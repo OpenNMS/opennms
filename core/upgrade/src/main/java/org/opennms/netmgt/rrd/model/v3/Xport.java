@@ -25,32 +25,69 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.rrdtool;
+package org.opennms.netmgt.rrd.model.v3;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The Class LongAdapter.
- * <p>The null representation of some integer values inside the XML version of an RRD is expressed as 'U'</p>
+ * The Class XPort (the XML representation of the 'rrdtool xport' command).
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
-public class LongAdapter extends XmlAdapter<String, Long> {
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Xport {
 
-    /* (non-Javadoc)
-     * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
+    /** The meta data. */
+    @XmlElement
+    private Meta meta;
+
+    /** The rows. */
+    @XmlElement(name="row")
+    @XmlElementWrapper(name="data")
+    private List<XRow> rows = new ArrayList<XRow>();
+
+    /**
+     * Gets the meta data.
+     *
+     * @return the meta data
      */
-    @Override
-    public String marshal(Long value) throws Exception {
-        return value == null ? "U" : value.toString();
+    public Meta getMeta() {
+        return meta;
     }
 
-    /* (non-Javadoc)
-     * @see javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
+    /**
+     * Sets the meta data.
+     *
+     * @param meta the new meta data
      */
-    @Override
-    public Long unmarshal(String value) throws Exception {
-        return value.equals("U") ? null : new Long(value);
+    public void setMeta(Meta meta) {
+        this.meta = meta;
+    }
+
+    /**
+     * Gets the rows.
+     *
+     * @return the rows
+     */
+    public List<XRow> getRows() {
+        return rows;
+    }
+
+    /**
+     * Sets the rows.
+     *
+     * @param rows the new rows
+     */
+    public void setRows(List<XRow> rows) {
+        this.rows = rows;
     }
 
 }

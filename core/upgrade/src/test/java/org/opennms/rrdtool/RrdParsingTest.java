@@ -32,6 +32,10 @@ import java.io.File;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.rrd.model.v3.CFType;
+import org.opennms.netmgt.rrd.model.v3.DSType;
+import org.opennms.netmgt.rrd.model.v3.RRDv3;
+import org.opennms.netmgt.rrd.model.v3.Xport;
 
 /**
  * The Class RRD Parsing Test.
@@ -47,7 +51,7 @@ public class RrdParsingTest {
      */
     @Test
     public void parseRrdSimple() throws Exception {
-        RRD rrd = JaxbUtils.unmarshal(RRD.class, new File("src/test/resources/rrd-dump.xml"));
+        RRDv3 rrd = JaxbUtils.unmarshal(RRDv3.class, new File("src/test/resources/rrd-dump.xml"));
         Assert.assertNotNull(rrd);
         Assert.assertEquals(new Long(300), rrd.getStep());
         Assert.assertEquals(new Long(1233926670), rrd.getLastUpdate());
@@ -73,7 +77,7 @@ public class RrdParsingTest {
      */
     @Test
     public void parseRrdWithComputedDs() throws Exception {
-        RRD rrd = JaxbUtils.unmarshal(RRD.class, new File("src/test/resources/rrd-dump-compute-ds.xml"));
+        RRDv3 rrd = JaxbUtils.unmarshal(RRDv3.class, new File("src/test/resources/rrd-dump-compute-ds.xml"));
         Assert.assertNotNull(rrd);
     }
 
@@ -84,7 +88,7 @@ public class RrdParsingTest {
      */
     @Test
     public void parseRrdWithAberrantBehaviorDetection() throws Exception {
-        RRD rrd = JaxbUtils.unmarshal(RRD.class, new File("src/test/resources/rrd-dump-aberrant-behavior-detection.xml"));
+        RRDv3 rrd = JaxbUtils.unmarshal(RRDv3.class, new File("src/test/resources/rrd-dump-aberrant-behavior-detection.xml"));
         Assert.assertNotNull(rrd);
     }
 

@@ -25,69 +25,32 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.rrdtool;
+package org.opennms.netmgt.rrd.model.v3;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
- * The Class XPort (the XML representation of the 'rrdtool xport' command).
+ * The Class LongAdapter.
+ * <p>The null representation of some integer values inside the XML version of an RRD is expressed as 'U'</p>
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
-public class Xport {
+public class LongAdapter extends XmlAdapter<String, Long> {
 
-    /** The meta data. */
-    @XmlElement
-    private Meta meta;
-
-    /** The rows. */
-    @XmlElement(name="row")
-    @XmlElementWrapper(name="data")
-    private List<XRow> rows = new ArrayList<XRow>();
-
-    /**
-     * Gets the meta data.
-     *
-     * @return the meta data
+    /* (non-Javadoc)
+     * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
      */
-    public Meta getMeta() {
-        return meta;
+    @Override
+    public String marshal(Long value) throws Exception {
+        return value == null ? "U" : value.toString();
     }
 
-    /**
-     * Sets the meta data.
-     *
-     * @param meta the new meta data
+    /* (non-Javadoc)
+     * @see javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
      */
-    public void setMeta(Meta meta) {
-        this.meta = meta;
-    }
-
-    /**
-     * Gets the rows.
-     *
-     * @return the rows
-     */
-    public List<XRow> getRows() {
-        return rows;
-    }
-
-    /**
-     * Sets the rows.
-     *
-     * @param rows the new rows
-     */
-    public void setRows(List<XRow> rows) {
-        this.rows = rows;
+    @Override
+    public Long unmarshal(String value) throws Exception {
+        return value.equals("U") ? null : new Long(value);
     }
 
 }

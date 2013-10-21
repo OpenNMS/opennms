@@ -25,7 +25,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.rrdtool.old;
+package org.opennms.netmgt.rrd.model.v1;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,8 +36,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.rrdtool.CFType;
-import org.opennms.rrdtool.Row;
+import org.opennms.netmgt.rrd.model.v3.CFType;
+import org.opennms.netmgt.rrd.model.v3.Row;
 
 /**
  * The Class RRA (Round Robin Archives).
@@ -47,7 +47,7 @@ import org.opennms.rrdtool.Row;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.PROPERTY)
-public class RraOld {
+public class RRAv1 {
 
     /** The consolidation function. */
     private CFType consolidationFunction;
@@ -59,7 +59,7 @@ public class RraOld {
     private List<Row> rows = new ArrayList<Row>();
 
     /** The CDP Data. */
-    private List<RraDsOld> dataSources = new ArrayList<RraDsOld>();
+    private List<RRADSv1> dataSources = new ArrayList<RRADSv1>();
 
     /** The XFF. */
     private Double xff = 0.5;
@@ -129,7 +129,7 @@ public class RraOld {
      */
     @XmlElement(name="ds")
     @XmlElementWrapper(name="cdp_prep")
-    public List<RraDsOld> getDataSources() {
+    public List<RRADSv1> getDataSources() {
         return dataSources;
     }
 
@@ -138,7 +138,7 @@ public class RraOld {
      *
      * @param dataSources the new data sources
      */
-    public void setDataSources(List<RraDsOld> dataSources) {
+    public void setDataSources(List<RRADSv1> dataSources) {
         this.dataSources = dataSources;
     }
 
@@ -171,7 +171,7 @@ public class RraOld {
      * @param rra the RRA object
      * @return true, if successful
      */
-    public boolean formatEquals(RraOld rra) {
+    public boolean formatEquals(RRAv1 rra) {
         if (this.consolidationFunction != null) {
             if (rra.consolidationFunction == null) return false;
             else if (!(this.consolidationFunction.equals(rra.consolidationFunction))) 

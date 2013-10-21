@@ -25,7 +25,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.rrdtool;
+package org.opennms.netmgt.rrd.model.v3;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +44,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.PROPERTY)
-public class Rra {
+public class RRA {
 
     /** The consolidation function. */
     private CFType consolidationFunction;
@@ -59,7 +59,7 @@ public class Rra {
     private Parameters parameters = new Parameters();
 
     /** The CDP Data. */
-    private List<RraDS> dataSources = new ArrayList<RraDS>();
+    private List<RRADS> dataSources = new ArrayList<RRADS>();
 
     /**
      * Gets the consolidation function.
@@ -145,7 +145,7 @@ public class Rra {
      */
     @XmlElement(name="ds")
     @XmlElementWrapper(name="cdp_prep")
-    public List<RraDS> getDataSources() {
+    public List<RRADS> getDataSources() {
         return dataSources;
     }
 
@@ -154,7 +154,7 @@ public class Rra {
      *
      * @param dataSources the new data sources
      */
-    public void setDataSources(List<RraDS> dataSources) {
+    public void setDataSources(List<RRADS> dataSources) {
         this.dataSources = dataSources;
     }
 
@@ -165,7 +165,7 @@ public class Rra {
      * @param rra the RRA object
      * @return true, if successful
      */
-    public boolean formatEquals(Rra rra) {
+    public boolean formatEquals(RRA rra) {
         if (this.consolidationFunction != null) {
             if (rra.consolidationFunction == null) return false;
             else if (!(this.consolidationFunction.equals(rra.consolidationFunction))) 

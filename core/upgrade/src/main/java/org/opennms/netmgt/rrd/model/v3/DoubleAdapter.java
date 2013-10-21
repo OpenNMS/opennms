@@ -25,58 +25,32 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.rrdtool;
+package org.opennms.netmgt.rrd.model.v3;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
- * The Class Row.
+ * The Class DoubleAdapter.
+ * <p>The null representation of some integer values inside the XML version of an RRD is expressed as 'U'</p>
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
-public class Row {
+public class DoubleAdapter extends XmlAdapter<String, Double> {
 
-    /** The values. */
-    @XmlElement(name="v")
-    private List<Double> values = new ArrayList<Double>();
-
-    /**
-     * Gets the values.
-     *
-     * @return the values
+    /* (non-Javadoc)
+     * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
      */
-    public List<Double> getValues() {
-        return values;
+    @Override
+    public String marshal(Double value) throws Exception {
+        return value == null ? "U" : value.toString();
     }
 
-    /**
-     * Sets the values.
-     *
-     * @param values the new values
+    /* (non-Javadoc)
+     * @see javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
      */
-    public void setValues(List<Double> values) {
-        this.values = values;
+    @Override
+    public Double unmarshal(String value) throws Exception {
+        return value.equals("U") ? null : new Double(value);
     }
 
-    /**
-     * Checks if is all the values are NaN.
-     *
-     * @return true, if all the values are NaN.
-     */
-    public boolean isNan() {
-        for (Double v : values) {
-            if (!v.isNaN()) {
-                return false;
-            }
-        }
-        return true;
-    }
 }

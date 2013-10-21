@@ -25,7 +25,10 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.rrdtool.old;
+package org.opennms.netmgt.rrd.model.v3;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -33,56 +36,47 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The Class RraDS (RRA CDP Data Source).
+ * The Class Row.
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
-@XmlRootElement(name="ds")
+@XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class RraDsOld {
+public class Row {
 
-    /** The unknown data points. */
-    @XmlElement(name="unknown_datapoints")
-    private Long unknownDataPoints = 0L;
-
-    /** The value. */
-    @XmlElement(name="value")
-    private Double value;
+    /** The values. */
+    @XmlElement(name="v")
+    private List<Double> values = new ArrayList<Double>();
 
     /**
-     * Gets the unknown data points.
+     * Gets the values.
      *
-     * @return the unknown data points
+     * @return the values
      */
-    public Long getUnknownDataPoints() {
-        return unknownDataPoints;
+    public List<Double> getValues() {
+        return values;
     }
 
     /**
-     * Sets the unknown data points.
+     * Sets the values.
      *
-     * @param unknownDataPoints the new unknown data points
+     * @param values the new values
      */
-    public void setUnknownDataPoints(Long unknownDataPoints) {
-        this.unknownDataPoints = unknownDataPoints;
+    public void setValues(List<Double> values) {
+        this.values = values;
     }
 
     /**
-     * Gets the value.
+     * Checks if is all the values are NaN.
      *
-     * @return the value
+     * @return true, if all the values are NaN.
      */
-    public Double getValue() {
-        return value;
+    public boolean isNan() {
+        for (Double v : values) {
+            if (!v.isNaN()) {
+                return false;
+            }
+        }
+        return true;
     }
-
-    /**
-     * Sets the value.
-     *
-     * @param value the new value
-     */
-    public void setValue(Double value) {
-        this.value = value;
-    }
-
 }

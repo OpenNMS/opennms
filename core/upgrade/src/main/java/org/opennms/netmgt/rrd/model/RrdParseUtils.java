@@ -25,7 +25,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.rrdtool;
+package org.opennms.netmgt.rrd.model;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -37,7 +37,8 @@ import java.io.InputStreamReader;
 import org.jrobin.core.RrdDb;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.rrdtool.old.RrdOld;
+import org.opennms.netmgt.rrd.model.v1.RRDv1;
+import org.opennms.netmgt.rrd.model.v3.RRDv3;
 import org.opennms.upgrade.api.OnmsUpgradeException;
 import org.springframework.util.FileCopyUtils;
 
@@ -46,12 +47,12 @@ import org.springframework.util.FileCopyUtils;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
-public class RrdtoolUtils {
+public class RrdParseUtils {
 
     /**
      * Instantiates a new RRDtool Utils.
      */
-    private RrdtoolUtils() {}
+    private RrdParseUtils() {}
 
     /**
      * Dumps a JRB.
@@ -60,9 +61,9 @@ public class RrdtoolUtils {
      * @return the RRD Object (old version)
      * @throws Exception the exception
      */
-    public static RrdOld dumpJrb(File sourceFile) throws Exception {
+    public static RRDv1 dumpJrb(File sourceFile) throws Exception {
         RrdDb jrb = new RrdDb(sourceFile, true);
-        RrdOld rrd = JaxbUtils.unmarshal(RrdOld.class, jrb.getXml());
+        RRDv1 rrd = JaxbUtils.unmarshal(RRDv1.class, jrb.getXml());
         jrb.close();
         return rrd;
     }
@@ -74,14 +75,14 @@ public class RrdtoolUtils {
      * @return the RRD Object
      * @throws Exception the exception
      */
-    public static RRD dumpRrd(File sourceFile) throws Exception {
+    public static RRDv3 dumpRrd(File sourceFile) throws Exception {
         String rrdBinary = System.getProperty("rrd.binary");
         if (rrdBinary == null) {
             throw new IllegalArgumentException("rrd.binary property must be set");
         }
         String command = rrdBinary + " dump " + sourceFile.getAbsolutePath();
         String[] commandArray = StringUtils.createCommandArray(command, '@');
-        RRD rrd = null;
+        RRDv3 rrd = null;
         Process process = Runtime.getRuntime().exec(commandArray);
         byte[] byteArray = FileCopyUtils.copyToByteArray(process.getInputStream());
         String errors = FileCopyUtils.copyToString(new InputStreamReader(process.getErrorStream()));
@@ -92,7 +93,7 @@ public class RrdtoolUtils {
         try {
             InputStream is = new ByteArrayInputStream(byteArray);
             reader = new BufferedReader(new InputStreamReader(is));
-            rrd = JaxbUtils.unmarshal(RRD.class, reader);
+            rrd = JaxbUtils.unmarshal(RRDv3.class, reader);
         } finally {
             reader.close();
         }
@@ -106,7 +107,7 @@ public class RrdtoolUtils {
      * @param targetFile the target file
      * @throws Exception the exception
      */
-    public static void restoreJrb(RrdOld rrd, File targetFile) throws Exception {
+    public static void restoreJrb(RRDv1 rrd, File targetFile) throws Exception {
         final File outputXmlFile = new File(targetFile + ".xml");
         JaxbUtils.marshal(rrd, new FileWriter(outputXmlFile));
         RrdDb targetJrb = new RrdDb(targetFile.getCanonicalPath(), RrdDb.PREFIX_XML + outputXmlFile.getAbsolutePath());
@@ -121,7 +122,7 @@ public class RrdtoolUtils {
      * @param targetFile the target file
      * @throws Exception the exception
      */
-    public static void restoreRrd(RRD rrd, File targetFile) throws Exception {
+    public static void restoreRrd(RRDv3 rrd, File targetFile) throws Exception {
         String rrdBinary = System.getProperty("rrd.binary");
         if (rrdBinary == null) {
             throw new IllegalArgumentException("rrd.binary property must be set");

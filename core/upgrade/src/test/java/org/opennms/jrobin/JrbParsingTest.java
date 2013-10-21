@@ -25,32 +25,46 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.rrdtool;
+package org.opennms.jrobin;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import java.io.File;
+
+import org.junit.Assert;
+import org.junit.Test;
+import org.opennms.netmgt.rrd.model.RrdParseUtils;
+import org.opennms.netmgt.rrd.model.v1.RRDv1;
 
 /**
- * The Class DoubleAdapter.
- * <p>The null representation of some integer values inside the XML version of an RRD is expressed as 'U'</p>
+ * The Class JrbParsingTest.
  * 
- * @author Alejandro Galue <agalue@opennms.org>
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
-public class DoubleAdapter extends XmlAdapter<String, Double> {
-
-    /* (non-Javadoc)
-     * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
+public class JrbParsingTest {
+    
+    /**
+     * Test JRobin parse.
+     *
+     * @throws Exception the exception
      */
-    @Override
-    public String marshal(Double value) throws Exception {
-        return value == null ? "U" : value.toString();
+    @Test
+    public void testJrobinParse() throws Exception {
+        RRDv1 jrb = RrdParseUtils.dumpJrb(new File("src/test/resources/tempA.jrb"));
+        Assert.assertNotNull(jrb);
+        
     }
 
-    /* (non-Javadoc)
-     * @see javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
+    /**
+     * Test JRobin restore.
+     *
+     * @throws Exception the exception
      */
-    @Override
-    public Double unmarshal(String value) throws Exception {
-        return value.equals("U") ? null : new Double(value);
+    @Test
+    public void testJrobinRestore() throws Exception {
+        RRDv1 jrb = RrdParseUtils.dumpJrb(new File("src/test/resources/tempA.jrb"));
+        File target = new File("target/tempA-converted.jrb");
+        RrdParseUtils.restoreJrb(jrb, target);
+        Assert.assertTrue(target.exists());
     }
 
 }
+

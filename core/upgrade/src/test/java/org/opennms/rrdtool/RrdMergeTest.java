@@ -34,6 +34,9 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.rrd.model.v3.RRDv3;
+import org.opennms.netmgt.rrd.model.v3.Row;
+import org.opennms.netmgt.rrd.model.v3.RRA;
 
 /**
  * The Class RRD Merging Test.
@@ -50,14 +53,14 @@ public class RrdMergeTest {
      */
     @Test
     public void testRrdMerge() throws Exception {
-        RRD tempA = JaxbUtils.unmarshal(RRD.class, new File("src/test/resources/rrd-tempA.xml"));
-        RRD tempB = JaxbUtils.unmarshal(RRD.class, new File("src/test/resources/rrd-tempB.xml"));
+        RRDv3 tempA = JaxbUtils.unmarshal(RRDv3.class, new File("src/test/resources/rrd-tempA.xml"));
+        RRDv3 tempB = JaxbUtils.unmarshal(RRDv3.class, new File("src/test/resources/rrd-tempB.xml"));
 
         // Retrieve a list of the time stamps of the rows with data from tempA.rrd
         // Verify the max value
         Double value = Double.NEGATIVE_INFINITY;
         List<Long> timestampsA = new ArrayList<Long>();
-        for (Rra rra : tempA.getRras()) {
+        for (RRA rra : tempA.getRras()) {
             for (Row row : rra.getRows()) {
                 if (!row.isNan()) {
                     timestampsA.add(tempA.findTimestampByRow(rra, row));
@@ -73,7 +76,7 @@ public class RrdMergeTest {
         // Retrieve a list of the time stamps of the rows with data from tempB.rrd
         value = Double.NEGATIVE_INFINITY;
         List<Long> timestampsB = new ArrayList<Long>();
-        for (Rra rra : tempB.getRras()) {
+        for (RRA rra : tempB.getRras()) {
             for (Row row : rra.getRows()) {
                 if (!row.isNan()) {
                     timestampsB.add(tempB.findTimestampByRow(rra, row));
@@ -104,7 +107,7 @@ public class RrdMergeTest {
         // Retrieve the list of the non NaN rows from the updated tempB.rrd
         value = Double.NEGATIVE_INFINITY;
         List<Long> timestampsFinal = new ArrayList<Long>();
-        for (Rra rra : tempB.getRras()) {
+        for (RRA rra : tempB.getRras()) {
             for (Row row : rra.getRows()) {
                 if (!row.isNan()) {
                     timestampsFinal.add(tempB.findTimestampByRow(rra, row));

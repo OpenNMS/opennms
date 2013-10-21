@@ -45,9 +45,9 @@ import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
-import org.opennms.rrdtool.RRD;
-import org.opennms.rrdtool.RrdtoolUtils;
-import org.opennms.rrdtool.old.RrdOld;
+import org.opennms.netmgt.rrd.model.RrdParseUtils;
+import org.opennms.netmgt.rrd.model.v1.RRDv1;
+import org.opennms.netmgt.rrd.model.v3.RRDv3;
 import org.opennms.upgrade.api.AbstractOnmsUpgrade;
 import org.opennms.upgrade.api.OnmsUpgradeException;
 
@@ -246,14 +246,14 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
     protected void mergeRrd(File source, File dest) {
         log("  merging RRD %s into %s\n", source, dest);
         try {
-            RRD rrdSrc = RrdtoolUtils.dumpRrd(source);
-            RRD rrdDst = RrdtoolUtils.dumpRrd(dest);
+            RRDv3 rrdSrc = RrdParseUtils.dumpRrd(source);
+            RRDv3 rrdDst = RrdParseUtils.dumpRrd(dest);
             if (rrdSrc == null || rrdDst == null) {
                 log("  Warning: can't load RRDs (ingoring merge).\n");
             }
             rrdDst.merge(rrdSrc);
             final File outputFile = new File(dest.getCanonicalPath() + ".merged");
-            RrdtoolUtils.restoreRrd(rrdDst, outputFile);
+            RrdParseUtils.restoreRrd(rrdDst, outputFile);
             FileUtils.moveFile(outputFile, dest);
         } catch (Exception e) {
             log("  Warning: ignoring merge because %s.\n", e.getMessage());
@@ -269,14 +269,14 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
     protected void mergeJrb(File source, File dest) {
         log("  merging JRB %s into %s\n", source, dest);
         try {
-            RrdOld rrdSrc = RrdtoolUtils.dumpJrb(source);
-            RrdOld rrdDst = RrdtoolUtils.dumpJrb(dest);
+            RRDv1 rrdSrc = RrdParseUtils.dumpJrb(source);
+            RRDv1 rrdDst = RrdParseUtils.dumpJrb(dest);
             if (rrdSrc == null || rrdDst == null) {
                 log("  Warning: can't load JRBs (ingoring merge).\n");
             }
             rrdDst.merge(rrdSrc);
             final File outputFile = new File(dest.getCanonicalPath() + ".merged");
-            RrdtoolUtils.restoreJrb(rrdDst, outputFile);
+            RrdParseUtils.restoreJrb(rrdDst, outputFile);
             FileUtils.moveFile(outputFile, dest);
         } catch (Exception e) {
             log("  Warning: ignoring merge because %s.\n", e.getMessage());

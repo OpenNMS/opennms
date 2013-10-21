@@ -25,7 +25,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.rrdtool.old;
+package org.opennms.netmgt.rrd.model.v3;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,18 +36,14 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.opennms.rrdtool.DS;
-import org.opennms.rrdtool.LongAdapter;
-import org.opennms.rrdtool.Row;
-
 /**
- * The Class RRD (Round Robin Database).
+ * The Class RRD (Round Robin Database) version 3.
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class RrdOld {
+public class RRDv3 {
 
     /** The version of the RRD Dump. */
     @XmlElement
@@ -68,7 +64,7 @@ public class RrdOld {
 
     /** The RRAs. */
     @XmlElement(name="rra")
-    private List<RraOld> rras = new ArrayList<RraOld>();
+    private List<RRA> rras = new ArrayList<RRA>();
 
     /**
      * Gets the version.
@@ -147,7 +143,7 @@ public class RrdOld {
      *
      * @return the RRAs
      */
-    public List<RraOld> getRras() {
+    public List<RRA> getRras() {
         return rras;
     }
 
@@ -156,7 +152,7 @@ public class RrdOld {
      *
      * @param rras the new RRAs
      */
-    public void setRras(List<RraOld> rras) {
+    public void setRras(List<RRA> rras) {
         this.rras = rras;
     }
 
@@ -166,7 +162,7 @@ public class RrdOld {
      * @param rra the RRA
      * @return the start time stamp (in seconds)
      */
-    public Long getStartTimestamp(RraOld rra) {
+    public Long getStartTimestamp(RRA rra) {
         if (getLastUpdate() == null || getStep() == null || rra == null) {
             return null;
         }
@@ -179,7 +175,7 @@ public class RrdOld {
      * @param rra the RRA
      * @return the end time stamp (in seconds)
      */
-    public Long getEndTimestamp(RraOld rra) {
+    public Long getEndTimestamp(RRA rra) {
         if (getLastUpdate() == null || getStep() == null || rra == null) {
             return null;
         }
@@ -193,7 +189,7 @@ public class RrdOld {
      * @param row the Row object
      * @return the long
      */
-    public Long findTimestampByRow(RraOld rra, Row row) {
+    public Long findTimestampByRow(RRA rra, Row row) {
         int rowNumber = rra.getRows().indexOf(row);
         if (rowNumber < 0) {
             return null;
@@ -208,7 +204,7 @@ public class RrdOld {
      * @param timestamp the row time stamp
      * @return the row object
      */
-    public Row findRowByTimestamp(RraOld rra, Long timestamp) {
+    public Row findRowByTimestamp(RRA rra, Long timestamp) {
         try {
             Long n = (timestamp - getStartTimestamp(rra)) / (rra.getPdpPerRow() * getStep());
             return rra.getRows().get(n.intValue());
@@ -225,12 +221,12 @@ public class RrdOld {
      * @param rrdSrc the RRD source
      * @throws IllegalArgumentException the illegal argument exception
      */
-    public void merge(RrdOld rrdSrc) throws IllegalArgumentException {
+    public void merge(RRDv3 rrdSrc) throws IllegalArgumentException {
         if (!formatEquals(rrdSrc)) {
             throw new IllegalArgumentException("Invalid RRD format");
         }
         int rraNum = 0;
-        for (RraOld rra : rrdSrc.getRras()) {
+        for (RRA rra : rrdSrc.getRras()) {
             for (Row row : rra.getRows()) {
                 if (!row.isNan()) {
                     Long ts = rrdSrc.findTimestampByRow(rra, row);
@@ -250,7 +246,7 @@ public class RrdOld {
      * @param rrd the RRD object
      * @return true, if successful
      */
-    public boolean formatEquals(RrdOld rrd) {
+    public boolean formatEquals(RRDv3 rrd) {
         if (this.step != null) {
             if (rrd.step == null) return false;
             else if (!(this.step.equals(rrd.step))) 
