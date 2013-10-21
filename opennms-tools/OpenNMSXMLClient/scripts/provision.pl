@@ -341,7 +341,7 @@ sub cmd_interface {
 
 Add a service to the interface identified by the given foreign source, node ID, and IP address.
 
-=item B<service remove E<lt>foreign-source<gt> E<lt>foreign-idE<gt> E<lt>ip-addressE<gt> E<lt>service-nameE<gt>>
+=item B<service remove E<lt>foreign-sourceE<gt> E<lt>foreign-idE<gt> E<lt>ip-addressE<gt> E<lt>service-nameE<gt>>
 
 Remove a service from the interface identified by the given foreign source, node ID, and IP address.
 
@@ -441,7 +441,7 @@ Add an asset to the node identified by the given foreign source and node foreign
 
 Remove an asset from the node identified by the given foreign source and node foreign ID.
 
-=item B<asset set E<lt>foreign-source<gt> E<lt>foreign-idE<gt> E<lt>keyE<gt> E<lt>valueE<gt>>
+=item B<asset set E<lt>foreign-sourceE<gt> E<lt>foreign-idE<gt> E<lt>keyE<gt> E<lt>valueE<gt>>
 
 Set an asset value given the node foreign source, foreign ID, and asset key.
 
