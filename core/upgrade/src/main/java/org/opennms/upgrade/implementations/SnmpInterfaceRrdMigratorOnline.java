@@ -63,6 +63,9 @@ import org.opennms.upgrade.api.OnmsUpgradeException;
  */
 public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
 
+    /** The Constant ZIP_EXT. */
+    public static final String ZIP_EXT = ".zip";
+
     /** The interfaces to merge. */
     private List<SnmpInterfaceUpgrade> interfacesToMerge;
 
@@ -112,10 +115,12 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
         }
         interfacesToMerge = getInterfacesToMerge();
         for (SnmpInterfaceUpgrade intf : interfacesToMerge) {
-            File target = intf.getNewInterfaceDir();
-            if (target.exists()) {
-                log("Backing up %s\n", target);
-                zipDir(target.getAbsolutePath() + ".zip", target);
+            File[] targets = { intf.getOldInterfaceDir(), intf.getNewInterfaceDir() };
+            for (File target : targets) {
+                if (target.exists()) {
+                    log("Backing up: %s\n", target);
+                    zipDir(target.getAbsolutePath() + ZIP_EXT, target);
+                }
             }
         }
     }
@@ -125,11 +130,13 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
      */
     public void postExecute() throws OnmsUpgradeException {
         for (SnmpInterfaceUpgrade intf : interfacesToMerge) {
-            File target = intf.getNewInterfaceDir();
-            File zip = new File(target.getAbsolutePath() + ".zip");
-            if (zip.exists()) {
-                log("Removing backup %s\n", zip);
-                zip.delete();
+            File[] targets = { intf.getOldInterfaceDir(), intf.getNewInterfaceDir() };
+            for (File target : targets) {
+                File zip = new File(target.getAbsolutePath() + ZIP_EXT);
+                if (zip.exists()) {
+                    log("Removing backup: %s\n", zip);
+                    zip.delete();
+                }
             }
         }
     }
@@ -141,12 +148,14 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
     public void rollback() throws OnmsUpgradeException {
         try {
             for (SnmpInterfaceUpgrade intf : interfacesToMerge) {
-                File target = intf.getNewInterfaceDir();
-                File zip = new File(target.getAbsolutePath() + ".zip");
-                FileUtils.deleteDirectory(target);
-                target.mkdirs();
-                unzipDir(zip, target);
-                zip.delete();
+                File[] targets = { intf.getOldInterfaceDir(), intf.getNewInterfaceDir() };
+                for (File target : targets) {
+                    File zip = new File(target.getAbsolutePath() + ZIP_EXT);
+                    FileUtils.deleteDirectory(target);
+                    target.mkdirs();
+                    unzipDir(zip, target);
+                    zip.delete();
+                }
             }
         } catch (IOException e) {
             throw new OnmsUpgradeException("Can't restore the backup files because " + e.getMessage());
