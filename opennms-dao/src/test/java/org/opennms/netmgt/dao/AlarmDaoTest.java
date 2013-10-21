@@ -36,9 +36,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Assert;
-
 import org.hibernate.PropertyValueException;
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.criteria.Alias;
@@ -63,7 +63,6 @@ import org.opennms.test.ThrowableAnticipator;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -94,24 +93,14 @@ public class AlarmDaoTest implements InitializingBean {
 	@Autowired
 	private DatabasePopulator m_databasePopulator;
 	
-    private static boolean m_populated = false;
-
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
     }
 
-    @BeforeTransaction
+    @Before
     public void setUp() {
-        try {
-            if (!m_populated) {
-                m_databasePopulator.populateDatabase();
-            }
-        } catch (Throwable e) {
-            e.printStackTrace(System.err);
-        } finally {
-            m_populated = true;
-        }
+        m_databasePopulator.populateDatabase();
     }
 
 	@Test

@@ -91,8 +91,9 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> implements
         m_lockName = (table == null || "".equals(table.name()) ? m_entityClass.getSimpleName() : table.name()).toUpperCase() + "_ACCESS";
     }
 
+    // Leave this non-final to avoid some Spring proxying warnings
     @Override
-    public final void afterPropertiesSet() throws IllegalArgumentException, BeanInitializationException {
+    public void afterPropertiesSet() throws IllegalArgumentException, BeanInitializationException {
         try {
             initDao();
         }
