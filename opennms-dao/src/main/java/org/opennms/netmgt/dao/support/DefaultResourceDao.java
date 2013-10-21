@@ -331,7 +331,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
             try {
                 initResourceTypes();
             } catch (IOException e) {
-                log().error("Can't reload resource types.", e);
+                LOG.error("Can't reload resource types.", e);
             }
         }
         return m_resourceTypes.values();
