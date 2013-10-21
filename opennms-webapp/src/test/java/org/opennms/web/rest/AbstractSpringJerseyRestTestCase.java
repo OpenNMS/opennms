@@ -366,9 +366,9 @@ public abstract class AbstractSpringJerseyRestTestCase {
 	protected static Map<String, String> parseParamData(String data) throws UnsupportedEncodingException {
         Map<String, String> retVal = new HashMap<String, String>();
         for (String item : data.split("&")) {
-            String[] kv = item.split("=");
-            if(kv.length > 1){
-                retVal.put(URLDecoder.decode(kv[0], "UTF-8"), URLDecoder.decode(kv[1],"UTF-8"));
+            int idx = item.indexOf("=");
+            if (idx > 0) {
+                retVal.put(URLDecoder.decode(item.substring(0, idx), "UTF-8"), URLDecoder.decode(item.substring(idx + 1), "UTF-8"));
             }
         }
         return retVal;

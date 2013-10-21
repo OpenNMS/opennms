@@ -30,6 +30,7 @@ package org.opennms.netmgt.mock;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -231,6 +232,10 @@ public class MockDataCollectionConfig implements DataCollectionConfigDao {
     }
 
     public void reload() {
+    }
+
+    public Date getLastUpdate() {
+        return null;
     }
 
 }
