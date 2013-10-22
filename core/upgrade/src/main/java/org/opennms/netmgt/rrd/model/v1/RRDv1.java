@@ -35,8 +35,9 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.netmgt.rrd.model.AbstractDS;
+import org.opennms.netmgt.rrd.model.AbstractRRA;
 import org.opennms.netmgt.rrd.model.AbstractRRD;
-import org.opennms.netmgt.rrd.model.v1.DS;
 
 /**
  * The Class RRD (Round Robin Database) version 1 (JRobin).
@@ -97,6 +98,41 @@ public class RRDv1 extends AbstractRRD {
     @Override
     protected String getRequiredVersion() {
         return VERSION;
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.rrd.model.AbstractRRD#createRRD()
+     */
+    @Override
+    protected AbstractRRD createRRD() {
+        RRDv1 clone = new RRDv1();
+        clone.setLastUpdate(getLastUpdate());
+        clone.setStep(getStep());
+        return clone;
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.rrd.model.AbstractRRD#addDataSource(org.opennms.netmgt.rrd.model.AbstractDS)
+     */
+    @Override
+    public void addDataSource(AbstractDS ds) {
+        dataSources.add((DS)ds);
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.rrd.model.AbstractRRD#getDataSource(int)
+     */
+    @Override
+    public AbstractDS getDataSource(int index) {
+        return dataSources.get(index);
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.rrd.model.AbstractRRD#addRRA(org.opennms.netmgt.rrd.model.AbstractRRA)
+     */
+    @Override
+    public void addRRA(AbstractRRA rra) {
+        rras.add((RRA)rra);
     }
 
 }

@@ -27,6 +27,9 @@
  *******************************************************************************/
 package org.opennms.netmgt.rrd.model;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -50,6 +53,57 @@ public abstract class AbstractRRD {
     private Long lastupdate;
 
     /**
+     * Creates the RRD.
+     *
+     * @return the abstract RRD
+     */
+    protected abstract AbstractRRD createRRD();
+
+    /**
+     * Gets the data sources.
+     *
+     * @return the data sources
+     */
+    public abstract List<? extends AbstractDS> getDataSources();
+
+    /**
+     * Gets the RRAs.
+     *
+     * @return the RRAs
+     */
+    public abstract List<? extends AbstractRRA> getRras();
+
+    /**
+     * Adds the RRA.
+     *
+     * @param rra the RRA
+     */
+    public abstract void addRRA(AbstractRRA rra);
+
+    /**
+     * Adds the data source.
+     *
+     * @param ds the DS
+     */
+    public abstract void addDataSource(AbstractDS ds);
+
+    /**
+     * Gets the data source.
+     *
+     * @param index the index
+     * @return the data source
+     */
+    public abstract AbstractDS getDataSource(int index);
+
+    /**
+     * Gets the required version.
+     *
+     * @return the required version
+     */
+    @XmlTransient
+    protected abstract String getRequiredVersion();
+
+    /**
      * Gets the version of the RRD Dump.
      *
      * @return the version
@@ -70,14 +124,6 @@ public abstract class AbstractRRD {
         }
         this.version = version;
     }
-
-    /**
-     * Gets the required version.
-     *
-     * @return the required version
-     */
-    @XmlTransient
-    protected abstract String getRequiredVersion();
 
     /**
      * Gets the step (interval) expressed in seconds.
@@ -117,20 +163,6 @@ public abstract class AbstractRRD {
     public void setLastUpdate(Long lastUpdate) {
         this.lastupdate = lastUpdate;
     }
-
-    /**
-     * Gets the data sources.
-     *
-     * @return the data sources
-     */
-    public abstract List<? extends AbstractDS> getDataSources();
-
-    /**
-     * Gets the RRAs.
-     *
-     * @return the RRAs
-     */
-    public abstract List<? extends AbstractRRA> getRras();
 
     /**
      * Gets the start time stamp, expressed in seconds since 1970-01-01 UTC.
@@ -217,6 +249,80 @@ public abstract class AbstractRRD {
     }
 
     /**
+     * Merge.
+     *
+     * @param rrdList the RRD list
+     * @throws IllegalArgumentException the illegal argument exception
+     */
+    public void merge(List<? extends AbstractRRD> rrdList) throws IllegalArgumentException {
+        if (rrdList.size() != getDataSources().size()) {
+            throw new IllegalArgumentException("Cannot merge RRDs because the amount of RRDs doesn't match the amount of data sources.");
+        }
+        for (AbstractRRD arrd : rrdList) {
+            if (!getVersion().equals(getVersion())) {
+                throw new IllegalArgumentException("Cannot merge RRDs because one of them have a different file version.");
+            }
+            if (!hasEqualsRras(arrd)) {
+                throw new IllegalArgumentException("Cannot merge RRDs because one of them as different RRA configuration.");
+            }
+            if (arrd.getDataSources().size() > 1) {
+                throw new IllegalArgumentException("Cannot merge RRDs because one of them has more than one DS.");
+            }
+        }
+        Collections.sort(rrdList, new Comparator<AbstractRRD>() {
+            @Override
+            public int compare(AbstractRRD a, AbstractRRD b) {
+                int aInt = getIndex(a.getDataSources().get(0).getName());
+                int bInt = getIndex(b.getDataSources().get(0).getName());
+                return aInt - bInt;
+            }
+        });
+        for (int i = 0; i < getRras().size(); i++) {
+            AbstractRRA rra = getRras().get(i);
+            for (int j = 0; j < rra.getRows().size(); j++) {
+                Row row = rra.getRows().get(j);
+                for (int k = 0; k < row.getValues().size(); k++) {
+                    Double v = rrdList.get(k).getRras().get(i).getRows().get(j).getValues().get(0);
+                    if (!v.isNaN()) {
+                        row.getValues().set(k, v);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Split.
+     * <p>If the RRD contain several data sources, it will return one RRD per DS.
+     * Otherwise, it will throw an exception.</p>
+     *
+     * @return the RRD list
+     * @throws IllegalArgumentException the illegal argument exception
+     */
+    public List<AbstractRRD> split() throws IllegalArgumentException {
+        if (getDataSources().size() <= 1) {
+            throw new IllegalArgumentException("Cannot split an RRD composed by 1 or less data-sources.");
+        }
+        List<AbstractRRD> rrds = new ArrayList<AbstractRRD>();
+        for (int i = 0; i < getDataSources().size(); i++) {
+            AbstractRRD rrd = createRRD();
+            rrd.addDataSource(getDataSource(i));
+            for (int j = 0; j < getRras().size(); j++) {
+                AbstractRRA currentRra = getRras().get(j);
+                AbstractRRA rra = currentRra.createSingleRRA(i);
+                for (Row currentRow : currentRra.getRows()) {
+                    Row row = new Row();
+                    row.getValues().add(currentRow.getValues().get(i));
+                    rra.getRows().add(row);
+                }
+                rrd.addRRA(rra);
+            }
+            rrds.add(rrd);
+        }
+        return rrds;
+    }
+
+    /**
      * Format equals.
      *
      * @param rrd the RRD object
@@ -244,6 +350,20 @@ public abstract class AbstractRRD {
                 return false;
         }
 
+        if (!hasEqualsRras(rrd)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Checks for equals RRAs.
+     *
+     * @param rrd the RRD object
+     * @return true, if successful
+     */
+    public boolean hasEqualsRras(AbstractRRD rrd) {
         if (this.getRras() != null) {
             if (rrd.getRras() == null) return false;
             else if (!(this.getRras().size() == rrd.getRras().size())) 
@@ -258,6 +378,24 @@ public abstract class AbstractRRD {
         }
 
         return true;
+    }
+
+    /**
+     * Gets the index.
+     *
+     * @param dsName the DS name
+     * @return the index
+     */
+    protected int getIndex(String dsName) {
+        if (getDataSources() == null) {
+            return -1;
+        }
+        for (int i=0; i < getDataSources().size(); i++) {
+            if (getDataSources().get(i).getName().equals(dsName)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
 }

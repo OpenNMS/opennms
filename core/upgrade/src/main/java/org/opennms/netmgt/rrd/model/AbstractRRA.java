@@ -47,6 +47,15 @@ public abstract class AbstractRRA {
     private List<Row> rows = new ArrayList<Row>();
 
     /**
+     * Creates a RRA with a single data source.
+     *
+     * @param dsIndex the RRA-DS index
+     * @return the abstract RRA
+     * @throws IllegalArgumentException the illegal argument exception
+     */
+    protected abstract AbstractRRA createSingleRRA(int dsIndex) throws IllegalArgumentException;
+
+    /**
      * Gets the PDP (Primary Data Points) per row.
      *
      * @return the PDP (Primary Data Points) per row

@@ -28,28 +28,20 @@
 package org.opennms.netmgt.rrd.model.v1;
 
 /**
- * The Enumeration CFType (Consolidation Function Type)
+ * The Enumeration CFType (Consolidation Function Type).
  */
 public enum CFType {
 
-    /**
-     * RRA:AVERAGE:xff:steps:rows
-     */
+    /** RRA:AVERAGE:xff:steps:rows. */
     AVERAGE,
 
-    /**
-     * RRA:MIN:xff:steps:rows
-     */
+    /** RRA:MIN:xff:steps:rows. */
     MIN,
 
-    /**
-     * RRA:MAX:xff:steps:rows
-     */
+    /** RRA:MAX:xff:steps:rows. */
     MAX,
 
-    /**
-     * RRA:LAST:xff:steps:rows
-     */
+    /** RRA:LAST:xff:steps:rows. */
     LAST;
 
     /**

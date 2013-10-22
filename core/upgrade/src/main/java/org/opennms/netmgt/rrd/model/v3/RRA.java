@@ -133,4 +133,17 @@ public class RRA extends AbstractRRA {
         return super.formatEquals(rra);
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.rrd.model.AbstractRRA#createSingleRRA(int)
+     */
+    @Override
+    protected AbstractRRA createSingleRRA(int dsIndex) throws IllegalArgumentException {
+        RRA clone = new RRA();
+        clone.setConsolidationFunction(getConsolidationFunction());
+        clone.setPdpPerRow(getPdpPerRow());
+        clone.getDataSources().add(getDataSources().get(dsIndex));
+        clone.setParameters(getParameters());
+        return clone;
+    }
+
 }

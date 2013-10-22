@@ -28,53 +28,35 @@
 package org.opennms.netmgt.rrd.model.v3;
 
 /**
- * The Enumeration CFType (Consolidation Function Type)
+ * The Enumeration CFType (Consolidation Function Type).
  */
 public enum CFType {
 
-    /**
-     * RRA:AVERAGE:xff:steps:rows
-     */
+    /** RRA:AVERAGE:xff:steps:rows. */
     AVERAGE,
 
-    /**
-     * RRA:MIN:xff:steps:rows
-     */
+    /** RRA:MIN:xff:steps:rows. */
     MIN,
 
-    /**
-     * RRA:MAX:xff:steps:rows
-     */
+    /** RRA:MAX:xff:steps:rows. */
     MAX,
 
-    /**
-     * RRA:LAST:xff:steps:rows
-     */
+    /** RRA:LAST:xff:steps:rows. */
     LAST,
 
-    /**
-     * RRA:HWPREDICT:rows:alpha:beta:seasonal period[:rra-num]
-     */
+    /** RRA:HWPREDICT:rows:alpha:beta:seasonal period[:rra-num]. */
     HWPREDICT,
 
-    /**
-     * RRA:SEASONAL:seasonal period:gamma:rra-num[:smoothing-window=fraction]
-     */
+    /** RRA:SEASONAL:seasonal period:gamma:rra-num[:smoothing-window=fraction]. */
     SEASONAL,
 
-    /**
-     * RRA:DEVSEASONAL:seasonal period:gamma:rra-num[:smoothing-window=fraction]
-     */
+    /** RRA:DEVSEASONAL:seasonal period:gamma:rra-num[:smoothing-window=fraction]. */
     DEVSEASONAL,
 
-    /** 
-     * RRA:DEVPREDICT:rows:rra-num
-     */
+    /** RRA:DEVPREDICT:rows:rra-num. */
     DEVPREDICT,
 
-    /**
-     * RRA:FAILURES:rows:threshold:window length:rra-num
-     */
+    /** RRA:FAILURES:rows:threshold:window length:rra-num. */
     FAILURES;
 
     /**
