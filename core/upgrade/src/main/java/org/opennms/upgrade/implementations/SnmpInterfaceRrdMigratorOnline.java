@@ -81,7 +81,7 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
      * @see org.opennms.upgrade.api.OnmsUpgrade#getOrder()
      */
     public int getOrder() {
-        return 2;
+        return 1;
     }
 
     /* (non-Javadoc)
@@ -258,6 +258,7 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
                 }
             }
             try {
+                log("  removing old directory %s\n", oldDir.getName());
                 FileUtils.deleteDirectory(oldDir);
             } catch (Exception e) {
                 log("  Warning: can't delete old directory because %s", e.getMessage());

@@ -78,7 +78,7 @@ public class SnmpInterfaceRrdMigratorOffline extends SnmpInterfaceRrdMigratorOnl
      */
     @Override
     public int getOrder() {
-        return 3;
+        return 2;
     }
 
     /* (non-Javadoc)

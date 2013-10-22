@@ -81,7 +81,7 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
      */
     @Override
     public int getOrder() {
-        return 1;
+        return 3;
     }
 
     /* (non-Javadoc)
@@ -146,6 +146,8 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
                 zip.delete();
             }
         }
+        File toolFile = new File(System.getProperty("opennms.home"), "contrib/jmx-config-fix.pl");
+        log("IMPORTANT: Do not forget to fix your JMX metrics and graph templates using the following tool: %s.\n", toolFile); // FIXME Is this correct;
     }
 
     /* (non-Javadoc)
@@ -281,13 +283,13 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
                 if (!dsName.equals(newName)) {
                     try {
                         log("Renaming %s to %s\n", rrdExt.toUpperCase(), newFile);
-                        FileUtils.moveFile(jrbFile, newFile); // TODO It should be copyFile in order to do a roll-back
+                        FileUtils.moveFile(jrbFile, newFile);
                     } catch (Exception e) {
                         log("Warning: Can't move file because: %s", e.getMessage());
                         continue;
                     }
                 }
-                if (!isRrdtool) {
+                if (!isRrdtool) { // Only the JRBs may contain invalid DS inside
                     updateJrb(newFile);
                 }
             }
@@ -343,13 +345,13 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
                 if (!jrbFile.equals(newFile)) {
                     try {
                         log("Renaming %s to %s\n", rrdExt.toUpperCase(), newFile);
-                        FileUtils.moveFile(jrbFile, newFile); // TODO It should be copyFile in order to do a roll-back
+                        FileUtils.moveFile(jrbFile, newFile);
                     } catch (Exception e) {
                         log("Warning: Can't move file because: %s", e.getMessage());
                         continue;
                     }
                 }
-                if (!isRrdtool) {
+                if (!isRrdtool) {  // Only the JRBs may contain invalid DS inside
                     updateJrb(newFile);
                 }
             }
