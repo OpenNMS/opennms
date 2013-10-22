@@ -303,7 +303,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
                 sb.append("<tr class='" + onmsAlarm.getSeverity().getLabel() + " onms'>");
                 sb.append("<td class='divider bright onms' valign='middle' rowspan='1'><nobr>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + onmsAlarm.getId() + "</nobr></td>");
                 sb.append("<td class='divider onms' valign='middle' rowspan='1'><nobr>" + onmsAlarm.getSeverity().getLabel() + "</nobr></td>");
-                sb.append("<td class='divider onms' valign='middle' rowspan='1'><nobr>" + onmsNode.getLabel() + "</nobr></td>");
+                sb.append("<td class='divider onms' valign='middle' rowspan='1'><nobr>" + (onmsNode!=null?onmsNode.getLabel():"-") + "</nobr></td>");
                 sb.append("<td class='divider onms' valign='middle' rowspan='1'><nobr>" + onmsAlarm.getCounter() + "</nobr></td>");
                 sb.append("<td class='divider onms' valign='middle' rowspan='1'><nobr>" + onmsAlarm.getLastEventTime().toString() + "</nobr></td>");
                 sb.append("<td class='divider onms' valign='middle' rowspan='1'>" + onmsAlarm.getLogMsg().replaceAll("\\<.*?>", "") + "</td>");
