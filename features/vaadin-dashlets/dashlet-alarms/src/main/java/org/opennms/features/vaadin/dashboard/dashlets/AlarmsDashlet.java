@@ -33,6 +33,8 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Fetch;
 import org.opennms.features.vaadin.dashboard.config.ui.editors.CriteriaBuilderHelper;
 import org.opennms.features.vaadin.dashboard.model.AbstractDashlet;
+import org.opennms.features.vaadin.dashboard.model.AbstractDashletComponent;
+import org.opennms.features.vaadin.dashboard.model.DashletComponent;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -67,12 +69,12 @@ public class AlarmsDashlet extends AbstractDashlet {
     /**
      * wallboard layout
      */
-    private VerticalLayout m_wallboardLayout = null;
+    private DashletComponent m_wallboardComponent = null;
 
     /**
      * dashboard layout
      */
-    private VerticalLayout m_dashboardLayout = null;
+    private DashletComponent m_dashboardComponent = null;
 
 
     /**
@@ -92,26 +94,106 @@ public class AlarmsDashlet extends AbstractDashlet {
     }
 
     @Override
-    public Component getWallboardComponent() {
-        if (m_wallboardLayout == null) {
-            m_wallboardLayout = new VerticalLayout();
-            m_wallboardLayout.setCaption(getName());
-            m_wallboardLayout.setWidth("100%");
+    public DashletComponent getWallboardComponent() {
+        if (m_wallboardComponent == null) {
+            m_wallboardComponent = new AbstractDashletComponent() {
+                private VerticalLayout m_verticalLayout = new VerticalLayout();
+
+                {
+                    m_verticalLayout.setCaption(getName());
+                    m_verticalLayout.setWidth("100%");
+                    refresh();
+                }
+
+                /**
+                 * Injects CSS styles on current page for this dashlet
+                 */
+                private void injectWallboardStyles() {
+                    Page.getCurrent().getStyles().add(".alerts.cleared { background: #000000; border-left: 15px solid #858585; }");
+                    Page.getCurrent().getStyles().add(".alerts.normal { background: #000000; border-left: 15px solid #336600; }");
+                    Page.getCurrent().getStyles().add(".alerts.indeterminate {  background: #000000; border-left: 15px solid #999; }");
+                    Page.getCurrent().getStyles().add(".alerts.warning { background: #000000; border-left: 15px solid #FFCC00; }");
+                    Page.getCurrent().getStyles().add(".alerts.minor { background: #000000;  border-left: 15px solid #FF9900; }");
+                    Page.getCurrent().getStyles().add(".alerts.major { background: #000000; border-left: 15px solid #FF3300; }");
+                    Page.getCurrent().getStyles().add(".alerts.critical { background: #000000; border-left: 15px solid #CC0000; }");
+                    Page.getCurrent().getStyles().add(".alerts-font {color: #3ba300; font-size: 18px; line-height: normal; }");
+                    Page.getCurrent().getStyles().add(".alerts-noalarms-font { font-size: 18px; line-height: normal; }");
+                    Page.getCurrent().getStyles().add(".alerts { padding: 5px 5px; margin: 1px; }");
+                }
+
+                @Override
+                public void refresh() {
+                    List<OnmsAlarm> alarms = getAlarms();
+
+                    OnmsSeverity boostSeverity = OnmsSeverity.valueOf(getDashletSpec().getParameters().get("boostSeverity"));
+
+                    m_verticalLayout.removeAllComponents();
+
+                    injectWallboardStyles();
+
+                    boosted = false;
+
+                    addComponents(m_verticalLayout, alarms);
+
+                }
+
+                @Override
+                public Component getComponent() {
+                    return m_verticalLayout;
+                }
+            };
         }
-        return m_wallboardLayout;
+        return m_wallboardComponent;
     }
 
     @Override
-    public Component getDashboardComponent() {
-        if (m_dashboardLayout == null) {
-            /**
-             * Setting up the layout
-             */
-            m_dashboardLayout = new VerticalLayout();
-            m_dashboardLayout.setCaption(getName());
-            m_dashboardLayout.setWidth("100%");
+    public DashletComponent getDashboardComponent() {
+        if (m_dashboardComponent == null) {
+            m_dashboardComponent = new AbstractDashletComponent() {
+                private VerticalLayout m_verticalLayout = new VerticalLayout();
+
+                {
+                    m_verticalLayout.setCaption(getName());
+                    m_verticalLayout.setWidth("100%");
+                    refresh();
+                }
+
+                /**
+                 * Injects CSS styles on current page for this dashlet
+                 */
+                private void injectDashboardStyles() {
+                    Page.getCurrent().getStyles().add(".alerts.cleared { background: #000000; border-left: 8px solid #858585; }");
+                    Page.getCurrent().getStyles().add(".alerts.normal { background: #000000; border-left: 8px solid #336600; }");
+                    Page.getCurrent().getStyles().add(".alerts.indeterminate {  background: #000000; border-left: 8px solid #999; }");
+                    Page.getCurrent().getStyles().add(".alerts.warning { background: #000000; border-left: 8px solid #FFCC00; }");
+                    Page.getCurrent().getStyles().add(".alerts.minor { background: #000000;  border-left: 8px solid #FF9900; }");
+                    Page.getCurrent().getStyles().add(".alerts.major { background: #000000; border-left: 8px solid #FF3300; }");
+                    Page.getCurrent().getStyles().add(".alerts.critical { background: #000000; border-left: 8px solid #CC0000; }");
+                    Page.getCurrent().getStyles().add(".alerts-font {color: #3ba300; font-size: 11px; line-height: normal; }");
+                    Page.getCurrent().getStyles().add(".alerts-noalarms-font { font-size: 11px; line-height: normal; }");
+                    Page.getCurrent().getStyles().add(".alerts { padding: 5px 5px; margin: 1px; }");
+                }
+
+                @Override
+                public void refresh() {
+                    List<OnmsAlarm> alarms = getAlarms();
+
+                    m_verticalLayout.removeAllComponents();
+
+                    injectDashboardStyles();
+
+                    boosted = false;
+
+                    addComponents(m_verticalLayout, alarms);
+                }
+
+                @Override
+                public Component getComponent() {
+                    return m_verticalLayout;
+                }
+            };
         }
-        return m_dashboardLayout;
+        return m_dashboardComponent;
     }
 
     /**
@@ -175,44 +257,6 @@ public class AlarmsDashlet extends AbstractDashlet {
     }
 
     /**
-     * Updates the alarm data using the associated {@link AlarmDao} and {@link NodeDao} instances.
-     *
-     * @return true, if boosted, false otherwise
-     */
-    @Override
-    public void updateDashboard() {
-        List<OnmsAlarm> alarms = getAlarms();
-
-        m_dashboardLayout.removeAllComponents();
-
-        injectDashboardStyles();
-
-        boosted = false;
-
-        addComponents(m_dashboardLayout, alarms);
-    }
-
-    /**
-     * Updates the alarm data using the associated {@link AlarmDao} and {@link NodeDao} instances.
-     *
-     * @return true, if boosted, false otherwise
-     */
-    @Override
-    public void updateWallboard() {
-        List<OnmsAlarm> alarms = getAlarms();
-
-        OnmsSeverity boostSeverity = OnmsSeverity.valueOf(getDashletSpec().getParameters().get("boostSeverity"));
-
-        m_wallboardLayout.removeAllComponents();
-
-        injectWallboardStyles();
-
-        boosted = false;
-
-        addComponents(m_wallboardLayout, alarms);
-    }
-
-    /**
      * Returns a human-readable {@link String} representation of a timestamp in the past.
      *
      * @param secondsAll the timestamp to be used
@@ -250,37 +294,6 @@ public class AlarmsDashlet extends AbstractDashlet {
         return output + " ago";
     }
 
-    /**
-     * Injects CSS styles on current page for this dashlet
-     */
-    private void injectWallboardStyles() {
-        Page.getCurrent().getStyles().add(".alerts.cleared { background: #000000; border-left: 15px solid #858585; }");
-        Page.getCurrent().getStyles().add(".alerts.normal { background: #000000; border-left: 15px solid #336600; }");
-        Page.getCurrent().getStyles().add(".alerts.indeterminate {  background: #000000; border-left: 15px solid #999; }");
-        Page.getCurrent().getStyles().add(".alerts.warning { background: #000000; border-left: 15px solid #FFCC00; }");
-        Page.getCurrent().getStyles().add(".alerts.minor { background: #000000;  border-left: 15px solid #FF9900; }");
-        Page.getCurrent().getStyles().add(".alerts.major { background: #000000; border-left: 15px solid #FF3300; }");
-        Page.getCurrent().getStyles().add(".alerts.critical { background: #000000; border-left: 15px solid #CC0000; }");
-        Page.getCurrent().getStyles().add(".alerts-font {color: #3ba300; font-size: 18px; line-height: normal; }");
-        Page.getCurrent().getStyles().add(".alerts-noalarms-font { font-size: 18px; line-height: normal; }");
-        Page.getCurrent().getStyles().add(".alerts { padding: 5px 5px; margin: 1px; }");
-    }
-
-    /**
-     * Injects CSS styles on current page for this dashlet
-     */
-    private void injectDashboardStyles() {
-        Page.getCurrent().getStyles().add(".alerts.cleared { background: #000000; border-left: 8px solid #858585; }");
-        Page.getCurrent().getStyles().add(".alerts.normal { background: #000000; border-left: 8px solid #336600; }");
-        Page.getCurrent().getStyles().add(".alerts.indeterminate {  background: #000000; border-left: 8px solid #999; }");
-        Page.getCurrent().getStyles().add(".alerts.warning { background: #000000; border-left: 8px solid #FFCC00; }");
-        Page.getCurrent().getStyles().add(".alerts.minor { background: #000000;  border-left: 8px solid #FF9900; }");
-        Page.getCurrent().getStyles().add(".alerts.major { background: #000000; border-left: 8px solid #FF3300; }");
-        Page.getCurrent().getStyles().add(".alerts.critical { background: #000000; border-left: 8px solid #CC0000; }");
-        Page.getCurrent().getStyles().add(".alerts-font {color: #3ba300; font-size: 11px; line-height: normal; }");
-        Page.getCurrent().getStyles().add(".alerts-noalarms-font { font-size: 11px; line-height: normal; }");
-        Page.getCurrent().getStyles().add(".alerts { padding: 5px 5px; margin: 1px; }");
-    }
 
     /**
      * Returns the component for visualising the alarms data.

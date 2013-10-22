@@ -112,7 +112,7 @@ public class WallboardBody extends VerticalLayout {
     public Dashlet getDashletInstance(DashletSpec dashletSpec) {
         DashletSelector dashletSelector = ((DashletSelectorAccess) getUI()).getDashletSelector();
         Dashlet dashlet = dashletSelector.getDashletFactoryForName(dashletSpec.getDashletName()).newDashletInstance(dashletSpec);
-        dashlet.getWallboardComponent().setCaption(null);
+        dashlet.getWallboardComponent().getComponent().setCaption(null);
         return dashlet;
     }
 
@@ -158,11 +158,11 @@ public class WallboardBody extends VerticalLayout {
 
             if (!priorityMap.containsKey(index)) {
                 Dashlet dashlet = getDashletInstance(dashletSpecs.get(index));
-                dashlet.getWallboardComponent().addStyleName("wallboard");
+                dashlet.getWallboardComponent().getComponent().addStyleName("wallboard");
 
                 dashlets.put(index, dashlet);
 
-                dashlets.get(index).updateWallboard();
+                dashlets.get(index).getWallboardComponent().refresh();
 
                 if (dashlets.get(index).isBoosted()) {
                     priorityMap.put(index, Math.max(0, dashletSpecs.get(index).getPriority() - dashletSpecs.get(index).getBoostPriority()));
@@ -178,7 +178,7 @@ public class WallboardBody extends VerticalLayout {
 
             if (priorityMap.get(index) <= 0) {
 
-                dashlets.get(index).updateWallboard();
+                dashlets.get(index).getWallboardComponent().refresh();
 
                 if (dashlets.get(index).isBoosted()) {
                     priorityMap.put(index, Math.max(0, dashletSpecs.get(index).getPriority() - dashletSpecs.get(index).getBoostPriority()));
@@ -220,7 +220,7 @@ public class WallboardBody extends VerticalLayout {
                         dashlets.put(next, getDashletInstance(dashletSpecs.get(next)));
                     }
 
-                    contentLayout.addComponent(dashlets.get(next).getWallboardComponent());
+                    contentLayout.addComponent(dashlets.get(next).getWallboardComponent().getComponent());
 
                     if (!progressIndicator.isVisible()) {
                         progressIndicator.setVisible(true);

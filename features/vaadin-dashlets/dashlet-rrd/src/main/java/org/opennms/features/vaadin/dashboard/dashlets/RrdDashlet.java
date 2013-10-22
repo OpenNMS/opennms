@@ -30,9 +30,7 @@ package org.opennms.features.vaadin.dashboard.dashlets;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page;
 import com.vaadin.ui.*;
-import org.opennms.features.vaadin.dashboard.model.AbstractDashlet;
-import org.opennms.features.vaadin.dashboard.model.Dashlet;
-import org.opennms.features.vaadin.dashboard.model.DashletSpec;
+import org.opennms.features.vaadin.dashboard.model.*;
 
 import java.util.Calendar;
 
@@ -47,15 +45,9 @@ public class RrdDashlet extends AbstractDashlet {
      */
     RrdGraphHelper m_rrdGraphHelper;
 
-    /**
-     * wallboard layout
-     */
-    private GridLayout m_gridLayout;
+    private DashletComponent m_wallboardComponent;
 
-    /**
-     * dashboard layout
-     */
-    private VerticalLayout m_dashboardLayout;
+    private DashletComponent m_dashboardComponent;
 
     /**
      * Constructor for instantiating new objects.
@@ -73,114 +65,217 @@ public class RrdDashlet extends AbstractDashlet {
     }
 
     @Override
-    public Component getDashboardComponent() {
-        if (m_dashboardLayout == null) {
-            m_dashboardLayout = new VerticalLayout();
-            m_dashboardLayout.setCaption(getName());
-            m_dashboardLayout.setSizeFull();
-        }
+    public DashletComponent getDashboardComponent() {
+        if (m_dashboardComponent == null) {
+            m_dashboardComponent = new AbstractDashletComponent() {
+                private VerticalLayout m_verticalLayout = new VerticalLayout();
 
-        return m_dashboardLayout;
-    }
-
-
-    @Override
-    public Component getWallboardComponent() {
-        if (m_gridLayout == null) {
-            m_gridLayout = new GridLayout();
-            m_gridLayout.setCaption(getName());
-            m_gridLayout.setSizeFull();
-            m_gridLayout.setColumns(1);
-            m_gridLayout.setRows(1);
-        }
-
-        return m_gridLayout;
-    }
-
-    /**
-     * Updates the dashlet contents and computes new boosted state
-     */
-    @Override
-    public void updateDashboard() {
-        /**
-         * removing old components
-         */
-        m_dashboardLayout.removeAllComponents();
-
-        /**
-         * iniatizing the parameters
-         */
-        int columns = 0;
-        int rows = 0;
-        int width = 0;
-        int height = 0;
-
-        try {
-            columns = Integer.parseInt(getDashletSpec().getParameters().get("columns"));
-        } catch (NumberFormatException numberFormatException) {
-            columns = 1;
-        }
-
-        try {
-            rows = Integer.parseInt(getDashletSpec().getParameters().get("rows"));
-        } catch (NumberFormatException numberFormatException) {
-            rows = 1;
-        }
-
-        try {
-            width = Integer.parseInt(getDashletSpec().getParameters().get("width"));
-        } catch (NumberFormatException numberFormatException) {
-            width = 400;
-        }
-
-        try {
-            height = Integer.parseInt(getDashletSpec().getParameters().get("height"));
-        } catch (NumberFormatException numberFormatException) {
-            height = 100;
-        }
-
-        /**
-         * getting the timeframe values
-         */
-        int timeFrameValue;
-        int timeFrameType;
-
-        try {
-            timeFrameValue = Integer.parseInt(getDashletSpec().getParameters().get("timeFrameValue"));
-        } catch (NumberFormatException numberFormatException) {
-            timeFrameValue = 1;
-        }
-
-        try {
-            timeFrameType = Integer.parseInt(getDashletSpec().getParameters().get("timeFrameType"));
-        } catch (NumberFormatException numberFormatException) {
-            timeFrameType = Calendar.HOUR;
-        }
-
-        int i = 0;
-
-        Page.getCurrent().getStyles().add(".box { margin: 5px; background-color: #444; border: 1px solid #999; border-top: 0; overflow: auto; }");
-        Page.getCurrent().getStyles().add(".text { color:#ffffff; line-height: 11px; font-size: 9px; font-family: 'Lucida Grande', Verdana, sans-serif; font-weight: bold; }");
-        Page.getCurrent().getStyles().add(".margin { margin:5px; }");
-
-        Accordion accordion = new Accordion();
-        accordion.setSizeFull();
-
-        /**
-         * adding the components
-         */
-        for (int y = 0; y < rows; y++) {
-            for (int x = 0; x < columns; x++) {
-                String graphUrl = getDashletSpec().getParameters().get("graphUrl" + i);
-
-                if (graphUrl != null && !"".equals(graphUrl)) {
-                    accordion.addTab(getGraphComponent(i, width, height, timeFrameType, timeFrameValue), getDashletSpec().getParameters().get("nodeLabel" + i) + "/" + getDashletSpec().getParameters().get("resourceTypeLabel" + i) + ": " + getDashletSpec().getParameters().get("resourceLabel" + i));
+                {
+                    m_verticalLayout.setCaption(getName());
+                    m_verticalLayout.setSizeFull();
                 }
-                i++;
-            }
+
+                @Override
+                public void refresh() {
+                    /**
+                     * removing old components
+                     */
+                    m_verticalLayout.removeAllComponents();
+
+                    /**
+                     * iniatizing the parameters
+                     */
+                    int columns = 0;
+                    int rows = 0;
+                    int width = 0;
+                    int height = 0;
+
+                    try {
+                        columns = Integer.parseInt(getDashletSpec().getParameters().get("columns"));
+                    } catch (NumberFormatException numberFormatException) {
+                        columns = 1;
+                    }
+
+                    try {
+                        rows = Integer.parseInt(getDashletSpec().getParameters().get("rows"));
+                    } catch (NumberFormatException numberFormatException) {
+                        rows = 1;
+                    }
+
+                    try {
+                        width = Integer.parseInt(getDashletSpec().getParameters().get("width"));
+                    } catch (NumberFormatException numberFormatException) {
+                        width = 400;
+                    }
+
+                    try {
+                        height = Integer.parseInt(getDashletSpec().getParameters().get("height"));
+                    } catch (NumberFormatException numberFormatException) {
+                        height = 100;
+                    }
+
+                    /**
+                     * getting the timeframe values
+                     */
+                    int timeFrameValue;
+                    int timeFrameType;
+
+                    try {
+                        timeFrameValue = Integer.parseInt(getDashletSpec().getParameters().get("timeFrameValue"));
+                    } catch (NumberFormatException numberFormatException) {
+                        timeFrameValue = 1;
+                    }
+
+                    try {
+                        timeFrameType = Integer.parseInt(getDashletSpec().getParameters().get("timeFrameType"));
+                    } catch (NumberFormatException numberFormatException) {
+                        timeFrameType = Calendar.HOUR;
+                    }
+
+                    int i = 0;
+
+                    Page.getCurrent().getStyles().add(".box { margin: 5px; background-color: #444; border: 1px solid #999; border-top: 0; overflow: auto; }");
+                    Page.getCurrent().getStyles().add(".text { color:#ffffff; line-height: 11px; font-size: 9px; font-family: 'Lucida Grande', Verdana, sans-serif; font-weight: bold; }");
+                    Page.getCurrent().getStyles().add(".margin { margin:5px; }");
+
+                    Accordion accordion = new Accordion();
+                    accordion.setSizeFull();
+
+                    /**
+                     * adding the components
+                     */
+                    for (int y = 0; y < rows; y++) {
+                        for (int x = 0; x < columns; x++) {
+                            String graphUrl = getDashletSpec().getParameters().get("graphUrl" + i);
+
+                            if (graphUrl != null && !"".equals(graphUrl)) {
+                                accordion.addTab(getGraphComponent(i, width, height, timeFrameType, timeFrameValue), getDashletSpec().getParameters().get("nodeLabel" + i) + "/" + getDashletSpec().getParameters().get("resourceTypeLabel" + i) + ": " + getDashletSpec().getParameters().get("resourceLabel" + i));
+                            }
+                            i++;
+                        }
+                    }
+
+                    m_verticalLayout.addComponent(accordion);
+                }
+
+                @Override
+                public Component getComponent() {
+                    return m_verticalLayout;
+                }
+            };
         }
 
-        m_dashboardLayout.addComponent(accordion);
+        return m_dashboardComponent;
+    }
+
+
+    @Override
+    public DashletComponent getWallboardComponent() {
+        if (m_wallboardComponent == null) {
+            m_wallboardComponent = new AbstractDashletComponent() {
+                private GridLayout m_gridLayout = new GridLayout();
+
+                {
+                    m_gridLayout.setCaption(getName());
+                    m_gridLayout.setSizeFull();
+                    m_gridLayout.setColumns(1);
+                    m_gridLayout.setRows(1);
+                }
+
+                @Override
+                public void refresh() {
+                    /**
+                     * removing old components
+                     */
+                    m_gridLayout.removeAllComponents();
+
+                    /**
+                     * iniatizing the parameters
+                     */
+                    int columns = 0;
+                    int rows = 0;
+                    int width = 0;
+                    int height = 0;
+
+                    try {
+                        columns = Integer.parseInt(getDashletSpec().getParameters().get("columns"));
+                    } catch (NumberFormatException numberFormatException) {
+                        columns = 1;
+                    }
+
+                    try {
+                        rows = Integer.parseInt(getDashletSpec().getParameters().get("rows"));
+                    } catch (NumberFormatException numberFormatException) {
+                        rows = 1;
+                    }
+
+                    try {
+                        width = Integer.parseInt(getDashletSpec().getParameters().get("width"));
+                    } catch (NumberFormatException numberFormatException) {
+                        width = 400;
+                    }
+
+                    try {
+                        height = Integer.parseInt(getDashletSpec().getParameters().get("height"));
+                    } catch (NumberFormatException numberFormatException) {
+                        height = 100;
+                    }
+
+                    /**
+                     * getting the timeframe values
+                     */
+                    int timeFrameValue;
+                    int timeFrameType;
+
+                    try {
+                        timeFrameValue = Integer.parseInt(getDashletSpec().getParameters().get("timeFrameValue"));
+                    } catch (NumberFormatException numberFormatException) {
+                        timeFrameValue = 1;
+                    }
+
+                    try {
+                        timeFrameType = Integer.parseInt(getDashletSpec().getParameters().get("timeFrameType"));
+                    } catch (NumberFormatException numberFormatException) {
+                        timeFrameType = Calendar.HOUR;
+                    }
+
+                    /**
+                     * setting new columns/rows
+                     */
+                    m_gridLayout.setColumns(columns);
+                    m_gridLayout.setRows(rows);
+
+                    int i = 0;
+
+                    Page.getCurrent().getStyles().add(".box { margin: 5px; background-color: #444; border: 1px solid #999; border-top: 0; overflow: auto; }");
+                    Page.getCurrent().getStyles().add(".text { color:#ffffff; line-height: 11px; font-size: 9px; font-family: 'Lucida Grande', Verdana, sans-serif; font-weight: bold; }");
+                    Page.getCurrent().getStyles().add(".margin { margin:5px; }");
+
+                    /**
+                     * adding the components
+                     */
+                    for (int y = 0; y < m_gridLayout.getRows(); y++) {
+                        for (int x = 0; x < m_gridLayout.getColumns(); x++) {
+                            String graphUrl = getDashletSpec().getParameters().get("graphUrl" + i);
+
+                            if (graphUrl != null && !"".equals(graphUrl)) {
+                                Component component = getGraphComponent(i, width, height, timeFrameType, timeFrameValue);
+                                m_gridLayout.addComponent(component, x, y);
+                                m_gridLayout.setComponentAlignment(component, Alignment.MIDDLE_CENTER);
+                            }
+                            i++;
+                        }
+                    }
+                }
+
+                @Override
+                public Component getComponent() {
+                    return m_gridLayout;
+                }
+            };
+        }
+
+        return m_wallboardComponent;
     }
 
     /**
@@ -227,94 +322,5 @@ public class RrdDashlet extends AbstractDashlet {
         verticalLayout.setMargin(true);
 
         return verticalLayout;
-    }
-
-    /**
-     * Updates the dashlet contents and computes new boosted state
-     */
-    @Override
-    public void updateWallboard() {
-        /**
-         * removing old components
-         */
-        m_gridLayout.removeAllComponents();
-
-        /**
-         * iniatizing the parameters
-         */
-        int columns = 0;
-        int rows = 0;
-        int width = 0;
-        int height = 0;
-
-        try {
-            columns = Integer.parseInt(getDashletSpec().getParameters().get("columns"));
-        } catch (NumberFormatException numberFormatException) {
-            columns = 1;
-        }
-
-        try {
-            rows = Integer.parseInt(getDashletSpec().getParameters().get("rows"));
-        } catch (NumberFormatException numberFormatException) {
-            rows = 1;
-        }
-
-        try {
-            width = Integer.parseInt(getDashletSpec().getParameters().get("width"));
-        } catch (NumberFormatException numberFormatException) {
-            width = 400;
-        }
-
-        try {
-            height = Integer.parseInt(getDashletSpec().getParameters().get("height"));
-        } catch (NumberFormatException numberFormatException) {
-            height = 100;
-        }
-
-        /**
-         * getting the timeframe values
-         */
-        int timeFrameValue;
-        int timeFrameType;
-
-        try {
-            timeFrameValue = Integer.parseInt(getDashletSpec().getParameters().get("timeFrameValue"));
-        } catch (NumberFormatException numberFormatException) {
-            timeFrameValue = 1;
-        }
-
-        try {
-            timeFrameType = Integer.parseInt(getDashletSpec().getParameters().get("timeFrameType"));
-        } catch (NumberFormatException numberFormatException) {
-            timeFrameType = Calendar.HOUR;
-        }
-
-        /**
-         * setting new columns/rows
-         */
-        m_gridLayout.setColumns(columns);
-        m_gridLayout.setRows(rows);
-
-        int i = 0;
-
-        Page.getCurrent().getStyles().add(".box { margin: 5px; background-color: #444; border: 1px solid #999; border-top: 0; overflow: auto; }");
-        Page.getCurrent().getStyles().add(".text { color:#ffffff; line-height: 11px; font-size: 9px; font-family: 'Lucida Grande', Verdana, sans-serif; font-weight: bold; }");
-        Page.getCurrent().getStyles().add(".margin { margin:5px; }");
-
-        /**
-         * adding the components
-         */
-        for (int y = 0; y < m_gridLayout.getRows(); y++) {
-            for (int x = 0; x < m_gridLayout.getColumns(); x++) {
-                String graphUrl = getDashletSpec().getParameters().get("graphUrl" + i);
-
-                if (graphUrl != null && !"".equals(graphUrl)) {
-                    Component component = getGraphComponent(i, width, height, timeFrameType, timeFrameValue);
-                    m_gridLayout.addComponent(component, x, y);
-                    m_gridLayout.setComponentAlignment(component, Alignment.MIDDLE_CENTER);
-                }
-                i++;
-            }
-        }
     }
 }

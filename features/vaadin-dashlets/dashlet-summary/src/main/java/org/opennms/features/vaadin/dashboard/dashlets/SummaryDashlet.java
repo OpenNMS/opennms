@@ -32,9 +32,7 @@ import com.vaadin.server.Sizeable;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.features.vaadin.dashboard.model.AbstractDashlet;
-import org.opennms.features.vaadin.dashboard.model.Dashlet;
-import org.opennms.features.vaadin.dashboard.model.DashletSpec;
+import org.opennms.features.vaadin.dashboard.model.*;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -67,15 +65,8 @@ public class SummaryDashlet extends AbstractDashlet {
     private static int TREND_SOUTHEAST = 1;
     private static int TREND_SOUTH = 0;
 
-    /**
-     * wallboard layout
-     */
-    private HorizontalLayout m_wallboardLayout;
-
-    /**
-     * dashboard layout
-     */
-    private HorizontalLayout m_dashboardLayout;
+    private DashletComponent m_dashboardComponent;
+    private DashletComponent m_wallboardComponent;
 
     /**
      * Constructor for instantiating new objects.
@@ -406,107 +397,6 @@ public class SummaryDashlet extends AbstractDashlet {
         return verticalLayout;
     }
 
-    @Override
-    public void updateDashboard() {
-        m_timeslot = 3600;
-
-        try {
-            m_timeslot = Math.max(1, Integer.parseInt(getDashletSpec().getParameters().get("timeslot")));
-        } catch (NumberFormatException numberFormatException) {
-            /**
-             * Just ignore
-             */
-        }
-
-        m_dashboardLayout.removeAllComponents();
-
-        Accordion accordion = new Accordion();
-        accordion.setSizeFull();
-
-        injectDashboardStyles();
-
-        Component severity = getComponentSeverity(16);
-        Component uei = getComponentUei(16);
-
-        VerticalLayout v1 = new VerticalLayout(severity);
-        v1.setSizeFull();
-        v1.setComponentAlignment(severity, Alignment.MIDDLE_CENTER);
-        v1.setMargin(true);
-        accordion.addTab(v1, "by Severity");
-
-        VerticalLayout v2 = new VerticalLayout(uei);
-        v2.setSizeFull();
-        v2.setComponentAlignment(uei, Alignment.MIDDLE_CENTER);
-        v2.setMargin(true);
-        accordion.addTab(v2, "by Uei");
-
-        m_dashboardLayout.addComponent(accordion);
-    }
-
-    /**
-     * Updates the data and checks whether this dashlet is boosted.
-     */
-    @Override
-    public void updateWallboard() {
-        m_timeslot = 3600;
-
-        try {
-            m_timeslot = Math.max(1, Integer.parseInt(getDashletSpec().getParameters().get("timeslot")));
-        } catch (NumberFormatException numberFormatException) {
-            /**
-             * Just ignore
-             */
-        }
-
-        m_wallboardLayout.removeAllComponents();
-
-        injectWallboardStyles();
-
-        Component severity = getComponentSeverity(32);
-        Component uei = getComponentUei(32);
-
-        m_wallboardLayout.addComponent(severity);
-        m_wallboardLayout.addComponent(uei);
-
-        m_wallboardLayout.setSizeFull();
-        m_wallboardLayout.setComponentAlignment(severity, Alignment.TOP_CENTER);
-        m_wallboardLayout.setComponentAlignment(uei, Alignment.TOP_CENTER);
-    }
-
-    /**
-     * Injects CSS styles in the current page
-     */
-    private void injectWallboardStyles() {
-        Page.getCurrent().getStyles().add(".summary.cleared { background: #000000; border-left: 15px solid #858585; }");
-        Page.getCurrent().getStyles().add(".summary.normal { background: #000000; border-left: 15px solid #336600; }");
-        Page.getCurrent().getStyles().add(".summary.indeterminate {  background: #000000; border-left: 15px solid #999; }");
-        Page.getCurrent().getStyles().add(".summary.warning { background: #000000; border-left: 15px solid #FFCC00; }");
-        Page.getCurrent().getStyles().add(".summary.minor { background: #000000;  border-left: 15px solid #FF9900; }");
-        Page.getCurrent().getStyles().add(".summary.major { background: #000000; border-left: 15px solid #FF3300; }");
-        Page.getCurrent().getStyles().add(".summary.critical { background: #000000; border-left: 15px solid #CC0000; }");
-        Page.getCurrent().getStyles().add(".summary.global { background: #000000; border-left: 15px solid #000000; }");
-        Page.getCurrent().getStyles().add(".summary { padding: 5px 5px; margin: 1px; }");
-        Page.getCurrent().getStyles().add(".summary-font { font-size: 24px; line-height: normal; text-align: right; color: #3ba300; }");
-        Page.getCurrent().getStyles().add(".summary-font-legend { font-size: 16px; line-height: normal; text-align: right; color: #3ba300; }");
-    }
-
-    /**
-     * Injects CSS styles in the current page
-     */
-    private void injectDashboardStyles() {
-        Page.getCurrent().getStyles().add(".summary.cleared { background: #000000; border-left: 8px solid #858585; }");
-        Page.getCurrent().getStyles().add(".summary.normal { background: #000000; border-left: 8px solid #336600; }");
-        Page.getCurrent().getStyles().add(".summary.indeterminate {  background: #000000; border-left: 8px solid #999; }");
-        Page.getCurrent().getStyles().add(".summary.warning { background: #000000; border-left: 8px solid #FFCC00; }");
-        Page.getCurrent().getStyles().add(".summary.minor { background: #000000;  border-left: 8px solid #FF9900; }");
-        Page.getCurrent().getStyles().add(".summary.major { background: #000000; border-left: 8px solid #FF3300; }");
-        Page.getCurrent().getStyles().add(".summary.critical { background: #000000; border-left: 8px solid #CC0000; }");
-        Page.getCurrent().getStyles().add(".summary.global { background: #000000; border-left: 8px solid #000000; }");
-        Page.getCurrent().getStyles().add(".summary { padding: 5px 5px; margin: 1px; }");
-        Page.getCurrent().getStyles().add(".summary-font { font-size: 17px; line-height: normal; text-align: right; color: #3ba300; }");
-        Page.getCurrent().getStyles().add(".summary-font-legend { font-size: 9px; line-height: normal; text-align: right; color: #3ba300; }");
-    }
-
     /**
      * Searches for alarms with the given criterias and returns the number found.
      *
@@ -556,29 +446,152 @@ public class SummaryDashlet extends AbstractDashlet {
     }
 
     @Override
-    public Component getDashboardComponent() {
-        if (m_dashboardLayout == null) {
-            m_dashboardLayout = new HorizontalLayout();
-            m_dashboardLayout.setCaption(getName());
-            m_dashboardLayout.setSizeFull();
+    public DashletComponent getWallboardComponent() {
+        if (m_wallboardComponent == null) {
+            m_wallboardComponent = new AbstractDashletComponent() {
+                private HorizontalLayout m_horizontalLayout = new HorizontalLayout();
+
+                {
+                    m_horizontalLayout.setCaption(getName());
+                    m_horizontalLayout.setSizeFull();
+                }
+
+                /**
+                 * Injects CSS styles in the current page
+                 */
+                private void injectWallboardStyles() {
+                    Page.getCurrent().getStyles().add(".summary.cleared { background: #000000; border-left: 15px solid #858585; }");
+                    Page.getCurrent().getStyles().add(".summary.normal { background: #000000; border-left: 15px solid #336600; }");
+                    Page.getCurrent().getStyles().add(".summary.indeterminate {  background: #000000; border-left: 15px solid #999; }");
+                    Page.getCurrent().getStyles().add(".summary.warning { background: #000000; border-left: 15px solid #FFCC00; }");
+                    Page.getCurrent().getStyles().add(".summary.minor { background: #000000;  border-left: 15px solid #FF9900; }");
+                    Page.getCurrent().getStyles().add(".summary.major { background: #000000; border-left: 15px solid #FF3300; }");
+                    Page.getCurrent().getStyles().add(".summary.critical { background: #000000; border-left: 15px solid #CC0000; }");
+                    Page.getCurrent().getStyles().add(".summary.global { background: #000000; border-left: 15px solid #000000; }");
+                    Page.getCurrent().getStyles().add(".summary { padding: 5px 5px; margin: 1px; }");
+                    Page.getCurrent().getStyles().add(".summary-font { font-size: 24px; line-height: normal; text-align: right; color: #3ba300; }");
+                    Page.getCurrent().getStyles().add(".summary-font-legend { font-size: 16px; line-height: normal; text-align: right; color: #3ba300; }");
+                }
+
+                @Override
+                public void refresh() {
+                    m_timeslot = 3600;
+
+                    try {
+                        m_timeslot = Math.max(1, Integer.parseInt(getDashletSpec().getParameters().get("timeslot")));
+                    } catch (NumberFormatException numberFormatException) {
+                        /**
+                         * Just ignore
+                         */
+                    }
+
+                    m_horizontalLayout.removeAllComponents();
+
+                    injectWallboardStyles();
+
+                    Component severity = getComponentSeverity(32);
+                    Component uei = getComponentUei(32);
+
+                    m_horizontalLayout.addComponent(severity);
+                    m_horizontalLayout.addComponent(uei);
+
+                    m_horizontalLayout.setSizeFull();
+                    m_horizontalLayout.setComponentAlignment(severity, Alignment.TOP_CENTER);
+                    m_horizontalLayout.setComponentAlignment(uei, Alignment.TOP_CENTER);
+                }
+
+                @Override
+                public Component getComponent() {
+                    return m_horizontalLayout;
+                }
+
+                @Override
+                public boolean isBoosted() {
+                    return SummaryDashlet.this.m_boosted;
+                }
+            };
         }
 
-        return m_dashboardLayout;
+        return m_wallboardComponent;
     }
 
     @Override
-    public Component getWallboardComponent() {
-        if (m_wallboardLayout == null) {
-            m_wallboardLayout = new HorizontalLayout();
-            m_wallboardLayout.setCaption(getName());
-            m_wallboardLayout.setSizeFull();
+    public DashletComponent getDashboardComponent() {
+        if (m_dashboardComponent == null) {
+            m_dashboardComponent = new AbstractDashletComponent() {
+                private HorizontalLayout m_horizontalLayout = new HorizontalLayout();
+
+                {
+                    m_horizontalLayout.setCaption(getName());
+                    m_horizontalLayout.setSizeFull();
+                }
+
+                /**
+                 * Injects CSS styles in the current page
+                 */
+                private void injectDashboardStyles() {
+                    Page.getCurrent().getStyles().add(".summary.cleared { background: #000000; border-left: 8px solid #858585; }");
+                    Page.getCurrent().getStyles().add(".summary.normal { background: #000000; border-left: 8px solid #336600; }");
+                    Page.getCurrent().getStyles().add(".summary.indeterminate {  background: #000000; border-left: 8px solid #999; }");
+                    Page.getCurrent().getStyles().add(".summary.warning { background: #000000; border-left: 8px solid #FFCC00; }");
+                    Page.getCurrent().getStyles().add(".summary.minor { background: #000000;  border-left: 8px solid #FF9900; }");
+                    Page.getCurrent().getStyles().add(".summary.major { background: #000000; border-left: 8px solid #FF3300; }");
+                    Page.getCurrent().getStyles().add(".summary.critical { background: #000000; border-left: 8px solid #CC0000; }");
+                    Page.getCurrent().getStyles().add(".summary.global { background: #000000; border-left: 8px solid #000000; }");
+                    Page.getCurrent().getStyles().add(".summary { padding: 5px 5px; margin: 1px; }");
+                    Page.getCurrent().getStyles().add(".summary-font { font-size: 17px; line-height: normal; text-align: right; color: #3ba300; }");
+                    Page.getCurrent().getStyles().add(".summary-font-legend { font-size: 9px; line-height: normal; text-align: right; color: #3ba300; }");
+                }
+
+                @Override
+                public void refresh() {
+                    m_timeslot = 3600;
+
+                    try {
+                        m_timeslot = Math.max(1, Integer.parseInt(getDashletSpec().getParameters().get("timeslot")));
+                    } catch (NumberFormatException numberFormatException) {
+                        /**
+                         * Just ignore
+                         */
+                    }
+
+                    m_horizontalLayout.removeAllComponents();
+
+                    Accordion accordion = new Accordion();
+                    accordion.setSizeFull();
+
+                    injectDashboardStyles();
+
+                    Component severity = getComponentSeverity(16);
+                    Component uei = getComponentUei(16);
+
+                    VerticalLayout v1 = new VerticalLayout(severity);
+                    v1.setSizeFull();
+                    v1.setComponentAlignment(severity, Alignment.MIDDLE_CENTER);
+                    v1.setMargin(true);
+                    accordion.addTab(v1, "by Severity");
+
+                    VerticalLayout v2 = new VerticalLayout(uei);
+                    v2.setSizeFull();
+                    v2.setComponentAlignment(uei, Alignment.MIDDLE_CENTER);
+                    v2.setMargin(true);
+                    accordion.addTab(v2, "by Uei");
+
+                    m_horizontalLayout.addComponent(accordion);
+                }
+
+                @Override
+                public Component getComponent() {
+                    return m_horizontalLayout;
+                }
+
+                @Override
+                public boolean isBoosted() {
+                    return SummaryDashlet.this.m_boosted;
+                }
+            };
         }
 
-        return m_wallboardLayout;
-    }
-
-    @Override
-    public boolean isBoosted() {
-        return m_boosted;
+        return m_dashboardComponent;
     }
 }

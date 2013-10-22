@@ -39,11 +39,14 @@ import fi.jasoft.dragdroplayouts.client.ui.LayoutDragMode;
 import fi.jasoft.dragdroplayouts.events.LayoutBoundTransferable;
 import org.opennms.features.vaadin.dashboard.config.DashletSelector;
 import org.opennms.features.vaadin.dashboard.model.Dashlet;
+import org.opennms.features.vaadin.dashboard.model.DashletComponent;
 import org.opennms.features.vaadin.dashboard.model.DashletSelectorAccess;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class implements a portal-like dashboard.
@@ -52,6 +55,11 @@ import java.util.List;
  * @author Marcus Hellberg (marcus@vaadin.com)
  */
 public class DashboardBody extends DDGridLayout {
+    /**
+     * the displayed dashlet components
+     */
+    Map<Component, DashletComponent> m_displayDashlets;
+
     /**
      * Default constructor.
      */
@@ -126,6 +134,8 @@ public class DashboardBody extends DDGridLayout {
      */
     public void setDashletSpecs(List<DashletSpec> dashletSpecs) {
 
+        m_displayDashlets = new HashMap<Component, DashletComponent>();
+
         int c = 0;
 
         List<DashletSpec> dashboardSuitableDashlets = new LinkedList<DashletSpec>();
@@ -160,13 +170,30 @@ public class DashboardBody extends DDGridLayout {
                 if (i < dashboardSuitableDashlets.size()) {
                     Dashlet dashlet = getDashletInstance(dashboardSuitableDashlets.get(i));
 
-                    //boolean boosted = dashlet.isBoosted();
+                    DashletComponent dashletComponent = dashlet.getDashboardComponent();
 
-                    addComponent(createPanel(dashlet.getDashboardComponent()), x, y);
+                    m_displayDashlets.put(dashletComponent.getComponent(), dashletComponent);
 
-                    dashlet.updateDashboard();
+                    dashletComponent.refresh();
+
+                    addComponent(createPanel(dashletComponent.getComponent()), x, y);
 
                     i++;
+                }
+            }
+        }
+    }
+
+    public void updateAll() {
+        for (int y = 0; y < getRows(); y++) {
+            for (int x = 0; x < getColumns(); x++) {
+                Panel panel = (Panel) getComponent(x, y);
+                if (panel != null) {
+                    Component component = panel.getContent();
+
+                    if (component != null) {
+                        m_displayDashlets.get(component).refresh();
+                    }
                 }
             }
         }

@@ -31,9 +31,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
-import org.opennms.features.vaadin.dashboard.model.AbstractDashlet;
-import org.opennms.features.vaadin.dashboard.model.Dashlet;
-import org.opennms.features.vaadin.dashboard.model.DashletSpec;
+import org.opennms.features.vaadin.dashboard.model.*;
 
 /**
  * This class represents a "undefined" {@link Dashlet} used for error conditions when the
@@ -42,8 +40,6 @@ import org.opennms.features.vaadin.dashboard.model.DashletSpec;
  * @author Christian Pape
  */
 public class UndefinedDashlet extends AbstractDashlet {
-
-    VerticalLayout m_verticalLayout;
 
     /**
      * Constructor for instantiating this {@link Dashlet}
@@ -55,20 +51,28 @@ public class UndefinedDashlet extends AbstractDashlet {
     }
 
     @Override
-    public Component getWallboardComponent() {
-        if (m_verticalLayout == null) {
-            m_verticalLayout = new VerticalLayout();
-            Label label = new Label("The defined dashlet could not be found!");
-            m_verticalLayout.addComponent(label);
-            m_verticalLayout.setComponentAlignment(label, Alignment.MIDDLE_CENTER);
-            m_verticalLayout.setCaption(getName());
+    public DashletComponent getWallboardComponent() {
+        DashletComponent dashletComponent = new AbstractDashletComponent() {
+            @Override
+            public void refresh() {
+            }
 
-        }
-        return m_verticalLayout;
+            @Override
+            public Component getComponent() {
+                VerticalLayout verticalLayout = new VerticalLayout();
+                Label label = new Label("The defined dashlet could not be found!");
+                verticalLayout.addComponent(label);
+                verticalLayout.setComponentAlignment(label, Alignment.MIDDLE_CENTER);
+                verticalLayout.setCaption(getName());
+
+                return verticalLayout;
+            }
+        };
+        return dashletComponent;
     }
 
     @Override
-    public Component getDashboardComponent() {
+    public DashletComponent getDashboardComponent() {
         return getWallboardComponent();
     }
 }

@@ -31,9 +31,7 @@ import com.vaadin.server.ExternalResource;
 import com.vaadin.ui.BrowserFrame;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
-import org.opennms.features.vaadin.dashboard.model.AbstractDashlet;
-import org.opennms.features.vaadin.dashboard.model.Dashlet;
-import org.opennms.features.vaadin.dashboard.model.DashletSpec;
+import org.opennms.features.vaadin.dashboard.model.*;
 
 /**
  * This class implements a {@link Dashlet} for displaying the surveillance view page of OpenNMS.
@@ -41,7 +39,7 @@ import org.opennms.features.vaadin.dashboard.model.DashletSpec;
  * @author Christian Pape
  */
 public class SurveillanceDashlet extends AbstractDashlet {
-    private VerticalLayout m_verticalLayout;
+    private DashletComponent m_dashletComponent;
 
     /**
      * Constructor for instantiating new objects.
@@ -53,32 +51,47 @@ public class SurveillanceDashlet extends AbstractDashlet {
     }
 
     @Override
-    public Component getDashboardComponent() {
-        return getWallboardComponent();
+    public DashletComponent getWallboardComponent() {
+        if (m_dashletComponent == null) {
+            m_dashletComponent = new AbstractDashletComponent() {
+                private VerticalLayout m_verticalLayout = new VerticalLayout();
+
+                {
+                    m_verticalLayout.setCaption(getName());
+                    m_verticalLayout.setSizeFull();
+                }
+
+                @Override
+                public void refresh() {
+                    m_verticalLayout.removeAllComponents();
+
+                    String viewName = "default";
+
+                    if (getDashletSpec().getParameters().containsKey("viewName")) {
+                        viewName = getDashletSpec().getParameters().get("viewName");
+                    }
+
+                    /**
+                     * creating browser frame to display node-maps
+                     */
+                    BrowserFrame browserFrame = new BrowserFrame(null, new ExternalResource("/opennms/surveillanceView.htm?quiet=true&viewName=" + viewName));
+                    browserFrame.setSizeFull();
+
+                    m_verticalLayout.addComponent(browserFrame);
+                }
+
+                @Override
+                public Component getComponent() {
+                    return m_verticalLayout;
+                }
+            };
+        }
+
+        return m_dashletComponent;
     }
 
     @Override
-    public Component getWallboardComponent() {
-        if (m_verticalLayout == null) {
-            m_verticalLayout = new VerticalLayout();
-            m_verticalLayout.setCaption(getName());
-            m_verticalLayout.setSizeFull();
-
-            String viewName = "default";
-
-            if (getDashletSpec().getParameters().containsKey("viewName")) {
-                viewName = getDashletSpec().getParameters().get("viewName");
-            }
-
-            /**
-             * creating browser frame to display node-maps
-             */
-            BrowserFrame browserFrame = new BrowserFrame(null, new ExternalResource("/opennms/surveillanceView.htm?quiet=true&viewName=" + viewName));
-            browserFrame.setSizeFull();
-
-            m_verticalLayout.addComponent(browserFrame);
-        }
-
-        return m_verticalLayout;
+    public DashletComponent getDashboardComponent() {
+        return getWallboardComponent();
     }
 }

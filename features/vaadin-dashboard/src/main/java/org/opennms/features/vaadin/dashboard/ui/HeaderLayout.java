@@ -28,11 +28,13 @@
 package org.opennms.features.vaadin.dashboard.ui;
 
 import com.vaadin.data.Property;
+import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
 import org.opennms.features.vaadin.dashboard.config.ui.WallboardProvider;
+import org.opennms.features.vaadin.dashboard.ui.dashboard.DashboardView;
 import org.opennms.features.vaadin.dashboard.ui.wallboard.WallboardView;
 
 /**
@@ -43,7 +45,7 @@ import org.opennms.features.vaadin.dashboard.ui.wallboard.WallboardView;
  */
 public class HeaderLayout extends HorizontalLayout implements ViewChangeListener {
 
-    WallboardView wallboardView = null;
+    View wallboardView = null;
     Button pauseButton, wallboardButton, dashboardButton;
 
     /**
@@ -97,10 +99,16 @@ public class HeaderLayout extends HorizontalLayout implements ViewChangeListener
         pauseButton = new Button("Pause", new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                if (wallboardView.isPaused()) {
-                    wallboardView.resume();
+                if (wallboardView instanceof WallboardView) {
+                if (((WallboardView) wallboardView).isPaused()) {
+                    ((WallboardView) wallboardView).resume();
                 } else {
-                    wallboardView.pause();
+                    ((WallboardView) wallboardView).pause();
+                }
+                } else {
+                    if (wallboardView instanceof DashboardView) {
+                        ((DashboardView) wallboardView).updateAll();
+                    }
                 }
 
                 updatePauseButton();
@@ -130,17 +138,27 @@ public class HeaderLayout extends HorizontalLayout implements ViewChangeListener
     }
 
     private void updatePauseButton() {
-        if (wallboardView.isPausable()) {
-            pauseButton.setEnabled(true);
+        if (wallboardView instanceof WallboardView) {
+            if (((WallboardView) wallboardView).isPausable()) {
+                pauseButton.setEnabled(true);
 
-            if (wallboardView.isPaused()) {
-                pauseButton.setCaption("Resume");
+                if (((WallboardView) wallboardView).isPaused()) {
+                    pauseButton.setCaption("Resume");
+                } else {
+                    pauseButton.setCaption("Pause");
+                }
             } else {
+                pauseButton.setEnabled(false);
                 pauseButton.setCaption("Pause");
             }
         } else {
-            pauseButton.setEnabled(false);
-            pauseButton.setCaption("Pause");
+            if (wallboardView instanceof DashboardView) {
+                pauseButton.setCaption("Refresh");
+                pauseButton.setEnabled(true);
+            } else {
+                pauseButton.setCaption("Pause");
+                pauseButton.setEnabled(false);
+            }
         }
     }
 
@@ -151,13 +169,8 @@ public class HeaderLayout extends HorizontalLayout implements ViewChangeListener
 
     @Override
     public void afterViewChange(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
-        if (viewChangeEvent.getNewView() instanceof WallboardView) {
-            wallboardView = (WallboardView) viewChangeEvent.getNewView();
+        wallboardView = viewChangeEvent.getNewView();
 
-            updatePauseButton();
-        } else {
-            pauseButton.setCaption("Pause");
-            pauseButton.setEnabled(false);
-        }
+        updatePauseButton();
     }
 }

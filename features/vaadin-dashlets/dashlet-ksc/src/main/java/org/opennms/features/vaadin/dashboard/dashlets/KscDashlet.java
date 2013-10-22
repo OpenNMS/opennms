@@ -32,6 +32,8 @@ import com.vaadin.server.Page;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import org.opennms.features.vaadin.dashboard.model.AbstractDashlet;
+import org.opennms.features.vaadin.dashboard.model.AbstractDashletComponent;
+import org.opennms.features.vaadin.dashboard.model.DashletComponent;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.netmgt.config.kscReports.Graph;
@@ -57,16 +59,8 @@ public class KscDashlet extends AbstractDashlet {
     private NodeDao m_nodeDao;
     private ResourceDao m_resourceDao;
     private TransactionOperations m_transactionOperations;
-
-    /**
-     * The grid layout used to layout the graphs
-     */
-    private GridLayout m_gridLayout;
-
-    /**
-     * The grid layout used to layout the graphs
-     */
-    private VerticalLayout m_dashboardLayout;
+    private DashletComponent m_wallboardComponent;
+    private DashletComponent m_dashboardComponent;
 
     /**
      * Constructor for instantiating new objects.
@@ -85,212 +79,72 @@ public class KscDashlet extends AbstractDashlet {
     }
 
     @Override
-    public Component getWallboardComponent() {
-        if (m_gridLayout == null) {
-            m_gridLayout = new GridLayout();
-            m_gridLayout.setCaption(getName());
-            m_gridLayout.setSizeFull();
-            m_gridLayout.setColumns(1);
-            m_gridLayout.setRows(1);
-        }
+    public DashletComponent getWallboardComponent() {
+        if (m_wallboardComponent == null) {
+            m_wallboardComponent = new AbstractDashletComponent() {
+                private GridLayout m_gridLayout = new GridLayout();
 
-        return m_gridLayout;
-    }
+                {
+                    m_gridLayout.setCaption(getName());
+                    m_gridLayout.setSizeFull();
+                    m_gridLayout.setColumns(1);
+                    m_gridLayout.setRows(1);
+                }
 
-    @Override
-    public Component getDashboardComponent() {
-        if (m_dashboardLayout == null) {
-            m_dashboardLayout = new VerticalLayout();
-            m_dashboardLayout.setCaption(getName());
-            m_dashboardLayout.setSizeFull();
-        }
+                @Override
+                public void refresh() {
+                    m_gridLayout.removeAllComponents();
 
-        return m_dashboardLayout;
-    }
+                    /**
+                     * initializing the parameters
+                     */
+                    int columns = 0;
+                    int rows = 0;
 
-    /**
-     * Updates the dashlet contents and computes new boosted state
-     */
-    @Override
-    public void updateDashboard() {
-        /**
-         * removing old components
-         */
+                    String kscReportName = getDashletSpec().getParameters().get("kscReport");
 
-        m_dashboardLayout.removeAllComponents();
+                    if (kscReportName == null || "".equals(kscReportName)) {
+                        return;
+                    }
 
-        String kscReportName = getDashletSpec().getParameters().get("kscReport");
+                    KSC_PerformanceReportFactory kscPerformanceReportFactory = KSC_PerformanceReportFactory.getInstance();
 
-        if (kscReportName == null || "".equals(kscReportName)) {
-            return;
-        }
+                    Map<Integer, String> reportsMap = kscPerformanceReportFactory.getReportList();
 
-        KSC_PerformanceReportFactory kscPerformanceReportFactory = KSC_PerformanceReportFactory.getInstance();
+                    int kscReportId = -1;
 
-        Map<Integer, String> reportsMap = kscPerformanceReportFactory.getReportList();
+                    for (Map.Entry<Integer, String> entry : reportsMap.entrySet()) {
 
-        int kscReportId = -1;
+                        if (kscReportName.equals(entry.getValue())) {
+                            kscReportId = entry.getKey();
+                            break;
+                        }
+                    }
 
-        for (Map.Entry<Integer, String> entry : reportsMap.entrySet()) {
+                    if (kscReportId == -1) {
+                        return;
+                    }
 
-            if (kscReportName.equals(entry.getValue())) {
-                kscReportId = entry.getKey();
-                break;
-            }
-        }
+                    Report kscReport = kscPerformanceReportFactory.getReportByIndex(kscReportId);
 
-        if (kscReportId == -1) {
-            return;
-        }
+                    columns = kscReport.getGraphs_per_line();
 
-        Report kscReport = kscPerformanceReportFactory.getReportByIndex(kscReportId);
+                    if (columns == 0) {
+                        columns = 1;
+                    }
 
-        Page.getCurrent().getStyles().add(".box { margin: 5px; background-color: #444; border: 1px solid #999; border-top: 0; overflow: auto; }");
-        Page.getCurrent().getStyles().add(".text { color:#ffffff; line-height: 11px; font-size: 9px; font-family: 'Lucida Grande', Verdana, sans-serif; font-weight: bold; }");
-        Page.getCurrent().getStyles().add(".margin { margin:5px; }");
+                    rows = kscReport.getGraphCount() / columns;
 
-        int width = 0;
-        int height = 0;
+                    if (rows == 0) {
+                        rows = 1;
+                    }
 
-        Accordion accordion = new Accordion();
-        accordion.setSizeFull();
-        m_dashboardLayout.addComponent(accordion);
+                    if (kscReport.getGraphCount() % columns > 0) {
+                        rows++;
+                    }
 
-        for (Graph graph : kscReport.getGraph()) {
-            Map<String, String> data = getDataForResourceId(graph.getNodeId(), graph.getResourceId());
-
-            Calendar beginTime = Calendar.getInstance();
-            Calendar endTime = Calendar.getInstance();
-
-            KSC_PerformanceReportFactory.getBeginEndTime(graph.getTimespan(), beginTime, endTime);
-
-            String urlString = "/opennms/graph/graph.png?resourceId=" + graph.getResourceId() + "&report=" + graph.getGraphtype() + "&start=" + beginTime.getTimeInMillis() + "&end=" + endTime.getTimeInMillis() + (width > 0 ? "&width=" + width : "") + (height > 0 ? "&height=" + height : "");
-
-            Image image = new Image(null, new ExternalResource(urlString));
-
-            VerticalLayout verticalLayout = new VerticalLayout();
-
-            HorizontalLayout horizontalLayout = new HorizontalLayout();
-            horizontalLayout.addStyleName("box");
-            horizontalLayout.setWidth("100%");
-            horizontalLayout.setHeight("42px");
-
-            VerticalLayout leftLayout = new VerticalLayout();
-            leftLayout.setDefaultComponentAlignment(Alignment.TOP_LEFT);
-            leftLayout.addStyleName("margin");
-
-            Label labelTitle;
-
-            if (graph.getTitle() == null || "".equals(graph.getTitle())) {
-                labelTitle = new Label("&nbsp;");
-                labelTitle.setContentMode(ContentMode.HTML);
-            } else {
-                labelTitle = new Label(graph.getTitle());
-            }
-
-            labelTitle.addStyleName("text");
-
-            Label labelFrom = new Label("From: " + beginTime.getTime().toString());
-            labelFrom.addStyleName("text");
-
-            Label labelTo = new Label("To: " + endTime.getTime().toString());
-            labelTo.addStyleName("text");
-
-            Label labelNodeLabel = new Label(data.get("nodeLabel"));
-            labelNodeLabel.addStyleName("text");
-
-            Label labelResourceLabel = new Label(data.get("resourceTypeLabel") + ": " + data.get("resourceLabel"));
-            labelResourceLabel.addStyleName("text");
-
-            leftLayout.addComponent(labelTitle);
-            leftLayout.addComponent(labelFrom);
-            leftLayout.addComponent(labelTo);
-
-            VerticalLayout rightLayout = new VerticalLayout();
-            rightLayout.setDefaultComponentAlignment(Alignment.TOP_LEFT);
-            rightLayout.addStyleName("margin");
-
-            rightLayout.addComponent(labelNodeLabel);
-            rightLayout.addComponent(labelResourceLabel);
-
-            horizontalLayout.addComponent(leftLayout);
-            horizontalLayout.addComponent(rightLayout);
-
-            horizontalLayout.setExpandRatio(leftLayout, 1.0f);
-            horizontalLayout.setExpandRatio(rightLayout, 1.0f);
-
-            verticalLayout.addComponent(horizontalLayout);
-            verticalLayout.addComponent(image);
-            verticalLayout.setWidth(image.getWidth() + "px");
-
-            accordion.addTab(verticalLayout, data.get("nodeLabel") + "/" + data.get("resourceTypeLabel") + ": " + data.get("resourceLabel"));
-
-            verticalLayout.setComponentAlignment(horizontalLayout, Alignment.MIDDLE_CENTER);
-            verticalLayout.setComponentAlignment(image, Alignment.MIDDLE_CENTER);
-            verticalLayout.setMargin(true);
-        }
-    }
-
-    /**
-     * Updates the dashlet contents and computes new boosted state
-     */
-    @Override
-    public void updateWallboard() {
-        /**
-         * removing old components
-         */
-        m_gridLayout.removeAllComponents();
-
-        /**
-         * iniatizing the parameters
-         */
-        int columns = 0;
-        int rows = 0;
-
-        String kscReportName = getDashletSpec().getParameters().get("kscReport");
-
-        if (kscReportName == null || "".equals(kscReportName)) {
-            return;
-        }
-
-        KSC_PerformanceReportFactory kscPerformanceReportFactory = KSC_PerformanceReportFactory.getInstance();
-
-        Map<Integer, String> reportsMap = kscPerformanceReportFactory.getReportList();
-
-        int kscReportId = -1;
-
-        for (Map.Entry<Integer, String> entry : reportsMap.entrySet()) {
-
-            if (kscReportName.equals(entry.getValue())) {
-                kscReportId = entry.getKey();
-                break;
-            }
-        }
-
-        if (kscReportId == -1) {
-            return;
-        }
-
-        Report kscReport = kscPerformanceReportFactory.getReportByIndex(kscReportId);
-
-        columns = kscReport.getGraphs_per_line();
-
-        if (columns == 0) {
-            columns = 1;
-        }
-
-        rows = kscReport.getGraphCount() / columns;
-
-        if (rows == 0) {
-            rows = 1;
-        }
-
-        if (kscReport.getGraphCount() % columns > 0) {
-            rows++;
-        }
-
-        int width = 0;
-        int height = 0;
+                    int width = 0;
+                    int height = 0;
 
         /*
         try {
@@ -304,105 +158,252 @@ public class KscDashlet extends AbstractDashlet {
         } catch (NumberFormatException numberFormatException) {
             height = 100;
         }
-         */
+        */
 
-        /**
-         * setting new columns/rows
-         */
-        m_gridLayout.setColumns(columns);
-        m_gridLayout.setRows(rows);
+                    /**
+                     * setting new columns/rows
+                     */
+                    m_gridLayout.setColumns(columns);
+                    m_gridLayout.setRows(rows);
 
-        int i = 0;
+                    int i = 0;
 
-        /**
-         * adding the components
-         */
+                    /**
+                     * adding the components
+                     */
 
-        Page.getCurrent().getStyles().add(".box { margin: 5px; background-color: #444; border: 1px solid #999; border-top: 0; overflow: auto; }");
-        Page.getCurrent().getStyles().add(".text { color:#ffffff; line-height: 11px; font-size: 9px; font-family: 'Lucida Grande', Verdana, sans-serif; font-weight: bold; }");
-        Page.getCurrent().getStyles().add(".margin { margin:5px; }");
+                    Page.getCurrent().getStyles().add(".box { margin: 5px; background-color: #444; border: 1px solid #999; border-top: 0; overflow: auto; }");
+                    Page.getCurrent().getStyles().add(".text { color:#ffffff; line-height: 11px; font-size: 9px; font-family: 'Lucida Grande', Verdana, sans-serif; font-weight: bold; }");
+                    Page.getCurrent().getStyles().add(".margin { margin:5px; }");
 
-        for (int y = 0; y < m_gridLayout.getRows(); y++) {
-            for (int x = 0; x < m_gridLayout.getColumns(); x++) {
+                    for (int y = 0; y < m_gridLayout.getRows(); y++) {
+                        for (int x = 0; x < m_gridLayout.getColumns(); x++) {
 
-                if (i < kscReport.getGraphCount()) {
-                    Graph graph = kscReport.getGraph(i);
+                            if (i < kscReport.getGraphCount()) {
+                                Graph graph = kscReport.getGraph(i);
 
-                    Map<String, String> data = getDataForResourceId(graph.getNodeId(), graph.getResourceId());
+                                Map<String, String> data = getDataForResourceId(graph.getNodeId(), graph.getResourceId());
 
-                    Calendar beginTime = Calendar.getInstance();
-                    Calendar endTime = Calendar.getInstance();
+                                Calendar beginTime = Calendar.getInstance();
+                                Calendar endTime = Calendar.getInstance();
 
-                    KSC_PerformanceReportFactory.getBeginEndTime(graph.getTimespan(), beginTime, endTime);
+                                KSC_PerformanceReportFactory.getBeginEndTime(graph.getTimespan(), beginTime, endTime);
 
-                    String urlString = "/opennms/graph/graph.png?resourceId=" + graph.getResourceId() + "&report=" + graph.getGraphtype() + "&start=" + beginTime.getTimeInMillis() + "&end=" + endTime.getTimeInMillis() + (width > 0 ? "&width=" + width : "") + (height > 0 ? "&height=" + height : "");
+                                String urlString = "/opennms/graph/graph.png?resourceId=" + graph.getResourceId() + "&report=" + graph.getGraphtype() + "&start=" + beginTime.getTimeInMillis() + "&end=" + endTime.getTimeInMillis() + (width > 0 ? "&width=" + width : "") + (height > 0 ? "&height=" + height : "");
 
-                    Image image = new Image(null, new ExternalResource(urlString));
+                                Image image = new Image(null, new ExternalResource(urlString));
 
-                    VerticalLayout verticalLayout = new VerticalLayout();
+                                VerticalLayout verticalLayout = new VerticalLayout();
 
-                    HorizontalLayout horizontalLayout = new HorizontalLayout();
-                    horizontalLayout.addStyleName("box");
-                    horizontalLayout.setWidth("100%");
-                    horizontalLayout.setHeight("42px");
+                                HorizontalLayout horizontalLayout = new HorizontalLayout();
+                                horizontalLayout.addStyleName("box");
+                                horizontalLayout.setWidth("100%");
+                                horizontalLayout.setHeight("42px");
 
-                    VerticalLayout leftLayout = new VerticalLayout();
-                    leftLayout.setDefaultComponentAlignment(Alignment.TOP_LEFT);
-                    leftLayout.addStyleName("margin");
+                                VerticalLayout leftLayout = new VerticalLayout();
+                                leftLayout.setDefaultComponentAlignment(Alignment.TOP_LEFT);
+                                leftLayout.addStyleName("margin");
 
-                    Label labelTitle;
+                                Label labelTitle;
 
-                    if (graph.getTitle() == null || "".equals(graph.getTitle())) {
-                        labelTitle = new Label("&nbsp;");
-                        labelTitle.setContentMode(ContentMode.HTML);
-                    } else {
-                        labelTitle = new Label(graph.getTitle());
+                                if (graph.getTitle() == null || "".equals(graph.getTitle())) {
+                                    labelTitle = new Label("&nbsp;");
+                                    labelTitle.setContentMode(ContentMode.HTML);
+                                } else {
+                                    labelTitle = new Label(graph.getTitle());
+                                }
+
+                                labelTitle.addStyleName("text");
+
+                                Label labelFrom = new Label("From: " + beginTime.getTime().toString());
+                                labelFrom.addStyleName("text");
+
+                                Label labelTo = new Label("To: " + endTime.getTime().toString());
+                                labelTo.addStyleName("text");
+
+                                Label labelNodeLabel = new Label(data.get("nodeLabel"));
+                                labelNodeLabel.addStyleName("text");
+
+                                Label labelResourceLabel = new Label(data.get("resourceTypeLabel") + ": " + data.get("resourceLabel"));
+                                labelResourceLabel.addStyleName("text");
+
+                                leftLayout.addComponent(labelTitle);
+                                leftLayout.addComponent(labelFrom);
+                                leftLayout.addComponent(labelTo);
+
+                                VerticalLayout rightLayout = new VerticalLayout();
+                                rightLayout.setDefaultComponentAlignment(Alignment.TOP_LEFT);
+                                rightLayout.addStyleName("margin");
+
+                                rightLayout.addComponent(labelNodeLabel);
+                                rightLayout.addComponent(labelResourceLabel);
+
+                                horizontalLayout.addComponent(leftLayout);
+                                horizontalLayout.addComponent(rightLayout);
+
+                                horizontalLayout.setExpandRatio(leftLayout, 1.0f);
+                                horizontalLayout.setExpandRatio(rightLayout, 1.0f);
+
+                                verticalLayout.addComponent(horizontalLayout);
+                                verticalLayout.addComponent(image);
+                                verticalLayout.setWidth(image.getWidth() + "px");
+
+                                m_gridLayout.addComponent(verticalLayout, x, y);
+
+                                verticalLayout.setComponentAlignment(horizontalLayout, Alignment.MIDDLE_CENTER);
+                                verticalLayout.setComponentAlignment(image, Alignment.MIDDLE_CENTER);
+                                m_gridLayout.setComponentAlignment(verticalLayout, Alignment.MIDDLE_CENTER);
+                            }
+                            i++;
+                        }
+                    }
+                }
+
+                @Override
+                public Component getComponent() {
+                    return m_gridLayout;
+                }
+            };
+        }
+
+        return m_wallboardComponent;
+    }
+
+    @Override
+    public DashletComponent getDashboardComponent() {
+        if (m_dashboardComponent == null) {
+            m_dashboardComponent = new AbstractDashletComponent() {
+                private VerticalLayout m_verticalLayout = new VerticalLayout();
+
+                {
+                    m_verticalLayout.setCaption(getName());
+                    m_verticalLayout.setSizeFull();
+                }
+
+                @Override
+                public void refresh() {
+                    m_verticalLayout.removeAllComponents();
+
+                    String kscReportName = getDashletSpec().getParameters().get("kscReport");
+
+                    if (kscReportName == null || "".equals(kscReportName)) {
+                        return;
                     }
 
-                    labelTitle.addStyleName("text");
+                    KSC_PerformanceReportFactory kscPerformanceReportFactory = KSC_PerformanceReportFactory.getInstance();
 
-                    Label labelFrom = new Label("From: " + beginTime.getTime().toString());
-                    labelFrom.addStyleName("text");
+                    Map<Integer, String> reportsMap = kscPerformanceReportFactory.getReportList();
 
-                    Label labelTo = new Label("To: " + endTime.getTime().toString());
-                    labelTo.addStyleName("text");
+                    int kscReportId = -1;
 
-                    Label labelNodeLabel = new Label(data.get("nodeLabel"));
-                    labelNodeLabel.addStyleName("text");
+                    for (Map.Entry<Integer, String> entry : reportsMap.entrySet()) {
 
-                    Label labelResourceLabel = new Label(data.get("resourceTypeLabel") + ": " + data.get("resourceLabel"));
-                    labelResourceLabel.addStyleName("text");
+                        if (kscReportName.equals(entry.getValue())) {
+                            kscReportId = entry.getKey();
+                            break;
+                        }
+                    }
 
-                    leftLayout.addComponent(labelTitle);
-                    leftLayout.addComponent(labelFrom);
-                    leftLayout.addComponent(labelTo);
+                    if (kscReportId == -1) {
+                        return;
+                    }
 
-                    VerticalLayout rightLayout = new VerticalLayout();
-                    rightLayout.setDefaultComponentAlignment(Alignment.TOP_LEFT);
-                    rightLayout.addStyleName("margin");
+                    Report kscReport = kscPerformanceReportFactory.getReportByIndex(kscReportId);
 
-                    rightLayout.addComponent(labelNodeLabel);
-                    rightLayout.addComponent(labelResourceLabel);
+                    Page.getCurrent().getStyles().add(".box { margin: 5px; background-color: #444; border: 1px solid #999; border-top: 0; overflow: auto; }");
+                    Page.getCurrent().getStyles().add(".text { color:#ffffff; line-height: 11px; font-size: 9px; font-family: 'Lucida Grande', Verdana, sans-serif; font-weight: bold; }");
+                    Page.getCurrent().getStyles().add(".margin { margin:5px; }");
 
-                    horizontalLayout.addComponent(leftLayout);
-                    horizontalLayout.addComponent(rightLayout);
+                    int width = 0;
+                    int height = 0;
 
-                    horizontalLayout.setExpandRatio(leftLayout, 1.0f);
-                    horizontalLayout.setExpandRatio(rightLayout, 1.0f);
+                    Accordion accordion = new Accordion();
+                    accordion.setSizeFull();
+                    m_verticalLayout.addComponent(accordion);
 
-                    verticalLayout.addComponent(horizontalLayout);
-                    verticalLayout.addComponent(image);
-                    verticalLayout.setWidth(image.getWidth() + "px");
+                    for (Graph graph : kscReport.getGraph()) {
+                        Map<String, String> data = getDataForResourceId(graph.getNodeId(), graph.getResourceId());
 
-                    m_gridLayout.addComponent(verticalLayout, x, y);
+                        Calendar beginTime = Calendar.getInstance();
+                        Calendar endTime = Calendar.getInstance();
 
-                    verticalLayout.setComponentAlignment(horizontalLayout, Alignment.MIDDLE_CENTER);
-                    verticalLayout.setComponentAlignment(image, Alignment.MIDDLE_CENTER);
-                    m_gridLayout.setComponentAlignment(verticalLayout, Alignment.MIDDLE_CENTER);
+                        KSC_PerformanceReportFactory.getBeginEndTime(graph.getTimespan(), beginTime, endTime);
+
+                        String urlString = "/opennms/graph/graph.png?resourceId=" + graph.getResourceId() + "&report=" + graph.getGraphtype() + "&start=" + beginTime.getTimeInMillis() + "&end=" + endTime.getTimeInMillis() + (width > 0 ? "&width=" + width : "") + (height > 0 ? "&height=" + height : "");
+
+                        Image image = new Image(null, new ExternalResource(urlString));
+
+                        VerticalLayout verticalLayout = new VerticalLayout();
+
+                        HorizontalLayout horizontalLayout = new HorizontalLayout();
+                        horizontalLayout.addStyleName("box");
+                        horizontalLayout.setWidth("100%");
+                        horizontalLayout.setHeight("42px");
+
+                        VerticalLayout leftLayout = new VerticalLayout();
+                        leftLayout.setDefaultComponentAlignment(Alignment.TOP_LEFT);
+                        leftLayout.addStyleName("margin");
+
+                        Label labelTitle;
+
+                        if (graph.getTitle() == null || "".equals(graph.getTitle())) {
+                            labelTitle = new Label("&nbsp;");
+                            labelTitle.setContentMode(ContentMode.HTML);
+                        } else {
+                            labelTitle = new Label(graph.getTitle());
+                        }
+
+                        labelTitle.addStyleName("text");
+
+                        Label labelFrom = new Label("From: " + beginTime.getTime().toString());
+                        labelFrom.addStyleName("text");
+
+                        Label labelTo = new Label("To: " + endTime.getTime().toString());
+                        labelTo.addStyleName("text");
+
+                        Label labelNodeLabel = new Label(data.get("nodeLabel"));
+                        labelNodeLabel.addStyleName("text");
+
+                        Label labelResourceLabel = new Label(data.get("resourceTypeLabel") + ": " + data.get("resourceLabel"));
+                        labelResourceLabel.addStyleName("text");
+
+                        leftLayout.addComponent(labelTitle);
+                        leftLayout.addComponent(labelFrom);
+                        leftLayout.addComponent(labelTo);
+
+                        VerticalLayout rightLayout = new VerticalLayout();
+                        rightLayout.setDefaultComponentAlignment(Alignment.TOP_LEFT);
+                        rightLayout.addStyleName("margin");
+
+                        rightLayout.addComponent(labelNodeLabel);
+                        rightLayout.addComponent(labelResourceLabel);
+
+                        horizontalLayout.addComponent(leftLayout);
+                        horizontalLayout.addComponent(rightLayout);
+
+                        horizontalLayout.setExpandRatio(leftLayout, 1.0f);
+                        horizontalLayout.setExpandRatio(rightLayout, 1.0f);
+
+                        verticalLayout.addComponent(horizontalLayout);
+                        verticalLayout.addComponent(image);
+                        verticalLayout.setWidth(image.getWidth() + "px");
+
+                        accordion.addTab(verticalLayout, data.get("nodeLabel") + "/" + data.get("resourceTypeLabel") + ": " + data.get("resourceLabel"));
+
+                        verticalLayout.setComponentAlignment(horizontalLayout, Alignment.MIDDLE_CENTER);
+                        verticalLayout.setComponentAlignment(image, Alignment.MIDDLE_CENTER);
+                        verticalLayout.setMargin(true);
+                    }
                 }
-                i++;
-            }
+
+                @Override
+                public Component getComponent() {
+                    return m_verticalLayout;
+                }
+            };
         }
+
+        return m_dashboardComponent;
     }
 
     /**
