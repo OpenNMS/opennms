@@ -41,13 +41,17 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.dao.support.NewTransactionTemplate;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 
 /**
@@ -83,7 +87,10 @@ public class UpsertTest implements InitializingBean {
     
     @Autowired
     DatabasePopulator m_populator;
-    
+
+    @Autowired
+    NewTransactionTemplate m_transactionTemplate;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -91,9 +98,14 @@ public class UpsertTest implements InitializingBean {
 
     @Before
     public void setUp() {
-        m_populator.populateDatabase();
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                m_populator.populateDatabase();
+            }
+        });
     }
-    
+
     @Test
     @JUnitTemporaryDatabase
     @Transactional

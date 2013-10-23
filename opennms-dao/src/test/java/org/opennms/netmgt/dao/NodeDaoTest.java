@@ -63,10 +63,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -92,9 +89,6 @@ public class NodeDaoTest implements InitializingBean {
 
     @Autowired
     DatabasePopulator m_populator;
-
-    @Autowired
-    TransactionTemplate m_transTemplate;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -250,14 +244,7 @@ public class NodeDaoTest implements InitializingBean {
     }
 
     public OnmsNode getNodeHierarchy(final int nodeId) {
-        return m_transTemplate.execute(new TransactionCallback<OnmsNode>() {
-
-            @Override
-            public OnmsNode doInTransaction(TransactionStatus status) {
-                return getNodeDao().getHierarchy(nodeId);
-            }
-
-        });
+        return getNodeDao().getHierarchy(nodeId);
     }
 
     /** Test for bug 1594 */

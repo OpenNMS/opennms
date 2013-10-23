@@ -68,6 +68,17 @@ public class Hibernate4SessionDataSource extends AbstractDataSource {
 	private DataSource targetDataSource;
 	private SessionFactory sessionFactory;
 
+	/**
+	 * Default constructor.
+	 */
+	public Hibernate4SessionDataSource() {
+	}
+
+	public Hibernate4SessionDataSource(DataSource target, SessionFactory session) {
+		targetDataSource = target;
+		sessionFactory = session;
+	}
+
 	public DataSource getTargetDataSource() {
 		return targetDataSource;
 	}

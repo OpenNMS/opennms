@@ -68,7 +68,6 @@ import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * 
@@ -99,9 +98,6 @@ public class JdbcFilterDaoTest implements InitializingBean {
     
     @Autowired
     DatabasePopulator m_populator;
-
-    @Autowired
-    TransactionTemplate m_transTemplate;
 
     @Autowired
     DataSource m_dataSource;

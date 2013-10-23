@@ -58,6 +58,8 @@
       <bean class="org.opennms.core.db.XADataSourceFactoryBean" />
     </property>
     <property name="poolSize" value="30"/>
+    <!-- This test query assures that connections are refreshed following a database restart -->
+    <property name="testQuery" value="SELECT 1"/>
   </bean>
 
   <!-- Atomikos JTA TransactionManager -->
@@ -132,8 +134,13 @@
 
   <bean id="timeKeeper" class="org.opennms.core.utils.DefaultTimeKeeper" />
 
-  <bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
-    <property name="transactionManager" ref="transactionManager" />
+  <bean id="transactionTemplate" class="org.opennms.netmgt.dao.support.DefaultTransactionTemplate">
+    <constructor-arg ref="transactionManager" />
+  </bean>
+
+  <!-- A TransactionTemplate that sets the propogation to "requires new" to always create new transactions -->
+  <bean id="newTransactionTemplate" class="org.opennms.netmgt.dao.support.NewTransactionTemplate">
+    <constructor-arg ref="transactionManager" />
   </bean>
   
   <onmsgi:service interface="org.springframework.transaction.support.TransactionOperations" ref="transactionTemplate" />

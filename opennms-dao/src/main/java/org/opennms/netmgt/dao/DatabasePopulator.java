@@ -810,4 +810,11 @@ public class DatabasePopulator {
     public void setAcknowledgmentDao(final AcknowledgmentDao acknowledgmentDao) {
         m_acknowledgmentDao = acknowledgmentDao;
     }
+
+    /**
+     * @deprecated Unused.
+     * 
+     * @param transactionOperation
+     */
+    public void setTransactionTemplate(final TransactionOperations transactionOperation) {}
 }
