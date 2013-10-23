@@ -39,6 +39,8 @@ import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.vaadin.event.FieldEvents;
+import com.vaadin.ui.*;
 import org.opennms.features.topology.api.CheckedOperation;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.HasExtraComponents;
@@ -95,27 +97,11 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinResponse;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.slider.SliderOrientation;
-import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CustomLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.NativeButton;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Slider;
-import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.VerticalSplitPanel;
-import com.vaadin.ui.Window;
 
 @SuppressWarnings("serial")
 @Theme("topo_default")
@@ -202,7 +188,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     private final IconRepositoryManager m_iconRepositoryManager;
     private WidgetManager m_widgetManager;
     private AbsoluteLayout m_treeMapSplitPanel;
-    private final Label m_zoomLevelLabel = new Label("0");
+    private final TextField m_zoomLevelLabel = new TextField();
     private final HistoryManager m_historyManager;
     private String m_headerHtml;
     private boolean m_showHeader = true;
@@ -468,6 +454,20 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         final Property<Double> scale = m_graphContainer.getScaleProperty();
 
         m_zoomLevelLabel.setHeight(20, Unit.PIXELS);
+        m_zoomLevelLabel.setWidth(22, Unit.PIXELS);
+        m_zoomLevelLabel.addStyleName("center-text");
+        m_zoomLevelLabel.addTextChangeListener(new FieldEvents.TextChangeListener() {
+            @Override
+            public void textChange(FieldEvents.TextChangeEvent event) {
+                try{
+                    int zoomLevel = Integer.parseInt(event.getText());
+                    setSemanticZoomLevel(zoomLevel);
+                } catch(NumberFormatException e){
+                    setSemanticZoomLevel(m_graphContainer.getSemanticZoomLevel());
+                }
+
+            }
+        });
 
         m_topologyComponent = new TopologyComponent(m_graphContainer, m_iconRepositoryManager, this);
         m_topologyComponent.setSizeFull();
