@@ -49,6 +49,7 @@ import org.opennms.netmgt.config.LinkdConfig;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.opennms.netmgt.dao.support.DefaultTransactionTemplate;
 import org.opennms.netmgt.linkd.scheduler.ReadyRunnable;
 import org.opennms.netmgt.linkd.scheduler.Scheduler;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
@@ -60,8 +61,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
 /**
@@ -82,7 +83,7 @@ public class Linkd extends AbstractServiceDaemon {
     protected static final String LOG_PREFIX = "linkd";
 
     @Autowired
-    private TransactionTemplate m_transTemplate;
+    private DefaultTransactionTemplate m_transTemplate;
 
     /**
      * Rescan scheduler thread
@@ -534,20 +535,26 @@ public class Linkd extends AbstractServiceDaemon {
     }
 
     public boolean runSingleSnmpCollection(final int nodeId) {
-        final LinkableNode node = m_queryMgr.getSnmpNode(nodeId);
-        if (node == null) {
-            LOG.warn("Node not found: {}", nodeId);
-            return false;
-        }
+    	return m_transTemplate.execute(new TransactionCallback<Boolean>() {
 
-        for (final SnmpCollection snmpColl : getSnmpCollections(nodeId,
-                                                                node.getSnmpPrimaryIpAddr(),
-                                                                node.getSysoid())) {
-            snmpColl.setScheduler(m_scheduler);
-            snmpColl.run();
-        }
+    		@Override
+    		public Boolean doInTransaction(TransactionStatus status) {
+    			final LinkableNode node = m_queryMgr.getSnmpNode(nodeId);
+    			if (node == null) {
+    				LOG.warn("Node not found: {}", nodeId);
+    				return false;
+    			}
 
-        return true;
+    			for (final SnmpCollection snmpColl : getSnmpCollections(nodeId,
+    					node.getSnmpPrimaryIpAddr(),
+    					node.getSysoid())) {
+    				snmpColl.setScheduler(m_scheduler);
+    				snmpColl.run();
+    			}
+
+    			return true;
+    		}
+    	});
     }
 
     public boolean runSingleLinkDiscovery(final String packageName) {
