@@ -38,6 +38,7 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.TransactionAwareEventForwarder;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.dao.support.DefaultTransactionTemplate;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -46,7 +47,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * 
@@ -76,7 +76,7 @@ public class TransactionAwareEventForwarderTest implements InitializingBean {
     private MockEventIpcManager m_eventIpcManager;
 
     @Autowired
-    TransactionTemplate m_transTemplate;
+    DefaultTransactionTemplate m_transTemplate;
 
     @Override
     public void afterPropertiesSet() throws Exception {

@@ -58,6 +58,7 @@ import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
+import org.opennms.netmgt.dao.support.NewTransactionTemplate;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -71,7 +72,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 /**
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
@@ -109,6 +112,9 @@ public class HttpCollectorTest implements TestContextAware, InitializingBean {
     @Autowired
     private Collectd m_collectd;
 
+    @Autowired
+    private NewTransactionTemplate m_transactionTemplate;
+
     private TestContext m_context;
 
     private final OnmsDistPoller m_distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
@@ -145,18 +151,22 @@ public class HttpCollectorTest implements TestContextAware, InitializingBean {
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
 
-        if (m_nodeDao.findByLabel("testnode").size() == 0) {
-            NetworkBuilder builder = new NetworkBuilder(m_distPoller);
-            builder.addNode("testnode");
-            builder.addInterface(InetAddressUtils.normalize(m_testHostName)).setIsManaged("M").setIsSnmpPrimary("P");
-            builder.addService(getServiceType("ICMP"));
-            builder.addService(getServiceType("HTTP"));
-            builder.addService(getServiceType("HTTPS"));
-            OnmsNode n = builder.getCurrentNode();
-            assertNotNull(n);
-            m_nodeDao.save(n);
-            m_nodeDao.flush();
-        }
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                if (m_nodeDao.findByLabel("testnode").size() == 0) {
+                    NetworkBuilder builder = new NetworkBuilder(m_distPoller);
+                    builder.addNode("testnode");
+                    builder.addInterface(InetAddressUtils.normalize(m_testHostName)).setIsManaged("M").setIsSnmpPrimary("P");
+                    builder.addService(getServiceType("ICMP"));
+                    builder.addService(getServiceType("HTTP"));
+                    builder.addService(getServiceType("HTTPS"));
+                    OnmsNode n = builder.getCurrentNode();
+                    assertNotNull(n);
+                    m_nodeDao.save(n);
+                }
+            }
+        });
 
         m_collector = new HttpCollector();
 
