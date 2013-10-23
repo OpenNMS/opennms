@@ -325,7 +325,6 @@ public class NodeDaoTest implements InitializingBean {
         simulateScan(timestamp);
 
         deleteObsoleteInterfaces(timestamp);
-        getNodeDao().flush();
 
         validateScan();
     }
@@ -357,7 +356,25 @@ public class NodeDaoTest implements InitializingBean {
     }
 
     private void deleteObsoleteInterfaces(Date timestamp) {
+        OnmsNode n = getNodeDao().get(getNode1().getId());
+
+        assertEquals(4, n.getIpInterfaces().size());
+        assertEquals(4, n.getSnmpInterfaces().size());
+        
+        boolean foundDate = false;
+        int nulls = 0;
+        for (OnmsIpInterface iface : n.getIpInterfaces()) {
+            if (iface.getIpLastCapsdPoll() == timestamp) {
+                foundDate = true;
+            } else if (iface.getIpLastCapsdPoll() == null) {
+                nulls++;
+            }
+        }
+        assertTrue(foundDate);
+        assertEquals(3, nulls);
+
         getNodeDao().deleteObsoleteInterfaces(getNode1().getId(), timestamp);
+        getNodeDao().flush();
     }
 
     private void validateNode(OnmsNode n) throws Exception {

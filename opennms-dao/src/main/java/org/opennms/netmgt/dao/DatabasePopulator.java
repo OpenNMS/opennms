@@ -195,6 +195,11 @@ public class DatabasePopulator {
     	extensions.add(extension);
     }
 
+    /**
+     * @deprecated Unused.
+     */
+    public void setPopulateInSeparateTransaction(final boolean pop) {}
+
     public void resetDatabase() {
         LOG.debug("==== DatabasePopulator Reset ====");
         for (final DataLinkInterface iface : m_dataLinkInterfaceDao.findAll()) {

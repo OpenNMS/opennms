@@ -202,8 +202,6 @@
     <bean id="filterDao" class="org.opennms.netmgt.filter.FilterDaoFactory" depends-on="filterDaoFactory-init" factory-method="getInstance" />
 
     <bean id="databasePopulator" class="org.opennms.netmgt.dao.DatabasePopulator">
-        <property name="populateInSeparateTransaction" value="true" />
-        <property name="transactionTemplate" ref="transactionTemplate" />
         <property name="distPollerDao" ref="distPollerDao" />
         <property name="nodeDao" ref="nodeDao" />
         <property name="ipInterfaceDao" ref="ipInterfaceDao" />

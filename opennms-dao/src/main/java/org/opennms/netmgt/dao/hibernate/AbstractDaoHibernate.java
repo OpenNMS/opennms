@@ -52,12 +52,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.Table;
-import java.io.Serializable;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.List;
-
 /**
  * <p>Abstract AbstractDaoHibernate class.</p>
  * 
@@ -407,7 +401,12 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> implements
      * @throws org.springframework.dao.DataAccessException if any.
      */
     public int bulkDelete(final String hql, final Object... values ) throws DataAccessException {
-        return bulkUpdate(hql, values);
+        // Flush any pending operations first
+        flush();
+        int retval = bulkUpdate(hql, values);
+        // Clear the session to make sure that deleted objects are evicted
+        clear();
+        return retval;
     }
     
     /**

@@ -354,8 +354,8 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     /** {@inheritDoc} */
     @Override
     public void deleteObsoleteInterfaces(Integer nodeId, Date scanStamp) {
-        bulkUpdate("delete from OnmsIpInterface ipInterface where ipInterface.node.id = ? and ipInterface.isSnmpPrimary != 'P' and (ipInterface.ipLastCapsdPoll is null or ipInterface.ipLastCapsdPoll < ?)", new Object[] { nodeId, scanStamp });
-        bulkUpdate("delete from OnmsSnmpInterface snmpInterface where snmpInterface.node.id = ? and (snmpInterface.lastCapsdPoll is null or snmpInterface.lastCapsdPoll < ?)", new Object[] { nodeId, scanStamp });
+        bulkDelete("delete from OnmsIpInterface ipInterface where ipInterface.node.id = ? and ipInterface.isSnmpPrimary != 'P' and (ipInterface.ipLastCapsdPoll is null or ipInterface.ipLastCapsdPoll < ?)", new Object[] { nodeId, scanStamp });
+        bulkDelete("delete from OnmsSnmpInterface snmpInterface where snmpInterface.node.id = ? and (snmpInterface.lastCapsdPoll is null or snmpInterface.lastCapsdPoll < ?)", new Object[] { nodeId, scanStamp });
     }
 
     /** {@inheritDoc} */
