@@ -74,6 +74,24 @@ public class OnmsGeolocationTest {
                 "UK",
                 "PR7 3JE, UK"
             },
+            {
+                null,
+                null,
+                null,
+                null,
+                " ",
+                " ",
+                null
+            },
+            {
+                null,
+                null,
+                null,
+                null,
+                "",
+                "",
+                null
+            }
         });
     }
 
