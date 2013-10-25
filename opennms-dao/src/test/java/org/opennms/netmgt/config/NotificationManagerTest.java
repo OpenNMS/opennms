@@ -52,9 +52,7 @@ import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
-import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.FilterParseException;
-import org.opennms.netmgt.filter.JdbcFilterDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -65,7 +63,6 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -107,16 +104,6 @@ public class NotificationManagerTest implements InitializingBean {
 
     @Before
     public void setUp() throws Exception {
-        // Initialize Filter DAO
-        DatabaseSchemaConfigFactory.init();
-        JdbcFilterDao jdbcFilterDao = new JdbcFilterDao();
-        // You must wrap the data source in Spring's TransactionAwareDataSourceProxy so that it
-        // executes its queries inside the current transaction.
-        jdbcFilterDao.setDataSource(new TransactionAwareDataSourceProxy(m_dataSource));
-        jdbcFilterDao.setDatabaseSchemaConfigFactory(DatabaseSchemaConfigFactory.getInstance());
-        jdbcFilterDao.afterPropertiesSet();
-        FilterDaoFactory.setInstance(jdbcFilterDao);
-
         m_configManager = new MockNotifdConfigManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "notifd-configuration.xml"));
         m_notificationManager = new NotificationManagerImpl(m_configManager, m_dataSource);
         
