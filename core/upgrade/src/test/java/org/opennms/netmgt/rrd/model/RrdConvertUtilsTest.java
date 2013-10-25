@@ -92,5 +92,29 @@ public class RrdConvertUtilsTest {
         Assert.assertNotNull(jrb);
     }
 
+    /**
+     * Test convert Advanced RRD into JRB (1).
+     *
+     * @throws Exception the exception
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testConvertAdvRrdIntoJrb1() throws Exception {
+        RRDv3 rrd = JaxbUtils.unmarshal(RRDv3.class, new File("src/test/resources/rrd-dump-compute-ds.xml"));
+        RRDv1 jrb = RrdConvertUtils.convert(rrd);
+        Assert.assertNull(jrb);
+    }
+
+    /**
+     * Test convert Advanced RRD into JRB (2).
+     *
+     * @throws Exception the exception
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testConvertAdvRrdIntoJrb2() throws Exception {
+        RRDv3 rrd = JaxbUtils.unmarshal(RRDv3.class, new File("src/test/resources/rrd-dump-aberrant-behavior-detection.xml"));
+        RRDv1 jrb = RrdConvertUtils.convert(rrd);
+        Assert.assertNull(jrb);
+    }
+
 }
 

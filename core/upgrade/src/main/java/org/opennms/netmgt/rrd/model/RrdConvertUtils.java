@@ -218,8 +218,9 @@ public class RrdConvertUtils {
         jrb.setLastUpdate(rrd.getLastUpdate());
         for (org.opennms.netmgt.rrd.model.v3.RRA rrav3 : rrd.getRras()) {
             org.opennms.netmgt.rrd.model.v1.RRA rrav1 = new org.opennms.netmgt.rrd.model.v1.RRA();
-            rrav1.setConsolidationFunction(rrav3.getConsolidationFunction().name());
-            if (rrav1.getConsolidationFunction() == null) {
+            try {
+                rrav1.setConsolidationFunction(rrav3.getConsolidationFunction().name());
+            } catch (IllegalArgumentException e) {
                 throw new IllegalArgumentException("RRDv1 doesn't support the consolidation function " + rrav3.getConsolidationFunction().value());
             }
             rrav1.setPdpPerRow(rrav3.getPdpPerRow());
@@ -235,8 +236,9 @@ public class RrdConvertUtils {
         }
         for (org.opennms.netmgt.rrd.model.v3.DS dsv3 : rrd.getDataSources()) {
             org.opennms.netmgt.rrd.model.v1.DS dsv1 = new org.opennms.netmgt.rrd.model.v1.DS();
-            dsv1.setType(dsv3.getType().value());
-            if (dsv1.getType() == null) {
+            try {
+                dsv1.setType(dsv3.getType().value());
+            } catch (IllegalArgumentException e) {
                 throw new IllegalArgumentException("RRDv1 doesn't support the data source type " + dsv3.getType().value());
             }
             dsv1.setName(dsv3.getName());
