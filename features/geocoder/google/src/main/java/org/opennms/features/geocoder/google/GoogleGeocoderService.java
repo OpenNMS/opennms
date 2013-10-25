@@ -2,6 +2,9 @@ package org.opennms.features.geocoder.google;
 
 import java.security.InvalidKeyException;
 
+import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.opennms.features.geocoder.Coordinates;
 import org.opennms.features.geocoder.GeocoderException;
 import org.opennms.features.geocoder.GeocoderService;
@@ -48,15 +51,20 @@ public class GoogleGeocoderService implements GeocoderService {
                 m_geocoder = new AdvancedGeoCoder();
             }
 
+            final HttpClient httpClient = m_geocoder.getHttpClient();
+
+            /* Configure proxying, if necessary... */
             final String httpProxyHost = System.getProperty("http.proxyHost");
             final Integer httpProxyPort = Integer.getInteger("http.proxyPort");
-
             if (httpProxyHost != null && httpProxyPort != null) {
                 LOG.info("Proxy configuration found, using {}:{} as HTTP proxy.", httpProxyHost, httpProxyPort);
-                m_geocoder.getHttpClient().getHostConfiguration().setProxy(httpProxyHost, httpProxyPort);
+                httpClient.getHostConfiguration().setProxy(httpProxyHost, httpProxyPort);
             } else {
                 LOG.info("No proxy configuration found.");
             }
+
+            /* Limit retries... */
+            httpClient.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(1, true));
 
             LOG.info("Google Geocoder initialized.");
         }

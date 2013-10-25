@@ -171,35 +171,42 @@ public class OnmsGeolocation implements Serializable {
     public String asAddressString() {
         final StringBuffer sb = new StringBuffer();
 
-        if (this.getAddress1() != null) {
+        if (hasText(this.getAddress1())) {
             sb.append(this.getAddress1());
-            if (this.getAddress2() != null) {
+            if (hasText(this.getAddress2())) {
                 sb.append(" ").append(this.getAddress2());
             }
         }
 
-        if (this.getCity() != null) {
+        if (hasText(this.getCity())) {
             if (sb.length() > 0) sb.append(", ");
             sb.append(this.getCity());
         }
-        if (this.getState() != null) {
+        if (hasText(this.getState())) {
             if (sb.length() > 0) sb.append(", ");
             sb.append(this.getState());
         }
-        if (this.getZip() != null) {
-            if (this.getState() != null) {
+        if (hasText(this.getZip())) {
+            if (hasText(this.getState())) {
                 sb.append(" ");
             } else if (sb.length() > 0) {
                 sb.append(", ");
             }
             sb.append(this.getZip());
         }
-        if (this.getCountry() != null) {
+        if (hasText(this.getCountry())) {
             if (sb.length() > 0) sb.append(", ");
             sb.append(this.getCountry());
+        }
+
+        if (sb.length() == 0) {
+            return null;
         }
 
         return sb.toString();
     }
 
+    private boolean hasText(final String string) {
+        return !(string == null || string.isEmpty() || string.trim().isEmpty());
+    }
 }
