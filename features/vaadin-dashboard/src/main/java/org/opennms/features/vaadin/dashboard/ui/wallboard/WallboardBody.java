@@ -1,10 +1,7 @@
 package org.opennms.features.vaadin.dashboard.ui.wallboard;
 
 import com.vaadin.server.VaadinSession;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.ProgressIndicator;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 import org.opennms.features.vaadin.dashboard.config.DashletSelector;
 import org.opennms.features.vaadin.dashboard.model.Dashlet;
 import org.opennms.features.vaadin.dashboard.model.DashletSelectorAccess;
@@ -220,7 +217,28 @@ public class WallboardBody extends VerticalLayout {
                         dashlets.put(next, getDashletInstance(dashletSpecs.get(next)));
                     }
 
-                    contentLayout.addComponent(dashlets.get(next).getWallboardComponent().getComponent());
+                    Panel panel = new Panel();
+                    panel.setSizeFull();
+
+                    String caption = dashlets.get(next).getName();
+
+                    if (dashlets.get(next).getDashletSpec().getTitle() != null) {
+                        if (!"".equals(dashlets.get(next).getDashletSpec().getTitle())) {
+                            caption += ": " + "" + dashlets.get(next).getDashletSpec().getTitle();
+                        }
+                    }
+
+                    panel.setCaption(caption);
+
+                    Component component = dashlets.get(next).getWallboardComponent().getComponent();
+
+                    VerticalLayout verticalLayout = new VerticalLayout(component);
+                    verticalLayout.setSizeFull();
+                    verticalLayout.setMargin(true);
+
+                    panel.setContent(verticalLayout);
+
+                    contentLayout.addComponent(panel);
 
                     if (!progressIndicator.isVisible()) {
                         progressIndicator.setVisible(true);

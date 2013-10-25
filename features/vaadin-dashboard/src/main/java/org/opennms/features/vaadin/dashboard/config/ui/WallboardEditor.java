@@ -35,6 +35,7 @@ import org.opennms.features.vaadin.dashboard.model.DashletFactory;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 import org.opennms.features.vaadin.dashboard.model.Wallboard;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -169,6 +170,16 @@ public class WallboardEditor extends VerticalLayout {
         addComponent(m_verticalLayout);
     }
 
+    public void swapDashletSpec(DashletSpec dashletSpec, int direction) {
+        int index = m_wallboard.getDashletSpecs().indexOf(dashletSpec);
+
+        if (index + direction >= 0 && index + direction < m_wallboard.getDashletSpecs().size()) {
+            Collections.swap(m_wallboard.getDashletSpecs(), index, index + direction);
+            updateDashletSpecs();
+            WallboardProvider.getInstance().save();
+        }
+    }
+
     /**
      * Method used for updating the {@link DashletFactory} list
      *
@@ -200,6 +211,17 @@ public class WallboardEditor extends VerticalLayout {
     }
 
     /**
+     * Updates the vertical layout to reflect ordering changes
+     */
+    public void updateDashletSpecs() {
+        m_verticalLayout.removeAllComponents();
+
+        for (DashletSpec dashletSpec : m_wallboard.getDashletSpecs()) {
+            m_verticalLayout.addComponent(m_dashletSpecEditorMap.get(dashletSpec));
+        }
+    }
+
+    /**
      * This method removes the given {@link DashletSpecEditor}.
      *
      * @param dashletSpecEditor the {@link DashletSpecEditor} to be removed
@@ -221,6 +243,7 @@ public class WallboardEditor extends VerticalLayout {
         DashletSpecEditor dashletSpecEditor = new DashletSpecEditor(this, m_dashletSelector, dashletSpec);
 
         m_dashletSpecEditorMap.put(dashletSpec, dashletSpecEditor);
+
         m_verticalLayout.addComponent(dashletSpecEditor);
 
         if (!m_wallboard.getDashletSpecs().contains(dashletSpec)) {

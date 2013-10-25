@@ -29,11 +29,13 @@ package org.opennms.features.vaadin.dashboard.config.ui;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.validator.AbstractStringValidator;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
 import org.opennms.features.vaadin.dashboard.config.DashletSelector;
 import org.opennms.features.vaadin.dashboard.model.DashletConfigurationWindow;
 import org.opennms.features.vaadin.dashboard.model.DashletFactory;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
+import org.opennms.features.vaadin.dashboard.model.Wallboard;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
@@ -59,7 +61,10 @@ public class DashletSpecEditor extends Panel {
      * The {@link NativeSelect} instance for selecting available dashlet factories.
      */
     private NativeSelect m_dashletSelect;
-
+    /**
+     * Title textfield
+     */
+    private TextField m_titleField;
     /**
      * Helper variable for disabling saving of data.
      */
@@ -110,9 +115,8 @@ public class DashletSpecEditor extends Panel {
         setWidth(100.0f, Unit.PERCENTAGE);
 
         GridLayout gridLayout = new GridLayout();
-        gridLayout.setColumns(4);
+        gridLayout.setColumns(6);
         gridLayout.setRows(1);
-
         gridLayout.setMargin(true);
 
         /**
@@ -287,8 +291,22 @@ public class DashletSpecEditor extends Panel {
             }
         });
 
+        m_titleField = new TextField();
+        m_titleField.setValue(dashletSpec.getTitle());
+        m_titleField.setImmediate(true);
+        m_titleField.setCaption("Title");
+
+        m_titleField.addValueChangeListener(new Property.ValueChangeListener() {
+            public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
+                m_dashletSpec.setTitle((String) valueChangeEvent.getProperty().getValue());
+                WallboardProvider.getInstance().save();
+                ((WallboardConfigUI) getUI()).notifyMessage("Data saved", "Title");
+            }
+        });
+
         FormLayout f1 = new FormLayout();
         f1.addComponent(m_dashletSelect);
+        f1.addComponent(m_titleField);
 
         /**
          * Adding the required input fields and buttons to several {@link FormLayout} instances for better layout.
@@ -335,13 +353,61 @@ public class DashletSpecEditor extends Panel {
 
         removeButton.setStyleName("small");
 
+        Button upButton = new Button();
+        upButton.setStyleName("small");
+        upButton.setIcon(new ThemeResource("../runo/icons/16/arrow-up.png"));
+        upButton.setDescription("Move this a dashlet entry one position up");
+
+        Button downButton = new Button();
+        downButton.setStyleName("small");
+        downButton.setIcon(new ThemeResource("../runo/icons/16/arrow-down.png"));
+        downButton.setDescription("Move this a dashlet entry one position down");
+
+        FormLayout f5 = new FormLayout();
+        f5.addComponent(upButton);
+        f5.addComponent(downButton);
+
+        Button previewButton = new Button("Preview");
+        previewButton.setStyleName("small");
+
+        Wallboard wallboard = new Wallboard();
+        wallboard.getDashletSpecs().add(m_dashletSpec);
+
+        previewButton.addClickListener(new PreviewClickListener(this, wallboard));
+
+        FormLayout f6 = new FormLayout();
+        f6.addComponent(previewButton);
+
+        upButton.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                m_wallboardEditor.swapDashletSpec(m_dashletSpec, -1);
+            }
+        });
+
+        downButton.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                m_wallboardEditor.swapDashletSpec(m_dashletSpec, +1);
+            }
+        });
+
         /**
          * Adding the different {@link FormLayout} instances to a {@link GridLayout}
          */
+        f1.setMargin(true);
+        f2.setMargin(true);
+        f3.setMargin(true);
+        f4.setMargin(true);
+        f5.setMargin(true);
+        f6.setMargin(true);
+
         gridLayout.addComponent(f1);
         gridLayout.addComponent(f2);
         gridLayout.addComponent(f3);
         gridLayout.addComponent(f4);
+        gridLayout.addComponent(f5);
+        gridLayout.addComponent(f6);
 
         setContent(gridLayout);
     }
