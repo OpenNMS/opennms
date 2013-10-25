@@ -174,7 +174,7 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
         final int port = config.port();
         final SnmpAgentAddress agentAddress = new SnmpAgentAddress(hostAddress, port);
     	
-    	final InetAddress localHost = InetAddress.getLocalHost();
+    	final InetAddress localHost = InetAddressUtils.addr("127.0.0.1");
     	final SnmpAgentConfigProxyMapper mapper = SnmpAgentConfigProxyMapper.getInstance();
 
     	SnmpAgentAddress listenAddress = null;
