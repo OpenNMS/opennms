@@ -24,31 +24,79 @@
     <property name="jdbcTemplate" ref="simpleJdbcTemplate" />
   </bean>
 
-  <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+  <!--
+    XADataSource that is wrapped with an AtomikosDataSourceBean which provides
+    pooling and JTA compatibility.
+  -->
+  <bean id="dataSource" class="com.atomikos.jdbc.AtomikosDataSourceBean" destroy-method="close">
+    <property name="uniqueResourceName" value="opennms"/>
+    <property name="xaDataSource">
+      <bean class="org.opennms.core.db.XADataSourceFactoryBean" />
+    </property>
+    <property name="poolSize" value="30"/>
+    <!-- This test query assures that connections are refreshed following a database restart -->
+    <property name="testQuery" value="SELECT 1"/>
+  </bean>
+
+  <!-- Atomikos JTA TransactionManager -->
+  <bean id="atomikosTransactionManager" class="com.atomikos.icatch.jta.UserTransactionManager" init-method="init" destroy-method="close">
+    <property name="forceShutdown" value="true"/>
+    <property name="transactionTimeout" value="300" />
+  </bean>
+
+  <!-- Atomikos JTA UserTransaction -->
+  <bean id="atomikosUserTransaction" class="com.atomikos.icatch.jta.UserTransactionImp"/>
+
+  <!-- Construct a Spring JtaTransactionManager that uses Atomikos JTA -->
+  <bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager">
+    <constructor-arg ref="atomikosUserTransaction"/>
+    <constructor-arg ref="atomikosTransactionManager"/>
+    <!-- <property name="allowCustomIsolationLevels" value="true"/> -->
+  </bean>
+
+  <!-- Create a Hibernate 4 LocalSessionFactoryBean that will provide thread-local sessions -->
+  <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
     <property name="dataSource" ref="dataSource" />
+    <!-- 
+      You MUST set this property or the SessionFactory will not communicate correctly with 
+      the JTA transaction manager and Spring and Hibernate will not coordinate transactions
+      properly.
+
+      https://jira.springsource.org/browse/SPR-9404
+      https://jira.springsource.org/browse/SPR-9480
+    -->
+    <property name="jtaTransactionManager" ref="transactionManager" />
     <property name="packagesToScan">
       <list>
-        <value>org.opennms.netmgt.dao</value>
+        <value>org.opennms.netmgt.dao.hibernate</value>
+        <value>org.opennms.netmgt.model</value>
+      </list>
+    </property>
+    <!--  property name="schemaUpdate" value="true">
+      </property -->
+    <property name="annotatedPackages">
+      <list>
+        <value>org.opennms.netmgt.dao.hibernate</value>
         <value>org.opennms.netmgt.model</value>
       </list>
     </property>
     <property name="hibernateProperties">
       <value>
+        <!-- Dialect for PostgreSQL 8.2+ -->
+        <!-- hibernate.dialect=org.hibernate.dialect.PostgreSQL82Dialect -->
         hibernate.dialect=org.hibernate.dialect.HSQLDialect
-        hibernate.cache.use_second_level_cache=false
-        hibernate.cache=false
+
         hibernate.cache.use_query_cache=false
+        hibernate.cache.use_second_level_cache=false
+
+        <!-- Configure Hibernate to use JTA factories -->
+        hibernate.transaction.factory_class=org.hibernate.engine.transaction.internal.jta.JtaTransactionFactory
+        <!--hibernate.transaction.jta.platform=[No specific value for Atomikos]-->
+
         hibernate.jdbc.batch_size=0
-        hibernate.format_sql=false
-        hibernate.show_sql=false
-        hibernate.hbm2ddl.auto=create
+        <!-- hibernate.format_sql=true -->
       </value>
     </property>
-  </bean>
-
-  <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
-    <property name="sessionFactory" ref="sessionFactory" />
-    <property name="nestedTransactionAllowed" value="true"/>
   </bean>
 
   <bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">

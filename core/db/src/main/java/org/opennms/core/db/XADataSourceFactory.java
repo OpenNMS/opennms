@@ -33,7 +33,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.URL;
+import java.net.URI;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.Map;
@@ -123,14 +123,23 @@ public final class XADataSourceFactory implements XADataSource {
 		try {
 			fileInputStream = new FileInputStream(cfgFile);
 			final JdbcDataSource ds = ConnectionFactoryUtil.marshalDataSourceFromConfig(fileInputStream, dsName);
-			PGXADataSource xaDataSource = new PGXADataSource();
-			URL url = new URL(ds.getUrl());
-			xaDataSource.setServerName(url.getHost());
-			xaDataSource.setPortNumber(url.getPort());
-			xaDataSource.setDatabaseName(ds.getDatabaseName());
-			xaDataSource.setUser(ds.getUserName());
-			xaDataSource.setPassword(ds.getPassword());
-			setInstance(xaDataSource);
+			String urlString = ds.getUrl();
+			if (urlString.startsWith("jdbc:")) {
+				urlString = urlString.substring("jdbc:".length());
+			}
+			URI url = URI.create(urlString);
+			// TODO: Add support for more XADataSources (hsqldb, derby)
+			if ("postgresql".equalsIgnoreCase(url.getScheme())) {
+				PGXADataSource xaDataSource = new PGXADataSource();
+				xaDataSource.setServerName(url.getHost());
+				xaDataSource.setPortNumber(url.getPort());
+				xaDataSource.setDatabaseName(ds.getDatabaseName());
+				xaDataSource.setUser(ds.getUserName());
+				xaDataSource.setPassword(ds.getPassword());
+				setInstance(xaDataSource);
+			} else {
+				throw new UnsupportedOperationException("Data source scheme not supported: " + url.getScheme());
+			}
 		} finally {
 			IOUtils.closeQuietly(fileInputStream);
 		}

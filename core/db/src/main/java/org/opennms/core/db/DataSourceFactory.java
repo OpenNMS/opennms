@@ -74,7 +74,7 @@ public final class DataSourceFactory implements DataSource {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(DataSourceFactory.class);
 	
-	private static final Class<?> DEFAULT_FACTORY_CLASS = C3P0ConnectionFactory.class;
+	private static final Class<?> DEFAULT_FACTORY_CLASS = AtomikosDataSourceFactory.class;
 
 	/**
      * The singleton instance of this factory

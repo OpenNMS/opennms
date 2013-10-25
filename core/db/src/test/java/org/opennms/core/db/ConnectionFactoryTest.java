@@ -46,10 +46,10 @@ import org.opennms.core.utils.ConfigFileConstants;
  * 
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
-public class C3P0ConnectionFactoryTest extends TestCase {
+public class ConnectionFactoryTest extends TestCase {
     public void testMarshalDataSourceFromConfig() throws Exception {
-        C3P0ConnectionFactory factory1 = null;
-        C3P0ConnectionFactory factory2 = null;
+        AtomikosDataSourceFactory factory1 = null;
+        AtomikosDataSourceFactory factory2 = null;
         
         try {
         	factory1 = makeFactory("opennms");
@@ -114,10 +114,10 @@ public class C3P0ConnectionFactoryTest extends TestCase {
         }
     }
 
-    private C3P0ConnectionFactory makeFactory(String database) throws MarshalException, ValidationException, PropertyVetoException, SQLException, IOException {
+    private AtomikosDataSourceFactory makeFactory(String database) throws MarshalException, ValidationException, PropertyVetoException, SQLException, IOException, ClassNotFoundException {
         InputStream stream = this.getClass().getResourceAsStream(ConfigFileConstants.getFileName(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME));
         try {
-            return new C3P0ConnectionFactory(stream, database);
+            return new AtomikosDataSourceFactory();
         } finally {
             IOUtils.closeQuietly(stream);
         }
