@@ -27,6 +27,7 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.dashboard.config.ui;
 
+import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.*;
 import org.opennms.features.vaadin.dashboard.model.Wallboard;
@@ -129,7 +130,37 @@ public class WallboardOverview extends VerticalLayout {
             }
         });
 
-        m_table.setVisibleColumns(new Object[]{"title", "Edit", "Remove", "Preview"});
+        m_table.addGeneratedColumn("Default", new Table.ColumnGenerator() {
+            public Object generateCell(Table source, final Object itemId, Object columnId) {
+                CheckBox checkBox = new CheckBox();
+                checkBox.setImmediate(true);
+
+                final Wallboard wallboard = m_beanItemContainer.getItem(itemId).getBean();
+                checkBox.setValue(wallboard.isDefault());
+
+                checkBox.addValueChangeListener(new Property.ValueChangeListener() {
+                    @Override
+                    public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
+                        boolean newValue = ((Boolean) valueChangeEvent.getProperty().getValue());
+
+                        if (newValue) {
+                            for (Wallboard wallboard1 : m_beanItemContainer.getItemIds()) {
+                                wallboard1.setDefault(false);
+                            }
+                        }
+
+                        wallboard.setDefault(newValue);
+
+                        m_table.refreshRowCache();
+
+                        WallboardProvider.getInstance().save();
+                    }
+                });
+                return checkBox;
+            }
+        });
+
+        m_table.setVisibleColumns(new Object[]{"title", "Edit", "Remove", "Preview", "Default"});
         m_table.setColumnHeader("title", "Title");
 
         /**

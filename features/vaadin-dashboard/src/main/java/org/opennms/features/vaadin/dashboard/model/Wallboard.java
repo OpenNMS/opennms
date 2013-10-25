@@ -49,6 +49,10 @@ public class Wallboard {
      * The title of this wallboard
      */
     private String m_title;
+    /**
+     * Is this one the default?
+     */
+    private boolean m_default = false;
 
     /**
      * Default constructor
@@ -66,6 +70,22 @@ public class Wallboard {
         for (DashletSpec dashletSpec : wallboard.getDashletSpecs()) {
             this.m_dashletSpecs.add(dashletSpec.clone());
         }
+    }
+
+    /**
+     * Returns whether this wallboard is the default wallboard.
+     *
+     * @return default value
+     */
+    public boolean isDefault() {
+        return m_default;
+    }
+
+    /**
+     * Sets the default value.
+     */
+    public void setDefault(boolean defaultValue) {
+        m_default = defaultValue;
     }
 
     /**
