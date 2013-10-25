@@ -34,6 +34,9 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -45,6 +48,7 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
+import org.opennms.netmgt.rrd.RrdUtils;
 
 /**
  * The Abstract class for OpenNMS Upgrade Implementations.
@@ -59,6 +63,9 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
 
     /** The RRD properties. */
     private Properties rrdProperties;
+
+    /** The OpenNMS version. */
+    private String onmsVersion;
 
     /**
      * Instantiates a new abstract OpenNMS upgrade.
@@ -76,6 +83,15 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
     @Override
     public String getId() {
         return getClass().getName();
+    }
+
+    /**
+     * Gets the home directory.
+     *
+     * @return the home directory
+     */
+    protected String getHomeDirectory() {
+        return ConfigFileConstants.getHome();
     }
 
     /**
@@ -160,7 +176,7 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
             rrdProperties = new Properties();
             loadProperties(rrdProperties, "rrd-configuration.properties");
         }
-        return mainProperties;
+        return rrdProperties;
     }
 
     /**
@@ -183,8 +199,9 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
      */
     protected boolean isRrdToolEnabled() {
         try {
+            RrdUtils.getStrategy().getClass().getSimpleName().equals("JniRrdStrategy");
             String strategy = getRrdProperties().getProperty("org.opennms.rrd.strategyClass", "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy");
-            return strategy.endsWith(".JniRrdStrategy");
+            return !strategy.endsWith(".JRobinRrdStrategy");
         } catch (Exception e) {
             return false;
         }
@@ -197,9 +214,9 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
      */
     protected String getRrdExtension() {
         try {
-            return getRrdProperties().getProperty("org.opennms.rrd.fileExtension", ".jrb");
+            return RrdUtils.getExtension();
         } catch (Exception e) {
-            return ".jrb";
+            return null;
         }
     }
 
@@ -306,6 +323,94 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
             }
             out.closeEntry();
             in.close();
+        }
+    }
+
+    /**
+     * Gets the currently installed OpenNMS version.
+     *
+     * @return the OpenNMS version
+     * @throws OnmsUpgradeException the OpenNMS upgrade exception
+     */
+    protected String getOpennmsVersion() throws OnmsUpgradeException {
+        if (onmsVersion == null) {
+            File versionFile = new File(getHomeDirectory(), "jetty-webapps/opennms/WEB-INF/version.properties");
+            Properties properties = new Properties();
+            try {
+                properties.load(new FileInputStream(versionFile));
+            } catch (Exception e) {
+                throw new OnmsUpgradeException("Can't load " + versionFile);
+            }
+            final String version = properties.getProperty("version.display");
+            if (version == null) {
+                throw new OnmsUpgradeException("Can't retrive OpenNMS version");
+            }
+            onmsVersion = version;
+        }
+        return onmsVersion;
+    }
+
+    /**
+     * Checks if the OpenNMS version is valid.
+     *
+     * @param mayor the mayor
+     * @param minor the minor
+     * @param release the release
+     * @return true, if the current installed version is greater or equals than $major.$minor.$release</p>
+     * @throws OnmsUpgradeException the OpenNMS upgrade exception
+     */
+    protected boolean isOnmsVersionValid(int mayor, int minor, int release) throws OnmsUpgradeException {
+        String version = getOpennmsVersion();
+        String[] a = version.split("\\.");
+        boolean isValid = false;
+        try {
+            isValid = Integer.parseInt(a[0]) >= mayor && Integer.parseInt(a[1]) >= minor && Integer.parseInt(a[2].replaceFirst("[^\\d].+", "")) >= release;
+        } catch (Exception e) {
+            throw new OnmsUpgradeException("Can't process the OpenNMS version");
+        }
+        return isValid;
+    }
+
+    /**
+     * Prints the settings.
+     *
+     * @throws OnmsUpgradeException the OpenNMS upgrade exception
+     */
+    protected void printMainSettings() throws OnmsUpgradeException {
+        log("OpenNMS Home: %s\n", getHomeDirectory());
+        log("OpenNMS Version: %s\n", getOpennmsVersion());
+        log("Is RRDtool enabled? %s\n", isRrdToolEnabled());
+        log("Is storeByGroup enabled? %s\n", isStoreByGroupEnabled());
+        log("RRD Extension: %s\n", getRrdExtension());
+        log("RRD Strategy: %s\n", RrdUtils.getStrategy().getClass().getName());
+    }
+
+    /**
+     * Prints the full settings.
+     *
+     * @throws OnmsUpgradeException the OpenNMS upgrade exception
+     */
+    protected void printFullSettings() throws OnmsUpgradeException {
+        printMainSettings();
+        printProperties("Main Properties", getMainProperties());
+        printProperties("RRD Properties", getRrdProperties());
+    }
+
+    /**
+     * Prints the properties.
+     *
+     * @param title the title
+     * @param properties the properties
+     */
+    private void printProperties(String title, Properties properties) {
+        List<String> keys = new ArrayList<String>();
+        for (Object k : properties.keySet()) {
+            keys.add((String) k);
+        }
+        Collections.sort(keys);
+        log("%s\n", title);
+        for (String key : keys) {
+            log("  %s = %s\n", key, properties.getProperty(key));
         }
     }
 

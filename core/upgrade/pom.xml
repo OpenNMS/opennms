@@ -21,14 +21,18 @@
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.daemon</artifactId>
     </dependency>
-    <!-- JMX Upgrade Dependencies -->
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-config</artifactId>
+      <artifactId>opennms-rrd-api</artifactId>
     </dependency>
+    <!-- Implementation Dependencies -->
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-config</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>

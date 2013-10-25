@@ -102,6 +102,12 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
      * @see org.opennms.upgrade.api.OnmsUpgrade#preExecute()
      */
     public void preExecute() throws OnmsUpgradeException {
+        printMainSettings();
+        if (getRrdExtension() == null) {
+            throw new OnmsUpgradeException("Can't find the configured extension for JRB/RRD.");
+        }
+        log("Is RRDtool enabled ? %s\n", isRrdToolEnabled());
+        log("Is storeByGroup enabled ? %s\n", isStoreByGroupEnabled());
         try {
             DataCollectionConfigFactory.init();
         } catch (Exception e) {
@@ -167,7 +173,11 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
     @Override
     public void execute() throws OnmsUpgradeException {
         for (SnmpInterfaceUpgrade intf : interfacesToMerge) {
-            merge(intf.getOldInterfaceDir(), intf.getNewInterfaceDir());
+            try {
+                merge(intf.getOldInterfaceDir(), intf.getNewInterfaceDir());
+            } catch (Exception e) {
+                throw new OnmsUpgradeException("Can't upgrade " + intf + " because " + e.getMessage(), e);
+            }
         }
         fixKscReports();
     }
@@ -236,8 +246,9 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
      *
      * @param oldDir the old directory
      * @param newDir the new directory
+     * @throws Exception the exception
      */
-    protected void merge(File oldDir, File newDir) {
+    protected void merge(File oldDir, File newDir) throws Exception {
         log("Merging data from %s to %s\n", oldDir, newDir);
         if (newDir.exists()) {
             File[] rrdFiles = getFiles(oldDir, getRrdExtension());
@@ -278,26 +289,23 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
      *
      * @param source the source RRD
      * @param dest the destination RRD
+     * @throws Exception the exception
      */
-    protected void mergeRrd(File source, File dest) {
+    protected void mergeRrd(File source, File dest) throws Exception {
         log("  merging RRD %s into %s\n", source, dest);
-        try {
-            RRDv3 rrdSrc = RrdConvertUtils.dumpRrd(source);
-            RRDv3 rrdDst = RrdConvertUtils.dumpRrd(dest);
-            if (rrdSrc == null || rrdDst == null) {
-                log("  Warning: can't load RRDs (ingoring merge).\n");
-                return;
-            }
-            rrdDst.merge(rrdSrc);
-            final File outputFile = new File(dest.getCanonicalPath() + ".merged");
-            RrdConvertUtils.restoreRrd(rrdDst, outputFile);
-            if (dest.exists()) {
-                FileUtils.deleteQuietly(dest);
-            }
-            FileUtils.moveFile(outputFile, dest);
-        } catch (Exception e) {
-            log("  Warning: ignoring merge because %s.\n", e.getMessage());
+        RRDv3 rrdSrc = RrdConvertUtils.dumpRrd(source);
+        RRDv3 rrdDst = RrdConvertUtils.dumpRrd(dest);
+        if (rrdSrc == null || rrdDst == null) {
+            log("  Warning: can't load RRDs (ingoring merge).\n");
+            return;
         }
+        rrdDst.merge(rrdSrc);
+        final File outputFile = new File(dest.getCanonicalPath() + ".merged");
+        RrdConvertUtils.restoreRrd(rrdDst, outputFile);
+        if (dest.exists()) {
+            FileUtils.deleteQuietly(dest);
+        }
+        FileUtils.moveFile(outputFile, dest);
     }
 
     /**
@@ -306,25 +314,21 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
      * @param source the source JRB
      * @param dest the destination JRB
      */
-    protected void mergeJrb(File source, File dest) {
+    protected void mergeJrb(File source, File dest) throws Exception {
         log("  merging JRB %s into %s\n", source, dest);
-        try {
-            RRDv1 rrdSrc = RrdConvertUtils.dumpJrb(source);
-            RRDv1 rrdDst = RrdConvertUtils.dumpJrb(dest);
-            if (rrdSrc == null || rrdDst == null) {
-                log("  Warning: can't load JRBs (ingoring merge).\n");
-                return;
-            }
-            rrdDst.merge(rrdSrc);
-            final File outputFile = new File(dest.getCanonicalPath() + ".merged");
-            RrdConvertUtils.restoreJrb(rrdDst, outputFile);
-            if (dest.exists()) {
-                FileUtils.deleteQuietly(dest);
-            }
-            FileUtils.moveFile(outputFile, dest);
-        } catch (Exception e) {
-            log("  Warning: ignoring merge because %s.\n", e.getMessage());
+        RRDv1 rrdSrc = RrdConvertUtils.dumpJrb(source);
+        RRDv1 rrdDst = RrdConvertUtils.dumpJrb(dest);
+        if (rrdSrc == null || rrdDst == null) {
+            log("  Warning: can't load JRBs (ingoring merge).\n");
+            return;
         }
+        rrdDst.merge(rrdSrc);
+        final File outputFile = new File(dest.getCanonicalPath() + ".merged");
+        RrdConvertUtils.restoreJrb(rrdDst, outputFile);
+        if (dest.exists()) {
+            FileUtils.deleteQuietly(dest);
+        }
+        FileUtils.moveFile(outputFile, dest);
     }
 
     /**

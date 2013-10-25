@@ -37,7 +37,6 @@ import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
 import org.jrobin.core.RrdDb;
-import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
@@ -105,32 +104,14 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
      */
     @Override
     public void preExecute() throws OnmsUpgradeException {
-        File versionFile = new File(ConfigFileConstants.getHome(), "jetty-webapps/opennms/WEB-INF/version.properties");
-        Properties properties = new Properties();
-        try {
-            properties.load(new FileInputStream(versionFile));
-        } catch (Exception e) {
-            throw new OnmsUpgradeException("Can't load " + versionFile);
-        }
-        String version = properties.getProperty("version.display");
-        log("Installed version: %s\n", version);
-        if (version == null) {
-            throw new OnmsUpgradeException("Can't retrive OpenNMS version");
-        }
-        String[] a = version.split("\\.");
-        boolean isValid = false;
-        try {
-            isValid = Integer.parseInt(a[0]) == 1 && Integer.parseInt(a[1]) == 12 && Integer.parseInt(a[2].replaceFirst("[^\\d].+", "")) >= 2;
-        } catch (Exception e) {
-            throw new OnmsUpgradeException("Can't process the OpenNMS version");
-        }
-        if (isValid) {
+        printMainSettings();
+        if (isOnmsVersionValid(1, 12, 2)) {
             for (File jmxResourceDir : getJmxResourceDirectories()) {
                 log("Backing up %s\n", jmxResourceDir);
                 zipDir(jmxResourceDir.getAbsolutePath() + ".zip", jmxResourceDir);
             }
         } else {
-            throw new OnmsUpgradeException("This upgrade procedure requires at least OpenNMS 1.12.2, the current version is " + version);
+            throw new OnmsUpgradeException("This upgrade procedure requires at least OpenNMS 1.12.2, the current version is " + getOpennmsVersion());
         }
     }
 
@@ -173,16 +154,9 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
      */
     @Override
     public void execute() throws OnmsUpgradeException {
-        String opennmsHome = System.getProperty("opennms.home");
-        if (opennmsHome == null) {
-            log("Warning: opennms.home is not configured, using /opt/opennms instead\n");
-            System.setProperty("opennms.home", "/opt/opennms");
-        }
         try {
             final boolean isRrdtool = isRrdToolEnabled();
             final boolean storeByGroup = isStoreByGroupEnabled();
-            log("Is RRDtool enabled ? %s\n", isRrdtool);
-            log("Is storeByGroup enabled ? %s\n", storeByGroup);
             for (File jmxResourceDir : getJmxResourceDirectories()) {
                 if (storeByGroup) {
                     processGroupFiles(jmxResourceDir, isRrdtool);

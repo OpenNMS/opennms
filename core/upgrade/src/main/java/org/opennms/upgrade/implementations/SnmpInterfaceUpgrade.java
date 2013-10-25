@@ -231,4 +231,12 @@ public class SnmpInterfaceUpgrade {
         return dir;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Interface[ifName=" + getIfName() + ", nodeId=" + getNodeId() + ", foreignSource=" + getForeignSource() + ", foreignId" + getForeignId() + "]";
+    }
+
 }
