@@ -51,6 +51,7 @@ import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.dao.support.NewTransactionTemplate;
 import org.opennms.netmgt.linkd.nb.Nms4005NetworkBuilder;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -60,7 +61,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
@@ -92,6 +95,9 @@ public class Nms4005Test extends Nms4005NetworkBuilder implements InitializingBe
     @Autowired
     private DataLinkInterfaceDao m_dataLinkInterfaceDao;
 
+    @Autowired
+    private NewTransactionTemplate m_transactionTemplate;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -111,7 +117,17 @@ public class Nms4005Test extends Nms4005NetworkBuilder implements InitializingBe
 
         for (Package pkg : Collections.list(m_linkdConfig.enumeratePackage())) {
             pkg.setForceIpRouteDiscoveryOnEthernet(true);
-        }        
+        }
+
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                m_nodeDao.save(getR1());
+                m_nodeDao.save(getR2());
+                m_nodeDao.save(getR3());
+                m_nodeDao.save(getR4());
+            }
+        });
     }
 
 	@Before
@@ -133,6 +149,7 @@ public class Nms4005Test extends Nms4005NetworkBuilder implements InitializingBe
  * 			   <>R2<>10.1.5.1 (2)---(3) 10.1.5.2 <>R3<>
  */
     @Test
+    @JUnitTemporaryDatabase
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host="10.1.1.2", port=161, resource="classpath:linkd/nms4005/10.1.1.2-walk.txt"),
             @JUnitSnmpAgent(host="10.1.2.2", port=161, resource="classpath:linkd/nms4005/10.1.2.2-walk.txt"),
@@ -140,11 +157,6 @@ public class Nms4005Test extends Nms4005NetworkBuilder implements InitializingBe
             @JUnitSnmpAgent(host="10.1.4.2", port=161, resource="classpath:linkd/nms4005/10.1.4.2-walk.txt")
     })
     public void testNms4005Network() throws Exception {
-    	m_nodeDao.save(getR1());
-    	m_nodeDao.save(getR2());
-    	m_nodeDao.save(getR3());
-    	m_nodeDao.save(getR4());
-    	
         final OnmsNode cisco1 = m_nodeDao.findByForeignId("linkd", R1_NAME);
         final OnmsNode cisco2 = m_nodeDao.findByForeignId("linkd", R2_NAME);
         final OnmsNode cisco3 = m_nodeDao.findByForeignId("linkd", R3_NAME);
@@ -167,7 +179,7 @@ public class Nms4005Test extends Nms4005NetworkBuilder implements InitializingBe
             printLink(link);
         }
         assertEquals("we should have found 4 data links", 4, ifaces.size());
-        //Rerun collectionand discovery must be all the same...
+        //Rerun collection and discovery must be all the same...
         assertTrue(m_linkd.runSingleSnmpCollection(cisco1.getId()));
         assertTrue(m_linkd.runSingleSnmpCollection(cisco2.getId()));
         assertTrue(m_linkd.runSingleSnmpCollection(cisco3.getId()));
@@ -184,6 +196,7 @@ public class Nms4005Test extends Nms4005NetworkBuilder implements InitializingBe
      * for each scan to ensure that the upsert code is working properly.
      */
     @Test
+    @JUnitTemporaryDatabase
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host="10.1.1.2", port=161, resource="classpath:linkd/nms4005/10.1.1.2-walk.txt"),
             @JUnitSnmpAgent(host="10.1.2.2", port=161, resource="classpath:linkd/nms4005/10.1.2.2-walk.txt"),
@@ -191,16 +204,10 @@ public class Nms4005Test extends Nms4005NetworkBuilder implements InitializingBe
             @JUnitSnmpAgent(host="10.1.4.2", port=161, resource="classpath:linkd/nms4005/10.1.4.2-walk.txt")
     })
     public void testNms4005NetworkWithThreads() throws Exception {
-    	m_nodeDao.save(getR1());
-    	m_nodeDao.save(getR2());
-    	m_nodeDao.save(getR3());
-    	m_nodeDao.save(getR4());
-
         final OnmsNode cisco1 = m_nodeDao.findByForeignId("linkd", R1_NAME);
         final OnmsNode cisco2 = m_nodeDao.findByForeignId("linkd", R2_NAME);
         final OnmsNode cisco3 = m_nodeDao.findByForeignId("linkd", R3_NAME);
         final OnmsNode cisco4 = m_nodeDao.findByForeignId("linkd", R4_NAME);
-
 
         assertTrue(m_linkd.scheduleNodeCollection(cisco1.getId()));
         assertTrue(m_linkd.scheduleNodeCollection(cisco2.getId()));

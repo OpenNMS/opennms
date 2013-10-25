@@ -49,6 +49,7 @@ import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.dao.support.NewTransactionTemplate;
 import org.opennms.netmgt.linkd.nb.Nms4930NetworkBuilder;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -58,7 +59,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
@@ -90,12 +93,15 @@ public class Nms4930Test extends Nms4930NetworkBuilder implements InitializingBe
     @Autowired
     private DataLinkInterfaceDao m_dataLinkInterfaceDao;
 
+    @Autowired
+    private NewTransactionTemplate m_transactionTemplate;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
     }
 
-	@Before
+    @Before
     public void setUp() throws Exception {
         // MockLogAppender.setupLogging(true);
         Properties p = new Properties();
@@ -108,8 +114,12 @@ public class Nms4930Test extends Nms4930NetworkBuilder implements InitializingBe
         super.setNodeDao(m_nodeDao);
         super.setSnmpInterfaceDao(m_snmpInterfaceDao);
  
-        buildNetwork4005();
-        
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                buildNetwork4005();
+            }
+        });
     }
 
 	@Before

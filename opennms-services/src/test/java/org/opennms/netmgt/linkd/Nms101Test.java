@@ -38,7 +38,7 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
-import org.junit.After;
+import org.hibernate.SessionFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -56,6 +56,8 @@ import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.dao.hibernate.Hibernate4SessionDataSource;
+import org.opennms.netmgt.dao.support.NewTransactionTemplate;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.JdbcFilterDao;
 import org.opennms.netmgt.linkd.nb.Nms101NetworkBuilder;
@@ -68,9 +70,10 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
@@ -93,6 +96,9 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
     DataSource m_dataSource;
 
     @Autowired
+    SessionFactory m_sessionFactory;
+
+    @Autowired
     private Linkd m_linkd;
 
     @Autowired
@@ -103,6 +109,9 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
 
     @Autowired
     private DataLinkInterfaceDao m_dataLinkInterfaceDao;
+
+    @Autowired
+    private NewTransactionTemplate m_transactionTemplate;
 
     private LinkdConfig m_linkdConfig;
 
@@ -126,7 +135,7 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
         JdbcFilterDao jdbcFilterDao = new JdbcFilterDao();
         // You must wrap the data source in Spring's TransactionAwareDataSourceProxy so that it
         // executes its queries inside the current transaction.
-        jdbcFilterDao.setDataSource(new TransactionAwareDataSourceProxy(m_dataSource));
+        jdbcFilterDao.setDataSource(new Hibernate4SessionDataSource(m_dataSource, m_sessionFactory));
         jdbcFilterDao.setDatabaseSchemaConfigFactory(DatabaseSchemaConfigFactory.getInstance());
         jdbcFilterDao.afterPropertiesSet();
         FilterDaoFactory.setInstance(jdbcFilterDao);
@@ -148,26 +157,22 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
 	    m_linkdConfig = LinkdConfigFactory.getInstance();
 	}
 
-    @After
-    public void tearDown() throws Exception {
-        for (final OnmsNode node : m_nodeDao.findAll()) {
-            m_nodeDao.delete(node);
-        }
-        m_nodeDao.flush();
-    }
-	
     @Test
-    @Transactional
+    @JUnitTemporaryDatabase
     public void testDefaultConfiguration() throws Exception {
-    	m_nodeDao.save(getExampleCom());
-    	m_nodeDao.save(getLaptop());
-    	m_nodeDao.save(getCisco7200a());
-    	m_nodeDao.save(getCisco7200b());
-    	m_nodeDao.save(getCisco3700());
-    	m_nodeDao.save(getCisco2691());
-    	m_nodeDao.save(getCisco1700());
-    	m_nodeDao.save(getCisco3600());
-    	m_nodeDao.flush();
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                m_nodeDao.save(getExampleCom());
+                m_nodeDao.save(getLaptop());
+                m_nodeDao.save(getCisco7200a());
+                m_nodeDao.save(getCisco7200b());
+                m_nodeDao.save(getCisco3700());
+                m_nodeDao.save(getCisco2691());
+                m_nodeDao.save(getCisco1700());
+                m_nodeDao.save(getCisco3600());
+            }
+        });
 
         assertEquals(true,m_linkdConfig.useBridgeDiscovery());
         assertEquals(true,m_linkdConfig.useOspfDiscovery());
@@ -286,15 +291,20 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
      * 
      */
 	@Test
+	@JUnitTemporaryDatabase
     @JUnitSnmpAgents(value={
         @JUnitSnmpAgent(host="10.1.5.1", port=161, resource="classpath:linkd/nms101/cisco1700b.properties"),
         @JUnitSnmpAgent(host="10.1.5.2", port=161, resource="classpath:linkd/nms101/cisco1700.properties")
     })
     public void testSimpleFakeConnection() throws Exception {
-		m_nodeDao.save(getCisco1700());
-		m_nodeDao.save(getCisco1700b());
-		m_nodeDao.save(getExampleCom());
-        m_nodeDao.flush();
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                m_nodeDao.save(getCisco1700());
+                m_nodeDao.save(getCisco1700b());
+                m_nodeDao.save(getExampleCom());
+            }
+        });
 
         final OnmsNode cisco1700 = m_nodeDao.findByForeignId("linkd", CISCO1700_NAME);
         final OnmsNode cisco1700b = m_nodeDao.findByForeignId("linkd", CISCO1700B_NAME);
@@ -343,16 +353,22 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
      *                  cisco3700  (3) --- (1)  cisco3600      
      */	
     @Test
+    @JUnitTemporaryDatabase
     @JUnitSnmpAgents(value={
         @JUnitSnmpAgent(host="10.1.1.1", port=161, resource="classpath:linkd/nms101/cisco7200a.properties"),
         @JUnitSnmpAgent(host="10.1.2.2", port=161, resource="classpath:linkd/nms101/cisco7200b.properties")
     })
     public void testsimpleLinkCisco7200aCisco7200b() throws Exception {
 
-    	m_nodeDao.save(getCisco7200a());
-    	m_nodeDao.save(getCisco7200b());
-    	m_nodeDao.flush();
-    	
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                m_nodeDao.save(getCisco7200a());
+                m_nodeDao.save(getCisco7200b());
+                m_nodeDao.flush();
+            }
+        });
+
         final OnmsNode cisco7200a = m_nodeDao.findByForeignId("linkd", CISCO7200A_NAME);
         final OnmsNode cisco7200b = m_nodeDao.findByForeignId("linkd", CISCO7200B_NAME);
         assertTrue(m_linkd.scheduleNodeCollection(cisco7200a.getId()));
@@ -385,16 +401,22 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
      *                  cisco3700  (3) --- (1)  cisco3600      
      */	
     @Test
+    @JUnitTemporaryDatabase
     @JUnitSnmpAgents(value={
         @JUnitSnmpAgent(host="10.1.1.1", port=161, resource="classpath:linkd/nms101/cisco7200a.properties"),
         @JUnitSnmpAgent(host="10.1.1.2", port=161, resource="classpath:linkd/nms101/laptop.properties")
     })
     public void testsimpleLinkCisco7200alaptop() throws Exception {
 
-    	m_nodeDao.save(getCisco7200a());
-    	m_nodeDao.save(getLaptop());
-    	m_nodeDao.flush();
-    	
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                m_nodeDao.save(getCisco7200a());
+                m_nodeDao.save(getLaptop());
+                m_nodeDao.flush();
+            }
+        });
+
         final OnmsNode cisco7200a = m_nodeDao.findByForeignId("linkd", CISCO7200A_NAME);
         final OnmsNode laptop = m_nodeDao.findByForeignId("linkd", LAPTOP_NAME);
         assertTrue(m_linkd.scheduleNodeCollection(cisco7200a.getId()));
@@ -427,16 +449,22 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
      *                  cisco3700  (3) --- (1)  cisco3600      
      */	
     @Test
+    @JUnitTemporaryDatabase
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host="10.1.3.2", port=161, resource="classpath:linkd/nms101/cisco3700.properties"),
             @JUnitSnmpAgent(host="10.1.6.2", port=161, resource="classpath:linkd/nms101/cisco3600.properties")
     })
     public void testsimpleLinkCisco3600aCisco3700() throws Exception {
 
-    	m_nodeDao.save(getCisco3700());
-    	m_nodeDao.save(getCisco3600());
-    	m_nodeDao.flush();
-    	
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                m_nodeDao.save(getCisco3700());
+                m_nodeDao.save(getCisco3600());
+                m_nodeDao.flush();
+            }
+        });
+
         final OnmsNode cisco3700 = m_nodeDao.findByForeignId("linkd", CISCO3600_NAME);
         final OnmsNode cisco3600 = m_nodeDao.findByForeignId("linkd", CISCO3700_NAME);
         assertTrue(m_linkd.scheduleNodeCollection(cisco3600.getId()));
@@ -470,6 +498,7 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
      *                  cisco3700  (3) --- (1)  cisco3600      
      */	
     @Test
+    @JUnitTemporaryDatabase
     @JUnitSnmpAgents(value={
         @JUnitSnmpAgent(host="10.1.1.1", port=161, resource="classpath:linkd/nms101/cisco7200a.properties"),
         @JUnitSnmpAgent(host="10.1.1.2", port=161, resource="classpath:linkd/nms101/laptop.properties"),
@@ -481,16 +510,20 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
     })
     public void testCiscoNetwork() throws Exception {
 
-    	m_nodeDao.save(getExampleCom());
-    	m_nodeDao.save(getLaptop());
-    	m_nodeDao.save(getCisco7200a());
-    	m_nodeDao.save(getCisco7200b());
-    	m_nodeDao.save(getCisco3700());
-    	m_nodeDao.save(getCisco2691());
-    	m_nodeDao.save(getCisco1700());
-    	m_nodeDao.save(getCisco3600());
-    	m_nodeDao.flush();
-    	
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                m_nodeDao.save(getExampleCom());
+                m_nodeDao.save(getLaptop());
+                m_nodeDao.save(getCisco7200a());
+                m_nodeDao.save(getCisco7200b());
+                m_nodeDao.save(getCisco3700());
+                m_nodeDao.save(getCisco2691());
+                m_nodeDao.save(getCisco1700());
+                m_nodeDao.save(getCisco3600());
+            }
+        });
+
         final OnmsNode laptop = m_nodeDao.findByForeignId("linkd", LAPTOP_NAME);
         final OnmsNode cisco7200a = m_nodeDao.findByForeignId("linkd", CISCO7200A_NAME);
         final OnmsNode cisco7200b = m_nodeDao.findByForeignId("linkd", CISCO7200B_NAME);
@@ -559,6 +592,7 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
      *                  cisco3700  (3) --- (1)  cisco3600      
      */	
     @Test
+    @JUnitTemporaryDatabase
     @JUnitSnmpAgents(value={
         @JUnitSnmpAgent(host="10.1.1.1", port=161, resource="classpath:linkd/nms101/cisco7200a.properties"),
         @JUnitSnmpAgent(host="10.1.2.2", port=161, resource="classpath:linkd/nms101/cisco7200b.properties")
@@ -577,10 +611,14 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
             pkg.setUseIsisDiscovery(false);
         }
 
-    	m_nodeDao.save(getCisco7200a());
-    	m_nodeDao.save(getCisco7200b());
-    	m_nodeDao.flush();
-    	
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                m_nodeDao.save(getCisco7200a());
+                m_nodeDao.save(getCisco7200b());
+            }
+        });
+
         final OnmsNode cisco7200a = m_nodeDao.findByForeignId("linkd", CISCO7200A_NAME);
         final OnmsNode cisco7200b = m_nodeDao.findByForeignId("linkd", CISCO7200B_NAME);
         assertTrue(m_linkd.scheduleNodeCollection(cisco7200a.getId()));

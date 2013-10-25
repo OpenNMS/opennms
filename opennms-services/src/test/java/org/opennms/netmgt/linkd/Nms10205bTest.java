@@ -36,6 +36,7 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import org.hibernate.SessionFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,6 +53,8 @@ import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.dao.hibernate.Hibernate4SessionDataSource;
+import org.opennms.netmgt.dao.support.NewTransactionTemplate;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.JdbcFilterDao;
 import org.opennms.netmgt.linkd.nb.Nms10205bNetworkBuilder;
@@ -62,9 +65,10 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
@@ -86,6 +90,9 @@ public class Nms10205bTest extends Nms10205bNetworkBuilder implements Initializi
     DataSource m_dataSource;
 
     @Autowired
+    SessionFactory m_sessionFactory;
+
+    @Autowired
     private Linkd m_linkd;
 
     private LinkdConfig m_linkdConfig;
@@ -98,7 +105,10 @@ public class Nms10205bTest extends Nms10205bNetworkBuilder implements Initializi
     
     @Autowired
     private DataLinkInterfaceDao m_dataLinkInterfaceDao;
-        
+
+    @Autowired
+    private NewTransactionTemplate m_transactionTemplate;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -119,13 +129,28 @@ public class Nms10205bTest extends Nms10205bNetworkBuilder implements Initializi
         JdbcFilterDao jdbcFilterDao = new JdbcFilterDao();
         // You must wrap the data source in Spring's TransactionAwareDataSourceProxy so that it
         // executes its queries inside the current transaction.
-        jdbcFilterDao.setDataSource(new TransactionAwareDataSourceProxy(m_dataSource));
+        jdbcFilterDao.setDataSource(new Hibernate4SessionDataSource(m_dataSource, m_sessionFactory));
         jdbcFilterDao.setDatabaseSchemaConfigFactory(DatabaseSchemaConfigFactory.getInstance());
         jdbcFilterDao.afterPropertiesSet();
         FilterDaoFactory.setInstance(jdbcFilterDao);
 
         super.setNodeDao(m_nodeDao);
         super.setSnmpInterfaceDao(m_snmpInterfaceDao);
+
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                m_nodeDao.save(getMumbai());
+                m_nodeDao.save(getDelhi());
+                m_nodeDao.save(getBangalore());
+                m_nodeDao.save(getBagmane());
+                m_nodeDao.save(getMysore());
+                m_nodeDao.save(getSpaceExSw1());
+                m_nodeDao.save(getSpaceExSw2());
+                m_nodeDao.save(getJ635042());
+                m_nodeDao.save(getSRX100());
+            }
+        });
     }
 
     @Before
@@ -216,6 +241,7 @@ Address          Interface              State     ID               Pri  Dead
 
 */
     @Test
+    @JUnitTemporaryDatabase
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=MUMBAI_IP, port=161, resource="classpath:linkd/nms10205b/"+MUMBAI_NAME+"_"+MUMBAI_IP+".txt"),
             @JUnitSnmpAgent(host=DELHI_IP, port=161, resource="classpath:linkd/nms10205b/"+DELHI_NAME+"_"+DELHI_IP+".txt"),
@@ -228,17 +254,6 @@ Address          Interface              State     ID               Pri  Dead
             @JUnitSnmpAgent(host=SRX_100_IP, port=161, resource="classpath:linkd/nms10205b/"+"SRX-100_"+SRX_100_IP+".txt")
     })
     public void testNetwork10205bLinks() throws Exception {
-        m_nodeDao.save(getMumbai());
-        m_nodeDao.save(getDelhi());
-        m_nodeDao.save(getBangalore());
-        m_nodeDao.save(getBagmane());
-        m_nodeDao.save(getMysore());
-        m_nodeDao.save(getSpaceExSw1());
-        m_nodeDao.save(getSpaceExSw2());
-        m_nodeDao.save(getJ635042());
-        m_nodeDao.save(getSRX100());
-        m_nodeDao.flush();
-
         Package example1 = m_linkdConfig.getPackage("example1");
         assertEquals(false, example1.hasForceIpRouteDiscoveryOnEthernet());
         example1.setForceIpRouteDiscoveryOnEthernet(true);
@@ -432,6 +447,7 @@ it has a link to Mysore that does not support LLDP
  
      */
     @Test
+    @JUnitTemporaryDatabase
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=MUMBAI_IP, port=161, resource="classpath:linkd/nms10205b/"+MUMBAI_NAME+"_"+MUMBAI_IP+".txt"),
             @JUnitSnmpAgent(host=DELHI_IP, port=161, resource="classpath:linkd/nms10205b/"+DELHI_NAME+"_"+DELHI_IP+".txt"),
@@ -444,17 +460,6 @@ it has a link to Mysore that does not support LLDP
             @JUnitSnmpAgent(host=SRX_100_IP, port=161, resource="classpath:linkd/nms10205b/"+"SRX-100_"+SRX_100_IP+".txt")
     })
     public void testNetwork10205bLldpLinks() throws Exception {
-        m_nodeDao.save(getMumbai());
-        m_nodeDao.save(getDelhi());
-        m_nodeDao.save(getBangalore());
-        m_nodeDao.save(getBagmane());
-        m_nodeDao.save(getMysore());
-        m_nodeDao.save(getSpaceExSw1());
-        m_nodeDao.save(getSpaceExSw2());
-        m_nodeDao.save(getJ635042());
-        m_nodeDao.save(getSRX100());
-        m_nodeDao.flush();
-
         Package example1 = m_linkdConfig.getPackage("example1");
         example1.setUseBridgeDiscovery(false);
         example1.setUseCdpDiscovery(false);
@@ -589,6 +594,7 @@ Address          Interface              State     ID               Pri  Dead
 
 */
     @Test
+    @JUnitTemporaryDatabase
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=MUMBAI_IP, port=161, resource="classpath:linkd/nms10205b/"+MUMBAI_NAME+"_"+MUMBAI_IP+".txt"),
             @JUnitSnmpAgent(host=DELHI_IP, port=161, resource="classpath:linkd/nms10205b/"+DELHI_NAME+"_"+DELHI_IP+".txt"),
@@ -601,17 +607,6 @@ Address          Interface              State     ID               Pri  Dead
             @JUnitSnmpAgent(host=SRX_100_IP, port=161, resource="classpath:linkd/nms10205b/"+"SRX-100_"+SRX_100_IP+".txt")
     })
     public void testNetwork10205bOspfLinks() throws Exception {
-        m_nodeDao.save(getMumbai());
-        m_nodeDao.save(getDelhi());
-        m_nodeDao.save(getBangalore());
-        m_nodeDao.save(getBagmane());
-        m_nodeDao.save(getMysore());
-        m_nodeDao.save(getSpaceExSw1());
-        m_nodeDao.save(getSpaceExSw2());
-        m_nodeDao.save(getJ635042());
-        m_nodeDao.save(getSRX100());
-        m_nodeDao.flush();
-
         Package example1 = m_linkdConfig.getPackage("example1");
         example1.setForceIpRouteDiscoveryOnEthernet(false);
         example1.setUseCdpDiscovery(false);

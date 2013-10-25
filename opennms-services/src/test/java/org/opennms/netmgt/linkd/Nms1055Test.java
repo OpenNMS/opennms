@@ -36,6 +36,7 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import org.hibernate.SessionFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,6 +54,8 @@ import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.dao.hibernate.Hibernate4SessionDataSource;
+import org.opennms.netmgt.dao.support.NewTransactionTemplate;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.JdbcFilterDao;
 import org.opennms.netmgt.linkd.nb.Nms1055NetworkBuilder;
@@ -63,9 +66,10 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
@@ -87,6 +91,9 @@ public class Nms1055Test extends Nms1055NetworkBuilder implements InitializingBe
     DataSource m_dataSource;
 
     @Autowired
+    SessionFactory m_sessionFactory;
+
+    @Autowired
     private Linkd m_linkd;
 
     private LinkdConfig m_linkdConfig;
@@ -97,10 +104,12 @@ public class Nms1055Test extends Nms1055NetworkBuilder implements InitializingBe
     @Autowired
     private SnmpInterfaceDao m_snmpInterfaceDao;
 
-    
     @Autowired
     private DataLinkInterfaceDao m_dataLinkInterfaceDao;
-        
+
+    @Autowired
+    private NewTransactionTemplate m_transactionTemplate;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -120,7 +129,7 @@ public class Nms1055Test extends Nms1055NetworkBuilder implements InitializingBe
         JdbcFilterDao jdbcFilterDao = new JdbcFilterDao();
         // You must wrap the data source in Spring's TransactionAwareDataSourceProxy so that it
         // executes its queries inside the current transaction.
-        jdbcFilterDao.setDataSource(new TransactionAwareDataSourceProxy(m_dataSource));
+        jdbcFilterDao.setDataSource(new Hibernate4SessionDataSource(m_dataSource, m_sessionFactory));
         jdbcFilterDao.setDatabaseSchemaConfigFactory(DatabaseSchemaConfigFactory.getInstance());
         jdbcFilterDao.afterPropertiesSet();
         FilterDaoFactory.setInstance(jdbcFilterDao);
@@ -254,14 +263,19 @@ public class Nms1055Test extends Nms1055NetworkBuilder implements InitializingBe
             @JUnitSnmpAgent(host=SANJOSE_IP, port=161, resource="classpath:linkd/nms1055/"+SANJOSE_NAME+"_"+SANJOSE_IP+".txt"),
             @JUnitSnmpAgent(host=RIOVISTA_IP, port=161, resource="classpath:linkd/nms1055/"+RIOVISTA_NAME+"_"+RIOVISTA_IP+".txt")
     })
+    @JUnitTemporaryDatabase
     public void testNetwork1055Links() throws Exception {
-        m_nodeDao.save(getPenrose());
-        m_nodeDao.save(getDelaware());
-        m_nodeDao.save(getPhoenix());
-        m_nodeDao.save(getAustin());
-        m_nodeDao.save(getSanjose());
-        m_nodeDao.save(getRiovista());
-        m_nodeDao.flush();
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                m_nodeDao.save(getPenrose());
+                m_nodeDao.save(getDelaware());
+                m_nodeDao.save(getPhoenix());
+                m_nodeDao.save(getAustin());
+                m_nodeDao.save(getSanjose());
+                m_nodeDao.save(getRiovista());
+            }
+        });
 
         Package example1 = m_linkdConfig.getPackage("example1");
         assertEquals(false, example1.hasForceIpRouteDiscoveryOnEthernet());
@@ -367,6 +381,7 @@ public class Nms1055Test extends Nms1055NetworkBuilder implements InitializingBe
            @JUnitSnmpAgent(host=PENROSE_IP, port=161, resource="classpath:linkd/nms1055/"+PENROSE_NAME+"_"+PENROSE_IP+".txt"),
            @JUnitSnmpAgent(host=DELAWARE_IP, port=161, resource="classpath:linkd/nms1055/"+DELAWARE_NAME+"_"+DELAWARE_IP+".txt")
    })
+   @JUnitTemporaryDatabase
    public void testNetwork1055StpLinks() throws Exception {
        m_nodeDao.save(getPenrose());
        m_nodeDao.save(getDelaware());
@@ -416,6 +431,7 @@ public class Nms1055Test extends Nms1055NetworkBuilder implements InitializingBe
             @JUnitSnmpAgent(host=SANJOSE_IP, port=161, resource="classpath:linkd/nms1055/"+SANJOSE_NAME+"_"+SANJOSE_IP+".txt"),
             @JUnitSnmpAgent(host=RIOVISTA_IP, port=161, resource="classpath:linkd/nms1055/"+RIOVISTA_NAME+"_"+RIOVISTA_IP+".txt")
     })
+    @JUnitTemporaryDatabase
     public void testNetwork1055OspfLinks() throws Exception {
         m_nodeDao.save(getPenrose());
         m_nodeDao.save(getDelaware());

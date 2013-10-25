@@ -37,6 +37,7 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import org.hibernate.SessionFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,6 +54,8 @@ import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.dao.hibernate.Hibernate4SessionDataSource;
+import org.opennms.netmgt.dao.support.NewTransactionTemplate;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.JdbcFilterDao;
 import org.opennms.netmgt.linkd.nb.Nms17216NetworkBuilder;
@@ -63,9 +66,10 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
@@ -87,6 +91,9 @@ public class Nms17216Test extends Nms17216NetworkBuilder implements Initializing
     DataSource m_dataSource;
 
     @Autowired
+    SessionFactory m_sessionFactory;
+
+    @Autowired
     private Linkd m_linkd;
 
     private LinkdConfig m_linkdConfig;
@@ -99,7 +106,10 @@ public class Nms17216Test extends Nms17216NetworkBuilder implements Initializing
 
     @Autowired
     private DataLinkInterfaceDao m_dataLinkInterfaceDao;
-        
+
+    @Autowired
+    private NewTransactionTemplate m_transactionTemplate;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -119,7 +129,7 @@ public class Nms17216Test extends Nms17216NetworkBuilder implements Initializing
         JdbcFilterDao jdbcFilterDao = new JdbcFilterDao();
         // You must wrap the data source in Spring's TransactionAwareDataSourceProxy so that it
         // executes its queries inside the current transaction.
-        jdbcFilterDao.setDataSource(new TransactionAwareDataSourceProxy(m_dataSource));
+        jdbcFilterDao.setDataSource(new Hibernate4SessionDataSource(m_dataSource, m_sessionFactory));
         jdbcFilterDao.setDatabaseSchemaConfigFactory(DatabaseSchemaConfigFactory.getInstance());
         jdbcFilterDao.afterPropertiesSet();
         FilterDaoFactory.setInstance(jdbcFilterDao);
@@ -206,19 +216,22 @@ public class Nms17216Test extends Nms17216NetworkBuilder implements Initializing
             @JUnitSnmpAgent(host=ROUTER3_IP, port=161, resource="classpath:linkd/nms17216/router3-walk.txt"),
             @JUnitSnmpAgent(host=ROUTER4_IP, port=161, resource="classpath:linkd/nms17216/router4-walk.txt")
     })
+    @JUnitTemporaryDatabase
     public void testNetwork17216Links() throws Exception {
-        
-        m_nodeDao.save(getSwitch1());
-        m_nodeDao.save(getSwitch2());
-        m_nodeDao.save(getSwitch3());
-        m_nodeDao.save(getSwitch4());
-        m_nodeDao.save(getSwitch5());
-        m_nodeDao.save(getRouter1());
-        m_nodeDao.save(getRouter2());
-        m_nodeDao.save(getRouter3());
-        m_nodeDao.save(getRouter4());
-
-        m_nodeDao.flush();
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                m_nodeDao.save(getSwitch1());
+                m_nodeDao.save(getSwitch2());
+                m_nodeDao.save(getSwitch3());
+                m_nodeDao.save(getSwitch4());
+                m_nodeDao.save(getSwitch5());
+                m_nodeDao.save(getRouter1());
+                m_nodeDao.save(getRouter2());
+                m_nodeDao.save(getRouter3());
+                m_nodeDao.save(getRouter4());
+            }
+        });
 
         Package example1 = m_linkdConfig.getPackage("example1");
         assertEquals(false, example1.hasForceIpRouteDiscoveryOnEthernet());
@@ -379,11 +392,16 @@ public class Nms17216Test extends Nms17216NetworkBuilder implements Initializing
             @JUnitSnmpAgent(host=SWITCH2_IP, port=161, resource="classpath:linkd/nms17216/switch2-walk.txt"),
             @JUnitSnmpAgent(host=SWITCH3_IP, port=161, resource="classpath:linkd/nms17216/switch3-walk.txt")
     })
+    @JUnitTemporaryDatabase
     public void testNetwork17216LldpLinks() throws Exception {
-        m_nodeDao.save(getSwitch1());
-        m_nodeDao.save(getSwitch2());
-        m_nodeDao.save(getSwitch3());
-        m_nodeDao.flush();
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                m_nodeDao.save(getSwitch1());
+                m_nodeDao.save(getSwitch2());
+                m_nodeDao.save(getSwitch3());
+            }
+        });
 
         Package example1 = m_linkdConfig.getPackage("example1");
         assertEquals(false, example1.hasForceIpRouteDiscoveryOnEthernet());
@@ -448,12 +466,15 @@ public class Nms17216Test extends Nms17216NetworkBuilder implements Initializing
             @JUnitSnmpAgent(host=SWITCH4_IP, port=161, resource="classpath:linkd/nms17216/switch4-walk.txt"),
             @JUnitSnmpAgent(host=ROUTER3_IP, port=161, resource="classpath:linkd/nms17216/router3-walk.txt")
     })
+    @JUnitTemporaryDatabase
     public void testNetwork17216Switch4Router4CdpLinks() throws Exception {
-        
-        m_nodeDao.save(getSwitch4());
-        m_nodeDao.save(getRouter3());
-
-        m_nodeDao.flush();
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                m_nodeDao.save(getSwitch4());
+                m_nodeDao.save(getRouter3());
+            }
+        });
 
         Package example1 = m_linkdConfig.getPackage("example1");
         assertEquals(false, example1.hasForceIpRouteDiscoveryOnEthernet());

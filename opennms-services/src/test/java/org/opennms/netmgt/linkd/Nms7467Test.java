@@ -46,6 +46,7 @@ import javax.sql.DataSource;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 import org.junit.Before;
 import org.junit.Test;
@@ -69,6 +70,8 @@ import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.api.StpInterfaceDao;
 import org.opennms.netmgt.dao.api.StpNodeDao;
 import org.opennms.netmgt.dao.api.VlanDao;
+import org.opennms.netmgt.dao.hibernate.Hibernate4SessionDataSource;
+import org.opennms.netmgt.dao.support.NewTransactionTemplate;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.JdbcFilterDao;
 import org.opennms.netmgt.linkd.nb.Nms7467NetworkBuilder;
@@ -86,9 +89,10 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
@@ -108,6 +112,9 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
 
     @Autowired
     DataSource m_dataSource;
+
+    @Autowired
+    SessionFactory m_sessionFactory;
 
     @Autowired
     private Linkd m_linkd;
@@ -137,7 +144,10 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
     
     @Autowired
     private DataLinkInterfaceDao m_dataLinkInterfaceDao;
-        
+
+    @Autowired
+    private NewTransactionTemplate m_transactionTemplate;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -158,7 +168,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         JdbcFilterDao jdbcFilterDao = new JdbcFilterDao();
         // You must wrap the data source in Spring's TransactionAwareDataSourceProxy so that it
         // executes its queries inside the current transaction.
-        jdbcFilterDao.setDataSource(new TransactionAwareDataSourceProxy(m_dataSource));
+        jdbcFilterDao.setDataSource(new Hibernate4SessionDataSource(m_dataSource, m_sessionFactory));
         jdbcFilterDao.setDatabaseSchemaConfigFactory(DatabaseSchemaConfigFactory.getInstance());
         jdbcFilterDao.afterPropertiesSet();
         FilterDaoFactory.setInstance(jdbcFilterDao);
@@ -233,6 +243,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
     }
     
     @Test
+    @JUnitTemporaryDatabase
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource="classpath:linkd/nms7467/"+CISCO_WS_C2948_IP+"-walk.txt"),
             @JUnitSnmpAgent(host=CISCO_C870_IP, port=161, resource="classpath:linkd/nms7467/"+CISCO_C870_IP+"-walk.txt"),
@@ -259,16 +270,18 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         example1.setSaveRouteTable(true);
         example1.setUseCdpDiscovery(true);
 
-        m_nodeDao.save(getCiscoC870());
-        m_nodeDao.save(getCiscoWsC2948());
-        m_nodeDao.save(getNetGearSw108());
-        m_nodeDao.save(getDarwin108());       
-        m_nodeDao.save(getLinuxUbuntu());
-        m_nodeDao.save(getNodeWithoutSnmp(ACCESSPOINT_NAME, ACCESSPOINT_IP));
-        m_nodeDao.save(getNodeWithoutSnmp(WORKSTATION_NAME, WORKSTATION_IP));
-
-        m_nodeDao.flush();
-
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                m_nodeDao.save(getCiscoC870());
+                m_nodeDao.save(getCiscoWsC2948());
+                m_nodeDao.save(getNetGearSw108());
+                m_nodeDao.save(getDarwin108());       
+                m_nodeDao.save(getLinuxUbuntu());
+                m_nodeDao.save(getNodeWithoutSnmp(ACCESSPOINT_NAME, ACCESSPOINT_IP));
+                m_nodeDao.save(getNodeWithoutSnmp(WORKSTATION_NAME, WORKSTATION_IP));
+            }
+        });
 
         final OnmsNode ciscorouter = m_nodeDao.findByForeignId("linkd", CISCO_C870_NAME);
         final OnmsNode ciscows = m_nodeDao.findByForeignId("linkd", CISCO_WS_C2948_NAME);
@@ -370,14 +383,18 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
     }
 
     @Test
+    @JUnitTemporaryDatabase
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource="classpath:linkd/nms7467/"+CISCO_WS_C2948_IP+"-walk.txt")
     })
     public void testCiscoWsC2948Collection() throws Exception {
-        
-        m_nodeDao.save(getCiscoWsC2948());
-        m_nodeDao.flush();
-        
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                m_nodeDao.save(getCiscoWsC2948());
+            }
+        });
+
         Package example1 = m_linkdConfig.getPackage("example1");
         example1.setUseLldpDiscovery(false);
         example1.setUseOspfDiscovery(false);
@@ -468,13 +485,18 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
     }
     
     @Test
+    @JUnitTemporaryDatabase
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=CISCO_C870_IP, port=161, resource="classpath:linkd/nms7467/"+CISCO_C870_IP+"-walk.txt")
     })
     public void testCiscoC870Collection() throws Exception {
-        m_nodeDao.save(getCiscoC870());
-        m_nodeDao.flush();
-        
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                m_nodeDao.save(getCiscoC870());
+            }
+        });
+
         Package example1 = m_linkdConfig.getPackage("example1");
         example1.setUseLldpDiscovery(false);
         example1.setUseOspfDiscovery(false);
@@ -591,12 +613,17 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
     }
 
     @Test
+    @JUnitTemporaryDatabase
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=NETGEAR_SW_108_IP, port=161, resource="classpath:linkd/nms7467/"+NETGEAR_SW_108_IP+"-walk.txt")
     })
     public void testNetGearSw108Collection() throws Exception {
-        m_nodeDao.save(getNetGearSw108());
-        m_nodeDao.flush();
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                m_nodeDao.save(getNetGearSw108());
+            }
+        });
 
         final OnmsNode ngsw108 = m_nodeDao.findByForeignId("linkd", NETGEAR_SW_108_NAME);
 
@@ -694,13 +721,18 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
     }
 
     @Test
+    @JUnitTemporaryDatabase
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=LINUX_UBUNTU_IP, port=161, resource="classpath:linkd/nms7467/"+LINUX_UBUNTU_IP+"-walk.txt")
     })
     public void testLinuxUbuntuCollection() throws Exception {
-        m_nodeDao.save(getLinuxUbuntu());
-        m_nodeDao.flush();
-        
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                m_nodeDao.save(getLinuxUbuntu());
+            }
+        });
+
         final OnmsNode linux = m_nodeDao.findByForeignId("linkd", LINUX_UBUNTU_NAME);
 
         assertTrue(m_linkd.scheduleNodeCollection(linux.getId()));
@@ -778,13 +810,18 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
     }
     
     @Test
+    @JUnitTemporaryDatabase
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=DARWIN_10_8_IP, port=161, resource="classpath:linkd/nms7467/"+DARWIN_10_8_IP+"-walk.txt")
     })
     public void testDarwin108Collection() throws Exception {
-        m_nodeDao.save(getDarwin108());
-        m_nodeDao.flush();
-        
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                m_nodeDao.save(getDarwin108());
+            }
+        });
+
         Package example1 = m_linkdConfig.getPackage("example1");
         example1.setUseLldpDiscovery(false);
         example1.setUseOspfDiscovery(false);
@@ -882,14 +919,19 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
      *  DARWIN_10_8:port4   ------> port 1 :NETGEAR_SW_108
      */
     @Test
+    @JUnitTemporaryDatabase
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=DARWIN_10_8_IP, port=161, resource="classpath:linkd/nms7467/"+DARWIN_10_8_IP+"-walk.txt"),
             @JUnitSnmpAgent(host=NETGEAR_SW_108_IP, port=161, resource="classpath:linkd/nms7467/"+NETGEAR_SW_108_IP+"-walk.txt")
     })
     public void testLinkDarwinNetgear() throws Exception {
-        m_nodeDao.save(getNetGearSw108());
-        m_nodeDao.save(getDarwin108());
-        m_nodeDao.flush();
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                m_nodeDao.save(getNetGearSw108());
+                m_nodeDao.save(getDarwin108());
+            }
+        });
 
         final OnmsNode mac = m_nodeDao.findByForeignId("linkd", DARWIN_10_8_NAME);
         final OnmsNode ngsw108 = m_nodeDao.findByForeignId("linkd", NETGEAR_SW_108_NAME);
@@ -927,6 +969,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
      *  NETGEAR_SW_108:port8------> port 2/1 (ifindex 9):CISCO_WS_C2948_IP
      */
     @Test
+    @JUnitTemporaryDatabase
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource="classpath:linkd/nms7467/"+CISCO_WS_C2948_IP+"-walk.txt"),
             @JUnitSnmpAgent(host=NETGEAR_SW_108_IP, port=161, resource="classpath:linkd/nms7467/"+NETGEAR_SW_108_IP+"-walk.txt")
@@ -935,9 +978,13 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
     	Package example1 = m_linkdConfig.getPackage("example1");
         example1.setForceIpRouteDiscoveryOnEthernet(false);
 
-    	m_nodeDao.save(getNetGearSw108());
-        m_nodeDao.save(getCiscoWsC2948());
-        m_nodeDao.flush();
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                m_nodeDao.save(getNetGearSw108());
+                m_nodeDao.save(getCiscoWsC2948());
+            }
+        });
 
         final OnmsNode ngsw108 = m_nodeDao.findByForeignId("linkd", NETGEAR_SW_108_NAME);
         final OnmsNode ciscows = m_nodeDao.findByForeignId("linkd", CISCO_WS_C2948_NAME);
@@ -978,14 +1025,19 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
      * LINUX_UBUNTU:port4  ------> port 2/3 (ifindex 11):CISCO_WS_C2948_IP
      */
     @Test
+    @JUnitTemporaryDatabase
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource="classpath:linkd/nms7467/"+CISCO_WS_C2948_IP+"-walk.txt"),
             @JUnitSnmpAgent(host=LINUX_UBUNTU_IP, port=161, resource="classpath:linkd/nms7467/"+LINUX_UBUNTU_IP+"-walk.txt")
     })
     public void testLinuxUbuntuCiscoWs() throws Exception {
-        m_nodeDao.save(getLinuxUbuntu());
-        m_nodeDao.save(getCiscoWsC2948());
-        m_nodeDao.flush();
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                m_nodeDao.save(getLinuxUbuntu());
+                m_nodeDao.save(getCiscoWsC2948());
+            }
+        });
 
         final OnmsNode linuxubuntu = m_nodeDao.findByForeignId("linkd", LINUX_UBUNTU_NAME);
         final OnmsNode ciscows = m_nodeDao.findByForeignId("linkd", CISCO_WS_C2948_NAME);
@@ -1024,13 +1076,18 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
      * 
      */
     @Test
+    @JUnitTemporaryDatabase
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource="classpath:linkd/nms7467/"+CISCO_WS_C2948_IP+"-walk.txt")
     })
     public void testWorkstationCiscoWs() throws Exception {
-        m_nodeDao.save(getNodeWithoutSnmp(WORKSTATION_NAME, WORKSTATION_IP));
-        m_nodeDao.save(getCiscoWsC2948());
-        m_nodeDao.flush();
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                m_nodeDao.save(getNodeWithoutSnmp(WORKSTATION_NAME, WORKSTATION_IP));
+                m_nodeDao.save(getCiscoWsC2948());
+            }
+        });
 
         final OnmsNode workstation = m_nodeDao.findByForeignId("linkd", WORKSTATION_NAME);
         final OnmsNode ciscows = m_nodeDao.findByForeignId("linkd", CISCO_WS_C2948_NAME);
