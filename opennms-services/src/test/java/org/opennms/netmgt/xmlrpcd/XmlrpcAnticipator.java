@@ -193,7 +193,17 @@ public class XmlrpcAnticipator implements XmlRpcHandler {
     public void setupWebServer() throws IOException {
         m_logger.info("XmlrpcAnticipator starting on port number " + m_port);
 
-        m_webServer = new WebServer(m_port);
+        // Retry a couple of times... sometimes we get failures in unit tests with
+        // "Address already in use" errors
+        for (int i = 0; i < 3; i++) {
+            try {
+                m_webServer = new WebServer(m_port);
+                break;
+            } catch (Throwable e) {
+                m_logger.warn("Caught exception while trying to initialize XMLRPC server, retrying", e);
+                try { Thread.sleep(1000); } catch (InterruptedException ex) {}
+            }
+        }
         m_webServer.addHandler("$default", this);
         m_webServer.start();
         waitForStartup();
