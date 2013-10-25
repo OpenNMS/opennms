@@ -76,6 +76,15 @@ public class RRA extends AbstractRRA {
     }
 
     /**
+     * Sets the consolidation function.
+     *
+     * @param consolidationFunction the new consolidation function
+     */
+    public void setConsolidationFunction(String consolidationFunction) {
+        this.consolidationFunction = CFType.fromValue(consolidationFunction);
+    }
+
+    /**
      * Gets the parameters.
      *
      * @return the parameters

@@ -110,6 +110,9 @@ public abstract class AbstractRRD {
      */
     @XmlElement(name="version")
     public String getVersion() {
+        if (version == null) {
+            version = getRequiredVersion();
+        }
         return version;
     }
 

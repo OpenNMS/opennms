@@ -41,7 +41,7 @@ import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
-import org.opennms.netmgt.rrd.model.RrdParseUtils;
+import org.opennms.netmgt.rrd.model.RrdConvertUtils;
 import org.opennms.netmgt.rrd.model.v1.RRDv1;
 import org.opennms.netmgt.rrd.model.v3.RRDv3;
 import org.opennms.upgrade.api.AbstractOnmsUpgrade;
@@ -282,15 +282,15 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
     protected void mergeRrd(File source, File dest) {
         log("  merging RRD %s into %s\n", source, dest);
         try {
-            RRDv3 rrdSrc = RrdParseUtils.dumpRrd(source);
-            RRDv3 rrdDst = RrdParseUtils.dumpRrd(dest);
+            RRDv3 rrdSrc = RrdConvertUtils.dumpRrd(source);
+            RRDv3 rrdDst = RrdConvertUtils.dumpRrd(dest);
             if (rrdSrc == null || rrdDst == null) {
                 log("  Warning: can't load RRDs (ingoring merge).\n");
                 return;
             }
             rrdDst.merge(rrdSrc);
             final File outputFile = new File(dest.getCanonicalPath() + ".merged");
-            RrdParseUtils.restoreRrd(rrdDst, outputFile);
+            RrdConvertUtils.restoreRrd(rrdDst, outputFile);
             if (dest.exists()) {
                 FileUtils.deleteQuietly(dest);
             }
@@ -309,15 +309,15 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
     protected void mergeJrb(File source, File dest) {
         log("  merging JRB %s into %s\n", source, dest);
         try {
-            RRDv1 rrdSrc = RrdParseUtils.dumpJrb(source);
-            RRDv1 rrdDst = RrdParseUtils.dumpJrb(dest);
+            RRDv1 rrdSrc = RrdConvertUtils.dumpJrb(source);
+            RRDv1 rrdDst = RrdConvertUtils.dumpJrb(dest);
             if (rrdSrc == null || rrdDst == null) {
                 log("  Warning: can't load JRBs (ingoring merge).\n");
                 return;
             }
             rrdDst.merge(rrdSrc);
             final File outputFile = new File(dest.getCanonicalPath() + ".merged");
-            RrdParseUtils.restoreJrb(rrdDst, outputFile);
+            RrdConvertUtils.restoreJrb(rrdDst, outputFile);
             if (dest.exists()) {
                 FileUtils.deleteQuietly(dest);
             }

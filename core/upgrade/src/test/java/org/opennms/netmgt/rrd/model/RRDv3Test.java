@@ -25,7 +25,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.rrdtool;
+package org.opennms.netmgt.rrd.model;
 
 import java.io.File;
 import java.util.List;

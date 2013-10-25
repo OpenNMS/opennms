@@ -25,46 +25,44 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.jrobin;
+package org.opennms.netmgt.rrd.model;
 
 import java.io.File;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.opennms.netmgt.rrd.model.RrdParseUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.rrd.model.v1.RRDv1;
+import org.opennms.netmgt.rrd.model.v1.CFType;
+import org.opennms.netmgt.rrd.model.v1.DSType;
 
 /**
- * The Class JrbParsingTest.
+ * The Class JRB Parsing Test.
  * 
- * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
+ * @author Alejandro Galue <agalue@opennms.org>
  */
-public class JrbParsingTest {
-    
-    /**
-     * Test JRobin parse.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testJrobinParse() throws Exception {
-        RRDv1 jrb = RrdParseUtils.dumpJrb(new File("src/test/resources/tempA.jrb"));
-        Assert.assertNotNull(jrb);
-        
-    }
+public class RRDv1Test {
 
     /**
-     * Test JRobin restore.
+     * Parses a simple JRB.
      *
      * @throws Exception the exception
      */
     @Test
-    public void testJrobinRestore() throws Exception {
-        RRDv1 jrb = RrdParseUtils.dumpJrb(new File("src/test/resources/tempA.jrb"));
-        File target = new File("target/tempA-converted.jrb");
-        RrdParseUtils.restoreJrb(jrb, target);
-        Assert.assertTrue(target.exists());
+    public void parseJrbSimple() throws Exception {
+        RRDv1 rrd = JaxbUtils.unmarshal(RRDv1.class, new File("src/test/resources/jrb-dump.xml"));
+        Assert.assertNotNull(rrd);
+        Assert.assertEquals(new Long(300), rrd.getStep());
+        Assert.assertEquals(new Long(1381503600), rrd.getLastUpdate());
+        Assert.assertEquals("temp", rrd.getDataSources().get(0).getName());
+        Assert.assertEquals(DSType.GAUGE, rrd.getDataSources().get(0).getType());
+        Assert.assertEquals(new Integer(0), rrd.getDataSources().get(0).getUnknownSec());
+
+        Assert.assertEquals(CFType.AVERAGE, rrd.getRras().get(0).getConsolidationFunction());
+        Assert.assertEquals(new Integer(1), rrd.getRras().get(0).getPdpPerRow());
+
+        Assert.assertEquals(new Integer(1), rrd.getRras().get(0).getPdpPerRow());
+        Assert.assertEquals(new Long(1381488900), rrd.getStartTimestamp(rrd.getRras().get(0)));
     }
 
 }
-

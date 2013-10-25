@@ -76,6 +76,15 @@ public class DS extends AbstractDS {
     }
 
     /**
+     * Sets the type.
+     *
+     * @param type the new type
+     */
+    public void setType(String type) {
+        this.type = DSType.fromValue(type);
+    }
+
+    /**
      * Gets the CDEF.
      *
      * @return the CDEF
