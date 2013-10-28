@@ -99,6 +99,8 @@ public class WallboardEditor extends VerticalLayout {
 
         upperHorizontalLayout.addComponent(label);
         Button helpButton = new Button("Help");
+        helpButton.setDescription("Display help and usage");
+
         helpButton.setStyleName("small");
         helpButton.addClickListener(new HelpClickListener(this, m_dashletSelector));
 
@@ -115,7 +117,7 @@ public class WallboardEditor extends VerticalLayout {
         final Button addButton = new Button("Add dashlet");
 
         addButton.setStyleName("small");
-
+        addButton.setDescription("Add a new dashlet instance");
         addButton.addClickListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent clickEvent) {
                 addDashletSpec(new DashletSpec());
@@ -123,6 +125,7 @@ public class WallboardEditor extends VerticalLayout {
         });
 
         final TextField titleField = new TextField();
+        titleField.setDescription("Title for this wallboard configuration");
         titleField.setValue(wallboard.getTitle());
         titleField.setImmediate(true);
         titleField.addValidator(new AbstractStringValidator("Title must be unique") {
@@ -148,6 +151,7 @@ public class WallboardEditor extends VerticalLayout {
         titleField.setCaption("Title");
 
         final Button previewButton = new Button("Preview");
+        previewButton.setDescription("Preview this wallboard configuration");
         previewButton.setStyleName("small");
         previewButton.addClickListener(new PreviewClickListener(this, m_wallboard));
 

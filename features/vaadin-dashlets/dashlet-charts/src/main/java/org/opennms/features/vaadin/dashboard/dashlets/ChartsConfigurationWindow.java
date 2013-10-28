@@ -90,9 +90,11 @@ public class ChartsConfigurationWindow extends DashletConfigurationWindow {
          */
         m_maximizeWidth = new CheckBox();
         m_maximizeWidth.setCaption("Maximize width");
+        m_maximizeWidth.setDescription("Maximize width");
 
         m_maximizeHeight = new CheckBox();
         m_maximizeHeight.setCaption("Maximize height");
+        m_maximizeHeight.setDescription("Maximize height");
 
         String maximizeWidthString = m_dashletSpec.getParameters().get("maximizeWidth");
         String maximizeHeightString = m_dashletSpec.getParameters().get("maximizeHeight");
@@ -104,6 +106,7 @@ public class ChartsConfigurationWindow extends DashletConfigurationWindow {
         m_maximizeHeight.setValue(maximizeHeight);
 
         m_chartSelect = new NativeSelect();
+        m_chartSelect.setDescription("Select chart to be displayed");
         m_chartSelect.setCaption("Chart");
         m_chartSelect.setNullSelectionAllowed(false);
         m_chartSelect.setInvalidAllowed(false);
@@ -175,6 +178,7 @@ public class ChartsConfigurationWindow extends DashletConfigurationWindow {
          * Adding the cancel button...
          */
         Button cancel = new Button("Cancel");
+        cancel.setDescription("Cancel editing");
         cancel.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -191,7 +195,7 @@ public class ChartsConfigurationWindow extends DashletConfigurationWindow {
          * ...and the OK button
          */
         Button ok = new Button("Save");
-
+        ok.setDescription("Save properties and close");
         ok.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {

@@ -111,6 +111,7 @@ public class PropertiesWindow extends DashletConfigurationWindow {
          * Adding the cancel button...
          */
         Button cancel = new Button("Cancel");
+        cancel.setDescription("Cancel editing properties");
         cancel.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -127,6 +128,7 @@ public class PropertiesWindow extends DashletConfigurationWindow {
          * ...and the OK button
          */
         Button ok = new Button("Save");
+        ok.setDescription("Save properties and close");
 
         ok.addClickListener(new Button.ClickListener() {
             @Override

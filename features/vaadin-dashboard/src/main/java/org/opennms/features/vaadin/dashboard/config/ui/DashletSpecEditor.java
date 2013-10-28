@@ -126,6 +126,7 @@ public class DashletSpecEditor extends Panel {
         priorityField.setValue(String.valueOf(dashletSpec.getPriority()));
         priorityField.setImmediate(true);
         priorityField.setCaption("Priority");
+        priorityField.setDescription("Priority of this dashlet");
 
         priorityField.addValidator(new AbstractStringValidator("Only numbers allowed here") {
             @Override
@@ -156,6 +157,7 @@ public class DashletSpecEditor extends Panel {
         boostPriorityField.setValue(String.valueOf(dashletSpec.getBoostPriority()));
         boostPriorityField.setImmediate(true);
         boostPriorityField.setCaption("Boost-Priority");
+        boostPriorityField.setDescription("Boost priority of this dashlet");
 
         boostPriorityField.addValidator(new AbstractStringValidator("Only numbers allowed here") {
             @Override
@@ -186,6 +188,7 @@ public class DashletSpecEditor extends Panel {
         durationField.setValue(String.valueOf(dashletSpec.getDuration()));
         durationField.setImmediate(true);
         durationField.setCaption("Duration");
+        durationField.setDescription("Duration for this dashlet");
 
         durationField.addValidator(new AbstractStringValidator("Only numbers allowed here") {
             @Override
@@ -216,6 +219,7 @@ public class DashletSpecEditor extends Panel {
         boostDurationField.setValue(String.valueOf(dashletSpec.getBoostDuration()));
         boostDurationField.setImmediate(true);
         boostDurationField.setCaption("Boost-Duration");
+        boostDurationField.setDescription("Boost duration for this dashlet");
 
         boostDurationField.addValidator(new AbstractStringValidator("Only numbers allowed here") {
             @Override
@@ -258,6 +262,7 @@ public class DashletSpecEditor extends Panel {
         m_dashletSelect.setNewItemsAllowed(false);
         m_dashletSelect.setNullSelectionItemId("Undefined");
         m_dashletSelect.select(dashletSpec.getDashletName());
+        m_dashletSelect.setDescription("Dashlet selection");
 
         m_dashletSelect.addValueChangeListener(new Property.ValueChangeListener() {
             public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
@@ -295,6 +300,7 @@ public class DashletSpecEditor extends Panel {
         m_titleField.setValue(dashletSpec.getTitle());
         m_titleField.setImmediate(true);
         m_titleField.setCaption("Title");
+        m_titleField.setDescription("Title for this dashlet instance");
 
         m_titleField.addValueChangeListener(new Property.ValueChangeListener() {
             public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
@@ -335,11 +341,13 @@ public class DashletSpecEditor extends Panel {
         m_propertiesButton.setEnabled(m_dashletSelector.getDashletFactoryForName(m_dashletSpec.getDashletName()).getRequiredParameters().size() > 0);
 
         m_propertiesButton.setStyleName("small");
+        m_propertiesButton.setDescription("Open properties dialog for this dashlet");
 
         /**
          * ...and the remove button
          */
         Button removeButton = new Button("Remove");
+        removeButton.setDescription("Remove this dashlet entry");
 
         FormLayout f4 = new FormLayout();
         f4.addComponent(m_propertiesButton);
@@ -369,6 +377,7 @@ public class DashletSpecEditor extends Panel {
 
         Button previewButton = new Button("Preview");
         previewButton.setStyleName("small");
+        previewButton.setDescription("Preview this single dashlet entry");
 
         Wallboard wallboard = new Wallboard();
         wallboard.getDashletSpecs().add(m_dashletSpec);
