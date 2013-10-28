@@ -30,13 +30,18 @@ package org.opennms.upgrade.implementations;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.LineIterator;
 import org.jrobin.core.RrdDb;
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
@@ -71,6 +76,9 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
 
     /** The JMX resource directories. */
     private List<File> jmxResourceDirectories;
+
+    /** The bad metrics. */
+    private List<String> badMetrics = new ArrayList<String>();
 
     public JmxRrdMigratorOffline() throws OnmsUpgradeException {
         super();
@@ -114,6 +122,9 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
         } else {
             throw new OnmsUpgradeException("This upgrade procedure requires at least OpenNMS 1.12.2, the current version is " + getOpennmsVersion());
         }
+        File configDir = new File(ConfigFileConstants.getHome(), File.separator + "etc");
+        log("Backing configuration files: %s\n", configDir);
+        zipDir(configDir.getAbsolutePath() + ".zip", configDir);
         try {
             CollectdConfigFactory.init();
         } catch (Exception e) {
@@ -138,14 +149,11 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
                 zip.delete();
             }
         }
-        /*
-         * FIXME Is this correct ?
-         * Which option is better ?
-         * - use jmx-config-fix.pl
-         * - add tools to fix JMX Config Files and Graph Templates
-         */
-        File toolFile = new File(System.getProperty("opennms.home"), "contrib/jmx-config-fix.pl");
-        log("IMPORTANT: Do not forget to fix your JMX metrics and graph templates using the following tool: %s.\n", toolFile);
+        File zip = new File(ConfigFileConstants.getHome(), File.separator + "etc" + ".zip");
+        if (zip.exists()) {
+            log("Removing backup %s\n", zip);
+            zip.delete();
+        }
     }
 
     /* (non-Javadoc)
@@ -161,6 +169,9 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
                 unzipDir(zip, jmxResourceDir);
                 zip.delete();
             }
+            File configDir = new File(ConfigFileConstants.getHome(), File.separator + "etc" );
+            File configZip = new File(configDir.getAbsolutePath() + ".zip");
+            unzipDir(configZip, configDir);
         } catch (IOException e) {
             throw new OnmsUpgradeException("Can't restore the backup files because " + e.getMessage());
         }
@@ -172,6 +183,7 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
     @Override
     public void execute() throws OnmsUpgradeException {
         try {
+            // Fixing JRB/RRD files
             final boolean isRrdtool = isRrdToolEnabled();
             final boolean storeByGroup = isStoreByGroupEnabled();
             for (File jmxResourceDir : getJmxResourceDirectories()) {
@@ -181,8 +193,140 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
                     processSingleFiles(jmxResourceDir, isRrdtool);
                 }
             }
+            // Fixing JMX Configuration File
+            File jmxConfigFile = null;
+            try {
+                jmxConfigFile = ConfigFileConstants.getFile(ConfigFileConstants.JMX_DATA_COLLECTION_CONF_FILE_NAME);
+            } catch (IOException e) {
+                throw new OnmsUpgradeException("Can't find JMX Configuration file (ignoring processing)");
+            }
+            fixJmxConfigurationFile(jmxConfigFile);
+            // Fixing Graph Templates
+            File jmxGraphsFile = new File(ConfigFileConstants.getHome(), File.separator + "etc" + File.separator + "snmp-graph.properties"); // TODO Is this correct ?
+            fixJmxGraphTemplateFile(jmxGraphsFile);
         } catch (Exception e) {
             throw new OnmsUpgradeException("Can't upgrade the JRBs because " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Fixes a JMX graph template file.
+     *
+     * @param jmxTemplateFile the JMX template file
+     * @throws OnmsUpgradeException the OpenNMS upgrade exception
+     */
+    private void fixJmxGraphTemplateFile(File jmxTemplateFile) throws OnmsUpgradeException {
+        try {
+            File outputFile = new File(jmxTemplateFile.getCanonicalFile() + ".temp");
+            FileWriter w = new FileWriter(outputFile);
+            Pattern defRegex = Pattern.compile("DEF:.+:(.+\\..+):");
+            Pattern colRegex = Pattern.compile("\\.columns=(.+)$");
+            Pattern incRegex = Pattern.compile("^include.directory=(.+)$");
+            List<File> externalFiles = new ArrayList<File>();
+            boolean override = false;
+            for (LineIterator it = FileUtils.lineIterator(jmxTemplateFile); it.hasNext();) {
+                String line = it.next();
+                Matcher m = incRegex.matcher(line);
+                if (m.find()) {
+                    File includeDirectory = new File(jmxTemplateFile.getParentFile(), m.group(1));
+                    if (includeDirectory.isDirectory()) {
+                        FilenameFilter propertyFilesFilter = new FilenameFilter() {
+                            @Override
+                            public boolean accept(File dir, String name) {
+                                return (name.endsWith(".properties"));
+                            }
+                        };
+                        for (File file : includeDirectory.listFiles(propertyFilesFilter)) {
+                            externalFiles.add(file);
+                        }
+                    }
+                }
+                m = colRegex.matcher(line);
+                if (m.find()) {
+                    String[] badColumns = m.group(1).split(",(\\s)?");
+                    for (String badDs : badColumns) {
+                        String fixedDs = getFixedDsName(badDs);
+                        if (badMetrics.contains(badDs)) {
+                            override = true;
+                            log("  Replacing bad data source %s with %s on %s\n", badDs, fixedDs, line);
+                            line = line.replaceAll(badDs, fixedDs);
+                        } else {
+                            log(" Warning: a bad data source not related with JMX has been found: %s\n (this won't be updated)", badDs);
+                        }
+                    }
+                }
+                m = defRegex.matcher(line);
+                if (m.find()) {
+                    String badDs = m.group(1);
+                    if (badMetrics.contains(badDs)) {
+                        override = true;
+                        String fixedDs = getFixedDsName(badDs);
+                        log("  Replacing bad data source %s with %s on %s\n", badDs, fixedDs, line);
+                        line = line.replaceAll(badDs, fixedDs);
+                    } else {
+                        log(" Warning: a bad data source not related with JMX has been found: %s\n (this won't be updated)", badDs);
+                    }
+                }
+                w.write(line + "\n");
+            }
+            w.close();
+            if (override) {
+                FileUtils.deleteQuietly(jmxTemplateFile);
+                FileUtils.moveFile(outputFile, jmxTemplateFile);
+            } else {
+                FileUtils.deleteQuietly(jmxTemplateFile);
+            }
+            if (!externalFiles.isEmpty()) {
+                for (File configFile : externalFiles) {
+                    fixJmxGraphTemplateFile(configFile);
+                }
+            }
+        } catch (Exception e) {
+            throw new OnmsUpgradeException("Can't fix " + jmxTemplateFile + " because " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Fixes a JMX configuration file.
+     *
+     * @param jmxConfigFile the JMX configuration file
+     * @throws OnmsUpgradeException the OpenNMS upgrade exception
+     */
+    private void fixJmxConfigurationFile(File jmxConfigFile) throws OnmsUpgradeException {
+        try {
+            File outputFile = new File(jmxConfigFile.getCanonicalFile() + ".temp");
+            FileWriter w = new FileWriter(outputFile);
+            Pattern extRegex = Pattern.compile("import-mbeans[>](.+)[<]");
+            Pattern aliasRegex = Pattern.compile("alias=\"(.+\\..+)\"");
+            List<File> externalFiles = new ArrayList<File>();
+            for (LineIterator it = FileUtils.lineIterator(jmxConfigFile); it.hasNext();) {
+                String line = it.next();
+                Matcher m = extRegex.matcher(line);
+                if (m.find()) {
+                    externalFiles.add(new File(jmxConfigFile.getParentFile(), m.group(1)));
+                }
+                m = aliasRegex.matcher(line);
+                if (m.find()) {
+                    String badDs = m.group(1);
+                    String fixedDs = getFixedDsName(badDs);
+                    log("  Replacing bad alias %s with %s on %s\n", badDs, fixedDs, line.trim());
+                    line = line.replaceAll(badDs, fixedDs);
+                    if (!badMetrics.contains(badDs)) {
+                        badMetrics.add(badDs);
+                    }
+                }
+                w.write(line + "\n");
+            }
+            w.close();
+            FileUtils.deleteQuietly(jmxConfigFile);
+            FileUtils.moveFile(outputFile, jmxConfigFile);
+            if (!externalFiles.isEmpty()) {
+                for (File configFile : externalFiles) {
+                    fixJmxConfigurationFile(configFile);
+                }
+            }
+        } catch (Exception e) {
+            throw new OnmsUpgradeException("Can't fix " + jmxConfigFile + " because " + e.getMessage(), e);
         }
     }
 
