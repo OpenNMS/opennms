@@ -35,6 +35,10 @@
       <artifactId>opennms-config</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-provision-persistence</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jrobin-dependencies</artifactId>
       <type>pom</type>
