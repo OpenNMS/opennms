@@ -54,6 +54,10 @@ import org.opennms.upgrade.api.OnmsUpgradeException;
  * is different from the 1.10 behavior. For this reason, some interfaces are going
  * to appear twice, and the data must be merged.</p>
  * 
+ * <p>This tool requires that OpenNMS 1.12 is running for a while to be sure that
+ * all the MAC addresses have been updated, and the directories already exist.</p>
+ * 
+ * <p>Issues fixed:</p>
  * <ul>
  * <li>NMS-6056</li>
  * </ul>

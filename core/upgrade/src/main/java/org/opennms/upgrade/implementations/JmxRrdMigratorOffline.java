@@ -53,6 +53,7 @@ import org.opennms.upgrade.api.OnmsUpgradeException;
  * <p>The fix for the following issues is going to break existing collected data specially for JRBs.
  * For this reason, these files must be updated too.</p>
  * 
+ * <p>Issues fixed:</p>
  * <ul>
  * <li>NMS-1539</li>
  * <li>NMS-3485</li>
@@ -113,6 +114,16 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
         } else {
             throw new OnmsUpgradeException("This upgrade procedure requires at least OpenNMS 1.12.2, the current version is " + getOpennmsVersion());
         }
+        try {
+            CollectdConfigFactory.init();
+        } catch (Exception e) {
+            throw new OnmsUpgradeException("Can't initialize collectd-configuration.xml because " + e.getMessage());
+        }
+        try {
+            JMXDataCollectionConfigFactory.init();
+        } catch (Exception e) {
+            throw new OnmsUpgradeException("Can't initialize jmx-datacollection-config.xml because " + e.getMessage());
+        }
     }
 
     /* (non-Javadoc)
@@ -127,8 +138,14 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
                 zip.delete();
             }
         }
+        /*
+         * FIXME Is this correct ?
+         * Which option is better ?
+         * - use jmx-config-fix.pl
+         * - add tools to fix JMX Config Files and Graph Templates
+         */
         File toolFile = new File(System.getProperty("opennms.home"), "contrib/jmx-config-fix.pl");
-        log("IMPORTANT: Do not forget to fix your JMX metrics and graph templates using the following tool: %s.\n", toolFile); // FIXME Is this correct;
+        log("IMPORTANT: Do not forget to fix your JMX metrics and graph templates using the following tool: %s.\n", toolFile);
     }
 
     /* (non-Javadoc)
@@ -226,13 +243,9 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
      * Gets the Collectd configuration.
      *
      * @return the Collectd configuration
-     * @throws Exception the exception
      */
-    private CollectdConfiguration getCollectdConfiguration() throws Exception {
-        CollectdConfigFactory.init();
-        JMXDataCollectionConfigFactory.init();
-        CollectdConfiguration config = CollectdConfigFactory.getInstance().getCollectdConfig().getConfig();
-        return config;
+    private CollectdConfiguration getCollectdConfiguration() {
+        return CollectdConfigFactory.getInstance().getCollectdConfig().getConfig();
     }
 
     /**

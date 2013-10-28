@@ -55,11 +55,17 @@ import org.opennms.upgrade.api.OnmsUpgradeException;
  * is different from the 1.10 behavior. For this reason, some interfaces are going
  * to appear twice, and the data must be merged.</p>
  * 
+ * <p>The offline version is going to retrieve the ifPhysAddress from all the nodes
+ * and store them on the OpenNMS database. Then it will proceed with the same procedure
+ * as the online version.</p>
+ * 
+ * <p>Issues fixed:</p>
  * <ul>
  * <li>NMS-6056</li>
  * </ul>
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
+ * @see org.opennms.upgrade.implementations.SnmpInterfaceRrdMigratorOnline
  */
 @Ignore
 public class SnmpInterfaceRrdMigratorOffline extends SnmpInterfaceRrdMigratorOnline {
@@ -190,15 +196,18 @@ public class SnmpInterfaceRrdMigratorOffline extends SnmpInterfaceRrdMigratorOnl
             if (hexString.length() == 12) {
                 return hexString;
             } else {
+                String displayString = value.toDisplayString();
+                if (displayString == null || displayString.trim().isEmpty()) {
+                    return null;
+                }
                 try {
-                    String displayString = value.toDisplayString();
-                    return displayString == null || displayString.trim().isEmpty() ? null : InetAddressUtils.normalizeMacAddress(displayString);
+                    return InetAddressUtils.normalizeMacAddress(displayString);
                 } catch (IllegalArgumentException e) {
-                    return value.toDisplayString();
+                    return displayString;
                 }
             }
         }
-        return value.toDisplayString();
+        return null;
     }
 
 }
