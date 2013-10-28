@@ -134,7 +134,7 @@ public class RequisitionsMigratorOffline extends AbstractOnmsUpgrade {
             for (File req : FileUtils.listFiles(getRequisitionDir(), new String[]{"xml"}, true)) {
                 log("Processing %s\n", req);
                 String content = IOUtils.toString(new FileInputStream(req), "UTF-8");
-                String output = content.replaceAll("(?s) non-ip-(snmp-primary|interfaces)=\"[^\"]+\"", "");
+                String output = content.replaceAll(" non-ip-(snmp-primary|interfaces)=\"[^\"]+\"", "");
                 if (content.length() != output.length()) {
                     log("Requisition updated, writing new content and testing it out\n", req);
                     IOUtils.write(output, new FileOutputStream(req), "UTF-8");
