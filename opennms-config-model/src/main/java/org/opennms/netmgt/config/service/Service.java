@@ -421,8 +421,7 @@ public class Service implements Serializable {
      * @return true if the object was removed from the collection.
      */
     public boolean removeAttribute(final Attribute vAttribute) {
-        boolean removed = _attributeList.remove(vAttribute);
-        return removed;
+        return _attributeList.remove(vAttribute);
     }
 
     /**
@@ -432,8 +431,7 @@ public class Service implements Serializable {
      * @return the element removed from the collection
      */
     public Attribute removeAttributeAt(final int index) {
-        Object obj = this._attributeList.remove(index);
-        return (Attribute) obj;
+        return this._attributeList.remove(index);
     }
 
     /**
@@ -443,8 +441,7 @@ public class Service implements Serializable {
      * @return true if the object was removed from the collection.
      */
     public boolean removeInvoke(final Invoke vInvoke) {
-        boolean removed = _invokeList.remove(vInvoke);
-        return removed;
+        return _invokeList.remove(vInvoke);
     }
 
     /**
@@ -454,8 +451,7 @@ public class Service implements Serializable {
      * @return the element removed from the collection
      */
     public Invoke removeInvokeAt(final int index) {
-        Object obj = this._invokeList.remove(index);
-        return (Invoke) obj;
+        return this._invokeList.remove(index);
     }
 
     /**

@@ -71,7 +71,7 @@ public class Trigger {
      * @return a {@link org.opennms.netmgt.dao.db.Trigger} object.
      */
     public static Trigger findTriggerInString(String create) {
-        Matcher m = m_pattern.matcher(create.toString());
+        Matcher m = m_pattern.matcher(create);
         if (!m.find()) {
             return null;
         }

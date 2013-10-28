@@ -38,51 +38,48 @@ import java.util.Properties;
  * The {@linkplain org.opennms.osgi.OnmsServiceManager} is a abstraction layer above the {@link org.osgi.framework.BundleContext}.
  * Its intention is to provide a so called session-scope for services.
  * The session-scope is realized by the {@link VaadinApplicationContext}-object.<br/><br>/
- *
+ * <p/>
  * Therefore you should always use {@linkplain org.opennms.osgi.OnmsServiceManager} instead of the {@link org.osgi.framework.BundleContext}.<br/><br/>
- *
+ * <p/>
  * A {@linkplain org.opennms.osgi.OnmsServiceManager} also listens to session events (e.g. to remove all registered services
  * from the OSGi-container for a session when the session has already been destroyed).
- * 
- * @author Markus von Rüden
  *
+ * @author Markus von Rüden
  */
 public interface OnmsServiceManager extends SessionListener {
 
     /**
      * Register a service with session scope.
-     * 
-     * @param object The service to be registered. Must not be null.
+     *
+     * @param serviceBean        The service to be registered. Must not be null.
      * @param applicationContext The session scope. Must not be null.
      */
-    void registerAsService(Object object, VaadinApplicationContext applicationContext);
+    <T> void registerAsService(Class<T> serviceClass, T serviceBean, VaadinApplicationContext applicationContext);
 
     /**
      * Registers a service with session scope but allows to set additional Properties.
-     * 
-     * @param object The service to be registered. Must not be null.
-     * @param applicationContext the session scope. Must not be null.
+     *
+     * @param serviceBean          The service to be registered. Must not be null.
+     * @param applicationContext   the session scope. Must not be null.
      * @param additionalProperties Additional Properties. Must not be null.
      */
-    void registerAsService(Object object, VaadinApplicationContext applicationContext, Properties additionalProperties);
+    <T> void registerAsService(Class<T> serviceClass, T serviceBean, VaadinApplicationContext applicationContext, Properties additionalProperties);
 
     /**
      * Returns a service in session-scope. Be aware that if there are multiple services registered
      * for the given class, only the first one is returned.
-     * 
-     * @param clazz The type of the service. Must not be null.
+     *
+     * @param clazz              The type of the service. Must not be null.
      * @param applicationContext The session-scope. Must not be null.
-     * @return
      */
     <T> T getService(Class<T> clazz, VaadinApplicationContext applicationContext);
 
     /**
      * Returns all registered services within session-scope and may be consider additional Properties.
-     * 
-     * @param clazz the type of the service. Must not be null.
-     * @param applicationContext The session scope. Must not be null.
+     *
+     * @param clazz                the type of the service. Must not be null.
+     * @param applicationContext   The session scope. Must not be null.
      * @param additionalProperties optional additional propeties. Must not be null.
-     * @return
      */
     <T> List<T> getServices(Class<T> clazz, VaadinApplicationContext applicationContext, Properties additionalProperties);
 

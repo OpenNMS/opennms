@@ -1,16 +1,5 @@
 package org.opennms.features.topology.app.internal.gwt.client;
 
-import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent.GraphUpdateListener;
-import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent.TopologyViewRenderer;
-import org.opennms.features.topology.app.internal.gwt.client.d3.D3;
-import org.opennms.features.topology.app.internal.gwt.client.d3.D3Transform;
-import org.opennms.features.topology.app.internal.gwt.client.d3.Tween;
-import org.opennms.features.topology.app.internal.gwt.client.svg.SVGElement;
-import org.opennms.features.topology.app.internal.gwt.client.svg.SVGGElement;
-import org.opennms.features.topology.app.internal.gwt.client.svg.SVGMatrix;
-import org.opennms.features.topology.app.internal.gwt.client.svg.SVGPoint;
-import org.opennms.features.topology.app.internal.gwt.client.view.TopologyView;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
@@ -22,6 +11,13 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.VTooltip;
+import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent.GraphUpdateListener;
+import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent.TopologyViewRenderer;
+import org.opennms.features.topology.app.internal.gwt.client.svg.SVGElement;
+import org.opennms.features.topology.app.internal.gwt.client.svg.SVGGElement;
+import org.opennms.features.topology.app.internal.gwt.client.svg.SVGMatrix;
+import org.opennms.features.topology.app.internal.gwt.client.svg.SVGPoint;
+import org.opennms.features.topology.app.internal.gwt.client.view.TopologyView;
 
 public class TopologyViewImpl extends Composite implements TopologyView<TopologyViewRenderer>, GraphUpdateListener {
 
@@ -59,15 +55,10 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
     
     @UiField
     Element m_marginContainer;
-    
+
     @UiField
     HTMLPanel m_widgetContainer;
     
-    TopologyViewRenderer m_topologyViewRenderer;
-
-    private boolean m_isRefresh;
-
-
     public int getLeftMargin() {
         return LEFT_MARGIN;
     }
@@ -81,10 +72,7 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
         super.onLoad();
         m_widgetContainer.setSize("100%", "100%");
         sinkEvents(Event.ONCONTEXTMENU | VTooltip.TOOLTIP_EVENTS | Event.ONMOUSEWHEEL);
-        m_topologyViewRenderer = m_presenter.getViewRenderer();
-        
     }
-
 
     @Override
     public void setPresenter(Presenter<TopologyViewRenderer> presenter) {

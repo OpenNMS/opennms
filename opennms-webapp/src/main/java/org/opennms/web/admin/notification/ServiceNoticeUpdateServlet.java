@@ -61,7 +61,7 @@ public class ServiceNoticeUpdateServlet extends HttpServlet {
         final HttpSession userSession = request.getSession(false);
         final Map<String, String> servicesCheckedMap = getServicesChecked(userSession);
 
-        final String checkedServices[] = request.getParameterValues("serviceCheck");
+        final String[] checkedServices = request.getParameterValues("serviceCheck");
         if (checkedServices != null) {
             for (final String checkedService : checkedServices) {
                 servicesCheckedMap.put(checkedService, "Y");

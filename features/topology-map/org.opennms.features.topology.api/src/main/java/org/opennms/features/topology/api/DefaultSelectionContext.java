@@ -72,6 +72,11 @@ public class DefaultSelectionContext implements SelectionContext {
 	}
 
 	@Override
+	public Collection<EdgeRef> getSelectedEdgeRefs() {
+		return Collections.unmodifiableSet(m_selectedEdges);
+	}
+
+	@Override
 	public boolean selectVertexRefs(Collection<? extends VertexRef> vertexRefs) {
 		Set<VertexRef> oldSet = new HashSet<VertexRef>();
 		oldSet.addAll(getSelectedVertexRefs());
@@ -115,23 +120,35 @@ public class DefaultSelectionContext implements SelectionContext {
 
 	@Override
 	public boolean setSelectedVertexRefs(Collection<? extends VertexRef> vertexRefs) {
+		Set<VertexRef> oldSet = new HashSet<VertexRef>();
+		oldSet.addAll(getSelectedVertexRefs());
+
 		doDeselectAll();
 
 		selectVertexRefs(vertexRefs);
 
-		// TODO: Can we return a more accurate value here?
-		return true;
+		if (oldSet.equals(getSelectedVertexRefs())) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	@Override
 	public boolean setSelectedEdgeRefs(Collection<? extends EdgeRef> edgeRefs) {
+		Set<EdgeRef> oldSet = new HashSet<EdgeRef>();
+		oldSet.addAll(getSelectedEdgeRefs());
+
 		doDeselectAll();
 
 		for(EdgeRef edgeRef : edgeRefs) {
 			setEdgeRefSelected(edgeRef, true);
 		}
 
-		// TODO: Can we return a more accurate value here?
-		return true;
+		if (oldSet.equals(getSelectedEdgeRefs())) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 }

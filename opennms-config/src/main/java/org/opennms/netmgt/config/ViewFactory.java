@@ -74,11 +74,6 @@ public class ViewFactory {
     private static ViewFactory instance;
 
     /**
-     * File path of views.xml
-     */
-    protected static File usersFile;
-
-    /**
      * A mapping of views ids to the View objects
      */
     protected static HashMap<String, View> m_views;

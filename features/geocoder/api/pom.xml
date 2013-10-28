@@ -18,7 +18,33 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
+  <dependencies>
+    <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>gwt-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+    </dependency>
+    <dependency>
+        <groupId>com.google.gwt</groupId>
+        <artifactId>gwt-user</artifactId>
+        <version>${gwtVersion}</version>
+        <scope>provided</scope>
+    </dependency>
+  </dependencies>    
+
   <build>
+
+    <resources>
+      <resource>
+        <directory>src/main/java</directory>
+        <includes>
+          <include>**/*.gwt.xml</include>
+          <include>**/*.java</include>
+        </includes>
+      </resource>
+    </resources>
+
     <plugins>
       <plugin>
         <groupId>org.apache.felix</groupId>

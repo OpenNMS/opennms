@@ -38,13 +38,13 @@ import java.util.Date;
  */
 public class FuzzyDateFormatter {
     /** Constant <code>MILLISECONDS_PER_SECOND=1000.0</code> */
-    public static final double MILLISECONDS_PER_SECOND = 1000.0;
+    private static final double MILLISECONDS_PER_SECOND = 1000.0;
     /** Constant <code>MILLISECONDS_PER_DAY=86400000.0</code> */
-    public static final double MILLISECONDS_PER_DAY = 86400000.0;
+    private static final double MILLISECONDS_PER_DAY = 86400000.0;
     /** Constant <code>MILLISECONDS_PER_HOUR=3600000.0</code> */
-    public static final double MILLISECONDS_PER_HOUR = 3600000.0;
+    private static final double MILLISECONDS_PER_HOUR = 3600000.0;
     /** Constant <code>MILLISECONDS_PER_MINUTE=60000.0</code> */
-    public static final double MILLISECONDS_PER_MINUTE = 60000.0;
+    private static final double MILLISECONDS_PER_MINUTE = 60000.0;
 
     /**
      * <p>Constructor for FuzzyDateFormatter.</p>

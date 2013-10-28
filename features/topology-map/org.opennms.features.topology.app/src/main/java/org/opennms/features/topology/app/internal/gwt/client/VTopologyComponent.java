@@ -28,6 +28,34 @@
 
 package org.opennms.features.topology.app.internal.gwt.client;
 
+import static org.opennms.features.topology.app.internal.gwt.client.d3.TransitionBuilder.fadeIn;
+import static org.opennms.features.topology.app.internal.gwt.client.d3.TransitionBuilder.fadeOut;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.opennms.features.topology.app.internal.gwt.client.d3.D3;
+import org.opennms.features.topology.app.internal.gwt.client.d3.D3Behavior;
+import org.opennms.features.topology.app.internal.gwt.client.d3.D3Drag;
+import org.opennms.features.topology.app.internal.gwt.client.d3.D3Events;
+import org.opennms.features.topology.app.internal.gwt.client.d3.D3Events.Handler;
+import org.opennms.features.topology.app.internal.gwt.client.d3.D3Transform;
+import org.opennms.features.topology.app.internal.gwt.client.d3.Func;
+import org.opennms.features.topology.app.internal.gwt.client.handler.DragHandlerManager;
+import org.opennms.features.topology.app.internal.gwt.client.handler.DragObject;
+import org.opennms.features.topology.app.internal.gwt.client.handler.MarqueeSelectHandler;
+import org.opennms.features.topology.app.internal.gwt.client.handler.PanHandler;
+import org.opennms.features.topology.app.internal.gwt.client.map.SVGTopologyMap;
+import org.opennms.features.topology.app.internal.gwt.client.service.ServiceRegistry;
+import org.opennms.features.topology.app.internal.gwt.client.service.support.DefaultServiceRegistry;
+import org.opennms.features.topology.app.internal.gwt.client.svg.BoundingRect;
+import org.opennms.features.topology.app.internal.gwt.client.svg.SVGGElement;
+import org.opennms.features.topology.app.internal.gwt.client.svg.SVGMatrix;
+import org.opennms.features.topology.app.internal.gwt.client.svg.SVGPoint;
+import org.opennms.features.topology.app.internal.gwt.client.view.TopologyView;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
@@ -46,34 +74,10 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Window.Navigator;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.MouseEventDetailsBuilder;
-import com.vaadin.client.TooltipInfo;
 import com.vaadin.shared.MouseEventDetails;
-import org.opennms.features.topology.app.internal.gwt.client.d3.*;
-import org.opennms.features.topology.app.internal.gwt.client.d3.D3Events.Handler;
-import org.opennms.features.topology.app.internal.gwt.client.handler.DragHandlerManager;
-import org.opennms.features.topology.app.internal.gwt.client.handler.DragObject;
-import org.opennms.features.topology.app.internal.gwt.client.handler.MarqueeSelectHandler;
-import org.opennms.features.topology.app.internal.gwt.client.handler.PanHandler;
-import org.opennms.features.topology.app.internal.gwt.client.map.SVGTopologyMap;
-import org.opennms.features.topology.app.internal.gwt.client.service.ServiceRegistry;
-import org.opennms.features.topology.app.internal.gwt.client.service.support.DefaultServiceRegistry;
-import org.opennms.features.topology.app.internal.gwt.client.svg.BoundingRect;
-import org.opennms.features.topology.app.internal.gwt.client.svg.SVGGElement;
-import org.opennms.features.topology.app.internal.gwt.client.svg.SVGMatrix;
-import org.opennms.features.topology.app.internal.gwt.client.svg.SVGPoint;
-import org.opennms.features.topology.app.internal.gwt.client.view.TopologyView;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.opennms.features.topology.app.internal.gwt.client.d3.TransitionBuilder.fadeIn;
-import static org.opennms.features.topology.app.internal.gwt.client.d3.TransitionBuilder.fadeOut;
 
 public class VTopologyComponent extends Composite implements SVGTopologyMap, TopologyView.Presenter<VTopologyComponent.TopologyViewRenderer> {
 
@@ -200,54 +204,54 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
                 @Override
 		public void draw(GWTGraph graph, final TopologyView<TopologyViewRenderer> topologyView, GWTBoundingBox oldBBox) {
 			D3 edgeSelection = getEdgeSelection(graph, topologyView);
-
 			D3 vertexSelection = getVertexSelection(graph, topologyView);
-			
-			vertexSelection.enter().create(GWTVertex.create()).call(setupEventHandlers())
-			.attr("transform", new Func<String, GWTVertex>() {
 
-                                @Override
-				public String call(GWTVertex vertex, int index) {
-					return "translate(" + vertex.getInitialX() + "," +  vertex.getInitialY() + ")";
-				}
+            vertexSelection
+                    .enter()
+                    .create(GWTVertex.create())
+                    .call(setupEventHandlers())
+                    .attr("transform", new Func<String, GWTVertex>() {
+                            @Override
+                            public String call(GWTVertex vertex, int index) {
+                                return "translate(" + vertex.getInitialX() + "," +  vertex.getInitialY() + ")";
+                            }
+                        })
+                    .attr("opacity", 1);
 
-			}).attr("opacity", 1);
+            //Exits
+            edgeSelection.exit().remove();
+            vertexSelection
+                    .exit()
+                    .with(new D3Behavior() {
+                            @Override
+                            public D3 run(D3 selection) {
+                                return selection.transition().delay(0).duration(500);
+                            }
+                        })
+                    .attr("transform", new Func<String, GWTVertex>(){
+                            @Override
+                            public String call(GWTVertex vertex, int index) {
+                                    return "translate(" + vertex.getInitialX() + "," +  vertex.getInitialY() + ")";
+                            }
+                        })
+                    .attr("opacity", 0).remove();
 
-			
-			//Exits
-			edgeSelection.exit().remove();
-			vertexSelection.exit().with(new D3Behavior() {
+            //Updates
+            edgeSelection.call(GWTEdge.draw()).attr("opacity", 1);
 
-				@Override
-				public D3 run(D3 selection) {
-					return selection.transition().delay(0).duration(500);
-				}
-			}).attr("transform", new Func<String, GWTVertex>(){
+            vertexSelection.with(updateTransition()).call(GWTVertex.draw()).attr("opacity", 1);
 
-                                @Override
-				public String call(GWTVertex vertex, int index) {
-					return "translate(" + vertex.getInitialX() + "," +  vertex.getInitialY() + ")";
-				}
+            //Enters
+            edgeSelection.enter().create(GWTEdge.create()).call(setupEdgeEventHandlers());
 
-			}).attr("opacity", 0).remove();
-
-
-			//Updates
-			edgeSelection.call(GWTEdge.draw()).attr("opacity", 1);
-			
-			vertexSelection.with(updateTransition()).call(GWTVertex.draw()).attr("opacity", 1);
-
-			//Enters
-			edgeSelection.enter().create(GWTEdge.create()).call(setupEdgeEventHandlers());
-			
             //Scaling and Fit to Zoom transitions
-			SVGMatrix transform = topologyView.calculateNewTransform(graph.getBoundingBox());
-            
-			int width = topologyView.getPhysicalWidth();
-			int height = topologyView.getPhysicalHeight();
-			D3 selection = D3.d3().select(topologyView.getSVGViewPort());
-			D3Transform tform = D3.getTransform(selection.attr("transform"));
-			
+            SVGMatrix transform = topologyView.calculateNewTransform(graph.getBoundingBox());
+
+            int width = topologyView.getPhysicalWidth();
+            int height = topologyView.getPhysicalHeight();
+            D3 selection = D3.d3().select(topologyView.getSVGViewPort());
+            D3Transform tform = D3.getTransform(selection.attr("transform"));
+
             JsArrayInteger p0 = (JsArrayInteger) JsArrayInteger.createArray();
             int x = tform.getX();
             int oldCenterX = (int) Math.round(((width/2 - x) / tform.getScaleX()));
@@ -257,7 +261,7 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
             p0.push( oldCenterY );
             p0.push((int) (width / tform.getScaleX()));
             p0.push((int) (height / tform.getScaleY()));
-            
+
             JsArrayInteger p1 = (JsArrayInteger) JsArrayInteger.createArray();
             int newCenterX = graph.getBoundingBox().getX() + graph.getBoundingBox().getWidth()/2;
             int newCenterY = graph.getBoundingBox().getY() + graph.getBoundingBox().getHeight()/2;
@@ -265,11 +269,16 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
             p1.push(newCenterY);
             p1.push(graph.getBoundingBox().getWidth());
             p1.push(graph.getBoundingBox().getHeight());
-            
-			D3.d3().zoomTransition(selection, width, height, p0, p1);
-            
-            D3.d3().selectAll(GWTEdge.SVG_EDGE_ELEMENT).style("stroke-width", GWTEdge.EDGE_WIDTH/transform.getA() + "px").transition().delay(750).duration(500).attr("opacity", "1").transition();
-            
+
+            D3.d3().zoomTransition(selection, width, height, p0, p1);
+
+            D3.d3().selectAll(GWTEdge.SVG_EDGE_ELEMENT)
+                    .style("stroke-width", GWTEdge.EDGE_WIDTH/transform.getA() + "px")
+                    .transition()
+                    .delay(750)
+                    .duration(500)
+                    .attr("opacity", "1")
+                    .transition();
 		}
 		
 		protected D3Behavior enterTransition() {
@@ -349,8 +358,7 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 				        m_client.registerTooltip(VTopologyComponent.this, edge, new TooltipInfo(edge.getTooltipText()));
 				    }
 					 */
-                    String edgeId = edge.getId();
-                    return edgeId;
+                    return edge.getId();
                 }
 
 			};
@@ -392,7 +400,6 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 	private SVGGraphDrawerNoTransition m_graphDrawerNoTransition;
 	private List<Element> m_selectedElements = new ArrayList<Element>();
 	private DragHandlerManager m_svgDragHandlerManager;
-    private ServiceRegistry m_serviceRegistry;
     private TopologyViewRenderer m_currentViewRender;
     
     private TopologyView<TopologyViewRenderer> m_topologyView;
@@ -416,15 +423,15 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 	protected void onLoad() {
 		super.onLoad();
 		consoleLog("onLoad");
-		m_serviceRegistry = new DefaultServiceRegistry();
-		m_serviceRegistry.register(vertexClickHandler(), new HashMap<String, String>(){{ put("handlerType", "vertexClick"); }}, Handler.class);
-		m_serviceRegistry.register(vertexDblClickHandler(), new HashMap<String, String>(){{ put("handlerType", "vertexDblClick"); }}, Handler.class);
-		m_serviceRegistry.register(vertexContextMenuHandler(), new HashMap<String, String>(){{ put("handlerType", "vertexContextMenu"); }}, Handler.class);
-		m_serviceRegistry.register(vertexTooltipHandler(), new HashMap<String, String>(){{ put("handlerType", "vertexTooltip"); }}, Handler.class);
+		ServiceRegistry serviceRegistry = new DefaultServiceRegistry();
+		serviceRegistry.register(vertexClickHandler(), new HashMap<String, String>(){{ put("handlerType", "vertexClick"); }}, Handler.class);
+		serviceRegistry.register(vertexDblClickHandler(), new HashMap<String, String>(){{ put("handlerType", "vertexDblClick"); }}, Handler.class);
+		serviceRegistry.register(vertexContextMenuHandler(), new HashMap<String, String>(){{ put("handlerType", "vertexContextMenu"); }}, Handler.class);
+		serviceRegistry.register(vertexTooltipHandler(), new HashMap<String, String>(){{ put("handlerType", "vertexTooltip"); }}, Handler.class);
 		
-		m_serviceRegistry.register(edgeContextHandler(), new HashMap<String, String>(){{ put("handlerType", "edgeContextMenu"); }}, Handler.class);
-		m_serviceRegistry.register(edgeTooltipHandler(), new HashMap<String, String>(){{ put("handlerType", "edgeTooltip"); }}, Handler.class);
-		m_serviceRegistry.register(edgeClickHandler(), new HashMap<String, String>(){{ put("handlerType", "edgeClick"); }}, Handler.class);
+		serviceRegistry.register(edgeContextHandler(), new HashMap<String, String>(){{ put("handlerType", "edgeContextMenu"); }}, Handler.class);
+		serviceRegistry.register(edgeTooltipHandler(), new HashMap<String, String>(){{ put("handlerType", "edgeTooltip"); }}, Handler.class);
+		serviceRegistry.register(edgeClickHandler(), new HashMap<String, String>(){{ put("handlerType", "edgeClick"); }}, Handler.class);
 		
 		
 		m_topologyView = new TopologyViewImpl();
@@ -433,7 +440,7 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 		m_componentHolder.add(m_topologyView.asWidget());
 		
 		m_svgDragHandlerManager = new DragHandlerManager();
-		m_svgDragHandlerManager.addDragBehaviorHandler(PanHandler.DRAG_BEHAVIOR_KEY, new PanHandler(this, m_serviceRegistry));
+		m_svgDragHandlerManager.addDragBehaviorHandler(PanHandler.DRAG_BEHAVIOR_KEY, new PanHandler(this, serviceRegistry));
 		m_svgDragHandlerManager.addDragBehaviorHandler(MarqueeSelectHandler.DRAG_BEHAVIOR_KEY, new MarqueeSelectHandler(this, m_topologyView));
 		m_svgDragHandlerManager.setCurrentDragHandler(PanHandler.DRAG_BEHAVIOR_KEY);
 		D3 svgElement = D3.d3().select(m_topologyView.getSVGElement());
@@ -474,8 +481,8 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 
 		};
 
-		m_graphDrawer = new SVGGraphDrawer(dragBehavior, m_serviceRegistry);
-		m_graphDrawerNoTransition = new SVGGraphDrawerNoTransition(dragBehavior, m_serviceRegistry);
+		m_graphDrawer = new SVGGraphDrawer(dragBehavior, serviceRegistry);
+		m_graphDrawerNoTransition = new SVGGraphDrawerNoTransition(dragBehavior, serviceRegistry);
 		
 		setTopologyViewRenderer(m_graphDrawer);
 
@@ -562,8 +569,7 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 			public void call(GWTVertex t, int index) {
 				if(m_client != null) {
 					Event event = (Event) D3.getEvent();
-					// TODO: Figure out how to do this in the new GWT
-                    m_client.getVTooltip().setPopupPosition(event.getClientX(), event.getClientY());
+                    m_client.getVTooltip().setPopupPosition(event.getClientX() + 20, event.getClientY() + 20);
                     m_client.getVTooltip().show();
 					event.stopPropagation();
 					event.preventDefault();
@@ -757,6 +763,8 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 
             vertex.setTooltipText(sharedVertex.getTooltipText());
 
+            vertex.setStyleName(sharedVertex.getStyleName());
+
             graph.addVertex(vertex);
 		}
 
@@ -819,13 +827,11 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 	}
 
     private String minEndPoint(GWTEdge edge1) {
-        String edge1Source = edge1.getSource().getId().compareTo(edge1.getTarget().getId()) < 0 ? edge1.getSource().getId() : edge1.getTarget().getId();
-        return edge1Source;
+        return edge1.getSource().getId().compareTo(edge1.getTarget().getId()) < 0 ? edge1.getSource().getId() : edge1.getTarget().getId();
     }
 	
     private String maxEndPoint(GWTEdge edge1) {
-        String edge1Source = edge1.getSource().getId().compareTo(edge1.getTarget().getId()) < 0 ? edge1.getTarget().getId() : edge1.getSource().getId();
-        return edge1Source;
+        return edge1.getSource().getId().compareTo(edge1.getTarget().getId()) < 0 ? edge1.getTarget().getId() : edge1.getSource().getId();
     }
     
 	private native void sortEdges(JsArray<GWTEdge> list)/*-{

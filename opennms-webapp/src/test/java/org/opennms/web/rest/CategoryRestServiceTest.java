@@ -62,6 +62,8 @@ public class CategoryRestServiceTest extends AbstractSpringJerseyRestTestCase {
         createMe.setDescription("This is a description");
         createMe.setName("myName");
         createCategory(createMe);
+
+        // verify
         String xml = sendRequest("GET", "/categories/myName", 200);
         OnmsCategory category = JAXB.unmarshal(new StringReader(xml), OnmsCategory.class);
         assertNotNull(category.getId());

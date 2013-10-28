@@ -51,7 +51,6 @@ public class GpClient implements Client<GpRequest, GpResponse> {
     private String m_match;
     private String m_hoption;
     private String m_toption;
-    private ExecRunner m_execRunner;
     private int m_exitStatus = 100;
     private String m_response = "";
     private String m_error = "";
@@ -69,21 +68,21 @@ public class GpClient implements Client<GpRequest, GpResponse> {
     public void connect(final InetAddress address, final int port, final int timeout) throws IOException, Exception {
         setExitStatus(100);
         
-        m_execRunner = new ExecRunner();
-        m_execRunner.setMaxRunTimeSecs(convertToSeconds(timeout));
+        ExecRunner execRunner = new ExecRunner();
+        execRunner.setMaxRunTimeSecs(convertToSeconds(timeout));
         final String hostAddress = InetAddressUtils.str(address);
 		final String script = "" + getScript() + " " + getHoption() + " " + hostAddress + " " + getToption() + " " + convertToSeconds(timeout);
         if (getArgs() == null)
-            setExitStatus(m_execRunner.exec(script));
+            setExitStatus(execRunner.exec(script));
         else
-            setExitStatus(m_execRunner.exec(getScript() + " " + getHoption() + " " + hostAddress + " " + getToption() + " " + convertToSeconds(timeout) + " " + getArgs()));
+            setExitStatus(execRunner.exec(getScript() + " " + getHoption() + " " + hostAddress + " " + getToption() + " " + convertToSeconds(timeout) + " " + getArgs()));
         
-        if (m_execRunner.isMaxRunTimeExceeded()) {
+        if (execRunner.isMaxRunTimeExceeded()) {
             
         } else {
             if (getExitStatus() == 0) {
-                setResponse(m_execRunner.getOutString());
-                setError(m_execRunner.getErrString());
+                setResponse(execRunner.getOutString());
+                setError(execRunner.getErrString());
             }
         }
     }

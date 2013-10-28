@@ -4,8 +4,9 @@
         .toolbar { position: absolute; top:0px; right:50%; }
     </ui:style>
     <g:HTMLPanel ui:field="m_widgetContainer">
-       <div id="chart-2" class="map-controls" style="width: 100%; height: 100%; background-color:white;">
-           <svg ui:field="m_svg" width="100%" height="100%" style="background-color:white;" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
+
+       <div id="chart-2" class="map-controls">
+           <svg ui:field="m_svg" width="100%" height="100%" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
                <defs>
 
                </defs>
@@ -18,7 +19,7 @@
                    </g>
                </g>
                </g>
-           
+
                <g ui:field="m_referenceMap" >
                    <rect ui:field="m_referenceMapBorder" style="display: none;" width="300" height="300" stroke="red" fill="white"></rect>
                    <rect ui:field="m_referenceMapViewport" style="display: none;" width="100" height="100" fill="lightblue" opacity="0.5"></rect>
@@ -26,7 +27,7 @@
 <!--                       <use xlink:href="#mapreference" preserveAspectRatio="xMinYMin meet"/> -->
 <!--                   </svg> -->
                </g>
-               
+
                <rect ui:field="m_marquee" display="none" stroke="red" fill="none" stroke-dasharray="5 5" x="507" y="299" width="71" height="217"></rect>
                <g id="hiddenIconContainer" transform="translate(-1000, -1000)">
 

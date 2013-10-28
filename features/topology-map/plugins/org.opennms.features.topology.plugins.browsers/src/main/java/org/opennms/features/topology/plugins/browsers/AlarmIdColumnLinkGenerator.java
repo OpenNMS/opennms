@@ -28,6 +28,7 @@
 package org.opennms.features.topology.plugins.browsers;
 
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 
 import org.opennms.features.topology.api.support.DialogWindow;
@@ -35,9 +36,12 @@ import org.opennms.features.topology.api.support.InfoWindow;
 import org.opennms.features.topology.api.support.InfoWindow.LabelCreator;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Property;
 import com.vaadin.server.Page;
+import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Button.ClickEvent;
@@ -46,8 +50,8 @@ import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.themes.BaseTheme;
 
 public class AlarmIdColumnLinkGenerator implements ColumnGenerator {
-
 	private static final long serialVersionUID = 621311104480258016L;
+	private static final Logger LOG = LoggerFactory.getLogger(AlarmIdColumnLinkGenerator.class);
 	private final String alarmIdPropertyName;
 	private final AlarmDao alarmDao;
 	
@@ -84,9 +88,14 @@ public class AlarmIdColumnLinkGenerator implements ColumnGenerator {
 			    }
 			    
 			    // alarm still exists, show alarm details
-				try {
+		                final URI currentLocation = Page.getCurrent().getLocation();
+		                final String contextRoot = VaadinServlet.getCurrent().getServletContext().getContextPath();
+		                final String redirectFragment = contextRoot + "/alarm/detail.htm?quiet=true&id=" + alarmId;
+		                LOG.debug("alarm {} clicked, current location = {}, uri = {}", alarmId, currentLocation, redirectFragment);
+
+		                try {
 					source.getUI().addWindow(
-						new InfoWindow(new URL(Page.getCurrent().getLocation().toURL(), "../../alarm/detail.htm?id=" + alarmId), new LabelCreator() {
+						new InfoWindow(new URL(currentLocation.toURL(), redirectFragment), new LabelCreator() {
 								
 							@Override
 							public String getLabel() {
@@ -94,7 +103,7 @@ public class AlarmIdColumnLinkGenerator implements ColumnGenerator {
 							}
 						}));
 				} catch (MalformedURLException e) {
-					e.printStackTrace();
+					LOG.error(e.getMessage(), e);
 				}
 			}
 		});

@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:larry@opennms.org">Lawrence Karnowski </a>
  * @author <a href="mailto:seth@opennms.org">Seth Leger </a>
  */
-public class IfLabel extends Object {
+public class IfLabel {
 
 	private static final Logger LOG = LoggerFactory.getLogger(IfLabel.class);
 	
@@ -81,7 +81,7 @@ public class IfLabel extends Object {
 
         // first I have to strip off the MAC address from the end, if there is
         // one
-        int dashIndex = ifLabel.lastIndexOf("-");
+        int dashIndex = ifLabel.lastIndexOf('-');
 
         if (dashIndex >= 0) {
             desc = ifLabel.substring(0, dashIndex);

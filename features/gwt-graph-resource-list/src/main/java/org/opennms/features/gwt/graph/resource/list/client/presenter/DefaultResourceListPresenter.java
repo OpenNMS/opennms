@@ -81,8 +81,10 @@ public class DefaultResourceListPresenter implements Presenter, DefaultResourceL
     
     private List<ResourceListItem> convertJsArrayToList(JsArray<ResourceListItem> resourceList) {
         List<ResourceListItem> data = new ArrayList<ResourceListItem>();
-        for(int i = 0; i < resourceList.length(); i++) {
-            data.add(resourceList.get(i));
+        if (resourceList != null) {
+            for(int i = 0; i < resourceList.length(); i++) {
+                data.add(resourceList.get(i));
+            }
         }
         
         Collections.sort(data, new Comparator<ResourceListItem>() {

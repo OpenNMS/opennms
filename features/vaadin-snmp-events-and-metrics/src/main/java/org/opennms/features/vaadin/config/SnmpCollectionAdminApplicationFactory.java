@@ -53,7 +53,7 @@ public class SnmpCollectionAdminApplicationFactory extends AbstractApplicationFa
      * @see org.ops4j.pax.vaadin.AbstractApplicationFactory#getUI()
      */
     @Override
-    public UI getUI() {
+    public UI createUI() {
         SnmpCollectionAdminApplication app = new SnmpCollectionAdminApplication();
         app.setDataCollectionDao(dataCollectionDao);
         return app;

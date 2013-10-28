@@ -34,10 +34,11 @@ public class DefaultMapViewManager implements MapViewManager{
     }
     @Override
     public void setMapBounds(BoundingBox boundingBox) {
-        m_mapBounds = boundingBox;
-        m_center = m_mapBounds.getCenter();
-        
-        fireUpdate();
+        if (!m_mapBounds.equals(boundingBox)) {
+            m_mapBounds = boundingBox;
+            m_center = m_mapBounds.getCenter();
+            fireUpdate();
+        }
     }
     @Override
     public void setViewPort(int width, int height) {

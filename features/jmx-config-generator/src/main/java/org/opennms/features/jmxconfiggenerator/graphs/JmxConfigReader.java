@@ -42,10 +42,10 @@ import org.slf4j.LoggerFactory;
 public class JmxConfigReader {
 
     private Logger logger = LoggerFactory.getLogger(JmxConfigReader.class);
-    private final String ATTRIBUTEREPORT = "AttributeReport";
-    private final String MBEANREPORT = "MBeanReport";
-    private final String COMPOSITEREPORT = "CompositeReport";
-    private final String COMPOSITATTRIBEREPORT = "CompositeAttributeReport";
+    private static final String ATTRIBUTEREPORT = "AttributeReport";
+    private static final String MBEANREPORT = "MBeanReport";
+    private static final String COMPOSITEREPORT = "CompositeReport";
+    private static final String COMPOSITATTRIBEREPORT = "CompositeAttributeReport";
 
     public Collection<Report> generateReportsByJmxDatacollectionConfig(String inputConfigFileName) {
         return generateReportsByJmxDatacollectionConfig(

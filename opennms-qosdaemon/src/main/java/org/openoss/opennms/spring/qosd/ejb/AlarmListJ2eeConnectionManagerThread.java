@@ -52,7 +52,6 @@ public class AlarmListJ2eeConnectionManagerThread extends Thread implements Alar
 	private int status = DISCONNECTED;
 	private PropertiesLoader props;
 	public Properties env;
-	private JVTAlarmMonitorHome home;
 	private JVTAlarmMonitorSession session;
 	private Object ref;
 	private AlarmMonitor alarmInternals;
@@ -290,7 +289,7 @@ public class AlarmListJ2eeConnectionManagerThread extends Thread implements Alar
 		{
 			ref = ic.lookup(props.getProperty("org.openoss.opennms.spring.qosd.jvthome"));
 			LOG.info("AlarmListJ2eeConnectionManagerThread.lookupBean() QoS Bean found");
-			home = (JVTAlarmMonitorHome) PortableRemoteObject.narrow( ref, 
+			JVTAlarmMonitorHome home = (JVTAlarmMonitorHome) PortableRemoteObject.narrow( ref, 
 					JVTAlarmMonitorHome.class );
 			
 			LOG.debug("AlarmListJ2eeConnectionManagerThread.lookupBean() home initialised");

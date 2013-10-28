@@ -29,8 +29,11 @@
 package org.opennms.web.alarm.filter;
 
 import org.opennms.web.alarm.AcknowledgeType;
+import org.opennms.web.alarm.AlarmQueryParms;
 import org.opennms.web.alarm.SortStyle;
 import org.opennms.web.filter.Filter;
+
+import java.util.List;
 
 
 /**
@@ -44,7 +47,7 @@ public class AlarmCriteria {
     
     public static final int NO_LIMIT = -1;
     public static final int NO_OFFSET = -1;
-    
+
     public static interface AlarmCriteriaVisitor<E extends Exception> {
         public void visitAckType(AcknowledgeType ackType) throws E; 
         public void visitFilter(Filter filter) throws E;
@@ -68,35 +71,28 @@ public class AlarmCriteria {
     AcknowledgeType m_ackType = AcknowledgeType.UNACKNOWLEDGED;
     int m_limit = NO_LIMIT;
     int m_offset = NO_OFFSET;
-    
-    /**
-     * <p>Constructor for AlarmCriteria.</p>
-     *
-     * @param filters a org$opennms$web$filter$Filter object.
-     */
+
+
+    public AlarmCriteria(List<Filter> filterList, AcknowledgeType ackType) {
+        this (filterList == null ? new Filter[0] : filterList.toArray(new Filter[filterList.size()]), ackType);
+    }
+
     public AlarmCriteria(Filter... filters) {
         this(filters, null, null, NO_LIMIT, NO_OFFSET);
     }
-    
-    /**
-     * <p>Constructor for AlarmCriteria.</p>
-     *
-     * @param ackType a {@link org.opennms.web.alarm.AcknowledgeType} object.
-     * @param filters an array of org$opennms$web$filter$Filter objects.
-     */
-    public AlarmCriteria(AcknowledgeType ackType, Filter[] filters) {
+
+    public AlarmCriteria(Filter[] filters, AcknowledgeType ackType) {
         this(filters, null, ackType, NO_LIMIT, NO_OFFSET);
     }
-    
-    /**
-     * <p>Constructor for AlarmCriteria.</p>
-     *
-     * @param filters an array of org$opennms$web$filter$Filter objects.
-     * @param sortStyle a {@link org.opennms.web.alarm.SortStyle} object.
-     * @param ackType a {@link org.opennms.web.alarm.AcknowledgeType} object.
-     * @param limit a int.
-     * @param offset a int.
-     */
+
+    public AlarmCriteria(List<Filter> filterList, SortStyle sortStyle, AcknowledgeType ackType, int limit, int offset) {
+        this(filterList == null ? new Filter[0] : filterList.toArray(new Filter[filterList.size()]), sortStyle, ackType, limit, offset);
+    }
+
+    public AlarmCriteria(AlarmQueryParms parms) {
+        this(parms.filters, parms.sortStyle, parms.ackType, parms.limit, parms.limit * parms.multiple);
+    }
+
     public AlarmCriteria(Filter[] filters, SortStyle sortStyle, AcknowledgeType ackType, int limit, int offset) {
         m_filters = filters;
         m_sortStyle = sortStyle;

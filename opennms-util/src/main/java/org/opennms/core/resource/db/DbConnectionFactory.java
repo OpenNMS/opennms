@@ -63,18 +63,16 @@ public interface DbConnectionFactory {
      * @param password
      *            the credentials use to authenticate the username
      * @throws java.lang.ClassNotFoundException if any.
-     * @throws java.sql.SQLException if any.
      */
-    public void init(String dbUrl, String dbDriver, String username, String password) throws ClassNotFoundException, SQLException;
+    public void init(String dbUrl, String dbDriver, String username, String password) throws ClassNotFoundException;
 
     /**
      * Deallocate all the resources that may have been allocated to this
      * database connection factory. Makes this factory unavailable for new
      * connection requests.
      *
-     * @throws java.sql.SQLException if any.
      */
-    public void destroy() throws SQLException;
+    public void destroy();
 
     /**
      * Retrieve a connection from the given database connection pool.

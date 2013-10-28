@@ -73,27 +73,27 @@ public class ActionDiscoveryServlet extends HttpServlet {
     
     
     /** Constant <code>addSpecificAction="AddSpecific"</code> */
-    public static String addSpecificAction = "AddSpecific";
+    public static final String addSpecificAction = "AddSpecific";
     /** Constant <code>removeSpecificAction="RemoveSpecific"</code> */
-    public static String removeSpecificAction = "RemoveSpecific";
+    public static final String removeSpecificAction = "RemoveSpecific";
     
     /** Constant <code>addIncludeRangeAction="AddIncludeRange"</code> */
-    public static String addIncludeRangeAction = "AddIncludeRange";
+    public static final String addIncludeRangeAction = "AddIncludeRange";
     /** Constant <code>removeIncludeRangeAction="RemoveIncludeRange"</code> */
-    public static String removeIncludeRangeAction = "RemoveIncludeRange";
+    public static final String removeIncludeRangeAction = "RemoveIncludeRange";
 
     /** Constant <code>addIncludeUrlAction="AddIncludeUrl"</code> */
-    public static String addIncludeUrlAction = "AddIncludeUrl";
+    public static final String addIncludeUrlAction = "AddIncludeUrl";
     /** Constant <code>removeIncludeUrlAction="RemoveIncludeUrl"</code> */
-    public static String removeIncludeUrlAction = "RemoveIncludeUrl";
+    public static final String removeIncludeUrlAction = "RemoveIncludeUrl";
 
     /** Constant <code>addExcludeRangeAction="AddExcludeRange"</code> */
-    public static String addExcludeRangeAction = "AddExcludeRange";
+    public static final String addExcludeRangeAction = "AddExcludeRange";
     /** Constant <code>removeExcludeRangeAction="RemoveExcludeRange"</code> */
-    public static String removeExcludeRangeAction = "RemoveExcludeRange";
+    public static final String removeExcludeRangeAction = "RemoveExcludeRange";
     
     /** Constant <code>saveAndRestartAction="SaveAndRestart"</code> */
-    public static String saveAndRestartAction = "SaveAndRestart";
+    public static final String saveAndRestartAction = "SaveAndRestart";
     
     
 	/** {@inheritDoc} */

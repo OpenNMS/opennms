@@ -101,7 +101,7 @@
     <jsp:param name="title" value="Alarm Detail" />
     <jsp:param name="headTitle" value="Detail" />
     <jsp:param name="headTitle" value="Alarms" />
-    <jsp:param name="breadcrumb" value="<a href='alarm/index.jsp'>Alarms</a>" />
+    <jsp:param name="breadcrumb" value="<a href='alarm/index.htm'>Alarms</a>" />
     <jsp:param name="breadcrumb" value="Detail" />
 </jsp:include>
 

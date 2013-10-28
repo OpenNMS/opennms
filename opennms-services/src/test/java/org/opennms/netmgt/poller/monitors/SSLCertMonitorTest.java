@@ -50,6 +50,7 @@ import org.opennms.netmgt.poller.mock.MonitorTestUtils;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.test.context.ContextConfiguration;
+import org.easymock.EasyMock;
 
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -90,6 +91,15 @@ public class SSLCertMonitorTest {
     @Ignore
     @JUnitHttpServer(port=10342, https=true)
     public void testValidDateForCertificate() throws UnknownHostException {
+        /* The certificate JUnitHttpServer uses is valid from Fri Jan 15 17:25:10 CST 2010 to
+         * Thu Apr 15 18:25:10 CDT 2010.
+         */
+        Calendar calExp = GregorianCalendar.getInstance();
+        calExp.setTimeInMillis(1271373909000L - 86400000 * 5);
+        Calendar cal = GregorianCalendar.getInstance();
+
+        EasyMock.expect(GregorianCalendar.getInstance()).andReturn(cal);
+        EasyMock.expect(GregorianCalendar.getInstance()).andReturn(calExp);
         SSLCertMonitor monitor = new SSLCertMonitor();
         Map<String, Object> parameters = new ConcurrentSkipListMap<String, Object>();
         parameters.put("port", "10342");
@@ -98,12 +108,6 @@ public class SSLCertMonitorTest {
         parameters.put("verbose", "true");
         parameters.put("days", "5");
 
-        /* The certificate JUnitHttpServer uses is valid from Fri Jan 15 17:25:10 CST 2010 to
-         * Thu Apr 15 18:25:10 CDT 2010.
-         */
-        Calendar cal = GregorianCalendar.getInstance();
-        cal.setTimeInMillis(1271373909000L - 86400000 * 5);
-        // monitor.setCalendar(cal);
         MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", "SSLCert", false);
         PollStatus status = monitor.poll(svc, parameters);
         assertTrue(status.isAvailable());

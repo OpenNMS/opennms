@@ -31,11 +31,12 @@ package org.opennms.netmgt.linkd.snmp;
 import java.net.InetAddress;
 import java.util.HashMap;
 
+import org.opennms.netmgt.snmp.AggregateTracker;
+import org.opennms.netmgt.snmp.NamedSnmpVar;
+import org.opennms.netmgt.snmp.SnmpResult;
+import org.opennms.netmgt.snmp.SnmpStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.opennms.netmgt.snmp.AggregateTracker;
-import org.opennms.netmgt.snmp.SnmpResult;
 
 public final class IsIsSystemObjectGroup extends AggregateTracker {
     

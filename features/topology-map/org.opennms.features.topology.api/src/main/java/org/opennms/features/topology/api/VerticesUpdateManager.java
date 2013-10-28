@@ -28,10 +28,9 @@
 
 package org.opennms.features.topology.api;
 
-import org.opennms.features.topology.api.topo.VertexRef;
-
-import java.util.List;
 import java.util.Set;
+
+import org.opennms.features.topology.api.topo.VertexRef;
 
 /**
  * A VerticesUpdateManager is responsible to publish all nodeIds
@@ -66,6 +65,11 @@ public interface VerticesUpdateManager extends SelectionListener, GraphContainer
 
         public boolean allVerticesSelected(){
             return m_displayingAllVertices;
+        }
+        
+        @Override
+        public String toString() {
+            return "VerticesUpdateEvent@" + this.hashCode() + " [displayAll=" + m_displayingAllVertices + ", refs=" + m_vertexRefs + "]";
         }
     }
 }

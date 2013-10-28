@@ -70,33 +70,33 @@ public final class SnmpInfo {
 
         // id text
         if (info.getIdtext() != null) {
-            snmpStr.append(Constants.DB_ATTRIB_DELIM + Constants.escape(info.getIdtext(), Constants.DB_ATTRIB_DELIM));
+            snmpStr.append(Constants.DB_ATTRIB_DELIM).append(Constants.escape(info.getIdtext(), Constants.DB_ATTRIB_DELIM));
         } else {
-            snmpStr.append(Constants.DB_ATTRIB_DELIM + "undefined");
+            snmpStr.append(Constants.DB_ATTRIB_DELIM).append("undefined");
         }
 
         // version
-        snmpStr.append(Constants.DB_ATTRIB_DELIM + info.getVersion());
+        snmpStr.append(Constants.DB_ATTRIB_DELIM).append(info.getVersion());
 
         // specific
         if (info.hasSpecific()) {
-            snmpStr.append(Constants.DB_ATTRIB_DELIM + Integer.toString(info.getSpecific()));
+            snmpStr.append(Constants.DB_ATTRIB_DELIM).append(Integer.toString(info.getSpecific()));
         } else {
-            snmpStr.append(Constants.DB_ATTRIB_DELIM + "undefined");
+            snmpStr.append(Constants.DB_ATTRIB_DELIM).append("undefined");
         }
 
         // generic
         if (info.hasGeneric()) {
-            snmpStr.append(Constants.DB_ATTRIB_DELIM + Integer.toString(info.getGeneric()));
+            snmpStr.append(Constants.DB_ATTRIB_DELIM).append(Integer.toString(info.getGeneric()));
         } else {
-            snmpStr.append(Constants.DB_ATTRIB_DELIM + "undefined");
+            snmpStr.append(Constants.DB_ATTRIB_DELIM).append("undefined");
         }
 
         // community
         if (info.getCommunity() != null) {
-            snmpStr.append(Constants.DB_ATTRIB_DELIM + info.getCommunity());
+            snmpStr.append(Constants.DB_ATTRIB_DELIM).append(info.getCommunity());
         } else {
-            snmpStr.append(Constants.DB_ATTRIB_DELIM + "undefined");
+            snmpStr.append(Constants.DB_ATTRIB_DELIM).append("undefined");
         }
 
         return Constants.format(snmpStr.toString(), maxlen);

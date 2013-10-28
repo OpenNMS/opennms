@@ -50,8 +50,6 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.DBUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.categories.CatFactory;
 import org.opennms.netmgt.filter.FilterDaoFactory;
@@ -59,6 +57,8 @@ import org.opennms.reporting.availability.AvailabilityConstants;
 import org.opennms.reporting.datablock.Node;
 import org.opennms.reporting.datablock.Outage;
 import org.opennms.reporting.datablock.OutageSvcTimesList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>LegacyAvailabilityDataService class.</p>
@@ -67,12 +67,6 @@ public class LegacyAvailabilityDataService implements AvailabilityDataService {
     private static final Logger LOG = LoggerFactory.getLogger(LegacyAvailabilityDataService.class);
 
     CatFactory m_catFactory;
-
-    /**
-     * Common Rule for the category group.
-     */
-
-    private String m_commonRule;
 
     private Connection m_availConn;
 
@@ -111,9 +105,9 @@ public class LegacyAvailabilityDataService implements AvailabilityDataService {
                     m_catFactory.getReadLock().lock();
 
                     try {
-                        m_commonRule = m_catFactory.getEffectiveRule(categoryName);
+                        String commonRule = m_catFactory.getEffectiveRule(categoryName);
 
-                        final List<InetAddress> nodeIPs = FilterDaoFactory.getInstance().getActiveIPAddressList(m_commonRule);
+                        final List<InetAddress> nodeIPs = FilterDaoFactory.getInstance().getActiveIPAddressList(commonRule);
                         LOG.debug("Number of IPs satisfying rule: {}", nodeIPs.size());
 
                         final List<String> monitoredServices = new ArrayList<String>(category.getServiceCollection());

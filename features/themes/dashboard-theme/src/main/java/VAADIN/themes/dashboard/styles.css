@@ -1,4 +1,4 @@
-@import "../reindeer/legacy-styles.css";
+@import "../runo/legacy-styles.css";
 
 .dashboard .v-portlet-slot {
     background: #fff !important;
@@ -41,10 +41,6 @@
 
 .debug {
     border: 1px dashed red;
-}
-
-.dashboard table td {
-    padding-right: 5px !important;
 }
 
 .dashboard .header {
@@ -103,4 +99,242 @@
 
 .help-table-cell {
     vertical-align: top;
+}
+
+.v-table-cell-wrapper { line-height: normal; padding: 3px; }
+
+/*  --------------------------------------------------
+    :: Alarm/Node Table Rows (Vaadin Widgets)
+    -------------------------------------------------- */
+
+/**
+ * Table row CSS. Coordinate these class names with the values inside:
+ *
+ * org.opennms.features.topology.app.internal.support.AlarmTableCellStyleGenerator
+ */
+
+/* The padding: 20px is handled by adding &nbsp;s with a ColumnGenerator */
+.v-table-cell-content-bright { /* padding-left: 20px; */ background-position: top left; background-repeat: repeat-y; }
+
+.v-table-row-alarm-minor,
+.v-table-row-alarm-minor-noack {
+    border-top: 2px solid #FF9900 !important;
+}
+.v-table-row-alarm-minor-noack {
+    font-weight: bold;
+}
+.v-table-row-alarm-minor.v-table-row,
+.v-table-row-alarm-minor-noack.v-table-row {
+    background-color: #FFEBCD;
+}
+.v-table-row-alarm-minor.v-table-row-odd,
+.v-table-row-alarm-minor-noack.v-table-row-odd {
+    background-color: #F8E4C6;
+}
+.v-table-row-alarm-minor .v-table-cell-content-bright,
+.v-table-row-alarm-minor-noack .v-table-cell-content-bright
+{
+    background-image: url(../../../images/bgMinor.png);
+}
+
+.v-table-row-alarm-critical,
+.v-table-row-alarm-critical-noack {
+    border-top: 2px solid #CC0000 !important;
+}
+.v-table-row-alarm-critical-noack {
+    font-weight: bold;
+}
+.v-table-row-alarm-critical.v-table-row,
+.v-table-row-alarm-critical-noack.v-table-row {
+    background-color: #F5CDCD;
+}
+.v-table-row-alarm-critical.v-table-row-odd,
+.v-table-row-alarm-critical-noack.v-table-row-odd {
+    background-color: #EEC6C6;
+}
+.v-table-row-alarm-critical .v-table-cell-content-bright,
+.v-table-row-alarm-critical-noack .v-table-cell-content-bright
+{
+    background-image: url(../../../images/bgCritical.png);
+}
+
+.v-table-row-alarm-major,
+.v-table-row-alarm-major-noack {
+    border-top: 2px solid #FF3300 !important;
+}
+.v-table-row-alarm-major-noack {
+    font-weight: bold;
+}
+.v-table-row-alarm-major.v-table-row,
+.v-table-row-alarm-major-noack.v-table-row {
+    background-color: #FFD7CD;
+}
+.v-table-row-alarm-major.v-table-row-odd,
+.v-table-row-alarm-major-noack.v-table-row-odd {
+    background-color: #F8D0C6;
+}
+.v-table-row-alarm-major .v-table-cell-content-bright,
+.v-table-row-alarm-major-noack .v-table-cell-content-bright
+{
+    background-image: url(../../../images/bgMajor.png);
+}
+
+.v-table-row-alarm-warning,
+.v-table-row-alarm-warning-noack {
+    border-top: 2px solid #FFCC00 !important;
+}
+.v-table-row-alarm-warning-noack {
+    font-weight: bold;
+}
+.v-table-row-alarm-warning.v-table-row,
+.v-table-row-alarm-warning-noack.v-table-row {
+    background-color: #FFF5CD;
+}
+.v-table-row-alarm-warning.v-table-row-odd,
+.v-table-row-alarm-warning-noack.v-table-row-odd {
+    background-color: #F8EEC6;
+}
+.v-table-row-alarm-warning .v-table-cell-content-bright,
+.v-table-row-alarm-warning-noack .v-table-cell-content-bright
+{
+    background-image: url(../../../images/bgWarning.png);
+}
+
+.v-table-row-alarm-indeterminate,
+.v-table-row-alarm-indeterminate-noack {
+    border-top: 2px solid #999000 !important;
+}
+.v-table-row-alarm-indeterminate-noack {
+    font-weight: bold;
+}
+.v-table-row-alarm-indeterminate.v-table-row,
+.v-table-row-alarm-indeterminate-noack.v-table-row {
+    background-color: #EBEBCD;
+}
+.v-table-row-alarm-indeterminate.v-table-row-odd,
+.v-table-row-alarm-indeterminate-noack.v-table-row-odd {
+    background-color: #E4E4C6;
+}
+.v-table-row-alarm-indeterminate .v-table-cell-content-bright,
+.v-table-row-alarm-indeterminate-noack .v-table-cell-content-bright
+{
+    background-image: url(../../../images/bgIndeterminate.png);
+}
+
+.v-table-row-alarm-normal,
+.v-table-row-alarm-normal-noack {
+    border-top: 2px solid #336600 !important;
+}
+.v-table-row-alarm-normal-noack {
+    font-weight: bold;
+}
+.v-table-row-alarm-normal.v-table-row,
+.v-table-row-alarm-normal-noack.v-table-row {
+    background-color: #D7E1CD;
+}
+.v-table-row-alarm-normal.v-table-row-odd,
+.v-table-row-alarm-normal-noack.v-table-row-odd {
+    background-color: #D0DAC6;
+}
+.v-table-row-alarm-normal .v-table-cell-content-bright,
+.v-table-row-alarm-normal-noack .v-table-cell-content-bright
+{
+    background-image: url(../../../images/bgNormal.png);
+}
+
+.v-table-row-alarm-cleared,
+.v-table-row-alarm-cleared-noack {
+    border-top: 2px solid #999 !important;
+}
+.v-table-row-alarm-cleared-noack {
+    font-weight: bold;
+}
+.v-table-row-alarm-cleared.v-table-row,
+.v-table-row-alarm-cleared-noack.v-table-row {
+    background-color: #EEEEEE;
+}
+.v-table-row-alarm-cleared.v-table-row-odd,
+.v-table-row-alarm-cleared-noack.v-table-row-odd {
+    background-color: #E7E7E7;
+}
+.v-table-row-alarm-cleared .v-table-cell-content-bright,
+.v-table-row-alarm-cleared-noack .v-table-cell-content-bright
+{
+    background-image: url(../../../images/bgCleared.png);
+}
+
+
+table.onms {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 0;
+    margin-bottom: 10px;
+    color:#000000;
+}
+
+table.o-box{ margin-bottom:0px; }
+
+td.bright { padding-left: 20px; background-position: top left; background-repeat: repeat-y; }
+
+tr.CellStatus td.onms { padding-left: 20px; background-position: top left; background-repeat: repeat-y; }
+tr.CellStatus td.Critical{ background-color: #F5CDCD; border-top: 2px solid #CC0000 !important; background-image: url(../../../images/bgCritical.png); }
+tr.CellStatus td.Major{ background-color: #FFD7CD; border-top: 2px solid #FF3300 !important; background-image: url(../../../images/bgMajor.png); }
+tr.CellStatus td.Minor{ background-color: #FFEBCD; border-top: 2px solid #FF9900 !important; background-image: url(../../../images/bgMinor.png); }
+tr.CellStatus td.Warning{ background-color: #FFF5CD; border-top: 2px solid #FFCC00 !important; background-image: url(../../../images/bgWarning.png); }
+tr.CellStatus td.Indeterminate{ background-color: #EBEBCD; border-top: 2px solid #999000 !important; background-image: url(../../../images/bgIndeterminate.png); }
+tr.CellStatus td.Normal{ background-color: #D7E1CD; border-top: 2px solid #336600 !important; background-image: url(../../../images/bgNormal.png); }
+tr.CellStatus td.Cleared { background-color: #EEE; border-top: 2px solid #999 !important; background-image: url(../../../images/bgCleared.png); }
+tr.CellStatus td.nobright { background-image: none;}
+
+tr.Critical td.onms { background-color: #F5CDCD; }
+tr.Critical td.divider { border-top: 2px solid #CC0000 !important; }
+tr.Critical td.bright { background-image: url(../../../images/bgCritical.png); }
+
+tr.Major td.onms { background-color: #FFD7CD; }
+tr.Major td.divider { border-top: 2px solid #FF3300 !important; }
+tr.Major td.bright { background-image: url(../../../images/bgMajor.png); }
+
+tr.Minor td.onms { background-color: #FFEBCD; }
+tr.Minor td.divider { border-top: 2px solid #FF9900 !important; }
+tr.Minor td.bright { background-image: url(../../../images/bgMinor.png); }
+
+tr.Warning td.onms { background-color: #FFF5CD; }
+tr.Warning td.divider { border-top: 2px solid #FFCC00 !important; }
+tr.Warning td.bright { background-image: url(../../../images/bgWarning.png); }
+
+tr.Indeterminate td.onms { background-color: #EBEBCD; }
+tr.Indeterminate td.divider { border-top: 2px solid #999900 !important; }
+tr.Indeterminate td.bright { background-image: url(../../../images/bgIndeterminate.png); }
+
+tr.Normal td.onms { background-color: #D7E1CD; }
+tr.Normal td.divider { border-top: 2px solid #336600 !important; }
+tr.Normal td.bright { background-image: url(../../../images/bgNormal.png); }
+
+tr.Cleared td.onms { background-color: #EEE; }
+tr.Cleared td.divider { border-top: 2px solid #999 !important; }
+tr.Cleared td.bright { background-image: url(../../../images/bgCleared.png); }
+
+td.onms { font-size: 100%; }
+
+th.onms {
+    border:1px solid #999;
+    padding: 4px 5px;
+    background-color: #444;
+    font-weight: bold;
+    text-align: left;
+    color: #FFF;
+}
+
+td.onms div.clip {
+    margin:0;
+    padding:0;
+    height:1.5em;
+    overflow:hidden;
+}
+
+td.onms {
+    border: 1px solid #999;
+    padding: 4px 5px;
+    background-color: #FFF;
+    font-size: 100%;
 }

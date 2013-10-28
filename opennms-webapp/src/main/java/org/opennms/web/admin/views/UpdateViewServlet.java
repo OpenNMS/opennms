@@ -67,7 +67,7 @@ public class UpdateViewServlet extends HttpServlet {
 
             newView.setMembership(null);
 
-            String users[] = request.getParameterValues("selectedUsers");
+            String[] users = request.getParameterValues("selectedUsers");
             Membership membership = new Membership();
             if (users != null) {
                 for (int i = 0; i < users.length; i++) {
@@ -78,7 +78,7 @@ public class UpdateViewServlet extends HttpServlet {
                 }
             }
 
-            String groups[] = request.getParameterValues("selectedGroups");
+            String[] groups = request.getParameterValues("selectedGroups");
             if (groups != null) {
                 for (int i = 0; i < groups.length; i++) {
                     Member member = new Member();

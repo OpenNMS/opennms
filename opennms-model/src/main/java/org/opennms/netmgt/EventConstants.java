@@ -41,519 +41,519 @@ import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 
 /**
- * This class holds all OpenNMS events related constants - the UEI's, parm
+ * This class holds all OpenNMS events related constants - the UEIs, parm
  * names, the event time format etc.
  */
 public class EventConstants {
     /**
      * The date format string to parse a Date.toString() type string to a
-     * database timestamp using the postgres to_timestamp() built-in function.
+     * database timestamp using the PostgreSQL to_timestamp() built-in function.
      */
     public static final String POSTGRES_DATE_FORMAT = "\'Dy Mon DD HH24:MI:SS Tz YYYY\'";
 
     /**
      * The string property set on JMS messages to indicate the encoding to be
-     * used
+     * used.
      */
     public static final String JMS_MSG_PROP_CHAR_ENCODING = "char_encoding";
 
     /**
      * The value for the string property set on JMS messages to indicate the
-     * encoding to be used
+     * encoding to be used.
      */
     public static final String JMS_MSG_PROP_CHAR_ENCODING_VALUE = "US-ASCII";
 
     /**
-     * The string property set on JMS messages to indicate the sender service
+     * The string property set on JMS messages to indicate the sender service.
      */
     public static final String JMS_MSG_PROP_SENDER = "sender";
 
     /**
      * The string property set on JMS messages broadcast from eventd - to use
-     * UEI(s) as a filter
+     * UEI(s) as a filter.
      */
     public static final String JMS_MSG_PROP_UEI_SELECTOR = "ueiSelector";
 
     //
-    // the eventUEIs used by OpenNMS
+    // The eventUEIs used by OpenNMS
     //
 
     /**
-     * The status query control event
+     * The status query control event.
      */
-    public final static String STATUS_QUERY_CONTROL_EVENT_UEI = "uei.opennms.org/internal/control/status";
+    public static final String STATUS_QUERY_CONTROL_EVENT_UEI = "uei.opennms.org/internal/control/status";
 
     /**
-     * The start event
+     * The start event.
      */
-    public final static String START_CONTROL_EVENT_UEI = "uei.opennms.org/internal/control/start";
+    public static final String START_CONTROL_EVENT_UEI = "uei.opennms.org/internal/control/start";
 
     /**
-     * The pause event
+     * The pause event.
      */
-    public final static String PAUSE_CONTROL_EVENT_UEI = "uei.opennms.org/internal/control/pause";
+    public static final String PAUSE_CONTROL_EVENT_UEI = "uei.opennms.org/internal/control/pause";
 
     /**
-     * The resume event
+     * The resume event.
      */
-    public final static String RESUME_CONTROL_EVENT_UEI = "uei.opennms.org/internal/control/resume";
+    public static final String RESUME_CONTROL_EVENT_UEI = "uei.opennms.org/internal/control/resume";
 
     /**
-     * The stop event
+     * The stop event.
      */
-    public final static String STOP_CONTROL_EVENT_UEI = "uei.opennms.org/internal/control/stop";
+    public static final String STOP_CONTROL_EVENT_UEI = "uei.opennms.org/internal/control/stop";
 
     /**
-     * The 'start pending' response event
+     * The 'start pending' response event.
      */
-    public final static String CONTROL_START_PENDING_EVENT_UEI = "uei.opennms.org/internal/control/startPending";
+    public static final String CONTROL_START_PENDING_EVENT_UEI = "uei.opennms.org/internal/control/startPending";
 
     /**
-     * The 'starting' response event
+     * The 'starting' response event.
      */
-    public final static String CONTROL_STARTING_EVENT_UEI = "uei.opennms.org/internal/control/starting";
+    public static final String CONTROL_STARTING_EVENT_UEI = "uei.opennms.org/internal/control/starting";
 
     /**
-     * The 'pause pending' response event
+     * The 'pause pending' response event.
      */
-    public final static String CONTROL_PAUSE_PENDING_EVENT_UEI = "uei.opennms.org/internal/control/pausePending";
+    public static final String CONTROL_PAUSE_PENDING_EVENT_UEI = "uei.opennms.org/internal/control/pausePending";
 
     /**
-     * The 'paused' response event
+     * The 'paused' response event.
      */
-    public final static String CONTROL_PAUSED_EVENT_UEI = "uei.opennms.org/internal/control/paused";
+    public static final String CONTROL_PAUSED_EVENT_UEI = "uei.opennms.org/internal/control/paused";
 
     /**
-     * The 'resume pending' response event
+     * The 'resume pending' response event.
      */
-    public final static String CONTROL_RESUME_PENDING_EVENT_UEI = "uei.opennms.org/internal/control/resumePending";
+    public static final String CONTROL_RESUME_PENDING_EVENT_UEI = "uei.opennms.org/internal/control/resumePending";
 
     /**
-     * The 'running' response event
+     * The 'running' response event.
      */
-    public final static String CONTROL_RUNNING_EVENT_UEI = "uei.opennms.org/internal/control/running";
+    public static final String CONTROL_RUNNING_EVENT_UEI = "uei.opennms.org/internal/control/running";
 
     /**
-     * The 'stop pending' response event
+     * The 'stop pending' response event.
      */
-    public final static String CONTROL_STOP_PENDING_EVENT_UEI = "uei.opennms.org/internal/control/stopPending";
+    public static final String CONTROL_STOP_PENDING_EVENT_UEI = "uei.opennms.org/internal/control/stopPending";
 
     /**
-     * The 'stopped' response event
+     * The 'stopped' response event.
      */
-    public final static String CONTROL_STOPPED_EVENT_UEI = "uei.opennms.org/internal/control/stopped";
+    public static final String CONTROL_STOPPED_EVENT_UEI = "uei.opennms.org/internal/control/stopped";
 
     /**
-     * The control error reponse event
+     * The control error reponse event.
      */
-    public final static String CONTROL_ERROR_EVENT_UEI = "uei.opennms.org/internal/control/error";
+    public static final String CONTROL_ERROR_EVENT_UEI = "uei.opennms.org/internal/control/error";
 
     /**
-     * The new suspect event UEI
+     * The new suspect event UEI.
      */
-    public final static String NEW_SUSPECT_INTERFACE_EVENT_UEI = "uei.opennms.org/internal/discovery/newSuspect";
+    public static final String NEW_SUSPECT_INTERFACE_EVENT_UEI = "uei.opennms.org/internal/discovery/newSuspect";
 
     /**
-     * The discovery pause event UEI
+     * The discovery pause event UEI.
      */
-    public final static String DISC_PAUSE_EVENT_UEI = "uei.opennms.org/internal/capsd/discPause";
+    public static final String DISC_PAUSE_EVENT_UEI = "uei.opennms.org/internal/capsd/discPause";
 
     /**
-     * The discovery resume event UEI
+     * The discovery resume event UEI.
      */
-    public final static String DISC_RESUME_EVENT_UEI = "uei.opennms.org/internal/capsd/discResume";
+    public static final String DISC_RESUME_EVENT_UEI = "uei.opennms.org/internal/capsd/discResume";
 
     /**
-     * The discovery configuration changed event UEI
+     * The discovery configuration changed event UEI.
      */
-    public final static String DISCOVERYCONFIG_CHANGED_EVENT_UEI = "uei.opennms.org/internal/discoveryConfigChange";
+    public static final String DISCOVERYCONFIG_CHANGED_EVENT_UEI = "uei.opennms.org/internal/discoveryConfigChange";
 
     /**
-     * The update server event UEI
+     * The update server event UEI.
      */
-    public final static String UPDATE_SERVER_EVENT_UEI = "uei.opennms.org/internal/capsd/updateServer";
+    public static final String UPDATE_SERVER_EVENT_UEI = "uei.opennms.org/internal/capsd/updateServer";
 
     /**
-     * The update service event UEI
+     * The update service event UEI.
      */
-    public final static String UPDATE_SERVICE_EVENT_UEI = "uei.opennms.org/internal/capsd/updateService";
+    public static final String UPDATE_SERVICE_EVENT_UEI = "uei.opennms.org/internal/capsd/updateService";
 
     /**
-     * The add node event UEI
+     * The add node event UEI.
      */
-    public final static String ADD_NODE_EVENT_UEI = "uei.opennms.org/internal/capsd/addNode";
+    public static final String ADD_NODE_EVENT_UEI = "uei.opennms.org/internal/capsd/addNode";
 
     /**
-     * The delete node event UEI
+     * The delete node event UEI.
      */
-    public final static String DELETE_NODE_EVENT_UEI = "uei.opennms.org/internal/capsd/deleteNode";
+    public static final String DELETE_NODE_EVENT_UEI = "uei.opennms.org/internal/capsd/deleteNode";
 
     /**
-     * The add interface event UEI
+     * The add interface event UEI.
      */
-    public final static String ADD_INTERFACE_EVENT_UEI = "uei.opennms.org/internal/capsd/addInterface";
+    public static final String ADD_INTERFACE_EVENT_UEI = "uei.opennms.org/internal/capsd/addInterface";
 
     /**
-     * The delete interface event UEI
+     * The delete interface event UEI.
      */
-    public final static String DELETE_INTERFACE_EVENT_UEI = "uei.opennms.org/internal/capsd/deleteInterface";
+    public static final String DELETE_INTERFACE_EVENT_UEI = "uei.opennms.org/internal/capsd/deleteInterface";
 
     /**
-     * The change service event UEI
+     * The change service event UEI.
      */
-    public final static String CHANGE_SERVICE_EVENT_UEI = "uei.opennms.org/internal/capsd/changeService";
+    public static final String CHANGE_SERVICE_EVENT_UEI = "uei.opennms.org/internal/capsd/changeService";
 
     /**
-     * The restart polling node event UEI
+     * The restart polling node event UEI.
      */
-    public final static String RESTART_POLLING_INTERFACE_EVENT_UEI = "uei.opennms.org/nodes/restartPollingInterface";
+    public static final String RESTART_POLLING_INTERFACE_EVENT_UEI = "uei.opennms.org/nodes/restartPollingInterface";
 
     /**
-     * The change service event UEI
+     * The change service event UEI.
      */
-    public final static String XMLRPC_NOTIFICATION_EVENT_UEI = "uei.opennms.org/internal/capsd/xmlrpcNotification";
+    public static final String XMLRPC_NOTIFICATION_EVENT_UEI = "uei.opennms.org/internal/capsd/xmlrpcNotification";
 
     /**
-     * The node added event UEI
+     * The node added event UEI.
      */
-    public final static String NODE_ADDED_EVENT_UEI = "uei.opennms.org/nodes/nodeAdded";
+    public static final String NODE_ADDED_EVENT_UEI = "uei.opennms.org/nodes/nodeAdded";
     
     /**
-     * The node updated event UEI (added for the ProvisioningAdapter integration)
+     * The node updated event UEI (added for the ProvisioningAdapter integration).
      */
-    public final static String NODE_UPDATED_EVENT_UEI = "uei.opennms.org/nodes/nodeUpdated";
+    public static final String NODE_UPDATED_EVENT_UEI = "uei.opennms.org/nodes/nodeUpdated";
     
 	/**
-	 * The node category membership changed UEI
+	 * The node category membership changed UEI.
 	 */
     public static final String NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/nodeCategoryMembershipChanged";
 
     /**
-     * The node gained interface event UEI
+     * The node gained interface event UEI.
      */
-    public final static String NODE_GAINED_INTERFACE_EVENT_UEI = "uei.opennms.org/nodes/nodeGainedInterface";
+    public static final String NODE_GAINED_INTERFACE_EVENT_UEI = "uei.opennms.org/nodes/nodeGainedInterface";
 
     /**
-     * The node gained service event UEI
+     * The node gained service event UEI.
      */
-    public final static String NODE_GAINED_SERVICE_EVENT_UEI = "uei.opennms.org/nodes/nodeGainedService";
+    public static final String NODE_GAINED_SERVICE_EVENT_UEI = "uei.opennms.org/nodes/nodeGainedService";
 
     /**
-     * The node lost service event UEI
+     * The node lost service event UEI.
      */
-    public final static String NODE_LOST_SERVICE_EVENT_UEI = "uei.opennms.org/nodes/nodeLostService";
+    public static final String NODE_LOST_SERVICE_EVENT_UEI = "uei.opennms.org/nodes/nodeLostService";
 
     /**
-     * The service responsive event UEI
+     * The service responsive event UEI.
      */
-    public final static String SERVICE_RESPONSIVE_EVENT_UEI = "uei.opennms.org/nodes/serviceResponsive";
+    public static final String SERVICE_RESPONSIVE_EVENT_UEI = "uei.opennms.org/nodes/serviceResponsive";
 
     /**
-     * The service unresponsive event UEI
+     * The service unresponsive event UEI.
      */
-    public final static String SERVICE_UNRESPONSIVE_EVENT_UEI = "uei.opennms.org/nodes/serviceUnresponsive";
+    public static final String SERVICE_UNRESPONSIVE_EVENT_UEI = "uei.opennms.org/nodes/serviceUnresponsive";
 
     /**
-     * The service unmanaged event UEI
+     * The service unmanaged event UEI.
      */
-    public final static String SERVICE_UNMANAGED_EVENT_UEI = "uei.opennms.org/nodes/serviceUnmanaged";
+    public static final String SERVICE_UNMANAGED_EVENT_UEI = "uei.opennms.org/nodes/serviceUnmanaged";
 
     /**
-     * The interface down event UEI
+     * The interface down event UEI.
      */
-    public final static String INTERFACE_DOWN_EVENT_UEI = "uei.opennms.org/nodes/interfaceDown";
+    public static final String INTERFACE_DOWN_EVENT_UEI = "uei.opennms.org/nodes/interfaceDown";
 
     /**
-     * The snmp interface oper status down event UEI
+     * The SNMP interface operStatus down event UEI.
      */
-    public final static String SNMP_INTERFACE_OPER_DOWN_EVENT_UEI = "uei.opennms.org/nodes/snmp/interfaceOperDown";
+    public static final String SNMP_INTERFACE_OPER_DOWN_EVENT_UEI = "uei.opennms.org/nodes/snmp/interfaceOperDown";
 
     /**
-     * The snmp interface admin down event UEI
+     * The SNMP interface admin down event UEI.
      */
-    public final static String SNMP_INTERFACE_ADMIN_DOWN_EVENT_UEI = "uei.opennms.org/nodes/snmp/interfaceAdminDown";
+    public static final String SNMP_INTERFACE_ADMIN_DOWN_EVENT_UEI = "uei.opennms.org/nodes/snmp/interfaceAdminDown";
     
     /**
-     * The node down event UEI
+     * The node down event UEI.
      */
-    public final static String NODE_DOWN_EVENT_UEI = "uei.opennms.org/nodes/nodeDown";
+    public static final String NODE_DOWN_EVENT_UEI = "uei.opennms.org/nodes/nodeDown";
 
     /**
-     * The path outage event UEI
+     * The path outage event UEI.
      */
-    public final static String PATH_OUTAGE_EVENT_UEI = "uei.opennms.org/nodes/pathOutage";
+    public static final String PATH_OUTAGE_EVENT_UEI = "uei.opennms.org/nodes/pathOutage";
 
     /**
-     * The node up event UEI
+     * The node up event UEI.
      */
-    public final static String NODE_UP_EVENT_UEI = "uei.opennms.org/nodes/nodeUp";
+    public static final String NODE_UP_EVENT_UEI = "uei.opennms.org/nodes/nodeUp";
 
     /**
-     * The interface up event UEI
+     * The interface up event UEI.
      */
-    public final static String INTERFACE_UP_EVENT_UEI = "uei.opennms.org/nodes/interfaceUp";
+    public static final String INTERFACE_UP_EVENT_UEI = "uei.opennms.org/nodes/interfaceUp";
 
     /**
-     * The snmp interface oper status up event UEI
+     * The SNMP interface operStatus up event UEI.
      */
-    public final static String SNMP_INTERFACE_OPER_UP_EVENT_UEI = "uei.opennms.org/nodes/snmp/interfaceOperUp";
+    public static final String SNMP_INTERFACE_OPER_UP_EVENT_UEI = "uei.opennms.org/nodes/snmp/interfaceOperUp";
 
     /**
-     * The snmp interface admin up event UEI
+     * The SNMP interface admin up event UEI.
      */
-    public final static String SNMP_INTERFACE_ADMIN_UP_EVENT_UEI = "uei.opennms.org/nodes/snmp/interfaceAdminUp";
+    public static final String SNMP_INTERFACE_ADMIN_UP_EVENT_UEI = "uei.opennms.org/nodes/snmp/interfaceAdminUp";
 
     /**
-     * The node regained service event UEI
+     * The node regained service event UEI.
      */
-    public final static String NODE_REGAINED_SERVICE_EVENT_UEI = "uei.opennms.org/nodes/nodeRegainedService";
+    public static final String NODE_REGAINED_SERVICE_EVENT_UEI = "uei.opennms.org/nodes/nodeRegainedService";
 
     /**
-     * The delete service event UEI
+     * The delete service event UEI.
      */
-    public final static String DELETE_SERVICE_EVENT_UEI = "uei.opennms.org/nodes/deleteService";
+    public static final String DELETE_SERVICE_EVENT_UEI = "uei.opennms.org/nodes/deleteService";
 
     /**
-     * The service deleted event UEI
+     * The service deleted event UEI.
      */
-    public final static String SERVICE_DELETED_EVENT_UEI = "uei.opennms.org/nodes/serviceDeleted";
+    public static final String SERVICE_DELETED_EVENT_UEI = "uei.opennms.org/nodes/serviceDeleted";
 
     /**
-     * The interface deleted event UEI
+     * The interface deleted event UEI.
      */
-    public final static String INTERFACE_DELETED_EVENT_UEI = "uei.opennms.org/nodes/interfaceDeleted";
+    public static final String INTERFACE_DELETED_EVENT_UEI = "uei.opennms.org/nodes/interfaceDeleted";
 
     /**
-     * The node deleted event UEI
+     * The node deleted event UEI.
      */
-    public final static String NODE_DELETED_EVENT_UEI = "uei.opennms.org/nodes/nodeDeleted";
+    public static final String NODE_DELETED_EVENT_UEI = "uei.opennms.org/nodes/nodeDeleted";
 
     /**
-     * The low threshold exceeded event UEI
+     * The low threshold exceeded event UEI.
      */
-    public final static String LOW_THRESHOLD_EVENT_UEI = "uei.opennms.org/threshold/lowThresholdExceeded";
+    public static final String LOW_THRESHOLD_EVENT_UEI = "uei.opennms.org/threshold/lowThresholdExceeded";
 
     /**
-     * The high threshold exceeded event UEI
+     * The high threshold exceeded event UEI.
      */
-    public final static String HIGH_THRESHOLD_EVENT_UEI = "uei.opennms.org/threshold/highThresholdExceeded";
+    public static final String HIGH_THRESHOLD_EVENT_UEI = "uei.opennms.org/threshold/highThresholdExceeded";
 
     /**
-     * The high threshold rearm event UEI
+     * The high threshold rearm event UEI.
      */
-    public final static String HIGH_THRESHOLD_REARM_EVENT_UEI = "uei.opennms.org/threshold/highThresholdRearmed";
+    public static final String HIGH_THRESHOLD_REARM_EVENT_UEI = "uei.opennms.org/threshold/highThresholdRearmed";
 
     /**
-     * The low threshold rearm event UEI
+     * The low threshold rearm event UEI.
      */
-    public final static String LOW_THRESHOLD_REARM_EVENT_UEI = "uei.opennms.org/threshold/lowThresholdRearmed";
+    public static final String LOW_THRESHOLD_REARM_EVENT_UEI = "uei.opennms.org/threshold/lowThresholdRearmed";
 
     /**
-     * The relative change event UEI
+     * The relative change event UEI.
      */
-    public final static String RELATIVE_CHANGE_THRESHOLD_EVENT_UEI = "uei.opennms.org/threshold/relativeChangeExceeded";
+    public static final String RELATIVE_CHANGE_THRESHOLD_EVENT_UEI = "uei.opennms.org/threshold/relativeChangeExceeded";
 
     /**
-     * The relative change event UEI
+     * The relative change event UEI.
      */
-    public final static String ABSOLUTE_CHANGE_THRESHOLD_EVENT_UEI = "uei.opennms.org/threshold/absoluteChangeExceeded";
+    public static final String ABSOLUTE_CHANGE_THRESHOLD_EVENT_UEI = "uei.opennms.org/threshold/absoluteChangeExceeded";
 
     /**
-     * ThresholdEvaluatorRearmingAbsoluteChange exceeded UEI
+     * ThresholdEvaluatorRearmingAbsoluteChange exceeded UEI.
      */
-    public final static String REARMING_ABSOLUTE_CHANGE_EXCEEDED_EVENT_UEI = "uei.opennms.org/threshold/rearmingAbsoluteChangeExceeded";
+    public static final String REARMING_ABSOLUTE_CHANGE_EXCEEDED_EVENT_UEI = "uei.opennms.org/threshold/rearmingAbsoluteChangeExceeded";
     
     /**
-     * ThresholdEvaluatorRearmingAbsoluteChange exceeded UEI
+     * ThresholdEvaluatorRearmingAbsoluteChange exceeded UEI.
      */
-    public final static String REARMING_ABSOLUTE_CHANGE_REARM_EVENT_UEI = "uei.opennms.org/threshold/rearmingAbsoluteChangeRearmed";
+    public static final String REARMING_ABSOLUTE_CHANGE_REARM_EVENT_UEI = "uei.opennms.org/threshold/rearmingAbsoluteChangeRearmed";
     
     /**
-     * The interface index changed event
+     * The interface index changed event.
      */
-    public final static String INTERFACE_INDEX_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/interfaceIndexChanged";
+    public static final String INTERFACE_INDEX_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/interfaceIndexChanged";
 
     /**
      * The interface supports SNMP event...generated during capability rescan
-     * when an already managed interface gains SNMP support for the first time
+     * when an already managed interface gains SNMP support for the first time.
      */
-    public final static String INTERFACE_SUPPORTS_SNMP_EVENT_UEI = "uei.opennms.org/internal/capsd/interfaceSupportsSNMP";
+    public static final String INTERFACE_SUPPORTS_SNMP_EVENT_UEI = "uei.opennms.org/internal/capsd/interfaceSupportsSNMP";
 
     /**
      * A service scan has discovered a duplicate IP address.
      */
-    public final static String DUPLICATE_IPINTERFACE_EVENT_UEI = "uei.opennms.org/internal/capsd/duplicateIPAddress";
+    public static final String DUPLICATE_IPINTERFACE_EVENT_UEI = "uei.opennms.org/internal/capsd/duplicateIPAddress";
 
     /**
-     * The interface reparented event
+     * The interface reparented event.
      */
-    public final static String INTERFACE_REPARENTED_EVENT_UEI = "uei.opennms.org/nodes/interfaceReparented";
+    public static final String INTERFACE_REPARENTED_EVENT_UEI = "uei.opennms.org/nodes/interfaceReparented";
 
     /**
-     * The node info changed event
+     * The node info changed event.
      */
-    public final static String NODE_INFO_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/nodeInfoChanged";
+    public static final String NODE_INFO_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/nodeInfoChanged";
 
     /**
-     * The interface IP host name changed event
+     * The interface IP host name changed event.
      */
-    public final static String INTERFACE_IP_HOSTNAME_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/interfaceIPHostNameChanged";
+    public static final String INTERFACE_IP_HOSTNAME_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/interfaceIPHostNameChanged";
 
     /**
-     * The node label changed event
+     * The node label changed event.
      */
-    public final static String NODE_LABEL_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/nodeLabelChanged";
+    public static final String NODE_LABEL_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/nodeLabelChanged";
 
     /**
-     * The node label source changed event
+     * The node label source changed event.
      */
-    public final static String NODE_LABEL_SOURCE_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/nodeLabelSourceChanged";
+    public static final String NODE_LABEL_SOURCE_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/nodeLabelSourceChanged";
 
     /**
-     * The node deleted event UEI
+     * The node deleted event UEI.
      */
-    public final static String DUP_NODE_DELETED_EVENT_UEI = "uei.opennms.org/nodes/duplicateNodeDeleted";
+    public static final String DUP_NODE_DELETED_EVENT_UEI = "uei.opennms.org/nodes/duplicateNodeDeleted";
 
     /**
      * The primary SNMP interface changed event.
      */
-    public final static String PRIMARY_SNMP_INTERFACE_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/primarySnmpInterfaceChanged";
+    public static final String PRIMARY_SNMP_INTERFACE_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/primarySnmpInterfaceChanged";
 
     /**
      * The reinitialize primary SNMP interface event.
      */
-    public final static String REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI = "uei.opennms.org/nodes/reinitializePrimarySnmpInterface";
+    public static final String REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI = "uei.opennms.org/nodes/reinitializePrimarySnmpInterface";
 
     /**
      * The configure SNMP event.
      */
-    public final static String CONFIGURE_SNMP_EVENT_UEI = "uei.opennms.org/internal/configureSNMP";
+    public static final String CONFIGURE_SNMP_EVENT_UEI = "uei.opennms.org/internal/configureSNMP";
 
     /**
-     * Collection failed
+     * Collection failed.
      */
-    public final static String DATA_COLLECTION_FAILED_EVENT_UEI = "uei.opennms.org/nodes/dataCollectionFailed";
+    public static final String DATA_COLLECTION_FAILED_EVENT_UEI = "uei.opennms.org/nodes/dataCollectionFailed";
 
     /**
-     * Collection succeeded
+     * Collection succeeded.
      */
-    public final static String DATA_COLLECTION_SUCCEEDED_EVENT_UEI = "uei.opennms.org/nodes/dataCollectionSucceeded";
+    public static final String DATA_COLLECTION_SUCCEEDED_EVENT_UEI = "uei.opennms.org/nodes/dataCollectionSucceeded";
 
     /**
-     * Thresholding failed
+     * Thresholding failed.
      */
-    public final static String THRESHOLDING_FAILED_EVENT_UEI = "uei.opennms.org/nodes/thresholdingFailed";
+    public static final String THRESHOLDING_FAILED_EVENT_UEI = "uei.opennms.org/nodes/thresholdingFailed";
 
     /**
-     * Thresholding succeeded
+     * Thresholding succeeded.
      */
-    public final static String THRESHOLDING_SUCCEEDED_EVENT_UEI = "uei.opennms.org/nodes/thresholdingSucceeded";
+    public static final String THRESHOLDING_SUCCEEDED_EVENT_UEI = "uei.opennms.org/nodes/thresholdingSucceeded";
 
     /**
      * The force interface rescan event UEI
      */
-    public final static String FORCE_RESCAN_EVENT_UEI = "uei.opennms.org/internal/capsd/forceRescan";
+    public static final String FORCE_RESCAN_EVENT_UEI = "uei.opennms.org/internal/capsd/forceRescan";
 
     /**
      * The suspend polling service event UEI
      */
-    public final static String SUSPEND_POLLING_SERVICE_EVENT_UEI = "uei.opennms.org/internal/poller/suspendPollingService";
+    public static final String SUSPEND_POLLING_SERVICE_EVENT_UEI = "uei.opennms.org/internal/poller/suspendPollingService";
 
     /**
-     * The resume polling service event UEI
+     * The resume polling service event UEI.
      */
 
-    public final static String RESUME_POLLING_SERVICE_EVENT_UEI = "uei.opennms.org/internal/poller/resumePollingService";
+    public static final String RESUME_POLLING_SERVICE_EVENT_UEI = "uei.opennms.org/internal/poller/resumePollingService";
 
     /**
-     * The snmp conflicts with db UEI
+     * The SNMP conflicts with db UEI.
      */
 
-    public final static String SNMP_CONFLICTS_WITH_DB_EVENT_UEI = "uei.opennms.org/internal/capsd/snmpConflictsWithDb";
+    public static final String SNMP_CONFLICTS_WITH_DB_EVENT_UEI = "uei.opennms.org/internal/capsd/snmpConflictsWithDb";
 
     /**
-     * The rescan completed UEI
+     * The rescan completed UEI.
      */
 
-    public final static String RESCAN_COMPLETED_EVENT_UEI = "uei.opennms.org/internal/capsd/rescanCompleted";
+    public static final String RESCAN_COMPLETED_EVENT_UEI = "uei.opennms.org/internal/capsd/rescanCompleted";
     
     /**
-     * The suspect scan completed UEI
+     * The suspect scan completed UEI.
      */
-    public final static String SUSPECT_SCAN_COMPLETED_EVENT_UEI = "uei.opennms.org/internal/capsd/suspectScanCompleted";
+    public static final String SUSPECT_SCAN_COMPLETED_EVENT_UEI = "uei.opennms.org/internal/capsd/suspectScanCompleted";
 
     /**
-     * The RTC subscribe event
+     * The RTC subscribe event.
      */
-    public final static String RTC_SUBSCRIBE_EVENT_UEI = "uei.opennms.org/internal/rtc/subscribe";
+    public static final String RTC_SUBSCRIBE_EVENT_UEI = "uei.opennms.org/internal/rtc/subscribe";
 
     /**
-     * The RTC unsubscribe event
+     * The RTC unsubscribe event.
      */
-    public final static String RTC_UNSUBSCRIBE_EVENT_UEI = "uei.opennms.org/internal/rtc/unsubscribe";
+    public static final String RTC_UNSUBSCRIBE_EVENT_UEI = "uei.opennms.org/internal/rtc/unsubscribe";
 
     
     /**
-     * An event used by queued to indicate that data for certain rrds should be immediately flushed to the disk
+     * An event used by queued to indicate that data for certain rrds should be immediately flushed to the disk.
      */
     public static final String PROMOTE_QUEUE_DATA_UEI = "uei.opennms.org/internal/promoteQueueData";
 
 
     /**
      * A service poll returned an unknown status (due to a problem getting poll
-     * information)
+     * information).
      */
-    public final static String SERVICE_STATUS_UNKNOWN = "uei.opennms.org/internal/unknownServiceStatus";
+    public static final String SERVICE_STATUS_UNKNOWN = "uei.opennms.org/internal/unknownServiceStatus";
 
     /**
-     * Notification without users event
+     * Notification without users event.
      */
-    public final static String NOTIFICATION_WITHOUT_USERS = "uei.opennms.org/internal/notificationWithoutUsers";
+    public static final String NOTIFICATION_WITHOUT_USERS = "uei.opennms.org/internal/notificationWithoutUsers";
 
     /**
      * A vulnerability scan on a specific interface was initiated by the user
-     * via the web UI
+     * via the web UI.
      */
-    public final static String SPECIFIC_VULN_SCAN_EVENT_UEI = "uei.opennms.org/vulnscand/specificVulnerabilityScan";
+    public static final String SPECIFIC_VULN_SCAN_EVENT_UEI = "uei.opennms.org/vulnscand/specificVulnerabilityScan";
 
     /**
-     * Demand poll service event ui
+     * Demand poll service event ui.
      */
 	public static final String DEMAND_POLL_SERVICE_EVENT_UEI = "uei.opennms.org/internal/demandPollService";
 
     /**
      * An event to signal that a user has changed asset information via the web
-     * UI
+     * UI.
      */
-    public final static String ASSET_INFO_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/assetInfoChanged";
+    public static final String ASSET_INFO_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/assetInfoChanged";
 
 	/**
-        * The scheduled-outages configuration was changed by the user via the web UI (or manually, for that matter)
+        * The scheduled-outages configuration was changed by the user via the web UI (or manually, for that matter).
         */
-    public final static String SCHEDOUTAGES_CHANGED_EVENT_UEI = "uei.opennms.org/internal/schedOutagesChanged";
+    public static final String SCHEDOUTAGES_CHANGED_EVENT_UEI = "uei.opennms.org/internal/schedOutagesChanged";
     
     /**
-     * The threshold config was changed by the user via the web UI, or manually
+     * The threshold config was changed by the user via the web UI, or manually.
      */
-    public final static String THRESHOLDCONFIG_CHANGED_EVENT_UEI = "uei.opennms.org/internal/thresholdConfigChange";
+    public static final String THRESHOLDCONFIG_CHANGED_EVENT_UEI = "uei.opennms.org/internal/thresholdConfigChange";
        
     /**
-     * The event config was changed by the user via the web UI, or manually, and should be reloaded
+     * The event config was changed by the user via the web UI, or manually, and should be reloaded.
      */
-    public final static String EVENTSCONFIG_CHANGED_EVENT_UEI = "uei.opennms.org/internal/eventsConfigChange";
+    public static final String EVENTSCONFIG_CHANGED_EVENT_UEI = "uei.opennms.org/internal/eventsConfigChange";
     
     /**
-     * The Snmp Poller config was changed by the user via the web UI, or manually, and should be reloaded
+     * The Snmp Poller config was changed by the user via the web UI, or manually, and should be reloaded.
      */
-    public final static String SNMPPOLLERCONFIG_CHANGED_EVENT_UEI = "uei.opennms.org/internal/reloadSnmpPollerConfig";
+    public static final String SNMPPOLLERCONFIG_CHANGED_EVENT_UEI = "uei.opennms.org/internal/reloadSnmpPollerConfig";
     
     /**
-     * Reload Vacuumd configuration UEI
+     * Reload Vacuumd configuration UEI.
      */
     public static final String RELOAD_VACUUMD_CONFIG_UEI = "uei.opennms.org/internal/reloadVacuumdConfig";
 
     /**
-     * Reload Daemon configuration UEI
+     * Reload Daemon configuration UEI.
      */
     public static final String RELOAD_DAEMON_CONFIG_UEI = "uei.opennms.org/internal/reloadDaemonConfig";
     /** Constant <code>RELOAD_DAEMON_CONFIG_FAILED_UEI="uei.opennms.org/internal/reloadDaemonCo"{trunked}</code> */
@@ -565,8 +565,8 @@ public class EventConstants {
     /** Constant <code>PARM_CONFIG_FILE_NAME="configFile"</code> */
     public static final String PARM_CONFIG_FILE_NAME = "configFile";
 
-    /**
-     * Reportd UEIs
+    /*
+     * Reportd UEIs.
      */
     
     public static final String REPORTD_RUN_REPORT = "uei.opennms.org/reportd/runReport";
@@ -596,7 +596,7 @@ public class EventConstants {
     public static final String LOCATION_MONITOR_CONNECTION_ADDRESS_CHANGED_UEI="uei.opennms.org/remote/locationMonitorConnectionAddressChanged";
 
     /** Constant <code>RELOAD_IMPORT_UEI="uei.opennms.org/internal/importer/reloa"{trunked}</code> */
-    public final static String RELOAD_IMPORT_UEI = "uei.opennms.org/internal/importer/reloadImport";
+    public static final String RELOAD_IMPORT_UEI = "uei.opennms.org/internal/importer/reloadImport";
     /** Constant <code>IMPORT_STARTED_UEI="uei.opennms.org/internal/importer/impor"{trunked}</code> */
     public static final String IMPORT_STARTED_UEI = "uei.opennms.org/internal/importer/importStarted";
     /** Constant <code>IMPORT_SUCCESSFUL_UEI="uei.opennms.org/internal/importer/impor"{trunked}</code> */
@@ -630,23 +630,23 @@ public class EventConstants {
     public static final String PARM_TROUBLE_TICKET = "troubleTicket";
 
     /** Constant <code>TROUBLETICKET_CREATE_UEI="uei.opennms.org/troubleTicket/create"</code> */
-    public final static String TROUBLETICKET_CREATE_UEI = "uei.opennms.org/troubleTicket/create";
+    public static final String TROUBLETICKET_CREATE_UEI = "uei.opennms.org/troubleTicket/create";
     /** Constant <code>TROUBLETICKET_UPDATE_UEI="uei.opennms.org/troubleTicket/update"</code> */
-    public final static String TROUBLETICKET_UPDATE_UEI = "uei.opennms.org/troubleTicket/update";
+    public static final String TROUBLETICKET_UPDATE_UEI = "uei.opennms.org/troubleTicket/update";
     /** Constant <code>TROUBLETICKET_CLOSE_UEI="uei.opennms.org/troubleTicket/close"</code> */
-    public final static String TROUBLETICKET_CLOSE_UEI = "uei.opennms.org/troubleTicket/close";
+    public static final String TROUBLETICKET_CLOSE_UEI = "uei.opennms.org/troubleTicket/close";
     /** Constant <code>TROUBLETICKET_CANCEL_UEI="uei.opennms.org/troubleTicket/cancel"</code> */
-    public final static String TROUBLETICKET_CANCEL_UEI = "uei.opennms.org/troubleTicket/cancel";
+    public static final String TROUBLETICKET_CANCEL_UEI = "uei.opennms.org/troubleTicket/cancel";
     
     /** Constant <code>TL1_AUTONOMOUS_MESSAGE_UEI="uei.opennms.org/api/tl1d/message/autono"{trunked}</code> */
-    public final static String TL1_AUTONOMOUS_MESSAGE_UEI = "uei.opennms.org/api/tl1d/message/autonomous";
+    public static final String TL1_AUTONOMOUS_MESSAGE_UEI = "uei.opennms.org/api/tl1d/message/autonomous";
 
     /** Constant <code>RANCID_DOWNLOAD_SUCCESS_UEI="uei.opennms.org/standard/rancid/traps/r"{trunked}</code> */
-    public final static String RANCID_DOWNLOAD_SUCCESS_UEI="uei.opennms.org/standard/rancid/traps/rancidTrapDownloadSuccess";
+    public static final String RANCID_DOWNLOAD_SUCCESS_UEI="uei.opennms.org/standard/rancid/traps/rancidTrapDownloadSuccess";
     /** Constant <code>RANCID_DOWNLOAD_FAILURE_UEI="uei.opennms.org/standard/rancid/traps/r"{trunked}</code> */
-    public final static String RANCID_DOWNLOAD_FAILURE_UEI="uei.opennms.org/standard/rancid/traps/rancidTrapDownloadFailure";
+    public static final String RANCID_DOWNLOAD_FAILURE_UEI="uei.opennms.org/standard/rancid/traps/rancidTrapDownloadFailure";
     /** Constant <code>RANCID_GROUP_PROCESSING_COMPLETED_UEI="uei.opennms.org/standard/rancid/traps/r"{trunked}</code> */
-    public final static String RANCID_GROUP_PROCESSING_COMPLETED_UEI="uei.opennms.org/standard/rancid/traps/rancidTrapGroupProcessingCompleted";
+    public static final String RANCID_GROUP_PROCESSING_COMPLETED_UEI="uei.opennms.org/standard/rancid/traps/rancidTrapGroupProcessingCompleted";
 
     /** Constant <code>DATA_LINK_FAILED_EVENT_UEI="uei.opennms.org/internal/linkd/dataLink"{trunked}</code> */
     public static final String DATA_LINK_FAILED_EVENT_UEI = "uei.opennms.org/internal/linkd/dataLinkFailed";
@@ -665,335 +665,335 @@ public class EventConstants {
     //
     /**
      * The criticalPathIp used in determining if a node down event is
-     * due to a path outage
+     * due to a path outage.
      */
-    public final static String PARM_CRITICAL_PATH_IP = "criticalPathIp";
+    public static final String PARM_CRITICAL_PATH_IP = "criticalPathIp";
 
     /**
      * The criticalPathServiceName used in determining if a node down event is
-     * due to a path outage
+     * due to a path outage.
      */
-    public final static String PARM_CRITICAL_PATH_SVC = "criticalPathServiceName";
+    public static final String PARM_CRITICAL_PATH_SVC = "criticalPathServiceName";
 
     /**
      * This parameter is set to true if a critical path outage has resulted in the
-     * suppression of a notification
+     * suppression of a notification.
      */
-    public final static String PARM_CRITICAL_PATH_NOTICE_SUPRESSED = "noticeSupressed";
+    public static final String PARM_CRITICAL_PATH_NOTICE_SUPRESSED = "noticeSupressed";
     
     /**
      * This parameter is set to indicate the id of the demandPoll object to store the results
-     * of a demandPoll in
+     * of a demandPoll in.
      */
-    public final static String PARM_DEMAND_POLL_ID = "demandPollId";
+    public static final String PARM_DEMAND_POLL_ID = "demandPollId";
 
     /**
-     * The nodeSysName from the node table when sent as an event parm
+     * The nodeSysName from the node table when sent as an event parm.
      */
-    public final static String PARM_NODE_SYSNAME = "nodesysname";
+    public static final String PARM_NODE_SYSNAME = "nodesysname";
 
     /**
-     * The nodeSysDescription from the node table when sent as an event parm
+     * The nodeSysDescription from the node table when sent as an event parm.
      */
-    public final static String PARM_NODE_SYSDESCRIPTION = "nodesysdescription";
+    public static final String PARM_NODE_SYSDESCRIPTION = "nodesysdescription";
 
     /**
-     * The nodeSysOid from the node table when sent as an event parm
+     * The nodeSysOid from the node table when sent as an event parm.
      */
-    public final static String PARM_NODE_SYSOID = "nodesysoid";
+    public static final String PARM_NODE_SYSOID = "nodesysoid";
 
     /**
-     * The nodeSysLocation from the node table when sent as an event parm
+     * The nodeSysLocation from the node table when sent as an event parm.
      */
-    public final static String PARM_NODE_SYSLOCATION = "nodesyslocation";
+    public static final String PARM_NODE_SYSLOCATION = "nodesyslocation";
 
     /**
-     * The nodeSysContact from the node table when sent as an event parm
+     * The nodeSysContact from the node table when sent as an event parm.
      */
-    public final static String PARM_NODE_SYSCONTACT = "nodesyscontact";
+    public static final String PARM_NODE_SYSCONTACT = "nodesyscontact";
 
     /**
-     * The ipHostName from the ipinterface table when sent as an event parm
+     * The ipHostName from the ipinterface table when sent as an event parm.
      */
-    public final static String PARM_IP_HOSTNAME = "iphostname";
+    public static final String PARM_IP_HOSTNAME = "iphostname";
 
     /**
      * The original ipHostName from the ipinterface table when sent as an event
-     * parm
+     * parm.
      */
-    public final static String PARM_OLD_IP_HOSTNAME = "oldiphostname";
+    public static final String PARM_OLD_IP_HOSTNAME = "oldiphostname";
 
     /**
-     * Name of the method of discovery when sent as an event parm
+     * Name of the method of discovery when sent as an event parm.
      */
-    public final static String PARM_METHOD = "method";
+    public static final String PARM_METHOD = "method";
 
     /**
-     * The interface sent as a parm of an event
+     * The interface sent as a parm of an event.
      */
-    public final static String PARM_INTERFACE = "interface";
+    public static final String PARM_INTERFACE = "interface";
 
     /**
-     * The action sent as a parm of an event
+     * The action sent as a parm of an event.
      */
-    public final static String PARM_ACTION = "action";
+    public static final String PARM_ACTION = "action";
 
     /**
-     * The DPName sent as a parm of an event
+     * The DPName sent as a parm of an event.
      */
-    public final static String PARM_DPNAME = "dpName";
+    public static final String PARM_DPNAME = "dpName";
 
     /**
-     * The old nodeid sent as a parm of the 'interfaceReparented' event
+     * The old nodeid sent as a parm of the 'interfaceReparented' event.
      */
-    public final static String PARM_OLD_NODEID = "oldNodeID";
+    public static final String PARM_OLD_NODEID = "oldNodeID";
 
     /**
-     * The new nodeid sent as a parm of the 'interfaceReparented' event
+     * The new nodeid sent as a parm of the 'interfaceReparented' event.
      */
-    public final static String PARM_NEW_NODEID = "newNodeID";
+    public static final String PARM_NEW_NODEID = "newNodeID";
 
     /**
-     * The old ifIndex value sent as a parm of the 'interfaceIndexChanged' event
+     * The old ifIndex value sent as a parm of the 'interfaceIndexChanged' event.
      */
-    public final static String PARM_OLD_IFINDEX = "oldIfIndex";
+    public static final String PARM_OLD_IFINDEX = "oldIfIndex";
 
     /**
-     * The new ifIndex value sent as a parm of the 'interfaceIndexChanged' event
+     * The new ifIndex value sent as a parm of the 'interfaceIndexChanged' event.
      */
-    public final static String PARM_NEW_IFINDEX = "newIfIndex";
+    public static final String PARM_NEW_IFINDEX = "newIfIndex";
 
     /**
-     * The nodeLabel from the node table when sent as an event parm
+     * The nodeLabel from the node table when sent as an event parm.
      */
-    public final static String PARM_NODE_LABEL = "nodelabel";
+    public static final String PARM_NODE_LABEL = "nodelabel";
 
     /**
-     * The nodeLabelSource from the node table when sent as an event parm
+     * The nodeLabelSource from the node table when sent as an event parm.
      */
-    public final static String PARM_NODE_LABEL_SOURCE = "nodelabelsource";
+    public static final String PARM_NODE_LABEL_SOURCE = "nodelabelsource";
 
     /**
-     * The oldNodeLabel sent as a parm of an event
+     * The oldNodeLabel sent as a parm of an event.
      */
-    public final static String PARM_OLD_NODE_LABEL = "oldNodeLabel";
+    public static final String PARM_OLD_NODE_LABEL = "oldNodeLabel";
 
     /**
-     * The oldNodeLabelSource sent as a parm of an event
+     * The oldNodeLabelSource sent as a parm of an event.
      */
-    public final static String PARM_OLD_NODE_LABEL_SOURCE = "oldNodeLabelSource";
+    public static final String PARM_OLD_NODE_LABEL_SOURCE = "oldNodeLabelSource";
 
     /**
-     * The newNodeLabel sent as a parm of an event
+     * The newNodeLabel sent as a parm of an event.
      */
-    public final static String PARM_NEW_NODE_LABEL = "newNodeLabel";
+    public static final String PARM_NEW_NODE_LABEL = "newNodeLabel";
 
     /**
-     * The newNodeLabelSource sent as a parm of an event
+     * The newNodeLabelSource sent as a parm of an event.
      */
-    public final static String PARM_NEW_NODE_LABEL_SOURCE = "newNodeLabelSource";
+    public static final String PARM_NEW_NODE_LABEL_SOURCE = "newNodeLabelSource";
 
     /**
-     * The nodeNetbiosName field from the node table when sent as an event parm
+     * The nodeNetbiosName field from the node table when sent as an event parm.
      */
-    public final static String PARM_NODE_NETBIOS_NAME = "nodenetbiosname";
+    public static final String PARM_NODE_NETBIOS_NAME = "nodenetbiosname";
 
     /**
-     * The nodeDomainName field from the node table when sent as an event parm
+     * The nodeDomainName field from the node table when sent as an event parm.
      */
-    public final static String PARM_NODE_DOMAIN_NAME = "nodedomainname";
+    public static final String PARM_NODE_DOMAIN_NAME = "nodedomainname";
 
     /**
-     * The operatingSystem field from the node table when sent as an event parm
+     * The operatingSystem field from the node table when sent as an event parm.
      */
-    public final static String PARM_NODE_OPERATING_SYSTEM = "nodeoperatingsystem";
+    public static final String PARM_NODE_OPERATING_SYSTEM = "nodeoperatingsystem";
 
     /**
      * The old value of the primarySnmpInterface field of the ipInterface table
      * when sent as an event parm.
      */
-    public final static String PARM_OLD_PRIMARY_SNMP_ADDRESS = "oldPrimarySnmpAddress";
+    public static final String PARM_OLD_PRIMARY_SNMP_ADDRESS = "oldPrimarySnmpAddress";
 
     /**
      * The new value of the primarySnmpInterface field of the ipInterface table
      * when sent as an event parm.
      */
-    public final static String PARM_NEW_PRIMARY_SNMP_ADDRESS = "newPrimarySnmpAddress";
+    public static final String PARM_NEW_PRIMARY_SNMP_ADDRESS = "newPrimarySnmpAddress";
 
     /**
      * The parameter name for the "SNMP security name string" when sent as an event parameter.
      */
-    public final static String PARM_SNMP_SECURITY_NAME = "securityName";
+    public static final String PARM_SNMP_SECURITY_NAME = "securityName";
     
     /**
      * The parameter name for the "SNMP security level string" when sent as an event parameter.
      */
-    public final static String PARM_SNMP_SECURITY_LEVEL = "securityLevel";
+    public static final String PARM_SNMP_SECURITY_LEVEL = "securityLevel";
     
     /**
      * The parameter name for the "SNMP auth passphrase string" when sent as an event parameter.
      */
-    public final static String PARM_SNMP_AUTH_PASSPHRASE = "authPassphrase";
+    public static final String PARM_SNMP_AUTH_PASSPHRASE = "authPassphrase";
     
     /**
      * The parameter name for the "SNMP auth protocol string" when sent as an event parameter.
      */
-    public final static String PARM_SNMP_AUTH_PROTOCOL = "authProtocol";
+    public static final String PARM_SNMP_AUTH_PROTOCOL = "authProtocol";
     
     /**
      * The parameter name for the "SNMP engine id string" when sent as an event parameter.
      */
-    public final static String PARM_SNMP_ENGINE_ID = "engineId";
+    public static final String PARM_SNMP_ENGINE_ID = "engineId";
     
     /**
      * The parameter name for the "SNMP context engine id string" when sent as an event parameter.
      */
-    public final static String PARM_SNMP_CONTEXT_ENGINE_ID = "contextEngineId";
+    public static final String PARM_SNMP_CONTEXT_ENGINE_ID = "contextEngineId";
     
     /**
      * The parameter name for the "SNMP enterprise id string" when sent as an event parameter.
      */
-    public final static String PARM_SNMP_ENTERPRISE_ID = "enterpriseId";
+    public static final String PARM_SNMP_ENTERPRISE_ID = "enterpriseId";
     
     /**
      * The parameter name for the "SNMP context name string" when sent as an event parameter.
      */
-    public final static String PARM_SNMP_CONTEXT_NAME = "contextName"; 
+    public static final String PARM_SNMP_CONTEXT_NAME = "contextName"; 
     
     /**
      * The parameter name for the "SNMP privacy passphrase string" when sent as an event parameter.
      */
-    public final static String PARM_SNMP_PRIVACY_PASSPHRASE = "privPassphrase";
+    public static final String PARM_SNMP_PRIVACY_PASSPHRASE = "privPassphrase";
     
     /**
      * The parameter name for the "SNMP privacy protocol string" when sent as an event parameter.
      */
-    public final static String PARM_SNMP_PRIVACY_PROTOCOL = "privProtocol";
+    public static final String PARM_SNMP_PRIVACY_PROTOCOL = "privProtocol";
     
     /**
      * The parameter name for the "SNMP max repetitions string" when sent as an event parameter.
      */
-    public final static String PARM_SNMP_MAX_REPETITIONS = "maxRepetitions";
+    public static final String PARM_SNMP_MAX_REPETITIONS = "maxRepetitions";
     
     /**
      * The parameter name for the "SNMP max request size string" when sent as an event parameter.
      */
-    public final static String PARM_SNMP_MAX_REQUEST_SIZE = "maxRequestSize";
+    public static final String PARM_SNMP_MAX_REQUEST_SIZE = "maxRequestSize";
     
     /**
      * The parameter name for the "SNMP max vars per pdu string" when sent as an event parameter.
      */
-    public final static String PARM_SNMP_MAX_VARS_PER_PDU = "maxVarsPerPdu";
+    public static final String PARM_SNMP_MAX_VARS_PER_PDU = "maxVarsPerPdu";
     
     /**
      * The parameter name for the "SNMP proxy host string" when sent as an event parameter.
      */
-    public final static String PARM_SNMP_PROXY_HOST= "proxyHost";
+    public static final String PARM_SNMP_PROXY_HOST= "proxyHost";
     
     /**
      * The first IP address in a range of IP addresses when sent as an event
      * parm.
      */
-    public final static String PARM_FIRST_IP_ADDRESS = "firstIPAddress";
+    public static final String PARM_FIRST_IP_ADDRESS = "firstIPAddress";
 
     /**
      * The last IP address in a range of IP addresses when sent as an event
      * parm.
      */
-    public final static String PARM_LAST_IP_ADDRESS = "lastIPAddress";
+    public static final String PARM_LAST_IP_ADDRESS = "lastIPAddress";
 
     /**
      * The SNMP read community string when sent as an event parm.
      * @deprecated use {@link #PARM_SNMP_READ_COMMUNITY_STRING} instead
      */
     @Deprecated
-    public final static String PARM_COMMUNITY_STRING = "communityString";
+    public static final String PARM_COMMUNITY_STRING = "communityString";
     
     /**
      * The SNMP read community string when sent as an event parm.
      */
-    public final static String PARM_SNMP_READ_COMMUNITY_STRING = "readCommunityString";
+    public static final String PARM_SNMP_READ_COMMUNITY_STRING = "readCommunityString";
     
     /**
      * The SNMP write community string when sent as an event parm.
      */
-    public final static String PARM_SNMP_WRITE_COMMUNITY_STRING = "writeCommunityString";
+    public static final String PARM_SNMP_WRITE_COMMUNITY_STRING = "writeCommunityString";
 
     /**
      * Service monitor qualifier when sent as an event parm
      */
-    public final static String PARM_QUALIFIER = "qualifier";
+    public static final String PARM_QUALIFIER = "qualifier";
 
     /**
      * The URL to which information is to be sent, sent as a parm to the rtc
-     * subscribe and unsubscribe events
+     * subscribe and unsubscribe events.
      */
-    public final static String PARM_URL = "url";
+    public static final String PARM_URL = "url";
 
     /**
      * The category for which information is to be sent, sent as a parm to the
-     * rtc subscribe event
+     * RTC subscribe event
      */
-    public final static String PARM_CAT_LABEL = "catlabel";
+    public static final String PARM_CAT_LABEL = "catlabel";
 
     /**
-     * The username when sent as a parameter(like for the rtc subscribe)
+     * The username when sent as a parameter(like for the RTC subscribe)
      */
-    public final static String PARM_USER = "user";
+    public static final String PARM_USER = "user";
 
     /**
-     * The passwd when sent as a parameter(like for the rtc subscribe)
+     * The passwd when sent as a parameter(like for the RTC subscribe)
      */
-    public final static String PARM_PASSWD = "passwd";
+    public static final String PARM_PASSWD = "passwd";
 
     /**
      * The status of a service as returned from a service monitor
      */
-    public final static String PARM_SERVICE_STATUS = "serviceStatus";
+    public static final String PARM_SERVICE_STATUS = "serviceStatus";
 
     /**
      * The external transaction number of an event to process.
      */
-    public final static String PARM_TRANSACTION_NO = "txno";
+    public static final String PARM_TRANSACTION_NO = "txno";
 
     /**
-     * The uei of a source event to report to external xmlrpc server.
+     * The UEI of a source event to report to external xmlrpc server.
      */
-    public final static String PARM_SOURCE_EVENT_UEI = "sourceUei";
+    public static final String PARM_SOURCE_EVENT_UEI = "sourceUei";
 
     /**
      * The message to explain a source event.
      */
-    public final static String PARM_SOURCE_EVENT_MESSAGE = "eventMessage";
+    public static final String PARM_SOURCE_EVENT_MESSAGE = "eventMessage";
 
     /**
      * The status to indicate which kind of external xmlrpc command to invoke.
      */
-    public final static String PARM_SOURCE_EVENT_STATUS = "eventStatus";
+    public static final String PARM_SOURCE_EVENT_STATUS = "eventStatus";
     
     /**
      * Used for retaining the reason from a monitor determines SERVICE_UNAVAILABLE
      */
-    public final static String PARM_LOSTSERVICE_REASON = "eventReason";
+    public static final String PARM_LOSTSERVICE_REASON = "eventReason";
     
     /**
      * Used for setting the value for  PARM_LOSTSERVICE_REASON when the lost
      * service is due to a critical path outage
      */
-    public final static String PARM_VALUE_PATHOUTAGE = "pathOutage";
+    public static final String PARM_VALUE_PATHOUTAGE = "pathOutage";
     
     /**
      * Parms used for passive status events sent to the PassiveServiceKeeper
      */
-    public final static String PARM_PASSIVE_NODE_LABEL = "passiveNodeLabel";
+    public static final String PARM_PASSIVE_NODE_LABEL = "passiveNodeLabel";
     /** Constant <code>PARM_PASSIVE_IPADDR="passiveIpAddr"</code> */
-    public final static String PARM_PASSIVE_IPADDR = "passiveIpAddr";
+    public static final String PARM_PASSIVE_IPADDR = "passiveIpAddr";
     /** Constant <code>PARM_PASSIVE_SERVICE_NAME="passiveServiceName"</code> */
-    public final static String PARM_PASSIVE_SERVICE_NAME = "passiveServiceName";
+    public static final String PARM_PASSIVE_SERVICE_NAME = "passiveServiceName";
     /** Constant <code>PARM_PASSIVE_SERVICE_STATUS="passiveStatus"</code> */
-    public final static String PARM_PASSIVE_SERVICE_STATUS = "passiveStatus";
+    public static final String PARM_PASSIVE_SERVICE_STATUS = "passiveStatus";
     /** Constant <code>PARM_PASSIVE_REASON_CODE="passiveReasonCode"</code> */
-    public final static String PARM_PASSIVE_REASON_CODE = "passiveReasonCode";
+    public static final String PARM_PASSIVE_REASON_CODE = "passiveReasonCode";
 
     /**
      * Parm used to importer event
@@ -1016,9 +1016,9 @@ public class EventConstants {
     public static final String PARM_PORT = "port";
 
     /** Constant <code>PARM_LOCATION_MONITOR_ID="locationMonitorId"</code> */
-    public final static String PARM_LOCATION_MONITOR_ID = "locationMonitorId";
+    public static final String PARM_LOCATION_MONITOR_ID = "locationMonitorId";
     /** Constant <code>PARM_LOCATION="location"</code> */
-    public final static String PARM_LOCATION = "location";
+    public static final String PARM_LOCATION = "location";
     
     /**
      * Parm use for promoteEnqueuedData event
@@ -1026,24 +1026,24 @@ public class EventConstants {
     public static final String PARM_FILES_TO_PROMOTE = "filesToPromote";
     
     /**
-     * Parameter used in event snmp poller definition
+     * Parameter used in event SNMP poller definition
      */ 
-    public final static String PARM_SNMP_INTERFACE_IFINDEX="snmpifindex";
+    public static final String PARM_SNMP_INTERFACE_IFINDEX="snmpifindex";
 
     /** Constant <code>PARM_SNMP_INTERFACE_IP="ipaddr"</code> */
-    public final static String PARM_SNMP_INTERFACE_IP="ipaddr"; 
+    public static final String PARM_SNMP_INTERFACE_IP="ipaddr"; 
 
     /** Constant <code>PARM_SNMP_INTERFACE_NAME="snmpifname"</code> */
-    public final static String PARM_SNMP_INTERFACE_NAME="snmpifname";
+    public static final String PARM_SNMP_INTERFACE_NAME="snmpifname";
 
     /** Constant <code>PARM_SNMP_INTERFACE_DESC="snmpifdescr"</code> */
-    public final static String PARM_SNMP_INTERFACE_DESC="snmpifdescr";
+    public static final String PARM_SNMP_INTERFACE_DESC="snmpifdescr";
 
     /** Constant <code>PARM_SNMP_INTERFACE_ALIAS="snmpifalias"</code> */
-    public final static String PARM_SNMP_INTERFACE_ALIAS="snmpifalias";
+    public static final String PARM_SNMP_INTERFACE_ALIAS="snmpifalias";
 
     /** Constant <code>PARM_SNMP_INTERFACE_MASK="mask"</code> */
-    public final static String PARM_SNMP_INTERFACE_MASK="mask";
+    public static final String PARM_SNMP_INTERFACE_MASK="mask";
     
     //
     // End event parms
@@ -1053,37 +1053,37 @@ public class EventConstants {
      * Status code used to indicate which external xmlrpc command to invoke to
      * report the occurrence of selected events.
      */
-    public final static int XMLRPC_NOTIFY_RECEIVED = 0;
+    public static final int XMLRPC_NOTIFY_RECEIVED = 0;
 
     /** Constant <code>XMLRPC_NOTIFY_SUCCESS=1</code> */
-    public final static int XMLRPC_NOTIFY_SUCCESS = 1;
+    public static final int XMLRPC_NOTIFY_SUCCESS = 1;
 
     /** Constant <code>XMLRPC_NOTIFY_FAILURE=2</code> */
-    public final static int XMLRPC_NOTIFY_FAILURE = 2;
+    public static final int XMLRPC_NOTIFY_FAILURE = 2;
 
     /**
-     * Enumerated value for the state(tticket and forward) when entry is active
+     * Enumerated value for the state(tticket and forward) when entry is active.
      */
     public static final int STATE_ON = 1;
 
     /**
      * Enumerated value for the state(tticket and forward) when entry is not
-     * active
+     * active.
      */
     static final int STATE_OFF = 0;
 
     /**
-     * UEI used for requesting an acknowledgment of an OnmsAcknowledgeable
+     * UEI used for requesting an acknowledgment of an OnmsAcknowledgeable.
      */
     public static final String ACKNOWLEDGE_EVENT_UEI = "uei.opennms.org/ackd/acknowledge";
 
     /**
-     * UEI used for indicating an OnmsAcknowledgeable has been acknowledged
+     * UEI used for indicating an OnmsAcknowledgeable has been acknowledged.
      */
     public static final String EVENT_ACKNOWLEDGED_UEI = "uei.opennms.org/ackd/acknowledgment";
 
     /**
-     * UEI used for indicating a change management event
+     * UEI used for indicating a change management event.
      */
     public static final String NODE_CONFIG_CHANGE_UEI = "uei.opennms.org/internal/translator/entityConfigChanged";
 
@@ -1093,12 +1093,12 @@ public class EventConstants {
     public static final String PARM_REASON = "reason";
     
     /**
-     * Used for indication the first endpoint to a map link
+     * Used for indication the first endpoint to a map link.
      */
     public static final String PARM_ENDPOINT1 = "endPoint1";
     
     /**
-     * Used for indication the second endpoint to a map link
+     * Used for indication the second endpoint to a map link.
      */
     public static final String PARM_ENDPOINT2 = "endPoint2";
 
@@ -1114,55 +1114,55 @@ public class EventConstants {
     //
 
     /** Constant <code>TYPE_STRING="string"</code> */
-    public final static String TYPE_STRING = "string";
+    public static final String TYPE_STRING = "string";
 
     /** Constant <code>TYPE_INT="int"</code> */
-    public final static String TYPE_INT = "int";
+    public static final String TYPE_INT = "int";
 
     /** Constant <code>TYPE_SNMP_OCTET_STRING="OctetString"</code> */
-    public final static String TYPE_SNMP_OCTET_STRING = "OctetString";
+    public static final String TYPE_SNMP_OCTET_STRING = "OctetString";
 
     /** Constant <code>TYPE_SNMP_INT32="Int32"</code> */
-    public final static String TYPE_SNMP_INT32 = "Int32";
+    public static final String TYPE_SNMP_INT32 = "Int32";
 
     /** Constant <code>TYPE_SNMP_NULL="Null"</code> */
-    public final static String TYPE_SNMP_NULL = "Null";
+    public static final String TYPE_SNMP_NULL = "Null";
 
     /** Constant <code>TYPE_SNMP_OBJECT_IDENTIFIER="ObjectIdentifier"</code> */
-    public final static String TYPE_SNMP_OBJECT_IDENTIFIER = "ObjectIdentifier";
+    public static final String TYPE_SNMP_OBJECT_IDENTIFIER = "ObjectIdentifier";
 
     /** Constant <code>TYPE_SNMP_IPADDRESS="IpAddress"</code> */
-    public final static String TYPE_SNMP_IPADDRESS = "IpAddress";
+    public static final String TYPE_SNMP_IPADDRESS = "IpAddress";
 
     /** Constant <code>TYPE_SNMP_TIMETICKS="TimeTicks"</code> */
-    public final static String TYPE_SNMP_TIMETICKS = "TimeTicks";
+    public static final String TYPE_SNMP_TIMETICKS = "TimeTicks";
 
     /** Constant <code>TYPE_SNMP_COUNTER32="Counter32"</code> */
-    public final static String TYPE_SNMP_COUNTER32 = "Counter32";
+    public static final String TYPE_SNMP_COUNTER32 = "Counter32";
 
     /** Constant <code>TYPE_SNMP_GAUGE32="Gauge32"</code> */
-    public final static String TYPE_SNMP_GAUGE32 = "Gauge32";
+    public static final String TYPE_SNMP_GAUGE32 = "Gauge32";
 
     /** Constant <code>TYPE_SNMP_OPAQUE="Opaque"</code> */
-    public final static String TYPE_SNMP_OPAQUE = "Opaque";
+    public static final String TYPE_SNMP_OPAQUE = "Opaque";
 
     /** Constant <code>TYPE_SNMP_SEQUENCE="Sequence"</code> */
-    public final static String TYPE_SNMP_SEQUENCE = "Sequence";
+    public static final String TYPE_SNMP_SEQUENCE = "Sequence";
 
     /** Constant <code>TYPE_SNMP_COUNTER64="Counter64"</code> */
-    public final static String TYPE_SNMP_COUNTER64 = "Counter64";
+    public static final String TYPE_SNMP_COUNTER64 = "Counter64";
 
     /** Constant <code>XML_ENCODING_TEXT="text"</code> */
-    public final static String XML_ENCODING_TEXT = "text";
+    public static final String XML_ENCODING_TEXT = "text";
 
     /** Constant <code>XML_ENCODING_BASE64="base64"</code> */
-    public final static String XML_ENCODING_BASE64 = "base64";
+    public static final String XML_ENCODING_BASE64 = "base64";
 
     /** Constant <code>XML_ENCODING_MAC_ADDRESS="macAddress"</code> */
     public static final String XML_ENCODING_MAC_ADDRESS = "macAddress";
 
     /** Constant <code>OID_SNMP_IFINDEX</code> */
-    public final static SnmpObjId OID_SNMP_IFINDEX = SnmpObjId.get(".1.3.6.1.2.1.2.2.1.1");
+    public static final SnmpObjId OID_SNMP_IFINDEX = SnmpObjId.get(".1.3.6.1.2.1.2.2.1.1");
 
     public static final ThreadLocal<DateFormat> FORMATTER_FULL = new ThreadLocal<DateFormat>() {
         @Override

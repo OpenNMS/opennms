@@ -16,7 +16,6 @@
   </bean>
 
   <bean id="groupManager" class="org.opennms.netmgt.config.GroupFactory" depends-on="groupManager-init" factory-method="getInstance"/>
-  
   <bean id="groupDao" class="org.opennms.netmgt.config.GroupManagerGroupDao">
     <property name="groupManager" ref="groupManager"/>
   </bean>

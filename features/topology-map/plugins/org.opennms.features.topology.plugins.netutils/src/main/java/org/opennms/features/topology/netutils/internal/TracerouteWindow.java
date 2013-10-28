@@ -59,7 +59,7 @@ import com.vaadin.ui.Button.ClickEvent;
 @SuppressWarnings("serial")
 public class TracerouteWindow extends Window {
 
-	private final double sizePercentage = 0.80; // Window size proportionate to main window
+	private static final double sizePercentage = 0.80; // Window size proportionate to main window
 	protected NativeSelect ipDropdown = null; //Dropdown component for IP Address
 	private Label nodeLabel = null; //Label displaying the name of the Node at the top of the window
 	protected TextField forcedHopField = null; //Textfield for the "Forced Hop" variable
@@ -72,7 +72,7 @@ public class TracerouteWindow extends Window {
 	private int margin = 40; //Padding around the results browser
 	private int splitHeight = 180;//Height from top of the window to the split location in pixels
 	private int topHeight = 220;//Set height size for everything above the split
-	private final String noLabel = "no such label"; //Label given to vertexes that have no real label.
+	private static final String noLabel = "no such label"; //Label given to vertexes that have no real label.
 	private String tracerouteUrl;
 
 	/**

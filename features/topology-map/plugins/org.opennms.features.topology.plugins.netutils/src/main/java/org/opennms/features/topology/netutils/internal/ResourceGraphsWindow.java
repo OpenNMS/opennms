@@ -46,11 +46,11 @@ import com.vaadin.ui.Window;
 @SuppressWarnings("serial")
 public class ResourceGraphsWindow extends Window {
 
-	private final double sizePercentage = 0.80; // Window size ratio to the main window
-	private final int widthCushion = 50; //Border cushion for width of window;
-	private final int heightCushion = 110; //Border cushion for height of window
+	private static final double sizePercentage = 0.80; // Window size ratio to the main window
+	private static final int widthCushion = 50; //Border cushion for width of window;
+	private static final int heightCushion = 110; //Border cushion for height of window
 	private Embedded rgBrowser = null; //Browser component which is directed at the Resource Graphs page
-	private final String noLabel = "no such label"; //Label given to vertexes that have no real label.
+	private static final String noLabel = "no such label"; //Label given to vertexes that have no real label.
 	
 	/**
 	 * The ResourceGraphsWindow method constructs a sub-window instance which can be added to a

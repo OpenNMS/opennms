@@ -53,8 +53,7 @@ public class DhcpClient implements Client<DhcpRequest, DhcpResponse> {
     private int m_retries;
     private int m_timeout;
     private InetAddress m_address;
-    private long m_responseTime;
-    
+
     /**
      * <p>close</p>
      */
@@ -80,10 +79,9 @@ public class DhcpClient implements Client<DhcpRequest, DhcpResponse> {
      */
     @Override
     public DhcpResponse receiveBanner() throws IOException, Exception {
-        m_responseTime = Dhcpd.isServer(m_address, m_timeout, getRetries());
-        LOG.debug("got a response from the server: {}", m_responseTime);
-        DhcpResponse response = new DhcpResponse(m_responseTime);
-        return response;
+        long responseTime = Dhcpd.isServer(m_address, m_timeout, getRetries());
+        LOG.debug("got a response from the server: {}", responseTime);
+        return new DhcpResponse(responseTime);
     }
 
     /**

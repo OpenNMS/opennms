@@ -28,25 +28,50 @@
 
 package org.opennms.features.topology.api.topo;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * The interface is extended by plugin developers to allow the setting of criteria for their Providers
  * 
  * @author brozow
  *
  */
-public interface Criteria {
-	
-	
-	enum ElementType { GRAPH, VERTEX, EDGE }
-	
+public abstract class Criteria {
+
+    public enum ElementType { GRAPH, VERTEX, EDGE;}
+
+    private volatile AtomicBoolean m_criteriaDirty = new AtomicBoolean(Boolean.TRUE);
+
 	/**
 	 * This criteria applies to only providers of the indicated type
 	 */
-	public ElementType getType();
-	
+	public abstract ElementType getType();
+
 	/**
 	 * This criteria only applies to providers for this namespace
 	 */
-	public String getNamespace();
+	public abstract String getNamespace();
 
+
+    @Override
+    public abstract int hashCode();
+
+    @Override
+    public abstract boolean equals(Object obj);
+
+    public void resetDirty() {
+        setDirty(false);
+    }
+
+    public boolean isDirty() {
+        synchronized (m_criteriaDirty) {
+            return m_criteriaDirty.get();
+        }
+    }
+
+    protected void setDirty(boolean isDirty) {
+        synchronized (m_criteriaDirty) {
+            m_criteriaDirty.set(isDirty);
+        }
+    }
 }

@@ -32,23 +32,21 @@ import org.opennms.netmgt.xml.event.Event;
 
 public abstract class AbstractEventPolicyRule implements EventPolicyRule {
 
-	private boolean forward;
-	
-        @Override
+    @Override
 	public void addForwardRule(EventMatch match) {
 		m_filter.add(match);
-		m_forwardes.add(new Boolean(true));
+		m_forwardes.add(Boolean.TRUE);
 	}
 
         @Override
 	public void addDropRule(EventMatch match) {
 		m_filter.add(match);
-		m_forwardes.add(new Boolean(false));
+		m_forwardes.add(Boolean.FALSE);
 	}
 
         @Override
 	public Event filter(Event event) {
-		forward=true;
+		boolean forward = true;
 		int count = 0;
 		for (EventMatch filter: m_filter) {
 			if (filter.match(event)) {

@@ -59,7 +59,6 @@ public class TicketNotificationStrategy implements NotificationStrategy {
 
 	private static final Logger LOG = LoggerFactory.getLogger(TicketNotificationStrategy.class);
 	private EventIpcManager m_eventManager;
-	private List<Argument> m_arguments;
 	private DefaultEventConfDao m_eventConfDao;
 	
 	enum AlarmType {
@@ -123,10 +122,8 @@ public class TicketNotificationStrategy implements NotificationStrategy {
         String eventUEI = null;
         String noticeID = null;
         
-        m_arguments = arguments;
-        
         // Pull the arguments we're interested in from the list.
-        for (Argument arg : m_arguments) {
+        for (Argument arg : arguments) {
 		LOG.debug("arguments: {} = {}", arg.getSwitch(), arg.getValue());
         	
             if ("eventID".equalsIgnoreCase(arg.getSwitch())) {

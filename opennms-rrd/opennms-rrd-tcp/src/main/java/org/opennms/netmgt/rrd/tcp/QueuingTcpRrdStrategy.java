@@ -62,7 +62,6 @@ public class QueuingTcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefi
     private static final Logger LOG = LoggerFactory.getLogger(QueuingTcpRrdStrategy.class);
 
     private final BlockingQueue<PerformanceDataReading> m_queue = new LinkedBlockingQueue<PerformanceDataReading>(50000);
-    private final ConsumerThread m_consumerThread;
     private final TcpRrdStrategy m_delegate;
     private int m_skippedReadings = 0;
 
@@ -125,8 +124,8 @@ public class QueuingTcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefi
      */
     public QueuingTcpRrdStrategy(TcpRrdStrategy delegate) {
         m_delegate = delegate;
-        m_consumerThread = new ConsumerThread(delegate, m_queue);
-        m_consumerThread.start();
+        ConsumerThread consumerThread = new ConsumerThread(delegate, m_queue);
+        consumerThread.start();
     }
 
     /** {@inheritDoc} */

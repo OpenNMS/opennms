@@ -86,7 +86,7 @@ public class TestServlet extends HttpServlet {
                 StringTokenizer st = new StringTokenizer(requestContent, "&");
                 SampleData data = new SampleData();
                 while (st.hasMoreTokens()) {
-                    String pair[] = ((String)st.nextToken()).split("=");
+                    String[] pair = ((String)st.nextToken()).split("=");
                     data.addParameter(pair[0], pair[1]);
                 }
                 resp.getWriter().write(JaxbUtils.marshal(data));

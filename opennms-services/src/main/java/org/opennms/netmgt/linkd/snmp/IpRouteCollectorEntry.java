@@ -34,6 +34,8 @@ import java.net.InetAddress;
 
 import org.opennms.netmgt.model.OnmsIpRouteInterface;
 import org.opennms.netmgt.model.OnmsIpRouteInterface.RouteType;
+import org.opennms.netmgt.snmp.NamedSnmpVar;
+import org.opennms.netmgt.snmp.SnmpStore;
 
 public abstract class IpRouteCollectorEntry extends SnmpStore {
 

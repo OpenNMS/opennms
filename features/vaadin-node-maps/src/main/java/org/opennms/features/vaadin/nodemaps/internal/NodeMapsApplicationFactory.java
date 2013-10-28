@@ -28,36 +28,18 @@
 
 package org.opennms.features.vaadin.nodemaps.internal;
 
-import org.ops4j.pax.vaadin.AbstractApplicationFactory;
+import org.opennms.osgi.OnmsVaadinUIFactory;
 import org.osgi.service.blueprint.container.BlueprintContainer;
-
-import com.vaadin.ui.UI;
 
 /**
  * A factory for creating NodeMapsApplication objects.
  * 
- * TODO: Refactor into a common class
- * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class NodeMapsApplicationFactory extends AbstractApplicationFactory {
+public class NodeMapsApplicationFactory extends OnmsVaadinUIFactory {
 
-	private final BlueprintContainer m_blueprintContainer;
-	private final String m_beanName;
-	
+
 	public NodeMapsApplicationFactory(BlueprintContainer container, String beanName) {
-		m_blueprintContainer = container;
-		m_beanName = beanName;
+		super(NodeMapsApplication.class, container, beanName);
 	}
-
-    @Override
-    public Class<? extends UI> getUIClass() {
-        return NodeMapsApplication.class;
-    }
-
-    @Override
-    public UI getUI() {
-        NodeMapsApplication application = (NodeMapsApplication) m_blueprintContainer.getComponentInstance(m_beanName);
-        return application;
-    }
 }

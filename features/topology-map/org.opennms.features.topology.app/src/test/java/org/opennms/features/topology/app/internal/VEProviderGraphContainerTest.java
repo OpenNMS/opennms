@@ -26,6 +26,7 @@ import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.plugins.topo.simple.SimpleGraphBuilder;
 
 public class VEProviderGraphContainerTest {
 
@@ -67,6 +68,7 @@ public class VEProviderGraphContainerTest {
 		providerManager.onEdgeProviderBind(m_edgeProvider);
 
 		GraphContainer graphContainer = new VEProviderGraphContainer(m_graphProvider, providerManager);
+		graphContainer.setSemanticZoomLevel(0);
 		
 		m_graphContainer = graphContainer;
 	}
@@ -104,6 +106,7 @@ public class VEProviderGraphContainerTest {
 		expectVertex("nodes", "g1", "vertex");
 		expectVertex("nodes", "g2", "vertex");
 		expectEdge("pseudo-nodes", "<nodes:g1>-<nodes:g2>", "edge");
+		expectEdge("pseudo-ncs", "<nodes:g1>-<nodes:g2>", "ncs edge");
 		
 		graph = m_graphContainer.getGraph();
 		
@@ -113,7 +116,7 @@ public class VEProviderGraphContainerTest {
 		
 		reset();
 		
-		m_graphContainer.setCriteria(SimpleEdgeProvider.labelMatches("ncs", "ncsedge."));
+		m_graphContainer.addCriteria(SimpleEdgeProvider.labelMatches("ncs", "ncsedge."));
 		
 		expectVertex("nodes", "g1", "vertex");
 		expectVertex("nodes", "g2", "vertex");

@@ -28,19 +28,14 @@
 
 package org.opennms.core.resource;
 
+import javax.sql.DataSource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Properties;
-import java.util.StringTokenizer;
-
-import javax.sql.DataSource;
+import java.util.*;
 
 /**
  * The Vault handles policies for allocating/deallocating scarce resources and
@@ -59,18 +54,18 @@ import javax.sql.DataSource;
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
  */
-public class Vault extends Object {
+public class Vault {
 
     /**
      * Holds all the application configuration properties.
      */
-    protected static Properties properties = new Properties(System.getProperties());
+    private static Properties properties = new Properties(System.getProperties());
 
     /**
      * Stores the directory where the OpenNMS configuration files can be found.
      * The default is <em>/opt/OpenNMS</em>.
      */
-    protected static String homeDir = "/opt/opennms/";
+    private static String homeDir = "/opt/opennms/";
 
     private static DataSource s_dataSource;
 
@@ -205,10 +200,10 @@ public class Vault extends Object {
      * <P>
      * Adds new keys to the system properties using the passed key name a the
      * properties location instance. The passed key is used as a key to the
-     * system {@link java.util.Properties#getPropertyget property} to find the
+     * system {@link java.util.Properties#getProperty} to find the
      * supplementary property information. The returned value should be in the
      * form of a list of file names, each separated by the system
-     * {@link java.io.File#pathSeparatorCharpath separator} character.
+     * {@link java.io.File#pathSeparator} character.
      * </P>
      *
      * <P>
@@ -238,8 +233,6 @@ public class Vault extends Object {
 
                         try {
                             p.load(is);
-                        } catch (IOException ioE) {
-                            throw ioE;
                         } finally {
                             try {
                                 is.close();

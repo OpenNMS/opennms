@@ -78,7 +78,7 @@ public abstract class NoticeUtil extends Object {
         } else if (type.equals(ResponderFilter.TYPE)) {
             filter = new ResponderFilter(value);
         } else if (type.equals(ServiceFilter.TYPE)) {
-            filter = new ServiceFilter(WebSecurityUtils.safeParseInt(value));
+            filter = new ServiceFilter(WebSecurityUtils.safeParseInt(value), servletContext);
         } else if (type.equals(UserFilter.TYPE)) {
             filter = new UserFilter(value);
         }

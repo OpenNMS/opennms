@@ -49,6 +49,8 @@ import com.vaadin.data.Validator;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.AbstractSplitPanel;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Form;
@@ -56,8 +58,6 @@ import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 
 public class MBeansView extends VerticalLayout implements ClickListener, ModelChangeListener, ViewStateChangedListener {
 
@@ -71,8 +71,6 @@ public class MBeansView extends VerticalLayout implements ClickListener, ModelCh
 	 * config model when clicking on 'next' button.
 	 */
 	private UiModel model;
-	private final AbstractSplitPanel mainPanel;
-	private final Layout mbeansContent;
 	private final JmxConfigGeneratorApplication app;
 	private final MBeansTree mbeansTree;
 	private final MBeansContentTabSheet mbeansTabSheet;
@@ -122,8 +120,8 @@ public class MBeansView extends VerticalLayout implements ClickListener, ModelCh
 		setSizeFull();
 		mbeansTabSheet = new MBeansContentTabSheet(controller);
 		mbeansTree = new MBeansTree(controller);
-		mbeansContent = initContentPanel(mbeansForm, mbeansTabSheet);
-		mainPanel = initMainPanel(mbeansTree, mbeansContent);
+		Layout mbeansContent = initContentPanel(mbeansForm, mbeansTabSheet);
+		AbstractSplitPanel mainPanel = initMainPanel(mbeansTree, mbeansContent);
 
 		registerListener(controller);
 

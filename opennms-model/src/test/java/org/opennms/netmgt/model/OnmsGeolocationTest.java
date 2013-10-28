@@ -74,11 +74,29 @@ public class OnmsGeolocationTest {
                 "UK",
                 "PR7 3JE, UK"
             },
+            {
+                null,
+                null,
+                null,
+                null,
+                " ",
+                " ",
+                null
+            },
+            {
+                null,
+                null,
+                null,
+                null,
+                "",
+                "",
+                null
+            }
         });
     }
 
     @Test
-    public void testUSAddress() {
+    public void testAddress() {
         assertEquals(m_expectedAddress, m_geolocation.asAddressString());
     }
 }

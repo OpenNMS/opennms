@@ -126,7 +126,7 @@ public final class Parameter {
                         Parm parm = new Parm();
                         parm.setParmName(paramEncoded[0]);
                         Value value = new Value();
-                        int startParamType = paramEncoded[1].lastIndexOf("(");
+                        int startParamType = paramEncoded[1].lastIndexOf('(');
                         if (startParamType == -1 ) {
                             value.setContent(paramEncoded[1]);
                             value.setType("string");

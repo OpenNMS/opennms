@@ -201,7 +201,7 @@ public class RequisitionFileUtils {
     /** return true if the snapshot file is newer than the supplied date **/
     public static boolean isNewer(final File snapshotFile, final Date date) {
         final String name = snapshotFile.getName();
-        final String timestamp = name.substring(name.lastIndexOf(".") + 1);
+        final String timestamp = name.substring(name.lastIndexOf('.') + 1);
         final Date snapshotDate = new Date(Long.valueOf(timestamp));
         final boolean isNewer = snapshotDate.after(date);
         LOG.trace("snapshot date = {}, comparison date = {}, snapshot date {} newer than comparison date", snapshotDate.getTime(), date.getTime(), (isNewer? "is" : "is not"));

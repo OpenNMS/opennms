@@ -39,8 +39,7 @@ public abstract class SelectionTree extends Tree {
     }
 
     private final TreeItemClickTracker m_treeItemClickTracker = new TreeItemClickTracker();
-    private boolean m_itemClicked = false;
-    
+
     protected GraphContainer m_graphContainer;
     
     public SelectionTree(FilterableHierarchicalContainer container) {
@@ -75,7 +74,6 @@ public abstract class SelectionTree extends Tree {
             
             @Override
             public void itemClick(ItemClickEvent event) {
-                m_itemClicked = true;
                 Set<Object> selectedIds = (Set<Object>) ((SelectionTree) event.getSource()).getValue();
                 
                 Object itemId = event.getItemId();

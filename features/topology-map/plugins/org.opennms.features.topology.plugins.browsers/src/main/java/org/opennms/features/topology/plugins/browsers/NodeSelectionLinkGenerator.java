@@ -28,34 +28,28 @@
 
 package org.opennms.features.topology.plugins.browsers;
 
-import java.util.*;
-
-import org.opennms.features.topology.api.*;
-
 import com.vaadin.data.Property;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.themes.BaseTheme;
+import org.opennms.features.topology.api.SelectionListener;
+import org.opennms.features.topology.api.VerticesUpdateManager;
 import org.opennms.features.topology.api.topo.AbstractVertexRef;
-import org.opennms.features.topology.api.topo.SimpleLeafVertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.osgi.EventProxy;
+import org.opennms.osgi.EventProxyAware;
 
-public class NodeSelectionLinkGenerator implements ColumnGenerator {
+import java.util.*;
 
-    private class NSLGVertexRef extends AbstractVertexRef{
-
-        public NSLGVertexRef(String namespace, String id, String label) {
-            super(namespace, id, label);
-        }
-    }
+public class NodeSelectionLinkGenerator implements ColumnGenerator, EventProxyAware {
 
 	private static final long serialVersionUID = -1072007643387089006L;
 
 	private final String m_nodeIdProperty;
+    private final String m_nodeLabelProperty;
 	private final ColumnGenerator m_generator;
 
 	/**
@@ -64,12 +58,13 @@ public class NodeSelectionLinkGenerator implements ColumnGenerator {
 	private Collection<SelectionListener> m_selectionListeners = new HashSet<SelectionListener>();
     private EventProxy m_eventProxy;
 
-    public NodeSelectionLinkGenerator(String nodeIdProperty) {
-		this(nodeIdProperty, new ToStringColumnGenerator());
+    public NodeSelectionLinkGenerator(String nodeIdProperty, String nodeLabelProperty) {
+		this(nodeIdProperty, nodeLabelProperty, new ToStringColumnGenerator());
 	}
 
-	public NodeSelectionLinkGenerator(String nodeIdProperty, ColumnGenerator generator) {
+	private NodeSelectionLinkGenerator(String nodeIdProperty, String nodeLabelProperty, ColumnGenerator generator) {
 		m_nodeIdProperty = nodeIdProperty;
+        m_nodeLabelProperty = nodeLabelProperty;
 		m_generator = generator;
 	}
 
@@ -89,8 +84,9 @@ public class NodeSelectionLinkGenerator implements ColumnGenerator {
 				button.addClickListener(new ClickListener() {
 					@Override
 					public void buttonClick(ClickEvent event) {
-
-                        fireVertexUpdatedEvent(Arrays.asList(nodeIdProperty.getValue()));
+                        Integer nodeId = nodeIdProperty.getValue();
+                        String nodeLabel = (String)source.getContainerProperty(itemId, m_nodeLabelProperty).getValue();
+                        fireVertexUpdatedEvent(nodeId, nodeLabel);
                     }
                 });
 				return button;
@@ -98,17 +94,10 @@ public class NodeSelectionLinkGenerator implements ColumnGenerator {
 		}
 	}
 
-    private List<VertexRef> getVertexRefsForIds(Integer nodeIdProperty) {
-        VertexRef tempRef = new NSLGVertexRef("nodes", String.valueOf(nodeIdProperty), "");
-        return Arrays.asList(tempRef);
-    }
-
-    protected void fireVertexUpdatedEvent(List<Integer> nodeIds) {
+    protected void fireVertexUpdatedEvent(Integer nodeId, String nodeLabel) {
         Set<VertexRef> vertexRefs = new HashSet<VertexRef>();
-        for (Integer id : nodeIds) {
-            VertexRef vRef = new AbstractVertexRef("nodes", String.valueOf(id),"");
-            vertexRefs.add(vRef);
-        }
+        VertexRef vRef = new AbstractVertexRef("nodes", String.valueOf(nodeId), nodeLabel);
+        vertexRefs.add(vRef);
         getEventProxy().fireEvent(new VerticesUpdateManager.VerticesUpdateEvent(vertexRefs));
     }
 

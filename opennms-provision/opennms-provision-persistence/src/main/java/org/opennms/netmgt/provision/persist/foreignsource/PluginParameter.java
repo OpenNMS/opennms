@@ -167,7 +167,11 @@ public class PluginParameter implements Serializable, Comparable<PluginParameter
                 PluginWrapper pw = new PluginWrapper(m_parent.getPluginClass());
                 keys = pw.getOptionalKeys();
                 for (PluginParameter p : m_parent.getParameters()) {
-                    if (p.getKey() != getKey()) {
+                    if (getKey() == null) {
+                        if (p.getKey() != null) {
+                            keys.remove(p.getKey());
+                        }
+                    } else if (!getKey().equals(p.getKey())) {
                         keys.remove(p.getKey());
                     }
                 }

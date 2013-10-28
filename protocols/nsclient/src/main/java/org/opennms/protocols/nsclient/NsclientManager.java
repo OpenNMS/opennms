@@ -74,12 +74,12 @@ public class NsclientManager {
     /**
      * The default socket timeout.
      */
-    public static int DEFAULT_SOCKET_TIMEOUT = 5000;
+    public static final int DEFAULT_SOCKET_TIMEOUT = 5000;
 
     /**
      * The default NSClient TCP port.
      */
-    public static int DEFAULT_PORT = 1248;
+    public static final int DEFAULT_PORT = 1248;
 
     /**
      * Stores the host name the manager is connect(ing/ed) to.

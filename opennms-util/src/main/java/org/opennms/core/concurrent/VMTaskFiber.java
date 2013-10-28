@@ -28,12 +28,12 @@
 
 package org.opennms.core.concurrent;
 
+import org.opennms.core.fiber.Fiber;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.net.URLClassLoader;
-
-import org.opennms.core.fiber.Fiber;
 
 /**
  * <p>VMTaskFiber class.</p>
@@ -76,11 +76,6 @@ public class VMTaskFiber implements Fiber, Runnable {
      * The class loader used to resolve classes for the thread group.
      */
     private ClassLoader m_classLoader;
-
-    /**
-     * The entry class.
-     */
-    private Class<?> m_entryClass;
 
     /**
      * The entry method.
@@ -126,7 +121,7 @@ public class VMTaskFiber implements Fiber, Runnable {
                 //
                 boolean isOK = true;
                 for (int x = 0; isOK && x < args.length; x++) {
-                    if (args[x].getName().equals(MAIN_PARAMETER_TYPES[x]) == false)
+                    if (!args[x].getName().equals(MAIN_PARAMETER_TYPES[x]))
                         isOK = false;
                 }
 
@@ -173,7 +168,7 @@ public class VMTaskFiber implements Fiber, Runnable {
 
         m_classLoader = new URLClassLoader(searchPaths);
 
-        m_entryClass = m_classLoader.loadClass(entryClassName);
+        Class<?> m_entryClass = m_classLoader.loadClass(entryClassName);
         m_entryMethod = findMain(m_entryClass);
         if (m_entryMethod == null)
             throw new NoSuchMethodException("main() method not found for class " + entryClassName);

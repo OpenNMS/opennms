@@ -56,8 +56,8 @@ public class ServiceCollector {
         return m_serviceID;
     }
 
-    public final String m_regex = "(\\d+)/(\\d+.\\d+.\\d+.\\d+)/(\\w+)"; 
-    public final Pattern m_pattern = Pattern.compile(m_regex);	
+    private static final String SERVICE_ID_REGEX = "(\\d+)/(\\d+.\\d+.\\d+.\\d+)/(\\w+)"; 
+    private static final Pattern SERVICE_ID_PATTERN = Pattern.compile(SERVICE_ID_REGEX);	
 
     public void addMessage(LogMessage msg) {
         if (!m_serviceID.equals(msg.getServiceID())) {
@@ -104,7 +104,7 @@ public class ServiceCollector {
     }
 
     public String getParsedServiceID() {
-        Matcher m = m_pattern.matcher(getServiceID());
+        Matcher m = SERVICE_ID_PATTERN.matcher(getServiceID());
         if(m.matches()) {
             return new String(m.group(1));
         }else{

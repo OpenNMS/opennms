@@ -43,7 +43,6 @@ import java.util.Observer;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.dhcpd.DhcpdConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.utils.IpValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -192,8 +191,11 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
         String myIpStr = DhcpdConfigFactory.getInstance().getMyIpAddress();
         LOG.debug("Checking string \"{}\" to see if we have an IP address", myIpStr);
         if (myIpStr != null &&  !myIpStr.equals("") && !myIpStr.equalsIgnoreCase("broadcast")) {
-            if(IpValidator.isIpValid(myIpStr)) {
+            try {
+                InetAddressUtils.toIpAddrBytes(myIpStr);
                 relayMode = true;
+            } catch (IllegalArgumentException e) {
+                LOG.warn("Invalid format for IP address: {}", myIpStr);
             }
         }
         LOG.debug("Setting relay mode {}", relayMode);

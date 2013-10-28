@@ -30,12 +30,30 @@ package org.opennms.features.topology.plugins.browsers;
 
 import org.opennms.core.criteria.restrictions.AnyRestriction;
 import org.opennms.core.criteria.restrictions.Restriction;
+import org.opennms.features.topology.api.topo.VertexRef;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 abstract class NodeIdFocusToRestrictionsConverter {
-    public List<Restriction> getRestrictions(List<Integer> nodeIdFocus) {
+
+    public List<Restriction> getRestrictions(Collection<VertexRef> vertices) {
+        // when there are no vertices, we need to create
+        // a restriction which will ALWAYS fail
+        // so we create a dummy restriction for node with id -1 (there should never be a node id with -1).
+        if (vertices.isEmpty()) {
+            List<Integer> nodeIdList = new ArrayList<Integer>();
+            nodeIdList.add(Integer.valueOf(-1)); // this will always return an empty result
+            return getRestrictions(nodeIdList);
+        }
+        return getRestrictions(extractNodeIds(vertices)); // we have entries, so wie use them
+    }
+
+    abstract protected Restriction createRestriction(Integer nodeId);
+
+    private List<Restriction> getRestrictions(List<Integer> nodeIdFocus) {
         List<Restriction> restrictions = new ArrayList<Restriction>();
         restrictions.add(getAnyRestriction(nodeIdFocus));
         return restrictions;
@@ -49,5 +67,24 @@ abstract class NodeIdFocusToRestrictionsConverter {
         return new AnyRestriction(restrictions.toArray(new Restriction[restrictions.size()]));
     }
 
-    abstract protected Restriction createRestriction(Integer nodeId);
+    /**
+     * Gets the node ids from the given vertices. A node id can only be extracted from a vertex with a "nodes"' namespace.
+     * For a vertex with namespace "node" the "getId()" method always returns the node id.
+     *
+     * @param vertices
+     * @return
+     */
+    private List<Integer> extractNodeIds(Collection<VertexRef> vertices) {
+        List<Integer> nodeIdList = new ArrayList<Integer>();
+        for (VertexRef eachRef : vertices) {
+            if ("nodes".equals(eachRef.getNamespace())) {
+                try {
+                    nodeIdList.add(Integer.valueOf(eachRef.getId()));
+                } catch (NumberFormatException e) {
+                    LoggerFactory.getLogger(this.getClass()).warn("Cannot filter nodes with ID: {}", eachRef.getId());
+                }
+            }
+        }
+        return nodeIdList;
+    }
 }

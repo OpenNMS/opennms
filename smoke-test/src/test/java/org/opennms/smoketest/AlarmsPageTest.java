@@ -115,6 +115,12 @@ public class AlarmsPageTest extends OpenNMSSeleniumTestCase {
         waitForText("Acknowledgment and Severity Actions");
     }
 
+    @Test
+    public void testAlarmIdNotFoundPage() throws InterruptedException {
+        selenium.open("/opennms/alarm/detail.htm?id=999999999");
+        waitForText("Alarm ID Not Found");
+    }
+    
     private boolean hasAlarmDetailLink() {
         return selenium.isElementPresent("//a[contains(@href,'alarm/detail.htm')]");
     }

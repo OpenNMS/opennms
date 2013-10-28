@@ -6,6 +6,7 @@
         <argument ref="alarmDao"/>
         <property name="name" value="Summary"/>
         <property name="boostable" value="true"/>
+        <property name="dashboardSuitable" value="true"/>
         <property name="requiredParameters">
             <map>
                 <entry key="timeslot" value="3600"/>

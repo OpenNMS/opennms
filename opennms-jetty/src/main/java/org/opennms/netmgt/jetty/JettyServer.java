@@ -175,12 +175,6 @@ public class JettyServer extends AbstractServiceDaemon {
         handlers.addHandler(wac);
     }
 
-    /**
-     * <p>excludeCipherSuites</p>
-     * @param contextFactory 
-     * @param https_port 
-     * @param sslConnector a {@link org.eclipse.jetty.server.security.SslSocketConnector} object.
-     */
     protected void excludeCipherSuites(final SslContextFactory contextFactory, final Integer port) {
         String[] defaultExclSuites = {
                 "SSL_DHE_DSS_WITH_DES_CBC_SHA",
@@ -218,8 +212,8 @@ public class JettyServer extends AbstractServiceDaemon {
     protected void onStart() {
         try {
             m_server.start();
-        } catch (final Exception e) {
-            LOG.error("Error starting Jetty Server", e);
+        } catch (final Throwable t) {
+            LOG.error("Error starting Jetty Server", t);
         }
     }
 
@@ -228,8 +222,8 @@ public class JettyServer extends AbstractServiceDaemon {
     protected void onStop() {
         try {
             m_server.stop();
-        } catch (final Exception e) {
-            LOG.error("Error stopping Jetty Server", e);
+        } catch (final Throwable t) {
+            LOG.error("Error stopping Jetty Server", t);
         }
     }
 

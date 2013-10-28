@@ -69,10 +69,6 @@ public class WmiClient implements IWmiClient {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(WmiClient.class);
 
-
-    private JIComServer m_ComStub = null;
-    private IJIComObject m_ComObject = null;
-    private IJIDispatch m_Dispatch = null;
     private String m_Address = null;
     private JISession m_Session = null;
     private IJIDispatch m_WbemServices = null;
@@ -233,13 +229,13 @@ public class WmiClient implements IWmiClient {
             m_Session.useSessionSecurity(true);
             m_Session.setGlobalSocketTimeout(5000);
 
-            m_ComStub = new JIComServer(JIProgId.valueOf(WMI_PROGID), m_Address, m_Session);
+            JIComServer m_ComStub = new JIComServer(JIProgId.valueOf(WMI_PROGID), m_Address, m_Session);
 
             final IJIComObject unknown = m_ComStub.createInstance();
-            m_ComObject = unknown.queryInterface(WMI_CLSID);
+            IJIComObject m_ComObject = unknown.queryInterface(WMI_CLSID);
 
             // This will obtain the dispatch interface
-            m_Dispatch = (IJIDispatch) JIObjectFactory.narrowObject(m_ComObject.queryInterface(IJIDispatch.IID));
+            IJIDispatch m_Dispatch = (IJIDispatch) JIObjectFactory.narrowObject(m_ComObject.queryInterface(IJIDispatch.IID));
             final JIVariant results[] = m_Dispatch.callMethodA(
                 "ConnectServer",
                 new Object[]{

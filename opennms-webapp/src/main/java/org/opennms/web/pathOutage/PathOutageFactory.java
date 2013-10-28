@@ -191,7 +191,7 @@ public class PathOutageFactory extends Object {
         try {
             int countManagedSvcs = 0;
             int countOutages = 0;
-            String result[] = new String[3];
+            String[] result = new String[3];
             result[1] = "Cleared";
             result[2] = "Unmanaged";
 

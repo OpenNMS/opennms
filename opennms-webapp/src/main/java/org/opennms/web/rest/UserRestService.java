@@ -98,6 +98,10 @@ public class UserRestService extends OnmsRestService {
                     return a.getUsername().compareTo(b.getUsername());
                 }
             });
+            for (OnmsUser eachUser : list) {
+                eachUser.setPasswordSalted(false);
+                eachUser.setPassword(null);
+            }
             return list;
         } catch (final Throwable t) {
             throw getException(Status.BAD_REQUEST, t);
@@ -113,7 +117,11 @@ public class UserRestService extends OnmsRestService {
         readLock();
         try {
             final OnmsUser user = m_userManager.getOnmsUser(username);
-            if (user != null) return user;
+            if (user != null) {
+                user.setPassword(null);
+                user.setPasswordSalted(false);
+                return user;
+            }
             throw getException(Status.NOT_FOUND, username + " does not exist");
         } catch (final Throwable t) {
             if (t instanceof WebApplicationException) throw (WebApplicationException)t;

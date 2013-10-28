@@ -55,9 +55,9 @@ public class InfoWindow extends Window {
     
     private static final long serialVersionUID = -510407825043696244L;
 	
-    private final double sizePercentage = 0.80; // Window size ratio to the main window
-    private final int widthCushion = 50; //Border cushion for width of window;
-    private final int heightCushion = 110; //Border cushion for height of window
+    private static final double sizePercentage = 0.80; // Window size ratio to the main window
+    private static final int widthCushion = 50; //Border cushion for width of window;
+    private static final int heightCushion = 110; //Border cushion for height of window
     private Embedded infoBrowser = null; //Browser component which is directed at the Resource Graphs page
 
     

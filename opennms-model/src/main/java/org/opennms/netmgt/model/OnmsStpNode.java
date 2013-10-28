@@ -165,10 +165,10 @@ public class OnmsStpNode {
             return null;
         }
         
-        public static BridgeBaseType UNKNOWN = new BridgeBaseType(BASE_TYPE_UNKNOWN);
-        public static BridgeBaseType TRANSPARENT_ONLY = new BridgeBaseType(BASE_TYPE_TRANSPARENT_ONLY);
-        public static BridgeBaseType SOURCEROUTE_ONLY = new BridgeBaseType(BASE_TYPE_SOURCEROUTE_ONLY);
-        public static BridgeBaseType SRT = new BridgeBaseType(BASE_TYPE_SRT);
+        public static final BridgeBaseType UNKNOWN = new BridgeBaseType(BASE_TYPE_UNKNOWN);
+        public static final BridgeBaseType TRANSPARENT_ONLY = new BridgeBaseType(BASE_TYPE_TRANSPARENT_ONLY);
+        public static final BridgeBaseType SOURCEROUTE_ONLY = new BridgeBaseType(BASE_TYPE_SOURCEROUTE_ONLY);
+        public static final BridgeBaseType SRT = new BridgeBaseType(BASE_TYPE_SRT);
 
 
     }

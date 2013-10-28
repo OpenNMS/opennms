@@ -72,7 +72,7 @@ public class ChartsConfigurationWindow extends DashletConfigurationWindow {
          * Setting up the base layouts
          */
 
-        setHeight(310, Unit.PIXELS);
+        setHeight(410, Unit.PIXELS);
         setWidth(40, Unit.PERCENTAGE);
 
         HorizontalLayout horizontalLayout = new HorizontalLayout();

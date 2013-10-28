@@ -38,7 +38,7 @@
   <jsp:param name="title" value="Advanced Event Search" />
   <jsp:param name="headTitle" value="Advanced Search" />
   <jsp:param name="headTitle" value="Events" />
-  <jsp:param name="breadcrumb" value="<a href='event/index.jsp'>Events</a>" />
+  <jsp:param name="breadcrumb" value="<a href='event/index'>Events</a>" />
   <jsp:param name="breadcrumb" value="Advanced Event Search" />
 </jsp:include>
 

@@ -285,8 +285,8 @@
             <% } %>
           </td>
           <td class="divider">
-            <% if(notification.getServiceName() != null) { %>
-              <% Filter serviceFilter = new ServiceFilter(notification.getServiceId()); %>
+            <% if(notification.getServiceName() != null && !notification.getServiceName().trim().isEmpty()) { %>
+              <% Filter serviceFilter = new ServiceFilter(notification.getServiceId(), getServletContext()); %>
               <% if( notification.getNodeId() != 0 && notification.getIpAddress() != null ) { %>
                 <c:url var="serviceLink" value="element/service.jsp">
                   <c:param name="node" value="<%=String.valueOf(notification.getNodeId())%>"/>

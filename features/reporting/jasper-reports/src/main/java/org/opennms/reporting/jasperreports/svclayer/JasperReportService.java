@@ -421,7 +421,7 @@ public class JasperReportService implements ReportService {
      * @return a sub report parameter map as {@link java.util.HashMap<String,Object>} object
      */
     private HashMap<String, Object> buildSubreport(final String mainReportId, final JasperReport mainReport) {
-        String repositoryId = mainReportId.substring(0, mainReportId.indexOf("_"));
+        String repositoryId = mainReportId.substring(0, mainReportId.indexOf('_'));
         HashMap<String, Object> subreportMap = new HashMap<String, Object>();
 
         // Filter parameter for sub reports

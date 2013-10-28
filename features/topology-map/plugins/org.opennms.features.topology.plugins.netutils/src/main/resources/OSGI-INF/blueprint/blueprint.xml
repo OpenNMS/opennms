@@ -6,14 +6,14 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
 
     <cm:property-placeholder persistent-id="org.opennms.features.topology.netutils" update-strategy="reload">
         <cm:default-properties>
-            <cm:property name="pingURL" value="/opennms/ExecCommand.map?command=ping"/>
-            <cm:property name="tracerouteURL" value="/opennms/ExecCommand.map?command=traceroute"/>
-            <cm:property name="eventsURL" value="/opennms/event/list"/>
-            <cm:property name="alarmsURL" value="/opennms/alarm/list.htm"/>
-        	<cm:property name="nodeListURL" value="/opennms/element/nodeList.htm"/>
-        	<cm:property name="nodePageURL" value="/opennms/element/node.jsp?node="/>
-        	<cm:property name="resourceGraphListURL" value="/opennms/graph/index.jsp"/>
-        	<cm:property name="resourceGraphNodeURL" value="/opennms/graph/chooseresource.htm?reports=all&amp;parentResourceId=node"/> 
+            <cm:property name="pingURL" value="ExecCommand.map?command=ping"/>
+            <cm:property name="tracerouteURL" value="ExecCommand.map?command=traceroute"/>
+            <cm:property name="eventsURL" value="event/list"/>
+            <cm:property name="alarmsURL" value="alarm/list.htm"/>
+        	<cm:property name="nodeListURL" value="element/nodeList.htm"/>
+        	<cm:property name="nodePageURL" value="element/node.jsp?node="/>
+        	<cm:property name="resourceGraphListURL" value="graph/index.jsp"/>
+        	<cm:property name="resourceGraphNodeURL" value="graph/chooseresource.htm?reports=all&amp;parentResourceId=node"/> 
         </cm:default-properties>
     </cm:property-placeholder>
     

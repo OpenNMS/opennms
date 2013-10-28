@@ -40,7 +40,6 @@ import java.util.StringTokenizer;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.dhcpd.DhcpdConfigFactory;
-import org.opennms.netmgt.utils.IpValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -330,9 +329,14 @@ final class Poller {
                 LOG.debug("isServer: DHCP relay agent address is {}", myIpStr);
             if (myIpStr == null || myIpStr.equals("") || myIpStr.equalsIgnoreCase("broadcast")) {
                 // do nothing
-            } else if (IpValidator.isIpValid(myIpStr)) {
-                s_myIpAddress = setIpAddress(myIpStr);
-                relayMode = true;
+            } else {
+                try {
+                    InetAddressUtils.toIpAddrBytes(myIpStr);
+                    s_myIpAddress = setIpAddress(myIpStr);
+                    relayMode = true;
+                } catch (IllegalArgumentException e) {
+                    LOG.warn("isServer: DHCP relay agent address is invalid: {}", myIpStr);
+                }
             }
             
             if (extendedMode == true) {
@@ -342,10 +346,15 @@ final class Poller {
                     // do nothing
                 } else if (requestStr.equalsIgnoreCase("targetHost")) {
                     targetOffset = false;
-                } else if (IpValidator.isIpValid(requestStr)) {
-                    s_requestIpAddress = setIpAddress(requestStr);
-                    reqTargetIp = false;
-                    targetOffset = false;
+                } else {
+                    try {
+                        InetAddressUtils.toIpAddrBytes(requestStr);
+                        s_requestIpAddress = setIpAddress(requestStr);
+                        reqTargetIp = false;
+                        targetOffset = false;
+                    } catch (IllegalArgumentException e) {
+                        LOG.warn("isServer: REQUEST query target is invalid: {}", requestStr);
+                    }
                 }
                     LOG.debug("REQUEST query options are: reqTargetIp = {}, targetOffset = {}", reqTargetIp, targetOffset);
             }

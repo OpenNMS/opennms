@@ -51,4 +51,6 @@ public interface SelectionContext {
 
 	public Collection<VertexRef> getSelectedVertexRefs();
 
+	public Collection<EdgeRef> getSelectedEdgeRefs();
+
 }

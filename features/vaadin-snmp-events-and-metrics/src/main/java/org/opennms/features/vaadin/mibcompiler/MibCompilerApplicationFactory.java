@@ -58,7 +58,7 @@ public class MibCompilerApplicationFactory extends AbstractApplicationFactory {
      * @see org.ops4j.pax.vaadin.AbstractApplicationFactory#getUI()
      */
     @Override
-    public UI getUI() {
+    public UI createUI() {
         if (eventProxy == null)
             throw new RuntimeException("eventProxy cannot be null.");
         if (eventConfDao == null)

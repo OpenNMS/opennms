@@ -30,7 +30,9 @@ package org.opennms.netmgt.linkd.snmp;
 
 import java.util.HashMap;
 
+import org.opennms.netmgt.snmp.NamedSnmpVar;
 import org.opennms.netmgt.snmp.SnmpResult;
+import org.opennms.netmgt.snmp.SnmpStore;
 
 public class IsisISAdjTableEntry extends SnmpStore {
 

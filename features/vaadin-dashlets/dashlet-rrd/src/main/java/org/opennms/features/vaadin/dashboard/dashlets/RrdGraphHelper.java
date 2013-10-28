@@ -101,6 +101,54 @@ public class RrdGraphHelper {
     }
 
     /**
+     * Returns the graph entries name/title mapping for a given resourceId.
+     *
+     * @param resourceId the resourceId
+     * @return a map of names/titles found
+     */
+    public Map<String, String> getGraphNameTitleMappingForResourceId(final String resourceId) {
+        return (Map<String, String>) m_transactionOperations.execute(new TransactionCallback<Object>() {
+            @Override
+            public Object doInTransaction(TransactionStatus transactionStatus) {
+                OnmsResource resource = m_resourceDao.getResourceById(resourceId);
+                PrefabGraph[] queries = m_graphDao.getPrefabGraphsForResource(resource);
+
+                Map<String, String> graphResults = new TreeMap<String, String>();
+
+                for (PrefabGraph query : queries) {
+                    graphResults.put(query.getName(), query.getTitle());
+                }
+
+                return graphResults;
+            }
+        });
+    }
+
+    /**
+     * Returns the graph entries title/name mapping for a given resourceId.
+     *
+     * @param resourceId the resourceId
+     * @return a map of titles/names found
+     */
+    public Map<String, String> getGraphTitleNameMappingForResourceId(final String resourceId) {
+        return (Map<String, String>) m_transactionOperations.execute(new TransactionCallback<Object>() {
+            @Override
+            public Object doInTransaction(TransactionStatus transactionStatus) {
+                OnmsResource resource = m_resourceDao.getResourceById(resourceId);
+                PrefabGraph[] queries = m_graphDao.getPrefabGraphsForResource(resource);
+
+                Map<String, String> graphResults = new TreeMap<String, String>();
+
+                for (PrefabGraph query : queries) {
+                    graphResults.put(query.getTitle(), query.getName());
+                }
+
+                return graphResults;
+            }
+        });
+    }
+
+    /**
      * Returns the graph entries for a given resourceId.
      *
      * @param resourceId the resourceId
@@ -116,7 +164,7 @@ public class RrdGraphHelper {
                 Map<String, String> graphResults = new TreeMap<String, String>();
 
                 for (PrefabGraph query : queries) {
-                    graphResults.put(query.getTitle(), "resourceId=" + resourceId + "&report=" + query.getName());
+                    graphResults.put(query.getName(), "resourceId=" + resourceId + "&report=" + query.getName());
                 }
 
                 return graphResults;

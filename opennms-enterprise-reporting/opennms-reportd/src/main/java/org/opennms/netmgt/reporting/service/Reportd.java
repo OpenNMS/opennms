@@ -175,7 +175,7 @@ public class Reportd implements SpringServiceDaemon {
                
            }
            
-           if (reportName != ""){
+           if (!"".equals(reportName)){
               LOG.debug("running report {}", reportName);
               runReport(reportName);
                

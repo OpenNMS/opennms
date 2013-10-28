@@ -43,7 +43,7 @@ import org.opennms.netmgt.model.ServiceInfo;
 public class JmxDaemonStatusDaoTest extends TestCase {
     static private MBeanServer mBeanServer;
 	static private ObjectName objectName[] = new ObjectName[4];
-	static private String names[] = {"test","test2","notifd","test3"};
+	static private String[] names = {"test","test2","notifd","test3"};
 	private JmxDaemonStatusDao jmxDaemonStatusDao;
 	static {
 		mBeanServer = MBeanServerFactory.createMBeanServer();

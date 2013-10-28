@@ -29,4 +29,20 @@ public class WallboardView extends VerticalLayout implements View {
             }
         }
     }
+
+    public boolean isPaused() {
+        return dashletBoardBody.isPaused();
+    }
+
+    public boolean isPausable() {
+        return dashletBoardBody.isPausable();
+    }
+
+    public void pause() {
+        dashletBoardBody.pause();
+    }
+
+    public void resume() {
+        dashletBoardBody.resume();
+    }
 }

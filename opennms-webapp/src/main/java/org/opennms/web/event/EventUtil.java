@@ -28,7 +28,11 @@
 
 package org.opennms.web.event;
 
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
@@ -222,4 +226,17 @@ public abstract class EventUtil {
 
         return filter;
     }
+
+	public static List<Filter> getFilterList(String[] filterStrings, ServletContext servletContext) {
+		List<Filter> filterList = new ArrayList<Filter>();
+        if (filterStrings != null) {
+            for (String filterString : filterStrings) {
+                Filter filter = EventUtil.getFilter(filterString, servletContext);
+                if (filter != null) {
+                    filterList.add(filter);
+                }
+            }
+        }
+		return filterList;
+	}
 }

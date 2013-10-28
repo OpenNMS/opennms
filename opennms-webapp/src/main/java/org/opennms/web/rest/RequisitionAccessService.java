@@ -113,8 +113,15 @@ public class RequisitionAccessService {
             return pending;
         }
 
-        public void save(final Requisition requisition) {
+        private void save(final Requisition requisition) {
             m_pending = requisition;
+        }
+
+        void addOrReplaceRequisition(final Requisition requisition) {
+            if (requisition != null) {
+                requisition.updateDateStamp();
+                save(requisition);
+            }
         }
 
         void addOrReplaceNode(final RequisitionNode node) {
@@ -249,7 +256,7 @@ public class RequisitionAccessService {
 
         void deleteInterface(final String foreignId, final String ipAddress) {
             LOG.debug("deleteInterface: Deleting interface {} from node {}/{}", ipAddress, getForeignSource(), foreignId);
-            Requisition req = getActiveRequisition(false);
+            final Requisition req = getActiveRequisition(false);
             if (req != null) {
                 final RequisitionNode node = req.getNode(foreignId);
                 if (node != null) {
@@ -278,7 +285,7 @@ public class RequisitionAccessService {
 
         void deleteCategory(final String foreignId, final String category) {
             LOG.debug("deleteCategory: Deleting category {} from node {}/{}", category, getForeignSource(), foreignId);
-            Requisition req = getActiveRequisition(false);
+            final Requisition req = getActiveRequisition(false);
             if (req != null) {
                 final RequisitionNode node = req.getNode(foreignId);
                 if (node != null) {
@@ -611,7 +618,7 @@ public class RequisitionAccessService {
     public void addOrReplaceRequisition(final Requisition requisition) {
         submitWriteOp(new Runnable() {
             @Override public void run() {
-                getAccessor(requisition.getForeignSource()).save(requisition);
+                getAccessor(requisition.getForeignSource()).addOrReplaceRequisition(requisition);
             }
         });
     }
@@ -762,6 +769,5 @@ public class RequisitionAccessService {
             }
         });
     }
-
 
 }

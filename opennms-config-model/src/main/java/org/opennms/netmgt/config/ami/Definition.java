@@ -657,8 +657,7 @@ public class Definition implements Serializable {
      * @return true if the object was removed from the collection.
      */
     public boolean removeIpMatch(final String vIpMatch) {
-        boolean removed = _ipMatchList.remove(vIpMatch);
-        return removed;
+        return _ipMatchList.remove(vIpMatch);
     }
 
     /**
@@ -668,8 +667,7 @@ public class Definition implements Serializable {
      * @return the element removed from the collection
      */
     public String removeIpMatchAt(final int index) {
-        Object obj = this._ipMatchList.remove(index);
-        return (String) obj;
+        return this._ipMatchList.remove(index);
     }
 
     /**
@@ -679,8 +677,7 @@ public class Definition implements Serializable {
      * @return true if the object was removed from the collection.
      */
     public boolean removeRange(final Range vRange) {
-        boolean removed = _rangeList.remove(vRange);
-        return removed;
+        return _rangeList.remove(vRange);
     }
 
     /**
@@ -690,8 +687,7 @@ public class Definition implements Serializable {
      * @return the element removed from the collection
      */
     public Range removeRangeAt(final int index) {
-        Object obj = this._rangeList.remove(index);
-        return (Range) obj;
+        return this._rangeList.remove(index);
     }
 
     /**
@@ -701,8 +697,7 @@ public class Definition implements Serializable {
      * @return true if the object was removed from the collection.
      */
     public boolean removeSpecific(final String vSpecific) {
-        boolean removed = _specificList.remove(vSpecific);
-        return removed;
+        return _specificList.remove(vSpecific);
     }
 
     /**
@@ -712,8 +707,7 @@ public class Definition implements Serializable {
      * @return the element removed from the collection
      */
     public String removeSpecificAt(final int index) {
-        Object obj = this._specificList.remove(index);
-        return (String) obj;
+        return this._specificList.remove(index);
     }
 
     /**

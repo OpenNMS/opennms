@@ -40,11 +40,11 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  *
- * This class provides an implimentation of a AlarmListConnectionManager which
- * connects to an external AlarmMonitor bean in a J2ee container ( i.e.
- * in Jboss ). It proxys the calls to the AlarmListJ2eeConnectionManagerThread which
- * coes the actiual connection. This allows Spring wiring to be used to
- * select this or nother class as the AlarmListConnectionManager in QosD
+ * This class provides an implementation of a AlarmListConnectionManager which
+ * connects to an external AlarmMonitor bean in a J2ee container (i.e.
+ * in Jboss). It proxies the calls to the AlarmListJ2eeConnectionManagerThread which
+ * calls the actual connection. This allows Spring wiring to be used to
+ * select this or another class as the AlarmListConnectionManager in QosD
  *
  * @author ranger
  * @version $Id: $

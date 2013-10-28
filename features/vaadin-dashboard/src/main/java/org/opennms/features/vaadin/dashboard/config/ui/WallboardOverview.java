@@ -130,6 +130,7 @@ public class WallboardOverview extends VerticalLayout {
         });
 
         m_table.setVisibleColumns(new Object[]{"title", "Edit", "Remove", "Preview"});
+        m_table.setColumnHeader("title", "Title");
 
         /**
          * Adding the table

@@ -64,7 +64,7 @@ public class LatencyParameters {
 	public Map<?,?> getParameters() {
 		return Collections.unmodifiableMap(m_parameters);
 	}
-	
+
 
 	/**
 	 * <p>getServiceName</p>
@@ -77,21 +77,16 @@ public class LatencyParameters {
 
 	int getInterval() {
 		Map<?,?> parameters = getParameters();
-	    int interval = ParameterMap.getKeyedInteger(parameters, "interval", LatencyThresholder.DEFAULT_INTERVAL);
-	    return interval;
+		return ParameterMap.getKeyedInteger(parameters, "interval", LatencyThresholder.DEFAULT_INTERVAL);
 	}
 
 	String getGroupName() {
 		Map<?,?> parameters = getParameters();
-	    String groupName = ParameterMap.getKeyedString(parameters, "thresholding-group", "default");
-	    return groupName;
+		return ParameterMap.getKeyedString(parameters, "thresholding-group", "default");
 	}
-	
+
 	int getRange() {
 		Map<?,?> parameters = getParameters();
-	    int range = ParameterMap.getKeyedInteger(parameters, "range", LatencyThresholder.DEFAULT_RANGE);
-	    return range;
+		return ParameterMap.getKeyedInteger(parameters, "range", LatencyThresholder.DEFAULT_RANGE);
 	}
-	
-
 }

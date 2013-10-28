@@ -40,8 +40,6 @@ public class PolledServiceTrigger extends SimpleTriggerBean {
 	
 	private static final long serialVersionUID = -3224274965842979439L;
 
-	private PolledService m_polledService;
-	
 	/**
 	 * <p>Constructor for PolledServiceTrigger.</p>
 	 *
@@ -50,10 +48,9 @@ public class PolledServiceTrigger extends SimpleTriggerBean {
 	 */
 	public PolledServiceTrigger(PolledService polledService) throws Exception {
 		super();
-		m_polledService = polledService;
-		
+
 		setName(polledService.getNodeId()+':'+polledService.getIpAddr()+':'+polledService.getSvcName());
-		setRepeatInterval(m_polledService.getPollModel().getPollInterval());
+		setRepeatInterval(polledService.getPollModel().getPollInterval());
 
 		afterPropertiesSet();
 	}

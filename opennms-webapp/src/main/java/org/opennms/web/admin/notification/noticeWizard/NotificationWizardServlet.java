@@ -117,13 +117,13 @@ public class NotificationWizardServlet extends HttpServlet {
          */
         try {
             NotifdConfigFactory.init();
-        } catch (final Exception e) {
-            throw new ServletException("Failed to initialize NotifdConfigFactory: " + e.getMessage(), e);
+        } catch (final Throwable t) {
+            throw new ServletException("Failed to initialize NotifdConfigFactory: " + t.getMessage(), t);
         }
         try {
             NotificationFactory.init();
-        } catch (final Exception e) {
-            throw new ServletException("Failed to initialize NotificationFactory: " + e.getMessage(), e);
+        } catch (final Throwable t) {
+            throw new ServletException("Failed to initialize NotificationFactory: " + t.getMessage(), t);
         }
 
         if (SOURCE_PAGE_NOTICES.equals(sourcePage)) {
@@ -155,8 +155,8 @@ public class NotificationWizardServlet extends HttpServlet {
         if ("delete".equals(userAction)) {
             try {
                 getNotificationFactory().removeNotification(request.getParameter("notice"));
-            } catch (final Exception e) {
-                throw new ServletException("Couldn't save/reload notifications configuration file: " + e.getMessage(), e);
+            } catch (final Throwable t) {
+                throw new ServletException("Couldn't save/reload notifications configuration file: " + t.getMessage(), t);
             }
             return SOURCE_PAGE_NOTICES;
         } else if ("edit".equals(userAction)) {
@@ -167,8 +167,8 @@ public class NotificationWizardServlet extends HttpServlet {
         } else if ("on".equals(userAction) || "off".equals(userAction)) {
             try {
                 getNotificationFactory().updateStatus(request.getParameter("notice"), userAction);
-            } catch (final Exception e) {
-                throw new ServletException("Couldn't save/reload notifications configuration file: " + e.getMessage(), e);
+            } catch (final Throwable t) {
+                throw new ServletException("Couldn't save/reload notifications configuration file: " + t.getMessage(), t);
             }
 
             return SOURCE_PAGE_NOTICES;
@@ -194,8 +194,7 @@ public class NotificationWizardServlet extends HttpServlet {
         if ("rebuild".equals(userAction)) {
             final Map<String, Object> params = new HashMap<String, Object>();
             params.put("newRule", request.getParameter("newRule"));
-
-            final String services[] = request.getParameterValues("services");
+            final String[] services = request.getParameterValues("services");
             if (services != null) {
                 params.put("services", services);
             }
@@ -218,7 +217,7 @@ public class NotificationWizardServlet extends HttpServlet {
 
         final StringBuffer rule = new StringBuffer(ruleString);
 
-        final String services[] = request.getParameterValues("services");
+        final String[] services = request.getParameterValues("services");
         if (services != null) {
             rule.append(" & ").append(" (");
 
@@ -232,7 +231,7 @@ public class NotificationWizardServlet extends HttpServlet {
             rule.append(" )");
         }
 
-        final String notServices[] = request.getParameterValues("notServices");
+        final String[] notServices = request.getParameterValues("notServices");
         if (notServices != null) {
             rule.append(" & ").append(" (");
 
@@ -325,8 +324,8 @@ public class NotificationWizardServlet extends HttpServlet {
         try {
             // replacing a path with a new name.
             getNotificationFactory().replaceNotification(oldName, newNotice);
-        } catch (final Exception e) {
-            throw new ServletException("Couldn't save/reload notification configuration file.", e);
+        } catch (final Throwable t) {
+            throw new ServletException("Couldn't save/reload notification configuration file.", t);
         }
 
         final String suppliedReturnPage=(String)user.getAttribute("noticeWizardReturnPage");
@@ -479,8 +478,8 @@ public class NotificationWizardServlet extends HttpServlet {
             final Notification oldNotice = getNotificationFactory().getNotification(request.getParameter("notice"));
             user.setAttribute("newNotice", copyNotice(oldNotice));
             return SOURCE_PAGE_UEIS;
-        } catch (final Exception e) {
-            throw new ServletException("couldn't get a copy of the notification to edit.", e);
+        } catch (final Throwable t) {
+            throw new ServletException("couldn't get a copy of the notification to edit.", t);
         }
     }
 

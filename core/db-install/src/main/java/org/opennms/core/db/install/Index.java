@@ -85,7 +85,7 @@ public class Index {
      * @return a {@link org.opennms.netmgt.dao.db.Index} object.
      */
     public static Index findIndexInString(String create) {
-        Matcher m = m_pattern.matcher(create.toString());
+        Matcher m = m_pattern.matcher(create);
         if (!m.find()) {
             return null;
         }

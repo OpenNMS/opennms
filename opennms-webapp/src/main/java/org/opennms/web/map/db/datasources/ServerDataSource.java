@@ -53,36 +53,24 @@ import org.slf4j.LoggerFactory;
  *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @version $Id: $
- * @since 1.8.1
  */
 public class ServerDataSource implements DataSourceInterface {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(ServerDataSource.class);
 
-
 	private Map<?,?> params;
-	boolean initialized = false;
-	private Map<String, String> severityMapping = new HashMap<String, String>();
+	private final Map<String, String> severityMapping = new HashMap<String, String>();
 
+	private static final String STATUS_FIELD="ev_status";
+	private static final String SEVERITY_FIELD="ev_severity";
+	private static final String TABLE_NAME="v_eventi_snm";
 	
-	static final String STATUS_FIELD="ev_status";
-	static final String SEVERITY_FIELD="ev_severity";
-	static final String TABLE_NAME="v_eventi_snm";
-	
-	final String CLOSED_STATUS = "CLOSED";
-	final String ACK_STATUS = "ACK";
-	final String ASSIGNED_STATUS = "ASSIGNED";
-	final String OPEN_STATUS = "OPEN";
-	
-	//private static MapPropertiesFactory mpf=null;
-	
-	static Connection opennmsConn = null;
-	static Connection externalConn = null;
+	private static final String CLOSED_STATUS = "CLOSED";
 
-	
+	private static Connection opennmsConn = null;
+	private static Connection externalConn = null;
+
+
 	/**
 	 * <p>Constructor for ServerDataSource.</p>
 	 *

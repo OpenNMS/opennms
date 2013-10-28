@@ -28,28 +28,19 @@
 
 package org.opennms.features.topology.app.internal;
 
+import org.opennms.osgi.OnmsVaadinUIFactory;
+import org.osgi.service.blueprint.container.BlueprintContainer;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import org.ops4j.pax.vaadin.AbstractApplicationFactory;
-import org.osgi.service.blueprint.container.BlueprintContainer;
-
-import com.vaadin.ui.UI;
-
-public class TopologyUIFactory extends AbstractApplicationFactory {
+public class TopologyUIFactory extends OnmsVaadinUIFactory {
     
-	private final BlueprintContainer m_blueprintContainer;
-	private final String m_beanName;
-	
-	public TopologyUIFactory(BlueprintContainer container, String beanName) {
-		m_blueprintContainer = container;
-		m_beanName = beanName;
-	}
 
-    @Override
-    public Class<? extends UI> getUIClass() {
-        return TopologyUI.class;
-    }
+	
+	public TopologyUIFactory(BlueprintContainer container, String uiBeanName) {
+        super(TopologyUI.class, container, uiBeanName);
+	}
 
     @Override
     public Map<String, String> getAdditionalHeaders() {
@@ -58,12 +49,6 @@ public class TopologyUIFactory extends AbstractApplicationFactory {
         //headers.put("X-Frame-Options", "ALLOW-FROM http://cdn.leafletjs.com/");
         //headers.put("X-Frame-Options", "ALLOW-FROM http://maps.google.com/");
         return headers;
-    }
-
-    @Override
-    public UI getUI() {
-        TopologyUI application = (TopologyUI) m_blueprintContainer.getComponentInstance(m_beanName);
-        return application;
     }
 
 }

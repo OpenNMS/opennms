@@ -28,15 +28,22 @@
 
 package org.opennms.features.topology.api.topo;
 
+import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.xml.bind.JAXBException;
 
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 
-public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvider implements GraphProvider {    
+public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvider implements GraphProvider {
     protected static final String SIMPLE_VERTEX_ID_PREFIX = "v";
 	protected static final String SIMPLE_GROUP_ID_PREFIX = "g";
 	protected static final String SIMPLE_EDGE_ID_PREFIX = "e";
@@ -284,6 +291,24 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
     }
 
     @Override
+    public final Map<VertexRef, Set<EdgeRef>> getEdgeIdsForVertices(VertexRef... vertices) {
+        List<Edge> edges = getEdges();
+        Map<VertexRef,Set<EdgeRef>> retval = new HashMap<VertexRef,Set<EdgeRef>>();
+        for (VertexRef vertex : vertices) {
+            if (vertex == null) continue;
+            Set<EdgeRef> edgeSet = new HashSet<EdgeRef>();
+            for (Edge edge : edges) {
+                // If the vertex is connected to the edge then add it
+                if (new RefComparator().compare(edge.getSource().getVertex(), vertex) == 0 || new RefComparator().compare(edge.getTarget().getVertex(), vertex) == 0) {
+                    edgeSet.add(edge);
+                }
+            }
+            retval.put(vertex, edgeSet);
+        }
+        return retval;
+    }
+
+    @Override
 	public Edge connectVertices(VertexRef sourceVertextId, VertexRef targetVertextId) {
         String nextEdgeId = getNextEdgeId();
         return connectVertices(nextEdgeId, sourceVertextId, targetVertextId);
@@ -312,5 +337,13 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
         groupIdGenerator.reset();
         edgeIdGenerator.reset();
     }
-}
 
+    @Override
+    public abstract void save();
+
+    @Override
+    public abstract void load(String filename) throws MalformedURLException, JAXBException;
+
+    @Override
+    public abstract void refresh();
+}

@@ -336,8 +336,7 @@ public class ActionEvent implements Serializable {
      * @return true if the object was removed from the collection.
      */
     public boolean removeAssignment(final Assignment vAssignment) {
-        boolean removed = _assignmentList.remove(vAssignment);
-        return removed;
+        return _assignmentList.remove(vAssignment);
     }
 
     /**
@@ -347,8 +346,7 @@ public class ActionEvent implements Serializable {
      * @return the element removed from the collection
      */
     public Assignment removeAssignmentAt(final int index) {
-        Object obj = this._assignmentList.remove(index);
-        return (Assignment) obj;
+        return this._assignmentList.remove(index);
     }
 
     /**

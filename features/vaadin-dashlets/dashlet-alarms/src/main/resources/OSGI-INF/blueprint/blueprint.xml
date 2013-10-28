@@ -3,11 +3,14 @@
     <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory"/>
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
 
+    <reference id="alarmRepository" interface="org.opennms.netmgt.dao.api.AlarmRepository" availability="mandatory" />
+
     <bean id="alarmsDashletFactory" class="org.opennms.features.vaadin.dashboard.dashlets.AlarmsDashletFactory" scope="singleton">
         <argument ref="alarmDao"/>
         <argument ref="nodeDao"/>
         <property name="name" value="Alarms"/>
         <property name="boostable" value="true"/>
+        <property name="dashboardSuitable" value="true"/>
 
         <property name="requiredParameters">
             <map>
@@ -26,8 +29,10 @@
     <bean id="alarmDetailsDashletFactory" class="org.opennms.features.vaadin.dashboard.dashlets.AlarmDetailsDashletFactory" scope="singleton">
         <argument ref="alarmDao"/>
         <argument ref="nodeDao"/>
+        <argument ref="alarmRepository"/>
         <property name="name" value="Alarm Details"/>
         <property name="boostable" value="true"/>
+        <property name="dashboardSuitable" value="true"/>
 
         <property name="requiredParameters">
             <map>

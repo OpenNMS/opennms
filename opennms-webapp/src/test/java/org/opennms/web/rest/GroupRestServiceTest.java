@@ -37,6 +37,7 @@ import java.io.StringReader;
 
 import javax.xml.bind.JAXB;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.xml.JaxbUtils;
@@ -109,6 +110,11 @@ public class GroupRestServiceTest extends AbstractSpringJerseyRestTestCase {
         String xml = sendRequest(GET, "/groups/deleteMe", 200);
         assertTrue(xml.contains("totallyUniqueUser"));
 
+        // add user to group twice
+        sendRequest(PUT, "/groups/deleteMe/users/totallyUniqueUser", 400); // already added
+        xml = sendRequest(GET, "/groups/deleteMe/users", 200);
+        assertEquals(1, StringUtils.countMatches(xml,  "totallyUniqueUser"));
+        
         // list all users of group
         xml = sendRequest(GET, "/groups/deleteMe/users", 200);
         assertNotNull(xml);

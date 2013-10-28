@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.model;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import junit.framework.TestCase;
 
 import org.junit.Test;

@@ -681,8 +681,7 @@ public class DBManager extends Manager {
             statement.setInt(2, mapId);
             statement.setString(3, type);
             rs = statement.executeQuery();
-            DbElement el = rs2Element(rs);
-            return el;
+            return rs2Element(rs);
         } catch (Throwable e) {
             LOG.error("Exception while getting element with elementid={} and mapid={}", id, mapId);
             throw new MapsException(e);
@@ -985,8 +984,7 @@ public class DBManager extends Manager {
             statement = conn.prepareStatement(sqlQuery);
             statement.setInt(1, id);
             rs = statement.executeQuery();
-            DbMap map = rs2Map(rs);
-            return map;
+            return rs2Map(rs);
         } catch (Throwable e) {
             LOG.error("Exception while getting map with mapid={}", id);
             throw new MapsException(e);
@@ -1199,8 +1197,7 @@ public class DBManager extends Manager {
             statement = conn.prepareStatement(sqlQuery);
             statement.setInt(1, mapId);
             rs = statement.executeQuery();
-            VMapInfo mm = rs2MapMenu(rs);
-            return mm;
+            return rs2MapMenu(rs);
         } catch (Throwable e) {
             LOG.error("Exception while getting map-menu for mapid {}", mapId);
             throw new MapsException(e);
@@ -2162,7 +2159,7 @@ public class DBManager extends Manager {
     }
 
     private String getLabel(String fqdn) {
-        if (fqdn.indexOf(".")>0 && !validate(fqdn)) {
+        if (fqdn.indexOf('.')>0 && !validate(fqdn)) {
             return fqdn.substring(0, fqdn.indexOf('.'));
         } else {
             return fqdn;

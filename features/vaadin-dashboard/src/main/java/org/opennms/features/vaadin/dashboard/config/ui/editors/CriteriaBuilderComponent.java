@@ -76,7 +76,7 @@ public class CriteriaBuilderComponent extends Panel {
          * parsing the criteria string...
          */
         if (!"".equals(criteriaString) && criteriaString != null) {
-            String arr[] = criteriaString.split("\\)\\.");
+            String[] arr = criteriaString.split("\\)\\.");
             for (String criteria : arr) {
                 /**
                  * ...and adding components

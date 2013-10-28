@@ -33,6 +33,7 @@ import com.vmware.vim25.mo.*;
 
 import org.apache.commons.io.IOExceptionWithCause;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.conn.util.InetAddressUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.BeanUtils;
@@ -91,8 +92,15 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
     private boolean m_importHostStandBy = false;
     private boolean m_importHostUnknown = false;
 
+    private boolean m_persistIPv4 = true;
+    private boolean m_persistIPv6 = true;
+
     private boolean m_persistVMs = true;
     private boolean m_persistHosts = true;
+
+    private boolean m_topologyPortGroups = false;
+    private boolean m_topologyNetworks = true;
+    private boolean m_topologyDatastores = true;
 
     /*
      * Host system managedObjectId to name mapping
@@ -140,6 +148,23 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
             m_persistHosts = false;
         }
 
+        boolean importIPv4Only = queryParameter("importIPv4Only", false);
+        boolean importIPv6Only = queryParameter("importIPv6Only", false);
+
+        if (importIPv4Only && importIPv6Only) {
+            throw new MalformedURLException("importIPv4Only and importIPv6Only can't be true simultaneously");
+        }
+        if (importIPv4Only) {
+            m_persistIPv6 = false;
+        }
+        if (importIPv6Only) {
+            m_persistIPv4 = false;
+        }
+
+        m_topologyPortGroups = queryParameter("topologyPortGroups", false);
+        m_topologyNetworks = queryParameter("topologyNetworks", true);
+        m_topologyDatastores = queryParameter("topologyDatastores", true);
+
         m_importVMPoweredOn = queryParameter("importVMPoweredOn", true);
         m_importVMPoweredOff = queryParameter("importVMPoweredOff", false);
         m_importVMSuspended = queryParameter("importVMSuspended", false);
@@ -167,7 +192,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
         path = path.replaceAll("^/", "");
         path = path.replaceAll("/$", "");
 
-        String pathElements[] = path.split("/");
+        String[] pathElements = path.split("/");
 
         if (pathElements.length == 1) {
             if ("".equals(pathElements[0])) {
@@ -211,6 +236,8 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
         List<CIMObject> cimObjects = null;
         try {
             cimObjects = vmwareViJavaAccess.queryCimObjects(hostSystem, "CIM_NumericSensor", ipAddress);
+        } catch (ConnectException e) {
+            return false;
         } catch (RemoteException e) {
             return false;
         } catch (CIMException e) {
@@ -251,28 +278,28 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
             for (String ipAddress : ipAddresses) {
 
                 try {
-                    InetAddress inetAddress = InetAddress.getByName(ipAddress);
+                    if ((m_persistIPv4 && InetAddressUtils.isIPv4Address(ipAddress)) || (m_persistIPv6 && InetAddressUtils.isIPv6Address(ipAddress))) {
+                        InetAddress inetAddress = InetAddress.getByName(ipAddress);
 
-                    if (!inetAddress.isLoopbackAddress()) {
-                        RequisitionInterface requisitionInterface = new RequisitionInterface();
-                        requisitionInterface.setIpAddr(ipAddress);
+                        if (!inetAddress.isLoopbackAddress()) {
+                            RequisitionInterface requisitionInterface = new RequisitionInterface();
+                            requisitionInterface.setIpAddr(ipAddress);
 
-                        //  the first one will be primary
-                        if (firstInterface) {
-                            requisitionInterface.setSnmpPrimary(PrimaryType.PRIMARY);
-
-                            for (String service : m_virtualMachineServices) {
-                                requisitionInterface.insertMonitoredService(new RequisitionMonitoredService(service.trim()));
+                            //  the first one will be primary
+                            if (firstInterface) {
+                                requisitionInterface.setSnmpPrimary(PrimaryType.PRIMARY);
+                                for (String service : m_virtualMachineServices) {
+                                    requisitionInterface.insertMonitoredService(new RequisitionMonitoredService(service.trim()));
+                                }
+                                firstInterface = false;
+                            } else {
+                                requisitionInterface.setSnmpPrimary(PrimaryType.SECONDARY);
                             }
 
-                            firstInterface = false;
-                        } else {
-                            requisitionInterface.setSnmpPrimary(PrimaryType.SECONDARY);
+                            requisitionInterface.setManaged(Boolean.TRUE);
+                            requisitionInterface.setStatus(Integer.valueOf(1));
+                            requisitionNode.putInterface(requisitionInterface);
                         }
-
-                        requisitionInterface.setManaged(Boolean.TRUE);
-                        requisitionInterface.setStatus(Integer.valueOf(1));
-                        requisitionNode.putInterface(requisitionInterface);
                     }
                 } catch (UnknownHostException unknownHostException) {
                     logger.warn("Invalid IP address '{}'", unknownHostException.getMessage());
@@ -288,26 +315,28 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
                 for (String ipAddress : ipAddresses) {
 
                     try {
-                        InetAddress inetAddress = InetAddress.getByName(ipAddress);
+                        if ((m_persistIPv4 && InetAddressUtils.isIPv4Address(ipAddress)) || (m_persistIPv6 && InetAddressUtils.isIPv6Address(ipAddress))) {
+                            InetAddress inetAddress = InetAddress.getByName(ipAddress);
 
-                        if (!inetAddress.isLoopbackAddress()) {
-                            RequisitionInterface requisitionInterface = new RequisitionInterface();
-                            requisitionInterface.setIpAddr(ipAddress);
+                            if (!inetAddress.isLoopbackAddress()) {
+                                RequisitionInterface requisitionInterface = new RequisitionInterface();
+                                requisitionInterface.setIpAddr(ipAddress);
 
-                            if (firstInterface) {
-                                primaryInterfaceCandidate = requisitionInterface;
-                                firstInterface = false;
+                                if (firstInterface) {
+                                    primaryInterfaceCandidate = requisitionInterface;
+                                    firstInterface = false;
+                                }
+
+                                if (!reachableInterfaceFound && reachableCimService(vmwareViJavaAccess, (HostSystem) managedEntity, ipAddress)) {
+                                    primaryInterfaceCandidate = requisitionInterface;
+                                    reachableInterfaceFound = true;
+                                }
+
+                                requisitionInterface.setManaged(Boolean.TRUE);
+                                requisitionInterface.setStatus(Integer.valueOf(1));
+                                requisitionInterface.setSnmpPrimary(PrimaryType.SECONDARY);
+                                requisitionInterfaceList.add(requisitionInterface);
                             }
-
-                            if (!reachableInterfaceFound && reachableCimService(vmwareViJavaAccess, (HostSystem) managedEntity, ipAddress)) {
-                                primaryInterfaceCandidate = requisitionInterface;
-                                reachableInterfaceFound = true;
-                            }
-
-                            requisitionInterface.setManaged(Boolean.TRUE);
-                            requisitionInterface.setStatus(Integer.valueOf(1));
-                            requisitionInterface.setSnmpPrimary(PrimaryType.SECONDARY);
-                            requisitionInterfaceList.add(requisitionInterface);
                         }
 
                     } catch (UnknownHostException unknownHostException) {
@@ -358,11 +387,15 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
                 vmwareTopologyInfo.append(", ");
             }
             try {
-                vmwareTopologyInfo.append(parentEntity.getMOR().getVal() + "/" + URLEncoder.encode(parentEntity.getName(), "UTF-8"));
+                if (parentEntity != null && parentEntity.getMOR() != null) {
+                    vmwareTopologyInfo.append(parentEntity.getMOR().getVal() + "/" + URLEncoder.encode(parentEntity.getName(), "UTF-8"));
+                } else {
+                    logger.warn("Can't add topologyInformation because either the parentEntity or the MOR is null for " + managedEntity.getName());
+                }
             } catch (UnsupportedEncodingException e) {
                 logger.warn("Unsupported encoding '{}'", e.getMessage());
             }
-            parentEntity = parentEntity.getParent();
+            parentEntity = parentEntity == null ? null : parentEntity.getParent();
         } while (parentEntity != null);
 
         if (managedEntity instanceof HostSystem) {
@@ -383,28 +416,35 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
             }
 
             try {
-                for (Datastore datastore : hostSystem.getDatastores()) {
-                    if (vmwareTopologyInfo.length() > 0) {
-                        vmwareTopologyInfo.append(", ");
-                    }
-                    try {
-                        vmwareTopologyInfo.append(datastore.getMOR().getVal() + "/" + URLEncoder.encode(datastore.getSummary().getName(), "UTF-8"));
-                    } catch (UnsupportedEncodingException e) {
-                        logger.warn("Unsupported encoding '{}'", e.getMessage());
+                if (m_topologyDatastores) {
+                    for (Datastore datastore : hostSystem.getDatastores()) {
+                        if (vmwareTopologyInfo.length() > 0) {
+                            vmwareTopologyInfo.append(", ");
+                        }
+                        try {
+                            vmwareTopologyInfo.append(datastore.getMOR().getVal() + "/" + URLEncoder.encode(datastore.getSummary().getName(), "UTF-8"));
+                        } catch (UnsupportedEncodingException e) {
+                            logger.warn("Unsupported encoding '{}'", e.getMessage());
+                        }
                     }
                 }
             } catch (RemoteException e) {
                 logger.warn("Cannot retrieve datastores for managedEntity '{}': '{}'", managedEntity.getMOR().getVal(), e.getMessage());
             }
+
             try {
-                for (Network network : hostSystem.getNetworks()) {
-                    if (vmwareTopologyInfo.length() > 0) {
-                        vmwareTopologyInfo.append(", ");
-                    }
-                    try {
-                        vmwareTopologyInfo.append(network.getMOR().getVal() + "/" + URLEncoder.encode(network.getSummary().getName(), "UTF-8"));
-                    } catch (UnsupportedEncodingException e) {
-                        logger.warn("Unsupported encoding '{}'", e.getMessage());
+                if (m_topologyNetworks) {
+                    for (Network network : hostSystem.getNetworks()) {
+                        if (vmwareTopologyInfo.length() > 0) {
+                            vmwareTopologyInfo.append(", ");
+                        }
+                        try {
+                            if (network instanceof DistributedVirtualPortgroup ? m_topologyPortGroups : true) {
+                                vmwareTopologyInfo.append(network.getMOR().getVal() + "/" + URLEncoder.encode(network.getSummary().getName(), "UTF-8"));
+                            }
+                        } catch (UnsupportedEncodingException e) {
+                            logger.warn("Unsupported encoding '{}'", e.getMessage());
+                        }
                     }
                 }
             } catch (RemoteException e) {
@@ -429,28 +469,34 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
                 }
 
                 try {
-                    for (Datastore datastore : virtualMachine.getDatastores()) {
-                        if (vmwareTopologyInfo.length() > 0) {
-                            vmwareTopologyInfo.append(", ");
-                        }
-                        try {
-                            vmwareTopologyInfo.append(datastore.getMOR().getVal() + "/" + URLEncoder.encode(datastore.getSummary().getName(), "UTF-8"));
-                        } catch (UnsupportedEncodingException e) {
-                            logger.warn("Unsupported encoding '{}'", e.getMessage());
+                    if (m_topologyDatastores) {
+                        for (Datastore datastore : virtualMachine.getDatastores()) {
+                            if (vmwareTopologyInfo.length() > 0) {
+                                vmwareTopologyInfo.append(", ");
+                            }
+                            try {
+                                vmwareTopologyInfo.append(datastore.getMOR().getVal() + "/" + URLEncoder.encode(datastore.getSummary().getName(), "UTF-8"));
+                            } catch (UnsupportedEncodingException e) {
+                                logger.warn("Unsupported encoding '{}'", e.getMessage());
+                            }
                         }
                     }
                 } catch (RemoteException e) {
                     logger.warn("Cannot retrieve datastores for managedEntity '{}': '{}'", managedEntity.getMOR().getVal(), e.getMessage());
                 }
                 try {
-                    for (Network network : virtualMachine.getNetworks()) {
-                        if (vmwareTopologyInfo.length() > 0) {
-                            vmwareTopologyInfo.append(", ");
-                        }
-                        try {
-                            vmwareTopologyInfo.append(network.getMOR().getVal() + "/" + URLEncoder.encode(network.getSummary().getName(), "UTF-8"));
-                        } catch (UnsupportedEncodingException e) {
-                            logger.warn("Unsupported encoding '{}'", e.getMessage());
+                    if (m_topologyNetworks) {
+                        for (Network network : virtualMachine.getNetworks()) {
+                            if (vmwareTopologyInfo.length() > 0) {
+                                vmwareTopologyInfo.append(", ");
+                            }
+                            try {
+                                if (network instanceof DistributedVirtualPortgroup ? m_topologyPortGroups : true) {
+                                    vmwareTopologyInfo.append(network.getMOR().getVal() + "/" + URLEncoder.encode(network.getSummary().getName(), "UTF-8"));
+                                }
+                            } catch (UnsupportedEncodingException e) {
+                                logger.warn("Unsupported encoding '{}'", e.getMessage());
+                            }
                         }
                     }
                 } catch (RemoteException e) {
@@ -640,6 +686,29 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
                     // create the new node...
                     RequisitionNode node = createRequisitionNode(ipAddresses, hostSystem, apiVersion, vmwareViJavaAccess);
 
+                    // add cpu
+                    try {
+                        node.putAsset(new RequisitionAsset("cpu", hostSystem.getHardware().getCpuInfo().getNumCpuCores() + " cores"));
+                    } catch (Exception e) {
+                        logger.debug("Can't find CPU information for {}", hostSystem.getName());
+                    }
+
+                    // add memory
+                    try {
+                        node.putAsset(new RequisitionAsset("memory", Math.round(hostSystem.getHardware().getMemorySize()/1000000f) + " MB"));
+                    } catch (Exception e) {
+                        logger.debug("Can't find Memory information for {}", hostSystem.getName());
+                    }
+
+                    // add vendor
+                    /*
+                    try {
+                        node.putAsset(new RequisitionAsset("vendor", hostSystem.getHardware().getSystemInfo().getVendor()));
+                    } catch (Exception e) {
+                        logger.debug("Can't find vendor information for {}", hostSystem.getName());
+                    }
+                    */
+
                     // ...and add it to the requisition
                     if (node != null && m_persistHosts) {
                         m_requisition.insertNode(node);
@@ -671,29 +740,29 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
                 if (checkVMPowerState(virtualMachine) && checkForAttribute(virtualMachine)) {
                     logger.debug("Adding Virtual Machine '{}'", virtualMachine.getName());
 
-                    LinkedHashSet<String> ipAddresses = new LinkedHashSet<String>();
-
-                    // add the Ip address reported by VMware tools, this should be primary
-                    ipAddresses.add(virtualMachine.getGuest().getIpAddress());
-
-                    // if possible, iterate over all virtual networks networks and add interface Ip addresses
-                    if (virtualMachine.getGuest().getNet() != null) {
-                        for (GuestNicInfo guestNicInfo : virtualMachine.getGuest().getNet()) {
-                            if (guestNicInfo.getIpAddress() != null) {
-                                for (String ipAddress : guestNicInfo.getIpAddress()) {
-                                    ipAddresses.add(ipAddress);
-                                }
-                            }
-                        }
-                    }
+                    // iterate over all interfaces
+                    TreeSet<String> ipAddresses = vmwareViJavaAccess.getVirtualMachineIpAddresses(virtualMachine);
 
                     // create the new node...
                     RequisitionNode node = createRequisitionNode(ipAddresses, virtualMachine, apiVersion, vmwareViJavaAccess);
 
                     // add the operating system
                     if (virtualMachine.getGuest().getGuestFullName() != null) {
-                        RequisitionAsset requisitionAsset = new RequisitionAsset("operatingSystem", virtualMachine.getGuest().getGuestFullName());
-                        node.putAsset(requisitionAsset);
+                        node.putAsset(new RequisitionAsset("operatingSystem", virtualMachine.getGuest().getGuestFullName()));
+                    }
+
+                    // add cpu
+                    try {
+                        node.putAsset(new RequisitionAsset("cpu", virtualMachine.getConfig().getHardware().getNumCPU() + " vCPU"));
+                    } catch (Exception e) {
+                        logger.debug("Can't find CPU information for {}", virtualMachine.getName());
+                    }
+
+                    // add memory
+                    try {
+                        node.putAsset(new RequisitionAsset("memory", virtualMachine.getConfig().getHardware().getMemoryMB() + " MB"));
+                    } catch (Exception e) {
+                        logger.debug("Can't find Memory information for {}", virtualMachine.getName());
                     }
 
                     // ...and add it to the requisition
@@ -800,6 +869,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
         }
         return attributes;
     }
+
     /**
      * {@inheritDoc}
      * <p/>
@@ -813,15 +883,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
         InputStream stream = null;
 
         try {
-            Requisition curReq = null;
-            try {
-                ForeignSourceRepository repository = BeanUtils.getBean("daoContext", "deployedForeignSourceRepository", ForeignSourceRepository.class);
-                if (repository != null) {
-                    curReq = repository.getRequisition(m_foreignSource);
-                }
-            } catch (Exception e) {
-                logger.warn("Can't retrieve requisition {}", m_foreignSource);
-            }
+            Requisition curReq = getExistingRequisition();
             Requisition newReq = buildVMwareRequisition();
             if (curReq == null) {
                 if (newReq == null) {
@@ -839,14 +901,32 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
                     for (RequisitionNode newNode : newReq.getNodes()) {
                         for (RequisitionNode curNode : curReq.getNodes()) {
                             if (newNode.getForeignId().equals(curNode.getForeignId())) {
+                                // Add existing custom assets
                                 for (RequisitionAsset asset : curNode.getAssets()) {
                                     if (!asset.getName().startsWith("vmware")) {
                                         newNode.putAsset(asset);
                                     }
                                 }
+                                // Add existing custom categories
                                 for (RequisitionCategory cat : curNode.getCategories()) {
                                     if (!cat.getName().startsWith("VMWare")) {
                                         newNode.putCategory(cat);
+                                    }
+                                }
+                                // Add existing custom services
+                                /*
+                                 * For each interface on the new requisition,
+                                 * - Retrieve the list of custom services from the corresponding interface on the existing requisition,
+                                 *   matching the interface by the IP address
+                                 * - If the list of services is not empty, add them to the new interface
+                                 */
+                                for (RequisitionInterface intf : curNode.getInterfaces()) {
+                                    List<RequisitionMonitoredService> services = getManualyConfiguredServices(intf);
+                                    if (!services.isEmpty()) {
+                                        RequisitionInterface newIntf = getRequisitionInterface(newNode, intf.getIpAddr());
+                                        if (newIntf != null) {
+                                            newIntf.getMonitoredServices().addAll(services);
+                                        }
                                     }
                                 }
                             }
@@ -861,6 +941,51 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
         }
 
         return stream;
+    }
+
+    protected Requisition getExistingRequisition() {
+        Requisition curReq = null;
+        try {
+            ForeignSourceRepository repository = BeanUtils.getBean("daoContext", "deployedForeignSourceRepository", ForeignSourceRepository.class);
+            if (repository != null) {
+                curReq = repository.getRequisition(m_foreignSource);
+            }
+        } catch (Exception e) {
+            logger.warn("Can't retrieve requisition {}", m_foreignSource);
+        }
+        return curReq;
+    }
+
+    private RequisitionInterface getRequisitionInterface(RequisitionNode node, String ipAddr) {
+        for (RequisitionInterface intf : node.getInterfaces()) {
+            if (ipAddr.equals(intf.getIpAddr())) {
+                return intf;
+            }
+        }
+        return null;
+    }
+
+    private List<RequisitionMonitoredService> getManualyConfiguredServices(RequisitionInterface intf) {
+        List<RequisitionMonitoredService> services = new ArrayList<RequisitionMonitoredService>();
+        for (RequisitionMonitoredService svc : intf.getMonitoredServices()) {
+            boolean found = false;
+            for (String svcName : m_hostSystemServices) {
+                if (svcName.trim().equals(svc.getServiceName())) {
+                    found = true;
+                    continue;
+                }
+            }
+            for (String svcName : m_virtualMachineServices) {
+                if (svcName.trim().equals(svc.getServiceName())) {
+                    found = true;
+                    continue;
+                }
+            }
+            if (!found) {
+                services.add(svc);
+            }
+        }
+        return services;
     }
 
     /**

@@ -36,9 +36,11 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.opennms.netmgt.snmp.AggregateTracker;
+import org.opennms.netmgt.snmp.NamedSnmpVar;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpResult;
+import org.opennms.netmgt.snmp.SnmpStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

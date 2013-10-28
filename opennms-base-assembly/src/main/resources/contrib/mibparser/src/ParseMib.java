@@ -33,7 +33,7 @@ class ParseMib/*@bgen(jjtree)*/implements ParseMibTreeConstants, ParseMibConstan
   protected static JJTParseMibState jjtree = new JJTParseMibState();
   protected static Token lastObjectIdentifierToken = null;
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
 
     try {
       if (args.length == 0) {

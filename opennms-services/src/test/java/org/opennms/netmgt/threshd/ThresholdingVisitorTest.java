@@ -52,7 +52,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.easymock.EasyMock;
 import org.junit.After;
@@ -930,7 +930,7 @@ public class ThresholdingVisitorTest {
     public void testBug3554_withMockFilterDao() throws Exception {
         initFactories("/threshd-configuration-bug3554.xml","/test-thresholds-bug3554.xml");
         
-        // Visitor with Mock FilterDao
+        // Visitor with Mock FavoriteFilterDao
         ThresholdingVisitor visitor = createVisitor();
         visitor.visitCollectionSet(createAnonymousCollectionSet(new Date().getTime()));
         // Do nothing, just to check visitor
@@ -979,7 +979,7 @@ public class ThresholdingVisitorTest {
     public void testBug3720() throws Exception {
         runTestForBug3554();
         
-        // Validate FilterDao Calls
+        // Validate FavoriteFilterDao Calls
         HashSet<String> filters = new HashSet<String>();
         for (org.opennms.netmgt.config.threshd.Package pkg : ThreshdConfigFactory.getInstance().getConfiguration().getPackage()) {
             filters.add(pkg.getFilter().getContent());
@@ -1786,7 +1786,7 @@ public class ThresholdingVisitorTest {
         if (value != null) {
             String pattern = System.getProperty("org.opennms.threshd.value.decimalformat", "###.##"); // See Bug 3427
             DecimalFormat valueFormatter = new DecimalFormat(pattern);
-            bldr.addParam("value", value.isNaN() ? "NaN" : valueFormatter.format(value));
+            bldr.addParam("value", value.isNaN() ? AbstractThresholdEvaluatorState.FORMATED_NAN : valueFormatter.format(value));
         }
 
         bldr.addParam("instance", instance);

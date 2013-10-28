@@ -220,8 +220,7 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
      */
     @Override
     public RrdDb openFile(final String fileName) throws Exception {
-        RrdDb rrd = new RrdDb(fileName);
-        return rrd;
+        return new RrdDb(fileName);
     }
 
     /**
@@ -640,7 +639,7 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
 
             } else if (arg.startsWith("GPRINT:")) {
                 String definition = arg.substring("GPRINT:".length());
-                String gprint[] = tokenize(definition, ":", true);
+                String[] gprint = tokenize(definition, ":", true);
                 String format = gprint[2];
                 //format = format.replaceAll("%(\\d*\\.\\d*)lf", "@$1");
                 //format = format.replaceAll("%s", "@s");
@@ -651,7 +650,7 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
 
             } else if (arg.startsWith("PRINT:")) {
                 String definition = arg.substring("PRINT:".length());
-                String print[] = tokenize(definition, ":", true);
+                String[] print = tokenize(definition, ":", true);
                 String format = print[2];
                 //format = format.replaceAll("%(\\d*\\.\\d*)lf", "@$1");
                 //format = format.replaceAll("%s", "@s");
@@ -661,12 +660,12 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
                 graphDef.print(print[0], print[1], format);
 
             } else if (arg.startsWith("COMMENT:")) {
-                String comments[] = tokenize(arg, ":", true);
+                String[] comments = tokenize(arg, ":", true);
                 String format = comments[1].replaceAll("\\n", "\\\\l");
                 graphDef.comment(format);
             } else if (arg.startsWith("AREA:")) {
                 String definition = arg.substring("AREA:".length());
-                String area[] = tokenize(definition, ":", true);
+                String[] area = tokenize(definition, ":", true);
                 String[] color = tokenize(area[0], "#", true);
                 if (area.length > 1) {
                     graphDef.area(color[0], getColorOrInvisible(color, 1), area[1]);
@@ -676,13 +675,13 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
 
             } else if (arg.startsWith("STACK:")) {
                 String definition = arg.substring("STACK:".length());
-                String stack[] = tokenize(definition, ":", true);
+                String[] stack = tokenize(definition, ":", true);
                 String[] color = tokenize(stack[0], "#", true);
                 graphDef.stack(color[0], getColor(color[1]), (stack.length > 1 ? stack[1] : ""));
 
             } else if (arg.startsWith("HRULE:")) {
                 String definition = arg.substring("HRULE:".length());
-                String hrule[] = tokenize(definition, ":", true);
+                String[] hrule = tokenize(definition, ":", true);
                 String[] color = tokenize(hrule[0], "#", true);
                 Double value = Double.valueOf(color[0]);
                 graphDef.hrule(value, getColor(color[1]), hrule[1]);

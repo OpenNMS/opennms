@@ -356,7 +356,7 @@ public abstract class JMXCollector implements ServiceCollector {
                         
                         String[] attrNames = attribNames.toArray(new String[attribNames.size()]);
 
-                        if (objectName.indexOf("*") == -1) {      
+                        if (objectName.indexOf('*') == -1) {      
                             LOG.debug("{} Collector - getAttributes: {}, # attributes: {}, # composite attribute members: {}", serviceName, objectName, attrNames.length, compAttribNames.size());
                             try {
                                 ObjectName oName = new ObjectName(objectName);
@@ -511,7 +511,7 @@ public abstract class JMXCollector implements ServiceCollector {
         if (objectName == null) {
             return "NULL";
         }
-        return objectName.replaceAll("[.:=,]", "_");
+        return objectName.replaceAll("[.:=,\\s]", "_");
     }
     
     /*
@@ -529,7 +529,7 @@ public abstract class JMXCollector implements ServiceCollector {
             StringTokenizer st = new StringTokenizer(substitutions, ",");
             while (st.hasMoreTokens()) {
                 String token = st.nextToken();
-                int index = token.indexOf("|");
+                int index = token.indexOf('|');
                 if (newKey.equals(token.substring(0, index))) {
                     newKey = token.substring(index + 1);
                 }

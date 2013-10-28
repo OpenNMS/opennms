@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.sql.DataSource;
+import javax.sql.XAConnection;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jdbc.core.RowCountCallbackHandler;
@@ -151,4 +152,21 @@ public class TemporaryDatabaseHsqldb implements TemporaryDatabase, InitializingB
         m_jdbcTemplate = template;
     }
 
+    /**
+     * TODO Implement these functions to use the XADataSource implementation 
+     * from HSQLDB
+     */
+    @Override
+    public XAConnection getXAConnection() throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * TODO Implement these functions to use the XADataSource implementation 
+     * from HSQLDB
+     */
+    @Override
+    public XAConnection getXAConnection(String user, String password) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
 }

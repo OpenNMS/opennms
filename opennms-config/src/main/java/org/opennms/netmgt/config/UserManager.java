@@ -47,6 +47,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.apache.commons.lang.StringUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
@@ -169,30 +170,33 @@ public abstract class UserManager {
         _saveCurrent();
     }
     
-    public void save(final OnmsUser user) throws Exception {
+    public void save(final OnmsUser onmsUser) throws Exception {
         update();
 
         m_writeLock.lock();
         
         try {
-            User castorUser = _getUser(user.getUsername());
+            User castorUser = _getUser(onmsUser.getUsername());
             if (castorUser == null) {
                 castorUser = new User();
-                castorUser.setUserId(user.getUsername());
+                castorUser.setUserId(onmsUser.getUsername());
             }
-            castorUser.setFullName(user.getFullName());
-            castorUser.setUserComments(user.getComments());
+            castorUser.setFullName(onmsUser.getFullName());
+            castorUser.setUserComments(onmsUser.getComments());
+
+            // Contact info
+            _setContact(castorUser, ContactType.email, onmsUser.getEmail());
             
             final Password pass = new Password();
-            pass.setContent(user.getPassword());
-            pass.setSalt(user.getPasswordSalted());
+            pass.setContent(onmsUser.getPassword());
+            pass.setSalt(onmsUser.getPasswordSalted());
             castorUser.setPassword(pass);
     
-            if (user.getDutySchedule() != null) {
-                castorUser.setDutySchedule(user.getDutySchedule());
+            if (onmsUser.getDutySchedule() != null) {
+                castorUser.setDutySchedule(onmsUser.getDutySchedule());
             }
             
-            _writeUser(user.getUsername(), castorUser);
+            _writeUser(onmsUser.getUsername(), castorUser);
         } finally {
             m_writeLock.unlock();
         }
@@ -317,8 +321,20 @@ public abstract class UserManager {
         user.setPassword(castorUser.getPassword().getContent());
         user.setPasswordSalted(castorUser.getPassword().getSalt());
         user.setDutySchedule(castorUser.getDutyScheduleCollection());
-   
+        user.setEmail(_getContactInfo(castorUser, ContactType.email));
         return user;
+    }
+    
+    private Contact _getContact(final String userId, final ContactType contactType) {
+    	User user = _getUser(userId);
+    	if (user != null && contactType != null) {
+    		for (Contact eachContact : user.getContactCollection()) {
+    			if (contactType.name().equals(eachContact.getType())) {
+    				return eachContact;
+    			}
+    		}
+    	}
+    	return null;
     }
     
     /**
@@ -463,7 +479,42 @@ public abstract class UserManager {
     public String getMicroblogName(final User user) throws MarshalException, ValidationException, FileNotFoundException, IOException {
         return getContactInfo(user, ContactType.microblog.toString());
     }
+    
+    public void setContactInfo(final String userId, final ContactType contactType, final String contactValue) throws Exception {
+    	 update();
+         m_writeLock.lock();
+         
+         try {
+             final User user = _getUser(userId);
+             if (user != null) {
+            	 _setContact(user, contactType, contactValue);
+             }
+             _saveCurrent();
+         } finally {
+             m_writeLock.unlock();
+         }
+	}
+    
+    private void _setContact(final User user, final ContactType contactType, final String value) {
+        if (user != null && !StringUtils.isEmpty(value)) {
+        	Contact contact = _getContact(user.getUserId(), contactType);
+        	if (contact == null) {
+        		contact = new Contact();
+        		user.addContact(contact);
+        	}
+        	contact.setInfo(value);
+    		contact.setType(contactType.name());
+        }
+    }
 
+    /**
+     * @see {@link #getContactInfo(String, String)} 
+     */
+    public String getContactInfo(final String userId, final ContactType contactType) throws MarshalException, ValidationException, IOException {
+    	if (userId == null || contactType == null) return null;
+    	return getContactInfo(userId, contactType.name());
+	}
+    
     /**
      * Get the contact info given a command string
      *
@@ -510,6 +561,10 @@ public abstract class UserManager {
         }
     }
 
+    private String _getContactInfo(final User user, final ContactType contactType) {
+    	return _getContactInfo(user, contactType.name());
+    }
+    
     private String _getContactInfo(final User user, final String command) {
         if (user == null) return "";
         

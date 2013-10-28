@@ -2,7 +2,7 @@
 
 . ./provision.sh
 
-export BASE_URL=http://localhost:8980/opennms/rest
+export BASE_URL=http://demo.opennms.org/opennms/rest
 export PROV_GROUP=testGroup
 
 
@@ -366,7 +366,7 @@ PassedInTestSuite()
     done
 }
 
-. ./shunit
+. ./shUnit
 
 if [ $# -ne 0 ]
 then

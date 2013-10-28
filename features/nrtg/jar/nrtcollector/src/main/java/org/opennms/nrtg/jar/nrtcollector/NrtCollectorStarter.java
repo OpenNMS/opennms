@@ -48,7 +48,7 @@ public class NrtCollectorStarter {
 
     private static AbstractApplicationContext context;
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         context = new AnnotationConfigApplicationContext(org.opennms.nrtg.jar.nrtcollector.AppConfig.class);
         context.registerShutdownHook();
         NrtCollector nrtCollector = (NrtCollector) context.getBean("nrtCollector");

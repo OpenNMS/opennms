@@ -87,7 +87,7 @@ public class TimeoutSecureXmlRpcClient
      * @param args an array of {@link java.lang.String} objects.
      * @throws java.lang.Exception if any.
      */
-    public static void main (final String args[]) throws Exception {
+    public static void main (final String[] args) throws Exception {
         // XmlRpc.setDebug (true);
         try {
             String url = args[0];

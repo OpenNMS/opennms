@@ -248,7 +248,7 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
      */
     protected XmlCollectionResource getCollectionResource(CollectionAgent agent, String instance, String resourceType, Date timestamp) {
         XmlCollectionResource resource = null;
-        if (resourceType.toLowerCase().equals("node")) {
+        if (resourceType.equalsIgnoreCase("node")) {
             resource = new XmlSingleInstanceCollectionResource(agent);
         } else {
             XmlResourceType type = getXmlResourceType(agent, resourceType);

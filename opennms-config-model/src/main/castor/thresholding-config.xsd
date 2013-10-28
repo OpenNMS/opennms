@@ -83,6 +83,15 @@
        </element>
     </sequence>
 
+    <attribute name="relaxed" type="boolean" use="optional" default="false">
+      <annotation>
+        <documentation>
+          An optional flag to tell the threshold processor to evaluate the expression even if there are unknown values.
+          This can be useful when processing expressions with conditionals. Default: false
+        </documentation>
+      </annotation>
+    </attribute>
+
     <attribute name="description" type="string" use="optional">
       <annotation>
         <documentation>

@@ -218,6 +218,7 @@ public abstract class BaseThresholdDefConfigWrapper {
         && getRearm() == o.getRearm()
         && getTrigger() == o.getTrigger()
         && getBasethresholddef().getFilterOperator().equals(o.getBasethresholddef().getFilterOperator())
+        && getBasethresholddef().isRelaxed() == o.getBasethresholddef().isRelaxed()
         && Arrays.equals(getBasethresholddef().getResourceFilter(), o.getBasethresholddef().getResourceFilter());
     }
     

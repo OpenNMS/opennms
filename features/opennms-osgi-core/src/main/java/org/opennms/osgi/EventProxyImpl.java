@@ -33,7 +33,7 @@ import org.osgi.framework.BundleContext;
 
 import java.util.List;
 
-public class EventProxyImpl implements EventProxy {
+class EventProxyImpl implements EventProxy {
 
     private final BundleContext bundleContext;
     private final VaadinApplicationContext applicationContext;

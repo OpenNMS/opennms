@@ -38,7 +38,7 @@
   <jsp:param name="title" value="Advanced Alarm Search" />
   <jsp:param name="headTitle" value="Advanced Search" />
   <jsp:param name="headTitle" value="Alarms" />
-  <jsp:param name="breadcrumb" value="<a href='alarm/index.jsp'>Alarms</a>" />
+  <jsp:param name="breadcrumb" value="<a href='alarm/index.htm'>Alarms</a>" />
   <jsp:param name="breadcrumb" value="Advanced Alarm Search" />
 </jsp:include>
 

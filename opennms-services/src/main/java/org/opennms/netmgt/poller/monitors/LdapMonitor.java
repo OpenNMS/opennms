@@ -51,6 +51,7 @@ import org.slf4j.LoggerFactory;
 
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPException;
+import com.novell.ldap.LDAPSearchConstraints;
 import com.novell.ldap.LDAPSearchResults;
 import com.novell.ldap.LDAPSocketFactory;
 
@@ -208,14 +209,25 @@ public class LdapMonitor extends AbstractServiceMonitor {
 
                 // do a quick search and see if any results come back
                 boolean attributeOnly = true;
-                String attrs[] = { LDAPConnection.NO_ATTRS };
+                String[] attrs = { LDAPConnection.NO_ATTRS };
                 int searchScope = LDAPConnection.SCOPE_ONE;
 
                 LOG.debug("running search {} from {}", searchFilter, searchBase);
                 LDAPSearchResults results = null;
+                
+                int msLimit = (int)tracker.getTimeoutInMillis();
+                int serverLimit = (int)tracker.getTimeoutInSeconds() + 1;
+                LDAPSearchConstraints cons = new LDAPSearchConstraints(msLimit, serverLimit, 
+                                                                       LDAPSearchConstraints.DEREF_NEVER, // dereference: default = never
+                                                                       1000, // maxResults: default = 1000
+                                                                       false, // doReferrals: default = false
+                                                                       1, // batchSize: default = 1
+                                                                       null, // handler: default = null
+                                                                       10 // hop_limit: default = 10
+                                                                       );
 
                 try {
-                    results = lc.search(searchBase, searchScope, searchFilter, attrs, attributeOnly);
+                    results = lc.search(searchBase, searchScope, searchFilter, attrs, attributeOnly, cons);
 
                     if (results != null && results.hasMore()) {
                         responseTime = tracker.elapsedTimeInMillis();

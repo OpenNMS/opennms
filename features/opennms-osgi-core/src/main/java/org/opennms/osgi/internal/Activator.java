@@ -63,7 +63,7 @@ public class Activator implements BundleActivator, SynchronousBundleListener {
         if (BundleEvent.STARTING == event.getType() && shouldAutoExportOnmsServices(event.getBundle())) {
             autoExportDefaultServices(event.getBundle().getBundleContext());
         } else if (BundleEvent.STOPPED == event.getType()) {
-            ; // we do not need to remove any services the underlying OSGi-container should
+            // we do not need to remove any services the underlying OSGi-container should
             // have handled that for us
         }
     }
@@ -86,8 +86,10 @@ public class Activator implements BundleActivator, SynchronousBundleListener {
 
     private boolean shouldAutoExportOnmsServices(Bundle bundle) {
         if (bundle == null) return false;
-        Object value = bundle.getHeaders().get("OnmsAutoExportServices");
-        if (value == null || !(value instanceof String)) return false;
-        return Boolean.valueOf((String)value);
+        String headerValue = bundle.getHeaders().get("OnmsAutoExportServices");
+        if (headerValue == null) {
+            return false;
+        }
+        return Boolean.valueOf(headerValue);
     }
 }

@@ -181,7 +181,7 @@ public class RrdGraphEntry extends Panel {
         } else {
             m_previewImage.setSource(new ExternalResource(m_rrdGraphHelper.imageUrlForGraph(getGraphUrl(), 150, 50, m_calendarField, m_calendarDiff)));
             m_previewImage.addStyleName("preview");
-            m_graphLabelComponent.setValue(m_graphId);
+            m_graphLabelComponent.setValue(m_resourceTypeLabel + ": " + m_resourceLabel);
             m_nodeLabelComponent.setValue(getNodeLabel());
             m_changeButton.setCaption("Change Rrd graph");
             m_previewImage.setVisible(true);

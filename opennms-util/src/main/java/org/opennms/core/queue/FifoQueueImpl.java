@@ -65,10 +65,6 @@ public class FifoQueueImpl<T> implements FifoQueue<T> {
      *
      * @param element
      *            The object to append to the queue.
-     * @exception org.opennms.core.queue.FifoQueueException
-     *                Thrown if a queue error occurs.
-     * @exception java.lang.InterruptedException
-     *                Thrown if the thread is interrupted.
      * @throws org.opennms.core.queue.FifoQueueException if any.
      * @throws java.lang.InterruptedException if any.
      */
@@ -96,10 +92,6 @@ public class FifoQueueImpl<T> implements FifoQueue<T> {
     /**
      * Removes the oldest element from the queue.
      *
-     * @exception org.opennms.core.queue.FifoQueueException
-     *                Thrown if a queue error occurs.
-     * @exception java.lang.InterruptedException
-     *                Thrown if the thread is interrupted.
      * @return The oldest object in the queue.
      * @throws org.opennms.core.queue.FifoQueueException if any.
      * @throws java.lang.InterruptedException if any.

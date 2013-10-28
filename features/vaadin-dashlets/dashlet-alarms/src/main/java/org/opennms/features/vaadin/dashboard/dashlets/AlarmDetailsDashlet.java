@@ -28,19 +28,26 @@
 package org.opennms.features.vaadin.dashboard.dashlets;
 
 import com.vaadin.server.Page;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.*;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Fetch;
+import org.opennms.core.criteria.restrictions.InRestriction;
+import org.opennms.core.criteria.restrictions.Restriction;
+import org.opennms.features.topology.plugins.browsers.*;
 import org.opennms.features.vaadin.dashboard.config.ui.editors.CriteriaBuilderHelper;
-import org.opennms.features.vaadin.dashboard.model.Dashlet;
+import org.opennms.features.vaadin.dashboard.model.AbstractDashlet;
+import org.opennms.features.vaadin.dashboard.model.AbstractDashletComponent;
+import org.opennms.features.vaadin.dashboard.model.DashletComponent;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.AlarmRepository;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.*;
+import org.opennms.osgi.EventProxy;
+import org.opennms.osgi.VaadinApplicationContextImpl;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -48,11 +55,7 @@ import java.util.List;
  *
  * @author Christian Pape
  */
-public class AlarmDetailsDashlet extends VerticalLayout implements Dashlet {
-    /**
-     * the dashlet's name
-     */
-    private String m_name;
+public class AlarmDetailsDashlet extends AbstractDashlet {
     /**
      * The {@link AlarmDao} used
      */
@@ -62,17 +65,21 @@ public class AlarmDetailsDashlet extends VerticalLayout implements Dashlet {
      */
     private NodeDao m_nodeDao;
     /**
-     * The {@link DashletSpec} for this instance
-     */
-    private DashletSpec m_dashletSpec;
-    /**
-     * boosted value
-     */
-    private boolean boosted = false;
-    /**
      * Helper for handling criterias
      */
     private CriteriaBuilderHelper m_criteriaBuilderHelper = new CriteriaBuilderHelper(OnmsAlarm.class, OnmsNode.class, OnmsCategory.class, OnmsEvent.class);
+    /**
+     * wallboard layout
+     */
+    DashletComponent m_wallboardComponent;
+    /**
+     * dashboard layout
+     */
+    DashletComponent m_dashboardComponent;
+    /**
+     * alarm table
+     */
+    AlarmRepository m_alarmRepository;
 
     /**
      * Constructor for instantiating new objects.
@@ -81,35 +88,173 @@ public class AlarmDetailsDashlet extends VerticalLayout implements Dashlet {
      * @param alarmDao    the {@link AlarmDao} to be used
      * @param nodeDao     the {@link NodeDao} to be used
      */
-    public AlarmDetailsDashlet(String name, DashletSpec dashletSpec, AlarmDao alarmDao, NodeDao nodeDao) {
+    public AlarmDetailsDashlet(String name, DashletSpec dashletSpec, AlarmDao alarmDao, NodeDao nodeDao, AlarmRepository alarmRepository) {
+        super(name, dashletSpec);
+
         /**
          * Setting the member fields
          */
-        m_name = name;
-        m_dashletSpec = dashletSpec;
         m_alarmDao = alarmDao;
         m_nodeDao = nodeDao;
+        m_alarmRepository = alarmRepository;
+    }
 
-        /**
-         * Setting up the layout
-         */
-        setCaption(getName());
-        setWidth("100%");
+    @Override
+    public DashletComponent getWallboardComponent() {
+
+        if (m_wallboardComponent == null) {
+            m_wallboardComponent = new AbstractDashletComponent() {
+
+                private VerticalLayout m_verticalLayout;
+
+                {
+                    m_verticalLayout = new VerticalLayout();
+                    m_verticalLayout.setCaption(getName());
+                    m_verticalLayout.setWidth("100%");
+
+                    refresh();
+                }
+
+                /**
+                 * Injects CSS styles on current page for this dashlet
+                 */
+                private void injectWallboardStyles() {
+                    Page.getCurrent().getStyles().add(".alert-details.cleared { background: #AAAAAA; border-left: 14px solid #858585; }");
+                    Page.getCurrent().getStyles().add(".alert-details.normal { background: #AAAAAA; border-left: 14px solid #336600; }");
+                    Page.getCurrent().getStyles().add(".alert-details.indeterminate { background: #AAAAAA; border-left: 14px solid #999; }");
+                    Page.getCurrent().getStyles().add(".alert-details.warning { background: #AAAAAA; border-left: 14px solid #FFCC00; }");
+                    Page.getCurrent().getStyles().add(".alert-details.minor { background: #AAAAAA; border-left: 14px solid #FF9900; }");
+                    Page.getCurrent().getStyles().add(".alert-details.major { background: #AAAAAA; border-left: 14px solid #FF3300; }");
+                    Page.getCurrent().getStyles().add(".alert-details.critical { background: #AAAAAA; border-left: 14px solid #CC0000; }");
+                    Page.getCurrent().getStyles().add(".alert-details-font {color: #000000; font-size: 17px; line-height: normal; }");
+                    Page.getCurrent().getStyles().add(".alert-details-noalarms-font { font-size: 17px; line-height: normal; }");
+                    Page.getCurrent().getStyles().add(".alert-details { padding: 5px 5px; margin: 1px; }");
+                }
+
+                @Override
+                public void refresh() {
+                    List<OnmsAlarm> alarms = getAlarms();
+                    m_verticalLayout.removeAllComponents();
+                    injectWallboardStyles();
+
+                    setBoosted(false);
+
+                    addComponents(m_verticalLayout, alarms);
+
+                    setBoosted(checkBoosted(alarms));
+                }
+
+                @Override
+                public Component getComponent() {
+                    return m_verticalLayout;
+                }
+            };
+        }
+        return m_wallboardComponent;
+    }
+
+    @Override
+    public DashletComponent getDashboardComponent() {
+        if (m_dashboardComponent == null) {
+            m_dashboardComponent = new AbstractDashletComponent() {
+
+                private AlarmTable m_alarmTable;
+
+                {
+                    m_alarmTable = new AlarmTable("Alarms", new AlarmDaoContainer(m_alarmDao), m_alarmRepository);
+
+                    m_alarmTable.setSizeFull();
+
+                    final VaadinApplicationContextImpl context = new VaadinApplicationContextImpl();
+                    final UI currentUI = UI.getCurrent();
+
+                    context.setSessionId(currentUI.getSession().getSession().getId());
+                    context.setUiId(currentUI.getUIId());
+
+                    m_alarmTable.setVaadinApplicationContext(context);
+
+                    final EventProxy eventProxy = new EventProxy() {
+                        @Override
+                        public <T> void fireEvent(final T eventObject) {
+                            System.out.println("got event: {}" + eventObject);
+                        }
+
+                        @Override
+                        public <T> void addPossibleEventConsumer(final T possibleEventConsumer) {
+                            System.out.println("(ignoring) add consumer: {}" + possibleEventConsumer);
+                        }
+                    };
+
+                    m_alarmTable.setEventProxy(eventProxy);
+
+                    m_alarmTable.setColumnReorderingAllowed(true);
+                    m_alarmTable.setColumnCollapsingAllowed(true);
+                    m_alarmTable.setSortContainerPropertyId("id");
+                    m_alarmTable.setSortAscending(false);
+                    m_alarmTable.setCellStyleGenerator(new AlarmTableCellStyleGenerator());
+
+                    m_alarmTable.addGeneratedColumn("severity", new SeverityGenerator());
+                    m_alarmTable.addGeneratedColumn("id", new AlarmIdColumnLinkGenerator(m_alarmDao, "id"));
+                    m_alarmTable.setVisibleColumns("id", "severity", "nodeLabel", "counter", "lastEventTime", "logMsg");
+                    m_alarmTable.setColumnHeaders("ID", "Severity", "Node", "Count", "Last Event Time", "Log Message");
+
+                    refresh();
+                }
+
+
+                @Override
+                public void refresh() {
+                    List<OnmsAlarm> alarms = getAlarms();
+
+                    List<Integer> alarmIds = new LinkedList();
+
+                    for (OnmsAlarm onmsAlarm : alarms) {
+                        alarmIds.add(onmsAlarm.getId());
+                    }
+
+                    List<Restriction> restrictions = new LinkedList<Restriction>();
+                    restrictions.add(new InRestriction("id", alarmIds));
+
+                    ((OnmsDaoContainer) m_alarmTable.getContainerDataSource()).setRestrictions(restrictions);
+
+                    setBoosted(checkBoosted(alarms));
+
+                    m_alarmTable.markAsDirtyRecursive();
+                }
+
+                @Override
+                public Component getComponent() {
+                    return m_alarmTable;
+                }
+            };
+        }
+        return m_dashboardComponent;
+    }
+
+    private boolean checkBoosted(List<OnmsAlarm> alarms) {
+        for (OnmsAlarm onmsAlarm : alarms) {
+            OnmsSeverity boostSeverity = OnmsSeverity.valueOf(getDashletSpec().getParameters().get("boostSeverity"));
+
+            if (onmsAlarm.getSeverity().isGreaterThanOrEqual(boostSeverity)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
-     * Updates the alarm data using the associated {@link AlarmDao} and {@link NodeDao} instances.
+     * Returns the alarms defined by this dashlet.
+     *
+     * @return the list of alarms
      */
-    @Override
-    public void update() {
+    private List<OnmsAlarm> getAlarms() {
         final CriteriaBuilder alarmCb = new CriteriaBuilder(OnmsAlarm.class);
 
         alarmCb.alias("node", "node");
         alarmCb.alias("node.categories", "category");
         alarmCb.alias("lastEvent", "event");
 
-        String criteria = m_dashletSpec.getParameters().get("criteria");
-        OnmsSeverity boostSeverity = OnmsSeverity.valueOf(m_dashletSpec.getParameters().get("boostSeverity"));
+        String criteria = getDashletSpec().getParameters().get("criteria");
 
         m_criteriaBuilderHelper.parseConfiguration(alarmCb, criteria);
 
@@ -118,18 +263,28 @@ public class AlarmDetailsDashlet extends VerticalLayout implements Dashlet {
 
         alarmCb.distinct();
 
-        List<OnmsAlarm> alarms = m_alarmDao.findMatching(alarmCb.toCriteria());
-        removeAllComponents();
+        return m_alarmDao.findMatching(alarmCb.toCriteria());
+    }
 
-        injectStyles();
-
-        boosted = false;
-
+    /**
+     * Adds the alarms components to a {@link AbstractOrderedLayout}
+     *
+     * @param component the component to add alarms to
+     * @param alarms    the alarms list
+     */
+    private void addComponents(AbstractOrderedLayout component, List<OnmsAlarm> alarms) {
         if (alarms.size() == 0) {
             Label label = new Label("No alarms found!");
             label.addStyleName("alert-details-noalarms-font");
-            addComponent(label);
+            component.addComponent(label);
         } else {
+            StringBuilder sb = new StringBuilder();
+
+            sb.append("<table class='onms'>");
+            sb.append("<thead>");
+            sb.append("<th class='onms'>ID</th><th class='onms'>Severity</th><th class='onms'>Node</th><th class='onms'>Count</th><th class='onms'>Last Event Time</th><th class='onms'>Log Msg</th>");
+            sb.append("</thead>");
+
             for (OnmsAlarm onmsAlarm : alarms) {
                 OnmsNode onmsNode = null;
 
@@ -143,29 +298,23 @@ public class AlarmDetailsDashlet extends VerticalLayout implements Dashlet {
                         onmsNode = nodes.get(0);
                     }
                 }
-                addComponent(createAlarmComponent(onmsAlarm, onmsNode));
 
-                if (onmsAlarm.getSeverity().isGreaterThanOrEqual(boostSeverity)) {
-                    boosted = true;
-                }
+                String s = "";
+                sb.append("<tr class='" + onmsAlarm.getSeverity().getLabel() + " onms'>");
+                sb.append("<td class='divider bright onms' valign='middle' rowspan='1'><nobr>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + onmsAlarm.getId() + "</nobr></td>");
+                sb.append("<td class='divider onms' valign='middle' rowspan='1'><nobr>" + onmsAlarm.getSeverity().getLabel() + "</nobr></td>");
+                sb.append("<td class='divider onms' valign='middle' rowspan='1'><nobr>" + (onmsNode!=null?onmsNode.getLabel():"-") + "</nobr></td>");
+                sb.append("<td class='divider onms' valign='middle' rowspan='1'><nobr>" + onmsAlarm.getCounter() + "</nobr></td>");
+                sb.append("<td class='divider onms' valign='middle' rowspan='1'><nobr>" + onmsAlarm.getLastEventTime().toString() + "</nobr></td>");
+                sb.append("<td class='divider onms' valign='middle' rowspan='1'>" + onmsAlarm.getLogMsg().replaceAll("\\<.*?>", "") + "</td>");
+                sb.append("</td></tr>");
             }
+            sb.append("</table>");
+            Label label = new Label(sb.toString());
+            label.setSizeFull();
+            label.setContentMode(ContentMode.HTML);
+            component.addComponent(label);
         }
-    }
-
-    /**
-     * Injects CSS styles on current page for this dashlet
-     */
-    private void injectStyles() {
-        Page.getCurrent().getStyles().add(".alert-details.cleared { background: #AAAAAA; border-left: 15px solid #858585; }");
-        Page.getCurrent().getStyles().add(".alert-details.normal { background: #AAAAAA; border-left: 15px solid #336600; }");
-        Page.getCurrent().getStyles().add(".alert-details.indeterminate { background: #AAAAAA; border-left: 15px solid #999; }");
-        Page.getCurrent().getStyles().add(".alert-details.warning { background: #AAAAAA; border-left: 15px solid #FFCC00; }");
-        Page.getCurrent().getStyles().add(".alert-details.minor { background: #AAAAAA; border-left: 15px solid #FF9900; }");
-        Page.getCurrent().getStyles().add(".alert-details.major { background: #AAAAAA; border-left: 15px solid #FF3300; }");
-        Page.getCurrent().getStyles().add(".alert-details.critical { background: #AAAAAA; border-left: 15px solid #CC0000; }");
-        Page.getCurrent().getStyles().add(".alert-details-font {color: #000000; font-size: 18px; line-height: normal; }");
-        Page.getCurrent().getStyles().add(".alert-details-noalarms-font { font-size: 18px; line-height: normal; }");
-        Page.getCurrent().getStyles().add(".alert-details { padding: 5px 5px; margin: 1px; }");
     }
 
     /**
@@ -175,6 +324,7 @@ public class AlarmDetailsDashlet extends VerticalLayout implements Dashlet {
      * @param onmsNode  an {@link OnmsNode} instance
      * @return component for this alarm
      */
+    @Deprecated
     public Component createAlarmComponent(OnmsAlarm onmsAlarm, OnmsNode onmsNode) {
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSizeFull();
@@ -183,7 +333,13 @@ public class AlarmDetailsDashlet extends VerticalLayout implements Dashlet {
         horizontalLayout.addStyleName(onmsAlarm.getSeverity().name().toLowerCase());
 
         VerticalLayout verticalLayout1 = new VerticalLayout();
+        VerticalLayout verticalLayout2 = new VerticalLayout();
+
+        horizontalLayout.addComponent(verticalLayout1);
+        horizontalLayout.addComponent(verticalLayout2);
+
         Label lastEvent = new Label();
+        lastEvent.setSizeUndefined();
         lastEvent.addStyleName("alert-details-font");
         lastEvent.setCaption("Last event");
         lastEvent.setValue(onmsAlarm.getLastEventTime().toString());
@@ -196,10 +352,6 @@ public class AlarmDetailsDashlet extends VerticalLayout implements Dashlet {
 
         verticalLayout1.addComponent(firstEvent);
         verticalLayout1.addComponent(lastEvent);
-
-        horizontalLayout.addComponent(verticalLayout1);
-
-        VerticalLayout verticalLayout2 = new VerticalLayout();
 
         Label nodeId = new Label();
         nodeId.setSizeUndefined();
@@ -216,16 +368,12 @@ public class AlarmDetailsDashlet extends VerticalLayout implements Dashlet {
         nodeLabel.setSizeUndefined();
         nodeLabel.addStyleName("alert-details-font");
         nodeLabel.setCaption("Node Label");
+
         if (onmsNode != null) {
             nodeLabel.setValue(onmsNode.getLabel());
         } else {
             nodeLabel.setValue("-");
         }
-
-        verticalLayout2.addComponent(nodeId);
-        verticalLayout2.addComponent(nodeLabel);
-
-        horizontalLayout.addComponent(verticalLayout2);
 
         Label logMessage = new Label();
         logMessage.addStyleName("alert-details-font");
@@ -233,21 +381,18 @@ public class AlarmDetailsDashlet extends VerticalLayout implements Dashlet {
         logMessage.setCaption("Log message");
         logMessage.setValue(onmsAlarm.getLogMsg().replaceAll("<[^>]*>", ""));
 
-        horizontalLayout.addComponent(logMessage);
+        HorizontalLayout horizontalLayout2 = new HorizontalLayout();
+        horizontalLayout2.setSizeFull();
+        horizontalLayout2.setSpacing(true);
+        horizontalLayout2.addComponent(nodeId);
+        horizontalLayout2.addComponent(nodeLabel);
+
+        verticalLayout2.addComponent(horizontalLayout2);
+        verticalLayout2.addComponent(logMessage);
+
         horizontalLayout.setExpandRatio(verticalLayout1, 1.0f);
-        horizontalLayout.setExpandRatio(verticalLayout2, 1.0f);
-        horizontalLayout.setExpandRatio(logMessage, 3.0f);
+        horizontalLayout.setExpandRatio(verticalLayout2, 4.0f);
 
         return horizontalLayout;
-    }
-
-    @Override
-    public String getName() {
-        return m_name;
-    }
-
-    @Override
-    public boolean isBoosted() {
-        return boosted;
     }
 }

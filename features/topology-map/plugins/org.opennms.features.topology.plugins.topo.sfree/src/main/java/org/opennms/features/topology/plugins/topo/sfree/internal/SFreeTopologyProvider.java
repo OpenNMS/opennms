@@ -6,9 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
+import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SimpleConnector;
@@ -23,12 +23,31 @@ public class SFreeTopologyProvider extends AbstractTopologyProvider implements G
     private static final String TOPOLOGY_NAMESPACE_SFREE = "sfree";
     public static final String ERDOS_RENIS = "ErdosReniy";
     public static final String BARABASI_ALBERT = "BarabasiAlbert";
+    
+    private int m_nodeCount = 200;
+    private double m_connectedness = 4.0;
 
     public SFreeTopologyProvider() {
         super(TOPOLOGY_NAMESPACE_SFREE);
     }
 
-    @Override
+    public int getNodeCount() {
+		return m_nodeCount;
+	}
+
+	public void setNodeCount(int nodeCount) {
+		m_nodeCount = nodeCount;
+	}
+
+	public double getConnectedness() {
+		return m_connectedness;
+	}
+
+	public void setConnectedness(double connectedness) {
+		m_connectedness = connectedness;
+	}
+
+	@Override
     public void save() {
         // Do nothing
     }
@@ -39,24 +58,28 @@ public class SFreeTopologyProvider extends AbstractTopologyProvider implements G
     }
 
     @Override
-    public void load(String filename) {
+    public Criteria getDefaultCriteria() {
+        return null; // no default focus
+    }
 
+    @Override
+    public void load(String filename) {
         clearVertices();
         clearEdges();
 
         if (filename.equals(ERDOS_RENIS))
-            createERRandomTopology(200,4);		
+            createERRandomTopology(m_nodeCount,m_connectedness);		
         else if (filename.equals(BARABASI_ALBERT))
-            createBARandomTopology(200,4);
+            createBARandomTopology(m_nodeCount,m_connectedness);
     }
 
-    private void createBARandomTopology(Integer numberOfNodes, Integer averageNumberofNeighboors) {
+    private void createBARandomTopology(int numberOfNodes, double averageNumberofNeighboors) {
         Map<Integer,SimpleLeafVertex> nodes = new HashMap<Integer, SimpleLeafVertex>();
         List<AbstractEdge> edges = new ArrayList<AbstractEdge>();
 
         for(int i=0; i<2*averageNumberofNeighboors; i++){
             LOG.debug("Creating First Cluster from: {}", i);
-            int j=(i+1)%(2*averageNumberofNeighboors);
+            int j=(i+1)%((int)Math.round(2*averageNumberofNeighboors));
 
             SimpleLeafVertex vertexi = new SimpleLeafVertex(TOPOLOGY_NAMESPACE_SFREE, Integer.toString(i), 0, 0);
             vertexi.setIconKey("sfree:system");
@@ -82,7 +105,7 @@ public class SFreeTopologyProvider extends AbstractTopologyProvider implements G
         }
 
         Random r = new Random((new Date()).getTime());
-        for(int i=2*averageNumberofNeighboors;i<numberOfNodes;i++){
+        for(int i=((int)Math.floor(2*averageNumberofNeighboors));i<numberOfNodes;i++){
 
             SimpleLeafVertex vertexi = new SimpleLeafVertex(TOPOLOGY_NAMESPACE_SFREE, Integer.toString(i),0,0);
             vertexi.setIconKey("sfree:system");
@@ -110,7 +133,7 @@ public class SFreeTopologyProvider extends AbstractTopologyProvider implements G
 
     }
 
-    private void createERRandomTopology(Integer numberOfNodes, Integer averageNumberofNeighboors) {
+    private void createERRandomTopology(int numberOfNodes, double averageNumberofNeighboors) {
         Map<Integer,SimpleLeafVertex> nodes = new HashMap<Integer, SimpleLeafVertex>();
         List<AbstractEdge> edges = new ArrayList<AbstractEdge>();
         for (Integer i=0; i< numberOfNodes ;i++) {
@@ -139,6 +162,5 @@ public class SFreeTopologyProvider extends AbstractTopologyProvider implements G
 
         addVertices(nodes.values().toArray(new Vertex[] {}));
         addEdges(edges.toArray(new Edge[] {}));
-
     }
 }

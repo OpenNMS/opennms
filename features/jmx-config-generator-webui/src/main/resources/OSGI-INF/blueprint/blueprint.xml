@@ -6,7 +6,7 @@ http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 https://svn.apache.o
 http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-core/src/main/resources/org/apache/aries/blueprint/ext/blueprint-ext.xsd">
 
 	<bean id="jmxConfigToolApplicationFactory"
-		class="org.opennms.features.jmxconfiggenerator.webui.JmxConfigToolApplicationFactory" />
+		class="org.opennms.features.jmxconfiggenerator.webui.JmxConfigToolUIFactory" />
 
 	<service interface="org.ops4j.pax.vaadin.ApplicationFactory"
 		ref="jmxConfigToolApplicationFactory">

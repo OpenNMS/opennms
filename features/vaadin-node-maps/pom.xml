@@ -62,7 +62,7 @@
                     <noServer>true</noServer>
                     <draftCompile>false</draftCompile>
                     <compileReport>false</compileReport>
-                    <style>OBF</style>
+                    <style>DETAILED</style>
                     <strict>true</strict>
                     <runTarget>http://localhost:8980/opennms/node-maps</runTarget>
                     <gwtSdkFirstInClasspath>true</gwtSdkFirstInClasspath>
@@ -163,6 +163,12 @@
 			<artifactId>org.osgi.compendium</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.opennms.osgi</groupId>
+			<artifactId>opennms-osgi-core</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
 
 		<!-- Vaadin Dependencies -->
 
@@ -177,8 +183,21 @@
 			<type>pom</type>
 			<scope>provided</scope>
 		</dependency>
+
 		<!-- Node Maps Dependencies -->
 
+		<dependency>
+			<groupId>org.opennms.features.topology</groupId>
+			<artifactId>api</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.opennms.features.topology.plugins</groupId>
+			<artifactId>browsers</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.opennms.features.geocoder</groupId>
 			<artifactId>org.opennms.features.geocoder.api</artifactId>
@@ -186,7 +205,7 @@
 		<dependency>
 			<groupId>org.discotools.gwt.leaflet</groupId>
 			<artifactId>gwtl-core</artifactId>
-			<version>0.3-ONMS-20130305-1</version>
+			<version>0.3-ONMS-20131014-1</version>
 			<optional>true</optional>
 			<scope>provided</scope>
 		</dependency>
@@ -242,13 +261,19 @@
 		<dependency>
 			<groupId>org.powermock</groupId>
 			<artifactId>powermock-module-junit4</artifactId>
-			<version>1.5</version>
+			<version>1.5.1</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.powermock</groupId>
 			<artifactId>powermock-api-easymock</artifactId>
-			<version>1.5</version>
+			<version>1.5.1</version>
+			<scope>test</scope>
+		</dependency>  
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-api-mockito</artifactId>
+			<version>1.5.1</version>
 			<scope>test</scope>
 		</dependency>  
 		<dependency>

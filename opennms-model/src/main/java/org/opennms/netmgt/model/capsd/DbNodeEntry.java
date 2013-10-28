@@ -1355,7 +1355,7 @@ public     String getDistributedPollerName() {
     public boolean updateNetBIOSName(String newnbName) {
         boolean doUpdate = false;
         if (newnbName != null && m_nbName != null) {
-            if (!newnbName.toUpperCase().equals(m_nbName))
+            if (!newnbName.equalsIgnoreCase(m_nbName))
                 doUpdate = true;
         } else if (newnbName == null && m_nbName == null) {
             // do nothing
@@ -1543,7 +1543,7 @@ public     String getDistributedPollerName() {
     public boolean updateForeignSource(String newForeignSource) {
         boolean doUpdate = false;
         if (newForeignSource != null && m_foreignSource != null) {
-            if (!newForeignSource.toUpperCase().equals(m_foreignSource))
+            if (!newForeignSource.equalsIgnoreCase(m_foreignSource))
                 doUpdate = true;
         } else if (newForeignSource == null && m_foreignSource == null) {
             // do nothing
@@ -1587,7 +1587,7 @@ public     String getDistributedPollerName() {
     public boolean updateForeignId(String newForeignId) {
         boolean doUpdate = false;
         if (newForeignId != null && m_foreignId != null) {
-            if (!newForeignId.toUpperCase().equals(m_foreignId))
+            if (!newForeignId.equalsIgnoreCase(m_foreignId))
                 doUpdate = true;
         } else if (newForeignId == null && m_foreignId == null) {
             // do nothing

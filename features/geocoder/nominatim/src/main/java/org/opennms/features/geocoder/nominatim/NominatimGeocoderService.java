@@ -2,16 +2,17 @@ package org.opennms.features.geocoder.nominatim;
 
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.ProxySelector;
 import java.net.URLEncoder;
 import java.util.List;
 
 import net.simon04.jelementtree.ElementTree;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.ProxySelectorRoutePlanner;
 import org.opennms.features.geocoder.Coordinates;
 import org.opennms.features.geocoder.GeocoderException;
 import org.opennms.features.geocoder.GeocoderService;
@@ -20,7 +21,7 @@ import org.slf4j.LoggerFactory;
 
 public class NominatimGeocoderService implements GeocoderService {
     private static final String GEOCODE_URL = "http://open.mapquestapi.com/nominatim/v1/search?format=xml";
-    private static final HttpClient m_httpClient = new DefaultHttpClient();
+    private static final DefaultHttpClient m_httpClient = new DefaultHttpClient();
 
     private String m_emailAddress;
     private String m_referer;
@@ -28,6 +29,12 @@ public class NominatimGeocoderService implements GeocoderService {
     private Logger m_log = LoggerFactory.getLogger(getClass());
 
     public NominatimGeocoderService() {
+        // Honor the JRE's HTTP proxy settings
+        final ProxySelectorRoutePlanner routePlanner = new ProxySelectorRoutePlanner(
+            m_httpClient.getConnectionManager().getSchemeRegistry(),
+            ProxySelector.getDefault()
+        );
+        m_httpClient.setRoutePlanner(routePlanner);
     }
     
     public void onInit() {

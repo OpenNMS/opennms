@@ -28,6 +28,7 @@ import org.opennms.features.topology.ssh.internal.gwt.client.ui.VTerminal;
 import com.vaadin.server.PaintException;
 import com.vaadin.server.PaintTarget;
 import com.vaadin.ui.AbstractComponent;
+import org.slf4j.LoggerFactory;
 
 /**
  * The SSHTerminal class is a custom Vaadin component that emulates VT100
@@ -53,7 +54,6 @@ public class SSHTerminal extends AbstractComponent {
 
 	/**
 	 * Constructor for the SSH Terminal 
-	 * @param app The main application
 	 * @param sshWindow The window holding the terminal
 	 * @param session The client instance used in the authorization of user names and passwords
 	 * @param width The width of the terminal
@@ -72,7 +72,9 @@ public class SSHTerminal extends AbstractComponent {
 			st = new SessionTerminal();
 			forceUpdate = true;
 			focus = false;
-		} catch (IOException e) { e.printStackTrace(); }
+		} catch (IOException e) {
+            LoggerFactory.getLogger(getClass()).error(e.getMessage(), e);
+        }
 	}
 
 	/**
@@ -88,43 +90,6 @@ public class SSHTerminal extends AbstractComponent {
 	protected SSHTerminalState getState() {
 	    return (SSHTerminalState) super.getState();
 	}
-	/** Paint (serialize) the component for the client. */
-//	@Override
-//	public synchronized void paintContent(PaintTarget target) throws PaintException {
-//		// Superclass writes any common attributes in the paint target.
-//		super.paintContent(target);
-//
-//		target.addVariable(this, "fromSSH", dumpContents);
-//		target.addVariable(this, "update", forceUpdate);
-//		target.addVariable(this, "focus", focus);
-//		target.addVariable(this, "closeClient", closeClient);
-//		forceUpdate = false;
-//	}
-//
-//	/** Deserialize changes received from client. */
-//	@Override
-//	public synchronized void changeVariables(Object source, Map<String,Object> variables) {
-//		if (variables.containsKey("isClosed")) {
-//			isClosed = ((Boolean)variables.get("isClosed"));
-//			if (isClosed){
-//				channel.close(true);
-//				getApplication().getMainWindow().removeWindow(sshWindow);
-//				requestRepaint();
-//			}
-//		}
-//		if (variables.containsKey("toSSH") && !isReadOnly()) {
-//			final String bytesToSSH = (String) variables.get("toSSH");
-//			try {
-//				dumpContents = st.handle(bytesToSSH, true);
-//				requestRepaint();
-//			} catch (IOException e) { e.printStackTrace(); }
-//		}
-//		if (variables.containsKey("isFocused")) {
-//			boolean isFocused = ((Boolean)variables.get("isFocused"));
-//			focus = !isFocused;
-//		}
-//	}
-	
 
 	/**
 	 * Nested class used to create the client side terminal
@@ -157,7 +122,7 @@ public class SSHTerminal extends AbstractComponent {
 				new Thread(this).start();
 				channel.open();
 			} catch (Exception e) {
-				e.printStackTrace();
+                LoggerFactory.getLogger(getClass()).error(e.getMessage(), e);
 			}
 		}
 
@@ -185,6 +150,7 @@ public class SSHTerminal extends AbstractComponent {
 			try {
 				return terminal.dump();
 			} catch (InterruptedException e) {
+                LoggerFactory.getLogger(getClass()).error(e.getMessage(), e);
 				throw new InterruptedIOException(e.toString());
 			}
 		}
@@ -218,7 +184,7 @@ public class SSHTerminal extends AbstractComponent {
 					}
 				}
 			} catch (IOException e) {
-				e.printStackTrace();
+                LoggerFactory.getLogger(getClass()).error(e.getMessage(), e);
 			}
 		}
 		

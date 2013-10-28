@@ -539,7 +539,7 @@ public class DefaultQueryManager implements QueryManager {
             @Override
             public void processRow(ResultSet rs) throws SQLException {
                
-                String row[] = new String[2];
+                String[] row = new String[2];
                 row[0] = rs.getString(1);
                 row[1] = rs.getString(2);
                 

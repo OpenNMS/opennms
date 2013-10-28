@@ -32,3 +32,4 @@ core/test-api/dns/src/main/java/org/opennms/core/test/dns/DNSServer.java
 opennms-services/src/main/java/org/opennms/netmgt/xmlrpcd/TimeoutSecureXmlRpcClient.java
 opennms-services/src/test/java/org/opennms/netmgt/syslogd/SyslogClient.java
 opennms-tools/OpenNMSXMLClient/*
+opennms-webapp/src/main/webapp/js/simpledateformat.js

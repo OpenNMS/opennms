@@ -1,6 +1,5 @@
 package org.opennms.features.vaadin.dashboard.ui.wallboard;
 
-import com.vaadin.server.ClientConnector;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
@@ -12,7 +11,6 @@ import org.opennms.features.vaadin.dashboard.model.DashletSelectorAccess;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 
 import java.util.*;
-import java.util.Timer;
 
 public class WallboardBody extends VerticalLayout {
     private final CssLayout contentLayout;
@@ -25,11 +23,12 @@ public class WallboardBody extends VerticalLayout {
     private Timer timer;
     private int waitFor = 0;
     private int iteration = 1, index = -1;
-    private final int PRIORITY_DECREASE = 1;
-    private final int DURATION_DECREASE = 1;
+    private static final int PRIORITY_DECREASE = 1;
+    private static final int DURATION_DECREASE = 1;
     private ProgressIndicator progressIndicator;
     private Label debugLabel = new Label("debug");
     private boolean debugEnabled = false;
+    private boolean paused = false;
 
     public WallboardBody() {
         addStyleName("wallboard-board");
@@ -94,10 +93,26 @@ public class WallboardBody extends VerticalLayout {
         }
     }
 
+    public void pause() {
+        paused = true;
+    }
+
+    public void resume() {
+        paused = false;
+    }
+
+    public boolean isPaused() {
+        return paused;
+    }
+
+    public boolean isPausable() {
+        return dashletSpecs.size() > 0;
+    }
+
     public Dashlet getDashletInstance(DashletSpec dashletSpec) {
         DashletSelector dashletSelector = ((DashletSelectorAccess) getUI()).getDashletSelector();
         Dashlet dashlet = dashletSelector.getDashletFactoryForName(dashletSpec.getDashletName()).newDashletInstance(dashletSpec);
-        dashlet.setCaption(null);
+        dashlet.getWallboardComponent().getComponent().setCaption(null);
         return dashlet;
     }
 
@@ -143,11 +158,11 @@ public class WallboardBody extends VerticalLayout {
 
             if (!priorityMap.containsKey(index)) {
                 Dashlet dashlet = getDashletInstance(dashletSpecs.get(index));
-                dashlet.addStyleName("wallboard");
+                dashlet.getWallboardComponent().getComponent().addStyleName("wallboard");
 
                 dashlets.put(index, dashlet);
 
-                dashlets.get(index).update();
+                dashlets.get(index).getWallboardComponent().refresh();
 
                 if (dashlets.get(index).isBoosted()) {
                     priorityMap.put(index, Math.max(0, dashletSpecs.get(index).getPriority() - dashletSpecs.get(index).getBoostPriority()));
@@ -163,7 +178,7 @@ public class WallboardBody extends VerticalLayout {
 
             if (priorityMap.get(index) <= 0) {
 
-                dashlets.get(index).update();
+                dashlets.get(index).getWallboardComponent().refresh();
 
                 if (dashlets.get(index).isBoosted()) {
                     priorityMap.put(index, Math.max(0, dashletSpecs.get(index).getPriority() - dashletSpecs.get(index).getBoostPriority()));
@@ -185,6 +200,10 @@ public class WallboardBody extends VerticalLayout {
 
     private void advanceTimer() {
 
+        if (paused) {
+            return;
+        }
+
         waitFor = (waitFor > 250 ? waitFor - 250 : 0);
 
         if (dashletSpecs.size() > 0) {
@@ -201,7 +220,7 @@ public class WallboardBody extends VerticalLayout {
                         dashlets.put(next, getDashletInstance(dashletSpecs.get(next)));
                     }
 
-                    contentLayout.addComponent(dashlets.get(next));
+                    contentLayout.addComponent(dashlets.get(next).getWallboardComponent().getComponent());
 
                     if (!progressIndicator.isVisible()) {
                         progressIndicator.setVisible(true);

@@ -129,7 +129,7 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
         }
     }
 
-	protected class Cache {
+    protected class Cache {
         // Maps each itemId to a item.
         private Map<K, BeanItem<T>> cacheContent = new HashMap<K, BeanItem<T>>();
 
@@ -190,7 +190,7 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
         }
     }
 
-	private final OnmsDao<T,K> m_dao;
+    private final OnmsDao<T,K> m_dao;
 
     // ORDER/SORTING
     private final List<Order> m_orders = new ArrayList<Order>();
@@ -200,15 +200,15 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
 
     private final List< SortEntry> m_sortEntries = new ArrayList<SortEntry>();
 
-	/**
-	 * TODO: Fix concurrent access to this field
-	 */
-	private final Collection<ItemSetChangeListener> m_itemSetChangeListeners = new HashSet<ItemSetChangeListener>();
+    /**
+     * TODO: Fix concurrent access to this field
+     */
+    private final Collection<ItemSetChangeListener> m_itemSetChangeListeners = new HashSet<ItemSetChangeListener>();
 
-	/**
-	 * TODO: Fix concurrent access to this field
-	 */
-	private Collection<SelectionListener> m_selectionListeners = new HashSet<SelectionListener>();
+    /**
+     * TODO: Fix concurrent access to this field
+     */
+    private Collection<SelectionListener> m_selectionListeners = new HashSet<SelectionListener>();
 
     private final Map<String,String> m_beanToHibernatePropertyMapping = new HashMap<String,String>();
 
@@ -222,9 +222,9 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
 
     private Map<Object,Class<?>> m_properties;
 
-	public OnmsDaoContainer(Class<T> itemClass, OnmsDao<T,K> dao) {
+    public OnmsDaoContainer(Class<T> itemClass, OnmsDao<T,K> dao) {
         m_itemClass = itemClass;
-		m_dao = dao;
+        m_dao = dao;
         size = new Size(DEFAULT_SIZE_RELOAD_TIME, new SizeReloadStrategy() {
             @Override
             public int reload() {
@@ -233,36 +233,36 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
         });
         page = new Page(DEFAULT_PAGE_SIZE, size);
         cache = new Cache();
-	}
+    }
 
-	@Override
-	public boolean containsId(Object itemId) {
-		if (itemId == null) return false;
+    @Override
+    public boolean containsId(Object itemId) {
+        if (itemId == null) return false;
         if (cache.containsItemId((K) itemId)) return true;
         int index = indexOfId(itemId);
         return index >= 0;
-	}
+    }
 
-	@Override
-	public Property<?> getContainerProperty(Object itemId, Object propertyId) {
-		Item item = getItem(itemId);
-		if (item == null) {
-			return null;
-		} else {
-			return item.getItemProperty(propertyId);
-		}
-	}
+    @Override
+    public Property<?> getContainerProperty(Object itemId, Object propertyId) {
+        Item item = getItem(itemId);
+        if (item == null) {
+            return null;
+        } else {
+            return item.getItemProperty(propertyId);
+        }
+    }
 
-	@Override
-	public Collection<?> getContainerPropertyIds() {
+    @Override
+    public Collection<?> getContainerPropertyIds() {
         loadPropertiesIfNull();
         updateContainerPropertyIds(m_properties);
         return Collections.unmodifiableCollection(m_properties.keySet());
     }
 
-	@Override
-	public Item getItem(Object itemId) {
-		if (itemId == null) return null;
+    @Override
+    public Item getItem(Object itemId) {
+        if (itemId == null) return null;
         if (cache.containsItemId((K)itemId)) return cache.getItem((K)itemId);
 
         // not in cache, get the right page
@@ -271,7 +271,7 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
 
         // page has the item now in container
         return cache.getItem((K)itemId);
-	}
+    }
 
     public Class<T> getItemClass() {
         return m_itemClass;
@@ -279,35 +279,35 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
 
     protected abstract K getId(T bean);
 
-	@Override
-	public Class<?> getType(Object propertyId) {
+    @Override
+    public Class<?> getType(Object propertyId) {
         return m_properties.get(propertyId);
     }
 
-	@Override
-	public boolean removeAllItems() throws UnsupportedOperationException {
-		m_dao.clear();
-		return true;
-	}
+    @Override
+    public boolean removeAllItems() throws UnsupportedOperationException {
+        m_dao.clear();
+        return true;
+    }
 
-	@Override
-	public boolean removeItem(Object itemId) throws UnsupportedOperationException {
-		m_dao.delete((K)itemId);
-		return true;
-	}
+    @Override
+    public boolean removeItem(Object itemId) throws UnsupportedOperationException {
+        m_dao.delete((K)itemId);
+        return true;
+    }
 
-	@Override
-	public int size() {
+    @Override
+    public int size() {
         return size.getValue();
-	}
+    }
 
-	@Override
-	public Object firstItemId() {
+    @Override
+    public Object firstItemId() {
         if (!cache.containsIndex(0)) {
             updatePage(0);
         }
         return cache.getItemId(0);
-	}
+    }
 
     @Override
     public Object lastItemId() {
@@ -318,10 +318,10 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
         return cache.getItemId(lastIndex);
     }
 
-	@Override
-	public boolean isFirstId(Object itemId) {
-		return firstItemId().equals(itemId);
-	}
+    @Override
+    public boolean isFirstId(Object itemId) {
+        return firstItemId().equals(itemId);
+    }
 
     private void updatePage(final int index) {
         boolean changed = page.updateOffset(index);
@@ -330,41 +330,41 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
         }
     }
 
-	@Override
-	public boolean isLastId(Object itemId) {
-		return lastItemId().equals(itemId);
-	}
+    @Override
+    public boolean isLastId(Object itemId) {
+        return lastItemId().equals(itemId);
+    }
 
-	@Override
-	public Object nextItemId(Object itemId) {
-		if (itemId == null) return null;
+    @Override
+    public Object nextItemId(Object itemId) {
+        if (itemId == null) return null;
         int nextIdIndex = indexOfId(itemId) + 1;
         if(cache.getItemId(nextIdIndex) == null) {
             updatePage(page.offset + page.length);
         }
         return cache.getItemId(nextIdIndex);
-	}
+    }
 
-	@Override
-	public Object prevItemId(Object itemId) {
-		if (itemId == null) return null;
+    @Override
+    public Object prevItemId(Object itemId) {
+        if (itemId == null) return null;
         int prevIdIndex = indexOfId(itemId) - 1;
         if (cache.getItemId(prevIdIndex) == null) {
             updatePage(prevIdIndex);
         }
         return cache.getItemId(prevIdIndex);
-	}
+    }
 
-	/**
-	 * This function returns {@link #getContainerPropertyIds()}.
-	 */
-	@Override
-	public Collection<?> getSortableContainerPropertyIds() {
-		return this.getContainerPropertyIds();
-	}
+    /**
+     * This function returns {@link #getContainerPropertyIds()}.
+     */
+    @Override
+    public Collection<?> getSortableContainerPropertyIds() {
+        return this.getContainerPropertyIds();
+    }
 
-	@Override
-	public void sort(Object[] propertyId, boolean[] ascending) {
+    @Override
+    public void sort(Object[] propertyId, boolean[] ascending) {
         List<SortEntry> newSortEntries = createSortEntries(propertyId, ascending);
         if (!m_sortEntries.equals(newSortEntries)) {
             m_sortEntries.clear();
@@ -382,7 +382,7 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
             }
             cache.reload(page);
         }
-	}
+    }
 
     protected List<SortEntry> createSortEntries(Object[] propertyId, boolean[] ascending) {
         List<SortEntry> sortEntries = new ArrayList<SortEntry>();
@@ -392,38 +392,38 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
         return sortEntries;
     }
 
-	@Override
-	public void addListener(ItemSetChangeListener listener) {
-		addItemSetChangeListener(listener);
-	}
+    @Override
+    public void addListener(ItemSetChangeListener listener) {
+        addItemSetChangeListener(listener);
+    }
 
-	@Override
-	public void removeListener(ItemSetChangeListener listener) {
-		removeItemSetChangeListener(listener);
-	}
+    @Override
+    public void removeListener(ItemSetChangeListener listener) {
+        removeItemSetChangeListener(listener);
+    }
 
-	@Override
-	public void addItemSetChangeListener(ItemSetChangeListener listener) {
-		m_itemSetChangeListeners.add(listener);
-	}
+    @Override
+    public void addItemSetChangeListener(ItemSetChangeListener listener) {
+        m_itemSetChangeListeners.add(listener);
+    }
 
-	@Override
-	public void removeItemSetChangeListener(ItemSetChangeListener listener) {
-		m_itemSetChangeListeners.remove(listener);
-	}
+    @Override
+    public void removeItemSetChangeListener(ItemSetChangeListener listener) {
+        m_itemSetChangeListeners.remove(listener);
+    }
 
-	protected void fireItemSetChangedEvent() {
-		ItemSetChangeEvent event = new ItemSetChangeEvent() {
-			private static final long serialVersionUID = -2796401359570611938L;
-			@Override
-			public Container getContainer() {
-				return OnmsDaoContainer.this;
-			}
-		};
-		for (ItemSetChangeListener listener : m_itemSetChangeListeners) {
-			listener.containerItemSetChange(event);
-		}
-	}
+    protected void fireItemSetChangedEvent() {
+        ItemSetChangeEvent event = new ItemSetChangeEvent() {
+            private static final long serialVersionUID = -2796401359570611938L;
+            @Override
+            public Container getContainer() {
+                return OnmsDaoContainer.this;
+            }
+        };
+        for (ItemSetChangeListener listener : m_itemSetChangeListeners) {
+            listener.containerItemSetChange(event);
+        }
+    }
 
     public void setRestrictions(List<Restriction> newRestrictions) {
         m_restrictions.clear();
