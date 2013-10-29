@@ -42,25 +42,25 @@ import org.opennms.netmgt.model.OnmsResource;
  */
 public class SnmpInterfaceUpgrade {
 
-    /** The node directory. */
+    /** The node's directory. */
     private File nodeDir;
 
-    /** The node id. */
+    /** The node's id. */
     private int nodeId;
 
-    /** The foreign id. */
+    /** The node's foreign id. */
     private String foreignId;
 
-    /** The foreign source. */
+    /** The node's foreign source. */
     private String foreignSource;
 
-    /** The if name. */
+    /** The SNMP interface name. */
     private String ifName;
 
-    /** The interface description. */
+    /** The SNMP interface description. */
     private String ifDescr;
 
-    /** The physical address. */
+    /** The SNMP physical address. */
     private String physAddr;
 
     /** The old RRD label. */
@@ -82,6 +82,35 @@ public class SnmpInterfaceUpgrade {
         ifDescr = rs.getString("snmpifdescr");
         ifName = rs.getString("snmpifname");
         physAddr = rs.getString("snmpphysaddr");
+        initialize();
+    }
+
+    /**
+     * Instantiates a new SNMP interface upgrade.
+     *
+     * @param nodeId the node id
+     * @param foreignId the foreign id
+     * @param foreignSource the foreign source
+     * @param ifName the SNMP interface name
+     * @param ifDescr the SNMP interface description
+     * @param physAddr the SNMP physical address
+     */
+    public SnmpInterfaceUpgrade(int nodeId, String foreignSource,
+            String foreignId, String ifDescr, String ifName,
+            String physAddr) {
+        this.nodeId = nodeId;
+        this.foreignSource = foreignSource;
+        this.foreignId = foreignId;
+        this.ifDescr = ifDescr;
+        this.ifName = ifName;
+        this.physAddr = physAddr;
+        initialize();
+    }
+
+    /**
+     * Initialize.
+     */
+    private void initialize() {
         oldRrdLabel = RrdLabelUtils.computeLabelForRRD(ifName, ifDescr, null);
         newRrdLabel = RrdLabelUtils.computeLabelForRRD(ifName, ifDescr, physAddr);
         nodeDir = getNodeDirectory(nodeId, foreignSource, foreignId);
@@ -201,7 +230,7 @@ public class SnmpInterfaceUpgrade {
      * @return the old resource id
      */
     public String getOldResourceId() {
-        return OnmsResource.createResourceId(Integer.toString(getNodeId()), "interfaceSnmp", getOldRrdLabel());
+        return OnmsResource.createResourceId("node", Integer.toString(nodeId), "interfaceSnmp", oldRrdLabel);
     }
 
     /**
@@ -210,7 +239,7 @@ public class SnmpInterfaceUpgrade {
      * @return the new resource id
      */
     public String getNewResourceId() {
-        return OnmsResource.createResourceId(Integer.toString(getNodeId()), "interfaceSnmp", getNewRrdLabel());
+        return OnmsResource.createResourceId("node", Integer.toString(nodeId), "interfaceSnmp", newRrdLabel);
     }
 
     /**

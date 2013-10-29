@@ -110,8 +110,6 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
         if (getRrdExtension() == null) {
             throw new OnmsUpgradeException("Can't find the configured extension for JRB/RRD.");
         }
-        log("Is RRDtool enabled ? %s\n", isRrdToolEnabled());
-        log("Is storeByGroup enabled ? %s\n", isStoreByGroupEnabled());
         try {
             DataCollectionConfigFactory.init();
         } catch (Exception e) {

@@ -77,8 +77,8 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
     /** The JMX resource directories. */
     private List<File> jmxResourceDirectories;
 
-    /** The bad metrics. */
-    private List<String> badMetrics = new ArrayList<String>();
+    /** The list of bad metrics. */
+    protected List<String> badMetrics = new ArrayList<String>();
 
     public JmxRrdMigratorOffline() throws OnmsUpgradeException {
         super();
@@ -115,6 +115,16 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
     public void preExecute() throws OnmsUpgradeException {
         printMainSettings();
         if (isOnmsVersionValid(1, 12, 2)) {
+            try {
+                CollectdConfigFactory.init();
+            } catch (Exception e) {
+                throw new OnmsUpgradeException("Can't initialize collectd-configuration.xml because " + e.getMessage());
+            }
+            try {
+                JMXDataCollectionConfigFactory.init();
+            } catch (Exception e) {
+                throw new OnmsUpgradeException("Can't initialize jmx-datacollection-config.xml because " + e.getMessage());
+            }
             for (File jmxResourceDir : getJmxResourceDirectories()) {
                 log("Backing up %s\n", jmxResourceDir);
                 zipDir(jmxResourceDir.getAbsolutePath() + ".zip", jmxResourceDir);
@@ -125,16 +135,6 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
         File configDir = new File(ConfigFileConstants.getHome(), File.separator + "etc");
         log("Backing configuration files: %s\n", configDir);
         zipDir(configDir.getAbsolutePath() + ".zip", configDir);
-        try {
-            CollectdConfigFactory.init();
-        } catch (Exception e) {
-            throw new OnmsUpgradeException("Can't initialize collectd-configuration.xml because " + e.getMessage());
-        }
-        try {
-            JMXDataCollectionConfigFactory.init();
-        } catch (Exception e) {
-            throw new OnmsUpgradeException("Can't initialize jmx-datacollection-config.xml because " + e.getMessage());
-        }
     }
 
     /* (non-Javadoc)
@@ -201,11 +201,58 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
                 throw new OnmsUpgradeException("Can't find JMX Configuration file (ignoring processing)");
             }
             fixJmxConfigurationFile(jmxConfigFile);
+            // List Bad Metrics:
+            log("Found %s Bad Metrics: %s\n", badMetrics.size(), badMetrics);
             // Fixing Graph Templates
             File jmxGraphsFile = new File(ConfigFileConstants.getHome(), File.separator + "etc" + File.separator + "snmp-graph.properties"); // TODO Is this correct ?
             fixJmxGraphTemplateFile(jmxGraphsFile);
         } catch (Exception e) {
             throw new OnmsUpgradeException("Can't upgrade the JRBs because " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Fixes a JMX configuration file.
+     *
+     * @param jmxConfigFile the JMX configuration file
+     * @throws OnmsUpgradeException the OpenNMS upgrade exception
+     */
+    private void fixJmxConfigurationFile(File jmxConfigFile) throws OnmsUpgradeException {
+        try {
+            log("Updating JMX metric definitions on %s\n", jmxConfigFile);
+            File outputFile = new File(jmxConfigFile.getCanonicalFile() + ".temp");
+            FileWriter w = new FileWriter(outputFile);
+            Pattern extRegex = Pattern.compile("import-mbeans[>](.+)[<]");
+            Pattern aliasRegex = Pattern.compile("alias=\"([^\"]+\\.[^\"]+)\"");
+            List<File> externalFiles = new ArrayList<File>();
+            for (LineIterator it = FileUtils.lineIterator(jmxConfigFile); it.hasNext();) {
+                String line = it.next();
+                Matcher m = extRegex.matcher(line);
+                if (m.find()) {
+                    externalFiles.add(new File(jmxConfigFile.getParentFile(), m.group(1)));
+                }
+                m = aliasRegex.matcher(line);
+                if (m.find()) {
+                    String badDs = m.group(1);
+                    String fixedDs = getFixedDsName(badDs);
+                    log("  Replacing bad alias %s with %s on %s\n", badDs, fixedDs, line.trim());
+                    line = line.replaceAll(badDs, fixedDs);
+                    if (badMetrics.contains(badDs) == false) {
+                        badMetrics.add(badDs);
+                    }
+                }
+                w.write(line + "\n");
+            }
+            w.close();
+            FileUtils.deleteQuietly(jmxConfigFile);
+            FileUtils.moveFile(outputFile, jmxConfigFile);
+            if (!externalFiles.isEmpty()) {
+                for (File configFile : externalFiles) {
+                    fixJmxConfigurationFile(configFile);
+                }
+            }
+        } catch (Exception e) {
+            throw new OnmsUpgradeException("Can't fix " + jmxConfigFile + " because " + e.getMessage(), e);
         }
     }
 
@@ -217,6 +264,7 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
      */
     private void fixJmxGraphTemplateFile(File jmxTemplateFile) throws OnmsUpgradeException {
         try {
+            log("Updating JMX graph templates on %s\n", jmxTemplateFile);
             File outputFile = new File(jmxTemplateFile.getCanonicalFile() + ".temp");
             FileWriter w = new FileWriter(outputFile);
             Pattern defRegex = Pattern.compile("DEF:.+:(.+\\..+):");
@@ -246,12 +294,15 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
                     String[] badColumns = m.group(1).split(",(\\s)?");
                     for (String badDs : badColumns) {
                         String fixedDs = getFixedDsName(badDs);
+                        if (fixedDs.equals(badDs)) {
+                            continue;
+                        }
                         if (badMetrics.contains(badDs)) {
                             override = true;
                             log("  Replacing bad data source %s with %s on %s\n", badDs, fixedDs, line);
                             line = line.replaceAll(badDs, fixedDs);
                         } else {
-                            log(" Warning: a bad data source not related with JMX has been found: %s\n (this won't be updated)", badDs);
+                            log("  Warning: a bad data source not related with JMX has been found: %s (this won't be updated)\n", badDs);
                         }
                     }
                 }
@@ -264,7 +315,7 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
                         log("  Replacing bad data source %s with %s on %s\n", badDs, fixedDs, line);
                         line = line.replaceAll(badDs, fixedDs);
                     } else {
-                        log(" Warning: a bad data source not related with JMX has been found: %s\n (this won't be updated)", badDs);
+                        log("  Warning: a bad data source not related with JMX has been found: %s (this won't be updated)\n", badDs);
                     }
                 }
                 w.write(line + "\n");
@@ -287,50 +338,6 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
     }
 
     /**
-     * Fixes a JMX configuration file.
-     *
-     * @param jmxConfigFile the JMX configuration file
-     * @throws OnmsUpgradeException the OpenNMS upgrade exception
-     */
-    private void fixJmxConfigurationFile(File jmxConfigFile) throws OnmsUpgradeException {
-        try {
-            File outputFile = new File(jmxConfigFile.getCanonicalFile() + ".temp");
-            FileWriter w = new FileWriter(outputFile);
-            Pattern extRegex = Pattern.compile("import-mbeans[>](.+)[<]");
-            Pattern aliasRegex = Pattern.compile("alias=\"(.+\\..+)\"");
-            List<File> externalFiles = new ArrayList<File>();
-            for (LineIterator it = FileUtils.lineIterator(jmxConfigFile); it.hasNext();) {
-                String line = it.next();
-                Matcher m = extRegex.matcher(line);
-                if (m.find()) {
-                    externalFiles.add(new File(jmxConfigFile.getParentFile(), m.group(1)));
-                }
-                m = aliasRegex.matcher(line);
-                if (m.find()) {
-                    String badDs = m.group(1);
-                    String fixedDs = getFixedDsName(badDs);
-                    log("  Replacing bad alias %s with %s on %s\n", badDs, fixedDs, line.trim());
-                    line = line.replaceAll(badDs, fixedDs);
-                    if (!badMetrics.contains(badDs)) {
-                        badMetrics.add(badDs);
-                    }
-                }
-                w.write(line + "\n");
-            }
-            w.close();
-            FileUtils.deleteQuietly(jmxConfigFile);
-            FileUtils.moveFile(outputFile, jmxConfigFile);
-            if (!externalFiles.isEmpty()) {
-                for (File configFile : externalFiles) {
-                    fixJmxConfigurationFile(configFile);
-                }
-            }
-        } catch (Exception e) {
-            throw new OnmsUpgradeException("Can't fix " + jmxConfigFile + " because " + e.getMessage(), e);
-        }
-    }
-
-    /**
      * Gets the JMX resource directories.
      *
      * @return the JMX resource directories
@@ -341,7 +348,7 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
             jmxResourceDirectories = new ArrayList<File>();
             CollectdConfiguration config;
             try {
-                config = getCollectdConfiguration();
+                config = CollectdConfigFactory.getInstance().getCollectdConfig().getConfig();
             } catch (Exception e) {
                 throw new OnmsUpgradeException("Can't upgrade the JRBs because " + e.getMessage(), e);
             }
@@ -367,6 +374,9 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
      */
     private void findJmxDirectories(final File rrdDir, final List<String> jmxfriendlyNames, final List<File> jmxDirectories) {
         File[] files = rrdDir.listFiles();
+        if (files == null) {
+            return;
+        }
         for (File file : files) {
             if (file.isDirectory()) {
                 boolean valid = false;
@@ -381,15 +391,6 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
                 findJmxDirectories(file, jmxfriendlyNames, jmxDirectories);
             }
         }
-    }
-
-    /**
-     * Gets the Collectd configuration.
-     *
-     * @return the Collectd configuration
-     */
-    private CollectdConfiguration getCollectdConfiguration() {
-        return CollectdConfigFactory.getInstance().getCollectdConfig().getConfig();
     }
 
     /**
