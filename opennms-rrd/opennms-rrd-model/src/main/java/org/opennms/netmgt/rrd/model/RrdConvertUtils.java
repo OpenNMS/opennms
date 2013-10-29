@@ -31,15 +31,16 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import org.jrobin.core.RrdDb;
+import org.jrobin.core.RrdException;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.rrd.model.v1.RRDv1;
 import org.opennms.netmgt.rrd.model.v3.RRDv3;
-import org.opennms.upgrade.api.OnmsUpgradeException;
 import org.springframework.util.FileCopyUtils;
 
 /**
@@ -59,9 +60,10 @@ public class RrdConvertUtils {
      *
      * @param sourceFile the source file
      * @return the RRD Object (old version)
-     * @throws Exception the exception
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws RrdException the RRD exception
      */
-    public static RRDv1 dumpJrb(File sourceFile) throws Exception {
+    public static RRDv1 dumpJrb(File sourceFile) throws IOException, RrdException  {
         RrdDb jrb = new RrdDb(sourceFile, true);
         RRDv1 rrd = JaxbUtils.unmarshal(RRDv1.class, jrb.getXml());
         jrb.close();
@@ -73,9 +75,10 @@ public class RrdConvertUtils {
      *
      * @param sourceFile the source file
      * @return the RRD Object
-     * @throws Exception the exception
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws RrdException the RRD exception
      */
-    public static RRDv3 dumpRrd(File sourceFile) throws Exception {
+    public static RRDv3 dumpRrd(File sourceFile) throws IOException, RrdException {
         String rrdBinary = System.getProperty("rrd.binary");
         if (rrdBinary == null) {
             throw new IllegalArgumentException("rrd.binary property must be set");
@@ -87,7 +90,7 @@ public class RrdConvertUtils {
         byte[] byteArray = FileCopyUtils.copyToByteArray(process.getInputStream());
         String errors = FileCopyUtils.copyToString(new InputStreamReader(process.getErrorStream()));
         if (errors.length() > 0) {
-            throw new OnmsUpgradeException("RRDtool command fail: " + errors);
+            throw new RrdException("RRDtool command fail: " + errors);
         }
         BufferedReader reader = null;
         try {
@@ -105,9 +108,10 @@ public class RrdConvertUtils {
      *
      * @param rrd the RRD object (old version)
      * @param targetFile the target file
-     * @throws Exception the exception
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws RrdException the RRD exception
      */
-    public static void restoreJrb(RRDv1 rrd, File targetFile) throws Exception {
+    public static void restoreJrb(RRDv1 rrd, File targetFile) throws IOException, RrdException {
         final File outputXmlFile = new File(targetFile + ".xml");
         JaxbUtils.marshal(rrd, new FileWriter(outputXmlFile));
         RrdDb targetJrb = new RrdDb(targetFile.getCanonicalPath(), RrdDb.PREFIX_XML + outputXmlFile.getAbsolutePath());
@@ -120,9 +124,10 @@ public class RrdConvertUtils {
      *
      * @param rrd the RRD object
      * @param targetFile the target file
-     * @throws Exception the exception
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws RrdException the RRD exception
      */
-    public static void restoreRrd(RRDv3 rrd, File targetFile) throws Exception {
+    public static void restoreRrd(RRDv3 rrd, File targetFile) throws IOException, RrdException {
         String rrdBinary = System.getProperty("rrd.binary");
         if (rrdBinary == null) {
             throw new IllegalArgumentException("rrd.binary property must be set");
@@ -134,7 +139,7 @@ public class RrdConvertUtils {
         Process process = Runtime.getRuntime().exec(commandArray);
         String errors = FileCopyUtils.copyToString(new InputStreamReader(process.getErrorStream()));
         if (errors.length() > 0) {
-            throw new OnmsUpgradeException("RRDtool command fail: " + errors);
+            throw new RrdException("RRDtool command fail: " + errors);
         }
         xmlDest.delete();
     }
@@ -144,9 +149,10 @@ public class RrdConvertUtils {
      *
      * @param sourceRrdFile the source RRDtool file
      * @param targetJrobinFile the target JRobin file
-     * @throws Exception the exception
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws RrdException the RRD exception
      */
-    public static void convertFromRrdToJrobin(File sourceRrdFile, File targetJrobinFile) throws Exception {
+    public static void convertFromRrdToJrobin(File sourceRrdFile, File targetJrobinFile) throws IOException, RrdException {
         RRDv3 rrd = dumpRrd(sourceRrdFile);
         RRDv1 jrb = convert(rrd);
         restoreJrb(jrb, targetJrobinFile);
@@ -157,16 +163,17 @@ public class RrdConvertUtils {
      *
      * @param sourceJrobinFile the source JRobin file
      * @param targetRrdFile the target RRDtool file
-     * @throws Exception the exception
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws RrdException the RRD exception
      */
-    public static void convertFromJrobinToRrd(File sourceJrobinFile, File targetRrdFile) throws Exception {
+    public static void convertFromJrobinToRrd(File sourceJrobinFile, File targetRrdFile) throws IOException, RrdException {
         RRDv1 jrb = dumpJrb(sourceJrobinFile);
         RRDv3 rrd = convert(jrb);
         restoreRrd(rrd, targetRrdFile);
     }
 
     /**
-     * Converts a JRobin object into an RRDtool object
+     * Converts a JRobin object into an RRDtool object.
      *
      * @param jrb the source JRobin object representation
      * @return the RRDtool object representation
@@ -206,7 +213,7 @@ public class RrdConvertUtils {
     }
 
     /**
-     * Converts a RRDtool object into a JRobin object
+     * Converts a RRDtool object into a JRobin object.
      *
      * @param rrd the RRDtool object representation
      * @return the JRobin object representation
