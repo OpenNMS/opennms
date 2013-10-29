@@ -103,6 +103,9 @@ public class NavBarController extends AbstractController implements Initializing
     }
     
     private String createHeaderHtml(HttpServletRequest request) {
+        /**
+         * Added javascript snippet to hide the header if not displayed in a toplevel window (iFrame).
+         */
         return "<div id='header'>" +
               "<h1 id='headerlogo'><a href='index.jsp'><img src=\"../images/logo.png\" alt='OpenNMS Web Console Home'></a></h1>" +
           "<div id='headerinfo'>" +
@@ -118,7 +121,7 @@ public class NavBarController extends AbstractController implements Initializing
           "</div>" +
           "</div>" +
           "<div class='spacer'><!-- --></div>" +
-          "</div>";
+          "</div><script type='text/javascript'>if (window.location != window.parent.location) { document.getElementById('header').style.display = 'none'; }</script>";
     }
 
     private String getNoticeStatus() {

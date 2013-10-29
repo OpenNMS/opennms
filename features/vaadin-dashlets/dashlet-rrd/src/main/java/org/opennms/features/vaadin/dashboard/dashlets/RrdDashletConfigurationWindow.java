@@ -126,6 +126,7 @@ public class RrdDashletConfigurationWindow extends DashletConfigurationWindow {
          */
         m_columnsSelect = new NativeSelect();
         m_columnsSelect.setCaption("Columns");
+        m_columnsSelect.setDescription("Number of columns");
         m_columnsSelect.setImmediate(true);
         m_columnsSelect.setNewItemsAllowed(false);
         m_columnsSelect.setMultiSelect(false);
@@ -134,6 +135,7 @@ public class RrdDashletConfigurationWindow extends DashletConfigurationWindow {
 
         m_rowsSelect = new NativeSelect();
         m_rowsSelect.setCaption("Rows");
+        m_rowsSelect.setDescription("Number of rows");
         m_rowsSelect.setImmediate(true);
         m_rowsSelect.setNewItemsAllowed(false);
         m_rowsSelect.setMultiSelect(false);
@@ -171,16 +173,20 @@ public class RrdDashletConfigurationWindow extends DashletConfigurationWindow {
          */
         m_widthField = new TextField();
         m_widthField.setCaption("Graph Width");
+        m_widthField.setDescription("Width of graphs");
         m_widthField.setValue(m_dashletSpec.getParameters().get("width"));
 
         m_heightField = new TextField();
         m_heightField.setCaption("Graph Height");
+        m_heightField.setDescription("Height of graphs");
         m_heightField.setValue(m_dashletSpec.getParameters().get("height"));
 
         m_timeFrameValue = new TextField("Timeframe value");
+        m_timeFrameValue.setDescription("Timeframe value");
         m_timeFrameValue.setValue(m_dashletSpec.getParameters().get("timeFrameValue"));
 
         m_timeFrameType = new NativeSelect("Timeframe type");
+        m_timeFrameType.setDescription("Timeframe type");
         m_timeFrameType.setNullSelectionAllowed(false);
         m_timeFrameType.setMultiSelect(false);
         m_timeFrameType.setNewItemsAllowed(false);
@@ -256,9 +262,9 @@ public class RrdDashletConfigurationWindow extends DashletConfigurationWindow {
          * KSC import stuff
          */
         Button importButton = new Button("KSC Import");
-
+        importButton.setDescription("Import KSC-report");
         final NativeSelect selectKSCReport = new NativeSelect();
-
+        selectKSCReport.setDescription("KSC-report selection");
         selectKSCReport.setCaption("KSC Report");
         selectKSCReport.setImmediate(true);
         selectKSCReport.setNewItemsAllowed(false);
@@ -318,6 +324,7 @@ public class RrdDashletConfigurationWindow extends DashletConfigurationWindow {
          * Adding the cancel button...
          */
         Button cancel = new Button("Cancel");
+        cancel.setDescription("Cancel editing");
         cancel.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -334,6 +341,7 @@ public class RrdDashletConfigurationWindow extends DashletConfigurationWindow {
          * ...and the OK button
          */
         Button ok = new Button("Save");
+        ok.setDescription("Save properties and close");
 
         ok.addClickListener(new Button.ClickListener() {
             @Override

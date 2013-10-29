@@ -165,6 +165,16 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
 
                     m_alarmTable.setSizeFull();
 
+                    m_alarmTable.setSortEnabled(false);
+
+                    m_alarmTable.addHeaderClickListener(new Table.HeaderClickListener() {
+                        @Override
+                        public void headerClick(Table.HeaderClickEvent headerClickEvent) {
+                            m_alarmTable.setSortContainerPropertyId(headerClickEvent.getPropertyId());
+                            m_alarmTable.setSortEnabled(true);
+                        }
+                    });
+
                     final VaadinApplicationContextImpl context = new VaadinApplicationContextImpl();
                     final UI currentUI = UI.getCurrent();
 
@@ -303,7 +313,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
                 sb.append("<tr class='" + onmsAlarm.getSeverity().getLabel() + " onms'>");
                 sb.append("<td class='divider bright onms' valign='middle' rowspan='1'><nobr>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + onmsAlarm.getId() + "</nobr></td>");
                 sb.append("<td class='divider onms' valign='middle' rowspan='1'><nobr>" + onmsAlarm.getSeverity().getLabel() + "</nobr></td>");
-                sb.append("<td class='divider onms' valign='middle' rowspan='1'><nobr>" + (onmsNode!=null?onmsNode.getLabel():"-") + "</nobr></td>");
+                sb.append("<td class='divider onms' valign='middle' rowspan='1'><nobr>" + (onmsNode != null ? onmsNode.getLabel() : "-") + "</nobr></td>");
                 sb.append("<td class='divider onms' valign='middle' rowspan='1'><nobr>" + onmsAlarm.getCounter() + "</nobr></td>");
                 sb.append("<td class='divider onms' valign='middle' rowspan='1'><nobr>" + onmsAlarm.getLastEventTime().toString() + "</nobr></td>");
                 sb.append("<td class='divider onms' valign='middle' rowspan='1'>" + onmsAlarm.getLogMsg().replaceAll("\\<.*?>", "") + "</td>");

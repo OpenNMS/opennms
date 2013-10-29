@@ -77,6 +77,7 @@ public class AlarmConfigurationWindow extends DashletConfigurationWindow {
          */
         m_boostedSeveritySelect = new NativeSelect();
         m_boostedSeveritySelect.setCaption("Boosted Severity");
+        m_boostedSeveritySelect.setDescription("Select the boost severity");
         m_boostedSeveritySelect.setMultiSelect(false);
         m_boostedSeveritySelect.setNullSelectionAllowed(false);
         m_boostedSeveritySelect.setInvalidAllowed(false);
@@ -124,7 +125,7 @@ public class AlarmConfigurationWindow extends DashletConfigurationWindow {
                 close();
             }
         });
-
+        cancel.setDescription("Cancel editing");
         cancel.setClickShortcut(ShortcutAction.KeyCode.ESCAPE, null);
         buttonLayout.addComponent(cancel);
         buttonLayout.setExpandRatio(cancel, 1.0f);
@@ -134,7 +135,7 @@ public class AlarmConfigurationWindow extends DashletConfigurationWindow {
          * ...and the OK button
          */
         Button ok = new Button("Save");
-
+        ok.setDescription("Save properties and close");
         ok.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {

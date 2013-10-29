@@ -220,6 +220,15 @@ final String baseHref = Util.calculateUrlBase( request );
 	</c:otherwise>
 </c:choose>
 
+<%--
+    Added javascript snippet to hide the header if not displayed in a toplevel window (iFrame).
+--%>
+<script type='text/javascript'>
+    if (window.location != window.parent.location) {
+        document.getElementById('header').style.display = 'none';
+    }
+</script>
+
 <!-- Body -->
 <%-- This <div> tag is unmatched in this file (its matching tag is in the
      footer), so we hide it in a JSP code fragment so the Eclipse HTML

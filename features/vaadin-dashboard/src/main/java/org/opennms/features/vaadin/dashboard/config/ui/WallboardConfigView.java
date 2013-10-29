@@ -203,6 +203,7 @@ public class WallboardConfigView extends HorizontalLayout implements TabSheet.Cl
                         setWidth("100%");
 
                         Button cancel = new Button("Cancel");
+                        cancel.setDescription("Cancel editing");
                         cancel.addClickListener(new Button.ClickListener() {
                             @Override
                             public void buttonClick(Button.ClickEvent event) {
@@ -216,7 +217,7 @@ public class WallboardConfigView extends HorizontalLayout implements TabSheet.Cl
                         setComponentAlignment(cancel, Alignment.TOP_RIGHT);
 
                         Button ok = new Button("Save");
-
+                        ok.setDescription("Save configuration");
                         ok.addClickListener(new Button.ClickListener() {
                             @Override
                             public void buttonClick(Button.ClickEvent event) {
