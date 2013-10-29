@@ -28,11 +28,35 @@
 
 package org.opennms.features.topology.api.topo;
 
-public interface Connector extends ConnectorRef {
-	
-	EdgeRef getEdge();
-	
-	VertexRef getVertex();
+import java.util.Set;
 
-	void setVertex(VertexRef vertex);
+/**
+ * This interface indicates that a criteria can be used to "collapse" elements of the graph.
+ * When collapsed, all of the elements of the graph will be replaced with a single vertex that
+ * represents all of the members. Edges that point to any member will be attached to the single
+ * vertex.
+ */
+public interface CollapsibleCriteria {
+
+	/**
+	 * Check to see whether the Criteria is collapsed or not.
+	 */
+	boolean isCollapsed();
+
+	/**
+	 * Set the collapsed state of the criteria.
+	 * @param collapsed Whether the criteria should be collapsed or not.
+	 */
+	void setCollapsed(boolean collapsed);
+
+	/**
+	 * Fetch the list of child vertices that should be collapsed
+	 */
+	Set<VertexRef> getVertices();
+
+	/**
+	 * This function returns the vertex that will be used to represent the group when the state is
+	 * set to collapsed.
+	 */
+	Vertex getCollapsedRepresentation();
 }

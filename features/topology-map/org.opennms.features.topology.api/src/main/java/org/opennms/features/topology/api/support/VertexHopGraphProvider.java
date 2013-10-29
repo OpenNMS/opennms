@@ -34,13 +34,17 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+
 import javax.xml.bind.JAXBException;
+
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.topo.CollapsibleCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;
@@ -85,6 +89,25 @@ public class VertexHopGraphProvider implements GraphProvider {
 		} else {
 			return null;
 		}
+	}
+
+	public static CollapsibleCriteria[] getCollapsedCriteriaForContainer(GraphContainer graphContainer) {
+		return getCollapsedCriteria(graphContainer.getCriteria());
+	}
+
+	public static CollapsibleCriteria[] getCollapsedCriteria(Criteria[] criteria) {
+		List<CollapsibleCriteria> retval = new ArrayList<CollapsibleCriteria>();
+		if (criteria != null) {
+			for (Criteria criterium : criteria) {
+				try {
+					CollapsibleCriteria hopCriteria = (CollapsibleCriteria)criterium;
+					if (hopCriteria.isCollapsed()) {
+						retval.add(hopCriteria);
+					}
+				} catch (ClassCastException e) {}
+			}
+		}
+		return retval.toArray(new CollapsibleCriteria[0]);
 	}
 
 	public abstract static class VertexHopCriteria extends Criteria {
@@ -328,8 +351,63 @@ public class VertexHopGraphProvider implements GraphProvider {
 			semanticZoomLevel++;
 		}
 
+		processed = collapseVertices(processed, getCollapsedCriteria(criteria));
+
 		return new ArrayList<Vertex>(processed);
 	}
+
+	public static Set<Vertex> collapseVertices(Collection<Vertex> vertices, CollapsibleCriteria[] criteria) {
+		Set<Vertex> retval = new HashSet<Vertex>(vertices);
+		Set<Vertex> addMe = new HashSet<Vertex>();
+
+		for (Iterator<Vertex> itr = retval.iterator(); itr.hasNext();) {
+			Vertex vertex = itr.next();
+
+			nextVertex:
+			for (CollapsibleCriteria criterium : criteria) {
+				Set<VertexRef> criteriaVertices = new HashSet<VertexRef>(criterium.getVertices());
+				for (Iterator<VertexRef> critItr = criteriaVertices.iterator(); critItr.hasNext();) {
+					VertexRef criteriaVertex = critItr.next();
+					if (new RefComparator().compare(vertex, criteriaVertex) == 0) {
+						// Remove the vertex from the return value
+						itr.remove();
+						// Add the collapsed representation
+						addMe.add(criterium.getCollapsedRepresentation());
+						break nextVertex;
+					}
+				}
+			}
+		}
+
+		retval.addAll(addMe);
+		return retval;
+	}
+
+	public static List<Edge> collapseEdges(Collection<Edge> edges, CollapsibleCriteria[] criteria) {
+		List<Edge> retval = new ArrayList<Edge>(edges);
+		List<Edge> addMe = new ArrayList<Edge>();
+
+		for (Iterator<Edge> itr = retval.iterator(); itr.hasNext();) {
+			Edge edge = itr.next();
+			for (CollapsibleCriteria criterium : criteria) {
+				Set<VertexRef> criteriaVertices = new HashSet<VertexRef>(criterium.getVertices());
+				for (Iterator<VertexRef> critItr = criteriaVertices.iterator(); critItr.hasNext();) {
+					VertexRef criteriaVertex = critItr.next();
+					if (new RefComparator().compare(edge.getSource().getVertex(), criteriaVertex) == 0) {
+						// Reset the edge source to the collapsed vertex
+						edge.getSource().setVertex(criterium.getCollapsedRepresentation());
+					} else if (new RefComparator().compare(edge.getTarget().getVertex(), criteriaVertex) == 0) {
+						// Reset the edge target to the collapsed vertex
+						edge.getTarget().setVertex(criterium.getCollapsedRepresentation());
+					}
+				}
+			}
+		}
+
+		retval.addAll(addMe);
+		return retval;
+	}
+
 	/**
 	 * TODO: OVERRIDE THIS FUNCTION?
 	 */
@@ -403,7 +481,9 @@ public class VertexHopGraphProvider implements GraphProvider {
 	 */
 	@Override
 	public List<Edge> getEdges(Criteria... criteria) {
-		return m_delegate.getEdges(criteria);
+		List<Edge> retval = m_delegate.getEdges(criteria);
+		retval = collapseEdges(retval, getCollapsedCriteria(criteria));
+		return retval;
 	}
 
 	@Override

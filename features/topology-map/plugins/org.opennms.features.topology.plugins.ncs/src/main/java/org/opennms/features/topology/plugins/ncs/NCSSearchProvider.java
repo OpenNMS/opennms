@@ -122,6 +122,9 @@ public class NCSSearchProvider implements SearchProvider {
         }
         m_serviceManager.registerCriteria(criteria, operationContext.getGraphContainer().getSessionId());
 
+        //Juniper specifically asked for the selection of NCS services
+        selectVerticesForEdge(criteria, operationContext.getGraphContainer().getSelectionManager());
+
     }
 
     @Override
