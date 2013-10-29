@@ -28,21 +28,29 @@
 
 package org.opennms.features.topology.app.internal.gwt.client;
 
-import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import org.opennms.features.topology.app.internal.gwt.client.ui.SearchTokenField;
+import com.google.gwt.user.client.Timer;
 
 import java.util.*;
 
 public class VSearchBox extends Composite implements SelectionHandler<SuggestOracle.Suggestion>,KeyUpHandler {
+
+    private HandlerRegistration m_windowResizeRegistration;
 
     public class DefaultCenterOnCallback implements SearchTokenField.CenterOnSuggestionCallback{
 
@@ -80,12 +88,18 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
     @UiField
     FlowPanel m_componentHolder;
 
+    FlowPanel m_scrollContainer;
     VerticalPanel m_focusedContainer;
 
     SuggestBox m_suggestBox;
     public VSearchBox(){
         initWidget(uiBinder.createAndBindUi(this));
+    }
 
+    @Override
+    protected void onDetach() {
+        super.onDetach();
+        m_windowResizeRegistration.removeHandler();
     }
 
     @Override
@@ -125,14 +139,56 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
 
         if(m_focusedContainer == null){
             m_focusedContainer = new VerticalPanel();
-            m_focusedContainer.setWidth("100%");
+
+            m_scrollContainer = new FlowPanel();
+            m_scrollContainer.getElement().getStyle().setBackgroundColor("#f9f9f9");
+            m_scrollContainer.add(m_focusedContainer);
 
         }
 
         m_focusedContainer.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
         m_focusedContainer.setTitle("Focused Vertices");
-        m_componentHolder.add(m_focusedContainer);
+        m_componentHolder.add(m_scrollContainer);
+
+        Timer timer = new Timer(){
+
+            @Override
+            public void run(){
+                updateScrollPanelSize();
+            }
+        };
+
+        timer.schedule(1000);
+
+        m_windowResizeRegistration = Window.addResizeHandler(new ResizeHandler() {
+            @Override
+            public void onResize(ResizeEvent event) {
+                updateScrollPanelSize();
+            }
+        });
+
     }
+
+    private void updateScrollPanelSize() {
+        Element topologyComponent = DOM.getElementById("TopologyComponent");
+        int topoHeight = topologyComponent.getOffsetHeight();
+        int containerHeight = topoHeight - (m_focusedContainer.getElement().getOffsetTop() + 5);
+        int tableHeight = m_focusedContainer.getOffsetHeight();
+
+
+        m_scrollContainer.setHeight("" + Math.min(containerHeight, tableHeight) + "px");
+
+        if(tableHeight > containerHeight){
+            m_scrollContainer.getElement().getStyle().setOverflowY(Style.Overflow.SCROLL);
+        } else{
+            m_scrollContainer.getElement().getStyle().setOverflowY(Style.Overflow.HIDDEN);
+        }
+
+    }
+
+    public static native void debug(Object obj) /*-{
+        $wnd.console.debug(obj);
+    }-*/;
 
     @Override
     public void onSelection(SelectionEvent<SuggestOracle.Suggestion> event) {
@@ -164,6 +220,8 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
 
             m_focusedContainer.add(field);
         }
+
+        updateScrollPanelSize();
 
     }
 
