@@ -38,9 +38,12 @@
                 <strict>true</strict>
                 <runTarget>http://localhost:8980/opennms/topology</runTarget>
                 <gwtSdkFirstInClasspath>true</gwtSdkFirstInClasspath>
+                <!-- Bind the codeserver to all local addresses -->
+                <bindAddress>0.0.0.0</bindAddress>
             </configuration>
             <executions>
                 <execution>
+                    <id>goals</id>
                     <configuration>
                         <!-- if you don't specify any modules, the plugin will find them -->
                         <!-- <modules> <module>com.vaadin.demo.mobilemail.gwt.ColorPickerWidgetSet</module>
@@ -50,6 +53,12 @@
                         <goal>resources</goal>
                         <goal>update-widgetset</goal>
                         <goal>compile</goal>
+                    </goals>
+                </execution>
+                <execution>
+                    <id>run-codeserver</id>
+                    <goals>
+                        <goal>run-codeserver</goal>
                     </goals>
                 </execution>
             </executions>
