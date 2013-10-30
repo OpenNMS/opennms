@@ -29,9 +29,11 @@ package org.opennms.upgrade.support;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import org.opennms.core.utils.FuzzyDateFormatter;
 import org.opennms.netmgt.vmmgr.ControllerUtils;
 import org.opennms.upgrade.api.Ignore;
 import org.opennms.upgrade.api.OnmsUpgrade;
@@ -128,6 +130,7 @@ public class Upgrade {
      * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
     protected void executeUpgrade(OnmsUpgrade upg) {
+        Date start = new Date();
         try {
             if (wasExecuted(upg)) {
                 log("  Task %s was already executed at %s\n", upg.getId(), getUpgradeStatus().getLastExecutionTime(upg));
@@ -159,8 +162,8 @@ public class Upgrade {
             upg.postExecute();
         } catch (OnmsUpgradeException e) {
             log("  Warning: can't run the post-execute phase because: %s\n", e.getMessage());
-            return;
         }
+        log("\nFinished in %s\n\n", FuzzyDateFormatter.calculateDifference(start, new Date()));
     }
 
     /**
@@ -252,9 +255,7 @@ public class Upgrade {
      * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
     public static void main(String args[]) throws OnmsUpgradeException {
-        long start = System.currentTimeMillis();
         Upgrade upgrade = new Upgrade();
         upgrade.execute();
-        upgrade.log("Finished in %s milliseconds\n", (System.currentTimeMillis() - start));
     }
 }

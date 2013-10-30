@@ -221,6 +221,7 @@ public class SnmpInterfaceUpgrade {
      * @return true, if the interface directory should be merged
      */
     public boolean shouldMerge() {
+        // oldRrdLabel == newRrdLabel (no merge needed because that means the interface doesn't have a MAC address)
         return !oldRrdLabel.equals(newRrdLabel);
     }
 

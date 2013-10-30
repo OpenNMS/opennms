@@ -226,7 +226,7 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
         try {
             Statement st = conn.createStatement();
             db.watch(st);
-            String query = "SELECT n.nodeid, n.foreignsource, n.foreignid, i.snmpifdescr, i.snmpifname, i.snmpphysaddr from node n, snmpinterface i where n.nodeid = i.nodeid and i.snmpphysaddr is not null";
+            String query = "SELECT n.nodeid, n.foreignsource, n.foreignid, i.snmpifdescr, i.snmpifname, i.snmpphysaddr from node n, snmpinterface i where n.nodeid = i.nodeid and i.snmpcollect in ('C','UC') and i.snmpphysaddr is not null";
             ResultSet rs = st.executeQuery(query);
             db.watch(rs);
             while (rs.next()) {
