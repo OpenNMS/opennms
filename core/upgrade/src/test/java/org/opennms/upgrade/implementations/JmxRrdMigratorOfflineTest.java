@@ -29,10 +29,15 @@ package org.opennms.upgrade.implementations;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.FilenameFilter;
+import java.util.Arrays;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.LineIterator;
 import org.jrobin.core.RrdDb;
 import org.junit.After;
 import org.junit.Assert;
@@ -54,7 +59,6 @@ public class JmxRrdMigratorOfflineTest {
     @Before
     public void setUp() throws Exception {
         FileUtils.copyDirectory(new File("src/test/resources/etc"), new File("target/home/etc"));
-        FileUtils.copyDirectory(new File("src/test/resources/rrd"), new File("target/home/rrd"));
         FileUtils.copyDirectory(new File("src/test/resources/WEB-INF"), new File("target/home/jetty-webapps/opennms/WEB-INF/"));
         System.setProperty("opennms.home", "target/home");
     }
@@ -70,17 +74,16 @@ public class JmxRrdMigratorOfflineTest {
     }
 
     /**
-     * Test upgrade.
+     * Test upgrade (single-metric JRBs, i.e. storeByGroup=false).
      *
      * @throws Exception the exception
      */
     @Test
-    public void testUpgrade() throws Exception {
-        JmxRrdMigratorOffline obj = new JmxRrdMigratorOffline();
-        obj.preExecute();
-        obj.execute();
-        obj.postExecute();
-        Assert.assertEquals(60, obj.badMetrics.size());
+    public void testUpgradeSingleMetric() throws Exception {
+        FileUtils.copyDirectory(new File("src/test/resources/rrd"), new File("target/home/rrd"));
+
+        executeUpgrader();
+
         File rrdDir = new File("target/home/rrd/1/opennms-jvm/");
         for (File file : getFiles(rrdDir, ".jrb")) {
             RrdDb jrb = new RrdDb(file, true);
@@ -97,6 +100,91 @@ public class JmxRrdMigratorOfflineTest {
                 String key = (String) o;
                 Assert.assertTrue(key.endsWith(ds));
                 Assert.assertEquals(ds, p.getProperty(key));
+            }
+        }
+    }
+
+    /**
+     * Test upgrade (multi-metric JRBs, i.e. storeByGroup=true).
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testUpgradeMultiMetric() throws Exception {
+        FileUtils.copyDirectory(new File("src/test/resources/rrd2"), new File("target/home/rrd"));
+
+        File config = new File("target/home/etc/opennms.properties");
+        Properties p = new Properties();
+        p.load(new FileReader(config));
+        p.setProperty("org.opennms.rrd.storeByGroup", "true");
+        p.store(new FileWriter(config), null);
+
+        executeUpgrader();
+
+        File jrbFile = new File("target/home/rrd/1/opennms-jvm/java_lang_type_MemoryPool_name_Survivor_Space.jrb");
+        Assert.assertTrue(jrbFile.exists());
+        RrdDb jrb = new RrdDb(jrbFile, true);
+        String[] dataSources = jrb.getDsNames();
+        jrb.close();
+
+        Properties dsProp = new Properties();
+        dsProp.load(new FileReader("target/home/rrd/1/opennms-jvm/ds.properties"));
+
+        Properties meta = new Properties();
+        meta.load(new FileReader("target/home/rrd/1/opennms-jvm/java_lang_type_MemoryPool_name_Survivor_Space.meta"));
+
+        for (String ds : dataSources) {
+            Assert.assertFalse(ds.contains("."));
+            Assert.assertEquals("java_lang_type_MemoryPool_name_Survivor_Space", dsProp.getProperty(ds));
+            Assert.assertEquals(ds, meta.getProperty("JMX_java.lang:type=MemoryPool.name.Survivor Space." + ds));
+        }
+    }
+
+    /**
+     * Execute upgrader.
+     *
+     * @throws Exception the exception
+     */
+    private void executeUpgrader() throws Exception {
+        JmxRrdMigratorOffline obj = new JmxRrdMigratorOffline();
+        obj.preExecute();
+        obj.execute();
+        obj.postExecute();
+        Assert.assertEquals(60, obj.badMetrics.size());
+
+        // Verify graph templates
+        File templates = new File("target/home/etc/snmp-graph.properties.d/jvm-graph.properties");
+        Pattern defRegex = Pattern.compile("DEF:.+:(.+\\..+):");
+        Pattern colRegex = Pattern.compile("\\.columns=(.+)$");
+        for (LineIterator it = FileUtils.lineIterator(templates); it.hasNext();) {
+            String line = it.next();
+            Matcher m = defRegex.matcher(line);
+            if (m.find()) {
+                String ds = m.group(1);
+                if (obj.badMetrics.contains(ds)) {
+                    Assert.fail("Bad metric found");
+                }
+            }
+            m = colRegex.matcher(line);
+            if (m.find()) {
+                String[] badColumns = m.group(1).split(",(\\s)?");
+                if (obj.badMetrics.containsAll(Arrays.asList(badColumns))) {
+                    Assert.fail("Bad metric found");
+                }
+            }
+        }
+
+        // Verify metric definitions
+        File metrics = new File("target/home/etc/jmx-datacollection-config.xml");
+        Pattern aliasRegex = Pattern.compile("alias=\"([^\"]+\\.[^\"]+)\"");
+        for (LineIterator it = FileUtils.lineIterator(metrics); it.hasNext();) {
+            String line = it.next();
+            Matcher m = aliasRegex.matcher(line);
+            if (m.find()) {
+                String ds = m.group(1);
+                if (obj.badMetrics.contains(ds)) {
+                    Assert.fail("Bad metric found");
+                }
             }
         }
     }
