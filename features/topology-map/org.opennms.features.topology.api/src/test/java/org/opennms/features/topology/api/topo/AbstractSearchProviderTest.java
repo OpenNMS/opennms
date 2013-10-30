@@ -28,16 +28,13 @@
 
 package org.opennms.features.topology.api.topo;
 
-import org.junit.Test;
-import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.support.AbstractSearchSelectionOperation;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+import org.opennms.features.topology.api.GraphContainer;
 
 public class AbstractSearchProviderTest {
 
@@ -108,7 +105,7 @@ public class AbstractSearchProviderTest {
     }
 
     private SearchProvider createSearchProvider() {
-        return new SearchProvider() {
+        return new AbstractSearchProvider() {
 
             List<VertexRef> m_vertexRefs = getVertexRefs();
 
@@ -134,15 +131,6 @@ public class AbstractSearchProviderTest {
             }
 
             @Override
-            public void onFocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
-            }
-
-            @Override
-            public void onDefocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
-
-            }
-
-            @Override
             public boolean supportsPrefix(String searchPrefix) {
                 return false;
             }
@@ -154,18 +142,11 @@ public class AbstractSearchProviderTest {
 
             @Override
             public void addVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
-
             }
 
             @Override
             public void removeVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
-
             }
-
-            @Override
-            public void onCenterSearchResult(SearchResult searchResult, GraphContainer graphContainer) {
-            }
-
         };
     }
 

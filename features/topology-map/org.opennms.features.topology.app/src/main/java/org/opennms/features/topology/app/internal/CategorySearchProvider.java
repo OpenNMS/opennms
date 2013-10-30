@@ -28,18 +28,22 @@
 
 package org.opennms.features.topology.app.internal;
 
-import com.google.common.collect.Lists;
+import java.util.List;
+
 import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.topo.*;
+import org.opennms.features.topology.api.topo.AbstractSearchProvider;
+import org.opennms.features.topology.api.topo.SearchProvider;
+import org.opennms.features.topology.api.topo.SearchQuery;
+import org.opennms.features.topology.api.topo.SearchResult;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.support.CategoryHopCriteria;
 import org.opennms.features.topology.app.internal.support.CategoryHopCriteriaFactory;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 
-import java.util.List;
+import com.google.common.collect.Lists;
 
-public class CategorySearchProvider implements SearchProvider{
+public class CategorySearchProvider extends AbstractSearchProvider implements SearchProvider {
 
     private CategoryHopCriteriaFactory m_categoryHopFactory;
     private CategoryDao m_categoryDao;
@@ -73,16 +77,6 @@ public class CategorySearchProvider implements SearchProvider{
     }
 
     @Override
-    public void onFocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
-
-    }
-
-    @Override
-    public void onDefocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
-
-    }
-
-    @Override
     public boolean supportsPrefix(String searchPrefix) {
         return searchPrefix.toLowerCase().equals("category=");
     }
@@ -104,11 +98,6 @@ public class CategorySearchProvider implements SearchProvider{
         CategoryHopCriteria c = m_categoryHopFactory.getCriteria(searchResult.getId());
         c.setId(searchResult.getId());
         container.removeCriteria(c);
-    }
-
-    @Override
-    public void onCenterSearchResult(SearchResult searchResult, GraphContainer graphContainer) {
-
     }
 
     public CategoryDao getCategoryDao() {

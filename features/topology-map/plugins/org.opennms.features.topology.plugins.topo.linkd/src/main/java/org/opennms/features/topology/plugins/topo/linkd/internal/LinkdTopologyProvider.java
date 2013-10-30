@@ -614,12 +614,10 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     @Override
     public void onFocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
-
     }
 
     @Override
     public void onDefocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
-
     }
 
     @Override
@@ -646,7 +644,10 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     @Override
     public void onCenterSearchResult(SearchResult searchResult, GraphContainer graphContainer) {
+    }
 
+    @Override
+    public void onToggleCollapse(SearchResult searchResult, GraphContainer graphContainer) {
     }
 
     private static String getIfStatusString(int ifStatusNum) {
