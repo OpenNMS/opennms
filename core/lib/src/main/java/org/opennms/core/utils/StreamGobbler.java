@@ -31,6 +31,7 @@
 package org.opennms.core.utils;
 
 import java.io.BufferedReader;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -39,7 +40,6 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -186,8 +186,8 @@ public class StreamGobbler extends Thread {
         } catch (final Throwable e) {
         	LOG.debug("Unable to read lines.", e);
         } finally {
-            IOUtils.closeQuietly(br);
-            IOUtils.closeQuietly(isr);
+            closeQuietly(br);
+            closeQuietly(isr);
         }
 
     }
@@ -203,6 +203,16 @@ public class StreamGobbler extends Thread {
      */
     private final void writeObject(final ObjectOutputStream out) throws IOException {
         throw new IOException("Object cannot be serialized");
+    }
+
+    private void closeQuietly(final Closeable c) {
+        if (c != null) {
+            try {
+                c.close();
+            } catch (final IOException closeE) {
+                LOG.debug("failed to close", closeE);
+            }
+        }
     }
 
 }
