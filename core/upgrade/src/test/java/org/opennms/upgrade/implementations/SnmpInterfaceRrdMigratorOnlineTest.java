@@ -58,21 +58,12 @@ public class SnmpInterfaceRrdMigratorOnlineTest {
      */
     @Before
     public void setUp() throws Exception {
-        File homeDir = new File("target/home");
-        File cfgDir = new File(homeDir, "etc");
-        Assert.assertTrue(cfgDir.mkdirs());
-        File rrdDir = new File(homeDir, "rrd");
-        Assert.assertTrue(rrdDir.mkdirs());
-        FileUtils.copyFile(new File("src/test/resources/version.properties"), new File(homeDir, "jetty-webapps/opennms/WEB-INF/version.properties"));
-        FileUtils.copyFile(new File("src/test/resources/opennms.properties"), new File(cfgDir, "opennms.properties"));
-        FileUtils.copyFile(new File("src/test/resources/rrd-configuration.properties"), new File(cfgDir, "rrd-configuration.properties"));
-        FileUtils.copyFile(new File("src/test/resources/datacollection-config.xml"), new File(cfgDir, "datacollection-config.xml"));
-        FileUtils.copyFile(new File("src/test/resources/ksc-performance-reports.xml"), new File(cfgDir, "ksc-performance-reports.xml"));
-        FileUtils.copyFile(new File("src/test/resources/tempA.jrb"), new File(rrdDir, "1/eth0/ifInOctets.jrb"));
-        FileUtils.copyFile(new File("src/test/resources/tempB.jrb"), new File(rrdDir, "1/eth0-005056c00008/ifInOctets.jrb"));
-        System.setProperty("opennms.home", homeDir.getCanonicalPath());
+        FileUtils.copyDirectory(new File("src/test/resources/etc"), new File("target/home/etc"));
+        FileUtils.copyDirectory(new File("src/test/resources/rrd"), new File("target/home/rrd"));
+        FileUtils.copyDirectory(new File("src/test/resources/WEB-INF"), new File("target/home/jetty-webapps/opennms/WEB-INF/"));
+        System.setProperty("opennms.home", "target/home");
         DefaultDataCollectionConfigDao dao = new DefaultDataCollectionConfigDao();
-        dao.setConfigResource(new FileSystemResource(new File(cfgDir, "datacollection-config.xml")));
+        dao.setConfigResource(new FileSystemResource(new File("target/home/etc/datacollection-config.xml")));
         dao.afterPropertiesSet();
         DataCollectionConfigFactory.setInstance(dao);
     }

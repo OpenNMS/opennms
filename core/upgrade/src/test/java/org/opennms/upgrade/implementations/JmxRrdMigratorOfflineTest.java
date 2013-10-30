@@ -28,8 +28,12 @@
 package org.opennms.upgrade.implementations;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.FilenameFilter;
+import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
+import org.jrobin.core.RrdDb;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -49,24 +53,10 @@ public class JmxRrdMigratorOfflineTest {
      */
     @Before
     public void setUp() throws Exception {
-        File homeDir = new File("target/home");
-        File cfgDir = new File(homeDir, "etc");
-        Assert.assertTrue(cfgDir.mkdirs());
-        File rrdDir = new File(homeDir, "rrd");
-        Assert.assertTrue(rrdDir.mkdirs());
-        FileUtils.copyFile(new File("src/test/resources/version.properties"), new File(homeDir, "jetty-webapps/opennms/WEB-INF/version.properties"));
-        FileUtils.copyFile(new File("src/test/resources/opennms-storeByGroup.properties"), new File(cfgDir, "opennms.properties"));
-        FileUtils.copyFile(new File("src/test/resources/rrd-configuration.properties"), new File(cfgDir, "rrd-configuration.properties"));
-        FileUtils.copyFile(new File("src/test/resources/opennms-server.xml"), new File(cfgDir, "opennms-server.xml"));
-        FileUtils.copyFile(new File("src/test/resources/collectd-configuration.xml"), new File(cfgDir, "collectd-configuration.xml"));
-        FileUtils.copyFile(new File("src/test/resources/jmx-datacollection-config.xml"), new File(cfgDir, "jmx-datacollection-config.xml"));
-        FileUtils.copyFile(new File("src/test/resources/jvm-graph.properties"), new File(cfgDir, "snmp-graph.properties.d/jvm-graph.properties"));
-        FileUtils.copyFile(new File("src/test/resources/snmp-graph.properties"), new File(cfgDir, "snmp-graph.properties"));
-        // FIXME RRDs ?
-        // I need a multi-ds JRB with bad DS and invalid name (spaces, quotes, etc.)
-        // I need a ds.properties with bad DS
-        // I need a .meta file with bad DS
-        System.setProperty("opennms.home", homeDir.getCanonicalPath());
+        FileUtils.copyDirectory(new File("src/test/resources/etc"), new File("target/home/etc"));
+        FileUtils.copyDirectory(new File("src/test/resources/rrd"), new File("target/home/rrd"));
+        FileUtils.copyDirectory(new File("src/test/resources/WEB-INF"), new File("target/home/jetty-webapps/opennms/WEB-INF/"));
+        System.setProperty("opennms.home", "target/home");
     }
 
     /**
@@ -91,7 +81,40 @@ public class JmxRrdMigratorOfflineTest {
         obj.execute();
         obj.postExecute();
         Assert.assertEquals(60, obj.badMetrics.size());
-        // FIXME Verify updated configuration files.
-        // FIXME Verify updated JRBs.
+        File rrdDir = new File("target/home/rrd/1/opennms-jvm/");
+        for (File file : getFiles(rrdDir, ".jrb")) {
+            RrdDb jrb = new RrdDb(file, true);
+            String ds = jrb.getDsNames()[0];
+            jrb.close();
+            Assert.assertFalse(ds.contains("."));
+            Assert.assertEquals(file.getName(), ds + ".jrb");
+        }
+        for (File file : getFiles(rrdDir, ".meta")) {
+            String ds = file.getName().replaceFirst("\\.meta", "");
+            Properties p = new Properties();
+            p.load(new FileReader(file));
+            for (Object o : p.keySet()) {
+                String key = (String) o;
+                Assert.assertTrue(key.endsWith(ds));
+                Assert.assertEquals(ds, p.getProperty(key));
+            }
+        }
     }
+
+    /**
+     * Gets the files.
+     *
+     * @param resourceDir the resource directory
+     * @param ext the extension
+     * @return the files
+     */
+    private File[] getFiles(final File resourceDir, final String ext) {
+        return resourceDir.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.toLowerCase().endsWith(ext);
+            }
+        });
+    }
+
 }

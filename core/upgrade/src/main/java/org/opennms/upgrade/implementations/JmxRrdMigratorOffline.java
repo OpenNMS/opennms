@@ -353,12 +353,14 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
                 throw new OnmsUpgradeException("Can't upgrade the JRBs because " + e.getMessage(), e);
             }
             List<String> services = getJmxServices(config);
+            log("JMX services found: %s\n", services);
             List<String> jmxFriendlyNames = new ArrayList<String>();
             for (String service : services) {
                 Service svc = getServiceObject(config, service);
                 String friendlyName = getSvcPropertyValue(svc, "friendly-name");
                 jmxFriendlyNames.add(friendlyName);
             }
+            log("JMX friendly names found: %s\n", jmxFriendlyNames);
             File rrdDir = new File(JMXDataCollectionConfigFactory.getInstance().getRrdPath());
             findJmxDirectories(rrdDir, jmxFriendlyNames, jmxResourceDirectories);
         }
@@ -558,20 +560,6 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
     }
 
     /**
-     * Gets the fixed DS name.
-     *
-     * @param dsName the DS name
-     * @return the fixed DS name
-     */
-    private String getFixedDsName(String dsName) {
-        if (dsName.contains(".")) {
-            String parts[] = dsName.split("\\.");
-            return parts[0] +  parts[1].substring(0, 1).toUpperCase() + parts[1].substring(1);
-        }
-        return dsName;
-    }
-
-    /**
      * Gets the JMX services.
      *
      * @param config the Collectd's configuration
@@ -620,6 +608,20 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
             }
         }
         return null;
+    }
+
+    /**
+     * Gets the fixed DS name.
+     *
+     * @param dsName the DS name
+     * @return the fixed DS name
+     */
+    private String getFixedDsName(String dsName) {
+        if (dsName.contains(".")) {
+            String parts[] = dsName.split("\\.");
+            return parts[0] +  parts[1].substring(0, 1).toUpperCase() + parts[1].substring(1);
+        }
+        return dsName;
     }
 
 }
