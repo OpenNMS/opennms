@@ -140,7 +140,7 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
      *
      * @param properties the properties
      * @param fileName the file name
-     * @throws OnmsUpgradeException 
+     * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
     protected void loadProperties(Properties properties, String fileName) throws OnmsUpgradeException {
         try {
@@ -155,7 +155,7 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
      * Gets the main properties.
      *
      * @return the main properties
-     * @throws OnmsUpgradeException 
+     * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
     protected Properties getMainProperties() throws OnmsUpgradeException {
         if (mainProperties == null) {
@@ -169,7 +169,7 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
      * Gets the RRD properties.
      *
      * @return the RRD properties
-     * @throws OnmsUpgradeException 
+     * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
     protected Properties getRrdProperties() throws OnmsUpgradeException {
         if (rrdProperties == null) {
@@ -249,80 +249,88 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
     }
 
     /**
-     * ZIP a directory.
+     * Populate files list.
      *
-     * @param zipFileName the ZIP file name
-     * @param sourceFolder the source folder object
-     * @throws OnmsUpgradeException the OpenNMS upgrade exception
+     * @param dir the source directory
+     * @param filesListInDir the list of files to populate
+     * @throws IOException Signals that an I/O exception has occurred.
      */
-    protected void zipDir(String zipFileName, File sourceFolder) throws OnmsUpgradeException {
-        try {
-            ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipFileName));
-            log("Creating %s\n", zipFileName);
-            addDir(sourceFolder, out);
-            out.close();
-        } catch (Exception e) {
-            throw new OnmsUpgradeException("Can't create " + zipFileName + " because " + e.getMessage());
+    private void populateFilesList(File dir, List<String> filesListInDir) throws IOException {
+        File[] files = dir.listFiles();
+        for(File file : files){
+            if(file.isFile()) filesListInDir.add(file.getAbsolutePath());
+            else populateFilesList(file, filesListInDir);
         }
     }
 
     /**
-     * UNZIP a directory.
+     * ZIP a directory.
      *
      * @param zipFileName the ZIP file name
-     * @param outputFolder the output folder object
+     * @param sourceFolder the source folder
+     * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
-    protected void unzipDir(File zipFileName, File outputFolder) throws OnmsUpgradeException {
-        byte[] buffer = new byte[1024];
+    protected void zipDir(String zipFileName, File sourceFolder) throws OnmsUpgradeException {
         try {
-            if (!outputFolder.exists()) {
-                outputFolder.mkdirs();
+            List<String> filesListInDir = new ArrayList<String>();
+            populateFilesList(sourceFolder, filesListInDir);
+            FileOutputStream fos = new FileOutputStream(zipFileName);
+            ZipOutputStream zos = new ZipOutputStream(fos);
+            for(String filePath : filesListInDir){
+                log("  Zipping %s\n", filePath);
+                ZipEntry ze = new ZipEntry(filePath.substring(sourceFolder.getAbsolutePath().length() + 1, filePath.length()));
+                zos.putNextEntry(ze);
+                FileInputStream fis = new FileInputStream(filePath);
+                byte[] buffer = new byte[1024];
+                int len;
+                while ((len = fis.read(buffer)) > 0) {
+                    zos.write(buffer, 0, len);
+                }
+                zos.closeEntry();
+                fis.close();
             }
-            ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFileName));
+            zos.flush();
+            zos.close();
+            fos.close();
+        } catch (Exception e) {
+            throw new OnmsUpgradeException("Cannot ZIP directory because " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * UNZIP a file.
+     *
+     * @param zipFileName the ZIP file name
+     * @param outputFolder the output folder
+     * @throws OnmsUpgradeException the OpenNMS upgrade exception
+     */
+    protected void unzipFile(File zipFileName, File outputFolder) throws OnmsUpgradeException {
+        try {
+            if (!outputFolder.exists()) outputFolder.mkdirs();
+            FileInputStream fis;
+            byte[] buffer = new byte[1024];
+            fis = new FileInputStream(zipFileName);
+            ZipInputStream zis = new ZipInputStream(fis);
             ZipEntry ze = zis.getNextEntry();
-            while (ze != null) {
+            while(ze != null){
                 String fileName = ze.getName();
                 File newFile = new File(outputFolder, fileName);
-                log("  Unzip %s\n", newFile.getAbsoluteFile());
+                log("  Unzipping to %s\n", newFile.getAbsolutePath());
+                new File(newFile.getParent()).mkdirs();
                 FileOutputStream fos = new FileOutputStream(newFile);
                 int len;
                 while ((len = zis.read(buffer)) > 0) {
                     fos.write(buffer, 0, len);
                 }
                 fos.close();
+                zis.closeEntry();
                 ze = zis.getNextEntry();
             }
             zis.closeEntry();
             zis.close();
+            fis.close();
         } catch (Exception e) {
-            throw new OnmsUpgradeException("Can't unzip files because " + e.getMessage()); 
-        }
-    }
-
-    /**
-     * Adds a directory to a ZIP file.
-     *
-     * @param dirObj the directory object
-     * @param out the ZIP output stream
-     * @throws IOException Signals that an I/O exception has occurred.
-     */
-    private void addDir(File dirObj, ZipOutputStream out) throws IOException {
-        File[] files = dirObj.listFiles();
-        byte[] tmpBuf = new byte[1024];
-        for (int i = 0; i < files.length; i++) {
-            if (files[i].isDirectory()) {
-                addDir(files[i], out);
-                continue;
-            }
-            FileInputStream in = new FileInputStream(files[i]);
-            log("  Adding: %s\n", files[i].getName());
-            out.putNextEntry(new ZipEntry(files[i].getName()));
-            int len;
-            while ((len = in.read(tmpBuf)) > 0) {
-                out.write(tmpBuf, 0, len);
-            }
-            out.closeEntry();
-            in.close();
+            throw new OnmsUpgradeException("Cannot UNZIP file because " + e.getMessage(), e);
         }
     }
 

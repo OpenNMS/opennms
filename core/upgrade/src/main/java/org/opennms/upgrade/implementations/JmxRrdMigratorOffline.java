@@ -166,12 +166,12 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
                 File zip = new File(jmxResourceDir.getAbsolutePath() + ".zip");
                 FileUtils.deleteDirectory(jmxResourceDir);
                 jmxResourceDir.mkdirs();
-                unzipDir(zip, jmxResourceDir);
+                unzipFile(zip, jmxResourceDir);
                 zip.delete();
             }
             File configDir = new File(ConfigFileConstants.getHome(), File.separator + "etc" );
             File configZip = new File(configDir.getAbsolutePath() + ".zip");
-            unzipDir(configZip, configDir);
+            unzipFile(configZip, configDir);
         } catch (IOException e) {
             throw new OnmsUpgradeException("Can't restore the backup files because " + e.getMessage());
         }

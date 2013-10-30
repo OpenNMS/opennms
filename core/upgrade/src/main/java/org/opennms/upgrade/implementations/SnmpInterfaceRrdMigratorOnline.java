@@ -160,7 +160,7 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
                     File zip = new File(target.getAbsolutePath() + ZIP_EXT);
                     FileUtils.deleteDirectory(target);
                     target.mkdirs();
-                    unzipDir(zip, target);
+                    unzipFile(zip, target);
                     zip.delete();
                 }
             }

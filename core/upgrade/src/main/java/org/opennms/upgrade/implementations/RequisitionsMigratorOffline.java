@@ -121,7 +121,7 @@ public class RequisitionsMigratorOffline extends AbstractOnmsUpgrade {
     @Override
     public void rollback() throws OnmsUpgradeException {
         File zip = getBackupFile();
-        unzipDir(zip, getRequisitionDir());
+        unzipFile(zip, getRequisitionDir());
         zip.delete();
     }
 
@@ -136,7 +136,7 @@ public class RequisitionsMigratorOffline extends AbstractOnmsUpgrade {
                 String content = IOUtils.toString(new FileInputStream(req), "UTF-8");
                 String output = content.replaceAll(" non-ip-(snmp-primary|interfaces)=\"[^\"]+\"", "");
                 if (content.length() != output.length()) {
-                    log("Requisition updated, writing new content and testing it out\n", req);
+                    log("  Updating and parsing the requisition\n", req);
                     IOUtils.write(output, new FileOutputStream(req), "UTF-8");
                     Requisition requisition = JaxbUtils.unmarshal(Requisition.class, req, true);
                     if (requisition == null) {
