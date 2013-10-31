@@ -175,13 +175,14 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
         int containerHeight = topoHeight - (m_focusedContainer.getElement().getOffsetTop() + 5);
         int tableHeight = m_focusedContainer.getOffsetHeight();
 
+        if(containerHeight >= 0){
+            m_scrollContainer.setHeight("" + Math.min(containerHeight, tableHeight) + "px");
 
-        m_scrollContainer.setHeight("" + Math.min(containerHeight, tableHeight) + "px");
-
-        if(tableHeight > containerHeight){
-            m_scrollContainer.getElement().getStyle().setOverflowY(Style.Overflow.SCROLL);
-        } else{
-            m_scrollContainer.getElement().getStyle().setOverflowY(Style.Overflow.HIDDEN);
+            if(tableHeight > containerHeight){
+                m_scrollContainer.getElement().getStyle().setOverflowY(Style.Overflow.SCROLL);
+            } else{
+                m_scrollContainer.getElement().getStyle().setOverflowY(Style.Overflow.HIDDEN);
+            }
         }
 
     }
