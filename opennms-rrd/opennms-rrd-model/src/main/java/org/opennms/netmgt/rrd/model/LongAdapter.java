@@ -42,7 +42,16 @@ public class LongAdapter extends XmlAdapter<String, Long> {
      */
     @Override
     public String marshal(Long value) throws Exception {
-        return value == null ? "U" : value.toString();
+        if (value == null) {
+            return null;
+        }
+        if (value == Long.MIN_VALUE) {
+            return "-inf";
+        }
+        if (value == Long.MAX_VALUE) {
+            return "inf";
+        }
+        return value.toString();
     }
 
     /* (non-Javadoc)
@@ -50,7 +59,16 @@ public class LongAdapter extends XmlAdapter<String, Long> {
      */
     @Override
     public Long unmarshal(String value) throws Exception {
-        return value.equals("U") ? null : new Long(value);
+        if (value.equalsIgnoreCase("U")) {
+            return null;
+        }
+        if (value.equalsIgnoreCase("-inf")) {
+            return Long.MIN_VALUE;
+        }
+        if (value.equalsIgnoreCase("inf")) {
+            return Long.MAX_VALUE;
+        }
+        return new Long(value);
     }
 
 }

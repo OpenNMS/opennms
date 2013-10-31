@@ -29,6 +29,8 @@ package org.opennms.upgrade.implementations;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -153,20 +155,7 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
      */
     @Override
     public void rollback() throws OnmsUpgradeException {
-        try {
-            for (SnmpInterfaceUpgrade intf : interfacesToMerge) {
-                File[] targets = { intf.getOldInterfaceDir(), intf.getNewInterfaceDir() };
-                for (File target : targets) {
-                    File zip = new File(target.getAbsolutePath() + ZIP_EXT);
-                    FileUtils.deleteDirectory(target);
-                    target.mkdirs();
-                    unzipFile(zip, target);
-                    zip.delete();
-                }
-            }
-        } catch (IOException e) {
-            throw new OnmsUpgradeException("Can't restore the backup files because " + e.getMessage());
-        }
+        // The idea is to roll back only the interfaces that weren't updated. A global roll back is not necessary.
     }
 
     /* (non-Javadoc)
@@ -178,7 +167,22 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
             try {
                 merge(intf.getOldInterfaceDir(), intf.getNewInterfaceDir());
             } catch (Exception e) {
-                throw new OnmsUpgradeException("Can't upgrade " + intf + " because " + e.getMessage(), e);
+                StringWriter w = new StringWriter();
+                PrintWriter p = new PrintWriter(w);
+                e.printStackTrace(p);
+                log("Error: Can't upgrade %s because %s: %s. Rolling back changes\n", intf, e.getMessage(), w.toString());
+                File[] targets = { intf.getOldInterfaceDir(), intf.getNewInterfaceDir() };
+                for (File target : targets) {
+                    File zip = new File(target.getAbsolutePath() + ZIP_EXT);
+                    try {
+                        FileUtils.deleteDirectory(target);
+                    } catch (IOException e1) {
+                        log("Warning: can't delete directory %s\n", target);
+                    }
+                    target.mkdirs();
+                    unzipFile(zip, target);
+                    zip.delete();
+                }
             }
         }
         fixKscReports();

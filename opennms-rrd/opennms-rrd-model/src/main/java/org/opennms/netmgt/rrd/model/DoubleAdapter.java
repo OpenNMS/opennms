@@ -42,7 +42,19 @@ public class DoubleAdapter extends XmlAdapter<String, Double> {
      */
     @Override
     public String marshal(Double value) throws Exception {
-        return value == null ? "U" : value.toString();
+        if (value == null) {
+            return null;
+        }
+        if (value == Double.NEGATIVE_INFINITY) {
+            return "-inf";
+        }
+        if (value == Double.POSITIVE_INFINITY) {
+            return "inf";
+        }
+        if (value.isNaN()) {
+            return "NaN";
+        }
+        return value.toString();
     }
 
     /* (non-Javadoc)
@@ -50,7 +62,19 @@ public class DoubleAdapter extends XmlAdapter<String, Double> {
      */
     @Override
     public Double unmarshal(String value) throws Exception {
-        return value.equals("U") ? null : new Double(value);
+        if (value.equalsIgnoreCase("U")) {
+            return null;
+        }
+        if (value.equalsIgnoreCase("-inf")) {
+            return Double.NEGATIVE_INFINITY;
+        }
+        if (value.equalsIgnoreCase("inf")) {
+            return Double.POSITIVE_INFINITY;
+        }
+        if (value.equalsIgnoreCase("nan")) {
+            return Double.NaN;
+        }
+        return new Double(value);
     }
 
 }
