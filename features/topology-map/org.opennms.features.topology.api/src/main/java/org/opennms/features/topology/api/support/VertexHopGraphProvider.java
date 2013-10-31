@@ -96,12 +96,28 @@ public class VertexHopGraphProvider implements GraphProvider {
 	}
 
 	public static CollapsibleCriteria[] getCollapsedCriteria(Criteria[] criteria) {
+		return getCollapsibleCriteria(criteria, true);
+	}
+
+	public static CollapsibleCriteria[] getCollapsibleCriteriaForContainer(GraphContainer graphContainer) {
+		return getCollapsibleCriteria(graphContainer.getCriteria());
+	}
+
+	public static CollapsibleCriteria[] getCollapsibleCriteria(Criteria[] criteria) {
+		return getCollapsibleCriteria(criteria, false);
+	}
+
+	public static CollapsibleCriteria[] getCollapsibleCriteria(Criteria[] criteria, boolean onlyCollapsed) {
 		List<CollapsibleCriteria> retval = new ArrayList<CollapsibleCriteria>();
 		if (criteria != null) {
 			for (Criteria criterium : criteria) {
 				try {
 					CollapsibleCriteria hopCriteria = (CollapsibleCriteria)criterium;
-					if (hopCriteria.isCollapsed()) {
+					if (onlyCollapsed) {
+						if (hopCriteria.isCollapsed()) {
+							retval.add(hopCriteria);
+						}
+					} else {
 						retval.add(hopCriteria);
 					}
 				} catch (ClassCastException e) {}

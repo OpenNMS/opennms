@@ -113,7 +113,7 @@ public class NCSSearchProvider extends AbstractSearchProvider implements SearchP
         List<NCSComponent> components = m_ncsComponentRepository.findByType("Service");
         for (NCSComponent component : components) {
             if(searchQuery.matches(component.getName())) {
-                searchResults.add(new SearchResult(String.valueOf(component.getId()), NAMESPACE, component.getName()));
+                searchResults.add(new SearchResult(NAMESPACE, String.valueOf(component.getId()), component.getName()));
             }
 
         }

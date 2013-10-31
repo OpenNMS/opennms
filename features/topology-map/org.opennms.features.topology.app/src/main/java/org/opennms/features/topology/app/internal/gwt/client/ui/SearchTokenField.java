@@ -28,17 +28,26 @@
 
 package org.opennms.features.topology.app.internal.gwt.client.ui;
 
+import org.opennms.features.topology.app.internal.gwt.client.SearchSuggestion;
+
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.*;
-import org.opennms.features.topology.app.internal.gwt.client.SearchSuggestion;
+import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 public class SearchTokenField extends Composite {
+
+    public interface CollapseCallback{
+        void onCollapse(SearchSuggestion searchSuggestion);
+    }
 
     public interface RemoveCallback{
         void onRemove(SearchSuggestion searchSuggestion);
@@ -64,9 +73,13 @@ public class SearchTokenField extends Composite {
     Anchor m_centerSuggestionBtn;
 
     @UiField
+    Anchor m_collapseBtn;
+
+    @UiField
     HorizontalPanel m_tokenContainer;
 
     private SearchSuggestion m_suggestion;
+    private CollapseCallback m_collapseCallback;
     private RemoveCallback m_removeCallback;
     private CenterOnSuggestionCallback m_centerOnCallback;
 
@@ -88,11 +101,19 @@ public class SearchTokenField extends Composite {
         m_closeBtn.setTitle("Remove from focus");
         m_closeBtn.getElement().getStyle().setCursor(Style.Cursor.POINTER);
 
-        m_centerSuggestionBtn.setTitle("Center On Map");
+        m_centerSuggestionBtn.setTitle("Center on map");
         m_centerSuggestionBtn.getElement().getStyle().setCursor(Style.Cursor.POINTER);
+
+        m_collapseBtn.setTitle("Collapse group");
+        m_collapseBtn.getElement().getStyle().setCursor(Style.Cursor.POINTER);
+
         setLabel(m_suggestion.getLabel());
         setNamespace(m_suggestion.getNamespace());
 
+    }
+
+    public void setCollapseCallback(CollapseCallback callback) {
+        m_collapseCallback = callback;
     }
 
     public void setRemoveCallback(RemoveCallback callback) {
@@ -109,6 +130,13 @@ public class SearchTokenField extends Composite {
 
     public void setLabel(String label) {
         m_label.getElement().setInnerText(label);
+    }
+
+    @UiHandler("m_collapseBtn")
+    void handleCollapse(ClickEvent event) {
+        if (m_collapseCallback != null) {
+            m_collapseCallback.onCollapse(m_suggestion);
+        }
     }
 
     @UiHandler("m_closeBtn")

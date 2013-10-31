@@ -28,10 +28,13 @@
 
 package org.opennms.features.topology.app.internal.gwt.client;
 
+import java.io.Serializable;
+
 import com.google.gwt.user.client.ui.SuggestOracle;
 
-public class SearchSuggestion implements SuggestOracle.Suggestion {
+public class SearchSuggestion implements Serializable, SuggestOracle.Suggestion {
 
+    private static final long serialVersionUID = 1876970713330053849L;
 
     String m_label;
     String m_id;

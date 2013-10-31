@@ -38,6 +38,8 @@ import java.util.Set;
  */
 public interface CollapsibleCriteria {
 
+	String getId();
+
 	/**
 	 * Check to see whether the Criteria is collapsed or not.
 	 */

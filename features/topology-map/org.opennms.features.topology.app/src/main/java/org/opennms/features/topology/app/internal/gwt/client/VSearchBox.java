@@ -28,6 +28,13 @@
 
 package org.opennms.features.topology.app.internal.gwt.client;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.opennms.features.topology.app.internal.gwt.client.ui.SearchTokenField;
+import org.opennms.features.topology.app.internal.gwt.client.ui.SearchTokenField.CollapseCallback;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.KeyUpEvent;
@@ -41,12 +48,17 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.*;
-import org.opennms.features.topology.app.internal.gwt.client.ui.SearchTokenField;
 import com.google.gwt.user.client.Timer;
-
-import java.util.*;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.SuggestBox;
+import com.google.gwt.user.client.ui.SuggestOracle;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.TextBoxBase;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 public class VSearchBox extends Composite implements SelectionHandler<SuggestOracle.Suggestion>,KeyUpHandler {
 
@@ -218,6 +230,14 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
                 }
             });
             field.setCenterOnCallback(new DefaultCenterOnCallback());
+            //if (searchSuggestion.isCollapsible()) {
+                field.setCollapseCallback(new CollapseCallback() {
+                    @Override
+                    public void onCollapse(SearchSuggestion searchSuggestion) {
+                        m_connector.toggleSuggestionCollapse(searchSuggestion);
+                    }
+                });
+            //}
 
             m_focusedContainer.add(field);
         }

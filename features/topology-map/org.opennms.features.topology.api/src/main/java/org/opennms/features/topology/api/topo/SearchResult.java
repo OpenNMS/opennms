@@ -34,14 +34,14 @@ public class SearchResult{
     private final String m_namespace;
     private final String m_label;
 
-    public SearchResult(String id, String namespace, String label){
+    public SearchResult(String namespace, String id, String label){
         m_id = id;
         m_namespace = namespace;
         m_label = label;
     }
 
     public SearchResult(VertexRef vertexRef) {
-        this(vertexRef.getId(), vertexRef.getNamespace(), vertexRef.getLabel());
+        this(vertexRef.getNamespace(), vertexRef.getId(), vertexRef.getLabel());
     }
 
     public String getId() {

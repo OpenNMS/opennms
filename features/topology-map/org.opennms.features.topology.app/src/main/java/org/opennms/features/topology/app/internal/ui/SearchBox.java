@@ -30,6 +30,7 @@ package org.opennms.features.topology.app.internal.ui;
 
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -53,6 +54,7 @@ import org.opennms.features.topology.app.internal.gwt.client.SearchBoxServerRpc;
 import org.opennms.features.topology.app.internal.gwt.client.SearchBoxState;
 import org.opennms.features.topology.app.internal.gwt.client.SearchSuggestion;
 import org.opennms.osgi.OnmsServiceManager;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Function;
 import com.google.common.collect.HashMultimap;
@@ -80,7 +82,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
 
         @Override
         public void selectSuggestion(SearchSuggestion searchSuggestion) {
-            SearchResult searchResult = new SearchResult(searchSuggestion.getId(), searchSuggestion.getNamespace(), searchSuggestion.getLabel());
+            SearchResult searchResult = new SearchResult(searchSuggestion.getNamespace(), searchSuggestion.getId(), searchSuggestion.getLabel());
 
             Multiset<SearchProvider> keys = m_suggestionMap.keys();
             for(SearchProvider key : keys){
@@ -94,7 +96,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
 
         @Override
         public void removeSelected(SearchSuggestion searchSuggestion) {
-            SearchResult searchResult = new SearchResult(searchSuggestion.getId(), searchSuggestion.getNamespace(), searchSuggestion.getLabel());
+            SearchResult searchResult = new SearchResult(searchSuggestion.getNamespace(), searchSuggestion.getId(), searchSuggestion.getLabel());
 
             Multiset<SearchProvider> keys = m_suggestionMap.keys();
             for(SearchProvider key : keys){
@@ -109,7 +111,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
 
         @Override
         public void addToFocus(SearchSuggestion searchSuggestion) {
-            SearchResult searchResult = new SearchResult(searchSuggestion.getId(), searchSuggestion.getNamespace(), searchSuggestion.getLabel());
+            SearchResult searchResult = new SearchResult(searchSuggestion.getNamespace(), searchSuggestion.getId(), searchSuggestion.getLabel());
 
             Multiset<SearchProvider> keys = m_suggestionMap.keys();
             for(SearchProvider key : keys){
@@ -126,7 +128,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
 
         @Override
         public void removeFocused(SearchSuggestion searchSuggestion) {
-            SearchResult searchResult = new SearchResult(searchSuggestion.getId(), searchSuggestion.getNamespace(), searchSuggestion.getLabel());
+            SearchResult searchResult = new SearchResult(searchSuggestion.getNamespace(), searchSuggestion.getId(), searchSuggestion.getLabel());
 
             Multiset<SearchProvider> keys = m_suggestionMap.keys();
             for(SearchProvider key : keys){
@@ -145,7 +147,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
 
         @Override
         public void centerSearchSuggestion(SearchSuggestion searchSuggestion){
-            SearchResult searchResult = new SearchResult(searchSuggestion.getId(), searchSuggestion.getNamespace(), searchSuggestion.getLabel());
+            SearchResult searchResult = new SearchResult(searchSuggestion.getNamespace(), searchSuggestion.getId(), searchSuggestion.getLabel());
 
             List<VertexRef> vRefs = null;
             Multiset<SearchProvider> keys = m_suggestionMap.keys();
@@ -173,6 +175,18 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
             mapViewManager.setBoundingBox(graphContainer.getGraph().getLayout().computeBoundingBox(vRefs));
         }
 
+        @Override
+        public void toggleSuggestionCollapse(SearchSuggestion searchSuggestion) {
+            SearchResult searchResult = new SearchResult(searchSuggestion.getNamespace(), searchSuggestion.getId(), searchSuggestion.getLabel());
+            Multiset<SearchProvider> keys = m_suggestionMap.keys();
+            for(SearchProvider key : keys){
+                Collection<SearchResult> searchResults = m_suggestionMap.get(key);
+                if(searchResults.contains(searchResult)) {
+                    key.onToggleCollapse(searchResult, m_operationContext.getGraphContainer());
+                    break;
+                }
+            }
+        }
     };
 
     public SearchBox(OnmsServiceManager serviceManager, OperationContext operationContext) {

@@ -22,7 +22,7 @@ public class CategoryHopCriteria extends VertexHopCriteria implements Collapsibl
 	private final String m_categoryName;
 	private CategoryDao m_categoryDao;
 	private NodeDao m_nodeDao;
-	private boolean m_collapsed;
+	private boolean m_collapsed = false;
 	private CategoryVertex m_collapsedVertex;
 
 	public static class CategoryVertex extends AbstractVertex {
@@ -107,7 +107,10 @@ public class CategoryHopCriteria extends VertexHopCriteria implements Collapsibl
 
 	@Override
 	public void setCollapsed(boolean collapsed) {
-		this.m_collapsed = collapsed;
+		if (collapsed != isCollapsed()) {
+			this.m_collapsed = collapsed;
+			setDirty(true);
+		}
 	}
 
 	@Override

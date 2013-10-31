@@ -124,7 +124,7 @@ public class AbstractSearchProviderTest {
                 List<SearchResult> verts = new ArrayList<SearchResult>();
                 for (VertexRef vertexRef : m_vertexRefs) {
                     if (searchQuery.matches(vertexRef.getLabel())) {
-                        verts.add(new SearchResult(vertexRef.getId(), vertexRef.getNamespace(), vertexRef.getLabel()));
+                        verts.add(new SearchResult(vertexRef.getNamespace(), vertexRef.getId(), vertexRef.getLabel()));
                     }
                 }
                 return verts;
