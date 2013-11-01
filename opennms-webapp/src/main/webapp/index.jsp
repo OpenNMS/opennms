@@ -38,7 +38,7 @@
 	<!-- Left Column -->
 	<div id="index-contentleft">
 		<!-- Problems box -->
-		<% String showNodesWithProblems = System.getProperty("opennms.nodesWithProblems.show", "false");
+		<% String showNodesWithProblems = System.getProperty("opennms.nodesWithProblems.show", "true");
            if (Boolean.parseBoolean(showNodesWithProblems)) { %>
 		<jsp:include page="/alarm/summary-box.htm" flush="false" />
 		<hr />
