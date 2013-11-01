@@ -40,8 +40,17 @@ public class SearchSuggestion implements Serializable, SuggestOracle.Suggestion 
     String m_id;
     String m_namespace;
     boolean m_focused = false;
+    boolean m_collapsible = false;
 
-    public void setLabel(String label){
+    public boolean isCollapsible() {
+		return m_collapsible;
+	}
+
+	public void setCollapsible(boolean collapsible) {
+		this.m_collapsible = collapsible;
+	}
+
+	public void setLabel(String label){
         m_label = label;
     }
 

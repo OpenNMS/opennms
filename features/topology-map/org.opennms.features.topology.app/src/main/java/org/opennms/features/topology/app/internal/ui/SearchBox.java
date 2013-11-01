@@ -30,7 +30,6 @@ package org.opennms.features.topology.app.internal.ui;
 
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -45,6 +44,7 @@ import org.opennms.features.topology.api.support.VertexHopGraphProvider.FocusNod
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractSearchQuery;
 import org.opennms.features.topology.api.topo.AbstractVertexRef;
+import org.opennms.features.topology.api.topo.CollapsibleCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.SearchProvider;
 import org.opennms.features.topology.api.topo.SearchQuery;
@@ -53,8 +53,8 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.gwt.client.SearchBoxServerRpc;
 import org.opennms.features.topology.app.internal.gwt.client.SearchBoxState;
 import org.opennms.features.topology.app.internal.gwt.client.SearchSuggestion;
+import org.opennms.features.topology.app.internal.support.CategoryHopCriteria;
 import org.opennms.osgi.OnmsServiceManager;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Function;
 import com.google.common.collect.HashMultimap;
@@ -277,6 +277,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
         suggestion.setNamespace(searchResult.getNamespace());
         suggestion.setId(searchResult.getId());
         suggestion.setLabel(searchResult.getLabel());
+        suggestion.setCollapsible(searchResult.isCollapsible());
 
         return suggestion;
     }
@@ -330,8 +331,20 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
 
 
         for (Criteria criteria : criterium) {
-            try {
-                if(criteria != nodeCriteria){
+            if(criteria != nodeCriteria){
+                try {
+                    CollapsibleCriteria crit = (CollapsibleCriteria) criteria;
+                    SearchSuggestion suggestion = new SearchSuggestion();
+                    suggestion.setId(crit.getId());
+                    suggestion.setLabel(crit.getLabel());
+                    suggestion.setNamespace(crit.getNamespace());
+                    suggestion.setCollapsible(true);
+
+                    suggestions.add(suggestion);
+                    continue;
+                } catch (ClassCastException e) {}
+
+                try {
                     VertexHopCriteria crit = (VertexHopCriteria) criteria;
                     SearchSuggestion suggestion = new SearchSuggestion();
                     suggestion.setId(crit.getId());
@@ -339,8 +352,8 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
                     suggestion.setNamespace(crit.getNamespace());
 
                     suggestions.add(suggestion);
-                }
-            } catch (ClassCastException e) {
+                    continue;
+                } catch (ClassCastException e) {}
             }
         }
 

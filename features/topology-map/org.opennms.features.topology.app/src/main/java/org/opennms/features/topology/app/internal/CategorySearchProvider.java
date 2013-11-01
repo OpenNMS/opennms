@@ -71,6 +71,7 @@ public class CategorySearchProvider extends AbstractSearchProvider implements Se
         for (String category : categories) {
             if(searchQuery.matches(category)){
                 SearchResult result = new SearchResult("category", category, category);
+                result.setCollapsible(true);
                 results.add(result);
             }
         }

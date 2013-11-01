@@ -230,14 +230,14 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
                 }
             });
             field.setCenterOnCallback(new DefaultCenterOnCallback());
-            //if (searchSuggestion.isCollapsible()) {
+            if (searchSuggestion.isCollapsible()) {
                 field.setCollapseCallback(new CollapseCallback() {
                     @Override
                     public void onCollapse(SearchSuggestion searchSuggestion) {
                         m_connector.toggleSuggestionCollapse(searchSuggestion);
                     }
                 });
-            //}
+            }
 
             m_focusedContainer.add(field);
         }

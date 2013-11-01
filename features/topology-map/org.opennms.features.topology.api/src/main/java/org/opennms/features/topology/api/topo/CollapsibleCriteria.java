@@ -61,4 +61,8 @@ public interface CollapsibleCriteria {
 	 * set to collapsed.
 	 */
 	Vertex getCollapsedRepresentation();
+
+	String getLabel();
+
+	String getNamespace();
 }

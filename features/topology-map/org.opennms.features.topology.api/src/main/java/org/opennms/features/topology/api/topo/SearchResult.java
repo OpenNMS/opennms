@@ -33,6 +33,7 @@ public class SearchResult{
     private final String m_id;
     private final String m_namespace;
     private final String m_label;
+    private boolean m_collapsible = false;
 
     public SearchResult(String namespace, String id, String label){
         m_id = id;
@@ -76,4 +77,12 @@ public class SearchResult{
                 + ((getNamespace() == null) ? 0 : getNamespace().hashCode());
         return result;
     }
+
+	public boolean isCollapsible() {
+		return m_collapsible;
+	}
+
+	public void setCollapsible(boolean collapsible) {
+		this.m_collapsible = collapsible;
+	}
 }
