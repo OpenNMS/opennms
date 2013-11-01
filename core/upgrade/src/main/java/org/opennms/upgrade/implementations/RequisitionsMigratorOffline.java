@@ -75,7 +75,7 @@ public class RequisitionsMigratorOffline extends AbstractOnmsUpgrade {
      */
     @Override
     public int getOrder() {
-        return 4;
+        return 1;
     }
 
     /* (non-Javadoc)

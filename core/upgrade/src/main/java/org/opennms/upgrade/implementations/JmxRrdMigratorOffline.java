@@ -89,7 +89,7 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
      */
     @Override
     public int getOrder() {
-        return 3;
+        return 4;
     }
 
     /* (non-Javadoc)

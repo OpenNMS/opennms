@@ -87,7 +87,7 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
      * @see org.opennms.upgrade.api.OnmsUpgrade#getOrder()
      */
     public int getOrder() {
-        return 1;
+        return 2;
     }
 
     /* (non-Javadoc)
