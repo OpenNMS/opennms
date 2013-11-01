@@ -82,7 +82,7 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
      */
     @Override
     public String getId() {
-        return getClass().getName();
+        return getClass().getSimpleName();
     }
 
     /**

@@ -70,6 +70,7 @@ import org.opennms.core.utils.ProcessExec;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.icmp.PingerFactory;
+import org.opennms.upgrade.support.Upgrade;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
@@ -947,6 +948,8 @@ public class Installer {
         Logger.getRootLogger().setLevel(Level.WARN);
         
         new Installer().install(argv);
+        System.out.println(""); // A simple line separator.
+        new Upgrade().execute();
     }
 
     /**

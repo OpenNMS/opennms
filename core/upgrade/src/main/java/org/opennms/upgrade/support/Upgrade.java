@@ -133,7 +133,7 @@ public class Upgrade {
         Date start = new Date();
         try {
             if (wasExecuted(upg)) {
-                log("  Task %s was already executed at %s\n", upg.getId(), getUpgradeStatus().getLastExecutionTime(upg));
+                log("  Task %s has been executed at %s\n", upg.getId(), getUpgradeStatus().getLastExecutionTime(upg));
                 return;
             }
             log("- Running pre-execution phase\n");
@@ -206,9 +206,9 @@ public class Upgrade {
                 if (cls.getAnnotation(Ignore.class) != null) {
                     continue;
                 }
-                log("Found upgrade task %s\n", cls.getName());
                 OnmsUpgrade upgrade = (OnmsUpgrade) cls.newInstance();
                 upgrades.add(upgrade);
+                log("Found upgrade task %s\n", upgrade.getId());
             }
             Collections.sort(upgrades, new OnmsUpgradeComparator());
         } catch (Exception e) {
@@ -224,24 +224,26 @@ public class Upgrade {
      * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
     public void execute() throws OnmsUpgradeException {
+        log("Executing Upgrade Tools ...\n");
         log("OpenNMS is currently %s\n", (isOpennmsRunning() ? "running" : "stopped"));
         List<OnmsUpgrade> upgradeObjects = getUpgradeObjects();
         for (OnmsUpgrade upg : upgradeObjects) {
-            log("Processing %s : %s\n", upg.getId(), upg.getDescription());
+            log("Processing %s: %s\n", upg.getId(), upg.getDescription());
             if (isOpennmsRunning()) {
                 if (upg.requiresOnmsRunning()) {
                     executeUpgrade(upg);
                 } else {
-                    log("  Class %s requires OpenNMS to be stopped but it is running\n", upg.getId());
+                    log("  Task %s requires that OpenNMS is stopped but it is running (ignoring)\n", upg.getId());
                 }
             } else {
                 if (upg.requiresOnmsRunning()) {
-                    log("  Class %s requires OpenNMS to be running but it is stopped\n", upg.getId());
+                    log("  Task %s requires OpenNMS is running but it is stopped (ignoring)\n", upg.getId());
                 } else {
                     executeUpgrade(upg);
                 }
             }
         }
+        log("\nUpgrade completed successfully!\n");
     }
 
     /**
@@ -255,7 +257,6 @@ public class Upgrade {
      * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
     public static void main(String args[]) throws OnmsUpgradeException {
-        Upgrade upgrade = new Upgrade();
-        upgrade.execute();
+        new Upgrade().execute();
     }
 }
