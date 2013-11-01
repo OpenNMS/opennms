@@ -224,7 +224,9 @@ public class Upgrade {
      * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
     public void execute() throws OnmsUpgradeException {
-        log("Executing Upgrade Tools ...\n");
+        log("\n==============================================================================\n");
+        log("OpenNMS Upgrader");
+        log("\n==============================================================================\n\n");
         log("OpenNMS is currently %s\n", (isOpennmsRunning() ? "running" : "stopped"));
         List<OnmsUpgrade> upgradeObjects = getUpgradeObjects();
         for (OnmsUpgrade upg : upgradeObjects) {

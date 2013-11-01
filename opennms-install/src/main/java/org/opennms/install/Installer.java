@@ -948,7 +948,6 @@ public class Installer {
         Logger.getRootLogger().setLevel(Level.WARN);
         
         new Installer().install(argv);
-        System.out.println(""); // A simple line separator.
         new Upgrade().execute();
     }
 
