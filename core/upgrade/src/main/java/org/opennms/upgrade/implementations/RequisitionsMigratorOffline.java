@@ -55,9 +55,6 @@ import org.opennms.upgrade.api.OnmsUpgradeException;
  */
 public class RequisitionsMigratorOffline extends AbstractOnmsUpgrade {
 
-    /** The Constant ZIP_EXT. */
-    public static final String ZIP_EXT = ".zip";
-
     /** The requisition directory. */
     private File requisitionDir;
 
@@ -100,7 +97,7 @@ public class RequisitionsMigratorOffline extends AbstractOnmsUpgrade {
     @Override
     public void preExecute() throws OnmsUpgradeException {
         log("Backing up: %s\n", getRequisitionDir());
-        zipDir(getBackupFile().getAbsolutePath(), getRequisitionDir());
+        zipDir(getBackupFile(), getRequisitionDir());
     }
 
     /* (non-Javadoc)
@@ -156,7 +153,7 @@ public class RequisitionsMigratorOffline extends AbstractOnmsUpgrade {
      */
     private File getRequisitionDir() {
         if (requisitionDir == null) {
-            requisitionDir = new File(ConfigFileConstants.getHome(), "/etc/imports");
+            requisitionDir = new File(ConfigFileConstants.getHome(), "etc" + File.separator + "imports");
         }
         return requisitionDir;
     }

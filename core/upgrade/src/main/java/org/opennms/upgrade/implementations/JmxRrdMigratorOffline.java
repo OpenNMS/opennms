@@ -114,7 +114,7 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
     @Override
     public void preExecute() throws OnmsUpgradeException {
         printMainSettings();
-        if (isOnmsVersionValid(1, 12, 2)) {
+        if (isInstalledVersionGreaterOrEqual(1, 12, 2)) {
             try {
                 CollectdConfigFactory.init();
             } catch (Exception e) {
@@ -127,14 +127,14 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
             }
             for (File jmxResourceDir : getJmxResourceDirectories()) {
                 log("Backing up %s\n", jmxResourceDir);
-                zipDir(jmxResourceDir.getAbsolutePath() + ".zip", jmxResourceDir);
+                zipDir(new File(jmxResourceDir.getAbsolutePath() + ZIP_EXT), jmxResourceDir);
             }
         } else {
             throw new OnmsUpgradeException("This upgrade procedure requires at least OpenNMS 1.12.2, the current version is " + getOpennmsVersion());
         }
         File configDir = new File(ConfigFileConstants.getHome(), File.separator + "etc");
         log("Backing configuration files: %s\n", configDir);
-        zipDir(configDir.getAbsolutePath() + ".zip", configDir);
+        zipDir(new File(configDir.getAbsolutePath() + ZIP_EXT), configDir);
     }
 
     /* (non-Javadoc)
@@ -143,13 +143,13 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
     @Override
     public void postExecute() throws OnmsUpgradeException {
         for (File jmxResourceDir : getJmxResourceDirectories()) {
-            File zip = new File(jmxResourceDir.getAbsolutePath() + ".zip");
+            File zip = new File(jmxResourceDir.getAbsolutePath() + ZIP_EXT);
             if (zip.exists()) {
                 log("Removing backup %s\n", zip);
                 zip.delete();
             }
         }
-        File zip = new File(ConfigFileConstants.getHome(), File.separator + "etc" + ".zip");
+        File zip = new File(ConfigFileConstants.getHome(), File.separator + "etc" + ZIP_EXT);
         if (zip.exists()) {
             log("Removing backup %s\n", zip);
             zip.delete();
@@ -163,14 +163,14 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
     public void rollback() throws OnmsUpgradeException {
         try {
             for (File jmxResourceDir : getJmxResourceDirectories()) {
-                File zip = new File(jmxResourceDir.getAbsolutePath() + ".zip");
+                File zip = new File(jmxResourceDir.getAbsolutePath() + ZIP_EXT);
                 FileUtils.deleteDirectory(jmxResourceDir);
                 jmxResourceDir.mkdirs();
                 unzipFile(zip, jmxResourceDir);
                 zip.delete();
             }
             File configDir = new File(ConfigFileConstants.getHome(), File.separator + "etc" );
-            File configZip = new File(configDir.getAbsolutePath() + ".zip");
+            File configZip = new File(configDir.getAbsolutePath() + ZIP_EXT);
             unzipFile(configZip, configDir);
         } catch (IOException e) {
             throw new OnmsUpgradeException("Can't restore the backup files because " + e.getMessage());

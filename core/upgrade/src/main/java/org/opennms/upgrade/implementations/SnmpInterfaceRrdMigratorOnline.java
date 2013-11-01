@@ -68,9 +68,6 @@ import org.opennms.upgrade.api.OnmsUpgradeException;
  */
 public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
 
-    /** The Constant ZIP_EXT. */
-    public static final String ZIP_EXT = ".zip";
-
     /** The interfaces to merge. */
     private List<SnmpInterfaceUpgrade> interfacesToMerge;
 
@@ -128,7 +125,7 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
             for (File target : targets) {
                 if (target.exists()) {
                     log("Backing up: %s\n", target);
-                    zipDir(target.getAbsolutePath() + ZIP_EXT, target);
+                    zipDir(new File(target.getAbsolutePath() + ZIP_EXT), target);
                 }
             }
         }

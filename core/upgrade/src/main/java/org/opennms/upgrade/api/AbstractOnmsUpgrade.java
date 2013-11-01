@@ -58,6 +58,9 @@ import org.opennms.netmgt.rrd.RrdUtils;
  */
 public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
 
+    /** The Constant ZIP_EXT. */
+    public static final String ZIP_EXT = ".zip";
+
     /** The main properties. */
     private Properties mainProperties;
 
@@ -257,8 +260,8 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
      */
     private void populateFilesList(File dir, List<String> filesListInDir) throws IOException {
         File[] files = dir.listFiles();
-        for(File file : files){
-            if(file.isFile()) filesListInDir.add(file.getAbsolutePath());
+        for (File file : files) {
+            if (file.isFile()) filesListInDir.add(file.getAbsolutePath());
             else populateFilesList(file, filesListInDir);
         }
     }
@@ -266,15 +269,15 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
     /**
      * ZIP a directory.
      *
-     * @param zipFileName the ZIP file name
+     * @param zipFile the output ZIP file
      * @param sourceFolder the source folder
      * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
-    protected void zipDir(String zipFileName, File sourceFolder) throws OnmsUpgradeException {
+    protected void zipDir(File zipFile, File sourceFolder) throws OnmsUpgradeException {
         try {
             List<String> filesListInDir = new ArrayList<String>();
             populateFilesList(sourceFolder, filesListInDir);
-            FileOutputStream fos = new FileOutputStream(zipFileName);
+            FileOutputStream fos = new FileOutputStream(zipFile);
             ZipOutputStream zos = new ZipOutputStream(fos);
             for(String filePath : filesListInDir){
                 log("  Zipping %s\n", filePath);
@@ -300,16 +303,16 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
     /**
      * UNZIP a file.
      *
-     * @param zipFileName the ZIP file name
+     * @param zipFile the input ZIP file
      * @param outputFolder the output folder
      * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
-    protected void unzipFile(File zipFileName, File outputFolder) throws OnmsUpgradeException {
+    protected void unzipFile(File zipFile, File outputFolder) throws OnmsUpgradeException {
         try {
             if (!outputFolder.exists()) outputFolder.mkdirs();
             FileInputStream fis;
             byte[] buffer = new byte[1024];
-            fis = new FileInputStream(zipFileName);
+            fis = new FileInputStream(zipFile);
             ZipInputStream zis = new ZipInputStream(fis);
             ZipEntry ze = zis.getNextEntry();
             while(ze != null){
@@ -359,7 +362,7 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
     }
 
     /**
-     * Checks if the OpenNMS version is valid.
+     * Checks if the installed version of OpenNMS is greater or equals than the supplied version.
      *
      * @param mayor the mayor
      * @param minor the minor
@@ -367,16 +370,16 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
      * @return true, if the current installed version is greater or equals than $major.$minor.$release</p>
      * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
-    protected boolean isOnmsVersionValid(int mayor, int minor, int release) throws OnmsUpgradeException {
+    protected boolean isInstalledVersionGreaterOrEqual(int mayor, int minor, int release) throws OnmsUpgradeException {
         String version = getOpennmsVersion();
         String[] a = version.split("\\.");
-        boolean isValid = false;
         try {
-            isValid = Integer.parseInt(a[0]) >= mayor && Integer.parseInt(a[1]) >= minor && Integer.parseInt(a[2].replaceFirst("[^\\d].+", "")) >= release;
+            int supplied  = mayor * 100 + minor * 10 + release;
+            int installed = Integer.parseInt(a[0]) * 100 + Integer.parseInt(a[1]) * 10 + Integer.parseInt(a[2].replaceFirst("[^\\d].+", ""));
+            return installed >= supplied;
         } catch (Exception e) {
             throw new OnmsUpgradeException("Can't process the OpenNMS version");
         }
-        return isValid;
     }
 
     /**

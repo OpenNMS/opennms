@@ -60,7 +60,7 @@ public class SnmpInterfaceRrdMigratorOnlineTest {
     public void setUp() throws Exception {
         FileUtils.copyDirectory(new File("src/test/resources/etc"), new File("target/home/etc"));
         FileUtils.copyDirectory(new File("src/test/resources/rrd"), new File("target/home/rrd"));
-        FileUtils.copyDirectory(new File("src/test/resources/WEB-INF"), new File("target/home/jetty-webapps/opennms/WEB-INF/"));
+        FileUtils.copyDirectory(new File("src/test/resources/jetty-webapps/opennms/WEB-INF"), new File("target/home/jetty-webapps/opennms/WEB-INF/"));
         System.setProperty("opennms.home", "target/home");
         DefaultDataCollectionConfigDao dao = new DefaultDataCollectionConfigDao();
         dao.setConfigResource(new FileSystemResource(new File("target/home/etc/datacollection-config.xml")));
