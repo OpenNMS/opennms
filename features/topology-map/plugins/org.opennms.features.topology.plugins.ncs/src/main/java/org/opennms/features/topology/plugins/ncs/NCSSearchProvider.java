@@ -143,7 +143,7 @@ public class NCSSearchProvider extends AbstractSearchProvider implements SearchP
 
     @Override
     public boolean supportsPrefix(String searchPrefix) {
-        return searchPrefix.equals("ncs=");
+        return supportsPrefix("ncs=", searchPrefix);
     }
 
     @Override

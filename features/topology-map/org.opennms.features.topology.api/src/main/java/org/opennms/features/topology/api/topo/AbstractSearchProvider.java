@@ -38,6 +38,13 @@ import org.opennms.features.topology.api.OperationContext;
  */
 public abstract class AbstractSearchProvider implements SearchProvider {
 
+    public static final boolean supportsPrefix(String providerPrefix, String searchPrefix) {
+        if (searchPrefix == null || "".equals(searchPrefix)) {
+            return false;
+        }
+        return providerPrefix.startsWith(searchPrefix.substring(0, Math.min(searchPrefix.length(), providerPrefix.length())));
+    }
+
     @Override
     public void onFocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
     }

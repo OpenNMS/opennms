@@ -80,7 +80,7 @@ public class CategorySearchProvider extends AbstractSearchProvider implements Se
 
     @Override
     public boolean supportsPrefix(String searchPrefix) {
-        return searchPrefix.toLowerCase().equals("category=");
+        return supportsPrefix("category=", searchPrefix);
     }
 
     @Override

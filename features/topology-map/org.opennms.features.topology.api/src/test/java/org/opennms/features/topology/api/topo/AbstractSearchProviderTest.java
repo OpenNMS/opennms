@@ -29,6 +29,8 @@
 package org.opennms.features.topology.api.topo;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -148,6 +150,18 @@ public class AbstractSearchProviderTest {
             public void removeVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
             }
         };
+    }
+    
+    @Test
+    public void testSupportsPrefix() {
+        assertFalse(AbstractSearchProvider.supportsPrefix("category=", null));
+        assertFalse(AbstractSearchProvider.supportsPrefix("category=", ""));
+        assertFalse(AbstractSearchProvider.supportsPrefix("category=", "d"));
+        assertTrue(AbstractSearchProvider.supportsPrefix("category=", "c"));
+        assertTrue(AbstractSearchProvider.supportsPrefix("category=", "cat"));
+        assertTrue(AbstractSearchProvider.supportsPrefix("category=", "category"));
+        assertFalse(AbstractSearchProvider.supportsPrefix("category=", "categoryy"));
+        assertTrue(AbstractSearchProvider.supportsPrefix("category=", "category="));
     }
 
     private List<VertexRef> getVertexRefs(){
