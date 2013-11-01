@@ -165,15 +165,7 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, Initia
         MockUtil.println("Sleeping for "+TEAR_DOWN_WAIT_MILLIS+" millis in tearDown...");
         Thread.sleep(TEAR_DOWN_WAIT_MILLIS);
     }
-    
-    /**
-     * Test for running statments
-     */
-    @Test
-    public final void testRunStatements() {
-    	m_vacuumd.executeStatements();
-    }
-    
+
     /**
      * This is an attempt at testing scheduled automations.
      * @throws InterruptedException
@@ -290,14 +282,9 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, Initia
      */
     @Test
     public final void testGetAutomations() {
-        assertEquals(19, VacuumdConfigFactory.getInstance().getAutomations().size());
+        assertEquals(29, VacuumdConfigFactory.getInstance().getAutomations().size());
     }
-    
-    @Test
-    public final void testGetAutoEvents() {
-        assertEquals(2, VacuumdConfigFactory.getInstance().getAutoEvents().size());
-    }
-    
+
     /**
      * Simple test on a helper method.
      */
@@ -313,7 +300,7 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, Initia
     public final void testGetActions() {
         AutomationProcessor ap = new AutomationProcessor(VacuumdConfigFactory.getInstance().getAutomation("cosmicClear"));
         
-        assertEquals(18,VacuumdConfigFactory.getInstance().getActions().size());
+        assertEquals(28, VacuumdConfigFactory.getInstance().getActions().size());
         assertEquals(2, ap.getAction().getTokenCount(VacuumdConfigFactory.getInstance().getAction("delete").getStatement().getContent()));
     }
     

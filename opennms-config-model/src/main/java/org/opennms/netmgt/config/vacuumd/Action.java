@@ -50,7 +50,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "action")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Action implements Serializable {
+public class Action implements Serializable, Named {
     private static final long serialVersionUID = -3299921998796224904L;
 
     private static final String DEFAULT_DATA_SOURCE = "opennms";

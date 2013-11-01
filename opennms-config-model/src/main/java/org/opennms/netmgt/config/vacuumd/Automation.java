@@ -49,7 +49,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "automation")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Automation implements Serializable {
+public class Automation implements Serializable, Named {
     private static final long serialVersionUID = -1003423077476370628L;
 
     private static final boolean DEFAULT_ACTIVE_FLAG = true;
@@ -110,14 +110,12 @@ public class Automation implements Serializable {
 
     public Automation(final String name, final int interval,
             final String triggerName, final String actionName,
-            final String autoEventName, final String actionEvent,
-            final boolean active) {
+            final String actionEvent, final boolean active) {
         super();
         setName(name);
         setInterval(interval);
         setTriggerName(triggerName);
         setActionName(actionName);
-        setAutoEventName(autoEventName);
         setActionEvent(actionEvent);
         setActive(active);
     }
