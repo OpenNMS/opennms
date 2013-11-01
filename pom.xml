@@ -1124,6 +1124,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.upgrade</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.xml</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -1847,6 +1852,11 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-rrd-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-rrd-model</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
