@@ -33,6 +33,7 @@ import java.io.FileWriter;
 import java.util.Date;
 import java.util.Properties;
 
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.upgrade.api.OnmsUpgrade;
 import org.opennms.upgrade.api.OnmsUpgradeException;
 
@@ -44,7 +45,7 @@ import org.opennms.upgrade.api.OnmsUpgradeException;
 public class UpgradeStatus {
 
     /** The Constant STATUS_FILE. */
-    public static final String STATUS_FILE = ".upgrades.opennms.properties";
+    public static final String STATUS_FILE = "opennms-upgrade-status.properties";
 
     /** The status properties. */
     private Properties status;
@@ -58,7 +59,7 @@ public class UpgradeStatus {
      * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
     public UpgradeStatus() throws OnmsUpgradeException {
-        this(new File(STATUS_FILE));
+        this(new File(ConfigFileConstants.getHome(), "etc" + File.separatorChar + STATUS_FILE));
     }
 
     /**
