@@ -153,7 +153,7 @@ public class RequisitionsMigratorOffline extends AbstractOnmsUpgrade {
      */
     private File getRequisitionDir() {
         if (requisitionDir == null) {
-            requisitionDir = new File(ConfigFileConstants.getHome(), "etc" + File.separator + "imports");
+            requisitionDir = new File(ConfigFileConstants.getFilePathString() + "imports");
         }
         return requisitionDir;
     }

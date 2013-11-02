@@ -6,5 +6,10 @@ if [ -f "$OPENNMS_HOME/etc/opennms.conf" ]; then
 	. "$OPENNMS_HOME/etc/opennms.conf"
 fi
 
-exec ${install.bin.dir}/runjava -r -- \
-     $ADDITIONAL_MANAGER_OPTIONS -Dopennms.home="$OPENNMS_HOME" -cp "$OPENNMS_HOME/lib/opennms_bootstrap.jar:$OPENNMS_HOME/lib/opennms_install.jar" org.opennms.install.Installer "$@"
+app_class=org.opennms.install.Installer
+exec $OPENNMS_HOME/bin/runjava -r -- \
+    $JAVA_OPTIONS $ADDITIONAL_MANAGER_OPTIONS \
+    -Dopennms.home=$OPENNMS_HOME \
+    -Dopennms.manager.class=$app_class \
+    -jar $OPENNMS_HOME/lib/opennms_bootstrap.jar $@
+
