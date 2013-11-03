@@ -43,7 +43,6 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.IOUtils;
-import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
@@ -95,16 +94,6 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
      */
     protected String getHomeDirectory() {
         return ConfigFileConstants.getHome();
-    }
-
-    /**
-     * Gets the fixed file name.
-     *
-     * @param oldFile the old file
-     * @return the fixed file name
-     */
-    protected String getFixedFileName(String oldFile) {
-        return AlphaNumeric.parseAndReplace(oldFile, '_');
     }
 
     /**
@@ -258,32 +247,32 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
      * @param filesListInDir the list of files to populate
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    private void populateFilesList(File dir, List<String> filesListInDir) throws IOException {
+    private void populateFilesList(File dir, List<File> filesListInDir) throws IOException {
         File[] files = dir.listFiles();
         for (File file : files) {
-            if (file.isFile()) filesListInDir.add(file.getAbsolutePath());
+            if (file.isFile()) filesListInDir.add(file);
             else populateFilesList(file, filesListInDir);
         }
     }
 
     /**
-     * ZIP a directory.
+     * ZIP a list of files.
      *
      * @param zipFile the output ZIP file
      * @param sourceFolder the source folder
+     * @param filesToCompress the list of files to compress
      * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
-    protected void zipDir(File zipFile, File sourceFolder) throws OnmsUpgradeException {
+    private void zipFiles(File zipFile, File sourceFolder, List<File> filesToCompress) throws OnmsUpgradeException {
         try {
-            List<String> filesListInDir = new ArrayList<String>();
-            populateFilesList(sourceFolder, filesListInDir);
             FileOutputStream fos = new FileOutputStream(zipFile);
             ZipOutputStream zos = new ZipOutputStream(fos);
-            for(String filePath : filesListInDir){
+            for(File file : filesToCompress){
+                String filePath = file.getAbsolutePath();
                 log("  Zipping %s\n", filePath);
                 ZipEntry ze = new ZipEntry(filePath.substring(sourceFolder.getAbsolutePath().length() + 1, filePath.length()));
                 zos.putNextEntry(ze);
-                FileInputStream fis = new FileInputStream(filePath);
+                FileInputStream fis = new FileInputStream(file);
                 byte[] buffer = new byte[1024];
                 int len;
                 while ((len = fis.read(buffer)) > 0) {
@@ -296,8 +285,36 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
             zos.close();
             fos.close();
         } catch (Exception e) {
-            throw new OnmsUpgradeException("Cannot ZIP directory because " + e.getMessage(), e);
+            throw new OnmsUpgradeException("Cannot ZIP files because " + e.getMessage(), e);
         }
+    }
+
+    /**
+     * ZIP a directory.
+     *
+     * @param zipFile the output ZIP file
+     * @param sourceFolder the source folder
+     * @throws OnmsUpgradeException the OpenNMS upgrade exception
+     */
+    protected void zipDir(File zipFile, File sourceFolder) throws OnmsUpgradeException {
+        List<File> filesToCompress = new ArrayList<File>();
+        try {
+            populateFilesList(sourceFolder, filesToCompress);
+        } catch (IOException e) {
+            throw new OnmsUpgradeException("Cannot ZIP files because " + e.getMessage(), e);
+        }
+        zipFiles(zipFile, sourceFolder, filesToCompress);
+    }
+
+    /**
+     * ZIP a file.
+     * 
+     * <p>The name of the ZIP file will be the name of the source file plus ".zip"</p>
+     * @param sourceFile the source file
+     * @throws OnmsUpgradeException the OpenNMS upgrade exception
+     */
+    protected void zipFile(File sourceFile) throws OnmsUpgradeException {
+        zipFiles(new File(sourceFile.getAbsolutePath() + ZIP_EXT), sourceFile.getParentFile(), Collections.singletonList(sourceFile));
     }
 
     /**

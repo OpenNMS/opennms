@@ -93,16 +93,6 @@ public class MockOnmsUpgrade extends AbstractOnmsUpgrade {
      */
     @Override
     public void execute() throws OnmsUpgradeException {
-        try {
-            zipDir(TEST_ZIP, new File("src/main/java"));
-            File output = new File("target/zip-test");
-            FileUtils.deleteDirectory(output);
-            Assert.assertTrue(output.mkdirs());
-            unzipFile(TEST_ZIP, output);
-            Assert.assertTrue(new File(output, "org/opennms/upgrade/api/OnmsUpgrade.java").exists());
-        } catch (Exception e) {
-            throw new OnmsUpgradeException("Can't upgrade", e);
-        }
     }
 
     /* (non-Javadoc)
@@ -111,6 +101,38 @@ public class MockOnmsUpgrade extends AbstractOnmsUpgrade {
     @Override
     public boolean requiresOnmsRunning() {
         return false;
+    }
+
+    /**
+     * Test Zip and Unzip directory.
+     *
+     * @throws Exception the exception
+     */
+    public void testZipAndUnzipDirectory() throws Exception {
+        zipDir(TEST_ZIP, new File("src/main/java"));
+        File output = new File("target/zip-test");
+        unzipFile(TEST_ZIP, output);
+        Assert.assertTrue(new File(output, "org/opennms/upgrade/api/OnmsUpgrade.java").exists());
+        FileUtils.deleteDirectory(output);
+    }
+
+    /**
+     * Test Zip and Unzip file.
+     *
+     * @throws Exception the exception
+     */
+    public void testZipAndUnzipFile() throws Exception {
+        File output = new File("target/zip-test");
+        File srcFile = new File("src/main/java/org/opennms/upgrade/api/OnmsUpgrade.java");
+        File dstFile = new File(output, "/org/opennms/upgrade/api/OnmsUpgrade.java");
+        FileUtils.copyFile(srcFile, dstFile);
+        zipFile(dstFile);
+        File zip = new File(dstFile.getAbsoluteFile() + ".zip");
+        Assert.assertTrue(zip.exists());
+        FileUtils.deleteQuietly(dstFile);
+        unzipFile(zip, output);
+        Assert.assertTrue(new File(output, "OnmsUpgrade.java").exists());
+        FileUtils.deleteDirectory(output);;
     }
 
 }

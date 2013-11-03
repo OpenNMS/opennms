@@ -41,6 +41,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
 import org.jrobin.core.RrdDb;
+import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
@@ -49,7 +50,6 @@ import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Service;
 import org.opennms.upgrade.api.AbstractOnmsUpgrade;
-import org.opennms.upgrade.api.Ignore;
 import org.opennms.upgrade.api.OnmsUpgradeException;
 
 /**
@@ -71,7 +71,6 @@ import org.opennms.upgrade.api.OnmsUpgradeException;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
-@Ignore
 public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
 
     /** The JMX resource directories. */
@@ -80,6 +79,14 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
     /** The list of bad metrics. */
     protected List<String> badMetrics = new ArrayList<String>();
 
+    /** Backup files. */
+    protected List<File> backupFiles = new ArrayList<File>();
+
+    /**
+     * Instantiates a new JMX RRD migrator offline.
+     *
+     * @throws OnmsUpgradeException the OpenNMS upgrade exception
+     */
     public JmxRrdMigratorOffline() throws OnmsUpgradeException {
         super();
     }
@@ -132,9 +139,6 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
         } else {
             throw new OnmsUpgradeException("This upgrade procedure requires at least OpenNMS 1.12.2, the current version is " + getOpennmsVersion());
         }
-        File configDir = new File(ConfigFileConstants.getFilePathString());
-        log("Backing configuration files: %s\n", configDir);
-        zipDir(new File(configDir.getAbsolutePath() + ZIP_EXT), configDir);
     }
 
     /* (non-Javadoc)
@@ -146,14 +150,13 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
             File zip = new File(jmxResourceDir.getAbsolutePath() + ZIP_EXT);
             if (zip.exists()) {
                 log("Removing backup %s\n", zip);
-                zip.delete();
+                FileUtils.deleteQuietly(zip);
             }
         }
-        File configDir = new File(ConfigFileConstants.getFilePathString());
-        File zip = new File(configDir.getAbsolutePath() + ZIP_EXT);
-        if (zip.exists()) {
-            log("Removing backup %s\n", zip);
-            zip.delete();
+        for (File backupFile : backupFiles) {
+            log("Removing backup %s\n", backupFile);
+            FileUtils.deleteQuietly(backupFile);
+            FileUtils.deleteQuietly(new File(backupFile.getAbsolutePath().replaceFirst(ZIP_EXT, ".temp")));
         }
     }
 
@@ -171,8 +174,9 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
                 zip.delete();
             }
             File configDir = new File(ConfigFileConstants.getFilePathString());
-            File zip = new File(configDir.getAbsolutePath() + ZIP_EXT);
-            unzipFile(zip, configDir);
+            for (File backupFile : backupFiles) {
+                unzipFile(backupFile, configDir);
+            }
         } catch (IOException e) {
             throw new OnmsUpgradeException("Can't restore the backup files because " + e.getMessage());
         }
@@ -221,6 +225,8 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
     private void fixJmxConfigurationFile(File jmxConfigFile) throws OnmsUpgradeException {
         try {
             log("Updating JMX metric definitions on %s\n", jmxConfigFile);
+            zipFile(jmxConfigFile);
+            backupFiles.add(new File(jmxConfigFile.getAbsolutePath() + ZIP_EXT));
             File outputFile = new File(jmxConfigFile.getCanonicalFile() + ".temp");
             FileWriter w = new FileWriter(outputFile);
             Pattern extRegex = Pattern.compile("import-mbeans[>](.+)[<]");
@@ -266,6 +272,8 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
     private void fixJmxGraphTemplateFile(File jmxTemplateFile) throws OnmsUpgradeException {
         try {
             log("Updating JMX graph templates on %s\n", jmxTemplateFile);
+            zipFile(jmxTemplateFile);
+            backupFiles.add(new File(jmxTemplateFile.getAbsolutePath() + ZIP_EXT));
             File outputFile = new File(jmxTemplateFile.getCanonicalFile() + ".temp");
             FileWriter w = new FileWriter(outputFile);
             Pattern defRegex = Pattern.compile("DEF:.+:(.+\\..+):");
@@ -326,7 +334,7 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
                 FileUtils.deleteQuietly(jmxTemplateFile);
                 FileUtils.moveFile(outputFile, jmxTemplateFile);
             } else {
-                FileUtils.deleteQuietly(jmxTemplateFile);
+                FileUtils.deleteQuietly(outputFile);
             }
             if (!externalFiles.isEmpty()) {
                 for (File configFile : externalFiles) {
@@ -364,6 +372,9 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
             log("JMX friendly names found: %s\n", jmxFriendlyNames);
             File rrdDir = new File(JMXDataCollectionConfigFactory.getInstance().getRrdPath());
             findJmxDirectories(rrdDir, jmxFriendlyNames, jmxResourceDirectories);
+            if (jmxResourceDirectories.isEmpty()) {
+                log("Warning: no JMX directories found on %s\n", rrdDir);
+            }
         }
         return jmxResourceDirectories;
     }
@@ -384,7 +395,7 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
             if (file.isDirectory()) {
                 boolean valid = false;
                 for (String friendlyName : jmxfriendlyNames) {
-                    if (file.getName().equals(friendlyName)) {
+                    if (file.getAbsolutePath().endsWith(friendlyName)) {
                         valid = true;
                     }
                 }
@@ -404,31 +415,6 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
      * @throws Exception the exception
      */
     private void processSingleFiles(File resourceDir, boolean isRrdtool) throws Exception {
-        // JRBs
-        final String rrdExt = getRrdExtension();
-        File[] jrbFiles = getFiles(resourceDir, rrdExt);
-        if (jrbFiles == null) {
-            log("Warning: there are no %s files on %s\n", rrdExt, resourceDir);
-        } else {
-            for (final File jrbFile : jrbFiles) {
-                log("Processing %s %s\n", rrdExt.toUpperCase(), jrbFile);
-                String dsName = jrbFile.getName().replaceFirst(rrdExt, "");
-                String newName = getFixedDsName(dsName);
-                File newFile = new File(jrbFile.getParentFile(), newName + rrdExt);
-                if (!dsName.equals(newName)) {
-                    try {
-                        log("Renaming %s to %s\n", rrdExt.toUpperCase(), newFile);
-                        FileUtils.moveFile(jrbFile, newFile);
-                    } catch (Exception e) {
-                        log("Warning: Can't move file because: %s", e.getMessage());
-                        continue;
-                    }
-                }
-                if (!isRrdtool) { // Only the JRBs may contain invalid DS inside
-                    updateJrb(newFile);
-                }
-            }
-        }
         // META
         final String metaExt = ".meta";
         File[] metaFiles = getFiles(resourceDir, metaExt);
@@ -456,6 +442,31 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
                 }
             }
         }
+        // JRBs
+        final String rrdExt = getRrdExtension();
+        File[] jrbFiles = getFiles(resourceDir, rrdExt);
+        if (jrbFiles == null) {
+            log("Warning: there are no %s files on %s\n", rrdExt, resourceDir);
+        } else {
+            for (final File jrbFile : jrbFiles) {
+                log("Processing %s %s\n", rrdExt.toUpperCase(), jrbFile);
+                String dsName = jrbFile.getName().replaceFirst(rrdExt, "");
+                String newName = getFixedDsName(dsName);
+                File newFile = new File(jrbFile.getParentFile(), newName + rrdExt);
+                if (!dsName.equals(newName)) {
+                    try {
+                        log("Renaming %s to %s\n", rrdExt.toUpperCase(), newFile);
+                        FileUtils.moveFile(jrbFile, newFile);
+                    } catch (Exception e) {
+                        log("Warning: Can't move file because: %s", e.getMessage());
+                        continue;
+                    }
+                }
+                if (!isRrdtool) { // Only the JRBs may contain invalid DS inside
+                    updateJrb(newFile);
+                }
+            }
+        }
     }
 
     /**
@@ -467,29 +478,20 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
      */
     private void processGroupFiles(File resourceDir, boolean isRrdtool) throws Exception {
         // DS
-        updateDsProperties(resourceDir);
-        // JRBs
-        final String rrdExt = getRrdExtension();
-        File[] jrbFiles = getFiles(resourceDir, rrdExt);
-        if (jrbFiles == null) {
-            log("Warning: there are no %s files on %s\n", rrdExt, resourceDir);
-        } else {
-            for (final File jrbFile : jrbFiles) {
-                log("Processing %s %s\n", rrdExt.toUpperCase(), jrbFile);
-                File newFile = new File(jrbFile.getParentFile(), getFixedFileName(jrbFile.getName().replaceFirst(rrdExt, "")) + rrdExt);
-                if (!jrbFile.equals(newFile)) {
-                    try {
-                        log("Renaming %s to %s\n", rrdExt.toUpperCase(), newFile);
-                        FileUtils.moveFile(jrbFile, newFile);
-                    } catch (Exception e) {
-                        log("Warning: Can't move file because: %s", e.getMessage());
-                        continue;
-                    }
-                }
-                if (!isRrdtool) {  // Only the JRBs may contain invalid DS inside
-                    updateJrb(newFile);
-                }
+        File dsFile = new File(resourceDir, "ds.properties");
+        log("Processing DS %s\n", dsFile);
+        if (dsFile.exists()) {
+            Properties dsProperties = new Properties();
+            Properties newDsProperties = new Properties();
+            dsProperties.load(new FileInputStream(dsFile));
+            for (Object key : dsProperties.keySet()) {
+                String oldName = (String) key;
+                String newName = getFixedDsName(oldName);
+                String oldFile = dsProperties.getProperty(oldName);
+                String newFile = getFixedFileName(oldFile);
+                newDsProperties.put(newName, newFile);
             }
+            newDsProperties.store(new FileWriter(dsFile), null);
         }
         // META
         final String metaExt = ".meta";
@@ -516,29 +518,28 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
                     metaFile.delete();
             }
         }
-    }
-
-    /**
-     * Update DS properties.
-     *
-     * @param resourceDir the resource directory
-     * @throws Exception the exception
-     */
-    private void updateDsProperties(File resourceDir) throws Exception {
-        File dsFile = new File(resourceDir, "ds.properties");
-        log("Processing DS %s\n", dsFile);
-        if (dsFile.exists()) {
-            Properties dsProperties = new Properties();
-            Properties newDsProperties = new Properties();
-            dsProperties.load(new FileInputStream(dsFile));
-            for (Object key : dsProperties.keySet()) {
-                String oldName = (String) key;
-                String newName = getFixedDsName(oldName);
-                String oldFile = dsProperties.getProperty(oldName);
-                String newFile = getFixedFileName(oldFile);
-                newDsProperties.put(newName, newFile);
+        // JRBs
+        final String rrdExt = getRrdExtension();
+        File[] jrbFiles = getFiles(resourceDir, rrdExt);
+        if (jrbFiles == null) {
+            log("Warning: there are no %s files on %s\n", rrdExt, resourceDir);
+        } else {
+            for (final File jrbFile : jrbFiles) {
+                log("Processing %s %s\n", rrdExt.toUpperCase(), jrbFile);
+                File newFile = new File(jrbFile.getParentFile(), getFixedFileName(jrbFile.getName().replaceFirst(rrdExt, "")) + rrdExt);
+                if (!jrbFile.equals(newFile)) {
+                    try {
+                        log("Renaming %s to %s\n", rrdExt.toUpperCase(), newFile);
+                        FileUtils.moveFile(jrbFile, newFile);
+                    } catch (Exception e) {
+                        log("Warning: Can't move file because: %s", e.getMessage());
+                        continue;
+                    }
+                }
+                if (!isRrdtool) {  // Only the JRBs may contain invalid DS inside
+                    updateJrb(newFile);
+                }
             }
-            newDsProperties.store(new FileWriter(dsFile), null);
         }
     }
 
@@ -570,6 +571,7 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
         List<String> services = new ArrayList<String>();
         for (Collector c : config.getCollectorCollection()) {
             // The following code has been made that way to avoid a dependency with opennms-services
+            // TODO Depends on opennms-services is not that bad, considering that some customers could have different implementations.
             if (c.getClassName().matches(".*(JBoss|JMXSecure|Jsr160|MX4J)Collector$")) {
                 services.add(c.getService());
             }
@@ -617,12 +619,22 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
      * @param dsName the DS name
      * @return the fixed DS name
      */
-    private String getFixedDsName(String dsName) {
+    protected String getFixedDsName(String dsName) {
         if (dsName.contains(".")) {
             String parts[] = dsName.split("\\.");
             return parts[0] +  parts[1].substring(0, 1).toUpperCase() + parts[1].substring(1);
         }
         return dsName;
+    }
+
+    /**
+     * Gets the fixed file name.
+     *
+     * @param oldFile the old file
+     * @return the fixed file name
+     */
+    protected String getFixedFileName(String oldFile) {
+        return AlphaNumeric.parseAndReplace(oldFile, '_');
     }
 
 }

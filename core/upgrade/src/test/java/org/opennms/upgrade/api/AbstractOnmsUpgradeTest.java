@@ -80,7 +80,17 @@ public class AbstractOnmsUpgradeTest {
      */
     @Test
     public void testZipAndUnzipDirectory() throws Exception {
-        task.execute();
+        task.testZipAndUnzipDirectory();
+    }
+
+    /**
+     * Test ZIP and UNZIP file.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testZipAndUnzipFile() throws Exception {
+        task.testZipAndUnzipFile();
     }
 
 }
