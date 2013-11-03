@@ -59,7 +59,7 @@ public class UpgradeStatus {
      * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
     public UpgradeStatus() throws OnmsUpgradeException {
-        this(new File(ConfigFileConstants.getHome(), "etc" + File.separatorChar + STATUS_FILE));
+        this(new File(ConfigFileConstants.getFilePathString() + STATUS_FILE));
     }
 
     /**
@@ -89,7 +89,7 @@ public class UpgradeStatus {
     public boolean wasExecuted(OnmsUpgrade upg) {
         for (Object obj : status.keySet()) {
             String cls = (String) obj;
-            if (cls.equals(upg.getClass().getName())) {
+            if (cls.equals(upg.getId())) {
                 return true;
             }
         }
@@ -105,7 +105,7 @@ public class UpgradeStatus {
     public String getLastExecutionTime(OnmsUpgrade upg) {
         for (Object obj : status.keySet()) {
             String cls = (String) obj;
-            if (cls.equals(upg.getClass().getName())) {
+            if (cls.equals(upg.getId())) {
                 return status.getProperty(cls);
             }
         }

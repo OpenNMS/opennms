@@ -132,7 +132,7 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
         } else {
             throw new OnmsUpgradeException("This upgrade procedure requires at least OpenNMS 1.12.2, the current version is " + getOpennmsVersion());
         }
-        File configDir = new File(ConfigFileConstants.getHome(), File.separator + "etc");
+        File configDir = new File(ConfigFileConstants.getFilePathString());
         log("Backing configuration files: %s\n", configDir);
         zipDir(new File(configDir.getAbsolutePath() + ZIP_EXT), configDir);
     }
@@ -149,7 +149,8 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
                 zip.delete();
             }
         }
-        File zip = new File(ConfigFileConstants.getHome(), File.separator + "etc" + ZIP_EXT);
+        File configDir = new File(ConfigFileConstants.getFilePathString());
+        File zip = new File(configDir.getAbsolutePath() + ZIP_EXT);
         if (zip.exists()) {
             log("Removing backup %s\n", zip);
             zip.delete();
@@ -169,9 +170,9 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
                 unzipFile(zip, jmxResourceDir);
                 zip.delete();
             }
-            File configDir = new File(ConfigFileConstants.getHome(), File.separator + "etc" );
-            File configZip = new File(configDir.getAbsolutePath() + ZIP_EXT);
-            unzipFile(configZip, configDir);
+            File configDir = new File(ConfigFileConstants.getFilePathString());
+            File zip = new File(configDir.getAbsolutePath() + ZIP_EXT);
+            unzipFile(zip, configDir);
         } catch (IOException e) {
             throw new OnmsUpgradeException("Can't restore the backup files because " + e.getMessage());
         }
@@ -204,7 +205,7 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
             // List Bad Metrics:
             log("Found %s Bad Metrics: %s\n", badMetrics.size(), badMetrics);
             // Fixing Graph Templates
-            File jmxGraphsFile = new File(ConfigFileConstants.getHome(), File.separator + "etc" + File.separator + "snmp-graph.properties"); // TODO Is this correct ?
+            File jmxGraphsFile = new File(ConfigFileConstants.getFilePathString(), "snmp-graph.properties");
             fixJmxGraphTemplateFile(jmxGraphsFile);
         } catch (Exception e) {
             throw new OnmsUpgradeException("Can't upgrade the JRBs because " + e.getMessage(), e);
