@@ -82,7 +82,7 @@ public class JmxRrdMigratorOfflineTest {
     public void testUpgradeSingleMetric() throws Exception {
         FileUtils.copyDirectory(new File("src/test/resources/rrd"), new File("target/home/rrd"));
 
-        executeUpgrader();
+        JmxRrdMigratorOffline jmxMigrator = executeMigrator();
 
         File rrdDir = new File("target/home/rrd/1/opennms-jvm/");
         for (File file : getFiles(rrdDir, ".jrb")) {
@@ -91,6 +91,7 @@ public class JmxRrdMigratorOfflineTest {
             jrb.close();
             Assert.assertFalse(ds.contains("."));
             Assert.assertEquals(file.getName(), ds + ".jrb");
+            Assert.assertEquals(ds, jmxMigrator.getFixedDsName(ds));
         }
         for (File file : getFiles(rrdDir, ".meta")) {
             String ds = file.getName().replaceFirst("\\.meta", "");
@@ -119,7 +120,7 @@ public class JmxRrdMigratorOfflineTest {
         p.setProperty("org.opennms.rrd.storeByGroup", "true");
         p.store(new FileWriter(config), null);
 
-        executeUpgrader();
+        executeMigrator();
 
         File jrbFile = new File("target/home/rrd/1/opennms-jvm/java_lang_type_MemoryPool_name_Survivor_Space.jrb");
         Assert.assertTrue(jrbFile.exists());
@@ -141,16 +142,17 @@ public class JmxRrdMigratorOfflineTest {
     }
 
     /**
-     * Execute upgrader.
+     * Executes the JMX Migrator.
      *
+     * @return the JMX Migrator object
      * @throws Exception the exception
      */
-    private void executeUpgrader() throws Exception {
-        JmxRrdMigratorOffline obj = new JmxRrdMigratorOffline();
-        obj.preExecute();
-        obj.execute();
-        obj.postExecute();
-        Assert.assertEquals(60, obj.badMetrics.size());
+    private JmxRrdMigratorOffline executeMigrator() throws Exception {
+        JmxRrdMigratorOffline jmxMigrator = new JmxRrdMigratorOffline();
+        jmxMigrator.preExecute();
+        jmxMigrator.execute();
+        jmxMigrator.postExecute();
+        Assert.assertEquals(60, jmxMigrator.badMetrics.size());
 
         // Verify graph templates
         File templates = new File("target/home/etc/snmp-graph.properties.d/jvm-graph.properties");
@@ -161,14 +163,14 @@ public class JmxRrdMigratorOfflineTest {
             Matcher m = defRegex.matcher(line);
             if (m.find()) {
                 String ds = m.group(1);
-                if (obj.badMetrics.contains(ds)) {
+                if (jmxMigrator.badMetrics.contains(ds)) {
                     Assert.fail("Bad metric found");
                 }
             }
             m = colRegex.matcher(line);
             if (m.find()) {
                 String[] badColumns = m.group(1).split(",(\\s)?");
-                if (obj.badMetrics.containsAll(Arrays.asList(badColumns))) {
+                if (jmxMigrator.badMetrics.containsAll(Arrays.asList(badColumns))) {
                     Assert.fail("Bad metric found");
                 }
             }
@@ -182,11 +184,13 @@ public class JmxRrdMigratorOfflineTest {
             Matcher m = aliasRegex.matcher(line);
             if (m.find()) {
                 String ds = m.group(1);
-                if (obj.badMetrics.contains(ds)) {
+                if (jmxMigrator.badMetrics.contains(ds)) {
                     Assert.fail("Bad metric found");
                 }
             }
         }
+
+        return jmxMigrator;
     }
 
     /**
