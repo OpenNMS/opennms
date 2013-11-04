@@ -90,6 +90,7 @@
           <includeGroup>bigip-sys-cpu</includeGroup>
           <includeGroup>bigip-sys-global-cpu</includeGroup>
           <includeGroup>mib2-X-interfaces</includeGroup>
+          <includeGroup>mib2-X-alsowik</includeGroup>
         </collect>
       </systemDef>
 
