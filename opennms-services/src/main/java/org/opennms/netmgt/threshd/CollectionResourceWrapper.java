@@ -250,12 +250,15 @@ public class CollectionResourceWrapper {
      * @return a {@link java.lang.String} object.
      */
     public String getParent() {
-        if (m_resource == null) {
+        if (m_resource == null || m_resource.getParent() == null) {
             return null;
         }
         // I can't find a better way to deal with this when storeByForeignSource is enabled
         if (m_resource.getParent().startsWith(DefaultResourceDao.FOREIGN_SOURCE_DIRECTORY)) {
             String[] parts = m_resource.getParent().split(File.separator);
+            if (parts.length < 3) {
+                return null;
+            }
             return parts[1] + ":" + parts[2];
         }
         return m_resource.getParent();
