@@ -40,6 +40,7 @@ import org.opennms.netmgt.collectd.IfInfo;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.dao.support.ResourceTypeUtils;
+import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.poller.LatencyCollectionResource;
 
@@ -241,7 +242,35 @@ public class CollectionResourceWrapper {
     public String getResourceTypeName() {
         return m_resource != null ? m_resource.getResourceTypeName() : null;
     }
-    
+
+    /**
+     * <p>getParent</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getParent() {
+        return m_resource != null ? m_resource.getParent() : null;
+    }
+
+    /**
+     * <p>getResourceId</p>
+     * <p>Inspired by DefaultKscReportService</p>
+     * 
+     * @return a {@link java.lang.String} object.
+     */
+    public String getResourceId() {
+        String resourceType  = getResourceTypeName();
+        String resourceLabel = getInstanceLabel();
+        if ("node".equals(resourceType)) {
+            resourceType  = "nodeSnmp";
+            resourceLabel = "";
+        }
+        if ("if".equals(resourceType)) {
+            resourceType = "interfaceSnmp";
+        }
+        return OnmsResource.createResourceId("node", getParent(), resourceType, resourceLabel);
+    }
+
     /**
      * <p>getIfLabel</p>
      *
