@@ -245,26 +245,6 @@ public class CollectionResourceWrapper {
     }
 
     /**
-     * <p>getParent</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getParent() {
-        if (m_resource == null || m_resource.getParent() == null) {
-            return null;
-        }
-        // I can't find a better way to deal with this when storeByForeignSource is enabled
-        if (m_resource.getParent().startsWith(DefaultResourceDao.FOREIGN_SOURCE_DIRECTORY)) {
-            String[] parts = m_resource.getParent().split(File.separator);
-            if (parts.length < 3) {
-                return null;
-            }
-            return parts[1] + ":" + parts[2];
-        }
-        return m_resource.getParent();
-    }
-
-    /**
      * <p>getResourceId</p>
      * <p>Inspired by DefaultKscReportService</p>
      * 
@@ -280,7 +260,17 @@ public class CollectionResourceWrapper {
         if ("if".equals(resourceType)) {
             resourceType = "interfaceSnmp";
         }
-        return OnmsResource.createResourceId("node", getParent(), resourceType, resourceLabel);
+        String parentResourceTypeName = "node";
+        String parentResourceName = Integer.toString(getNodeId());
+        // I can't find a better way to deal with this when storeByForeignSource is enabled        
+        if (m_resource != null && m_resource.getParent() != null && m_resource.getParent().startsWith(DefaultResourceDao.FOREIGN_SOURCE_DIRECTORY)) {
+            String[] parts = m_resource.getParent().split(File.separator);
+            if (parts.length == 3) {
+                parentResourceTypeName = "nodeSource";
+                parentResourceName = parts[1] + ":" + parts[2];
+            }
+        }
+        return OnmsResource.createResourceId(parentResourceTypeName, parentResourceName, resourceType, resourceLabel);
     }
 
     /**

@@ -412,7 +412,7 @@ public class CollectionResourceWrapperTest {
         Assert.assertEquals(Integer.toString(ifIndex), wrapper.getIfIndex()); // IfLabel is called only once
         Assert.assertEquals("eth0", wrapper.getIfInfoValue("snmpifname"));  // IfLabel is called only once
         Assert.assertEquals("eth0-001122334455", wrapper.getInstanceLabel());
-        Assert.assertEquals("node[JUnit%3AT001].interfaceSnmp[eth0-001122334455]", wrapper.getResourceId());
+        Assert.assertEquals("nodeSource[JUnit%3AT001].interfaceSnmp[eth0-001122334455]", wrapper.getResourceId());
     }
 
     @Test
