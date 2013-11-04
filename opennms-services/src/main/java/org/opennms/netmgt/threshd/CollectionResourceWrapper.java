@@ -39,6 +39,7 @@ import org.opennms.netmgt.collectd.AliasedResource;
 import org.opennms.netmgt.collectd.IfInfo;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionResource;
+import org.opennms.netmgt.dao.support.DefaultResourceDao;
 import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.RrdRepository;
@@ -249,7 +250,15 @@ public class CollectionResourceWrapper {
      * @return a {@link java.lang.String} object.
      */
     public String getParent() {
-        return m_resource != null ? m_resource.getParent() : null;
+        if (m_resource == null) {
+            return null;
+        }
+        // I can't find a better way to deal with this when storeByForeignSource is enabled
+        if (m_resource.getParent().startsWith(DefaultResourceDao.FOREIGN_SOURCE_DIRECTORY)) {
+            String[] parts = m_resource.getParent().split(File.separator);
+            return parts[1] + ":" + parts[2];
+        }
+        return m_resource.getParent();
     }
 
     /**
