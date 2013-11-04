@@ -207,12 +207,12 @@ public class MapWidgetComponent extends NodeMapComponent implements GeoAssetProv
                 int unackedCount = 0;
 
                 // pass 2: get alarm data for anything that's been grabbed from the DB
-                if (!m_activeNodes.isEmpty()) {
+                if (!nodes.isEmpty()) {
                     LOG.debug("getting alarms for nodes");
                     final CriteriaBuilder ab = new CriteriaBuilder(OnmsAlarm.class);
                     ab.alias("node", "node");
                     ab.ge("severity", OnmsSeverity.WARNING);
-                    ab.in("node.id", m_activeNodes.keySet());
+                    ab.in("node.id", nodes.keySet());
                     ab.orderBy("node.id").asc();
                     ab.orderBy("severity").desc();
 
@@ -221,7 +221,7 @@ public class MapWidgetComponent extends NodeMapComponent implements GeoAssetProv
                         LOG.debug("nodeId = {}, lastId = {}, unackedCount = {}", new Object[]{nodeId, lastId, unackedCount});
                         if (nodeId != lastId) {
                             LOG.debug("  setting severity for node {} to {}", new Object[]{nodeId, alarm.getSeverity().getLabel()});
-                            final NodeEntry nodeEntry = m_activeNodes.get(nodeId);
+                            final NodeEntry nodeEntry = nodes.get(nodeId);
                             nodeEntry.setSeverity(alarm.getSeverity());
                             if (lastId != -1) {
                                 nodeEntry.setUnackedCount(unackedCount);
@@ -237,7 +237,7 @@ public class MapWidgetComponent extends NodeMapComponent implements GeoAssetProv
                 }
 
                 if (lastId != -1) {
-                    m_activeNodes.get(lastId).setUnackedCount(unackedCount);
+                    nodes.get(lastId).setUnackedCount(unackedCount);
                 }
 
                 // pass 3: save any asset updates to the database
