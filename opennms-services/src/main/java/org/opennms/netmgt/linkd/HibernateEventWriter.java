@@ -103,8 +103,8 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 
     // SELECT node.nodeid, nodesysoid, ipaddr FROM node LEFT JOIN ipinterface ON node.nodeid = j.nodeid WHERE nodetype = 'A' AND issnmpprimary = 'P'
     @Override
-    public List<LinkableNode> getSnmpNodeList() {
-        final List<LinkableNode> nodes = new ArrayList<LinkableNode>();
+    public List<LinkableSnmpNode> getSnmpNodeList() {
+        final List<LinkableSnmpNode> nodes = new ArrayList<LinkableSnmpNode>();
 
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsNode.class);
         builder.alias("ipInterfaces", "iface", JoinType.LEFT_JOIN);
@@ -112,7 +112,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
         builder.eq("iface.isSnmpPrimary", PrimaryType.PRIMARY);
         for (final OnmsNode node : m_nodeDao.findMatching(builder.toCriteria())) {
             final String sysObjectId = node.getSysObjectId();
-            nodes.add(new LinkableNode(node.getId(), node.getPrimaryInterface().getIpAddress(), sysObjectId == null? "-1" : sysObjectId));
+            nodes.add(new LinkableSnmpNode(node.getId(), node.getPrimaryInterface().getIpAddress(), sysObjectId == null? "-1" : sysObjectId));
         }
 
         return nodes;
@@ -120,7 +120,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 
     // SELECT nodesysoid, ipaddr FROM node LEFT JOIN ipinterface ON node.nodeid = ipinterface.nodeid WHERE node.nodeid = ? AND nodetype = 'A' AND issnmpprimary = 'P'
     @Override
-    public LinkableNode getSnmpNode(final int nodeid) {
+    public LinkableSnmpNode getSnmpNode(final int nodeid) {
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsNode.class);
         builder.alias("ipInterfaces", "iface", JoinType.LEFT_JOIN);
         builder.eq("type", "A");
@@ -131,7 +131,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
         if (nodes.size() > 0) {
             final OnmsNode node = nodes.get(0);
             final String sysObjectId = node.getSysObjectId();
-            return new LinkableNode(node.getId(), node.getPrimaryInterface().getIpAddress(), sysObjectId == null? "-1" : sysObjectId);
+            return new LinkableSnmpNode(node.getId(), node.getPrimaryInterface().getIpAddress(), sysObjectId == null? "-1" : sysObjectId);
         } else {
             return null;
         }

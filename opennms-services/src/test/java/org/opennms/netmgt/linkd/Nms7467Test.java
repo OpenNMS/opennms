@@ -285,7 +285,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertTrue(m_linkd.runSingleSnmpCollection(mac.getId()));
         assertTrue(m_linkd.runSingleSnmpCollection(linux.getId()));
         
-        final Collection<LinkableNode> linkables = m_linkd.getLinkableNodes();
+        final Collection<LinkableNode> linkables = m_linkd.getLinkableNodesOnPackage("example1");
         assertEquals(5, linkables.size());       
 
         for (OnmsAtInterface onmsat: m_atInterfaceDao.findAll()) {
@@ -380,8 +380,8 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertTrue(m_linkd.runSingleSnmpCollection(ciscosw.getId()));
 
         // linkd has 1 linkable node
-        assertEquals(1, m_linkd.getLinkableNodes().size());
-        LinkableNode linkNode = m_linkd.getLinkableNodes().iterator().next();
+        assertEquals(1, m_linkd.getLinkableNodesOnPackage("example1").size());
+        LinkableNode linkNode = m_linkd.getLinkableNodesOnPackage("example1").iterator().next();
         
         // linkabble node is not null
         assertTrue(linkNode != null);
@@ -476,8 +476,8 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertTrue(m_linkd.runSingleSnmpCollection(ciscorouter.getId()));
 
         // linkd has 1 linkable node
-        assertEquals(1, m_linkd.getLinkableNodes().size());
-        LinkableNode linkNode = m_linkd.getLinkableNodes().iterator().next();
+        assertEquals(1, m_linkd.getLinkableNodesOnPackage("example1").size());
+        LinkableNode linkNode = m_linkd.getLinkableNodesOnPackage("example1").iterator().next();
         
         // linkabble node is not null
         assertTrue(linkNode != null);
@@ -594,8 +594,8 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertTrue(m_linkd.runSingleSnmpCollection(ngsw108.getId()));
 
         // linkd has 1 linkable node
-        assertEquals(1, m_linkd.getLinkableNodes().size());
-        LinkableNode linkNode = m_linkd.getLinkableNodes().iterator().next();
+        assertEquals(1, m_linkd.getLinkableNodesOnPackage("example1").size());
+        LinkableNode linkNode = m_linkd.getLinkableNodesOnPackage("example1").iterator().next();
         
         // linkabble node is not null
         assertTrue(linkNode != null);
@@ -697,8 +697,8 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertTrue(m_linkd.runSingleSnmpCollection(linux.getId()));
 
         // linkd has 1 linkable node
-        assertEquals(1, m_linkd.getLinkableNodes().size());
-        LinkableNode linkNode = m_linkd.getLinkableNodes().iterator().next();
+        assertEquals(1, m_linkd.getLinkableNodesOnPackage("example1").size());
+        LinkableNode linkNode = m_linkd.getLinkableNodesOnPackage("example1").iterator().next();
         
         // linkabble node is not null
         assertTrue(linkNode != null);
@@ -788,8 +788,8 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertTrue(m_linkd.runSingleSnmpCollection(mac.getId()));
 
         // linkd has 1 linkable node
-        assertEquals(1, m_linkd.getLinkableNodes().size());
-        LinkableNode linkNode = m_linkd.getLinkableNodes().iterator().next();
+        assertEquals(1, m_linkd.getLinkableNodesOnPackage("example1").size());
+        LinkableNode linkNode = m_linkd.getLinkableNodesOnPackage("example1").iterator().next();
         
         // linkabble node is not null
         assertTrue(linkNode != null);
@@ -1029,8 +1029,8 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
 
         assertTrue(m_linkd.runSingleSnmpCollection(ciscows.getId()));
 
-        assertEquals(1, m_linkd.getLinkableNodes().size());
-        LinkableNode linkNode = m_linkd.getLinkableNodes().iterator().next();
+        assertEquals(1, m_linkd.getLinkableNodesOnPackage("example1").size());
+        LinkableNode linkNode = m_linkd.getLinkableNodesOnPackage("example1").iterator().next();
         
         // linkable node is not null
         assertTrue(linkNode != null);
@@ -1132,7 +1132,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertTrue(m_linkd.runSingleSnmpCollection(ciscows.getId()));
         assertTrue(m_linkd.runSingleSnmpCollection(ciscorouter.getId()));
         
-        final Collection<LinkableNode> linkables = m_linkd.getLinkableNodes();
+        final Collection<LinkableNode> linkables = m_linkd.getLinkableNodesOnPackage("example1");
         assertEquals(2, linkables.size());
         
         for (LinkableNode lnode: linkables) {
@@ -1197,7 +1197,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
 
        assertTrue(m_linkd.runSingleSnmpCollection(ciscows.getId()));
        
-       final Collection<LinkableNode> linkables = m_linkd.getLinkableNodes();
+       final Collection<LinkableNode> linkables = m_linkd.getLinkableNodesOnPackage("example1");
        assertEquals(1, linkables.size());
        
        for (LinkableNode lnode: linkables) {
