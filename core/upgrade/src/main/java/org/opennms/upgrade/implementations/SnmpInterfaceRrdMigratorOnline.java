@@ -196,7 +196,7 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
             log("  Checking report %s\n", report.getTitle());
             for (Graph graph : report.getGraphCollection()) {
                 for (SnmpInterfaceUpgrade intf : interfacesToMerge) {
-                    if (intf.getOldResourceId().equals(graph.getResourceId())) {
+                    if (intf.shouldUpdate(graph.getResourceId())) {
                         changed = true;
                         graph.setResourceId(intf.getNewResourceId());
                     }
@@ -231,7 +231,7 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
             ResultSet rs = st.executeQuery(query);
             db.watch(rs);
             while (rs.next()) {
-                SnmpInterfaceUpgrade intf = new SnmpInterfaceUpgrade(rs);
+                SnmpInterfaceUpgrade intf = new SnmpInterfaceUpgrade(rs, isStoreByForeignSourceEnabled());
                 if (intf.shouldMerge()) {
                     interfacesToMerge.add(intf);
                 }

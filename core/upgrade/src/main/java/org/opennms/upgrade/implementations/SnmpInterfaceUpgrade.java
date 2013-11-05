@@ -69,19 +69,24 @@ public class SnmpInterfaceUpgrade {
     /** The new RRD label. */
     private String newRrdLabel;
 
+    /** The store by foreign source. */
+    private boolean storeByForeignSource;
+
     /**
      * Instantiates a new SNMP interface upgrade.
      *
      * @param rs the ResultSet
+     * @param storeByForeignSource true, if the store by foreign source is enabled
      * @throws SQLException the sQL exception
      */
-    public SnmpInterfaceUpgrade(ResultSet rs) throws SQLException {
+    public SnmpInterfaceUpgrade(ResultSet rs, boolean storeByForeignSource) throws SQLException {
         nodeId = rs.getInt("nodeid");
         foreignSource = rs.getString("foreignsource");
         foreignId = rs.getString("foreignid");
         ifDescr = rs.getString("snmpifdescr");
         ifName = rs.getString("snmpifname");
         physAddr = rs.getString("snmpphysaddr");
+        this.storeByForeignSource = storeByForeignSource;
         initialize();
     }
 
@@ -89,21 +94,23 @@ public class SnmpInterfaceUpgrade {
      * Instantiates a new SNMP interface upgrade.
      *
      * @param nodeId the node id
-     * @param foreignId the foreign id
      * @param foreignSource the foreign source
-     * @param ifName the SNMP interface name
+     * @param foreignId the foreign id
      * @param ifDescr the SNMP interface description
+     * @param ifName the SNMP interface name
      * @param physAddr the SNMP physical address
+     * @param storeByForeignSource true, if store by foreign source is enabled
      */
     public SnmpInterfaceUpgrade(int nodeId, String foreignSource,
             String foreignId, String ifDescr, String ifName,
-            String physAddr) {
+            String physAddr, boolean storeByForeignSource) {
         this.nodeId = nodeId;
         this.foreignSource = foreignSource;
         this.foreignId = foreignId;
         this.ifDescr = ifDescr;
         this.ifName = ifName;
         this.physAddr = physAddr;
+        this.storeByForeignSource = storeByForeignSource;
         initialize();
     }
 
@@ -216,7 +223,7 @@ public class SnmpInterfaceUpgrade {
     }
 
     /**
-     * Checks the should merge flag.
+     * Checks if the interface directories should be merged
      *
      * @return true, if the interface directory should be merged
      */
@@ -232,7 +239,7 @@ public class SnmpInterfaceUpgrade {
      * @return the old resource id
      */
     public String getOldResourceId() {
-        return OnmsResource.createResourceId("node", Integer.toString(nodeId), "interfaceSnmp", oldRrdLabel);
+        return getResourceId(oldRrdLabel);
     }
 
     /**
@@ -241,7 +248,29 @@ public class SnmpInterfaceUpgrade {
      * @return the new resource id
      */
     public String getNewResourceId() {
-        return OnmsResource.createResourceId("node", Integer.toString(nodeId), "interfaceSnmp", newRrdLabel);
+        return getResourceId(newRrdLabel);
+    }
+
+    /**
+     * Gets the resource id.
+     *
+     * @param label the label
+     * @return the resource id
+     */
+    private String getResourceId(String label) {
+        String parentType = storeByForeignSource ? "nodeSource" : "node";
+        String parentId   = storeByForeignSource ? foreignSource + ':' + foreignId : Integer.toString(nodeId);
+        return OnmsResource.createResourceId(parentType, parentId, "interfaceSnmp", label);
+    }
+
+    /**
+     * Checks if the resourceId should be updated.
+     *
+     * @param resourceId the resource id to check
+     * @return true, if the resource should be updated
+     */
+    public boolean shouldUpdate(String resourceId) {
+        return resourceId.endsWith("interfaceSnmp[" + oldRrdLabel + "]");
     }
 
     /**

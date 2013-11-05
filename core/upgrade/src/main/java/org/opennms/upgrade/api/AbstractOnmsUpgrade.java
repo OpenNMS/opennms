@@ -172,13 +172,26 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
     }
 
     /**
-     * Checks if is storeByGroup enabled.
+     * Checks if storeByGroup is enabled.
      *
-     * @return true, if is storeByGroup enabled
+     * @return true, if storeByGroup is enabled
      */
     protected boolean isStoreByGroupEnabled() {
         try {
             return Boolean.parseBoolean(getMainProperties().getProperty("org.opennms.rrd.storeByGroup", "false"));
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * Checks if storeByForeignSource is enabled.
+     *
+     * @return true, if storeByForeignSource is enabled
+     */
+    protected boolean isStoreByForeignSourceEnabled() {
+        try {
+            return Boolean.parseBoolean(getMainProperties().getProperty("org.opennms.rrd.storeByForeignSource", "false"));
         } catch (Exception e) {
             return false;
         }
