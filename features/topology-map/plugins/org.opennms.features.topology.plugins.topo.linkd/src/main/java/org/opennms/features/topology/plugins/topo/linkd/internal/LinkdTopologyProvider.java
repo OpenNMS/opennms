@@ -43,6 +43,7 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.AbstractEdge;
+import org.opennms.features.topology.api.topo.AbstractSearchProvider;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Criteria;
@@ -614,17 +615,15 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     @Override
     public void onFocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
-
     }
 
     @Override
     public void onDefocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
-
     }
 
     @Override
     public boolean supportsPrefix(String searchPrefix) {
-        return searchPrefix.contains("nodes=");
+        return AbstractSearchProvider.supportsPrefix("nodes=", searchPrefix);
     }
 
     @Override
@@ -646,7 +645,10 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     @Override
     public void onCenterSearchResult(SearchResult searchResult, GraphContainer graphContainer) {
+    }
 
+    @Override
+    public void onToggleCollapse(SearchResult searchResult, GraphContainer graphContainer) {
     }
 
     private static String getIfStatusString(int ifStatusNum) {

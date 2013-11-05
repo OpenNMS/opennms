@@ -72,6 +72,7 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
         super.onLoad();
         m_widgetContainer.setSize("100%", "100%");
         sinkEvents(Event.ONCONTEXTMENU | VTooltip.TOOLTIP_EVENTS | Event.ONMOUSEWHEEL);
+        m_svg.setId("TopologyComponent");
     }
 
     @Override

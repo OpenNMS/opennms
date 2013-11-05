@@ -28,21 +28,36 @@
 
 package org.opennms.features.topology.api.topo;
 
-import java.util.List;
-
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
 
-public interface SearchProvider {
-    String getSearchProviderNamespace();
-    boolean contributesTo(String namespace);
-    List<SearchResult> query(SearchQuery searchQuery);
-    void onFocusSearchResult(SearchResult searchResult, OperationContext operationContext);
-    void onDefocusSearchResult(SearchResult searchResult, OperationContext operationContext);
-    boolean supportsPrefix(String searchPrefix);
-    List<VertexRef> getVertexRefsBy(SearchResult searchResult);
-    void addVertexHopCriteria(SearchResult searchResult, GraphContainer container);
-    void removeVertexHopCriteria(SearchResult searchResult, GraphContainer container);
-    void onCenterSearchResult(SearchResult searchResult, GraphContainer graphContainer);
-    void onToggleCollapse(SearchResult searchResult, GraphContainer graphContainer);
+/**
+ * This abstract class provides empty implementations of all of the event handler functions.
+ * @author root
+ *
+ */
+public abstract class AbstractSearchProvider implements SearchProvider {
+
+    public static final boolean supportsPrefix(String providerPrefix, String searchPrefix) {
+        if (searchPrefix == null || "".equals(searchPrefix)) {
+            return false;
+        }
+        return providerPrefix.startsWith(searchPrefix.substring(0, Math.min(searchPrefix.length(), providerPrefix.length())));
+    }
+
+    @Override
+    public void onFocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
+    }
+
+    @Override
+    public void onDefocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
+    }
+
+    @Override
+    public void onCenterSearchResult(SearchResult searchResult, GraphContainer graphContainer) {
+    }
+
+    @Override
+    public void onToggleCollapse(SearchResult searchResult, GraphContainer graphContainer) {
+    }
 }
