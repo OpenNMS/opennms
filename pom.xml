@@ -124,7 +124,6 @@
     <module>opennms-provision</module>
     <module>opennms-enterprise-reporting</module>
     <module>opennms-services</module>
-    <module>opennms-import</module>
     <module>opennms-jetty</module>
     <module>opennms-correlation</module>
     <module>opennms-reporting</module>
@@ -1839,11 +1838,6 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-javamail-api</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-import</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
