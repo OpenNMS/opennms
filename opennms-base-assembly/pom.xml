@@ -637,10 +637,6 @@
       <artifactId>postgresql</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-qosdaemon</artifactId>
-    </dependency>
-    <dependency>
       <groupId>axis</groupId>
       <artifactId>axis</artifactId>
       <exclusions>
