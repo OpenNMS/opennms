@@ -15,6 +15,7 @@ xsi:schemaLocation="
   <bean id="severityGenerator" class="org.opennms.features.topology.plugins.browsers.SeverityGenerator" />
   <bean id="nodeIdSelectionLinkGenerator" class="org.opennms.features.topology.plugins.browsers.NodeSelectionLinkGenerator">
     <argument value="nodeId" />
+    <argument value="nodeLabel"/>
   </bean>
   <bean id="alarmIdColumnLinkGenerator" class="org.opennms.features.topology.plugins.browsers.AlarmIdColumnLinkGenerator">
     <argument ref="alarmDao" />
@@ -106,6 +107,7 @@ xsi:schemaLocation="
 
   <bean id="nodeTableSelectionLinkGenerator" class="org.opennms.features.topology.plugins.browsers.NodeSelectionLinkGenerator">
     <argument value="id" />
+    <argument value="label"/>
   </bean>
   <bean id="ipInterfaceGenerator" class="org.opennms.features.topology.plugins.browsers.OnmsIpInterfaceGenerator" />
 
@@ -114,9 +116,9 @@ xsi:schemaLocation="
     <argument ref="nodeDaoContainer" />
     <property name="columnReorderingAllowed" value="true" />
     <property name="columnCollapsingAllowed" value="true" />
-	<property name="cellStyleGenerator">
+    <property name="cellStyleGenerator">
       <bean class="org.opennms.features.topology.plugins.browsers.NodeTableCellStyleGenerator">
-      	<property name="alarmDao" ref="alarmDao" />
+        <property name="alarmDao" ref="alarmDao" />
       </bean>
     </property>
 
@@ -133,33 +135,64 @@ xsi:schemaLocation="
     <property name="visibleColumns">
       <array>
         <value>id</value>
-        <value>foreignSource</value>
-        <value>foreignId</value>
         <value>label</value>
-        <value>labelSource</value>
+        <value>createTime</value>
         <value>lastCapsdPoll</value>
         <value>primaryInterface</value>
-        <value>sysObjectId</value>
-        <value>sysName</value>
-        <value>sysDescription</value>
         <value>sysContact</value>
         <value>sysLocation</value>
+        <value>sysDescription</value>
+        <!--<value>sysName</value>-->
+        <value>foreignSource</value>
+        <value>foreignId</value>
       </array>
+      <!--
+        All available bean properties:
+
+        arpInterfaces
+        arpInterfacesBySource
+        assetRecord
+        categories
+        createTime
+        criticalInterface
+        distPoller
+        down
+        foreignId
+        foreignSource
+        id
+        ipInterfaces
+        label
+        labelSource
+        lastCapsdPoll
+        netBiosDomain
+        netBiosName
+        nodeId
+        operatingSystem
+        parent
+        pathElement
+        primaryInterface
+        snmpInterfaces
+        sysContact
+        sysDescription
+        sysLocation
+        sysName
+        sysObjectId
+        type
+      -->
     </property>
     <property name="columnHeaders">
       <array>
         <value>ID</value>
-        <value>Foreign Source</value>
-        <value>Foreign ID</value>
         <value>Label</value>
-        <value>Label Source</value>
+        <value>Creation Time</value>
         <value>Last Capabilities Scan</value>
         <value>Primary Interface</value>
-        <value>sysObjectId</value>
-        <value>sysName</value>
-        <value>sysDescription</value>
+        <!--<value>sysName</value>-->
         <value>sysContact</value>
         <value>sysLocation</value>
+        <value>sysDescription</value>
+        <value>Foreign Source</value>
+        <value>Foreign ID</value>
       </array>
     </property>
   </bean>

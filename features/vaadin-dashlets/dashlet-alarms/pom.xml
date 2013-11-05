@@ -41,6 +41,13 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.opennms.features.topology.plugins</groupId>
+            <artifactId>browsers</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- Vaadin Dependencies -->
 
         <dependency>
@@ -61,6 +68,13 @@
             <groupId>org.opennms.features.themes</groupId>
             <artifactId>dashboard-theme</artifactId>
             <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.opennms.osgi</groupId>
+            <artifactId>opennms-osgi-core</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>

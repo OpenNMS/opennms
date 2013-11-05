@@ -121,7 +121,7 @@ public class JRobinDirectoryUtil {
     }
 
     private boolean checkDsPropertyFileFor(String ifOctetsDS, String directory) throws IOException {
-        File f = new File(directory.toString() + "" + File.separator + "ds.properties");
+        File f = new File(directory, "ds.properties");
         if (f.exists()) {
             Properties prop = new Properties();
             FileInputStream fis = new FileInputStream(f);

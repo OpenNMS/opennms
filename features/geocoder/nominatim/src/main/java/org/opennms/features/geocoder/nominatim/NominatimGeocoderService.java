@@ -9,6 +9,8 @@ import java.util.List;
 import net.simon04.jelementtree.ElementTree;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -53,7 +55,12 @@ public class NominatimGeocoderService implements GeocoderService {
 
         InputStream responseStream = null;
         try {
-            responseStream = m_httpClient.execute(method).getEntity().getContent();
+            final HttpResponse response = m_httpClient.execute(method);
+            final StatusLine statusLine = response.getStatusLine();
+            if (statusLine.getStatusCode() != 200) {
+                throw new GeocoderException("Nominatim returned a non-OK response code: " + statusLine.getStatusCode() + " " + statusLine.getReasonPhrase());
+            }
+            responseStream = response.getEntity().getContent();
             final ElementTree tree = ElementTree.fromStream(responseStream);
             if (tree == null) {
                 throw new GeocoderException("an error occurred connecting to the Nominatim geocoding service (no XML tree was found)");
@@ -81,7 +88,7 @@ public class NominatimGeocoderService implements GeocoderService {
 
     private String getUrl(final String geolocation) throws GeocoderException {
         try {
-            return GEOCODE_URL + "&q=" + URLEncoder.encode(geolocation, "UTF-8");
+            return GEOCODE_URL + "&email=" + URLEncoder.encode(geolocation, "UTF-8") + "&q=" + URLEncoder.encode(geolocation, "UTF-8");
         } catch (final UnsupportedEncodingException e) {
             throw new GeocoderException("unable to URL-encode query string", e);
         }

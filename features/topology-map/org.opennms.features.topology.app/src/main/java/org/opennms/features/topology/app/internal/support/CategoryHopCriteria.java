@@ -6,23 +6,40 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
+import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.AbstractVertexRef;
+import org.opennms.features.topology.api.topo.CollapsibleCriteria;
 import org.opennms.features.topology.api.topo.RefComparator;
+import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
 
-public class CategoryHopCriteria extends VertexHopCriteria {
+public class CategoryHopCriteria extends VertexHopCriteria implements CollapsibleCriteria {
 
 	private final String m_categoryName;
 	private CategoryDao m_categoryDao;
 	private NodeDao m_nodeDao;
+	private boolean m_collapsed;
+	private CategoryVertex m_collapsedVertex;
+
+	public static class CategoryVertex extends AbstractVertex {
+		public CategoryVertex(String namespace, String id, String label) {
+			super(namespace, id, label);
+		}
+
+		@Override
+		public boolean isGroup() {
+			return true;
+		}
+	}
 
 	public CategoryHopCriteria(String categoryName) {
 		m_categoryName = categoryName;
         setLabel(m_categoryName);
+        m_collapsedVertex = new CategoryVertex("nodes", "category:" + m_categoryName, m_categoryName);
 	}
 
 	public CategoryDao getCategoryDao() {
@@ -81,5 +98,20 @@ public class CategoryHopCriteria extends VertexHopCriteria {
 			}
 			return retval;
 		}
+	}
+
+	@Override
+	public boolean isCollapsed() {
+		return m_collapsed;
+	}
+
+	@Override
+	public void setCollapsed(boolean collapsed) {
+		this.m_collapsed = collapsed;
+	}
+
+	@Override
+	public Vertex getCollapsedRepresentation() {
+		return m_collapsedVertex;
 	}
 }

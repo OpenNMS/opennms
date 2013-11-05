@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.config;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -116,4 +117,6 @@ public interface DataCollectionConfigDao {
     List<String> getAvailableMibGroups();
 
     void reload();
+
+    Date getLastUpdate();
 }

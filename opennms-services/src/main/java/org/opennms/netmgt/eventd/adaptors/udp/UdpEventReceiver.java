@@ -379,7 +379,7 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
 
     /** {@inheritDoc} */
     @Override
-    public void setLogPrefix(String prefix) {
+    public synchronized void setLogPrefix(final String prefix) {
         m_logPrefix = prefix;
     }
     

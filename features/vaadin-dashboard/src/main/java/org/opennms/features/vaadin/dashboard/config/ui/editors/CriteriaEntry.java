@@ -48,6 +48,7 @@ public enum CriteriaEntry {
             nativeSelect.setNewItemsAllowed(false);
             nativeSelect.setInvalidAllowed(false);
             nativeSelect.setStyleName("small");
+            nativeSelect.setDescription("Property selection");
 
             boolean first = true;
             for (String property : criteriaBuilderHelper.getEntities()) {
@@ -68,7 +69,7 @@ public enum CriteriaEntry {
 
             textField.setCaption("Value");
             textField.setStyleName("small");
-
+            textField.setDescription("Value");
             return textField;
         }
     },
@@ -79,6 +80,7 @@ public enum CriteriaEntry {
 
             textField.setCaption("Text value");
             textField.setStyleName("small");
+            textField.setDescription("Text value");
 
             return textField;
         }
@@ -90,6 +92,7 @@ public enum CriteriaEntry {
 
             textField.setCaption("Integer value");
             textField.setStyleName("small");
+            textField.setDescription("Integer value");
 
             return textField;
         }

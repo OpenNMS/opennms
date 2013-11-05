@@ -44,12 +44,6 @@ public class SearchTokenField extends Composite {
         void onRemove(SearchSuggestion searchSuggestion);
     }
 
-    public interface SelectionCallback {
-        void onSelection(SearchSuggestion searchSuggestion);
-
-        void onDeselection(SearchSuggestion searchSuggestion);
-    }
-
     public interface CenterOnSuggestionCallback{
         void onCenter(SearchSuggestion searchSuggestion);
     }
@@ -58,10 +52,10 @@ public class SearchTokenField extends Composite {
     public interface SearchTokenFieldUiBinder extends UiBinder<Widget, SearchTokenField>{}
 
     @UiField
-    SpanElement m_namespace;
+    FlowPanel m_namespace;
 
     @UiField
-    SpanElement m_label;
+    FlowPanel m_label;
 
     @UiField
     Anchor m_closeBtn;
@@ -69,9 +63,11 @@ public class SearchTokenField extends Composite {
     @UiField
     Anchor m_centerSuggestionBtn;
 
+    @UiField
+    HorizontalPanel m_tokenContainer;
+
     private SearchSuggestion m_suggestion;
     private RemoveCallback m_removeCallback;
-    private SelectionCallback m_selectionCallback;
     private CenterOnSuggestionCallback m_centerOnCallback;
 
     public SearchTokenField(SearchSuggestion searchSuggestion) {
@@ -87,6 +83,8 @@ public class SearchTokenField extends Composite {
     }
 
     private void init() {
+        m_tokenContainer.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+
         m_closeBtn.setTitle("Remove from focus");
         m_closeBtn.getElement().getStyle().setCursor(Style.Cursor.POINTER);
 
@@ -105,16 +103,12 @@ public class SearchTokenField extends Composite {
         m_centerOnCallback = callback;
     }
 
-    public void setSelectionCallback(SelectionCallback callback) {
-        m_selectionCallback = callback;
-    }
-
     public void setNamespace(String namespace) {
-        m_namespace.setInnerText(namespace);
+        m_namespace.getElement().setInnerText(namespace + ": ");
     }
 
     public void setLabel(String label) {
-        m_label.setInnerText(label);
+        m_label.getElement().setInnerText(label);
     }
 
     @UiHandler("m_closeBtn")

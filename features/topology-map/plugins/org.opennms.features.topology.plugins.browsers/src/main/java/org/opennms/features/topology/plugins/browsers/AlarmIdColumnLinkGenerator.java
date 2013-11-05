@@ -90,7 +90,7 @@ public class AlarmIdColumnLinkGenerator implements ColumnGenerator {
 			    // alarm still exists, show alarm details
 		                final URI currentLocation = Page.getCurrent().getLocation();
 		                final String contextRoot = VaadinServlet.getCurrent().getServletContext().getContextPath();
-		                final String redirectFragment = contextRoot + "/alarm/detail.htm?id=" + alarmId;
+		                final String redirectFragment = contextRoot + "/alarm/detail.htm?quiet=true&id=" + alarmId;
 		                LOG.debug("alarm {} clicked, current location = {}, uri = {}", alarmId, currentLocation, redirectFragment);
 
 		                try {

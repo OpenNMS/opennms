@@ -99,12 +99,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-import</artifactId>
-      <version>${project.version}</version>
-      <classifier>xsds</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
       <artifactId>opennms-model</artifactId>
       <version>${project.version}</version>
       <classifier>xsds</classifier>
@@ -115,14 +109,6 @@
       <version>${project.version}</version>
       <classifier>xsds</classifier>
     </dependency>
-    <!--
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-qosdaemon</artifactId>
-      <version>${project.version}</version>
-      <classifier>xsds</classifier>
-    </dependency>
-    -->
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-reporting</artifactId>

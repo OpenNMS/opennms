@@ -200,6 +200,7 @@ public class HelpClickListener implements Button.ClickListener {
         sb.append("    <th>Name</th>");
         sb.append("    <th>Description</th>");
         sb.append("  </tr>");
+        sb.append("  <tr><td class='help-table-cell'>title</td><td class='help-table-cell'>The title for this Dashlet instance</td></tr>");
         sb.append("  <tr><td class='help-table-cell'>duration</td><td class='help-table-cell'>Time in seconds the Dashlet will be displayed</td></tr>");
         sb.append("  <tr><td class='help-table-cell'>priority</td><td class='help-table-cell'>Lower priority means that the Dashlet will be displayed more often</td></tr>");
         sb.append("  <tr><td class='help-table-cell'>boostedDuration</td><td class='help-table-cell'>This value is added to the duration value if the Dashlet is \"boosted\"</td></tr>");

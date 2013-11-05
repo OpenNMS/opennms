@@ -455,9 +455,9 @@ public final class RescanProcessor implements Runnable {
                 // Update subtargets
                 if (collectorWithSnmp.hasAdditionalTargets()) {
                     final Map<InetAddress, List<SupportedProtocol>> subTargets = collectorWithSnmp.getAdditionalTargets();
-                    for(final InetAddress subIf : subTargets.keySet()) {
-                        updateInterface(dbc, now, node, collectorWithSnmp.getTarget(), subIf, subTargets.get(subIf), snmpCollector, doesSnmp);
-                        updatedIfList.add(subIf);
+                    for (final Map.Entry<InetAddress,List<SupportedProtocol>> entry : subTargets.entrySet()) {
+                        updateInterface(dbc, now, node, collectorWithSnmp.getTarget(), entry.getKey(), entry.getValue(), snmpCollector, doesSnmp);
+                        updatedIfList.add(entry.getKey());
                     }
                 }
 
@@ -492,9 +492,10 @@ public final class RescanProcessor implements Runnable {
             // Update subtargets
             if (ifc.hasAdditionalTargets()) {
                 final Map<InetAddress, List<SupportedProtocol>> subTargets = ifc.getAdditionalTargets();
-                for(final InetAddress subIf : subTargets.keySet()) {
+                for (final Map.Entry<InetAddress,List<SupportedProtocol>> entry : subTargets.entrySet()) {
+                    final InetAddress subIf = entry.getKey();
                     if (!updatedIfList.contains(subIf)) {
-                        updateInterface(dbc, now, node, ifc.getTarget(), subIf, subTargets.get(subIf), snmpCollector, doesSnmp);
+                        updateInterface(dbc, now, node, ifc.getTarget(), subIf, entry.getValue(), snmpCollector, doesSnmp);
                         updatedIfList.add(subIf);
                     }
                 }
@@ -1942,9 +1943,11 @@ public final class RescanProcessor implements Runnable {
             // Now go through list of sub-targets
             if (ifc.hasAdditionalTargets()) {
                 final Map<InetAddress, List<SupportedProtocol>> subTargets = ifc.getAdditionalTargets();
-                for(final InetAddress xifaddr : subTargets.keySet()) {
+                for (final Map.Entry<InetAddress, List<SupportedProtocol>> entry : subTargets.entrySet()) {
+                    final InetAddress xifaddr = entry.getKey();
+                    final List<SupportedProtocol> protocols = entry.getValue();
                     if (addresses.contains(xifaddr) == false) {
-                        if (SuspectEventProcessor.supportsSnmp(subTargets.get(xifaddr)) && SuspectEventProcessor.hasIfIndex(xifaddr, snmpc) && SuspectEventProcessor.getIfType(xifaddr, snmpc) == 24) {
+                        if (SuspectEventProcessor.supportsSnmp(protocols) && SuspectEventProcessor.hasIfIndex(xifaddr, snmpc) && SuspectEventProcessor.getIfType(xifaddr, snmpc) == 24) {
                             LOG.debug("buildLBSnmpAddressList: adding subtarget interface {} temporarily marked as primary!", str(xifaddr));
                             addresses.add(xifaddr);
                         }
@@ -1998,11 +2001,12 @@ public final class RescanProcessor implements Runnable {
             // Now go through list of sub-targets
             if (ifc.hasAdditionalTargets()) {
                 final Map<InetAddress, List<SupportedProtocol>> subTargets = ifc.getAdditionalTargets();
-
-                for(final InetAddress xifaddr : subTargets.keySet()) {
+                for (final Map.Entry<InetAddress,List<SupportedProtocol>> entry : subTargets.entrySet()) {
+                    final InetAddress xifaddr = entry.getKey();
+                    final List<SupportedProtocol> protocols = entry.getValue();
                     // Add eligible subtargets.
                     if (addresses.contains(xifaddr) == false) {
-                        if (SuspectEventProcessor.supportsSnmp(subTargets.get(xifaddr)) && SuspectEventProcessor.hasIfIndex(xifaddr, snmpc)) {
+                        if (SuspectEventProcessor.supportsSnmp(protocols) && SuspectEventProcessor.hasIfIndex(xifaddr, snmpc)) {
                             LOG.debug("buildSnmpAddressList: adding subtarget interface {} temporarily marked as primary!", str(xifaddr));
                             addresses.add(xifaddr);
                         }

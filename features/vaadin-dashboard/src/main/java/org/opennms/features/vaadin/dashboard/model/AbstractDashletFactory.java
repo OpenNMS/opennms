@@ -59,6 +59,10 @@ public abstract class AbstractDashletFactory implements DashletFactory {
      * boostable flag
      */
     protected boolean m_boostable = true;
+    /**
+     * Are this dashlet suitable for displaying in the dashboard view.
+     */
+    protected boolean m_dashboardSuitable = false;
 
     /**
      * Constructor for instantiating a new factory.
@@ -144,6 +148,22 @@ public abstract class AbstractDashletFactory implements DashletFactory {
      */
     public void setBoostable(boolean boostable) {
         m_boostable = boostable;
+    }
+
+    /**
+     * This method sets whether this dashlet is suitable for displaying in the dashboard view.
+     */
+    public void setDashboardSuitable(boolean dashletSuitable) {
+        m_dashboardSuitable = dashletSuitable;
+    }
+
+    /**
+     * Returns whether this dashlet is suitable for displaying in the dashboard view.
+     *
+     * @return true if suitable, false otherwise
+     */
+    public boolean isSuitableForDashboard() {
+        return m_dashboardSuitable;
     }
 
     /**

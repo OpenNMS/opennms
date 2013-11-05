@@ -271,10 +271,10 @@ public class MibCompilerPanel extends Panel {
                         if (suggestedFile.exists()) {
                             ConfirmDialog.show(getUI(),
                                                "Are you sure?",
-                                               "The MIB " + mibFileName + " already exist on the compiled directory?<br/>Override the existing file could break other compiled mibs, so proceed with caution.<br/>This cannot be undone.",
-                                               "Yes",
-                                               "No",
-                                               new ConfirmDialog.Listener() {
+                                                   "The MIB " + mibFileName + " already exist on the compiled directory?<br/>Override the existing file could break other compiled mibs, so proceed with caution.<br/>This cannot be undone.",
+                                                   "Yes",
+                                                   "No",
+                                                   new ConfirmDialog.Listener() {
                                 public void onClose(ConfirmDialog dialog) {
                                     if (dialog.isConfirmed()) {
                                         renameFile(logger, currentFile, suggestedFile);

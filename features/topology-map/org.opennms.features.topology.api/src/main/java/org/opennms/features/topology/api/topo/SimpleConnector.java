@@ -131,6 +131,11 @@ public class SimpleConnector implements Connector {
 	}
 
 	@Override
+	public void setVertex(VertexRef vertex) {
+		m_vertex = vertex;
+	}
+
+	@Override
 	public int compareTo(Ref o) {
 		if (this.equals(o)) {
 			return 0;

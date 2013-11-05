@@ -78,6 +78,7 @@ public class KscDashletConfigurationWindow extends DashletConfigurationWindow {
         formLayout.setMargin(true);
 
         m_kscSelect = new NativeSelect();
+        m_kscSelect.setDescription("Select KSC-report to be displayed");
         m_kscSelect.setCaption("KSC-Report");
         m_kscSelect.setImmediate(true);
         m_kscSelect.setNewItemsAllowed(false);
@@ -125,6 +126,7 @@ public class KscDashletConfigurationWindow extends DashletConfigurationWindow {
          * Adding the cancel button...
          */
         Button cancel = new Button("Cancel");
+        cancel.setDescription("Cancel editing");
         cancel.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -141,7 +143,7 @@ public class KscDashletConfigurationWindow extends DashletConfigurationWindow {
          * ...and the OK button
          */
         Button ok = new Button("Save");
-
+        ok.setDescription("Save properties and close");
         ok.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {

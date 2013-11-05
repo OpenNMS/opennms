@@ -205,7 +205,7 @@ public class ThresholdingSet {
      * @param attributeName a {@link java.lang.String} object.
      * @return a boolean.
      */
-    public boolean hasThresholds(String resourceTypeName, String attributeName) {
+    public boolean hasThresholds(final String resourceTypeName, final String attributeName) {
         boolean ok = false;
         for (ThresholdGroup group : m_thresholdGroups) {
             Map<String,Set<ThresholdEntity>> entityMap = getEntityMap(group, resourceTypeName);
@@ -267,23 +267,28 @@ public class ThresholdingSet {
                 for(String key : entityMap.keySet()) {
                     for (ThresholdEntity thresholdEntity : entityMap.get(key)) {
                         if (passedThresholdFilters(resourceWrapper, thresholdEntity)) {
-                            LOG.info("applyThresholds: Processing threshold {} : {}", key, thresholdEntity);
+                            LOG.info("applyThresholds: Processing threshold {} : {} on resource {}", key, thresholdEntity, resourceWrapper);
                             Collection<String> requiredDatasources = thresholdEntity.getRequiredDatasources();
                             Map<String, Double> values = new HashMap<String,Double>();
                             boolean valueMissing = false;
+                            boolean relaxed = thresholdEntity.getThresholdConfig().getBasethresholddef().isRelaxed();
                             for(String ds: requiredDatasources) {
                                 Double dsValue = resourceWrapper.getAttributeValue(ds);
                                 if(dsValue == null) {
-                                    LOG.info("applyThresholds: Could not get data source value for '{}'.  Not evaluating threshold.", ds);
+                                    LOG.info("applyThresholds: Could not get data source value for '{}', {}", ds, (relaxed ? "but the expression will be evaluated (relaxed mode enabled)" : "not evaluating threshold"));
                                     valueMissing = true;
                                 }
                                 values.put(ds,dsValue);
                             }
-                            if(!valueMissing) {
-                                LOG.info("applyThresholds: All values found, evaluating");
-                                resourceWrapper.setLabel(thresholdEntity.getDatasourceLabel());
-                                List<Event> thresholdEvents = thresholdEntity.evaluateAndCreateEvents(resourceWrapper, values, date);
-                                eventsList.addAll(thresholdEvents);
+                            if(!valueMissing || relaxed) {
+                                LOG.info("applyThresholds: All attributes found for {}, evaluating", resourceWrapper);
+                                resourceWrapper.setDsLabel(thresholdEntity.getDatasourceLabel());
+                                try {
+                                    List<Event> thresholdEvents = thresholdEntity.evaluateAndCreateEvents(resourceWrapper, values, date);
+                                    eventsList.addAll(thresholdEvents);
+                                } catch (Exception e) {
+                                    LOG.warn("applyThresholds: Can't evaluate {} on {} because {}", key, resourceWrapper, e.getMessage());
+                                }
                             }
                         } else {
                             LOG.info("applyThresholds: Not processing threshold {} : {} because no filters matched", key, thresholdEntity);
@@ -315,7 +320,7 @@ public class ThresholdingSet {
             LOG.debug("passedThresholdFilters: filter #{}: field={}, regex='{}'", count, f.getField(), f.getContent());
             count++;
             // Read Resource Attribute and apply filter rules if attribute is not null
-            String attr = resource.getLabelValue(f.getField());
+            String attr = resource.getFieldValue(f.getField());
             if (attr != null) {
                 try {
                     final Pattern p = Pattern.compile(f.getContent());
@@ -448,7 +453,7 @@ public class ThresholdingSet {
             }
             ThresholdResourceType thisResourceType = typeMap.get(resourceType);
             if (thisResourceType == null) {
-                LOG.info("getEntityMap: No thresholds configured for resource type '{}' in threshold group {}. Skipping this group.", resourceType, thresholdGroup.getName());
+                LOG.debug("getEntityMap: No thresholds configured for resource type '{}' in threshold group {}. Skipping this group.", resourceType, thresholdGroup.getName());
                 return null;
             }
             entityMap = thisResourceType.getThresholdMap();

@@ -68,6 +68,7 @@ public class VEProviderGraphContainerTest {
 		providerManager.onEdgeProviderBind(m_edgeProvider);
 
 		GraphContainer graphContainer = new VEProviderGraphContainer(m_graphProvider, providerManager);
+		graphContainer.setSemanticZoomLevel(0);
 		
 		m_graphContainer = graphContainer;
 	}

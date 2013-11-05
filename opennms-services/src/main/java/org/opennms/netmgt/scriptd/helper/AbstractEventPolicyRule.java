@@ -35,13 +35,13 @@ public abstract class AbstractEventPolicyRule implements EventPolicyRule {
     @Override
 	public void addForwardRule(EventMatch match) {
 		m_filter.add(match);
-		m_forwardes.add(new Boolean(true));
+		m_forwardes.add(Boolean.TRUE);
 	}
 
         @Override
 	public void addDropRule(EventMatch match) {
 		m_filter.add(match);
-		m_forwardes.add(new Boolean(false));
+		m_forwardes.add(Boolean.FALSE);
 	}
 
         @Override

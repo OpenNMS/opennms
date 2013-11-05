@@ -79,6 +79,7 @@ public class TopologySelector {
     		if(!container.getBaseTopology().equals(m_topologyProvider)) {
                 container.setBaseTopology(m_topologyProvider);
                 container.clearCriteria(); // remove all criteria
+                container.setSemanticZoomLevel(1); // reset to 1
                 container.addCriteria(container.getBaseTopology().getDefaultCriteria());
                 container.redoLayout();
             }

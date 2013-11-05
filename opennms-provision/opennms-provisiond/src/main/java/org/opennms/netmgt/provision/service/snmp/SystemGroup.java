@@ -36,7 +36,9 @@ import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.service.operations.ScanResource;
 import org.opennms.netmgt.snmp.AggregateTracker;
+import org.opennms.netmgt.snmp.NamedSnmpVar;
 import org.opennms.netmgt.snmp.SnmpResult;
+import org.opennms.netmgt.snmp.SnmpStore;
 
 /**
  * <P>

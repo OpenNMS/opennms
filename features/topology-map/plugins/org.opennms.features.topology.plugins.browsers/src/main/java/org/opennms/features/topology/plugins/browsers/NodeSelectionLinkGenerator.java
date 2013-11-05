@@ -46,16 +46,10 @@ import java.util.*;
 
 public class NodeSelectionLinkGenerator implements ColumnGenerator, EventProxyAware {
 
-    private class NSLGVertexRef extends AbstractVertexRef{
-
-        public NSLGVertexRef(String namespace, String id, String label) {
-            super(namespace, id, label);
-        }
-    }
-
 	private static final long serialVersionUID = -1072007643387089006L;
 
 	private final String m_nodeIdProperty;
+    private final String m_nodeLabelProperty;
 	private final ColumnGenerator m_generator;
 
 	/**
@@ -64,12 +58,13 @@ public class NodeSelectionLinkGenerator implements ColumnGenerator, EventProxyAw
 	private Collection<SelectionListener> m_selectionListeners = new HashSet<SelectionListener>();
     private EventProxy m_eventProxy;
 
-    public NodeSelectionLinkGenerator(String nodeIdProperty) {
-		this(nodeIdProperty, new ToStringColumnGenerator());
+    public NodeSelectionLinkGenerator(String nodeIdProperty, String nodeLabelProperty) {
+		this(nodeIdProperty, nodeLabelProperty, new ToStringColumnGenerator());
 	}
 
-	public NodeSelectionLinkGenerator(String nodeIdProperty, ColumnGenerator generator) {
+	private NodeSelectionLinkGenerator(String nodeIdProperty, String nodeLabelProperty, ColumnGenerator generator) {
 		m_nodeIdProperty = nodeIdProperty;
+        m_nodeLabelProperty = nodeLabelProperty;
 		m_generator = generator;
 	}
 
@@ -89,8 +84,9 @@ public class NodeSelectionLinkGenerator implements ColumnGenerator, EventProxyAw
 				button.addClickListener(new ClickListener() {
 					@Override
 					public void buttonClick(ClickEvent event) {
-
-                        fireVertexUpdatedEvent(Arrays.asList(nodeIdProperty.getValue()));
+                        Integer nodeId = nodeIdProperty.getValue();
+                        String nodeLabel = (String)source.getContainerProperty(itemId, m_nodeLabelProperty).getValue();
+                        fireVertexUpdatedEvent(nodeId, nodeLabel);
                     }
                 });
 				return button;
@@ -98,17 +94,10 @@ public class NodeSelectionLinkGenerator implements ColumnGenerator, EventProxyAw
 		}
 	}
 
-    private List<VertexRef> getVertexRefsForIds(Integer nodeIdProperty) {
-        VertexRef tempRef = new NSLGVertexRef("nodes", String.valueOf(nodeIdProperty), "");
-        return Arrays.asList(tempRef);
-    }
-
-    protected void fireVertexUpdatedEvent(List<Integer> nodeIds) {
+    protected void fireVertexUpdatedEvent(Integer nodeId, String nodeLabel) {
         Set<VertexRef> vertexRefs = new HashSet<VertexRef>();
-        for (Integer id : nodeIds) {
-            VertexRef vRef = new AbstractVertexRef("nodes", String.valueOf(id),"");
-            vertexRefs.add(vRef);
-        }
+        VertexRef vRef = new AbstractVertexRef("nodes", String.valueOf(nodeId), nodeLabel);
+        vertexRefs.add(vRef);
         getEventProxy().fireEvent(new VerticesUpdateManager.VerticesUpdateEvent(vertexRefs));
     }
 

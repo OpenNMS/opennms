@@ -220,14 +220,13 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
     private static final Logger s_log = LoggerFactory.getLogger(VEProviderGraphContainer.class);
 
-    private int m_semanticZoomLevel = 0;
+    private int m_semanticZoomLevel = 1;
     private Property<Double> m_scaleProperty = new ScaleProperty(0.0);
     private LayoutAlgorithm m_layoutAlgorithm;
     private SelectionManager m_selectionManager;
     private StatusProvider m_statusProvider;
     private MergingGraphProvider m_mergedGraphProvider;
     private MapViewManager m_viewManager = new DefaultMapViewManager();
-    private String m_userName;
     private String m_sessionId;
     private BundleContext m_bundleContext;
     private Set<ChangeListener> m_listeners = new CopyOnWriteArraySet<ChangeListener>();

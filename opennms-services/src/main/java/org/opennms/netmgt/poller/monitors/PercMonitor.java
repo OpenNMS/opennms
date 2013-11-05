@@ -210,7 +210,7 @@ final public class PercMonitor extends SnmpMonitorStrategy {
             			if ( diskStates.get(disk.getKey()).toInt() !=3 ){
             				// this is bad disk.
             				
-            				returnValue  += "phy drv(" + disk.getKey().toString() + ")";
+            				returnValue  += "phy drv(" + disk.getKey() + ")";
             				
             			}
             			

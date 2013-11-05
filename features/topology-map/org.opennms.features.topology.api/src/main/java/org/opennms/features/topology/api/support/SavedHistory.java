@@ -198,7 +198,11 @@ public class SavedHistory {
 
         // Apply the history for each registered HistoryOperation
         for (HistoryOperation operation : operations) {
-            operation.applyHistory(graphContainer, m_settings);
+            try {
+                operation.applyHistory(graphContainer, m_settings);
+            } catch (Throwable e) {
+                LoggerFactory.getLogger(this.getClass()).warn("Failed to perform applyHistory() operation", e);
+            }
         }
         applySavedLocations(m_locations, graphContainer.getGraph().getLayout());
         graphContainer.setSemanticZoomLevel(getSemanticZoomLevel());

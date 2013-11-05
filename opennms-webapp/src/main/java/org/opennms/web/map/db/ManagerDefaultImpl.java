@@ -772,15 +772,18 @@ public class ManagerDefaultImpl implements Manager {
             java.util.Map<String, String> iconsBySysoid = mapsPropertiesFactory.getIconsBySysoid();
             if (iconsBySysoid != null) {
                 LOG.debug("getIconBySysoid: sysoid = {}", sysoid);
-                for (String key : iconsBySysoid.keySet()) {
+                
+                for (final Map.Entry<String,String> entry : iconsBySysoid.entrySet()) {
+                    final String key = entry.getKey();
                     LOG.debug("getIconBySysoid: key = {}", key);
                     if (key.equals(sysoid)) {
-                        LOG.debug("getIconBySysoid: iconBySysoid = {}", iconsBySysoid.get(key));
-                        return iconsBySysoid.get(key);
+                        final String value = entry.getValue();
+                        LOG.debug("getIconBySysoid: iconBySysoid = {}", value);
+                        return value;
                     }
                 }
             }
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             LOG.error("Exception while getting icons by sysoid");
             throw new MapsException(e);
         }
@@ -1403,20 +1406,27 @@ public class ManagerDefaultImpl implements Manager {
         } // end linkinfo for
         // Now add the VLink to links......
         int maxlinks=mapsPropertiesFactory.getMaxLinks();
-        for (String elid : numberofsinglelinksmap.keySet()) {
-            LOG.debug("parsing link between element: {} with #links {}", elid, numberofsinglelinksmap.get(elid));
-            if (numberofsinglelinksmap.get(elid) <= maxlinks) {
-                for (String linkid : singlevlinkmap.keySet()) {
+
+        for (final Map.Entry<String,Integer> entry : numberofsinglelinksmap.entrySet()) {
+            final String elid = entry.getKey();
+            final Integer numLinks = entry.getValue();
+
+            LOG.debug("parsing link between element: {} with #links {}", elid, numLinks);
+            if (numLinks <= maxlinks) {
+                for (final Map.Entry<String,List<VLink>> vlinkEntry : singlevlinkmap.entrySet()) {
+                    final String linkid = vlinkEntry.getKey();
                     if (linkid.indexOf(elid) != -1) {
-                        LOG.debug("adding single links for {} Adding links # {}", linkid, singlevlinkmap.get(linkid).size());
-                        links.addAll(singlevlinkmap.get(linkid));
+                        final List<VLink> vlinks = vlinkEntry.getValue();
+                        LOG.debug("adding single links for {} Adding links # {}", linkid, vlinks.size());
+                        links.addAll(vlinks);
                     }
                 }
             } else {
-                for (String linkid : multivlinkmap.keySet()) {
+                for (final Map.Entry<String,VLink> vlinkEntry : multivlinkmap.entrySet()) {
+                    final String linkid = vlinkEntry.getKey();
                     if (linkid.indexOf(elid) != -1) { 
                         LOG.debug("adding multi link for : {}", linkid);
-                        links.add(multivlinkmap.get(linkid));
+                        links.add(vlinkEntry.getValue());
                     }
                 }
                 
@@ -1668,20 +1678,21 @@ public class ManagerDefaultImpl implements Manager {
 
     @Override
     public boolean checkCommandExecution() {
-        List<String> keytoremove = new ArrayList<String>();
-        for (String key: commandmap.keySet()) {
-            Command c = commandmap.get(key);
-            if (c.runned() && !c.scheduledToRemove())
-                c.scheduleToRemove();
-            if (c.runned() && c.scheduledToRemove())
-                keytoremove.add(key);
+        final Iterator<String> commands = commandmap.keySet().iterator();
+        while (commands.hasNext()) {
+            final String key = commands.next();
+            final Command c = commandmap.get(key);
+            
+            if (c.runned()) {
+                if (c.scheduledToRemove()) {
+                    commands.remove();
+                } else {
+                    c.scheduleToRemove();
+                }
+            }
         }
-        for (String key: keytoremove) {
-            commandmap.remove(key);
-        }
-        
-        if ( commandmap.size() > 5 )
-            return false;
+
+        if ( commandmap.size() > 5 ) return false;
         return true;
         
     }

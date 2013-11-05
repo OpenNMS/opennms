@@ -39,6 +39,8 @@ import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.vaadin.event.FieldEvents;
+import com.vaadin.ui.*;
 import org.opennms.features.topology.api.CheckedOperation;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.HasExtraComponents;
@@ -95,27 +97,11 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinResponse;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.slider.SliderOrientation;
-import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CustomLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.NativeButton;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Slider;
-import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.VerticalSplitPanel;
-import com.vaadin.ui.Window;
 
 @SuppressWarnings("serial")
 @Theme("topo_default")
@@ -140,7 +126,6 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             if (needsRefresh()) {
                 refreshUI();
             }
-            updateCounter();
         }
 
         private void refreshUI() {
@@ -153,22 +138,6 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
                 lastUpdateTime = System.currentTimeMillis();
                 refreshInProgress = false;
-            }
-        }
-
-        private void updateCounter() {
-            if (m_graphContainer.getAutoRefreshSupport().isEnabled()) {
-                final long interval = m_graphContainer.getAutoRefreshSupport().getInterval(); //in seconds
-                final long diff = System.currentTimeMillis() - lastUpdateTime;
-                final long secondsPassed = diff / 1000;
-                final long secondsLeft = interval - secondsPassed;
-                m_refreshCounter.setCaption(Long.toString(secondsLeft));
-                m_refreshCounter.setDescription(secondsLeft + " seconds until next refresh");
-                m_refreshCounter.setEnabled(true);
-            } else {
-                m_refreshCounter.setCaption("");
-                m_refreshCounter.setDescription("Auto-Refresh is disabled");
-                m_refreshCounter.setEnabled(false);
             }
         }
 
@@ -188,7 +157,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     }
 
     private static final long serialVersionUID = 6837501987137310938L;
-    private static Logger m_log = LoggerFactory.getLogger(TopologyUI.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TopologyUI.class);
 
     private TopologyComponent m_topologyComponent;
     private Window m_noContentWindow;
@@ -202,7 +171,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     private final IconRepositoryManager m_iconRepositoryManager;
     private WidgetManager m_widgetManager;
     private AbsoluteLayout m_treeMapSplitPanel;
-    private final Label m_zoomLevelLabel = new Label("0");
+    private final TextField m_zoomLevelLabel = new TextField();
     private final HistoryManager m_historyManager;
     private String m_headerHtml;
     private boolean m_showHeader = true;
@@ -213,7 +182,6 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     private VerticesUpdateManager m_verticesUpdateManager;
     private Button m_panBtn;
     private Button m_selectBtn;
-    private final Label m_refreshCounter = new Label();
     private Button m_szlOutBtn;
     int m_settingFragment = 0;
 
@@ -221,15 +189,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         if(m_headerProvider == null) {
             return "";
         } else {
-            String headerHtml = m_headerProvider.getHeaderHtml(request);
-
-            /**
-             * Adding some magic to hide the header when displayed inside an iFrame
-             */
-
-            headerHtml += "<script type='text/javascript'>if (window.location != window.parent.location) { document.getElementById('header').style.display = 'none'; }</script>";
-
-            return headerHtml;
+            return m_headerProvider.getHeaderHtml(request);
         }
     }
 
@@ -262,7 +222,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                 return context;
             }
         });
-        VerticesUpdateManager verticesUpdateManager = new OsgiVerticesUpdateManager(m_serviceManager, m_applicationContext);
+        m_verticesUpdateManager = new OsgiVerticesUpdateManager(m_serviceManager, m_applicationContext);
 
         // Add a request handler that parses incoming focusNode and szl query parameters
         getSession().addRequestHandler(new RequestHandler() {
@@ -321,7 +281,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                 try {
                     refs.add(Integer.parseInt(nodeId));
                 } catch (NumberFormatException e) {
-                    m_log.warn("Invalid node ID found in {} parameter: {}", PARAMETER_FOCUS_NODES, nodeId);
+                    LOG.warn("Invalid node ID found in {} parameter: {}", PARAMETER_FOCUS_NODES, nodeId);
                 }
             }
             // If we found valid node IDs in the list...
@@ -367,7 +327,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             try {
                 graphContainer.setSemanticZoomLevel(Integer.parseInt(szl));
             } catch (NumberFormatException e) {
-                m_log.warn("Invalid SZL found in {} parameter: {}", PARAMETER_SEMANTIC_ZOOM_LEVEL, szl);
+                LOG.warn("Invalid SZL found in {} parameter: {}", PARAMETER_SEMANTIC_ZOOM_LEVEL, szl);
             }
         }
     }
@@ -402,14 +362,13 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         addContentLayout();
     }
 
-    private static void setupErrorHandler() {
-        
-        UI.getCurrent().setErrorHandler(new DefaultErrorHandler() {
+    private void setupErrorHandler() {
+        setErrorHandler(new DefaultErrorHandler() {
 
             @Override
             public void error(com.vaadin.server.ErrorEvent event) {
                 Notification.show("An Exception Occurred: see karaf.log", Notification.Type.TRAY_NOTIFICATION);
-                LoggerFactory.getLogger(this.getClass()).warn("An Exception Occured: in the TopologyUI", event.getThrowable());
+                LOG.warn("An Exception Occured: in the TopologyUI", event.getThrowable());
                 super.error(event);
             }
         });
@@ -437,9 +396,9 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                 try {
                     is.close();
                 } catch (final IOException closeE) {
-                    m_log.debug("failed to close HTML input stream", closeE);
+                    LOG.debug("failed to close HTML input stream", closeE);
                 }
-                m_log.debug("failed to get header layout data", e);
+                LOG.debug("failed to get header layout data", e);
             }
         }
     }
@@ -469,6 +428,20 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         final Property<Double> scale = m_graphContainer.getScaleProperty();
 
         m_zoomLevelLabel.setHeight(20, Unit.PIXELS);
+        m_zoomLevelLabel.setWidth(22, Unit.PIXELS);
+        m_zoomLevelLabel.addStyleName("center-text");
+        m_zoomLevelLabel.addTextChangeListener(new FieldEvents.TextChangeListener() {
+            @Override
+            public void textChange(FieldEvents.TextChangeEvent event) {
+                try{
+                    int zoomLevel = Integer.parseInt(event.getText());
+                    setSemanticZoomLevel(zoomLevel);
+                } catch(NumberFormatException e){
+                    setSemanticZoomLevel(m_graphContainer.getSemanticZoomLevel());
+                }
+
+            }
+        });
 
         m_topologyComponent = new TopologyComponent(m_graphContainer, m_iconRepositoryManager, this);
         m_topologyComponent.setSizeFull();
@@ -495,7 +468,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                     showFocusVerticesBtn.setCaption(FontAwesomeIcons.Icon.eye_close.variant());
                 }
                 m_topologyComponent.getState().setHighlightFocus(!m_topologyComponent.getState().isHighlightFocus());
-                m_graphContainer.redoLayout();
+                m_topologyComponent.updateGraph();
             }
         });
 
@@ -650,9 +623,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         VerticalLayout toolbar = new VerticalLayout();
         toolbar.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
         toolbar.setSpacing(true);
-        if (m_graphContainer.hasAutoRefreshSupport()) {
-            toolbar.addComponent(m_refreshCounter);
-        }
+
         toolbar.addComponent(historyCtrlLayout);
         toolbar.addComponent(locationToolLayout);
         toolbar.addComponent(showFocusVerticesBtn);
@@ -1011,7 +982,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     public void verticesUpdated(VerticesUpdateManager.VerticesUpdateEvent event) {
         Collection<VertexRef> selectedVertexRefs = m_selectionManager.getSelectedVertexRefs();
         Set<VertexRef> vertexRefs = event.getVertexRefs();
-        if(!selectedVertexRefs.equals(vertexRefs) && !event.allVerticesSelected()){
+        if(!selectedVertexRefs.equals(vertexRefs) && !event.allVerticesSelected()) {
             m_selectionManager.setSelectedVertexRefs(vertexRefs);
         }
     }

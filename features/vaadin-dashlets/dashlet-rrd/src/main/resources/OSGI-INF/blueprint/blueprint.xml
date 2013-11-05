@@ -17,6 +17,7 @@
         <property name="rrdGraphHelper" ref="rrdGraphHelper"/>
         <property name="nodeDao" ref="nodeDao"/>
         <property name="boostable" value="false"/>
+        <property name="dashboardSuitable" value="true"/>
 
         <property name="requiredParameters">
             <map>

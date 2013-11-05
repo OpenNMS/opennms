@@ -61,6 +61,7 @@
        <feature>dashlet-rrd</feature>
        <feature>dashlet-ksc</feature>
        <feature>dashlet-topology</feature>
+       <feature>dashlet-surveillance</feature>
    </feature>
 
 </features>

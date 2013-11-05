@@ -97,6 +97,7 @@ public class CriteriaRestrictionComponent extends HorizontalLayout {
         m_restrictionSelect.setMultiSelect(false);
         m_restrictionSelect.setNewItemsAllowed(false);
         m_restrictionSelect.setImmediate(true);
+        m_restrictionSelect.setDescription("Restriction selection");
 
         for (CriteriaRestriction criteriaRestriction : CriteriaRestriction.values()) {
             m_restrictionSelect.addItem(criteriaRestriction.name());

@@ -32,6 +32,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -639,6 +640,11 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
     @Override
     public void reload() {
         loadConfig(getConfigResource());
+    }
+
+    @Override
+    public Date getLastUpdate() {
+        return new Date(getContainer().getLastUpdate());
     }
 
 }

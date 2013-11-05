@@ -3,6 +3,7 @@
     <bean id="mapDashletFactory" class="org.opennms.features.vaadin.dashboard.dashlets.MapDashletFactory" scope="singleton">
         <property name="name" value="Map"/>
         <property name="boostable" value="false"/>
+        <property name="dashboardSuitable" value="true"/>
 
         <property name="requiredParameters">
             <map>

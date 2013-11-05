@@ -13,6 +13,7 @@
         <property name="resourceDao" ref="resourceDao"/>
         <property name="nodeDao" ref="nodeDao"/>
         <property name="transactionOperations" ref="transactionOperations"/>
+        <property name="dashboardSuitable" value="true"/>
 
         <property name="requiredParameters">
             <map>

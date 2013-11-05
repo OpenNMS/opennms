@@ -30,6 +30,8 @@ package org.opennms.netmgt.provision.service.snmp;
 
 import java.net.InetAddress;
 
+import org.opennms.netmgt.snmp.NamedSnmpVar;
+
 /**
  * <P>
  * The IpAddrTableEntry class is designed to hold all the MIB-II information for

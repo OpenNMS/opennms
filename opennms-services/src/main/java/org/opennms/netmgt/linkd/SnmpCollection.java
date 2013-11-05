@@ -38,10 +38,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.opennms.netmgt.linkd.snmp.SnmpStore;
-import org.opennms.netmgt.linkd.snmp.SnmpTable;
 import org.opennms.netmgt.linkd.scheduler.ReadyRunnable;
 import org.opennms.netmgt.linkd.scheduler.Scheduler;
 import org.opennms.netmgt.linkd.snmp.CdpCacheTable;
@@ -55,14 +51,18 @@ import org.opennms.netmgt.linkd.snmp.LldpLocalGroup;
 import org.opennms.netmgt.linkd.snmp.LldpRemTable;
 import org.opennms.netmgt.linkd.snmp.OspfGeneralGroup;
 import org.opennms.netmgt.linkd.snmp.OspfNbrTable;
+import org.opennms.netmgt.linkd.snmp.SnmpTable;
 import org.opennms.netmgt.linkd.snmp.VlanTable;
 import org.opennms.netmgt.linkd.snmp.VlanTableBasic;
 import org.opennms.netmgt.model.OnmsVlan;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpStore;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is designed to collect the necessary SNMP information from the

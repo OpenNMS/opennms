@@ -73,11 +73,15 @@ public class NodeMapComponent extends AbstractComponent {
     }
 
     public void showNodes(final Map<Integer, NodeEntry> nodeEntries) {
+        LOG.info("Updating map node list: {} entries.", nodeEntries.size());
+
         final List<MapNode> nodes = new LinkedList<MapNode>();
         for (final NodeEntry node : nodeEntries.values()) {
             nodes.add(node.createNode());
         }
         getState().nodes = nodes;
+
+        LOG.info("Finished updating map node list.");
     }
 
     @Override
@@ -110,6 +114,13 @@ public class NodeMapComponent extends AbstractComponent {
         private OnmsSeverity m_severity = OnmsSeverity.NORMAL;
         private List<String> m_categories = new ArrayList<String>();
         private int m_unackedCount = 0;
+
+        NodeEntry(final Integer nodeId, final String nodeLabel, final float longitude, final float latitude) {
+            m_nodeId = nodeId;
+            m_nodeLabel = nodeLabel;
+            m_longitude = longitude;
+            m_latitude = latitude;
+        }
 
         public NodeEntry(final OnmsNode node) {
             final OnmsAssetRecord assetRecord = node.getAssetRecord();
@@ -153,12 +164,11 @@ public class NodeMapComponent extends AbstractComponent {
         }
 
         public MapNode createNode() {
-            MapNode node = new MapNode();
+            final MapNode node = new MapNode();
+
             node.setLatitude(m_latitude);
             node.setLongitude(m_longitude);
-            if (m_nodeId != null) {
-                node.setNodeId(m_nodeId.toString());
-            }
+            node.setNodeId(String.valueOf(m_nodeId));
             node.setNodeLabel(m_nodeLabel);
             node.setForeignSource(m_foreignSource);
             node.setForeignId(m_foreignId);

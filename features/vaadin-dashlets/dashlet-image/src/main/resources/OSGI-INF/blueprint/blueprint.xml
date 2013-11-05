@@ -3,6 +3,7 @@
     <bean id="imageDashletFactory" class="org.opennms.features.vaadin.dashboard.dashlets.ImageDashletFactory" scope="singleton">
         <property name="name" value="Image"/>
         <property name="boostable" value="false"/>
+        <property name="dashboardSuitable" value="true"/>
 
         <property name="requiredParameters">
             <map>

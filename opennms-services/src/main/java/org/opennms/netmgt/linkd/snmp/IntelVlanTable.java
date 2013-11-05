@@ -35,6 +35,7 @@ import java.util.List;
 import org.opennms.netmgt.model.OnmsVlan;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpStore;
 
 /**
  * <P>

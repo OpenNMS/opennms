@@ -86,7 +86,7 @@ import org.xml.sax.SAXException;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public class DataManager extends Object {
+public class DataManager {
     
     private static final Logger LOG = LoggerFactory.getLogger(DataManager.class);
     
@@ -114,7 +114,7 @@ public class DataManager extends Object {
 		}
 
 		// This is called exactly once for each unique (node ID, IP address, service name) tuple
-		public void processIfService(RTCNodeKey key) {
+		public synchronized void processIfService(RTCNodeKey key) {
 		    for (RTCCategory cat : m_categories.values()) {
 				if (catContainsIfService(cat, key)) {
 					RTCNode rtcN = getRTCNode(key);

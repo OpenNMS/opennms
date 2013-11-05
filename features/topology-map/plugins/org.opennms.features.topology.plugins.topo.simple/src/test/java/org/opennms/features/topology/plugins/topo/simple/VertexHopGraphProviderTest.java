@@ -1,20 +1,74 @@
 package org.opennms.features.topology.plugins.topo.simple;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.FocusNodeHopCriteria;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
+import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.AbstractVertexRef;
+import org.opennms.features.topology.api.topo.CollapsibleCriteria;
+import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
 
 public class VertexHopGraphProviderTest {
 
 	private VertexHopGraphProvider m_provider;
 
-	
+	private static final String TEST_ID = "TEST";
+
+	private static class TestCollapsibleCriteria extends VertexHopCriteria implements CollapsibleCriteria {
+
+		@Override
+		public boolean isCollapsed() {
+			return true;
+		}
+
+		@Override
+		public void setCollapsed(boolean collapsed) {
+		}
+
+		@Override
+		public Set<VertexRef> getVertices() {
+			Set<VertexRef> retval = new HashSet<VertexRef>();
+			retval.add(new AbstractVertexRef("nodes", "g0", "g0"));
+			retval.add(new AbstractVertexRef("nodes", "g1", "g1"));
+			retval.add(new AbstractVertexRef("nodes", "g2", "g2"));
+			return retval;
+		}
+
+		@Override
+		public Vertex getCollapsedRepresentation() {
+			return new AbstractVertex("nodes", TEST_ID, "TEST VERTEX");
+		}
+
+		@Override
+		public String getNamespace() {
+			return "nodes";
+		}
+
+		@Override
+		public int hashCode() {
+			return getLabel().hashCode();
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			return getLabel().equals(obj);
+		}
+	}
+
 	@Before
 	public void setUp() {
 
@@ -52,5 +106,24 @@ public class VertexHopGraphProviderTest {
 		assertEquals(2, m_provider.getSemanticZoomLevel(new AbstractVertexRef("nodes", "v2")));
 		assertEquals(2, m_provider.getSemanticZoomLevel(new AbstractVertexRef("nodes", "v3")));
 		assertEquals(2, m_provider.getSemanticZoomLevel(new AbstractVertexRef("nodes", "v4")));
+	}
+
+	@Test
+	public void testCollapseVertices() {
+		List<Vertex> vertices = m_provider.getVertices(new Criteria[] { new TestCollapsibleCriteria() });
+
+		// Test vertex that replaces the collapsed vertices
+		assertTrue(vertices.contains(new AbstractVertexRef("nodes", TEST_ID)));
+
+		// These vertices should be "collapsed"
+		assertFalse(vertices.contains(new AbstractVertexRef("nodes", "g0")));
+		assertFalse(vertices.contains(new AbstractVertexRef("nodes", "g1")));
+		assertFalse(vertices.contains(new AbstractVertexRef("nodes", "g2")));
+		
+		// These vertices remain uncollapsed
+		assertTrue(vertices.contains(new AbstractVertexRef("nodes", "v1")));
+		assertTrue(vertices.contains(new AbstractVertexRef("nodes", "v2")));
+		assertTrue(vertices.contains(new AbstractVertexRef("nodes", "v3")));
+		assertTrue(vertices.contains(new AbstractVertexRef("nodes", "v4")));
 	}
 }

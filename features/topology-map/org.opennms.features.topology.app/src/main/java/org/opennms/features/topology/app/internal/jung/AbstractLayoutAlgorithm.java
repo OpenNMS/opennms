@@ -9,19 +9,27 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractLayoutAlgorithm implements LayoutAlgorithm, LayoutConstants {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractLayoutAlgorithm.class);
 
 	@Override
 	abstract public void updateLayout(GraphContainer graph);
 
 	protected static Dimension selectLayoutSize(GraphContainer g) {
-		int vertexCount = g.getGraph().getDisplayVertices().size();
+	    int vertexCount = g.getGraph().getDisplayVertices().size();
 
-		double height = 1.5*Math.sqrt(vertexCount)*ELBOW_ROOM;
-		double width = height*16.0/9.0;
+	    double height = 1.5*Math.sqrt(vertexCount)*ELBOW_ROOM;
+	    double width = height*16.0/9.0;
 
-		return new Dimension((int)width, (int)height);
+	    Dimension dim = new Dimension((int)width, (int)height);
+	    
+	    LOG.debug("selectLayoutSize: vertexCount={}, returm dim={}", vertexCount, dim);
+	    
+	    return dim;
 	}
 
 	protected static Transformer<VertexRef, Point2D> initializer(final Layout graphLayout) {

@@ -28,6 +28,9 @@
 
 package org.opennms.netmgt.linkd.snmp;
 
+import org.opennms.netmgt.snmp.NamedSnmpVar;
+import org.opennms.netmgt.snmp.SnmpStore;
+
 /**
  *<P>The Dot1dTpFdbTableEntry class is designed to hold all the MIB-II
  * information for one entry in the MIB II dot1dBridge.dot1dTp.dot1dTpFdbTable.

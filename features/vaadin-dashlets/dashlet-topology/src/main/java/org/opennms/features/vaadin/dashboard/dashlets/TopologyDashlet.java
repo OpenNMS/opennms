@@ -29,24 +29,18 @@ package org.opennms.features.vaadin.dashboard.dashlets;
 
 import com.vaadin.server.ExternalResource;
 import com.vaadin.ui.BrowserFrame;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
-import org.opennms.features.vaadin.dashboard.model.Dashlet;
-import org.opennms.features.vaadin.dashboard.model.DashletSpec;
+import org.opennms.features.vaadin.dashboard.model.*;
 
 /**
  * This class implements a {@link Dashlet} for displaying the topology map application.
  *
  * @author Christian Pape
  */
-public class TopologyDashlet extends VerticalLayout implements Dashlet {
-    /**
-     * the dashlet's name
-     */
-    private String m_name;
-    /**
-     * The {@link DashletSpec} for this instance
-     */
-    private DashletSpec m_dashletSpec;
+public class TopologyDashlet extends AbstractDashlet {
+
+    private DashletComponent m_dashletComponent;
 
     /**
      * Constructor for instantiating new objects.
@@ -54,54 +48,73 @@ public class TopologyDashlet extends VerticalLayout implements Dashlet {
      * @param dashletSpec the {@link DashletSpec} to be used
      */
     public TopologyDashlet(String name, DashletSpec dashletSpec) {
-        /**
-         * Setting the member fields
-         */
-        m_name = name;
-        m_dashletSpec = dashletSpec;
+        super(name, dashletSpec);
+    }
 
-        /**
-         * Setting up the layout
-         */
-        setCaption(getName());
-        setSizeFull();
+    @Override
+    public DashletComponent getWallboardComponent() {
+        if (m_dashletComponent == null) {
+            m_dashletComponent = new AbstractDashletComponent() {
+                private VerticalLayout m_verticalLayout = new VerticalLayout();
 
-        String focusNodes = "";
-        String szl = "1";
+                {
+                    m_verticalLayout.setCaption(getName());
+                    m_verticalLayout.setSizeFull();
+                }
 
-        if (m_dashletSpec.getParameters().containsKey("focusNodes")) {
-            focusNodes = m_dashletSpec.getParameters().get("focusNodes");
+                @Override
+                public void refresh() {
+                    m_verticalLayout.removeAllComponents();
+
+                    String focusNodes = "";
+                    String szl = "";
+                    String provider = "";
+
+                    if (getDashletSpec().getParameters().containsKey("focusNodes")) {
+                        focusNodes = getDashletSpec().getParameters().get("focusNodes");
+                    }
+
+                    if (getDashletSpec().getParameters().containsKey("szl")) {
+                        szl = getDashletSpec().getParameters().get("szl");
+                    }
+
+                    if (getDashletSpec().getParameters().containsKey("provider")) {
+                        provider = getDashletSpec().getParameters().get("provider");
+                    }
+
+                    String query = "";
+
+                    if (!"".equals(focusNodes)) {
+                        query += "focusNodes=" + focusNodes + "&";
+                    }
+
+                    if (!"".equals(szl)) {
+                        query += "szl=" + szl + "&";
+                    }
+
+                    if (!"".equals(provider)) {
+                        query += "provider=" + provider + "&";
+                    }
+                    /**
+                     * creating browser frame to display node-maps
+                     */
+                    BrowserFrame browserFrame = new BrowserFrame(null, new ExternalResource("/opennms/topology?" + query));
+                    browserFrame.setSizeFull();
+                    m_verticalLayout.addComponent(browserFrame);
+                }
+
+                @Override
+                public Component getComponent() {
+                    return m_verticalLayout;
+                }
+            };
         }
 
-        if (m_dashletSpec.getParameters().containsKey("szl")) {
-            szl = m_dashletSpec.getParameters().get("szl");
-        }
-
-        /**
-         * creating browser frame to display node-maps
-         */
-        BrowserFrame browserFrame = new BrowserFrame(null, new ExternalResource("/opennms/topology?szl=" + szl + "&focusNodes=" + focusNodes));
-        browserFrame.setSizeFull();
-        addComponent(browserFrame);
+        return m_dashletComponent;
     }
 
     @Override
-    public String getName() {
-        return m_name;
-    }
-
-    @Override
-    public boolean isBoosted() {
-        return false;
-    }
-
-    /**
-     * Updates the dashlet contents and computes new boosted state
-     */
-    @Override
-    public void update() {
-        /**
-         * do nothing
-         */
+    public DashletComponent getDashboardComponent() {
+        return getWallboardComponent();
     }
 }
