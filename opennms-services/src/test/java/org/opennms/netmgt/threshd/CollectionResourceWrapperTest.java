@@ -67,6 +67,7 @@ import org.opennms.netmgt.config.datacollection.Parameter;
 import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.StorageStrategy;
+import org.opennms.netmgt.dao.support.DefaultResourceDao;
 import org.opennms.netmgt.mock.MockDataCollectionConfig;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.model.OnmsNode;
@@ -361,20 +362,25 @@ public class CollectionResourceWrapperTest {
         db.update("update snmpinterface set snmpifindex=?, snmpifname=?, snmpifdescr=? where id=?", ifIndex, ifName, ifName, 1);
         DataSourceFactory.setInstance(db);
         Vault.setDataSource(db);
-        
+
+        // Create Mock Collection Agent
+        CollectionAgent agent = createCollectionAgent();
+
         // Create SnmpIfData
         OnmsNode node = new OnmsNode();
-        node.setId(1);
+        node.setId(agent.getNodeId());
         node.setLabel("testNode");
+        node.setForeignSource(agent.getForeignSource());
+        node.setForeignId(agent.getForeignId());
         OnmsSnmpInterface snmpIface = new OnmsSnmpInterface(node, ifIndex);
         snmpIface.setIfDescr(ifName);
         snmpIface.setIfName(ifName);
         snmpIface.setIfAlias(ifName);
         snmpIface.setIfSpeed(10000000l);
+        snmpIface.setPhysAddr("001122334455");
         SnmpIfData ifData = new SnmpIfData(snmpIface);
 
         // Creating IfResourceType
-        CollectionAgent agent = createCollectionAgent();
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();        
         OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig);
         IfResourceType resourceType = new IfResourceType(agent, collection);
@@ -391,7 +397,7 @@ public class CollectionResourceWrapperTest {
         // Validations
         Assert.assertEquals(node.getId().intValue(), wrapper.getNodeId());
         Assert.assertEquals("127.0.0.1", wrapper.getHostAddress()); // Should be the address of the SNMP Agent (Bug 3808)
-        Assert.assertEquals("eth0", wrapper.getIfLabel());
+        Assert.assertEquals("eth0-001122334455", wrapper.getIfLabel());
         Assert.assertEquals("if", wrapper.getResourceTypeName());
         Assert.assertEquals("SNMP", wrapper.getServiceName());
         Assert.assertEquals(true, wrapper.isAnInterfaceResource());
@@ -400,7 +406,8 @@ public class CollectionResourceWrapperTest {
         Assert.assertEquals(Integer.toString(ifIndex), wrapper.getIfIndex()); // IfLabel is called only once
         Assert.assertEquals(Integer.toString(ifIndex), wrapper.getIfIndex()); // IfLabel is called only once
         Assert.assertEquals("eth0", wrapper.getIfInfoValue("snmpifname"));  // IfLabel is called only once
-        Assert.assertEquals("eth0", wrapper.getInstanceLabel());
+        Assert.assertEquals("eth0-001122334455", wrapper.getInstanceLabel());
+        Assert.assertEquals("nodeSource[JUnit%3AT001].interfaceSnmp[eth0-001122334455]", wrapper.getResourceId());
     }
 
     @Test
@@ -455,7 +462,9 @@ public class CollectionResourceWrapperTest {
         EasyMock.expect(agent.getNodeId()).andReturn(1).anyTimes();
         EasyMock.expect(agent.getHostAddress()).andReturn("127.0.0.1").anyTimes();
         EasyMock.expect(agent.getSnmpInterfaceInfo((IfResourceType)EasyMock.anyObject())).andReturn(new HashSet<IfInfo>()).anyTimes();
-        EasyMock.expect(agent.getStorageDir()).andReturn(new File("target/snmp/rrd")).anyTimes();
+        EasyMock.expect(agent.getForeignSource()).andReturn("JUnit").anyTimes();
+        EasyMock.expect(agent.getForeignId()).andReturn("T001").anyTimes();
+        EasyMock.expect(agent.getStorageDir()).andReturn(new File(DefaultResourceDao.FOREIGN_SOURCE_DIRECTORY + File.separator + "JUnit" + File.separator + "T001")).anyTimes();
         EasyMock.replay(agent);
         return agent;
     }

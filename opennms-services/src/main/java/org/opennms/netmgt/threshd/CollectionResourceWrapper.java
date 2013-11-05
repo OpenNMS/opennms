@@ -38,7 +38,9 @@ import org.opennms.netmgt.collectd.AliasedResource;
 import org.opennms.netmgt.collectd.IfInfo;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionResource;
+import org.opennms.netmgt.dao.support.DefaultResourceDao;
 import org.opennms.netmgt.dao.support.ResourceTypeUtils;
+import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.poller.LatencyCollectionResource;
 import org.slf4j.Logger;
@@ -244,7 +246,36 @@ public class CollectionResourceWrapper {
     public String getResourceTypeName() {
         return m_resource != null ? m_resource.getResourceTypeName() : null;
     }
-    
+
+    /**
+     * <p>getResourceId</p>
+     * <p>Inspired by DefaultKscReportService</p>
+     * 
+     * @return a {@link java.lang.String} object.
+     */
+    public String getResourceId() {
+        String resourceType  = getResourceTypeName();
+        String resourceLabel = getInstanceLabel();
+        if ("node".equals(resourceType)) {
+            resourceType  = "nodeSnmp";
+            resourceLabel = "";
+        }
+        if ("if".equals(resourceType)) {
+            resourceType = "interfaceSnmp";
+        }
+        String parentResourceTypeName = "node";
+        String parentResourceName = Integer.toString(getNodeId());
+        // I can't find a better way to deal with this when storeByForeignSource is enabled        
+        if (m_resource != null && m_resource.getParent() != null && m_resource.getParent().startsWith(DefaultResourceDao.FOREIGN_SOURCE_DIRECTORY)) {
+            String[] parts = m_resource.getParent().split(File.separator);
+            if (parts.length == 3) {
+                parentResourceTypeName = "nodeSource";
+                parentResourceName = parts[1] + ":" + parts[2];
+            }
+        }
+        return OnmsResource.createResourceId(parentResourceTypeName, parentResourceName, resourceType, resourceLabel);
+    }
+
     /**
      * <p>getIfLabel</p>
      *
