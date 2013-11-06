@@ -64,7 +64,8 @@ public class AtomikosDataSourceFactory extends AtomikosDataSourceBean implements
 		super.setTestQuery("SELECT 1");
 	}
 
-	@Override
+	// Uncomment when we require Java 7
+	//@Override
 	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
 		throw new SQLFeatureNotSupportedException();
 	}
