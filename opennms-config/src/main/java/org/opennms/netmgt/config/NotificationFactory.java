@@ -104,7 +104,6 @@ public class NotificationFactory extends NotificationManager {
      */
     public static synchronized void init() throws IOException, FileNotFoundException, MarshalException, ValidationException, ClassNotFoundException, SQLException, PropertyVetoException  {
         if (!initialized) {
-            DataSourceFactory.init();
             instance = new NotificationFactory();
             instance.reload();
             initialized = true;

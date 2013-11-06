@@ -138,12 +138,6 @@ public class ServletInitializer extends Object {
         Vault.setProperties(properties);
         Vault.setHomeDir(homeDir);
 
-        try {
-        	DataSourceFactory.init();
-        } catch (Throwable e) {
-        	throw new ServletException("Could not initialize data source factory: " + e, e);
-        }
-
         // This is done inside "Vault.getDataSource" to ensure that "Vault" could be used by "IfLabel" - See Bug 4117
         // Vault.setDataSource(DataSourceFactory.getInstance());
     }

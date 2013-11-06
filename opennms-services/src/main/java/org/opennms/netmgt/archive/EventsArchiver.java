@@ -234,28 +234,11 @@ public class EventsArchiver {
 
         // Make sure we can connect to the database
         try {
-            DataSourceFactory.init();
             m_conn = DataSourceFactory.getInstance().getConnection();
-        } catch (IOException e) {
-            LOG.error("IOException while initializing database", e);
-            throw new UndeclaredThrowableException(e);
-        } catch (MarshalException e) {
-            LOG.error("MarshalException while initializing database", e);
-            throw new UndeclaredThrowableException(e);
-        } catch (ValidationException e) {
-            LOG.error("ValidationException while initializing database", e);
-            throw new UndeclaredThrowableException(e);
-        } catch (PropertyVetoException e) {
-            LOG.error("PropertyVetoException while initializing database", e);
-            throw new UndeclaredThrowableException(e);
         } catch (SQLException e) {
-            LOG.error("SQLException while initializing database", e);
-            throw new UndeclaredThrowableException(e);
-        } catch (ClassNotFoundException e) {
-            LOG.error("ClassNotFoundException while initializing database", e);
+            LOG.error("Exception while connecting to database", e);
             throw new UndeclaredThrowableException(e);
         }
-        // XXX should we be throwing ArchiverException instead?
     }
 
     /**

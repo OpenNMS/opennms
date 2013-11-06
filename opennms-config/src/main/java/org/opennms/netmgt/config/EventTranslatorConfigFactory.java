@@ -198,8 +198,6 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
             // to reload, reload() will need to be called
             return;
         }
-        
-        DataSourceFactory.init();
 
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.TRANSLATOR_CONFIG_FILE_NAME);
 

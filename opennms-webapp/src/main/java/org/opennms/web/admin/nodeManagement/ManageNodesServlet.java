@@ -93,12 +93,6 @@ public class ManageNodesServlet extends HttpServlet {
     @Override
     public void init() throws ServletException {
         try {
-            DataSourceFactory.init();
-        } catch (Throwable e) {
-            throw new ServletException("Could not initialize database factory: " + e.getMessage(), e);
-        }
-
-        try {
             NotificationFactory.init();
         } catch (Throwable e) {
             throw new ServletException("Could not initialize notification factory: " + e.getMessage(), e);
