@@ -77,6 +77,10 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
         final JUnitTemporaryDatabase jtd = findAnnotation(testContext);
         if (jtd == null) return;
 
+        // Close down the data sources that are referenced by the static DataSourceFactory helper classes
+        DataSourceFactory.close();
+        XADataSourceFactory.close();
+
         try {
             // DON'T REMOVE THE DATABASE, just rely on the ShutdownHook to remove them instead
             // otherwise you might remove the class-level database that is reused between tests.

@@ -28,12 +28,11 @@
 
 package org.opennms.core.db;
 
-import java.beans.PropertyVetoException;
-import java.io.IOException;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.util.logging.Logger;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
+import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 
@@ -50,15 +49,53 @@ import com.atomikos.jdbc.AtomikosDataSourceBean;
 </bean>
 */
 
-public class AtomikosDataSourceFactory extends AtomikosDataSourceBean {
+public class AtomikosDataSourceFactory extends AtomikosDataSourceBean implements ClosableDataSource {
 
 	private static final long serialVersionUID = -6411281260947841402L;
 
-	public AtomikosDataSourceFactory() throws MarshalException, ValidationException, ClassNotFoundException, IOException, PropertyVetoException, SQLException {
-		XADataSourceFactory.init();
+	public AtomikosDataSourceFactory(JdbcDataSource ds) {
+		this();
+	}
+
+	public AtomikosDataSourceFactory() {
 		super.setUniqueResourceName("opennms");
-		super.setXaDataSource(XADataSourceFactory.getXADataSource());
+		super.setXaDataSource(XADataSourceFactory.getInstance());
 		super.setPoolSize(30);
 		super.setTestQuery("SELECT 1");
+	}
+
+	@Override
+	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+		throw new SQLFeatureNotSupportedException();
+	}
+
+	@Override
+	public <T> T unwrap(Class<T> iface) throws SQLException {
+		throw new SQLException();
+	}
+
+	@Override
+	public boolean isWrapperFor(Class<?> iface) throws SQLException {
+		return false;
+	}
+
+	@Override
+	public void setIdleTimeout(int idleTimeout) {
+		super.setMaxIdleTime(idleTimeout);
+	}
+
+	@Override
+	public void setMinPool(int minPool) {
+		super.setMinPoolSize(minPool);
+	}
+
+	@Override
+	public void setMaxPool(int maxPool) {
+		super.setMaxPoolSize(maxPool);
+	}
+
+	@Override
+	public void setMaxSize(int maxSize) {
+		super.setMaxPoolSize(maxSize);
 	}
 }

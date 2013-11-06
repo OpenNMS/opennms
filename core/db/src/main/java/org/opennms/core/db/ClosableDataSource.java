@@ -28,6 +28,7 @@
 
 package org.opennms.core.db;
 
+import java.io.Closeable;
 import java.sql.SQLException;
 
 import javax.sql.DataSource;
@@ -35,14 +36,13 @@ import javax.sql.DataSource;
 /**
  * <p>ClosableDataSource interface.</p>
  */
-public interface ClosableDataSource extends DataSource {
+public interface ClosableDataSource extends DataSource, Closeable {
     
     /**
      * Close the datasource, if necessary.
-     *
-     * @throws java.sql.SQLException if any.
      */
-    void close() throws SQLException;
+    @Override
+    void close();
 
     /**
      * How long, in seconds, an idle connection is kept in the pool before it is removed.

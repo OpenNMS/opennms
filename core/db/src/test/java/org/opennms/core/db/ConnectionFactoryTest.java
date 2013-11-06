@@ -29,6 +29,7 @@
 package org.opennms.core.db;
 
 import java.beans.PropertyVetoException;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -40,7 +41,9 @@ import junit.framework.TestCase;
 import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.test.DaoTestConfigBean;
 
 /**
  * 
@@ -48,6 +51,9 @@ import org.opennms.core.utils.ConfigFileConstants;
  */
 public class ConnectionFactoryTest extends TestCase {
     public void testMarshalDataSourceFromConfig() throws Exception {
+        DaoTestConfigBean bean = new DaoTestConfigBean();
+        bean.afterPropertiesSet();
+
         AtomikosDataSourceFactory factory1 = null;
         AtomikosDataSourceFactory factory2 = null;
         
@@ -115,11 +121,15 @@ public class ConnectionFactoryTest extends TestCase {
     }
 
     private AtomikosDataSourceFactory makeFactory(String database) throws MarshalException, ValidationException, PropertyVetoException, SQLException, IOException, ClassNotFoundException {
-        InputStream stream = this.getClass().getResourceAsStream(ConfigFileConstants.getFileName(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME));
+        InputStream stream1 = new ByteArrayInputStream(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, ConfigFileConstants.getFileName(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME)).getBytes());
+        DataSourceFactory.setDataSourceConfigurationFactory(new DataSourceConfigurationFactory(stream1));
+        InputStream stream2 = new ByteArrayInputStream(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, ConfigFileConstants.getFileName(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME)).getBytes());
+        XADataSourceFactory.setDataSourceConfigurationFactory(new DataSourceConfigurationFactory(stream2));
         try {
             return new AtomikosDataSourceFactory();
         } finally {
-            IOUtils.closeQuietly(stream);
+            IOUtils.closeQuietly(stream1);
+            IOUtils.closeQuietly(stream2);
         }
     }
 }

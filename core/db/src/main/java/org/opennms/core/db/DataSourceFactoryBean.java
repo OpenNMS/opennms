@@ -83,7 +83,6 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Initializ
      */
     @Override
     public void afterPropertiesSet() throws Exception {
-        DataSourceFactory.init();
         Vault.setDataSource(DataSourceFactory.getInstance()); // Fix for Bug 4117
     }
 
@@ -94,7 +93,7 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Initializ
      */
     @Override
     public void destroy() throws Exception {
-        LOG.info("Closing DataSourceFactory!!!");
+        LOG.info("Closing {}!!!", getClass().getSimpleName());
         DataSourceFactory.close();
     }
 
