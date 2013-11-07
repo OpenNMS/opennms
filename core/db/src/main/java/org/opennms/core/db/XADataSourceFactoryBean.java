@@ -40,7 +40,7 @@ import org.springframework.beans.factory.InitializingBean;
 /**
  * <p>XADataSourceFactoryBean class.</p>
  */
-public class XADataSourceFactoryBean implements FactoryBean<XADataSource>, InitializingBean, DisposableBean {
+public class XADataSourceFactoryBean implements FactoryBean<XADataSource>, DisposableBean {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(XADataSourceFactoryBean.class);
 
@@ -76,23 +76,13 @@ public class XADataSourceFactoryBean implements FactoryBean<XADataSource>, Initi
     }
 
     /**
-     * <p>afterPropertiesSet</p>
-     *
-     * @throws java.lang.Exception if any.
-     */
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        XADataSourceFactory.init();
-    }
-
-    /**
      * <p>destroy</p>
      *
      * @throws java.lang.Exception if any.
      */
     @Override
     public void destroy() throws Exception {
-        LOG.info("Closing DataSourceFactory!!!");
+        LOG.info("Closing {}!!!", getClass().getSimpleName());
         XADataSourceFactory.close();
     }
 

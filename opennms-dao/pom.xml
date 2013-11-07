@@ -95,6 +95,11 @@
       <type>pom</type>
     </dependency>
     <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>atomikos-dependencies</artifactId>
+      <type>pom</type>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.xml</artifactId>
     </dependency>
@@ -161,10 +166,6 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jcl-over-slf4j</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>c3p0</groupId>
-      <artifactId>c3p0</artifactId>
     </dependency>
     <dependency>
       <groupId>org.hibernate.javax.persistence</groupId>

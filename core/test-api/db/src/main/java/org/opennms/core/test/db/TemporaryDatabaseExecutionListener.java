@@ -47,15 +47,11 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.datasource.DelegatingDataSource;
-import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListener;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.util.Assert;
-
-import com.mchange.v2.c3p0.DataSources;
-import com.mchange.v2.c3p0.PooledDataSource;
 
 /**
  * This {@link TestExecutionListener} creates a temporary database and then
@@ -81,8 +77,9 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
         final JUnitTemporaryDatabase jtd = findAnnotation(testContext);
         if (jtd == null) return;
 
-        final PooledDataSource pds = (PooledDataSource)testContext.getAttribute("org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener.pooledDataSource");
-        if (pds != null) pds.hardReset();
+        // Close down the data sources that are referenced by the static DataSourceFactory helper classes
+        DataSourceFactory.close();
+        XADataSourceFactory.close();
 
         try {
             // DON'T REMOVE THE DATABASE, just rely on the ShutdownHook to remove them instead
@@ -219,21 +216,10 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
         }
 
         m_database = m_databases.remove();
-        final PooledDataSource pooledDataSource = (PooledDataSource)DataSources.pooledDataSource(m_database);
 
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                try { pooledDataSource.close(); }
-                catch (final Throwable t) { LOG.debug("failed to close pooled data source", t); }
-            }
-        });
-
-        final LazyConnectionDataSourceProxy proxy = new LazyConnectionDataSourceProxy(pooledDataSource);
-        DataSourceFactory.setInstance(proxy);
+        DataSourceFactory.setInstance(m_database);
         XADataSourceFactory.setInstance(m_database);
 
-        testContext.setAttribute("org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener.pooledDataSource", pooledDataSource);
         System.err.println(String.format("TemporaryDatabaseExecutionListener.prepareTestInstance(%s) prepared db %s", testContext, m_database.toString()));
         System.err.println("Temporary Database Name: " + m_database.getTestDatabase());
     }

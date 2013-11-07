@@ -29,6 +29,7 @@
 package org.opennms.core.db;
 
 import java.beans.PropertyVetoException;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -40,16 +41,21 @@ import junit.framework.TestCase;
 import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.test.DaoTestConfigBean;
 
 /**
  * 
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
-public class C3P0ConnectionFactoryTest extends TestCase {
+public class ConnectionFactoryTest extends TestCase {
     public void testMarshalDataSourceFromConfig() throws Exception {
-        C3P0ConnectionFactory factory1 = null;
-        C3P0ConnectionFactory factory2 = null;
+        DaoTestConfigBean bean = new DaoTestConfigBean();
+        bean.afterPropertiesSet();
+
+        AtomikosDataSourceFactory factory1 = null;
+        AtomikosDataSourceFactory factory2 = null;
         
         try {
         	factory1 = makeFactory("opennms");
@@ -114,12 +120,16 @@ public class C3P0ConnectionFactoryTest extends TestCase {
         }
     }
 
-    private C3P0ConnectionFactory makeFactory(String database) throws MarshalException, ValidationException, PropertyVetoException, SQLException, IOException {
-        InputStream stream = this.getClass().getResourceAsStream(ConfigFileConstants.getFileName(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME));
+    private AtomikosDataSourceFactory makeFactory(String database) throws MarshalException, ValidationException, PropertyVetoException, SQLException, IOException, ClassNotFoundException {
+        InputStream stream1 = new ByteArrayInputStream(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, ConfigFileConstants.getFileName(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME)).getBytes());
+        DataSourceFactory.setDataSourceConfigurationFactory(new DataSourceConfigurationFactory(stream1));
+        InputStream stream2 = new ByteArrayInputStream(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, ConfigFileConstants.getFileName(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME)).getBytes());
+        XADataSourceFactory.setDataSourceConfigurationFactory(new DataSourceConfigurationFactory(stream2));
         try {
-            return new C3P0ConnectionFactory(stream, database);
+            return new AtomikosDataSourceFactory();
         } finally {
-            IOUtils.closeQuietly(stream);
+            IOUtils.closeQuietly(stream1);
+            IOUtils.closeQuietly(stream2);
         }
     }
 }
