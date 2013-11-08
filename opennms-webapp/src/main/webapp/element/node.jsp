@@ -162,7 +162,7 @@
         nodeModel.put("statusSite", asset.getBuilding());
     }
     
-    nodeModel.put("resources", m_resourceService.findNodeChildResources(nodeId));
+    nodeModel.put("resources", m_resourceService.findNodeChildResources(node_db));
     nodeModel.put("vlans", NetworkElementFactory.getInstance(getServletContext()).getVlansOnNode(nodeId));
     nodeModel.put("criticalPath", PathOutageFactory.getCriticalPath(nodeId));
     nodeModel.put("noCriticalPath", PathOutageFactory.NO_CRITICAL_PATH);
