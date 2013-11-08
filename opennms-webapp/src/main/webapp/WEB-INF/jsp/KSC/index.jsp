@@ -97,9 +97,9 @@
 		
 		
 	</script>
-    <opennms:kscCustomReportList id="kscReportList" dataObject="customData"></opennms:kscCustomReportList>
+    <opennms:kscCustomReportList id="kscReportList" dataObject="customData" isreadonly="${isReadOnly}"></opennms:kscCustomReportList>
     <!-- For IE Only -->
-    <div name="opennms-kscCustomReportList" id="kscReportList-ie" dataObject="customData"></div>
+    <div name="opennms-kscCustomReportList" id="kscReportList-ie" dataObject="customData" isreadonly="${isReadOnly}"></div>
   </div>
 
   <h3 class="o-box">Node & Domain Interface Reports</h3>
