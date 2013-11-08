@@ -44,7 +44,7 @@ public class OnmsAuthenticationDetails extends WebAuthenticationDetails {
      */
     public OnmsAuthenticationDetails(HttpServletRequest request) {
         super(request);
-        String userGroups = request.getParameter("userGroups");
+        String userGroups = request.getParameter("j_usergroups");
         if(userGroups != null){
             String[] split = userGroups.split(",");
             m_userGroupList = split[0].equals("") ? null : split;
