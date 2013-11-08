@@ -102,8 +102,8 @@ public class AbstractSearchProviderTest {
 
         SearchProvider searchProvider1 = createSearchProvider();
 
-        assertEquals(10, searchProvider1.query(containsQuery).size());
-        assertEquals(1, searchProvider1.query(exactQuery).size());
+        assertEquals(10, searchProvider1.query(containsQuery, null).size());
+        assertEquals(1, searchProvider1.query(exactQuery, null).size());
     }
 
     private SearchProvider createSearchProvider() {
@@ -122,7 +122,7 @@ public class AbstractSearchProviderTest {
             }
 
             @Override
-            public List<SearchResult> query(SearchQuery searchQuery) {
+            public List<SearchResult> query(SearchQuery searchQuery, GraphContainer graphContainer) {
                 List<SearchResult> verts = new ArrayList<SearchResult>();
                 for (VertexRef vertexRef : m_vertexRefs) {
                     if (searchQuery.matches(vertexRef.getLabel())) {

@@ -65,13 +65,17 @@ public class CategorySearchProvider extends AbstractSearchProvider implements Se
     }
 
     @Override
-    public List<SearchResult> query(SearchQuery searchQuery) {
+    public List<SearchResult> query(SearchQuery searchQuery, GraphContainer graphContainer) {
         List<String> categories = m_categoryDao.getAllCategoryNames();
         List<SearchResult> results = new ArrayList<SearchResult>();
         for (String category : categories) {
             if(searchQuery.matches(category)){
                 SearchResult result = new SearchResult("category", category, category);
                 result.setCollapsible(true);
+                CollapsibleCriteria criteria = getMatchingCriteria(graphContainer, category);
+                if (criteria != null) {
+                    result.setCollapsed(criteria.isCollapsed());
+                }
                 results.add(result);
             }
         }
@@ -112,13 +116,20 @@ public class CategorySearchProvider extends AbstractSearchProvider implements Se
 
     @Override
     public void onToggleCollapse(SearchResult searchResult, GraphContainer graphContainer) {
+        CollapsibleCriteria criteria = getMatchingCriteria(graphContainer, searchResult.getId());
+        if (criteria != null) {
+            criteria.setCollapsed(!criteria.isCollapsed());
+            graphContainer.redoLayout();
+        }
+    }
+
+    private static CollapsibleCriteria getMatchingCriteria(GraphContainer graphContainer, String label) {
         CollapsibleCriteria[] criteria = VertexHopGraphProvider.getCollapsibleCriteriaForContainer(graphContainer);
         for (CollapsibleCriteria criterium : criteria) {
-            if (criterium.getId().equals(searchResult.getId())) {
-                criterium.setCollapsed(!criterium.isCollapsed());
-                graphContainer.redoLayout();
-                break;
+            if (criterium.getId().equals(label)) {
+                return criterium;
             }
         }
+        return null;
     }
 }

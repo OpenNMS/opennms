@@ -29,11 +29,9 @@
 package org.opennms.features.topology.app.internal.gwt.client.ui;
 
 import org.opennms.features.topology.app.internal.gwt.client.SearchSuggestion;
-import org.springframework.util.StringUtils;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -109,9 +107,19 @@ public class SearchTokenField extends Composite {
         //m_centerSuggestionBtn.getElement().getStyle().setPadding(5, Unit.PX);
 
         if (m_suggestion.isCollapsible()) {
-            m_collapseBtn.setTitle("Collapse group");
             m_collapseBtn.getElement().getStyle().setCursor(Style.Cursor.POINTER);
             //m_collapseBtn.getElement().getStyle().setPadding(5, Unit.PX);
+
+            // If the suggestion is already collapsed, then switch the icon to the "+" icon
+            m_collapseBtn.getElement().removeClassName("icon-plus");
+            m_collapseBtn.getElement().removeClassName("icon-minus");
+            if (m_suggestion.isCollapsed()) {
+                m_collapseBtn.getElement().addClassName("icon-plus");
+                m_collapseBtn.setTitle("Expand group");
+            } else {
+                m_collapseBtn.getElement().addClassName("icon-minus");
+                m_collapseBtn.setTitle("Collapse group");
+            }
         } else {
             m_collapseBtn.setVisible(false);
         }
@@ -148,11 +156,14 @@ public class SearchTokenField extends Composite {
             m_collapseCallback.onCollapse(m_suggestion);
         }
         // Toggle the icon on the button
-        String styleClass = m_collapseBtn.getElement().getClassName();
-        if (styleClass.contains("icon-minus")) {
-            m_collapseBtn.getElement().setClassName(styleClass.replace("icon-minus", "icon-plus"));
-        } else if (styleClass.contains("icon-plus")) {
-            m_collapseBtn.getElement().setClassName(styleClass.replace("icon-plus", "icon-minus"));
+        if (m_suggestion.isCollapsed()) {
+            m_collapseBtn.getElement().removeClassName("icon-minus");
+            m_collapseBtn.getElement().addClassName("icon-plus");
+            m_collapseBtn.setTitle("Expand group");
+        } else {
+            m_collapseBtn.getElement().removeClassName("icon-plus");
+            m_collapseBtn.getElement().addClassName("icon-minus");
+            m_collapseBtn.setTitle("Collapse group");
         }
     }
 

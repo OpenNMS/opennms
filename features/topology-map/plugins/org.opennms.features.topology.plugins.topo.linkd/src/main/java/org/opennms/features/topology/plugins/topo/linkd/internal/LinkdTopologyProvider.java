@@ -600,7 +600,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     }
 
     @Override
-    public List<SearchResult> query(SearchQuery searchQuery) {
+    public List<SearchResult> query(SearchQuery searchQuery, GraphContainer graphContainer) {
         List<Vertex> vertices = m_vertexProvider.getVertices();
         List<SearchResult> searchResults = Lists.newArrayList();
 

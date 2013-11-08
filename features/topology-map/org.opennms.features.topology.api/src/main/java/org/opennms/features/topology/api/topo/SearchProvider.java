@@ -36,7 +36,7 @@ import org.opennms.features.topology.api.OperationContext;
 public interface SearchProvider {
     String getSearchProviderNamespace();
     boolean contributesTo(String namespace);
-    List<SearchResult> query(SearchQuery searchQuery);
+    List<SearchResult> query(SearchQuery searchQuery, GraphContainer graphContainer);
     void onFocusSearchResult(SearchResult searchResult, OperationContext operationContext);
     void onDefocusSearchResult(SearchResult searchResult, OperationContext operationContext);
     boolean supportsPrefix(String searchPrefix);
