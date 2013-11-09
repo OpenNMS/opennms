@@ -111,6 +111,12 @@
     if( node_db == null ) {
 		throw new ElementNotFoundException("No such node in database", "node", "element/linkednode.jsp", "node", "element/nodeList.htm");
     }
+    String parentRes = Integer.toString(nodeId);
+    String parentResType = "node";
+    if (!(node_db.getForeignSource() == null) && !(node_db.getForeignId() == null)) {
+        parentRes = node_db.getForeignSource() + ":" + node_db.getForeignId();
+        parentResType = "nodeSource";
+    }
 
     //find the telnet interfaces, if any
     String telnetIp = null;
@@ -231,11 +237,11 @@
           </li>
         <% } %>
 
-        <% if (m_resourceService.findNodeChildResources(nodeId).size() > 0) { %>
+        <% if (m_resourceService.findNodeChildResources(node_db).size() > 0) { %>
 	  <li>
         <c:url var="resourceGraphsUrl" value="graph/chooseresource.htm">
-          <c:param name="parentResourceType" value="node"/>
-          <c:param name="parentResource" value="<%= Integer.toString(nodeId) %>"/>
+          <c:param name="parentResourceType" value="<%=parentResType%>"/>
+          <c:param name="parentResource" value="<%=parentRes%>"/>
           <c:param name="reports" value="all"/>
         </c:url>
           <a href="${fn:escapeXml(resourceGraphsUrl)}">Resource Graphs</a>
