@@ -60,6 +60,7 @@
     -->
     
     <input name="reset" type="reset" value="Reset" />
+    <input name="j_usergroups" type="hidden" value=""/>
     <input name="Login" type="submit" value="Login" />
 
     <script type="text/javascript">

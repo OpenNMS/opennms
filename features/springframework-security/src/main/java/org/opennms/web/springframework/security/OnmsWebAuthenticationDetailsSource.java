@@ -26,23 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.topo;
+package org.opennms.web.springframework.security;
 
-import java.util.List;
+import org.springframework.security.authentication.AuthenticationDetailsSource;
 
-import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.OperationContext;
+import javax.servlet.http.HttpServletRequest;
 
-public interface SearchProvider {
-    String getSearchProviderNamespace();
-    boolean contributesTo(String namespace);
-    List<SearchResult> query(SearchQuery searchQuery);
-    void onFocusSearchResult(SearchResult searchResult, OperationContext operationContext);
-    void onDefocusSearchResult(SearchResult searchResult, OperationContext operationContext);
-    boolean supportsPrefix(String searchPrefix);
-    List<VertexRef> getVertexRefsBy(SearchResult searchResult);
-    void addVertexHopCriteria(SearchResult searchResult, GraphContainer container);
-    void removeVertexHopCriteria(SearchResult searchResult, GraphContainer container);
-    void onCenterSearchResult(SearchResult searchResult, GraphContainer graphContainer);
-    void onToggleCollapse(SearchResult searchResult, GraphContainer graphContainer);
+public class OnmsWebAuthenticationDetailsSource implements AuthenticationDetailsSource<HttpServletRequest, OnmsAuthenticationDetails> {
+
+    @Override
+    public OnmsAuthenticationDetails buildDetails(HttpServletRequest context) {
+        return new OnmsAuthenticationDetails(context);
+    }
 }

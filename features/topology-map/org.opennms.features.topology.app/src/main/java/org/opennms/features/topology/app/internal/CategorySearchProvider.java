@@ -28,18 +28,23 @@
 
 package org.opennms.features.topology.app.internal;
 
-import com.google.common.collect.Lists;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.topo.*;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider;
+import org.opennms.features.topology.api.topo.AbstractSearchProvider;
+import org.opennms.features.topology.api.topo.CollapsibleCriteria;
+import org.opennms.features.topology.api.topo.SearchProvider;
+import org.opennms.features.topology.api.topo.SearchQuery;
+import org.opennms.features.topology.api.topo.SearchResult;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.support.CategoryHopCriteria;
 import org.opennms.features.topology.app.internal.support.CategoryHopCriteriaFactory;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 
-import java.util.List;
-
-public class CategorySearchProvider implements SearchProvider{
+public class CategorySearchProvider extends AbstractSearchProvider implements SearchProvider {
 
     private CategoryHopCriteriaFactory m_categoryHopFactory;
     private CategoryDao m_categoryDao;
@@ -62,10 +67,11 @@ public class CategorySearchProvider implements SearchProvider{
     @Override
     public List<SearchResult> query(SearchQuery searchQuery) {
         List<String> categories = m_categoryDao.getAllCategoryNames();
-        List<SearchResult> results = Lists.newArrayList();
+        List<SearchResult> results = new ArrayList<SearchResult>();
         for (String category : categories) {
             if(searchQuery.matches(category)){
-                SearchResult result = new SearchResult(category, "category", category);
+                SearchResult result = new SearchResult("category", category, category);
+                result.setCollapsible(true);
                 results.add(result);
             }
         }
@@ -73,18 +79,8 @@ public class CategorySearchProvider implements SearchProvider{
     }
 
     @Override
-    public void onFocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
-
-    }
-
-    @Override
-    public void onDefocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
-
-    }
-
-    @Override
     public boolean supportsPrefix(String searchPrefix) {
-        return searchPrefix.toLowerCase().equals("category=");
+        return supportsPrefix("category=", searchPrefix);
     }
 
     @Override
@@ -106,16 +102,23 @@ public class CategorySearchProvider implements SearchProvider{
         container.removeCriteria(c);
     }
 
-    @Override
-    public void onCenterSearchResult(SearchResult searchResult, GraphContainer graphContainer) {
-
-    }
-
     public CategoryDao getCategoryDao() {
         return m_categoryDao;
     }
 
     public void setCategoryDao(CategoryDao m_categoryDao) {
         this.m_categoryDao = m_categoryDao;
+    }
+
+    @Override
+    public void onToggleCollapse(SearchResult searchResult, GraphContainer graphContainer) {
+        CollapsibleCriteria[] criteria = VertexHopGraphProvider.getCollapsibleCriteriaForContainer(graphContainer);
+        for (CollapsibleCriteria criterium : criteria) {
+            if (criterium.getId().equals(searchResult.getId())) {
+                criterium.setCollapsed(!criterium.isCollapsed());
+                graphContainer.redoLayout();
+                break;
+            }
+        }
     }
 }

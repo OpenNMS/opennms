@@ -240,20 +240,10 @@
       </div>
       <!-- end menu -->
 
-
             <jsp:include page="/includes/alarm-querypanel.jsp" flush="false" />
           
-            <% if( alarmCount > 0 ) { %>
-              <% String baseUrl = this.makeLink(callback, parms, favorite); %>
-              <jsp:include page="/includes/resultsIndex.jsp" flush="false" >
-                <jsp:param name="count"    value="<%=alarmCount%>" />
-                <jsp:param name="baseurl"  value="<%=baseUrl%>"    />
-                <jsp:param name="limit"    value="<%=parms.getLimit()%>"      />
-                <jsp:param name="multiple" value="<%=parms.getMultiple()%>"   />
-              </jsp:include>
-            <% } %>
-
             <% if( parms.getFilters().size() > 0 || AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) || AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) ) { %>
+                <div>
                 <p>
                     Favorites:
                     <onms:select
@@ -261,14 +251,8 @@
                             selected='${favorite}'
                             handler='${filterFavoriteSelectTagHandler}'
                             onChange='changeFavorite(this)'/>
-                    <onms:favorite
-                            favorite="${favorite}"
-                            parameters="${parms}"
-                            callback="${callback}"
-                            context="/alarm/list"
-                            createFavoriteController="/alarm/createFavorite"
-                            deleteFavoriteController="/alarm/deleteFavorite"
-                            onDeselect="<%=FavoriteTag.Action.CLEAR_FILTERS%>"/>
+                </p>
+                <p>
                     <onms:filters
                             context="/alarm/list"
                             favorite="${favorite}"
@@ -278,9 +262,29 @@
                             acknowledgeFilterPrefix="Alarm(s)"
                             acknowledgeFilterSuffix="alarm(s)"
                             callback="${callback}" />
+
+                    <onms:favorite
+                            favorite="${favorite}"
+                            parameters="${parms}"
+                            callback="${callback}"
+                            context="/alarm/list"
+                            createFavoriteController="/alarm/createFavorite"
+                            deleteFavoriteController="/alarm/deleteFavorite"
+                            onDeselect="<%=FavoriteTag.Action.CLEAR_FILTERS%>"/>
                 </p>
+                </div>
             <% } %>
             <onms:alert/>
+
+            <% if( alarmCount > 0 ) { %>
+              <% String baseUrl = this.makeLink(callback, parms, favorite); %>
+              <jsp:include page="/includes/resultsIndex.jsp" flush="false" >
+                <jsp:param name="count"    value="<%=alarmCount%>" />
+                <jsp:param name="baseurl"  value="<%=baseUrl%>"    />
+                <jsp:param name="limit"    value="<%=parms.getLimit()%>"      />
+                <jsp:param name="multiple" value="<%=parms.getMultiple()%>"   />
+              </jsp:include>
+            <% } %>
 
       <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
           <form action="<%= Util.calculateUrlBase(request, "alarm/acknowledge") %>" method="post" name="alarm_action_form">

@@ -126,7 +126,7 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
             
             if (graph.getNodeId() != null && !graph.getNodeId().equals("null")) {
                 parentResourceTypeName = "node";
-                parentResourceName = graph.getNodeId(); // FIXME what about storeByForeignSource ?
+                parentResourceName = graph.getNodeId();
             } else if (graph.getNodeSource() != null && !graph.getNodeSource().equals("null")) {
                 parentResourceTypeName = "nodeSource";
                 parentResourceName = graph.getNodeSource();

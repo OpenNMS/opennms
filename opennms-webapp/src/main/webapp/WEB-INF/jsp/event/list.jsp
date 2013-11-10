@@ -221,6 +221,41 @@
 
       <jsp:include page="/includes/event-querypanel.jsp" flush="false" />
           
+            <% if( parms.getFilters().size() > 0 || AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) || AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) ) { %>
+                <div>
+                <p>
+                    Favorites:
+                    <onms:select
+                            elements='${favorites}'
+                            selected='${favorite}'
+                            handler='${filterFavoriteSelectTagHandler}'
+                            onChange='changeFavorite(this)'/>
+                </p>
+                <p>
+                    <onms:filters
+                            context="/event/list"
+                            favorite="${favorite}"
+                            parameters="${parms}"
+                            showRemoveLink="true"
+                            showAcknowledgeFilter="true"
+                            acknowledgeFilterPrefix="Event(s)"
+                            acknowledgeFilterSuffix="event(s)"
+                            callback="${callback}" />
+
+                    <onms:favorite
+                            favorite="${favorite}"
+                            parameters="${parms}"
+                            callback="${callback}"
+                            context="/event/list"
+                            createFavoriteController="/event/createFavorite"
+                            deleteFavoriteController="/event/deleteFavorite"
+                            onDeselect="<%=FavoriteTag.Action.CLEAR_FILTERS%>"/>
+
+                </p>
+                </div>
+            <% } %>
+            <onms:alert/>
+
             <% if( events.length > 0 ) { %>
               <% String baseUrl = this.makeLink(callback, parms, favorite); %>
               <% if ( eventCount == -1 ) { %>
@@ -239,36 +274,6 @@
                 </jsp:include>
               <% } %>
             <% } %>
-
-            <% if( parms.getFilters().size() > 0 || AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) || AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) ) { %>
-                <p>
-                    Favorites:
-                    <onms:select
-                            elements='${favorites}'
-                            selected='${favorite}'
-                            handler='${filterFavoriteSelectTagHandler}'
-                            onChange='changeFavorite(this)'/>
-                    <onms:favorite
-                            favorite="${favorite}"
-                            parameters="${parms}"
-                            callback="${callback}"
-                            context="/event/list"
-                            createFavoriteController="/event/createFavorite"
-                            deleteFavoriteController="/event/deleteFavorite"
-                            onDeselect="<%=FavoriteTag.Action.CLEAR_FILTERS%>"/>
-                    <onms:filters
-                        context="/event/list"
-                        favorite="${favorite}"
-                        parameters="${parms}"
-                        showRemoveLink="true"
-                        showAcknowledgeFilter="true"
-                        acknowledgeFilterPrefix="Event(s)"
-                        acknowledgeFilterSuffix="event(s)"
-                        callback="${callback}" />
-
-              </p>
-            <% } %>
-            <onms:alert/>
 
     <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
       <form action="event/acknowledge" method="post" name="acknowledge_form">

@@ -30,8 +30,6 @@ package org.opennms.features.topology.app.internal.gwt.client;
 
 import com.vaadin.shared.communication.ServerRpc;
 
-import java.util.List;
-
 public interface SearchBoxServerRpc extends ServerRpc {
 
     public void querySuggestions(String query, int indexFrom, int indexTo);
@@ -40,4 +38,5 @@ public interface SearchBoxServerRpc extends ServerRpc {
     public void addToFocus(SearchSuggestion searchSuggestion);
     public void removeFocused(SearchSuggestion searchSuggestion);
     public void centerSearchSuggestion(SearchSuggestion searchSuggestion);
+    public void toggleSuggestionCollapse(SearchSuggestion searchSuggestion);
 }

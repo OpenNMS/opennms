@@ -28,6 +28,8 @@
 
 package org.opennms.features.topology.app.internal.gwt.client;
 
+import java.util.Date;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.SuggestOracle;
 import com.vaadin.client.communication.RpcProxy;
@@ -113,5 +115,9 @@ public class SearchBoxConnector extends AbstractComponentConnector {
 
     public void centerOnSuggestion(SearchSuggestion searchSuggestion) {
         m_rpc.centerSearchSuggestion(searchSuggestion);
+    }
+
+    public void toggleSuggestionCollapse(SearchSuggestion searchSuggestion) {
+        m_rpc.toggleSuggestionCollapse(searchSuggestion);
     }
 }
