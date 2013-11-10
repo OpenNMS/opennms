@@ -96,6 +96,8 @@ public class SearchTokenField extends Composite {
     }
 
     private void init() {
+        log(getClass().getSimpleName() + ".init(): " + m_suggestion.toString());
+
         m_tokenContainer.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 
         m_closeBtn.setTitle("Remove from focus");
@@ -152,6 +154,8 @@ public class SearchTokenField extends Composite {
 
     @UiHandler("m_collapseBtn")
     void handleCollapse(ClickEvent event) {
+        log(getClass().getSimpleName() + ".handleCollapse(): " + m_suggestion.toString());
+        
         if (m_collapseCallback != null) {
             m_collapseCallback.onCollapse(m_suggestion);
         }
@@ -181,4 +185,7 @@ public class SearchTokenField extends Composite {
         }
     }
 
+    private static native void log(Object message) /*-{
+        $wnd.console.debug(message);
+    }-*/;
 }

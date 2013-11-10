@@ -219,6 +219,11 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
 
     public void setFocused(List<SearchSuggestion> focused) {
         m_focusedContainer.clear();
+        if (focused == null) {
+            log("Focus list for searchbox is null");
+            updateScrollPanelSize();
+            return;
+        }
         log(focused);
         for(SearchSuggestion searchSuggestion : focused){
             SearchTokenField field = new SearchTokenField(searchSuggestion);

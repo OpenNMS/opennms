@@ -131,4 +131,9 @@ public class SearchSuggestion implements Serializable, SuggestOracle.Suggestion 
     public boolean isFocused() {
         return m_focused;
     }
+
+    @Override
+    public String toString() {
+        return "SearchSuggestion[namespace:" + m_namespace + ",id:" + m_id + ",label:" + m_label + ",focused:" + m_focused + ",collapsible:" + m_collapsible + ",collapsed:" + m_collapsed + "]";
+    }
 }
