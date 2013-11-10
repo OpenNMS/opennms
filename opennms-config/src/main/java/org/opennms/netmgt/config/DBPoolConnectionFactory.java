@@ -29,8 +29,6 @@
 package org.opennms.netmgt.config;
 
 import java.beans.PropertyVetoException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -41,9 +39,9 @@ import javax.sql.DataSource;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.db.BaseConnectionFactory;
+import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 
 import snaq.db.DBPoolDataSource;
 
@@ -55,12 +53,8 @@ public class DBPoolConnectionFactory extends BaseConnectionFactory {
 
 	private DBPoolDataSource m_dataSource;
 
-    public DBPoolConnectionFactory(final InputStream stream, final String dsName) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
-    	super(stream, dsName);
-    }
-
-    public DBPoolConnectionFactory(final String configFile, final String dsName) throws IOException, MarshalException, ValidationException, PropertyVetoException, SQLException {
-    	super(configFile, dsName);
+    public DBPoolConnectionFactory(final JdbcDataSource ds) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
+    	super(ds);
     }
 
     @Override
@@ -120,7 +114,7 @@ public class DBPoolConnectionFactory extends BaseConnectionFactory {
     }
 
     @Override
-    public void setLoginTimeout(final int seconds) throws SQLException {
+    public void setLoginTimeout(final int seconds) {
         m_dataSource.setLoginTimeout(seconds);
     }
 
@@ -135,7 +129,7 @@ public class DBPoolConnectionFactory extends BaseConnectionFactory {
     }
 
     @Override
-    public void close() throws SQLException {
+    public void close() {
     	super.close();
     	LOG.info("Closing DBPool pool.");
     	m_dataSource.release();

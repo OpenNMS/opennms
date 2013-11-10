@@ -6,16 +6,25 @@
 
   <!-- 
     Available implementations:
-	   org.opennms.core.db.C3P0ConnectionFactory
-		  - Uses C3P0 (http://sourceforge.net/projects/c3p0/)  This is the default.
+      org.opennms.core.db.AtomikosDataSourceFactory
+        - Uses Atomikos TransactionEssentials (http://www.atomikos.com/Main/TransactionsEssentials)
+          This is the default.
+
+      The following datasources are not "transaction aware" (XA) so are not compatible 
+      with OpenNMS 1.13 and higher which uses Hibernate 4, Spring 3.1+, and the Java 
+      Transaction API (JTA) to perform data access and transaction processing. The 
+      following data sources are obsolete and have been removed from OpenNMS.
+
+      org.opennms.core.db.C3P0ConnectionFactory
+        - Uses C3P0 (http://sourceforge.net/projects/c3p0/).
       org.opennms.netmgt.config.DBPoolConnectionFactory
-		  - Uses DBPool (http://www.snaq.net/java/DBPool/)  An alternate high-performance pool.
+        - Uses DBPool (http://www.snaq.net/java/DBPool/)  An alternate high-performance pool.
           Extremely experimental.
-		org.opennms.netmgt.config.TomcatJdbcPoolConnectionFactory
-		  - Uses Tomcat DBCP (http://people.apache.org/~fhanik/jdbc-pool/jdbc-pool.html)  A
+      org.opennms.netmgt.config.TomcatJdbcPoolConnectionFactory
+        - Uses Tomcat DBCP (http://people.apache.org/~fhanik/jdbc-pool/jdbc-pool.html)  A
           highly concurrent pooling API.  Extremely experimental.
   -->
-  <connection-pool factory="org.opennms.core.db.C3P0ConnectionFactory"
+  <connection-pool factory="org.opennms.core.db.AtomikosDataSourceFactory"
     idleTimeout="600"
     loginTimeout="3"
     minPool="10"

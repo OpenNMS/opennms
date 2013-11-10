@@ -28,23 +28,13 @@
 
 package org.opennms.core.db;
 
-import java.beans.PropertyVetoException;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.URL;
-import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
+import java.net.URI;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 
-import org.apache.commons.io.IOUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.postgresql.xa.PGXADataSource;
@@ -66,73 +56,52 @@ import org.slf4j.LoggerFactory;
  *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  */
-public final class XADataSourceFactory implements XADataSource {
+public abstract class XADataSourceFactory {
 
 	private static final Logger LOG = LoggerFactory.getLogger(DataSourceFactory.class);
 
-	/**
-	 * The singleton instance of this factory
-	 */
-	private static XADataSource m_singleton = null;
-
-	private static final Map<String, XADataSource> m_dataSources = new ConcurrentHashMap<String, XADataSource>();
-
-	/**
-	 * Load the config from the default config file and create the singleton
-	 * instance of this factory.
-	 *
-	 * @exception java.io.IOException
-	 *                Thrown if the specified config file cannot be read
-	 * @exception org.exolab.castor.xml.MarshalException
-	 *                Thrown if the file does not conform to the schema.
-	 * @exception org.exolab.castor.xml.ValidationException
-	 *                Thrown if the contents do not match the required schema.
-	 * @throws java.sql.SQLException if any.
-	 * @throws java.beans.PropertyVetoException if any.
-	 * @throws java.io.IOException if any.
-	 * @throws org.exolab.castor.xml.MarshalException if any.
-	 * @throws org.exolab.castor.xml.ValidationException if any.
-	 * @throws java.lang.ClassNotFoundException if any.
-	 */
-	public static synchronized void init() throws IOException, MarshalException, ValidationException, ClassNotFoundException, PropertyVetoException, SQLException {
-		if (!isLoaded("opennms")) {
-			init("opennms");
+	private static DataSourceConfigurationFactory m_dataSourceConfigFactory;
+	
+	static {
+		// Try to create a DataSourceConfigurationFactory from the default opennms-datasources.xml
+		try {
+			m_dataSourceConfigFactory = new DataSourceConfigurationFactory(ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME));
+		} catch (IOException e) {
+			LOG.warn("Could not parse default data source configuration", e);
+			m_dataSourceConfigFactory = null;
 		}
 	}
+
+	private static final Map<String, XADataSource> m_dataSources = new ConcurrentHashMap<String, XADataSource>();
 
 	/**
 	 * <p>init</p>
 	 *
 	 * @param dsName a {@link java.lang.String} object.
-	 * @throws java.io.IOException if any.
-	 * @throws org.exolab.castor.xml.MarshalException if any.
-	 * @throws org.exolab.castor.xml.ValidationException if any.
-	 * @throws java.lang.ClassNotFoundException if any.
-	 * @throws java.beans.PropertyVetoException if any.
-	 * @throws java.sql.SQLException if any.
 	 */
-	public static synchronized void init(final String dsName) throws IOException, MarshalException, ValidationException, ClassNotFoundException, PropertyVetoException, SQLException {
+	public static synchronized void init(final String dsName) {
 		if (isLoaded(dsName)) {
-			// init already called - return
-			// to reload, reload() will need to be called
+			// init already called, return
 			return;
 		}
 
-		final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME);
-		FileInputStream fileInputStream = null;
-		try {
-			fileInputStream = new FileInputStream(cfgFile);
-			final JdbcDataSource ds = ConnectionFactoryUtil.marshalDataSourceFromConfig(fileInputStream, dsName);
+		final JdbcDataSource ds = m_dataSourceConfigFactory.getJdbcDataSource(dsName);
+		String urlString = ds.getUrl();
+		if (urlString.startsWith("jdbc:")) {
+			urlString = urlString.substring("jdbc:".length());
+		}
+		URI url = URI.create(urlString);
+		// TODO: Add support for more XADataSources (hsqldb, derby)
+		if ("postgresql".equalsIgnoreCase(url.getScheme())) {
 			PGXADataSource xaDataSource = new PGXADataSource();
-			URL url = new URL(ds.getUrl());
 			xaDataSource.setServerName(url.getHost());
 			xaDataSource.setPortNumber(url.getPort());
 			xaDataSource.setDatabaseName(ds.getDatabaseName());
 			xaDataSource.setUser(ds.getUserName());
 			xaDataSource.setPassword(ds.getPassword());
-			setInstance(xaDataSource);
-		} finally {
-			IOUtils.closeQuietly(fileInputStream);
+			setInstance(dsName, xaDataSource);
+		} else {
+			throw new UnsupportedOperationException("Data source scheme not supported: " + url.getScheme());
 		}
 	}
 
@@ -173,41 +142,12 @@ public final class XADataSourceFactory implements XADataSource {
 	}
 
 	/**
-	 * Return a new database connection to the database configured in the
-	 * <tt>opennms-database.xml</tt>. The database connection is not managed
-	 * by the factory and must be release by the caller by using the
-	 * <code>close</code> method.
-	 *
-	 * @return a new database connection to the database configured in the
-	 *         <tt>opennms-database.xml</tt>
-	 * @throws java.sql.SQLException
-	 *             Thrown if there is an error opening the connection to the
-	 *             database.
-	 */
-	@Override
-	public XAConnection getXAConnection() throws SQLException {
-		return getXAConnection("opennms");
-	}
-
-	/**
-	 * <p>getConnection</p>
-	 *
-	 * @param dsName a {@link java.lang.String} object.
-	 * @return a {@link java.sql.Connection} object.
-	 * @throws java.sql.SQLException if any.
-	 */
-	public XAConnection getXAConnection(final String dsName) throws SQLException {
-		return getXADataSource(dsName).getXAConnection();
-	}
-
-	/**
 	 * <p>setInstance</p>
 	 *
-	 * @param singleton a {@link javax.sql.DataSource} object.
+	 * @param ds a {@link javax.sql.DataSource} object.
 	 */
-	public static void setInstance(final XADataSource singleton) {
-		m_singleton=singleton;
-		setInstance("opennms", singleton);
+	public static void setInstance(final XADataSource ds) {
+		setInstance("opennms", ds);
 	}
 
 	/**
@@ -217,7 +157,7 @@ public final class XADataSourceFactory implements XADataSource {
 	 * @param singleton a {@link javax.sql.DataSource} object.
 	 */
 	public static synchronized void setInstance(final String dsName, final XADataSource singleton) {
-		m_dataSources.put(dsName,singleton);
+		m_dataSources.put(dsName, singleton);
 	}
 
 	/**
@@ -236,103 +176,23 @@ public final class XADataSourceFactory implements XADataSource {
 	 * @return a {@link javax.sql.DataSource} object.
 	 */
 	public static synchronized XADataSource getXADataSource(final String dsName) {
+		init(dsName);
 		return m_dataSources.get(dsName);
 	}
 
-	/** {@inheritDoc} */
-	@Override
-	public XAConnection getXAConnection(final String username, final String password) throws SQLException {
-		return getXAConnection();
-	}
-
-	/**
-	 * <p>getLogWriter</p>
-	 *
-	 * @return a {@link java.io.PrintWriter} object.
-	 * @throws java.sql.SQLException if any.
-	 */
-	@Override
-	public PrintWriter getLogWriter() throws SQLException {
-		return m_singleton.getLogWriter();
-	}
-
-	/**
-	 * <p>getLogWriter</p>
-	 *
-	 * @param dsName a {@link java.lang.String} object.
-	 * @return a {@link java.io.PrintWriter} object.
-	 * @throws java.sql.SQLException if any.
-	 */
-	public PrintWriter getLogWriter(final String dsName) throws SQLException {
-		return getXADataSource(dsName).getLogWriter();
-	}
-
-	/** {@inheritDoc} */
-	@Override
-	public void setLogWriter(final PrintWriter out) throws SQLException {
-		setLogWriter("opennms", out);
-	}
-
-	/**
-	 * <p>setLogWriter</p>
-	 *
-	 * @param dsName a {@link java.lang.String} object.
-	 * @param out a {@link java.io.PrintWriter} object.
-	 * @throws java.sql.SQLException if any.
-	 */
-	public void setLogWriter(final String dsName, final PrintWriter out) throws SQLException {
-		getXADataSource(dsName).setLogWriter(out);
-	}
-
-	/** {@inheritDoc} */
-	@Override
-	public void setLoginTimeout(final int seconds) throws SQLException {
-		setLoginTimeout("opennms", seconds);
-	}
-
-	/**
-	 * <p>setLoginTimeout</p>
-	 *
-	 * @param dsName a {@link java.lang.String} object.
-	 * @param seconds a int.
-	 * @throws java.sql.SQLException if any.
-	 */
-	public void setLoginTimeout(final String dsName, final int seconds) throws SQLException {
-		getXADataSource(dsName).setLoginTimeout(seconds);
-	}
-
-	/**
-	 * <p>getLoginTimeout</p>
-	 *
-	 * @return a int.
-	 * @throws java.sql.SQLException if any.
-	 */
-	@Override
-	public int getLoginTimeout() throws SQLException {
-		return getLoginTimeout("opennms");
-	}
-
-	/**
-	 * <p>getLoginTimeout</p>
-	 *
-	 * @param dsName a {@link java.lang.String} object.
-	 * @return a int.
-	 * @throws java.sql.SQLException if any.
-	 */
-	public int getLoginTimeout(final String dsName) throws SQLException {
-		return getXADataSource(dsName).getLoginTimeout();
-	}
-
-	/** {@inheritDoc} */
-	public java.util.logging.Logger getParentLogger() throws SQLFeatureNotSupportedException {
-		throw new SQLFeatureNotSupportedException("getParentLogger not supported");
-	}
+    /**
+     */
+    public static synchronized void setDataSourceConfigurationFactory(final DataSourceConfigurationFactory factory) {
+        // Close any existing datasources
+        close();
+        m_dataSourceConfigFactory = factory;
+    }
 
 	/**
 	 * <p>close</p>
 	 *
 	 * @throws java.sql.SQLException if any.
 	 */
-	public static synchronized void close() throws SQLException {
+	public static synchronized void close() {
 	}
 }
