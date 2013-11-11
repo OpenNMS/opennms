@@ -473,7 +473,7 @@ public final class DiscoveryLink implements ReadyRunnable {
                     // are restricted to those where the least significant
                     // 4 bits are zero (i.e., only the most significant 4
                     // bits are settable).
-                    int designatedbridgeport = Integer.parseInt(stpPortDesignatedPort.substring(1),
+                    int designatedbridgeport = 8191 & Integer.parseInt(stpPortDesignatedPort,
                                                                 16);
 
                     // try to see if designated bridge is linkable SNMP node
