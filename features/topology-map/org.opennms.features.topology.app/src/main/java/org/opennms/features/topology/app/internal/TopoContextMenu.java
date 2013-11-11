@@ -33,15 +33,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
-import org.opennms.features.topology.api.OperationContext.DisplayLocation;
+import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.app.internal.CommandManager.DefaultOperationContext;
 import org.slf4j.LoggerFactory;
 import org.vaadin.peter.contextmenu.ContextMenu;
-
-import com.vaadin.ui.UI;
 
 public class TopoContextMenu extends ContextMenu {
 
@@ -119,23 +115,21 @@ public class TopoContextMenu extends ContextMenu {
 		return m_items;
 	}
 
-	public void updateContextMenuItems(Object target, UI ui, GraphContainer graphContainer) {
-		updateContextMenuItems(target, ui, graphContainer, getItems());
+	public void updateContextMenuItems(Object target, OperationContext operationContext) {
+		updateContextMenuItems(target, operationContext, getItems());
 	}
 
-	private void updateContextMenuItems(Object target, UI ui, GraphContainer graphContainer, List<TopoContextMenuItem> items) {
+	private void updateContextMenuItems(Object target, OperationContext operationContext, List<TopoContextMenuItem> items) {
 		for(TopoContextMenuItem contextItem : items) {
 			if(contextItem.hasChildren()) {
-				updateContextMenuItems(target, ui, graphContainer, contextItem.getChildren());
+				updateContextMenuItems(target, operationContext, contextItem.getChildren());
 			} else {
-				TopoContextMenu.updateContextMenuItem(target, contextItem, graphContainer, ui);
+				TopoContextMenu.updateContextMenuItem(target, contextItem, operationContext);
 			}
 		}
 	}
 
-	private static void updateContextMenuItem(Object target, TopoContextMenuItem contextItem, GraphContainer graphContainer, UI mainWindow) {
-		DefaultOperationContext operationContext = new DefaultOperationContext(mainWindow, graphContainer, DisplayLocation.CONTEXTMENU);
-
+	private static void updateContextMenuItem(Object target, TopoContextMenuItem contextItem, OperationContext operationContext) {
 		ContextMenuItem ctxMenuItem = contextItem.getItem();
 		Operation operation = contextItem.getOperation();
 
