@@ -399,6 +399,9 @@ public class VertexHopGraphProvider implements GraphProvider {
 		return retval;
 	}
 
+	/**
+	 * TODO OPTIMIZE THIS FUNCTION?
+	 */
 	public static List<Edge> collapseEdges(Collection<Edge> edges, CollapsibleCriteria[] criteria) {
 		List<Edge> retval = new ArrayList<Edge>(edges);
 		List<Edge> addMe = new ArrayList<Edge>();
@@ -458,7 +461,13 @@ public class VertexHopGraphProvider implements GraphProvider {
 	}
 
 	@Override
-	public List<Vertex> getChildren(VertexRef group) {
+	public List<Vertex> getChildren(VertexRef group, Criteria... criteria) {
+		for (CollapsibleCriteria criterium : getCollapsedCriteria(criteria)) {
+			if (new RefComparator().compare(criterium.getCollapsedRepresentation(), group) == 0) {
+				return getVertices(criterium.getVertices());
+			}
+		}
+		//LOG.warn("Called getChildren() on a vertex {} that is not currently collapsible", group);
 		return Collections.emptyList();
 	}
 

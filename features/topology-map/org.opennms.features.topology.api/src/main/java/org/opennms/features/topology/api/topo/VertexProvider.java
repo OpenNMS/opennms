@@ -80,7 +80,7 @@ public interface VertexProvider {
 	
 	boolean setParent(VertexRef child, VertexRef parent);
 	
-	public List<Vertex> getChildren(VertexRef group);
+	public List<Vertex> getChildren(VertexRef group, Criteria... criteria);
 	
 	public void addVertexListener(VertexListener vertexListener);
 	

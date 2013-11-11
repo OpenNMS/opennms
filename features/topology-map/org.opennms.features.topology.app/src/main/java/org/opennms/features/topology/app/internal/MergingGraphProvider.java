@@ -285,8 +285,8 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 	}
 
 	@Override
-	public List<Vertex> getChildren(VertexRef group) {
-		return vProvider(group).getChildren(group);
+	public List<Vertex> getChildren(VertexRef group, Criteria... criteria) {
+		return vProvider(group).getChildren(group, criteria);
 	}
 
 	@Override
@@ -610,7 +610,7 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 		}
 
 		@Override
-		public List<Vertex> getChildren(VertexRef group) {
+		public List<Vertex> getChildren(VertexRef group, Criteria... criteria) {
 			return Collections.emptyList();
 		}
 

@@ -1,10 +1,18 @@
 package org.opennms.features.topology.app.internal;
 
-import com.vaadin.data.Item;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.topology.api.topo.AbstractRef;
+import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexProvider;
@@ -13,13 +21,7 @@ import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import com.vaadin.data.Item;
 
 public class AlarmStatusProviderTest {
     
@@ -126,7 +128,7 @@ public class AlarmStatusProviderTest {
         
         EasyMock.replay(m_alarmDao);
         
-        Map<VertexRef, Status> statusMap = m_statusProvider.getStatusForVertices(m_vertexProvider, vertexList);
+        Map<VertexRef, Status> statusMap = m_statusProvider.getStatusForVertices(m_vertexProvider, vertexList, new Criteria[0]);
         assertEquals(1, statusMap.size());
         assertEquals(vertex, new ArrayList<VertexRef>(statusMap.keySet()).get(0));
         String computeStatus = statusMap.get(vertex).computeStatus();

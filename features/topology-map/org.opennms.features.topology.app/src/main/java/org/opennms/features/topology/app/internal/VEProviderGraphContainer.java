@@ -524,17 +524,17 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 	public Collection<VertexRef> getVertexRefForest(Collection<VertexRef> vertexRefs) {
 		Set<VertexRef> processed = new LinkedHashSet<VertexRef>();
 		for(VertexRef vertexRef : vertexRefs) {
-			addRefTreeToSet(vertexRef, processed);
+			addRefTreeToSet(getBaseTopology(), vertexRef, processed, getCriteria());
 		}
 		return processed;
 	}
-	
-	public void addRefTreeToSet(VertexRef vertexId, Set<VertexRef> processed) {
+
+	private static void addRefTreeToSet(GraphProvider graphProvider, VertexRef vertexId, Set<VertexRef> processed, Criteria[] criteria) {
 		processed.add(vertexId);
 
-		for(VertexRef childId : getBaseTopology().getChildren(vertexId)) {
+		for(VertexRef childId : graphProvider.getChildren(vertexId, criteria)) {
 			if (!processed.contains(childId)) {
-				addRefTreeToSet(childId, processed);
+				addRefTreeToSet(graphProvider, childId, processed, criteria);
 			}
 		}
 	}

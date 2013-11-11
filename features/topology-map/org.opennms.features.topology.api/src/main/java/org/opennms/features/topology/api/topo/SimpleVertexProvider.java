@@ -154,7 +154,7 @@ public class SimpleVertexProvider implements VertexProvider {
 	}
 
 	@Override
-	public List<Vertex> getChildren(VertexRef group) {
+	public List<Vertex> getChildren(VertexRef group, Criteria... criteria) {
 		Set<VertexRef> children = m_children.get(group);
 		return children == null ? Collections.<Vertex>emptyList() : getVertices(children);
 	}

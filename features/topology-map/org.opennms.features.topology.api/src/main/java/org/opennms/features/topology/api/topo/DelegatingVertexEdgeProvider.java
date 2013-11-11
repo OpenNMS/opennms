@@ -78,8 +78,8 @@ public class DelegatingVertexEdgeProvider implements VertexProvider, EdgeProvide
 	}
 
 	@Override
-	public final List<Vertex> getChildren(VertexRef group) {
-		return m_vertexProvider.getChildren(group);
+	public final List<Vertex> getChildren(VertexRef group, Criteria... criteria) {
+		return m_vertexProvider.getChildren(group, criteria);
 	}
 
 	@Override
