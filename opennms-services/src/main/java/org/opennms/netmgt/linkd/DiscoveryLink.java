@@ -747,38 +747,20 @@ public final class DiscoveryLink implements ReadyRunnable {
         LOG.info("getLinkdFromLldp: adding links using Layer Link Discovery Protocol");
         int i = 0;
         for (LinkableNode linknode1 : m_lldpNodes) {
-            for (LinkableNode linknode2 : m_lldpNodes) {
-                if (linknode1.getNodeId() == linknode2.getNodeId())
-                    continue;
-                for (NodeToNodeLink lldpLink : getLldpLink(linknode1,
-                                                           linknode2)) {
-                    addNodetoNodeLink(lldpLink);
-                    i++;
-                }
+            for (LldpRemInterface lldpremiface : linknode1.getLldpRemInterfaces()) {
+                LOG.debug("run: found LLDP interface {}", lldpremiface.toString());
+                NodeToNodeLink link = new NodeToNodeLink(
+                                                         lldpremiface.getLldpRemNodeid(),
+                                                         lldpremiface.getLldpRemIfIndex());
+                link.setNodeparentid(linknode1.getNodeId());
+                link.setParentifindex(lldpremiface.getLldpLocIfIndex());
+                addNodetoNodeLink(link);
+                i++;
             }
         }
 
         LOG.info("getLinkdFromLldp: done LLDP. Found links # {}.", i);
 
-    }
-
-    private List<NodeToNodeLink> getLldpLink(LinkableNode linknode1,
-                                             LinkableNode linknode2) {
-        LOG.info("getLinkdFromLldp: finding LLDP links between node parent with id {} and node with id {}.", linknode1.getNodeId(), linknode2.getNodeId());
-        List<NodeToNodeLink> links = new ArrayList<NodeToNodeLink>();
-        for (LldpRemInterface lldpremiface : linknode1.getLldpRemInterfaces()) {
-            if (lldpremiface.getLldpRemChassidSubtype() == linknode2.getLldpChassisIdSubtype()
-                    && lldpremiface.getLldpRemChassisid().equals(linknode2.getLldpChassisId())) {
-                LOG.debug("run: found LLDP interface {}", lldpremiface.toString());
-                NodeToNodeLink link = new NodeToNodeLink(
-                                                         linknode2.getNodeId(),
-                                                         lldpremiface.getLldpRemIfIndex());
-                link.setNodeparentid(linknode1.getNodeId());
-                link.setParentifindex(lldpremiface.getLldpLocIfIndex());
-                links.add(link);
-            }
-        }
-        return links;
     }
 
     /**

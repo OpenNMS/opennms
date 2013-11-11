@@ -38,6 +38,8 @@ public class LinkableSnmpNode {
 
     private final String m_sysoid;
 
+    private final String m_sysname;
+
     /**
      * <p>
      * Constructor for LinkableSnmpNode.
@@ -51,10 +53,11 @@ public class LinkableSnmpNode {
      *            a {@link java.lang.String} object.
      */
     public LinkableSnmpNode(final int nodeId,
-            final InetAddress snmpPrimaryAddr, final String sysoid) {
+            final InetAddress snmpPrimaryAddr, final String sysoid, final String sysname) {
         m_nodeId = nodeId;
         m_snmpprimaryaddr = snmpPrimaryAddr;
         m_sysoid = sysoid;
+        m_sysname = sysname;
     }
 
     /**
@@ -102,6 +105,17 @@ public class LinkableSnmpNode {
      */
     public String getSysoid() {
         return m_sysoid;
+    }
+
+    /**
+     * <p>
+     * getSysname
+     * </p>
+     * 
+     * @return a {@link java.lang.String} object.
+     */
+    public String getSysname() {
+        return m_sysname;
     }
 
 }

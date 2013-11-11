@@ -36,6 +36,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.criterion.Restrictions;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.EqRestriction;
@@ -53,6 +54,7 @@ import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsAtInterface;
+import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsIpRouteInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -112,7 +114,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
         builder.eq("iface.isSnmpPrimary", PrimaryType.PRIMARY);
         for (final OnmsNode node : m_nodeDao.findMatching(builder.toCriteria())) {
             final String sysObjectId = node.getSysObjectId();
-            nodes.add(new LinkableSnmpNode(node.getId(), node.getPrimaryInterface().getIpAddress(), sysObjectId == null? "-1" : sysObjectId));
+            nodes.add(new LinkableSnmpNode(node.getId(), node.getPrimaryInterface().getIpAddress(), sysObjectId == null? "-1" : sysObjectId, node.getSysName()));
         }
 
         return nodes;
@@ -131,7 +133,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
         if (nodes.size() > 0) {
             final OnmsNode node = nodes.get(0);
             final String sysObjectId = node.getSysObjectId();
-            return new LinkableSnmpNode(node.getId(), node.getPrimaryInterface().getIpAddress(), sysObjectId == null? "-1" : sysObjectId);
+            return new LinkableSnmpNode(node.getId(), node.getPrimaryInterface().getIpAddress(), sysObjectId == null? "-1" : sysObjectId, node.getSysName());
         } else {
             return null;
         }
@@ -768,15 +770,89 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 
     @Transactional
     @Override
-    public Integer getFromSysnameIpAddress(final String lldpRemSysname, final InetAddress lldpRemPortid) {
+    public OnmsSnmpInterface getFromSysnameIpAddress(final String lldpRemSysname, final InetAddress lldpRemPortid) {
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsIpInterface.class);
         builder.createAlias("node", "node");
         builder.eq("node.sysName", lldpRemSysname);
         builder.eq("ipAddress",lldpRemPortid);
         final List<OnmsIpInterface> interfaces = getIpInterfaceDao().findMatching(builder.toCriteria());
         if (interfaces != null && !interfaces.isEmpty()) {
-            return interfaces.get(0).getIfIndex();
+            return interfaces.get(0).getSnmpInterface();
         }
+        return null;
+    }
+
+    @Transactional
+    @Override
+    protected OnmsSnmpInterface getFromSysnameIfName(String lldpRemSysname,
+            String lldpRemPortid) {
+        final OnmsCriteria criteria = new OnmsCriteria(OnmsSnmpInterface.class);
+        criteria.createAlias("node", "node");
+        criteria.add(Restrictions.eq("node.sysName", lldpRemSysname));
+        criteria.add(Restrictions.eq("ifName", lldpRemPortid));
+        final List<OnmsSnmpInterface> interfaces = getSnmpInterfaceDao().findMatching(criteria);
+        if (interfaces != null && !interfaces.isEmpty() && interfaces.size() == 1) {
+            return interfaces.get(0);
+        }
+        return null;
+    }
+
+    @Transactional
+    @Override
+    protected OnmsSnmpInterface getFromSysnameIfIndex(String lldpRemSysname,
+            Integer lldpRemPortid) {
+        final OnmsCriteria criteria = new OnmsCriteria(OnmsSnmpInterface.class);
+        criteria.createAlias("node", "node");
+        criteria.add(Restrictions.eq("node.sysName", lldpRemSysname));
+        criteria.add(Restrictions.eq("ifIndex", lldpRemPortid));
+        final List<OnmsSnmpInterface> interfaces = getSnmpInterfaceDao().findMatching(criteria);
+        if (interfaces != null && !interfaces.isEmpty() && interfaces.size() == 1) {
+            return interfaces.get(0);
+        }
+        return null;
+    }
+
+    @Transactional
+    @Override
+    protected OnmsSnmpInterface getFromSysnameMacAddress(String lldpRemSysname,
+            String lldpRemPortid) {
+        final OnmsCriteria criteria = new OnmsCriteria(OnmsSnmpInterface.class);
+        criteria.createAlias("node", "node");
+        criteria.add(Restrictions.eq("node.sysName", lldpRemSysname));
+        criteria.add(Restrictions.eq("physAddr", lldpRemPortid));
+        final List<OnmsSnmpInterface> interfaces = getSnmpInterfaceDao().findMatching(criteria);
+        if (interfaces != null && !interfaces.isEmpty() && interfaces.size() == 1) {
+            return interfaces.get(0);
+        }
+        return null;
+    }
+
+    @Transactional
+    @Override
+    protected OnmsSnmpInterface getFromSysnameIfAlias(String lldpRemSysname,
+            String lldpRemPortid) {
+        final OnmsCriteria criteria = new OnmsCriteria(OnmsSnmpInterface.class);
+        criteria.createAlias("node", "node");
+        criteria.add(Restrictions.eq("node.sysName", lldpRemSysname));
+        criteria.add(Restrictions.eq("ifAlias", lldpRemPortid));
+        final List<OnmsSnmpInterface> interfaces = getSnmpInterfaceDao().findMatching(criteria);
+        if (interfaces != null && !interfaces.isEmpty() && interfaces.size() == 0) {
+            return interfaces.get(0);
+        }
+        return null;
+    }
+
+    @Transactional
+    @Override
+    protected OnmsSnmpInterface getFromSysnameAgentCircuitId(String lldpRemSysname,
+            String lldpRemPortid) {
+        LOG.warn("getFromSysnameAgentCircuitId: AgentCircuitId LLDP PortSubTypeId not supported");
+        return null;
+    }
+
+    protected OnmsSnmpInterface getFromSysnamePortComponent(String lldpRemSysname,
+            String lldpRemPortid) {
+        LOG.warn("getFromSysnamePortComponent:PortComponent LLDP PortSubTypeId not supported");
         return null;
     }
 

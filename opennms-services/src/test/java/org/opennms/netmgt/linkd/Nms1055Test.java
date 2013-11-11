@@ -137,22 +137,22 @@ public class Nms1055Test extends Nms1055NetworkBuilder implements InitializingBe
          *         DELAWARE_IF_IFNAME_MAP.put(517, "ge-0/0/1");
          *         DELAWARE_IF_IFALIAS_MAP.put(517, "test");
          */
-        assertEquals(517, queryManager.getFromSysnameIfAlias(DELAWARE_NAME, "test").intValue());
-        assertEquals(517, queryManager.getFromSysnameIfName(DELAWARE_NAME, "ge-0/0/1").intValue());
+        assertEquals(517, queryManager.getFromSysnameIfAlias(DELAWARE_NAME, "test").getIfIndex().intValue());
+        assertEquals(517, queryManager.getFromSysnameIfName(DELAWARE_NAME, "ge-0/0/1").getIfIndex().intValue());
 
         /*
          * DELAWARE_IF_MAC_MAP.put(585, "0022830951f5");
          */
-        assertEquals(585, queryManager.getFromSysnameMacAddress(DELAWARE_NAME, "0022830951f5").intValue());
+        assertEquals(585, queryManager.getFromSysnameMacAddress(DELAWARE_NAME, "0022830951f5").getIfIndex().intValue());
         /*
          * DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("10.155.69.17"), 13);
          */
-        assertEquals(13, queryManager.getFromSysnameIpAddress(DELAWARE_NAME, InetAddressUtils.addr("10.155.69.17")).intValue());
+        assertEquals(13, queryManager.getFromSysnameIpAddress(DELAWARE_NAME, InetAddressUtils.addr("10.155.69.17")).getIfIndex().intValue());
    
         /*
          * DELAWARE_IF_IFALIAS_MAP.put(574, "<To_Penrose>");
          */
-        assertEquals(574, queryManager.getFromSysnameIfAlias(DELAWARE_NAME, "<To_Penrose>").intValue());
+        assertEquals(574, queryManager.getFromSysnameIfAlias(DELAWARE_NAME, "<To_Penrose>").getIfIndex().intValue());
     }
 
     /*

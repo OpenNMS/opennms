@@ -80,7 +80,7 @@ public class LldpRemTableEntry extends SnmpStore {
         new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, LLDP_REM_PORTID_ALIAS, LLDP_REM_PORTID_OID, 5),
         
         /**
-         * "The string value used to identify the port component
+         * "The string value used to identify the system name
          * associated with the remote system."
          */
         new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, LLDP_REM_SYSNAME_ALIAS, LLDP_REM_SYSNAME_OID, 6)
