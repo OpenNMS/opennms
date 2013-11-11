@@ -474,10 +474,10 @@ public class CollectionResourceWrapper {
                 value = ResourceTypeUtils.getStringProperty(resourceDirectory, ds);
             }
         } catch (Throwable e) {
-            log().info("getLabelValue: Can't get value for attribute " + ds + " for resource " + m_resource + ". " + e, e);
+            log().info("getFieldValue: Can't get value for attribute " + ds + " for resource " + m_resource + ". " + e, e);
         }
         if (value == null) {
-            log().debug("getLabelValue: The field " + ds + " is not a string property. Trying to parse it as numeric metric.");
+            log().debug("getFieldValue: The field " + ds + " is not a string property. Trying to parse it as numeric metric.");
             Double d = getAttributeValue(ds);
             if (d != null)
                 value = d.toString();
