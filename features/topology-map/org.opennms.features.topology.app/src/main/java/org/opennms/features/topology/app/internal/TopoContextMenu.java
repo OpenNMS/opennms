@@ -29,10 +29,19 @@
 package org.opennms.features.topology.app.internal;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
+import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
+import org.opennms.features.topology.api.OperationContext.DisplayLocation;
+import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.app.internal.CommandManager.DefaultOperationContext;
+import org.slf4j.LoggerFactory;
 import org.vaadin.peter.contextmenu.ContextMenu;
+
+import com.vaadin.ui.UI;
 
 public class TopoContextMenu extends ContextMenu {
 
@@ -108,5 +117,41 @@ public class TopoContextMenu extends ContextMenu {
 	
 	public List<TopoContextMenuItem> getItems() {
 		return m_items;
+	}
+
+	public void updateContextMenuItems(Object target, UI ui, GraphContainer graphContainer) {
+		updateContextMenuItems(target, ui, graphContainer, getItems());
+	}
+
+	private void updateContextMenuItems(Object target, UI ui, GraphContainer graphContainer, List<TopoContextMenuItem> items) {
+		for(TopoContextMenuItem contextItem : items) {
+			if(contextItem.hasChildren()) {
+				updateContextMenuItems(target, ui, graphContainer, contextItem.getChildren());
+			} else {
+				TopoContextMenu.updateContextMenuItem(target, contextItem, graphContainer, ui);
+			}
+		}
+	}
+
+	private static void updateContextMenuItem(Object target, TopoContextMenuItem contextItem, GraphContainer graphContainer, UI mainWindow) {
+		DefaultOperationContext operationContext = new DefaultOperationContext(mainWindow, graphContainer, DisplayLocation.CONTEXTMENU);
+
+		ContextMenuItem ctxMenuItem = contextItem.getItem();
+		Operation operation = contextItem.getOperation();
+
+		List<VertexRef> targets = asVertexList(target);
+
+		// TODO: Figure out how to do this in the new contextmenu
+		//ctxMenuItem.setVisible(operation.display(targets, operationContext));
+
+		try {
+			ctxMenuItem.setEnabled(operation.enabled(targets, operationContext));
+		} catch (final RuntimeException e) {
+			LoggerFactory.getLogger(TopoContextMenu.class).warn("updateContextMenuItem: operation failed", e);
+		}
+	}
+
+	private static List<VertexRef> asVertexList(Object target) {
+		return (target != null && target instanceof VertexRef) ? Arrays.asList((VertexRef)target) : Collections.<VertexRef>emptyList();
 	}
 }

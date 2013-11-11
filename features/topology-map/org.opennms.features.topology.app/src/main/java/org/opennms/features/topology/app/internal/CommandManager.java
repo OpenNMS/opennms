@@ -358,23 +358,6 @@ public class CommandManager {
 		}
 	}
 
-    public void updateContextMenuItem(Object target, TopoContextMenuItem contextItem, GraphContainer graphContainer, UI mainWindow) {
-        DefaultOperationContext operationContext = new DefaultOperationContext(mainWindow, graphContainer, DisplayLocation.CONTEXTMENU);
-        
-        ContextMenuItem ctxMenuItem = contextItem.getItem();
-        Operation operation = m_contextMenuItemsToOperationMap.get(ctxMenuItem);
-     
-        List<VertexRef> targets = asVertexList(target);
-        // TODO: Figure out how to do this in the new contextmenu
-
-        //ctxMenuItem.setVisible(operation.display(targets, operationContext));
-        try {
-        ctxMenuItem.setEnabled(operation.enabled(targets, operationContext));
-        } catch (final RuntimeException e) {
-            LoggerFactory.getLogger(this.getClass()).warn("updateContextMenuItem: operation failed", e);
-        }
-    }
-
 	private static List<VertexRef> asVertexList(Object target) {
 		return (target != null && target instanceof VertexRef) ? Arrays.asList((VertexRef)target) : Collections.<VertexRef>emptyList();
 	}

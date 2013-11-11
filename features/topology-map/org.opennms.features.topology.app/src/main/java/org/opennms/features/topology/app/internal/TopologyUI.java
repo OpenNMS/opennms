@@ -808,16 +808,6 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 		updateMenuItems(m_menuBar.getItems());
 	}
 
-	private void updateContextMenuItems(Object target, List<TopoContextMenuItem> items) {
-		for(TopoContextMenuItem contextItem : items) {
-			if(contextItem.hasChildren()) {
-				updateContextMenuItems(target, contextItem.getChildren());
-			} else {
-				m_commandManager.updateContextMenuItem(target, contextItem, m_graphContainer, this);
-			}
-		}
-	}
-
 	private void updateMenuItems(List<MenuItem> menuItems) {
 		for(MenuItem menuItem : menuItems) {
 			if(menuItem.hasChildren()) {
@@ -852,10 +842,10 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 		m_contextMenu.setAsContextMenuOf(this);
 		updateMenuItems();
 	}
-	
-    @Override
-	public void show(Object target, int left, int top) {
-		updateContextMenuItems(target, m_contextMenu.getItems());
+
+	@Override
+	public void showContextMenu(Object target, int left, int top) {
+		m_contextMenu.updateContextMenuItems(target, this, m_graphContainer);
 		m_contextMenu.setTarget(target);
 		m_contextMenu.open(left, top);
 	}

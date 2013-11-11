@@ -29,8 +29,8 @@
 package org.opennms.features.topology.app.internal;
 
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
@@ -47,7 +47,9 @@ public class ContextMenuBuilder extends MenuBuilder<Command, TopoContextMenuItem
                 addMenuItems(menuItem, (Map<String, Object>) entry.getValue());
             }else {
                 OperationCommand command = (OperationCommand) entry.getValue();
-                cMenu.addItem(entry.getKey(), command.getOperation());
+                //if (command.getOperation().display(targets, operationContext)) {
+                    cMenu.addItem(entry.getKey(), command.getOperation());
+                //}
             }
             
         }
