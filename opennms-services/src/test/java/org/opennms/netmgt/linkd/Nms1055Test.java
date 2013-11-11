@@ -311,11 +311,11 @@ public class Nms1055Test extends Nms1055NetworkBuilder implements InitializingBe
                 // penrose xe-1/0/0 -> delaware xe-1/0/0 --lldp
                 checkLink(delaware, penrose, 574, 510, datalinkinterface);
             } else if (linkid == start+6) {
-                // penrose ge-1/3/1 -> delaware ge-0/0/6 --lldp
-                checkLink(delaware, penrose, 522, 525, datalinkinterface);
-            } else if (linkid == start+7) {
                 // penrose xe-1/0/1 -> phoenix xe-0/0/1  --lldp
                 checkLink(phoenix, penrose, 509, 511, datalinkinterface);   
+            } else if (linkid == start+7) {
+                // penrose ge-1/3/1 -> delaware ge-0/0/6 --lldp
+                checkLink(delaware, penrose, 522, 525, datalinkinterface);
             } else if (linkid == start+8) {
                 // penrose ge-1/2/1 -> riovista ge-0/0/0.0  --lldp
                 // this link is also discovered using the bridge strategy
@@ -328,11 +328,11 @@ public class Nms1055Test extends Nms1055NetworkBuilder implements InitializingBe
                 // this link is also discovered using the bridge strategy
                 checkLink(riovista, delaware, 503, 540, datalinkinterface);
             } else if (linkid == start+11) {
-                // phoenix ge-0/2/0 -> austin ge-0/0/46.0  --lldp
-                checkLink(austin, phoenix, 508, 508, datalinkinterface);                   
-            } else if (linkid == start+12) {
                 // phoenix ge-1/0/3 -> sanjose ge-1/0/0  --lldp
                 checkLink(sanjose, phoenix, 516, 515, datalinkinterface);                   
+            } else if (linkid == start+12) {
+                // phoenix ge-0/2/0 -> austin ge-0/0/46.0  --lldp
+                checkLink(austin, phoenix, 508, 508, datalinkinterface);                   
             } else if (linkid == start+13) {
                 // austin ge-1/0/3 -> sanjose ge-1/0/1  --lldp
                 checkLink(sanjose, austin, 517, 515, datalinkinterface);                

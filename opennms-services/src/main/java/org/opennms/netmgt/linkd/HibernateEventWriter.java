@@ -768,16 +768,17 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
         m_dataLinkInterfaceDao = dataLinkInterfaceDao;
     }
 
-    @Transactional
     @Override
+    @Transactional
     public OnmsSnmpInterface getFromSysnameIpAddress(final String lldpRemSysname, final InetAddress lldpRemPortid) {
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsIpInterface.class);
         builder.createAlias("node", "node");
         builder.eq("node.sysName", lldpRemSysname);
         builder.eq("ipAddress",lldpRemPortid);
         final List<OnmsIpInterface> interfaces = getIpInterfaceDao().findMatching(builder.toCriteria());
-        if (interfaces != null && !interfaces.isEmpty()) {
-            return interfaces.get(0).getSnmpInterface();
+        if (interfaces != null && !interfaces.isEmpty() && interfaces.size() == 1) {
+            OnmsIpInterface ip =interfaces.get(0);
+            return getSnmpInterfaceDao().findByNodeIdAndIfIndex(ip.getNode().getId(), ip.getIfIndex());
         }
         return null;
     }
@@ -836,7 +837,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
         criteria.add(Restrictions.eq("node.sysName", lldpRemSysname));
         criteria.add(Restrictions.eq("ifAlias", lldpRemPortid));
         final List<OnmsSnmpInterface> interfaces = getSnmpInterfaceDao().findMatching(criteria);
-        if (interfaces != null && !interfaces.isEmpty() && interfaces.size() == 0) {
+        if (interfaces != null && !interfaces.isEmpty() && interfaces.size() == 1) {
             return interfaces.get(0);
         }
         return null;
