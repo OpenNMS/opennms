@@ -43,11 +43,11 @@ public class ContextMenuBuilder extends MenuBuilder<Command, TopoContextMenuItem
         Set<Entry<String, Object>> sortedEntrySet = getSortedMenuItems();
         for(Entry<String, Object> entry : sortedEntrySet) {
             if(entry.getValue() instanceof Map<?,?>) {
-                TopoContextMenuItem menuItem = cMenu.addItem(entry.getKey(), (Operation)null);
+                TopoContextMenuItem menuItem = cMenu.addItem(removeLabelProperties(entry.getKey()), (Operation)null);
                 addMenuItems(menuItem, (Map<String, Object>) entry.getValue());
             }else {
                 OperationCommand command = (OperationCommand) entry.getValue();
-                cMenu.addItem(entry.getKey(), command.getOperation());
+                cMenu.addItem(removeLabelProperties(entry.getKey()), command.getOperation());
             }
         }
         return cMenu;
@@ -60,7 +60,7 @@ public class ContextMenuBuilder extends MenuBuilder<Command, TopoContextMenuItem
 	    for(Entry<String, Object> entry : sortedEntrySet) {
 	        String commandKey = entry.getKey();
 	        if(entry.getValue() instanceof Map<?,?>) {
-	            TopoContextMenuItem subMenuItem = subMenu.addChildMenuItem(commandKey, null);
+	            TopoContextMenuItem subMenuItem = subMenu.addChildMenuItem(removeLabelProperties(commandKey), null);
 	            addMenuItems(subMenuItem, (Map<String, Object>) entry.getValue());
 	        }else {
 	            if(commandKey.startsWith("separator")) {
