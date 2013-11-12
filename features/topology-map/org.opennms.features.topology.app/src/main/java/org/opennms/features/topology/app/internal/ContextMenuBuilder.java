@@ -47,11 +47,8 @@ public class ContextMenuBuilder extends MenuBuilder<Command, TopoContextMenuItem
                 addMenuItems(menuItem, (Map<String, Object>) entry.getValue());
             }else {
                 OperationCommand command = (OperationCommand) entry.getValue();
-                //if (command.getOperation().display(targets, operationContext)) {
-                    cMenu.addItem(entry.getKey(), command.getOperation());
-                //}
+                cMenu.addItem(entry.getKey(), command.getOperation());
             }
-            
         }
         return cMenu;
 	}
@@ -63,20 +60,17 @@ public class ContextMenuBuilder extends MenuBuilder<Command, TopoContextMenuItem
 	    for(Entry<String, Object> entry : sortedEntrySet) {
 	        String commandKey = entry.getKey();
 	        if(entry.getValue() instanceof Map<?,?>) {
-	            TopoContextMenuItem subMenuItem = subMenu.addItem(commandKey, null);
+	            TopoContextMenuItem subMenuItem = subMenu.addChildMenuItem(commandKey, null);
 	            addMenuItems(subMenuItem, (Map<String, Object>) entry.getValue());
 	        }else {
 	            if(commandKey.startsWith("separator")) {
 	                subMenu.setSeparatorVisible(true);
 	            }else {
 	                Command cmd = (Command) entry.getValue();
-	                subMenu.addItem(removeLabelProperties(commandKey), cmd.getOperation());
+	                subMenu.addChildMenuItem(removeLabelProperties(commandKey), cmd.getOperation());
 	            }
 	        }
 	        
 	    }
 	}
-
-
-	
 }

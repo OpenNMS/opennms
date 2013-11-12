@@ -851,16 +851,17 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             m_rootLayout.addComponent(m_menuBar, 0);
         }
 
-
-		m_contextMenu = commandManager.getContextMenu(m_graphContainer, this);
+		m_contextMenu = commandManager.getContextMenu(new DefaultOperationContext(this, m_graphContainer, DisplayLocation.CONTEXTMENU));
 		m_contextMenu.setAsContextMenuOf(this);
 		updateMenuItems();
 	}
 
 	@Override
 	public void showContextMenu(Object target, int left, int top) {
-		m_contextMenu.updateContextMenuItems(target, new DefaultOperationContext(this, m_graphContainer, DisplayLocation.CONTEXTMENU));
+		// The target must be set before we update the operation context because the op context
+		// operations are dependent on the target of the right-click
 		m_contextMenu.setTarget(target);
+		m_contextMenu.updateOperationContext(new DefaultOperationContext(this, m_graphContainer, DisplayLocation.CONTEXTMENU));
 		m_contextMenu.open(left, top);
 	}
 

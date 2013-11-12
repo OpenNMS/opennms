@@ -36,6 +36,7 @@ import org.opennms.features.topology.api.Constants;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.LoggerFactory;
@@ -190,10 +191,16 @@ public class RenameGroupOperation implements Constants, Operation {
 
 	@Override
 	public boolean display(List<VertexRef> targets, OperationContext operationContext) {
-		return targets != null && 
-		targets.size() == 1 && 
-		targets.get(0) != null 
-		;
+		try {
+			@SuppressWarnings("unused")
+			VertexHopGraphProvider provider = (VertexHopGraphProvider)operationContext.getGraphContainer().getBaseTopology();
+			return false;
+		} catch (ClassCastException e) {
+			return targets != null && 
+					targets.size() == 1 && 
+					targets.get(0) != null 
+					;
+		}
 	}
 
 	@Override
