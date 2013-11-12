@@ -591,30 +591,29 @@ public abstract class ElementUtil {
      * <p>getNodeByParams</p>
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @param nodeIdParam a {@link java.lang.String} object.
+     * @param nodeLookupParam a {@link java.lang.String} object.
      * @return a {@link OnmsNode} object.
      * @throws javax.servlet.ServletException if any.
      * @throws java.sql.SQLException if any.
      */
     public static OnmsNode getNodeByParams(HttpServletRequest request,
-            String nodeIdParam, ServletContext servletContext) throws ServletException, SQLException {
-        if (request.getParameter(nodeIdParam) == null) {
-            throw new MissingParameterException(nodeIdParam, new String[] { "node" });
+            String nodeLookupParam, ServletContext servletContext) throws ServletException, SQLException {
+        if (request.getParameter(nodeLookupParam) == null) {
+            throw new MissingParameterException(nodeLookupParam, new String[] { "node" });
         }
 
-        String nodeIdString = request.getParameter(nodeIdParam);
-
-        int nodeId;
-
-        try {
-            nodeId = Integer.parseInt(nodeIdString);
-        } catch (NumberFormatException e) {
-            throw new ElementIdNotFoundException("Wrong data type for \""
-                    + nodeIdParam + "\", should be integer", nodeIdString, 
-                    "node", "element/node.jsp", "node", "element/nodeList.htm");
+        String nodeLookupString = request.getParameter(nodeLookupParam);
+        if (!nodeLookupString.contains(":")) {
+            try {
+                Integer.parseInt(nodeLookupString);
+            } catch (NumberFormatException e) {
+                throw new ElementIdNotFoundException("Wrong data type for \""
+                        + nodeLookupString + "\", should be integer", nodeLookupString, 
+                        "node", "element/node.jsp", "node", "element/nodeList.htm");
+            }
         }
 
-        OnmsNode node = NetworkElementFactory.getInstance(servletContext).getNode(nodeId);
+        OnmsNode node = NetworkElementFactory.getInstance(servletContext).getNode(nodeLookupString);
 
         if (node == null) {
             throw new ElementNotFoundException("No such node in database", "node", "element/node.jsp", "node", "element/nodeList.htm");
