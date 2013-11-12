@@ -43,6 +43,7 @@ import org.opennms.features.topology.app.internal.support.CategoryHopCriteria;
 import org.opennms.features.topology.app.internal.support.CategoryHopCriteriaFactory;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.model.OnmsCategory;
 
 public class CategorySearchProvider extends AbstractSearchProvider implements SearchProvider {
 
@@ -66,13 +67,13 @@ public class CategorySearchProvider extends AbstractSearchProvider implements Se
 
     @Override
     public List<SearchResult> query(SearchQuery searchQuery, GraphContainer graphContainer) {
-        List<String> categories = m_categoryDao.getAllCategoryNames();
+        List<OnmsCategory> categories = m_categoryDao.findAll();
         List<SearchResult> results = new ArrayList<SearchResult>();
-        for (String category : categories) {
-            if(searchQuery.matches(category)){
-                SearchResult result = new SearchResult("category", category, category);
+        for (OnmsCategory category : categories) {
+            if(searchQuery.matches(category.getName())){
+                SearchResult result = new SearchResult("category", category.getId().toString(), category.getName());
                 result.setCollapsible(true);
-                CollapsibleCriteria criteria = getMatchingCriteria(graphContainer, category);
+                CollapsibleCriteria criteria = getMatchingCriteria(graphContainer, category.getName());
                 if (criteria != null) {
                     result.setCollapsed(criteria.isCollapsed());
                 }

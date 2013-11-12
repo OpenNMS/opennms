@@ -28,6 +28,9 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
+import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import java.io.File;
 import java.net.MalformedURLException;
@@ -272,6 +275,8 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     private String m_configurationFile;
 
+    private final boolean m_aclEnabled;
+
     public String getConfigurationFile() {
         return m_configurationFile;
     }
@@ -328,6 +333,8 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     
     public LinkdTopologyProvider() {
     	super(TOPOLOGY_NAMESPACE_LINKD);
+        String aclsProp = System.getProperty("org.opennms.web.aclsEnabled");
+        m_aclEnabled = aclsProp != null ? aclsProp.equals("true") : false;
     }
 
     private static WrappedGraph getGraphFromFile(File file) throws JAXBException, MalformedURLException {
@@ -601,7 +608,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     @Override
     public List<SearchResult> query(SearchQuery searchQuery, GraphContainer graphContainer) {
-        List<Vertex> vertices = m_vertexProvider.getVertices();
+        List<Vertex> vertices = getVertices();
         List<SearchResult> searchResults = Lists.newArrayList();
 
         for(Vertex vertex : vertices){
@@ -611,6 +618,33 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         }
 
         return searchResults;
+    }
+
+    private List<Vertex> getVertices() {
+        if(m_aclEnabled){
+            //Get All nodes when called should filter with ACL
+            List<OnmsNode> onmsNodes = m_nodeDao.findAll();
+
+            //Transform the onmsNodes list to a list of Ids
+            final List<Integer> nodes = Lists.transform(onmsNodes, new Function<OnmsNode, Integer>() {
+                @Override
+                public Integer apply(OnmsNode node) {
+                    return node.getId();
+                }
+            });
+
+
+            //Filter out the nodes that are not viewable by the user.
+            return Lists.newArrayList(Collections2.filter(m_vertexProvider.getVertices(), new Predicate<Vertex>() {
+                @Override
+                public boolean apply(Vertex vertex) {
+                    return nodes.contains(vertex.getNodeID());
+                }
+            }));
+        } else{
+            return m_vertexProvider.getVertices();
+        }
+
     }
 
     @Override
