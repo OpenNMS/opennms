@@ -357,7 +357,7 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
      *
      * @return a int.
      */
-    public int getStatus() {
+    public Integer getStatus() {
         if (m_status == null) {
             return  1;
         } else {

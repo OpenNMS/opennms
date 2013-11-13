@@ -56,10 +56,10 @@ public class GWTVertex extends JavaScriptObject {
     protected GWTVertex() {};
 
     public static native GWTVertex create(String id, int x, int y) /*-{
-    	return {"id":id, "x":x, "y":y, "initialX":0, "initialY":0, "selected":false,
+    	return {"id":id, "x":x, "y":y, "initialX":-1000, "initialY":-1000, "selected":false,
     	        "iconUrl":"", "svgIconId":"", "semanticZoomLevel":0, "group":null,
     	        "status":"", "statusCount":"", "iconHeight":48, "iconWidth":48, "tooltipText":"", 
-    	        "severityArray":[], "total": 0, "isGroup": true, "stylename":"vertex"};
+    	        "severityArray":[], "total": 0, "isGroup": true, "stylename":"vertex", "isIconNormalized": false};
 	}-*/;
 
     public final native String getId()/*-{
@@ -209,6 +209,14 @@ public class GWTVertex extends JavaScriptObject {
     
     public final native void setIsGroup(boolean group) /*-{
     	this.isGroup = group;
+    }-*/;
+
+    public final native void setIconNormalized(boolean bool) /*-{
+        this.isIconNormalized = bool;
+    }-*/;
+
+    public final native boolean isIconNormalized() /*-{
+        return this.isIconNormalized;
     }-*/;
     
     public final String[] getClassArray() {
@@ -373,6 +381,9 @@ public class GWTVertex extends JavaScriptObject {
                 double iconHeight = scaleFactor * height;
                 vertex.setIconHeight(iconHeight);
                 vertex.setIconWidth(scaleFactor * width);
+                if(scaleFactor != Double.POSITIVE_INFINITY){
+                    vertex.setIconNormalized(true);
+                }
                 return "translate(-" + newX +" , -" + newY +") scale(" + scaleFactor + ")";
             }
         };
@@ -456,13 +467,31 @@ public class GWTVertex extends JavaScriptObject {
         };
     }
 
+    protected static Func<String, GWTVertex> getVertexOpacity(){
+        return new Func<String, GWTVertex>() {
+            @Override
+            public String call(GWTVertex vertex, int index) {
+                return vertex.isIconNormalized() ? "1" : "0";
+            }
+        };
+    }
+
+    protected static Func<String, GWTVertex> getVertexVisibility(){
+        return new Func<String, GWTVertex>() {
+            @Override
+            public String call(GWTVertex vertex, int index) {
+                return vertex.isIconNormalized() ? "visible" : "hidden";
+            }
+        };
+    }
+
     public static D3Behavior draw() {
         return new D3Behavior() {
 
             @Override
             public D3 run(D3 selection) {
                 final D3 iconContainer = selection.select(".icon-container");
-                iconContainer.attr("transform", normalizeSVGIcon()).attr("opacity", 1);
+                iconContainer.attr("transform", normalizeSVGIcon()).attr("opacity", getVertexOpacity());
                 iconContainer.select(".vertex .activeIcon").attr("opacity", selectionFilter());
 
                 selection.select(".svgIconOverlay").attr("width", calculateOverlayWidth()).attr("height", calculateOverlayHeight())
@@ -493,7 +522,7 @@ public class GWTVertex extends JavaScriptObject {
                 vertex.attr("opacity",1e-6).style("cursor", "pointer");
                 vertex.append("svg:rect").attr("class", "status").attr("fill", "none").attr("stroke-width", 5).attr("stroke-location", "outside").attr("stroke", "blue").attr("opacity", 0);
 
-                D3 svgIconContainer         = vertex.append("g").attr("class", "icon-container");
+                D3 svgIconContainer         = vertex.append("g").attr("class", "icon-container").attr("opacity", 0);
                 D3 svgIcon                  = svgIconContainer.append("use");
                 D3 svgIconRollover          = svgIconContainer.append("use");
                 D3 svgIconActive            = svgIconContainer.append("use");
@@ -527,7 +556,7 @@ public class GWTVertex extends JavaScriptObject {
                     }
                 });
 
-                svgIconContainer.attr("opacity", 0);
+
                 svgIcon.attr("xlink:href", svgIconId("")).attr("class", "upIcon");
                 svgIconRollover.attr("xlink:href", svgIconId("_rollover")).attr("class", "overIcon").attr("opacity", 0);
                 svgIconActive.attr("xlink:href", svgIconId("_active")).attr("class", "activeIcon").attr("opacity", 0);
@@ -553,7 +582,7 @@ public class GWTVertex extends JavaScriptObject {
         };
     }
     public static final native void logDocument(Object doc)/*-{
-        $wnd.console.log(doc)
+        $wnd.console.debug(doc);
     }-*/;
     
     //support for creating a node-chart

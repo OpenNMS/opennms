@@ -607,6 +607,7 @@
 
     <!-- Graphing -->
     <bean name="/graph/chooseresource.htm" class="org.opennms.web.controller.ChooseResourceController">
+        <property name="nodeDao" ref="nodeDao"/>
         <property name="chooseResourceService" ref="chooseResourceService"/>
         <property name="defaultEndUrl">
             <value>graph/results.htm</value>

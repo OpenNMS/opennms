@@ -176,7 +176,15 @@ public class DashboardBody extends DDGridLayout {
 
                     dashletComponent.refresh();
 
-                    addComponent(createPanel(dashletComponent.getComponent()), x, y);
+                    String caption = dashlet.getName();
+
+                    if (dashlet.getDashletSpec().getTitle() != null) {
+                        if (!"".equals(dashlet.getDashletSpec().getTitle())) {
+                            caption += ": " + "" + dashlet.getDashletSpec().getTitle();
+                        }
+                    }
+
+                    addComponent(createPanel(dashletComponent.getComponent(), caption), x, y);
 
                     i++;
                 }
@@ -199,10 +207,10 @@ public class DashboardBody extends DDGridLayout {
         }
     }
 
-    private Panel createPanel(Component content) {
+    private Panel createPanel(Component content, String caption) {
         Panel panel = new Panel();
         panel.setSizeFull();
-        panel.setCaption(content.getCaption());
+        panel.setCaption(caption);
         panel.setContent(content);
 
         return panel;

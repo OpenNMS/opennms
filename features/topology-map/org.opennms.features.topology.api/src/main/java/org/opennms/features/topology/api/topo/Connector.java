@@ -33,4 +33,6 @@ public interface Connector extends ConnectorRef {
 	EdgeRef getEdge();
 	
 	VertexRef getVertex();
+
+	void setVertex(VertexRef vertex);
 }

@@ -126,7 +126,6 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             if (needsRefresh()) {
                 refreshUI();
             }
-            updateCounter();
         }
 
         private void refreshUI() {
@@ -139,22 +138,6 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
                 lastUpdateTime = System.currentTimeMillis();
                 refreshInProgress = false;
-            }
-        }
-
-        private void updateCounter() {
-            if (m_graphContainer.getAutoRefreshSupport().isEnabled()) {
-                final long interval = m_graphContainer.getAutoRefreshSupport().getInterval(); //in seconds
-                final long diff = System.currentTimeMillis() - lastUpdateTime;
-                final long secondsPassed = diff / 1000;
-                final long secondsLeft = interval - secondsPassed;
-                m_refreshCounter.setCaption(Long.toString(secondsLeft));
-                m_refreshCounter.setDescription(secondsLeft + " seconds until next refresh");
-                m_refreshCounter.setEnabled(true);
-            } else {
-                m_refreshCounter.setCaption("");
-                m_refreshCounter.setDescription("Auto-Refresh is disabled");
-                m_refreshCounter.setEnabled(false);
             }
         }
 
@@ -199,7 +182,6 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     private VerticesUpdateManager m_verticesUpdateManager;
     private Button m_panBtn;
     private Button m_selectBtn;
-    private final Label m_refreshCounter = new Label();
     private Button m_szlOutBtn;
     int m_settingFragment = 0;
 
@@ -207,15 +189,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         if(m_headerProvider == null) {
             return "";
         } else {
-            String headerHtml = m_headerProvider.getHeaderHtml(request);
-
-            /**
-             * Adding some magic to hide the header when displayed inside an iFrame
-             */
-
-            headerHtml += "<script type='text/javascript'>if (window.location != window.parent.location) { document.getElementById('header').style.display = 'none'; }</script>";
-
-            return headerHtml;
+            return m_headerProvider.getHeaderHtml(request);
         }
     }
 
@@ -649,9 +623,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         VerticalLayout toolbar = new VerticalLayout();
         toolbar.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
         toolbar.setSpacing(true);
-        if (m_graphContainer.hasAutoRefreshSupport()) {
-            toolbar.addComponent(m_refreshCounter);
-        }
+
         toolbar.addComponent(historyCtrlLayout);
         toolbar.addComponent(locationToolLayout);
         toolbar.addComponent(showFocusVerticesBtn);

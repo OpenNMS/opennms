@@ -11,6 +11,7 @@
   <name>OpenNMS Tools</name>
   <modules>
     <module>opennms-eventd-stresser</module>
+    <module>opennms-qosdaemon</module>
     <module>opennms-rrd-stresser</module>
     <module>opennms-rrd-converter</module>
     <module>groovy-tools</module>

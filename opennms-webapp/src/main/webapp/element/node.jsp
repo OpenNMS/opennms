@@ -162,7 +162,7 @@
         nodeModel.put("statusSite", asset.getBuilding());
     }
     
-    nodeModel.put("resources", m_resourceService.findNodeChildResources(nodeId));
+    nodeModel.put("resources", m_resourceService.findNodeChildResources(node_db));
     nodeModel.put("vlans", NetworkElementFactory.getInstance(getServletContext()).getVlansOnNode(nodeId));
     nodeModel.put("criticalPath", PathOutageFactory.getCriticalPath(nodeId));
     nodeModel.put("noCriticalPath", PathOutageFactory.NO_CRITICAL_PATH);
@@ -404,11 +404,14 @@
 	
 	<!-- Availability box -->
 	<c:if test="${fn:length( model.intfs ) < 10}">
-    <jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" />
+    <jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" >
+      <jsp:param name="node" value="${model.id}" />
+    </jsp:include>
     </c:if> 
-    <script type="text/javascript">
-        var nodeId = ${model.id}
-    </script>
+
+  <script type="text/javascript">
+    var nodeId = ${model.id}
+  </script>
   <div id="interface-panel-gwt">
     <h3 class="o-box">Node Interfaces</h3>
     <opennms:interfacelist id="gwtnodeList"></opennms:interfacelist>
@@ -489,7 +492,9 @@
   </div>
   
   <!-- Category box -->
-  <jsp:include page="/includes/nodeCategory-box.htm" flush="false" />
+  <jsp:include page="/includes/nodeCategory-box.htm" flush="false" >
+    <jsp:param name="node" value="${model.id}" />
+  </jsp:include>
   
   <!-- notification box -->
   <jsp:include page="/includes/notification-box.jsp" flush="false" >

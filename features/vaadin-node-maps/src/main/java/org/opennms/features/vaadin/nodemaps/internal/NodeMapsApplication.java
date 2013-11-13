@@ -143,11 +143,6 @@ public class NodeMapsApplication extends UI {
 
     public void setHeaderHtml(final String headerHtml) {
         m_headerHtml = headerHtml;
-
-        /**
-         * Added some magic to hide search controls and header if displayed inside an iframe
-         */
-        m_headerHtml += "<script type='text/javascript'>if (window.location != window.parent.location) { document.getElementById('header').style.display = 'none'; var style = document.createElement(\"style\"); style.type = 'text/css'; style.innerHTML = '.leaflet-control-container { display: none; }'; document.body.appendChild(style); }</script>";
     }
 
     public void setAlarmTable(final AlarmTable table) {

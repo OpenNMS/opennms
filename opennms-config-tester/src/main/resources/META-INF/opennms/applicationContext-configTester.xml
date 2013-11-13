@@ -357,16 +357,8 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
   <bean id="dataSourceFactory" class="org.opennms.netmgt.config.DataSourceFactory" depends-on="dataSourceFactory-init" factory-method="getInstance"/>
   -->
     
-  <bean id="dataSourceTester" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.core.db.ConnectionFactoryUtil.marshalDataSourceFromConfig</value></property>
-    <property name="arguments">
-      <list>
-        <bean class="java.io.FileInputStream">
-          <constructor-arg><value>${opennms.home}/etc/opennms-datasources.xml</value></constructor-arg>
-        </bean>
-        <value>opennms</value>
-      </list>
-    </property>
+  <bean id="dataSourceTester" class="org.opennms.core.db.DataSourceConfigurationFactory">
+    <constructor-arg value="${opennms.home}/etc/opennms-datasources.xml"/>
   </bean>
 
   <bean id="opennmsServerConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">

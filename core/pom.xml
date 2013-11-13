@@ -38,6 +38,7 @@
     <module>soa</module>
     <module>tasks</module>
     <module>test-api</module>
+    <module>upgrade</module>
     <!--<module>web</module>-->
     <module>xml</module>
   </modules>

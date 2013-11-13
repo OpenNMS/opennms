@@ -50,7 +50,24 @@ public interface NetworkElementFactoryInterface {
 	 */
 	String getIpPrimaryAddress(int nodeId);
 
+	/**
+         * Get a node based on it's node ID
+	 * 
+	 * @return a {@link OnmsNode} object
+	 * 
+         * @param nodeId an int
+	 */
 	OnmsNode getNode(int nodeId);
+
+	/**
+         * Get a node based on it's node ID or foreignSource:foreignId
+         * 
+         * @return a {@link OnmsNode} object
+         * 
+         *
+         * @param lookupCriteria the criteria, either the node ID, or a colon-separated string of foreignSource:foreignId
+         */
+        OnmsNode getNode(String lookupCriteria);
 
 	/**
 	 * Returns all non-deleted nodes.

@@ -409,6 +409,11 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
     }
 
     @Override
+    public void onToggleCollapse(final SearchResult searchResult, final GraphContainer graphContainer) {
+        // TODO: implement?
+    }
+
+    @Override
     public String getSearchProviderNamespace() {
         return "vmware";
     }

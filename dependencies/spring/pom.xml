@@ -22,8 +22,8 @@
       <version>${springVersion}</version>
       <exclusions>
         <exclusion>
-          <groupId>c3p0</groupId>
-          <artifactId>c3p0</artifactId>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -33,8 +33,8 @@
       <version>${springVersion}</version>
       <exclusions>
         <exclusion>
-          <groupId>c3p0</groupId>
-          <artifactId>c3p0</artifactId>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -44,8 +44,8 @@
       <version>${springVersion}</version>
       <exclusions>
         <exclusion>
-          <groupId>c3p0</groupId>
-          <artifactId>c3p0</artifactId>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -55,8 +55,8 @@
       <version>${springVersion}</version>
       <exclusions>
         <exclusion>
-          <groupId>c3p0</groupId>
-          <artifactId>c3p0</artifactId>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -66,8 +66,8 @@
       <version>${springVersion}</version>
       <exclusions>
         <exclusion>
-          <groupId>c3p0</groupId>
-          <artifactId>c3p0</artifactId>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -77,8 +77,8 @@
       <version>${springVersion}</version>
       <exclusions>
         <exclusion>
-          <groupId>c3p0</groupId>
-          <artifactId>c3p0</artifactId>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -87,10 +87,6 @@
       <artifactId>spring-core</artifactId>
       <version>${springVersion}</version>
       <exclusions>
-        <exclusion>
-          <groupId>c3p0</groupId>
-          <artifactId>c3p0</artifactId>
-        </exclusion>
         <exclusion>
           <groupId>commons-logging</groupId>
           <artifactId>commons-logging</artifactId>
@@ -103,8 +99,8 @@
       <version>${springVersion}</version>
       <exclusions>
         <exclusion>
-          <groupId>c3p0</groupId>
-          <artifactId>c3p0</artifactId>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -114,8 +110,8 @@
       <version>${springVersion}</version>
       <exclusions>
         <exclusion>
-          <groupId>c3p0</groupId>
-          <artifactId>c3p0</artifactId>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -125,8 +121,8 @@
       <version>${springVersion}</version>
       <exclusions>
         <exclusion>
-          <groupId>c3p0</groupId>
-          <artifactId>c3p0</artifactId>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -135,10 +131,6 @@
       <artifactId>spring-orm</artifactId>
       <version>${springVersion}</version>
       <exclusions>
-        <exclusion>
-          <groupId>c3p0</groupId>
-          <artifactId>c3p0</artifactId>
-        </exclusion>
         <exclusion>
           <groupId>org.hibernate</groupId>
           <artifactId>hibernate</artifactId>
@@ -151,6 +143,10 @@
           <groupId>org.hibernate</groupId>
           <artifactId>hibernate-entitymanager</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -159,8 +155,8 @@
       <version>${springVersion}</version>
       <exclusions>
         <exclusion>
-          <groupId>c3p0</groupId>
-          <artifactId>c3p0</artifactId>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -168,11 +164,23 @@
       <groupId>org.aspectj</groupId>
       <artifactId>aspectjrt</artifactId>
       <version>${aspectjVersion}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.aspectj</groupId>
       <artifactId>aspectjweaver</artifactId>
       <version>${aspectjVersion}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <!-- Spring Dependencies -->
     <dependency>
@@ -180,13 +188,15 @@
       <artifactId>jsr250-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>c3p0</groupId>
-      <artifactId>c3p0</artifactId>
-    </dependency>
-    <dependency>
       <!-- Needed for spring-context-support -->
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>

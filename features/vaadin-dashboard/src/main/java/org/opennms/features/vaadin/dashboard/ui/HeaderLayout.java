@@ -34,6 +34,7 @@ import com.vaadin.server.ExternalResource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
 import org.opennms.features.vaadin.dashboard.config.ui.WallboardProvider;
+import org.opennms.features.vaadin.dashboard.model.Wallboard;
 import org.opennms.features.vaadin.dashboard.ui.dashboard.DashboardView;
 import org.opennms.features.vaadin.dashboard.ui.wallboard.WallboardView;
 
@@ -45,8 +46,9 @@ import org.opennms.features.vaadin.dashboard.ui.wallboard.WallboardView;
  */
 public class HeaderLayout extends HorizontalLayout implements ViewChangeListener {
 
-    View wallboardView = null;
-    Button pauseButton, wallboardButton, dashboardButton;
+    private View m_wallboardView = null;
+    private Button m_pauseButton, m_wallboardButton, m_dashboardButton;
+    private NativeSelect m_nativeSelect;
 
     /**
      * Default constructor.
@@ -71,43 +73,45 @@ public class HeaderLayout extends HorizontalLayout implements ViewChangeListener
         /**
          * Adding the selection box
          */
-        final NativeSelect nativeSelect = new NativeSelect();
-        nativeSelect.setContainerDataSource(WallboardProvider.getInstance().getBeanContainer());
-        nativeSelect.setItemCaptionPropertyId("title");
-        nativeSelect.setNullSelectionAllowed(false);
-        nativeSelect.setImmediate(true);
+        m_nativeSelect = new NativeSelect();
+        m_nativeSelect.setDescription("Select wallboard configuration");
+        m_nativeSelect.setContainerDataSource(WallboardProvider.getInstance().getBeanContainer());
+        m_nativeSelect.setItemCaptionPropertyId("title");
+        m_nativeSelect.setNullSelectionAllowed(false);
+        m_nativeSelect.setImmediate(true);
 
-        nativeSelect.addValueChangeListener(new Property.ValueChangeListener() {
+        m_nativeSelect.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
-                wallboardButton.setEnabled(true);
-                dashboardButton.setEnabled(true);
+                m_wallboardButton.setEnabled(true);
+                m_dashboardButton.setEnabled(true);
             }
         });
 
-        dashboardButton = new Button("Dashboard", new Button.ClickListener() {
+        m_dashboardButton = new Button("Dashboard", new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 UI.getCurrent().getNavigator().addViewChangeListener(HeaderLayout.this);
-                UI.getCurrent().getNavigator().navigateTo("dashboard/" + nativeSelect.getContainerProperty(nativeSelect.getValue(), "title"));
+                UI.getCurrent().getNavigator().navigateTo("dashboard/" + m_nativeSelect.getContainerProperty(m_nativeSelect.getValue(), "title"));
             }
         });
+        m_dashboardButton.setDescription("Dashboard view");
 
         /**
          * Adding the wallboard button
          */
-        pauseButton = new Button("Pause", new Button.ClickListener() {
+        m_pauseButton = new Button("Pause", new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                if (wallboardView instanceof WallboardView) {
-                if (((WallboardView) wallboardView).isPaused()) {
-                    ((WallboardView) wallboardView).resume();
+                if (m_wallboardView instanceof WallboardView) {
+                    if (((WallboardView) m_wallboardView).isPaused()) {
+                        ((WallboardView) m_wallboardView).resume();
+                    } else {
+                        ((WallboardView) m_wallboardView).pause();
+                    }
                 } else {
-                    ((WallboardView) wallboardView).pause();
-                }
-                } else {
-                    if (wallboardView instanceof DashboardView) {
-                        ((DashboardView) wallboardView).updateAll();
+                    if (m_wallboardView instanceof DashboardView) {
+                        ((DashboardView) m_wallboardView).updateAll();
                     }
                 }
 
@@ -118,46 +122,57 @@ public class HeaderLayout extends HorizontalLayout implements ViewChangeListener
         /**
          * Adding the wallboard button
          */
-        wallboardButton = new Button("Wallboard", new Button.ClickListener() {
+        m_wallboardButton = new Button("Wallboard", new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 UI.getCurrent().getNavigator().addViewChangeListener(HeaderLayout.this);
-                UI.getCurrent().getNavigator().navigateTo("wallboard/" + nativeSelect.getContainerProperty(nativeSelect.getValue(), "title"));
+                UI.getCurrent().getNavigator().navigateTo("wallboard/" + m_nativeSelect.getContainerProperty(m_nativeSelect.getValue(), "title"));
             }
         });
+        m_wallboardButton.setDescription("Wallboard view");
 
-        pauseButton.setEnabled(false);
-        wallboardButton.setEnabled(false);
-        dashboardButton.setEnabled(false);
+        m_pauseButton.setEnabled(false);
+        m_wallboardButton.setEnabled(false);
+        m_dashboardButton.setEnabled(false);
 
-        addComponents(nativeSelect, dashboardButton, wallboardButton, pauseButton);
-        setComponentAlignment(nativeSelect, Alignment.MIDDLE_CENTER);
-        setComponentAlignment(dashboardButton, Alignment.MIDDLE_CENTER);
-        setComponentAlignment(wallboardButton, Alignment.MIDDLE_CENTER);
-        setComponentAlignment(pauseButton, Alignment.MIDDLE_CENTER);
+        addComponents(m_nativeSelect, m_dashboardButton, m_wallboardButton, m_pauseButton);
+        setComponentAlignment(m_nativeSelect, Alignment.MIDDLE_CENTER);
+        setComponentAlignment(m_dashboardButton, Alignment.MIDDLE_CENTER);
+        setComponentAlignment(m_wallboardButton, Alignment.MIDDLE_CENTER);
+        setComponentAlignment(m_pauseButton, Alignment.MIDDLE_CENTER);
+    }
+
+    public void gotoWallboard(Wallboard wallboard) {
+        m_nativeSelect.setValue(wallboard);
+        UI.getCurrent().getNavigator().navigateTo("wallboard/" + wallboard.getTitle());
     }
 
     private void updatePauseButton() {
-        if (wallboardView instanceof WallboardView) {
-            if (((WallboardView) wallboardView).isPausable()) {
-                pauseButton.setEnabled(true);
+        if (m_wallboardView instanceof WallboardView) {
+            if (((WallboardView) m_wallboardView).isPausable()) {
+                m_pauseButton.setEnabled(true);
 
-                if (((WallboardView) wallboardView).isPaused()) {
-                    pauseButton.setCaption("Resume");
+                if (((WallboardView) m_wallboardView).isPaused()) {
+                    m_pauseButton.setCaption("Resume");
+                    m_pauseButton.setDescription("Resume the execution of the wallboard");
                 } else {
-                    pauseButton.setCaption("Pause");
+                    m_pauseButton.setCaption("Pause");
+                    m_pauseButton.setDescription("Pause the execution of the wallboard");
                 }
             } else {
-                pauseButton.setEnabled(false);
-                pauseButton.setCaption("Pause");
+                m_pauseButton.setEnabled(false);
+                m_pauseButton.setCaption("Pause");
+                m_pauseButton.setDescription("Pause the execution of the wallboard");
             }
         } else {
-            if (wallboardView instanceof DashboardView) {
-                pauseButton.setCaption("Refresh");
-                pauseButton.setEnabled(true);
+            if (m_wallboardView instanceof DashboardView) {
+                m_pauseButton.setCaption("Refresh");
+                m_pauseButton.setDescription("Refresh");
+                m_pauseButton.setEnabled(true);
             } else {
-                pauseButton.setCaption("Pause");
-                pauseButton.setEnabled(false);
+                m_pauseButton.setCaption("Pause");
+                m_pauseButton.setDescription("Pause the execution of the wallboard");
+                m_pauseButton.setEnabled(false);
             }
         }
     }
@@ -169,7 +184,7 @@ public class HeaderLayout extends HorizontalLayout implements ViewChangeListener
 
     @Override
     public void afterViewChange(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
-        wallboardView = viewChangeEvent.getNewView();
+        m_wallboardView = viewChangeEvent.getNewView();
 
         updatePauseButton();
     }

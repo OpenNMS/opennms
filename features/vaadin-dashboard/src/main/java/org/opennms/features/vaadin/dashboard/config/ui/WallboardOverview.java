@@ -27,6 +27,7 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.dashboard.config.ui;
 
+import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.*;
 import org.opennms.features.vaadin.dashboard.model.Wallboard;
@@ -74,6 +75,7 @@ public class WallboardOverview extends VerticalLayout {
 
         Button button = new Button("Help");
         button.setStyleName("small");
+        button.setDescription("Display help and usage");
 
         button.addClickListener(new HelpClickListener(this, m_wallboardConfigView.getDashletSelector()));
 
@@ -97,6 +99,7 @@ public class WallboardOverview extends VerticalLayout {
         m_table.addGeneratedColumn("Edit", new Table.ColumnGenerator() {
             public Object generateCell(Table source, final Object itemId, Object columnId) {
                 Button button = new Button("Edit");
+                button.setDescription("Edit this wallboard configuration");
                 button.setStyleName("small");
                 button.addClickListener(new Button.ClickListener() {
                     public void buttonClick(Button.ClickEvent clickEvent) {
@@ -110,6 +113,7 @@ public class WallboardOverview extends VerticalLayout {
         m_table.addGeneratedColumn("Remove", new Table.ColumnGenerator() {
             public Object generateCell(Table source, final Object itemId, Object columnId) {
                 Button button = new Button("Remove");
+                button.setDescription("Delete this wallboard configuration");
                 button.setStyleName("small");
                 button.addClickListener(new Button.ClickListener() {
                     public void buttonClick(Button.ClickEvent clickEvent) {
@@ -123,13 +127,45 @@ public class WallboardOverview extends VerticalLayout {
         m_table.addGeneratedColumn("Preview", new Table.ColumnGenerator() {
             public Object generateCell(Table source, final Object itemId, Object columnId) {
                 Button button = new Button("Preview");
+                button.setDescription("Preview this wallboard configuration");
                 button.setStyleName("small");
                 button.addClickListener(new PreviewClickListener(WallboardOverview.this, (Wallboard) itemId));
                 return button;
             }
         });
 
-        m_table.setVisibleColumns(new Object[]{"title", "Edit", "Remove", "Preview"});
+        m_table.addGeneratedColumn("Default", new Table.ColumnGenerator() {
+            public Object generateCell(Table source, final Object itemId, Object columnId) {
+                CheckBox checkBox = new CheckBox();
+                checkBox.setImmediate(true);
+                checkBox.setDescription("Make this wallboard configuration the default");
+
+                final Wallboard wallboard = m_beanItemContainer.getItem(itemId).getBean();
+                checkBox.setValue(wallboard.isDefault());
+
+                checkBox.addValueChangeListener(new Property.ValueChangeListener() {
+                    @Override
+                    public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
+                        boolean newValue = ((Boolean) valueChangeEvent.getProperty().getValue());
+
+                        if (newValue) {
+                            for (Wallboard wallboard1 : m_beanItemContainer.getItemIds()) {
+                                wallboard1.setDefault(false);
+                            }
+                        }
+
+                        wallboard.setDefault(newValue);
+
+                        m_table.refreshRowCache();
+
+                        WallboardProvider.getInstance().save();
+                    }
+                });
+                return checkBox;
+            }
+        });
+
+        m_table.setVisibleColumns(new Object[]{"title", "Edit", "Remove", "Preview", "Default"});
         m_table.setColumnHeader("title", "Title");
 
         /**
