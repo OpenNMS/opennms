@@ -36,7 +36,6 @@ import org.opennms.features.topology.api.Constants;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.LoggerFactory;
@@ -253,12 +252,10 @@ public class CreateGroupOperation implements Constants, Operation {
 
 	@Override
 	public boolean display(List<VertexRef> targets, OperationContext operationContext) {
-		try {
-			@SuppressWarnings("unused")
-			VertexHopGraphProvider provider = (VertexHopGraphProvider)operationContext.getGraphContainer().getBaseTopology();
-			return false;
-		} catch (ClassCastException e) {
+		if (operationContext.getGraphContainer().getBaseTopology().groupingSupported()) {
 			return true;
+		} else {
+			return false;
 		}
 	}
 

@@ -256,12 +256,10 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 
 	@Override
 	public boolean display(List<VertexRef> targets, OperationContext operationContext) {
-		try {
-			@SuppressWarnings("unused")
-			VertexHopGraphProvider provider = (VertexHopGraphProvider)operationContext.getGraphContainer().getBaseTopology();
-			return false;
-		} catch (ClassCastException e) {
+		if (operationContext.getGraphContainer().getBaseTopology().groupingSupported()) {
 			return enabled(targets, operationContext);
+		} else {
+			return false;
 		}
 	}
 
