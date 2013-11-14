@@ -30,11 +30,13 @@ package org.opennms.core.db;
 
 import java.io.IOException;
 import java.net.URI;
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.sql.XADataSource;
 
+import org.hsqldb.jdbc.pool.JDBCXADataSource;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.postgresql.xa.PGXADataSource;
@@ -67,7 +69,7 @@ public abstract class XADataSourceFactory {
 		try {
 			m_dataSourceConfigFactory = new DataSourceConfigurationFactory(ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME));
 		} catch (IOException e) {
-			LOG.warn("Could not parse default data source configuration", e);
+			LOG.debug("Could not parse default data source configuration", e);
 			m_dataSourceConfigFactory = null;
 		}
 	}
@@ -91,7 +93,7 @@ public abstract class XADataSourceFactory {
 			urlString = urlString.substring("jdbc:".length());
 		}
 		URI url = URI.create(urlString);
-		// TODO: Add support for more XADataSources (hsqldb, derby)
+		// TODO: Add support for more XADataSources (derby)
 		if ("postgresql".equalsIgnoreCase(url.getScheme())) {
 			PGXADataSource xaDataSource = new PGXADataSource();
 			xaDataSource.setServerName(url.getHost());
@@ -100,6 +102,19 @@ public abstract class XADataSourceFactory {
 			xaDataSource.setUser(ds.getUserName());
 			xaDataSource.setPassword(ds.getPassword());
 			setInstance(dsName, xaDataSource);
+		} else if ("hsqldb".equalsIgnoreCase(url.getScheme())) {
+			try {
+				JDBCXADataSource xaDataSource = new JDBCXADataSource();
+				xaDataSource.setUrl(urlString);
+				xaDataSource.setDatabaseName(ds.getDatabaseName());
+				xaDataSource.setUser(ds.getUserName());
+				xaDataSource.setPassword(ds.getPassword());
+				//xaDataSource.setLoginTimeout();
+				setInstance(dsName, xaDataSource);
+			} catch (SQLException e) {
+				// This shouldn't ever be thrown, there is no code in the JDBCXADataSource constructor
+				throw new UnsupportedOperationException("Could not create HSQLDB XADataSource", e);
+			}
 		} else {
 			throw new UnsupportedOperationException("Data source scheme not supported: " + url.getScheme());
 		}
