@@ -28,17 +28,20 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
-import com.google.common.collect.Lists;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
+import java.util.Set;
+
 import javax.xml.bind.JAXB;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
@@ -602,7 +605,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     @Override
     public List<SearchResult> query(SearchQuery searchQuery, GraphContainer graphContainer) {
         List<Vertex> vertices = m_vertexProvider.getVertices();
-        List<SearchResult> searchResults = Lists.newArrayList();
+        List<SearchResult> searchResults = new ArrayList<SearchResult>();
 
         for(Vertex vertex : vertices){
             if(searchQuery.matches(vertex.getLabel())) {
@@ -627,8 +630,8 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     }
 
     @Override
-    public List<VertexRef> getVertexRefsBy(SearchResult searchResult) {
-        return Lists.newArrayList((VertexRef)getVertex(searchResult.getNamespace(), searchResult.getId()));  //To change body of implemented methods use File | Settings | File Templates.
+    public Set<VertexRef> getVertexRefsBy(SearchResult searchResult) {
+        return Collections.singleton((VertexRef)getVertex(searchResult.getNamespace(), searchResult.getId()));  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override

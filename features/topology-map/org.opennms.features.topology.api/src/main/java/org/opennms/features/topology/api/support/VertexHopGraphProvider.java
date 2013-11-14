@@ -72,23 +72,7 @@ public class VertexHopGraphProvider implements GraphProvider {
 	}
 
 	public static FocusNodeHopCriteria getFocusNodeHopCriteriaForContainer(GraphContainer graphContainer, boolean createIfAbsent) {
-		Criteria[] criteria = graphContainer.getCriteria();
-		if (criteria != null) {
-			for (Criteria criterium : criteria) {
-				try {
-					FocusNodeHopCriteria hopCriteria = (FocusNodeHopCriteria)criterium;
-					return hopCriteria;
-				} catch (ClassCastException e) {}
-			}
-		}
-
-		if (createIfAbsent) {
-			FocusNodeHopCriteria hopCriteria = new FocusNodeHopCriteria();
-			graphContainer.addCriteria(hopCriteria);
-			return hopCriteria;
-		} else {
-			return null;
-		}
+		return Criteria.getSingleCriteriaForGraphContainer(graphContainer, FocusNodeHopCriteria.class, createIfAbsent);
 	}
 
 	public static CollapsibleCriteria[] getCollapsedCriteriaForContainer(GraphContainer graphContainer) {

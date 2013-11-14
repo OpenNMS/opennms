@@ -58,7 +58,14 @@ xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
 		<property name="ncsCriteriaServiceManager" ref="ncsCriteriaServiceManager" />
 	</bean>
 
-    <service interface="org.opennms.features.topology.api.topo.SearchProvider" ref="ncsSearchProvider"/>
+	<service interface="org.opennms.features.topology.api.topo.SearchProvider" ref="ncsSearchProvider"/>
+
+	<bean id="ncsHistoryOperation" class="org.opennms.features.topology.plugins.ncs.NCSHopCriteriaHistoryOperation">
+		<property name="ncsComponentRepository" ref="ncsComponentRepository" />
+		<property name="ncsEdgeProvider" ref="ncsEdgeProvider" />
+	</bean>
+
+	<service interface="org.opennms.features.topology.api.HistoryOperation" ref="ncsHistoryOperation"/>
 
 	<bean id="ncsEdgeProvider" class="org.opennms.features.topology.plugins.ncs.NCSEdgeProvider">
 		<description>This EdgeProvider exposes edges between nodes that are implied by NCSComponents.</description>

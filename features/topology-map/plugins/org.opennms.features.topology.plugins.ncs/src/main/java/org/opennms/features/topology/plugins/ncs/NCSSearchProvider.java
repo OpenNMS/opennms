@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
@@ -13,6 +14,7 @@ import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHo
 import org.opennms.features.topology.api.topo.AbstractSearchProvider;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.RefComparator;
 import org.opennms.features.topology.api.topo.SearchProvider;
 import org.opennms.features.topology.api.topo.SearchQuery;
 import org.opennms.features.topology.api.topo.SearchResult;
@@ -23,11 +25,11 @@ import org.opennms.netmgt.model.ncs.NCSComponentRepository;
 
 public class NCSSearchProvider extends AbstractSearchProvider implements SearchProvider {
 
-    public class NCSHopCriteria extends VertexHopCriteria{
+    public static class NCSHopCriteria extends VertexHopCriteria{
 
         private final Set<VertexRef> m_vertices;
 
-        public NCSHopCriteria(String id, HashSet<VertexRef> vertexRefs, String label) {
+        public NCSHopCriteria(String id, Set<VertexRef> vertexRefs, String label) {
             setId(id);
             m_vertices = vertexRefs;
             setLabel(label);
@@ -69,18 +71,18 @@ public class NCSSearchProvider extends AbstractSearchProvider implements SearchP
         m_container = new NCSServiceContainer(m_ncsComponentRepository);
 	}
 
-    protected void selectVerticesForEdge(Criteria criteria, SelectionManager selectionManager) {
-	    selectionManager.setSelectedVertexRefs(getVertexRefsForEdges(criteria));
+    protected static void selectVerticesForEdge(NCSEdgeProvider provider, Criteria criteria, SelectionManager selectionManager) {
+	    selectionManager.setSelectedVertexRefs(getVertexRefsForEdges(provider, criteria));
 	    
     }
 
-    protected void deselectVerticesForEgde(Criteria criteria, SelectionManager selectionManager) {
-        selectionManager.deselectVertexRefs(getVertexRefsForEdges(criteria));
+    protected static void deselectVerticesForEdge(NCSEdgeProvider provider, Criteria criteria, SelectionManager selectionManager) {
+        selectionManager.deselectVertexRefs(getVertexRefsForEdges(provider, criteria));
     }
 
-    private List<VertexRef> getVertexRefsForEdges(Criteria criteria) {
-        List<VertexRef> vertexRefs = new ArrayList<VertexRef>();
-        List<Edge> edges = m_ncsEdgeProvider.getEdges(criteria);
+    public static Set<VertexRef> getVertexRefsForEdges(NCSEdgeProvider provider, Criteria criteria) {
+        Set<VertexRef> vertexRefs = new TreeSet<VertexRef>(new RefComparator());
+        List<Edge> edges = provider.getEdges(criteria);
         for(Edge ncsEdge : edges) {
             vertexRefs.add(ncsEdge.getSource().getVertex());
             vertexRefs.add(ncsEdge.getTarget().getVertex());
@@ -130,7 +132,7 @@ public class NCSSearchProvider extends AbstractSearchProvider implements SearchP
         m_serviceManager.registerCriteria(criteria, operationContext.getGraphContainer().getSessionId());
 
         //Juniper specifically asked for the selection of NCS services
-        selectVerticesForEdge(criteria, operationContext.getGraphContainer().getSelectionManager());
+        selectVerticesForEdge(m_ncsEdgeProvider, criteria, operationContext.getGraphContainer().getSelectionManager());
 
     }
 
@@ -147,21 +149,21 @@ public class NCSSearchProvider extends AbstractSearchProvider implements SearchP
     }
 
     @Override
-    public List<VertexRef> getVertexRefsBy(SearchResult searchResult) {
+    public Set<VertexRef> getVertexRefsBy(SearchResult searchResult) {
         Criteria criteria = NCSEdgeProvider.createCriteria(Collections.singletonList(Long.parseLong(searchResult.getId())));
-        return getVertexRefsForEdges(criteria);
+        return getVertexRefsForEdges(m_ncsEdgeProvider, criteria);
     }
 
     @Override
     public void addVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
         Criteria criteria = NCSEdgeProvider.createCriteria(Collections.singletonList(Long.parseLong(searchResult.getId())));
-        container.addCriteria(new NCSHopCriteria(searchResult.getId(), new HashSet<VertexRef>(getVertexRefsForEdges(criteria)), searchResult.getLabel()));
+        container.addCriteria(new NCSHopCriteria(searchResult.getId(), new HashSet<VertexRef>(getVertexRefsForEdges(m_ncsEdgeProvider, criteria)), searchResult.getLabel()));
     }
 
     @Override
     public void removeVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
         Criteria criteria = NCSEdgeProvider.createCriteria(Collections.singletonList(Long.parseLong(searchResult.getId())));
-        container.removeCriteria(new NCSHopCriteria(searchResult.getId(), new HashSet<VertexRef>(getVertexRefsForEdges(criteria)), searchResult.getLabel()));
+        container.removeCriteria(new NCSHopCriteria(searchResult.getId(), new HashSet<VertexRef>(getVertexRefsForEdges(m_ncsEdgeProvider, criteria)), searchResult.getLabel()));
 
         if(m_serviceManager.isCriteriaRegistered(NAMESPACE, container.getSessionId())) {
             m_serviceManager.unregisterCriteria(NAMESPACE, container.getSessionId());

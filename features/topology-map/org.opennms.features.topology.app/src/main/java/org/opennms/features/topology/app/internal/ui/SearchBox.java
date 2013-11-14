@@ -32,6 +32,8 @@ package org.opennms.features.topology.app.internal.ui;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.MapViewManager;
@@ -148,7 +150,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
         public void centerSearchSuggestion(SearchSuggestion searchSuggestion){
             SearchResult searchResult = new SearchResult(searchSuggestion.getNamespace(), searchSuggestion.getId(), searchSuggestion.getLabel());
 
-            List<VertexRef> vRefs = null;
+            Set<VertexRef> vRefs = null;
             Multiset<SearchProvider> keys = m_suggestionMap.keys();
             for(SearchProvider key : keys){
                 Collection<SearchResult> searchResults = m_suggestionMap.get(key);
@@ -164,7 +166,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
             AbstractVertexRef vertexRef = new AbstractVertexRef(searchResult.getNamespace(), searchResult.getId(), searchResult.getLabel());
             if(criteria.getVertices().contains(vertexRef)){
                 if(vRefs == null){
-                    vRefs = Lists.newArrayList();
+                    vRefs = new TreeSet<VertexRef>();
                 }
                 vRefs.add(vertexRef);
             }
