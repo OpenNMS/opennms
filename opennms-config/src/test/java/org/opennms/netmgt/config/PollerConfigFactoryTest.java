@@ -37,6 +37,7 @@ import junit.framework.TestCase;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.db.XADataSourceFactory;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.xml.CastorUtils;
@@ -128,7 +129,7 @@ public class PollerConfigFactoryTest extends TestCase {
         MockDatabase db = new MockDatabase();
         db.populate(network);
         DataSourceFactory.setInstance(db);
-        
+        XADataSourceFactory.setInstance(db);
     }
 
     @Override

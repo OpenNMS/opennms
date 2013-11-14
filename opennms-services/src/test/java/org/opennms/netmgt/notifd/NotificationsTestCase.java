@@ -36,6 +36,7 @@ import java.util.Date;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.db.XADataSourceFactory;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
@@ -137,6 +138,7 @@ public class NotificationsTestCase {
     protected MockDatabase createDatabase(MockNetwork network) throws Exception {
         MockDatabase db = new MockDatabase();
         DataSourceFactory.setInstance(db);
+        XADataSourceFactory.setInstance(db);
         db.populate(network);
         return db;
     }

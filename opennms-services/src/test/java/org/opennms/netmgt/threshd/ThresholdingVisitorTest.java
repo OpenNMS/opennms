@@ -52,19 +52,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.junit.Assert;
-
 import org.easymock.EasyMock;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.db.XADataSourceFactory;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.InetAddressUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.collectd.AliasedResource;
 import org.opennms.netmgt.collectd.CollectionAgent;
@@ -110,6 +108,8 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
 
 /**
@@ -489,6 +489,7 @@ public class ThresholdingVisitorTest {
             db.update("insert into category_node values (?, ?)", 11, i);
         }
         DataSourceFactory.setInstance(db);
+        XADataSourceFactory.setInstance(db);
 
         // Initialize Filter DAO
         System.setProperty("opennms.home", "src/test/resources");
@@ -1078,6 +1079,7 @@ public class ThresholdingVisitorTest {
             db.update("insert into category_node values (?, ?)", 11, i);
         }
         DataSourceFactory.setInstance(db);
+        XADataSourceFactory.setInstance(db);
 
         // Initialize Filter DAO
 
@@ -1884,6 +1886,7 @@ public class ThresholdingVisitorTest {
         if (ifName != null)
             db.update("update snmpinterface set snmpifname=?, snmpifdescr=? where id=?", ifName, ifName, 1);
         DataSourceFactory.setInstance(db);
+        XADataSourceFactory.setInstance(db);
         Vault.setDataSource(db);
     }
 

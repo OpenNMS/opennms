@@ -112,6 +112,7 @@ public class JdbcWebNotificationRepositoryTest implements InitializingBean {
 
     @Test
     @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @Transactional
     public void testGetNotification(){
         Notification notice = m_notificationRepo.getNotification(1);
         assertNotNull(notice);

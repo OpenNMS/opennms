@@ -48,7 +48,7 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -79,7 +79,7 @@ public class NetworkElementFactoryTest implements InitializingBean {
     DataSource m_dataSource;
 
     @Autowired
-    SimpleJdbcTemplate m_jdbcTemplate;
+    JdbcTemplate m_jdbcTemplate;
 
     @Autowired
     NodeDao m_nodeDao;
@@ -95,8 +95,8 @@ public class NetworkElementFactoryTest implements InitializingBean {
     }
     
     @Test
-    @Transactional
     @JUnitTemporaryDatabase
+    @Transactional
     public void testGetNodeLabel() throws SQLException {
         String nodeLabel = NetworkElementFactory.getInstance(m_appContext).getNodeLabel(1);
         
@@ -105,6 +105,7 @@ public class NetworkElementFactoryTest implements InitializingBean {
     
     @Test
     @JUnitTemporaryDatabase
+    @Transactional
     public void testGetIpPrimaryAddress() throws SQLException {
         m_jdbcTemplate.update("INSERT INTO node (nodeId, nodeCreateTime, nodeType, nodeLabel) VALUES (12, now(), 'A', 'nodeLabel')");
         m_jdbcTemplate.update("INSERT INTO ipinterface (nodeid, ipaddr, iplastcapsdpoll, issnmpprimary) VALUES (12, '172.168.1.1', now(), 'P')");
@@ -116,7 +117,6 @@ public class NetworkElementFactoryTest implements InitializingBean {
     
     @Test
     @Transactional
-    @JUnitTemporaryDatabase
     public void testGetNodesWithIpLikeOneInterface() throws Exception {
         // setUp() creates nodes by default, start with a clean slate
         for (final OnmsNode node : m_nodeDao.findAll()) {
@@ -134,7 +134,6 @@ public class NetworkElementFactoryTest implements InitializingBean {
     // bug introduced in revision 2932
     @Test
     @Transactional
-    @JUnitTemporaryDatabase
     public void testGetNodesWithIpLikeTwoInterfaces() throws Exception {
         // setUp() creates nodes by default, start with a clean slate
         for (final OnmsNode node : m_nodeDao.findAll()) {
@@ -168,7 +167,6 @@ public class NetworkElementFactoryTest implements InitializingBean {
 
     @Test
     @Transactional
-    @JUnitTemporaryDatabase
     public void testGetActiveInterfacesOnNode() {
     	Interface[] intfs = NetworkElementFactory.getInstance(m_appContext).getActiveInterfacesOnNode(m_dbPopulator.getNode1().getId());
     	assertEquals("active interfaces", 4, intfs.length);
@@ -177,7 +175,6 @@ public class NetworkElementFactoryTest implements InitializingBean {
         
     @Test
     @Transactional
-    @JUnitTemporaryDatabase
     public void testGetDataLinksOnInterface() {
         List<LinkInterface> dlis = NetworkElementFactory.getInstance(m_appContext).getDataLinksOnInterface(m_dbPopulator.getNode1().getId(), 1);
         assertEquals(4, dlis.size());
@@ -188,7 +185,6 @@ public class NetworkElementFactoryTest implements InitializingBean {
     
     @Test
     @Transactional
-    @JUnitTemporaryDatabase
     public void testGetAtInterfaces() throws Exception {
         AtInterface atif = NetworkElementFactory.getInstance(m_appContext).getAtInterface(m_dbPopulator.getNode2().getId(), "192.168.2.1");
         assertEquals("AA:BB:CC:DD:EE:FF", atif.get_physaddr());
@@ -199,7 +195,6 @@ public class NetworkElementFactoryTest implements InitializingBean {
     
     @Test
     @Transactional
-    @JUnitTemporaryDatabase
     public void testGetDataLinksOnNode() throws SQLException {
     	List<LinkInterface> dlis = NetworkElementFactory.getInstance(m_appContext).getDataLinksOnNode(m_dbPopulator.getNode1().getId());
         assertEquals(5, dlis.size());
@@ -210,6 +205,7 @@ public class NetworkElementFactoryTest implements InitializingBean {
     
     @Test
     @JUnitTemporaryDatabase
+    @Transactional
     public void testGetServicesOnInterface() {
         m_jdbcTemplate.update("UPDATE ifservices SET status='A' WHERE id=2;");
         Service[] svc = NetworkElementFactory.getInstance(m_appContext).getServicesOnInterface(1, "192.168.1.1");

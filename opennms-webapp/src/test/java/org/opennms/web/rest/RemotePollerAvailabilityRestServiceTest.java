@@ -44,6 +44,7 @@ import javax.servlet.ServletException;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.db.XADataSourceFactory;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabase;
@@ -54,10 +55,10 @@ import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
+import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.PollStatus;
-import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.test.DaoTestConfigBean;
 import org.opennms.web.rest.AvailCalculator.UptimeCalculator;
 import org.opennms.web.rest.support.TimeChunker;
@@ -107,9 +108,11 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
             db.setPopulateSchema(false);
             db.create();
             DataSourceFactory.setInstance(db);
+            XADataSourceFactory.setInstance(db);
         }else {
             MockDatabase db = new MockDatabase(true);
             DataSourceFactory.setInstance(db);
+            XADataSourceFactory.setInstance(db);
         }
         
                 

@@ -34,6 +34,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.db.XADataSourceFactory;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.netmgt.config.syslogd.HideMatch;
@@ -58,6 +59,7 @@ public class SyslogdConfigFactoryTest {
         db.populate(network);
 
         DataSourceFactory.setInstance(db);
+        XADataSourceFactory.setInstance(db);
 
         m_factory = new SyslogdConfigFactory(ConfigurationTestUtils.getInputStreamForResource(this, "/etc/syslogd-configuration.xml"));
     }

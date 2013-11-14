@@ -36,6 +36,7 @@ import junit.framework.TestCase;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.db.XADataSourceFactory;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
@@ -59,10 +60,10 @@ public class CollectorConfigDaoImplTest extends TestCase {
         MockLogAppender.setupLogging();
 
         MockDatabase m_db = new MockDatabase();
-        //        m_db.populate(m_network);
+        // m_db.populate(m_network);
 
         DataSourceFactory.setInstance(m_db);
-
+        XADataSourceFactory.setInstance(m_db);
     }
 
     @Override

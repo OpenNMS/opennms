@@ -35,6 +35,7 @@ import javax.servlet.ServletException;
 import junit.framework.TestCase;
 
 import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.db.XADataSourceFactory;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.test.DaoTestConfigBean;
 import org.springframework.mock.web.MockFilterConfig;
@@ -68,6 +69,7 @@ public class SpringWebflowContextTest extends TestCase {
 
         MockDatabase db = new MockDatabase(true);
         DataSourceFactory.setInstance(db);
+        XADataSourceFactory.setInstance(db);
 
         servletContext = new MockServletContext("file:src/main/webapp");
 

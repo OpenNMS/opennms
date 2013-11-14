@@ -37,6 +37,7 @@ import java.util.Locale;
 import junit.framework.TestCase;
 
 import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.db.XADataSourceFactory;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
@@ -67,6 +68,7 @@ public class AvailabilityCalculatorTest extends TestCase {
 
         m_db = new MockDatabase();
         DataSourceFactory.setInstance(m_db);
+        XADataSourceFactory.setInstance(m_db);
 
         InputStream is = ConfigurationTestUtils.getInputStreamForConfigFile("database-schema.xml");
         DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(is));

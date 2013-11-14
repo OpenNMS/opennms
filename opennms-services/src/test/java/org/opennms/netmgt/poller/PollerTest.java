@@ -48,6 +48,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.db.XADataSourceFactory;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
@@ -157,6 +158,7 @@ public class PollerTest {
 		m_db = new MockDatabase();
 		m_db.populate(m_network);
 		DataSourceFactory.setInstance(m_db);
+		XADataSourceFactory.setInstance(m_db);
 
 //		DemandPollDao demandPollDao = new DemandPollDaoHibernate(m_db);
 //		demandPollDao.setAllocateIdStmt(m_db

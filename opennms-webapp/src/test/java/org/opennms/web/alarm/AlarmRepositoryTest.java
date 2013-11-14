@@ -35,6 +35,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Date;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,6 +46,7 @@ import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AlarmRepository;
+import org.opennms.netmgt.dao.support.NewTransactionTemplate;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCriteria;
@@ -59,7 +61,9 @@ import org.opennms.web.filter.Filter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -72,6 +76,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
+@Transactional
 public class AlarmRepositoryTest implements InitializingBean {
     
     @Autowired
@@ -83,6 +88,9 @@ public class AlarmRepositoryTest implements InitializingBean {
     @Autowired
     AlarmDao m_alarmDao;
     
+    @Autowired
+    NewTransactionTemplate m_transactionTemplate;
+    
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -90,11 +98,15 @@ public class AlarmRepositoryTest implements InitializingBean {
     
     @Before
     public void setUp(){
-       m_dbPopulator.populateDatabase();
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                m_dbPopulator.populateDatabase();
+            }
+        });
     }
-    
+
     @Test
-    @Transactional
     @JUnitTemporaryDatabase
     public void testGetAlarmById(){
         OnmsAlarm alarm = m_alarmRepo.getAlarm(1);
@@ -119,7 +131,6 @@ public class AlarmRepositoryTest implements InitializingBean {
     }
     
     @Test
-    @Transactional
     @JUnitTemporaryDatabase
     public void testCountMatchingAlarmsBySeverity(){
         AlarmCriteria criteria = new AlarmCriteria();
@@ -200,7 +211,6 @@ public class AlarmRepositoryTest implements InitializingBean {
     }
     
     @Test
-    @Transactional
     @JUnitTemporaryDatabase
     public void testSort() {
         
@@ -212,7 +222,6 @@ public class AlarmRepositoryTest implements InitializingBean {
     }
 
     @Test
-    @Transactional
     @JUnitTemporaryDatabase
     public void testSortAndSearchBySameProperty() {
         
@@ -224,7 +233,6 @@ public class AlarmRepositoryTest implements InitializingBean {
     }
 
     @Test
-    @Transactional
     @JUnitTemporaryDatabase
     public void testAcknowledgeUnacknowledgeAllAlarms() {
         String user = "TestUser";
@@ -240,7 +248,6 @@ public class AlarmRepositoryTest implements InitializingBean {
     }
     
     @Test
-    @Transactional
     @JUnitTemporaryDatabase
     public void testCountMatchingBySeverity(){
         long[] matchingAlarmCount = m_alarmRepo.countMatchingAlarmsBySeverity(AlarmUtil.getOnmsCriteria(new AlarmCriteria(new SeverityFilter(OnmsSeverity.NORMAL))));
@@ -285,5 +292,4 @@ public class AlarmRepositoryTest implements InitializingBean {
         Assert.assertEquals(1, acks.size());
         Assert.assertEquals("agalue", acks.get(0).getAckUser());
     }
-
 }

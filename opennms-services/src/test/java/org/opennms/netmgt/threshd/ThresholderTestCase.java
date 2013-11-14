@@ -47,6 +47,7 @@ import junit.framework.TestCase;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.db.XADataSourceFactory;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
@@ -159,6 +160,7 @@ public class ThresholderTestCase extends TestCase {
 		MockDatabase db = new MockDatabase();
 		db.populate(m_network);
 		DataSourceFactory.setInstance(db);
+		XADataSourceFactory.setInstance(db);
 	}
 
 	protected void ensureExceededAfterFetches(String dsName, int count) {

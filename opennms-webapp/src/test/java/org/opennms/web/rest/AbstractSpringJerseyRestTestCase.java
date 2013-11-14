@@ -59,6 +59,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.db.XADataSourceFactory;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.test.DaoTestConfigBean;
@@ -89,9 +90,9 @@ public abstract class AbstractSpringJerseyRestTestCase {
     public static String POST = "POST";
     public static String DELETE = "DELETE";
     public static String PUT = "PUT";
-    
+
     String contextPath = "/opennms/rest";
-    
+
     private ServletContainer dispatcher;
     private MockServletConfig servletConfig;
     private MockServletContext servletContext;
@@ -108,7 +109,8 @@ public abstract class AbstractSpringJerseyRestTestCase {
 
         MockDatabase db = new MockDatabase(true);
         DataSourceFactory.setInstance(db);
-                
+        XADataSourceFactory.setInstance(db);
+
         setServletContext(new MockServletContext("file:src/main/webapp"));
 
         getServletContext().addInitParameter("contextConfigLocation", 
@@ -189,6 +191,10 @@ public abstract class AbstractSpringJerseyRestTestCase {
             getDispatcher().destroy();
         }
         afterServletDestroy();
+
+        // Close down the data sources that are referenced by the static DataSourceFactory helper classes
+        DataSourceFactory.close();
+        XADataSourceFactory.close();
     }
 
     /**

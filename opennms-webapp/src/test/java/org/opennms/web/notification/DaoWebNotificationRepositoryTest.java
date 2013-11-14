@@ -106,6 +106,7 @@ public class DaoWebNotificationRepositoryTest implements InitializingBean {
 
     @Test
     @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @Transactional
     public void testGetNotification(){
         Notification notice = m_daoNotificationRepo.getNotification(1);
         assertNotNull(notice);

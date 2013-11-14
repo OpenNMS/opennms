@@ -56,6 +56,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.db.XADataSourceFactory;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
@@ -237,6 +238,7 @@ public class LatencyStoringServiceMonitorAdaptorTest {
         db.populate(network);
         db.update("update snmpinterface set snmpifname=?, snmpifdescr=? where id=?", "eth0", "eth0", 1);
         DataSourceFactory.setInstance(db);
+        XADataSourceFactory.setInstance(db);
         Vault.setDataSource(db);
         
         m_mocks.replayAll();

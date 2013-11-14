@@ -48,6 +48,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.db.XADataSourceFactory;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
@@ -141,6 +142,7 @@ public class OpenNMSProvisionerTest {
         MockLogAppender.setupLogging();
         MockDatabase db = new MockDatabase();
         DataSourceFactory.setInstance(db);
+        XADataSourceFactory.setInstance(db);
 
         RrdUtils.setStrategy(m_strategy);
         

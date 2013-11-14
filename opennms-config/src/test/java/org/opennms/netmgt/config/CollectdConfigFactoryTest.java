@@ -37,6 +37,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.db.XADataSourceFactory;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.netmgt.filter.FilterDaoFactory;
@@ -62,7 +63,8 @@ public class CollectdConfigFactoryTest {
         db.populate(network);
 
         DataSourceFactory.setInstance(db);
-        
+        XADataSourceFactory.setInstance(db);
+
         FilterDaoFactory.getInstance();
 
         InputStream in = ConfigurationTestUtils.getInputStreamForResource(this, "collectd-testdata.xml");
