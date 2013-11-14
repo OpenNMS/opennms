@@ -154,7 +154,7 @@ public class DataLinkInterfaceRestServiceTest extends AbstractSpringJerseyRestTe
                 "  </link>";
 
         MockHttpServletResponse response = sendPost("/links", xml, 303, null);
-        assertTrue(response.getHeader("Location").toString().contains("opennms/rest/links/"));
+        assertTrue(response.getHeader("Location").toString().contains(contextPath + "links/"));
         
         final String newXml = sendRequest(GET, "/links", 200);
         assertTrue(newXml.contains("<links count=\"4\""));
