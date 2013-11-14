@@ -210,17 +210,15 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 	 */
     @Override
     public OnmsNode getNode(int nodeId) {
-        OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
-        criteria.add(Restrictions.eq("id",nodeId));
-        
-        List<OnmsNode> nodes = m_nodeDao.findMatching(criteria);
-        if(nodes.size() > 0 ) {
-            OnmsNode onmsNode = nodes.get(0);
-            return onmsNode;
-        }else {
-            return null;
-        }
+        return m_nodeDao.get(nodeId);
+    }
 
+    /* (non-Javadoc)
+     * @see org.opennms.web.element.NetworkElementFactoryInterface#getNode(string)
+     */
+    @Override
+    public OnmsNode getNode(String  lookupCriteria) {
+        return m_nodeDao.get(lookupCriteria);
     }
 
     /* (non-Javadoc)

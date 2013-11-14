@@ -440,6 +440,43 @@ public class CollectionResourceWrapperTest {
         Assert.assertEquals("opt", wrapper.getInstanceLabel());
     }
 
+    @Test
+    public void testNumericFields() throws Exception {
+        CollectionAgent agent = createCollectionAgent();
+        MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
+        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig);
+        ResourceType rt = new ResourceType();
+        rt.setName("dskIndex");
+        rt.setLabel("Disk Table Index (UCD-SNMP MIB)");
+        StorageStrategy strategy = new StorageStrategy();
+        strategy.setClazz("org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy");
+        strategy.addParameter(new Parameter("sibling-column-name", "ns-dskPath"));
+        strategy.addParameter(new Parameter("replace-first", "s/^-$/_root_fs/"));
+        strategy.addParameter(new Parameter("replace-all", "s/^-//"));
+        strategy.addParameter(new Parameter("replace-all", "s/\\s//"));
+        strategy.addParameter(new Parameter("replace-all","s/:\\\\.*//"));
+        rt.setStorageStrategy(strategy);
+        PersistenceSelectorStrategy pstrategy = new PersistenceSelectorStrategy();
+        pstrategy.setClazz("org.opennms.netmgt.collectd.PersistAllSelectorStrategy");
+        rt.setPersistenceSelectorStrategy(pstrategy);
+
+        GenericIndexResourceType resourceType = new GenericIndexResourceType(agent, collection, rt);
+
+        SnmpCollectionResource resource = new GenericIndexResource(resourceType, resourceType.getName(), new SnmpInstId(100));
+        SnmpAttribute total = addAttributeToCollectionResource(resource, "ns-dskTotal", "gauge", "dskIndex", "10000");
+        SnmpAttribute used = addAttributeToCollectionResource(resource, "ns-dskUsed", "gauge", "dskIndex", "5000");
+        SnmpAttribute label = addAttributeToCollectionResource(resource, "ns-dskPath", "string", "dskIndex", "/opt");
+        Map<String, CollectionAttribute> attributes = new HashMap<String, CollectionAttribute>();
+        attributes.put(used.getName(), used);
+        attributes.put(total.getName(), total);
+        attributes.put(label.getName(), label);
+
+        CollectionResourceWrapper wrapper = createWrapper(resource, attributes);
+        Assert.assertEquals("opt", wrapper.getInstanceLabel());
+        Assert.assertEquals(new Double("10000.0"), wrapper.getAttributeValue(total.getName()));
+        Assert.assertEquals("10000.0", wrapper.getFieldValue(total.getName()));
+    }
+
     private SnmpCollectionResource createNodeResource(CollectionAgent agent) {
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();        
         OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig);
