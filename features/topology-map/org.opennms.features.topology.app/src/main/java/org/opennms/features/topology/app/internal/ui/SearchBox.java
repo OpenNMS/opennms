@@ -150,13 +150,13 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
         public void centerSearchSuggestion(SearchSuggestion searchSuggestion){
             SearchResult searchResult = new SearchResult(searchSuggestion.getNamespace(), searchSuggestion.getId(), searchSuggestion.getLabel());
 
-            Set<VertexRef> vRefs = null;
+            Set<VertexRef> vRefs = new TreeSet<VertexRef>();
             Multiset<SearchProvider> keys = m_suggestionMap.keys();
             for(SearchProvider key : keys){
                 Collection<SearchResult> searchResults = m_suggestionMap.get(key);
                 if(searchResults.contains(searchResult)) {
                     key.onCenterSearchResult(searchResult, m_operationContext.getGraphContainer());
-                    vRefs = key.getVertexRefsBy(searchResult);
+                    vRefs.addAll(key.getVertexRefsBy(searchResult));
                     break;
                 }
             }
