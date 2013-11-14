@@ -34,6 +34,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.opennms.features.topology.api.GraphContainer;
@@ -138,7 +139,7 @@ public class AbstractSearchProviderTest {
             }
 
             @Override
-            public List<VertexRef> getVertexRefsBy(SearchResult searchResult) {
+            public Set<VertexRef> getVertexRefsBy(SearchResult searchResult) {
                 return null;
             }
 

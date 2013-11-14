@@ -28,10 +28,13 @@
 
 package org.opennms.features.topology.app.internal;
 
+
 import java.util.*;
 
-import org.opennms.core.criteria.Criteria;
-import org.opennms.core.criteria.restrictions.Restrictions;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.AbstractSearchProvider;
@@ -99,7 +102,7 @@ public class CategorySearchProvider extends AbstractSearchProvider implements Se
     }
 
     @Override
-    public List<VertexRef> getVertexRefsBy(SearchResult searchResult) {
+    public Set<VertexRef> getVertexRefsBy(SearchResult searchResult) {
         return null;
     }
 

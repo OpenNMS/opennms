@@ -28,7 +28,11 @@
 
 package org.opennms.features.topology.api.topo;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.opennms.features.topology.api.GraphContainer;
 
 /**
  * The interface is extended by plugin developers to allow the setting of criteria for their Providers
@@ -37,6 +41,47 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  */
 public abstract class Criteria {
+
+	public static <T extends Criteria> T getSingleCriteriaForGraphContainer(GraphContainer graphContainer, Class<T> criteriaClass, boolean createIfAbsent) {
+		Criteria[] criteria = graphContainer.getCriteria();
+		if (criteria != null) {
+			for (Criteria criterium : criteria) {
+				try {
+					T hopCriteria = criteriaClass.cast(criterium);
+					return hopCriteria;
+				} catch (ClassCastException e) {}
+			}
+		}
+
+		if (createIfAbsent) {
+			T hopCriteria;
+			try {
+				hopCriteria = criteriaClass.newInstance();
+			} catch (InstantiationException e) {
+				throw new IllegalArgumentException("Cannot create instance of " + criteriaClass.getName() + " with empty constructor", e);
+			} catch (IllegalAccessException e) {
+				throw new IllegalArgumentException("Cannot create instance of " + criteriaClass.getName() + " with empty constructor", e);
+			}
+			graphContainer.addCriteria(hopCriteria);
+			return hopCriteria;
+		} else {
+			return null;
+		}
+	}
+
+	public static <T extends Criteria> Set<T> getCriteriaForGraphContainer(GraphContainer graphContainer, Class<T> criteriaClass) {
+		Set<T> retval = new HashSet<T>();
+		Criteria[] criteria = graphContainer.getCriteria();
+		if (criteria != null) {
+			for (Criteria criterium : criteria) {
+				try {
+					T hopCriteria = criteriaClass.cast(criterium);
+					retval.add(hopCriteria);
+				} catch (ClassCastException e) {}
+			}
+		}
+		return retval;
+	}
 
     public enum ElementType { GRAPH, VERTEX, EDGE;}
 

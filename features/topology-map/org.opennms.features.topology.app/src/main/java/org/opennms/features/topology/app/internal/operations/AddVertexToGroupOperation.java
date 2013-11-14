@@ -38,6 +38,7 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.SelectionManager;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -49,10 +50,12 @@ import com.vaadin.data.Validator;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
-import com.vaadin.server.UserError;
 import com.vaadin.server.AbstractErrorMessage.ContentMode;
 import com.vaadin.server.ErrorMessage.ErrorLevel;
+import com.vaadin.server.UserError;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
@@ -61,8 +64,6 @@ import com.vaadin.ui.FormFieldFactory;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 
 public class AddVertexToGroupOperation implements Constants, Operation {
 	
@@ -255,7 +256,11 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 
 	@Override
 	public boolean display(List<VertexRef> targets, OperationContext operationContext) {
-		return true;
+		if (operationContext.getGraphContainer().getBaseTopology().groupingSupported()) {
+			return enabled(targets, operationContext);
+		} else {
+			return false;
+		}
 	}
 
 	@Override

@@ -7,7 +7,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>
             <entry key="operation.menuLocation" value="Device"/>
-            <entry key="operation.contextMenuLocation" value="Utils"/>
+            <entry key="operation.contextMenuLocation" value=""/>
             <entry key="operation.label" value="SSH?group=additions"/> <!-- The label for this operation -->
         </service-properties>
         <bean class="org.opennms.features.topology.ssh.internal.operations.SSHOperation"/>

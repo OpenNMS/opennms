@@ -63,6 +63,12 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         </bean>
     </service>
 
+	<bean id="categoryHistoryOperation" class=" org.opennms.features.topology.app.internal.support.CategoryHopCriteriaHistoryOperation">
+		<property name="categoryHopCriteriaFactory" ref="categoryHopCriteriaFactory"/>
+	</bean>
+	
+	<service interface="org.opennms.features.topology.api.HistoryOperation" ref="categoryHistoryOperation"/>
+
     <!-- status provider -->
     <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory" />
 
