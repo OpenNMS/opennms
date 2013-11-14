@@ -76,6 +76,9 @@ public class SearchTokenField extends Composite {
     Anchor m_collapseBtn;
 
     @UiField
+    HorizontalPanel m_iconPanel;
+
+    @UiField
     HorizontalPanel m_tokenContainer;
 
     private final SearchSuggestion m_suggestion;
@@ -102,15 +105,14 @@ public class SearchTokenField extends Composite {
 
         m_closeBtn.setTitle("Remove from focus");
         m_closeBtn.getElement().getStyle().setCursor(Style.Cursor.POINTER);
-        //m_closeBtn.getElement().getStyle().setPadding(5, Unit.PX);
+        m_closeBtn.getElement().getStyle().setPaddingLeft(5, Style.Unit.PX);
 
         m_centerSuggestionBtn.setTitle("Center on map");
         m_centerSuggestionBtn.getElement().getStyle().setCursor(Style.Cursor.POINTER);
-        //m_centerSuggestionBtn.getElement().getStyle().setPadding(5, Unit.PX);
+        m_centerSuggestionBtn.getElement().getStyle().setPaddingLeft(5, Style.Unit.PX);
 
         if (m_suggestion.isCollapsible()) {
             m_collapseBtn.getElement().getStyle().setCursor(Style.Cursor.POINTER);
-            //m_collapseBtn.getElement().getStyle().setPadding(5, Unit.PX);
 
             // If the suggestion is already collapsed, then switch the icon to the "+" icon
             m_collapseBtn.getElement().removeClassName("icon-plus");

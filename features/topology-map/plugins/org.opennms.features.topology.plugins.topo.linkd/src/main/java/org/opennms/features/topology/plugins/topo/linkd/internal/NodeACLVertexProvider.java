@@ -32,6 +32,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.opennms.features.topology.api.topo.*;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
@@ -223,19 +224,18 @@ public class NodeACLVertexProvider implements GraphProvider {
             List<OnmsNode> onmsNodes = m_nodeDao.findAll();
 
             //Transform the onmsNodes list to a list of Ids
-            final List<Integer> nodes = Lists.transform(onmsNodes, new Function<OnmsNode, Integer>() {
+            final Set<Integer> nodes = new HashSet(Lists.transform(onmsNodes, new Function<OnmsNode, Integer>() {
                 @Override
                 public Integer apply(OnmsNode node) {
                     return node.getId();
                 }
-            });
-
+            }));
 
             //Filter out the nodes that are not viewable by the user.
             return Lists.newArrayList(Collections2.filter(vertices, new Predicate<Vertex>() {
                 @Override
                 public boolean apply(Vertex vertex) {
-                    return nodes.contains(vertex.getNodeID());
+                    return nodes.contains(vertex.getNodeID()) && vertex.getNamespace().toLowerCase().equals("nodes");
                 }
             }));
         }else{

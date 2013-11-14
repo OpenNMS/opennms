@@ -40,7 +40,7 @@ public class CategoryHopCriteria extends VertexHopCriteria implements Collapsibl
 	public CategoryHopCriteria(String categoryName) {
 		m_categoryName = categoryName;
 		setLabel(m_categoryName);
-		m_collapsedVertex = new CategoryVertex("nodes", "category:" + m_categoryName, m_categoryName);
+		m_collapsedVertex = new CategoryVertex("category", "category:" + m_categoryName, m_categoryName);
 	}
 
 	public CategoryDao getCategoryDao() {
