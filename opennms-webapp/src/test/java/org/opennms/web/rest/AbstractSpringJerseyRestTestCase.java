@@ -46,7 +46,7 @@ import java.util.Map;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
-import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -59,16 +59,17 @@ import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.db.XADataSourceFactory;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.test.DaoTestConfigBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletConfig;
-import org.springframework.mock.web.MockServletContext;
 import org.springframework.orm.hibernate3.support.OpenSessionInViewFilter;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
@@ -89,12 +90,16 @@ public abstract class AbstractSpringJerseyRestTestCase {
     public static String POST = "POST";
     public static String DELETE = "DELETE";
     public static String PUT = "PUT";
-    
-    String contextPath = "/opennms/rest";
-    
+
+    ///String contextPath = "/opennms/rest";
+    public static String contextPath = "/";
+
     private ServletContainer dispatcher;
     private MockServletConfig servletConfig;
-    private MockServletContext servletContext;
+
+    @Autowired
+    protected ServletContext servletContext;
+
     private ContextLoaderListener contextListener;
     private Filter filter;
     private WebApplicationContext m_webAppContext;
@@ -108,37 +113,12 @@ public abstract class AbstractSpringJerseyRestTestCase {
 
         MockDatabase db = new MockDatabase(true);
         DataSourceFactory.setInstance(db);
-                
-        setServletContext(new MockServletContext("file:src/main/webapp"));
+        XADataSourceFactory.setInstance(db);
 
-        getServletContext().addInitParameter("contextConfigLocation", 
-                "classpath:/org/opennms/web/rest/applicationContext-test.xml " +
-                "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml " +
-                "classpath:/META-INF/opennms/applicationContext-soa.xml " +
-                "classpath*:/META-INF/opennms/component-service.xml " +
-                "classpath*:/META-INF/opennms/component-dao.xml " +
-                "classpath:/META-INF/opennms/applicationContext-reportingCore.xml " +
-                "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml " +
-                "classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml " +
-                "classpath:/META-INF/opennms/applicationContext-mockEventProxy.xml " +
-                "classpath:/applicationContext-jersey-test.xml " +
-                "classpath:/META-INF/opennms/applicationContext-reporting.xml " +
-                "classpath:/META-INF/opennms/applicationContext-mock-usergroup.xml " +
-                "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml " +
-                "/WEB-INF/applicationContext-spring-security.xml " +
-                "/WEB-INF/applicationContext-jersey.xml");
-        
-        getServletContext().addInitParameter("parentContextKey", "daoContext");
-                
-        ServletContextEvent e = new ServletContextEvent(getServletContext());
-        setContextListener(new ContextLoaderListener());
-        getContextListener().contextInitialized(e);
-
-        getServletContext().setContextPath(contextPath);
         setServletConfig(new MockServletConfig(getServletContext(), "dispatcher"));    
         getServletConfig().addInitParameter("com.sun.jersey.config.property.resourceConfigClass", "com.sun.jersey.api.core.PackagesResourceConfig");
         getServletConfig().addInitParameter("com.sun.jersey.config.property.packages", "org.opennms.web.rest");
-        
+
         try {
 
             MockFilterConfig filterConfig = new MockFilterConfig(getServletContext(), "openSessionInViewFilter");
@@ -157,14 +137,14 @@ public abstract class AbstractSpringJerseyRestTestCase {
         System.err.println("------------------------------------------------------------------------------");
     }
 
-    protected void cleanUpImports() {
+    protected static void cleanUpImports() {
         final Iterator<File> fileIterator = FileUtils.iterateFiles(new File("target/test/opennms-home/etc/imports"), null, true);
         while (fileIterator.hasNext()) {
             fileIterator.next().delete();
         }
     }
 
-    protected MockServletContext getServletContext() {
+    protected ServletContext getServletContext() {
     	return servletContext;
     }
 
@@ -184,7 +164,6 @@ public abstract class AbstractSpringJerseyRestTestCase {
     public void tearDown() throws Exception {
         System.err.println("------------------------------------------------------------------------------");
         beforeServletDestroy();
-        getContextListener().contextDestroyed(new ServletContextEvent(getServletContext()));
         if (getDispatcher() != null) {
             getDispatcher().destroy();
         }
@@ -210,15 +189,19 @@ public abstract class AbstractSpringJerseyRestTestCase {
                 getDispatcher().service(filterRequest, filterResponse);
             }
         };
-        if (getFilter() != null) getFilter().doFilter(request, response, filterChain);
+        if (getFilter() != null) {
+            getFilter().doFilter(request, response, filterChain);
+        } else {
+            filterChain.doFilter(request, response);
+        }
     }
     
-    protected MockHttpServletResponse createResponse() {
+    protected static MockHttpServletResponse createResponse() {
         return new MockHttpServletResponse();
     }
 
-	protected MockHttpServletRequest createRequest(final String requestType, final String urlPath) {
-		final MockHttpServletRequest request = new MockHttpServletRequest(getServletContext(), requestType, contextPath + urlPath) {
+	protected static MockHttpServletRequest createRequest(final ServletContext context, final String requestType, final String urlPath) {
+		final MockHttpServletRequest request = new MockHttpServletRequest(context, requestType, contextPath + urlPath) {
 
 			@Override
 			// FIXME: remove when we update to Spring 3.1
@@ -322,7 +305,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
      * @param statusCode
      */
     protected MockHttpServletResponse sendData(String requestType, String contentType, String url, String data, int statusCode) throws Exception {
-        MockHttpServletRequest request = createRequest(requestType, url);
+        MockHttpServletRequest request = createRequest(getServletContext(), requestType, url);
         request.setContentType(contentType);
 
         if(contentType.equals(MediaType.APPLICATION_FORM_URLENCODED)){
@@ -379,13 +362,13 @@ public abstract class AbstractSpringJerseyRestTestCase {
     }
 
     protected String sendRequest(final String requestType, final String url, final Map<?,?> parameters, final int expectedStatus, final String expectedUrlSuffix) throws Exception {
-        final MockHttpServletRequest request = createRequest(requestType, url);
+        final MockHttpServletRequest request = createRequest(getServletContext(), requestType, url);
         request.setParameters(parameters);
         request.setQueryString(getQueryString(parameters));
         return sendRequest(request, expectedStatus, expectedUrlSuffix);
     }
     
-    protected String getQueryString(final Map<?,?> parameters) {
+    protected static String getQueryString(final Map<?,?> parameters) {
     	final StringBuffer sb = new StringBuffer();
 
 		try {
@@ -417,7 +400,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
     }
 
     protected String sendRequest(String requestType, String url, int expectedStatus) throws Exception {
-    	final MockHttpServletRequest request = createRequest(requestType, url);
+    	final MockHttpServletRequest request = createRequest(getServletContext(), requestType, url);
         return sendRequest(request, expectedStatus);
     }
 
@@ -446,7 +429,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
     }
     
     protected <T> T getXmlObject(JAXBContext context, String url, int expectedStatus, Class<T> expectedClass) throws Exception {
-        MockHttpServletRequest request = createRequest(GET, url);
+        MockHttpServletRequest request = createRequest(getServletContext(), GET, url);
         MockHttpServletResponse response = createResponse();
         dispatch(request, response);
         assertEquals(expectedStatus, response.getStatus());
@@ -469,7 +452,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
         marshaller.marshal(object, out);
         final byte[] content = out.toByteArray();
         
-        final MockHttpServletRequest request = createRequest(PUT, url);
+        final MockHttpServletRequest request = createRequest(getServletContext(), PUT, url);
         request.setContentType(MediaType.APPLICATION_XML);
         request.setContent(content);
         final MockHttpServletResponse response = createResponse();
@@ -548,10 +531,6 @@ public abstract class AbstractSpringJerseyRestTestCase {
     
     public <T> T getBean(String name, Class<T> beanClass) {
         return m_webAppContext.getBean(name, beanClass);
-    }
-
-    public void setServletContext(MockServletContext servletContext) {
-        this.servletContext = servletContext;
     }
 
     public void setContextListener(ContextLoaderListener contextListener) {
