@@ -95,6 +95,11 @@ public class NodeACLVertexProvider implements GraphProvider {
     }
 
     @Override
+    public boolean groupingSupported() {
+        return false;
+    }
+
+    @Override
     public Vertex addGroup(String label, String iconKey) {
         return m_delegate.addGroup(label, iconKey);
     }
@@ -235,7 +240,7 @@ public class NodeACLVertexProvider implements GraphProvider {
             return Lists.newArrayList(Collections2.filter(vertices, new Predicate<Vertex>() {
                 @Override
                 public boolean apply(Vertex vertex) {
-                    return nodes.contains(vertex.getNodeID()) && vertex.getNamespace().toLowerCase().equals("nodes");
+                    return vertex.getNamespace().toLowerCase().equals("nodes") ? nodes.contains(vertex.getNodeID()) : true;
                 }
             }));
         }else{
