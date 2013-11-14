@@ -21,14 +21,14 @@ public class CategoryHopCriteriaHistoryOperation implements HistoryOperation {
 
 	@Override
 	public void applyHistory(GraphContainer container, Map<String, String> settings) {
+		// Remove any existing {@link CategoryHopCriteria}
+		Set<CategoryHopCriteria> oldCriteria = Criteria.getCriteriaForGraphContainer(container, CategoryHopCriteria.class);
+		for (CategoryHopCriteria criterium : oldCriteria) {
+			container.removeCriteria(criterium);
+		}
+
 		String setting = settings.get(getClass().getName());
 		if (setting != null && setting.length() > 0) {
-			// Remove any existing NCSHopCriteria
-			Set<CategoryHopCriteria> oldCriteria = Criteria.getCriteriaForGraphContainer(container, CategoryHopCriteria.class);
-			for (CategoryHopCriteria criterium : oldCriteria) {
-				container.removeCriteria(criterium);
-			}
-
 			for (String category : setting.split(DELIMITER)) {
 				container.addCriteria(m_categoryHopCriteriaFactory.getCriteria(category));
 			}

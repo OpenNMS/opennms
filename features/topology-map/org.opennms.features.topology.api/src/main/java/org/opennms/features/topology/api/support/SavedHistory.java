@@ -177,7 +177,7 @@ public class SavedHistory {
     }
 
     public void apply(GraphContainer graphContainer, Collection<HistoryOperation> operations) {
-        // LoggerFactory.getLogger(this.getClass()).debug("Applying " + toString());
+        LoggerFactory.getLogger(this.getClass()).debug("Applying " + toString());
 
         if (m_focusVertices.size() > 0) {
             FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(graphContainer);

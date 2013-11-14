@@ -29,14 +29,14 @@ public class NCSHopCriteriaHistoryOperation implements HistoryOperation {
 
 	@Override
 	public void applyHistory(GraphContainer container, Map<String, String> settings) {
+		// Remove any existing {@link NCSHopCriteria}
+		Set<NCSHopCriteria> oldCriteria = Criteria.getCriteriaForGraphContainer(container, NCSHopCriteria.class);
+		for (NCSHopCriteria criterium : oldCriteria) {
+			container.removeCriteria(criterium);
+		}
+
 		String setting = settings.get(getClass().getName());
 		if (setting != null && setting.length() > 0) {
-			// Remove any existing NCSHopCriteria
-			Set<NCSHopCriteria> oldCriteria = Criteria.getCriteriaForGraphContainer(container, NCSHopCriteria.class);
-			for (NCSHopCriteria criterium : oldCriteria) {
-				container.removeCriteria(criterium);
-			}
-
 			for (String idString : setting.split(DELIMITER)) {
 				Long id = Long.parseLong(idString);
 				Criteria criteria = NCSEdgeProvider.createCriteria(Collections.singletonList(id));
