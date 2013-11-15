@@ -58,6 +58,11 @@ public class AbstractEdge extends AbstractEdgeRef implements Edge {
 		m_styleName = "edge";
 	}
 
+	@Override
+	public AbstractEdge clone() {
+		return new AbstractEdge(getNamespace(), getId(), getSource().clone(), getTarget().clone());
+	}
+
 	/**
 	 * @deprecated Use namespace/id tuple
 	 */
