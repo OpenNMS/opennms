@@ -47,12 +47,14 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.NotifdConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
+import org.opennms.netmgt.config.PollOutagesConfigManager;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.poller.Outage;
 import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -85,6 +87,9 @@ public class ScheduledOutagesRestServiceTest extends AbstractSpringJerseyRestTes
     private FilterDao m_filterDao;
     private String m_onmsHome;
 
+    @Autowired
+    private PollOutagesConfigManager m_pollOutagesConfigManager;
+
     @Override
     protected void beforeServletStart() throws Exception {
         MockLogAppender.setupLogging();
@@ -103,8 +108,8 @@ public class ScheduledOutagesRestServiceTest extends AbstractSpringJerseyRestTes
                 + "<interface address='match-any'/>"
                 + "</outage>"
                 + "</outages>");
-        PollOutagesConfigFactory factory = new PollOutagesConfigFactory(new FileSystemResource(outagesConfig));
-        PollOutagesConfigFactory.setInstance(factory);
+        m_pollOutagesConfigManager.setConfigResource(new FileSystemResource(outagesConfig));
+        m_pollOutagesConfigManager.afterPropertiesSet();
 
         // Setup Filter DAO
         m_filterDao = EasyMock.createMock(FilterDao.class);

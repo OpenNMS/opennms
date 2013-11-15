@@ -83,7 +83,6 @@ import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(locations={
-        "classpath:/org/opennms/web/rest/applicationContext-test.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
@@ -98,7 +97,9 @@ import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
         "classpath:/META-INF/opennms/applicationContext-mock-usergroup.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-spring-security.xml",
-        "file:src/main/webapp/WEB-INF/applicationContext-jersey.xml"
+        "file:src/main/webapp/WEB-INF/applicationContext-jersey.xml",
+
+        "classpath:/org/opennms/web/rest/applicationContext-test.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
@@ -255,7 +256,7 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
         }
         System.err.println("total time taken: " + (System.currentTimeMillis() - startTime) + "UptimeCalculator.count = " + UptimeCalculator.count);
         
-        Thread.sleep(360000);
+        Thread.sleep(2000);
         
         startTime = System.currentTimeMillis();
         responseString = sendRequest(GET, url, parameters, 200);
@@ -376,7 +377,7 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
             }
         });
         
-        Thread.sleep(10000L);
+        Thread.sleep(2000L);
         
         txTemplate.execute(new TransactionCallbackWithoutResult() {
             
