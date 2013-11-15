@@ -614,7 +614,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     @Override
     public List<SearchResult> query(SearchQuery searchQuery, GraphContainer graphContainer) {
-        List<Vertex> vertices = getVertices();
+        List<Vertex> vertices = getFilteredVertices();
         List<SearchResult> searchResults = Lists.newArrayList();
 
         for(Vertex vertex : vertices){
@@ -626,7 +626,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         return searchResults;
     }
 
-    private List<Vertex> getVertices() {
+    private List<Vertex> getFilteredVertices() {
         if(m_aclEnabled){
             //Get All nodes when called should filter with ACL
             List<OnmsNode> onmsNodes = m_nodeDao.findAll();
