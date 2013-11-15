@@ -111,6 +111,7 @@ public class JdbcWebEventRepositoryTest implements InitializingBean {
     
     @Test
     @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @Transactional
     public void testGetEvent(){
         Event event = m_eventRepo.getEvent(1);
         assertNotNull(event);
@@ -118,6 +119,7 @@ public class JdbcWebEventRepositoryTest implements InitializingBean {
     
     @Test
     @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @Transactional
     public void testAcknowledgeUnacknowledgeMatchingAlarms(){
         m_eventRepo.acknowledgeMatchingEvents("TestUser", new Date(), new EventCriteria(new EventIdFilter(1)));
         
@@ -169,6 +171,7 @@ public class JdbcWebEventRepositoryTest implements InitializingBean {
     
     @Test
     @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @Transactional
     public void testDoubleFilterTest(){
         m_eventRepo.acknowledgeAll("TestUser", new Date());
         

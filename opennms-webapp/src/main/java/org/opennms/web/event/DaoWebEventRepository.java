@@ -241,6 +241,7 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
             event.setEventAckTime(timestamp);
             m_eventDao.update(event);
         }
+        m_eventDao.flush();
     }
     
     /** {@inheritDoc} */
@@ -315,6 +316,7 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
             event.setEventAckTime(null);
             m_eventDao.update(event);
         }
+        m_eventDao.flush();
     }
     
 

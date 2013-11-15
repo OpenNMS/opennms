@@ -127,12 +127,14 @@ public class WebEventRepositoryFilterTest implements InitializingBean {
     
     @Test
     @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @Transactional
     public void testEventIdFilter(){
         EventIdFilter filter = new EventIdFilter(1);
         assert1Result(filter);
     }
     
     @Test
+    @Transactional
     public void testEventIdListFilter(){
         int[] ids = {1};
         EventIdListFilter filter = new EventIdListFilter(ids);
@@ -555,7 +557,7 @@ public class WebEventRepositoryFilterTest implements InitializingBean {
         
         Event[] events = m_jdbcEventRepo.getMatchingEvents(criteria);
         assertEquals(1, events.length);
-        
+
         events = m_daoEventRepo.getMatchingEvents(criteria);
         assertEquals(1, events.length);
     }
