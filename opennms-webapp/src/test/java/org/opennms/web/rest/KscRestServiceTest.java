@@ -76,6 +76,7 @@ public class KscRestServiceTest extends AbstractSpringJerseyRestTestCase {
     @Override
     protected void beforeServletStart() throws Exception {
         KSC_PerformanceReportFactory.setConfigFile(m_configFile);
+        KSC_PerformanceReportFactory.getInstance().reload();
     }
     
     @Override
@@ -87,10 +88,10 @@ public class KscRestServiceTest extends AbstractSpringJerseyRestTestCase {
     public void testReadOnly() throws Exception {
         // Testing GET Collection
         String xml = sendRequest(GET, "/ksc", 200);
-        assertTrue(xml.contains("Test 2"));
+        assertTrue(xml, xml.contains("Test 2"));
 
         xml = sendRequest(GET, "/ksc/0", 200);
-        assertTrue(xml.contains("label=\"Test\""));
+        assertTrue(xml, xml.contains("label=\"Test\""));
 
         sendRequest(GET, "/ksc/3", 404);
     }
@@ -104,10 +105,10 @@ public class KscRestServiceTest extends AbstractSpringJerseyRestTestCase {
         sendRequest(PUT, "/ksc/0", params, 303, "/ksc/0");
 
         final String xml = slurp(m_configFile);
-        assertTrue(xml.contains("title=\"foo\""));
+        assertTrue(xml, xml.contains("title=\"foo\""));
     }
 
-    private String slurp(final File file) throws Exception {
+    private static String slurp(final File file) throws Exception {
         Reader fileReader = null;
         BufferedReader reader = null;
 
