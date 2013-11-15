@@ -91,10 +91,11 @@ public class IPInterfaceTableTracker extends TableTracker {
                 	if (addr == null) {
                 		throw new IllegalArgumentException("cannot convert "+inst+" to an InetAddress");
                 	}
-					return addr;
+                	return addr;
+                } else {
+                	return null;
                 }
             }
-            return null;
         }
 
         private InetAddress getNetMask() {
