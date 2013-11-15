@@ -71,7 +71,11 @@ public class EdgeProviderMapImpl implements EdgeProvider {
 
 	@Override
 	public List<Edge> getEdges(Criteria... criteria) {
-		return Collections.unmodifiableList(Collections.list(Collections.enumeration(m_edges.values())));
+		List<Edge> edges = new ArrayList<Edge>();
+		for (Edge edge : m_edges.values()) {
+			edges.add(edge.clone());
+		}
+		return Collections.unmodifiableList(edges);
 	}
 
 	@Override

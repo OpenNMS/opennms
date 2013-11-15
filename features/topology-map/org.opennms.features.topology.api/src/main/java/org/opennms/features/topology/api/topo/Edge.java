@@ -30,7 +30,9 @@ package org.opennms.features.topology.api.topo;
 
 import com.vaadin.data.Item;
 
-public interface Edge extends EdgeRef {
+public interface Edge extends EdgeRef, Cloneable {
+
+	Edge clone();
 
 	/**
 	 * @deprecated Use namespace/id tuple
