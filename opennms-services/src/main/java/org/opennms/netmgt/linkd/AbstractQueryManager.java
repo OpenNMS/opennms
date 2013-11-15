@@ -230,16 +230,16 @@ public abstract class AbstractQueryManager implements QueryManager {
                                                       physAddr,
                                                       at.getIpAddress());
             atinterface.setIfIndex(interfaceindex);
-            getLinkd().addAtInterface(atinterface);
+            getLinkd().addAtInterface(snmpcoll.getPackageName(),atinterface);
             
         }
         
         if (!hasPrimaryIpAsAtinterface)
-        	savePrimaryAddressAtInterface(node);
+        	savePrimaryAddressAtInterface(snmpcoll.getPackageName(),node);
         
     }
 
-	private void savePrimaryAddressAtInterface(final LinkableNode node) {
+	private void savePrimaryAddressAtInterface(final String packageName, final LinkableNode node) {
 		LOG.info("savePrimaryAddressAtInterface: try to setting ifindex for linkednode primary ip address '{}' ", node.getSnmpPrimaryIpAddr().getHostAddress());
 		OnmsIpInterface ipinterface = getIpInterfaceDao().findByNodeIdAndIpAddress(Integer.valueOf(node.getNodeId()), node.getSnmpPrimaryIpAddr().getHostAddress());
 		if (ipinterface != null) {
@@ -249,7 +249,7 @@ public abstract class AbstractQueryManager implements QueryManager {
 		        at.setMacAddress(snmpinterface.getPhysAddr());
 		        LOG.info("savePrimaryAddressAtInterface: Setting AtInterface ifIndex to {}, for primary IP Address {}, MAC = {})", at.getIfIndex(), at.getIpAddress().getHostAddress(), at.getMacAddress());
 		        at.setIfIndex(snmpinterface.getIfIndex());
-		        getLinkd().addAtInterface(at);
+		        getLinkd().addAtInterface(packageName,at);
 		    }
 		}
 	}

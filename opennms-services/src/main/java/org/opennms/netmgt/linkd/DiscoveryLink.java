@@ -234,7 +234,7 @@ public final class DiscoveryLink implements ReadyRunnable {
         m_ospfNodes.clear();
         m_isisNodes.clear();
 
-        getLinkd().clearAtInterfaces(getPackageName());
+        getLinkd().clearPackageSavedData(getPackageName());
 
         m_linkd.updateDiscoveryLinkCollection(this);
 
@@ -248,7 +248,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 
     protected void populateMacToAtInterface() {
         LOG.debug("populateMacToAtInterface: using atNodes to populate macToAtinterface");
-        final Set<String> macAddresses = getLinkd().getMacAddressesForPackage(getPackageName());
+        final Set<String> macAddresses = getLinkd().getMacAddressesOnPackage(getPackageName());
         if (macAddresses == null || macAddresses.isEmpty()) return;
         for (final String macAddress : macAddresses) {
             final List<AtInterface> atInterfaces = getLinkd().getAtInterfaces(getPackageName(), macAddress);

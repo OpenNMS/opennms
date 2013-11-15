@@ -518,7 +518,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         * CISCO_C870:65.41.39.146:00000c03b09e:14:BVI1
         */
 
-        final Set<String> macAddresses = m_linkd.getMacAddressesForPackage(packageName);
+        final Set<String> macAddresses = m_linkd.getMacAddressesOnPackage(packageName);
         assertEquals(2, macAddresses.size());
         List<AtInterface> ats = m_linkd.getAtInterfaces(packageName, "001f6cd034e7");
         assertNotNull(ats);
@@ -636,7 +636,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         * Transparent Bridge
         */
         
-        final Set<String> macAddresses = m_linkd.getMacAddressesForPackage(packageName);
+        final Set<String> macAddresses = m_linkd.getMacAddressesOnPackage(packageName);
         assertNotNull(macAddresses);
         assertEquals(1, macAddresses.size());
         List<AtInterface> ats = m_linkd.getAtInterfaces(packageName, "00223ff00b7b");
@@ -726,7 +726,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         * 
         */
         
-        final Set<String> macAddresses = m_linkd.getMacAddressesForPackage(packageName);
+        final Set<String> macAddresses = m_linkd.getMacAddressesOnPackage(packageName);
         assertNotNull(macAddresses);
         assertEquals(1, macAddresses.size());
 
@@ -817,7 +817,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         *  
         */
         
-        final Set<String> macAddresses = m_linkd.getMacAddressesForPackage(packageName);
+        final Set<String> macAddresses = m_linkd.getMacAddressesOnPackage(packageName);
         assertNotNull(macAddresses);
         assertEquals(1, macAddresses.size());
 
@@ -1035,7 +1035,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         // linkable node is not null
         assertTrue(linkNode != null);
         
-        final Set<String> macAddresses = m_linkd.getMacAddressesForPackage("example1");
+        final Set<String> macAddresses = m_linkd.getMacAddressesOnPackage("example1");
         assertEquals(2, macAddresses.size());
 
         //final Map<String, List<AtInterface>> mactoatinterfacemap = m_linkd.getAtInterfaces("example1");

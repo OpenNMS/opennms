@@ -98,7 +98,7 @@ public class Linkd extends AbstractServiceDaemon {
     private LinkdConfig m_linkdConfig;
 
     /**
-     * List that contains Linkable Nodes.
+     * Map that contains for package Linkable Nodes.
      */
     private Map<String,List<LinkableNode>> m_nodes;
 
@@ -866,42 +866,40 @@ public class Linkd extends AbstractServiceDaemon {
 
     // Here all the information related to the
     // mapping between ipaddress and mac address are stored
-    public void addAtInterface(final AtInterface atinterface) {
+    public void addAtInterface(final String packageName, final AtInterface atinterface) {
         LOG.debug("addAtInterface: adding at interface {}/{}", atinterface.getIpAddress().getHostAddress(),atinterface.getMacAddress());
-        for (final String packageName : getActivePackages()) {
-            final String macAddress = atinterface.getMacAddress();
-            final InetAddress ipAddress = atinterface.getIpAddress();
+        final String macAddress = atinterface.getMacAddress();
+        final InetAddress ipAddress = atinterface.getIpAddress();
 
-            if (!isInterfaceInPackage(ipAddress, packageName)) {
-                LOG.debug("addAtInterface: ip {} not in package {}. Skipping", atinterface.getIpAddress().getHostAddress(),packageName);
-                continue;
+        if (!isInterfaceInPackage(ipAddress, packageName)) {
+            LOG.debug("addAtInterface: ip {} not in package {}. Skipping", atinterface.getIpAddress().getHostAddress(),packageName);
+            return;
+        }
+
+        synchronized (m_macToAtinterface) {
+            if (!m_macToAtinterface.containsKey(packageName)) {
+                LOG.debug("addAtInterface: creating map for package {}.",packageName);
+                m_macToAtinterface.put(packageName, new HashMap<String, List<AtInterface>>());
             }
 
-            synchronized (m_macToAtinterface) {
-                if (!m_macToAtinterface.containsKey(packageName)) {
-                    LOG.debug("addAtInterface: creating map for package {}.",packageName);
-                    m_macToAtinterface.put(packageName, new HashMap<String, List<AtInterface>>());
-                }
+            final List<AtInterface> atis;
+            if (m_macToAtinterface.get(packageName).containsKey(macAddress)) {
+                atis = m_macToAtinterface.get(packageName).get(macAddress);
+            } else {
+                atis = new ArrayList<AtInterface>();
+            }
 
-                final List<AtInterface> atis;
-                if (m_macToAtinterface.get(packageName).containsKey(macAddress)) {
-                    atis = m_macToAtinterface.get(packageName).get(macAddress);
-                } else {
-                    atis = new ArrayList<AtInterface>();
-                }
-
-                if (atis.contains(atinterface)) {
-                    LOG.debug("addAtInterface: Interface/package {}/{} found not adding.", atinterface.getIpAddress().getHostAddress(),packageName);
-                } else {
-                    LOG.debug("addAtInterface: add ip/mac/ifindex {}/{}/{} on package {}.", atinterface.getIpAddress().getHostAddress(), atinterface.getMacAddress(), atinterface.getIfIndex(), packageName);
-                    atis.add(atinterface);
-                    m_macToAtinterface.get(packageName).put(macAddress, atis);
-                }
+            if (atis.contains(atinterface)) {
+                LOG.debug("addAtInterface: Interface/package {}/{} found not adding.", atinterface.getIpAddress().getHostAddress(),packageName);
+            } else {
+                LOG.debug("addAtInterface: add ip/mac/ifindex {}/{}/{} on package {}.", atinterface.getIpAddress().getHostAddress(), atinterface.getMacAddress(), atinterface.getIfIndex(), packageName);
+                atis.add(atinterface);
+                m_macToAtinterface.get(packageName).put(macAddress, atis);
             }
         }
     }
 
-    public Set<String> getMacAddressesForPackage(final String packageName) {
+    public Set<String> getMacAddressesOnPackage(final String packageName) {
         synchronized(m_macToAtinterface) {
             final Map<String, List<AtInterface>> interfaceMaps = m_macToAtinterface.get(packageName);
             if (interfaceMaps != null) return Collections.unmodifiableSet(interfaceMaps.keySet());
@@ -920,10 +918,16 @@ public class Linkd extends AbstractServiceDaemon {
         return Collections.emptyList();
     }
 
-    public void clearAtInterfaces(final String packageName) {
+    public void clearPackageSavedData(final String packageName) {
         synchronized (m_macToAtinterface) {
             final Map<String, List<AtInterface>> interfaces = m_macToAtinterface.get(packageName);
             if (interfaces != null) interfaces.clear();
+        }
+        
+        synchronized (m_nodes) {
+            final List<LinkableNode> nodes = m_nodes.get(packageName);
+            if (nodes != null) nodes.clear();
+            
         }
     }
 
