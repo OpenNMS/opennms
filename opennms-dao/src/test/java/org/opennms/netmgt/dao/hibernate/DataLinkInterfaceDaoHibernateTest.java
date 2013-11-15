@@ -29,6 +29,7 @@
 package org.opennms.netmgt.dao.hibernate;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
@@ -48,6 +49,7 @@ import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.DataLinkInterface;
+import org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsNode;
@@ -183,6 +185,7 @@ public class DataLinkInterfaceDaoHibernateTest implements InitializingBean {
         // Create a new data link interface and save it.
         DataLinkInterface dli = new DataLinkInterface(m_databasePopulator.getNode2(), 2, m_databasePopulator.getNode1().getId(), 1, StatusType.UNKNOWN, new Date());
         dli.setLinkTypeId(101);
+        dli.setProtocol(DiscoveryProtocol.NA);
         m_dataLinkInterfaceDao.save(dli);
         m_dataLinkInterfaceDao.flush();
 
@@ -198,6 +201,7 @@ public class DataLinkInterfaceDaoHibernateTest implements InitializingBean {
         assertEquals(dli.getStatus(), dli2.getStatus());
         assertEquals(dli.getLinkTypeId(), dli2.getLinkTypeId());
         assertEquals(dli.getLastPollTime(), dli2.getLastPollTime());
+        assertEquals(dli.getProtocol(), dli2.getProtocol());
         assertEquals(dli.getSource(), "linkd");
     }
 
@@ -223,6 +227,7 @@ public class DataLinkInterfaceDaoHibernateTest implements InitializingBean {
         assertEquals(dli.getStatus(), dli2.getStatus());
         assertEquals(dli.getLinkTypeId(), dli2.getLinkTypeId());
         assertEquals(dli.getLastPollTime(), dli2.getLastPollTime());
+        assertNull(dli2.getProtocol());
         assertEquals(dli.getSource(), "rest");
     }
 

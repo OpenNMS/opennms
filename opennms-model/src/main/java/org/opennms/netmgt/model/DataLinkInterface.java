@@ -62,6 +62,17 @@ import org.opennms.netmgt.xml.bind.StatusTypeXmlAdapter;
 @XmlAccessorType(XmlAccessType.NONE)
 public class DataLinkInterface implements Serializable, Comparable<DataLinkInterface> {
     private static final long serialVersionUID = -3336726327359373609L;
+
+    public static enum DiscoveryProtocol {
+        bridge,
+        cdp,
+        iproute,
+        lldp,
+        ospf,
+        isis,
+        NA
+    }
+
     private Integer m_id;
     private OnmsNode m_node;
     private Integer m_ifIndex;
@@ -71,6 +82,9 @@ public class DataLinkInterface implements Serializable, Comparable<DataLinkInter
     private Integer m_linkTypeId;
     private Date m_lastPollTime;
     private String m_source = "linkd";
+
+    private DiscoveryProtocol m_protocol;
+    
     /**
      * work around a marshalling issue by storing the OnmsNode nodeId *
      */
@@ -198,6 +212,16 @@ public class DataLinkInterface implements Serializable, Comparable<DataLinkInter
 
     public void setLinkTypeId(final Integer linkTypeId) {
         m_linkTypeId = linkTypeId;
+    }
+
+    @XmlElement(name = "protocol")
+    @Column(name = "protocol", nullable = true)
+    public DiscoveryProtocol getProtocol() {
+        return m_protocol;
+    }
+
+    public void setProtocol(DiscoveryProtocol protocol) {
+        m_protocol = protocol;
     }
 
     @XmlElement(name = "lastPollTime")

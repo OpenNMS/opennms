@@ -56,4 +56,14 @@
             <dropIndex tableName="filterfavorites" indexName="filternamesidx" />
         </rollback>
     </changeSet>
+    
+    <changeSet author="rssntn67" id="1.13.0-add-protocol-to-datalinkinterface">
+      <addColumn tableName="datalinkinterface">
+        <column name="protocol" type="varchar(31)" />
+      </addColumn>
+      <rollback>
+        <dropColumn tableName="datalinkinterface" columnName="protocol" />
+      </rollback>
+    </changeSet>
+    
 </databaseChangeLog>

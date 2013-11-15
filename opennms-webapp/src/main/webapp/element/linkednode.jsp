@@ -293,6 +293,7 @@
             <th>L3 Interfaces</th>
 			<th width="10%">Link Type</th>
 			<th width="10%">Status</th>
+			<th>Discovery Protocol</th>
 			<th>Last Scan</th>
 			 
 <%--
@@ -364,6 +365,10 @@
             <% } else { %>
      			&nbsp;
 		    <% } %>
+		    </td>
+
+		    <td class="standard">
+             	<%=linkInterface.getProtocol()%>
 		    </td>
 
 		    <td class="standard">

@@ -1,6 +1,7 @@
 --# create.sql -- SQL to build the initial tables for the OpenNMS Project
 --#
 --# Modifications:
+--# 2013 Nov 15: Added protocol field in datalinkinterface table
 --# 2009 Sep 29: Added linkTypeId field in datalinkinterface table
 --# 2009 Mar 27: Added Users, Groups tables
 --# 2009 Jan 28: Added Acks tables - david@opennms.org
@@ -1855,6 +1856,7 @@ create index iprouteinterface_rnh_idx on iprouteinterface(routenexthop);
 --#                      'G' - Good
 --#                      'B' - Bad
 --#                      'X' - Admin Down
+--#  protocol          : the protocol used to discover the link (bridge,iproute,isis,ospf,cdp,lldp)  
 --#  linkTypeId        : An Integer (corresponding at iftype for cables links) indicating the type  
 --#  lastPollTime      : The last time when this information was retrived
 --#  source            : The source of the data link.  Defaults to 'linkd', but can be different
@@ -1869,6 +1871,7 @@ create table datalinkinterface (
     nodeparentid     integer not null,
     parentIfIndex    integer not null,
     status           char(1) not null,
+    protocol         varchar(31),
     linkTypeId       integer,
     lastPollTime     timestamp not null,
     source           varchar(64) not null default 'linkd',

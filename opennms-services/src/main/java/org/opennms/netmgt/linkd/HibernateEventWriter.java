@@ -52,6 +52,7 @@ import org.opennms.netmgt.dao.api.StpNodeDao;
 import org.opennms.netmgt.dao.api.VlanDao;
 import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.model.DataLinkInterface;
+import org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsAtInterface;
 import org.opennms.netmgt.model.OnmsCriteria;
@@ -303,6 +304,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
                 link.setLastPollTime(now);
             }
             link.setSource(source);
+            link.setProtocol(lk.getProtocol());
 
             DataLinkInterface reverselink = getDatabaseLink(m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(Integer.valueOf(lk.getNodeparentid()),
                                                                                                           Integer.valueOf(lk.getParentifindex())), lk.getNodeId(), lk.getIfindex());
@@ -348,6 +350,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
                 link.setLastPollTime(now);
             }
             link.setSource(source);
+            link.setProtocol(DiscoveryProtocol.bridge);
             LOG.debug("storeDiscoveryLink: Storing {}", link);
             m_dataLinkInterfaceDao.saveOrUpdate(link);
         }
