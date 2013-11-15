@@ -89,7 +89,7 @@ public class CategoryHopCriteria extends VertexHopCriteria implements Collapsibl
 	@Override
 	public Set<VertexRef> getVertices() {
 		OnmsCategory category = m_categoryDao.findByName(m_categoryName);
-		if (m_categoryDao == null) {
+		if (category == null) {
 			return Collections.emptySet();
 		} else {
 			List<OnmsNode> nodes = m_nodeDao.findByCategory(category);

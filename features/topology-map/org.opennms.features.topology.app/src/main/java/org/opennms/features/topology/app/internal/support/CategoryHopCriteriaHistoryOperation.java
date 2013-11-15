@@ -41,7 +41,7 @@ public class CategoryHopCriteriaHistoryOperation implements HistoryOperation {
 		if (criteria.size() > 0) {
 			Set<String> retval = new TreeSet<String>();
 			for (CategoryHopCriteria criterium : criteria) {
-				retval.add(criterium.getId());
+				retval.add(criterium.getLabel());
 			}
 			return Collections.singletonMap(getClass().getName(), StringUtils.collectionToDelimitedString(retval, DELIMITER));
 		} else {
