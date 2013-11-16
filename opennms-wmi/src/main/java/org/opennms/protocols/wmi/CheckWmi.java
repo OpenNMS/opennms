@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -57,8 +57,9 @@ public class CheckWmi {
 	    final Options options = new Options();
 		options.addOption("domain", true, "the NT/AD domain the credentials belong to");
 		options.addOption("wmiClass", true, "the object class in WMI to query");
+		options.addOption("wmiNamespace", true, "the namespace in WMI to use (default: " + WmiParams.WMI_DEFAULT_NAMESPACE + ")");
 		options.addOption("wmiObject", true, "the object to query in WMI");
-        options.addOption("wmiWql", true, "the query string to execute in WMI");
+		options.addOption("wmiWql", true, "the query string to execute in WMI");
 		options.addOption("op", true, "compare operation: NOOP, EQ, NEQ, GT, LT");
 		options.addOption("value", true, "the value to compare to");
 		options.addOption("matchType", true, "type of matching for multiple results: all, none, some, one");
@@ -91,6 +92,11 @@ public class CheckWmi {
 		} else {
 			usage(options, cmd);
 			System.exit(1);
+		}
+		
+		String wmiNamespace = WmiParams.WMI_DEFAULT_NAMESPACE;
+		if (cmd.hasOption("wmiNamespace")) {
+		    wmiNamespace = cmd.getOptionValue("wmiNamespace");
 		}
         
         String wmiWql = "";
@@ -138,7 +144,8 @@ public class CheckWmi {
                 clientParams = new WmiParams(WmiParams.WMI_OPERATION_WQL, compVal, compOp, wmiWql, wmiObject);
 			// Create the WMI Manager
             final WmiManager mgr = new WmiManager(host, user, pass, domain, matchType);
-
+            mgr.setNamespace(wmiNamespace);
+            
 			// Connect to the WMI server.
 			mgr.init();
 
