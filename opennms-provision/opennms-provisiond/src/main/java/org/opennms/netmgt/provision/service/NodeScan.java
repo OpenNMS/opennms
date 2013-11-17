@@ -419,20 +419,18 @@ public class NodeScan implements RunInBatch {
 					final InetAddress address = addr(ipAddress);
 
 					// skip if it's any number of unusual/local address types
-					if (address == null) return;
-					if (address.isAnyLocalAddress()) {
+					if (address == null) {
+						return;
+					} else if (address.isAnyLocalAddress()) {
 						LOG.debug("{}.isAnyLocalAddress() == true, Skipping.", ipAddress);
 						return;
-					}
-					if (address.isLinkLocalAddress()) {
+					} else if (address.isLinkLocalAddress()) {
 						LOG.debug("{}.isLinkLocalAddress() == true, Skipping.", ipAddress);
 						return;
-					}
-					if (address.isLoopbackAddress()) {
+					} else if (address.isLoopbackAddress()) {
 						LOG.debug("{}.isLoopbackAddress() == true, Skipping.", ipAddress);
 						return;
-					}
-					if (address.isMulticastAddress()) {
+					} else if (address.isMulticastAddress()) {
 						LOG.debug("{}.isMulticastAddress() == true, Skipping.", ipAddress);
 						return;
 					}
@@ -486,20 +484,18 @@ public class NodeScan implements RunInBatch {
 					final InetAddress address = addr(ipAddress);
 
 					// skip if it's any number of unusual/local address types
-					if (address == null) return;
-					if (address.isAnyLocalAddress()) {
+					if (address == null) {
+						return;
+					} else if (address.isAnyLocalAddress()) {
 						LOG.debug("{}.isAnyLocalAddress() == true, Skipping.", ipAddress);
 						return;
-					}
-					if (address.isLinkLocalAddress()) {
+					} else if (address.isLinkLocalAddress()) {
 						LOG.debug("{}.isLinkLocalAddress() == true, Skipping.", ipAddress);
 						return;
-					}
-					if (address.isLoopbackAddress()) {
+					} else if (address.isLoopbackAddress()) {
 						LOG.debug("{}.isLoopbackAddress() == true, Skipping.", ipAddress);
 						return;
-					}
-					if (address.isMulticastAddress()) {
+					} else if (address.isMulticastAddress()) {
 						LOG.debug("{}.isMulticastAddress() == true, Skipping.", ipAddress);
 						return;
 					}

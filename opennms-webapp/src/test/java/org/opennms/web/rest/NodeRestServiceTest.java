@@ -46,19 +46,47 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNodeList;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.web.WebAppConfiguration;
 
-/*
+/**
  * TODO
  * 1. Need to figure it out how to create a Mock for EventProxy to validate events sent by RESTful service
  */
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@WebAppConfiguration
+@ContextConfiguration(locations={
+        "classpath:/org/opennms/web/rest/applicationContext-test.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-service.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-reportingCore.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockEventProxy.xml",
+        "classpath:/applicationContext-jersey-test.xml",
+        "classpath:/META-INF/opennms/applicationContext-reporting.xml",
+        "classpath:/META-INF/opennms/applicationContext-mock-usergroup.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
+        "file:src/main/webapp/WEB-INF/applicationContext-spring-security.xml",
+        "file:src/main/webapp/WEB-INF/applicationContext-jersey.xml"
+})
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase
 public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
     private static final Logger LOG = LoggerFactory.getLogger(NodeRestServiceTest.class);
 
@@ -71,6 +99,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
     }
     
     @Test
+    @JUnitTemporaryDatabase
     public void testNode() throws Exception {
         // Testing POST
         createNode();
@@ -133,6 +162,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testPutNode() throws Exception {
         JAXBContext context = JAXBContext.newInstance(OnmsNodeList.class);
         Unmarshaller unmarshaller = context.createUnmarshaller();
@@ -163,6 +193,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testLimits() throws Exception {
         JAXBContext context = JAXBContext.newInstance(OnmsNodeList.class);
         Unmarshaller unmarshaller = context.createUnmarshaller();
@@ -217,6 +248,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testIpInterface() throws Exception {
         createIpInterface();
         String url = "/nodes/1/ipinterfaces";
@@ -231,6 +263,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
     }
     
     @Test
+    @JUnitTemporaryDatabase
     public void testIpInterfaceLimit() throws Exception{
         createTwoIpInterface();
         String url = "/nodes/1/ipinterfaces";
@@ -246,6 +279,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
     }
     
     @Test
+    @JUnitTemporaryDatabase
     public void testIpInterfaceByIpAddress() throws Exception{
         createTwoIpInterface();
         String url = "/nodes/1/ipinterfaces";
@@ -255,6 +289,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
     }
     
     @Test
+    @JUnitTemporaryDatabase
     public void testIpInterfaceIpLikeFilter() throws Exception{
         createTwoIpInterface();
         String url = "/nodes/1/ipinterfaces";
@@ -264,6 +299,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testSnmpInterface() throws Exception {
         createSnmpInterface();
         String url = "/nodes/1/snmpinterfaces";
@@ -278,6 +314,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testMonitoredService() throws Exception {
         createService();
         String url = "/nodes/1/ipinterfaces/10.10.10.10/services";
@@ -292,6 +329,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testCategory() throws Exception {
         createNode();
         // add category to node 
@@ -325,9 +363,10 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testNodeComboQuery() throws Exception {
         String url = "/nodes";
-        MockHttpServletRequest request = createRequest(GET, url);
+        MockHttpServletRequest request = createRequest(getServletContext(), GET, url);
         request.addParameter("_dc", "1235761409572");
         request.addParameter("start", "0");
         request.addParameter("limit", "10");
@@ -336,6 +375,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testIPhoneNodeSearch() throws Exception {
         createIpInterface();
         String url = "/nodes";

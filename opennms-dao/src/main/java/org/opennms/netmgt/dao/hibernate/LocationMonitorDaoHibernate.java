@@ -378,6 +378,9 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
     /** {@inheritDoc} */
     @Override
     public Collection<OnmsLocationMonitor> findByLocationDefinition(final OnmsMonitoringLocationDefinition locationDefinition) {
+    	if (locationDefinition == null) {
+    		throw new IllegalArgumentException("Location definition is null");
+    	}
     	return (Collection<OnmsLocationMonitor>)find("from OnmsLocationMonitor as mon where mon.definitionName = ?", locationDefinition.getName());
     }
 
