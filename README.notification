@@ -191,3 +191,4 @@ Below is an example for sending emails via the mail command:
   			<switch>-tm</switch>
     </argument>
 </command>
+
