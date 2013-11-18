@@ -39,6 +39,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.xml.bind.JAXBException;
@@ -384,30 +385,66 @@ public class VertexHopGraphProvider implements GraphProvider {
 	}
 
 	/**
-	 * TODO OPTIMIZE THIS FUNCTION?
+	 * This function assumes that all criteria passed in are marked as collapsed.
+	 * @param edges
+	 * @param criteria
+	 * @return
 	 */
 	public static List<Edge> collapseEdges(Collection<Edge> edges, CollapsibleCriteria[] criteria) {
-		List<Edge> retval = new ArrayList<Edge>(edges);
-		List<Edge> addMe = new ArrayList<Edge>();
 
-		for (Iterator<Edge> itr = retval.iterator(); itr.hasNext();) {
-			Edge edge = itr.next();
-			for (CollapsibleCriteria criterium : criteria) {
-				Set<VertexRef> criteriaVertices = new HashSet<VertexRef>(criterium.getVertices());
-				for (Iterator<VertexRef> critItr = criteriaVertices.iterator(); critItr.hasNext();) {
-					VertexRef criteriaVertex = critItr.next();
-					if (new RefComparator().compare(edge.getSource().getVertex(), criteriaVertex) == 0) {
-						// Reset the edge source to the collapsed vertex
-						edge.getSource().setVertex(criterium.getCollapsedRepresentation());
-					} else if (new RefComparator().compare(edge.getTarget().getVertex(), criteriaVertex) == 0) {
-						// Reset the edge target to the collapsed vertex
-						edge.getTarget().setVertex(criterium.getCollapsedRepresentation());
+		// Make a map of all of the vertices to their new collapsed representations
+		Map<VertexRef,Set<VertexRef>> vertexToCollapsedVertices = new TreeMap<VertexRef,Set<VertexRef>>(new RefComparator());
+		for (CollapsibleCriteria criterium : criteria) {
+			Set<VertexRef> criteriaVertices = criterium.getVertices();
+			if (criteriaVertices.size() > 0) {
+				Vertex collapsedVertex = criterium.getCollapsedRepresentation();
+				for (VertexRef criteriaVertex : criteriaVertices) {
+					Set<VertexRef> collapsedVertices = vertexToCollapsedVertices.get(criteriaVertex);
+					if (collapsedVertices == null) {
+						collapsedVertices = new HashSet<VertexRef>();
+						vertexToCollapsedVertices.put(criteriaVertex, collapsedVertices);
 					}
+					collapsedVertices.add(collapsedVertex);
 				}
 			}
 		}
 
-		retval.addAll(addMe);
+		List<Edge> retval = new ArrayList<Edge>();
+		for (Edge edge : edges) {
+			// Add the original edge to retval unless we replace it with an edge that points to a
+			// collapsed vertex
+			boolean addOriginalEdge = true;
+
+			// If the source vertex is in the collapsed list...
+			Set<VertexRef> collapsedVertices = vertexToCollapsedVertices.get(edge.getSource().getVertex());
+			if (collapsedVertices != null) {
+				for (VertexRef collapsedEndpoint : collapsedVertices) {
+					// Add a new edge with the source as the collapsed vertex
+					Edge newCollapsedEdge = edge.clone();
+					newCollapsedEdge.getSource().setVertex(collapsedEndpoint);
+					retval.add(newCollapsedEdge);
+				}
+				// Since we just added a replacement edge, don't add the original
+				addOriginalEdge = false;
+			} 
+
+			collapsedVertices = vertexToCollapsedVertices.get(edge.getTarget().getVertex());
+			if (collapsedVertices != null) {
+				for (VertexRef collapsedEndpoint : collapsedVertices) {
+					// Add a new edge with the target as the collapsed vertex
+					Edge newCollapsedEdge = edge.clone();
+					newCollapsedEdge.getTarget().setVertex(collapsedEndpoint);
+					retval.add(newCollapsedEdge);
+				}
+				// Since we just added a replacement edge, don't add the original
+				addOriginalEdge = false;
+			}
+
+			// Add the original edge if it wasn't replaced with an edge to a collapsed vertex
+			if (addOriginalEdge) {
+				retval.add(edge);
+			}
+		}
 		return retval;
 	}
 

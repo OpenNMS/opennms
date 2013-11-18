@@ -1,7 +1,7 @@
 package org.opennms.features.topology.plugins.topo.simple;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
@@ -18,6 +18,7 @@ import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.AbstractVertexRef;
 import org.opennms.features.topology.api.topo.CollapsibleCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -93,6 +94,94 @@ public class VertexHopGraphProviderTest {
 		m_provider = new VertexHopGraphProvider(baseProvider);
 	}
 	
+	@Test
+	public void testCollapseEdges() {
+		CollapsibleCriteria collapseMe = new CollapsibleCriteria() {
+			
+			@Override
+			public void setCollapsed(boolean collapsed) {}
+			
+			@Override
+			public boolean isCollapsed() {
+				return true;
+			}
+			
+			@Override
+			public Set<VertexRef> getVertices() {
+				Set<VertexRef> retval = new HashSet<VertexRef>();
+				retval.add(new AbstractVertexRef("nodes", "g2"));
+				return retval;
+			}
+			
+			@Override
+			public String getNamespace() {
+				return "nodes";
+			}
+			
+			@Override
+			public String getLabel() {
+				return "Test Criteria";
+			}
+			
+			@Override
+			public String getId() {
+				return "Test Criteria";
+			}
+			
+			@Override
+			public Vertex getCollapsedRepresentation() {
+				return new AbstractVertex("category", "c");
+			}
+		};
+
+		List<Edge> edges = VertexHopGraphProvider.collapseEdges(m_provider.getEdges(), new CollapsibleCriteria[] { collapseMe });
+		for (Edge edge : edges) {
+			assertEquals("nodes", edge.getNamespace());
+
+			/*
+			Here's the original list of edges
+
+			.edge("e1", "g0", "g1").eLabel("edge1").eStyleName("edge")
+			.edge("e2", "g0", "g2").eLabel("edge2").eStyleName("edge")
+			.edge("e3", "g1", "v1").eLabel("edge3").eStyleName("edge")
+			.edge("e4", "g1", "v2").eLabel("edge4").eStyleName("edge")
+			.edge("e5", "g2", "v3").eLabel("edge5").eStyleName("edge")
+			.edge("e6", "g2", "v4").eLabel("edge6").eStyleName("edge")
+			*/
+			if (edge.getId().equals("e1")) {
+				assertEquals("nodes", edge.getSource().getVertex().getNamespace());
+				assertEquals("g0", edge.getSource().getVertex().getId());
+				assertEquals("nodes", edge.getTarget().getVertex().getNamespace());
+				assertEquals("g1", edge.getTarget().getVertex().getId());
+			} else if (edge.getId().equals("e2")) {
+				assertEquals("nodes", edge.getSource().getVertex().getNamespace());
+				assertEquals("g0", edge.getSource().getVertex().getId());
+				assertEquals("category", edge.getTarget().getVertex().getNamespace());
+				assertEquals("c", edge.getTarget().getVertex().getId());
+			} else if (edge.getId().equals("e3")) {
+				assertEquals("nodes", edge.getSource().getVertex().getNamespace());
+				assertEquals("g1", edge.getSource().getVertex().getId());
+				assertEquals("nodes", edge.getTarget().getVertex().getNamespace());
+				assertEquals("v1", edge.getTarget().getVertex().getId());
+			} else if (edge.getId().equals("e4")) {
+				assertEquals("nodes", edge.getSource().getVertex().getNamespace());
+				assertEquals("g1", edge.getSource().getVertex().getId());
+				assertEquals("nodes", edge.getTarget().getVertex().getNamespace());
+				assertEquals("v2", edge.getTarget().getVertex().getId());
+			} else if (edge.getId().equals("e5")) {
+				assertEquals("category", edge.getSource().getVertex().getNamespace());
+				assertEquals("c", edge.getSource().getVertex().getId());
+				assertEquals("nodes", edge.getTarget().getVertex().getNamespace());
+				assertEquals("v3", edge.getTarget().getVertex().getId());
+			} else if (edge.getId().equals("e6")) {
+				assertEquals("category", edge.getSource().getVertex().getNamespace());
+				assertEquals("c", edge.getSource().getVertex().getId());
+				assertEquals("nodes", edge.getTarget().getVertex().getNamespace());
+				assertEquals("v4", edge.getTarget().getVertex().getId());
+			}
+		}
+	}
+
 	@Test
 	public void testGraphProvider() {
 		FocusNodeHopCriteria criteria = new FocusNodeHopCriteria();
