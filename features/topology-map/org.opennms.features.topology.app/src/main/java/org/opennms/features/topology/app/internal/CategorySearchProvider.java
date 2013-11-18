@@ -48,19 +48,20 @@ import org.opennms.features.topology.app.internal.support.CategoryHopCriteriaFac
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsCriteria;
-import org.opennms.netmgt.model.OnmsNode;
 
 public class CategorySearchProvider extends AbstractSearchProvider implements SearchProvider {
 
     private final NodeDao m_nodeDao;
     private CategoryHopCriteriaFactory m_categoryHopFactory;
     private CategoryDao m_categoryDao;
+    private boolean m_isACLEnabled = false;
 
     public CategorySearchProvider(CategoryDao categoryDao, NodeDao nodeDao){
         m_categoryDao = categoryDao;
         m_nodeDao = nodeDao;
         m_categoryHopFactory = new CategoryHopCriteriaFactory(categoryDao, nodeDao);
+        m_isACLEnabled = System.getProperty("org.opennms.web.aclsEnabled") != null ?
+                                System.getProperty("org.opennms.web.aclsEnabled").toLowerCase().equals("true") : false;
     }
 
     @Override
@@ -75,11 +76,8 @@ public class CategorySearchProvider extends AbstractSearchProvider implements Se
 
     @Override
     public List<SearchResult> query(SearchQuery searchQuery, GraphContainer graphContainer) {
-        List<OnmsNode> nodes = m_nodeDao.findAll();
-        Set<OnmsCategory> categories = new LinkedHashSet<OnmsCategory>();
-        for(OnmsNode node : nodes){
-            categories.addAll(node.getCategories());
-        }
+
+        Collection<OnmsCategory> categories = m_categoryDao.findAll();
 
         List<SearchResult> results = new ArrayList<SearchResult>();
         for (OnmsCategory category : categories) {
