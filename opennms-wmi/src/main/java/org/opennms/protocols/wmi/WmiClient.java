@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -222,7 +222,7 @@ public class WmiClient implements IWmiClient {
 
     /** {@inheritDoc} */
     @Override
-    public void connect(final String domain, final String username, final String password) throws WmiException {
+    public void connect(final String domain, final String username, final String password, final String namespace) throws WmiException {
         try {
 
             m_Session = JISession.createSession(domain, username, password);
@@ -240,7 +240,7 @@ public class WmiClient implements IWmiClient {
                 "ConnectServer",
                 new Object[]{
                     new JIString(m_Address),
-                    JIVariant.OPTIONAL_PARAM(),
+                    new JIString(namespace),
                     JIVariant.OPTIONAL_PARAM(),
                     JIVariant.OPTIONAL_PARAM(),
                     JIVariant.OPTIONAL_PARAM(),
