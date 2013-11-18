@@ -60,7 +60,11 @@ public class AbstractEdge extends AbstractEdgeRef implements Edge {
 
 	@Override
 	public AbstractEdge clone() {
-		return new AbstractEdge(getNamespace(), getId(), getSource().clone(), getTarget().clone());
+		AbstractEdge retval = new AbstractEdge(getNamespace(), getId(), getSource().clone(), getTarget().clone());
+		retval.setLabel(getLabel());
+		retval.setStyleName(getStyleName());
+		retval.setTooltipText(getTooltipText());
+		return retval;
 	}
 
 	/**
