@@ -247,6 +247,7 @@
                 <p>
                     Favorites:
                     <onms:select
+                            defaultText="All Alarms"
                             elements='${favorites}'
                             selected='${favorite}'
                             handler='${filterFavoriteSelectTagHandler}'

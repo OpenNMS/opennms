@@ -226,6 +226,7 @@
                 <p>
                     Favorites:
                     <onms:select
+                            defaultText="All Events"
                             elements='${favorites}'
                             selected='${favorite}'
                             handler='${filterFavoriteSelectTagHandler}'
