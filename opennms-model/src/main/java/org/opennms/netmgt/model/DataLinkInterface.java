@@ -32,6 +32,8 @@ import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -214,8 +216,9 @@ public class DataLinkInterface implements Serializable, Comparable<DataLinkInter
         m_linkTypeId = linkTypeId;
     }
 
+    @Enumerated(EnumType.STRING)
     @XmlElement(name = "protocol")
-    @Column(name = "protocol", nullable = true)
+    @Column(name = "protocol", length=31, nullable = true)
     public DiscoveryProtocol getProtocol() {
         return m_protocol;
     }
