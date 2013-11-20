@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -76,6 +76,11 @@ public class WmiManager {
 	private String m_MatchType = null;
 
 	private int m_Timeout = DEFAULT_SOCKET_TIMEOUT;
+	
+	/**
+	 * The WMI namespace to use when requesting a check
+	 */
+	private String m_namespace = null;
 
     /**
 	 * This method is used for setting the password used to perform service
@@ -146,6 +151,7 @@ public class WmiManager {
 		m_HostName = host;
 		m_Username = user;
 		m_Password = pass;
+                m_namespace = WmiParams.WMI_DEFAULT_NAMESPACE;
 		m_Domain = host;
         m_MatchType = "all";
     }
@@ -166,6 +172,7 @@ public class WmiManager {
 		m_HostName = host;
 		m_Username = user;
 		m_Password = pass;
+		m_namespace = WmiParams.WMI_DEFAULT_NAMESPACE;
 		m_MatchType = "all";
 		if ("".equals(domain)) {
 			m_Domain = host;
@@ -192,6 +199,7 @@ public class WmiManager {
 		m_HostName = host;
 		m_Username = user;
 		m_Password = pass;
+                m_namespace = WmiParams.WMI_DEFAULT_NAMESPACE;
 		if (isValidMatchType(matchType)) {
 			m_MatchType = matchType;
 		} else {
@@ -252,7 +260,7 @@ public class WmiManager {
 	 */
 	public void init() throws WmiException {
 		m_WmiClient = (IWmiClient)new WmiClient(m_HostName);
-		m_WmiClient.connect(m_Domain, m_Username, m_Password);
+		m_WmiClient.connect(m_Domain, m_Username, m_Password, m_namespace);
 	}
 
 	/**
@@ -263,7 +271,7 @@ public class WmiManager {
 	 */
 	public void init(final IWmiClient client) throws WmiException {
 		m_WmiClient = client;
-		m_WmiClient.connect(m_Domain, m_Username, m_Password);
+		m_WmiClient.connect(m_Domain, m_Username, m_Password, m_namespace);
 	}
 	
 	/**
@@ -413,5 +421,23 @@ public class WmiManager {
 	 */
 	public void setMatchType(final String matchType) {
 		m_MatchType = matchType;
+	}
+	
+	/**
+	 * <p>getNamespace</p>
+	 * 
+	 * @return the m_namespace
+	 */
+	public String getNamespace() {
+	    return m_namespace;
+	}
+	
+	/**
+	 * <p>setNamespace</p>
+	 * 
+	 * @param the m_namespace to set
+	 */
+	public void setNamespace(final String namespace) {
+	    m_namespace = namespace;
 	}
 }
