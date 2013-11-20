@@ -136,7 +136,7 @@ public class VertexHopGraphProviderTest {
 			}
 		};
 
-		List<Edge> edges = VertexHopGraphProvider.collapseEdges(new HashSet<Edge>(m_provider.getEdges()), new CollapsibleCriteria[] { collapseMe });
+		Set<Edge> edges = VertexHopGraphProvider.collapseEdges(new HashSet<Edge>(m_provider.getEdges()), new CollapsibleCriteria[] { collapseMe });
 		for (Edge edge : edges) {
 			assertEquals("nodes", edge.getNamespace());
 
