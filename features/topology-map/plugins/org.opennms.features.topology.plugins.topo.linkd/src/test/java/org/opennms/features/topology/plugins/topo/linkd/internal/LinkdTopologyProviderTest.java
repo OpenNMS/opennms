@@ -155,8 +155,8 @@ public class LinkdTopologyProviderTest {
 		assertEquals("v0", vertexA.getId());
 		//LoggerFactory.getLogger(this.getClass()).debug(m_topologyProvider.getVertices().get(0).toString());
 		assertTrue(m_topologyProvider.containsVertexId(vertexA));
-		assertTrue(m_topologyProvider.containsVertexId("v0"));
-		assertFalse(m_topologyProvider.containsVertexId("v1"));
+		assertTrue(m_topologyProvider.containsVertexId(new AbstractVertexRef("nodes", "v0")));
+		assertFalse(m_topologyProvider.containsVertexId(new AbstractVertexRef("nodes", "v1")));
 		
 		((AbstractVertex)vertexA).setIpAddress("10.0.0.4");
 

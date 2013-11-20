@@ -195,9 +195,9 @@ public class NodeACLVertexProvider implements GraphProvider {
     }
 
     @Override
-    public boolean containsVertexId(VertexRef id) {
+    public boolean containsVertexId(VertexRef id, Criteria... criteria) {
         //TODO: Filter through ACL list
-        return m_delegate.containsVertexId(id);
+        return m_delegate.containsVertexId(id, criteria);
     }
 
     @Override
@@ -207,9 +207,9 @@ public class NodeACLVertexProvider implements GraphProvider {
     }
 
     @Override
-    public Vertex getVertex(VertexRef reference) {
+    public Vertex getVertex(VertexRef reference, Criteria... criteria) {
         //TODO: Filter through ACL list
-        return m_delegate.getVertex(reference);
+        return m_delegate.getVertex(reference, criteria);
     }
 
     @Override
@@ -249,8 +249,8 @@ public class NodeACLVertexProvider implements GraphProvider {
     }
 
     @Override
-    public List<Vertex> getVertices(Collection<? extends VertexRef> references) {
-        return filterVertices(m_delegate.getVertices(references));
+    public List<Vertex> getVertices(Collection<? extends VertexRef> references, Criteria... criteria) {
+        return filterVertices(m_delegate.getVertices(references, criteria));
     }
 
     @Override

@@ -90,8 +90,8 @@ public class DeleteGroupOperation implements Operation {
 		return targets != null && 
 		targets.size() == 1 && 
 		targets.get(0) != null && 
-		operationContext.getGraphContainer().getBaseTopology().getVertex(targets.get(0)) != null &&
-		operationContext.getGraphContainer().getBaseTopology().getVertex(targets.get(0)).isGroup()
+		operationContext.getGraphContainer().getBaseTopology().getVertex(targets.get(0), operationContext.getGraphContainer().getCriteria()) != null &&
+		operationContext.getGraphContainer().getBaseTopology().getVertex(targets.get(0), operationContext.getGraphContainer().getCriteria()).isGroup()
 		;
 	}
 

@@ -1,8 +1,5 @@
 package org.opennms.features.topology.app.internal;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanItem;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -14,6 +11,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.opennms.features.topology.api.AutoRefreshSupport;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
@@ -42,6 +40,10 @@ import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.data.util.BeanItem;
 
 public class VEProviderGraphContainer implements GraphContainer, VertexListener, EdgeListener, ServiceListener {
 
@@ -202,7 +204,10 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 			m_displayEdges.addAll(displayEdges);
 			for (Iterator<Edge> itr = m_displayEdges.iterator(); itr.hasNext();) {
 				Edge edge = itr.next();
-				if (m_displayVertices.contains(edge.getSource().getVertex())) {
+				if (new RefComparator().compare(edge.getSource().getVertex(), edge.getTarget().getVertex()) == 0) {
+					s_log.debug("Discarding edge whose source and target are the same: {}", edge);
+					itr.remove();
+				} else if (m_displayVertices.contains(edge.getSource().getVertex())) {
 					if (m_displayVertices.contains(edge.getTarget().getVertex())) {
 						// This edge is OK, it is attached to two vertices that are in the graph
 					} else {
@@ -372,33 +377,39 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 			}
     	}
 
-    	Set<Edge> displayEdges = new HashSet<Edge>();
+    	Collection<Edge> displayEdges = new HashSet<Edge>();
+    	// This legacy grouping code mimics the CollapsibleCriteria behavior
+    	if (m_mergedGraphProvider.groupingSupported()) {
+    		for(Edge e : m_mergedGraphProvider.getEdges(getCriteria())) {
+    			VertexRef source = e.getSource().getVertex();
+    			VertexRef target = e.getTarget().getVertex();
 
-        final List<Edge> edges = m_mergedGraphProvider.getEdges(getCriteria());
-        for(Edge e : edges) {
-    		VertexRef source = e.getSource().getVertex();
-    		VertexRef target = e.getTarget().getVertex();
-
-    		Vertex displaySource = getDisplayVertex(source);
-			Vertex displayTarget = getDisplayVertex(target);
-			if (displaySource == null || displayTarget == null) {
-				// skip this one
-			}
-			else if (refEquals(displaySource, displayTarget)) {
-				// skip this one
-			}
-			else if (refEquals(source, displaySource) && refEquals(target, displayTarget)) {
-				displayEdges.add(e);
-			} else {
-				// we may need to create a pseudo edge to represent this edge
-				String pseudoId = pseudoId(displaySource, displayTarget);
-				PseudoEdge pEdge = new PseudoEdge("pseudo-"+e.getNamespace(), pseudoId, e.getStyleName(), displaySource, displayTarget);
-                //This is a hack to get around the device A to device Z label in NCS Path when going through groups
-                if(e.getStyleName().equals("ncs edge direct")){
-                    pEdge.setTooltipText(e.getTooltipText());
-                }
-				displayEdges.add(pEdge);
-			}
+    			VertexRef displaySource = getDisplayVertex(source);
+    			VertexRef displayTarget = getDisplayVertex(target);
+    			if (displaySource == null) {
+    				s_log.debug("Discarding edge with null source: {}", e);
+    			} else if (displayTarget == null) {
+    				s_log.debug("Discarding edge with null target: {}", e);
+    			} else if (refEquals(displaySource, displayTarget)) {
+    				s_log.debug("Discarding edge with identical source and target: {}", e);
+    			} else if (refEquals(source, displaySource) && refEquals(target, displayTarget)) {
+    				// If the grouping display source and target are the same as the actual
+    				// source and target (ie. the vertex is not part of a group) then just
+    				// display the edge
+    				displayEdges.add(e);
+    			} else {
+    				// we may need to create a pseudo edge to represent this edge
+    				String pseudoId = pseudoId(displaySource, displayTarget);
+    				PseudoEdge pEdge = new PseudoEdge("pseudo-"+e.getNamespace(), pseudoId, e.getStyleName(), m_mergedGraphProvider.getVertex(displaySource), m_mergedGraphProvider.getVertex(displayTarget));
+    				//This is a hack to get around the device A to device Z label in NCS Path when going through groups
+    				if(e.getStyleName().equals("ncs edge direct")){
+    					pEdge.setTooltipText(e.getTooltipText());
+    				}
+    				displayEdges.add(pEdge);
+    			}
+    		}
+    	} else {
+    		displayEdges = m_mergedGraphProvider.getEdges(getCriteria());
     	}
 
         if (m_graph == null) {
@@ -446,19 +457,19 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
         return new RefComparator().compare(a, b) == 0;
     }
     
-    private Vertex getDisplayVertex(VertexRef vertexRef) {
-    	int szl = getSemanticZoomLevel();
-    	int vzl = m_mergedGraphProvider.getSemanticZoomLevel(vertexRef);
-    	if (vzl == szl || (vzl < szl && !m_mergedGraphProvider.hasChildren(vertexRef))) {
-    		return m_mergedGraphProvider.getVertex(vertexRef);
-    	} else {
-    		Vertex parent = m_mergedGraphProvider.getParent(vertexRef);
-    		if (parent != null) {
-    			return getDisplayVertex(parent);
-    		} else {
-    			return null;
-    		}
-    	}
+    private VertexRef getDisplayVertex(VertexRef vertexRef) {
+		int szl = getSemanticZoomLevel();
+		int vzl = m_mergedGraphProvider.getSemanticZoomLevel(vertexRef);
+		if (vzl == szl || (vzl < szl && !m_mergedGraphProvider.hasChildren(vertexRef))) {
+			return vertexRef;
+		} else {
+			Vertex parent = m_mergedGraphProvider.getParent(vertexRef);
+			if (parent != null) {
+				return getDisplayVertex(parent);
+			} else {
+				return null;
+			}
+		}
     }
 
     @Override

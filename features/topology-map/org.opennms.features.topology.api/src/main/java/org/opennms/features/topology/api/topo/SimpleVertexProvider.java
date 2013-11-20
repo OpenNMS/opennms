@@ -73,7 +73,7 @@ public class SimpleVertexProvider implements VertexProvider {
 	}
 
 	@Override
-	public Vertex getVertex(VertexRef reference) {
+	public Vertex getVertex(VertexRef reference, Criteria... criteria) {
 		return getSimpleVertex(reference);
 	}
 
@@ -85,7 +85,7 @@ public class SimpleVertexProvider implements VertexProvider {
 	}
 
 	@Override
-	public List<Vertex> getVertices(Collection<? extends VertexRef> references) {
+	public List<Vertex> getVertices(Collection<? extends VertexRef> references, Criteria... criteria) {
 		List<Vertex> vertices = new ArrayList<Vertex>();
 		for(VertexRef ref : references) {
 			Vertex vertex = getSimpleVertex(ref);
@@ -265,8 +265,8 @@ public class SimpleVertexProvider implements VertexProvider {
 	}
 
 	@Override
-	public boolean containsVertexId(VertexRef id) {
-		return getVertex(id) != null;
+	public boolean containsVertexId(VertexRef id, Criteria... criteria) {
+		return getVertex(id, criteria) != null;
 	}
 
 }

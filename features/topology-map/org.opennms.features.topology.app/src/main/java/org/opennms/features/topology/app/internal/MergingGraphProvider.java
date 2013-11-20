@@ -220,8 +220,8 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 	}
 
 	@Override
-	public Vertex getVertex(VertexRef reference) {
-		return vProvider(reference).getVertex(reference);
+	public Vertex getVertex(VertexRef reference, Criteria... criteria) {
+		return vProvider(reference).getVertex(reference, criteria);
 	}
 
 	@Override
@@ -256,11 +256,11 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 	}
 
 	@Override
-	public List<Vertex> getVertices(Collection<? extends VertexRef> references) {
+	public List<Vertex> getVertices(Collection<? extends VertexRef> references, Criteria... criteria) {
 		List<Vertex> vertices = new ArrayList<Vertex>(references.size());
 		
 		for(VertexRef vertexRef : references) {
-			Vertex vertex = getVertex(vertexRef);
+			Vertex vertex = getVertex(vertexRef, criteria);
 			if (vertex != null) {
 				vertices.add(vertex);
 			}
@@ -495,12 +495,12 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 	}
 
 	@Override
-	public boolean containsVertexId(VertexRef id) {
-		if (m_baseGraphProvider.containsVertexId(id)) {
+	public boolean containsVertexId(VertexRef id, Criteria... criteria) {
+		if (m_baseGraphProvider.containsVertexId(id, criteria)) {
 			return true;
 		} else {
 			for (VertexProvider provider : m_vertexProviders.values()) {
-				if (provider.containsVertexId(id)) {
+				if (provider.containsVertexId(id, criteria)) {
 					return true;
 				}
 			}
@@ -583,7 +583,7 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 		}
 
 		@Override
-		public Vertex getVertex(VertexRef reference) {
+		public Vertex getVertex(VertexRef reference, Criteria... criteria) {
 			return null;
 		}
 
@@ -598,7 +598,7 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 		}
 
 		@Override
-		public List<Vertex> getVertices(Collection<? extends VertexRef> references) {
+		public List<Vertex> getVertices(Collection<? extends VertexRef> references, Criteria... criteria) {
 			return Collections.emptyList();
 		}
 
@@ -754,7 +754,7 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 		}
 
 		@Override
-		public boolean containsVertexId(VertexRef id) {
+		public boolean containsVertexId(VertexRef id, Criteria... criteria) {
 			return false;
 		}
 

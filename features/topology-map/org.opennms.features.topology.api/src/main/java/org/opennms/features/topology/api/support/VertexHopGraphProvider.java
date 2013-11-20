@@ -34,7 +34,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +44,7 @@ import java.util.TreeSet;
 import javax.xml.bind.JAXBException;
 
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.topo.AbstractVertexRef;
 import org.opennms.features.topology.api.topo.CollapsibleCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
@@ -61,7 +61,7 @@ import org.slf4j.LoggerFactory;
 /**
  * This class will be used to filter a topology so that the semantic zoom level is
  * interpreted as a hop distance away from a set of selected vertices. The vertex 
- * selection is specified using a {@link Criteria} filter.
+ * selection is specified using sets of {@link VertexHopCriteria} filters.
  * 
  * @author Seth
  */
@@ -234,14 +234,21 @@ public class VertexHopGraphProvider implements GraphProvider {
 		return m_delegate.contributesTo(namespace);
 	}
 
+	@Deprecated
 	@Override
 	public boolean containsVertexId(String id) {
-		return m_delegate.containsVertexId(id);
+		return containsVertexId(new AbstractVertexRef(getVertexNamespace(), id));
 	}
 
 	@Override
-	public boolean containsVertexId(VertexRef id) {
-		return m_delegate.containsVertexId(id);
+	public boolean containsVertexId(VertexRef id, Criteria... criteria) {
+		for (CollapsibleCriteria criterium : getCollapsedCriteria(criteria)) {
+			Vertex collapsed = criterium.getCollapsedRepresentation();
+			if (new RefComparator().compare(collapsed, id) == 0) {
+				return true;
+			}
+		}
+		return m_delegate.containsVertexId(id, criteria);
 	}
 
 	@Override
@@ -250,8 +257,14 @@ public class VertexHopGraphProvider implements GraphProvider {
 	}
 
 	@Override
-	public Vertex getVertex(VertexRef reference) {
-		return m_delegate.getVertex(reference);
+	public Vertex getVertex(VertexRef reference, Criteria... criteria) {
+		for (CollapsibleCriteria criterium : getCollapsedCriteria(criteria)) {
+			Vertex collapsed = criterium.getCollapsedRepresentation();
+			if (new RefComparator().compare(collapsed, reference) == 0) {
+				return collapsed;
+			}
+		}
+		return m_delegate.getVertex(reference, criteria);
 	}
 
 	@Override
@@ -337,9 +350,9 @@ public class VertexHopGraphProvider implements GraphProvider {
                 if (refs != null) {
                 	neighbors.addAll(refs);
                 }
-                Vertex vertex = getVertex(vertexRef);
+                Vertex vertex = getVertex(vertexRef, criteria);
                 if (vertex != null) {
-                	processed.add(getVertex(vertexRef));
+                	processed.add(getVertex(vertexRef, criteria));
                 }
 			}
 
@@ -458,8 +471,8 @@ public class VertexHopGraphProvider implements GraphProvider {
 	 * TODO: OVERRIDE THIS FUNCTION?
 	 */
 	@Override
-	public List<Vertex> getVertices(Collection<? extends VertexRef> references) {
-		return m_delegate.getVertices(references);
+	public List<Vertex> getVertices(Collection<? extends VertexRef> references, Criteria... criteria) {
+		return m_delegate.getVertices(references, criteria);
 	}
 
 	/**

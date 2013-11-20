@@ -6,12 +6,14 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
@@ -25,6 +27,7 @@ import org.opennms.features.topology.api.topo.AbstractEdgeRef;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.AbstractVertexRef;
 import org.opennms.features.topology.api.topo.CollapsibleCriteria;
+import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.EdgeRef;
@@ -171,6 +174,7 @@ public class VEProviderGraphContainerTest {
 
 		// Change SZL to 1
 		m_graphContainer.setSemanticZoomLevel(1);
+		assertEquals(2, m_graphContainer.getCriteria().length);
 
 		// Focus vertex
 		expectVertex("nodes", "v1", "vertex");
@@ -204,6 +208,8 @@ public class VEProviderGraphContainerTest {
 		expectEdge("ncs", "ncs3", "ncs edge");
 		
 		graph = m_graphContainer.getGraph();
+		//assertEquals(4, graph.getDisplayVertices().size());
+		//assertEquals(5, graph.getDisplayEdges().size());
 		assertEquals(3, graph.getDisplayVertices().size());
 		assertEquals(4, graph.getDisplayEdges().size());
 
@@ -214,33 +220,45 @@ public class VEProviderGraphContainerTest {
 
 
 		// Add a collapsed criteria to the container
-		m_graphContainer.addCriteria(new TestCollapsibleCriteria());
+		Criteria collapsibleCriteria = new TestCollapsibleCriteria();
+		m_graphContainer.addCriteria(collapsibleCriteria);
 		assertEquals(3, m_graphContainer.getCriteria().length);
 
-		assertEquals(3, m_graphContainer.getGraph().getDisplayVertices().size());
-		assertEquals(3, m_graphContainer.getBaseTopology().getVertices(new TestCollapsibleCriteria()).size());
+		// Make sure that the TestCollapsibleCriteria is mapping "v2" and "v4" to the collapsed "test" vertex
+		Map<VertexRef,Set<Vertex>> collapsed = VertexHopGraphProvider.getMapOfVerticesToCollapsedVertices(
+				VertexHopGraphProvider.getCollapsedCriteria(m_graphContainer.getCriteria())
+		);
+		assertTrue(collapsed.containsKey(new AbstractVertexRef("nodes", "v2")));
+		assertTrue(collapsed.containsKey(new AbstractVertexRef("nodes", "v4")));
+		assertTrue(collapsed.get(new AbstractVertexRef("nodes", "v2")).equals(Collections.singleton(new AbstractVertexRef("nodes", "test"))));
+		assertTrue(collapsed.get(new AbstractVertexRef("nodes", "v4")).equals(Collections.singleton(new AbstractVertexRef("nodes", "test"))));
 
-		/**
-		 * TODO The set of edges returned here is problematic. See SPC-787 and SPC-791.
-		 */
+		assertEquals(
+			ArrayUtils.toString(m_graphContainer.getGraph().getDisplayVertices()), 
+			3, 
+			m_graphContainer.getGraph().getDisplayVertices().size()
+		);
+		assertEquals(
+			ArrayUtils.toString(m_graphContainer.getBaseTopology().getVertices(new TestCollapsibleCriteria())), 
+			3,
+			m_graphContainer.getBaseTopology().getVertices(new TestCollapsibleCriteria()).size()
+		);
+
 		expectVertex("nodes", "v1", "vertex");
-		// WTF why is this here
 		expectVertex("nodes", "v3", "vertex");
+		// Collapsed vertex that contains v2 and v4
 		expectVertex("nodes", "test", "test");
+
 		expectEdge("ncs", "ncs1", "ncs edge");
-		// WTF why is this not here
-		//expectEdge("nodes", "e1", "edge");
-		// WTF why is this here
-		//expectEdge("nodes", "e2", "edge");
-		// WTF why is this here
-		//expectEdge("nodes", "e3", "edge");
-		// WTF why is this not here
-		//expectEdge("nodes", "e4", "edge");
+		expectEdge("nodes", "e1", "edge");
+		expectEdge("nodes", "e2", "edge");
+		expectEdge("nodes", "e3", "edge");
+		expectEdge("nodes", "e4", "edge");
 
 		graph = m_graphContainer.getGraph();
 
 		assertEquals(3, graph.getDisplayVertices().size());
-		assertEquals(1, graph.getDisplayEdges().size());
+		assertEquals(5, graph.getDisplayEdges().size());
 
 		for (Edge edge : graph.getDisplayEdges()) {
 			if (edge.getId().equals("e1")) {
@@ -255,6 +273,11 @@ public class VEProviderGraphContainerTest {
 			} else if (edge.getId().equals("e4")) {
 				assertEquals("test", edge.getSource().getVertex().getId());
 				assertEquals("v1", edge.getTarget().getVertex().getId());
+			} else if (edge.getId().equals("ncs1")) {
+				assertEquals("v1", edge.getSource().getVertex().getId());
+				assertEquals("v3", edge.getTarget().getVertex().getId());
+			} else {
+				fail("Unknown edge ID: " + edge.getId());
 			}
 		}
 
@@ -262,6 +285,15 @@ public class VEProviderGraphContainerTest {
 		verify();
 		verifyConnectedness(graph);
 		reset();
+
+		// Remove the collapsed criteria and make sure that the state reverts correctly
+		m_graphContainer.removeCriteria(collapsibleCriteria);
+		graph = m_graphContainer.getGraph();
+
+		//assertEquals(4, graph.getDisplayVertices().size());
+		//assertEquals(5, graph.getDisplayEdges().size());
+		assertEquals(3, graph.getDisplayVertices().size());
+		assertEquals(4, graph.getDisplayEdges().size());
 	}
 
 	@Test

@@ -157,11 +157,11 @@ public class GraphPainter extends BaseGraphVisitor {
 	}
 
 	private String getSourceKey(Edge edge) {
-		return m_graphContainer.getBaseTopology().getVertex(edge.getSource().getVertex()).getKey();
+		return m_graphContainer.getBaseTopology().getVertex(edge.getSource().getVertex(), m_graphContainer.getCriteria()).getKey();
 	}
 
 	private String getTargetKey(Edge edge) {
-		return m_graphContainer.getBaseTopology().getVertex(edge.getTarget().getVertex()).getKey();
+		return m_graphContainer.getBaseTopology().getVertex(edge.getTarget().getVertex(), m_graphContainer.getCriteria()).getKey();
 	}
 
 	/**

@@ -95,7 +95,7 @@ public class RenameGroupOperation implements Constants, Operation {
 				//Object parentKey = targets.get(0);
 				//Object parentId = graphContainer.getVertexItemIdForVertexKey(parentKey);
 				VertexRef parentId = targets.get(0);
-				Vertex parentVertex = parentId == null ? null : graphContainer.getBaseTopology().getVertex(parentId);
+				Vertex parentVertex = parentId == null ? null : graphContainer.getBaseTopology().getVertex(parentId, graphContainer.getCriteria());
 				Item parentItem = parentVertex == null ? null : parentVertex.getItem();
 
 				if (parentItem != null) {
@@ -206,8 +206,8 @@ public class RenameGroupOperation implements Constants, Operation {
 		return targets != null && 
 		targets.size() == 1 && 
 		targets.get(0) != null && 
-		operationContext.getGraphContainer().getBaseTopology().getVertex(targets.get(0)) != null &&
-		operationContext.getGraphContainer().getBaseTopology().getVertex(targets.get(0)).isGroup()
+		operationContext.getGraphContainer().getBaseTopology().getVertex(targets.get(0), operationContext.getGraphContainer().getCriteria()) != null &&
+		operationContext.getGraphContainer().getBaseTopology().getVertex(targets.get(0), operationContext.getGraphContainer().getCriteria()).isGroup()
 		;
 	}
 
