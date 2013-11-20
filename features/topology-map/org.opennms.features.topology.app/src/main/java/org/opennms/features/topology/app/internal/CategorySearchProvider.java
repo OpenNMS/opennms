@@ -55,6 +55,7 @@ public class CategorySearchProvider extends AbstractSearchProvider implements Se
     private CategoryHopCriteriaFactory m_categoryHopFactory;
     private CategoryDao m_categoryDao;
     private boolean m_isACLEnabled = false;
+    private String m_hiddenCategoryPrefix = null;
 
     public CategorySearchProvider(CategoryDao categoryDao, NodeDao nodeDao){
         m_categoryDao = categoryDao;
@@ -81,7 +82,7 @@ public class CategorySearchProvider extends AbstractSearchProvider implements Se
 
         List<SearchResult> results = new ArrayList<SearchResult>();
         for (OnmsCategory category : categories) {
-            if (searchQuery.matches(category.getName())) {
+            if (!checkHiddenPrefix(category.getName()) && searchQuery.matches(category.getName())) {
                 SearchResult result = new SearchResult("category", category.getId().toString(), category.getName());
                 result.setCollapsible(true);
                 CollapsibleCriteria criteria = getMatchingCriteria(graphContainer, category.getName());
@@ -92,6 +93,14 @@ public class CategorySearchProvider extends AbstractSearchProvider implements Se
             }
         }
         return results;
+    }
+
+    private boolean checkHiddenPrefix(String name) {
+        if(m_hiddenCategoryPrefix == null) return false;
+
+        return name.startsWith(m_hiddenCategoryPrefix);
+
+
     }
 
     @Override
@@ -124,6 +133,10 @@ public class CategorySearchProvider extends AbstractSearchProvider implements Se
 
     public void setCategoryDao(CategoryDao m_categoryDao) {
         this.m_categoryDao = m_categoryDao;
+    }
+
+    public void setHiddenCategoryPrefix(String prefix) {
+        m_hiddenCategoryPrefix = prefix;
     }
 
     @Override
