@@ -194,7 +194,7 @@ public class WmiCollector implements ServiceCollector {
     }
 
     private boolean isGroupAvailable(final WmiAgentState agentState, final Wpm wpm) {
-        LogUtils.debugf(this, "Checking availability of group %s", wpm.getName());
+        LogUtils.debugf(this, "Checking availability of group %s via object %s of class %s in namespace %s", wpm.getName(), wpm.getKeyvalue(), wpm.getWmiClass(), wpm.getWmiNamespace());
         WmiManager manager = null;
 
         /*
@@ -206,6 +206,7 @@ public class WmiCollector implements ServiceCollector {
         try {
             // Get and initialize the WmiManager
             manager = agentState.getManager();
+            manager.setNamespace(wpm.getWmiNamespace());
             manager.init();
 
             final WmiParams params = new WmiParams(WmiParams.WMI_OPERATION_INSTANCEOF, "not-applicable", "NOOP", wpm.getWmiClass(), wpm.getKeyvalue());
