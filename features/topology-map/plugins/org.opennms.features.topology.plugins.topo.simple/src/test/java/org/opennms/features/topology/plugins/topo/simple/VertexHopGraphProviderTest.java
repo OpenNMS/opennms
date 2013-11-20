@@ -2,7 +2,9 @@ package org.opennms.features.topology.plugins.topo.simple;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.HashSet;
 import java.util.List;
@@ -134,7 +136,7 @@ public class VertexHopGraphProviderTest {
 			}
 		};
 
-		List<Edge> edges = VertexHopGraphProvider.collapseEdges(m_provider.getEdges(), new CollapsibleCriteria[] { collapseMe });
+		List<Edge> edges = VertexHopGraphProvider.collapseEdges(new HashSet<Edge>(m_provider.getEdges()), new CollapsibleCriteria[] { collapseMe });
 		for (Edge edge : edges) {
 			assertEquals("nodes", edge.getNamespace());
 
@@ -178,6 +180,8 @@ public class VertexHopGraphProviderTest {
 				assertEquals("c", edge.getSource().getVertex().getId());
 				assertEquals("nodes", edge.getTarget().getVertex().getNamespace());
 				assertEquals("v4", edge.getTarget().getVertex().getId());
+			} else {
+				fail("Unexpected edge found: " + edge.toString());
 			}
 		}
 	}
@@ -195,6 +199,38 @@ public class VertexHopGraphProviderTest {
 		assertEquals(2, m_provider.getSemanticZoomLevel(new AbstractVertexRef("nodes", "v2")));
 		assertEquals(2, m_provider.getSemanticZoomLevel(new AbstractVertexRef("nodes", "v3")));
 		assertEquals(2, m_provider.getSemanticZoomLevel(new AbstractVertexRef("nodes", "v4")));
+
+		// Make sure that the hop provider isn't showing nodes with parent/child relationships like the
+		// older grouping providers did
+		assertNull(m_provider.getParent(new AbstractVertexRef("nodes", "g0")));
+		assertNull(m_provider.getParent(new AbstractVertexRef("nodes", "g1")));
+		assertNull(m_provider.getParent(new AbstractVertexRef("nodes", "g2")));
+		assertNull(m_provider.getParent(new AbstractVertexRef("nodes", "v1")));
+		assertNull(m_provider.getParent(new AbstractVertexRef("nodes", "v2")));
+		assertNull(m_provider.getParent(new AbstractVertexRef("nodes", "v3")));
+		assertNull(m_provider.getParent(new AbstractVertexRef("nodes", "v4")));
+
+		criteria.clear();
+		criteria.add(new AbstractVertexRef("nodes", "v1"));
+		m_provider.getVertices(criteria);
+
+		assertEquals(2, m_provider.getSemanticZoomLevel(new AbstractVertexRef("nodes", "g0")));
+		assertEquals(1, m_provider.getSemanticZoomLevel(new AbstractVertexRef("nodes", "g1")));
+		assertEquals(3, m_provider.getSemanticZoomLevel(new AbstractVertexRef("nodes", "g2")));
+		assertEquals(0, m_provider.getSemanticZoomLevel(new AbstractVertexRef("nodes", "v1")));
+		assertEquals(2, m_provider.getSemanticZoomLevel(new AbstractVertexRef("nodes", "v2")));
+		assertEquals(4, m_provider.getSemanticZoomLevel(new AbstractVertexRef("nodes", "v3")));
+		assertEquals(4, m_provider.getSemanticZoomLevel(new AbstractVertexRef("nodes", "v4")));
+
+		// Make sure that the hop provider isn't showing nodes with parent/child relationships like the
+		// older grouping providers did
+		assertNull(m_provider.getParent(new AbstractVertexRef("nodes", "g0")));
+		assertNull(m_provider.getParent(new AbstractVertexRef("nodes", "g1")));
+		assertNull(m_provider.getParent(new AbstractVertexRef("nodes", "g2")));
+		assertNull(m_provider.getParent(new AbstractVertexRef("nodes", "v1")));
+		assertNull(m_provider.getParent(new AbstractVertexRef("nodes", "v2")));
+		assertNull(m_provider.getParent(new AbstractVertexRef("nodes", "v3")));
+		assertNull(m_provider.getParent(new AbstractVertexRef("nodes", "v4")));
 	}
 
 	@Test
