@@ -111,6 +111,18 @@ public class AbstractEdge extends AbstractEdgeRef implements Edge {
 	}
 
 	@Override
-	public String toString() { return "Edge:"+getNamespace()+":"+getId() + "[label="+getLabel()+", styleName="+getStyleName()+"]"; } 
-
+	public String toString() {
+		StringBuffer retval = new StringBuffer();
+		retval.append("Edge:").append(getNamespace()).append(":").append(getId());
+		retval.append("[");
+		retval.append("label=").append(getLabel());
+		retval.append(",");
+		retval.append("styleName=").append(getStyleName());
+		retval.append(",");
+		retval.append("source=").append(getSource().getVertex().getLabel());
+		retval.append(",");
+		retval.append("target=").append(getTarget().getVertex().getLabel());
+		retval.append("]");
+		return retval.toString();
+	}
 }
