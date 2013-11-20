@@ -141,7 +141,7 @@ public class SelectTag<T> extends SimpleTagSupport {
             optionsBuffer.append(getOption(eachElement, m_selected));
         }
         String output = TEMPLATE
-                .replace("{ONCHANGE}", StringUtils.isEmpty(m_onChange) ? "" : "m_onChange=\"" + m_onChange + "\"")
+                .replace("{ONCHANGE}", StringUtils.isEmpty(m_onChange) ? "" : "onChange=\"" + m_onChange + "\"")
                 .replace("{OPTIONS}", optionsBuffer.toString());
 
         // write output
@@ -153,7 +153,7 @@ public class SelectTag<T> extends SimpleTagSupport {
         return OPTION_TEMPLATE
                 .replace("{VALUE}", handler.getValue(element))
                 .replace("{DESCRIPTION}", handler.getDescription(element))
-                .replace("{SELECTED}", handler.isSelected(element, selected) ? "m_selected" : "");
+                .replace("{SELECTED}", handler.isSelected(element, selected) ? "selected" : "");
     }
 
     private SelectTagHandler getSelectTagHandler() {
