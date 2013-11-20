@@ -383,7 +383,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             public void error(com.vaadin.server.ErrorEvent event) {
                 Notification.show("An Exception Occurred: see karaf.log", Notification.Type.TRAY_NOTIFICATION);
                 LOG.warn("An Exception Occured: in the TopologyUI", event.getThrowable());
-                super.error(event);
+
             }
         });
     }
