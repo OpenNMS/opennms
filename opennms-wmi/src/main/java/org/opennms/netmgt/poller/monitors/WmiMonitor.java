@@ -142,7 +142,7 @@ public class WmiMonitor extends AbstractServiceMonitor {
             }
             
             if (parameters.get("namespace") != null) {
-                wmiNamespace = ParameterMap.getKeyedString(parameters,  "namespace", DEFAULT_WMI_NAMESPACE);
+                wmiNamespace = ParameterMap.getKeyedString(parameters,  "wmiNamespace", ParameterMap.getKeyedString(parameters, "namespace", DEFAULT_WMI_NAMESPACE));
             }
             
             matchType = ParameterMap.getKeyedString(parameters, "matchType", DEFAULT_WMI_MATCH_TYPE);
