@@ -33,6 +33,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -140,7 +141,7 @@ public class AbstractSearchProviderTest {
 
             @Override
             public Set<VertexRef> getVertexRefsBy(SearchResult searchResult) {
-                return null;
+                return Collections.emptySet();
             }
 
             @Override

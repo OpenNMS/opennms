@@ -105,7 +105,7 @@ public class CategorySearchProvider extends AbstractSearchProvider implements Se
 
     @Override
     public Set<VertexRef> getVertexRefsBy(SearchResult searchResult) {
-        return null;
+        return Collections.emptySet();
     }
 
     @Override
