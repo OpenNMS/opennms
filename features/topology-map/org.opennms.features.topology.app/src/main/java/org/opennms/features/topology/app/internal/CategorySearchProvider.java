@@ -51,18 +51,13 @@ import org.opennms.netmgt.model.OnmsCategory;
 
 public class CategorySearchProvider extends AbstractSearchProvider implements SearchProvider {
 
-    private final NodeDao m_nodeDao;
     private CategoryHopCriteriaFactory m_categoryHopFactory;
     private CategoryDao m_categoryDao;
-    private boolean m_isACLEnabled = false;
     private String m_hiddenCategoryPrefix = null;
 
     public CategorySearchProvider(CategoryDao categoryDao, NodeDao nodeDao){
         m_categoryDao = categoryDao;
-        m_nodeDao = nodeDao;
         m_categoryHopFactory = new CategoryHopCriteriaFactory(categoryDao, nodeDao);
-        m_isACLEnabled = System.getProperty("org.opennms.web.aclsEnabled") != null ?
-                                System.getProperty("org.opennms.web.aclsEnabled").toLowerCase().equals("true") : false;
     }
 
     @Override
@@ -96,7 +91,7 @@ public class CategorySearchProvider extends AbstractSearchProvider implements Se
     }
 
     private boolean checkHiddenPrefix(String name) {
-        if(m_hiddenCategoryPrefix == null) return false;
+        if(m_hiddenCategoryPrefix == null || m_hiddenCategoryPrefix.equals("")) return false;
 
         return name.startsWith(m_hiddenCategoryPrefix);
 
