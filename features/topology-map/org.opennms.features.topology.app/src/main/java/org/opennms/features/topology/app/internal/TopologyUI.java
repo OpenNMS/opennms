@@ -896,6 +896,12 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         m_settingFragment++;
         String fragment = event.getUriFragment();
         m_historyManager.applyHistory(m_userName, fragment, m_graphContainer);
+
+        // This is a hack to fix issue SPC-796 so that the display states of the 
+        // TopologyComponent and NoContentAvailableWindow are reset correctly 
+        // after a history operation
+        graphChanged(m_graphContainer);
+
         m_settingFragment--;
     }
 
@@ -915,9 +921,14 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         boolean verticesAvailable = !graphContainer.getGraph().getDisplayVertices().isEmpty();
 
         // toggle view
-        if (verticesAvailable == m_noContentWindow.isVisible()) {
-            m_noContentWindow.setVisible(!verticesAvailable);
-            m_topologyComponent.setEnabled(verticesAvailable);
+        if (verticesAvailable) {
+            m_noContentWindow.setVisible(false);
+            removeWindow(m_noContentWindow);
+            m_topologyComponent.setEnabled(true);
+        } else {
+            m_topologyComponent.setEnabled(false);
+            m_noContentWindow.setVisible(true);
+            addWindow(m_noContentWindow);
         }
 
         m_zoomLevelLabel.setValue(String.valueOf(graphContainer.getSemanticZoomLevel()));
