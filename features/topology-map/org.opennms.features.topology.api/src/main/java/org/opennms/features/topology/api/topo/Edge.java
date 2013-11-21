@@ -35,6 +35,11 @@ public interface Edge extends EdgeRef, Cloneable {
 	Edge clone();
 
 	/**
+	 * Allow code to override the ID on cloned instances.
+	 */
+	void setId(String id);
+
+	/**
 	 * @deprecated Use namespace/id tuple
 	 */
 	String getKey();
@@ -45,7 +50,7 @@ public interface Edge extends EdgeRef, Cloneable {
 
 	Connector getTarget();
 
-        @Override
+	@Override
 	String getLabel();
 
 	String getTooltipText();

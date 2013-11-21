@@ -432,25 +432,46 @@ public class VertexHopGraphProvider implements GraphProvider {
 				boolean addOriginalEdge = true;
 	
 				// If the source vertex is in the collapsed list...
-				Set<Vertex> collapsedVertices = vertexToCollapsedVertices.get(edge.getSource().getVertex());
-				if (collapsedVertices != null) {
-					for (VertexRef collapsedEndpoint : collapsedVertices) {
+				Set<Vertex> collapsedSources = vertexToCollapsedVertices.get(edge.getSource().getVertex());
+				if (collapsedSources != null) {
+					for (VertexRef collapsedSource : collapsedSources) {
 						// Add a new edge with the source as the collapsed vertex
 						Edge newCollapsedEdge = edge.clone();
-						newCollapsedEdge.getSource().setVertex(collapsedEndpoint);
+						newCollapsedEdge.setId("collapsedSource-" + newCollapsedEdge.getId());
+						newCollapsedEdge.getSource().setVertex(collapsedSource);
 						retval.add(newCollapsedEdge);
 					}
 					// Since we just added a replacement edge, don't add the original
 					addOriginalEdge = false;
 				} 
 	
-				collapsedVertices = vertexToCollapsedVertices.get(edge.getTarget().getVertex());
-				if (collapsedVertices != null) {
-					for (VertexRef collapsedEndpoint : collapsedVertices) {
+				Set<Vertex> collapsedTargets = vertexToCollapsedVertices.get(edge.getTarget().getVertex());
+				if (collapsedTargets != null) {
+					for (VertexRef collapsedTarget : collapsedTargets) {
 						// Add a new edge with the target as the collapsed vertex
 						Edge newCollapsedEdge = edge.clone();
-						newCollapsedEdge.getTarget().setVertex(collapsedEndpoint);
+						newCollapsedEdge.setId("collapsedTarget-" + newCollapsedEdge.getId());
+						newCollapsedEdge.getTarget().setVertex(collapsedTarget);
 						retval.add(newCollapsedEdge);
+					}
+					// Since we just added a replacement edge, don't add the original
+					addOriginalEdge = false;
+				}
+
+				// If both the source and target have been collapsed, connect all of the collapsed
+				// representations to each other. This will allow collapsed groups to connect to one
+				// another.
+				//
+				if (collapsedSources != null && collapsedTargets != null) {
+					for (VertexRef collapsedEndpoint : collapsedSources) {
+						for (VertexRef collapsedTarget : collapsedTargets) {
+							// Add a new edge with the target as the collapsed vertex
+							Edge newCollapsedEdge = edge.clone();
+							newCollapsedEdge.setId("collapsed-" + newCollapsedEdge.getId());
+							newCollapsedEdge.getSource().setVertex(collapsedEndpoint);
+							newCollapsedEdge.getTarget().setVertex(collapsedTarget);
+							retval.add(newCollapsedEdge);
+						}
 					}
 					// Since we just added a replacement edge, don't add the original
 					addOriginalEdge = false;

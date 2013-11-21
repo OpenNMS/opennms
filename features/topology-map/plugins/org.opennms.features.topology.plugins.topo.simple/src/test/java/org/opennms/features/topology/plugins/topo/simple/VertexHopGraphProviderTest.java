@@ -155,7 +155,7 @@ public class VertexHopGraphProviderTest {
 				assertEquals("g0", edge.getSource().getVertex().getId());
 				assertEquals("nodes", edge.getTarget().getVertex().getNamespace());
 				assertEquals("g1", edge.getTarget().getVertex().getId());
-			} else if (edge.getId().equals("e2")) {
+			} else if (edge.getId().equals("collapsedTarget-e2")) {
 				assertEquals("nodes", edge.getSource().getVertex().getNamespace());
 				assertEquals("g0", edge.getSource().getVertex().getId());
 				assertEquals("category", edge.getTarget().getVertex().getNamespace());
@@ -170,12 +170,12 @@ public class VertexHopGraphProviderTest {
 				assertEquals("g1", edge.getSource().getVertex().getId());
 				assertEquals("nodes", edge.getTarget().getVertex().getNamespace());
 				assertEquals("v2", edge.getTarget().getVertex().getId());
-			} else if (edge.getId().equals("e5")) {
+			} else if (edge.getId().equals("collapsedSource-e5")) {
 				assertEquals("category", edge.getSource().getVertex().getNamespace());
 				assertEquals("c", edge.getSource().getVertex().getId());
 				assertEquals("nodes", edge.getTarget().getVertex().getNamespace());
 				assertEquals("v3", edge.getTarget().getVertex().getId());
-			} else if (edge.getId().equals("e6")) {
+			} else if (edge.getId().equals("collapsedSource-e6")) {
 				assertEquals("category", edge.getSource().getVertex().getNamespace());
 				assertEquals("c", edge.getSource().getVertex().getId());
 				assertEquals("nodes", edge.getTarget().getVertex().getNamespace());

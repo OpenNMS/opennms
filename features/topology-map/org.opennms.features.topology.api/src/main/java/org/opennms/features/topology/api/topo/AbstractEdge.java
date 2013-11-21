@@ -67,6 +67,11 @@ public class AbstractEdge extends AbstractEdgeRef implements Edge {
 		return retval;
 	}
 
+	@Override
+	public void setId(String id) {
+		m_id = id;
+	}
+
 	/**
 	 * @deprecated Use namespace/id tuple
 	 */

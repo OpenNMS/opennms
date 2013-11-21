@@ -47,7 +47,7 @@ public class VEProviderGraphContainerTest {
 	private Set<EdgeRef> m_expectedEdges = new HashSet<EdgeRef>();
 	private Map<EdgeRef, String> m_expectedEdgeStyles = new HashMap<EdgeRef, String>();
 
-	private static class TestCollapsibleCriteria extends VertexHopCriteria implements CollapsibleCriteria {
+	private static abstract class TestCollapsibleCriteria extends VertexHopCriteria implements CollapsibleCriteria {
 
 		@Override
 		public boolean isCollapsed() {
@@ -59,16 +59,13 @@ public class VEProviderGraphContainerTest {
 		}
 
 		@Override
-		public Set<VertexRef> getVertices() {
-			Set<VertexRef> retval = new HashSet<VertexRef>();
-			retval.add(new AbstractVertexRef("nodes", "v2", "vertex2"));
-			retval.add(new AbstractVertexRef("nodes", "v4", "vertex4"));
-			return retval;
-		}
+		public abstract Set<VertexRef> getVertices();
+
+		protected abstract String getCollapsedId();
 
 		@Override
 		public Vertex getCollapsedRepresentation() {
-			AbstractVertex retval = new AbstractVertex("nodes", "test", "Collapsed vertex");
+			AbstractVertex retval = new AbstractVertex("nodes", getCollapsedId(), "Collapsed vertex");
 			retval.setStyleName("test");
 			return retval;
 		}
@@ -86,6 +83,33 @@ public class VEProviderGraphContainerTest {
 		@Override
 		public boolean equals(Object obj) {
 			return getLabel().equals(obj);
+		}
+	}
+
+	private static class TestCriteria1 extends TestCollapsibleCriteria {
+
+		protected String getCollapsedId() {
+			return "test";
+		}
+
+		public Set<VertexRef> getVertices() {
+			Set<VertexRef> retval = new HashSet<VertexRef>();
+			retval.add(new AbstractVertexRef("nodes", "v2", "vertex2"));
+			retval.add(new AbstractVertexRef("nodes", "v4", "vertex4"));
+			return retval;
+		}
+	}
+
+	private static class TestCriteria2 extends TestCollapsibleCriteria {
+
+		protected String getCollapsedId() {
+			return "collapse-v3";
+		}
+
+		public Set<VertexRef> getVertices() {
+			Set<VertexRef> retval = new HashSet<VertexRef>();
+			retval.add(new AbstractVertexRef("nodes", "v3", "vertex3"));
+			return retval;
 		}
 	}
 
@@ -220,7 +244,7 @@ public class VEProviderGraphContainerTest {
 
 
 		// Add a collapsed criteria to the container
-		Criteria collapsibleCriteria = new TestCollapsibleCriteria();
+		Criteria collapsibleCriteria = new TestCriteria1();
 		m_graphContainer.addCriteria(collapsibleCriteria);
 		assertEquals(3, m_graphContainer.getCriteria().length);
 
@@ -239,9 +263,9 @@ public class VEProviderGraphContainerTest {
 			m_graphContainer.getGraph().getDisplayVertices().size()
 		);
 		assertEquals(
-			ArrayUtils.toString(m_graphContainer.getBaseTopology().getVertices(new TestCollapsibleCriteria())), 
+			ArrayUtils.toString(m_graphContainer.getBaseTopology().getVertices(new TestCriteria1())), 
 			3,
-			m_graphContainer.getBaseTopology().getVertices(new TestCollapsibleCriteria()).size()
+			m_graphContainer.getBaseTopology().getVertices(new TestCriteria1()).size()
 		);
 
 		expectVertex("nodes", "v1", "vertex");
@@ -250,10 +274,10 @@ public class VEProviderGraphContainerTest {
 		expectVertex("nodes", "test", "test");
 
 		expectEdge("ncs", "ncs1", "ncs edge");
-		expectEdge("nodes", "e1", "edge");
-		expectEdge("nodes", "e2", "edge");
-		expectEdge("nodes", "e3", "edge");
-		expectEdge("nodes", "e4", "edge");
+		expectEdge("nodes", "collapsedTarget-e1", "edge");
+		expectEdge("nodes", "collapsedSource-e2", "edge");
+		expectEdge("nodes", "collapsedTarget-e3", "edge");
+		expectEdge("nodes", "collapsedSource-e4", "edge");
 
 		graph = m_graphContainer.getGraph();
 
@@ -261,16 +285,16 @@ public class VEProviderGraphContainerTest {
 		assertEquals(5, graph.getDisplayEdges().size());
 
 		for (Edge edge : graph.getDisplayEdges()) {
-			if (edge.getId().equals("e1")) {
+			if (edge.getId().equals("collapsedTarget-e1")) {
 				assertEquals("v1", edge.getSource().getVertex().getId());
 				assertEquals("test", edge.getTarget().getVertex().getId());
-			} else if (edge.getId().equals("e2")) {
+			} else if (edge.getId().equals("collapsedSource-e2")) {
 				assertEquals("test", edge.getSource().getVertex().getId());
 				assertEquals("v3", edge.getTarget().getVertex().getId());
-			} else if (edge.getId().equals("e3")) {
+			} else if (edge.getId().equals("collapsedTarget-e3")) {
 				assertEquals("v3", edge.getSource().getVertex().getId());
 				assertEquals("test", edge.getTarget().getVertex().getId());
-			} else if (edge.getId().equals("e4")) {
+			} else if (edge.getId().equals("collapsedSource-e4")) {
 				assertEquals("test", edge.getSource().getVertex().getId());
 				assertEquals("v1", edge.getTarget().getVertex().getId());
 			} else if (edge.getId().equals("ncs1")) {
@@ -294,6 +318,57 @@ public class VEProviderGraphContainerTest {
 		//assertEquals(5, graph.getDisplayEdges().size());
 		assertEquals(3, graph.getDisplayVertices().size());
 		assertEquals(4, graph.getDisplayEdges().size());
+
+		collapsibleCriteria = new TestCriteria1();
+		m_graphContainer.addCriteria(collapsibleCriteria);
+		collapsibleCriteria = new TestCriteria2();
+		m_graphContainer.addCriteria(collapsibleCriteria);
+		assertEquals(4, m_graphContainer.getCriteria().length);
+
+		graph = m_graphContainer.getGraph();
+
+		assertEquals(
+			ArrayUtils.toString(m_graphContainer.getGraph().getDisplayVertices()), 
+			3, 
+			m_graphContainer.getGraph().getDisplayVertices().size()
+		);
+		/*
+		 * One edge is missing because of the VertexHopGraphProvider issue mentioned above.
+		assertEquals(
+			ArrayUtils.toString(m_graphContainer.getGraph().getDisplayEdges()), 
+			5, 
+			m_graphContainer.getGraph().getDisplayEdges().size()
+		);
+		 */
+		assertEquals(
+			ArrayUtils.toString(m_graphContainer.getGraph().getDisplayEdges()), 
+			4, 
+			m_graphContainer.getGraph().getDisplayEdges().size()
+		);
+
+		for (Edge edge : graph.getDisplayEdges()) {
+			if (edge.getId().equals("collapsedTarget-e1")) {
+				assertEquals("v1", edge.getSource().getVertex().getId());
+				assertEquals("test", edge.getTarget().getVertex().getId());
+			} else if (edge.getId().equals("collapsed-e2")) {
+				assertEquals("test", edge.getSource().getVertex().getId());
+				assertEquals("collapse-v3", edge.getTarget().getVertex().getId());
+			} else if (edge.getId().equals("collapsed-e3")) {
+				assertEquals("collapse-v3", edge.getSource().getVertex().getId());
+				assertEquals("test", edge.getTarget().getVertex().getId());
+			} else if (edge.getId().equals("collapsedSource-e4")) {
+				assertEquals("test", edge.getSource().getVertex().getId());
+				assertEquals("v1", edge.getTarget().getVertex().getId());
+			/**
+			 * This edge is not found because of the issue mentioned above.
+			} else if (edge.getId().equals("collapsedTarget-ncs1")) {
+				assertEquals("v1", edge.getSource().getVertex().getId());
+				assertEquals("collapse-v3", edge.getTarget().getVertex().getId());
+			 */
+			} else {
+				fail("Unknown edge ID: " + edge.getId());
+			}
+		}
 	}
 
 	@Test
