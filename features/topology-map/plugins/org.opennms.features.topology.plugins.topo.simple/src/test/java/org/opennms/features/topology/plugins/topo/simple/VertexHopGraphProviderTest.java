@@ -1,8 +1,10 @@
 package org.opennms.features.topology.plugins.topo.simple;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.HashSet;
 import java.util.List;
@@ -18,6 +20,7 @@ import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.AbstractVertexRef;
 import org.opennms.features.topology.api.topo.CollapsibleCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -94,6 +97,96 @@ public class VertexHopGraphProviderTest {
 	}
 	
 	@Test
+	public void testCollapseEdges() {
+		CollapsibleCriteria collapseMe = new CollapsibleCriteria() {
+			
+			@Override
+			public void setCollapsed(boolean collapsed) {}
+			
+			@Override
+			public boolean isCollapsed() {
+				return true;
+			}
+			
+			@Override
+			public Set<VertexRef> getVertices() {
+				Set<VertexRef> retval = new HashSet<VertexRef>();
+				retval.add(new AbstractVertexRef("nodes", "g2"));
+				return retval;
+			}
+			
+			@Override
+			public String getNamespace() {
+				return "nodes";
+			}
+			
+			@Override
+			public String getLabel() {
+				return "Test Criteria";
+			}
+			
+			@Override
+			public String getId() {
+				return "Test Criteria";
+			}
+			
+			@Override
+			public Vertex getCollapsedRepresentation() {
+				return new AbstractVertex("category", "c");
+			}
+		};
+
+		Set<Edge> edges = VertexHopGraphProvider.collapseEdges(new HashSet<Edge>(m_provider.getEdges()), new CollapsibleCriteria[] { collapseMe });
+		for (Edge edge : edges) {
+			assertEquals("nodes", edge.getNamespace());
+
+			/*
+			Here's the original list of edges
+
+			.edge("e1", "g0", "g1").eLabel("edge1").eStyleName("edge")
+			.edge("e2", "g0", "g2").eLabel("edge2").eStyleName("edge")
+			.edge("e3", "g1", "v1").eLabel("edge3").eStyleName("edge")
+			.edge("e4", "g1", "v2").eLabel("edge4").eStyleName("edge")
+			.edge("e5", "g2", "v3").eLabel("edge5").eStyleName("edge")
+			.edge("e6", "g2", "v4").eLabel("edge6").eStyleName("edge")
+			*/
+			if (edge.getId().equals("e1")) {
+				assertEquals("nodes", edge.getSource().getVertex().getNamespace());
+				assertEquals("g0", edge.getSource().getVertex().getId());
+				assertEquals("nodes", edge.getTarget().getVertex().getNamespace());
+				assertEquals("g1", edge.getTarget().getVertex().getId());
+			} else if (edge.getId().equals("collapsedTarget-e2")) {
+				assertEquals("nodes", edge.getSource().getVertex().getNamespace());
+				assertEquals("g0", edge.getSource().getVertex().getId());
+				assertEquals("category", edge.getTarget().getVertex().getNamespace());
+				assertEquals("c", edge.getTarget().getVertex().getId());
+			} else if (edge.getId().equals("e3")) {
+				assertEquals("nodes", edge.getSource().getVertex().getNamespace());
+				assertEquals("g1", edge.getSource().getVertex().getId());
+				assertEquals("nodes", edge.getTarget().getVertex().getNamespace());
+				assertEquals("v1", edge.getTarget().getVertex().getId());
+			} else if (edge.getId().equals("e4")) {
+				assertEquals("nodes", edge.getSource().getVertex().getNamespace());
+				assertEquals("g1", edge.getSource().getVertex().getId());
+				assertEquals("nodes", edge.getTarget().getVertex().getNamespace());
+				assertEquals("v2", edge.getTarget().getVertex().getId());
+			} else if (edge.getId().equals("collapsedSource-e5")) {
+				assertEquals("category", edge.getSource().getVertex().getNamespace());
+				assertEquals("c", edge.getSource().getVertex().getId());
+				assertEquals("nodes", edge.getTarget().getVertex().getNamespace());
+				assertEquals("v3", edge.getTarget().getVertex().getId());
+			} else if (edge.getId().equals("collapsedSource-e6")) {
+				assertEquals("category", edge.getSource().getVertex().getNamespace());
+				assertEquals("c", edge.getSource().getVertex().getId());
+				assertEquals("nodes", edge.getTarget().getVertex().getNamespace());
+				assertEquals("v4", edge.getTarget().getVertex().getId());
+			} else {
+				fail("Unexpected edge found: " + edge.toString());
+			}
+		}
+	}
+
+	@Test
 	public void testGraphProvider() {
 		FocusNodeHopCriteria criteria = new FocusNodeHopCriteria();
 		criteria.add(new AbstractVertexRef("nodes", "g0"));
@@ -106,6 +199,38 @@ public class VertexHopGraphProviderTest {
 		assertEquals(2, m_provider.getSemanticZoomLevel(new AbstractVertexRef("nodes", "v2")));
 		assertEquals(2, m_provider.getSemanticZoomLevel(new AbstractVertexRef("nodes", "v3")));
 		assertEquals(2, m_provider.getSemanticZoomLevel(new AbstractVertexRef("nodes", "v4")));
+
+		// Make sure that the hop provider isn't showing nodes with parent/child relationships like the
+		// older grouping providers did
+		assertNull(m_provider.getParent(new AbstractVertexRef("nodes", "g0")));
+		assertNull(m_provider.getParent(new AbstractVertexRef("nodes", "g1")));
+		assertNull(m_provider.getParent(new AbstractVertexRef("nodes", "g2")));
+		assertNull(m_provider.getParent(new AbstractVertexRef("nodes", "v1")));
+		assertNull(m_provider.getParent(new AbstractVertexRef("nodes", "v2")));
+		assertNull(m_provider.getParent(new AbstractVertexRef("nodes", "v3")));
+		assertNull(m_provider.getParent(new AbstractVertexRef("nodes", "v4")));
+
+		criteria.clear();
+		criteria.add(new AbstractVertexRef("nodes", "v1"));
+		m_provider.getVertices(criteria);
+
+		assertEquals(2, m_provider.getSemanticZoomLevel(new AbstractVertexRef("nodes", "g0")));
+		assertEquals(1, m_provider.getSemanticZoomLevel(new AbstractVertexRef("nodes", "g1")));
+		assertEquals(3, m_provider.getSemanticZoomLevel(new AbstractVertexRef("nodes", "g2")));
+		assertEquals(0, m_provider.getSemanticZoomLevel(new AbstractVertexRef("nodes", "v1")));
+		assertEquals(2, m_provider.getSemanticZoomLevel(new AbstractVertexRef("nodes", "v2")));
+		assertEquals(4, m_provider.getSemanticZoomLevel(new AbstractVertexRef("nodes", "v3")));
+		assertEquals(4, m_provider.getSemanticZoomLevel(new AbstractVertexRef("nodes", "v4")));
+
+		// Make sure that the hop provider isn't showing nodes with parent/child relationships like the
+		// older grouping providers did
+		assertNull(m_provider.getParent(new AbstractVertexRef("nodes", "g0")));
+		assertNull(m_provider.getParent(new AbstractVertexRef("nodes", "g1")));
+		assertNull(m_provider.getParent(new AbstractVertexRef("nodes", "g2")));
+		assertNull(m_provider.getParent(new AbstractVertexRef("nodes", "v1")));
+		assertNull(m_provider.getParent(new AbstractVertexRef("nodes", "v2")));
+		assertNull(m_provider.getParent(new AbstractVertexRef("nodes", "v3")));
+		assertNull(m_provider.getParent(new AbstractVertexRef("nodes", "v4")));
 	}
 
 	@Test

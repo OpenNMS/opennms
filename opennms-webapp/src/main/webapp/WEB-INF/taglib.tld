@@ -106,6 +106,10 @@
         <tag-class>org.opennms.web.tags.SelectTag</tag-class>
         <body-content>empty</body-content>
         <attribute>
+            <name>defaultText</name>
+            <required>false</required>
+        </attribute>
+        <attribute>
             <name>elements</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>

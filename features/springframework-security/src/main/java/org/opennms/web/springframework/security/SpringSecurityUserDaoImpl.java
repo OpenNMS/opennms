@@ -40,6 +40,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.BundleLists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -311,7 +313,7 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
         if (m_users == null) {
             return true;
         } else {
-            return m_userManager.isUpdateNeeded();
+            return m_usersLastModified != m_userManager.getLastModified();
         }
     }
     

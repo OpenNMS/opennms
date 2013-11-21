@@ -1,5 +1,15 @@
 package org.opennms.features.topology.app.internal;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.Vertex;
@@ -10,18 +20,9 @@ import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 public class AlarmStatusProvider implements StatusProvider {
-    
-    public class AlarmStatus implements Status {
+
+    public static class AlarmStatus implements Status {
 
         private final String m_label;
         private final long m_alarmCount;
@@ -43,7 +44,11 @@ public class AlarmStatusProvider implements StatusProvider {
             statusMap.put("statusCount", "" + m_alarmCount);
             return statusMap;
         }
-        
+
+        @Override
+        public String toString() {
+            return String.format("[%s: %d]", m_label, m_alarmCount);
+        }
     }
 
     private AlarmDao m_alarmDao;
@@ -53,11 +58,11 @@ public class AlarmStatusProvider implements StatusProvider {
     }
 
     @Override
-    public Map<VertexRef, Status> getStatusForVertices(VertexProvider vertexProvider, Collection<VertexRef> vertices) {
+    public Map<VertexRef, Status> getStatusForVertices(VertexProvider vertexProvider, Collection<VertexRef> vertices, Criteria[] criteria) {
         Map<VertexRef, Status> returnMap = new HashMap<VertexRef, Status>();
 
         // split nodes from groups and others
-        List<VertexRef> nodeRefs = getNodeVertexRefs(vertexProvider, vertices); // nodes
+        List<VertexRef> nodeRefs = getNodeVertexRefs(vertexProvider, vertices, criteria); // nodes
         List<VertexRef> otherRefs = getOtherVertexRefs(vertices);  // groups
 
         Map<Integer, VertexRef> nodeIdMap = extractNodeIds(nodeRefs);
@@ -77,7 +82,7 @@ public class AlarmStatusProvider implements StatusProvider {
         for (VertexRef eachRef : otherRefs) {
             if (isGroup(eachRef)) {
                 List<AlarmSummary> alarmSummariesForGroup = new ArrayList<AlarmSummary>();
-                List<Vertex> children = vertexProvider.getChildren(eachRef);
+                List<Vertex> children = vertexProvider.getChildren(eachRef, criteria);
                 for (Vertex eachChildren : children) {
                     AlarmSummary eachChildrenAlarmSummary = nodeIdToAlarmSummaryMap.get(eachChildren.getNodeID());
                     if (eachChildrenAlarmSummary != null) {
@@ -106,12 +111,12 @@ public class AlarmStatusProvider implements StatusProvider {
         return resultMap;
     }
 
-    private AlarmStatus createStatus(AlarmSummary summary) {
+    private static AlarmStatus createStatus(AlarmSummary summary) {
         AlarmStatus status = new AlarmStatus(summary.getMaxSeverity().getLabel(), summary.getAlarmCount());
         return status;
     }
 
-    private Map<Integer, VertexRef> extractNodeIds(Collection<VertexRef> inputList) {
+    private static Map<Integer, VertexRef> extractNodeIds(Collection<VertexRef> inputList) {
         Map<Integer, VertexRef> vertexRefToNodeIdMap = new HashMap<Integer, VertexRef>();
 
         for (VertexRef eachRef : inputList) {
@@ -122,7 +127,7 @@ public class AlarmStatusProvider implements StatusProvider {
                         vertexRefToNodeIdMap.put(nodeId, eachRef);
                     }
                 } catch (NumberFormatException nfe) {
-                    LoggerFactory.getLogger(getClass()).warn("Could not parse id '{}' of vertex '{}' as integer.", eachRef.getId(), eachRef);
+                    LoggerFactory.getLogger(AlarmStatusProvider.class).warn("Could not parse id '{}' of vertex '{}' as integer.", eachRef.getId(), eachRef);
                 }
             }
         }
@@ -130,12 +135,12 @@ public class AlarmStatusProvider implements StatusProvider {
         return vertexRefToNodeIdMap;
     }
 
-    private List<VertexRef> getNodeVertexRefs(VertexProvider vertexProvider, Collection<VertexRef> vertices) {
+    private static List<VertexRef> getNodeVertexRefs(VertexProvider vertexProvider, Collection<VertexRef> vertices, Criteria[] criteria) {
         List<VertexRef> returnList = new ArrayList<VertexRef>();
          for (VertexRef eachRef : vertices) {
             if ("nodes".equals(eachRef.getNamespace())) {
                 if(isGroup(eachRef)) {
-                    addChildrenRecursively(vertexProvider, eachRef, returnList);
+                    addChildrenRecursively(vertexProvider, eachRef, returnList, criteria);
                 } else {
                     if (!returnList.contains(eachRef)) {
                         returnList.add(eachRef);
@@ -146,7 +151,7 @@ public class AlarmStatusProvider implements StatusProvider {
         return returnList;
     }
 
-    private List<VertexRef> getOtherVertexRefs(Collection<VertexRef> vertices) {
+    private static List<VertexRef> getOtherVertexRefs(Collection<VertexRef> vertices) {
         List<VertexRef> returnList = new ArrayList<VertexRef>();
         for (VertexRef eachRef : vertices) {
             if (!"nodes".equals(eachRef.getNamespace())) {
@@ -156,31 +161,31 @@ public class AlarmStatusProvider implements StatusProvider {
         return returnList;
     }
 
-    private void addChildrenRecursively(VertexProvider vertexProvider, VertexRef groupRef, Collection<VertexRef> vertexRefs) {
-        List<Vertex> vertices = vertexProvider.getChildren(groupRef);
+    private static void addChildrenRecursively(VertexProvider vertexProvider, VertexRef groupRef, Collection<VertexRef> vertexRefs, Criteria[] criteria) {
+        List<Vertex> vertices = vertexProvider.getChildren(groupRef, criteria);
         for(Vertex vertex : vertices) {
             if(!vertex.isGroup()) {
                 if (!vertexRefs.contains(vertex)) {
                     vertexRefs.add(vertex);
                 }
             } else {
-                addChildrenRecursively(vertexProvider, vertex, vertexRefs);
+                addChildrenRecursively(vertexProvider, vertex, vertexRefs, criteria);
             }
         }
     }
 
-    private boolean isGroup(VertexRef vertexRef) {
+    private static boolean isGroup(VertexRef vertexRef) {
         if(vertexRef instanceof Vertex) {
             return ((Vertex) vertexRef).isGroup();
         }
         return false;
     }
 
-    private AlarmStatus createIndeterminateStatus() {
+    private static AlarmStatus createIndeterminateStatus() {
         return new AlarmStatus(OnmsSeverity.INDETERMINATE.getLabel(), 0);
     }
 
-    private AlarmStatus calculateAlarmStatusForGroup(List<AlarmSummary> alarmSummaries) {
+    private static AlarmStatus calculateAlarmStatusForGroup(List<AlarmSummary> alarmSummaries) {
         if (!alarmSummaries.isEmpty()) {
             Collections.sort(alarmSummaries, new Comparator<AlarmSummary>() {
                 @Override

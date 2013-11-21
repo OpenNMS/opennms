@@ -35,15 +35,15 @@ import org.slf4j.LoggerFactory;
 public class SavedHistory {
 
     @XmlAttribute(name="semantic-zoom-level")
-    public int m_szl;
+    private int m_szl;
 
     @XmlElement(name="bounding-box")
     @XmlJavaTypeAdapter(BoundingBoxAdapter.class)
-    public BoundingBox m_boundBox;
+    private BoundingBox m_boundBox;
 
     @XmlElement(name="locations")
     @XmlJavaTypeAdapter(VertexRefPointMapAdapter.class)
-    public Map<VertexRef, Point> m_locations = new HashMap<VertexRef, Point>();
+    private Map<VertexRef, Point> m_locations = new HashMap<VertexRef, Point>();
 
     @XmlElement(name="selection")
     @XmlJavaTypeAdapter(VertexRefSetAdapter.class)
@@ -58,7 +58,7 @@ public class SavedHistory {
      */
     @XmlElement(name="settings")
     @XmlJavaTypeAdapter(StringMapAdapter.class)
-    public final Map<String,String> m_settings = new HashMap<String,String>();
+    private final Map<String,String> m_settings = new HashMap<String,String>();
 
     protected SavedHistory() {
         // Here for JAXB support
@@ -87,8 +87,6 @@ public class SavedHistory {
             getFocusVertices(graphContainer),
             getOperationSettings(graphContainer, operations)
         );
-        // TODO Why is this here? We just called this function in the constructor call.
-        saveLocations(graphContainer.getGraph());
     }
 
     protected static Set<VertexRef> getFocusVertices(GraphContainer graphContainer) {
@@ -118,7 +116,6 @@ public class SavedHistory {
         }
         return locations;
     }
-
 
     public int getSemanticZoomLevel() {
         return m_szl;
@@ -180,7 +177,7 @@ public class SavedHistory {
     }
 
     public void apply(GraphContainer graphContainer, Collection<HistoryOperation> operations) {
-        // LoggerFactory.getLogger(this.getClass()).debug("Applying " + toString());
+        LoggerFactory.getLogger(this.getClass()).debug("Applying " + toString());
 
         if (m_focusVertices.size() > 0) {
             FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(graphContainer);

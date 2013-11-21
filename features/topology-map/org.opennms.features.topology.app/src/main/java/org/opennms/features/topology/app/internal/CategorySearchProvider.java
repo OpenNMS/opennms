@@ -28,8 +28,12 @@
 
 package org.opennms.features.topology.app.internal;
 
+
+import java.util.*;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
@@ -43,11 +47,13 @@ import org.opennms.features.topology.app.internal.support.CategoryHopCriteria;
 import org.opennms.features.topology.app.internal.support.CategoryHopCriteriaFactory;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.model.OnmsCategory;
 
 public class CategorySearchProvider extends AbstractSearchProvider implements SearchProvider {
 
     private CategoryHopCriteriaFactory m_categoryHopFactory;
     private CategoryDao m_categoryDao;
+    private String m_hiddenCategoryPrefix = null;
 
     public CategorySearchProvider(CategoryDao categoryDao, NodeDao nodeDao){
         m_categoryDao = categoryDao;
@@ -65,17 +71,31 @@ public class CategorySearchProvider extends AbstractSearchProvider implements Se
     }
 
     @Override
-    public List<SearchResult> query(SearchQuery searchQuery) {
-        List<String> categories = m_categoryDao.getAllCategoryNames();
+    public List<SearchResult> query(SearchQuery searchQuery, GraphContainer graphContainer) {
+
+        Collection<OnmsCategory> categories = m_categoryDao.findAll();
+
         List<SearchResult> results = new ArrayList<SearchResult>();
-        for (String category : categories) {
-            if(searchQuery.matches(category)){
-                SearchResult result = new SearchResult("category", category, category);
+        for (OnmsCategory category : categories) {
+            if (!checkHiddenPrefix(category.getName()) && searchQuery.matches(category.getName())) {
+                SearchResult result = new SearchResult("category", category.getId().toString(), category.getName());
                 result.setCollapsible(true);
+                CollapsibleCriteria criteria = getMatchingCriteria(graphContainer, category.getName());
+                if (criteria != null) {
+                    result.setCollapsed(criteria.isCollapsed());
+                }
                 results.add(result);
             }
         }
         return results;
+    }
+
+    private boolean checkHiddenPrefix(String name) {
+        if(m_hiddenCategoryPrefix == null || m_hiddenCategoryPrefix.equals("")) return false;
+
+        return name.startsWith(m_hiddenCategoryPrefix);
+
+
     }
 
     @Override
@@ -84,20 +104,20 @@ public class CategorySearchProvider extends AbstractSearchProvider implements Se
     }
 
     @Override
-    public List<VertexRef> getVertexRefsBy(SearchResult searchResult) {
-        return null;
+    public Set<VertexRef> getVertexRefsBy(SearchResult searchResult) {
+        return Collections.emptySet();
     }
 
     @Override
     public void addVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
-        CategoryHopCriteria criteria = m_categoryHopFactory.getCriteria(searchResult.getId());
+        CategoryHopCriteria criteria = m_categoryHopFactory.getCriteria(searchResult.getLabel());
         criteria.setId(searchResult.getId());
         container.addCriteria(criteria);
     }
 
     @Override
     public void removeVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
-        CategoryHopCriteria c = m_categoryHopFactory.getCriteria(searchResult.getId());
+        CategoryHopCriteria c = m_categoryHopFactory.getCriteria(searchResult.getLabel());
         c.setId(searchResult.getId());
         container.removeCriteria(c);
     }
@@ -110,15 +130,26 @@ public class CategorySearchProvider extends AbstractSearchProvider implements Se
         this.m_categoryDao = m_categoryDao;
     }
 
+    public void setHiddenCategoryPrefix(String prefix) {
+        m_hiddenCategoryPrefix = prefix;
+    }
+
     @Override
     public void onToggleCollapse(SearchResult searchResult, GraphContainer graphContainer) {
+        CollapsibleCriteria criteria = getMatchingCriteria(graphContainer, searchResult.getId());
+        if (criteria != null) {
+            criteria.setCollapsed(!criteria.isCollapsed());
+            graphContainer.redoLayout();
+        }
+    }
+
+    private static CollapsibleCriteria getMatchingCriteria(GraphContainer graphContainer, String id) {
         CollapsibleCriteria[] criteria = VertexHopGraphProvider.getCollapsibleCriteriaForContainer(graphContainer);
         for (CollapsibleCriteria criterium : criteria) {
-            if (criterium.getId().equals(searchResult.getId())) {
-                criterium.setCollapsed(!criterium.isCollapsed());
-                graphContainer.redoLayout();
-                break;
+            if (criterium.getId().equals(id)) {
+                return criterium;
             }
         }
+        return null;
     }
 }

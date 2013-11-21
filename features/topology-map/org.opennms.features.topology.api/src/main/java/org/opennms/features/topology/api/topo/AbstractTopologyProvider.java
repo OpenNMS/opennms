@@ -250,6 +250,11 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
     }
 
     @Override
+    public boolean groupingSupported() {
+        return true;
+    }
+
+    @Override
     public final AbstractVertex addGroup(String groupName, String groupIconKey) {
         String nextGroupId = getNextGroupId();
         return addGroup(nextGroupId, groupIconKey, groupName);

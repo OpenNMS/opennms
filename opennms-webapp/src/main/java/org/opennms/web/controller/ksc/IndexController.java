@@ -36,9 +36,14 @@ import org.opennms.web.api.Authentication;
 import org.opennms.web.svclayer.KscReportService;
 import org.opennms.web.svclayer.ResourceService;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
+
+import java.util.Collection;
 
 /**
  * <p>IndexController class.</p>
@@ -62,6 +67,7 @@ public class IndexController extends AbstractController implements InitializingB
 
         ModelAndView modelAndView = new ModelAndView("KSC/index");
 
+        modelAndView.addObject("isReadOnly", isReadOnly());
         modelAndView.addObject("kscReadOnly", ( (!request.isUserInRole( Authentication.ROLE_ADMIN )) || request.isUserInRole(Authentication.ROLE_READONLY)) || (request.getRemoteUser() == null));
         modelAndView.addObject("reports", getKscReportService().getReportList());
         modelAndView.addObject("nodeResources", getResourceService().findNodeResources());
@@ -69,6 +75,16 @@ public class IndexController extends AbstractController implements InitializingB
         modelAndView.addObject("domainResources", getResourceService().findDomainResources());
         
         return modelAndView;
+    }
+
+    private boolean isReadOnly() {
+        for(GrantedAuthority authority : SecurityContextHolder.getContext().getAuthentication().getAuthorities()){
+            if (Authentication.ROLE_READONLY.equals(authority.getAuthority())){
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
