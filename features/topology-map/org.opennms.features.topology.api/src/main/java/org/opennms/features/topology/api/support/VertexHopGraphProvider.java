@@ -34,16 +34,17 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.xml.bind.JAXBException;
 
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.topo.AbstractVertexRef;
 import org.opennms.features.topology.api.topo.CollapsibleCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
@@ -60,7 +61,7 @@ import org.slf4j.LoggerFactory;
 /**
  * This class will be used to filter a topology so that the semantic zoom level is
  * interpreted as a hop distance away from a set of selected vertices. The vertex 
- * selection is specified using a {@link Criteria} filter.
+ * selection is specified using sets of {@link VertexHopCriteria} filters.
  * 
  * @author Seth
  */
@@ -72,23 +73,7 @@ public class VertexHopGraphProvider implements GraphProvider {
 	}
 
 	public static FocusNodeHopCriteria getFocusNodeHopCriteriaForContainer(GraphContainer graphContainer, boolean createIfAbsent) {
-		Criteria[] criteria = graphContainer.getCriteria();
-		if (criteria != null) {
-			for (Criteria criterium : criteria) {
-				try {
-					FocusNodeHopCriteria hopCriteria = (FocusNodeHopCriteria)criterium;
-					return hopCriteria;
-				} catch (ClassCastException e) {}
-			}
-		}
-
-		if (createIfAbsent) {
-			FocusNodeHopCriteria hopCriteria = new FocusNodeHopCriteria();
-			graphContainer.addCriteria(hopCriteria);
-			return hopCriteria;
-		} else {
-			return null;
-		}
+		return Criteria.getSingleCriteriaForGraphContainer(graphContainer, FocusNodeHopCriteria.class, createIfAbsent);
 	}
 
 	public static CollapsibleCriteria[] getCollapsedCriteriaForContainer(GraphContainer graphContainer) {
@@ -249,14 +234,21 @@ public class VertexHopGraphProvider implements GraphProvider {
 		return m_delegate.contributesTo(namespace);
 	}
 
+	@Deprecated
 	@Override
 	public boolean containsVertexId(String id) {
-		return m_delegate.containsVertexId(id);
+		return containsVertexId(new AbstractVertexRef(getVertexNamespace(), id));
 	}
 
 	@Override
-	public boolean containsVertexId(VertexRef id) {
-		return m_delegate.containsVertexId(id);
+	public boolean containsVertexId(VertexRef id, Criteria... criteria) {
+		for (CollapsibleCriteria criterium : getCollapsedCriteria(criteria)) {
+			Vertex collapsed = criterium.getCollapsedRepresentation();
+			if (new RefComparator().compare(collapsed, id) == 0) {
+				return true;
+			}
+		}
+		return m_delegate.containsVertexId(id, criteria);
 	}
 
 	@Override
@@ -265,8 +257,14 @@ public class VertexHopGraphProvider implements GraphProvider {
 	}
 
 	@Override
-	public Vertex getVertex(VertexRef reference) {
-		return m_delegate.getVertex(reference);
+	public Vertex getVertex(VertexRef reference, Criteria... criteria) {
+		for (CollapsibleCriteria criterium : getCollapsedCriteria(criteria)) {
+			Vertex collapsed = criterium.getCollapsedRepresentation();
+			if (new RefComparator().compare(collapsed, reference) == 0) {
+				return collapsed;
+			}
+		}
+		return m_delegate.getVertex(reference, criteria);
 	}
 
 	@Override
@@ -312,7 +310,7 @@ public class VertexHopGraphProvider implements GraphProvider {
 		if (focusNodes.size() < 1) {
 			// ...then return an empty list of vertices
 			return Collections.emptyList();
-//            return allVertices;
+			// return allVertices;
 		}
 		
 
@@ -352,9 +350,9 @@ public class VertexHopGraphProvider implements GraphProvider {
                 if (refs != null) {
                 	neighbors.addAll(refs);
                 }
-                Vertex vertex = getVertex(vertexRef);
+                Vertex vertex = getVertex(vertexRef, criteria);
                 if (vertex != null) {
-                	processed.add(getVertex(vertexRef));
+                	processed.add(getVertex(vertexRef, criteria));
                 }
 			}
 
@@ -372,64 +370,130 @@ public class VertexHopGraphProvider implements GraphProvider {
 		return new ArrayList<Vertex>(processed);
 	}
 
-	public static Set<Vertex> collapseVertices(Collection<Vertex> vertices, CollapsibleCriteria[] criteria) {
-		Set<Vertex> retval = new HashSet<Vertex>(vertices);
-		Set<Vertex> addMe = new HashSet<Vertex>();
+	public static Set<Vertex> collapseVertices(Set<Vertex> vertices, CollapsibleCriteria[] criteria) {
+		// Make a map of all of the vertices to their new collapsed representations
+		Map<VertexRef,Set<Vertex>> vertexToCollapsedVertices = getMapOfVerticesToCollapsedVertices(criteria);
 
-		for (Iterator<Vertex> itr = retval.iterator(); itr.hasNext();) {
-			Vertex vertex = itr.next();
-
-			nextVertex:
-			for (CollapsibleCriteria criterium : criteria) {
-				Set<VertexRef> criteriaVertices = new HashSet<VertexRef>(criterium.getVertices());
-				for (Iterator<VertexRef> critItr = criteriaVertices.iterator(); critItr.hasNext();) {
-					VertexRef criteriaVertex = critItr.next();
-					if (new RefComparator().compare(vertex, criteriaVertex) == 0) {
-						// Remove the vertex from the return value
-						itr.remove();
-						// Add the collapsed representation
-						addMe.add(criterium.getCollapsedRepresentation());
-						break nextVertex;
+		if (vertexToCollapsedVertices.size() > 0) {
+			Set<Vertex> retval = new HashSet<Vertex>();
+			for (Vertex vertex : vertices) {
+				// If the source vertex is in the collapsed list...
+				Set<Vertex> collapsedVertices = vertexToCollapsedVertices.get(vertex);
+				if (collapsedVertices != null) {
+					for (Vertex collapsedEndpoint : collapsedVertices) {
+						retval.add(collapsedEndpoint);
 					}
+				} else {
+					retval.add(vertex);
 				}
 			}
+			return retval;
+		} else {
+			return vertices;
 		}
-
-		retval.addAll(addMe);
-		return retval;
 	}
 
-	public static List<Edge> collapseEdges(Collection<Edge> edges, CollapsibleCriteria[] criteria) {
-		List<Edge> retval = new ArrayList<Edge>(edges);
-		List<Edge> addMe = new ArrayList<Edge>();
-
-		for (Iterator<Edge> itr = retval.iterator(); itr.hasNext();) {
-			Edge edge = itr.next();
-			for (CollapsibleCriteria criterium : criteria) {
-				Set<VertexRef> criteriaVertices = new HashSet<VertexRef>(criterium.getVertices());
-				for (Iterator<VertexRef> critItr = criteriaVertices.iterator(); critItr.hasNext();) {
-					VertexRef criteriaVertex = critItr.next();
-					if (new RefComparator().compare(edge.getSource().getVertex(), criteriaVertex) == 0) {
-						// Reset the edge source to the collapsed vertex
-						edge.getSource().setVertex(criterium.getCollapsedRepresentation());
-					} else if (new RefComparator().compare(edge.getTarget().getVertex(), criteriaVertex) == 0) {
-						// Reset the edge target to the collapsed vertex
-						edge.getTarget().setVertex(criterium.getCollapsedRepresentation());
+	public static Map<VertexRef,Set<Vertex>> getMapOfVerticesToCollapsedVertices(CollapsibleCriteria[] criteria) {
+		// Make a map of all of the vertices to their new collapsed representations
+		Map<VertexRef,Set<Vertex>> vertexToCollapsedVertices = new TreeMap<VertexRef,Set<Vertex>>(new RefComparator());
+		for (CollapsibleCriteria criterium : criteria) {
+			Set<VertexRef> criteriaVertices = criterium.getVertices();
+			if (criteriaVertices.size() > 0) {
+				Vertex collapsedVertex = criterium.getCollapsedRepresentation();
+				for (VertexRef criteriaVertex : criteriaVertices) {
+					Set<Vertex> collapsedVertices = vertexToCollapsedVertices.get(criteriaVertex);
+					if (collapsedVertices == null) {
+						collapsedVertices = new HashSet<Vertex>();
+						vertexToCollapsedVertices.put(criteriaVertex, collapsedVertices);
 					}
+					collapsedVertices.add(collapsedVertex);
 				}
 			}
 		}
+		return vertexToCollapsedVertices;
+	}
 
-		retval.addAll(addMe);
-		return retval;
+	/**
+	 * This function assumes that all criteria passed in are marked as collapsed.
+	 * @param edges
+	 * @param criteria
+	 * @return
+	 */
+	public static Set<Edge> collapseEdges(Set<Edge> edges, CollapsibleCriteria[] criteria) {
+
+		// Make a map of all of the vertices to their new collapsed representations
+		Map<VertexRef,Set<Vertex>> vertexToCollapsedVertices = getMapOfVerticesToCollapsedVertices(criteria);
+
+		if (vertexToCollapsedVertices.size() > 0) {
+			Set<Edge> retval = new HashSet<Edge>();
+			for (Edge edge : edges) {
+				// Add the original edge to retval unless we replace it with an edge that points to a
+				// collapsed vertex
+				boolean addOriginalEdge = true;
+	
+				// If the source vertex is in the collapsed list...
+				Set<Vertex> collapsedSources = vertexToCollapsedVertices.get(edge.getSource().getVertex());
+				if (collapsedSources != null) {
+					for (VertexRef collapsedSource : collapsedSources) {
+						// Add a new edge with the source as the collapsed vertex
+						Edge newCollapsedEdge = edge.clone();
+						newCollapsedEdge.setId("collapsedSource-" + newCollapsedEdge.getId());
+						newCollapsedEdge.getSource().setVertex(collapsedSource);
+						retval.add(newCollapsedEdge);
+					}
+					// Since we just added a replacement edge, don't add the original
+					addOriginalEdge = false;
+				} 
+	
+				Set<Vertex> collapsedTargets = vertexToCollapsedVertices.get(edge.getTarget().getVertex());
+				if (collapsedTargets != null) {
+					for (VertexRef collapsedTarget : collapsedTargets) {
+						// Add a new edge with the target as the collapsed vertex
+						Edge newCollapsedEdge = edge.clone();
+						newCollapsedEdge.setId("collapsedTarget-" + newCollapsedEdge.getId());
+						newCollapsedEdge.getTarget().setVertex(collapsedTarget);
+						retval.add(newCollapsedEdge);
+					}
+					// Since we just added a replacement edge, don't add the original
+					addOriginalEdge = false;
+				}
+
+				// If both the source and target have been collapsed, connect all of the collapsed
+				// representations to each other. This will allow collapsed groups to connect to one
+				// another.
+				//
+				if (collapsedSources != null && collapsedTargets != null) {
+					for (VertexRef collapsedEndpoint : collapsedSources) {
+						for (VertexRef collapsedTarget : collapsedTargets) {
+							// Add a new edge with the target as the collapsed vertex
+							Edge newCollapsedEdge = edge.clone();
+							newCollapsedEdge.setId("collapsed-" + newCollapsedEdge.getId());
+							newCollapsedEdge.getSource().setVertex(collapsedEndpoint);
+							newCollapsedEdge.getTarget().setVertex(collapsedTarget);
+							retval.add(newCollapsedEdge);
+						}
+					}
+					// Since we just added a replacement edge, don't add the original
+					addOriginalEdge = false;
+				}
+	
+				// Add the original edge if it wasn't replaced with an edge to a collapsed vertex
+				if (addOriginalEdge) {
+					retval.add(edge);
+				}
+			}
+			return retval;
+		} else {
+			return edges;
+		}
 	}
 
 	/**
 	 * TODO: OVERRIDE THIS FUNCTION?
 	 */
 	@Override
-	public List<Vertex> getVertices(Collection<? extends VertexRef> references) {
-		return m_delegate.getVertices(references);
+	public List<Vertex> getVertices(Collection<? extends VertexRef> references, Criteria... criteria) {
+		return m_delegate.getVertices(references, criteria);
 	}
 
 	/**
@@ -458,7 +522,13 @@ public class VertexHopGraphProvider implements GraphProvider {
 	}
 
 	@Override
-	public List<Vertex> getChildren(VertexRef group) {
+	public List<Vertex> getChildren(VertexRef group, Criteria... criteria) {
+		for (CollapsibleCriteria criterium : getCollapsedCriteria(criteria)) {
+			if (new RefComparator().compare(criterium.getCollapsedRepresentation(), group) == 0) {
+				return getVertices(criterium.getVertices());
+			}
+		}
+		//LOG.warn("Called getChildren() on a vertex {} that is not currently collapsible", group);
 		return Collections.emptyList();
 	}
 
@@ -492,14 +562,11 @@ public class VertexHopGraphProvider implements GraphProvider {
 		return m_delegate.getEdge(reference);
 	}
 
-	/**
-	 * TODO OVERRIDE THIS FUNCTION?
-	 */
 	@Override
 	public List<Edge> getEdges(Criteria... criteria) {
-		List<Edge> retval = m_delegate.getEdges(criteria);
+		Set<Edge> retval = new HashSet<Edge>(m_delegate.getEdges(criteria));
 		retval = collapseEdges(retval, getCollapsedCriteria(criteria));
-		return retval;
+		return new ArrayList<Edge>(retval);
 	}
 
 	@Override
@@ -540,6 +607,11 @@ public class VertexHopGraphProvider implements GraphProvider {
 	@Override
 	public Vertex addVertex(int x, int y) {
 		return m_delegate.addVertex(x, y);
+	}
+
+	@Override
+	public boolean groupingSupported() {
+		return false;
 	}
 
 	@Override

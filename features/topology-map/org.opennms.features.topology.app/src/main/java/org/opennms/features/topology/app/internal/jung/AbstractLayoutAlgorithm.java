@@ -36,6 +36,10 @@ public abstract class AbstractLayoutAlgorithm implements LayoutAlgorithm, Layout
 		return new Transformer<VertexRef, Point2D>() {
 			@Override
 			public Point2D transform(VertexRef v) {
+				if (v == null) {
+					LOG.warn("Algorithm tried to layout a null vertex");
+					return new Point(0,0);
+				}
 				org.opennms.features.topology.api.Point location = graphLayout.getLocation(v);
 				return new Point(location.getX(), location.getY());
 			}

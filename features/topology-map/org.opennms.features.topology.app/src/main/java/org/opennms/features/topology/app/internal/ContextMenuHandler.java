@@ -37,5 +37,5 @@ public interface ContextMenuHandler {
      * @param left
      * @param top
      */
-    public void show(Object target, int left, int top);
+    void showContextMenu(Object target, int left, int top);
 }

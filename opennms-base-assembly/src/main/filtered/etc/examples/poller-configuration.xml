@@ -628,6 +628,7 @@
       <parameter key="retry" value="2" />
       <parameter key="timeout" value="3000" />
       <parameter key="matchType" value="all" />
+      <parameter key="wmiNamespace" value="root/cimv2" />
       <parameter key="wmiClass" value="Win32_ComputerSystem" />
       <parameter key="wmiObject" value="Status" />
       <parameter key="compareOp" value="EQ" />

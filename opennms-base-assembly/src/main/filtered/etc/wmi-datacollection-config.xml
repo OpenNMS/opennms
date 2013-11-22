@@ -15,7 +15,7 @@
              *  wmiClass is the WMI object class.
              *  Check every recheckInterval milliseconds (3600000 = 1hr)
             -->
-            <wpm name="wmiOSMemory" wmiClass="Win32_PerfFormattedData_PerfOS_Memory"
+            <wpm name="wmiOSMemory" wmiClass="Win32_PerfFormattedData_PerfOS_Memory" wmiNamespace="root/cimv2"
                  keyvalue="Name" recheckInterval="3600000" ifType="all" resourceType="node">
                 <!-- Amount of physical memory in bytes available to processes -->
                 <attrib name="AvailableBytes" alias="wmiOSMemAvailBytes" wmiObject="AvailableBytes" type="Gauge"/>
@@ -40,7 +40,7 @@
              *  wmiClass is the WMI object class.
              *  Check every recheckInterval milliseconds (3600000 = 1hr)
             -->
-            <wpm name="wmiOSObjects" wmiClass="Win32_PerfFormattedData_PerfOS_Objects"
+            <wpm name="wmiOSObjects" wmiClass="Win32_PerfFormattedData_PerfOS_Objects" wmiNamespace="root/cimv2"
                  keyvalue="Name" recheckInterval="3600000" ifType="all" resourceType="node">
                 <!-- Number of events in the computer at the time of data collection -->
                 <!-- An event is used when two or more threads wish to synchronize execution -->
@@ -62,7 +62,7 @@
              *  wmiClass is the WMI object class.
              *  Check every recheckInterval milliseconds (3600000 = 1hr)
             -->
-            <wpm name="wmiOSCpu" wmiClass="Win32_PerfFormattedData_PerfOS_Processor"
+            <wpm name="wmiOSCpu" wmiClass="Win32_PerfFormattedData_PerfOS_Processor" wmiNamespace="root/cimv2"
                  keyvalue="Name" recheckInterval="3600000" ifType="all" resourceType="wmiOSCpu">
                 <!-- Label for this Processor instance -->
                 <attrib name="ProcessorName" alias="wmiOSCpuName" wmiObject="Name" type="string"/>
@@ -83,7 +83,7 @@
              *  wmiClass is the WMI object class.
              *  Check every recheckInterval milliseconds (3600000 = 1hr)
             -->
-            <wpm name="wmiPhysicalDisk" wmiClass="Win32_PerfFormattedData_PerfDisk_PhysicalDisk"
+            <wpm name="wmiPhysicalDisk" wmiClass="Win32_PerfFormattedData_PerfDisk_PhysicalDisk" wmiNamespace="root/cimv2"
                  keyvalue="Name" recheckInterval="3600000" ifType="all" resourceType="wmiPhysicalDisk">
                 <!-- Label for this PhysicalDisk instance -->
                 <attrib name="PhysDiskName" alias="wmiPDName" wmiObject="Name" type="string"/>
@@ -100,7 +100,7 @@
              *  wmiClass is the WMI object class.
              *  Check every recheckInterval milliseconds (3600000 = 1hr)
             -->
-            <wpm name="wmiLogicalDisk" wmiClass="Win32_PerfFormattedData_PerfDisk_LogicalDisk"
+            <wpm name="wmiLogicalDisk" wmiClass="Win32_PerfFormattedData_PerfDisk_LogicalDisk" wmiNamespace="root/cimv2"
                  keyvalue="Name" recheckInterval="3600000" ifType="all" resourceType="wmiLogicalDisk">
                 <!-- Label for this LogicalDisk instance -->
                 <attrib name="LogDiskName" alias="wmiLDName" wmiObject="Name" type="string"/>
@@ -117,7 +117,7 @@
             </wpm>
 
             <!-- A collection of network interface statistics -->
-            <wpm name="wmiTcpipNetworkInterface" wmiClass="Win32_PerfRawData_Tcpip_NetworkInterface"
+            <wpm name="wmiTcpipNetworkInterface" wmiClass="Win32_PerfRawData_Tcpip_NetworkInterface" wmiNamespace="root/cimv2"
                  keyvalue="Name" recheckInterval="3600000" ifType="ignore" resourceType="wmiTcpipNetworkInterface">
                 <!-- The label for this Network Interface instance -->
                 <attrib name="TcpIpIfName" alias="wmiIpNetIfName" wmiObject="Name" type="string"/>
@@ -148,7 +148,7 @@
              *  wmiClass is the WMI object class.
              *  Check every recheckInterval milliseconds (3600000 = 1hr)
             -->
-            <wpm name="win32_terminalservices" wmiClass="Win32_PerfFormattedData_TermService_TerminalServices"
+            <wpm name="win32_terminalservices" wmiClass="Win32_PerfFormattedData_TermService_TerminalServices" wmiNamespace="root/cimv2"
                  keyvalue="ActiveSessions" recheckInterval="3600000" ifType="all" resourceType="node">
                 <!--  Collect these attributes.
                  *  Name is the unique name used for keyvalue.
@@ -165,7 +165,7 @@
             </wpm>
 
             <!-- A collection of server session statistics -->
-            <wpm name="win32_serversessions" wmiClass="Win32_PerfFormattedData_PerfNet_Server"
+            <wpm name="win32_serversessions" wmiClass="Win32_PerfFormattedData_PerfNet_Server" wmiNamespace="root/cimv2"
                  keyvalue="ServerSessions" recheckInterval="3600000" ifType="all" resourceType="node">
                 <!-- The number of sessions currently active in the server. -->
                 <attrib name="ServerSessions" alias="wmiServerSessions" wmiObject="ServerSessions" type="Gauge" />
@@ -180,7 +180,7 @@
             </wpm>
 
             <!-- A collection of server error statistics -->
-            <wpm name="win32_servererrors" wmiClass="Win32_PerfFormattedData_PerfNet_Server" keyvalue="ErrorsSystem"
+            <wpm name="win32_servererrors" wmiClass="Win32_PerfFormattedData_PerfNet_Server" keyvalue="ErrorsSystem" wmiNamespace="root/cimv2"
                  recheckInterval="3600000" ifType="all" resourceType="node">
                 <!-- The number of times an internal Server Error was detected. -->
                 <attrib name="ErrorsSystem" alias="wmiServerErrsSystem" wmiObject="ErrorsSystem" type="Counter" />
@@ -193,7 +193,7 @@
             </wpm>
 
             <!-- A collection of HTTP statistics -->
-            <wpm name="win32_w3svc" wmiClass="Win32_PerfFormattedData_W3SVC_WebService" keyvalue="Name"
+            <wpm name="win32_w3svc" wmiClass="Win32_PerfFormattedData_W3SVC_WebService" keyvalue="Name" wmiNamespace="root/cimv2"
                  recheckInterval="3600000" ifType="all" resourceType="wmiW3">
                 <!-- Label for this Web instance -->
                 <attrib name="WebSvcName" alias="wmiW3Name" wmiObject="Name" type="string"/>

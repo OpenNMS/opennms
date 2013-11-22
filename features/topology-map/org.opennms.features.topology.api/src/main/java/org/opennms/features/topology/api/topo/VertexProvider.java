@@ -57,11 +57,11 @@ public interface VertexProvider {
 	 */
 	boolean containsVertexId(String id);
 
-	boolean containsVertexId(VertexRef id);
+	boolean containsVertexId(VertexRef id, Criteria... criteria);
 
 	public Vertex getVertex(String namespace, String id);
 	
-	public Vertex getVertex(VertexRef reference);
+	public Vertex getVertex(VertexRef reference, Criteria... criteria);
 	
 	public int getSemanticZoomLevel(VertexRef vertex);
 	
@@ -70,7 +70,7 @@ public interface VertexProvider {
 	 */
 	public List<Vertex> getVertices(Criteria... criteria);
 	
-	public List<Vertex> getVertices(Collection<? extends VertexRef> references);
+	public List<Vertex> getVertices(Collection<? extends VertexRef> references, Criteria... criteria);
 	
 	public List<Vertex> getRootGroup();
 	
@@ -80,7 +80,7 @@ public interface VertexProvider {
 	
 	boolean setParent(VertexRef child, VertexRef parent);
 	
-	public List<Vertex> getChildren(VertexRef group);
+	public List<Vertex> getChildren(VertexRef group, Criteria... criteria);
 	
 	public void addVertexListener(VertexListener vertexListener);
 	

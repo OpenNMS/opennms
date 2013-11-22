@@ -50,7 +50,7 @@ public class GraphPainter extends BaseGraphVisitor {
         }
 
         if (m_statusProvider != null) {
-            Map<VertexRef, Status> newStatusMap = m_statusProvider.getStatusForVertices(m_graphContainer.getBaseTopology(), new ArrayList<VertexRef>((graph.getDisplayVertices())));
+            Map<VertexRef, Status> newStatusMap = m_statusProvider.getStatusForVertices(m_graphContainer.getBaseTopology(), new ArrayList<VertexRef>(graph.getDisplayVertices()), m_graphContainer.getCriteria());
             if (newStatusMap != null) {
                 m_statusMap.clear();
                 m_statusMap.putAll(newStatusMap);
@@ -157,11 +157,11 @@ public class GraphPainter extends BaseGraphVisitor {
 	}
 
 	private String getSourceKey(Edge edge) {
-		return m_graphContainer.getBaseTopology().getVertex(edge.getSource().getVertex()).getKey();
+		return m_graphContainer.getBaseTopology().getVertex(edge.getSource().getVertex(), m_graphContainer.getCriteria()).getKey();
 	}
 
 	private String getTargetKey(Edge edge) {
-		return m_graphContainer.getBaseTopology().getVertex(edge.getTarget().getVertex()).getKey();
+		return m_graphContainer.getBaseTopology().getVertex(edge.getTarget().getVertex(), m_graphContainer.getCriteria()).getKey();
 	}
 
 	/**

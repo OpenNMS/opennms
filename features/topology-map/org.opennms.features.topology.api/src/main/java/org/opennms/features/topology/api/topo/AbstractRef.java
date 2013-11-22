@@ -32,7 +32,7 @@ package org.opennms.features.topology.api.topo;
 public class AbstractRef implements Ref {
 	
 	private final String m_namespace;
-	private final String m_id;
+	protected String m_id;
 	private String m_label;
 	
 	protected AbstractRef(String namespace, String id, String label) {

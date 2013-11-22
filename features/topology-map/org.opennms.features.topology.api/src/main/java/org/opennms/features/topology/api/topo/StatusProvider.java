@@ -33,5 +33,5 @@ import java.util.Map;
 
 public interface StatusProvider {
 
-	public Map<VertexRef, Status> getStatusForVertices(VertexProvider vertexProvider, Collection<VertexRef> vertices);
+	public Map<VertexRef, Status> getStatusForVertices(VertexProvider vertexProvider, Collection<VertexRef> vertices, Criteria[] criteria);
 }

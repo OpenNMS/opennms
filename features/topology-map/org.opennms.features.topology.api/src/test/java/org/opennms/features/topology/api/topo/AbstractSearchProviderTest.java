@@ -33,7 +33,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.opennms.features.topology.api.GraphContainer;
@@ -102,8 +104,8 @@ public class AbstractSearchProviderTest {
 
         SearchProvider searchProvider1 = createSearchProvider();
 
-        assertEquals(10, searchProvider1.query(containsQuery).size());
-        assertEquals(1, searchProvider1.query(exactQuery).size());
+        assertEquals(10, searchProvider1.query(containsQuery, null).size());
+        assertEquals(1, searchProvider1.query(exactQuery, null).size());
     }
 
     private SearchProvider createSearchProvider() {
@@ -122,7 +124,7 @@ public class AbstractSearchProviderTest {
             }
 
             @Override
-            public List<SearchResult> query(SearchQuery searchQuery) {
+            public List<SearchResult> query(SearchQuery searchQuery, GraphContainer graphContainer) {
                 List<SearchResult> verts = new ArrayList<SearchResult>();
                 for (VertexRef vertexRef : m_vertexRefs) {
                     if (searchQuery.matches(vertexRef.getLabel())) {
@@ -138,8 +140,8 @@ public class AbstractSearchProviderTest {
             }
 
             @Override
-            public List<VertexRef> getVertexRefsBy(SearchResult searchResult) {
-                return null;
+            public Set<VertexRef> getVertexRefsBy(SearchResult searchResult) {
+                return Collections.emptySet();
             }
 
             @Override

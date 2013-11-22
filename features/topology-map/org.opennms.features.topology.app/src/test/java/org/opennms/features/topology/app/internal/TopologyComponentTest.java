@@ -273,8 +273,8 @@ public class TopologyComponentTest {
         }
         
         for(Edge e: graph.getDisplayEdges()) {
-        	Vertex sourceV = graphContainer.getBaseTopology().getVertex(e.getSource().getVertex());
-        	Vertex targetV = graphContainer.getBaseTopology().getVertex(e.getTarget().getVertex());
+        	Vertex sourceV = graphContainer.getBaseTopology().getVertex(e.getSource().getVertex(), graphContainer.getCriteria());
+        	Vertex targetV = graphContainer.getBaseTopology().getVertex(e.getTarget().getVertex(), graphContainer.getCriteria());
             String sourceKey = sourceV.getKey();
             String targetKey = targetV.getKey();
             mockEdgeWithKeys(target2, e.getKey(), sourceKey, targetKey);

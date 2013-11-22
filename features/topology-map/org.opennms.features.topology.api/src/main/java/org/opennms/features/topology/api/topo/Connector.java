@@ -28,10 +28,12 @@
 
 package org.opennms.features.topology.api.topo;
 
-public interface Connector extends ConnectorRef {
-	
+public interface Connector extends ConnectorRef, Cloneable {
+
+	Connector clone();
+
 	EdgeRef getEdge();
-	
+
 	VertexRef getVertex();
 
 	void setVertex(VertexRef vertex);

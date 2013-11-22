@@ -11,8 +11,8 @@
                 <g:FlowPanel styleName="search-token-label" ui:field="m_label" />
             </g:cell>
             <g:cell>
-                <g:HorizontalPanel styleName="search-token-ctrls">
-                    <g:Anchor ui:field="m_collapseBtn" styleName="icon-minus" ></g:Anchor>
+                <g:HorizontalPanel styleName="search-token-ctrls" ui:field="m_iconPanel">
+                    <g:Anchor ui:field="m_collapseBtn"></g:Anchor>
                     <g:Anchor ui:field="m_centerSuggestionBtn" styleName="icon-location-arrow"></g:Anchor>
                     <g:Anchor ui:field="m_closeBtn" styleName="icon-remove" ></g:Anchor>
                 </g:HorizontalPanel>
