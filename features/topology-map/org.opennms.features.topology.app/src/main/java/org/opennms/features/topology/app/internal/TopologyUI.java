@@ -39,8 +39,6 @@ import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.vaadin.event.FieldEvents;
-import com.vaadin.ui.*;
 import org.opennms.features.topology.api.CheckedOperation;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.HasExtraComponents;
@@ -64,7 +62,6 @@ import org.opennms.features.topology.api.support.VertexHopGraphProvider.FocusNod
 import org.opennms.features.topology.api.topo.AbstractVertexRef;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.CommandManager.DefaultOperationContext;
-import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
 import org.opennms.features.topology.app.internal.TopologyComponent.VertexUpdateListener;
 import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
 import org.opennms.features.topology.app.internal.support.FontAwesomeIcons;
@@ -87,6 +84,7 @@ import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.data.Property;
+import com.vaadin.event.FieldEvents;
 import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.server.Page;
 import com.vaadin.server.Page.UriFragmentChangedEvent;
@@ -97,11 +95,27 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinResponse;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.slider.SliderOrientation;
+import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.NativeButton;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Slider;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.VerticalSplitPanel;
+import com.vaadin.ui.Window;
 
 @SuppressWarnings("serial")
 @Theme("topo_default")
@@ -369,7 +383,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             public void error(com.vaadin.server.ErrorEvent event) {
                 Notification.show("An Exception Occurred: see karaf.log", Notification.Type.TRAY_NOTIFICATION);
                 LOG.warn("An Exception Occured: in the TopologyUI", event.getThrowable());
-                super.error(event);
+
             }
         });
     }
@@ -808,16 +822,6 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 		updateMenuItems(m_menuBar.getItems());
 	}
 
-	private void updateContextMenuItems(Object target, List<TopoContextMenuItem> items) {
-		for(TopoContextMenuItem contextItem : items) {
-			if(contextItem.hasChildren()) {
-				updateContextMenuItems(target, contextItem.getChildren());
-			} else {
-				m_commandManager.updateContextMenuItem(target, contextItem, m_graphContainer, this);
-			}
-		}
-	}
-
 	private void updateMenuItems(List<MenuItem> menuItems) {
 		for(MenuItem menuItem : menuItems) {
 			if(menuItem.hasChildren()) {
@@ -847,16 +851,17 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             m_rootLayout.addComponent(m_menuBar, 0);
         }
 
-
-		m_contextMenu = commandManager.getContextMenu(m_graphContainer, this);
+		m_contextMenu = commandManager.getContextMenu(new DefaultOperationContext(this, m_graphContainer, DisplayLocation.CONTEXTMENU));
 		m_contextMenu.setAsContextMenuOf(this);
 		updateMenuItems();
 	}
-	
-    @Override
-	public void show(Object target, int left, int top) {
-		updateContextMenuItems(target, m_contextMenu.getItems());
+
+	@Override
+	public void showContextMenu(Object target, int left, int top) {
+		// The target must be set before we update the operation context because the op context
+		// operations are dependent on the target of the right-click
 		m_contextMenu.setTarget(target);
+		m_contextMenu.updateOperationContext(new DefaultOperationContext(this, m_graphContainer, DisplayLocation.CONTEXTMENU));
 		m_contextMenu.open(left, top);
 	}
 
@@ -891,6 +896,12 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         m_settingFragment++;
         String fragment = event.getUriFragment();
         m_historyManager.applyHistory(m_userName, fragment, m_graphContainer);
+
+        // This is a hack to fix issue SPC-796 so that the display states of the 
+        // TopologyComponent and NoContentAvailableWindow are reset correctly 
+        // after a history operation
+        graphChanged(m_graphContainer);
+
         m_settingFragment--;
     }
 
@@ -910,9 +921,14 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         boolean verticesAvailable = !graphContainer.getGraph().getDisplayVertices().isEmpty();
 
         // toggle view
-        if (verticesAvailable == m_noContentWindow.isVisible()) {
-            m_noContentWindow.setVisible(!verticesAvailable);
-            m_topologyComponent.setEnabled(verticesAvailable);
+        if (verticesAvailable) {
+            m_noContentWindow.setVisible(false);
+            removeWindow(m_noContentWindow);
+            m_topologyComponent.setEnabled(true);
+        } else {
+            m_topologyComponent.setEnabled(false);
+            m_noContentWindow.setVisible(true);
+            addWindow(m_noContentWindow);
         }
 
         m_zoomLevelLabel.setValue(String.valueOf(graphContainer.getSemanticZoomLevel()));

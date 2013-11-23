@@ -58,6 +58,10 @@ public class OnmsAuthenticationDetails extends WebAuthenticationDetails {
         return m_userGroupList;
     }
 
+    public void setUserGroups(String... groups){
+        m_userGroupList = groups;
+    }
+
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(super.toString()).append(": ");

@@ -28,7 +28,6 @@
 
 package org.opennms.features.topology.app.internal.gwt.client;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -220,6 +219,11 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
 
     public void setFocused(List<SearchSuggestion> focused) {
         m_focusedContainer.clear();
+        if (focused == null) {
+            log("Focus list for searchbox is null");
+            updateScrollPanelSize();
+            return;
+        }
         log(focused);
         for(SearchSuggestion searchSuggestion : focused){
             SearchTokenField field = new SearchTokenField(searchSuggestion);
@@ -235,6 +239,8 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
                     @Override
                     public void onCollapse(SearchSuggestion searchSuggestion) {
                         m_connector.toggleSuggestionCollapse(searchSuggestion);
+                        // Update the state of the local object
+                        searchSuggestion.setCollapsed(!searchSuggestion.isCollapsed());
                     }
                 });
             }

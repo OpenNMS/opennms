@@ -92,7 +92,7 @@
     pageContext.setAttribute("addNegativeFilter", "[-]");
     pageContext.setAttribute("addBeforeFilter", "[&gt;]");
     pageContext.setAttribute("addAfterFilter", "[&lt;]");
-    pageContext.setAttribute("filterFavoriteSelectTagHandler", new FilterFavoriteSelectTagHandler());
+    pageContext.setAttribute("filterFavoriteSelectTagHandler", new FilterFavoriteSelectTagHandler("All Alarms"));
     
     final String baseHref = org.opennms.web.api.Util.calculateUrlBase(request);
 %>
@@ -247,6 +247,7 @@
                 <p>
                     Favorites:
                     <onms:select
+                            defaultText="All Alarms"
                             elements='${favorites}'
                             selected='${favorite}'
                             handler='${filterFavoriteSelectTagHandler}'

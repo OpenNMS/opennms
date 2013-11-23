@@ -73,13 +73,13 @@ public class DelegatingVertexEdgeProvider implements VertexProvider, EdgeProvide
 	}
 
 	@Override
-	public boolean containsVertexId(VertexRef id) {
-		return m_vertexProvider.containsVertexId(id);
+	public boolean containsVertexId(VertexRef id, Criteria... criteria) {
+		return m_vertexProvider.containsVertexId(id, criteria);
 	}
 
 	@Override
-	public final List<Vertex> getChildren(VertexRef group) {
-		return m_vertexProvider.getChildren(group);
+	public final List<Vertex> getChildren(VertexRef group, Criteria... criteria) {
+		return m_vertexProvider.getChildren(group, criteria);
 	}
 
 	@Override
@@ -108,8 +108,8 @@ public class DelegatingVertexEdgeProvider implements VertexProvider, EdgeProvide
 	}
 
 	@Override
-	public final Vertex getVertex(VertexRef reference) {
-		return m_vertexProvider.getVertex(reference);
+	public final Vertex getVertex(VertexRef reference, Criteria... criteria) {
+		return m_vertexProvider.getVertex(reference, criteria);
 	}
 
 	@Override
@@ -118,8 +118,8 @@ public class DelegatingVertexEdgeProvider implements VertexProvider, EdgeProvide
 	}
 
 	@Override
-	public final List<Vertex> getVertices(Collection<? extends VertexRef> references) {
-		return m_vertexProvider.getVertices(references);
+	public final List<Vertex> getVertices(Collection<? extends VertexRef> references, Criteria... criteria) {
+		return m_vertexProvider.getVertices(references, criteria);
 	}
 
 	@Override

@@ -104,7 +104,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
                 menuTarget = getGraph().getEdgeByKey(targetKey);
             }
 
-            m_contextMenuHandler.show(menuTarget, x, y);
+            m_contextMenuHandler.showContextMenu(menuTarget, x, y);
 
         }
 

@@ -88,7 +88,7 @@ public class NodeMapQueryLink implements Operation {
 
     @Override
     public boolean display(final List<VertexRef> targets, final OperationContext operationContext) {
-        return true;
+        return (targets != null && targets.size() > 1);
     }
 
     @Override

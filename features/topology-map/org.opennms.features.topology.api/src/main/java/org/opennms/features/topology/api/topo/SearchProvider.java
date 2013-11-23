@@ -29,6 +29,7 @@
 package org.opennms.features.topology.api.topo;
 
 import java.util.List;
+import java.util.Set;
 
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
@@ -36,11 +37,11 @@ import org.opennms.features.topology.api.OperationContext;
 public interface SearchProvider {
     String getSearchProviderNamespace();
     boolean contributesTo(String namespace);
-    List<SearchResult> query(SearchQuery searchQuery);
+    List<SearchResult> query(SearchQuery searchQuery, GraphContainer graphContainer);
     void onFocusSearchResult(SearchResult searchResult, OperationContext operationContext);
     void onDefocusSearchResult(SearchResult searchResult, OperationContext operationContext);
     boolean supportsPrefix(String searchPrefix);
-    List<VertexRef> getVertexRefsBy(SearchResult searchResult);
+    Set<VertexRef> getVertexRefsBy(SearchResult searchResult);
     void addVertexHopCriteria(SearchResult searchResult, GraphContainer container);
     void removeVertexHopCriteria(SearchResult searchResult, GraphContainer container);
     void onCenterSearchResult(SearchResult searchResult, GraphContainer graphContainer);

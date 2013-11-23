@@ -857,13 +857,19 @@
     <url-pattern>/admin/userGroupView/users/removeDutySchedules</url-pattern>
   </servlet-mapping>
   <!-- end of user configuration servlets -->
-  
+
   <!-- group configuration servlets -->
   <servlet-mapping>
     <servlet-name>dispatcher</servlet-name>
     <url-pattern>/admin/userGroupView/groups/modifyGroup</url-pattern>
   </servlet-mapping>
   <!-- end of group configuration servlets -->
+  <!-- set UserGroup for user dynamically -->
+  <servlet-mapping>
+      <servlet-name>dispatcher</servlet-name>
+      <url-pattern>/support/groups/setACLUserGroups</url-pattern>
+  </servlet-mapping>
+  <!-- end -->
   
   <servlet-mapping>
     <servlet-name>admin-roles</servlet-name>

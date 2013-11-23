@@ -29,11 +29,9 @@
 package org.opennms.features.topology.app.internal.gwt.client.ui;
 
 import org.opennms.features.topology.app.internal.gwt.client.SearchSuggestion;
-import org.springframework.util.StringUtils;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -78,6 +76,9 @@ public class SearchTokenField extends Composite {
     Anchor m_collapseBtn;
 
     @UiField
+    HorizontalPanel m_iconPanel;
+
+    @UiField
     HorizontalPanel m_tokenContainer;
 
     private final SearchSuggestion m_suggestion;
@@ -98,20 +99,31 @@ public class SearchTokenField extends Composite {
     }
 
     private void init() {
+        log(getClass().getSimpleName() + ".init(): " + m_suggestion.toString());
+
         m_tokenContainer.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 
         m_closeBtn.setTitle("Remove from focus");
         m_closeBtn.getElement().getStyle().setCursor(Style.Cursor.POINTER);
-        //m_closeBtn.getElement().getStyle().setPadding(5, Unit.PX);
+        m_closeBtn.getElement().getStyle().setPaddingLeft(5, Style.Unit.PX);
 
         m_centerSuggestionBtn.setTitle("Center on map");
         m_centerSuggestionBtn.getElement().getStyle().setCursor(Style.Cursor.POINTER);
-        //m_centerSuggestionBtn.getElement().getStyle().setPadding(5, Unit.PX);
+        m_centerSuggestionBtn.getElement().getStyle().setPaddingLeft(5, Style.Unit.PX);
 
         if (m_suggestion.isCollapsible()) {
-            m_collapseBtn.setTitle("Collapse group");
             m_collapseBtn.getElement().getStyle().setCursor(Style.Cursor.POINTER);
-            //m_collapseBtn.getElement().getStyle().setPadding(5, Unit.PX);
+
+            // If the suggestion is already collapsed, then switch the icon to the "+" icon
+            m_collapseBtn.getElement().removeClassName("icon-plus");
+            m_collapseBtn.getElement().removeClassName("icon-minus");
+            if (m_suggestion.isCollapsed()) {
+                m_collapseBtn.getElement().addClassName("icon-plus");
+                m_collapseBtn.setTitle("Expand group");
+            } else {
+                m_collapseBtn.getElement().addClassName("icon-minus");
+                m_collapseBtn.setTitle("Collapse group");
+            }
         } else {
             m_collapseBtn.setVisible(false);
         }
@@ -144,15 +156,20 @@ public class SearchTokenField extends Composite {
 
     @UiHandler("m_collapseBtn")
     void handleCollapse(ClickEvent event) {
+        log(getClass().getSimpleName() + ".handleCollapse(): " + m_suggestion.toString());
+        
         if (m_collapseCallback != null) {
             m_collapseCallback.onCollapse(m_suggestion);
         }
         // Toggle the icon on the button
-        String styleClass = m_collapseBtn.getElement().getClassName();
-        if (styleClass.contains("icon-minus")) {
-            m_collapseBtn.getElement().setClassName(styleClass.replace("icon-minus", "icon-plus"));
-        } else if (styleClass.contains("icon-plus")) {
-            m_collapseBtn.getElement().setClassName(styleClass.replace("icon-plus", "icon-minus"));
+        if (m_suggestion.isCollapsed()) {
+            m_collapseBtn.getElement().removeClassName("icon-minus");
+            m_collapseBtn.getElement().addClassName("icon-plus");
+            m_collapseBtn.setTitle("Expand group");
+        } else {
+            m_collapseBtn.getElement().removeClassName("icon-plus");
+            m_collapseBtn.getElement().addClassName("icon-minus");
+            m_collapseBtn.setTitle("Collapse group");
         }
     }
 
@@ -170,4 +187,7 @@ public class SearchTokenField extends Composite {
         }
     }
 
+    private static native void log(Object message) /*-{
+        $wnd.console.debug(message);
+    }-*/;
 }

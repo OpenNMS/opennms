@@ -67,7 +67,7 @@ public class RemoveVertexOperation implements Operation {
     public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
         if(targets != null) {
             for(VertexRef target : targets) {
-                if(operationContext.getGraphContainer().getBaseTopology().getVertex(target) == null) return false;
+                if(operationContext.getGraphContainer().getBaseTopology().getVertex(target, operationContext.getGraphContainer().getCriteria()) == null) return false;
             }
             return true;
         }
