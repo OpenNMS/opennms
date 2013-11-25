@@ -146,6 +146,9 @@ public class MenuHeaderTest extends OpenNMSSeleniumTestCase {
         waitForHtmlSource("opennmsnodemaps", 20000, true);
         handleVaadinErrorButtons();
 
+        // It looks like it takes a second or two to load the header so wait
+        // for the link to appear
+        waitForElement("//a[@href='maps.htm']", 20000);
         clickAndVerifyText("//a[@href='maps.htm']", "OpenNMS Maps");
         clickAndWait("//div[@id='content']//a[contains(text(), 'SVG')]");
         waitForText("/ Network Topology Maps", LOAD_TIMEOUT);
