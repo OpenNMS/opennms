@@ -52,7 +52,7 @@ import org.springframework.core.type.filter.AssignableTypeFilter;
 public class Upgrade {
 
     /** The class scope. */
-    private String classScope = "org/opennms/upgrade"; // To avoid issues with OSGi and other classes.
+    private String classScope = "org.opennms.upgrade"; // To avoid issues with OSGi and other classes.
 
     /** The upgrade status object. */
     private UpgradeStatus upgradeStatus;

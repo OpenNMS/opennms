@@ -88,7 +88,7 @@ public class UpgradeTest {
     @Test
     public void testUpgrade() throws Exception {
         Assert.assertFalse(upgradeStatus.wasExecuted(new TestUpgradeNothing()));
-        performUpgrade("org/opennms/upgrade/tests");
+        performUpgrade("org.opennms.upgrade.tests");
         Assert.assertTrue(upgradeStatus.wasExecuted(new TestUpgradeNothing()));
         Assert.assertEquals(3, UpgradeHelper.getExecutedList().size());
         Assert.assertEquals(TestUpgradeNothing.class.getName(), UpgradeHelper.getExecutedList().get(0));
