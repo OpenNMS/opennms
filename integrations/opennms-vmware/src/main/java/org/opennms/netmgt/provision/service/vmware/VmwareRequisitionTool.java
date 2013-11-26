@@ -71,13 +71,10 @@ public class VmwareRequisitionTool {
         VmwareRequisitionUrlConnection c = new VmwareRequisitionUrlConnection(url) {
             @Override
             protected Requisition getExistingRequisition() {
-                String onmsHome = System.getProperty("opennms.home");
-                if (onmsHome != null) {
-                    // This is not elegant but it is necessary to avoid booting Spring
-                    File req = new File(ConfigFileConstants.getFilePathString(), "imports" + File.separator + m_requisition + ".xml");
-                    if (req.exists()) {
-                        return JaxbUtils.unmarshal(Requisition.class, req);
-                    }
+                // This is not elegant but it is necessary to avoid booting Spring
+                File req = new File(ConfigFileConstants.getFilePathString(), "imports" + File.separator + m_foreignSource + ".xml");
+                if (req.exists()) {
+                    return JaxbUtils.unmarshal(Requisition.class, req);
                 }
                 return null;
             }
