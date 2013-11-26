@@ -116,7 +116,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
     /**
      * requisition object
      */
-    private Requisition m_requisition = null;
+    protected Requisition m_requisition = null;
 
     /**
      * Constructor for creating an instance of this class.
