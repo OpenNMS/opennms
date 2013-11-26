@@ -74,7 +74,7 @@ public class CircleLayoutAlgorithm extends AbstractLayoutAlgorithm {
 	protected static Dimension selectLayoutSize(GraphContainer g) {
 		int vertexCount = g.getGraph().getDisplayVertices().size();
 
-		int spacing = ELBOW_ROOM/5;
+		int spacing = ELBOW_ROOM;
 
 		int diameter = (int)(vertexCount*spacing/Math.PI);
 

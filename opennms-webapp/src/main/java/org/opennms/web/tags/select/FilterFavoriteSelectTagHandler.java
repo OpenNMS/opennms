@@ -31,6 +31,12 @@ package org.opennms.web.tags.select;
 import org.opennms.netmgt.model.OnmsFilterFavorite;
 
 public class FilterFavoriteSelectTagHandler implements SelectTagHandler<OnmsFilterFavorite> {
+    private String m_nullDescription = "";
+
+    public FilterFavoriteSelectTagHandler(String nullDescription){
+        m_nullDescription = nullDescription;
+    }
+
     @Override
     public String getValue(OnmsFilterFavorite input) {
         if (input == null) return "";
@@ -39,7 +45,7 @@ public class FilterFavoriteSelectTagHandler implements SelectTagHandler<OnmsFilt
 
     @Override
     public String getDescription(OnmsFilterFavorite input) {
-        if (input == null) return "";
+        if (input == null) return m_nullDescription;
         return "" + input.getName();
     }
 

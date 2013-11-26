@@ -138,6 +138,14 @@
 					</documentation>
 				</annotation>
 			</attribute>
+			<attribute name="wmiNamespace" type="string" use="optional" default="root/cimv2">
+				<annotation>
+					<documentation>
+						This is the WMI namespace in which the class that we'll be checking
+						resides. The default is "root/cimv2".
+					</documentation>
+				</annotation>
+			</attribute>
 		</complexType>
 	</element>
 	<element name="attrib">

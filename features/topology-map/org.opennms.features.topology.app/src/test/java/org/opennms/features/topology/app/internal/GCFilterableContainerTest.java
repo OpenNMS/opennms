@@ -67,7 +67,7 @@ public class GCFilterableContainerTest {
         }
         
         // group must have no parent
-        Assert.assertEquals(null, graphContainer.getBaseTopology().getVertex(groupId).getParent());
+        Assert.assertEquals(null, graphContainer.getBaseTopology().getVertex(groupId, graphContainer.getCriteria()).getParent());
     }
     
 }

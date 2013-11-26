@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -52,7 +52,7 @@ public class TestingNewStructure {
         try {
             // Connect to the WMI server.
             final WmiClient wmiClient = new WmiClient("localhost");
-            wmiClient.connect("CHILDRENSNT", "CE136452", "aj7162007");
+            wmiClient.connect("CHILDRENSNT", "CE136452", "aj7162007", WmiParams.WMI_DEFAULT_NAMESPACE);
 
             final OnmsWbemObjectSet wos = wmiClient.performExecQuery("Select * From Win32_NTLogEvent");
             System.out.println("The number of objects retrieved: " + wos.count());

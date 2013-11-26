@@ -32,6 +32,8 @@ package org.opennms.features.topology.app.internal.ui;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.MapViewManager;
@@ -53,7 +55,6 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.gwt.client.SearchBoxServerRpc;
 import org.opennms.features.topology.app.internal.gwt.client.SearchBoxState;
 import org.opennms.features.topology.app.internal.gwt.client.SearchSuggestion;
-import org.opennms.features.topology.app.internal.support.CategoryHopCriteria;
 import org.opennms.osgi.OnmsServiceManager;
 
 import com.google.common.base.Function;
@@ -149,13 +150,13 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
         public void centerSearchSuggestion(SearchSuggestion searchSuggestion){
             SearchResult searchResult = new SearchResult(searchSuggestion.getNamespace(), searchSuggestion.getId(), searchSuggestion.getLabel());
 
-            List<VertexRef> vRefs = null;
+            Set<VertexRef> vRefs = new TreeSet<VertexRef>();
             Multiset<SearchProvider> keys = m_suggestionMap.keys();
             for(SearchProvider key : keys){
                 Collection<SearchResult> searchResults = m_suggestionMap.get(key);
                 if(searchResults.contains(searchResult)) {
                     key.onCenterSearchResult(searchResult, m_operationContext.getGraphContainer());
-                    vRefs = key.getVertexRefsBy(searchResult);
+                    vRefs.addAll(key.getVertexRefsBy(searchResult));
                     break;
                 }
             }
@@ -165,7 +166,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
             AbstractVertexRef vertexRef = new AbstractVertexRef(searchResult.getNamespace(), searchResult.getId(), searchResult.getLabel());
             if(criteria.getVertices().contains(vertexRef)){
                 if(vRefs == null){
-                    vRefs = Lists.newArrayList();
+                    vRefs = new TreeSet<VertexRef>();
                 }
                 vRefs.add(vertexRef);
             }
@@ -215,7 +216,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
                 if(provider.supportsPrefix(query)) {
                     // If there is an '=' divider, strip it off. Otherwise, use an empty query string
                     String queryOnly = query.indexOf('=') > 0 ? query.substring(query.indexOf('=') + 1) : "";
-                    List<SearchResult> q = provider.query(getSearchQuery(queryOnly));
+                    List<SearchResult> q = provider.query(getSearchQuery(queryOnly), m_operationContext.getGraphContainer());
                     results.addAll(q);
                     if(m_suggestionMap.containsKey(provider)){
                         m_suggestionMap.get(provider).addAll(q);
@@ -224,7 +225,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
                     }
 
                 } else{
-                    List<SearchResult> q = provider.query(getSearchQuery(query));
+                    List<SearchResult> q = provider.query(getSearchQuery(query), m_operationContext.getGraphContainer());
                     results.addAll(q);
                     if (m_suggestionMap.containsKey(provider)) {
                         m_suggestionMap.get(provider).addAll(q);
@@ -263,21 +264,14 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
     }
 
     private static SearchSuggestion mapToSearchSuggestion(SearchResult searchResult) {
-        SearchSuggestion suggestion = new SearchSuggestion();
-        suggestion.setNamespace(searchResult.getNamespace());
-        suggestion.setId(searchResult.getId());
-        suggestion.setLabel(searchResult.getLabel());
+        SearchSuggestion suggestion = new SearchSuggestion(searchResult.getNamespace(), searchResult.getId(), searchResult.getLabel());
         suggestion.setCollapsible(searchResult.isCollapsible());
-
+        suggestion.setCollapsed(searchResult.isCollapsed());
         return suggestion;
     }
 
     private static SearchSuggestion mapToSearchSuggestion(VertexRef vertexRef) {
-        SearchSuggestion suggestion = new SearchSuggestion();
-        suggestion.setNamespace(vertexRef.getNamespace());
-        suggestion.setId(vertexRef.getId());
-        suggestion.setLabel(vertexRef.getLabel());
-
+        SearchSuggestion suggestion = new SearchSuggestion(vertexRef.getNamespace(), vertexRef.getId(), vertexRef.getLabel());
         return suggestion;
     }
 
@@ -324,23 +318,16 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
             if(criteria != nodeCriteria){
                 try {
                     CollapsibleCriteria crit = (CollapsibleCriteria) criteria;
-                    SearchSuggestion suggestion = new SearchSuggestion();
-                    suggestion.setId(crit.getId());
-                    suggestion.setLabel(crit.getLabel());
-                    suggestion.setNamespace(crit.getNamespace());
+                    SearchSuggestion suggestion = new SearchSuggestion(crit.getNamespace(), crit.getId(), crit.getLabel());
                     suggestion.setCollapsible(true);
-
+                    suggestion.setCollapsed(crit.isCollapsed());
                     suggestions.add(suggestion);
                     continue;
                 } catch (ClassCastException e) {}
 
                 try {
                     VertexHopCriteria crit = (VertexHopCriteria) criteria;
-                    SearchSuggestion suggestion = new SearchSuggestion();
-                    suggestion.setId(crit.getId());
-                    suggestion.setLabel(crit.getLabel());
-                    suggestion.setNamespace(crit.getNamespace());
-
+                    SearchSuggestion suggestion = new SearchSuggestion(crit.getNamespace(), crit.getId(), crit.getLabel());
                     suggestions.add(suggestion);
                     continue;
                 } catch (ClassCastException e) {}

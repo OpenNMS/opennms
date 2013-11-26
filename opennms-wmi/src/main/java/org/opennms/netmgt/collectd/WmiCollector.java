@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -121,7 +121,7 @@ public class WmiCollector implements ServiceCollector {
                 // Collect the data
                 try {
                     // Tell the agent to connect
-                    agentState.connect();
+                    agentState.connect(wpm.getWmiNamespace());
 
                     // And retrieve the client object for working.
                     client = (WmiClient) agentState.getWmiClient();

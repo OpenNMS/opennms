@@ -58,6 +58,20 @@ public class AbstractEdge extends AbstractEdgeRef implements Edge {
 		m_styleName = "edge";
 	}
 
+	@Override
+	public AbstractEdge clone() {
+		AbstractEdge retval = new AbstractEdge(getNamespace(), getId(), getSource().clone(), getTarget().clone());
+		retval.setLabel(getLabel());
+		retval.setStyleName(getStyleName());
+		retval.setTooltipText(getTooltipText());
+		return retval;
+	}
+
+	@Override
+	public void setId(String id) {
+		m_id = id;
+	}
+
 	/**
 	 * @deprecated Use namespace/id tuple
 	 */
@@ -102,6 +116,18 @@ public class AbstractEdge extends AbstractEdgeRef implements Edge {
 	}
 
 	@Override
-	public String toString() { return "Edge:"+getNamespace()+":"+getId() + "[label="+getLabel()+", styleName="+getStyleName()+"]"; } 
-
+	public String toString() {
+		StringBuffer retval = new StringBuffer();
+		retval.append("Edge:").append(getNamespace()).append(":").append(getId());
+		retval.append("[");
+		retval.append("label=").append(getLabel());
+		retval.append(",");
+		retval.append("styleName=").append(getStyleName());
+		retval.append(",");
+		retval.append("source=").append(getSource().getVertex().getLabel());
+		retval.append(",");
+		retval.append("target=").append(getTarget().getVertex().getLabel());
+		retval.append("]");
+		return retval.toString();
+	}
 }

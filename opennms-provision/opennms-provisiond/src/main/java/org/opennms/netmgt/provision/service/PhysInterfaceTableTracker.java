@@ -148,7 +148,20 @@ public class PhysInterfaceTableTracker extends TableTracker {
         
         private Long getSpeed() {
             final Long highSpeed = getIfHighSpeed();
-            return (highSpeed != null && highSpeed > 4294) ? (highSpeed*1000000L) : getIfSpeed();
+            final Long ifSpeed = getIfSpeed();
+            if (highSpeed != null && highSpeed > 4294L) {
+                return highSpeed * 1000000L;
+            }
+            if (ifSpeed == null) {
+                if (highSpeed != null && highSpeed > 0) {
+                    LOG.warn("the ifSpeed for ifIndex {} is null but the ifHighSpeed is {}, using ifHighSpeed instead", getIfIndex(), highSpeed);
+                    return highSpeed * 1000000L;
+                } else {
+                    LOG.warn("the ifSpeed for ifIndex {} is null, returning 0 instead", getIfIndex());
+                    return 0L;
+                }
+            }
+            return ifSpeed;
         }
 
         private Integer getIfOperStatus() {
