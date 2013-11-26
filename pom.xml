@@ -394,10 +394,26 @@
           </archive>
         </configuration>
       </plugin>
+      <!-- Make sure that this version of gmaven roughly matches the version of groovy that we depend on -->
       <plugin>
-        <groupId>org.codehaus.groovy.maven</groupId>
+        <groupId>org.codehaus.gmaven</groupId>
         <artifactId>gmaven-plugin</artifactId>
-        <version>1.0</version>
+        <version>1.3</version>
+        <configuration>
+          <providerSelection>1.7</providerSelection>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.codehaus.gmaven.runtime</groupId>
+            <artifactId>gmaven-runtime-1.7</artifactId>
+            <version>1.3</version>
+          </dependency>
+          <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>1.7.5</version>
+          </dependency>
+        </dependencies>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -424,7 +440,7 @@
             <pluginExecutions>
               <pluginExecution>
                 <pluginExecutionFilter>
-                  <groupId>org.codehaus.groovy.maven</groupId>
+                  <groupId>org.codehaus.gmaven</groupId>
                   <artifactId>gmaven-plugin</artifactId>
                   <versionRange>[1.0,)</versionRange>
                   <goals>
@@ -437,7 +453,7 @@
               </pluginExecution>
               <pluginExecution>
                 <pluginExecutionFilter>
-                  <groupId>org.codehaus.groovy.maven</groupId>
+                  <groupId>org.codehaus.gmaven</groupId>
                   <artifactId>gmaven-plugin</artifactId>
                   <versionRange>[1.0,)</versionRange>
                   <goals>
