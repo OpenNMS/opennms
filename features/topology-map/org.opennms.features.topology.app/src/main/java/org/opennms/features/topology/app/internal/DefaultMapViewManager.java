@@ -45,6 +45,10 @@ public class DefaultMapViewManager implements MapViewManager{
             m_center = m_mapBounds.getCenter();
             fireUpdate();
         }
+
+        if(m_mapBounds.getWidth() < m_viewPortWidth && m_mapBounds.getHeight() < m_viewPortHeight){
+            m_mapBounds = m_mapBounds.computeWithAspectRatio(getViewPortAspectRatio());
+        }
     }
     @Override
     public void setViewPort(int width, int height) {

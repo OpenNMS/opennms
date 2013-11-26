@@ -919,7 +919,10 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         } else {
             m_topologyComponent.setEnabled(false);
             m_noContentWindow.setVisible(true);
-            addWindow(m_noContentWindow);
+            if(!m_noContentWindow.isAttached()){
+                addWindow(m_noContentWindow);
+            }
+
         }
 
         m_zoomLevelLabel.setValue(String.valueOf(graphContainer.getSemanticZoomLevel()));
