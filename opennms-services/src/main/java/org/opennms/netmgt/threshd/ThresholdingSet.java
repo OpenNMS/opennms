@@ -272,7 +272,7 @@ public class ThresholdingSet {
                     for (ThresholdEntity thresholdEntity : entityMap.get(key)) {
                         if (passedThresholdFilters(resourceWrapper, thresholdEntity)) {
                             log().info("applyThresholds: Processing threshold " + key + " : " + thresholdEntity + " on resource " + resourceWrapper);
-                            Collection<String> requiredDatasources = thresholdEntity.getRequiredDatasources();
+                            Collection<String> requiredDatasources = thresholdEntity.getThresholdConfig().getRequiredDatasources();
                             Map<String, Double> values = new HashMap<String,Double>();
                             boolean valueMissing = false;
                             boolean relaxed = thresholdEntity.getThresholdConfig().getBasethresholddef().isRelaxed();
