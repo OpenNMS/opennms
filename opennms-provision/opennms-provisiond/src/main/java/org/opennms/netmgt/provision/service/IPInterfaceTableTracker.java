@@ -31,7 +31,6 @@ package org.opennms.netmgt.provision.service;
 import java.net.InetAddress;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.snmp.RowCallback;
@@ -41,6 +40,9 @@ import org.opennms.netmgt.snmp.SnmpRowResult;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.TableTracker;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * PhysInterfaceTableTracker
  *
@@ -48,6 +50,7 @@ import org.opennms.netmgt.snmp.TableTracker;
  * @version $Id: $
  */
 public class IPInterfaceTableTracker extends TableTracker {
+    private static final Logger LOG = LoggerFactory.getLogger(IPInterfaceTableTracker.class);
     
     /** Constant <code>IP_ADDR_TABLE_ENTRY</code> */
     public static final SnmpObjId IP_ADDR_TABLE_ENTRY = SnmpObjId.get(".1.3.6.1.2.1.4.20.1");
@@ -110,7 +113,7 @@ public class IPInterfaceTableTracker extends TableTracker {
             final String ipAddr = getIpAddress();
             final InetAddress netMask = getNetMask();
 
-            LogUtils.debugf(this, "createInterfaceFromRow: ifIndex = %s, ipAddress = %s, netmask = %s", ifIndex, ipAddr, netMask);
+            LOG.debug("createInterfaceFromRow: ifIndex = {}, ipAddress = {}, netmask = {}", ifIndex, ipAddr, netMask);
 
             if (ipAddr == null) {
                 return null;
