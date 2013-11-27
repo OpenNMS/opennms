@@ -55,6 +55,7 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.gwt.client.SearchBoxServerRpc;
 import org.opennms.features.topology.app.internal.gwt.client.SearchBoxState;
 import org.opennms.features.topology.app.internal.gwt.client.SearchSuggestion;
+import org.opennms.features.topology.app.internal.support.CategoryHopCriteria;
 import org.opennms.osgi.OnmsServiceManager;
 
 import com.google.common.base.Function;
@@ -142,6 +143,10 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
                 }
             }
 
+            if(m_suggestionMap.size() == 0){
+                removeIfSuggMapEmpty(searchResult, m_operationContext.getGraphContainer());
+            }
+
             removeIfSpecialURLCase(searchResult);
             m_operationContext.getGraphContainer().redoLayout();
         }
@@ -194,6 +199,17 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
         m_serviceManager = serviceManager;
         m_operationContext = operationContext;
         init();
+    }
+
+    public void removeIfSuggMapEmpty(SearchResult searchResult, GraphContainer graphContainer){
+        Criteria[] criterias = graphContainer.getCriteria();
+        for(Criteria criteria : criterias){
+            try{
+                CategoryHopCriteria crit = (CategoryHopCriteria) criteria;
+                if(crit.getCategoryName().equals(searchResult.getLabel())) graphContainer.removeCriteria(crit);
+            } catch (ClassCastException e){}
+
+        }
     }
 
     public void removeIfSpecialURLCase(SearchResult searchResult) {
