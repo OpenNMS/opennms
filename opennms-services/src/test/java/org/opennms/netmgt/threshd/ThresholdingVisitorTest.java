@@ -1264,7 +1264,7 @@ public class ThresholdingVisitorTest {
         verifyEvents(0);
     }
 
-    /*
+    /**
      * This test uses this files from src/test/resources:
      * - threshd-configuration-outages.xml
      * - test-thresholds.xml
@@ -1273,12 +1273,12 @@ public class ThresholdingVisitorTest {
      public void testBug4261_scheduledOutages() throws Exception {
          initFactories("/threshd-configuration-outages.xml","/test-thresholds.xml");
          ThresholdingVisitor visitor = createVisitor();
-         Assert.assertEquals(1, visitor.m_thresholdingSet.m_scheduledOutages.size());
+         Assert.assertEquals(1, visitor.getScheduledOutages().size());
          Assert.assertTrue("is node on outage", visitor.isNodeInOutage());
      }
 
      
-     /*
+     /**
       * This test uses this files from src/test/resources:
       * - thresd-configuration.xml
       * - test-thresholds-bug5258-a.xml

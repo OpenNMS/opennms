@@ -73,7 +73,7 @@ public class ThresholdingSet {
     protected boolean m_initialized = false;
     protected boolean m_hasThresholds = false;
     
-    protected List<ThresholdGroup> m_thresholdGroups = new LinkedList<ThresholdGroup>();
+    protected final List<ThresholdGroup> m_thresholdGroups = new LinkedList<ThresholdGroup>();
     protected final List<String> m_scheduledOutages = new ArrayList<String>();
 
     /**
@@ -180,7 +180,8 @@ public class ThresholdingSet {
                 LOG.debug("{}: Merging threshold group: {}", logHeader, thresholdGroup);
             }
         }
-        m_thresholdGroups = newThresholdGroupList;
+        m_thresholdGroups.clear();
+        m_thresholdGroups.addAll(newThresholdGroupList);
     }
 
     /*
@@ -381,7 +382,7 @@ public class ThresholdingSet {
      * - Compare interface/service pair against each Threshd package.
      * - For each match, create new ThresholdableService object and schedule it for collection
      */
-    private List<String> getThresholdGroupNames(int nodeId, String hostAddress, String serviceName) {
+    private static List<String> getThresholdGroupNames(int nodeId, String hostAddress, String serviceName) {
         ThreshdConfigManager configManager = ThreshdConfigFactory.getInstance();
 
         List<String> groupNameList = new LinkedList<String>();
