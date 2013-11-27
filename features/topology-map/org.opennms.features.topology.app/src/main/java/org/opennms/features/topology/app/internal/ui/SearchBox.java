@@ -192,6 +192,10 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
                     break;
                 }
             }
+
+            if(m_suggestionMap.size() == 0){
+                collapseIfSuggMapEmpty(searchResult, m_operationContext.getGraphContainer());
+            }
         }
     };
 
@@ -209,6 +213,27 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
                 if(crit.getCategoryName().equals(searchResult.getLabel())) graphContainer.removeCriteria(crit);
             } catch (ClassCastException e){}
 
+        }
+    }
+
+    public void collapseIfSuggMapEmpty(SearchResult searchResult, GraphContainer graphContainer){
+        //A special check for categories that were added then after re-login can't collapse
+        boolean isDirty = false;
+        Criteria[] criterias = graphContainer.getCriteria();
+        for(Criteria criteria : criterias){
+            try{
+                CategoryHopCriteria crit = (CategoryHopCriteria) criteria;
+                if(crit.getCategoryName().equals(searchResult.getLabel())){
+                    crit.setCollapsed(!crit.isCollapsed());
+                    isDirty = true;
+                }
+
+            } catch (ClassCastException e){}
+
+        }
+
+        if (isDirty) {
+            graphContainer.redoLayout();
         }
     }
 
