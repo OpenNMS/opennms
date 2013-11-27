@@ -29,6 +29,7 @@
 package org.opennms.netmgt.threshd;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -134,7 +135,10 @@ public final class ThresholdEntity implements Cloneable {
      */
     public Collection<String> getRequiredDatasources() {
         if (hasThresholds()) {
-            return getThresholdConfig().getRequiredDatasources();
+            final List<String> dataSources = new ArrayList<String>();
+            dataSources.addAll(getThresholdConfig().getRequiredDatasources());
+            dataSources.addAll(getThresholdConfig().getFilterDatasources());
+            return dataSources;
         } else {
             throw new IllegalStateException("No thresholds have been added.");
         }

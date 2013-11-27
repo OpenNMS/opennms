@@ -28,13 +28,16 @@
 
 package org.opennms.netmgt.threshd;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.opennms.netmgt.config.threshd.Basethresholddef;
 import org.opennms.netmgt.config.threshd.Expression;
+import org.opennms.netmgt.config.threshd.ResourceFilter;
 import org.opennms.netmgt.config.threshd.Threshold;
 
 /**
@@ -69,6 +72,19 @@ public abstract class BaseThresholdDefConfigWrapper {
             return new ExpressionConfigWrapper((Expression)baseDef);
         }
         return null;
+    }
+    
+    /**
+     * Returns the names of the datasources required from the resource filters
+     *
+     * @return Collection of the names of datasources
+     */
+    public List<String> getFilterDatasources() {
+        final List<String> dataSources = new ArrayList<String>();
+        for (ResourceFilter s : getBasethresholddef().getResourceFilterCollection()) {
+            dataSources.add(s.getField());
+        }
+        return dataSources;
     }
     
     /**

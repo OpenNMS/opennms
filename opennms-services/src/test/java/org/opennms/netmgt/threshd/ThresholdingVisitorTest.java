@@ -1577,6 +1577,25 @@ public class ThresholdingVisitorTest {
     }
 
     /*
+     * NMS-6278
+     * 
+     * This test uses this files from src/test/resources:
+     * - thresd-configuration-numeric-filter.xml
+     * - test-thresholds.xml
+     */
+    @Test
+    public void testNumericThresholsFiltersOnGenericResource() throws Exception {
+        initFactories("/threshd-configuration.xml","/test-thresholds-numeric-filter.xml");
+        ThresholdingVisitor visitor = createVisitor();
+        
+        addHighThresholdEvent(1, 30, 25, 50, "/opt", "1", "hrStorageUsed", null, null);
+
+        runFileSystemDataTest(visitor, 1, "/opt", 50, 100);
+        
+        verifyEvents(0);
+    }
+
+    /*
      * This test uses this files from src/test/resources:
      * - thresd-configuration.xml
      * - test-thresholds-5.xml
