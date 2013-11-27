@@ -351,10 +351,14 @@ public class ThresholdingSet {
                 }
             } else {
                 log().warn("passedThresholdFilters: can't find value of " + f.getField() + " for resource " + resource);
+                if (operator.equals("and")) {
+                    return false;
+                }
             }
         }
-        if (operator.equals("and") && andResult)
+        if (operator.equals("and") && andResult) {
             return true;
+        }
         return false;
     }
     
