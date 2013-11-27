@@ -244,6 +244,7 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
             } 
             for (JdbcDataSource ds : dsc.getJdbcDataSourceCollection()) {
                 if (ds.getName().equals("opennms")) {
+                    log("Connecting to %s\n", ds.getUrl());
                     return DriverManager.getConnection(ds.getUrl(), ds.getUserName(), ds.getPassword());
                 }
             }

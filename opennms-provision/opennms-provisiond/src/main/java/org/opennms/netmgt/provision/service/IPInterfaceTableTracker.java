@@ -31,6 +31,7 @@ package org.opennms.netmgt.provision.service;
 import java.net.InetAddress;
 
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.snmp.RowCallback;
@@ -105,19 +106,27 @@ public class IPInterfaceTableTracker extends TableTracker {
 
         public OnmsIpInterface createInterfaceFromRow() {
             
-            String ipAddr = getIpAddress();
-            InetAddress netMask = getNetMask();
-            Integer ifIndex = getIfIndex();
+            final Integer ifIndex = getIfIndex();
+            final String ipAddr = getIpAddress();
+            final InetAddress netMask = getNetMask();
 
-            OnmsSnmpInterface snmpIface = new OnmsSnmpInterface(null, ifIndex);
-            snmpIface.setNetMask(netMask);
-            snmpIface.setCollectionEnabled(true);
+            LogUtils.debugf(this, "createInterfaceFromRow: ifIndex = %s, ipAddress = %s, netmask = %s", ifIndex, ipAddr, netMask);
+
+            if (ipAddr == null) {
+                return null;
+            }
 
             final InetAddress inetAddress = InetAddressUtils.addr(ipAddr);
-            OnmsIpInterface iface = new OnmsIpInterface(inetAddress, null);
-            iface.setSnmpInterface(snmpIface);
-            
-            iface.setIfIndex(ifIndex);
+            final OnmsIpInterface iface = new OnmsIpInterface(inetAddress, null);
+
+            if (ifIndex != null) {
+                final OnmsSnmpInterface snmpIface = new OnmsSnmpInterface(null, ifIndex);
+                snmpIface.setNetMask(netMask);
+                snmpIface.setCollectionEnabled(true);
+                iface.setSnmpInterface(snmpIface);
+                iface.setIfIndex(ifIndex);
+            }
+
             String hostName = null;
             if (inetAddress != null) hostName = inetAddress.getHostName();
             if (hostName == null) hostName = InetAddressUtils.normalize(ipAddr);
