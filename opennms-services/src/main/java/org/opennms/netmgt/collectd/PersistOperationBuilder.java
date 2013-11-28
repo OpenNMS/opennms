@@ -30,6 +30,7 @@ package org.opennms.netmgt.collectd;
 
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -46,6 +47,7 @@ import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>PersistOperationBuilder class.</p>
@@ -92,7 +94,7 @@ public class PersistOperationBuilder {
         return m_repository;
     }
 
-    private File getResourceDir(ResourceIdentifier resource) {
+    private File getResourceDir(ResourceIdentifier resource) throws FileNotFoundException {
         return resource.getResourceDir(getRepository());
     }
 
@@ -144,9 +146,14 @@ public class PersistOperationBuilder {
             // Nothing to do.  In fact, we'll get an error if we try to create an RRD file with no data sources            
             return;
         }
-        
-        RrdUtils.createRRD(m_resource.getOwnerName(), getResourceDir(m_resource).getAbsolutePath(), m_rrdName, getRepository().getStep(), getDataSources(), getRepository().getRraList());
-        RrdUtils.updateRRD(m_resource.getOwnerName(), getResourceDir(m_resource).getAbsolutePath(), m_rrdName, m_timeKeeper.getCurrentTime(), getValues());
+
+        try {
+            RrdUtils.createRRD(m_resource.getOwnerName(), getResourceDir(m_resource).getAbsolutePath(), m_rrdName, getRepository().getStep(), getDataSources(), getRepository().getRraList());
+            RrdUtils.updateRRD(m_resource.getOwnerName(), getResourceDir(m_resource).getAbsolutePath(), m_rrdName, m_timeKeeper.getCurrentTime(), getValues());
+        } catch (FileNotFoundException e) {
+            LoggerFactory.getLogger(getClass()).warn("Could not get resource directory: " + e.getMessage(), e);
+            return;
+        }
     }
 
     private String getValues() {

@@ -29,6 +29,7 @@
 package org.opennms.netmgt.config.collector;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
 import org.opennms.netmgt.model.RrdRepository;
 
@@ -53,6 +54,6 @@ public interface ResourceIdentifier {
      * @param repository a {@link org.opennms.netmgt.model.RrdRepository} object.
      * @return a {@link java.io.File} object.
      */
-    public File getResourceDir(RrdRepository repository);
+    public File getResourceDir(RrdRepository repository) throws FileNotFoundException;
 
 }
