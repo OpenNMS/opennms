@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.threshd;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -61,24 +62,21 @@ import org.opennms.netmgt.xml.event.Event;
  */
 public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
 
-	/*
+	/**
      * Holds thresholds configuration for a node/interface/service
      */
     CollectorThresholdingSet m_thresholdingSet;
     
-    /*
+    /**
      * Holds required attribute from CollectionResource to evaluate thresholds.
      */
     Map<String, CollectionAttribute> m_attributesMap;
 
 	private Date m_collectionTimestamp;
     
-    /*
-     * Is static because successful creation depends on thresholding-enabled parameter.
-     */
     /**
-     * <p>create</p>
-     *
+     * Is static because successful creation depends on thresholding-enabled parameter.
+     * 
      * @param nodeId a int.
      * @param hostAddress a {@link java.lang.String} object.
      * @param serviceName a {@link java.lang.String} object.
@@ -119,27 +117,27 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
         return m_thresholdingSet.hasThresholds();
     }
     
-    /*
-     * Get a list of thresholds groups (for junit only at this time)
-     */
     /**
-     * <p>getThresholdGroups</p>
-     *
-     * @return a {@link java.util.List} object.
+     * Get a list of thresholds groups (for JUnit only at this time).
      */
-    public List<ThresholdGroup> getThresholdGroups() {
-        return m_thresholdingSet.m_thresholdGroups;
+    List<ThresholdGroup> getThresholdGroups() {
+        return Collections.unmodifiableList(m_thresholdingSet.m_thresholdGroups);
+    }
+    
+    /**
+     * Get a list of scheduled outages (for JUnit only at this time).
+     */
+    List<String> getScheduledOutages() {
+        return Collections.unmodifiableList(m_thresholdingSet.m_scheduledOutages);
     }
     
     @Override
 	public void visitCollectionSet(CollectionSet set) {
     	m_collectionTimestamp = set.getCollectionTimestamp();
 	}
-    /*
-     * Force reload thresholds configuration, and merge threshold states
-     */
+
     /**
-     * <p>reload</p>
+     * Force reload thresholds configuration, and merge threshold states
      */
     public void reload() {
         m_thresholdingSet.reinitialize();
@@ -153,22 +151,20 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
         return m_thresholdingSet.isNodeInOutage();
     }
 
-    /*
+    /**
      *  Initialize required attributes map (m_attributesMap)
      */
-    /** {@inheritDoc} */
     @Override
     public void visitResource(CollectionResource resource) {
         m_attributesMap = new HashMap<String, CollectionAttribute>();
     }        
 
-    /*
+    /**
      * Add/Update required attributes for thresholds on m_attributeMap.
      * This is used because CollectionResource does not have direct reference to their attributes
      * (The way to get attribute is against AttributeGroup object contained on CollectioResource
      * implementations).
      */
-    /** {@inheritDoc} */
     @Override    
     public void visitAttribute(CollectionAttribute attribute) {
         if (m_thresholdingSet.hasThresholds(attribute)) {
@@ -183,11 +179,10 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
         }
     }
 
-    /*
+    /**
      * Apply threshold for specific resource (and required attributes).
-     * Send thresholds events (if exists)
+     * Send thresholds events (if exists).
      */
-    /** {@inheritDoc} */
     @Override
     public void completeResource(CollectionResource resource) {
         List<Event> eventList = m_thresholdingSet.applyThresholds(resource, m_attributesMap, m_collectionTimestamp);
@@ -196,7 +191,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
         proxy.sendAllEvents();
     }
     
-    /*
+    /**
      * Return the collection timestamp passed in at construct time.  Typically used by tests, but might be  useful elsewhere
      */
     public Date getCollectionTimestamp() {

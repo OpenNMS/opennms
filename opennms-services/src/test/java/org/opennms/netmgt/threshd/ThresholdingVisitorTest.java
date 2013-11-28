@@ -884,7 +884,7 @@ public class ThresholdingVisitorTest {
 
         // Validating Thresholding Set
         ThresholdingVisitor visitor = createVisitor();
-        assertEquals(5, visitor.m_thresholdingSet.m_thresholdGroups.size());
+        assertEquals(5, visitor.getThresholdGroups().size());
     }
 
     /*
@@ -1265,7 +1265,7 @@ public class ThresholdingVisitorTest {
      public void testBug4261_scheduledOutages() throws Exception {
          initFactories("/threshd-configuration-outages.xml","/test-thresholds.xml");
          ThresholdingVisitor visitor = createVisitor();
-         Assert.assertEquals(1, visitor.m_thresholdingSet.m_scheduledOutages.size());
+         Assert.assertEquals(1, visitor.getScheduledOutages().size());
          Assert.assertTrue("is node on outage", visitor.isNodeInOutage());
      }
 
