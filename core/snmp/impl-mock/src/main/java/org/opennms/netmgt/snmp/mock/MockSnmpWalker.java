@@ -165,7 +165,7 @@ public class MockSnmpWalker extends SnmpWalker {
     }
 
     @Override
-    protected void close() throws IOException {
+    public void close() throws IOException {
         m_executor.shutdown();
     }
 

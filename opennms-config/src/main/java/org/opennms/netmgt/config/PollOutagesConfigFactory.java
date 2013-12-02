@@ -51,9 +51,6 @@ import org.springframework.core.io.Resource;
  * 
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @version $Id: $
  */
 public final class PollOutagesConfigFactory extends PollOutagesConfigManager {
     /**

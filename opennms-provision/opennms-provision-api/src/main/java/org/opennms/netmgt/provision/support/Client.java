@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.provision.support;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetAddress;
 
@@ -37,7 +38,7 @@ import java.net.InetAddress;
  * @author brozow
  * @version $Id: $
  */
-public interface Client<Request, Response> {
+public interface Client<Request, Response> extends Closeable {
     
     /**
      * <p>connect</p>
