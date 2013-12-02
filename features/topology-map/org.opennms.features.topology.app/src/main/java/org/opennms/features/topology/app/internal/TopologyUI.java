@@ -58,10 +58,12 @@ import org.opennms.features.topology.api.WidgetUpdateListener;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.FocusNodeHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractVertexRef;
+import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.CommandManager.DefaultOperationContext;
 import org.opennms.features.topology.app.internal.TopologyComponent.VertexUpdateListener;
 import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
+import org.opennms.features.topology.app.internal.support.CategoryHopCriteria;
 import org.opennms.features.topology.app.internal.support.FontAwesomeIcons;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 import org.opennms.features.topology.app.internal.ui.NoContentAvailableWindow;
@@ -315,10 +317,22 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         }
 
         // check if we have a criteria set
-        if (criteria.isEmpty()) { // no criteria or nodes in focus, load defaults
+        if (criteria.isEmpty() && noAdditionalFocusCriteria(graphContainer)) { // no criteria or nodes in focus, load defaults
             graphContainer.removeCriteria(criteria); // it is empty, so we don't need it
             graphContainer.addCriteria(graphContainer.getBaseTopology().getDefaultCriteria()); // set default
         }
+    }
+
+    private static boolean noAdditionalFocusCriteria(GraphContainer graphContainer) {
+        Criteria[] crits = graphContainer.getCriteria();
+        for(Criteria criteria : crits){
+            try{
+                CategoryHopCriteria catCrit = (CategoryHopCriteria) criteria;
+                return false;
+            } catch(ClassCastException e){}
+
+        }
+        return true;
     }
 
     private static void loadSemanticZoomLevel(VaadinRequest request, GraphContainer graphContainer) {
