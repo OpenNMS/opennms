@@ -120,14 +120,14 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
     }
     
     /**
-     * Get a list of thresholds groups (for JUnit only at this time)
+     * Get a list of thresholds groups (for JUnit only at this time).
      *
      * @return a {@link java.util.List} object.
      */
     List<ThresholdGroup> getThresholdGroups() {
         return Collections.unmodifiableList(m_thresholdingSet.m_thresholdGroups);
     }
-
+    
     /**
      * Get a list of scheduled outages (for JUnit only at this time).
      */

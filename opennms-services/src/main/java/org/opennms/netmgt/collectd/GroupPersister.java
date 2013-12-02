@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.collectd;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -70,8 +71,12 @@ public class GroupPersister extends BasePersister {
             }
             
             createBuilder(group.getResource(), group.getName(), group.getGroupType().getAttributeTypes());
-            File path = group.getResource().getResourceDir(getRepository());
-            ResourceTypeUtils.updateDsProperties(path, dsNamesToRrdNames);
+            try {
+                File path = group.getResource().getResourceDir(getRepository());
+                ResourceTypeUtils.updateDsProperties(path, dsNamesToRrdNames);
+            } catch (FileNotFoundException e) {
+                LOG.warn("Could not update datasource properties: " + e.getMessage(), e);
+            }
         }
     }
 

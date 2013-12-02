@@ -29,6 +29,7 @@
 package org.opennms.netmgt.collectd;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Iterator;
@@ -55,7 +56,7 @@ import org.slf4j.LoggerFactory;
  */
 public class BasePersister extends AbstractCollectionSetVisitor implements Persister {
     
-    private static final Logger LOG = LoggerFactory.getLogger(BasePersister.class);
+    protected static final Logger LOG = LoggerFactory.getLogger(BasePersister.class);
     
     private boolean m_ignorePersist = false;
     private ServiceParameters m_params;
@@ -185,9 +186,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
             LOG.debug("Persisting {}", attribute);
             CollectionResource resource = attribute.getResource();
             String value = attribute.getStringValue();
-    
-            File resourceDir = resource.getResourceDir(getRepository());
-    
+            
             //String attrVal = (value == null ? null : value.toString());
             //if (attrVal == null) {
             if (value == null) {
@@ -196,7 +195,10 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
             }
             String attrName = attribute.getName();
             try {
+                File resourceDir = resource.getResourceDir(getRepository());
                 ResourceTypeUtils.updateStringProperty(resourceDir, value, attrName);
+            } catch(FileNotFoundException e) {
+                LOG.error("Unable to save string attribute {}", attribute, e);
             } catch(IOException e) {
                 LOG.error("Unable to save string attribute {}", attribute, e);
             }
