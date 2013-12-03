@@ -101,6 +101,99 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
         }
     }
 
+    protected void clickAndWait(final String pattern) {
+        selenium.click(pattern);
+        waitForPageToLoad();
+    }
+
+    protected void clickAndVerifyText(final String pattern, final String expectedText) {
+        clickAndWait(pattern);
+        assertTrue("'" + expectedText + " must exist in page", selenium.isTextPresent(expectedText));
+    }
+
+    protected void goBack() {
+        selenium.goBack();
+        waitForPageToLoad();
+    }
+
+    protected void waitForPageToLoad() {
+        selenium.waitForPageToLoad(String.valueOf(LOAD_TIMEOUT));
+    }
+
+    protected void waitForText(final String expectedText) throws InterruptedException {
+        waitForText(expectedText, LOAD_TIMEOUT);
+    }
+
+    protected void waitForText(final String expectedText, final long timeout) throws InterruptedException {
+        waitForText(expectedText, timeout, true);
+    }
+
+    protected void waitForText(final String expectedText, final long timeout, boolean failOnError) throws InterruptedException {
+        if (!selenium.isTextPresent(expectedText)) {
+            final long timeoutTime = System.currentTimeMillis() + timeout;
+            while (!selenium.isTextPresent(expectedText) && System.currentTimeMillis() <= timeoutTime) {
+                Thread.sleep(timeout / 10);
+            }
+        }
+        try {
+            assertTrue("Expected text not found: " + expectedText, selenium.isTextPresent(expectedText));
+        } catch (final AssertionError e) {
+            if (failOnError) {
+                throw e;
+            } else {
+                LogUtils.errorf("Failed to find text %s after %d milliseconds.", expectedText, timeout);
+                LogUtils.errorf("Page body was:\n%s", selenium.getBodyText());
+            }
+        }
+    }
+
+    protected void waitForHtmlSource(final String expectedText) throws InterruptedException {
+        waitForHtmlSource(expectedText, LOAD_TIMEOUT);
+    }
+
+    protected void waitForHtmlSource(final String expectedText, final long timeout) throws InterruptedException {
+        waitForHtmlSource(expectedText, timeout, true);
+    }
+
+    protected void waitForHtmlSource(final String expectedText, final long timeout, boolean failOnError) throws InterruptedException {
+        if (!selenium.getHtmlSource().contains(expectedText)) {
+            final long timeoutTime = System.currentTimeMillis() + timeout;
+            while (!selenium.getHtmlSource().contains(expectedText) && System.currentTimeMillis() <= timeoutTime) {
+                Thread.sleep(timeout / 10);
+            }
+        }
+        try {
+            assertTrue("HTML source not found: " + expectedText, selenium.getHtmlSource().contains(expectedText));
+        } catch (final AssertionError e) {
+            if (failOnError) {
+                throw e;
+            } else {
+                LogUtils.errorf("Failed to find text %s after %d milliseconds.", expectedText, timeout);
+                LogUtils.errorf("Page body was:\n%s", selenium.getBodyText());
+            }
+        }
+    }
+
+    protected void waitForElement(final String specification) throws InterruptedException {
+        waitForElement(specification, LOAD_TIMEOUT);
+    }
+
+    protected void waitForElement(final String specification, final long timeout) throws InterruptedException {
+        if (!selenium.isElementPresent(specification)) {
+            final long timeoutTime = System.currentTimeMillis() + timeout;
+            while (!selenium.isElementPresent(specification) && System.currentTimeMillis() <= timeoutTime) {
+                Thread.sleep(timeout / 10);
+            }
+        }
+        try {
+            assertTrue("Element not found: " + specification, selenium.isElementPresent(specification));
+        } catch (final AssertionError e) {
+            throw e;
+            //LogUtils.error("Failed to find element %s after %d milliseconds.", specification, timeout);
+            //LogUtils.error("Page body was:\n%s selenium.getBodyText());
+        }
+    }
+
     protected void waitForPageToLoad() {
         selenium.waitForPageToLoad(LOAD_TIMEOUT);
     }
