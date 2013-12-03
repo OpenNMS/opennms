@@ -119,10 +119,10 @@ public class SearchTokenField extends Composite {
             m_collapseBtn.getElement().removeClassName("icon-minus");
             if (m_suggestion.isCollapsed()) {
                 m_collapseBtn.getElement().addClassName("icon-plus");
-                m_collapseBtn.setTitle("Expand group");
+                m_collapseBtn.setTitle("Expand category");
             } else {
                 m_collapseBtn.getElement().addClassName("icon-minus");
-                m_collapseBtn.setTitle("Collapse group");
+                m_collapseBtn.setTitle("Collapse category");
             }
         } else {
             m_collapseBtn.setVisible(false);
