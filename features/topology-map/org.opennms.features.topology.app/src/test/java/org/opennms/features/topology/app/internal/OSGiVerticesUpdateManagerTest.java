@@ -408,6 +408,10 @@ public class OSGiVerticesUpdateManagerTest {
         }
 
         @Override
+        public void setDirty(boolean dirty) {
+        }
+
+        @Override
         public int getSemanticZoomLevel() {
             return 0; 
         }
