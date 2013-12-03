@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -86,6 +86,8 @@ public interface OnmsUpgrade {
      * Rollback.
      * <p>Restore the initial state of the OpenNMS files if something went wrong while running the execute() method.</p>
      * <p>Must restore the backups of the files if necessary.</p>
+     *
+     * @throws OnmsUpgradeException the onms upgrade exception
      */
     void rollback() throws OnmsUpgradeException;
 

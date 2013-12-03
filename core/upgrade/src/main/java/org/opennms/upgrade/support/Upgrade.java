@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -101,7 +101,6 @@ public class Upgrade {
      * Checks if is OpenNMS running.
      *
      * @return true, if is OpenNMS running
-     * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
     protected boolean isOpennmsRunning() {
         try {
@@ -127,7 +126,6 @@ public class Upgrade {
      * Execute upgrade.
      *
      * @param upg the upgrade implementation class
-     * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
     protected void executeUpgrade(OnmsUpgrade upg) {
         Date start = new Date();
