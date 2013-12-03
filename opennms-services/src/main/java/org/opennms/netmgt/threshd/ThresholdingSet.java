@@ -172,8 +172,6 @@ public class ThresholdingSet {
                     if (thresholdGroup == null) {
                         LOG.error("{}: Could not get threshold group with name {}", logHeader, groupName);
                     } else {
-                        // Merge existing data with current data
-                        thresholdGroup = m_thresholdsDao.merge(foundGroup);
                         newThresholdGroupList.add(thresholdGroup);
                         LOG.debug("{}: Adding threshold group: {}", logHeader, thresholdGroup);
                     }
@@ -274,7 +272,7 @@ public class ThresholdingSet {
                         for (ThresholdEntity thresholdEntity : entityMap.get(key)) {
                             if (passedThresholdFilters(resourceWrapper, thresholdEntity)) {
                                 LOG.info("applyThresholds: Processing threshold {} : {} on resource {}", key, thresholdEntity, resourceWrapper);
-                                Collection<String> requiredDatasources = thresholdEntity.getRequiredDatasources();
+                                Collection<String> requiredDatasources = thresholdEntity.getThresholdConfig().getRequiredDatasources();
                                 Map<String, Double> values = new HashMap<String,Double>();
                                 boolean valueMissing = false;
                                 boolean relaxed = thresholdEntity.getThresholdConfig().getBasethresholddef().isRelaxed();
@@ -295,16 +293,6 @@ public class ThresholdingSet {
                                     } catch (Exception e) {
                                         LOG.warn("applyThresholds: Can't evaluate {} on {} because {}", key, resourceWrapper, e.getMessage());
                                     }
-                                    if(!valueMissing || relaxed) {
-                                        LOG.info("applyThresholds: All attributes found for " + resourceWrapper + ", evaluating");
-                                        resourceWrapper.setDsLabel(thresholdEntity.getDatasourceLabel());
-                                        try {
-                                            List<Event> thresholdEvents = thresholdEntity.evaluateAndCreateEvents(resourceWrapper, values, date);
-                                            eventsList.addAll(thresholdEvents);
-                                        } catch (Exception e) {
-                                            LOG.warn("applyThresholds: Can't evaluate " + key + " on " + resourceWrapper + " because " + e.getMessage(), e);
-                                        }
-                                    } 
                                 }
                             } else {
                                 LOG.info("applyThresholds: Not processing threshold {} : {} because no filters matched", key, thresholdEntity);
