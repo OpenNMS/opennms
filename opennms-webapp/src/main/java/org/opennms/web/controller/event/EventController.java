@@ -162,7 +162,8 @@ public class EventController extends MultiActionController implements Initializi
                     OnmsFilterFavorite.Page.EVENT);
             if (favorite != null) {
                 ModelAndView successView = list(request, favorite); // success
-                AlertTag.addAlertToRequest(successView, "Favorite was created successfully", AlertType.SUCCESS);
+                //Comment out as per request
+                //AlertTag.addAlertToRequest(successView, "Favorite was created successfully", AlertType.SUCCESS);
                 return successView;
             }
             error = "An error occured while creating the favorite";
