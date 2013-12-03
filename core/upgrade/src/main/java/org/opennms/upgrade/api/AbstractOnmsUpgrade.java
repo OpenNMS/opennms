@@ -47,7 +47,6 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
-import org.opennms.netmgt.rrd.RrdUtils;
 
 /**
  * The Abstract class for OpenNMS Upgrade Implementations.
@@ -198,30 +197,36 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
     }
 
     /**
+     * Gets the RRD strategy.
+     *
+     * @return the RRD strategy
+     * @throws OnmsUpgradeException the OpenNMS upgrade exception
+     */
+    protected String getRrdStrategy() throws OnmsUpgradeException {
+        return getRrdProperties().getProperty("org.opennms.rrd.strategyClass", "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy");
+    }
+
+    /**
      * Checks if is RRDtool enabled.
      *
      * @return true, if is RRDtool enabled
+     * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
-    protected boolean isRrdToolEnabled() {
-        try {
-            RrdUtils.getStrategy().getClass().getSimpleName().equals("JniRrdStrategy");
-            String strategy = getRrdProperties().getProperty("org.opennms.rrd.strategyClass", "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy");
-            return !strategy.endsWith(".JRobinRrdStrategy");
-        } catch (Exception e) {
-            return false;
-        }
+    protected boolean isRrdToolEnabled() throws OnmsUpgradeException {
+        return !getRrdStrategy().endsWith("JRobinRrdStrategy");
     }
 
     /**
      * Gets the RRD extension.
      *
      * @return the RRD extension
+     * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
-    protected String getRrdExtension() {
-        try {
-            return RrdUtils.getExtension();
-        } catch (Exception e) {
-            return null;
+    protected String getRrdExtension() throws OnmsUpgradeException {
+        if (System.getProperty("org.opennms.rrd.fileExtension") != null) {
+            return System.getProperty("org.opennms.rrd.fileExtension");
+        } else {
+            return isRrdToolEnabled() ? ".rrd" : ".jrb";
         }
     }
 
@@ -424,7 +429,7 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
         log("Is RRDtool enabled? %s\n", isRrdToolEnabled());
         log("Is storeByGroup enabled? %s\n", isStoreByGroupEnabled());
         log("RRD Extension: %s\n", getRrdExtension());
-        log("RRD Strategy: %s\n", RrdUtils.getStrategy().getClass().getName());
+        log("RRD Strategy: %s\n", getRrdStrategy());
     }
 
     /**
