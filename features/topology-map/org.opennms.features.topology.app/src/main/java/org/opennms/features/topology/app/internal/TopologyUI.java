@@ -137,7 +137,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                 TopologyUI.this.markAsDirtyRecursive();
 
                 m_lastUpdateTime = System.currentTimeMillis();
-                m_lastUpdatedTimeLabel.setValue("Last update time: " + new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss").format(new Date(m_lastUpdateTime)));
+                m_lastUpdatedTimeLabel.setValue("Last update time: " + new SimpleDateFormat("EEE MMM dd yyyy hh:mm a z").format(new Date(m_lastUpdateTime)));
 
                 m_refreshInProgress = false;
             }
