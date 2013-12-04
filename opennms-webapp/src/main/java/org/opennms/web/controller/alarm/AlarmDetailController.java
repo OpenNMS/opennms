@@ -34,6 +34,7 @@ import javax.servlet.ServletException;
 
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.web.alarm.Alarm;
+import org.opennms.web.alarm.AlarmIdNotFoundException;
 import org.opennms.web.alarm.WebAlarmRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,8 +117,12 @@ public class AlarmDetailController extends MultiActionController {
             logger.debug("Alarm retrieved: '{}'", m_alarm.toString());
         } catch (NumberFormatException e) {
             logger.error("Could not parse alarm ID '{}' to integer.", httpServletRequest.getParameter("id"));
-        } catch (Exception e) {
+        } catch (Throwable e) {
             logger.error("Could not retrieve alarm from webAlarmRepository for ID='{}'", alarmIdString);
+        }
+
+        if (m_alarm == null) {
+            throw new AlarmIdNotFoundException("Could not find alarm with ID: " + alarmIdString, alarmIdString);
         }
 
         // return to view WEB-INF/jsp/alarm/detail.jsp
