@@ -45,7 +45,7 @@ import com.thoughtworks.selenium.SeleniumException;
 import com.thoughtworks.selenium.webdriven.WebDriverBackedSelenium;
 
 public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
-    protected static final String LOAD_TIMEOUT = "60000";
+    protected static final long LOAD_TIMEOUT = 60000;
     protected static final String BASE_URL = "http://localhost:8980/";
     private WebDriver m_driver = null;
 
@@ -101,6 +101,11 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
         }
     }
 
+    protected void frontPage() throws Exception {
+        selenium.open("/opennms/index.jsp");
+        waitForPageToLoad();
+    }
+
     protected void clickAndWait(final String pattern) {
         selenium.click(pattern);
         waitForPageToLoad();
@@ -112,6 +117,7 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
     }
 
     protected void goBack() {
+        LogUtils.warnf(this, "goBack() is not supported on Safari!");
         selenium.goBack();
         waitForPageToLoad();
     }
