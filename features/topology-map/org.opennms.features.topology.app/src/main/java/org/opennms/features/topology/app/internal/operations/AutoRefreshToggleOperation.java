@@ -53,6 +53,7 @@ public class AutoRefreshToggleOperation extends AbstractCheckedOperation {
     private static Undoer toggle(final GraphContainer container) {
         if (container.hasAutoRefreshSupport()) {
             container.getAutoRefreshSupport().toggle();
+            container.redoLayout();
         }
 
         return new Undoer() {

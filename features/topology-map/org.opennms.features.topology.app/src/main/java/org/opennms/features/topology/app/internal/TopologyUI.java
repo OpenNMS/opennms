@@ -239,10 +239,12 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             }
         });
 
-        loadUserSettings(m_applicationContext);
         // Set the algorithm last so that the criteria and SZLs are
         // in place before we run the layout algorithm.
         m_graphContainer.setLayoutAlgorithm(new FRLayoutAlgorithm());
+
+        loadUserSettings(m_applicationContext);
+
         setupListeners();
         createLayouts();
         // Set up an error handler for UI-level exceptions
