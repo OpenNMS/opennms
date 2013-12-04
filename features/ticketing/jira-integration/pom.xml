@@ -52,6 +52,11 @@
             <type>pom</type>
         </dependency>
         <dependency>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>jaxb-dependencies</artifactId>
+            <type>pom</type>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.features.ticketing</groupId>
             <artifactId>org.opennms.features.ticketing.api</artifactId>
         </dependency>
@@ -68,6 +73,12 @@
             <groupId>com.atlassian.jira</groupId>
             <artifactId>jira-rest-java-client</artifactId>
             <version>1.0</version>
+            <exclusions>
+              <exclusion>
+                <groupId>com.sun.xml.bind</groupId>
+                <artifactId>jaxb-impl</artifactId>
+              </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 </project>
