@@ -9,12 +9,17 @@
   <artifactId>smoke-test</artifactId>
   <name>OpenNMS Smoke Test</name>
   <properties>
-    <seleniumVersion>2.33.0</seleniumVersion>
+    <seleniumVersion>2.37.1</seleniumVersion>
   </properties>
   <dependencies>
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-java</artifactId>
+      <version>${seleniumVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-remote-driver</artifactId>
       <version>${seleniumVersion}</version>
     </dependency>
     <dependency>
