@@ -37,6 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.opennms.netmgt.dao.api.AlarmRepository;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.web.alarm.AlarmIdNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -103,6 +104,11 @@ public class AlarmDetailController extends MultiActionController {
 
             // Get alarm by ID
             OnmsAlarm alarm = m_webAlarmRepository.getAlarm(alarmId);
+
+            if (alarm == null) {
+                throw new AlarmIdNotFoundException("Could not find alarm with ID: " + alarmIdString, alarmIdString);
+            }
+
             logger.debug("Alarm retrieved: '{}'", alarm.toString());
 
             // return to view WEB-INF/jsp/alarm/detail.jsp

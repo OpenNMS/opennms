@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -196,6 +196,8 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
 
     /**
      * Fix KSC reports.
+     *
+     * @throws OnmsUpgradeException the onms upgrade exception
      */
     protected void fixKscReports()  throws OnmsUpgradeException {
         log("Fixing KSC Reports.\n");
@@ -325,6 +327,7 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
      *
      * @param source the source JRB
      * @param dest the destination JRB
+     * @throws Exception the exception
      */
     protected void mergeJrb(File source, File dest) throws Exception {
         log("  merging JRB %s into %s\n", source, dest);
