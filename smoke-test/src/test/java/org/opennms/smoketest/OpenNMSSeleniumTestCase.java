@@ -41,8 +41,8 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import com.thoughtworks.selenium.SeleneseTestBase;
 
 public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
-
-    protected static final String LOAD_TIMEOUT = "30000";
+    protected static final String LOAD_TIMEOUT = "60000";
+    protected static final String BASE_URL = "http://localhost:8980/";
 
     @Before
     public void setUp() throws Exception {
@@ -73,8 +73,7 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
             //}
         }
 
-        String baseUrl = "http://localhost:8980/";
-        selenium = new WebDriverBackedSelenium(driver, baseUrl);
+        selenium = new WebDriverBackedSelenium(driver, BASE_URL);
         selenium.open("/opennms/login.jsp");
         selenium.type("name=j_username", "admin");
         selenium.type("name=j_password", "admin");
@@ -84,7 +83,16 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
 
     @After
     public void tearDown() throws Exception {
-        if (selenium != null) selenium.stop();
+        if (selenium != null) {
+            try {
+                if (selenium.isElementPresent("link=Log out")) selenium.click("link=Log out");
+            } catch (final SeleniumException e) {
+                // don't worry about it, this is just for logging out
+            }
+            selenium.stop();
+        }
+    }
+
     }
 
     protected void waitForPageToLoad() {
