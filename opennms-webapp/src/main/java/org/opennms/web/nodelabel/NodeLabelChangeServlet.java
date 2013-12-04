@@ -38,16 +38,16 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.opennms.netmgt.utils.NodeLabel;
 import org.opennms.web.api.Util;
 import org.opennms.web.element.NetworkElementFactory;
 import org.opennms.web.rest.MultivaluedMapImpl;
-import org.opennms.web.rest.RequisitionRestService;
+import org.opennms.web.rest.RequisitionAccessService;
 import org.opennms.web.servlet.MissingParameterException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -101,7 +101,7 @@ public class NodeLabelChangeServlet extends HttpServlet {
 
         try {
             final int nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
-            OnmsNode node = NetworkElementFactory.getInstance(getServletContext()).getNode(nodeId);
+            final OnmsNode node = NetworkElementFactory.getInstance(getServletContext()).getNode(nodeId);
             NodeLabel oldLabel = new NodeLabel(node.getLabel(), node.getLabelSource());
             NodeLabel newLabel = null;
 
@@ -113,29 +113,26 @@ public class NodeLabelChangeServlet extends HttpServlet {
                 throw new ServletException("Unexpected labeltype value: " + labelType);
             }
 
-            WebApplicationContext beanFactory = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
-            TransactionTemplate transactionTemplate = beanFactory.getBean(TransactionTemplate.class);
-            final RequisitionRestService requisitionService = beanFactory.getBean(RequisitionRestService.class);
-            final NodeDao nodeDao = beanFactory.getBean(NodeDao.class);
-
             final String newNodeLabel = newLabel.getLabel();
-            String foreignSource = transactionTemplate.execute(new TransactionCallback<String>() {
-                public String doInTransaction(TransactionStatus status) {
-                    OnmsNode node = nodeDao.get(nodeId);
-                    if (node.getForeignSource() != null && node.getForeignId() != null) {
+            boolean managedByProvisiond = node.getForeignSource() != null && node.getForeignId() != null;
+            if (managedByProvisiond) {
+                WebApplicationContext beanFactory = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
+                final TransactionTemplate transactionTemplate = beanFactory.getBean(TransactionTemplate.class);
+                final RequisitionAccessService requisitionService = beanFactory.getBean(RequisitionAccessService.class);
+                transactionTemplate.execute(new TransactionCallback<RequisitionNode>() {
+                    public RequisitionNode doInTransaction(TransactionStatus status) {
                         MultivaluedMapImpl params = new MultivaluedMapImpl();
                         params.putSingle("node-label", newNodeLabel);
                         requisitionService.updateNode(node.getForeignSource(), node.getForeignId(), params);
-                        return node.getForeignSource();
+                        return requisitionService.getNode(node.getForeignSource(), node.getForeignId());
                     }
-                    return null;
-                }
-            });
+                });
+            }
 
             this.sendLabelChangeEvent(nodeId, oldLabel, newLabel);
 
-            if (foreignSource != null) {
-                response.sendRedirect(Util.calculateUrlBase(request, "admin/nodelabelProvisioned.jsp?node=" + nodeIdString + "&foreignSource=" + foreignSource));
+            if (managedByProvisiond) {
+                response.sendRedirect(Util.calculateUrlBase(request, "admin/nodelabelProvisioned.jsp?node=" + nodeIdString + "&foreignSource=" + node.getForeignSource()));
             } else {
                 NodeLabel.assignLabel(nodeId, newLabel);
                 response.sendRedirect(Util.calculateUrlBase(request, "element/node.jsp?node=" + nodeIdString));
