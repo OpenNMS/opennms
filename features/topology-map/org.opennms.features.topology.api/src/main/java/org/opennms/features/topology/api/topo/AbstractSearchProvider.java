@@ -42,7 +42,7 @@ public abstract class AbstractSearchProvider implements SearchProvider {
         if (searchPrefix == null || "".equals(searchPrefix)) {
             return false;
         }
-        return providerPrefix.startsWith(searchPrefix.substring(0, Math.min(searchPrefix.length(), providerPrefix.length())));
+        return providerPrefix.startsWith(searchPrefix.substring(0, Math.min(searchPrefix.length(), providerPrefix.length())).toLowerCase());
     }
 
     @Override

@@ -1254,13 +1254,15 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
 
     private Integer getStpNodeFromStpRootIdentifier(String baseaddress) {
-    	
-        final OnmsCriteria criteria = new OnmsCriteria(OnmsStpNode.class);
-        criteria.add(Restrictions.eq("baseBridgeAddress", baseaddress.substring(5,16)));
 
-        List<OnmsStpNode> stpnodes = m_stpNodeDao.findMatching(criteria);
-        if (stpnodes.size() == 1)
-        	return stpnodes.get(0).getId();
+        if(!baseaddress.equals("")){
+            final OnmsCriteria criteria = new OnmsCriteria(OnmsStpNode.class);
+            criteria.add(Restrictions.eq("baseBridgeAddress", baseaddress.substring(5,16)));
+
+            List<OnmsStpNode> stpnodes = m_stpNodeDao.findMatching(criteria);
+            if (stpnodes.size() == 1)
+                return stpnodes.get(0).getId();
+        }
         return null;
     }
 
