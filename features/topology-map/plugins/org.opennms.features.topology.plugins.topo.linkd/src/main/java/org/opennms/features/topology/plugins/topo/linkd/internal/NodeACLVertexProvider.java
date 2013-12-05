@@ -241,7 +241,7 @@ public class NodeACLVertexProvider implements GraphProvider {
             List<OnmsNode> onmsNodes = m_nodeDao.findAll();
 
             //Transform the onmsNodes list to a list of Ids
-            final Set<Integer> nodes = new HashSet(Lists.transform(onmsNodes, new Function<OnmsNode, Integer>() {
+            final Set<Integer> nodes = new HashSet<Integer>(Lists.transform(onmsNodes, new Function<OnmsNode, Integer>() {
                 @Override
                 public Integer apply(OnmsNode node) {
                     return node.getId();
