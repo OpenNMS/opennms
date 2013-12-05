@@ -26,9 +26,9 @@ public class OnmsDaoContainerTest {
         EasyMock.expect(alarmDaoMock.findMatching((Criteria)EasyMock.anyObject())).andReturn(alarmList);
         EasyMock.replay(alarmDaoMock);
 
-        OnmsDaoContainer container = new AlarmDaoContainer(alarmDaoMock);
+        AlarmDaoContainer container = new AlarmDaoContainer(alarmDaoMock);
 
-        List items = container.getItemIds(0, 1);
+        List<Integer> items = container.getItemIds(0, 1);
         Assert.assertNotNull(items);
         Assert.assertEquals(1, items.size());
     }

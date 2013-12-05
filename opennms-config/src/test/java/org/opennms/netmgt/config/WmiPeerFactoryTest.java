@@ -413,7 +413,7 @@ public class WmiPeerFactoryTest extends TestCase {
 
         assertEquals(1, factory.getConfig().getDefinitionCount());
         
-        assertEquals("obscurityFTW!", factory.getInstance().getAgentConfig(InetAddress.getByName("1.1.1.1")).getPassword());
+        assertEquals("obscurityFTW!", WmiPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("1.1.1.1")).getPassword());
     }
 
     /**
@@ -441,7 +441,7 @@ public class WmiPeerFactoryTest extends TestCase {
 
         assertEquals(1, factory.getConfig().getDefinitionCount());
         
-        assertEquals("obscure!=secure", factory.getInstance().getAgentConfig(InetAddress.getByName("192.168.0.5")).getPassword());
+        assertEquals("obscure!=secure", WmiPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("192.168.0.5")).getPassword());
     }
     
     /**
@@ -469,7 +469,7 @@ public class WmiPeerFactoryTest extends TestCase {
 
         assertEquals(1, factory.getConfig().getDefinitionCount());
         
-        assertEquals("clarityFTW!", factory.getInstance().getAgentConfig(InetAddress.getByName("1.1.1.1")).getPassword());
+        assertEquals("clarityFTW!", WmiPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("1.1.1.1")).getPassword());
     }
 
     /**
@@ -497,7 +497,7 @@ public class WmiPeerFactoryTest extends TestCase {
 
         assertEquals(1, factory.getConfig().getDefinitionCount());
         
-        assertEquals("aVerySecureOne", factory.getInstance().getAgentConfig(InetAddress.getByName("192.168.0.5")).getPassword());
+        assertEquals("aVerySecureOne", WmiPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("192.168.0.5")).getPassword());
     }
 
 }
