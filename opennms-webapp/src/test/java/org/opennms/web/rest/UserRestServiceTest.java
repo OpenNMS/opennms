@@ -29,10 +29,10 @@
 package org.opennms.web.rest;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
@@ -45,6 +45,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.users.User;
