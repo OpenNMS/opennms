@@ -33,7 +33,6 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.junit.Assert;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,8 +51,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -86,7 +85,7 @@ public class AvailabilityDatabasePopulatorTest implements InitializingBean {
 	OutageDao m_outageDao;
 
 	@Autowired
-	SimpleJdbcTemplate m_template;
+	JdbcTemplate m_template;
 
     @Override
     public void afterPropertiesSet() throws Exception {

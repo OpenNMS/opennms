@@ -40,7 +40,7 @@ import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 import org.opennms.core.db.install.SimpleDataSource;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
  * <p>For each unit test method, creates a temporary database before the unit
@@ -57,7 +57,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
  */
 public class TemporaryDatabaseTestCase extends TestCase {
     
-    protected SimpleJdbcTemplate jdbcTemplate;
+    protected JdbcTemplate jdbcTemplate;
 
     private static final String TEST_DB_NAME_PREFIX = "opennms_test_";
     
@@ -203,7 +203,7 @@ public class TemporaryDatabaseTestCase extends TestCase {
     
     public void setDataSource(DataSource dataSource) {
         m_dataSource = dataSource;
-        jdbcTemplate = new SimpleJdbcTemplate(dataSource);
+        jdbcTemplate = new JdbcTemplate(dataSource);
     }
     
     public DataSource getDataSource() {
@@ -457,7 +457,7 @@ public class TemporaryDatabaseTestCase extends TestCase {
         }
     }
     
-    public SimpleJdbcTemplate getJdbcTemplate() {
+    public JdbcTemplate getJdbcTemplate() {
     	return jdbcTemplate;
     }
     
