@@ -70,7 +70,7 @@ public class AlarmsPageTest extends OpenNMSSeleniumTestCase {
     @Test
     public void testAllLinks() throws InterruptedException{
         clickAndWait("link=All alarms (summary)");
-        waitForText("alarm is outstanding");
+        waitForText("Alarm(s) outstanding");
         waitForElement("//input[@value='Go']");
         waitForElement("css=input[type='submit']");
         clickAndWait("css=a[title='Alarms System Page']");
@@ -105,7 +105,7 @@ public class AlarmsPageTest extends OpenNMSSeleniumTestCase {
 
         assertTrue(hasAlarmDetailLink());
 
-        waitForText("alarm is outstanding");
+        waitForText("Alarm(s) outstanding");
         waitForElement("//input[@value='Go']");
         waitForElement("css=input[type='submit']");
         assertTrue(hasAlarmDetailLink());

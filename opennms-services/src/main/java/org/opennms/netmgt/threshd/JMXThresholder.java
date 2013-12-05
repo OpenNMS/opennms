@@ -541,7 +541,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
         
         for(Object threshKey  :thresholdMap.keySet()) {
             ThresholdEntity threshold = thresholdMap.get(threshKey);
-            Collection<String> requiredDatasources=threshold.getRequiredDatasources();
+            Collection<String> requiredDatasources=threshold.getThresholdConfig().getRequiredDatasources();
             Map<String, Double> values=getThresholdValues(directory, range, interval, requiredDatasources);
             if(values==null) {
                 continue; //Not all values were available
@@ -633,7 +633,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
         Map<String, String> ifDataMap = new HashMap<String, String>();
         for(Object threshKey  :thresholdMap.keySet()) {
             ThresholdEntity threshold = thresholdMap.get(threshKey);
-            Collection<String> requiredDatasources=threshold.getRequiredDatasources();
+            Collection<String> requiredDatasources=threshold.getThresholdConfig().getRequiredDatasources();
             Map<String, Double> values=getThresholdValues(directory, range, interval, requiredDatasources);
             if(values==null) {
                 continue; //Not all values were available

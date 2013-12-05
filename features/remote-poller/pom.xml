@@ -109,7 +109,7 @@ groovy.compiler.output.path=target/classes
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.codehaus.groovy.maven</groupId>
+        <groupId>org.codehaus.gmaven</groupId>
         <artifactId>gmaven-plugin</artifactId>
         <executions>
           <execution>

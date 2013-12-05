@@ -273,7 +273,12 @@ abstract public class PollOutagesConfigManager extends AbstractJaxbConfigDao<Out
      * @param getOutageSchedule(newOutage) a {@link org.opennms.netmgt.config.poller.Outage} object.
      */
     public void addOutage(final Outage newOutage) {
-        getConfig().addOutage(newOutage);
+        getWriteLock().lock();
+        try {
+            getConfig().addOutage(newOutage);
+        } finally {
+            getWriteLock().unlock();
+        }
     }
 
     /**
@@ -282,7 +287,12 @@ abstract public class PollOutagesConfigManager extends AbstractJaxbConfigDao<Out
      * @param outageName a {@link java.lang.String} object.
      */
     public void removeOutage(final String outageName) {
-        getConfig().removeOutage(getOutage(outageName));
+        getWriteLock().lock();
+        try {
+            getConfig().removeOutage(getOutage(outageName));
+        } finally {
+            getWriteLock().unlock();
+        }
     }
 
     /**
@@ -291,7 +301,12 @@ abstract public class PollOutagesConfigManager extends AbstractJaxbConfigDao<Out
      * @param getOutageSchedule(outageToRemove) a {@link org.opennms.netmgt.config.poller.Outage} object.
      */
     public void removeOutage(final Outage outageToRemove) {
-        getConfig().removeOutage(outageToRemove);
+        getWriteLock().lock();
+        try {
+            getConfig().removeOutage(outageToRemove);
+        } finally {
+            getWriteLock().unlock();
+        }
     }
 
     /**
@@ -301,12 +316,17 @@ abstract public class PollOutagesConfigManager extends AbstractJaxbConfigDao<Out
      * @param getOutageSchedule(newOutage) a {@link org.opennms.netmgt.config.poller.Outage} object.
      */
     public void replaceOutage(final Outage oldOutage, final Outage newOutage) {
-        int count = getConfig().getOutageCount();
-        for (int i = 0; i < count; i++) {
-            if (getConfig().getOutage(i).equals(oldOutage)) {
-                getConfig().setOutage(i, newOutage);
-                return;
+        getWriteLock().lock();
+        try {
+            int count = getConfig().getOutageCount();
+            for (int i = 0; i < count; i++) {
+                if (getConfig().getOutage(i).equals(oldOutage)) {
+                    getConfig().setOutage(i, newOutage);
+                    return;
+                }
             }
+        } finally {
+            getWriteLock().unlock();
         }
     }
 

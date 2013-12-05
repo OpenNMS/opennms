@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -223,14 +223,15 @@ public class SnmpInterfaceUpgrade {
     }
 
     /**
-     * Checks if the interface directories should be merged
+     * Checks if the interface directories should be merged.
      *
      * @return true, if the interface directory should be merged
      */
     public boolean shouldMerge() {
         // An SnmpInterfaceUpgrade entry only exist for SNMP interfaces with MAC Address.
-        // For this reason, if the old directory exist, that means, the interface statistics must be merged.
-        return getOldInterfaceDir().exists();
+        // For this reason, if the old directory exist and the label of the old interface is different than the new one,
+        // that means, the interface statistics must be merged.
+        return getOldInterfaceDir().exists() && !getOldRrdLabel().equals(getNewRrdLabel());
     }
 
     /**

@@ -28,15 +28,8 @@
 
 package org.opennms.web.group;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.opennms.core.utils.BeanUtils;
-import org.opennms.netmgt.config.GroupDao;
 import org.opennms.netmgt.config.groups.Group;
-import org.opennms.netmgt.dao.api.CategoryDao;
-import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.web.services.GroupService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;

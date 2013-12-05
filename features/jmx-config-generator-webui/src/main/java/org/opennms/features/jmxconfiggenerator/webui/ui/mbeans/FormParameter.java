@@ -70,7 +70,7 @@ public interface FormParameter {
 	 *         {@link EditControls} have been invoked and executed. May return
 	 *         null.
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	EditControls.Callback getAdditionalCallback();
 
 	/**

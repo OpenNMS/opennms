@@ -362,6 +362,7 @@ public abstract class EventUtils {
      */
     public static String toString(Event event) {
         StringBuffer b = new StringBuffer("Event: ");
+        b.append("\n");
         if (event.getAutoacknowledge() != null) {
             b.append(" Autoacknowledge: " + event.getAutoacknowledge() + "\n");
         }
@@ -469,19 +470,19 @@ public abstract class EventUtils {
 
     public static String toString(Collection<Parm> parms) {
         if (parms.size() == 0) {
-            return "Parms: (none)\n";
+            return "{}\n";
         }
         
         StringBuffer b = new StringBuffer();
-        b.append("Parms:\n");
+        b.append("{\n");
         for (Parm p : parms) {
-            b.append(" ");
+            b.append("  ");
             b.append(p.getParmName());
             b.append(" = ");
             b.append(toString(p.getValue()));
             b.append("\n");
         }
-        b.append("End Parms\n");
+        b.append(" }");
         return b.toString();
     }
     

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -60,14 +60,15 @@ public class WmiPlugin extends AbstractPlugin {
 	/**
 	 * The protocol supported by the plugin
 	 */
-	private final static String PROTOCOL_NAME = "WMI";
+    private final static String PROTOCOL_NAME = "WMI";
 
-	private final static String DEFAULT_WMI_CLASS = "Win32_ComputerSystem";
-	private final static String DEFAULT_WMI_OBJECT = "Status";
-	private final static String DEFAULT_WMI_COMP_VAL = "OK";
-	private final static String DEFAULT_WMI_MATCH_TYPE = "all";
-	private final static String DEFAULT_WMI_COMP_OP = "EQ";
+    private final static String DEFAULT_WMI_CLASS = "Win32_ComputerSystem";
+    private final static String DEFAULT_WMI_OBJECT = "Status";
+    private final static String DEFAULT_WMI_COMP_VAL = "OK";
+    private final static String DEFAULT_WMI_MATCH_TYPE = "all";
+    private final static String DEFAULT_WMI_COMP_OP = "EQ";
     private final static String DEFAULT_WMI_WQL = "NOTSET";
+    private final static String DEFAULT_WMI_NAMESPACE = WmiParams.WMI_DEFAULT_NAMESPACE;
 
 	/**
 	 * {@inheritDoc}
@@ -121,65 +122,67 @@ public class WmiPlugin extends AbstractPlugin {
 	@Override
 	public boolean isProtocolSupported(final InetAddress address, final Map<String, Object> qualifiers) {
 	    final WmiAgentConfig agentConfig = WmiPeerFactory.getInstance().getAgentConfig(address);
-		String matchType = DEFAULT_WMI_MATCH_TYPE;
-		String compVal = DEFAULT_WMI_COMP_VAL;
-		String compOp = DEFAULT_WMI_COMP_OP;
-		String wmiClass = DEFAULT_WMI_CLASS;
-		String wmiObject = DEFAULT_WMI_OBJECT;
-        String wmiWqlStr = DEFAULT_WMI_WQL;
+	    String matchType = DEFAULT_WMI_MATCH_TYPE;
+	    String compVal = DEFAULT_WMI_COMP_VAL;
+	    String compOp = DEFAULT_WMI_COMP_OP;
+	    String wmiClass = DEFAULT_WMI_CLASS;
+	    String wmiObject = DEFAULT_WMI_OBJECT;
+	    String wmiWqlStr = DEFAULT_WMI_WQL;
+	    String wmiNamespace = DEFAULT_WMI_NAMESPACE;
 
-        if (qualifiers != null) {
-            if (qualifiers.get("timeout") != null) {
-            	int timeout = ParameterMap.getKeyedInteger(qualifiers, "timeout", agentConfig.getTimeout());
-                agentConfig.setTimeout(timeout);
-            }
-            
-            if (qualifiers.get("retry") != null) {
-            	int retries = ParameterMap.getKeyedInteger(qualifiers, "retry", agentConfig.getRetries());
-                agentConfig.setRetries(retries);
-            }
+	    if (qualifiers != null) {
+	        if (qualifiers.get("timeout") != null) {
+	            int timeout = ParameterMap.getKeyedInteger(qualifiers, "timeout", agentConfig.getTimeout());
+	            agentConfig.setTimeout(timeout);
+	        }
 
-            if (qualifiers.get("username") != null) {
-                String user = ParameterMap.getKeyedString(qualifiers, "username", agentConfig.getUsername());
-                agentConfig.setUsername(user);
-            }
-            
-            if (qualifiers.get("password") != null) {
-                String pass = ParameterMap.getKeyedString(qualifiers, "password", agentConfig.getPassword());
-                agentConfig.setPassword(pass);
-            }
-            
-            if (qualifiers.get("domain") != null) {
-                String domain = ParameterMap.getKeyedString(qualifiers, "domain", agentConfig.getDomain());
-                agentConfig.setDomain(domain);
-            }
-            
-            matchType = ParameterMap.getKeyedString(qualifiers, "matchType", DEFAULT_WMI_MATCH_TYPE);
-			compVal = ParameterMap.getKeyedString(qualifiers, "compareValue", DEFAULT_WMI_COMP_VAL);
-			compOp = ParameterMap.getKeyedString(qualifiers, "compareOp", DEFAULT_WMI_COMP_OP);
-            wmiWqlStr = ParameterMap.getKeyedString(qualifiers, "wql", DEFAULT_WMI_WQL);
-            wmiClass = ParameterMap.getKeyedString(qualifiers, "wmiClass", DEFAULT_WMI_CLASS);
-			wmiObject = ParameterMap.getKeyedString(qualifiers, "wmiObject", DEFAULT_WMI_OBJECT);
-		}
+	        if (qualifiers.get("retry") != null) {
+	            int retries = ParameterMap.getKeyedInteger(qualifiers, "retry", agentConfig.getRetries());
+	            agentConfig.setRetries(retries);
+	        }
 
-        WmiParams clientParams = null;
+	        if (qualifiers.get("username") != null) {
+	            String user = ParameterMap.getKeyedString(qualifiers, "username", agentConfig.getUsername());
+	            agentConfig.setUsername(user);
+	        }
 
-        if(wmiWqlStr.equals(DEFAULT_WMI_WQL)) {
-            // Create the check parameters holder.
-		    clientParams = new WmiParams(WmiParams.WMI_OPERATION_INSTANCEOF, compVal, compOp, wmiClass, wmiObject);
-        } else {
-            // Define the WQL Query.
-            clientParams = new WmiParams(WmiParams.WMI_OPERATION_WQL, compVal, compOp, wmiWqlStr, wmiObject);
-        }
+	        if (qualifiers.get("password") != null) {
+	            String pass = ParameterMap.getKeyedString(qualifiers, "password", agentConfig.getPassword());
+	            agentConfig.setPassword(pass);
+	        }
+
+	        if (qualifiers.get("domain") != null) {
+	            String domain = ParameterMap.getKeyedString(qualifiers, "domain", agentConfig.getDomain());
+	            agentConfig.setDomain(domain);
+	        }
+
+	        matchType = ParameterMap.getKeyedString(qualifiers, "matchType", DEFAULT_WMI_MATCH_TYPE);
+	        compVal = ParameterMap.getKeyedString(qualifiers, "compareValue", DEFAULT_WMI_COMP_VAL);
+	        compOp = ParameterMap.getKeyedString(qualifiers, "compareOp", DEFAULT_WMI_COMP_OP);
+	        wmiWqlStr = ParameterMap.getKeyedString(qualifiers, "wql", DEFAULT_WMI_WQL);
+	        wmiClass = ParameterMap.getKeyedString(qualifiers, "wmiClass", DEFAULT_WMI_CLASS);
+	        wmiObject = ParameterMap.getKeyedString(qualifiers, "wmiObject", DEFAULT_WMI_OBJECT);
+	        wmiNamespace = ParameterMap.getKeyedString(qualifiers,  "wmiNamespace", DEFAULT_WMI_NAMESPACE);
+	    }
+
+	    WmiParams clientParams = null;
+
+	    if(wmiWqlStr.equals(DEFAULT_WMI_WQL)) {
+	        // Create the check parameters holder.
+	        clientParams = new WmiParams(WmiParams.WMI_OPERATION_INSTANCEOF, compVal, compOp, wmiClass, wmiObject);
+	    } else {
+	        // Define the WQL Query.
+	        clientParams = new WmiParams(WmiParams.WMI_OPERATION_WQL, compVal, compOp, wmiWqlStr, wmiObject);
+	    }
 
 
-		// Perform the operation specified in the parameters.
-		WmiResult result = isServer(address, agentConfig.getUsername(), agentConfig.getPassword(), agentConfig.getDomain(), matchType,
-				agentConfig.getRetries(), agentConfig.getTimeout(), clientParams);
+	    // Perform the operation specified in the parameters.
+	    WmiResult result = isServer(address, agentConfig.getUsername(), agentConfig.getPassword(), agentConfig.getDomain(), matchType,
+	                                agentConfig.getRetries(), agentConfig.getTimeout(), clientParams, wmiNamespace);
 
-		// Only fail on critical and unknown returns.
+	    // Only fail on critical and unknown returns.
 	    return (result != null && result.getResultCode() != WmiResult.RES_STATE_CRIT
-				&& result.getResultCode() != WmiResult.RES_STATE_UNKNOWN);
+	            && result.getResultCode() != WmiResult.RES_STATE_UNKNOWN);
 	}
 
 	/**
@@ -202,7 +205,7 @@ public class WmiPlugin extends AbstractPlugin {
 	 *         contain the proper result code based on the params passed.
 	 */
 	private WmiResult isServer(final InetAddress host, final String user, final String pass,
-	        final String domain, final String matchType, final int retries, final int timeout, final WmiParams params) {
+	        final String domain, final String matchType, final int retries, final int timeout, final WmiParams params, final String wmiNamespace) {
 		boolean isAServer = false;
 
 		WmiResult result = null;
@@ -212,6 +215,8 @@ public class WmiPlugin extends AbstractPlugin {
 				// Create the WMI Manager
 				mgr = new WmiManager(InetAddressUtils.str(host), user, pass, domain, matchType);
 
+				// Set the WMI namespace
+				mgr.setNamespace(wmiNamespace);
 				// Connect to the WMI server.
 				mgr.init();
 

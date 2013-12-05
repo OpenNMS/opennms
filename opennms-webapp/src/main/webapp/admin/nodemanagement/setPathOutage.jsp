@@ -102,7 +102,7 @@ LABEL
   }
 
 
-  function delete()
+  function deletePathOutage()
   {
       if (confirm("Are you sure you want to proceed? This action will delete any existing critical path for this node."))
       {
@@ -169,7 +169,7 @@ LABEL
 <h2>Delete critical path for this node</h2>
 <br/>
 <p>
-<input type="button" name="task" value="Delete" onClick="delete()"/>
+<input type="button" name="task" value="Delete" onClick="deletePathOutage()"/>
 </p>
 
 </form>

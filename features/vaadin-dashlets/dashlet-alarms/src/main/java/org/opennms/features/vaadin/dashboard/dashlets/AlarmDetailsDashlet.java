@@ -216,7 +216,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
                 public void refresh() {
                     List<OnmsAlarm> alarms = getAlarms();
 
-                    List<Integer> alarmIds = new LinkedList();
+                    List<Integer> alarmIds = new LinkedList<Integer>();
 
                     for (OnmsAlarm onmsAlarm : alarms) {
                         alarmIds.add(onmsAlarm.getId());

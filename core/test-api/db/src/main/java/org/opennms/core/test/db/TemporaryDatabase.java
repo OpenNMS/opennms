@@ -3,7 +3,7 @@ package org.opennms.core.test.db;
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
 
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 public interface TemporaryDatabase extends DataSource, XADataSource {
     public static final String TEST_DB_NAME_PREFIX = "opennms_test_";
@@ -20,5 +20,5 @@ public interface TemporaryDatabase extends DataSource, XADataSource {
     public void create() throws TemporaryDatabaseException;
     public void drop() throws TemporaryDatabaseException;
     public int countRows(final String sql, Object... values);
-    public SimpleJdbcTemplate getJdbcTemplate();
+    public JdbcTemplate getJdbcTemplate();
 }

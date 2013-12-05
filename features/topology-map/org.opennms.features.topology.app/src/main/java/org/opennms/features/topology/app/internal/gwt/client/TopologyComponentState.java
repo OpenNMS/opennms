@@ -16,6 +16,7 @@ public class TopologyComponentState extends AbstractComponentState implements Se
     private List<SharedEdge> m_edges;
     private List<String> m_svgDefs;
     private boolean m_highlightFocus = false;
+    private String m_lastUpdateTime = "";
 
     public void setBoundX(int boundX) {
         m_boundX = boundX;
@@ -87,5 +88,13 @@ public class TopologyComponentState extends AbstractComponentState implements Se
 
     public boolean isHighlightFocus(){
         return m_highlightFocus;
+    }
+
+    public void setLastUpdateTime(String lastUpdateTime) {
+        m_lastUpdateTime = lastUpdateTime;
+    }
+
+    public String getLastUpdateTime() {
+        return m_lastUpdateTime;
     }
 }

@@ -1,7 +1,6 @@
 package org.opennms.web.filter;
 
 
-import org.opennms.web.event.AcknowledgeType;
 
 public enum NormalizedAcknowledgeType {
     ACKNOWLEDGED("ack"),

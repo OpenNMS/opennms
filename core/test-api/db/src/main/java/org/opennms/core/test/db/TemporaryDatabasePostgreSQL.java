@@ -53,8 +53,8 @@ import org.opennms.core.db.install.InstallerDb;
 import org.opennms.core.db.install.SimpleDataSource;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.postgresql.xa.PGXADataSource;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCountCallbackHandler;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.util.StringUtils;
 
 /**
@@ -87,7 +87,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
 
     private boolean m_destroyed = false;
 
-    private SimpleJdbcTemplate m_jdbcTemplate;
+    private JdbcTemplate m_jdbcTemplate;
 
     public TemporaryDatabasePostgreSQL() throws Exception {
         this(TEST_DB_NAME_PREFIX + System.currentTimeMillis());
@@ -299,7 +299,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
         } catch (final SQLException e) {
             throw new TemporaryDatabaseException("Error occurred while testing database is connectable.", e);
         }
-        setJdbcTemplate(new SimpleJdbcTemplate(this));
+        setJdbcTemplate(new JdbcTemplate(this));
     }
 
     private void createTestDatabase() throws TemporaryDatabaseException {
@@ -495,7 +495,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
 
     public int countRows(String sql, Object... values) {
         RowCountCallbackHandler counter = new RowCountCallbackHandler();
-        getJdbcTemplate().getJdbcOperations().query(sql, values, counter);
+        getJdbcTemplate().query(sql, values, counter);
         return counter.getRowCount();
     }
 
@@ -504,7 +504,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
     }
 
     protected Integer getNextId(String nxtIdStmt) {
-        return getJdbcTemplate().queryForInt(nxtIdStmt);
+        return getJdbcTemplate().queryForObject(nxtIdStmt, Integer.class);
     }
 
     @Override
@@ -537,11 +537,11 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
         throw new SQLFeatureNotSupportedException("getParentLogger not supported");
     }
 
-    public SimpleJdbcTemplate getJdbcTemplate() {
+    public JdbcTemplate getJdbcTemplate() {
         return m_jdbcTemplate;
     }
 
-    public void setJdbcTemplate(SimpleJdbcTemplate jdbcTemplate) {
+    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
         m_jdbcTemplate = jdbcTemplate;
     }
 

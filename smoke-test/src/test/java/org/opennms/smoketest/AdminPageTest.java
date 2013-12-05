@@ -71,7 +71,7 @@ public class AdminPageTest extends OpenNMSSeleniumTestCase {
         waitForElement("link=Manage Surveillance Categories");
         waitForElement("link=Delete Nodes");
         waitForElement("link=Manage Applications");
-        waitForElement("link=Manage Location Monitors");
+        waitForElement("link=Manage Remote Pollers");
         waitForElement("link=the OpenNMS wiki");
     }
 

@@ -30,7 +30,6 @@ package org.opennms.netmgt.poller.monitors;
 
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 

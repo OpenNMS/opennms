@@ -28,36 +28,58 @@
 
 package org.opennms.netmgt.collectd;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.net.InetAddress;
+import java.util.Arrays;
+import java.util.Collection;
 
-import junit.framework.TestSuite;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
-import org.opennms.core.test.snmp.SnmpTestSuiteUtils;
-
+@RunWith(Parameterized.class)
 public class SnmpNodeCollectorTest extends SnmpCollectorTestCase {
 
-    public static TestSuite suite() {
-        return SnmpTestSuiteUtils.createSnmpVersionTestSuite(SnmpNodeCollectorTest.class);
-    }
+	public SnmpNodeCollectorTest(int config) {
+		setVersion(config);
+	}
 
+	@Parameters
+	public static Collection<Object[]> params() {
+		Object[][] retval = new Object[][] {
+			{ SnmpAgentConfig.VERSION1 },
+			{ SnmpAgentConfig.VERSION2C },
+			{ SnmpAgentConfig.VERSION3 }
+		};
+		return Arrays.asList(retval);
+	}
+
+    @Test
     public void testZeroVars() throws Exception {
         SnmpNodeCollector collector = createNodeCollector();
         assertMibObjectsPresent(collector.getCollectionSet().getNodeInfo(), getAttributeList());
     }
 
+    @Test
     public void testInvalidVar() throws Exception {
         addAttribute("invalid", ".1.3.6.1.2.1.2", "0", "string");
         SnmpNodeCollector collector = createNodeCollector();
         assertTrue(collector.getEntry().isEmpty());
     }
 
+    @Test
     public void testInvalidInst() throws Exception {
         addAttribute("invalid", ".1.3.6.1.2.1.1.3", "1", "timeTicks");
         SnmpNodeCollector collector = createNodeCollector();
         assertTrue(collector.getEntry().isEmpty());
     }
 
+    @Test
     public void testOneVar() throws Exception {
         addSysName();
         SnmpNodeCollector collector = createNodeCollector();

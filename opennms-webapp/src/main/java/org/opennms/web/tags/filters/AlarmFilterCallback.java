@@ -1,12 +1,11 @@
 package org.opennms.web.tags.filters;
 
-import org.opennms.netmgt.model.OnmsFilterFavorite;
-import org.opennms.web.alarm.AlarmUtil;
-import org.opennms.web.filter.Filter;
-import org.opennms.web.filter.QueryParameters;
+import java.util.List;
 
 import javax.servlet.ServletContext;
-import java.util.List;
+
+import org.opennms.web.alarm.AlarmUtil;
+import org.opennms.web.filter.Filter;
 
 public class AlarmFilterCallback extends AbstractFilterCallback {
 

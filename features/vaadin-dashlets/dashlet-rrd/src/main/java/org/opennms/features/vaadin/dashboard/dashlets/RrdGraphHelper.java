@@ -107,9 +107,9 @@ public class RrdGraphHelper {
      * @return a map of names/titles found
      */
     public Map<String, String> getGraphNameTitleMappingForResourceId(final String resourceId) {
-        return (Map<String, String>) m_transactionOperations.execute(new TransactionCallback<Object>() {
+        return m_transactionOperations.execute(new TransactionCallback<Map<String, String>>() {
             @Override
-            public Object doInTransaction(TransactionStatus transactionStatus) {
+            public Map<String, String> doInTransaction(TransactionStatus transactionStatus) {
                 OnmsResource resource = m_resourceDao.getResourceById(resourceId);
                 PrefabGraph[] queries = m_graphDao.getPrefabGraphsForResource(resource);
 
@@ -131,9 +131,9 @@ public class RrdGraphHelper {
      * @return a map of titles/names found
      */
     public Map<String, String> getGraphTitleNameMappingForResourceId(final String resourceId) {
-        return (Map<String, String>) m_transactionOperations.execute(new TransactionCallback<Object>() {
+        return m_transactionOperations.execute(new TransactionCallback<Map<String, String>>() {
             @Override
-            public Object doInTransaction(TransactionStatus transactionStatus) {
+            public Map<String, String> doInTransaction(TransactionStatus transactionStatus) {
                 OnmsResource resource = m_resourceDao.getResourceById(resourceId);
                 PrefabGraph[] queries = m_graphDao.getPrefabGraphsForResource(resource);
 
@@ -155,9 +155,9 @@ public class RrdGraphHelper {
      * @return a map of graphs found
      */
     public Map<String, String> getGraphResultsForResourceId(final String resourceId) {
-        return (Map<String, String>) m_transactionOperations.execute(new TransactionCallback<Object>() {
+        return m_transactionOperations.execute(new TransactionCallback<Map<String, String>>() {
             @Override
-            public Object doInTransaction(TransactionStatus transactionStatus) {
+            public Map<String, String> doInTransaction(TransactionStatus transactionStatus) {
                 OnmsResource resource = m_resourceDao.getResourceById(resourceId);
                 PrefabGraph[] queries = m_graphDao.getPrefabGraphsForResource(resource);
 
@@ -189,9 +189,9 @@ public class RrdGraphHelper {
      * @return the map of resources
      */
     public Map<OnmsResourceType, List<OnmsResource>> getResourceTypeMapForNodeId(final String nodeId) {
-        return (Map<OnmsResourceType, List<OnmsResource>>) m_transactionOperations.execute(new TransactionCallback<Object>() {
+        return m_transactionOperations.execute(new TransactionCallback<Map<OnmsResourceType, List<OnmsResource>>>() {
             @Override
-            public Object doInTransaction(TransactionStatus transactionStatus) {
+            public Map<OnmsResourceType, List<OnmsResource>> doInTransaction(TransactionStatus transactionStatus) {
                 OnmsResource resource = m_resourceDao.getResourceById("node[" + nodeId + "]");
 
                 Map<OnmsResourceType, List<OnmsResource>> resourceTypeMap = new LinkedHashMap<OnmsResourceType, List<OnmsResource>>();
@@ -213,9 +213,9 @@ public class RrdGraphHelper {
      * @return a list of nodes
      */
     public List<OnmsNode> getNodesWithResources() {
-        return (List<OnmsNode>) m_transactionOperations.execute(new TransactionCallback<Object>() {
+        return m_transactionOperations.execute(new TransactionCallback<List<OnmsNode>>() {
             @Override
-            public Object doInTransaction(TransactionStatus transactionStatus) {
+            public List<OnmsNode> doInTransaction(TransactionStatus transactionStatus) {
                 List<OnmsNode> onmsNodeList = m_nodeDao.findAll();
                 for (int i = onmsNodeList.size() - 1; i >= 0; i--) {
                     OnmsResource resource = m_resourceDao.getResourceById("node[" + onmsNodeList.get(i).getId() + "]");
