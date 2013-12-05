@@ -127,7 +127,7 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
     }
 
     protected void waitForText(final String expectedText, final long timeout) throws InterruptedException {
-        waitForText(expectedText, timeout, false);
+        waitForText(expectedText, timeout, true);
     }
 
     protected void waitForText(final String expectedText, final long timeout, boolean failOnError) throws InterruptedException {
@@ -138,7 +138,7 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
             }
         }
         try {
-            assertTrue(selenium.isTextPresent(expectedText));
+            assertTrue("Expected text not found: " + expectedText, selenium.isTextPresent(expectedText));
         } catch (final AssertionError e) {
             if (failOnError) {
                 throw e;
@@ -154,7 +154,7 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
     }
 
     protected void waitForHtmlSource(final String expectedText, final long timeout) throws InterruptedException {
-        waitForHtmlSource(expectedText, timeout, false);
+        waitForHtmlSource(expectedText, timeout, true);
     }
 
     protected void waitForHtmlSource(final String expectedText, final long timeout, boolean failOnError) throws InterruptedException {
@@ -165,7 +165,7 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
             }
         }
         try {
-            assertTrue(selenium.getHtmlSource().contains(expectedText));
+            assertTrue("HTML source not found: " + expectedText, selenium.getHtmlSource().contains(expectedText));
         } catch (final AssertionError e) {
             if (failOnError) {
                 throw e;
@@ -188,10 +188,11 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
             }
         }
         try {
-            assertTrue(selenium.isElementPresent(specification));
+            assertTrue("Element not found: " + specification, selenium.isElementPresent(specification));
         } catch (final AssertionError e) {
-            LOG.error("Failed to find element {} after {} milliseconds.", specification, timeout);
-            LOG.error("Page body was:\n{}", selenium.getBodyText());
+            throw e;
+            //LOG.error("Failed to find element {} after {} milliseconds.", specification, timeout);
+            //LOG.error("Page body was:\n{}", selenium.getBodyText());
         }
     }
 

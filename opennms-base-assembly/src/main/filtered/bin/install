@@ -1,6 +1,15 @@
 #!/bin/sh -
 
 OPENNMS_HOME="${install.dir}"
+RUNAS="root"
+
+myuser="`id | sed -e 's/uid=[0-9][0-9]*(//' -e 's/).*//'`"
+if [ x"$myuser" = x"$RUNAS" ]; then
+	true # all is well
+else
+	echo "Error: you must run this script as $RUNAS, not '$myuser'" >&2
+	exit 4 # According to LSB: 4 - user had insufficient privileges
+fi
 
 if [ -f "$OPENNMS_HOME/etc/opennms.conf" ]; then
 	. "$OPENNMS_HOME/etc/opennms.conf"

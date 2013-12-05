@@ -29,7 +29,7 @@
 package org.opennms.web.springframework.security;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.*;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -77,30 +77,41 @@ public class AuthFilterEnabler implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         
-        boolean shouldFilter = AclUtils.shouldFilter(SecurityContextHolder.getContext().getAuthentication().getAuthorities());
+            boolean shouldFilter = AclUtils.shouldFilter(SecurityContextHolder.getContext().getAuthentication().getAuthorities());
 
         try {
+            String[] groupNames;
             if (shouldFilter) {
                 String user = SecurityContextHolder.getContext().getAuthentication().getName();
 
-
                 List<Group> groups = m_groupDao.findGroupsForUser(user);
-
-                String[] groupNames = new String[groups.size()];
+                groupNames  = new String[groups.size()];
                 for(int i = 0; i < groups.size(); i++) {
                     groupNames[i] = groups.get(i).getName();
                 }
 
+                if(SecurityContextHolder.getContext().getAuthentication().getDetails() instanceof OnmsAuthenticationDetails){
+                    OnmsAuthenticationDetails details = (OnmsAuthenticationDetails) SecurityContextHolder.getContext().getAuthentication().getDetails();
+
+                    if(details.getUserGroups() != null && details.getUserGroups().length > 0){
+                        Set<String> detailsSet = new HashSet<String>(Arrays.asList(details.getUserGroups()));
+                        Set<String> groupSet = new HashSet<String>(Arrays.asList(groupNames));
+
+                        if(groupSet.containsAll(detailsSet)){
+                            groupNames = details.getUserGroups();
+                        }
+                    }
+                }
 
                 m_filterManager.enableAuthorizationFilter(groupNames);
             }
-
             chain.doFilter(request, response);
 
         } finally {
             if (shouldFilter) {
                 m_filterManager.disableAuthorizationFilter();
             }
+
         }
 
         

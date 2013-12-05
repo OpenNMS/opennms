@@ -28,22 +28,22 @@
 
 package org.opennms.features.topology.api.topo;
 
+import java.util.List;
+import java.util.Set;
+
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.support.AbstractSearchSelectionOperation;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
-
-import java.util.List;
 
 public interface SearchProvider {
     String getSearchProviderNamespace();
-    public boolean contributesTo(String namespace);
-    List<SearchResult> query(SearchQuery searchQuery);
+    boolean contributesTo(String namespace);
+    List<SearchResult> query(SearchQuery searchQuery, GraphContainer graphContainer);
     void onFocusSearchResult(SearchResult searchResult, OperationContext operationContext);
     void onDefocusSearchResult(SearchResult searchResult, OperationContext operationContext);
     boolean supportsPrefix(String searchPrefix);
-    List<VertexRef> getVertexRefsBy(SearchResult searchResult);
+    Set<VertexRef> getVertexRefsBy(SearchResult searchResult);
     void addVertexHopCriteria(SearchResult searchResult, GraphContainer container);
     void removeVertexHopCriteria(SearchResult searchResult, GraphContainer container);
     void onCenterSearchResult(SearchResult searchResult, GraphContainer graphContainer);
+    void onToggleCollapse(SearchResult searchResult, GraphContainer graphContainer);
 }

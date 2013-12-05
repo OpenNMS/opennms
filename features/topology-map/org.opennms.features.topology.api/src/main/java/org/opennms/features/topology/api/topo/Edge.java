@@ -30,7 +30,14 @@ package org.opennms.features.topology.api.topo;
 
 import com.vaadin.data.Item;
 
-public interface Edge extends EdgeRef {
+public interface Edge extends EdgeRef, Cloneable {
+
+	Edge clone();
+
+	/**
+	 * Allow code to override the ID on cloned instances.
+	 */
+	void setId(String id);
 
 	/**
 	 * @deprecated Use namespace/id tuple
@@ -43,7 +50,7 @@ public interface Edge extends EdgeRef {
 
 	Connector getTarget();
 
-        @Override
+	@Override
 	String getLabel();
 
 	String getTooltipText();

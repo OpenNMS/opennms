@@ -28,17 +28,26 @@
 
 package org.opennms.features.topology.app.internal.gwt.client.ui;
 
+import org.opennms.features.topology.app.internal.gwt.client.SearchSuggestion;
+
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.*;
-import org.opennms.features.topology.app.internal.gwt.client.SearchSuggestion;
+import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 public class SearchTokenField extends Composite {
+
+    public interface CollapseCallback{
+        void onCollapse(SearchSuggestion searchSuggestion);
+    }
 
     public interface RemoveCallback{
         void onRemove(SearchSuggestion searchSuggestion);
@@ -64,9 +73,16 @@ public class SearchTokenField extends Composite {
     Anchor m_centerSuggestionBtn;
 
     @UiField
+    Anchor m_collapseBtn;
+
+    @UiField
+    HorizontalPanel m_iconPanel;
+
+    @UiField
     HorizontalPanel m_tokenContainer;
 
-    private SearchSuggestion m_suggestion;
+    private final SearchSuggestion m_suggestion;
+    private CollapseCallback m_collapseCallback;
     private RemoveCallback m_removeCallback;
     private CenterOnSuggestionCallback m_centerOnCallback;
 
@@ -83,16 +99,42 @@ public class SearchTokenField extends Composite {
     }
 
     private void init() {
+        log(getClass().getSimpleName() + ".init(): " + m_suggestion.toString());
+
         m_tokenContainer.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 
         m_closeBtn.setTitle("Remove from focus");
         m_closeBtn.getElement().getStyle().setCursor(Style.Cursor.POINTER);
+        m_closeBtn.getElement().getStyle().setPaddingLeft(5, Style.Unit.PX);
 
-        m_centerSuggestionBtn.setTitle("Center On Map");
+        m_centerSuggestionBtn.setTitle("Center on map");
         m_centerSuggestionBtn.getElement().getStyle().setCursor(Style.Cursor.POINTER);
+        m_centerSuggestionBtn.getElement().getStyle().setPaddingLeft(5, Style.Unit.PX);
+
+        if (m_suggestion.isCollapsible()) {
+            m_collapseBtn.getElement().getStyle().setCursor(Style.Cursor.POINTER);
+
+            // If the suggestion is already collapsed, then switch the icon to the "+" icon
+            m_collapseBtn.getElement().removeClassName("icon-plus");
+            m_collapseBtn.getElement().removeClassName("icon-minus");
+            if (m_suggestion.isCollapsed()) {
+                m_collapseBtn.getElement().addClassName("icon-plus");
+                m_collapseBtn.setTitle("Expand category");
+            } else {
+                m_collapseBtn.getElement().addClassName("icon-minus");
+                m_collapseBtn.setTitle("Collapse category");
+            }
+        } else {
+            m_collapseBtn.setVisible(false);
+        }
+
         setLabel(m_suggestion.getLabel());
         setNamespace(m_suggestion.getNamespace());
 
+    }
+
+    public void setCollapseCallback(CollapseCallback callback) {
+        m_collapseCallback = callback;
     }
 
     public void setRemoveCallback(RemoveCallback callback) {
@@ -104,11 +146,31 @@ public class SearchTokenField extends Composite {
     }
 
     public void setNamespace(String namespace) {
-        m_namespace.getElement().setInnerText(namespace + ": ");
+        final String capitalized = namespace.substring(0, 1).toUpperCase() + namespace.substring(1);
+        m_namespace.getElement().setInnerText(capitalized + ": ");
     }
 
     public void setLabel(String label) {
         m_label.getElement().setInnerText(label);
+    }
+
+    @UiHandler("m_collapseBtn")
+    void handleCollapse(ClickEvent event) {
+        log(getClass().getSimpleName() + ".handleCollapse(): " + m_suggestion.toString());
+        
+        if (m_collapseCallback != null) {
+            m_collapseCallback.onCollapse(m_suggestion);
+        }
+        // Toggle the icon on the button
+        if (m_suggestion.isCollapsed()) {
+            m_collapseBtn.getElement().removeClassName("icon-minus");
+            m_collapseBtn.getElement().addClassName("icon-plus");
+            m_collapseBtn.setTitle("Expand group");
+        } else {
+            m_collapseBtn.getElement().removeClassName("icon-plus");
+            m_collapseBtn.getElement().addClassName("icon-minus");
+            m_collapseBtn.setTitle("Collapse group");
+        }
     }
 
     @UiHandler("m_closeBtn")
@@ -125,4 +187,7 @@ public class SearchTokenField extends Composite {
         }
     }
 
+    private static native void log(Object message) /*-{
+        $wnd.console.debug(message);
+    }-*/;
 }

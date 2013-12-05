@@ -83,4 +83,6 @@ public interface GraphContainer extends DisplayState {
 
     // TODO move to another location. This should not be stored here! (maybe VaadinApplicationContext is the right place)
     void setSessionId(String sessionId);
+
+    void setDirty(boolean dirty);
 }

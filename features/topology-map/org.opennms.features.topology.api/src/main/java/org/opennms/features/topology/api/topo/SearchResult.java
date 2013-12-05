@@ -28,31 +28,38 @@
 
 package org.opennms.features.topology.api.topo;
 
-public class SearchResult{
+public class SearchResult {
 
     private final String m_id;
     private final String m_namespace;
     private final String m_label;
+    private boolean m_collapsible = false;
+    private boolean m_collapsed = false;
 
-    public SearchResult(String id, String namespace, String label){
+    public SearchResult(String namespace, String id, String label){
         m_id = id;
         m_namespace = namespace;
         m_label = label;
     }
 
     public SearchResult(VertexRef vertexRef) {
-        this(vertexRef.getId(), vertexRef.getNamespace(), vertexRef.getLabel());
+        this(vertexRef.getNamespace(), vertexRef.getId(), vertexRef.getLabel());
     }
 
-    public String getId() {
+    public SearchResult(SearchResult result) {
+        this(result.getNamespace(), result.getId(), result.getLabel());
+        setCollapsible(result.isCollapsible());
+    }
+
+    public final String getId() {
         return m_id;
     }
 
-    public String getNamespace() {
+    public final String getNamespace() {
         return m_namespace;
     }
 
-    public String getLabel() {
+    public final String getLabel() {
         return m_label;
     }
 
@@ -76,4 +83,20 @@ public class SearchResult{
                 + ((getNamespace() == null) ? 0 : getNamespace().hashCode());
         return result;
     }
+
+	public final boolean isCollapsible() {
+		return m_collapsible;
+	}
+
+	public final void setCollapsible(boolean collapsible) {
+		this.m_collapsible = collapsible;
+	}
+
+	public final boolean isCollapsed() {
+		return m_collapsed;
+	}
+
+	public final void setCollapsed(boolean collapsed) {
+		this.m_collapsed = collapsed;
+	}
 }

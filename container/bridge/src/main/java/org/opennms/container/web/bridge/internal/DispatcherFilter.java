@@ -73,8 +73,6 @@ public class DispatcherFilter implements Filter {
             } else {
                 chain.doFilter(request, response);
             }
-        } catch (final Exception e) {
-            m_filterConfig.getServletContext().log("Something went horribly awry.", e);
         } finally {
             m_controller.getRequestListener().requestDestroyed(sre);
         }

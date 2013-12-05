@@ -226,7 +226,9 @@ public class SimpleEdgeProvider implements EdgeProvider {
 	@Override
 	public List<Edge> getEdges(Criteria... criteria) {
 		List<Edge> edges = new ArrayList<Edge>();
-		edges.addAll(m_edgeMap.values());
+		for (Edge edge : m_edgeMap.values()) {
+			edges.add(edge.clone());
+		}
 
 		for (Criteria criterium : criteria) {
 			try {

@@ -147,7 +147,7 @@ public class EventController extends MultiActionController implements Initializi
     public ModelAndView index(HttpServletRequest request, HttpServletResponse response) throws Exception {
     	List<OnmsFilterFavorite> userFilterList = favoriteService.getFavorites(request.getRemoteUser(), OnmsFilterFavorite.Page.EVENT);
         ModelAndView modelAndView = new ModelAndView("event/index");
-        modelAndView.addObject("favorites", userFilterList);
+        modelAndView.addObject("favorites", userFilterList.toArray());
         modelAndView.addObject("callback", getFilterCallback());
         return modelAndView;
     }
@@ -162,7 +162,8 @@ public class EventController extends MultiActionController implements Initializi
                     OnmsFilterFavorite.Page.EVENT);
             if (favorite != null) {
                 ModelAndView successView = list(request, favorite); // success
-                AlertTag.addAlertToRequest(successView, "Favorite was created successfully", AlertType.SUCCESS);
+                //Comment out as per request
+                //AlertTag.addAlertToRequest(successView, "Favorite was created successfully", AlertType.SUCCESS);
                 return successView;
             }
             error = "An error occured while creating the favorite";
@@ -364,7 +365,7 @@ public class EventController extends MultiActionController implements Initializi
         modelAndView.addObject("events", events);
         modelAndView.addObject("parms", new NormalizedQueryParameters(parms));
         modelAndView.addObject("callback", getFilterCallback());
-        modelAndView.addObject("favorites", favoriteService.getFavorites(request.getRemoteUser(), OnmsFilterFavorite.Page.EVENT));
+        modelAndView.addObject("favorites", favoriteService.getFavorites(request.getRemoteUser(), OnmsFilterFavorite.Page.EVENT).toArray());
 
         if (m_showEventCount) {
             EventCriteria countCriteria = new EventCriteria(filterList, ackType);

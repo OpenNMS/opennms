@@ -110,7 +110,7 @@ public class AlarmFilterController extends MultiActionController implements Init
     public ModelAndView index(HttpServletRequest request, HttpServletResponse response) throws Exception {
         List<OnmsFilterFavorite> userFilterList = favoriteService.getFavorites(request.getRemoteUser(), OnmsFilterFavorite.Page.ALARM);
         ModelAndView modelAndView = new ModelAndView("alarm/index");
-        modelAndView.addObject("favorites", userFilterList);
+        modelAndView.addObject("favorites", userFilterList.toArray());
         modelAndView.addObject("callback", getFilterCallback());
         return modelAndView;
     }
@@ -125,7 +125,8 @@ public class AlarmFilterController extends MultiActionController implements Init
                     OnmsFilterFavorite.Page.ALARM);
             if (favorite != null) {
                 ModelAndView successView = list(request, favorite); // success
-                AlertTag.addAlertToRequest(successView, "Favorite was created successfully", AlertType.SUCCESS);
+                //Commented out per request. Left it in, in case we wanted it back later
+                //AlertTag.addAlertToRequest(successView, "Favorite was created successfully", AlertType.SUCCESS);
                 return successView;
             }
             error = "An error occured while creating the favorite";
@@ -239,7 +240,7 @@ public class AlarmFilterController extends MultiActionController implements Init
         modelAndView.addObject("alarmCount", alarmCount);
         modelAndView.addObject("parms", new NormalizedQueryParameters(parms));
         modelAndView.addObject("callback", getFilterCallback());
-        modelAndView.addObject("favorites", favoriteService.getFavorites(request.getRemoteUser(), OnmsFilterFavorite.Page.ALARM));
+        modelAndView.addObject("favorites", favoriteService.getFavorites(request.getRemoteUser(), OnmsFilterFavorite.Page.ALARM).toArray());
         return modelAndView;
     }
 

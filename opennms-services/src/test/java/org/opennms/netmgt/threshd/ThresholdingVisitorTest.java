@@ -252,7 +252,7 @@ public class ThresholdingVisitorTest {
 
     /*
      * This test uses this files from src/test/resources:
-     * - thresd-configuration.xml
+     * - threshd-configuration.xml
      * - test-thresholds.xml
      */
     @Test
@@ -265,7 +265,7 @@ public class ThresholdingVisitorTest {
 
     /*
      * This test uses this files from src/test/resources:
-     * - thresd-configuration.xml
+     * - threshd-configuration.xml
      * - test-thresholds.xml
      * 
      * Updated to reflect the fact that counter are treated as rates (counter wrap is not checked here anymore).
@@ -361,7 +361,7 @@ public class ThresholdingVisitorTest {
 
     /*
      * This test uses this files from src/test/resources:
-     * - thresd-configuration.xml
+     * - threshd-configuration.xml
      * - test-thresholds.xml
      * 
      * Updated to reflect the fact that counter are treated as rates.
@@ -382,7 +382,7 @@ public class ThresholdingVisitorTest {
 
     /*
      * This test uses this files from src/test/resources:
-     * - thresd-configuration.xml
+     * - threshd-configuration.xml
      * - test-thresholds.xml
      * 
      * Updated to reflect the fact that counter are treated as rates.
@@ -412,11 +412,11 @@ public class ThresholdingVisitorTest {
     
     /*
      * Before call visitor.reload(), this test uses this files from src/test/resources:
-     * - thresd-configuration.xml
+     * - threshd-configuration.xml
      * - test-thresholds.xml
      * 
      * After call visitor.reload(), this test uses this files from src/test/resources:
-     * - thresd-configuration.xml
+     * - threshd-configuration.xml
      * - test-thresholds-2.xml
      */
     @Test
@@ -555,7 +555,7 @@ public class ThresholdingVisitorTest {
      * any scenario which can actually replicate the reported issue
      * 
      * This test uses this files from src/test/resources:
-     * - thresd-configuration.xml
+     * - threshd-configuration.xml
      * - test-thresholds-bug2746.xml
      */
     @Test
@@ -603,7 +603,7 @@ public class ThresholdingVisitorTest {
 
     /*
      * This test uses this files from src/test/resources:
-     * - thresd-configuration.xml
+     * - threshd-configuration.xml
      * - test-thresholds.xml
      */
     @Test
@@ -629,11 +629,11 @@ public class ThresholdingVisitorTest {
     
     /*
      * Before call visitor.reload(), this test uses this files from src/test/resources:
-     * - thresd-configuration.xml
+     * - threshd-configuration.xml
      * - test-thresholds.xml
      * 
      * After call visitor.reload(), this test uses this files from src/test/resources:
-     * - thresd-configuration.xml
+     * - threshd-configuration.xml
      * - test-thresholds-2.xml
      */
     @Test
@@ -667,11 +667,11 @@ public class ThresholdingVisitorTest {
 
     /*
      * Before call visitor.reload(), this test uses this files from src/test/resources:
-     * - thresd-configuration.xml
+     * - threshd-configuration.xml
      * - test-thresholds.xml
      * 
      * After call visitor.reload(), this test uses this files from src/test/resources:
-     * - thresd-configuration.xml
+     * - threshd-configuration.xml
      * - test-thresholds-3.xml
      */
     @Test
@@ -712,11 +712,11 @@ public class ThresholdingVisitorTest {
      * The high definition must be removed from cache and rearmed event must be sent.
      * 
      * Before call visitor.reload(), this test uses this files from src/test/resources:
-     * - thresd-configuration.xml
+     * - threshd-configuration.xml
      * - test-thresholds.xml
      * 
      * After call visitor.reload(), this test uses this files from src/test/resources:
-     * - thresd-configuration.xml
+     * - threshd-configuration.xml
      * - test-thresholds-4.xml
      */
     @Test
@@ -746,7 +746,7 @@ public class ThresholdingVisitorTest {
     
     /*
      * This test uses this files from src/test/resources:
-     * - thresd-configuration.xml
+     * - threshd-configuration.xml
      * - test-thresholds-bug3193.xml
      * 
      * Updated to reflect the fact that counter are treated as rates.
@@ -798,7 +798,7 @@ public class ThresholdingVisitorTest {
     
     /*
      * This test uses this files from src/test/resources:
-     * - thresd-configuration.xml
+     * - threshd-configuration.xml
      * - test-thresholds-2.xml
      * 
      * Updated to reflect the fact that counter are treated as rates.
@@ -810,7 +810,7 @@ public class ThresholdingVisitorTest {
 
     /*
      * This test uses this files from src/test/resources:
-     * - thresd-configuration.xml
+     * - threshd-configuration.xml
      * - test-thresholds-2.xml
      * 
      * Updated to reflect the fact that counter are treated as rates.
@@ -822,7 +822,7 @@ public class ThresholdingVisitorTest {
 
     /*
      * This test uses this files from src/test/resources:
-     * - thresd-configuration.xml
+     * - threshd-configuration.xml
      * - test-thresholds-bug3227.xml
      * 
      * There is no Frame Relay related thresholds definitions on test-thresholds-bug3227.xml.
@@ -870,7 +870,7 @@ public class ThresholdingVisitorTest {
 
     /*
      * This test uses this files from src/test/resources:
-     * - thresd-configuration.xml
+     * - threshd-configuration.xml
      * - test-thresholds-bug3333.xml
      */
     @Test
@@ -893,7 +893,7 @@ public class ThresholdingVisitorTest {
     
     /*
      * This test uses this files from src/test/resources:
-     * - thresd-configuration-bug3390.xml
+     * - threshd-configuration-bug3390.xml
      * - test-thresholds-bug3390.xml
      * 
      * The idea is to define many threshold-group parameters on a service inside a package
@@ -918,12 +918,12 @@ public class ThresholdingVisitorTest {
 
         // Validating Thresholding Set
         ThresholdingVisitor visitor = createVisitor();
-        assertEquals(5, visitor.m_thresholdingSet.m_thresholdGroups.size());
+        assertEquals(5, visitor.getThresholdGroups().size());
     }
 
     /*
      * This test uses this files from src/test/resources:
-     * - thresd-configuration-bug3554.xml
+     * - threshd-configuration-bug3554.xml
      * - test-thresholds-bug3554.xml
      */
     @Test
@@ -949,7 +949,7 @@ public class ThresholdingVisitorTest {
 
     /*
      * This test uses this files from src/test/resources:
-     * - thresd-configuration-bug3554.xml
+     * - threshd-configuration-bug3554.xml
      * - test-thresholds-bug3554.xml
      * 
      * The problem is that every time we create a ThresholdingVisitor instance, the method
@@ -970,7 +970,7 @@ public class ThresholdingVisitorTest {
 
     /*
      * This test uses this files from src/test/resources:
-     * - thresd-configuration-bug3554.xml
+     * - threshd-configuration-bug3554.xml
      * - test-thresholds-bug3554.xml
      * 
      * This test demonstrate that we can force filter auto-reload.
@@ -990,7 +990,7 @@ public class ThresholdingVisitorTest {
 
     /*
      * This test uses this files from src/test/resources:
-     * - thresd-configuration-bug3748.xml
+     * - threshd-configuration-bug3748.xml
      * - test-thresholds-bug3748.xml
      * 
      * This test has been created to validate absolute thresholds.
@@ -1008,7 +1008,7 @@ public class ThresholdingVisitorTest {
 
     /*
      * This test uses this files from src/test/resources:
-     * - thresd-configuration.xml
+     * - threshd-configuration.xml
      * - test-thresholds-NMS5115.xml
      * 
      * The idea is to be able to use any numeric metric inside the resource filters. NMS-5115 is a valid use case for this.
@@ -1110,7 +1110,7 @@ public class ThresholdingVisitorTest {
 
     /*
      * This test uses this files from src/test/resources:
-     * - thresd-configuration-bug3487.xml
+     * - threshd-configuration-bug3487.xml
      * - test-thresholds.xml
      */
     @Test
@@ -1146,7 +1146,7 @@ public class ThresholdingVisitorTest {
 
     /*
      * This test uses this files from src/test/resources:
-     * - thresd-configuration-bug3575.xml
+     * - threshd-configuration-bug3575.xml
      * - test-thresholds-bug3575.xml
      */
     @Test
@@ -1175,7 +1175,7 @@ public class ThresholdingVisitorTest {
 
     /*
      * This test uses this files from src/test/resources:
-     * - thresd-configuration.xml
+     * - threshd-configuration.xml
      * - test-thresholds-bug3428.xml
      * 
      * Updated to reflect the fact that counter are treated as rates.
@@ -1195,7 +1195,7 @@ public class ThresholdingVisitorTest {
 
     /*
      * This test uses this files from src/test/resources:
-     * - thresd-configuration.xml
+     * - threshd-configuration.xml
      * - test-thresholds-bug3428.xml
      * 
      * Updated to reflect the fact that counter are treated as rates.
@@ -1215,7 +1215,7 @@ public class ThresholdingVisitorTest {
 
     /*
      * This test uses this files from src/test/resources:
-     * - thresd-configuration.xml
+     * - threshd-configuration.xml
      * - test-thresholds-bug3664.xml
      * 
      * Updated to reflect the fact that counter are treated as rates.
@@ -1264,7 +1264,7 @@ public class ThresholdingVisitorTest {
         verifyEvents(0);
     }
 
-    /*
+    /**
      * This test uses this files from src/test/resources:
      * - threshd-configuration-outages.xml
      * - test-thresholds.xml
@@ -1273,14 +1273,14 @@ public class ThresholdingVisitorTest {
      public void testBug4261_scheduledOutages() throws Exception {
          initFactories("/threshd-configuration-outages.xml","/test-thresholds.xml");
          ThresholdingVisitor visitor = createVisitor();
-         Assert.assertEquals(1, visitor.m_thresholdingSet.m_scheduledOutages.size());
+         Assert.assertEquals(1, visitor.getScheduledOutages().size());
          Assert.assertTrue("is node on outage", visitor.isNodeInOutage());
      }
 
      
-     /*
+     /**
       * This test uses this files from src/test/resources:
-      * - thresd-configuration.xml
+      * - threshd-configuration.xml
       * - test-thresholds-bug5258-a.xml
       * - test-thresholds-bug5258-b.xml
       */
@@ -1322,7 +1322,7 @@ public class ThresholdingVisitorTest {
 
      /*
      * This test uses this files from src/test/resources:
-     * - thresd-configuration.xml
+     * - threshd-configuration.xml
      * - test-thresholds-bug3664.xml
      * 
      * Updated to reflect the fact that counter are treated as rates.
@@ -1363,7 +1363,7 @@ public class ThresholdingVisitorTest {
 
     /*
      * This test uses this files from src/test/resources:
-     * - thresd-configuration.xml
+     * - threshd-configuration.xml
      * - test-thresholds-bug3428.xml
      * 
      * Updated to reflect the fact that counter are treated as rates.
@@ -1514,7 +1514,7 @@ public class ThresholdingVisitorTest {
 
     /*
      * This test uses this files from src/test/resources:
-     * - thresd-configuration.xml
+     * - threshd-configuration.xml
      * - test-thresholds.xml
      * 
      * It is important to add ".*" at the end of resource-filter tag definition in order to match many resources
@@ -1540,8 +1540,27 @@ public class ThresholdingVisitorTest {
     }
 
     /*
+     * NMS-6278
+     * 
      * This test uses this files from src/test/resources:
-     * - thresd-configuration.xml
+     * - threshd-configuration.xml
+     * - test-thresholds-numeric-filter.xml
+     */
+    @Test
+    public void testNumericThresholdFiltersOnGenericResource() throws Exception {
+        initFactories("/threshd-configuration.xml","/test-thresholds-numeric-filter.xml");
+        ThresholdingVisitor visitor = createVisitor();
+        
+        addHighThresholdEvent(1, 30, 25, 50, "/opt", "1", "hrStorageUsed", null, null);
+
+        runFileSystemDataTest(visitor, 1, "/opt", 50, 100);
+        
+        verifyEvents(0);
+    }
+
+    /*
+     * This test uses this files from src/test/resources:
+     * - threshd-configuration.xml
      * - test-thresholds-5.xml
      */
     @Test
@@ -1816,7 +1835,7 @@ public class ThresholdingVisitorTest {
                 for (Event e : m_anticipatedEvents) {
                     System.err.println("expected event " + e.getUei() + ": " + e.getDescr());
                 }
-                System.err.println("anticipated = " + m_anticipatedEvents + ", received = " + receivedList);
+                System.err.println("anticipated = " + m_anticipatedEvents + "\nreceived = " + receivedList);
                 fail("Anticipated event count (" + m_anticipatedEvents.size() + ") is different from received event count (" + receivedList.size() + ").");
             }
             for (int i = 0; i < m_anticipatedEvents.size(); i++) {

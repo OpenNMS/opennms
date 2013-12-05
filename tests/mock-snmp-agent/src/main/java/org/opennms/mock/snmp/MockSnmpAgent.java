@@ -214,7 +214,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         if (!thread.isAlive()) {
             agent.m_running = false;
             agent.m_stopped = true;
-            throw new IllegalStateException("agent failed to start", agent.m_failure);
+            throw new IllegalStateException("agent failed to start on address " + bindAddress, agent.m_failure);
         }
         
         if (System.getProperty(PROPERTY_SLEEP_ON_CREATE) != null) {

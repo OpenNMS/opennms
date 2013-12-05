@@ -29,8 +29,6 @@
 package org.opennms.netmgt.config;
 
 import java.beans.PropertyVetoException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -42,22 +40,18 @@ import javax.sql.DataSource;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.db.BaseConnectionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.opennms.netmgt.config.opennmsDataSources.Param;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TomcatJdbcPoolConnectionFactory extends BaseConnectionFactory {
     private static final Logger LOG = LoggerFactory.getLogger(TomcatJdbcPoolConnectionFactory.class);
 
 	private org.apache.tomcat.jdbc.pool.DataSource m_dataSource;
 
-    public TomcatJdbcPoolConnectionFactory(final InputStream stream, final String dsName) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
-    	super(stream, dsName);
-    }
-
-    public TomcatJdbcPoolConnectionFactory(final String configFile, final String dsName) throws IOException, MarshalException, ValidationException, PropertyVetoException, SQLException {
-    	super(configFile, dsName);
+    public TomcatJdbcPoolConnectionFactory(final JdbcDataSource ds) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
+    	super(ds);
     }
 
     @Override
@@ -128,7 +122,7 @@ public class TomcatJdbcPoolConnectionFactory extends BaseConnectionFactory {
     }
 
     @Override
-    public void setLoginTimeout(final int seconds) throws SQLException {
+    public void setLoginTimeout(final int seconds) {
         m_dataSource.setLoginTimeout(seconds);
     }
 
@@ -143,7 +137,7 @@ public class TomcatJdbcPoolConnectionFactory extends BaseConnectionFactory {
     }
 
     @Override
-    public void close() throws SQLException {
+    public void close() {
     	super.close();
     	LOG.info("Closing Tomcat DBCP pool.");
     	m_dataSource.close();

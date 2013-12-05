@@ -32,6 +32,8 @@ package org.opennms.features.topology.app.internal.ui;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.MapViewManager;
@@ -44,6 +46,7 @@ import org.opennms.features.topology.api.support.VertexHopGraphProvider.FocusNod
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractSearchQuery;
 import org.opennms.features.topology.api.topo.AbstractVertexRef;
+import org.opennms.features.topology.api.topo.CollapsibleCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.SearchProvider;
 import org.opennms.features.topology.api.topo.SearchQuery;
@@ -52,6 +55,7 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.gwt.client.SearchBoxServerRpc;
 import org.opennms.features.topology.app.internal.gwt.client.SearchBoxState;
 import org.opennms.features.topology.app.internal.gwt.client.SearchSuggestion;
+import org.opennms.features.topology.app.internal.support.CategoryHopCriteria;
 import org.opennms.osgi.OnmsServiceManager;
 
 import com.google.common.base.Function;
@@ -80,7 +84,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
 
         @Override
         public void selectSuggestion(SearchSuggestion searchSuggestion) {
-            SearchResult searchResult = new SearchResult(searchSuggestion.getId(), searchSuggestion.getNamespace(), searchSuggestion.getLabel());
+            SearchResult searchResult = new SearchResult(searchSuggestion.getNamespace(), searchSuggestion.getId(), searchSuggestion.getLabel());
 
             Multiset<SearchProvider> keys = m_suggestionMap.keys();
             for(SearchProvider key : keys){
@@ -94,7 +98,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
 
         @Override
         public void removeSelected(SearchSuggestion searchSuggestion) {
-            SearchResult searchResult = new SearchResult(searchSuggestion.getId(), searchSuggestion.getNamespace(), searchSuggestion.getLabel());
+            SearchResult searchResult = new SearchResult(searchSuggestion.getNamespace(), searchSuggestion.getId(), searchSuggestion.getLabel());
 
             Multiset<SearchProvider> keys = m_suggestionMap.keys();
             for(SearchProvider key : keys){
@@ -109,7 +113,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
 
         @Override
         public void addToFocus(SearchSuggestion searchSuggestion) {
-            SearchResult searchResult = new SearchResult(searchSuggestion.getId(), searchSuggestion.getNamespace(), searchSuggestion.getLabel());
+            SearchResult searchResult = new SearchResult(searchSuggestion.getNamespace(), searchSuggestion.getId(), searchSuggestion.getLabel());
 
             Multiset<SearchProvider> keys = m_suggestionMap.keys();
             for(SearchProvider key : keys){
@@ -126,7 +130,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
 
         @Override
         public void removeFocused(SearchSuggestion searchSuggestion) {
-            SearchResult searchResult = new SearchResult(searchSuggestion.getId(), searchSuggestion.getNamespace(), searchSuggestion.getLabel());
+            SearchResult searchResult = new SearchResult(searchSuggestion.getNamespace(), searchSuggestion.getId(), searchSuggestion.getLabel());
 
             Multiset<SearchProvider> keys = m_suggestionMap.keys();
             for(SearchProvider key : keys){
@@ -139,21 +143,25 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
                 }
             }
 
+            if(m_suggestionMap.size() == 0){
+                removeIfSuggMapEmpty(searchResult, m_operationContext.getGraphContainer());
+            }
+
             removeIfSpecialURLCase(searchResult);
             m_operationContext.getGraphContainer().redoLayout();
         }
 
         @Override
         public void centerSearchSuggestion(SearchSuggestion searchSuggestion){
-            SearchResult searchResult = new SearchResult(searchSuggestion.getId(), searchSuggestion.getNamespace(), searchSuggestion.getLabel());
+            SearchResult searchResult = new SearchResult(searchSuggestion.getNamespace(), searchSuggestion.getId(), searchSuggestion.getLabel());
 
-            List<VertexRef> vRefs = null;
+            Set<VertexRef> vRefs = new TreeSet<VertexRef>();
             Multiset<SearchProvider> keys = m_suggestionMap.keys();
             for(SearchProvider key : keys){
                 Collection<SearchResult> searchResults = m_suggestionMap.get(key);
                 if(searchResults.contains(searchResult)) {
                     key.onCenterSearchResult(searchResult, m_operationContext.getGraphContainer());
-                    vRefs = key.getVertexRefsBy(searchResult);
+                    vRefs.addAll(key.getVertexRefsBy(searchResult));
                     break;
                 }
             }
@@ -163,7 +171,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
             AbstractVertexRef vertexRef = new AbstractVertexRef(searchResult.getNamespace(), searchResult.getId(), searchResult.getLabel());
             if(criteria.getVertices().contains(vertexRef)){
                 if(vRefs == null){
-                    vRefs = Lists.newArrayList();
+                    vRefs = new TreeSet<VertexRef>();
                 }
                 vRefs.add(vertexRef);
             }
@@ -173,12 +181,60 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
             mapViewManager.setBoundingBox(graphContainer.getGraph().getLayout().computeBoundingBox(vRefs));
         }
 
+        @Override
+        public void toggleSuggestionCollapse(SearchSuggestion searchSuggestion) {
+            SearchResult searchResult = new SearchResult(searchSuggestion.getNamespace(), searchSuggestion.getId(), searchSuggestion.getLabel());
+            Multiset<SearchProvider> keys = m_suggestionMap.keys();
+            for(SearchProvider key : keys){
+                Collection<SearchResult> searchResults = m_suggestionMap.get(key);
+                if(searchResults.contains(searchResult)) {
+                    key.onToggleCollapse(searchResult, m_operationContext.getGraphContainer());
+                    break;
+                }
+            }
+
+            if(m_suggestionMap.size() == 0){
+                collapseIfSuggMapEmpty(searchResult, m_operationContext.getGraphContainer());
+            }
+        }
     };
 
     public SearchBox(OnmsServiceManager serviceManager, OperationContext operationContext) {
         m_serviceManager = serviceManager;
         m_operationContext = operationContext;
         init();
+    }
+
+    public void removeIfSuggMapEmpty(SearchResult searchResult, GraphContainer graphContainer){
+        Criteria[] criterias = graphContainer.getCriteria();
+        for(Criteria criteria : criterias){
+            try{
+                CategoryHopCriteria crit = (CategoryHopCriteria) criteria;
+                if(crit.getCategoryName().equals(searchResult.getLabel())) graphContainer.removeCriteria(crit);
+            } catch (ClassCastException e){}
+
+        }
+    }
+
+    public void collapseIfSuggMapEmpty(SearchResult searchResult, GraphContainer graphContainer){
+        //A special check for categories that were added then after re-login can't collapse
+        boolean isDirty = false;
+        Criteria[] criterias = graphContainer.getCriteria();
+        for(Criteria criteria : criterias){
+            try{
+                CategoryHopCriteria crit = (CategoryHopCriteria) criteria;
+                if(crit.getCategoryName().equals(searchResult.getLabel())){
+                    crit.setCollapsed(!crit.isCollapsed());
+                    isDirty = true;
+                }
+
+            } catch (ClassCastException e){}
+
+        }
+
+        if (isDirty) {
+            graphContainer.redoLayout();
+        }
     }
 
     public void removeIfSpecialURLCase(SearchResult searchResult) {
@@ -191,7 +247,6 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
 
 
     private List<SearchSuggestion> getQueryResults(final String query) {
-        String searchPrefix = getQueryPrefix(query);
         String namespace = m_operationContext.getGraphContainer().getBaseTopology().getVertexNamespace();
 
         List<SearchProvider> providers = m_serviceManager.getServices(SearchProvider.class, null, new Properties());
@@ -199,9 +254,10 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
 
         for(SearchProvider provider : providers) {
             if(provider.getSearchProviderNamespace().equals(namespace) || provider.contributesTo(namespace)){
-                if(searchPrefix != null && provider.supportsPrefix(searchPrefix)) {
-                    String queryOnly = query.replace(searchPrefix, "");
-                    List<SearchResult> q = provider.query(getSearchQuery(queryOnly));
+                if(provider.supportsPrefix(query)) {
+                    // If there is an '=' divider, strip it off. Otherwise, use an empty query string
+                    String queryOnly = query.indexOf('=') > 0 ? query.substring(query.indexOf('=') + 1) : "";
+                    List<SearchResult> q = provider.query(getSearchQuery(queryOnly), m_operationContext.getGraphContainer());
                     results.addAll(q);
                     if(m_suggestionMap.containsKey(provider)){
                         m_suggestionMap.get(provider).addAll(q);
@@ -210,7 +266,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
                     }
 
                 } else{
-                    List<SearchResult> q = provider.query(getSearchQuery(query));
+                    List<SearchResult> q = provider.query(getSearchQuery(query), m_operationContext.getGraphContainer());
                     results.addAll(q);
                     if (m_suggestionMap.containsKey(provider)) {
                         m_suggestionMap.get(provider).addAll(q);
@@ -226,25 +282,15 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
     }
 
 
-    private SearchQuery getSearchQuery(String query) {
-        SearchQuery searchQuery;
-        if(query.equals("*")){
-            searchQuery = new AllSearchQuery(query);
-        } else{
-            searchQuery = new ContainsSearchQuery(query);
+    private static SearchQuery getSearchQuery(String query) {
+        if("*".equals(query) || "".equals(query)){
+            return new AllSearchQuery(query);
+        } else {
+            return new ContainsSearchQuery(query);
         }
-        return searchQuery;
     }
 
-    public String getQueryPrefix(String query){
-        String prefix = null;
-        if(query.contains("=")){
-            prefix = query.substring(0, query.indexOf('=') + 1);
-        }
-        return prefix;
-    }
-
-    private List<SearchSuggestion> mapToSuggestions(List<SearchResult> searchResults) {
+    private static List<SearchSuggestion> mapToSuggestions(List<SearchResult> searchResults) {
         return Lists.transform(searchResults, new Function<SearchResult, SearchSuggestion>(){
             @Override
             public SearchSuggestion apply(SearchResult searchResult) {
@@ -254,25 +300,19 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
 
     }
 
-    private VertexRef mapToVertexRef(SearchSuggestion suggestion) {
+    private static VertexRef mapToVertexRef(SearchSuggestion suggestion) {
         return new AbstractVertexRef(suggestion.getNamespace(), suggestion.getId(), suggestion.getLabel());
     }
 
-    private SearchSuggestion mapToSearchSuggestion(SearchResult searchResult) {
-        SearchSuggestion suggestion = new SearchSuggestion();
-        suggestion.setNamespace(searchResult.getNamespace());
-        suggestion.setId(searchResult.getId());
-        suggestion.setLabel(searchResult.getLabel());
-
+    private static SearchSuggestion mapToSearchSuggestion(SearchResult searchResult) {
+        SearchSuggestion suggestion = new SearchSuggestion(searchResult.getNamespace(), searchResult.getId(), searchResult.getLabel());
+        suggestion.setCollapsible(searchResult.isCollapsible());
+        suggestion.setCollapsed(searchResult.isCollapsed());
         return suggestion;
     }
 
-    private SearchSuggestion mapToSearchSuggestion(VertexRef vertexRef) {
-        SearchSuggestion suggestion = new SearchSuggestion();
-        suggestion.setNamespace(vertexRef.getNamespace());
-        suggestion.setId(vertexRef.getId());
-        suggestion.setLabel(vertexRef.getLabel());
-
+    private static SearchSuggestion mapToSearchSuggestion(VertexRef vertexRef) {
+        SearchSuggestion suggestion = new SearchSuggestion(vertexRef.getNamespace(), vertexRef.getId(), vertexRef.getLabel());
         return suggestion;
     }
 
@@ -316,24 +356,29 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
 
 
         for (Criteria criteria : criterium) {
-            try {
-                if(criteria != nodeCriteria){
-                    VertexHopCriteria crit = (VertexHopCriteria) criteria;
-                    SearchSuggestion suggestion = new SearchSuggestion();
-                    suggestion.setId(crit.getId());
-                    suggestion.setLabel(crit.getLabel());
-                    suggestion.setNamespace(crit.getNamespace());
-
+            if(criteria != nodeCriteria){
+                try {
+                    CollapsibleCriteria crit = (CollapsibleCriteria) criteria;
+                    SearchSuggestion suggestion = new SearchSuggestion(crit.getNamespace(), crit.getId(), crit.getLabel());
+                    suggestion.setCollapsible(true);
+                    suggestion.setCollapsed(crit.isCollapsed());
                     suggestions.add(suggestion);
-                }
-            } catch (ClassCastException e) {
+                    continue;
+                } catch (ClassCastException e) {}
+
+                try {
+                    VertexHopCriteria crit = (VertexHopCriteria) criteria;
+                    SearchSuggestion suggestion = new SearchSuggestion(crit.getNamespace(), crit.getId(), crit.getLabel());
+                    suggestions.add(suggestion);
+                    continue;
+                } catch (ClassCastException e) {}
             }
         }
 
         getState().setFocused(suggestions);
     }
 
-    private class ContainsSearchQuery extends AbstractSearchQuery implements SearchQuery {
+    private static class ContainsSearchQuery extends AbstractSearchQuery implements SearchQuery {
         public ContainsSearchQuery(String query) {
             super(query);
         }
@@ -344,7 +389,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
         }
     }
 
-    private class AllSearchQuery extends AbstractSearchQuery{
+    private static class AllSearchQuery extends AbstractSearchQuery{
 
         public AllSearchQuery(String queryString) {
             super(queryString);

@@ -35,7 +35,6 @@ import java.util.Date;
 import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
@@ -114,17 +113,7 @@ public abstract class AbstractThresholdEvaluatorState implements ThresholdEvalua
         bldr.addParam("instanceLabel", resource.getInstanceLabel() == null ? "null" : resource.getInstanceLabel());
 
         // Add the resource ID required to call the Graph API.
-        // Inspired by DefaultKscReportService
-        String resourceType  = resource.getResourceTypeName();
-        String resourceLabel = resource.getInstanceLabel();
-        if ("node".equals(resourceType)) {
-            resourceType  = "nodeSnmp";
-            resourceLabel = "";
-        }
-        if ("if".equals(resourceType)) {
-            resourceType = "interfaceSnmp";
-        }
-        bldr.addParam("resourceId", OnmsResource.createResourceId("node", Integer.toString(resource.getNodeId()), resourceType, resourceLabel));
+        bldr.addParam("resourceId",resource.getResourceId());
 
         // Add additional parameters
         if (additionalParams != null) {

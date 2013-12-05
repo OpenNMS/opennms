@@ -9,9 +9,97 @@
   <groupId>org.opennms.osgi</groupId>
   <artifactId>all</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS OSGi Container - All Features</name>
+  <name>OpenNMS OSGi Container - OpenNMS Features</name>
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.opennms.maven.plugins</groupId>
+        <artifactId>features-maven-plugin</artifactId>
+        <configuration>
+          <name>opennms-${project.version}</name>
+          <!-- 
+            This option will recursively pull the all of the <repository> references inside all of the 
+            referenced repositories and put all of their features into a single <features> repository.
+          -->
+          <importRepositories>true</importRepositories>
+          <!-- 
+            Don't import other repositories that are already inside well-organized feature hierarchies
+            outside of OpenNMS (Karaf, ActiveMQ).
+          -->
+          <importRepositoryExclusions>
+            <value>karaf-${karafVersion}</value>
+            <value>activemq-${activemqVersion}</value>
+          </importRepositoryExclusions>
+          <repositories>
+
+            <!-- Karaf base features -->
+            <repository>mvn:org.opennms.container/karaf/${project.version}/xml/features</repository>
+
+            <!-- OpenNMS OSGi core -->
+            <repository>mvn:org.opennms.osgi/opennms-osgi-core/${project.version}/xml/features</repository>
+
+            <!-- JMX Config Generator features -->
+            <repository>mvn:org.opennms.features/jmxconfiggenerator/${project.version}/xml/features</repository>
+            <repository>mvn:org.opennms.features/jmxconfiggenerator.webui/${project.version}/xml/features</repository>
+
+            <!-- MIB Parser and Event/Collection features -->
+            <repository>mvn:org.opennms.features/vaadin-snmp-events-and-metrics/${project.version}/xml/features</repository>
+
+            <!-- Node maps -->
+            <repository>mvn:org.opennms.features/vaadin-node-maps/${project.version}/xml/features</repository>
+
+            <!-- NRTG features -->
+            <repository>mvn:org.opennms.osgi.features.nrtg/nrtg/${project.version}/xml/features</repository>
+
+            <!-- Topology features -->
+            <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-dev/${project.version}/xml/features</repository>
+            <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-base/${project.version}/xml/features</repository>
+            <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-browsers/${project.version}/xml/features</repository>
+            <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-linkd/${project.version}/xml/features</repository>
+            <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-ncs/${project.version}/xml/features</repository>
+            <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-sfree/${project.version}/xml/features</repository>
+            <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-simple/${project.version}/xml/features</repository>
+            <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-vmware/${project.version}/xml/features</repository>
+
+            <!-- Vaadin Dashboard Feature-->
+            <repository>mvn:org.opennms.features/vaadin-dashboard/${project.version}/xml/features</repository>
+            <repository>mvn:org.opennms.features.vaadin-dashlets/dashlet-features/${project.version}/xml</repository>
+
+          </repositories>
+
+          <!-- 
+            Import all of the features into the "opennms-${project.version}" feature. This list
+            determines the JARs that are installed into the ${opennms.home}/system directory during
+            opennms-full-assembly.
+          -->
+          <features>
+            <feature>opennms-osgi-core</feature>
+            <feature>jmxconfiggenerator.webui</feature>
+            <feature>dashlet-alarms</feature>
+            <feature>dashlet-charts</feature>
+            <feature>dashlet-image</feature>
+            <feature>dashlet-ksc</feature>
+            <feature>dashlet-map</feature>
+            <feature>dashlet-rrd</feature>
+            <feature>dashlet-rtc</feature>
+            <feature>dashlet-summary</feature>
+            <feature>dashlet-surveillance</feature>
+            <feature>dashlet-topology</feature>
+            <feature>nrtg</feature>
+            <feature>opennms-topology-dev</feature>
+            <feature>opennms-topology-runtime-base</feature>
+            <feature>opennms-topology-runtime-browsers</feature>
+            <feature>opennms-topology-runtime-linkd</feature>
+            <feature>opennms-topology-runtime-ncs</feature>
+            <feature>opennms-topology-runtime-sfree</feature>
+            <feature>opennms-topology-runtime-simple</feature>
+            <feature>opennms-topology-runtime-vmware</feature>
+            <feature>vaadin-dashboard</feature>
+            <feature>vaadin-node-maps</feature>
+            <feature>vaadin-snmp-events-and-metrics</feature>
+          </features>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
@@ -59,4 +147,124 @@
       </plugin>
     </plugins>
   </build>
+  <dependencies>
+    <dependency>
+      <groupId>org.opennms.container</groupId>
+      <artifactId>karaf</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.osgi</groupId>
+      <artifactId>opennms-osgi-core</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>jmxconfiggenerator</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>jmxconfiggenerator.webui</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>vaadin-snmp-events-and-metrics</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>vaadin-node-maps</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.osgi.features.nrtg</groupId>
+      <artifactId>nrtg</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.osgi.features.topology</groupId>
+      <artifactId>opennms-topology-dev</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.osgi.features.topology</groupId>
+      <artifactId>opennms-topology-runtime-base</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.osgi.features.topology</groupId>
+      <artifactId>opennms-topology-runtime-browsers</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.osgi.features.topology</groupId>
+      <artifactId>opennms-topology-runtime-linkd</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.osgi.features.topology</groupId>
+      <artifactId>opennms-topology-runtime-ncs</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.osgi.features.topology</groupId>
+      <artifactId>opennms-topology-runtime-sfree</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.osgi.features.topology</groupId>
+      <artifactId>opennms-topology-runtime-simple</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.osgi.features.topology</groupId>
+      <artifactId>opennms-topology-runtime-vmware</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>vaadin-dashboard</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.vaadin-dashlets</groupId>
+      <artifactId>dashlet-features</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
 </project>

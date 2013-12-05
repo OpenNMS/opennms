@@ -32,9 +32,11 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
@@ -137,7 +139,10 @@ public final class ThresholdEntity implements Cloneable {
      */
     public Collection<String> getRequiredDatasources() {
         if (hasThresholds()) {
-            return getThresholdConfig().getRequiredDatasources();
+            final Set<String> dataSources = new HashSet<String>();
+            dataSources.addAll(getThresholdConfig().getRequiredDatasources());
+            dataSources.addAll(getThresholdConfig().getFilterDatasources());
+            return dataSources;
         } else {
             throw new IllegalStateException("No thresholds have been added.");
         }

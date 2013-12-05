@@ -31,8 +31,10 @@ package org.opennms.features.topology.plugins.topo.vmware.internal;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
@@ -409,6 +411,11 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
     }
 
     @Override
+    public void onToggleCollapse(final SearchResult searchResult, final GraphContainer graphContainer) {
+        // TODO: implement?
+    }
+
+    @Override
     public String getSearchProviderNamespace() {
         return "vmware";
     }
@@ -419,8 +426,8 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
     }
 
     @Override
-    public List<VertexRef> getVertexRefsBy(SearchResult searchResult) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public Set<VertexRef> getVertexRefsBy(SearchResult searchResult) {
+        return Collections.emptySet();  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
@@ -436,7 +443,7 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
     }
 
     @Override
-    public List<SearchResult> query(SearchQuery searchQuery) {
+    public List<SearchResult> query(SearchQuery searchQuery, GraphContainer graphContainer) {
         List<Vertex> vertices = m_vertexProvider.getVertices();
         List<SearchResult> searchResults = Lists.newArrayList();
 

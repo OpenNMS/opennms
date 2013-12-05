@@ -139,10 +139,10 @@ xsi:schemaLocation="
         <value>createTime</value>
         <value>lastCapsdPoll</value>
         <value>primaryInterface</value>
-        <value>sysName</value>
         <value>sysContact</value>
         <value>sysLocation</value>
         <value>sysDescription</value>
+        <!--<value>sysName</value>-->
         <value>foreignSource</value>
         <value>foreignId</value>
       </array>
@@ -187,7 +187,7 @@ xsi:schemaLocation="
         <value>Creation Time</value>
         <value>Last Capabilities Scan</value>
         <value>Primary Interface</value>
-        <value>sysName</value>
+        <!--<value>sysName</value>-->
         <value>sysContact</value>
         <value>sysLocation</value>
         <value>sysDescription</value>

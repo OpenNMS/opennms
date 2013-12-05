@@ -210,17 +210,15 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 	 */
     @Override
     public OnmsNode getNode(int nodeId) {
-        OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
-        criteria.add(Restrictions.eq("id",nodeId));
-        
-        List<OnmsNode> nodes = m_nodeDao.findMatching(criteria);
-        if(nodes.size() > 0 ) {
-            OnmsNode onmsNode = nodes.get(0);
-            return onmsNode;
-        }else {
-            return null;
-        }
+        return m_nodeDao.get(nodeId);
+    }
 
+    /* (non-Javadoc)
+     * @see org.opennms.web.element.NetworkElementFactoryInterface#getNode(string)
+     */
+    @Override
+    public OnmsNode getNode(String  lookupCriteria) {
+        return m_nodeDao.get(lookupCriteria);
     }
 
     /* (non-Javadoc)
@@ -1256,13 +1254,15 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
 
     private Integer getStpNodeFromStpRootIdentifier(String baseaddress) {
-    	
-        final OnmsCriteria criteria = new OnmsCriteria(OnmsStpNode.class);
-        criteria.add(Restrictions.eq("baseBridgeAddress", baseaddress.substring(5,16)));
 
-        List<OnmsStpNode> stpnodes = m_stpNodeDao.findMatching(criteria);
-        if (stpnodes.size() == 1)
-        	return stpnodes.get(0).getId();
+        if(!baseaddress.equals("")){
+            final OnmsCriteria criteria = new OnmsCriteria(OnmsStpNode.class);
+            criteria.add(Restrictions.eq("baseBridgeAddress", baseaddress.substring(5,16)));
+
+            List<OnmsStpNode> stpnodes = m_stpNodeDao.findMatching(criteria);
+            if (stpnodes.size() == 1)
+                return stpnodes.get(0).getId();
+        }
         return null;
     }
 

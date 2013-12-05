@@ -201,7 +201,7 @@
               </descriptors>
               <features>
                 <feature>http-whiteboard</feature>
-                <feature>opennms-all</feature>
+                <feature>opennms-${project.version}</feature>
               </features>
               <repository>target/features-repo</repository>
             </configuration>

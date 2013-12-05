@@ -132,8 +132,10 @@ public class PolicyTest {
     // values created in other transactions (unless you are lucky - which sometimes we are not)
     public void testSnmpPollPolicy() throws Exception {
         try {
+            // Create a BackgroundTask to wait for the provisioning group import to complete
             final BackgroundTask eventRecieved = anticipateEvents(EventConstants.PROVISION_SCAN_COMPLETE_UEI, EventConstants.PROVISION_SCAN_ABORTED_UEI );
 
+            // Import the provisioning group
             m_provisioner.importModelFromResource(m_resourceLoader.getResource("classpath:/NMS-5414.xml"), true);
             int nodeId = getNodeId();
             eventRecieved.await();

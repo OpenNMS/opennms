@@ -148,6 +148,9 @@ public class KscRestService extends OnmsRestService {
                 throw getException(Status.BAD_REQUEST, "Invalid request: reportName and resourceId cannot be empty!");
             }
             final Report report = m_kscReportFactory.getReportByIndex(kscReportId);
+            if (report == null) {
+                throw getException(Status.NOT_FOUND, "Invalid request: No KSC report found with ID: " + kscReportId);
+            }
             final Graph graph = new Graph();
             if (title != null) {
                 graph.setTitle(title);

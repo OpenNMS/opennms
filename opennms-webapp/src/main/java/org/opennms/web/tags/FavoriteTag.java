@@ -132,6 +132,8 @@ public class FavoriteTag extends TagSupport {
      */
     private static final String IMG_TEMPLATE = new String("<img style=\"cursor:pointer;\" title=\"{0}\" with=25 height=25 onClick=\"{1}\" src=\"{2}\"/>{3}");
 
+    private static final String BUTTON_TEMPLATE = new String("<button onClick=\"{0}\" title=\"{1}\" >{2}</button>");
+
     private static final String JAVASCRIPT_TEMPLATE =    "<script type=\"text/javascript\">\n{SELECT_SCRIPT}\n\n{DESELECT_SCRIPT}\n</script>\n";
 
     private static final String CREATE_FAVORITE_JAVASCRIPT_TEMPLATE =
@@ -263,18 +265,16 @@ public class FavoriteTag extends TagSupport {
     private String getImageString() {
         if (getFavorite() != null) {
             return MessageFormat.format(
-                    IMG_TEMPLATE,
-                    getDeselectAction().getDescription(),
+                    BUTTON_TEMPLATE,
                     getDeselectAction().getJavascriptCallback(this),
-                    "images/star_filled.png",
-                    " " + getFavorite().getName());
+                    getDeselectAction().getDescription(),
+                    "remove filter");
         }
         return MessageFormat.format(
-                IMG_TEMPLATE,
-                getSelectAction().getDescription(),
+                BUTTON_TEMPLATE,
                 getSelectAction().getJavascriptCallback(this),
-                "images/star_empty.png",
-                "");
+                getSelectAction().getDescription(),
+                "save filter");
     }
 
     /**

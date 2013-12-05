@@ -68,12 +68,21 @@
   <dependencies>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
+      <artifactId>atomikos-dependencies</artifactId>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
       <artifactId>castor-dependencies</artifactId>
       <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.xml</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-test</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

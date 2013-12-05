@@ -28,48 +28,63 @@
 
 package org.opennms.features.topology.app.internal.gwt.client;
 
+import java.io.Serializable;
+
 import com.google.gwt.user.client.ui.SuggestOracle;
 
-public class SearchSuggestion implements SuggestOracle.Suggestion {
+public class SearchSuggestion implements Serializable, SuggestOracle.Suggestion {
 
+    private static final long serialVersionUID = 1876970713330053849L;
 
-    String m_label;
-    String m_id;
-    String m_namespace;
-    boolean m_focused = false;
+    private String m_id;
+    private String m_namespace;
+    private String m_label;
+    private boolean m_collapsible = false;
+    private boolean m_collapsed = false;
+    private boolean m_focused = false;
 
-    public void setLabel(String label){
+    public SearchSuggestion() {}
+
+    public SearchSuggestion(String namespace, String id, String label) {
+        setId(id);
+        setNamespace(namespace);
+        setLabel(label);
+    }
+
+    public final void setLabel(String label) {
         m_label = label;
     }
 
-    public String getLabel(){
+    public final String getLabel() {
         return m_label;
     }
 
-    public void setId(String id) {
+    public final void setId(String id) {
         m_id = id;
     }
 
-    public String getId(){
+    public final String getId() {
         return m_id;
     }
 
-    public void setNamespace(String namespace) {
+    public final void setNamespace(String namespace) {
         m_namespace = namespace;
     }
 
-    public String getNamespace() {
+    public final String getNamespace() {
         return m_namespace;
     }
 
     @Override
     public String getDisplayString() {
-        return "<div><b>" + getNamespace() + ": </b>" + getLabel() + "</div>";
+        String namespace = getNamespace();
+        final String capitalized = namespace.substring(0, 1).toUpperCase() + namespace.substring(1);
+        return "<div><b>" + capitalized + ": </b>" + getLabel() + "</div>";
     }
 
     @Override
     public String getReplacementString() {
-        return m_label;
+        return getLabel();
     }
 
     @Override
@@ -93,11 +108,32 @@ public class SearchSuggestion implements SuggestOracle.Suggestion {
         return result;
     }
 
+	public final boolean isCollapsible() {
+		return m_collapsible;
+	}
+
+	public final void setCollapsible(boolean collapsible) {
+		this.m_collapsible = collapsible;
+	}
+
+	public final boolean isCollapsed() {
+		return m_collapsed;
+	}
+
+	public final void setCollapsed(boolean collapsed) {
+		this.m_collapsed = collapsed;
+	}
+
     public void setFocused(boolean focused) {
         m_focused = focused;
     }
 
     public boolean isFocused() {
         return m_focused;
+    }
+
+    @Override
+    public String toString() {
+        return "SearchSuggestion[namespace:" + m_namespace + ",id:" + m_id + ",label:" + m_label + ",focused:" + m_focused + ",collapsible:" + m_collapsible + ",collapsed:" + m_collapsed + "]";
     }
 }
