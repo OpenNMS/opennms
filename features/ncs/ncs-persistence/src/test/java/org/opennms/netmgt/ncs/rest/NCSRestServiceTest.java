@@ -43,6 +43,7 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
@@ -316,7 +317,7 @@ public class NCSRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
 		setupLogging("DEBUG");
 
-		final MockHttpServletRequest request = createRequest(POST, "/NCS");
+		final MockHttpServletRequest request = createRequest(getServletContext(), POST, "/NCS");
 		request.setContentType(MediaType.APPLICATION_XML);
 		request.setContent(m_serviceXMLFragment.getBytes());
 		request.setQueryString("deleteOrphans=true");
@@ -340,7 +341,7 @@ public class NCSRestServiceTest extends AbstractSpringJerseyRestTestCase {
 		}
 		anticipateEvent(EventConstants.COMPONENT_UPDATED_UEI, new String[] { "Service", "CokeP2P", "NA-Service", "123" });
 
-		final MockHttpServletRequest request = createRequest(POST, "/NCS");
+		final MockHttpServletRequest request = createRequest(getServletContext(), POST, "/NCS");
 		request.setContentType(MediaType.APPLICATION_XML);
 		request.setContent(m_serviceXMLTopFragment.getBytes());
 		request.setQueryString("deleteOrphans=true");

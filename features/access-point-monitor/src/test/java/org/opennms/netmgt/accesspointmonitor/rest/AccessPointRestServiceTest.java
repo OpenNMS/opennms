@@ -28,9 +28,11 @@
 
 package org.opennms.netmgt.accesspointmonitor.rest;
 
-import org.junit.Test;
 import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
