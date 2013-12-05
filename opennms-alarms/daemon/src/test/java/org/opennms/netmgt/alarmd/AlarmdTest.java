@@ -181,25 +181,25 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase>, Initial
         final MockNode node = m_mockNetwork.getNode(1);
 
         //there should be no alarms in the alarms table
-        assertEquals(0, m_jdbcTemplate.queryForInt("select count(*) from alarms"));
+        assertEquals(0, m_jdbcTemplate.queryForObject("select count(*) from alarms", Integer.class).intValue());
 
         //this should be the first occurrence of this alarm
         //there should be 1 alarm now
         sendNodeDownEvent("%nodeid%", node);
         Thread.sleep(1000);
-        assertEquals(1, m_jdbcTemplate.queryForInt("select count(*) from alarms"));
+        assertEquals(1, m_jdbcTemplate.queryForObject("select count(*) from alarms", Integer.class).intValue());
 
         //this should be the second occurrence and shouldn't create another row
         //there should still be only 1 alarm
         sendNodeDownEvent("%nodeid%", node);
         Thread.sleep(1000);
-        assertEquals(1, m_jdbcTemplate.queryForInt("select count(*) from alarms"));
+        assertEquals(1, m_jdbcTemplate.queryForObject("select count(*) from alarms", Integer.class).intValue());
 
         //this should be a new alarm because of the new key
         //there should now be 2 alarms
         sendNodeDownEvent("DontReduceThis", node);
         Thread.sleep(1000);
-        assertEquals(2, m_jdbcTemplate.queryForInt("select count(*) from alarms"));
+        assertEquals(2, m_jdbcTemplate.queryForObject("select count(*) from alarms", Integer.class).intValue());
 
         MockUtil.println("Going for the print of the counter column");
         m_jdbcTemplate.query("select reductionKey, sum(counter) from alarms group by reductionKey", new RowCallbackHandler() {
@@ -218,7 +218,7 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase>, Initial
         int numberOfAlarmsToReduce = 10;
 
         //there should be no alarms in the alarms table
-        assertEquals(0, m_jdbcTemplate.queryForInt("select count(*) from alarms"));
+        assertEquals(0, m_jdbcTemplate.queryForObject("select count(*) from alarms", Integer.class).intValue());
 
         final String reductionKey = "countThese";
         final MockNode node = m_mockNetwork.getNode(1);
@@ -259,8 +259,8 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase>, Initial
 
         //this should be the first occurrence of this alarm
         //there should be 1 alarm now
-        int rowCount = m_jdbcTemplate.queryForInt("select count(*) from alarms");
-        Integer counterColumn = m_jdbcTemplate.queryForInt("select counter from alarms where reductionKey = ?", new Object[] { reductionKey });
+        int rowCount = m_jdbcTemplate.queryForObject("select count(*) from alarms", Integer.class).intValue();
+        Integer counterColumn = m_jdbcTemplate.queryForObject("select counter from alarms where reductionKey = ?", new Object[] { reductionKey }, Integer.class).intValue();
         MockUtil.println("rowcCount is: "+rowCount+", expected 1.");
         MockUtil.println("counterColumn is: "+counterColumn+", expected "+numberOfAlarmsToReduce);
         assertEquals(1, rowCount);
@@ -289,12 +289,12 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase>, Initial
         }
 
 
-        Integer alarmId = m_jdbcTemplate.queryForInt("select alarmId from alarms where reductionKey = ?", new Object[] { reductionKey });
-        rowCount = m_jdbcTemplate.queryForInt("select count(*) from events where alarmid = ?", new Object[] { alarmId });
+        Integer alarmId = m_jdbcTemplate.queryForObject("select alarmId from alarms where reductionKey = ?", new Object[] { reductionKey }, Integer.class).intValue();
+        rowCount = m_jdbcTemplate.queryForObject("select count(*) from events where alarmid = ?", new Object[] { alarmId }, Integer.class).intValue();
         MockUtil.println(String.valueOf(rowCount) + " of events with alarmid: "+alarmId);
         //      assertEquals(numberOfAlarmsToReduce, rowCount);
 
-        rowCount = m_jdbcTemplate.queryForInt("select count(*) from events where alarmid is null");
+        rowCount = m_jdbcTemplate.queryForObject("select count(*) from events where alarmid is null", Integer.class).intValue();
         MockUtil.println(String.valueOf(rowCount) + " of events with null alarmid");
         assertEquals(0, rowCount);
 
@@ -375,11 +375,11 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase>, Initial
     @Test
     @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class)
     public void changeFields() throws InterruptedException, SQLException {
-        assertEquals(0, m_jdbcTemplate.queryForInt("select count(*) from alarms"));
+        assertEquals(0, m_jdbcTemplate.queryForObject("select count(*) from alarms", Integer.class).intValue());
         
         String reductionKey = "testUpdateField";
         
-        int alarmCount = m_jdbcTemplate.queryForInt("select count(*) from alarms");
+        int alarmCount = m_jdbcTemplate.queryForObject("select count(*) from alarms", Integer.class).intValue();
         
         assertEquals(0, alarmCount);
         
@@ -387,7 +387,7 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase>, Initial
         
         //Verify we have the default alarm
         sendNodeDownEvent(reductionKey, node1);
-        int severity = m_jdbcTemplate.queryForInt("select severity from alarms a where a.reductionKey = ?", reductionKey);
+        int severity = m_jdbcTemplate.queryForObject("select severity from alarms a where a.reductionKey = ?", new Object[] { reductionKey }, Integer.class).intValue();
         assertEquals(OnmsSeverity.MAJOR, OnmsSeverity.get(severity));
         
         //Store the original logmsg from the original alarm (we are about to test changing it with subsequent alarm reduction)
@@ -413,12 +413,12 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase>, Initial
 
         //Duplicate the alarm but change the severity and verify the change
         sendNodeDownEventWithUpdateFieldSeverity(reductionKey, node1, OnmsSeverity.CRITICAL);
-        severity = m_jdbcTemplate.queryForInt("select severity from alarms");
+        severity = m_jdbcTemplate.queryForObject("select severity from alarms", Integer.class).intValue();
         assertEquals("Severity should now be Critical", OnmsSeverity.CRITICAL, OnmsSeverity.get(severity));
         
         //Duplicate the alarm but don't force the change of severity
         sendNodeDownEvent(reductionKey, node1);
-        severity = m_jdbcTemplate.queryForInt("select severity from alarms");
+        severity = m_jdbcTemplate.queryForObject("select severity from alarms", Integer.class).intValue();
         assertEquals("Severity should still be Critical", OnmsSeverity.CRITICAL, OnmsSeverity.get(severity));
 
         //Duplicate the alarm and change the logmsg

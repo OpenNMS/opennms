@@ -111,7 +111,7 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
         
         
         
-        getJdbcTemplate().queryForInt("SELECT setval('nodeNxtId', max(nodeid)) FROM node");
+        getJdbcTemplate().queryForObject("SELECT setval('nodeNxtId', max(nodeid)) FROM node", Integer.class);
         
     }
     
