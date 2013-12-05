@@ -150,12 +150,8 @@ public class ServletInitializer extends Object {
 
     private static void loadPropertiesFromFile(Properties opennmsProperties, String propertiesFile) throws FileNotFoundException, ServletException, IOException {
         InputStream configurationStream = new FileInputStream(propertiesFile);
-        if (configurationStream == null) {
-            throw new ServletException("Could not load properties from file '" + propertiesFile + "'");
-        } else {
-            opennmsProperties.load(configurationStream);
-            configurationStream.close();
-        }
+        opennmsProperties.load(configurationStream);
+        configurationStream.close();
     }
 
     private static void loadPropertiesFromContextResource(ServletContext context, Properties properties, String propertiesResource) throws ServletException, IOException {

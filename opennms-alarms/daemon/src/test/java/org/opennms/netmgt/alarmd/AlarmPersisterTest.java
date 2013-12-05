@@ -60,15 +60,12 @@ import org.springframework.test.context.ContextConfiguration;
 public class AlarmPersisterTest implements InitializingBean {
 
     @Autowired
-    @SuppressWarnings("unused")
     private MockEventIpcManager m_mockEventIpcManager;
     
     @Autowired
-    @SuppressWarnings("unused")
     private AlarmDao m_alarmDao;
     
     @Autowired
-    @SuppressWarnings("unused")
     private EventDao m_eventDao;
 
     @Override

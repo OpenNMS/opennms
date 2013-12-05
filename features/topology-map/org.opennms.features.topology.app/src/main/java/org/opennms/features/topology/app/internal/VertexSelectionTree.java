@@ -7,7 +7,6 @@ import org.opennms.features.topology.api.SelectionContext;
 import org.opennms.features.topology.api.SelectionListener;
 import org.opennms.features.topology.api.topo.VertexRef;
 
-import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Tree;
 
 @SuppressWarnings({"serial"})

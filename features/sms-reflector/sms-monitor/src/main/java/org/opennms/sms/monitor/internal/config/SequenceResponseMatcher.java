@@ -44,7 +44,6 @@ import org.opennms.sms.reflector.smsservice.MobileMsgResponse;
  */
 public abstract class SequenceResponseMatcher {
 	// Forces this to be an XSD complexType instead of simpleType
-	@SuppressWarnings("unused")
 	@XmlAttribute(name="dummy", required=false)
 	private String m_dummy;
 	

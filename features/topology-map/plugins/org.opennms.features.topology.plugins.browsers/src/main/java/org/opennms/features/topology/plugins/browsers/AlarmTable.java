@@ -205,7 +205,7 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 	}
 
 	@Override
-	@SuppressWarnings("unchecked") // Because Aries Blueprint cannot handle generics
+	@SuppressWarnings("rawtypes") // Because Aries Blueprint cannot handle generics
 	public void setColumnGenerators(final Map generators) {
 		super.setColumnGenerators(generators);
 		for (final Object key : generators.keySet()) {
