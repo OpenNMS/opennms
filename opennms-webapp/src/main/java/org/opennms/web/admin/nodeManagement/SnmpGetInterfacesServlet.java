@@ -74,19 +74,6 @@ public class SnmpGetInterfacesServlet extends HttpServlet {
         "ON ipinterface.snmpinterfaceid=snmpinterface.id " +
         "WHERE snmpinterface.nodeid=?";
 
-    /**
-     * <p>init</p>
-     *
-     * @throws javax.servlet.ServletException if any.
-     */
-    @Override
-    public void init() throws ServletException {
-        try {
-            DataSourceFactory.init();
-        } catch (Throwable e) {
-        }
-    }
-    
     /** {@inheritDoc} */
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

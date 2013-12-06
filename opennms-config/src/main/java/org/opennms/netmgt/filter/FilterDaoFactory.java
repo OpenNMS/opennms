@@ -81,11 +81,6 @@ public class FilterDaoFactory {
         
         JdbcFilterDao jdbcFilterDao = new JdbcFilterDao();
         
-        try {
-            DataSourceFactory.init();
-        } catch (Throwable e) {
-            throw new DataAccessResourceFailureException("Could not initialize DataSourceFactory: " + e, e);
-        }
         jdbcFilterDao.setDataSource(DataSourceFactory.getInstance());
         
         try {

@@ -352,7 +352,6 @@ public class NSClientCollector implements ServiceCollector {
         m_scheduledNodes.clear();
         initNSClientPeerFactory();
         initNSClientCollectionConfig();
-        initDatabaseConnectionFactory();
         initializeRrdRepository();
     }
 
@@ -406,30 +405,6 @@ public class NSClientCollector implements ServiceCollector {
             if (!f.mkdirs()) {
                 throw new RuntimeException("Unable to create RRD file " + "repository.  Path doesn't already exist and could not make directory: " + DataCollectionConfigFactory.getInstance().getRrdPath());
             }
-        }
-    }
-
-    private void initDatabaseConnectionFactory() {
-        try {
-            DataSourceFactory.init();
-        } catch (IOException e) {
-            LOG.error("initDatabaseConnectionFactory: IOException getting database connection", e);
-            throw new UndeclaredThrowableException(e);
-        } catch (MarshalException e) {
-            LOG.error("initDatabaseConnectionFactory: Marshall Exception getting database connection", e);
-            throw new UndeclaredThrowableException(e);
-        } catch (ValidationException e) {
-            LOG.error("initDatabaseConnectionFactory: Validation Exception getting database connection", e);
-            throw new UndeclaredThrowableException(e);
-        } catch (SQLException e) {
-            LOG.error("initDatabaseConnectionFactory: Failed getting connection to the database.", e);
-            throw new UndeclaredThrowableException(e);
-        } catch (PropertyVetoException e) {
-            LOG.error("initDatabaseConnectionFactory: Failed getting connection to the database.", e);
-            throw new UndeclaredThrowableException(e);
-        } catch (ClassNotFoundException e) {
-            LOG.error("initDatabaseConnectionFactory: Failed loading database driver.", e);
-            throw new UndeclaredThrowableException(e);
         }
     }
 

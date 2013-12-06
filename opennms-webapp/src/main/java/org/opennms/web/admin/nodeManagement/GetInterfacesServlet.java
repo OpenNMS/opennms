@@ -61,20 +61,6 @@ public class GetInterfacesServlet extends HttpServlet {
 
     private static final String SERVICE_QUERY = "SELECT ifservices.serviceid, servicename, status FROM ifservices, service " + "WHERE nodeid=? AND ipaddr=? AND status IN ('A','U','F', 'S', 'R') " + "AND ifservices.serviceid = service.serviceid ORDER BY servicename";
 
-    /**
-     * <p>init</p>
-     *
-     * @throws javax.servlet.ServletException if any.
-     */
-    @Override
-    public void init() throws ServletException {
-        try {
-            DataSourceFactory.init();
-        } catch (Throwable e) {
-            throw new ServletException(e);
-        }
-    }
-
     /** {@inheritDoc} */
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

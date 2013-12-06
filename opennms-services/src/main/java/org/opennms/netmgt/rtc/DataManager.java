@@ -384,30 +384,7 @@ public class DataManager {
     }
 
 	private DataSource getConnectionFactory() {
-		DataSource connFactory;
-		try {
-		    DataSourceFactory.init();
-		    connFactory = DataSourceFactory.getInstance();
-		} catch (IOException ex) {
-		    LOG.warn("Failed to load database config", ex);
-		    throw new UndeclaredThrowableException(ex);
-		} catch (MarshalException ex) {
-		    LOG.warn("Failed to unmarshall database config", ex);
-		    throw new UndeclaredThrowableException(ex);
-		} catch (ValidationException ex) {
-		    LOG.warn("Failed to unmarshall database config", ex);
-		    throw new UndeclaredThrowableException(ex);
-        } catch (ClassNotFoundException ex) {
-            LOG.warn("Failed to get database connection", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (SQLException ex) {
-            LOG.warn("Failed to get database connection", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (PropertyVetoException ex) {
-            LOG.warn("Failed to get database connection", ex);
-            throw new UndeclaredThrowableException(ex);
-        }
-		return connFactory;
+		return DataSourceFactory.getInstance();
 	}
 
     /**

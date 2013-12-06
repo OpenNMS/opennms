@@ -88,13 +88,6 @@ public class Notifd extends AbstractServiceDaemon implements NotifdMBean {
         }
         
         try {
-            DataSourceFactory.init();
-        } catch (Throwable t) {
-            LOG.error("start: Failed to init database connection factory.", t);
-            throw new UndeclaredThrowableException(t);
-        }
-
-        try {
             GroupFactory.init();
         } catch (Throwable t) {
             LOG.error("start: Failed to init group factory.", t);
