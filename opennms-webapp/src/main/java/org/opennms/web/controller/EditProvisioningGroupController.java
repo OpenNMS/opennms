@@ -311,7 +311,12 @@ public class EditProvisioningGroupController extends SimpleFormController {
             choices.add(type.getCode());
         }
         map.put("snmpPrimaryChoices", choices);
-        
+
+        List<String> status = new ArrayList<String>();
+        status.add("1");
+        status.add("3");
+        map.put("statusChoices", status);
+
         String groupName = request.getParameter("groupName");
         if (groupName != null) {
             List<String> services = new ArrayList<String>(m_provisioningService.getServiceTypeNames(groupName));
