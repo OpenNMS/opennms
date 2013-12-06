@@ -29,6 +29,7 @@
 package org.opennms.netmgt.threshd;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -450,39 +451,59 @@ public class CollectionResourceWrapper {
      * @return a {@link java.lang.String} object.
      */
     public String getFieldValue(String ds) {
-        if (ds == null || ds.equals(""))
+        if (ds == null || "".equals(ds)) {
             return null;
+        }
+
         if (log().isDebugEnabled()) {
             log().debug("getLabelValue: Getting Value for " + m_resource.getResourceTypeName() + "::" + ds);
         }
-        if ("nodeid".equalsIgnoreCase(ds))
+
+        if ("nodeid".equalsIgnoreCase(ds)) {
             return Integer.toString(m_nodeId);
-        if ("ipaddress".equalsIgnoreCase(ds))
+        } else if ("ipaddress".equalsIgnoreCase(ds)) {
             return m_hostAddress;
-        if ("iflabel".equalsIgnoreCase(ds))
+        } else if ("iflabel".equalsIgnoreCase(ds)) {
             return getIfLabel();
-        String value = null;
-        File resourceDirectory = m_resource.getResourceDir(m_repository);
-        if ("id".equalsIgnoreCase(ds)) {
-            return resourceDirectory.getName();
+        } else if ("id".equalsIgnoreCase(ds)) {
+            try {
+                File resourceDirectory = m_resource.getResourceDir(m_repository);
+                return resourceDirectory.getName();
+            } catch (FileNotFoundException e) {
+                log().debug("getLabelValue: cannot find resource directory: " + e.getMessage(), e);
+            }
         }
+
         try {
-            if (isAnInterfaceResource()) { // Get Value from ifInfo only for Interface Resource
-                value = getIfInfoValue(ds);
+            String retval = null;
+
+            // Get Value from ifInfo only for Interface Resource
+            if (isAnInterfaceResource()) {
+                retval = getIfInfoValue(ds);
+                if (retval != null) {
+                    return retval;
+                }
             }
-            if (value == null) { // Find value on saved string attributes                
-                value = ResourceTypeUtils.getStringProperty(resourceDirectory, ds);
+
+            // Find value on saved string attributes
+            File resourceDirectory = m_resource.getResourceDir(m_repository);
+            retval = ResourceTypeUtils.getStringProperty(resourceDirectory, ds);
+            if (retval != null) {
+                return retval;
             }
+        } catch (FileNotFoundException e) {
+            log().debug("getFieldValue: Can't find resource directory: " + e.getMessage(), e);
         } catch (Throwable e) {
-            log().info("getLabelValue: Can't get value for attribute " + ds + " for resource " + m_resource + ". " + e, e);
+            log().info("getFieldValue: Can't get value for attribute " + ds + " for resource " + m_resource + ". " + e, e);
         }
-        if (value == null) {
-            log().debug("getLabelValue: The field " + ds + " is not a string property. Trying to parse it as numeric metric.");
-            Double d = getAttributeValue(ds);
-            if (d != null)
-                value = d.toString();
+
+        log().debug("getFieldValue: The field " + ds + " is not a string property. Trying to parse it as numeric metric.");
+        Double d = getAttributeValue(ds);
+        if (d != null) {
+            return d.toString();
         }
-        return value;
+
+        return null;
     }
     
     /** {@inheritDoc} */

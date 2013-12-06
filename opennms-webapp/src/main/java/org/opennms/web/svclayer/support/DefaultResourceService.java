@@ -39,6 +39,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.GraphDao;
 import org.opennms.netmgt.dao.ResourceDao;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.model.RrdGraphAttribute;
@@ -164,6 +165,20 @@ public class DefaultResourceService implements ResourceService, InitializingBean
     }
 
     /** {@inheritDoc} */
+    public List<OnmsResource> findNodeChildResources(OnmsNode node) {
+        List<OnmsResource> resources = new ArrayList<OnmsResource>();
+        if (node != null) {
+            if (Boolean.getBoolean("org.opennms.rrd.storeByForeignSource")) {
+                String source = node.getForeignSource() + ':' + node.getForeignId();
+                resources.addAll(findNodeSourceChildResources(source));
+            } else {
+                resources.addAll(findNodeChildResources(node.getId()));
+            }
+        }
+        return resources;
+    }
+
+    /** {@inheritDoc} */
     public List<OnmsResource> findNodeChildResources(int nodeId) {
         List<OnmsResource> resources = new ArrayList<OnmsResource>();
         OnmsResource resource = m_resourceDao.getResourceById(OnmsResource.createResourceId("node", Integer.toString(nodeId)));
@@ -228,7 +243,7 @@ public class DefaultResourceService implements ResourceService, InitializingBean
 
         return matchingChildResources;
     }
-    
+
     private static OnmsResource checkLabelForQuotes(OnmsResource childResource) {
         
         String lbl  = Util.convertToJsSafeString(childResource.getLabel());

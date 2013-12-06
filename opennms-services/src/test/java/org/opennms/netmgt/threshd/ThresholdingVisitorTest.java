@@ -929,7 +929,7 @@ public class ThresholdingVisitorTest {
 
         // Validating Thresholding Set
         ThresholdingVisitor visitor = createVisitor();
-        assertEquals(5, visitor.m_thresholdingSet.m_thresholdGroups.size());
+        assertEquals(5, visitor.getThresholdGroups().size());
     }
 
     /*
@@ -1310,7 +1310,7 @@ public class ThresholdingVisitorTest {
      public void testBug4261_scheduledOutages() throws Exception {
          initFactories("/threshd-configuration-outages.xml","/test-thresholds.xml");
          ThresholdingVisitor visitor = createVisitor();
-         Assert.assertEquals(1, visitor.m_thresholdingSet.m_scheduledOutages.size());
+         Assert.assertEquals(1, visitor.getScheduledOutages().size());
          Assert.assertTrue("is node on outage", visitor.isNodeInOutage());
      }
 
@@ -1572,6 +1572,25 @@ public class ThresholdingVisitorTest {
         runFileSystemDataTest(visitor, 1, "/opt", 50, 100);
         runFileSystemDataTest(visitor, 2, "/opt01", 60, 100);
         runFileSystemDataTest(visitor, 3, "/home", 70, 100);
+        
+        verifyEvents(0);
+    }
+
+    /*
+     * NMS-6278
+     * 
+     * This test uses this files from src/test/resources:
+     * - thresd-configuration-numeric-filter.xml
+     * - test-thresholds.xml
+     */
+    @Test
+    public void testNumericThresholsFiltersOnGenericResource() throws Exception {
+        initFactories("/threshd-configuration.xml","/test-thresholds-numeric-filter.xml");
+        ThresholdingVisitor visitor = createVisitor();
+        
+        addHighThresholdEvent(1, 30, 25, 50, "/opt", "1", "hrStorageUsed", null, null);
+
+        runFileSystemDataTest(visitor, 1, "/opt", 50, 100);
         
         verifyEvents(0);
     }

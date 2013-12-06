@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -53,6 +53,7 @@ public class WmiDetector extends SyncAbstractDetector {
     private final static String DEFAULT_WMI_MATCH_TYPE = "all";
     private final static String DEFAULT_WMI_COMP_OP = "EQ";
     private final static String DEFAULT_WMI_WQL = "NOTSET";
+    private final static String DEFAULT_WMI_NAMESPACE = WmiParams.WMI_DEFAULT_NAMESPACE;
 
     private String m_matchType;
 
@@ -72,6 +73,8 @@ public class WmiDetector extends SyncAbstractDetector {
 
     private String m_domain;
     
+    private String m_namespace;
+    
     public WmiDetector() {
         super(PROTOCOL_NAME, 0);
     }
@@ -85,6 +88,7 @@ public class WmiDetector extends SyncAbstractDetector {
         setWmiClass(getWmiClass() != null ? getWmiClass() : DEFAULT_WMI_CLASS);
         setWmiObject(getWmiObject() != null ? getWmiObject() : DEFAULT_WMI_OBJECT);
         setWmiWqlStr(getWmiWqlStr() != null ? getWmiWqlStr() : DEFAULT_WMI_WQL);
+        setNamespace(getNamespace() != null ? getNamespace() : DEFAULT_WMI_NAMESPACE);
     }
 
     @Override
@@ -115,7 +119,7 @@ public class WmiDetector extends SyncAbstractDetector {
             agentConfig.setTimeout(getTimeout());
 
         // Perform the operation specified in the parameters.
-        WmiResult result = isServer(address, agentConfig.getUsername(), agentConfig.getPassword(), agentConfig.getDomain(), getMatchType(),
+        WmiResult result = isServer(address, agentConfig.getUsername(), agentConfig.getPassword(), agentConfig.getDomain(), getNamespace(), getMatchType(),
                 agentConfig.getRetries(), agentConfig.getTimeout(), clientParams);
 
         // Only fail on critical and unknown returns.
@@ -124,7 +128,7 @@ public class WmiDetector extends SyncAbstractDetector {
     }
     
     private WmiResult isServer(InetAddress host, String user, String pass,
-            String domain, String matchType, int retries, int timeout,
+            String domain, String namespace, String matchType, int retries, int timeout,
             WmiParams params) {
         boolean isAServer = false;
 
@@ -134,6 +138,7 @@ public class WmiDetector extends SyncAbstractDetector {
             try {
                 mgr = new WmiManager(InetAddressUtils.str(host), user,
                         pass, domain, matchType);
+                mgr.setNamespace(namespace);
 
                 // Connect to the WMI server.
                 mgr.init();
@@ -276,4 +281,12 @@ public class WmiDetector extends SyncAbstractDetector {
         return m_domain;
     }
 
+    public void setNamespace(String namespace) {
+        m_namespace = namespace;
+    }
+
+
+    public String getNamespace() {
+        return m_namespace;
+    }
 }

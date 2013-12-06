@@ -29,12 +29,10 @@
 package org.opennms.netmgt.provision.service.vmware;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.util.List;
-import java.util.Properties;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -43,6 +41,8 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.provision.persist.requisition.Requisition;
 
 /**
  * The Class VmwareRequisitionTool
@@ -65,25 +65,20 @@ public class VmwareRequisitionTool {
             System.exit(1);
         }
 
-        // Load opennms.properties into the system properties
-        try {
-            Properties opennmsProperties = new Properties();
-            File file = new File(ConfigFileConstants.getFilePathString(), File.separator + "opennms.properties");
-            opennmsProperties.load(new FileInputStream(file));
-            for (Object prop : opennmsProperties.keySet()) {
-                String key = (String) prop;
-                String val = opennmsProperties.getProperty(key);
-                System.setProperty(key, val);
-            }
-        } catch (Exception e) {
-            System.err.println("Can't load OpenNMS Properties.");
-            System.exit(1);
-        }
-
         String urlString = arguments.remove(0);
         URL url = new URL(urlString.replaceFirst("vmware", "http")); // Internal trick to avoid confusions.
 
-        VmwareRequisitionUrlConnection c = new VmwareRequisitionUrlConnection(url);
+        VmwareRequisitionUrlConnection c = new VmwareRequisitionUrlConnection(url) {
+            @Override
+            protected Requisition getExistingRequisition() {
+                // This is not elegant but it is necessary to avoid booting Spring
+                File req = new File(ConfigFileConstants.getFilePathString(), "imports" + File.separator + m_foreignSource + ".xml");
+                if (req.exists()) {
+                    return JaxbUtils.unmarshal(Requisition.class, req);
+                }
+                return null;
+            }
+        };
         c.connect();
         InputStream is = c.getInputStream();
         if (is == null) {

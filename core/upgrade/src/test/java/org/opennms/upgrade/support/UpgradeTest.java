@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -88,7 +88,7 @@ public class UpgradeTest {
     @Test
     public void testUpgrade() throws Exception {
         Assert.assertFalse(upgradeStatus.wasExecuted(new TestUpgradeNothing()));
-        performUpgrade("org/opennms/upgrade/tests");
+        performUpgrade("org.opennms.upgrade.tests");
         Assert.assertTrue(upgradeStatus.wasExecuted(new TestUpgradeNothing()));
         Assert.assertEquals(3, UpgradeHelper.getExecutedList().size());
         Assert.assertEquals(TestUpgradeNothing.class.getName(), UpgradeHelper.getExecutedList().get(0));

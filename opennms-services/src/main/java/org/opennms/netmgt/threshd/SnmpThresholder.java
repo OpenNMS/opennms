@@ -371,7 +371,7 @@ public final class SnmpThresholder implements ServiceThresholder {
         //Find out what data sources this threshold needs, check if they are available, and if so,
         // then get them and evaluate with them
         SnmpThresholdConfiguration thresholdConfiguration = snmpIface.getThresholdConfiguration();
-        Collection<String> requiredDatasources=threshold.getRequiredDatasources();
+        Collection<String> requiredDatasources=threshold.getThresholdConfig().getRequiredDatasources();
         Map<String, Double> values=new HashMap<String,Double>();
         String group = snmpIface.getThresholdConfiguration().getGroupName();
         for(String ds: requiredDatasources) {

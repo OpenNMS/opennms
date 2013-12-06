@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -232,7 +232,8 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
             Pattern extRegex = Pattern.compile("import-mbeans[>](.+)[<]");
             Pattern aliasRegex = Pattern.compile("alias=\"([^\"]+\\.[^\"]+)\"");
             List<File> externalFiles = new ArrayList<File>();
-            for (LineIterator it = FileUtils.lineIterator(jmxConfigFile); it.hasNext();) {
+            LineIterator it = FileUtils.lineIterator(jmxConfigFile);
+            while (it.hasNext()) {
                 String line = it.next();
                 Matcher m = extRegex.matcher(line);
                 if (m.find()) {
@@ -250,6 +251,7 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
                 }
                 w.write(line + "\n");
             }
+            LineIterator.closeQuietly(it);
             w.close();
             FileUtils.deleteQuietly(jmxConfigFile);
             FileUtils.moveFile(outputFile, jmxConfigFile);
@@ -281,7 +283,8 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
             Pattern incRegex = Pattern.compile("^include.directory=(.+)$");
             List<File> externalFiles = new ArrayList<File>();
             boolean override = false;
-            for (LineIterator it = FileUtils.lineIterator(jmxTemplateFile); it.hasNext();) {
+            LineIterator it = FileUtils.lineIterator(jmxTemplateFile);
+            while (it.hasNext()) {
                 String line = it.next();
                 Matcher m = incRegex.matcher(line);
                 if (m.find()) {
@@ -329,6 +332,7 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
                 }
                 w.write(line + "\n");
             }
+            LineIterator.closeQuietly(it);
             w.close();
             if (override) {
                 FileUtils.deleteQuietly(jmxTemplateFile);

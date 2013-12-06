@@ -10344,6 +10344,7 @@ The third argument is the phase number.&lt;/p&gt;&lt;table&gt;
 			mtrapargsString=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="true"/>
 </event>
 <event>
 	<mask>
@@ -10392,7 +10393,8 @@ The third argument is the phase number.&lt;/p&gt;&lt;table&gt;
 			rPDULoadStatusPhaseNumber=%parm[#3]% 
 			mtrapargsString=%parm[#4]%&lt;/p&gt;
 		</logmsg>
-	<severity>Cleared</severity>
+	<severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" clear-key="uei.opennms.org/vendor/APC/traps/rPDULowLoad:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" auto-clean="true"/>
 </event>
 <event>
 	<mask>
@@ -10441,6 +10443,7 @@ The third argument is the phase number.&lt;/p&gt;&lt;table&gt;
 			mtrapargsString=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
 </event>
 <event>
 	<mask>
@@ -10489,7 +10492,8 @@ The third argument is the phase number.&lt;/p&gt;&lt;table&gt;
 			rPDULoadStatusPhaseNumber=%parm[#3]% 
 			mtrapargsString=%parm[#4]%&lt;/p&gt;
 		</logmsg>
-	<severity>Cleared</severity>
+	<severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" clear-key="uei.opennms.org/vendor/APC/traps/rPDUNearOverload:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" auto-clean="false"/>
 </event>
 <event>
 	<mask>
@@ -10538,6 +10542,7 @@ The third argument is the phase number.&lt;/p&gt;&lt;table&gt;
 			mtrapargsString=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
 </event>
 <event>
 	<mask>
@@ -10586,7 +10591,8 @@ The third argument is the phase number.&lt;/p&gt;&lt;table&gt;
 			rPDULoadStatusPhaseNumber=%parm[#3]% 
 			mtrapargsString=%parm[#4]%&lt;/p&gt;
 		</logmsg>
-	<severity>Cleared</severity>
+	<severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" clear-key="uei.opennms.org/vendor/APC/traps/rPDUOverload:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" auto-clean="false"/>
 </event>
 <event>
 	<mask>
@@ -10629,6 +10635,7 @@ The second argument is the device name.&lt;/p&gt;&lt;table&gt;
 			mtrapargsString=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
 </event>
 <event>
 	<mask>
@@ -10670,7 +10677,8 @@ The second argument is the device name.&lt;/p&gt;&lt;table&gt;
 			rPDUIdentName=%parm[#2]% 
 			mtrapargsString=%parm[#3]%&lt;/p&gt;
 		</logmsg>
-	<severity>Cleared</severity>
+	<severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/APC/traps/rPDUPowerSupply1Fail:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="2" auto-clean="false"/>
 </event>
 <event>
 	<mask>
@@ -10713,6 +10721,7 @@ The second argument is the device name.&lt;/p&gt;&lt;table&gt;
 			mtrapargsString=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
 </event>
 <event>
 	<mask>
@@ -10754,7 +10763,8 @@ The second argument is the device name.&lt;/p&gt;&lt;table&gt;
 			rPDUIdentName=%parm[#2]% 
 			mtrapargsString=%parm[#3]%&lt;/p&gt;
 		</logmsg>
-	<severity>Cleared</severity>
+	<severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" clear-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="2" auto-clean="false"/>
 </event>
 <event>
 	<mask>
