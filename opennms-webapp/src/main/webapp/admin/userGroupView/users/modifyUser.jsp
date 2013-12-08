@@ -452,7 +452,7 @@
   <b>Duty Schedules</b>
 </p>
                                   <%
-Collection dutySchedules = user.getDutyScheduleCollection();
+Collection<String> dutySchedules = user.getDutyScheduleCollection();
         %>
 				<input type="hidden" name="dutySchedules" value="<%=user.getDutyScheduleCount()%>"/>
           
@@ -472,10 +472,10 @@ Collection dutySchedules = user.getDutyScheduleCollection();
             </tr>
                         <%
 int i = 0;
-        Iterator iter = dutySchedules.iterator();
+        Iterator<String> iter = dutySchedules.iterator();
         while (iter.hasNext()) {
-            DutySchedule tmp = new DutySchedule((String) iter.next());
-            Vector curSched = tmp.getAsVector();
+            DutySchedule tmp = new DutySchedule(iter.next());
+            Vector<Object> curSched = tmp.getAsVector();
 
             %>
                         <tr>

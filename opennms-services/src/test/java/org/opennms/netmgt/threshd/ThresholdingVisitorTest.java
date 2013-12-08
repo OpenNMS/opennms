@@ -1903,7 +1903,6 @@ public class ThresholdingVisitorTest {
         if (ifName != null)
             db.update("update snmpinterface set snmpifname=?, snmpifdescr=? where id=?", ifName, ifName, 1);
         DataSourceFactory.setInstance(db);
-        Vault.setDataSource(db);
     }
 
     private boolean deleteDirectory(File path) {

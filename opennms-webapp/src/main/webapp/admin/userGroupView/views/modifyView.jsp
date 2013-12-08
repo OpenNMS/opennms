@@ -320,13 +320,13 @@
         Membership membership = view.getMembership();
         if(membership != null)
         {
-            Collection collmem = membership.getMemberCollection();
+            Collection<Member> collmem = membership.getMemberCollection();
             if(collmem != null)
             {
-                Iterator iterator = (Iterator)collmem.iterator();
+                Iterator<Member> iterator = collmem.iterator();
                 while(null != iterator && iterator.hasNext())
                 {
-                    Member member = (Member) iterator.next();
+                    Member member = iterator.next();
                     if(member.getType().equals("user"))
                     {
                         buffer.append("<option>" + (String)member.getContent() + "</option>");
@@ -344,20 +344,20 @@
     {
         StringBuffer buffer = new StringBuffer("<select  WIDTH=\"200\" STYLE=\"width: 200px\" multiple name=\"availableUsers\" size=\"10\">");
         
-        List users = new ArrayList();
+        List<String> users = new ArrayList<String>();
         Membership membership = view.getMembership();
         if(membership != null)
         {
-            Collection collmem = membership.getMemberCollection();
+            Collection<Member> collmem = membership.getMemberCollection();
             if(collmem != null)
             {
-                Iterator iterator = (Iterator)collmem.iterator();
+                Iterator<Member> iterator = collmem.iterator();
                 while(null != iterator && iterator.hasNext())
                 {
-                    Member member = (Member) iterator.next();
+                    Member member = iterator.next();
                     if(member != null && member.getType().equals("user"))
                     {
-                        users.add((String)member.getContent());
+                        users.add(member.getContent());
                     }
                 }
             }
@@ -367,13 +367,13 @@
         {
             UserFactory.init();
             UserManager userFactory = UserFactory.getInstance();
-            List userNames = userFactory.getUserNames();
+            List<String> userNames = userFactory.getUserNames();
             
             if(userNames != null)
             {
                 for (int i = 0; i < userNames.size(); i++)
                 {
-                    String curUser = (String)userNames.get(i);
+                    String curUser = userNames.get(i);
                     
                     if (!users.contains(curUser))
                     {
@@ -396,18 +396,18 @@
     {
         StringBuffer buffer = new StringBuffer("<select WIDTH=\"200\" STYLE=\"width: 200px\" multiple name=\"selectedGroups\" size=\"10\">");
         
-        List groups = new ArrayList();
+        List<String> groups = new ArrayList<String>();
         Membership membership = view.getMembership();
         if(membership != null)
         {
-	          Collection collmem = membership.getMemberCollection();
-            Iterator iterator = (Iterator)collmem.iterator();
+            Collection<Member> collmem = membership.getMemberCollection();
+            Iterator<Member> iterator = collmem.iterator();
             while(iterator.hasNext())
             {
-                	Member member = (Member) iterator.next();
+                	Member member = iterator.next();
 	                if(member.getType().equals("group"))
         	        {
-                	        groups.add((String)member.getContent());
+                	        groups.add(member.getContent());
                 	}
             }
         }                                                    
@@ -426,20 +426,20 @@
     {
         StringBuffer buffer = new StringBuffer("<select  WIDTH=\"200\" STYLE=\"width: 200px\" multiple name=\"availableGroups\" size=\"10\">");
         
-        List groups = new ArrayList();
+        List<String> groups = new ArrayList<String>();
         Membership membership = view.getMembership();
         if(membership != null)
         {
-	          Collection collmem = membership.getMemberCollection();
+	          Collection<Member> collmem = membership.getMemberCollection();
             if(collmem != null)
             {
-                Iterator iterator = (Iterator)collmem.iterator();
+                Iterator<Member> iterator = collmem.iterator();
                 while(iterator.hasNext())
                 {
                     Member member = (Member) iterator.next();
                     if(member.getType().equals("group"))
                     {
-                        groups.add((String)member.getContent());
+                        groups.add(member.getContent());
                     }
                 }
         	  }
@@ -453,11 +453,11 @@
         {
             GroupFactory.init();
             GroupManager groupFactory = GroupFactory.getInstance();
-            List groupNames = groupFactory.getGroupNames();
+            List<String> groupNames = groupFactory.getGroupNames();
             
             for (int i = 0; i < groupNames.size(); i++)
             {
-                 String curGroup = (String)groupNames.get(i);
+                 String curGroup = groupNames.get(i);
                  
                  if (!groups.contains(curGroup))
                  {

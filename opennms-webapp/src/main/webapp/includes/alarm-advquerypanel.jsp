@@ -44,9 +44,9 @@
 %>
 <%
     //get the service names, in alpha order
-    Map serviceNameMap = new TreeMap(NetworkElementFactory.getInstance(getServletContext()).getServiceNameToIdMap());
-    Set serviceNameSet = serviceNameMap.keySet();
-    Iterator serviceNameIterator = serviceNameSet.iterator();
+    Map<String,Integer> serviceNameMap = new TreeMap<String,Integer>(NetworkElementFactory.getInstance(getServletContext()).getServiceNameToIdMap());
+    Set<String> serviceNameSet = serviceNameMap.keySet();
+    Iterator<String> serviceNameIterator = serviceNameSet.iterator();
  
     //get the current time values
     Calendar now = Calendar.getInstance();

@@ -39,7 +39,7 @@
 <%@page import="org.opennms.netmgt.config.users.*" %>
 <%
 	UserManager userFactory;
-  	Map users = null;
+  	Map<String,User> users = null;
 	
 	try
     	{
@@ -145,11 +145,11 @@
           <td width="15%"><b>Text Pin</b></td>
           -->
         </tr>
-        <% Iterator i = users.keySet().iterator();
+        <% Iterator<String> i = users.keySet().iterator();
            int row = 0;
            while(i.hasNext()) 
            {
-              User curUser = (User)users.get(i.next());
+              User curUser = users.get(i.next());
 	      String userid = curUser.getUserId();
 	      String email = userFactory.getEmail(userid);
 	      String pagerEmail = userFactory.getPagerEmail(userid);

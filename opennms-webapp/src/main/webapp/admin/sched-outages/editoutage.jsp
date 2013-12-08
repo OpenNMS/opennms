@@ -35,6 +35,7 @@
         import="java.util.*,
         org.opennms.netmgt.config.*,
         org.opennms.netmgt.config.poller.*,
+        org.opennms.core.db.DataSourceFactory,
         org.opennms.core.utils.DBUtils,
         org.opennms.core.utils.WebSecurityUtils,
         org.opennms.core.resource.Vault,
@@ -146,7 +147,7 @@
     
 
     private static Set<Integer> getDependencyNodesByCriticalPath(String criticalpathip) throws SQLException {
-	    final Connection conn = Vault.getDbConnection();
+	    final Connection conn = DataSourceFactory.getInstance().getConnection();
 	    final DBUtils d = new DBUtils(PathOutageFactory.class, conn);
 	    Set<Integer> pathNodes = new TreeSet<Integer>();
         try {
@@ -181,7 +182,7 @@
 	}
 	
 	private static Set<Integer> getDependencyNodesByNodeid(int nodeid) throws SQLException {
-	    final Connection conn = Vault.getDbConnection();
+	    final Connection conn = DataSourceFactory.getInstance().getConnection();
 	    final DBUtils d = new DBUtils(PathOutageFactory.class, conn);
 
 	    Set<Integer> pathNodes = new TreeSet<Integer>();

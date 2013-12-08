@@ -61,7 +61,7 @@
 		String status = "Unknown";
 		try {
 				NotifdConfigFactory.init();
-				status = NotifdConfigFactory.getInstance().getPrettyStatus();
+				status = NotifdConfigFactory.getPrettyStatus();
 		} catch (Throwable e) { 
 			// If factory can't be initialized, status is already 'Unknown'
 		}

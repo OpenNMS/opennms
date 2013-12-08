@@ -33,7 +33,7 @@
 	import="java.sql.Connection,
 			java.util.Iterator,
 			java.util.List,
-			org.opennms.core.resource.Vault,
+			org.opennms.core.db.DataSourceFactory,
 			org.opennms.core.utils.DBUtils,
 			org.opennms.web.pathOutage.*
 " %>
@@ -69,7 +69,7 @@
           </tr>
 
 <%        Iterator<String> iter = nodeList.iterator();
-          final Connection conn = Vault.getDbConnection();
+          final Connection conn = DataSourceFactory.getInstance().getConnection();
           final DBUtils d = new DBUtils(PathOutageFactory.class, conn);
           try {
               while( iter.hasNext() ) {

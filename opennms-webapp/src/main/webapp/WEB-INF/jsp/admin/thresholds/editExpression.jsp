@@ -74,7 +74,7 @@
     				</c:forEach>
     			</select>
     		</td>
-    		<td class="standard"><input type="text" name="expression" size=30" value="${expression.expression}"/></td>
+    		<td class="standard"><input type="text" name="expression" size="30" value="${expression.expression}"/></td>
     		<td class="standard">
     		   	<select name="dsType">
     				<c:forEach items="${dsTypes}" var="thisDsType">
@@ -89,10 +89,10 @@
 						<option ${selected} value='${thisDsType.key}'>${thisDsType.value}</option>
     				</c:forEach>
     			</select></td>
- 			<td class="standard"><input type="text" name="dsLabel" size=30" value="${expression.dsLabel}"/></td>
-    		<td class="standard"><input type="text" name="value" size=10" value="${expression.value}"/></td>
-    		<td class="standard"><input type="text" name="rearm" size=10" value="${expression.rearm}"/></td>
-    		<td class="standard"><input type="text" name="trigger" size=10" value="${expression.trigger}"/></td>
+ 			<td class="standard"><input type="text" name="dsLabel" size="30" value="${expression.dsLabel}"/></td>
+    		<td class="standard"><input type="text" name="value" size="10" value="${expression.value}"/></td>
+    		<td class="standard"><input type="text" name="rearm" size="10" value="${expression.rearm}"/></td>
+    		<td class="standard"><input type="text" name="trigger" size="10" value="${expression.trigger}"/></td>
     	</tr>
     </table>
     <table class="normal">

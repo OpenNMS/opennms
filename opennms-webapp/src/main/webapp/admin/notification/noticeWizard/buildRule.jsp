@@ -157,7 +157,7 @@
     public String buildServiceOptions(String rule)
         throws SQLException
     {
-        List services = NotificationFactory.getInstance().getServiceNames();
+        List<String> services = NotificationFactory.getInstance().getServiceNames();
         StringBuffer buffer = new StringBuffer();
         
         for (int i = 0; i < services.size(); i++)
@@ -180,7 +180,7 @@
     public String buildNotServiceOptions(String rule)
         throws SQLException
     {
-        List services = NotificationFactory.getInstance().getServiceNames();
+        List<String> services = NotificationFactory.getInstance().getServiceNames();
         StringBuffer buffer = new StringBuffer();
         
         for (int i = 0; i < services.size(); i++)
@@ -207,11 +207,6 @@
     {
         org.apache.regexp.RE dirRegEx = null;
         dirRegEx = new org.apache.regexp.RE( ".+\\..+\\..+\\..+");
-        
-        if (dirRegEx == null)
-        {
-            return "*.*.*.*";
-        }
         
         StringTokenizer tokens = new StringTokenizer(rule, " ");
         while(tokens.hasMoreTokens())

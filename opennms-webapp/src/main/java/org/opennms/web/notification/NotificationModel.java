@@ -38,10 +38,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-import org.opennms.core.resource.Vault;
+import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.utils.DBUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.core.utils.DBUtils;
 
 public class NotificationModel extends Object {
 	
@@ -105,7 +105,7 @@ public class NotificationModel extends Object {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
 
-        final Connection conn = Vault.getDbConnection();
+        final Connection conn = DataSourceFactory.getInstance().getConnection();
         final DBUtils d = new DBUtils(getClass(), conn);
 
         try {
@@ -180,7 +180,7 @@ public class NotificationModel extends Object {
     public Notification[] allNotifications(String order) throws SQLException {
         Notification[] notices = null;
 
-        final Connection conn = Vault.getDbConnection();
+        final Connection conn = DataSourceFactory.getInstance().getConnection();
         final DBUtils d = new DBUtils(getClass(), conn);
 
         try {
@@ -302,7 +302,7 @@ public class NotificationModel extends Object {
     public Notification[] getOutstandingNotices() throws SQLException {
         Notification[] notices = null;
 
-        final Connection conn = Vault.getDbConnection();
+        final Connection conn = DataSourceFactory.getInstance().getConnection();
         final DBUtils d = new DBUtils(getClass(), conn);
 
         try {
@@ -332,7 +332,7 @@ public class NotificationModel extends Object {
     public int getOutstandingNoticeCount() throws SQLException {
         int count = 0;
 
-        final Connection conn = Vault.getDbConnection();
+        final Connection conn = DataSourceFactory.getInstance().getConnection();
         final DBUtils d = new DBUtils(getClass(), conn);
 
         try {
@@ -369,7 +369,7 @@ public class NotificationModel extends Object {
 
         int count = 0;
 
-        final Connection conn = Vault.getDbConnection();
+        final Connection conn = DataSourceFactory.getInstance().getConnection();
         final DBUtils d = new DBUtils(getClass(), conn);
 
         try {
@@ -403,7 +403,7 @@ public class NotificationModel extends Object {
     public Notification[] getOutstandingNotices(String name) throws SQLException {
         Notification[] notices = null;
 
-        final Connection conn = Vault.getDbConnection();
+        final Connection conn = DataSourceFactory.getInstance().getConnection();
         final DBUtils d = new DBUtils(getClass(), conn);
 
         try {
@@ -438,7 +438,7 @@ public class NotificationModel extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        final Connection conn = Vault.getDbConnection();
+        final Connection conn = DataSourceFactory.getInstance().getConnection();
         final DBUtils d = new DBUtils(getClass(), conn);
 
         try {
@@ -467,7 +467,7 @@ public class NotificationModel extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        final Connection conn = Vault.getDbConnection();
+        final Connection conn = DataSourceFactory.getInstance().getConnection();
         final DBUtils d = new DBUtils(getClass(), conn);
 
         try {

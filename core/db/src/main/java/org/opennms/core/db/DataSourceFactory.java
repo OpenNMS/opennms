@@ -50,14 +50,8 @@ import org.slf4j.LoggerFactory;
 /**
  * <p>
  * This is the singleton class used to load the OpenNMS database configuration
- * from the opennms-database.xml. This provides convenience methods to create
- * database connections to the database configured in this default xml
- * </p>
- *
- * <p>
- * <strong>Note: </strong>Users of this class should make sure the
- * <em>init()</em> is called before calling any other method to ensure the
- * config is loaded before accessing other convenience methods
+ * from the opennms-datasources.xml. This provides convenience methods to create
+ * database connections to the database configured in this default XML.
  * </p>
  *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>

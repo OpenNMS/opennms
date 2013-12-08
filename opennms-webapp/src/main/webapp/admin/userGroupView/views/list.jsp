@@ -40,7 +40,7 @@
 
 <%
 	ViewFactory viewFactory = null;
-	Map views = null;
+	Map<String,View> views = null;
 	
   	try {
 		ViewFactory.init();
@@ -121,7 +121,7 @@
           <td width="5%"><b>View Name</b></td>
           <td width="5%"><b>View Title</b></td>
         </tr>
-        <% Iterator i = views.keySet().iterator();
+        <% Iterator<String> i = views.keySet().iterator();
            int row = 0;
            while(i.hasNext())
            {

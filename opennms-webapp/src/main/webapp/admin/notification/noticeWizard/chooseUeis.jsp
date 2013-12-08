@@ -125,17 +125,17 @@
     public String buildEventSelect(Notification notice)
       throws IOException, FileNotFoundException
     {
-        List events = m_eventConfDao.getEventsByLabel();
+        List<Event> events = m_eventConfDao.getEventsByLabel();
         StringBuffer buffer = new StringBuffer();
         
-        List excludeList = getExcludeList();
+        List<String> excludeList = getExcludeList();
 	TreeMap<String, String> sortedMap = new TreeMap<String, String>();
 
-        Iterator i = events.iterator();
+        Iterator<Event> i = events.iterator();
 
         while(i.hasNext()) //for (int i = 0; i < events.size(); i++)
         {
-            Event e = (Event)i.next();
+            Event e = i.next();
             String uei = e.getUei();
             //System.out.println(uei);
 
@@ -149,9 +149,9 @@
 		sortedMap.put(label,uei);
             }
 	}
-	i=sortedMap.keySet().iterator();
+	Iterator<String> it = sortedMap.keySet().iterator();
 	while(i.hasNext()) {
-		String label=(String)i.next();
+		String label = it.next();
 		String uei=(String)sortedMap.get(label);
 		if (uei.equals(notice.getUei())) {
 			buffer.append("<option selected VALUE=" + uei + ">" + label + "</option>");
@@ -175,7 +175,7 @@
         return leftover;
      }
      
-     public List getExcludeList()
+     public List<String> getExcludeList()
       throws IOException, FileNotFoundException
      {
         List<String> excludes = new ArrayList<String>();

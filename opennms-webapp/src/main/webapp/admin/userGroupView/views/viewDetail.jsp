@@ -112,11 +112,11 @@
             <%  Membership membership= view.getMembership();
 		if(membership != null)
 		{
-	                Enumeration enummember = membership.enumerateMember();
-        	        List users = new ArrayList();
+	                Enumeration<Member> enummember = membership.enumerateMember();
+        	        List<String> users = new ArrayList<String>();
                 	while(enummember != null && enummember.hasMoreElements())
 	                {
-        	                Member member = (Member)enummember.nextElement();
+        	                Member member = enummember.nextElement();
                 	        if(member.getType().equals("user"))
                         	        users.add(member.getContent());
 	                }  
@@ -135,8 +135,8 @@
             <%  membership= view.getMembership();
 		if(membership != null)
 		{
-			Enumeration enummember = membership.enumerateMember();
-			List groups = new ArrayList();
+			Enumeration<Member> enummember = membership.enumerateMember();
+			List<String> groups = new ArrayList<String>();
 			while(enummember != null && enummember.hasMoreElements())
 			{
 				Member member = (Member)enummember.nextElement();
@@ -162,8 +162,8 @@
                     <td width="85%"><b>Rule</b></td>
                   </tr>
                   <% Categories categories = view.getCategories();
-		     Collection catcoll = categories.getCategoryCollection();
-                     Iterator iter = catcoll.iterator();
+		     Collection<Category> catcoll = categories.getCategoryCollection();
+                     Iterator<Category> iter = catcoll.iterator();
 		     while (iter.hasNext()) 
                      { 
                         Category curCategory = (Category)iter.next();

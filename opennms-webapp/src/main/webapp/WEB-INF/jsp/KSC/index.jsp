@@ -102,7 +102,7 @@
     <div name="opennms-kscCustomReportList" id="kscReportList-ie" dataObject="customData" isreadonly="${isReadOnly}"></div>
   </div>
 
-  <h3 class="o-box">Node & Domain Interface Reports</h3>
+  <h3 class="o-box">Node &amp; Domain Interface Reports</h3>
   <div class="boxWrapper">
   <p>Select resource for desired performance report</p>
     <script type="text/javascript">

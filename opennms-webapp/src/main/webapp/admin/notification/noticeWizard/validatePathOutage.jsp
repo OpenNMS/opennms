@@ -131,8 +131,8 @@
       throws FilterParseException
   {
           StringBuffer buffer = new StringBuffer();
-          SortedMap nodes = FilterDaoFactory.getInstance().getNodeMap(rule);
-          Iterator i = nodes.keySet().iterator();
+          SortedMap<Integer,String> nodes = FilterDaoFactory.getInstance().getNodeMap(rule);
+          Iterator<Integer> i = nodes.keySet().iterator();
           while(i.hasNext())
           {
               Integer key = (Integer)i.next();

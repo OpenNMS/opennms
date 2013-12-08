@@ -39,7 +39,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.core.resource.Vault;
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.WebSecurityUtils;
@@ -100,7 +100,7 @@ public class SetCriticalPathServlet extends HttpServlet {
         final DBUtils d = new DBUtils(getClass());
 
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
             PreparedStatement stmt = conn.prepareStatement(SQL_DELETE_CRITICAL_PATH);
             d.watch(stmt);
@@ -117,7 +117,7 @@ public class SetCriticalPathServlet extends HttpServlet {
 
         final DBUtils d = new DBUtils(getClass());
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
             PreparedStatement stmt = conn.prepareStatement(SQL_SET_CRITICAL_PATH);
             d.watch(stmt);

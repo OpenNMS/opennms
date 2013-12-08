@@ -46,8 +46,8 @@
 	"
 %>
 <%
-	HashMap scanablePlugin = new HashMap();
-	HashMap scanableUserPlugin = new HashMap();
+	HashMap<String,Service> scanablePlugin = new HashMap<String,Service>();
+	HashMap<String,Service> scanableUserPlugin = new HashMap<String,Service>();
 
 	String homeDir = Vault.getHomeDir();
         if( homeDir == null ) {
@@ -58,7 +58,7 @@
         protoMap = getQueries();
         String[] protocols = BundleLists.parseBundleList( this.props.getProperty( "services" ));
  
-	java.util.List polledPlugins = new ArrayList();
+	java.util.List<String> polledPlugins = new ArrayList<String>();
 	PollerConfig pollerFactory = null;
 	PollerConfiguration pollerConfig = null;
 	try
@@ -68,22 +68,22 @@
 		pollerConfig = pollerFactory.getConfiguration();
 	     	if(pollerConfig != null)
      		{
-        		Collection packColl = pollerConfig.getPackageCollection();
+        		Collection<org.opennms.netmgt.config.poller.Package> packColl = pollerConfig.getPackageCollection();
         		if(packColl != null)
         		{
-                		Iterator iter = (Iterator)packColl.iterator();
+                		Iterator<org.opennms.netmgt.config.poller.Package> iter = packColl.iterator();
                 		if(iter.hasNext())
                 		{
-                        		org.opennms.netmgt.config.poller.Package pkg = (org.opennms.netmgt.config.poller.Package)iter.next();
+                        		org.opennms.netmgt.config.poller.Package pkg = iter.next();
                         		if(pkg != null)
                         		{
-                                		Collection svcCollection = pkg.getServiceCollection();
+                                		Collection<org.opennms.netmgt.config.poller.Service> svcCollection = pkg.getServiceCollection();
                                 		if(svcCollection != null)
                                 		{
-                                        		Iterator svcIter = svcCollection.iterator();
+                                        		Iterator<org.opennms.netmgt.config.poller.Service> svcIter = svcCollection.iterator();
                                         		while(svcIter.hasNext())
                                         		{
-                                                		org.opennms.netmgt.config.poller.Service svcs = (org.opennms.netmgt.config.poller.Service)svcIter.next();
+                                                		org.opennms.netmgt.config.poller.Service svcs = svcIter.next();
                                                 		if(svcs != null)
                                                 		{
                                                         if(svcs.getUserDefined().equals("true"))
@@ -119,26 +119,26 @@
 	}
 
 %><%!
-	Map protoMap;
+	Map<String,String> protoMap;
         Properties props = new java.util.Properties();
 	String[] sortedProtocols;
-    	public Map getQueries() {
-		Map queries = new HashMap();
+    	public Map<String,String> getQueries() {
+		Map<String,String> queries = new HashMap<String,String>();
 
         	if( this.protoMap == null ) {
             		String[] protocols = BundleLists.parseBundleList( this.props.getProperty( "services" ));
 			sortedProtocols = new String[protocols.length];
-            		this.protoMap = new TreeMap();
+            		this.protoMap = new TreeMap<String,String>();
 
-			TreeMap sortTmp = new TreeMap();
+			TreeMap<String,String> sortTmp = new TreeMap<String,String>();
             		for( int i = 0; i < protocols.length; i++ )
             		{
                 		this.protoMap.put(this.props.getProperty( "service." + protocols[i] + ".protocol" ), protocols[i]);
 				sortTmp.put(protocols[i], "service." + protocols[i] + ".protocol");
             		}
 
-			Set keys = sortTmp.keySet();
-			Iterator sortIter = keys.iterator();
+			Set<String> keys = sortTmp.keySet();
+			Iterator<String> sortIter = keys.iterator();
 			int i = 0;
 			while(sortIter.hasNext())
 			{

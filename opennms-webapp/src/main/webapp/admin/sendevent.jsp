@@ -289,16 +289,16 @@
     public String buildEventSelect()
       throws IOException, FileNotFoundException
     {
-        List events = m_eventConfDao.getEventsByLabel();
+        List<Event> events = m_eventConfDao.getEventsByLabel();
         StringBuffer buffer = new StringBuffer();
 
         List<String> excludeList = getExcludeList();
 	TreeMap<String, String> sortedMap = new TreeMap<String, String>();
 
-        Iterator i = events.iterator();
+        Iterator<Event> i = events.iterator();
 
         while(i.hasNext()) {
-            org.opennms.netmgt.xml.eventconf.Event e = (org.opennms.netmgt.xml.eventconf.Event)i.next();
+            Event e = i.next();
 
             String uei = e.getUei();
             //System.out.println(uei);

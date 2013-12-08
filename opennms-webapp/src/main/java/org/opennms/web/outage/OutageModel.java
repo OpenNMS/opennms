@@ -40,7 +40,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import org.opennms.core.resource.Vault;
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.outage.OutageSummary;
@@ -76,7 +76,7 @@ public class OutageModel {
         Outage[] outages = new Outage[0];
 
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
             Statement stmt = conn.createStatement();
@@ -102,7 +102,7 @@ public class OutageModel {
         Outage[] outages = new Outage[0];
  
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
             Statement stmt = conn.createStatement();
@@ -128,7 +128,7 @@ public class OutageModel {
         int count = 0;
 
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
             Statement stmt = conn.createStatement();
@@ -156,7 +156,7 @@ public class OutageModel {
         int count = 0;
 
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
             Statement stmt = conn.createStatement();
@@ -185,7 +185,7 @@ public class OutageModel {
         Outage[] outages = new Outage[0];
 
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
             PreparedStatement stmt = conn.prepareStatement(""
@@ -234,7 +234,7 @@ public class OutageModel {
         List<Integer> outageIds = new ArrayList<Integer>();
 
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
             PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT outageid from outages where nodeid=?  and ifregainedservice is null and suppresstime is null or suppresstime < now();");
@@ -272,7 +272,7 @@ public class OutageModel {
         List<OnmsNode> newNodes = new ArrayList<OnmsNode>();
         
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
             PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT nodeid from outages where nodeid in ( " + nodeList + " ) and ifregainedservice is null and suppresstime is null or suppresstime < now();");
@@ -301,7 +301,7 @@ public class OutageModel {
         Outage[] outages = new Outage[0];
 
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
             PreparedStatement stmt = conn.prepareStatement(""
@@ -350,7 +350,7 @@ public class OutageModel {
         Outage[] outages = new Outage[0];
 
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
             PreparedStatement stmt = conn.prepareStatement("  "
@@ -409,7 +409,7 @@ public class OutageModel {
         long timeLong = time.getTime();
 
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
             PreparedStatement stmt = conn.prepareStatement("  "
@@ -458,7 +458,7 @@ public class OutageModel {
         Outage[] outages = new Outage[0];
 
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
             PreparedStatement stmt = conn.prepareStatement("  "
@@ -517,7 +517,7 @@ public class OutageModel {
         long timeLong = time.getTime();
 
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
             PreparedStatement stmt = conn.prepareStatement("  "
@@ -569,7 +569,7 @@ public class OutageModel {
         Outage[] outages = new Outage[0];
 
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
             
             PreparedStatement stmt = conn.prepareStatement("  "
@@ -631,7 +631,7 @@ public class OutageModel {
         long timeLong = time.getTime();
 
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
             
             PreparedStatement stmt = conn.prepareStatement("  "
@@ -685,7 +685,7 @@ public class OutageModel {
         OutageSummary[] summaries = new OutageSummary[0];
 
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
             
             Statement stmt = conn.createStatement();
@@ -745,7 +745,7 @@ public class OutageModel {
         OutageSummary[] summaries = new OutageSummary[0];
 
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
             
             PreparedStatement stmt = conn.prepareStatement(
@@ -806,7 +806,7 @@ public class OutageModel {
         OutageSummary[] summaries = new OutageSummary[0];
 
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
             
             Statement stmt = conn.createStatement();

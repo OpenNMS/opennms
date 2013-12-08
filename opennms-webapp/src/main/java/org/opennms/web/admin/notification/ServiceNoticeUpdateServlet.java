@@ -41,7 +41,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.opennms.core.resource.Vault;
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.WebSecurityUtils;
 
@@ -95,7 +95,7 @@ public class ServiceNoticeUpdateServlet extends HttpServlet {
 
         final DBUtils d = new DBUtils(getClass());
         try {
-            connection = Vault.getDbConnection();
+            connection = DataSourceFactory.getInstance().getConnection();
             d.watch(connection);
 
             final PreparedStatement stmt = connection.prepareStatement(UPDATE_SERVICE);

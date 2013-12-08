@@ -38,7 +38,7 @@ import java.util.Vector;
 
 import javax.servlet.ServletContext;
 
-import org.opennms.core.resource.Vault;
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.web.element.NetworkElementFactory;
 import org.opennms.web.filter.Filter;
@@ -77,7 +77,7 @@ public class NoticeFactory {
         final DBUtils d = new DBUtils(NoticeFactory.class);
 
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
             StringBuffer select = new StringBuffer("SELECT COUNT(NOTIFYID) AS NOTICECOUNT FROM NOTIFICATIONS WHERE");
@@ -122,7 +122,7 @@ public class NoticeFactory {
         DBUtils d = new DBUtils(NoticeFactory.class);
 
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM NOTIFICATION WHERE NOTIFYID=?");
@@ -158,7 +158,7 @@ public class NoticeFactory {
         final DBUtils d = new DBUtils(NoticeFactory.class);
 
         try {
-            Connection connection = Vault.getDbConnection();
+            Connection connection = DataSourceFactory.getInstance().getConnection();
             d.watch(connection);
 
             PreparedStatement statement = connection.prepareStatement("SELECT eventDisplay FROM events WHERE eventid=?");
@@ -294,7 +294,7 @@ public class NoticeFactory {
         final DBUtils d = new DBUtils(NoticeFactory.class);
 
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
             StringBuffer select = new StringBuffer("SELECT * FROM NOTIFICATIONS WHERE");
@@ -416,7 +416,7 @@ public class NoticeFactory {
         final DBUtils d = new DBUtils(NoticeFactory.class);
 
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
             StringBuffer select = new StringBuffer("SELECT * FROM NOTIFICATIONS WHERE NODEID=? AND INTERFACEID=?");
@@ -473,7 +473,7 @@ public class NoticeFactory {
         DBUtils d = new DBUtils(NoticeFactory.class);
 
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
             StringBuffer select = new StringBuffer("SELECT * FROM NOTIFICATIONS WHERE INTERFACEID=?");
@@ -530,7 +530,7 @@ public class NoticeFactory {
         final DBUtils d = new DBUtils(NoticeFactory.class);
 
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
             StringBuffer select = new StringBuffer("SELECT * FROM NOTIFICATIONS WHERE NODEID=? AND INTERFACEID=? AND SERVICEID=?");
@@ -584,7 +584,7 @@ public class NoticeFactory {
         DBUtils d = new DBUtils(NoticeFactory.class);
 
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
             StringBuffer select = new StringBuffer("SELECT * FROM NOTIFICATION WHERE SERVICEID=?");
@@ -682,7 +682,7 @@ public class NoticeFactory {
 
             DBUtils d = new DBUtils(NoticeFactory.class);
             try {
-                Connection conn = Vault.getDbConnection();
+                Connection conn = DataSourceFactory.getInstance().getConnection();
                 d.watch(conn);
 
                 PreparedStatement stmt = conn.prepareStatement(update.toString());

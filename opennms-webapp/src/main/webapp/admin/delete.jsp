@@ -46,7 +46,7 @@
 
 <%
     HttpSession userSession = request.getSession(false);
-    List nodes = null;
+    List<ManagedNode> nodes = null;
     Integer lineItems= new Integer(0);
     
     interfaceIndex = 0;
@@ -54,7 +54,7 @@
     
     if (userSession != null)
     {
-  	nodes = (List)userSession.getAttribute("listAll.delete.jsp");
+  	nodes = (List<ManagedNode>)userSession.getAttribute("listAll.delete.jsp");
         lineItems = (Integer)userSession.getAttribute("lineItems.delete.jsp");
     }
 %>
@@ -214,7 +214,7 @@
 <jsp:include page="/includes/footer.jsp" flush="true"/>
 
 <%!
-      public String buildTableRows(List nodes, int start, int stop)
+      public String buildTableRows(List<ManagedNode> nodes, int start, int stop)
       	throws java.sql.SQLException
       {
           StringBuffer row = new StringBuffer();
@@ -222,7 +222,7 @@
           for (int i = start; i < stop; i++)
           {
                 
-                ManagedNode curNode = (ManagedNode)nodes.get(i);
+                ManagedNode curNode = nodes.get(i);
                 String nodelabel = NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(curNode.getNodeID());
 		int nodeid = curNode.getNodeID();
                  

@@ -84,8 +84,8 @@
 				thisPackage.removeOutageCalendar(deleteName); //Will quietly do nothing if outage doesn't exist
 			}
 	
-			for (Iterator iter = CollectdConfigFactory.getInstance().getCollectdConfig().getPackages().iterator(); iter.hasNext();) {
-				org.opennms.netmgt.config.collectd.Package thisPackage = ((CollectdPackage) iter.next()).getPackage();
+			for (Iterator<CollectdPackage> iter = CollectdConfigFactory.getInstance().getCollectdConfig().getPackages().iterator(); iter.hasNext();) {
+				org.opennms.netmgt.config.collectd.Package thisPackage = iter.next().getPackage();
 				thisPackage.removeOutageCalendar(deleteName); //Will quietly do nothing if outage doesn't exist
 			}
 	
@@ -178,8 +178,8 @@ div.nodeintbox {
 			CollectdConfigFactory.init();
 			List<String> collectionOutages = new ArrayList<String>();
 	
-			for (Iterator iter = CollectdConfigFactory.getInstance().getCollectdConfig().getPackages().iterator(); iter.hasNext();) {
-				org.opennms.netmgt.config.collectd.Package thisPackage = ((CollectdPackage) iter.next()).getPackage();
+			for (Iterator<CollectdPackage> iter = CollectdConfigFactory.getInstance().getCollectdConfig().getPackages().iterator(); iter.hasNext();) {
+				org.opennms.netmgt.config.collectd.Package thisPackage = iter.next().getPackage();
 				collectionOutages.addAll(thisPackage.getOutageCalendarCollection());
 			}
 	

@@ -66,42 +66,42 @@
 
 
 
-<TITLE>
+<title>
 Additional Legend Information
-</TITLE>
+</title>
 
 <div id="header">
-<h1><a href="http://localhost:8980/opennms/index.jsp"><img alt="OpenNMS Web Console Home" src="http://localhost:8980/opennms/images/logo.png"></a></h1>
+<h1><a href="http://localhost:8980/opennms/index.jsp"><img alt="OpenNMS Web Console Home" src="http://localhost:8980/opennms/images/logo.png"/></a></h1>
 </div>
 
 <div id="content">
-<BODY>
+<body>
 <h2>
-<P>
+<p>
 Each status cell is an intersection of a Location and Application
-</P>
+</p>
 <br/>
-<P>
+<p>
 An Application is defined by a subset of the set of IP based services created in OpenNMS
-</P>
+</p>
 <p>
 </p>
-<P>
+<p>
 A Location is an arbitrary entity defined through configuration by the OpenNMS user
-</P>
+</p>
 <br/>
-<P>
+<p>
 Each Location presents Availability as the best percentage possible based on the history of status<br/>
 of services monitored from *all* remote pollers in that Location since midnight of the current day.<br/>
 If there were 2 services being monitored by 2 remote pollers and each 1 service down, uniquely, then<br/>
  the availability would still be 100%.
-</P>
+</p>
 <br/>
-<P>
+<p>
 Each Location presents Status as the worst known status of all remote pollers in a Started state.
-<P>
+<p>
 </h2>
-</BODY>
+</body>
 </div>
 
-</HTML>
+</html>

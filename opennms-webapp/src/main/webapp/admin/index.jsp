@@ -161,7 +161,7 @@
             <%String status = "Unknown";
                 try {
                     NotifdConfigFactory.init();
-                    status = NotifdConfigFactory.getInstance().getPrettyStatus();
+                    status = NotifdConfigFactory.getPrettyStatus();
                 } catch (Throwable e) { /*if factory can't be initialized, status is already 'Unknown'*/ }
             %>
             <p align="right">Notification Status:

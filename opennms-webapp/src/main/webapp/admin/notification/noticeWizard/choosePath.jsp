@@ -77,7 +77,7 @@
   <jsp:param name="breadcrumb" value="Choose Path" />
 </jsp:include>
 
-<script language="JAVASCRIPT" >
+<script type="text/javascript" >
   
     function trimString(str) 
     {
@@ -235,10 +235,10 @@
          
          try {
             pathsMap = new TreeMap<String, Path>(DestinationPathFactory.getInstance().getPaths());
-         Iterator iterator = pathsMap.keySet().iterator();
+         Iterator<String> iterator = pathsMap.keySet().iterator();
          while(iterator.hasNext())
          { 
-                 String key = (String)iterator.next();
+                 String key = iterator.next();
                  if (key.equals(currentPath))
                  {
                     buffer.append("<option SELECTED VALUE=" + key + ">" + key + "</option>");

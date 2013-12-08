@@ -90,10 +90,10 @@
 						<option ${selected} value='${thisDsType.key}'>${thisDsType.value}</option>
     				</c:forEach>
     			</select></td>
- 			<td class="standard"><input type="text" name="dsLabel" size=30" value="${threshold.dsLabel}"/></td>
-    		<td class="standard"><input type="text" name="value" size=10" value="${threshold.value}"/></td>
-    		<td class="standard"><input type="text" name="rearm" size=10" value="${threshold.rearm}"/></td>
-    		<td class="standard"><input type="text" name="trigger" size=10" value="${threshold.trigger}"/></td>
+ 			<td class="standard"><input type="text" name="dsLabel" size="30" value="${threshold.dsLabel}"/></td>
+    		<td class="standard"><input type="text" name="value" size="10" value="${threshold.value}"/></td>
+    		<td class="standard"><input type="text" name="rearm" size="10" value="${threshold.rearm}"/></td>
+    		<td class="standard"><input type="text" name="trigger" size="10" value="${threshold.trigger}"/></td>
     	</tr>
     </table>
     <table class="normal">

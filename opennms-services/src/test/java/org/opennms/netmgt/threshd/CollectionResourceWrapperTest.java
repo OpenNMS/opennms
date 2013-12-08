@@ -361,7 +361,6 @@ public class CollectionResourceWrapperTest {
         db.populate(network);
         db.update("update snmpinterface set snmpifindex=?, snmpifname=?, snmpifdescr=? where id=?", ifIndex, ifName, ifName, 1);
         DataSourceFactory.setInstance(db);
-        Vault.setDataSource(db);
 
         // Create Mock Collection Agent
         CollectionAgent agent = createCollectionAgent();

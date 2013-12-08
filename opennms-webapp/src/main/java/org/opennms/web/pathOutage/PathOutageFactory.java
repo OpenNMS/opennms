@@ -35,7 +35,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.core.resource.Vault;
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.WebSecurityUtils;
 
@@ -84,7 +84,7 @@ public class PathOutageFactory extends Object {
      * @throws java.sql.SQLException if any.
      */
     public static List<String[]> getAllCriticalPaths() throws SQLException {
-        final Connection conn = Vault.getDbConnection();
+        final Connection conn = DataSourceFactory.getInstance().getConnection();
         final DBUtils d = new DBUtils(PathOutageFactory.class, conn);
 
         final List<String[]> paths = new ArrayList<String[]>();
@@ -122,7 +122,7 @@ public class PathOutageFactory extends Object {
         String result = NO_CRITICAL_PATH;
 
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
             PreparedStatement stmt = conn.prepareStatement(GET_CRITICAL_PATH_BY_NODEID);
             d.watch(stmt);
@@ -152,7 +152,7 @@ public class PathOutageFactory extends Object {
      * @throws java.sql.SQLException if any.
      */
     public static List<String> getNodesInPath(String criticalPathIp, String criticalPathServiceName) throws SQLException {
-        final Connection conn = Vault.getDbConnection();
+        final Connection conn = DataSourceFactory.getInstance().getConnection();
         final DBUtils d = new DBUtils(PathOutageFactory.class, conn);
 
         final List<String> pathNodes = new ArrayList<String>();
@@ -270,7 +270,7 @@ public class PathOutageFactory extends Object {
      * @throws java.sql.SQLException if any.
      */
     public static String[] getCriticalPathData(String criticalPathIp, String criticalPathServiceName) throws SQLException {
-        final Connection conn = Vault.getDbConnection();
+        final Connection conn = DataSourceFactory.getInstance().getConnection();
         final DBUtils d = new DBUtils(PathOutageFactory.class, conn);
 
         String[] result = new String[4];

@@ -44,6 +44,9 @@
 
 <%
   	WebGroup group = (WebGroup)session.getAttribute("group.modifyGroup.jsp");
+    if (group == null) {
+        throw new ServletException("Could not get session attribute group");
+    }
     String[] allCategories = (String[])session.getAttribute("allCategories.modifyGroup.jsp");
     String[] allUsers = (String[])session.getAttribute("allUsers.modifyGroup.jsp");
     String[] allVisibleMaps = (String[])session.getAttribute("allVisibleMaps.modifyGroup.jsp");
@@ -53,9 +56,6 @@
     String[] availableUsers = group.getRemainingUsers(Arrays.asList(allUsers)).toArray(new String[0]);
 
 
-	if (group == null) {
-		throw new ServletException("Could not get session attribute group");
-	}
 	
 	
 %>
@@ -424,7 +424,7 @@
                        int i = 0;
                        for(String dutySchedSpec : group.getDutySchedules()) {
                            DutySchedule tmp = new DutySchedule(dutySchedSpec);
-                           Vector curSched = tmp.getAsVector();
+                           Vector<Object> curSched = tmp.getAsVector();
                     %>
                     <tr>
                       <td width="1%"><%=(i+1)%></td>

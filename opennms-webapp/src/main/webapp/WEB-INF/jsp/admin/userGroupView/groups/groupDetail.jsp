@@ -100,7 +100,7 @@
             <tr>
               <td>
                 <b>Assigned Users:</b>
-                <% Collection users = group.getUsers();
+                <% Collection<String> users = group.getUsers();
                 if (users.size() < 1)
                 { %>
                   <table width="50%" border="0" cellspacing="0" cellpadding="2" >
@@ -113,11 +113,11 @@
                 <% }
                 else { %>
                   <table width="50%" border="1" cellspacing="0" cellpadding="2" >
-                    <% 	Iterator usersIter = (Iterator)users.iterator(); 
+                    <% 	Iterator<String> usersIter = users.iterator(); 
 			while (usersIter != null && usersIter.hasNext()) { %>
                       <tr>
                         <td>
-                          <%=(String)usersIter.next()%>
+                          <%=usersIter.next()%>
                         </td>
                       </tr>
                     <% } %>
@@ -129,14 +129,14 @@
               <td>
               <b>Duty Schedules:</b>
                     <table width="50%" border="1" cellspacing="0" cellpadding="2" >
-                      <% Collection dutySchedules = group.getDutySchedules(); %>
+                      <% Collection<String> dutySchedules = group.getDutySchedules(); %>
                       <%
                               int i =0;
-                              Iterator iter = dutySchedules.iterator();
+                              Iterator<String> iter = dutySchedules.iterator();
                               while(iter.hasNext())
                               {
-                                      DutySchedule tmp = new DutySchedule((String)iter.next());
-                                      Vector curSched = tmp.getAsVector();
+                                      DutySchedule tmp = new DutySchedule(iter.next());
+                                      Vector<Object> curSched = tmp.getAsVector();
                                       i++;
                       %>
                       <tr>

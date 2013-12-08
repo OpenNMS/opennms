@@ -83,7 +83,7 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Initializ
      */
     @Override
     public void afterPropertiesSet() throws Exception {
-        Vault.setDataSource(DataSourceFactory.getInstance()); // Fix for Bug 4117
+        // Do nothing
     }
 
     /**
