@@ -456,7 +456,7 @@ public class RequisitionNode {
      * @param value a {@link java.lang.String} object.
      */
     public void setParentForeignSource(String value) {
-        m_parentForeignSource = value;
+        m_parentForeignSource = value != null && "".equals(value.trim()) ? null : value;
     }
 
     /**
@@ -474,7 +474,7 @@ public class RequisitionNode {
      * @param value a {@link java.lang.String} object.
      */
     public void setParentForeignId(String value) {
-        m_parentForeignId = value;
+        m_parentForeignId = value != null && "".equals(value.trim()) ? null : value;
     }
 
     /**
@@ -492,7 +492,7 @@ public class RequisitionNode {
      * @param value a {@link java.lang.String} object.
      */
     public void setParentNodeLabel(String value) {
-        m_parentNodeLabel = value;
+        m_parentNodeLabel = value != null && "".equals(value.trim()) ? null : value;
     }
 
     @Override
