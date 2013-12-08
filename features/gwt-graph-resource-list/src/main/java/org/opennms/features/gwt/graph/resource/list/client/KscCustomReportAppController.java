@@ -28,7 +28,6 @@
 
 package org.opennms.features.gwt.graph.resource.list.client;
 
-import com.google.gwt.user.client.Window;
 import org.opennms.features.gwt.graph.resource.list.client.presenter.KscCustomReportListPresenter;
 import org.opennms.features.gwt.graph.resource.list.client.presenter.Presenter;
 import org.opennms.features.gwt.graph.resource.list.client.view.DefaultResourceListViewImpl;

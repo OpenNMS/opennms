@@ -77,12 +77,6 @@ public class DeleteNodesServlet extends HttpServlet {
     /** {@inheritDoc} */
     @Override
     public void init() throws ServletException {
-        try {
-            DataSourceFactory.init();
-        } catch (Throwable e) {
-            throw new ServletException("Could not initialize database factory: " + e, e);
-        }
-
         WebApplicationContext webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
         ResourceService resourceService = (ResourceService) webAppContext.getBean("resourceService", ResourceService.class);
 

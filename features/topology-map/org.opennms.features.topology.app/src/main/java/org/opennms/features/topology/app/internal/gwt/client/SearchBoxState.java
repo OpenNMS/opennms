@@ -28,11 +28,10 @@
 
 package org.opennms.features.topology.app.internal.gwt.client;
 
-import com.vaadin.shared.AbstractComponentState;
-
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+
+import com.vaadin.shared.AbstractComponentState;
 
 public class SearchBoxState extends AbstractComponentState {
 

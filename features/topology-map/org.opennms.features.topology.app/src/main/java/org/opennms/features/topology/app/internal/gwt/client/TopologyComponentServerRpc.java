@@ -1,10 +1,9 @@
 package org.opennms.features.topology.app.internal.gwt.client;
 
+import java.util.List;
+
 import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.shared.communication.ServerRpc;
-
-import java.util.List;
-import java.util.Map;
 
 public interface TopologyComponentServerRpc extends ServerRpc {
     

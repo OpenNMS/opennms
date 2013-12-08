@@ -35,6 +35,7 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -46,6 +47,7 @@ import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.MapKeyColumn;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Version;
@@ -56,9 +58,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
-import org.hibernate.annotations.CollectionOfElements;
-import org.hibernate.annotations.MapKey;
 
 
 @Entity
@@ -341,9 +340,9 @@ public class NCSComponent {
 		return m_foreignSource.equals(foreignSource) && m_foreignId.equals(foreignId);
 	}
 
-    @CollectionOfElements
+    @ElementCollection
     @JoinTable(name="ncs_attributes")
-    @MapKey(columns=@Column(name="key"))
+    @MapKeyColumn(name="key")
     @Column(name="value", nullable=false)
 	public Map<String, String> getAttributes() {
 		return m_attributes;

@@ -28,7 +28,6 @@
 
 package org.opennms.web.services;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.After;

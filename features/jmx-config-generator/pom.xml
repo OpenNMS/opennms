@@ -126,15 +126,12 @@
         <dependency>
             <groupId>org.opennms.features</groupId>
             <artifactId>org.opennms.features.name-cutter</artifactId>
-            <version>${project.version}</version>
-            <type>jar</type>
         </dependency>
 
         <dependency>
             <groupId>org.apache.velocity</groupId>
             <artifactId>velocity</artifactId>
             <version>${velocity.version}</version>
-            <type>jar</type>
         </dependency>
 
         <dependency>

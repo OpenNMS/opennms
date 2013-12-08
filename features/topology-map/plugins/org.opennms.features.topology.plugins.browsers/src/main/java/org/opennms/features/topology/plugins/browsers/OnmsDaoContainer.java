@@ -445,12 +445,12 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
     }
 
     @Override
-    public List<?> getItemIds(int startIndex, int numberOfItems) {
+    public List<K> getItemIds(int startIndex, int numberOfItems) {
         int endIndex = startIndex + numberOfItems;
         if (endIndex > size()) endIndex = size() - 1;
         List<K> itemIds = new ArrayList<K>();
         for (int i=startIndex; i<endIndex; i++) {
-            itemIds.add((K)getIdByIndex(i));
+            itemIds.add(getIdByIndex(i));
         }
         return itemIds;
     }
@@ -484,7 +484,7 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
     }
 
     @Override
-    public Object getIdByIndex(int index) {
+    public K getIdByIndex(int index) {
         if (cache.containsIndex(index)) return cache.getItemId(index);
         updatePage(index);
         return cache.getItemId(index); // it is now in the cache or it does not exist

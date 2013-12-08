@@ -69,21 +69,6 @@ public class AddNewInterfaceServlet extends HttpServlet {
      */
     final static String EVENT_SOURCE_VALUE = "Web UI";
 
-    /**
-     * <p>init</p>
-     *
-     * @throws javax.servlet.ServletException if any.
-     */
-    @Override
-    public void init() throws ServletException {
-        try {
-            DataSourceFactory.init();
-        } catch (Throwable e) {
-            throw new ServletException("AddNewInterfaceServlet: Error initialising database connection factory." + e);
-        }
-
-    }
-
     /** {@inheritDoc} */
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

@@ -3,8 +3,6 @@ package org.opennms.features.topology.plugins.browsers;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.Date;
-
 public class ProfilerTest {
 
     @Test

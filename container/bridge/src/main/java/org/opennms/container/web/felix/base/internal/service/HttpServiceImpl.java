@@ -60,7 +60,7 @@ public final class HttpServiceImpl
     }
 
     @Override
-    @SuppressWarnings("unchecked") // Because of OSGi API
+    @SuppressWarnings("rawtypes") // Because of OSGi API
     public void registerFilter(Filter filter, String pattern, Dictionary initParams, int ranking, HttpContext context)
         throws ServletException
     {
@@ -86,7 +86,7 @@ public final class HttpServiceImpl
     }
 
     @Override
-    @SuppressWarnings("unchecked") // Because of OSGi API
+    @SuppressWarnings("rawtypes") // Because of OSGi API
     public void registerServlet(String alias, Servlet servlet, Dictionary initParams, HttpContext context)
         throws ServletException, NamespaceException
     {

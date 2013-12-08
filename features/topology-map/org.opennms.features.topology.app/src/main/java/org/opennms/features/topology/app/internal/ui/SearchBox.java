@@ -170,9 +170,6 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
             FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(m_operationContext.getGraphContainer());
             AbstractVertexRef vertexRef = new AbstractVertexRef(searchResult.getNamespace(), searchResult.getId(), searchResult.getLabel());
             if(criteria.getVertices().contains(vertexRef)){
-                if(vRefs == null){
-                    vRefs = new TreeSet<VertexRef>();
-                }
                 vRefs.add(vertexRef);
             }
 

@@ -414,9 +414,9 @@ public class KscDashlet extends AbstractDashlet {
      * @return a map with meta data, like resourceLabel, resourceTypeLabel
      */
     public Map<String, String> getDataForResourceId(final String nodeId, final String resourceId) {
-        return (Map<String, String>) m_transactionOperations.execute(new TransactionCallback<Object>() {
+        return m_transactionOperations.execute(new TransactionCallback<Map<String, String>>() {
             @Override
-            public Object doInTransaction(TransactionStatus transactionStatus) {
+            public Map<String, String> doInTransaction(TransactionStatus transactionStatus) {
                 Map<String, String> data = new HashMap<String, String>();
 
                 if (nodeId == null) {

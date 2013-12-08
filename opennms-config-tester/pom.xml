@@ -85,7 +85,6 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-alarm-northbounder-syslog</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <!-- Non-OpenNMS dependencies -->
     <dependency>

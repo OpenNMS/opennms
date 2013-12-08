@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,37 +26,33 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.test;
+package org.opennms.core.test.rest;
 
-import org.opennms.test.VersionSettingTestSuite;
+import java.security.Principal;
 
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+public class MockUserPrincipal implements Principal {
+	
+	private static MockUserPrincipal m_instance = null;
+	private static String m_name = "admin";
 
-public class VersionSettingTestSuiteTest extends TestCase {
-    
-    public int version = 0;
-    
-    public static TestSuite suite() {
-        return new VersionSettingTestSuite(VersionSettingTestSuiteTest.class, "Version 1 Suite", 1);
-    }
+	private MockUserPrincipal() {
+	}
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
+	@Override
+	public String getName() {
+		return m_name;
+	}
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-    
-    public void testThatVersionIsSet() {
-        assertEquals(1, version);
-    }
-    
-    public void setVersion(int v) {
-        version = v;
-    }
+	public static void setName(final String name) {
+		m_name = name;
+	}
+
+	public static Principal getInstance() {
+		if (m_instance == null) {
+			m_instance  = new MockUserPrincipal();
+		}
+		
+		return m_instance;
+	}
 
 }
