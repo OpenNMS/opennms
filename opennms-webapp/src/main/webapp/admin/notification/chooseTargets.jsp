@@ -191,11 +191,9 @@ action="admin/notification/destinationWizard" >
           <td width="25%" valign="top" align="left">
             <select width="200" style="width: 200px" name="users" size="10" multiple>
              <%
-                         Map<String,Boolean> users = getUsers(targets);
-                         Iterator<String> iterator = users.keySet().iterator();
-                         while (iterator.hasNext()) {
-                             String key = iterator.next();
-                             if ((users.get(key)).booleanValue()) {
+                         for (Map.Entry<String,Boolean> entry : getUsers(targets).entrySet()) {
+                             String key = entry.getKey();
+                             if (entry.getValue().booleanValue()) {
              %>
                     <option selected VALUE=<%=key%>><%=key%></option>
             <%
@@ -212,11 +210,9 @@ action="admin/notification/destinationWizard" >
           <td width="25%" valign="top" align="left">
             <select width="200" style="width: 200px" name="groups" size="10" multiple>
              <%
-                         Map<String,Boolean> groups = getGroups(targets);
-                         iterator = groups.keySet().iterator();
-                         while (iterator.hasNext()) {
-                             String key = iterator.next();
-                             if (groups.get(key).booleanValue()) {
+                         for (Map.Entry<String,Boolean> entry : getGroups(targets).entrySet()) {
+                             String key = entry.getKey();
+                             if (entry.getValue().booleanValue()) {
              %>
                     <option selected VALUE=<%=key%>><%=key%></option>
             <%
@@ -233,11 +229,9 @@ action="admin/notification/destinationWizard" >
           <td width="25%" valign="top" align="left">
             <select WIDTH="200" STYLE="width: 200px" NAME="roles" SIZE="10" multiple>
              <%
-                         Map<String,Boolean> roles = getRoles(targets);
-                         iterator = roles.keySet().iterator();
-                         while (iterator.hasNext()) {
-                             String key = iterator.next();
-                             if (roles.get(key).booleanValue()) {
+                     for (Map.Entry<String,Boolean> entry : getRoles(targets).entrySet()) {
+                         String key = entry.getKey();
+                         if (entry.getValue().booleanValue()) {
              %>
                     <option selected VALUE=<%=key%>><%=key%></option>
             <%
@@ -256,10 +250,7 @@ action="admin/notification/destinationWizard" >
             <br/>&nbsp;<br/>
             <select width="200" style="width: 200px" name="emails" size="7" multiple>
              <%
-                         Map<String,String> emails = getEmails(targets);
-                         iterator = emails.keySet().iterator();
-                         while (iterator.hasNext()) {
-                             String key = iterator.next();
+                 for (String key : getEmails(targets).keySet()) {
              %>
                     <option VALUE=<%=key%>><%=key%></option>
             <%
@@ -345,11 +336,7 @@ public Map<String,Boolean> getUsers(Collection<Target> targets) throws ServletEx
         Map<String, String> emails = new TreeMap<String, String>();
 
         try {
-            Collection<String> targetNames = getTargetNames(targets);
-
-            Iterator<String> i = targetNames.iterator();
-            while (i.hasNext()) {
-                String key = i.next();
+            for (String key : getTargetNames(targets)) {
                 if (key.indexOf("@") > -1) {
                     emails.put(key, key);
                 }
@@ -364,10 +351,8 @@ public Map<String,Boolean> getUsers(Collection<Target> targets) throws ServletEx
 
     public Collection<String> getTargetNames(Collection<Target> targets) {
         Collection<String> targetNames = new ArrayList<String>();
-
-        Iterator<Target> i = targets.iterator();
-        while (i.hasNext()) {
-            targetNames.add(i.next().getName());
+        for (Target target : targets) {
+            targetNames.add(target.getName());
         }
         return targetNames;
     }%>

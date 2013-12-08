@@ -234,11 +234,8 @@
          Map<String, Path> pathsMap = null;
          
          try {
-            pathsMap = new TreeMap<String, Path>(DestinationPathFactory.getInstance().getPaths());
-         Iterator<String> iterator = pathsMap.keySet().iterator();
-         while(iterator.hasNext())
-         { 
-                 String key = iterator.next();
+             pathsMap = new TreeMap<String, Path>(DestinationPathFactory.getInstance().getPaths());
+             for (String key : pathsMap.keySet()) {
                  if (key.equals(currentPath))
                  {
                     buffer.append("<option SELECTED VALUE=" + key + ">" + key + "</option>");
@@ -247,7 +244,7 @@
                  {
                     buffer.append("<option VALUE=" + key + ">" + key + "</option>");
                  }
-            }
+             }
          } catch (Throwable e)
          {
             throw new ServletException("couldn't get destination path list.", e);

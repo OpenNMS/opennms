@@ -208,10 +208,8 @@
 			<% Collection<String> dutySchedules = user.getDutyScheduleCollection(); %>
                         <%
                                 int i =0;
-                                Iterator<String> iter = dutySchedules.iterator();
-                                while(iter.hasNext())
-                                {  
-                                        DutySchedule tmp = new DutySchedule(iter.next());
+                                for (String dutySchedule : dutySchedules) {
+                                        DutySchedule tmp = new DutySchedule(dutySchedule);
                                         Vector<Object> curSched = tmp.getAsVector();        
 					i++;
                               

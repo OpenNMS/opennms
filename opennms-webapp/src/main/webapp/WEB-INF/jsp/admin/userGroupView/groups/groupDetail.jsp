@@ -113,11 +113,10 @@
                 <% }
                 else { %>
                   <table width="50%" border="1" cellspacing="0" cellpadding="2" >
-                    <% 	Iterator<String> usersIter = users.iterator(); 
-			while (usersIter != null && usersIter.hasNext()) { %>
+                    <% for (String user : users) { %>
                       <tr>
                         <td>
-                          <%=usersIter.next()%>
+                          <%=user%>
                         </td>
                       </tr>
                     <% } %>
@@ -132,10 +131,8 @@
                       <% Collection<String> dutySchedules = group.getDutySchedules(); %>
                       <%
                               int i =0;
-                              Iterator<String> iter = dutySchedules.iterator();
-                              while(iter.hasNext())
-                              {
-                                      DutySchedule tmp = new DutySchedule(iter.next());
+                              for (String dutySchedule : dutySchedules) {
+                                      DutySchedule tmp = new DutySchedule(dutySchedule);
                                       Vector<Object> curSched = tmp.getAsVector();
                                       i++;
                       %>

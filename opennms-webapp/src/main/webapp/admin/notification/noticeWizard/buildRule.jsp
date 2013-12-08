@@ -160,17 +160,17 @@
         List<String> services = NotificationFactory.getInstance().getServiceNames();
         StringBuffer buffer = new StringBuffer();
         
-        for (int i = 0; i < services.size(); i++)
+        for (String service : services)
         {
-            int serviceIndex = rule.indexOf((String)services.get(i));
+            int serviceIndex = rule.indexOf(service);
             //check for !is<service name>
             if (serviceIndex>0 && rule.charAt(serviceIndex-3) != '!')
             {
-                buffer.append("<option selected VALUE='" + services.get(i) + "'>" + services.get(i) + "</option>");
+                buffer.append("<option selected VALUE='" + service + "'>" + service + "</option>");
             }
             else
             {
-                buffer.append("<option VALUE='" + services.get(i) + "'>" + services.get(i) + "</option>");
+                buffer.append("<option VALUE='" + service + "'>" + service + "</option>");
             }
         }
         

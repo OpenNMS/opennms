@@ -82,10 +82,7 @@
                                 		Collection<org.opennms.netmgt.config.poller.Service> svcCollection = pkg.getServiceCollection();
                                 		if(svcCollection != null)
                                 		{
-                                        		Iterator<org.opennms.netmgt.config.poller.Service> svcIter = svcCollection.iterator();
-                                        		while(svcIter.hasNext())
-                                        		{
-                                                		org.opennms.netmgt.config.poller.Service svcs = svcIter.next();
+                                				for (Service svcs : svcCollection) {
                                                 		if(svcs != null)
                                                 		{
 									if(svcs.getUserDefined().equals("true"))
@@ -141,11 +138,8 @@
             		}	
 				
 			Set<String> keys = sortTmp.keySet();
-			Iterator<String> sortIter = keys.iterator();
 			int i = 0;
-			while(sortIter.hasNext())
-			{
-				String key = sortIter.next();
+			for (String key : keys) {
 				sortedProtocols[i++] = key;
 			}
         	}
@@ -217,11 +211,8 @@
       </tr>
       <%
 	Set<String> scanned = scanablePlugin.keySet();
-	Iterator<String> iterator = scanned.iterator();
 	int rowCounter = 0;
-	while(iterator.hasNext())
-	{
-		String servicename = (String)iterator.next();
+	for (String servicename : scanned) {
 		Service svc = (Service)scanablePlugin.get(servicename);
 		if(svc != null)
 		{
@@ -286,10 +277,7 @@
       </tr>
 	<%
 
-        iterator = userscanned.iterator();
-        while(iterator.hasNext())
-        {
-                String servicename = iterator.next();
+        for (String servicename : userscanned) {
                 Service svc = (Service)scanableUserPlugin.get(servicename);
                 if(svc != null)
                 {

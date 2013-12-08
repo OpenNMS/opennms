@@ -162,11 +162,7 @@
                     <td width="85%"><b>Rule</b></td>
                   </tr>
                   <% Categories categories = view.getCategories();
-		     Collection<Category> catcoll = categories.getCategoryCollection();
-                     Iterator<Category> iter = catcoll.iterator();
-		     while (iter.hasNext()) 
-                     { 
-                        Category curCategory = (Category)iter.next();
+                     for (Category curCategory : categories.getCategoryCollection()) {
                   %>
                     <tr>
                       <td>

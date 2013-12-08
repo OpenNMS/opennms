@@ -145,11 +145,9 @@
           <td width="15%"><b>Text Pin</b></td>
           -->
         </tr>
-        <% Iterator<String> i = users.keySet().iterator();
+        <% 
            int row = 0;
-           while(i.hasNext()) 
-           {
-              User curUser = users.get(i.next());
+           for (User curUser : users.values()) {
 	      String userid = curUser.getUserId();
 	      String email = userFactory.getEmail(userid);
 	      String pagerEmail = userFactory.getPagerEmail(userid);

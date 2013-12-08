@@ -68,12 +68,10 @@
           <th>Status</th>
           </tr>
 
-<%        Iterator<String> iter = nodeList.iterator();
-          final Connection conn = DataSourceFactory.getInstance().getConnection();
+<%        final Connection conn = DataSourceFactory.getInstance().getConnection();
           final DBUtils d = new DBUtils(PathOutageFactory.class, conn);
           try {
-              while( iter.hasNext() ) {
-                  String nodeid = iter.next();
+              for (String nodeid : nodeList) {
                   String labelColor[] = PathOutageFactory.getLabelAndStatus(nodeid, conn); %>
                   <tr class="CellStatus">
                   <td><a href="element/node.jsp?node=<%= nodeid %>"><%= labelColor[0] %></a></td>

@@ -323,11 +323,8 @@
             Collection<Member> collmem = membership.getMemberCollection();
             if(collmem != null)
             {
-                Iterator<Member> iterator = collmem.iterator();
-                while(null != iterator && iterator.hasNext())
-                {
-                    Member member = iterator.next();
-                    if(member.getType().equals("user"))
+                for (Member member : collmem) {
+                    if("user".equals(member.getType()))
                     {
                         buffer.append("<option>" + (String)member.getContent() + "</option>");
                     }
@@ -351,11 +348,8 @@
             Collection<Member> collmem = membership.getMemberCollection();
             if(collmem != null)
             {
-                Iterator<Member> iterator = collmem.iterator();
-                while(null != iterator && iterator.hasNext())
-                {
-                    Member member = iterator.next();
-                    if(member != null && member.getType().equals("user"))
+                for (Member member : collmem) {
+                    if(member != null && "user".equals(member.getType()))
                     {
                         users.add(member.getContent());
                     }
@@ -401,11 +395,8 @@
         if(membership != null)
         {
             Collection<Member> collmem = membership.getMemberCollection();
-            Iterator<Member> iterator = collmem.iterator();
-            while(iterator.hasNext())
-            {
-                	Member member = iterator.next();
-	                if(member.getType().equals("group"))
+            for (Member member : collmem) {
+	                if("group".equals(member.getType()))
         	        {
                 	        groups.add(member.getContent());
                 	}
@@ -433,11 +424,8 @@
 	          Collection<Member> collmem = membership.getMemberCollection();
             if(collmem != null)
             {
-                Iterator<Member> iterator = collmem.iterator();
-                while(iterator.hasNext())
-                {
-                    Member member = (Member) iterator.next();
-                    if(member.getType().equals("group"))
+                for (Member member : collmem) {
+                    if("group".equals(member.getType()))
                     {
                         groups.add(member.getContent());
                     }

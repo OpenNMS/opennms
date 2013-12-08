@@ -106,9 +106,6 @@
             }
         }
     }
-    
-    Set<String> keySet = nodeMap.keySet();
-    Iterator<String> nameIterator = keySet.iterator();
 %>
 
 
@@ -170,8 +167,7 @@
 	    int valuecnt = 0;
 	    int outagecnt = 0;
 
-            while( nameIterator.hasNext() ) {
-                String nodeLabel = nameIterator.next();
+        for (String nodeLabel : nodeMap.keySet()) {
                 Node node = nodeMap.get(nodeLabel);
                 
                 double value = node.getNodevalue();

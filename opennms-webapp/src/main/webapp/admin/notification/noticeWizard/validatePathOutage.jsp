@@ -132,10 +132,7 @@
   {
           StringBuffer buffer = new StringBuffer();
           SortedMap<Integer,String> nodes = FilterDaoFactory.getInstance().getNodeMap(rule);
-          Iterator<Integer> i = nodes.keySet().iterator();
-          while(i.hasNext())
-          {
-              Integer key = (Integer)i.next();
+          for (Integer key : nodes.keySet()) {
               buffer.append("<tr><td width=\"50%\" valign=\"top\">").append(key).append("</td>");
               buffer.append("<td width=\"50%\">");
               buffer.append(nodes.get(key));

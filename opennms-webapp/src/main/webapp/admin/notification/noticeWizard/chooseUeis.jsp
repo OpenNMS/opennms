@@ -129,13 +129,9 @@
         StringBuffer buffer = new StringBuffer();
         
         List<String> excludeList = getExcludeList();
-	TreeMap<String, String> sortedMap = new TreeMap<String, String>();
+        TreeMap<String, String> sortedMap = new TreeMap<String, String>();
 
-        Iterator<Event> i = events.iterator();
-
-        while(i.hasNext()) //for (int i = 0; i < events.size(); i++)
-        {
-            Event e = i.next();
+        for (Event e : events) {
             String uei = e.getUei();
             //System.out.println(uei);
 
@@ -146,12 +142,11 @@
             //System.out.println(trimmedUei);
             
             if (!excludeList.contains(trimmedUei)) {
-		sortedMap.put(label,uei);
+                sortedMap.put(label,uei);
             }
-	}
-	Iterator<String> it = sortedMap.keySet().iterator();
-	while(i.hasNext()) {
-		String label = it.next();
+        }
+
+    for (String label : sortedMap.keySet()) {
 		String uei=(String)sortedMap.get(label);
 		if (uei.equals(notice.getUei())) {
 			buffer.append("<option selected VALUE=" + uei + ">" + label + "</option>");

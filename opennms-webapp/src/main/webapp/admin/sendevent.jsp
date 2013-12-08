@@ -295,10 +295,7 @@
         List<String> excludeList = getExcludeList();
 	TreeMap<String, String> sortedMap = new TreeMap<String, String>();
 
-        Iterator<Event> i = events.iterator();
-
-        while(i.hasNext()) {
-            Event e = i.next();
+        for (Event e : events) {
 
             String uei = e.getUei();
             //System.out.println(uei);

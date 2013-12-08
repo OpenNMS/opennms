@@ -121,11 +121,9 @@
           <td width="5%"><b>View Name</b></td>
           <td width="5%"><b>View Title</b></td>
         </tr>
-        <% Iterator<String> i = views.keySet().iterator();
+        <% 
            int row = 0;
-           while(i.hasNext())
-           {
-              View curView = (View)views.get(i.next());
+           for (View curView : views.values()) {
          %>
          <tr bgcolor=<%=row%2==0 ? "#ffffff" : "#cccccc"%>>
           <td width="5%" rowspan="2" align="center">

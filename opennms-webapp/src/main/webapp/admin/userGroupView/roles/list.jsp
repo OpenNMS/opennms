@@ -53,9 +53,7 @@
 		throw new ServletException("User:list " + e.getMessage());
 	}
 
-	Iterator<String> i = users.keySet().iterator();
-	while (i.hasNext()) {
-		User curUser = (User)users.get(i.next());
+	for (User curUser : users.values()) {
 		usersHash.put(curUser.getUserId(), curUser.getFullName());
 	}
 

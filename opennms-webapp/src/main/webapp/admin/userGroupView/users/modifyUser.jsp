@@ -471,10 +471,9 @@ Collection<String> dutySchedules = user.getDutyScheduleCollection();
               <td><b>End Time</b></td>
             </tr>
                         <%
-int i = 0;
-        Iterator<String> iter = dutySchedules.iterator();
-        while (iter.hasNext()) {
-            DutySchedule tmp = new DutySchedule(iter.next());
+        int i = 0;
+        for (String dutySchedule : dutySchedules) {
+            DutySchedule tmp = new DutySchedule(dutySchedule);
             Vector<Object> curSched = tmp.getAsVector();
 
             %>

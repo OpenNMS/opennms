@@ -80,13 +80,10 @@
                                 		Collection<org.opennms.netmgt.config.poller.Service> svcCollection = pkg.getServiceCollection();
                                 		if(svcCollection != null)
                                 		{
-                                        		Iterator<org.opennms.netmgt.config.poller.Service> svcIter = svcCollection.iterator();
-                                        		while(svcIter.hasNext())
-                                        		{
-                                                		org.opennms.netmgt.config.poller.Service svcs = svcIter.next();
+                                				for (Service svcs : svcCollection) {
                                                 		if(svcs != null)
                                                 		{
-                                                        if(svcs.getUserDefined().equals("true"))
+                                                        if("true".equals(svcs.getUserDefined()))
                                                         {
                                                           scanableUserPlugin.put(svcs.getName(), svcs);
                                                         }
@@ -96,7 +93,7 @@
                                                         }
 
                                                      		String status = svcs.getStatus();
-                                                     		if(status != null && status.equals("on"))
+                                                     		if(status != null && "on".equals(status))
                                                      		{
                                                             polledPlugins.add(svcs.getName());
                                                      		}
@@ -138,11 +135,8 @@
             		}
 
 			Set<String> keys = sortTmp.keySet();
-			Iterator<String> sortIter = keys.iterator();
 			int i = 0;
-			while(sortIter.hasNext())
-			{
-				String key = (String)sortIter.next();
+			for (String key : keys) {
 				sortedProtocols[i++] = key;
 			}
         	}

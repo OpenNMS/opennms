@@ -46,7 +46,6 @@
     //get the service names, in alpha order
     Map<String,Integer> serviceNameMap = new TreeMap<String,Integer>(NetworkElementFactory.getInstance(getServletContext()).getServiceNameToIdMap());
     Set<String> serviceNameSet = serviceNameMap.keySet();
-    Iterator<String> serviceNameIterator = serviceNameSet.iterator();
  
     //get the current time values
     Calendar now = Calendar.getInstance();
@@ -98,8 +97,7 @@
               <select name="service" size="1">
                 <option selected><%=AlarmUtil.ANY_SERVICES_OPTION%></option>
 
-                <% while( serviceNameIterator.hasNext() ) { %>
-                  <% String name = (String)serviceNameIterator.next(); %>
+                <% for (String name : serviceNameSet) { %>
                   <option value="<%=serviceNameMap.get(name)%>"><%=name%></option>
                 <% } %>
               </select>

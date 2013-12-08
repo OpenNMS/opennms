@@ -52,7 +52,6 @@
     Map<String,Integer> serviceNameMap = new TreeMap<String,Integer>(NetworkElementFactory.getInstance(getServletContext()).getServiceNameToIdMap());
     List<String> serviceNameList = new ArrayList<String>(serviceNameMap.keySet());
     Collections.sort(serviceNameList);
-    Iterator<String> serviceNameIterator = serviceNameList.iterator();
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -99,8 +98,7 @@
 					<p align="right">Providing service:          
 						<input type="hidden" name="listInterfaces" value="false"/>
 						<select name="service" size="1">
-						  <% while( serviceNameIterator.hasNext() ) { %>
-						    <% String name = (String)serviceNameIterator.next(); %> 
+						  <% for (String name : serviceNameList) { %>
 						    <option value="<%=serviceNameMap.get(name)%>"><%=name%></option>
 						  <% } %>          
 						</select>
