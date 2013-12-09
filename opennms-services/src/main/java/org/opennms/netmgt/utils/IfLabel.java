@@ -104,7 +104,7 @@ public class IfLabel {
                 "    OR snmpifname ilike '"+queryDesc+"')";
         LOG.debug("getInterfaceInfoFromLabel: query is: {}", query);
         
-        Querier q = new Querier(DataSourceFactory.getDataSource(), query, new RowProcessor() {
+        Querier q = new Querier(DataSourceFactory.getInstance(), query, new RowProcessor() {
 
             @Override
             public void processRow(ResultSet rs) throws SQLException {
@@ -165,7 +165,7 @@ public class IfLabel {
         
         final ArrayList<String> list = new ArrayList<String>();
         
-        Querier q = new Querier(DataSourceFactory.getDataSource(), query, new RowProcessor() {
+        Querier q = new Querier(DataSourceFactory.getInstance(), query, new RowProcessor() {
             @Override
             public void processRow(ResultSet rs) throws SQLException {
                 String name = rs.getString("snmpifname");
@@ -218,7 +218,7 @@ public class IfLabel {
         		"   AND ipinterface.nodeid = "+nodeId+
         		"   AND ipinterface.ipaddr = '"+inetAddr+"'";
         
-        Querier q = new Querier(DataSourceFactory.getDataSource(), query, new RowProcessor() {
+        Querier q = new Querier(DataSourceFactory.getInstance(), query, new RowProcessor() {
             @Override
             public void processRow(ResultSet rs) throws SQLException {
                 String name = rs.getString("snmpifname");
@@ -282,7 +282,7 @@ public class IfLabel {
         		"   AND ipinterface.ifindex= "+ifIndex;
         
         
-        Querier q = new Querier(DataSourceFactory.getDataSource(), query, new RowProcessor() {
+        Querier q = new Querier(DataSourceFactory.getInstance(), query, new RowProcessor() {
 
             @Override
             public void processRow(ResultSet rs) throws SQLException {
@@ -335,7 +335,7 @@ public class IfLabel {
                 "   AND snmpifindex= "+ifIndex;
         
         
-        Querier q = new Querier(DataSourceFactory.getDataSource(), query, new RowProcessor() {
+        Querier q = new Querier(DataSourceFactory.getInstance(), query, new RowProcessor() {
 
             @Override
             public void processRow(ResultSet rs) throws SQLException {

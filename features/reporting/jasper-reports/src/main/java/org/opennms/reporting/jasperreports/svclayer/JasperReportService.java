@@ -385,7 +385,7 @@ public class JasperReportService implements ReportService {
                     try {
                         if ("jdbc".equalsIgnoreCase(m_globalReportRepository.getEngine(reportId))) {
                             try {
-                                final Connection connection = DataSourceFactory.getDataSource().getConnection();
+                                final Connection connection = DataSourceFactory.getInstance().getConnection();
                                 db.watch(connection);
                                 JasperFillManager.fillReportToFile(jasperReport, outputFileName, reportParms, connection);
                             } finally {
@@ -470,7 +470,7 @@ public class JasperReportService implements ReportService {
                     if ("jdbc".equalsIgnoreCase(m_globalReportRepository.getEngine(reportId))) {
                         final DBUtils db = new DBUtils();
                         try {
-                            final Connection connection = DataSourceFactory.getDataSource().getConnection();
+                            final Connection connection = DataSourceFactory.getInstance().getConnection();
                             db.watch(connection);
 
                             final JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, jrReportParms, connection);

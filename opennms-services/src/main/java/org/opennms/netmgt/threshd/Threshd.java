@@ -331,7 +331,7 @@ public final class Threshd extends AbstractServiceDaemon {
         for(final String svcName : m_svcThresholders.keySet()) {
 
             // find the monitored services for each thresholder and schedule them
-            Querier querier = new Querier(DataSourceFactory.getDataSource(), SQL_RETRIEVE_INTERFACES) {
+            Querier querier = new Querier(DataSourceFactory.getInstance(), SQL_RETRIEVE_INTERFACES) {
 
                 @Override
                 public void processRow(ResultSet rs) throws SQLException {

@@ -66,7 +66,7 @@ public class ConfigTesterTest {
 
     @After
     public void done() {
-        ConfigTesterDataSource dataSource = (ConfigTesterDataSource) DataSourceFactory.getDataSource();
+        ConfigTesterDataSource dataSource = (ConfigTesterDataSource) DataSourceFactory.getInstance();
 
         if (dataSource != null && dataSource.getConnectionGetAttempts().size() > 0) {
             StringWriter writer = new StringWriter();
