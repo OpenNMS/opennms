@@ -188,6 +188,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     private Button m_szlOutBtn;
     private LastUpdatedLabel m_lastUpdatedTimeLabel;
     int m_settingFragment = 0;
+    private SearchBox m_searchBox;
 
     private String getHeader(HttpServletRequest request) {
         if(m_headerProvider == null) {
@@ -607,9 +608,9 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             }
         });
 
-        SearchBox searchBox = new SearchBox(m_serviceManager, new CommandManager.DefaultOperationContext(this, m_graphContainer, OperationContext.DisplayLocation.SEARCH));
-        m_selectionManager.addSelectionListener(searchBox);
-        m_graphContainer.addChangeListener(searchBox);
+        m_searchBox = new SearchBox(m_serviceManager, new CommandManager.DefaultOperationContext(this, m_graphContainer, OperationContext.DisplayLocation.SEARCH));
+        m_selectionManager.addSelectionListener(m_searchBox);
+        m_graphContainer.addChangeListener(m_searchBox);
 
         //History Button Layout
         HorizontalLayout historyButtonLayout = new HorizontalLayout();
@@ -659,7 +660,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         mapLayout.addComponent(m_topologyComponent, "top:0px; left: 0px; right: 0px; bottom: 0px;");
         mapLayout.addComponent(m_lastUpdatedTimeLabel, "top: 5px; right: 10px;");
         mapLayout.addComponent(toolbar, "top: 25px; right: 10px;");
-        mapLayout.addComponent(searchBox, "top:5px; left:5px;");
+        mapLayout.addComponent(m_searchBox, "top:5px; left:5px;");
         //mapLayout.addComponent(locationToolLayout, "top: 5px; left: 50%");
         mapLayout.setSizeFull();
 
@@ -914,6 +915,9 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         // TopologyComponent and NoContentAvailableWindow are reset correctly 
         // after a history operation
         graphChanged(m_graphContainer);
+
+        //Manually trigger the searchbox to refresh
+        m_searchBox.graphChanged(m_graphContainer);
 
         m_settingFragment--;
     }
