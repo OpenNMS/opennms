@@ -70,7 +70,6 @@ public class GpResponse {
      * @return a boolean.
      */
     public boolean validate(final String banner) {
-        return banner.matches(m_response);
+        return m_response.matches(banner);
     }
-
 }
