@@ -202,6 +202,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
     public SearchBox(OnmsServiceManager serviceManager, OperationContext operationContext) {
         m_serviceManager = serviceManager;
         m_operationContext = operationContext;
+        setImmediate(true);
         init();
     }
 
