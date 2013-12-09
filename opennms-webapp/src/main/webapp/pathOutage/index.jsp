@@ -30,10 +30,12 @@
 --%>
 
 <%@page language="java" contentType="text/html" session="true"
-	import="java.util.Iterator,
+	import="
 		java.util.List,
-                org.opennms.netmgt.config.OpennmsServerConfigFactory,
-                org.opennms.web.pathOutage.*" %>
+		org.opennms.netmgt.config.OpennmsServerConfigFactory,
+		org.opennms.web.pathOutage.*
+	"
+%>
 
 
 

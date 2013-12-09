@@ -93,11 +93,8 @@
     pageContext.setAttribute("addBeforeFilter", "[&gt;]");
     pageContext.setAttribute("addAfterFilter", "[&lt;]");
     pageContext.setAttribute("filterFavoriteSelectTagHandler", new FilterFavoriteSelectTagHandler("All Alarms"));
-    
-    final String baseHref = org.opennms.web.api.Util.calculateUrlBase(request);
 %>
-
-
+<c:set var="baseHref" value="<%=Util.calculateUrlBase(request)%>"/>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Alarm List" />

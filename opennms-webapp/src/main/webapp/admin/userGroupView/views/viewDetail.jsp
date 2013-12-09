@@ -34,7 +34,6 @@
 	session="true"
 	import="org.opennms.netmgt.config.*,
 		java.util.*,
-		java.text.*,
 		org.opennms.netmgt.config.views.*,
 		org.opennms.web.servlet.MissingParameterException
 	"
@@ -81,7 +80,7 @@
               </td>
               <td width="90%" valign="top">
 		<% if(view != null){ String title = view.getTitle(); %>
-                <%= (title != null || title.equals(""))? "":title %>
+                <%= (title == null || title.equals(""))? "":title %>
 		<% } %>
               </td>
             </tr>
@@ -91,7 +90,7 @@
               </td>
               <td width="90%" valign="top">
 		<% if(view != null){ String comment = view.getComment(); %>
-                <%= (comment != null || comment.equals(""))? "":comment %>
+                <%= (comment == null || comment.equals(""))? "":comment %>
 		<% } %>
               </td>
             </tr>
@@ -101,7 +100,7 @@
               </td>
               <td width="90%" valign="top">
 		<% if(view != null){ Common common = view.getCommon(); %>
-                <%= (common != null || common.getRule().equals(""))? "":common.getRule() %>
+                <%= (common == null || common.getRule().equals(""))? "":common.getRule() %>
                 <% } %> 
               </td>
             </tr>

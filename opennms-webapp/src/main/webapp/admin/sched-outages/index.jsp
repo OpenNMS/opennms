@@ -40,9 +40,7 @@
 	org.opennms.netmgt.EventConstants,
 	org.opennms.netmgt.xml.event.Event,
 	org.opennms.web.api.Util,
-	java.net.*,
-	java.io.*,
-	org.opennms.netmgt.utils.*
+	java.net.*
 "%>
 
 <%!public void sendOutagesChangedEvent() throws ServletException {

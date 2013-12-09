@@ -32,7 +32,7 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.web.api.Authentication,
+	import="
 		org.opennms.core.resource.Vault
 	"
 %>

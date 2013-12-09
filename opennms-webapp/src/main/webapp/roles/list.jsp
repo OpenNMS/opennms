@@ -41,7 +41,6 @@
 	UserManager userFactory;
   	Map<String,User> users = null;
 	HashMap<String,String> usersHash = new HashMap<String,String>();
-	String curUserName = null;
 	
 	try
     	{

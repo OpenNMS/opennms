@@ -41,7 +41,6 @@
 		org.opennms.netmgt.xml.rtc.Node,
 		org.opennms.web.servlet.XssRequestWrapper,
 		org.opennms.web.springframework.security.AclUtils,
-		org.opennms.web.springframework.security.AclUtils.NodeAccessChecker,
 		org.springframework.security.core.context.SecurityContextHolder
 		"
 %>

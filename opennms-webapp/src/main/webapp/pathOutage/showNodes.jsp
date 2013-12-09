@@ -31,7 +31,6 @@
 
 <%@page language="java" contentType="text/html" session="true"
 	import="java.sql.Connection,
-			java.util.Iterator,
 			java.util.List,
 			org.opennms.core.db.DataSourceFactory,
 			org.opennms.core.utils.DBUtils,

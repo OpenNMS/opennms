@@ -33,12 +33,11 @@
 	session="true"
 	import="
 		java.io.*,
-		java.util.*, java.util.Map.Entry,
-		java.net.InetAddress, java.net.UnknownHostException,
+		java.util.*,
 		org.opennms.netmgt.config.*,
-		org.opennms.netmgt.config.notifications.*,
 		org.opennms.core.utils.BundleLists,
 		org.opennms.core.utils.ConfigFileConstants,
+		org.opennms.core.utils.InetAddressUtils,
 		org.opennms.netmgt.xml.eventconf.Event,
 		org.springframework.core.io.FileSystemResource
 	"
@@ -57,15 +56,7 @@
 	}
 %>
 <%
-    HttpSession user = request.getSession(true);
-
-    String hostName = "localhost";
-    try {
-	java.net.InetAddress localMachine = java.net.InetAddress.getLocalHost();
-        hostName = localMachine.getHostName();
-    } catch(java.net.UnknownHostException uhe) {
-	//handle exception
-    }
+    String hostName = InetAddressUtils.getLocalHostName();
 %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Send Event" />

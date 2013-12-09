@@ -32,13 +32,10 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="java.io.File,
-		java.util.*,
-		org.opennms.netmgt.config.capsd.*,
+	import="java.util.*,
 		org.opennms.netmgt.config.poller.*,
 		org.opennms.netmgt.config.PollerConfigFactory,
 		org.opennms.netmgt.config.PollerConfig,
-		org.opennms.netmgt.config.CapsdConfigFactory,
 		org.opennms.core.resource.Vault,
 		org.opennms.core.utils.BundleLists,
 		org.opennms.core.utils.ConfigFileConstants,

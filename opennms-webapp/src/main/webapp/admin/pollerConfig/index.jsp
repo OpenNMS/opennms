@@ -32,13 +32,10 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="java.io.File,
-		java.util.*,
-		org.opennms.netmgt.config.capsd.*,
+	import="java.util.*,
 		org.opennms.netmgt.config.poller.*,
 		org.opennms.netmgt.config.PollerConfigFactory,
 		org.opennms.netmgt.config.PollerConfig,
-		org.opennms.netmgt.config.CapsdConfigFactory,
 		org.opennms.core.resource.Vault,
 		org.opennms.core.utils.BundleLists,
 		org.opennms.core.utils.ConfigFileConstants,
@@ -58,7 +55,6 @@
  
         props.load( new FileInputStream( ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONF_FILE_NAME )));
 	protoMap = getQueries();
-        String[] protocols = BundleLists.parseBundleList( this.props.getProperty( "services" ));
  
 	java.util.List<String> polledPlugins = new ArrayList<String>();
 	PollerConfig pollerFactory = null;
@@ -216,8 +212,6 @@
 		Service svc = (Service)scanablePlugin.get(servicename);
 		if(svc != null)
 		{
-			String user = request.getRemoteUser();
-			String status = svc.getStatus();
 			String port = "<b>-</b>";
 
 			Enumeration<Parameter> param = svc.enumerateParameter();
@@ -281,8 +275,6 @@
                 Service svc = (Service)scanableUserPlugin.get(servicename);
                 if(svc != null)
                 {
-                        String user = request.getRemoteUser();
-                        String status = svc.getStatus();
                         String port = "<b>-</b>";
 
                         Enumeration<Parameter> param = svc.enumerateParameter();

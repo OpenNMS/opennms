@@ -39,7 +39,6 @@
 <%@page import="org.springframework.util.Assert"%>
 
 <%@page import="org.opennms.netmgt.EventConstants"%>
-<%@page import="org.opennms.core.utils.WebSecurityUtils"%>
 <%@page import="org.opennms.web.servlet.XssRequestWrapper"%>
 <%@page import="org.opennms.web.event.Event"%>
 <%@page import="org.opennms.web.event.AcknowledgeType"%>

@@ -102,10 +102,6 @@
     String addAfterDateFilterString  = "[&lt;]";    
 %>
 
-
-
-
-<%@page import="org.opennms.web.event.AcknowledgeType"%>
 <%@page import="org.opennms.web.event.SortStyle"%><jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Event List" />
   <jsp:param name="headTitle" value="List" />

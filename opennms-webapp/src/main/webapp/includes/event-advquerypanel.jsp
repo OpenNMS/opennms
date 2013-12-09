@@ -35,9 +35,8 @@
 	buffer="1024kb"
 	import="java.util.*,
 		org.opennms.web.element.NetworkElementFactory,
-		org.opennms.netmgt.model.OnmsSeverity,
-		org.opennms.web.event.*
-		"
+		org.opennms.netmgt.model.OnmsSeverity
+	"
 %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %> 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %> 

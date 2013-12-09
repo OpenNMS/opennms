@@ -35,7 +35,6 @@
 %>
 
 <%@page import="org.opennms.util.ilr.Collector"%>
-<%@page import="org.opennms.util.ilr.Filter"%>
 <%@page import="java.io.*"%>
 <%@page import="org.slf4j.*"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
@@ -109,20 +108,22 @@ pageContext.setAttribute("searchString",searchString);
 
 
 %>
-<c_rt:set var="nan" value="<%=java.lang.Double.NaN%>"/>
+
+<body>
+<c:set var="nan" value="<%=java.lang.Double.NaN%>"/>
 <div style="float:left;">
 <form id="ILRfilter" action="admin/nodemanagement/instrumentationLogReader.jsp" method=get>
 <table border="0" cellpadding="0" cellspacing="0">
 <th>Filtering</th>
-<br>
-<input type="text" name="searchString" size=15 value="${searchString}"></td>
-<input type="submit" value="Submit">
+<br/>
+<input type="text" name="searchString" size=15 value="${searchString}"/></td>
+<input type="submit" value="Submit"/>
 </form>
 </div>
 <div style="padding-top:20px">
 <form action="admin/nodemanagement/instrumentationLogReader.jsp" method=get>
-<input type="hidden" name="searchString" value="">
-<input type="submit" value="Reset">
+<input type="hidden" name="searchString" value=""/>
+<input type="submit" value="Reset"/>
 </form>
 </div>
 
@@ -345,3 +346,4 @@ the <em>log4j.properties</em> configuration file.
 
 	<hr />
 <jsp:include page="/includes/footer.jsp" flush="false"/>
+</body>

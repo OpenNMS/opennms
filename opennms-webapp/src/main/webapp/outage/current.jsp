@@ -32,9 +32,6 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.web.outage.*,
-		java.util.*
-	"
 %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 

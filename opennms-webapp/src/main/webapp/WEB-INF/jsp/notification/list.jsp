@@ -36,13 +36,10 @@
 			org.opennms.web.notification.filter.*,
                 org.opennms.web.api.Authentication,
 		java.util.*,
-		java.sql.SQLException,
 		java.io.UnsupportedEncodingException,
 		org.opennms.web.event.Event,
 		org.opennms.web.filter.Filter,
-		org.opennms.web.element.NetworkElementFactory,
-		org.opennms.core.utils.WebSecurityUtils,
-		org.opennms.netmgt.model.OnmsSeverity
+		org.opennms.core.utils.WebSecurityUtils
 	"
 %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -70,12 +67,6 @@
 
     if( notices == null || parms == null || nodeLabels == null ) {
         throw new ServletException( "Missing a required attribute." );
-    }
-
-    // Make 'action' the opposite of the current acknowledgement state
-    String action = AcknowledgeType.ACKNOWLEDGED.getShortName();
-    if (parms.ackType != null && parms.ackType == AcknowledgeType.ACKNOWLEDGED) {
-        action = AcknowledgeType.UNACKNOWLEDGED.getShortName();
     }
 
     pageContext.setAttribute("addPositiveFilter", "[+]");

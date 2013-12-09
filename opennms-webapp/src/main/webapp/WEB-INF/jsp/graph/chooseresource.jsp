@@ -32,14 +32,11 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.web.api.Util,
-			org.opennms.web.element.*,
-			java.util.*"
 %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
-<%@page import="org.opennms.web.svclayer.ResourceService"%><jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Choose Resource" />
   <jsp:param name="headTitle" value="Choose" />
   <jsp:param name="headTitle" value="Resource Graphs" />

@@ -32,12 +32,10 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.netmgt.config.*,
+	import="
 		java.util.*,
 		java.text.*,
-		org.opennms.netmgt.config.groups.*,
-		org.opennms.netmgt.config.users.DutySchedule,
-                org.opennms.web.servlet.MissingParameterException
+		org.opennms.netmgt.config.users.DutySchedule
 	"
 %>
 
@@ -130,11 +128,9 @@
                     <table width="50%" border="1" cellspacing="0" cellpadding="2" >
                       <% Collection<String> dutySchedules = group.getDutySchedules(); %>
                       <%
-                              int i =0;
                               for (String dutySchedule : dutySchedules) {
                                       DutySchedule tmp = new DutySchedule(dutySchedule);
                                       Vector<Object> curSched = tmp.getAsVector();
-                                      i++;
                       %>
                       <tr>
                          <% ChoiceFormat days = new ChoiceFormat("0#Mo|1#Tu|2#We|3#Th|4#Fr|5#Sa|6#Su");

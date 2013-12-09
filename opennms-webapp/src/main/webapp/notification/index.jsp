@@ -32,7 +32,6 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="java.util.Date"
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >

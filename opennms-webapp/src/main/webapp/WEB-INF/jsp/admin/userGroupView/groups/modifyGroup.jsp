@@ -32,12 +32,10 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.netmgt.config.*,
+	import="
 		java.util.*,
 		java.text.*,
-		org.opennms.netmgt.config.groups.*,
-		org.opennms.netmgt.config.users.*,
-		org.opennms.netmgt.model.OnmsCategory
+		org.opennms.netmgt.config.users.*
 	"
 %>
 <%@page import="org.opennms.web.group.WebGroup"%>

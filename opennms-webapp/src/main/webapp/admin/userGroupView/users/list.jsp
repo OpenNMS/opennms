@@ -34,7 +34,6 @@
 	session="true"
 %>
 <%@page import="java.util.*" %>
-<%@page import="javax.servlet.*" %>
 <%@page import="org.opennms.netmgt.config.*" %>
 <%@page import="org.opennms.netmgt.config.users.*" %>
 <%

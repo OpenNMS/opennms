@@ -29,24 +29,15 @@
 
 --%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.api.Util, org.opennms.core.utils.WebSecurityUtils, org.opennms.web.servlet.*,org.opennms.web.element.*,java.util.*,java.io.*,org.opennms.web.element.NetworkElementFactory" %>
+<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.api.Util, org.opennms.core.utils.WebSecurityUtils, org.opennms.web.servlet.*,org.opennms.web.element.*,org.opennms.web.element.NetworkElementFactory" %>
 
 <%
-
-        
     //required parameter node
     String nodeIdString = request.getParameter( "node" );
     if(nodeIdString == null) {
         throw new MissingParameterException( "node", new String[] {"report", "node", "intf"} );
     }
     int nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
-
-    String solaris = request.getParameter( "solaris" );
-
-    boolean solarisStyle = false;
-    if(solaris != null && solaris.equals("true")) {
-    	solarisStyle = true;
-    }
 %>
 
 <html>

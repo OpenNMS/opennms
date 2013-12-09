@@ -33,7 +33,6 @@
 	contentType="text/html"
 	session="true"
 	import="java.util.*,
-		org.opennms.web.api.Util,
 		org.opennms.netmgt.config.*,
 		org.opennms.netmgt.config.destinationPaths.*
 	"

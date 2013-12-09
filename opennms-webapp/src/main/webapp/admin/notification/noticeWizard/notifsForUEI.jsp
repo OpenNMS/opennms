@@ -51,7 +51,6 @@
 %>
 
 <%
-    HttpSession user = request.getSession(true);
 	String uei=request.getParameter("uei");
 	Map<String, Notification> allNotifications=NotificationFactory.getInstance().getNotifications();
 	List<Notification> notifsForUEI=new ArrayList<Notification>();

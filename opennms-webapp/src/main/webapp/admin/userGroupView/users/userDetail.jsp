@@ -207,11 +207,9 @@
                       <table width="50%" border="1" cellspacing="0" cellpadding="2" >
 			<% Collection<String> dutySchedules = user.getDutyScheduleCollection(); %>
                         <%
-                                int i =0;
                                 for (String dutySchedule : dutySchedules) {
                                         DutySchedule tmp = new DutySchedule(dutySchedule);
                                         Vector<Object> curSched = tmp.getAsVector();        
-					i++;
                               
                         %>
                         <tr>

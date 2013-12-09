@@ -29,14 +29,9 @@
 
 --%>
 
-<%@page import="org.opennms.netmgt.snmp.SnmpConfiguration"%>
-<%@page import="org.opennms.netmgt.config.snmp.SnmpConfig"%>
 <%@page import="com.google.common.base.Strings"%>
 <%@page import="org.opennms.web.snmpinfo.SnmpInfo"%>
-<%@page import="com.google.common.base.Charsets"%>
-<%@page import="java.nio.charset.Charset"%>
-<%@page import="com.google.common.io.Files"%>
-<%@page import="org.opennms.netmgt.config.SnmpPeerFactory"%>
+<%@page import="org.opennms.netmgt.snmp.SnmpConfiguration"%>
 <%@page language="java" contentType="text/html" session="true"%>
 
 <jsp:include page="/includes/header.jsp" flush="false">

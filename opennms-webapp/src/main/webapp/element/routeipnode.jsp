@@ -38,7 +38,6 @@
         java.util.*,
         org.opennms.core.utils.InetAddressUtils,
         org.opennms.netmgt.model.OnmsNode,
-		org.opennms.core.utils.WebSecurityUtils,
 		org.opennms.web.element.*,
 		org.opennms.web.svclayer.ResourceService,
 		org.springframework.web.context.WebApplicationContext,

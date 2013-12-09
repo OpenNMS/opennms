@@ -34,8 +34,7 @@
 	session="true"
 	import="
 		java.util.*,
-		org.opennms.web.element.*,
-		org.opennms.web.asset.*
+		org.opennms.web.element.*
 	"
 %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>

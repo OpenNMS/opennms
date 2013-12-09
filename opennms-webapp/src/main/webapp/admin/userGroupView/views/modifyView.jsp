@@ -34,7 +34,6 @@
 	session="true"
 	import="org.opennms.netmgt.config.*,
 		java.util.*,
-		java.text.*,
 		org.opennms.netmgt.config.views.*
 	"
 %>

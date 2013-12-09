@@ -33,19 +33,8 @@
         contentType="text/html"
         session="true"
         import="java.util.*, java.util.regex.*,
-        org.opennms.netmgt.config.*,
-        org.opennms.netmgt.config.poller.*,
-        org.opennms.core.utils.WebSecurityUtils,
         org.opennms.web.element.*,
         org.opennms.netmgt.model.OnmsNode,
-        org.opennms.netmgt.EventConstants,
-        org.opennms.netmgt.xml.event.Event,
-        org.opennms.netmgt.utils.*,
-        org.opennms.web.api.Util,
-        java.net.*,
-        java.io.*,
-        java.text.NumberFormat,
-        java.text.SimpleDateFormat,
         net.sf.json.JSONSerializer
         "
 %>

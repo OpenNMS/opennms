@@ -32,8 +32,7 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="java.io.File,
-		java.util.*,
+	import="java.util.*,
 		org.opennms.web.element.NetworkElementFactory,
 		org.opennms.web.admin.nodeManagement.*
 	"
@@ -47,15 +46,13 @@
 <%
     HttpSession userSession = request.getSession(false);
     List<ManagedNode> nodes = null;
-    Integer lineItems= new Integer(0);
     
     interfaceIndex = 0;
     serviceIndex = 0;
     
     if (userSession != null)
     {
-  	nodes = (List<ManagedNode>)userSession.getAttribute("listAll.delete.jsp");
-        lineItems = (Integer)userSession.getAttribute("lineItems.delete.jsp");
+        nodes = (List<ManagedNode>)userSession.getAttribute("listAll.delete.jsp");
     }
 %>
 
