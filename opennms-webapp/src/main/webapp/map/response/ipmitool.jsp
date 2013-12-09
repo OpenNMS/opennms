@@ -84,7 +84,7 @@ function doCommand(){
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
 <br/>
 
-<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<table width="100%" border="0">
   <tr>
     <td align="left">
       <table>

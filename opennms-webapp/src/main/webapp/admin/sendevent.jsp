@@ -188,7 +188,7 @@
 <form method="post" name="sendevent"
       id="form.sendevent"
       action="admin/postevent.jsp" >
-      <table width="50%" cellspacing="2" cellpadding="2" border="0">
+      <table width="50%" border="0">
         <tr>
           <td valign="top" align="left">
             <h4>Events</h4>

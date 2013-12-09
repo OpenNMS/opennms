@@ -166,7 +166,7 @@ action="admin/notification/destinationWizard" >
 <input type="hidden" name="sourcePage" value="chooseTargets.jsp"/>
 <input type="hidden" name="nextPage"/>
 
-<table cellspacing="2" cellpadding="2" border="0">
+<table border="0">
         <tr>
           <td valign="top"><h4>Send to Selected Users:</h4></td>
           <td>&nbsp;</td>

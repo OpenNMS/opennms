@@ -126,7 +126,7 @@
 <br/>
 <br/>
 
-     <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black">
+     <table width="100%" border="1" bordercolor="black">
 
          <tr bgcolor="#999999">
           <td width="5%"><b>Delete</b></td>

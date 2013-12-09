@@ -112,7 +112,7 @@
 
     <!--<a href="javascript:addNewView()"> <img src="images/add1.gif" alt="Add new view"> Add new view</a>-->
      <p>Click on the <i>View Name</i> link to see detailed information about a view.</p>
-     <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black">
+     <table width="100%" border="1" bordercolor="black">
 
          <tr bgcolor="#999999">
           <td width="5%"><b>Delete</b></td>

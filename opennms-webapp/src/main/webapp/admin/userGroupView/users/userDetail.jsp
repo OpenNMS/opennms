@@ -96,7 +96,7 @@
       <tr>
         <td>
           
-            <table width="100%" border="0" cellspacing="0" cellpadding="2" >
+            <table width="100%" border="0" >
               
               <tr>
                 <td>
@@ -204,7 +204,7 @@
                 <td>
                 <b>Duty Schedules:</b>
                   
-                      <table width="50%" border="1" cellspacing="0" cellpadding="2" >
+                      <table width="50%" border="1">
 			<% Collection<String> dutySchedules = user.getDutyScheduleCollection(); %>
                         <%
                                 for (String dutySchedule : dutySchedules) {

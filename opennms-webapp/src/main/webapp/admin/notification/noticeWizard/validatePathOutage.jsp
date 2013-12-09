@@ -101,7 +101,7 @@
         <input type="hidden" name="criticalSvc" value="<%=criticalSvc%>"/>
         <input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_VALIDATE_PATH_OUTAGE%>"/>
         <% if (showNodes != null && showNodes.equals("on")) { %>
-          <table width="50%" cellspacing="2" cellpadding="2" border="1">
+          <table width="50%" border="1">
             <tr bgcolor="#999999">
               <td>
                 <b>Node ID</b>

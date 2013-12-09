@@ -194,7 +194,7 @@ function doNextRequest() {
 
 <br/>
 
-<table width="80%" cellpadding="0" cellspacing="0" border="0">
+<table width="80%" border="0">
   <tr>
     <td align="left">
       <table>

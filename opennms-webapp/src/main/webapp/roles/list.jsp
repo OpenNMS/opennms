@@ -90,7 +90,7 @@
 
 <h3>Role Configuration</h3>
 
-<table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black">
+<table width="100%" border="1" bordercolor="black">
 
          <tr bgcolor="#999999">
           <td><b>Name</b></td>

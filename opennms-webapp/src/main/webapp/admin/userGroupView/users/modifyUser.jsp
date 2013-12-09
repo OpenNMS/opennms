@@ -193,7 +193,7 @@
     <input type="button" value="Reset Password" onClick="resetPassword()" />
   </p>
 
-    <table width="100%" border="0" cellspacing="0" cellpadding="2">
+    <table width="100%" border="0">
             <tr>
               <td colspan="2">
                 <p><b>User Information</b></p>
@@ -456,7 +456,7 @@ Collection<String> dutySchedules = user.getDutyScheduleCollection();
         %>
 				<input type="hidden" name="dutySchedules" value="<%=user.getDutyScheduleCount()%>"/>
           
-          <table width="100%" border="1" cellspacing="0" cellpadding="2" >
+          <table width="100%" border="1">
             <tr bgcolor="#999999">
               <td>&nbsp;</td>
               <td><b>Delete</b></td>

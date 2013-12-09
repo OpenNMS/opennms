@@ -62,10 +62,10 @@
 
 <h2>Details for Group: <%=group.getName()%></h2>
 
-    <table width="100%" border="0" cellspacing="0" cellpadding="2" >
+    <table width="100%" border="0">
       <tr>
         <td>
-          <table width="100%" border="0" cellspacing="0" cellpadding="2">
+          <table width="100%" border="0">
             <tr>
               <td width="10%" valign="top">
                 <b>Comments:</b>
@@ -79,7 +79,7 @@
       </tr>
       <tr>
         <td>
-          <table width="100%" border="0" cellspacing="0" cellpadding="2">
+          <table width="100%" border="0">
             <tr>
               <td width="10%" valign="top">
                 <b>Default Map:</b>
@@ -94,14 +94,14 @@
 
       <tr>
         <td>
-          <table width="100%" border="0" cellspacing="0" cellpadding="2" >
+          <table width="100%" border="0">
             <tr>
               <td>
                 <b>Assigned Users:</b>
                 <% Collection<String> users = group.getUsers();
                 if (users.size() < 1)
                 { %>
-                  <table width="50%" border="0" cellspacing="0" cellpadding="2" >
+                  <table width="50%" border="0">
                     <tr>
                       <td>
                         No users belong to this group.
@@ -110,7 +110,7 @@
                   </table>
                 <% }
                 else { %>
-                  <table width="50%" border="1" cellspacing="0" cellpadding="2" >
+                  <table width="50%" border="1">
                     <% for (String user : users) { %>
                       <tr>
                         <td>
@@ -125,7 +125,7 @@
             <tr>
               <td>
               <b>Duty Schedules:</b>
-                    <table width="50%" border="1" cellspacing="0" cellpadding="2" >
+                    <table width="50%" border="1">
                       <% Collection<String> dutySchedules = group.getDutySchedules(); %>
                       <%
                               for (String dutySchedule : dutySchedules) {

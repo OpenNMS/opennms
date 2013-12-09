@@ -301,7 +301,7 @@
 <form method="post" name="modifyGroup" onsubmit="return saveGroup();">
   <input type="hidden" name="groupName" value="<%=group.getName()%>"/>
   <input type="hidden" name="operation"/>
-      <table width="100%" border="0" cellspacing="0" cellpadding="2" >
+      <table width="100%" border="0">
         <tr>
           <td>
                 Assign a default map to group selecting from selection list.
@@ -327,7 +327,7 @@
         </table>
 
 
-      <table width="100%" border="0" cellspacing="0" cellpadding="2" >
+      <table width="100%" border="0">
         <tr>
           <td>
                 Assign and unassign users to the group using the select lists below. Also, change the ordering of
@@ -338,7 +338,7 @@
 
         <tr>
           <td align="left">
-            <table bgcolor="white" border="1" cellpadding="5" cellspacing="2">
+            <table bgcolor="white" border="1">
               <tr>
                 <td colspan="3" align="center">
                   <b>Assign/Unassign Users</b>
@@ -371,7 +371,7 @@
       
 	      <tr>
 	          <td align="left">
-	            <table bgcolor="white" border="1" cellpadding="5" cellspacing="2">
+	            <table bgcolor="white" border="1">
 	              <tr>
 	                <td colspan="3" align="center">
 	                  <b>Assign/Unassign Categories</b>
@@ -404,7 +404,7 @@
 	      </table>
       
       <p><b>Duty Schedules</b></p>
-      <table width="100%" border="1" cellspacing="0" cellpadding="2" >
+      <table width="100%" border="1">
         <tr bgcolor="#999999">
           <td>&nbsp;</td>
           <td><b>Delete</b></td>

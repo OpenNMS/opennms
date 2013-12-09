@@ -73,7 +73,7 @@
 		<%= view.getName() %>
 		<% } %>
 	  </h2>
-          <table width="100%" border="0" cellspacing="0" cellpadding="2">
+          <table width="100%" border="0">
             <tr>
               <td width="10%" valign="top"> 
                 <b>Title:</b>
@@ -107,7 +107,7 @@
           </table>
           
           <h2>User Members</h2>
-          <table width="20%" border="1" cellspacing="0" cellpadding="2" >
+          <table width="20%" border="1">
             <%  Membership membership= view.getMembership();
 		if(membership != null)
 		{
@@ -130,7 +130,7 @@
           </table>
 
           <h2>Group Members</h2>
-          <table width="20%" border="1" cellspacing="0" cellpadding="2" >
+          <table width="20%" border="1">
             <%  membership= view.getMembership();
 		if(membership != null)
 		{
@@ -153,7 +153,7 @@
           </table>
 
                 <h2>Categories</h2>
-                <table width="100%" border="1" cellspacing="0" cellpadding="2" >
+                <table width="100%" border="1">
                   <tr bgcolor="#999999">
                     <td width="5%"><b>Label</b></td>
                     <td width="5%"><b>Normal</b></td>

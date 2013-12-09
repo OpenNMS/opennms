@@ -97,7 +97,7 @@
 <form method="post" name="events"
       action="admin/notification/noticeWizard/notificationWizard" >
       <input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_UEIS%>"/>
-      <table width="50%" cellspacing="2" cellpadding="2" border="0">
+      <table width="50%" border="0">
         <tr>
           <td valign="top" align="left">
             <h4>Events</h4>

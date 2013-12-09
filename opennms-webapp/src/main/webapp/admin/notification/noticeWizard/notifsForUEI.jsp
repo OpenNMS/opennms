@@ -105,7 +105,7 @@
 </form>
 
 <h2>Existing Notifications for UEI <%=uei%></h2>
-      <table width="50%" cellspacing="2" cellpadding="2" border="0">
+      <table width="50%" border="0">
       	 <tr><th>Name</th><th>Description</th><th>Rule</th><th>Destination path</th><th>Varbinds</th><th>Actions</th></tr>
       <% for(Notification notif : notifsForUEI) { 
           	String varbindDescription="";

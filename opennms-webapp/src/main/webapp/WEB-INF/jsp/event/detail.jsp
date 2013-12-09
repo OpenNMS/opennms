@@ -122,7 +122,7 @@
         
         <tr  class="<%= event.getSeverity().getLabel() %>">
           <th>Time</th>
-          <td><%=org.opennms.web.api.Util.formatDateToUIString(event.getTime())%></td>
+          <td><fmt:formatDate value="<%=event.getTime()%>" type="BOTH" /></td>
           <th>Interface</th>
           <td>
             <% if( event.getIpAddress() != null ) { %>
@@ -141,7 +141,16 @@
           </td>
           <% if ("true".equals(acknowledgeEvent)) { %>
           <th>Time&nbsp;Acknowledged</th>
-          <td><%=event.getAcknowledgeTime()!=null ? org.opennms.web.api.Util.formatDateToUIString(event.getAcknowledgeTime()) : "&nbsp;"%></td>
+          <td>
+          <c:choose>
+            <c:when test="<%=event.getAcknowledgeTime() != null%>">
+              <fmt:formatDate value="<%=event.getAcknowledgeTime()%>" type="BOTH" />
+            </c:when>
+            <c:otherwise>
+              &nbsp;
+            </c:otherwise>
+          </c:choose>
+          </td>
           <% } else { %>
           <td colspan="2">&nbsp;</td>
           <% } %>

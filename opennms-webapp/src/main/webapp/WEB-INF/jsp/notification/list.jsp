@@ -230,7 +230,7 @@
             <% } %>
           </td>
           <td class="bright divider" rowspan="2"><%=eventSeverity%></td>
-          <td class="divider"><%=org.opennms.web.api.Util.formatDateToUIString(notification.getTimeSent())%></td>
+          <td class="divider"><fmt:formatDate value="<%=notification.getTimeSent()%>" type="BOTH" /></td>
           <td class="divider">
           <% final String responder = notification.getResponder(); %>
           <% if (responder != null) { %>
@@ -243,9 +243,9 @@
             </td>
           <td class="divider">
             <%if (notification.getTimeReplied()!=null) { %>
-              <%=org.opennms.web.api.Util.formatDateToUIString(notification.getTimeReplied())%>
+              <fmt:formatDate value="<%=notification.getTimeReplied()%>" type="BOTH" />
             <% } %>
-					</td>
+          </td>
           <td class="divider">
             <% if(notification.getNodeId() != 0 ) { %>
               <% Filter nodeFilter = new NodeFilter(notification.getNodeId()); %>
