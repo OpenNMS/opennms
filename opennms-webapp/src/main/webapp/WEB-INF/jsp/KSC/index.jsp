@@ -35,7 +35,6 @@
   import="
   org.opennms.web.api.Util,
   org.opennms.web.servlet.XssRequestWrapper,
-  org.opennms.web.controller.ksc.CustomViewController,
   org.opennms.web.svclayer.ResourceService,
   org.springframework.web.context.WebApplicationContext,
   org.springframework.web.context.support.WebApplicationContextUtils
@@ -50,9 +49,9 @@
     final String match = req.getParameter("match");
     pageContext.setAttribute("topLevelResources", m_resourceService.findTopLevelResources());
     pageContext.setAttribute("match", match);
-    final String baseHref = Util.calculateUrlBase(request);
 %>
-    
+<c:set var="baseHref" value="%=Util.calculateUrlBase(request)%"/>
+
 <%!
     public ResourceService m_resourceService;
     
