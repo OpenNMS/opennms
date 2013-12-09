@@ -62,10 +62,10 @@
 
 <h2>Details for Group: <%=group.getName()%></h2>
 
-    <table width="100%" border="0">
+    <table width="100%">
       <tr>
         <td>
-          <table width="100%" border="0">
+          <table width="100%">
             <tr>
               <td width="10%" valign="top">
                 <b>Comments:</b>
@@ -79,7 +79,7 @@
       </tr>
       <tr>
         <td>
-          <table width="100%" border="0">
+          <table width="100%">
             <tr>
               <td width="10%" valign="top">
                 <b>Default Map:</b>
@@ -94,14 +94,14 @@
 
       <tr>
         <td>
-          <table width="100%" border="0">
+          <table width="100%">
             <tr>
               <td>
                 <b>Assigned Users:</b>
                 <% Collection<String> users = group.getUsers();
                 if (users.size() < 1)
                 { %>
-                  <table width="50%" border="0">
+                  <table width="50%">
                     <tr>
                       <td>
                         No users belong to this group.

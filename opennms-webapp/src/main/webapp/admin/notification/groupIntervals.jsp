@@ -74,7 +74,7 @@
     <form method="post" name="groupIntervals" action="admin/notification/destinationWizard" >
       <%=Util.makeHiddenTags(request)%>
       <input type="hidden" name="sourcePage" value="groupIntervals.jsp"/>
-      <table width="50%" border="0">
+      <table width="50%">
         <tr>
           <td valign="top" align="left">
           <%=intervalTable(newPath, 

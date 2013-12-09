@@ -221,7 +221,7 @@
   <input type="hidden" name="viewName" value="<%=view.getName()%>"/>
   <input type="hidden" name="redirect"/>
 
-      <table width="100%" border="0">
+      <table width="100%">
         <tr>
           <td align="left">
             <table bgcolor="white" border="1" cellpadding="5" cellspacing="2">

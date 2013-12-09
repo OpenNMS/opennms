@@ -113,7 +113,7 @@ pageContext.setAttribute("searchString",searchString);
 <c:set var="nan" value="<%=java.lang.Double.NaN%>"/>
 <div style="float:left;">
 <form id="ILRfilter" action="admin/nodemanagement/instrumentationLogReader.jsp" method=get>
-<table border="0">
+<table>
 <th>Filtering</th>
 <br/>
 <input type="text" name="searchString" size=15 value="${searchString}"/></td>

@@ -86,7 +86,7 @@
       action="admin/notification/noticeWizard/notificationWizard" >
       <input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_RULE%>"/>
       <input type="hidden" name="nextPage" value=""/>
-      <table width="100%" border="0">
+      <table width="100%">
         <tr>
           <td valign="top" align="left">
             <p>Filtering on TCP/IP address uses a very flexible format, allowing you

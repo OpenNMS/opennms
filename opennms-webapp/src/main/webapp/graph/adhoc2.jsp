@@ -156,7 +156,7 @@
     <form method="get" action="graph/adhoc3.jsp" >
       <%=Util.makeHiddenTags(request)%>
 
-      <table width="100%" border="0">
+      <table width="100%">
         <c:set var="anythingSelected" value="false"/>
         <c:forEach var="dsIndex" begin="0" end="3">
           <!-- Data Source ${dsIndex} -->     

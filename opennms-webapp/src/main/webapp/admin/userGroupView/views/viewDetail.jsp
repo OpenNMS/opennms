@@ -73,7 +73,7 @@
 		<%= view.getName() %>
 		<% } %>
 	  </h2>
-          <table width="100%" border="0">
+          <table width="100%">
             <tr>
               <td width="10%" valign="top"> 
                 <b>Title:</b>

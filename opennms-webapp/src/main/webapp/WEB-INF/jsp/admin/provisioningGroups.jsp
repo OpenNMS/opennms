@@ -84,7 +84,7 @@
   </span>
   <br />
  
-  <table class="top" border="0">
+  <table class="top">
   	<tr>
   	  <td>
   	  	Requisition:<br />

@@ -166,7 +166,7 @@ action="admin/notification/destinationWizard" >
 <input type="hidden" name="sourcePage" value="chooseTargets.jsp"/>
 <input type="hidden" name="nextPage"/>
 
-<table border="0">
+<table>
         <tr>
           <td valign="top"><h4>Send to Selected Users:</h4></td>
           <td>&nbsp;</td>
@@ -227,7 +227,7 @@ action="admin/notification/destinationWizard" >
            </td>
            <td>&nbsp;</td>
           <td width="25%" valign="top" align="left">
-            <select WIDTH="200" STYLE="width: 200px" NAME="roles" SIZE="10" multiple>
+            <select width="200" style="width: 200px" name="roles" size="10" multiple>
              <%
                      for (Map.Entry<String,Boolean> entry : getRoles(targets).entrySet()) {
                          String key = entry.getKey();

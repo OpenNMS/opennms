@@ -301,7 +301,7 @@
 <form method="post" name="modifyGroup" onsubmit="return saveGroup();">
   <input type="hidden" name="groupName" value="<%=group.getName()%>"/>
   <input type="hidden" name="operation"/>
-      <table width="100%" border="0">
+      <table width="100%">
         <tr>
           <td>
                 Assign a default map to group selecting from selection list.
@@ -327,7 +327,7 @@
         </table>
 
 
-      <table width="100%" border="0">
+      <table width="100%">
         <tr>
           <td>
                 Assign and unassign users to the group using the select lists below. Also, change the ordering of

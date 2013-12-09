@@ -158,7 +158,7 @@
 				<td>Access Method:</td>
 				<td>
 					<select name="accessMethod" >
-					<option value="" selected="true">--</option>
+					<option value="" selected="selected">--</option>
 					<option value="rsh">RSH</option>
 					<option value="ssh">SSH</option>
 					<option value="telnet">Telnet</option>

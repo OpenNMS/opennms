@@ -68,11 +68,11 @@
   <jsp:param name="breadcrumb" value="User Detail" />
 </jsp:include>
 
-    <table width="100%" border="0" cellspacing="0" cellpadding="2" >
+    <table width="100%">
       <tr>
         <td>
           <h2>Details for User: <%=user.getUserId()%> <%= user.isReadOnly()? "(Read Only)":"" %></h2>
-          <table width="100%" border="0" cellspacing="0" cellpadding="2">
+          <table width="100%">
             <tr>
               <td width="10%" valign="top">
                 <b>Full Name:</b>
@@ -96,7 +96,7 @@
       <tr>
         <td>
           
-            <table width="100%" border="0" >
+            <table width="100%" >
               
               <tr>
                 <td>

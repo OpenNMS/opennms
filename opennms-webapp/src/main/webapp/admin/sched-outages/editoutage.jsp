@@ -830,7 +830,7 @@ function updateOutageTypeDisplay(selectElement) {
 <h2>Editing Outage: <%= theOutage.getName() %></h2>
 
 		<label>Nodes and Interfaces:</label>
-			<table class="normal" border="0">
+			<table class="normal">
 				<tr>
 					<th valign="top">Node Labels</th>
 					<th valign="top">Interfaces</th>
@@ -1017,7 +1017,7 @@ function updateOutageTypeDisplay(selectElement) {
 					}
 				%>
 			</table>
-			<table class="normal" border="0">
+			<table class="normal">
 				<tr id="chooseDay" style="display: none">
 					<td>
 						<span id="chooseDayOfMonth" style="display: none">

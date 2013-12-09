@@ -193,7 +193,7 @@
     <input type="button" value="Reset Password" onClick="resetPassword()" />
   </p>
 
-    <table width="100%" border="0">
+    <table width="100%">
             <tr>
               <td colspan="2">
                 <p><b>User Information</b></p>

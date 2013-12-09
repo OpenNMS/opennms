@@ -93,7 +93,7 @@
 
 <h3>Check the TCP/IP addresses below to ensure that the rule has given the expected results. If it hasn't click the
           'Rebuild' link below the table. If the results look good continue by clicking the 'Next' link also below the table.</h3>
-      <table width="100%" border="0">
+      <table width="100%">
         <tr>
           <td width="10%">Current Rule:
           </td>
@@ -116,7 +116,7 @@
           </tr>
           <%=buildInterfaceTable(newRule, services, notServices)%>
         </table>
-        <table width="100%" border="0">
+        <table width="100%">
          <tr> 
           <td>
            <a HREF="javascript:rebuild()">&#139;&#139;&#139; Rebuild</a>&nbsp;&nbsp;&nbsp;

@@ -165,7 +165,7 @@
 	<tr align="right">
 		<td>&nbsp;</td>
 		<td>
-		<table border="0">
+		<table>
 		<tr>
 		<td>
 		<form action="<c:url value='${reqUrl}'/>" method="post" name="doneForm">

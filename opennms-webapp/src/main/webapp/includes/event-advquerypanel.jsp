@@ -69,10 +69,10 @@
 
 
 <form action="event/query" method="get">
-  <table width="100%" border="0">
+  <table width="100%">
     <tr>
       <td valign="top">
-        <table width="100%" border="0">
+        <table width="100%">
           <tr>
             <td>Event Text Contains:</td>
             <td>TCP/IP Address Like:</td>
