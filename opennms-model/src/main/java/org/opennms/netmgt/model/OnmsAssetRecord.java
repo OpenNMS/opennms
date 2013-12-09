@@ -1916,6 +1916,10 @@ public class OnmsAssetRecord implements Serializable {
         }
 
         OnmsGeolocation toGeolocation = this.getGeolocation();
+        if (toGeolocation == null) {
+            toGeolocation = new OnmsGeolocation();
+            this.setGeolocation(toGeolocation);
+        }
         final OnmsGeolocation fromGeolocation = newRecord.getGeolocation();
 
         //this works because all asset properties are strings

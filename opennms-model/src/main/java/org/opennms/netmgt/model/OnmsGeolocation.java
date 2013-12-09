@@ -6,21 +6,14 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
-import org.hibernate.annotations.Formula;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 
 @Embeddable
 public class OnmsGeolocation implements Serializable {
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 3597395774470348687L;
+    private static final long serialVersionUID = -3346555393433178515L;
 
     public OnmsGeolocation() {}
-
-    @Formula("0")
-    private static int dummy = 0;
 
     private String m_address1;
     private String m_address2;
