@@ -35,25 +35,10 @@ import java.util.TreeMap;
 import javax.annotation.Resource;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.systemreport.SystemReportPlugin;
-import org.opennms.test.JUnitConfigurationEnvironment;
-import org.springframework.test.context.ContextConfiguration;
 
-@RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations={
-        "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath*:/META-INF/opennms/component-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-systemReport.xml",
-        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
-})
-@JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase
-public class TopReportPluginTest {
+public class TopReportPluginTest extends ReportPluginTestCase {
     @Resource(name="topReportPlugin")
     private SystemReportPlugin m_topReportPlugin;
 
