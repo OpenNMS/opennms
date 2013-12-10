@@ -50,7 +50,7 @@
     pageContext.setAttribute("topLevelResources", m_resourceService.findTopLevelResources());
     pageContext.setAttribute("match", match);
 %>
-<c:set var="baseHref" value="%=Util.calculateUrlBase(request)%"/>
+<c:set var="baseHref" value="<%=Util.calculateUrlBase(request)%>"/>
 
 <%!
     public ResourceService m_resourceService;
