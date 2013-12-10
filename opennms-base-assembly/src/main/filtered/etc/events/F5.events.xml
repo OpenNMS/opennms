@@ -49,7 +49,7 @@
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			threednsTrapVSRedToGreen trap received&lt;/p&gt;
 		</logmsg>
-	<severity>Cleared</severity>
+	<severity>Normal</severity>
 	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
                 alarm-type="2" 
                 auto-clean="false" 
@@ -78,7 +78,7 @@
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			threednsTrapServerRedToGreen trap received&lt;/p&gt;
 		</logmsg>
-	<severity>Cleared</severity>
+	<severity>Normal</severity>
 	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
                 alarm-type="2" 
                 auto-clean="false" 
@@ -248,7 +248,7 @@
 			ipAddressString=%parm[#2]% 
 			memberPort=%parm[#3]%&lt;/p&gt;
 		</logmsg>
-	<severity>Cleared</severity>
+	<severity>Normal</severity>
 	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" 
                 alarm-type="2" 
                 auto-clean="false" 
@@ -437,7 +437,7 @@
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bigipAgentStart trap received&lt;/p&gt;
 		</logmsg>
-	<severity>Cleared</severity>
+	<severity>Normal</severity>
 	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
                 alarm-type="2" 
                 auto-clean="false" 
@@ -762,7 +762,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p&gt;&lt;table&gt
 			bigipNotifyObjNode=%parm[#2]% 
 			bigipNotifyObjPort=%parm[#3]%&lt;/p&gt;
 		</logmsg>
-	<severity>Cleared</severity>
+	<severity>Normal</severity>
 	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" 
                 alarm-type="2" 
                 auto-clean="false" 
@@ -837,7 +837,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p&gt;&lt;table&gt
 			bigipNotifyObjMsg=%parm[#1]% 
 			bigipNotifyObjNode=%parm[#2]%&lt;/p&gt;
 		</logmsg>
-	<severity>Cleared</severity>
+	<severity>Normal</severity>
 	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" 
                 alarm-type="2" 
                 auto-clean="false" 
@@ -995,7 +995,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p&gt;&lt;table&gt
 			bigipFeatureOnline trap received 
 			bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;
 		</logmsg>
-	<severity>Cleared</severity>
+	<severity>Normal</severity>
 	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
                 alarm-type="2" 
                 auto-clean="false" 
