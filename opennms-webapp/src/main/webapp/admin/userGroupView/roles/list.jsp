@@ -114,7 +114,7 @@
         <c:choose>
           <c:when test="${empty roleManager.roles}">
             <tr>
-              <td colspan="6">No roles defined.  Use the "Add New Role" button
+              <td colspan="6">No roles defined.  Use the "Add new role" link
                 to add roles.</td>
             </tr>
 	 	  </c:when>

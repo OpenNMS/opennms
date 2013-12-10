@@ -88,10 +88,10 @@
     // optional bookmark
     final OnmsFilterFavorite favorite = (OnmsFilterFavorite) req.getAttribute("favorite");
 
-    pageContext.setAttribute("addPositiveFilter", "[+]");
-    pageContext.setAttribute("addNegativeFilter", "[-]");
-    pageContext.setAttribute("addBeforeFilter", "[&gt;]");
-    pageContext.setAttribute("addAfterFilter", "[&lt;]");
+    pageContext.setAttribute("addPositiveFilter", "<i class=\"fa fa-plus-square-o\"></i>");
+    pageContext.setAttribute("addNegativeFilter", "<i class=\"fa fa-minus-square-o\"></i>");
+    pageContext.setAttribute("addBeforeFilter", "<i class=\"fa fa-toggle-right\"></i>");
+    pageContext.setAttribute("addAfterFilter", "<i class=\"fa fa-toggle-left\"></i>");
     pageContext.setAttribute("filterFavoriteSelectTagHandler", new FilterFavoriteSelectTagHandler("All Alarms"));
 %>
 <c:set var="baseHref" value="<%=Util.calculateUrlBase(request)%>"/>
@@ -104,6 +104,7 @@
   <jsp:param name="breadcrumb" value="List" />
 </jsp:include>
 
+<link rel="stylesheet" href="css/font-awesome-4.0.3/css/font-awesome.min.css">
 
   <script type="text/javascript">
     function checkAllCheckboxes() {
