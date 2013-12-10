@@ -262,7 +262,7 @@ class EventQueueProcessor implements Runnable, PausableFiber {
         while (!exitCheck) {
             // check the child thread!
             if (m_worker.isAlive() == false && m_status.get() != STOP_PENDING) {
-                LOG.warn(this, "%s terminated abnormally", getName());
+                LOG.warn("{} terminated abnormally", getName());
                 m_status.set(STOP_PENDING);
             }
 
