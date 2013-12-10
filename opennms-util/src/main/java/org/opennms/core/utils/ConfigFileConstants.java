@@ -243,11 +243,6 @@ public final class ConfigFileConstants {
     public static final int USERS_CONF_FILE_NAME;
 
     /**
-     * The user views config file
-     */
-    public static final int VIEWS_CONF_FILE_NAME;
-
-    /**
      * The categories config file
      */
     public static final int CATEGORIES_CONF_FILE_NAME;
@@ -512,7 +507,6 @@ public final class ConfigFileConstants {
         EXCLUDE_UEI_FILE_NAME = 18;
         USERS_CONF_FILE_NAME = 19;
 
-        VIEWS_CONF_FILE_NAME = 20;
         CATEGORIES_CONF_FILE_NAME = 21;
         GROUPS_CONF_FILE_NAME = 22;
         NOTIFICATIONS_CONF_FILE_NAME = 23;
@@ -639,7 +633,6 @@ public final class ConfigFileConstants {
         FILE_ID_TO_NAME[EXCLUDE_UEI_FILE_NAME] = "exclude-ueis.properties";
         FILE_ID_TO_NAME[USERS_CONF_FILE_NAME] = "users.xml";
 
-        FILE_ID_TO_NAME[VIEWS_CONF_FILE_NAME] = "views.xml";
         FILE_ID_TO_NAME[CATEGORIES_CONF_FILE_NAME] = "categories.xml";
         FILE_ID_TO_NAME[GROUPS_CONF_FILE_NAME] = "groups.xml";
         FILE_ID_TO_NAME[NOTIFICATIONS_CONF_FILE_NAME] = "notifications.xml";
