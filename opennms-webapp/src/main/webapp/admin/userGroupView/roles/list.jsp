@@ -71,6 +71,8 @@
 	<jsp:param name="breadcrumb" value="Role List" />
 </jsp:include>
 
+<link rel="stylesheet" href="css/font-awesome-4.0.3/css/font-awesome.min.css">
+
 <script type="text/javascript" >
 
 	function doOperation(op, role) {
@@ -124,7 +126,7 @@
 				<c:set var="confirmScript" value="return confirm('Are you sure you want to delete the role ${role.name}?')"/>
 				
 				<tr>
-				<td><a href="${deleteUrl}" onclick="${confirmScript}"><img src="images/trash.gif" alt="Delete ${role.name}"></a></td>
+				<td><a href="${deleteUrl}" onclick="${confirmScript}"><i class="fa fa-trash-o fa-2x"></i></a></td>
 				<td><a href="${viewUrl}">${role.name}</a></td>
 				<td>
 				  <c:set var="supervisorUser">${role.defaultUser}</c:set>

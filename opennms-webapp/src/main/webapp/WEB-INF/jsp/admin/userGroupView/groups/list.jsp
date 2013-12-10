@@ -41,6 +41,8 @@
   <jsp:param name="breadcrumb" value="Group List" />
 </jsp:include>
 
+<link rel="stylesheet" href="css/font-awesome-4.0.3/css/font-awesome.min.css">
+
 <script type="text/javascript" >
 
     function addNewGroup()
@@ -97,7 +99,11 @@
   <input type="hidden" name="groupName"/>
   <input type="hidden" name="newName"/>
 
-       <a href="javascript:addNewGroup()"> <img src="images/add1.gif" alt="Add new group"> Add new group</a>
+<p>
+  <a href="javascript:addNewGroup()">
+    <i class="fa fa-plus-circle fa-2x"></i> Add new group
+  </a>
+</p>
 
   <table>
 
@@ -113,15 +119,15 @@
           <td width="5%" align="center">
             <c:choose>
               <c:when test='${group.name != "Admin"}'>
-                <a href="javascript:deleteGroup('${group.name}')" onclick="return confirm('Are you sure you want to delete the group ${group.name}?')"><img src="images/trash.gif"></a>              
+                <a href="javascript:deleteGroup('${group.name}')" onclick="return confirm('Are you sure you want to delete the group ${group.name}?')"><i class="fa fa-trash-o fa-2x"></i></a>              
               </c:when>
               <c:otherwise>
-                <img src="images/trash.gif" title="Cannot delete ${group.name} group">
+                <i class="fa fa-trash-o fa-2x" onclick="alert('Sorry, the ${group.name} group cannot be deleted.')"></i>
               </c:otherwise>
             </c:choose>
           </td>
           <td width="5%" align="center">
-            <a href="javascript:modifyGroup('${group.name}')"><img src="images/modify.gif"></a>
+            <a href="javascript:modifyGroup('${group.name}')"><i class="fa fa-edit fa-2x"></i></a>
           </td>
           <td width="5%" align="center">
             <c:choose>
