@@ -22,11 +22,7 @@
     <bean name="collectorConfigDao" class="org.opennms.netmgt.collectd.CollectorConfigDaoImpl"/>
 
     <bean id="daemon" class="org.opennms.netmgt.collectd.Collectd">
-      <property name="collectorConfigDao" ref="collectorConfigDao" />
-      <property name="ipInterfaceDao" ref="ipInterfaceDao"/>
-      <property name="nodeDao" ref="nodeDao"/>
       <property name="eventIpcManager" ref="eventIpcManager"/>
-      <property name="transactionTemplate" ref="transactionTemplate"/>
     </bean>
 
 </beans>
