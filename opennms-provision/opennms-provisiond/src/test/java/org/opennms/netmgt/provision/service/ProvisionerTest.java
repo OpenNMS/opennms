@@ -82,6 +82,7 @@ import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.model.OnmsAssetRecord;
+import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
@@ -1349,6 +1350,46 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         importFromResource("classpath:/requisition_with_node_categories_changed.xml", true);
 
         m_eventAnticipator.verifyAnticipated();
+    }
+
+    @Test(timeout=300000)
+    @JUnitTemporaryDatabase
+    public void testImportWithGeoData() throws Exception {
+        importFromResource("classpath:/tec_dump.xml", true);
+        final NodeDao nodeDao = getNodeDao();
+
+        OnmsNode node = nodeDao.findByForeignId("matt:", "4243");
+        nodeDao.initialize(node.getAssetRecord());
+        nodeDao.initialize(node.getAssetRecord().getGeolocation());
+
+        OnmsGeolocation geolocation = new OnmsGeolocation();
+        geolocation.setAddress1("220 Chatham Business Dr.");
+        geolocation.setCity("Pittsboro");
+        geolocation.setState("NC");
+        geolocation.setZip("27312");
+        geolocation.setLatitude(35.715723f);
+        geolocation.setLongitude(-79.162261f);
+        node.getAssetRecord().setGeolocation(geolocation);
+        nodeDao.saveOrUpdate(node);
+        nodeDao.flush();
+
+        node = nodeDao.findByForeignId("matt:", "4243");
+        geolocation = node.getAssetRecord().getGeolocation();
+
+        assertNotNull(geolocation.getLatitude());
+        assertNotNull(geolocation.getLongitude());
+        assertEquals(Float.valueOf(35.715723f).doubleValue(),  geolocation.getLatitude().doubleValue(),  0.1d);
+        assertEquals(Float.valueOf(-79.162261f).doubleValue(), geolocation.getLongitude().doubleValue(), 0.1d);
+
+        System.err.println("=================================================================BLEARGH");
+        importFromResource("classpath:/tec_dump.xml", true);
+        node = nodeDao.findByForeignId("matt:", "4243");
+        geolocation = node.getAssetRecord().getGeolocation();
+
+        assertNotNull(geolocation.getLatitude());
+        assertNotNull(geolocation.getLongitude());
+        assertEquals(Float.valueOf(35.715723f).doubleValue(),  geolocation.getLatitude().doubleValue(),  0.1d);
+        assertEquals(Float.valueOf(-79.162261f).doubleValue(), geolocation.getLongitude().doubleValue(), 0.1d);
     }
 
     private static Event nodeDeleted(int nodeid) {

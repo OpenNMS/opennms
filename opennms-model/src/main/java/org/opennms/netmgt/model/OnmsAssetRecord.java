@@ -1913,6 +1913,13 @@ public class OnmsAssetRecord implements Serializable {
             return;
         }
 
+        OnmsGeolocation toGeolocation = this.getGeolocation();
+        if (toGeolocation == null) {
+            toGeolocation = new OnmsGeolocation();
+            this.setGeolocation(toGeolocation);
+        }
+        final OnmsGeolocation fromGeolocation = newRecord.getGeolocation();
+
         //this works because all asset properties are strings
         //if the model dependencies ever change to not include spring, this will break
         final BeanWrapper currentBean = PropertyAccessorFactory.forBeanPropertyAccess(this);
@@ -1931,5 +1938,8 @@ public class OnmsAssetRecord implements Serializable {
                 currentBean.setPropertyValue(propertyName, newBean.getPropertyValue(propertyName));
             }
         }
+
+        toGeolocation.mergeGeolocation(fromGeolocation);
+        setGeolocation(toGeolocation);
     }
 }

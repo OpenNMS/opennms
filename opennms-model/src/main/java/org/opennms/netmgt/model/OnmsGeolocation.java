@@ -1,16 +1,17 @@
 package org.opennms.netmgt.model;
 
+import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.PropertyAccessorFactory;
+
 @Embeddable
 public class OnmsGeolocation implements Serializable {
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -3859935145186027524L;
+    private static final long serialVersionUID = -3346555393433178515L;
 
     public OnmsGeolocation() {}
 
@@ -208,5 +209,28 @@ public class OnmsGeolocation implements Serializable {
 
     private boolean hasText(final String string) {
         return !(string == null || string.isEmpty() || string.trim().isEmpty());
+    }
+
+    public void mergeGeolocation(final OnmsGeolocation from) {
+        if (from == null) {
+            return;
+        }
+
+        final BeanWrapper toBean = PropertyAccessorFactory.forBeanPropertyAccess(this);
+        final BeanWrapper fromBean = PropertyAccessorFactory.forBeanPropertyAccess(from);
+        final PropertyDescriptor[] pds = fromBean.getPropertyDescriptors();
+
+        for (final PropertyDescriptor pd : pds) {
+            final String propertyName = pd.getName();
+
+            if (propertyName.equals("class")) {
+                continue;
+            }
+
+            final Object propertyValue = fromBean.getPropertyValue(propertyName);
+            if (propertyValue != null) {
+                toBean.setPropertyValue(propertyName, propertyValue);
+            }
+        }
     }
 }
