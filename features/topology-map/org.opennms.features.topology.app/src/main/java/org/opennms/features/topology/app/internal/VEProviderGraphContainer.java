@@ -631,7 +631,8 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
         m_autoRefreshSupport = autoRefreshSupport;
     }
 
-    private void setDirty(boolean isDirty) {
+    @Override
+    public void setDirty(boolean isDirty) {
         m_containerDirty.set(isDirty);
     }
 

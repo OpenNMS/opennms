@@ -39,7 +39,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import org.opennms.features.topology.api.topo.Criteria.ElementType;
 import org.slf4j.LoggerFactory;
 
 public class SimpleEdgeProvider implements EdgeProvider {

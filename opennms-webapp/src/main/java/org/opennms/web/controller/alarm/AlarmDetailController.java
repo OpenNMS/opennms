@@ -28,6 +28,7 @@
 
 package org.opennms.web.controller.alarm;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -37,6 +38,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.opennms.netmgt.dao.api.AlarmRepository;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.web.alarm.AlarmIdNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -95,29 +97,37 @@ public class AlarmDetailController extends MultiActionController {
      * Display alarm detail page
      */
     public ModelAndView detail(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {
-        String alarmIdString = httpServletRequest.getParameter("id");
+
+        OnmsAlarm m_alarm = null;
+        String alarmIdString = "";
+        List<OnmsAcknowledgment> acknowledgments = Collections.emptyList();
+
+        // Try to parse alarm ID as string to integer
         try {
+            alarmIdString = httpServletRequest.getParameter("id");
             // Try to parse alarm ID as string to integer
             int alarmId = Integer.parseInt(alarmIdString);
-            List<OnmsAcknowledgment> acknowledgments = m_webAlarmRepository.getAcknowledgments(alarmId);
+            acknowledgments = m_webAlarmRepository.getAcknowledgments(alarmId);
 
             // Get alarm by ID
-            OnmsAlarm alarm = m_webAlarmRepository.getAlarm(alarmId);
-            logger.debug("Alarm retrieved: '{}'", alarm.toString());
-
-            // return to view WEB-INF/jsp/alarm/detail.jsp
-            ModelAndView mv = new ModelAndView("alarm/detail");
-            mv.addObject("alarm", alarm);
-            mv.addObject("alarmId", alarmIdString);
-            mv.addObject("acknowledgments", acknowledgments);
-            return mv;
+            m_alarm = m_webAlarmRepository.getAlarm(alarmId);
+            logger.debug("Alarm retrieved: '{}'", m_alarm.toString());
         } catch (NumberFormatException e) {
-            logger.error("Could not parse alarm ID '{}' to integer.", alarmIdString);
-            throw new ServletException("Could not parse alarm ID " + alarmIdString + " to integer.");
+            logger.error("Could not parse alarm ID '{}' to integer.", httpServletRequest.getParameter("id"));
         } catch (Throwable e) {
             logger.error("Could not retrieve alarm from webAlarmRepository for ID='{}'", alarmIdString);
-            throw new ServletException("Could not retrieve alarm from webAlarmRepository for ID=" + alarmIdString);
         }
+
+        if (m_alarm == null) {
+            throw new AlarmIdNotFoundException("Could not find alarm with ID: " + alarmIdString, alarmIdString);
+        }
+
+        // return to view WEB-INF/jsp/alarm/detail.jsp
+        ModelAndView mv = new ModelAndView("alarm/detail");
+        mv.addObject("alarm", m_alarm);
+        mv.addObject("alarmId", alarmIdString);
+        mv.addObject("acknowledgments", acknowledgments);
+        return mv;
     }
 
     public ModelAndView removeStickyMemo(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {

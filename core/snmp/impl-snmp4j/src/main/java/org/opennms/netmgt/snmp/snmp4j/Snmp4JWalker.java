@@ -226,8 +226,8 @@ public class Snmp4JWalker extends SnmpWalker {
         return m_tgt.getVersion();
     }
 
-        @Override
-    protected void close() throws IOException {
+    @Override
+    public void close() throws IOException {
         if (m_session != null) {
             m_session.close();
             m_session = null;

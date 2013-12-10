@@ -50,7 +50,6 @@
     <dependency>
       <groupId>org.opennms.features.sms-reflector</groupId>
       <artifactId>sms-ping</artifactId>
-      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -62,7 +61,6 @@
     <dependency>
       <groupId>org.opennms.features.sms-reflector</groupId>
       <artifactId>sms-service</artifactId>
-      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -84,13 +82,11 @@
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.tasks</artifactId>
-      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.lib</artifactId>
-      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

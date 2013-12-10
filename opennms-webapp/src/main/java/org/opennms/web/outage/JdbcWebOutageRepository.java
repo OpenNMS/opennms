@@ -38,20 +38,19 @@ import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.model.outage.OutageSummary;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.outage.filter.OutageCriteria;
-import org.opennms.web.outage.filter.OutageIdFilter;
 import org.opennms.web.outage.filter.OutageCriteria.BaseOutageCriteriaVisitor;
 import org.opennms.web.outage.filter.OutageCriteria.OutageCriteriaVisitor;
+import org.opennms.web.outage.filter.OutageIdFilter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.support.DataAccessUtils;
-import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.RowMapperResultSetExtractor;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 /**
  * <p>JdbcWebOutageRepository class.</p>
@@ -63,7 +62,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 public class JdbcWebOutageRepository implements WebOutageRepository, InitializingBean {
 
     @Autowired
-    SimpleJdbcTemplate m_simpleJdbcTemplate;
+    JdbcTemplate m_jdbcTemplate;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -228,16 +227,12 @@ public class JdbcWebOutageRepository implements WebOutageRepository, Initializin
     }
     
     private <T> T queryForObject(String sql, PreparedStatementSetter setter, RowMapper<T> rowMapper) throws DataAccessException {
-        return DataAccessUtils.requiredSingleResult(jdbc().query(sql, setter, new RowMapperResultSetExtractor<T>(rowMapper, 1)));
+        return DataAccessUtils.requiredSingleResult(m_jdbcTemplate.query(sql, setter, new RowMapperResultSetExtractor<T>(rowMapper, 1)));
     }
 
 
     private <T> List<T> queryForList(String sql, PreparedStatementSetter setter, ParameterizedRowMapper<T> rm) {
-        return jdbc().query(sql, setter, new RowMapperResultSetExtractor<T>(rm));
-    }
-    
-    private JdbcOperations jdbc() {
-        return m_simpleJdbcTemplate.getJdbcOperations();
+        return m_jdbcTemplate.query(sql, setter, new RowMapperResultSetExtractor<T>(rm));
     }
 
     private PreparedStatementSetter paramSetter(final OutageCriteria criteria, final Object... args) {

@@ -250,7 +250,7 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
         String localFailureMessage = "time for eventId " + eventId + " does not match between old and new (in local time zone): " + eventTime + " (" + new Date(eventTime.getTime()) + ") -> " + newEventTime + " (" + new Date(newEventTime.getTime())+ ")";
         assertEquals(localFailureMessage, eventTime, newEventTime);
 
-        jdbcTemplate.getJdbcOperations().execute("SET TIME ZONE 'UTC'");
+        jdbcTemplate.execute("SET TIME ZONE 'UTC'");
         
         Date utcEventTime = jdbcTemplate.queryForObject("select eventTime from events where eventId = ?", Date.class, eventId);
         String utcFailureMessage = "time for eventId " + eventId + " does not match between old and new (in UTC): " + eventTime + " (" + new Date(eventTime.getTime()) + ") -> " + utcEventTime + " (" + new Date(utcEventTime.getTime())+ ")";

@@ -28,20 +28,22 @@
 
 package org.opennms.features.topology.app.internal.gwt.client;
 
-import com.vaadin.shared.AbstractComponentState;
-
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+
+import com.vaadin.shared.AbstractComponentState;
 
 public class SearchBoxState extends AbstractComponentState {
 
     List<SearchSuggestion> m_suggestions = new ArrayList<SearchSuggestion>();
     List<SearchSuggestion> m_selected = new ArrayList<SearchSuggestion>();
     List<SearchSuggestion> m_focused = new ArrayList<SearchSuggestion>();
+    int m_triggerCount = 0;
 
     public void setSuggestions(List<SearchSuggestion> suggestions){
         m_suggestions = suggestions;
+        //This is a stupid hack to get VAADIN state to push all changes all the time
+        m_triggerCount += 1;
     }
 
     public List<SearchSuggestion> getSuggestions(){
@@ -51,6 +53,15 @@ public class SearchBoxState extends AbstractComponentState {
     public void setSelected(List<SearchSuggestion> selected){
         m_selected = selected;
     }
+
+    //Needed to have this method so that triggerCount would trigger a push to client
+    public void setTriggerCount(int count){
+        m_triggerCount = count;
+    }
+    public int getTriggerCount(){
+        return m_triggerCount;
+    }
+
 
     public List<SearchSuggestion> getSelected(){
         return m_selected;

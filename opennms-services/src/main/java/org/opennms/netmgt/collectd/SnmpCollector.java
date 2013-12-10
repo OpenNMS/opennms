@@ -212,12 +212,6 @@ public class SnmpCollector implements ServiceCollector {
     @Override
     public void initialize(Map<String, String> parameters) {
     	initSnmpPeerFactory();
-        //initDataCollectionConfig();
-        initDatabaseConnectionFactory();
-        
-        // Get path to RRD repository
-        //initializeRrdRepository();
-
     }
 
     /*private void initializeRrdRepository() {
@@ -245,30 +239,6 @@ public class SnmpCollector implements ServiceCollector {
             throw new CollectionInitializationException("Unable to initialize RrdUtils", e);
         }
     }*/
-
-    private void initDatabaseConnectionFactory() {
-        try {
-            DataSourceFactory.init();
-        } catch (IOException e) {
-            LOG.error("initDatabaseConnectionFactory: IOException getting database connection", e);
-            throw new UndeclaredThrowableException(e);
-        } catch (MarshalException e) {
-            LOG.error("initDatabaseConnectionFactory: Marshall Exception getting database connection", e);
-            throw new UndeclaredThrowableException(e);
-        } catch (ValidationException e) {
-            LOG.error("initDatabaseConnectionFactory: Validation Exception getting database connection", e);
-            throw new UndeclaredThrowableException(e);
-        } catch (SQLException e) {
-            LOG.error("initDatabaseConnectionFactory: Failed getting connection to the database", e);
-            throw new UndeclaredThrowableException(e);
-        } catch (PropertyVetoException e) {
-            LOG.error("initDatabaseConnectionFactory: Failed getting connection to the database", e);
-            throw new UndeclaredThrowableException(e);
-        } catch (ClassNotFoundException e) {
-            LOG.error("initDatabaseConnectionFactory: Failed loading database driver", e);
-            throw new UndeclaredThrowableException(e);
-        }
-    }
 
     /*
     private void initDataCollectionConfig() {

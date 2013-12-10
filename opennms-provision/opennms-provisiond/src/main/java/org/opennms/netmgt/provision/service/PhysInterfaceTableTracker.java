@@ -154,10 +154,10 @@ public class PhysInterfaceTableTracker extends TableTracker {
             }
             if (ifSpeed == null) {
                 if (highSpeed != null && highSpeed > 0) {
-                    LOG.warn("the ifSpeed for ifIndex {} is null but the ifHighSpeed is {}, using ifHighSpeed instead", getIfIndex(), highSpeed);
+                    LOG.warn("the ifSpeed for ifIndex {} is null, which is a violation of the standard (this seems to be related to a broken SNMP agent). But, the ifHighSpeed is {}, so that value will be used instead.", getIfIndex(), highSpeed);
                     return highSpeed * 1000000L;
                 } else {
-                    LOG.warn("the ifSpeed for ifIndex {} is null, returning 0 instead", getIfIndex());
+                    LOG.warn("the ifSpeed for ifIndex {} is null, which is a violation of the standard (this seems to be related to a broken SNMP agent). Returning 0 instead", getIfIndex());
                     return 0L;
                 }
             }

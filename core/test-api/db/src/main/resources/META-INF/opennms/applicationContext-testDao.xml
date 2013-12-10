@@ -12,23 +12,28 @@
 
   <context:annotation-config />
 
-<!-- 
+  <!--
   <onmsgi:reference id="dataSource" interface="javax.sql.DataSource"/>
- 
   <onmsgi:reference id="jdbcTemplate" interface="org.springframework.jdbc.core.JdbcOperations" />
   <onmsgi:reference id="simpleJdbcTemplate" interface="org.springframework.jdbc.core.simple.SimpleJdbcOperations" />
- -->  
+  -->
 
   <bean id="temporaryDatabase" class="org.opennms.core.test.db.TemporaryDatabaseHsqldb">
     <property name="dataSource" ref="dataSource" />
     <property name="jdbcTemplate" ref="simpleJdbcTemplate" />
   </bean>
 
+  <!-- Set the HSQLDB datasource as the XADataSource -->
+  <bean id="init-xaDataSourceFactory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="temporaryDatabase">
+    <property name="staticMethod"><value>org.opennms.core.db.XADataSourceFactory.init</value></property>
+    <property name="arguments"><list><ref bean="temporaryDatabase"/></list></property>
+  </bean>
+
   <!--
     XADataSource that is wrapped with an AtomikosDataSourceBean which provides
     pooling and JTA compatibility.
   -->
-  <bean id="dataSource" class="com.atomikos.jdbc.AtomikosDataSourceBean" destroy-method="close">
+  <bean id="dataSource" class="com.atomikos.jdbc.AtomikosDataSourceBean" destroy-method="close" depends-on="init-xaDataSourceFactory">
     <property name="uniqueResourceName" value="opennms"/>
     <property name="xaDataSource">
       <bean class="org.opennms.core.db.XADataSourceFactoryBean" />
@@ -76,6 +81,11 @@
   </bean>
 
   <bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
+    <property name="transactionManager" ref="transactionManager" />
+  </bean>
+  
+  <!-- A TransactionTemplate that sets the propogation to "requires new" to always create new transactions -->
+  <bean id="newTransactionTemplate" class="org.springframework.transaction.support.NewTransactionTemplate">
     <property name="transactionManager" ref="transactionManager" />
   </bean>
   

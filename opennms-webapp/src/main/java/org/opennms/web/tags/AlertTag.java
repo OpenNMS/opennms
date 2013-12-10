@@ -28,20 +28,17 @@
 
 package org.opennms.web.tags;
 
-import org.opennms.web.alert.Alert;
-import org.opennms.web.alert.AlertType;
-import org.springframework.web.servlet.ModelAndView;
-
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.JspTagException;
-import javax.servlet.jsp.tagext.SimpleTagSupport;
-import javax.servlet.jsp.tagext.TagSupport;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.SimpleTagSupport;
+
+import org.opennms.web.alert.Alert;
+import org.opennms.web.alert.AlertType;
+import org.springframework.web.servlet.ModelAndView;
 
 /**
  * Is used to render messages from any controller in the ui.

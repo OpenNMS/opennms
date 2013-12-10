@@ -106,7 +106,6 @@ public class VmwareCollector implements ServiceCollector {
             logger.error("vmwareDatacollectionConfigDao should be a non-null value.");
         }
 
-        initDatabaseConnectionFactory();
         initializeRrdRepository();
     }
 
@@ -125,18 +124,6 @@ public class VmwareCollector implements ServiceCollector {
         final File f = new File(m_vmwareDatacollectionConfigDao.getRrdPath());
         if (!f.isDirectory() && !f.mkdirs()) {
             throw new RuntimeException("Unable to create RRD file repository.  Path doesn't already exist and could not make directory: " + m_vmwareDatacollectionConfigDao.getRrdPath());
-        }
-    }
-
-    /**
-     * Initializes the database connection factory.
-     */
-    private void initDatabaseConnectionFactory() {
-        try {
-            DataSourceFactory.init();
-        } catch (final Exception e) {
-            logger.error("initDatabaseConnectionFactory: Error initializing DataSourceFactory. Error message: '{}'", e.getMessage());
-            throw new UndeclaredThrowableException(e);
         }
     }
 

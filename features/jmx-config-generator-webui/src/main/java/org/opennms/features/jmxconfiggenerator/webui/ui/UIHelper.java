@@ -43,15 +43,14 @@ import org.slf4j.LoggerFactory;
 
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Notification.Type;
 
 /**
  * This class provides several helper methods for ui stuff, e.g. creating a

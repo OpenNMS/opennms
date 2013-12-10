@@ -49,7 +49,6 @@
         <dependency>
             <groupId>org.opennms.osgi.features.topology</groupId>
             <artifactId>vaadin</artifactId>
-            <version>${project.version}</version>
             <type>pom</type>
         </dependency>
         <dependency> <!-- Required by pax/vaadin -->

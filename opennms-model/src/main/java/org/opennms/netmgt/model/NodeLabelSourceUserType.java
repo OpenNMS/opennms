@@ -33,9 +33,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
 
-import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
+import org.hibernate.type.CharacterType;
 import org.hibernate.type.EnumType;
+import org.hibernate.type.StringType;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 
 public class NodeLabelSourceUserType extends EnumType {
@@ -56,7 +57,7 @@ public class NodeLabelSourceUserType extends EnumType {
 
     @Override
     public Object nullSafeGet(final ResultSet rs, final String[] names, final Object owner) throws HibernateException, SQLException {
-        Character c = Hibernate.CHARACTER.nullSafeGet(rs, names[0]);
+        Character c = CharacterType.INSTANCE.nullSafeGet(rs, names[0]);
         if (c == null) {
             return null;
         }
@@ -71,13 +72,13 @@ public class NodeLabelSourceUserType extends EnumType {
     @Override
     public void nullSafeSet(final PreparedStatement st, final Object value, final int index) throws HibernateException, SQLException {
         if (value == null) {
-            Hibernate.STRING.nullSafeSet(st, null, index);
+            StringType.INSTANCE.nullSafeSet(st, null, index);
         } else if (value instanceof NodeLabelSource){
-            Hibernate.CHARACTER.nullSafeSet(st, ((NodeLabelSource)value).toString().charAt(0), index);
+            CharacterType.INSTANCE.nullSafeSet(st, ((NodeLabelSource)value).toString().charAt(0), index);
         } else if (value instanceof String){
             for (NodeLabelSource type : NodeLabelSource.values()) {
                 if (type.toString().equals(value)) {
-                    Hibernate.CHARACTER.nullSafeSet(st, type.toString().charAt(0), index);
+                    CharacterType.INSTANCE.nullSafeSet(st, type.toString().charAt(0), index);
                 }
             }
         }

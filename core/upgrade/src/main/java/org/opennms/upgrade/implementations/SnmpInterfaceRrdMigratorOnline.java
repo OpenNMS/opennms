@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,8 +38,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
+import org.opennms.netmgt.config.DefaultDataCollectionConfigDao;
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
@@ -48,6 +50,7 @@ import org.opennms.netmgt.rrd.model.v1.RRDv1;
 import org.opennms.netmgt.rrd.model.v3.RRDv3;
 import org.opennms.upgrade.api.AbstractOnmsUpgrade;
 import org.opennms.upgrade.api.OnmsUpgradeException;
+import org.springframework.core.io.FileSystemResource;
 
 /**
  * The Class RRD/JRB Migrator for SNMP Interfaces Data (Online Version)
@@ -110,7 +113,13 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
             throw new OnmsUpgradeException("Can't find the configured extension for JRB/RRD.");
         }
         try {
-            DataCollectionConfigFactory.init();
+            // Manually initialization of the DataCollectionConfigDao to avoid bootstrap Spring Framework and create a new connection pool.
+            File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.DATA_COLLECTION_CONF_FILE_NAME);
+            DefaultDataCollectionConfigDao config = new DefaultDataCollectionConfigDao();
+            config.setConfigResource(new FileSystemResource(cfgFile));
+            config.afterPropertiesSet();
+            config.getConfiguredResourceTypes();
+            DataCollectionConfigFactory.setInstance(config);
         } catch (Exception e) {
             throw new OnmsUpgradeException("Can't initialize datacollection-config.xml because " + e.getMessage());
         }
@@ -187,6 +196,8 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
 
     /**
      * Fix KSC reports.
+     *
+     * @throws OnmsUpgradeException the onms upgrade exception
      */
     protected void fixKscReports()  throws OnmsUpgradeException {
         log("Fixing KSC Reports.\n");
@@ -316,6 +327,7 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
      *
      * @param source the source JRB
      * @param dest the destination JRB
+     * @throws Exception the exception
      */
     protected void mergeJrb(File source, File dest) throws Exception {
         log("  merging JRB %s into %s\n", source, dest);

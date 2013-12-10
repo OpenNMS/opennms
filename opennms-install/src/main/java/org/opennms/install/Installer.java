@@ -67,7 +67,6 @@ import org.opennms.core.utils.ProcessExec;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.icmp.PingerFactory;
-import org.opennms.upgrade.support.Upgrade;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
@@ -293,7 +292,8 @@ public class Installer {
         System.out.println("Installer completed successfully!");
 
         if (!m_skip_upgrade_tools) {
-            new Upgrade().execute();
+            System.setProperty("opennms.manager.class", "org.opennms.upgrade.support.Upgrade");
+            Bootstrap.main(new String[] {});
         }
     }
 

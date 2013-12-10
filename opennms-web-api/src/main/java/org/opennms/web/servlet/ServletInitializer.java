@@ -138,24 +138,14 @@ public class ServletInitializer extends Object {
         Vault.setProperties(properties);
         Vault.setHomeDir(homeDir);
 
-        try {
-        	DataSourceFactory.init();
-        } catch (Throwable e) {
-        	throw new ServletException("Could not initialize data source factory: " + e, e);
-        }
-
         // This is done inside "Vault.getDataSource" to ensure that "Vault" could be used by "IfLabel" - See Bug 4117
         // Vault.setDataSource(DataSourceFactory.getInstance());
     }
 
     private static void loadPropertiesFromFile(Properties opennmsProperties, String propertiesFile) throws FileNotFoundException, ServletException, IOException {
         InputStream configurationStream = new FileInputStream(propertiesFile);
-        if (configurationStream == null) {
-            throw new ServletException("Could not load properties from file '" + propertiesFile + "'");
-        } else {
-            opennmsProperties.load(configurationStream);
-            configurationStream.close();
-        }
+        opennmsProperties.load(configurationStream);
+        configurationStream.close();
     }
 
     private static void loadPropertiesFromContextResource(ServletContext context, Properties properties, String propertiesResource) throws ServletException, IOException {

@@ -49,6 +49,9 @@ public class CategoryHopCriteria extends VertexHopCriteria implements Collapsibl
 
 	public void setCategoryDao(CategoryDao categoryDao) {
 		this.m_categoryDao = categoryDao;
+        if(getId().endsWith("")){
+            setId(m_categoryDao.findByName(m_categoryName).getId().toString());
+        }
 	}
 
 	public NodeDao getNodeDao() {

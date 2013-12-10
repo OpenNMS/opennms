@@ -30,6 +30,7 @@ package org.opennms.netmgt.config;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 
 import junit.framework.TestCase;
 
@@ -386,4 +387,117 @@ public class WmiPeerFactoryTest extends TestCase {
         assertEquals("192.168.0.6", factory.getConfig().getDefinition(0).getRange(0).getBegin());
         assertEquals("192.168.0.100", factory.getConfig().getDefinition(0).getRange(0).getEnd());
     }
+
+    /**
+     * @throws MarshalException
+     * @throws ValidationException
+     * @throws IOException 
+     */
+    public final void testEncodedPassDefault() throws MarshalException, ValidationException, IOException {
+
+        String amiConfigXml = "<?xml version=\"1.0\"?>\n" + 
+        "<wmi-config retry=\"3\" timeout=\"800\"\n" + 
+        "   password=\"b2JzY3VyaXR5RlRXIQ===\">\n" + 
+        "   <definition>\n" + 
+        "       <specific>192.168.0.5</specific>\n" + 
+        "   </definition>\n" + 
+        "\n" + 
+        "</wmi-config>\n" + 
+        "";
+
+        WmiPeerFactory factory = new WmiPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
+
+        assertEquals(1, factory.getConfig().getDefinitionCount());
+
+        WmiPeerFactory.optimize();
+
+        assertEquals(1, factory.getConfig().getDefinitionCount());
+        
+        assertEquals("obscurityFTW!", WmiPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("1.1.1.1")).getPassword());
+    }
+
+    /**
+     * @throws MarshalException
+     * @throws ValidationException
+     * @throws IOException 
+     */
+    public final void testEncodedPassDefinition() throws MarshalException, ValidationException, IOException {
+
+        String amiConfigXml = "<?xml version=\"1.0\"?>\n" + 
+        "<wmi-config retry=\"3\" timeout=\"800\"\n" + 
+        "   password=\"b2JzY3VyaXR5RlRXIQ===\">\n" + 
+        "   <definition password=\"b2JzY3VyZSE9c2VjdXJl===\">\n" + 
+        "       <specific>192.168.0.5</specific>\n" + 
+        "   </definition>\n" + 
+        "\n" + 
+        "</wmi-config>\n" + 
+        "";
+
+        WmiPeerFactory factory = new WmiPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
+
+        assertEquals(1, factory.getConfig().getDefinitionCount());
+
+        WmiPeerFactory.optimize();
+
+        assertEquals(1, factory.getConfig().getDefinitionCount());
+        
+        assertEquals("obscure!=secure", WmiPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("192.168.0.5")).getPassword());
+    }
+    
+    /**
+     * @throws MarshalException
+     * @throws ValidationException
+     * @throws IOException 
+     */
+    public final void testUnencodedPassDefault() throws MarshalException, ValidationException, IOException {
+
+        String amiConfigXml = "<?xml version=\"1.0\"?>\n" + 
+        "<wmi-config retry=\"3\" timeout=\"800\"\n" + 
+        "   password=\"clarityFTW!\">\n" + 
+        "   <definition>\n" + 
+        "       <specific>192.168.0.5</specific>\n" + 
+        "   </definition>\n" + 
+        "\n" + 
+        "</wmi-config>\n" + 
+        "";
+
+        WmiPeerFactory factory = new WmiPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
+
+        assertEquals(1, factory.getConfig().getDefinitionCount());
+
+        WmiPeerFactory.optimize();
+
+        assertEquals(1, factory.getConfig().getDefinitionCount());
+        
+        assertEquals("clarityFTW!", WmiPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("1.1.1.1")).getPassword());
+    }
+
+    /**
+     * @throws MarshalException
+     * @throws ValidationException
+     * @throws IOException 
+     */
+    public final void testUnencodedPassDefinition() throws MarshalException, ValidationException, IOException {
+
+        String amiConfigXml = "<?xml version=\"1.0\"?>\n" + 
+        "<wmi-config retry=\"3\" timeout=\"800\"\n" + 
+        "   password=\"clarityFTW!\">\n" + 
+        "   <definition password=\"aVerySecureOne\">\n" + 
+        "       <specific>192.168.0.5</specific>\n" + 
+        "   </definition>\n" + 
+        "\n" + 
+        "</wmi-config>\n" + 
+        "";
+
+        WmiPeerFactory factory = new WmiPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
+
+        assertEquals(1, factory.getConfig().getDefinitionCount());
+
+        WmiPeerFactory.optimize();
+
+        assertEquals(1, factory.getConfig().getDefinitionCount());
+        
+        assertEquals("aVerySecureOne", WmiPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("192.168.0.5")).getPassword());
+    }
+
 }

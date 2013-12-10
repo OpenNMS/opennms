@@ -38,23 +38,22 @@ import java.util.List;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.event.filter.EventCriteria;
-import org.opennms.web.event.filter.EventIdFilter;
-import org.opennms.web.event.filter.EventIdListFilter;
 import org.opennms.web.event.filter.EventCriteria.BaseEventCriteriaVisitor;
 import org.opennms.web.event.filter.EventCriteria.EventCriteriaVisitor;
+import org.opennms.web.event.filter.EventIdFilter;
+import org.opennms.web.event.filter.EventIdListFilter;
 import org.opennms.web.filter.Filter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.support.DataAccessUtils;
-import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.RowMapperResultSetExtractor;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 /**
  * <p>JdbcWebEventRepository class.</p>
@@ -64,7 +63,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 public class JdbcWebEventRepository implements WebEventRepository, InitializingBean {
     
     @Autowired
-    SimpleJdbcTemplate m_simpleJdbcTemplate;
+    JdbcTemplate m_jdbcTemplate;
     
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -212,7 +211,7 @@ public class JdbcWebEventRepository implements WebEventRepository, InitializingB
         sql = sql + " GROUP BY EVENTSEVERITY";
         
         final int[] alarmCounts = new int[8];
-        jdbc().query(sql, paramSetter(criteria), new RowCallbackHandler(){
+        m_jdbcTemplate.query(sql, paramSetter(criteria), new RowCallbackHandler(){
 
             @Override
             public void processRow(ResultSet rs) throws SQLException {
@@ -257,14 +256,14 @@ public class JdbcWebEventRepository implements WebEventRepository, InitializingB
     /** {@inheritDoc} */
     @Override
     public void acknowledgeAll(String user, Date timestamp) {
-        m_simpleJdbcTemplate.update("UPDATE EVENTS SET EVENTACKUSER=?, EVENTACKTIME=? WHERE EVENTACKUSER IS NULL ", user, new Timestamp(timestamp.getTime()));
+        m_jdbcTemplate.update("UPDATE EVENTS SET EVENTACKUSER=?, EVENTACKTIME=? WHERE EVENTACKUSER IS NULL ", user, new Timestamp(timestamp.getTime()));
     }
 
     /** {@inheritDoc} */
     @Override
     public void acknowledgeMatchingEvents(String user, Date timestamp, EventCriteria criteria) {
         String sql = getSql("UPDATE EVENTS SET EVENTACKUSER=?, EVENTACKTIME=? ", criteria);
-        jdbc().update(sql, paramSetter(criteria, user, new Timestamp(timestamp.getTime())));
+        m_jdbcTemplate.update(sql, paramSetter(criteria, user, new Timestamp(timestamp.getTime())));
     }
     
     /**
@@ -272,14 +271,14 @@ public class JdbcWebEventRepository implements WebEventRepository, InitializingB
      */
     @Override
     public void unacknowledgeAll() {
-        m_simpleJdbcTemplate.update("UPDATE EVENTS SET EVENTACKUSER=NULL, EVENTACKTIME=NULL WHERE EVENTACKUSER IS NOT NULL ");
+        m_jdbcTemplate.update("UPDATE EVENTS SET EVENTACKUSER=NULL, EVENTACKTIME=NULL WHERE EVENTACKUSER IS NOT NULL ");
     }
 
     /** {@inheritDoc} */
     @Override
     public void unacknowledgeMatchingEvents(EventCriteria criteria) {
         String sql = getSql("UPDATE EVENTS SET EVENTACKUSER=NULL, EVENTACKTIME=null ", criteria);
-        jdbc().update(sql, paramSetter(criteria));
+        m_jdbcTemplate.update(sql, paramSetter(criteria));
     }
     
     private int queryForInt(String sql, PreparedStatementSetter setter) throws DataAccessException {
@@ -288,16 +287,11 @@ public class JdbcWebEventRepository implements WebEventRepository, InitializingB
     }
     
     private <T> T queryForObject(String sql, PreparedStatementSetter setter, RowMapper<T> rowMapper) throws DataAccessException {
-        return DataAccessUtils.requiredSingleResult(jdbc().query(sql, setter, new RowMapperResultSetExtractor<T>(rowMapper, 1)));
+        return DataAccessUtils.requiredSingleResult(m_jdbcTemplate.query(sql, setter, new RowMapperResultSetExtractor<T>(rowMapper, 1)));
     }
 
 
     private <T> List<T> queryForList(String sql, PreparedStatementSetter setter, ParameterizedRowMapper<T> rm) {
-        return jdbc().query(sql, setter, new RowMapperResultSetExtractor<T>(rm));
+        return m_jdbcTemplate.query(sql, setter, new RowMapperResultSetExtractor<T>(rm));
     }
-    
-    private JdbcOperations jdbc() {
-        return m_simpleJdbcTemplate.getJdbcOperations();
-    }
-
 }

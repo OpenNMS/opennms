@@ -81,7 +81,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
     private String m_hostname = null;
     private String m_username = null;
     private String m_password = null;
-    private String m_foreignSource = null;
+    protected String m_foreignSource = null;
 
     private boolean m_importVMPoweredOn = true;
     private boolean m_importVMPoweredOff = false;

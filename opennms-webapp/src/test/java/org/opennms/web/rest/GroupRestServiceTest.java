@@ -43,6 +43,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsCategoryCollection;

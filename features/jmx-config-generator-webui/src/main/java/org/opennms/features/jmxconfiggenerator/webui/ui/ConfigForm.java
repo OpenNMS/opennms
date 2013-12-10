@@ -36,7 +36,6 @@ import org.opennms.features.jmxconfiggenerator.webui.data.ModelChangeListener;
 import org.opennms.features.jmxconfiggenerator.webui.data.ServiceConfig;
 import org.opennms.features.jmxconfiggenerator.webui.data.UiModel;
 
-import com.google.common.base.CaseFormat;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItem;

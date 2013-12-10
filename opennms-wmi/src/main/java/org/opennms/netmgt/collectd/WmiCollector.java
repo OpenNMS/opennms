@@ -199,7 +199,7 @@ public class WmiCollector implements ServiceCollector {
     }
 
     private boolean isGroupAvailable(final WmiAgentState agentState, final Wpm wpm) {
-        LOG.debug("Checking availability of group {}", wpm.getName());
+        LOG.debug("Checking availability of group {} via object {} of class {} in namespace {}", wpm.getName(), wpm.getKeyvalue(), wpm.getWmiClass(), wpm.getWmiNamespace());
         WmiManager manager = null;
 
         /*
@@ -211,6 +211,7 @@ public class WmiCollector implements ServiceCollector {
         try {
             // Get and initialize the WmiManager
             manager = agentState.getManager();
+            manager.setNamespace(wpm.getWmiNamespace());
             manager.init();
 
             final WmiParams params = new WmiParams(WmiParams.WMI_OPERATION_INSTANCEOF, "not-applicable", "NOOP", wpm.getWmiClass(), wpm.getKeyvalue());
@@ -247,7 +248,6 @@ public class WmiCollector implements ServiceCollector {
         m_scheduledNodes.clear();
         initWMIPeerFactory();
         initWMICollectionConfig();
-        initDatabaseConnectionFactory();
         initializeRrdRepository();
     }
 
@@ -301,15 +301,6 @@ public class WmiCollector implements ServiceCollector {
             if (!f.mkdirs()) {
                 throw new RuntimeException("Unable to create RRD file repository.  Path doesn't already exist and could not make directory: " + DataCollectionConfigFactory.getInstance().getRrdPath());
             }
-        }
-    }
-
-    private void initDatabaseConnectionFactory() {
-        try {
-            DataSourceFactory.init();
-        } catch (final Exception e) {
-            LOG.error("initDatabaseConnectionFactory: Error initializing DataSourceFactory.", e);
-            throw new UndeclaredThrowableException(e);
         }
     }
 

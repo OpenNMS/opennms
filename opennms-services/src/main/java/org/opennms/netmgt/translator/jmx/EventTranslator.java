@@ -71,7 +71,6 @@ public class EventTranslator extends AbstractServiceDaemon implements EventTrans
     protected void onInit() {
 
         try {
-            DataSourceFactory.init();
             EventTranslatorConfigFactory.init();
         } catch (MarshalException e) {
             LOG.error("Could not unmarshall configuration", e);

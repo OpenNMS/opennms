@@ -55,6 +55,7 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.gwt.client.SearchBoxServerRpc;
 import org.opennms.features.topology.app.internal.gwt.client.SearchBoxState;
 import org.opennms.features.topology.app.internal.gwt.client.SearchSuggestion;
+import org.opennms.features.topology.app.internal.support.CategoryHopCriteria;
 import org.opennms.osgi.OnmsServiceManager;
 
 import com.google.common.base.Function;
@@ -142,6 +143,10 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
                 }
             }
 
+            if(m_suggestionMap.size() == 0){
+                removeIfSuggMapEmpty(searchResult, m_operationContext.getGraphContainer());
+            }
+
             removeIfSpecialURLCase(searchResult);
             m_operationContext.getGraphContainer().redoLayout();
         }
@@ -165,9 +170,6 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
             FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(m_operationContext.getGraphContainer());
             AbstractVertexRef vertexRef = new AbstractVertexRef(searchResult.getNamespace(), searchResult.getId(), searchResult.getLabel());
             if(criteria.getVertices().contains(vertexRef)){
-                if(vRefs == null){
-                    vRefs = new TreeSet<VertexRef>();
-                }
                 vRefs.add(vertexRef);
             }
 
@@ -187,13 +189,50 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
                     break;
                 }
             }
+
+            if(m_suggestionMap.size() == 0){
+                collapseIfSuggMapEmpty(searchResult, m_operationContext.getGraphContainer());
+            }
         }
     };
 
     public SearchBox(OnmsServiceManager serviceManager, OperationContext operationContext) {
         m_serviceManager = serviceManager;
         m_operationContext = operationContext;
+        setImmediate(true);
         init();
+    }
+
+    public void removeIfSuggMapEmpty(SearchResult searchResult, GraphContainer graphContainer){
+        Criteria[] criterias = graphContainer.getCriteria();
+        for(Criteria criteria : criterias){
+            try{
+                CategoryHopCriteria crit = (CategoryHopCriteria) criteria;
+                if(crit.getCategoryName().equals(searchResult.getLabel())) graphContainer.removeCriteria(crit);
+            } catch (ClassCastException e){}
+
+        }
+    }
+
+    public void collapseIfSuggMapEmpty(SearchResult searchResult, GraphContainer graphContainer){
+        //A special check for categories that were added then after re-login can't collapse
+        boolean isDirty = false;
+        Criteria[] criterias = graphContainer.getCriteria();
+        for(Criteria criteria : criterias){
+            try{
+                CategoryHopCriteria crit = (CategoryHopCriteria) criteria;
+                if(crit.getCategoryName().equals(searchResult.getLabel())){
+                    crit.setCollapsed(!crit.isCollapsed());
+                    isDirty = true;
+                }
+
+            } catch (ClassCastException e){}
+
+        }
+
+        if (isDirty) {
+            graphContainer.redoLayout();
+        }
     }
 
     public void removeIfSpecialURLCase(SearchResult searchResult) {

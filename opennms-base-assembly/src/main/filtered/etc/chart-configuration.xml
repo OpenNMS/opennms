@@ -8,7 +8,7 @@
   	plot-orientation="vertical" 
   	draw-bar-outline="true" 
   	range-axis-label="Count"
-  	sub-label-class="org.opennms.netmgt.charts.SeveritySubLabels" 
+  	sub-label-class="org.opennms.web.charts.SeveritySubLabels" 
   	show-urls="false"
     show-tool-tips="false">
       

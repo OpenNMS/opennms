@@ -48,7 +48,7 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -79,7 +79,7 @@ public class NetworkElementFactoryTest implements InitializingBean {
     DataSource m_dataSource;
 
     @Autowired
-    SimpleJdbcTemplate m_jdbcTemplate;
+    JdbcTemplate m_jdbcTemplate;
 
     @Autowired
     NodeDao m_nodeDao;

@@ -37,7 +37,7 @@ public abstract class AbstractLogger
     }
 
     @Override
-    @SuppressWarnings("unchecked") // Due to the OSGi API
+    @SuppressWarnings("rawtypes") // Due to the OSGi API
     public final void log(ServiceReference ref, int level, String message)
     {
         log(ref, level, message, null);

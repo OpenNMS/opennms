@@ -201,7 +201,6 @@ public abstract class JMXCollector implements ServiceCollector {
         // Make sure we can connect to the database
         java.sql.Connection ctest = null;
         try {
-            DataSourceFactory.init();
             ctest = DataSourceFactory.getInstance().getConnection();
         } catch (final Exception e) {
             LOG.error("initialize: failed to get a database connection", e);

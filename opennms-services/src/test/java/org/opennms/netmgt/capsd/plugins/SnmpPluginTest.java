@@ -28,23 +28,50 @@
 
 package org.opennms.netmgt.capsd.plugins;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestSuite;
-
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.test.snmp.SnmpTestSuiteUtils;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpStrategy;
+import org.opennms.netmgt.snmp.joesnmp.JoeSnmpStrategy;
+import org.opennms.netmgt.snmp.mock.MockSnmpStrategy;
+import org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy;
 import org.springframework.core.io.ByteArrayResource;
 
+@RunWith(Parameterized.class)
 public class SnmpPluginTest extends OpenNMSTestCase {
+	private static final String STRATEGY_CLASS_PROPERTY_NAME = "org.opennms.snmp.strategyClass";
+
+	public SnmpPluginTest(Class<? extends SnmpStrategy> strategyClass) {
+		System.setProperty(STRATEGY_CLASS_PROPERTY_NAME, strategyClass.getName());
+	}
+
+	@Parameters
+	public static Collection<Object[]> params() {
+		Object[][] retval = new Object[][] {
+			{ JoeSnmpStrategy.class },
+			{ Snmp4JStrategy.class },
+			{ MockSnmpStrategy.class }
+		};
+		return Arrays.asList(retval);
+	}
 
     /*
      * FIXME: Assertions are not checked
@@ -56,16 +83,13 @@ public class SnmpPluginTest extends OpenNMSTestCase {
     private boolean m_runAssertions = false;
     
     private SnmpPlugin m_plugin = null;
-    
-    public static TestSuite suite() {
-        return SnmpTestSuiteUtils.createSnmpStrategyTestSuite(SnmpPluginTest.class);
-    }
 
     /**
      * Required method for TestCase
      */
+    @Before
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         assertNotNull("The org.opennms.snmp.strategyClass must be set to run this test", System.getProperty("org.opennms.snmp.strategyClass"));
         super.setUp();
         if (m_plugin == null) {
@@ -75,18 +99,11 @@ public class SnmpPluginTest extends OpenNMSTestCase {
     }
 
     /**
-     * Required method for TestCase
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-            
-    /**
      * This test works against a live v1/2c compatible agent until
      * the MockAgent code is completed.
      * @throws UnknownHostException 
      */
+    @Test
     public void testIsForcedV1ProtocolSupported() throws UnknownHostException {
         InetAddress address = myLocalHost();
         Map<String, Object> map = new HashMap<String, Object>();
@@ -102,6 +119,7 @@ public class SnmpPluginTest extends OpenNMSTestCase {
      * the MockAgent code is completed.
      * @throws UnknownHostException 
      */
+    @Test
     public void testIsExpectedValue() throws UnknownHostException {
         InetAddress address = myLocalHost();
         Map<String, Object> map = new HashMap<String, Object>();
@@ -115,12 +133,14 @@ public class SnmpPluginTest extends OpenNMSTestCase {
     /*
      * Class under test for boolean isProtocolSupported(InetAddress)
      */
+    @Test
     public final void testIsProtocolSupportedInetAddress() throws UnknownHostException {
         if (m_runAssertions) {
             assertTrue("protocol is not supported", m_plugin.isProtocolSupported(myLocalHost()));
         }
     }
     
+    @Test
     public final void testIsV3ProtocolSupported() throws ValidationException, IOException, IOException, MarshalException {
         setVersion(SnmpAgentConfig.VERSION3);
         ByteArrayResource rsrc = new ByteArrayResource(getSnmpConfig().getBytes());
@@ -131,6 +151,7 @@ public class SnmpPluginTest extends OpenNMSTestCase {
         }
     }
 
+    @Test
     public final void testIsV3ForcedToV1Supported() throws ValidationException, IOException, IOException, MarshalException {
         setVersion(SnmpAgentConfig.VERSION3);
         ByteArrayResource rsrc = new ByteArrayResource(getSnmpConfig().getBytes());

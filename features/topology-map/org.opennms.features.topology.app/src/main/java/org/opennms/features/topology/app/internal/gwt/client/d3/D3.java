@@ -39,8 +39,6 @@ import com.google.gwt.core.client.JsArrayNumber;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
 
-import java.util.List;
-
 public class D3 extends JavaScriptObject {
     
     protected D3() {};

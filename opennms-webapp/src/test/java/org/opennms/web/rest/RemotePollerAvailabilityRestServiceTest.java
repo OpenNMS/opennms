@@ -51,6 +51,7 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabase;
 import org.opennms.core.test.db.TemporaryDatabasePostgreSQL;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;

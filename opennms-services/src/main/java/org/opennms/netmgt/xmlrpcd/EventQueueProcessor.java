@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.xmlrpcd;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
@@ -71,7 +73,7 @@ class EventQueueProcessor implements Runnable, PausableFiber {
     /**
      * Current status of the fiber
      */
-    private int m_status;
+    private AtomicInteger m_status = new AtomicInteger(START_PENDING);
 
     /**
      * The thread that is executing the <code>run</code> method on behalf of
@@ -259,28 +261,40 @@ class EventQueueProcessor implements Runnable, PausableFiber {
         // Loop until there is a new client or we are shutdown
         while (!exitCheck) {
             // check the child thread!
-            if (m_worker.isAlive() == false && m_status != STOP_PENDING) {
-		LOG.warn("{} terminated abnormally", getName());
-                m_status = STOP_PENDING;
+            if (m_worker.isAlive() == false && m_status.get() != STOP_PENDING) {
+                LOG.warn("{} terminated abnormally", getName());
+                m_status.set(STOP_PENDING);
             }
 
-            // do normal status checks now
-            if (m_status == STOP_PENDING) {
-                exitCheck = true;
-                exitThread = true;
-                m_status = STOPPED;
-            } else if (m_status == PAUSE_PENDING) {
-                pause();
-            } else if (m_status == RESUME_PENDING) {
-                resume();
-            } else if (m_status == PAUSED) {
-                try {
-                    wait();
-                } catch (final InterruptedException e) {
-                    m_status = STOP_PENDING;
-                }
-            } else if (m_status == RUNNING) {
-                exitCheck = true;
+            switch (m_status.get()) {
+                case STOP_PENDING:
+                    exitCheck = true;
+                    exitThread = true;
+                    m_status.set(STOPPED);
+                    break;
+
+                case PAUSE_PENDING:
+                    pause();
+                    break;
+
+                case RESUME_PENDING:
+                    resume();
+                    break;
+
+                case PAUSED:
+                    try {
+                        wait();
+                    } catch (final InterruptedException e) {
+                        m_status.set(STOP_PENDING);
+                    }
+                    break;
+
+                case RUNNING:
+                    exitCheck = true;
+                    break;
+
+                default:
+                    break;
             }
 
         } // end !exit check
@@ -303,7 +317,7 @@ class EventQueueProcessor implements Runnable, PausableFiber {
             throw new IllegalStateException("The fiber is running or has already run");
         }
 
-        m_status = STARTING;
+        m_status.set(STARTING);
 
         m_worker = new Thread(this, getName());
         m_worker.start();
@@ -320,7 +334,7 @@ class EventQueueProcessor implements Runnable, PausableFiber {
             throw new IllegalStateException("The fiber is not running");
         }
 
-        m_status = PAUSED;
+        m_status.set(PAUSED);
         notifyAll();
     }
 
@@ -333,7 +347,7 @@ class EventQueueProcessor implements Runnable, PausableFiber {
             throw new IllegalStateException("The fiber is not running");
         }
 
-        m_status = RUNNING;
+        m_status.set(RUNNING);
         notifyAll();
     }
 
@@ -352,7 +366,7 @@ class EventQueueProcessor implements Runnable, PausableFiber {
             throw new IllegalStateException("The fiber has never run");
         }
 
-        m_status = STOP_PENDING;
+        m_status.set(STOP_PENDING);
         m_worker.interrupt();
         notifyAll();
     }
@@ -375,10 +389,10 @@ class EventQueueProcessor implements Runnable, PausableFiber {
     @Override
     public synchronized int getStatus() {
         if (m_worker != null && !m_worker.isAlive()) {
-            m_status = STOPPED;
+            m_status.set(STOPPED);
         }
 
-        return m_status;
+        return m_status.get();
     }
 
     /**
@@ -388,9 +402,7 @@ class EventQueueProcessor implements Runnable, PausableFiber {
      */
     @Override
     public void run() {
-        synchronized (this) {
-            m_status = RUNNING;
-        }
+        m_status.set(RUNNING);
 
         while (statusOK()) {
             Event event = null;
@@ -401,13 +413,13 @@ class EventQueueProcessor implements Runnable, PausableFiber {
 
                 event = null;
 
-                m_status = STOP_PENDING;
+                m_status.set(STOP_PENDING);
             } catch (final FifoQueueException qE) {
 		LOG.debug("Caught FIFO queue exception.", qE);
 
                 event = null;
 
-                m_status = STOP_PENDING;
+                m_status.set(STOP_PENDING);
             }
 
             if (event != null && statusOK()) {
@@ -418,7 +430,7 @@ class EventQueueProcessor implements Runnable, PausableFiber {
                 }
             }
             if (event != null && !statusOK()) {
-		LOG.error("EventQueueProcessor not OK, exiting with status: {}", m_status);
+                LOG.error("EventQueueProcessor not OK, exiting with status: {}", m_status.get());
             }
         }
     }

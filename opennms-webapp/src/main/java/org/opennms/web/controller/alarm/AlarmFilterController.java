@@ -125,7 +125,8 @@ public class AlarmFilterController extends MultiActionController implements Init
                     OnmsFilterFavorite.Page.ALARM);
             if (favorite != null) {
                 ModelAndView successView = list(request, favorite); // success
-                AlertTag.addAlertToRequest(successView, "Favorite was created successfully", AlertType.SUCCESS);
+                //Commented out per request. Left it in, in case we wanted it back later
+                //AlertTag.addAlertToRequest(successView, "Favorite was created successfully", AlertType.SUCCESS);
                 return successView;
             }
             error = "An error occured while creating the favorite";

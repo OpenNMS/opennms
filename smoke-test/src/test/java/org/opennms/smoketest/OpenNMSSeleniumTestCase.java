@@ -47,6 +47,7 @@ import com.thoughtworks.selenium.SeleniumException;
 public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
     protected static final Logger LOG = LoggerFactory.getLogger(OpenNMSSeleniumTestCase.class);
     protected static final long LOAD_TIMEOUT = 60000;
+    protected static final String BASE_URL = "http://localhost:8980/";
 
     @Before
     public void setUp() throws Exception {
@@ -82,8 +83,7 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
             //}
         }
 
-        String baseUrl = "http://localhost:8980/";
-        selenium = new WebDriverBackedSelenium(driver, baseUrl);
+        selenium = new WebDriverBackedSelenium(driver, BASE_URL);
         selenium.open("/opennms/login.jsp");
         selenium.type("name=j_username", "admin");
         selenium.type("name=j_password", "admin");
@@ -103,6 +103,11 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
         }
     }
 
+    protected void frontPage() throws Exception {
+        selenium.open("/opennms/index.jsp");
+        waitForPageToLoad();
+    }
+
     protected void clickAndWait(final String pattern) {
         selenium.click(pattern);
         waitForPageToLoad();
@@ -114,6 +119,7 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
     }
 
     protected void goBack() {
+        LOG.warn("goBack() is not supported on Safari!");
         selenium.goBack();
         waitForPageToLoad();
     }
@@ -127,7 +133,7 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
     }
 
     protected void waitForText(final String expectedText, final long timeout) throws InterruptedException {
-        waitForText(expectedText, timeout, false);
+        waitForText(expectedText, timeout, true);
     }
 
     protected void waitForText(final String expectedText, final long timeout, boolean failOnError) throws InterruptedException {
@@ -138,7 +144,7 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
             }
         }
         try {
-            assertTrue(selenium.isTextPresent(expectedText));
+            assertTrue("Expected text not found: " + expectedText, selenium.isTextPresent(expectedText));
         } catch (final AssertionError e) {
             if (failOnError) {
                 throw e;
@@ -154,7 +160,7 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
     }
 
     protected void waitForHtmlSource(final String expectedText, final long timeout) throws InterruptedException {
-        waitForHtmlSource(expectedText, timeout, false);
+        waitForHtmlSource(expectedText, timeout, true);
     }
 
     protected void waitForHtmlSource(final String expectedText, final long timeout, boolean failOnError) throws InterruptedException {
@@ -165,7 +171,7 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
             }
         }
         try {
-            assertTrue(selenium.getHtmlSource().contains(expectedText));
+            assertTrue("HTML source not found: " + expectedText, selenium.getHtmlSource().contains(expectedText));
         } catch (final AssertionError e) {
             if (failOnError) {
                 throw e;
@@ -188,10 +194,11 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
             }
         }
         try {
-            assertTrue(selenium.isElementPresent(specification));
+            assertTrue("Element not found: " + specification, selenium.isElementPresent(specification));
         } catch (final AssertionError e) {
-            LOG.error("Failed to find element {} after {} milliseconds.", specification, timeout);
-            LOG.error("Page body was:\n{}", selenium.getBodyText());
+            throw e;
+            //LOG.error("Failed to find element {} after {} milliseconds.", specification, timeout);
+            //LOG.error("Page body was:\n{}", selenium.getBodyText());
         }
     }
 

@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.snmp;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.concurrent.CountDownLatch;
@@ -36,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class SnmpWalker {
+public abstract class SnmpWalker implements Closeable {
 	
 	private static final transient Logger LOG = LoggerFactory.getLogger(SnmpWalker.class);
     
@@ -53,7 +54,7 @@ public abstract class SnmpWalker {
 
     private final CountDownLatch m_signal;
 
-    private InetAddress m_address;
+    private final InetAddress m_address;
     private WalkerPduBuilder m_pduBuilder;
     private ResponseProcessor m_responseProcessor;
     private final int m_maxVarsPerPdu;
@@ -61,14 +62,14 @@ public abstract class SnmpWalker {
     private String m_errorMessage = "";
     private Throwable m_errorThrowable = null;
     
-    protected SnmpWalker(InetAddress address, String name, int maxVarsPerPdu, int maxRepititions, CollectionTracker tracker) {
+    protected SnmpWalker(InetAddress address, String name, int maxVarsPerPdu, int maxRepetitions, CollectionTracker tracker) {
         m_address = address;
         m_signal = new CountDownLatch(1);
         
         m_name = name;
 
         m_tracker = tracker;
-        m_tracker.setMaxRepetitions(maxRepititions);
+        m_tracker.setMaxRepetitions(maxRepetitions);
         
         m_maxVarsPerPdu = maxVarsPerPdu;
     }
@@ -84,7 +85,7 @@ public abstract class SnmpWalker {
         }
     }
     
-    public int getMaxVarsPerPdu() {
+    public final int getMaxVarsPerPdu() {
         return (m_pduBuilder == null ? m_maxVarsPerPdu : m_pduBuilder.getMaxVarsPerPdu());
     }
 
@@ -163,9 +164,10 @@ public abstract class SnmpWalker {
         }
     }
 
-    protected abstract void close() throws IOException;
-    
-    public String getName() {
+    @Override
+    public abstract void close() throws IOException;
+
+    public final String getName() {
         return m_name;
     }
 
@@ -183,7 +185,11 @@ public abstract class SnmpWalker {
     }
     
     public void waitFor(long timeout) throws InterruptedException {
-        m_signal.await(timeout, TimeUnit.MILLISECONDS);
+        if (m_signal.await(timeout, TimeUnit.MILLISECONDS)) {
+            // Everything completed on time
+        } else {
+            handleTimeout("Timeout of " + timeout + " expired while waiting for " + getClass().getSimpleName() + " to finish");
+        }
     }
     
     // processErrors returns true if we need to retry the request and false otherwise
@@ -195,19 +201,15 @@ public abstract class SnmpWalker {
         m_responseProcessor.processResponse(receivedOid, val);
     }
 
-    protected void setAddress(InetAddress address) {
-        m_address = address;
-    }
-
-    protected InetAddress getAddress() {
+    protected final InetAddress getAddress() {
         return m_address;
     }
 
-    public String getErrorMessage() {
+    public final String getErrorMessage() {
         return m_errorMessage;
     }
 
-    public Throwable getErrorThrowable() {
+    public final Throwable getErrorThrowable() {
         return m_errorThrowable;
     }
 

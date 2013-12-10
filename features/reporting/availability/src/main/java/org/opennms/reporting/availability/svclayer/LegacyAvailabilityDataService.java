@@ -352,26 +352,10 @@ public class LegacyAvailabilityDataService implements AvailabilityDataService {
         // Initialize the DataCollectionConfigFactory
         //
         try {
-            DataSourceFactory.init();
             m_availConn = DataSourceFactory.getInstance().getConnection();
-        } catch (MarshalException e) {
-            LOG.error("initialize: Failed to load data collection configuration", e);
-            throw new AvailabilityDataServiceException("failed to load data collection configuration");
-        } catch (ValidationException e) {
-            LOG.error("initialize: Failed to load data collection configuration", e);
-            throw new AvailabilityDataServiceException("failed to load data collection configuration");
-        } catch (IOException e) {
-            LOG.error("initialize: Failed to load data collection configuration", e);
-            throw new UndeclaredThrowableException(e);
-        } catch (ClassNotFoundException e) {
-            LOG.error("initialize: Failed loading database driver.", e);
-            throw new AvailabilityDataServiceException("failed to load data collection configuration");
         } catch (SQLException e) {
             LOG.error("initialize: Failed getting connection to the database.", e);
             throw new AvailabilityDataServiceException("failed to load data collection configuration");
-        } catch (PropertyVetoException e) {
-            LOG.error("initialize: Failed getting connection to the database.", e);
-            throw new AvailabilityDataServiceException("initialize: Failed getting connection to the database");
         }
     }
 

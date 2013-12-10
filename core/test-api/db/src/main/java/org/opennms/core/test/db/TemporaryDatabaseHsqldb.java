@@ -12,15 +12,15 @@ import javax.sql.DataSource;
 import javax.sql.XAConnection;
 
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCountCallbackHandler;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.util.Assert;
 
 public class TemporaryDatabaseHsqldb implements TemporaryDatabase, InitializingBean {
     private static DataSource m_dataSource = null;
     private String m_testDatabase;
     private boolean m_populateSchema = false;
-    private SimpleJdbcTemplate m_jdbcTemplate;
+    private JdbcTemplate m_jdbcTemplate;
     private Set<String> m_initializedUsers = new HashSet<String>();
 
     public TemporaryDatabaseHsqldb() {
@@ -139,16 +139,16 @@ public class TemporaryDatabaseHsqldb implements TemporaryDatabase, InitializingB
     @Override
     public int countRows(final String sql, final Object... values) {
         final RowCountCallbackHandler counter = new RowCountCallbackHandler();
-        getJdbcTemplate().getJdbcOperations().query(sql, values, counter);
+        getJdbcTemplate().query(sql, values, counter);
         return counter.getRowCount();
     }
 
     @Override
-    public SimpleJdbcTemplate getJdbcTemplate() {
+    public JdbcTemplate getJdbcTemplate() {
         return m_jdbcTemplate;
     }
     
-    public void setJdbcTemplate(final SimpleJdbcTemplate template) {
+    public void setJdbcTemplate(final JdbcTemplate template) {
         m_jdbcTemplate = template;
     }
 

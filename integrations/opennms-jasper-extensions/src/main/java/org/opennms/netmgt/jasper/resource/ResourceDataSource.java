@@ -135,7 +135,7 @@ public class ResourceDataSource implements JRDataSource {
             String jniStrategy = System.getProperty("org.opennms.rrd.strategyClass");
             String rrdFileExtension = System.getProperty("org.opennms.rrd.fileExtension");
             
-            if(jniStrategy != null && jniStrategy.contains("JniStrategy")) {
+            if(jniStrategy != null && jniStrategy.contains("JniRrdStrategy")) {
                 if(rrdFileExtension != null) {
                     return rrdFileExtension;
                 }else {

@@ -240,8 +240,6 @@
       </div>
       <!-- end menu -->
 
-            <jsp:include page="/includes/alarm-querypanel.jsp" flush="false" />
-          
             <% if( parms.getFilters().size() > 0 || AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) || AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) ) { %>
                 <div>
                 <p>
@@ -253,6 +251,10 @@
                             handler='${filterFavoriteSelectTagHandler}'
                             onChange='changeFavorite(this)'/>
                 </p>
+            <% } %>
+            <jsp:include page="/includes/alarm-querypanel.jsp" flush="false" />
+
+            <% if( parms.getFilters().size() > 0 || AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) || AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) ) { %>
                 <p>
                     <onms:filters
                             context="/alarm/list"
@@ -469,7 +471,11 @@
             <% } %>
           </td>
           <td class="divider">
-            <nobr><span title="Event <%= alarms[i].getLastEvent().getId()%>"><a href="event/detail.htm?id=<%= alarms[i].getLastEvent().getId()%>"><fmt:formatDate value="${alarm.lastEventTime}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${alarm.lastEventTime}" type="time" pattern="HH:mm:ss"/></a></span></nobr>
+            <nobr>
+              <% if(alarms[i].getLastEvent() != null) { %><span title="Event <%= alarms[i].getLastEvent().getId()%>"><a href="event/detail.htm?id=<%= alarms[i].getLastEvent().getId()%>"><% } %>
+                <fmt:formatDate value="${alarm.lastEventTime}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${alarm.lastEventTime}" type="time" pattern="HH:mm:ss"/>
+              <% if(alarms[i].getLastEvent() != null) { %></a></span><% } %>
+            </nobr>
             <nobr>
               <a href="<%=this.makeLink(callback, parms, new AfterLastEventTimeFilter(alarms[i].getLastEventTime()), true, favorite)%>"  class="filterLink" title="Only show alarms occurring after this one">${addAfterFilter}</a>
               <a href="<%=this.makeLink(callback, parms, new BeforeLastEventTimeFilter(alarms[i].getLastEventTime()), true, favorite)%>" class="filterLink" title="Only show alarms occurring before this one">${addBeforeFilter}</a>

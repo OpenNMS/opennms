@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
  * EventWriter loads the information in each 'Event' into the database.
@@ -376,7 +376,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
     
     String getHostName(final int nodeId, final String hostip) throws SQLException {
         try {
-            final String hostname = new SimpleJdbcTemplate(getDataSource()).queryForObject(EventdConstants.SQL_DB_HOSTIP_TO_HOSTNAME, String.class, new Object[] { nodeId, hostip });
+            final String hostname = new JdbcTemplate(getDataSource()).queryForObject(EventdConstants.SQL_DB_HOSTIP_TO_HOSTNAME, String.class, new Object[] { nodeId, hostip });
             return (hostname != null) ? hostname : hostip;
         } catch (final EmptyResultDataAccessException e) {
             return hostip;
