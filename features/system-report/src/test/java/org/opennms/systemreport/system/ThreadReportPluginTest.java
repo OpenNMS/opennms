@@ -30,49 +30,30 @@ package org.opennms.systemreport.system;
 
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map.Entry;
+import java.io.IOException;
 import java.util.TreeMap;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.systemreport.SystemReportPlugin;
-import org.opennms.test.JUnitConfigurationEnvironment;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.test.context.ContextConfiguration;
-
 import org.opennms.systemreport.SystemReportPlugin;
 
-public class JavaReportPluginTest extends ReportPluginTestCase {
-    @Resource(name="javaReportPlugin")
-    private SystemReportPlugin m_javaReportPlugin;
+public class ThreadReportPluginTest extends ReportPluginTestCase {
+    @Resource(name="threadReportPlugin")
+    private SystemReportPlugin m_threadReportPlugin;
 
-    @Resource(name="osReportPlugin")
-    private SystemReportPlugin m_osReportPlugin;
-
-    public JavaReportPluginTest() {
+    public ThreadReportPluginTest() {
         MockLogAppender.setupLogging(false, "ERROR");
     }
 
     @Test
-    public void testJavaReportPlugin() {
-        assertTrue(listContains(JavaReportPlugin.class));
-        final TreeMap<String, org.springframework.core.io.Resource> entries = m_javaReportPlugin.getEntries();
-        final float classVer = Float.valueOf(getResourceText(entries.get("Class Version")));
-        assertTrue(classVer >= 49.0);
-    }
-
-    @Test
-    public void testOSPlugin() {
-        assertTrue(listContains(OSReportPlugin.class));
-        final TreeMap<String, org.springframework.core.io.Resource> entries = m_osReportPlugin.getEntries();
-        assertTrue(entries.containsKey("Architecture"));
-        assertTrue(entries.containsKey("Name"));
-        assertTrue(entries.containsKey("Distribution"));
+    public void testThreadReportPlugin() throws IOException {
+        assertTrue(listContains(ThreadReportPlugin.class));
+        final TreeMap<String, org.springframework.core.io.Resource> entries = m_threadReportPlugin.getEntries();
+        final org.springframework.core.io.Resource resource = entries.get("ThreadDump.txt");
+        final String contents = IOUtils.toString(resource.getInputStream());
+        assertTrue(contents.contains("at sun.management.ThreadImpl.dumpAllThreads"));
     }
 }

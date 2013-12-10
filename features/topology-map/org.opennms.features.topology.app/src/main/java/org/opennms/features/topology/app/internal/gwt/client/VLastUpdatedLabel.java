@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,29 +26,32 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.systemreport.system;
+package org.opennms.features.topology.app.internal.gwt.client;
 
-import static org.junit.Assert.assertTrue;
+import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.i18n.client.LocaleInfo;
+import com.google.gwt.i18n.client.constants.TimeZoneConstants;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Label;
 
-import java.util.TreeMap;
+import com.google.gwt.i18n.client.TimeZone;
+import java.util.Date;
 
-import javax.annotation.Resource;
+public class VLastUpdatedLabel extends Composite {
 
-import org.junit.Test;
-import org.opennms.core.test.MockLogAppender;
-import org.opennms.systemreport.SystemReportPlugin;
+    Label m_label;
 
-public class TopReportPluginTest extends ReportPluginTestCase {
-    @Resource(name="topReportPlugin")
-    private SystemReportPlugin m_topReportPlugin;
+    public VLastUpdatedLabel(){
+        m_label = new Label();
+        initWidget(m_label);
 
-    public TopReportPluginTest() {
-        MockLogAppender.setupLogging(true, "DEBUG");
     }
 
-    @Test
-    public void testTopReportPlugin() {
-        final TreeMap<String, org.springframework.core.io.Resource> entries = m_topReportPlugin.getEntries();
-        assertTrue(entries.containsKey("Output"));
+    public void setUpdateTime(long millis){
+        if(millis > 0){
+            Date lastUpdate = new Date(millis);
+            DateTimeFormat fmt = DateTimeFormat.getFormat("EEE MMM dd yyyy hh:mm a");
+            m_label.setText("Last update time: " + fmt.format(lastUpdate));
+        }
     }
 }

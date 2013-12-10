@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,29 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.systemreport.system;
+package org.opennms.features.topology.app.internal.gwt.client;
 
-import static org.junit.Assert.assertTrue;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.ui.Widget;
+import com.vaadin.client.communication.StateChangeEvent;
+import com.vaadin.client.ui.AbstractComponentConnector;
+import com.vaadin.shared.AbstractComponentState;
+import com.vaadin.shared.ui.Connect;
 
-import java.util.TreeMap;
+@Connect(org.opennms.features.topology.app.internal.ui.LastUpdatedLabel.class)
+public class LastUpdatedLabelConnector extends AbstractComponentConnector{
 
-import javax.annotation.Resource;
-
-import org.junit.Test;
-import org.opennms.core.test.MockLogAppender;
-import org.opennms.systemreport.SystemReportPlugin;
-
-public class TopReportPluginTest extends ReportPluginTestCase {
-    @Resource(name="topReportPlugin")
-    private SystemReportPlugin m_topReportPlugin;
-
-    public TopReportPluginTest() {
-        MockLogAppender.setupLogging(true, "DEBUG");
+    @Override
+    protected VLastUpdatedLabel createWidget() {
+        return GWT.create(VLastUpdatedLabel.class);
     }
 
-    @Test
-    public void testTopReportPlugin() {
-        final TreeMap<String, org.springframework.core.io.Resource> entries = m_topReportPlugin.getEntries();
-        assertTrue(entries.containsKey("Output"));
+    @Override
+    public VLastUpdatedLabel getWidget() {
+        return (VLastUpdatedLabel) super.getWidget();
+    }
+
+    @Override
+    public LastUpdatedLabelState getState() {
+        return (LastUpdatedLabelState) super.getState();
+    }
+
+    @Override
+    public void onStateChanged(StateChangeEvent stateChangeEvent) {
+        getWidget().setUpdateTime(getState().getUpdateTime());
     }
 }

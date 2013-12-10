@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,29 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.systemreport.system;
+package org.opennms.features.topology.app.internal.gwt.client;
 
-import static org.junit.Assert.assertTrue;
+import com.vaadin.shared.AbstractComponentState;
 
-import java.util.TreeMap;
+public class LastUpdatedLabelState extends AbstractComponentState {
 
-import javax.annotation.Resource;
+    private long m_utcTime = -1;
 
-import org.junit.Test;
-import org.opennms.core.test.MockLogAppender;
-import org.opennms.systemreport.SystemReportPlugin;
-
-public class TopReportPluginTest extends ReportPluginTestCase {
-    @Resource(name="topReportPlugin")
-    private SystemReportPlugin m_topReportPlugin;
-
-    public TopReportPluginTest() {
-        MockLogAppender.setupLogging(true, "DEBUG");
+    public void setUpdateTime(long utcTime){
+        m_utcTime = utcTime;
     }
 
-    @Test
-    public void testTopReportPlugin() {
-        final TreeMap<String, org.springframework.core.io.Resource> entries = m_topReportPlugin.getEntries();
-        assertTrue(entries.containsKey("Output"));
+    public long getUpdateTime(){
+        return m_utcTime;
     }
 }
