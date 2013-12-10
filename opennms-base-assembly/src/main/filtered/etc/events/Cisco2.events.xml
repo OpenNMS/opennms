@@ -39763,7 +39763,6 @@ link.&lt;/p&gt;&lt;table&gt;
 	ifType=%parm[#5]%&lt;/p&gt;
 	</logmsg>
     <severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
     <varbindsdecode>
       <parmid>parm[#2]</parmid>
       <decode varbinddecodedstring="up" varbindvalue="1"/>
@@ -40017,6 +40016,7 @@ link.&lt;/p&gt;&lt;table&gt;
       <decode varbinddecodedstring="aviciOpticalEther" varbindvalue="233"/>
       <decode varbinddecodedstring="atmbond" varbindvalue="234"/>
     </varbindsdecode>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
   </event>
   <event>
     <mask>
@@ -40321,7 +40321,6 @@ information of the communication link.&lt;/p&gt;&lt;table&gt;
 	ifType=%parm[#5]%&lt;/p&gt;
 	</logmsg>
     <severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" clear-key="uei.opennms.org/vendor/Cisco/ciscoIfExtensionMIB/traps/cieLinkDown:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" auto-clean="false" />
     <varbindsdecode>
       <parmid>parm[#2]</parmid>
       <decode varbinddecodedstring="up" varbindvalue="1"/>
@@ -40575,6 +40574,7 @@ information of the communication link.&lt;/p&gt;&lt;table&gt;
       <decode varbinddecodedstring="aviciOpticalEther" varbindvalue="233"/>
       <decode varbinddecodedstring="atmbond" varbindvalue="234"/>
     </varbindsdecode>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" clear-key="uei.opennms.org/vendor/Cisco/ciscoIfExtensionMIB/traps/cieLinkDown:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" auto-clean="false" />
   </event>
   <event>
     <mask>
@@ -41143,7 +41143,6 @@ specified by cieDelayedLinkUpDownDelay.&lt;/p&gt;&lt;table&gt;
 	cieIfOperStatusCause=%parm[#5]%&lt;/p&gt;
 	</logmsg>
     <severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false" />
     <varbindsdecode>
       <parmid>parm[#1]</parmid>
       <decode varbinddecodedstring="up" varbindvalue="1"/>
@@ -41668,6 +41667,7 @@ specified by cieDelayedLinkUpDownDelay.&lt;/p&gt;&lt;table&gt;
       <decode varbinddecodedstring="domainIdsInvalid" varbindvalue="267"/>
       <decode varbinddecodedstring="fabricNameInvalid" varbindvalue="268"/>
     </varbindsdecode>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false" />
   </event>
 <!-- End of mib2events auto-generated data for MIB: CISCO-IF-EXTENSION-MIB -->
 </events>
