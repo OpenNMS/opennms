@@ -1358,7 +1358,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         importFromResource("classpath:/tec_dump.xml", true);
         final NodeDao nodeDao = getNodeDao();
 
-        OnmsNode node = nodeDao.findByForeignId("matt:", "4243");
+        OnmsNode node = nodeDao.findByForeignId("empty", "4243");
         nodeDao.initialize(node.getAssetRecord());
         nodeDao.initialize(node.getAssetRecord().getGeolocation());
 
@@ -1373,7 +1373,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         nodeDao.saveOrUpdate(node);
         nodeDao.flush();
 
-        node = nodeDao.findByForeignId("matt:", "4243");
+        node = nodeDao.findByForeignId("empty", "4243");
         geolocation = node.getAssetRecord().getGeolocation();
 
         assertNotNull(geolocation.getLatitude());
@@ -1383,7 +1383,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
 
         System.err.println("=================================================================BLEARGH");
         importFromResource("classpath:/tec_dump.xml", true);
-        node = nodeDao.findByForeignId("matt:", "4243");
+        node = nodeDao.findByForeignId("empty", "4243");
         geolocation = node.getAssetRecord().getGeolocation();
 
         assertNotNull(geolocation.getLatitude());
