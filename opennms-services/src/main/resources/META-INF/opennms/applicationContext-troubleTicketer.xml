@@ -35,7 +35,6 @@
 	</bean>
    
 	<bean name="ticketerServiceLayer" class="${opennms.ticketer.servicelayer}">
-		<property name="alarmDao" ref="alarmDao" />
 		<property name="ticketerPlugin" ref="ticketerPlugin" />
 	</bean>
 

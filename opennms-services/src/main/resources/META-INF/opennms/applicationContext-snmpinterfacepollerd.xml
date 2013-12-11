@@ -19,20 +19,16 @@
     <aop:aspectj-autoproxy proxy-target-class="true"/>
     <context:annotation-config />
 
-        
     <bean name="pollContext" class="org.opennms.netmgt.snmpinterfacepoller.DefaultPollContext">
       <property name="eventManager" ref="eventIpcManager" />
       <property name="localHostName" ref="localHostName" />
       <property name="name" value="OpenNMS.SnmpPoller.DefaultPollContext" />
-      <property name="snmpInterfaceDao" ref="snmpInterfaceDao" />
-      <property name="ipInterfaceDao" ref="ipInterfaceDao" />
     </bean> 
     
     <bean name="pollableNetwork" class="org.opennms.netmgt.snmpinterfacepoller.pollable.PollableNetwork">
         <constructor-arg ref="pollContext" />
     </bean>
     
-        
     <bean name="daemon" class="org.opennms.netmgt.snmpinterfacepoller.SnmpPoller" destroy-method="stop">
       <property name="pollerConfig" ref="snmpinterfacepollerConfig" />
       <property name="network" ref="pollableNetwork" />
