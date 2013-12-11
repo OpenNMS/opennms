@@ -33,15 +33,11 @@
 		contentType="text/html"
 		session="true"
 		import="java.util.*,
-				org.opennms.netmgt.config.SnmpInterfacePollerConfigFactory,
-				org.opennms.netmgt.config.SnmpInterfacePollerConfig,
                 org.opennms.core.utils.SIUtils,
                 org.opennms.netmgt.model.OnmsNode,
                 org.opennms.netmgt.model.OnmsResource,
-                org.opennms.web.api.Util,
                 org.opennms.web.api.Authentication,
                 org.opennms.web.element.*,
-                org.opennms.web.event.*,
                 org.opennms.web.svclayer.ResourceService,
                 org.opennms.netmgt.utils.IfLabel,
                 org.springframework.web.context.WebApplicationContext,

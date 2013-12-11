@@ -64,6 +64,7 @@ import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.dao.api.CollectorConfigDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
@@ -181,12 +182,17 @@ public class CollectdTest extends TestCase {
         CollectdConfigFactory collectdConfig = new CollectdConfigFactory(ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/config/collectd-testdata.xml"), "nms1", false);
         CollectdConfigFactory.setInstance(collectdConfig);
 
+        final MockTransactionTemplate transTemplate = new MockTransactionTemplate();
+        transTemplate.afterPropertiesSet();
+
         m_collectd = new Collectd();
         m_collectd.setEventIpcManager(getEventIpcManager());
         m_collectd.setCollectorConfigDao(getCollectorConfigDao());
         m_collectd.setNodeDao(getNodeDao());
         m_collectd.setIpInterfaceDao(getIpInterfaceDao());
         m_collectd.setScheduler(m_scheduler);
+        m_collectd.setTransactionTemplate(transTemplate);
+        //m_collectd.afterPropertiesSet();
 
         Package pkg = new Package();
         pkg.setName("pkg");
@@ -255,7 +261,7 @@ public class CollectdTest extends TestCase {
         return iface;
     }
 
-    public void testCreate() throws CollectionInitializationException {
+    public void testCreate() throws Exception {
         
         setupTransactionManager();
         
@@ -272,7 +278,8 @@ public class CollectdTest extends TestCase {
 
         m_easyMockUtils.replayAll();
         
-        m_collectd.init();
+        m_collectd.afterPropertiesSet();
+
         m_collectd.start();
         m_collectd.stop();
 
@@ -304,7 +311,7 @@ public class CollectdTest extends TestCase {
 		assertEquals("Overriding read community failed.", "notPublic", s);
     }
 
-    public void testNoMatchingSpecs() throws CollectionInitializationException {
+    public void testNoMatchingSpecs() throws Exception {
         String svcName = "SNMP";
 
         setupCollector(svcName);
@@ -314,7 +321,8 @@ public class CollectdTest extends TestCase {
 
         m_easyMockUtils.replayAll();
 
-        m_collectd.init();
+        m_collectd.afterPropertiesSet();
+
         m_collectd.start();
 
         m_scheduler.next();
@@ -326,7 +334,7 @@ public class CollectdTest extends TestCase {
         m_easyMockUtils.verifyAll();
     }
 
-    public void testOneMatchingSpec() throws CollectionException, CollectionInitializationException {
+    public void testOneMatchingSpec() throws Exception {
         String svcName = "SNMP";
         OnmsIpInterface iface = getInterface();
 
@@ -365,7 +373,8 @@ public class CollectdTest extends TestCase {
         
         m_easyMockUtils.replayAll();
 
-        m_collectd.init();
+        m_collectd.afterPropertiesSet();
+
         m_collectd.start();
         
         m_scheduler.next();

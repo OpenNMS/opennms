@@ -30,8 +30,7 @@
 --%>
 
 <%@ page language="java" contentType="text/html" session="true" import="
-	org.opennms.web.controller.ksc.FormProcGraphController,
-	org.opennms.web.controller.ksc.CustomGraphEditDetailsController
+	org.opennms.web.controller.ksc.FormProcGraphController
 "%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>

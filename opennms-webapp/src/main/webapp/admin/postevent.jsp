@@ -32,10 +32,7 @@
 	contentType="text/html"
 	session="true"
 	import="
-		java.io.*,
 		java.util.*,
-		java.net.InetAddress,
-                java.net.UnknownHostException,
                 org.opennms.web.api.Util,
                 org.opennms.netmgt.EventConstants,
                 org.opennms.netmgt.xml.event.Event,
@@ -45,8 +42,6 @@
 	"
 %>
 <%
-    HttpSession user = request.getSession(true);
-
     String uei = StringUtils.trimToEmpty(request.getParameter("uei"));
     if (StringUtils.isBlank(uei)) {
         response.sendRedirect("sendevent.jsp");

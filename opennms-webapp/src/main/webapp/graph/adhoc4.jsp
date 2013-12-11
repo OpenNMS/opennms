@@ -142,7 +142,7 @@
     
     
     String[] ignores = new String[] { "startMonth", "startYear", "startDate", "startHour","endMonth", "endYear", "endDate", "endHour" };
-    Map additions = new HashMap();
+    Map<String,Object> additions = new HashMap<String,Object>();
     additions.put( "start", start );
     additions.put( "end", end );
     additions.put( "adhoc", "true" );

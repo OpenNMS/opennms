@@ -76,6 +76,7 @@ import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -136,8 +137,10 @@ public class Collectd extends AbstractServiceDaemon implements
     /**
      * Indicates if scheduling of existing interfaces has been completed
      */
+    @Autowired
     private volatile CollectorConfigDao m_collectorConfigDao;
 
+    @Autowired
     private volatile IpInterfaceDao m_ifaceDao;
 
     static class SchedulingCompletedFlag {
@@ -158,8 +161,10 @@ public class Collectd extends AbstractServiceDaemon implements
 
     private volatile EventIpcManager m_eventIpcManager;
 
+    @Autowired
     private volatile TransactionTemplate m_transTemplate;
 
+    @Autowired
     private volatile NodeDao m_nodeDao;
 
     /**
@@ -297,7 +302,7 @@ public class Collectd extends AbstractServiceDaemon implements
                 // Create a scheduler
                 try {
                     LOG.debug("init: Creating collectd scheduler");
-                    setScheduler(new LegacyScheduler("Collectd", getCollectorConfigDao().getSchedulerThreads()));
+                    setScheduler(new LegacyScheduler("Collectd", m_collectorConfigDao.getSchedulerThreads()));
                 } catch (final RuntimeException e) {
                     LOG.error("init: Failed to create collectd scheduler", e);
                     throw e;
@@ -388,7 +393,7 @@ public class Collectd extends AbstractServiceDaemon implements
         instrumentation().beginFindInterfacesWithService(svcName);
         int count = -1;
         try {
-           Collection<OnmsIpInterface> ifaces = getIpInterfaceDao().findByServiceType(svcName);
+           Collection<OnmsIpInterface> ifaces = m_ifaceDao.findByServiceType(svcName);
            count = ifaces.size();
            return ifaces;
         } finally {
@@ -432,7 +437,7 @@ public class Collectd extends AbstractServiceDaemon implements
     
 	private void scheduleNode(final int nodeId, final boolean existing) {
 		
-        getCollectorConfigDao().rebuildPackageIpListMap();
+        m_collectorConfigDao.rebuildPackageIpListMap();
 		
 		OnmsNode node = m_nodeDao.getHierarchy(nodeId);
 		node.visit(new AbstractEntityVisitor() {
@@ -549,7 +554,7 @@ public class Collectd extends AbstractServiceDaemon implements
          * For each match, create new SnmpCollector object and
          * schedule it for collection
          */
-        for(CollectdPackage wpkg : getCollectorConfigDao().getPackages()) {
+        for(CollectdPackage wpkg : m_collectorConfigDao.getPackages()) {
             /*
              * Make certain the the current service is in the package
              * and enabled!
@@ -636,7 +641,7 @@ public class Collectd extends AbstractServiceDaemon implements
 
     private void refreshServicePackages() {
     	for (CollectableService thisService : m_collectableServices) {
-            thisService.refreshPackage(getCollectorConfigDao());
+            thisService.refreshPackage(m_collectorConfigDao);
         }
     }
 
@@ -1126,7 +1131,7 @@ public class Collectd extends AbstractServiceDaemon implements
         // This moved to here from the scheduleInterface() for better behavior
         // during initialization
         
-        getCollectorConfigDao().rebuildPackageIpListMap();
+        m_collectorConfigDao.rebuildPackageIpListMap();
 
         scheduleInterface(event.getNodeid().intValue(), event.getInterface(),
                           event.getService(), false);
@@ -1380,12 +1385,8 @@ public class Collectd extends AbstractServiceDaemon implements
      *
      * @param collectorConfigDao a {@link org.opennms.netmgt.dao.api.CollectorConfigDao} object.
      */
-    public void setCollectorConfigDao(CollectorConfigDao collectorConfigDao) {
+    void setCollectorConfigDao(CollectorConfigDao collectorConfigDao) {
         m_collectorConfigDao = collectorConfigDao;
-    }
-
-    private CollectorConfigDao getCollectorConfigDao() {
-        return m_collectorConfigDao;
     }
 
     /**
@@ -1393,12 +1394,8 @@ public class Collectd extends AbstractServiceDaemon implements
      *
      * @param ifSvcDao a {@link org.opennms.netmgt.dao.api.IpInterfaceDao} object.
      */
-    public void setIpInterfaceDao(IpInterfaceDao ifSvcDao) {
+    void setIpInterfaceDao(IpInterfaceDao ifSvcDao) {
         m_ifaceDao = ifSvcDao;
-    }
-
-    private IpInterfaceDao getIpInterfaceDao() {
-        return m_ifaceDao;
     }
 
     /**
@@ -1406,7 +1403,7 @@ public class Collectd extends AbstractServiceDaemon implements
      *
      * @param transTemplate a {@link org.springframework.transaction.support.TransactionTemplate} object.
      */
-    public void setTransactionTemplate(TransactionTemplate transTemplate) {
+    void setTransactionTemplate(TransactionTemplate transTemplate) {
         m_transTemplate = transTemplate;
     }
 
@@ -1415,7 +1412,7 @@ public class Collectd extends AbstractServiceDaemon implements
      *
      * @param nodeDao a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
-    public void setNodeDao(NodeDao nodeDao) {
+    void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
     }
     
@@ -1457,7 +1454,7 @@ public class Collectd extends AbstractServiceDaemon implements
          * so that the event processor will have them for
          * new incoming events to create collectable service objects.
          */
-        Collection<Collector> collectors = getCollectorConfigDao().getCollectors();
+        Collection<Collector> collectors = m_collectorConfigDao.getCollectors();
         for (Collector collector : collectors) {
             String svcName = collector.getService();
             try {

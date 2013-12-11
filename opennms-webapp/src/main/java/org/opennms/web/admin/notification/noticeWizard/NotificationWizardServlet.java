@@ -44,7 +44,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.opennms.core.resource.Vault;
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.config.NotifdConfigFactory;
 import org.opennms.netmgt.config.NotificationFactory;
@@ -597,7 +597,7 @@ public class NotificationWizardServlet extends HttpServlet {
     }
 
     private void updatePaths(final String rule, final String criticalIp, final String criticalSvc) throws FilterParseException, SQLException {
-        final Connection conn = Vault.getDbConnection();
+        final Connection conn = DataSourceFactory.getInstance().getConnection();
         final DBUtils d = new DBUtils(getClass(), conn);
         try {
             final SortedMap<Integer, String> nodes = getFilterDao().getNodeMap(rule);

@@ -42,8 +42,7 @@
 	session="true"
 	import="org.opennms.web.category.*,
 		org.opennms.core.utils.WebSecurityUtils,
-		org.opennms.web.element.*,
-		java.util.*
+		org.opennms.web.element.*
 	"
 %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>

@@ -50,14 +50,8 @@ import org.slf4j.LoggerFactory;
 /**
  * <p>
  * This is the singleton class used to load the OpenNMS database configuration
- * from the opennms-database.xml. This provides convenience methods to create
- * database connections to the database configured in this default xml
- * </p>
- *
- * <p>
- * <strong>Note: </strong>Users of this class should make sure the
- * <em>init()</em> is called before calling any other method to ensure the
- * config is loaded before accessing other convenience methods
+ * from the opennms-datasources.xml. This provides convenience methods to create
+ * database connections to the database configured in this default XML.
  * </p>
  *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
@@ -162,7 +156,7 @@ public abstract class DataSourceFactory {
         setInstance(dsName, dataSource);
     }
 
-    private static boolean isLoaded(final String dsName) {
+    private static synchronized boolean isLoaded(final String dsName) {
         return m_dataSources.containsKey(dsName);			
     }
 
@@ -189,9 +183,9 @@ public abstract class DataSourceFactory {
      * @param name a {@link java.lang.String} object.
      * @return a {@link javax.sql.DataSource} object.
      */
-    public static DataSource getInstance(final String name) {
+    public static synchronized DataSource getInstance(final String name) {
         init(name);
-        return getDataSource(name);
+        return m_dataSources.get(name);
     }
 
     /**
@@ -211,25 +205,6 @@ public abstract class DataSourceFactory {
      */
     public static synchronized void setInstance(final String dsName, final DataSource ds) {
         m_dataSources.put(dsName, ds);
-    }
-
-    /**
-     * Return the datasource configured for the database
-     *
-     * @return the datasource configured for the database
-     */
-    public static DataSource getDataSource() {
-        return getDataSource("opennms");
-    }
-
-    /**
-     * <p>getDataSource</p>
-     *
-     * @param dsName a {@link java.lang.String} object.
-     * @return a {@link javax.sql.DataSource} object.
-     */
-    public static synchronized DataSource getDataSource(final String dsName) {
-        return m_dataSources.get(dsName);
     }
 
     /**

@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.DBUtils;
@@ -215,7 +216,7 @@ public class NodeLabel {
      * @deprecated Use a {@link NodeDao#load(Integer)} method call instead
      */
     public static NodeLabel retrieveLabel(final int nodeID) throws SQLException {
-        final Connection dbConnection = Vault.getDbConnection();
+        final Connection dbConnection = DataSourceFactory.getInstance().getConnection();
         final DBUtils d = new DBUtils(NodeLabel.class, dbConnection);
 
         try {
@@ -301,7 +302,7 @@ public class NodeLabel {
      * @deprecated Use a {@link NodeDao#update(org.opennms.netmgt.model.OnmsNode)} method call instead
      */
     public static void assignLabel(final int nodeID, final NodeLabel nodeLabel) throws SQLException {
-        final Connection dbConnection = Vault.getDbConnection();
+        final Connection dbConnection = DataSourceFactory.getInstance().getConnection();
         final DBUtils d = new DBUtils(NodeLabel.class, dbConnection);
 
         try {
@@ -383,7 +384,7 @@ public class NodeLabel {
      * @deprecated Update this to use modern DAO methods instead of raw SQL
      */
     public static NodeLabel computeLabel(final int nodeID) throws SQLException {
-        final Connection dbConnection = Vault.getDbConnection();
+        final Connection dbConnection = DataSourceFactory.getInstance().getConnection();
         final DBUtils d = new DBUtils(NodeLabel.class, dbConnection);
 
         try {

@@ -362,7 +362,6 @@ public class CollectionResourceWrapperTest {
         db.update("update snmpinterface set snmpifindex=?, snmpifname=?, snmpifdescr=? where id=?", ifIndex, ifName, ifName, 1);
         DataSourceFactory.setInstance(db);
         XADataSourceFactory.setInstance(db);
-        Vault.setDataSource(db);
 
         // Create Mock Collection Agent
         CollectionAgent agent = createCollectionAgent();

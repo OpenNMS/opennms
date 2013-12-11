@@ -48,14 +48,13 @@
 <head>
 <title>All Outages</title>
 
-
-</head>
-<body>
-
 <link rel="stylesheet" type="text/css"
 	href="<c:url value="/css/styles.css"/>">
 <link rel="stylesheet" type="text/css"
 	href="<c:url value="/css/extremecomponents.css"/>">
+
+</head>
+<body>
 
 <center><ec:table items="tabledata" var="tabledata"
 	action="${pageContext.request.contextPath}/displayAllOutages.htm?${pageContext.request.queryString}"

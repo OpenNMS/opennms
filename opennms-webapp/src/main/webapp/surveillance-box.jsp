@@ -33,7 +33,7 @@
 
 <meta name='gwt:module' content='org.opennms.dashboard.Dashboard' />
 <link media="screen" href="css/dashboard.css" type="text/css" rel="stylesheet">
-<script type="text/javascript" language='javascript' src='dashboard/dashboard.nocache.js'></script>
+<script type="text/javascript" src='dashboard/dashboard.nocache.js'></script>
 <table class="dashboard" cellspacing="5" width="100%">
   <tbody>
     <tr>

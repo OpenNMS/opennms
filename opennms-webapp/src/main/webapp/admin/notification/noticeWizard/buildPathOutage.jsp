@@ -118,7 +118,7 @@
 
 	    Show matching node list:
             <% if (showNodes == null) { %>
-            <input type="checkbox" name="showNodes" checked="true" >
+            <input type="checkbox" name="showNodes" checked="checked" >
             <% } else { %>
             <input type="checkbox" name="showNodes">
             <% } %>

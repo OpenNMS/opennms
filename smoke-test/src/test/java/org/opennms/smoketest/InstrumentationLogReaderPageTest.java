@@ -43,9 +43,9 @@ public class InstrumentationLogReaderPageTest extends OpenNMSSeleniumTestCase {
     @Test
     public void testInstrumentationLogReaderPage() throws Exception {
         selenium.type("name=searchString", "test");
-        clickAndWait("css=input[type=submit]");
+        clickAndWait("css=#ILRfilter > input[type=submit]");
         assertEquals("test", selenium.getValue("name=searchString"));
-        clickAndWait("css=form > input[type=submit]");
+        clickAndWait("css=#ILRreset > input[type=submit]");
         assertEquals("", selenium.getValue("name=searchString"));
         waitForText("Service");
         waitForText("Threads Used:");

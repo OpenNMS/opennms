@@ -1906,7 +1906,6 @@ public class ThresholdingVisitorTest {
             db.update("update snmpinterface set snmpifname=?, snmpifdescr=? where id=?", ifName, ifName, 1);
         DataSourceFactory.setInstance(db);
         XADataSourceFactory.setInstance(db);
-        Vault.setDataSource(db);
     }
 
     private boolean deleteDirectory(File path) {

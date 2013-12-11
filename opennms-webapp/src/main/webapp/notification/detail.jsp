@@ -32,8 +32,7 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="java.util.*,
-		org.opennms.core.utils.WebSecurityUtils,
+	import="org.opennms.core.utils.WebSecurityUtils,
 		org.opennms.web.notification.*,
 		org.opennms.web.element.*,
                 org.opennms.web.event.*
@@ -93,9 +92,18 @@
 <table>
   <tr class="<%=eventSeverity%>">
     <td width="15%">Notification Time</td>
-    <td width="17%"><%=org.opennms.web.api.Util.formatDateToUIString(notice.getTimeSent())%></td>
+    <td width="17%"><fmt:formatDate value="<%=notice.getTimeSent()%>" type="BOTH" /></td>
     <td width="15%">Time&nbsp;Replied</td>
-    <td width="17%"><%=notice.getTimeReplied()!=null ? org.opennms.web.api.Util.formatDateToUIString(notice.getTimeReplied()) : "&nbsp;"%></td>
+    <td width="17%">
+      <c:choose>
+        <c:when test="<%=notice.getTimeReplied() != null%>">
+          <fmt:formatDate value="<%=notice.getTimeReplied()%>" type="BOTH" />
+        </c:when>
+        <c:otherwise>
+          &nbsp;
+        </c:otherwise>
+      </c:choose>
+    </td>
     <td width="15%">Responder</td>
     <td width="17%"><%=notice.getResponder()!=null ? notice.getResponder() : "&nbsp;"%></td>
   </tr>
@@ -194,7 +202,7 @@
     <tr class="<%=eventSeverity%>">
       <td><%=sentTo.getUserId()%></td>
 
-      <td><%=org.opennms.web.api.Util.formatDateToUIString(sentTo.getTime())%></td>
+      <td><fmt:formatDate value="<%=sentTo.getTime()%>" type="BOTH" /></td>
 
       <td>
         <% if (sentTo.getMedia()!=null && !sentTo.getMedia().trim().equals("")) { %>

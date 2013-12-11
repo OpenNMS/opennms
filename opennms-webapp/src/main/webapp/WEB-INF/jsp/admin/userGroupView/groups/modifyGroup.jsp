@@ -32,18 +32,19 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.netmgt.config.*,
+	import="
 		java.util.*,
 		java.text.*,
-		org.opennms.netmgt.config.groups.*,
-		org.opennms.netmgt.config.users.*,
-		org.opennms.netmgt.model.OnmsCategory
+		org.opennms.netmgt.config.users.*
 	"
 %>
 <%@page import="org.opennms.web.group.WebGroup"%>
 
 <%
   	WebGroup group = (WebGroup)session.getAttribute("group.modifyGroup.jsp");
+    if (group == null) {
+        throw new ServletException("Could not get session attribute group");
+    }
     String[] allCategories = (String[])session.getAttribute("allCategories.modifyGroup.jsp");
     String[] allUsers = (String[])session.getAttribute("allUsers.modifyGroup.jsp");
     String[] allVisibleMaps = (String[])session.getAttribute("allVisibleMaps.modifyGroup.jsp");
@@ -53,9 +54,6 @@
     String[] availableUsers = group.getRemainingUsers(Arrays.asList(allUsers)).toArray(new String[0]);
 
 
-	if (group == null) {
-		throw new ServletException("Could not get session attribute group");
-	}
 	
 	
 %>
@@ -303,7 +301,7 @@
 <form method="post" name="modifyGroup" onsubmit="return saveGroup();">
   <input type="hidden" name="groupName" value="<%=group.getName()%>"/>
   <input type="hidden" name="operation"/>
-      <table width="100%" border="0" cellspacing="0" cellpadding="2" >
+      <table width="100%">
         <tr>
           <td>
                 Assign a default map to group selecting from selection list.
@@ -329,7 +327,7 @@
         </table>
 
 
-      <table width="100%" border="0" cellspacing="0" cellpadding="2" >
+      <table width="100%">
         <tr>
           <td>
                 Assign and unassign users to the group using the select lists below. Also, change the ordering of
@@ -340,7 +338,7 @@
 
         <tr>
           <td align="left">
-            <table bgcolor="white" border="1" cellpadding="5" cellspacing="2">
+            <table bgcolor="white" border="1">
               <tr>
                 <td colspan="3" align="center">
                   <b>Assign/Unassign Users</b>
@@ -373,7 +371,7 @@
       
 	      <tr>
 	          <td align="left">
-	            <table bgcolor="white" border="1" cellpadding="5" cellspacing="2">
+	            <table bgcolor="white" border="1">
 	              <tr>
 	                <td colspan="3" align="center">
 	                  <b>Assign/Unassign Categories</b>
@@ -406,7 +404,7 @@
 	      </table>
       
       <p><b>Duty Schedules</b></p>
-      <table width="100%" border="1" cellspacing="0" cellpadding="2" >
+      <table width="100%" border="1">
         <tr bgcolor="#999999">
           <td>&nbsp;</td>
           <td><b>Delete</b></td>
@@ -424,7 +422,7 @@
                        int i = 0;
                        for(String dutySchedSpec : group.getDutySchedules()) {
                            DutySchedule tmp = new DutySchedule(dutySchedSpec);
-                           Vector curSched = tmp.getAsVector();
+                           Vector<Object> curSched = tmp.getAsVector();
                     %>
                     <tr>
                       <td width="1%"><%=(i+1)%></td>

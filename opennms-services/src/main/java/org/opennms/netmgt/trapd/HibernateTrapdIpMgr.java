@@ -38,6 +38,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
@@ -53,6 +54,7 @@ public class HibernateTrapdIpMgr implements TrapdIpMgr, InitializingBean {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(HibernateTrapdIpMgr.class);
 	
+	@Autowired
     private IpInterfaceDao m_ipInterfaceDao;
     
     /**
@@ -153,15 +155,6 @@ public class HibernateTrapdIpMgr implements TrapdIpMgr, InitializingBean {
      */
     public IpInterfaceDao getIpInterfaceDao() {
         return m_ipInterfaceDao;
-    }
-
-    /**
-     * <p>setIpInterfaceDao</p>
-     *
-     * @param ipInterfaceDao a {@link org.opennms.netmgt.dao.api.IpInterfaceDao} object.
-     */
-    public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
-        m_ipInterfaceDao = ipInterfaceDao;
     }
 
 }

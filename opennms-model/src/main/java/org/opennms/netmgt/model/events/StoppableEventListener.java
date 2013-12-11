@@ -28,17 +28,19 @@
 
 package org.opennms.netmgt.model.events;
 
+import java.io.Closeable;
+
 /**
  * StoppableEventListener
  *
  * @author brozow
  * @version $Id: $
  */
-public interface StoppableEventListener extends EventListener {
+public interface StoppableEventListener extends EventListener, Closeable {
     
     /**
-     * <p>stop</p>
+     * Override close() so that we can avoid specifying a checked exception.
      */
-    public void stop();
-
+    @Override
+    void close();
 }

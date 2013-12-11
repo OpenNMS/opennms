@@ -239,7 +239,6 @@ public class LatencyStoringServiceMonitorAdaptorTest {
         db.update("update snmpinterface set snmpifname=?, snmpifdescr=? where id=?", "eth0", "eth0", 1);
         DataSourceFactory.setInstance(db);
         XADataSourceFactory.setInstance(db);
-        Vault.setDataSource(db);
         
         m_mocks.replayAll();
         LatencyStoringServiceMonitorAdaptor adaptor = new LatencyStoringServiceMonitorAdaptor(service, m_pollerConfig, pkg);

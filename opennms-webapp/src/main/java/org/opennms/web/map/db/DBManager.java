@@ -34,7 +34,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -50,16 +49,14 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.resource.db.DbConnectionFactory;
 import org.opennms.core.resource.db.SimpleDbConnectionFactory;
 import org.opennms.core.utils.InetAddressUtils;
-
 import org.opennms.web.map.MapsConstants;
 import org.opennms.web.map.MapsException;
-
 import org.opennms.web.map.view.VElementInfo;
 import org.opennms.web.map.view.VMapInfo;
 import org.slf4j.Logger;
@@ -153,7 +150,7 @@ public class DBManager extends Manager {
             }
         } else {
             try {
-                return Vault.getDbConnection();
+                return DataSourceFactory.getInstance().getConnection();
             } catch (SQLException e) {
                 LOG.error("Exception while creating connection");
                 throw new MapsException(e);
@@ -164,11 +161,7 @@ public class DBManager extends Manager {
     void releaseConnection(Connection conn) throws MapsException {
         try {
             if (conn != null && !conn.isClosed()) {
-                if (m_factory != null) {
-                    conn.close();
-                } else {
-                    Vault.releaseDbConnection(conn);
-                }
+                conn.close();
             }
         } catch (Throwable e) {
             LOG.error("Exception while releasing connection");
