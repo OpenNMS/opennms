@@ -39463,7 +39463,7 @@ when a virtual context is removed/deleted.&lt;/p&gt;&lt;table&gt;
     <mask>
       <maskelement>
         <mename>id</mename>
-        <mevalue>.1.3.6.1.4.1.9.9.276.0</mevalue>
+        <mevalue>.1.3.6.1.4.1.9.9.276</mevalue>
       </maskelement>
       <maskelement>
         <mename>generic</mename>
@@ -40022,7 +40022,7 @@ link.&lt;/p&gt;&lt;table&gt;
     <mask>
       <maskelement>
         <mename>id</mename>
-        <mevalue>.1.3.6.1.4.1.9.9.276.0</mevalue>
+        <mevalue>.1.3.6.1.4.1.9.9.276</mevalue>
       </maskelement>
       <maskelement>
         <mename>generic</mename>
@@ -40580,7 +40580,7 @@ information of the communication link.&lt;/p&gt;&lt;table&gt;
     <mask>
       <maskelement>
         <mename>id</mename>
-        <mevalue>.1.3.6.1.4.1.9.9.276.0</mevalue>
+        <mevalue>.1.3.6.1.4.1.9.9.276</mevalue>
       </maskelement>
       <maskelement>
         <mename>generic</mename>
