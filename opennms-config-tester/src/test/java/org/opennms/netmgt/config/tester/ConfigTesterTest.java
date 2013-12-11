@@ -56,12 +56,14 @@ import org.springframework.util.StringUtils;
 public class ConfigTesterTest {
     private static Set<String> m_filesTested = new HashSet<String>();
     private static Set<String> m_filesIgnored = new HashSet<String>();
-    //private ConfigTesterDataSource m_dataSource;
+    private ConfigTesterDataSource m_dataSource;
 
     @Before
     public void init() {
         DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
         daoTestConfig.afterPropertiesSet();
+        m_dataSource = new ConfigTesterDataSource();
+        DataSourceFactory.setInstance(m_dataSource);
     }
 
     @After
