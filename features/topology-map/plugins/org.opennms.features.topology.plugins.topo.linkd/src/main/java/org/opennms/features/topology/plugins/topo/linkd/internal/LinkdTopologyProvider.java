@@ -37,11 +37,7 @@ import com.google.common.collect.Lists;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import javax.xml.bind.JAXB;
 import javax.xml.bind.JAXBContext;
@@ -74,11 +70,8 @@ import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.api.TopologyDao;
-import org.opennms.netmgt.model.DataLinkInterface;
-import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.*;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
-import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.slf4j.LoggerFactory;
 
 public class LinkdTopologyProvider extends AbstractTopologyProvider implements GraphProvider, SearchProvider {
@@ -283,6 +276,8 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     private final boolean m_aclEnabled;
 
+    private FilterManager m_filterManager;
+
     public String getConfigurationFile() {
         return m_configurationFile;
     }
@@ -325,6 +320,14 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     public void setTopologyDao(TopologyDao topologyDao) {
         m_topologyDao = topologyDao;
+    }
+
+    public void setFilterManager(FilterManager filterManager){
+        m_filterManager = filterManager;
+    }
+
+    public FilterManager getFilterManager() {
+        return m_filterManager;
     }
 
     /**
@@ -399,13 +402,22 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         
         log("loadtopology: adding nodes without links: " + isAddNodeWithoutLink());
         if (isAddNodeWithoutLink()) {
-            for (OnmsNode onmsnode: m_nodeDao.findAll()) {
+
+            List<OnmsNode> allNodes;
+
+            allNodes = getAllNodesNoACL();
+
+            for (OnmsNode onmsnode: allNodes) {
                 String nodeId = onmsnode.getNodeId();
                 if (getVertex(getVertexNamespace(), nodeId) == null) {
                     log("loadtopology: adding link-less node: " + onmsnode.getLabel());
                     addVertices(getVertex(onmsnode));
                 }
             }
+
+
+
+
         }
         
         File configFile = new File(m_configurationFile);
@@ -459,6 +471,24 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         log("Found " + getGroups().size() + " groups");        
         log("Found " + getVerticesWithoutGroups().size() + " vertices");
         log("Found " + getEdges().size() + " edges");
+    }
+
+    private List<OnmsNode> getAllNodesNoACL() {
+
+        String[] userGroups = getFilterManager().getAuthorizationGroups();
+        List<OnmsNode> nodeList = null;
+        try{
+            getFilterManager().disableAuthorizationFilter();
+            nodeList = m_nodeDao.findAll();
+
+        } finally {
+            if(userGroups != null){
+                getFilterManager().enableAuthorizationFilter(userGroups);
+            }
+            return nodeList != null ? nodeList : Collections.EMPTY_LIST;
+        }
+
+
     }
 
     private AbstractVertex getVertex(OnmsNode onmsnode) {
@@ -785,4 +815,6 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         }
         return null; // no default available
     }
+
+
 }
