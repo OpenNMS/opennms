@@ -6,6 +6,22 @@
 
 	<!-- Start 1.12 -->
 
+	<section id="introduction-1.12.2">
+		<title>Release 1.12.2</title>
+
+		<para>
+			Release 1.12.2 is the third in the stable 1.12 series of OpenNMS.
+			It contains quite a few bug fixes and enhancements since the
+			1.12.1 release.  For a high-level overview of what has changed
+			since OpenNMS 1.10,
+			see <ulink url="http://www.opennms.org/wiki/What%27s_New_in_OpenNMS_1.12">What's
+			New in OpenNMS 1.12</ulink>.
+		</para>
+		<para>
+			The codename for 1.12.2 is <emphasis>Liberace</emphasis>
+		</para>
+	</section>
+
 	<section id="introduction-1.12.1">
 		<title>Release 1.12.1</title>
 
