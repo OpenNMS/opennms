@@ -626,6 +626,10 @@
        <configuration>
           <encoding>UTF-8</encoding>
           <escapeString>\</escapeString>
+          <delimiters>
+            <delimiter>${*}</delimiter>
+          </delimiters>
+          <useDefaultDelimiters>false</useDefaultDelimiters>
        </configuration>
      </plugin>
      <plugin>
