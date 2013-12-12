@@ -32,6 +32,7 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  * The Abstract RRA (Round Robin Archives).
@@ -41,7 +42,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 public abstract class AbstractRRA {
 
     /** The PDP (Primary Data Points) per row. */
-    private Integer pdpPerRow;
+    private Long pdpPerRow;
 
     /** The rows. */
     private List<Row> rows = new ArrayList<Row>();
@@ -61,7 +62,8 @@ public abstract class AbstractRRA {
      * @return the PDP (Primary Data Points) per row
      */
     @XmlElement(name="pdp_per_row")
-    public Integer getPdpPerRow() {
+    @XmlJavaTypeAdapter(LongAdapter.class)
+    public Long getPdpPerRow() {
         return pdpPerRow;
     }
 
@@ -70,7 +72,7 @@ public abstract class AbstractRRA {
      *
      * @param pdpPerRow the new PDP (Primary Data Points) per row
      */
-    public void setPdpPerRow(Integer pdpPerRow) {
+    public void setPdpPerRow(Long pdpPerRow) {
         this.pdpPerRow = pdpPerRow;
     }
 

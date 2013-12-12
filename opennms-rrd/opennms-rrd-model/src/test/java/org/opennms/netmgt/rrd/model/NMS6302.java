@@ -32,29 +32,25 @@ import java.io.File;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.rrd.model.RrdXport;
+import org.opennms.netmgt.rrd.model.v3.RRDv3;
 
 /**
- * The Class RRD Export Test.
+ * The Test Class for NMS6302.
  * 
- * @author Alejandro Galue <agalue@opennms.org>
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
-public class RrdXportTest {
+public class NMS6302 {
 
     /**
-     * Parses the Xport.
+     * Test JRobin parse.
      *
      * @throws Exception the exception
      */
     @Test
-    public void parseXport() throws Exception {
-        RrdXport xport = JaxbUtils.unmarshal(RrdXport.class, new File("src/test/resources/rrd-xport.xml"));
-        Assert.assertNotNull(xport);
-        Assert.assertEquals(new Long(300), xport.getMeta().getStep());
-        Assert.assertEquals(new Long(1206312900), xport.getMeta().getStart());
-        Assert.assertEquals(new Long(1206316500), xport.getMeta().getEnd());
-        Assert.assertEquals("load average 5min", xport.getMeta().getLegends().get(0));
-        Assert.assertEquals(new Long(1206312900), xport.getRows().get(0).getTimestamp());
-        Assert.assertEquals(new Double(19.86), xport.getRows().get(0).getValues().get(0));
+    public void testJrobinParse() throws Exception {
+        RRDv3 rrd = JaxbUtils.unmarshal(RRDv3.class, new File("src/test/resources/ifHCOutOctets.xml"), true);
+        Assert.assertNotNull(rrd);
     }
+
 }
+

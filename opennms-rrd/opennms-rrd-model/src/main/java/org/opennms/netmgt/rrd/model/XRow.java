@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  * The Class XRow (XPort Row).
@@ -38,11 +39,10 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Alejandro Galue <agalue@opennms.org>
  */
 @XmlRootElement(name="row")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.PROPERTY)
 public class XRow extends Row {
 
     /** The time stamp expressed in seconds since 1970-01-01 UTC. */
-    @XmlElement(name="t")
     private Long timestamp;
 
     /**
@@ -51,6 +51,8 @@ public class XRow extends Row {
      * 
      * @return the time stamp
      */
+    @XmlElement(name="t")
+    @XmlJavaTypeAdapter(LongAdapter.class)
     public Long getTimestamp() {
         return timestamp;
     }
