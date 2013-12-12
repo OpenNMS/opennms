@@ -4,6 +4,23 @@
 
 	<subtitle>About This Release</subtitle>
 
+	<!-- Start 1.13 -->
+
+	<section id="introduction-1.13.0">
+		<title>Release 1.13.0</title>
+
+		<para>
+			Release 1.13.0 is the first unstable release; it is a preview of
+			what will eventually become the OpenNMS 1.14.x stable series.
+			It contains a number of enhancements, most notably GUI work in the
+			topology UI, as well as some code cleanup and other updates that
+			are too invasive to include in 1.12.
+		</para>
+		<para>
+			The codename for 1.13.0 is <emphasis>Hedningarna</emphasis>
+		</para>
+	</section>
+
 	<!-- Start 1.12 -->
 
 	<section id="introduction-1.12.2">
