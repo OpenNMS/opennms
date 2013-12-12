@@ -66,7 +66,7 @@ public class HibernateFilterManager implements FilterManager {
      */
     @Override
     public void disableAuthorizationFilter() {
-        m_authorizationGroups = new String[0];
+        m_authorizationGroups = null;
         HibernateCallback<Object> cb = new HibernateCallback<Object>() {
 
             @Override
@@ -83,6 +83,11 @@ public class HibernateFilterManager implements FilterManager {
     @Override
     public String[] getAuthorizationGroups() {
         return m_authorizationGroups;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return m_authorizationGroups != null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     /* (non-Javadoc)

@@ -404,7 +404,6 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         if (isAddNodeWithoutLink()) {
 
             List<OnmsNode> allNodes;
-
             allNodes = getAllNodesNoACL();
 
             for (OnmsNode onmsnode: allNodes) {
@@ -474,18 +473,21 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     }
 
     private List<OnmsNode> getAllNodesNoACL() {
+        if(getFilterManager().isEnabled()){
+            String[] userGroups = getFilterManager().getAuthorizationGroups();
+            List<OnmsNode> nodeList = null;
+            try{
+                getFilterManager().disableAuthorizationFilter();
+                nodeList = m_nodeDao.findAll();
 
-        String[] userGroups = getFilterManager().getAuthorizationGroups();
-        List<OnmsNode> nodeList = null;
-        try{
-            getFilterManager().disableAuthorizationFilter();
-            nodeList = m_nodeDao.findAll();
-
-        } finally {
-            if(userGroups != null){
-                getFilterManager().enableAuthorizationFilter(userGroups);
+            } finally {
+                if(userGroups != null){
+                    getFilterManager().enableAuthorizationFilter(userGroups);
+                }
+                return nodeList != null ? nodeList : Collections.EMPTY_LIST;
             }
-            return nodeList != null ? nodeList : Collections.EMPTY_LIST;
+        } else {
+            return m_nodeDao.findAll();
         }
 
 

@@ -53,4 +53,6 @@ public interface FilterManager {
 
     public String[] getAuthorizationGroups();
 
+    public boolean isEnabled();
+
 }
