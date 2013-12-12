@@ -40,16 +40,13 @@ import org.opennms.netmgt.rrd.model.AbstractRRA;
 import org.opennms.netmgt.rrd.model.AbstractRRD;
 
 /**
- * The Class RRD (Round Robin Database) version 3.
+ * The Class RRD (Round Robin Database) supports version 3 and 4.
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
 @XmlRootElement(name="rrd")
 @XmlAccessorType(XmlAccessType.PROPERTY)
 public class RRDv3 extends AbstractRRD {
-
-    /** The Constant VERSION. */
-    public static final String VERSION = "0003";
 
     /** The RRAs. */
     public List<RRA> rras = new ArrayList<RRA>();
@@ -92,14 +89,6 @@ public class RRDv3 extends AbstractRRD {
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.netmgt.rrd.model.AbstractRRD#getRequiredVersion()
-     */
-    @Override
-    protected String getRequiredVersion() {
-        return VERSION;
-    }
-
-    /* (non-Javadoc)
      * @see org.opennms.netmgt.rrd.model.AbstractRRD#createRRD()
      */
     @Override
@@ -115,7 +104,7 @@ public class RRDv3 extends AbstractRRD {
      */
     @Override
     public void addDataSource(AbstractDS ds) {
-       dataSources.add((DS)ds);
+        dataSources.add((DS)ds);
     }
 
     /* (non-Javadoc)

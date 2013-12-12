@@ -31,6 +31,10 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.opennms.netmgt.rrd.model.DoubleAdapter;
+import org.opennms.netmgt.rrd.model.LongAdapter;
 
 /**
  * The Class RraDS (RRA CDP Data Source).
@@ -38,15 +42,13 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Alejandro Galue <agalue@opennms.org>
  */
 @XmlRootElement(name="ds")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.PROPERTY)
 public class RRADS {
 
     /** The unknown data points. */
-    @XmlElement(name="unknown_datapoints")
     private Long unknownDataPoints = 0L;
 
     /** The value. */
-    @XmlElement(name="value")
     private Double value;
 
     /**
@@ -54,6 +56,8 @@ public class RRADS {
      *
      * @return the unknown data points
      */
+    @XmlElement(name="unknown_datapoints")
+    @XmlJavaTypeAdapter(LongAdapter.class)
     public Long getUnknownDataPoints() {
         return unknownDataPoints;
     }
@@ -72,6 +76,8 @@ public class RRADS {
      *
      * @return the value
      */
+    @XmlElement(name="value")
+    @XmlJavaTypeAdapter(DoubleAdapter.class)
     public Double getValue() {
         return value;
     }

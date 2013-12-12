@@ -25,36 +25,32 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.netmgt.rrd.model;
+package org.opennms.netmgt.rrd.model.v3;
 
-import java.io.File;
-
-import org.junit.Assert;
-import org.junit.Test;
-import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.rrd.model.RrdXport;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
- * The Class RRD Export Test.
+ * The Class CFTypeAdapter.
+ * <p>The XML representation sometimes contain spaces when defining the data source.</p>
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
-public class RrdXportTest {
+public class CFTypeAdapter extends XmlAdapter<String, CFType> {
 
-    /**
-     * Parses the Xport.
-     *
-     * @throws Exception the exception
+    /* (non-Javadoc)
+     * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
      */
-    @Test
-    public void parseXport() throws Exception {
-        RrdXport xport = JaxbUtils.unmarshal(RrdXport.class, new File("src/test/resources/rrd-xport.xml"));
-        Assert.assertNotNull(xport);
-        Assert.assertEquals(new Long(300), xport.getMeta().getStep());
-        Assert.assertEquals(new Long(1206312900), xport.getMeta().getStart());
-        Assert.assertEquals(new Long(1206316500), xport.getMeta().getEnd());
-        Assert.assertEquals("load average 5min", xport.getMeta().getLegends().get(0));
-        Assert.assertEquals(new Long(1206312900), xport.getRows().get(0).getTimestamp());
-        Assert.assertEquals(new Double(19.86), xport.getRows().get(0).getValues().get(0));
+    @Override
+    public String marshal(CFType type) throws Exception {
+        return type == null ? null : type.value();
     }
+
+    /* (non-Javadoc)
+     * @see javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
+     */
+    @Override
+    public CFType unmarshal(String value) throws Exception {
+        return value == null ? null : CFType.fromValue(value.trim());
+    }
+
 }

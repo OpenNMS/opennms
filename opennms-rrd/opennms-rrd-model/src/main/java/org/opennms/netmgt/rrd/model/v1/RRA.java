@@ -35,8 +35,10 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.opennms.netmgt.rrd.model.AbstractRRA;
+import org.opennms.netmgt.rrd.model.DoubleAdapter;
 
 /**
  * The Class RRA (Round Robin Archives).
@@ -63,6 +65,7 @@ public class RRA extends AbstractRRA {
      * @return the consolidation function
      */
     @XmlElement(name="cf")
+    @XmlJavaTypeAdapter(CFTypeAdapter.class)
     public CFType getConsolidationFunction() {
         return consolidationFunction;
     }
@@ -115,6 +118,7 @@ public class RRA extends AbstractRRA {
      * @return the XFF
      */
     @XmlElement(name="xff")
+    @XmlJavaTypeAdapter(DoubleAdapter.class)
     public Double getXff() {
         return xff;
     }
