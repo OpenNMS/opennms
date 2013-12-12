@@ -137,22 +137,22 @@ public class Nms1055Test extends Nms1055NetworkBuilder implements InitializingBe
          *         DELAWARE_IF_IFNAME_MAP.put(517, "ge-0/0/1");
          *         DELAWARE_IF_IFALIAS_MAP.put(517, "test");
          */
-        assertEquals(517, queryManager.getFromSysnameIfAlias(DELAWARE_NAME, "test").intValue());
-        assertEquals(517, queryManager.getFromSysnameIfName(DELAWARE_NAME, "ge-0/0/1").intValue());
+        assertEquals(517, queryManager.getFromSysnameIfAlias(DELAWARE_NAME, "test").getIfIndex().intValue());
+        assertEquals(517, queryManager.getFromSysnameIfName(DELAWARE_NAME, "ge-0/0/1").getIfIndex().intValue());
 
         /*
          * DELAWARE_IF_MAC_MAP.put(585, "0022830951f5");
          */
-        assertEquals(585, queryManager.getFromSysnameMacAddress(DELAWARE_NAME, "0022830951f5").intValue());
+        assertEquals(585, queryManager.getFromSysnameMacAddress(DELAWARE_NAME, "0022830951f5").getIfIndex().intValue());
         /*
          * DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("10.155.69.17"), 13);
          */
-        assertEquals(13, queryManager.getFromSysnameIpAddress(DELAWARE_NAME, InetAddressUtils.addr("10.155.69.17")).intValue());
+        assertEquals(13, queryManager.getFromSysnameIpAddress(DELAWARE_NAME, InetAddressUtils.addr("10.155.69.17")).getIfIndex().intValue());
    
         /*
          * DELAWARE_IF_IFALIAS_MAP.put(574, "<To_Penrose>");
          */
-        assertEquals(574, queryManager.getFromSysnameIfAlias(DELAWARE_NAME, "<To_Penrose>").intValue());
+        assertEquals(574, queryManager.getFromSysnameIfAlias(DELAWARE_NAME, "<To_Penrose>").getIfIndex().intValue());
     }
 
     /*
@@ -311,11 +311,11 @@ public class Nms1055Test extends Nms1055NetworkBuilder implements InitializingBe
                 // penrose xe-1/0/0 -> delaware xe-1/0/0 --lldp
                 checkLink(delaware, penrose, 574, 510, datalinkinterface);
             } else if (linkid == start+6) {
-                // penrose ge-1/3/1 -> delaware ge-0/0/6 --lldp
-                checkLink(delaware, penrose, 522, 525, datalinkinterface);
-            } else if (linkid == start+7) {
                 // penrose xe-1/0/1 -> phoenix xe-0/0/1  --lldp
                 checkLink(phoenix, penrose, 509, 511, datalinkinterface);   
+            } else if (linkid == start+7) {
+                // penrose ge-1/3/1 -> delaware ge-0/0/6 --lldp
+                checkLink(delaware, penrose, 522, 525, datalinkinterface);
             } else if (linkid == start+8) {
                 // penrose ge-1/2/1 -> riovista ge-0/0/0.0  --lldp
                 // this link is also discovered using the bridge strategy
@@ -328,11 +328,11 @@ public class Nms1055Test extends Nms1055NetworkBuilder implements InitializingBe
                 // this link is also discovered using the bridge strategy
                 checkLink(riovista, delaware, 503, 540, datalinkinterface);
             } else if (linkid == start+11) {
-                // phoenix ge-0/2/0 -> austin ge-0/0/46.0  --lldp
-                checkLink(austin, phoenix, 508, 508, datalinkinterface);                   
-            } else if (linkid == start+12) {
                 // phoenix ge-1/0/3 -> sanjose ge-1/0/0  --lldp
                 checkLink(sanjose, phoenix, 516, 515, datalinkinterface);                   
+            } else if (linkid == start+12) {
+                // phoenix ge-0/2/0 -> austin ge-0/0/46.0  --lldp
+                checkLink(austin, phoenix, 508, 508, datalinkinterface);                   
             } else if (linkid == start+13) {
                 // austin ge-1/0/3 -> sanjose ge-1/0/1  --lldp
                 checkLink(sanjose, austin, 517, 515, datalinkinterface);                

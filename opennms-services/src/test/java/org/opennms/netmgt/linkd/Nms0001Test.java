@@ -133,7 +133,7 @@ public class Nms0001Test extends Nms0001NetworkBuilder implements InitializingBe
             @JUnitSnmpAgent(host = OEDIPUS_IP, port = 161, resource = "classpath:linkd/nms0001/" + OEDIPUS_NAME + "-"+OEDIPUS_IP + "-walk.txt"),
             @JUnitSnmpAgent(host = SIEGFRIE_IP, port = 161, resource = "classpath:linkd/nms0001/" + SIEGFRIE_NAME + "-"+SIEGFRIE_IP + "-walk.txt")
     })
-    public void testNetwork17216Links() throws Exception {
+    public void testIsIsLinks() throws Exception {
         
         m_nodeDao.save(getFroh());
         m_nodeDao.save(getOedipus());
@@ -215,7 +215,7 @@ public class Nms0001Test extends Nms0001NetworkBuilder implements InitializingBe
             
         }
         
-        DataLinkInterface iface = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(froh.getId(), Integer.valueOf(599));
+        DataLinkInterface iface = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(froh.getId(), Integer.valueOf(599)).iterator().next();
         iface.setNodeParentId(oedipus.getId());
         iface.setParentIfIndex(578);
         iface.setStatus(StatusType.ACTIVE);

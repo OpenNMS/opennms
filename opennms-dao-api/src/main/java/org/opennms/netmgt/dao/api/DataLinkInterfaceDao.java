@@ -70,7 +70,9 @@ public interface DataLinkInterfaceDao extends OnmsDao<DataLinkInterface, Integer
 
     void markDeletedIfNodeDeleted();
 
-    DataLinkInterface findByNodeIdAndIfIndex(Integer nodeId, Integer ifindex);
+    Collection<DataLinkInterface> findByNodeIdAndIfIndex(Integer nodeId, Integer ifindex);
+
+    Collection<DataLinkInterface> findByParentNodeIdAndIfIndex(Integer nodeparentId, Integer parentifindex);
 
     void deactivateIfOlderThan(Date now, String source);
 
