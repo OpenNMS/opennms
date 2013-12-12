@@ -50,9 +50,9 @@ import java.util.Map;
  */
 public class DataCollectionConfigParserTest {
 
-    private static final int resourceTypesCount = 159;
+    private static final int resourceTypesCount = 161;
     private static final int systemDefCount = 150;
-    private static final int groupsCount = 256;
+    private static final int groupsCount = 259;
     private Level errorLevel;
 
     @Before
@@ -108,7 +108,7 @@ public class DataCollectionConfigParserTest {
         // Validate SNMP Collection
         Assert.assertEquals(0, collection.getResourceTypeCount()); // Resource Types should live on a special collection
         Assert.assertEquals(142, collection.getSystems().getSystemDefCount());
-        Assert.assertEquals(167, collection.getGroups().getGroupCount()); // Unused groups will be ignored
+        Assert.assertEquals(170, collection.getGroups().getGroupCount()); // Unused groups will be ignored
     }
 
     @Test
