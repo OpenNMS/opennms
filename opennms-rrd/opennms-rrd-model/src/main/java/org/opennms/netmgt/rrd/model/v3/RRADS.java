@@ -31,6 +31,10 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.opennms.netmgt.rrd.model.DoubleAdapter;
+import org.opennms.netmgt.rrd.model.LongAdapter;
 
 /**
  * The Class RraDS (RRA CDP Data Source).
@@ -49,60 +53,73 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class RRADS {
 
-    /** The history. */
+    /** The history (CF_FAILURES). */
     @XmlElement(name="history")
     private String history;
 
-    /** The init flag. */
+    /** The init seasonal (CF_SEASONAL, CF_DEVSEASONAL). */
     @XmlElement(name="init_flag")
-    private Integer initFlag = 1;
+    @XmlJavaTypeAdapter(LongAdapter.class)
+    private Long initFlag = 1L;
 
-    /** The intercept. */
+    /** The intercept (CF_HWPREDICT, CF_MHWPREDICT). */
     @XmlElement(name="intercept")
+    @XmlJavaTypeAdapter(DoubleAdapter.class)
     private Double intercept = Double.NaN;
 
-    /** The last intercept. */
+    /** The last intercept (CF_HWPREDICT, CF_MHWPREDICT). */
     @XmlElement(name="last_intercept")
+    @XmlJavaTypeAdapter(DoubleAdapter.class)
     private Double lastIntercept = Double.NaN;
 
-    /** The last NaN count. */
+    /** The last NaN count (CF_HWPREDICT, CF_MHWPREDICT). */
     @XmlElement(name="last_nan_count")
-    private Integer lastNanCount = 1;
+    @XmlJavaTypeAdapter(LongAdapter.class)
+    private Long lastNanCount = 1L;
 
-    /** The last seasonal. */
+    /** The last seasonal (CF_SEASONAL, CF_DEVSEASONAL). */
     @XmlElement(name="last_seasonal")
+    @XmlJavaTypeAdapter(DoubleAdapter.class)
     private Double lastSeasonal = Double.NaN;
 
-    /** The last slope. */
+    /** The last slope (CF_HWPREDICT, CF_MHWPREDICT). */
     @XmlElement(name="last_slope")
+    @XmlJavaTypeAdapter(DoubleAdapter.class)
     private Double lastSlope = Double.NaN;
 
-    /** The NaN count. */
+    /** The NaN count (CF_HWPREDICT, CF_MHWPREDICT). */
     @XmlElement(name="nan_count")
-    private Integer nanCount = 1;
+    @XmlJavaTypeAdapter(LongAdapter.class)
+    private Long nanCount = 1L;
 
-    /** The primary value. */
+    /** The primary value (ALL). */
     @XmlElement(name="primary_value")
+    @XmlJavaTypeAdapter(DoubleAdapter.class)
     private Double primaryValue = 0.0;
 
-    /** The seasonal. */
+    /** The seasonal (CF_SEASONAL, CF_DEVSEASONAL). */
     @XmlElement(name="seasonal")
+    @XmlJavaTypeAdapter(DoubleAdapter.class)
     private Double seasonal = Double.NaN;
 
-    /** The secondary value. */
+    /** The secondary value (ALL). */
     @XmlElement(name="secondary_value")
+    @XmlJavaTypeAdapter(DoubleAdapter.class)
     private Double secondaryValue = 0.0;
 
-    /** The slope. */
+    /** The slope (CF_HWPREDICT, CF_MHWPREDICT). */
     @XmlElement(name="slope")
+    @XmlJavaTypeAdapter(DoubleAdapter.class)
     private Double slope = Double.NaN;
 
-    /** The unknown data points. */
+    /** The unknown data points (CF_AVERAGE, CF_MAXIMUM, CF_MINIMUM, CF_LAST). */
     @XmlElement(name="unknown_datapoints")
+    @XmlJavaTypeAdapter(LongAdapter.class)
     private Long unknownDataPoints = 0L;
 
-    /** The value. */
+    /** The value (CF_AVERAGE, CF_MAXIMUM, CF_MINIMUM, CF_LAST). */
     @XmlElement(name="value")
+    @XmlJavaTypeAdapter(DoubleAdapter.class)
     private Double value;
 
     /**
@@ -124,20 +141,20 @@ public class RRADS {
     }
 
     /**
-     * Gets the inits the flag.
+     * Gets the init seasonal.
      *
-     * @return the inits the flag
+     * @return the init seasonal
      */
-    public Integer getInitFlag() {
+    public Long getInitFlag() {
         return initFlag;
     }
 
     /**
-     * Sets the inits the flag.
+     * Sets the init seasonal.
      *
-     * @param initFlag the new inits the flag
+     * @param initFlag the new init seasonal
      */
-    public void setInitFlag(Integer initFlag) {
+    public void setInitFlag(Long initFlag) {
         this.initFlag = initFlag;
     }
 
@@ -182,7 +199,7 @@ public class RRADS {
      *
      * @return the last NaN count
      */
-    public Integer getLastNanCount() {
+    public Long getLastNanCount() {
         return lastNanCount;
     }
 
@@ -191,7 +208,7 @@ public class RRADS {
      *
      * @param lastNanCount the new last NaN count
      */
-    public void setLastNanCount(Integer lastNanCount) {
+    public void setLastNanCount(Long lastNanCount) {
         this.lastNanCount = lastNanCount;
     }
 
@@ -236,7 +253,7 @@ public class RRADS {
      *
      * @return the NaN count
      */
-    public Integer getNanCount() {
+    public Long getNanCount() {
         return nanCount;
     }
 
@@ -245,7 +262,7 @@ public class RRADS {
      *
      * @param nanCount the new NaN count
      */
-    public void setNanCount(Integer nanCount) {
+    public void setNanCount(Long nanCount) {
         this.nanCount = nanCount;
     }
 
