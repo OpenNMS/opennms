@@ -15,6 +15,7 @@
         <collect>
           <includeGroup>foundry-sys</includeGroup>
           <includeGroup>mib2-X-interfaces</includeGroup>
+          <includeGroup>mib2-X-interfaces-pkts</includeGroup>
         </collect>
       </systemDef>
 
