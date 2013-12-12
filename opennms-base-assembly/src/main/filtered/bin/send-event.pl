@@ -39,7 +39,7 @@ my $help = 0;
 my $version = 0;
 my $result = GetOptions("help|h" => \$help,
                         "descr|d=s"     => \$DESCR,
-                        "logmsg|l=s"     => \$LOGMSG,
+                        "logmsg|l=s"    => \$LOGMSG,
                         "interface|i=s" => \$INTERFACE,
                         "nodeid|n=i"    => \$NODEID,
                         "parm|p=s"      => \@PARMS,
