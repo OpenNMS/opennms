@@ -47,7 +47,7 @@ import org.opennms.features.vaadin.mibcompiler.services.JsmiMibParser;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
-public class SPC465 {
+public class SPC465Test {
 
     /** The Constant MIB_DIR. */
     protected static final File MIB_DIR = new File("src/test/resources");
