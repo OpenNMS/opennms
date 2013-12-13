@@ -19,4 +19,30 @@
         </collect>
       </systemDef>
 
+      <systemDef name="Foundry Networks BigIron 4000">
+        <sysoid>.1.3.6.1.4.1.1991.1.3.6.2</sysoid>
+        <collect>
+          <includeGroup>foundry-sys</includeGroup>
+          <includeGroup>mib2-X-interfaces</includeGroup>
+          <includeGroup>ietf-bgp4-peer-stats</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Foundry Networks BigIron 8000">
+        <sysoid>.1.3.6.1.4.1.1991.1.3.7.2</sysoid>
+        <collect>
+          <includeGroup>foundry-sys</includeGroup>
+          <includeGroup>mib2-X-interfaces</includeGroup>
+          <includeGroup>ietf-bgp4-peer-stats</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Foundry Networks BigIron RX">
+        <sysoid>.1.3.6.1.4.1.1991.1.3.40.2.2</sysoid>
+        <collect>
+          <includeGroup>foundry-sys</includeGroup>
+          <includeGroup>mib2-X-interfaces</includeGroup>
+          <includeGroup>ietf-bgp4-peer-stats</includeGroup>
+        </collect>
+      </systemDef>
 </datacollection-group>
