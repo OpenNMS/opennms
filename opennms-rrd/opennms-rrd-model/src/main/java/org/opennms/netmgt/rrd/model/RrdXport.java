@@ -42,16 +42,13 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Alejandro Galue <agalue@opennms.org>
  */
 @XmlRootElement(name="xport")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.PROPERTY)
 public class RrdXport {
 
     /** The meta data. */
-    @XmlElement(name="meta")
     private XMeta meta;
 
     /** The rows. */
-    @XmlElement(name="row")
-    @XmlElementWrapper(name="data")
     private List<XRow> rows = new ArrayList<XRow>();
 
     /**
@@ -59,6 +56,7 @@ public class RrdXport {
      *
      * @return the meta data
      */
+    @XmlElement(name="meta")
     public XMeta getMeta() {
         return meta;
     }
@@ -77,6 +75,8 @@ public class RrdXport {
      *
      * @return the rows
      */
+    @XmlElement(name="row")
+    @XmlElementWrapper(name="data")
     public List<XRow> getRows() {
         return rows;
     }

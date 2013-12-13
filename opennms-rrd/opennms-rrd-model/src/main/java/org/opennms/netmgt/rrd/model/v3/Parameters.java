@@ -31,6 +31,10 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.opennms.netmgt.rrd.model.DoubleAdapter;
+import org.opennms.netmgt.rrd.model.LongAdapter;
 
 /**
  * The Class RRA Parameters.
@@ -49,48 +53,59 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Parameters {
 
-    /** The delta negative. */
+    /** The delta negative (CF_FAILURES). */
     @XmlElement(name="delta_neg")
+    @XmlJavaTypeAdapter(DoubleAdapter.class)
     private Double deltaNeg;
 
-    /** The delta position. */
+    /** The delta position (CF_FAILURES). */
     @XmlElement(name="delta_pos")
+    @XmlJavaTypeAdapter(DoubleAdapter.class)
     private Double deltaPos;
 
-    /** The dependent RRA index. */
+    /** The dependent RRA index (CF_SEASONAL, CF_DEVSEASONAL, CF_HWPREDICT, CF_MHWPREDICT, CF_DEVPREDICT). */
     @XmlElement(name="dependent_rra_idx")
-    private Integer dependentRraIdx;
+    @XmlJavaTypeAdapter(LongAdapter.class)
+    private Long dependentRraIdx;
 
-    /** The failure threshold. */
+    /** The failure threshold (CF_FAILURES). */
     @XmlElement(name="failure_threshold")
-    private Integer failureThreshold;
+    @XmlJavaTypeAdapter(LongAdapter.class)
+    private Long failureThreshold;
 
-    /** The hw alpha. */
+    /** The HW alpha (CF_HWPREDICT, CF_MHWPREDICT). */
     @XmlElement(name="hw_alpha")
+    @XmlJavaTypeAdapter(DoubleAdapter.class)
     private Double hwAlpha;
 
-    /** The hw beta. */
+    /** The HW beta (CF_HWPREDICT, CF_MHWPREDICT). */
     @XmlElement(name="hw_beta")
+    @XmlJavaTypeAdapter(DoubleAdapter.class)
     private Double hwBeta;
 
-    /** The seasonal gamma. */
+    /** The seasonal gamma (CF_SEASONAL, CF_DEVSEASONAL). */
     @XmlElement(name="seasonal_gamma")
+    @XmlJavaTypeAdapter(DoubleAdapter.class)
     private Double seasonalGamma;
 
-    /** The seasonal smooth index. */
+    /** The seasonal smooth index (CF_SEASONAL, CF_DEVSEASONAL). */
     @XmlElement(name="seasonal_smooth_idx")
-    private Integer seasonalSmoothIdx;
+    @XmlJavaTypeAdapter(LongAdapter.class)
+    private Long seasonalSmoothIdx;
 
-    /** The failure threshold. */
+    /** The smoothing window (CF_SEASONAL, CF_DEVSEASONAL). */
     @XmlElement(name="smoothing_window")
-    private Integer smoothingWindow;
+    @XmlJavaTypeAdapter(DoubleAdapter.class)
+    private Double smoothingWindow;
 
-    /** The window length. */
+    /** The window length (CF_FAILURES). */
     @XmlElement(name="window_len")
-    private Integer windowLen;
+    @XmlJavaTypeAdapter(LongAdapter.class)
+    private Long windowLen;
 
-    /** The XFF. */
+    /** The XFF (CF_AVERAGE, CF_MAXIMUM, CF_MINIMUM, CF_LAST). */
     @XmlElement(name="xff")
+    @XmlJavaTypeAdapter(DoubleAdapter.class)
     private Double xff = 0.5;
 
     /**
@@ -134,7 +149,7 @@ public class Parameters {
      *
      * @return the dependent RRA index
      */
-    public Integer getDependentRraIdx() {
+    public Long getDependentRraIdx() {
         return dependentRraIdx;
     }
 
@@ -143,7 +158,7 @@ public class Parameters {
      *
      * @param dependentRraIdx the new dependent RRA index
      */
-    public void setDependentRraIdx(Integer dependentRraIdx) {
+    public void setDependentRraIdx(Long dependentRraIdx) {
         this.dependentRraIdx = dependentRraIdx;
     }
 
@@ -152,7 +167,7 @@ public class Parameters {
      *
      * @return the failure threshold
      */
-    public Integer getFailureThreshold() {
+    public Long getFailureThreshold() {
         return failureThreshold;
     }
 
@@ -161,7 +176,7 @@ public class Parameters {
      *
      * @param failureThreshold the new failure threshold
      */
-    public void setFailureThreshold(Integer failureThreshold) {
+    public void setFailureThreshold(Long failureThreshold) {
         this.failureThreshold = failureThreshold;
     }
 
@@ -224,7 +239,7 @@ public class Parameters {
      *
      * @return the seasonal smooth index
      */
-    public Integer getSeasonalSmoothIdx() {
+    public Long getSeasonalSmoothIdx() {
         return seasonalSmoothIdx;
     }
 
@@ -233,7 +248,7 @@ public class Parameters {
      *
      * @param seasonalSmoothIdx the new seasonal smooth index
      */
-    public void setSeasonalSmoothIdx(Integer seasonalSmoothIdx) {
+    public void setSeasonalSmoothIdx(Long seasonalSmoothIdx) {
         this.seasonalSmoothIdx = seasonalSmoothIdx;
     }
 
@@ -242,7 +257,7 @@ public class Parameters {
      *
      * @return the smoothing window
      */
-    public Integer getSmoothingWindow() {
+    public Double getSmoothingWindow() {
         return smoothingWindow;
     }
 
@@ -251,7 +266,7 @@ public class Parameters {
      *
      * @param smoothingWindow the new smoothing window
      */
-    public void setSmoothingWindow(Integer smoothingWindow) {
+    public void setSmoothingWindow(Double smoothingWindow) {
         this.smoothingWindow = smoothingWindow;
     }
 
@@ -260,7 +275,7 @@ public class Parameters {
      *
      * @return the window length
      */
-    public Integer getWindowLen() {
+    public Long getWindowLen() {
         return windowLen;
     }
 
@@ -269,7 +284,7 @@ public class Parameters {
      *
      * @param windowLen the new window length
      */
-    public void setWindowLen(Integer windowLen) {
+    public void setWindowLen(Long windowLen) {
         this.windowLen = windowLen;
     }
 

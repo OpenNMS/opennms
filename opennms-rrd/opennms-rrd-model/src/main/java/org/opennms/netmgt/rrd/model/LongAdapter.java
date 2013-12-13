@@ -31,7 +31,7 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
  * The Class LongAdapter.
- * <p>The null representation of some integer values inside the XML version of an RRD is expressed as 'U'</p>
+ * <p>The null representation of some long values inside the XML version of an RRD is expressed as 'U'</p>
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
@@ -59,16 +59,17 @@ public class LongAdapter extends XmlAdapter<String, Long> {
      */
     @Override
     public Long unmarshal(String value) throws Exception {
-        if (value.equalsIgnoreCase("U")) {
+        final String v = value.trim();
+        if (v.equalsIgnoreCase("u")) {
             return null;
         }
-        if (value.equalsIgnoreCase("-inf")) {
+        if (v.equalsIgnoreCase("-inf")) {
             return Long.MIN_VALUE;
         }
-        if (value.equalsIgnoreCase("inf")) {
+        if (v.equalsIgnoreCase("inf")) {
             return Long.MAX_VALUE;
         }
-        return new Long(value);
+        return new Long(v);
     }
 
 }

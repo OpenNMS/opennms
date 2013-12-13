@@ -32,32 +32,35 @@ package org.opennms.netmgt.rrd.model.v3;
  */
 public enum CFType {
 
-    /** RRA:AVERAGE:xff:steps:rows. */
+    /** v3: RRA:AVERAGE:xff:steps:rows. */
     AVERAGE,
 
-    /** RRA:MIN:xff:steps:rows. */
+    /** v3: RRA:MIN:xff:steps:rows. */
     MIN,
 
-    /** RRA:MAX:xff:steps:rows. */
+    /** v3: RRA:MAX:xff:steps:rows. */
     MAX,
 
-    /** RRA:LAST:xff:steps:rows. */
+    /** v3: RRA:LAST:xff:steps:rows. */
     LAST,
 
-    /** RRA:HWPREDICT:rows:alpha:beta:seasonal period[:rra-num]. */
+    /** v3: RRA:HWPREDICT:rows:alpha:beta:seasonal-period[:rra-num]. */
     HWPREDICT,
 
-    /** RRA:SEASONAL:seasonal period:gamma:rra-num[:smoothing-window=fraction]. */
+    /** v3: RRA:SEASONAL:seasonal-period:gamma:rra-num[:smoothing-window=fraction]. */
     SEASONAL,
 
-    /** RRA:DEVSEASONAL:seasonal period:gamma:rra-num[:smoothing-window=fraction]. */
+    /** v3: RRA:DEVSEASONAL:seasonal-period:gamma:rra-num[:smoothing-window=fraction]. */
     DEVSEASONAL,
 
-    /** RRA:DEVPREDICT:rows:rra-num. */
+    /** v3: RRA:DEVPREDICT:rows:rra-num. */
     DEVPREDICT,
 
-    /** RRA:FAILURES:rows:threshold:window length:rra-num. */
-    FAILURES;
+    /** v3: RRA:FAILURES:rows:threshold:window-length:rra-num. */
+    FAILURES,
+
+    /** v4: RRA:MHWPREDICT:rows:alpha:beta:seasonal-period[:rra-num] */
+    MHWPREDICT;
 
     /**
      * Gets the CF Value.

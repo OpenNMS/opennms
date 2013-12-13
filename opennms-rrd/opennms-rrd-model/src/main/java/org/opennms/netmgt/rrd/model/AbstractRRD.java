@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,7 +33,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
@@ -96,23 +95,12 @@ public abstract class AbstractRRD {
     public abstract AbstractDS getDataSource(int index);
 
     /**
-     * Gets the required version.
-     *
-     * @return the required version
-     */
-    @XmlTransient
-    protected abstract String getRequiredVersion();
-
-    /**
      * Gets the version of the RRD Dump.
      *
      * @return the version
      */
     @XmlElement(name="version")
     public String getVersion() {
-        if (version == null) {
-            version = getRequiredVersion();
-        }
         return version;
     }
 
@@ -122,9 +110,6 @@ public abstract class AbstractRRD {
      * @param version the new version
      */
     public void setVersion(String version) {
-        if (!version.equals(getRequiredVersion())) {
-            throw new IllegalArgumentException("Invalid RRD Version (expecting version " + getRequiredVersion() + ")");
-        }
         this.version = version;
     }
 
@@ -134,6 +119,7 @@ public abstract class AbstractRRD {
      * @return the step
      */
     @XmlElement(name="step")
+    @XmlJavaTypeAdapter(LongAdapter.class)
     public Long getStep() {
         return step;
     }

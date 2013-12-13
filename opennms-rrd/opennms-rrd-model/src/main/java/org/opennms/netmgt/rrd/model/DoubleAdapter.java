@@ -31,7 +31,7 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
  * The Class DoubleAdapter.
- * <p>The null representation of some integer values inside the XML version of an RRD is expressed as 'U'</p>
+ * <p>The null representation of some double values inside the XML version of an RRD is expressed as 'U'</p>
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
@@ -62,19 +62,20 @@ public class DoubleAdapter extends XmlAdapter<String, Double> {
      */
     @Override
     public Double unmarshal(String value) throws Exception {
-        if (value.equalsIgnoreCase("U")) {
+        final String v = value.trim();
+        if (v.equalsIgnoreCase("u")) {
             return null;
         }
-        if (value.equalsIgnoreCase("-inf")) {
+        if (v.equalsIgnoreCase("-inf")) {
             return Double.NEGATIVE_INFINITY;
         }
-        if (value.equalsIgnoreCase("inf")) {
+        if (v.equalsIgnoreCase("inf")) {
             return Double.POSITIVE_INFINITY;
         }
-        if (value.equalsIgnoreCase("nan")) {
+        if (v.equalsIgnoreCase("nan")) {
             return Double.NaN;
         }
-        return new Double(value);
+        return new Double(v);
     }
 
 }
