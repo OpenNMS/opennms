@@ -11,7 +11,7 @@
 
 		<para>
 			Release 1.12.3 is the fourth in the stable 1.12 series of OpenNMS.
-			It contains a critical bugfix to the upgrade tools added in 1.12.3,
+			It contains a critical bugfix to the upgrade tools added in 1.12.2,
 			as well as a few small config updates.
 			see <ulink url="http://www.opennms.org/wiki/What%27s_New_in_OpenNMS_1.12">What's
 			New in OpenNMS 1.12</ulink>.
