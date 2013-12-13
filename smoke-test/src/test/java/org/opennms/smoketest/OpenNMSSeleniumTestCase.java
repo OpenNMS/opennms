@@ -39,6 +39,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
 import com.thoughtworks.selenium.SeleneseTestBase;
+import com.thoughtworks.selenium.SeleniumException;
 
 public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
     protected static final String LOAD_TIMEOUT = "60000";
@@ -91,8 +92,6 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
             }
             selenium.stop();
         }
-    }
-
     }
 
     protected void waitForPageToLoad() {
