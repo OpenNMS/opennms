@@ -39,6 +39,7 @@
         <include-collection dataCollectionGroup="IBM"/>
         <include-collection dataCollectionGroup="IP Unity"/>
         <include-collection dataCollectionGroup="Juniper"/>
+        <include-collection dataCollectionGroup="Konica"/>
         <include-collection dataCollectionGroup="Kyocera"/>
         <include-collection dataCollectionGroup="Lexmark"/>
         <include-collection dataCollectionGroup="Liebert"/>
