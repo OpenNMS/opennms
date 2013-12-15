@@ -54,7 +54,7 @@ import org.springframework.core.io.Resource;
 public class DataCollectionConfigParserTest {
 
     private static final int resourceTypesCount = 161;
-    private static final int systemDefCount = 153;
+    private static final int systemDefCount = 154;
     private static final int groupsCount = 260;
 
     @Before
