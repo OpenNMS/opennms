@@ -2117,6 +2117,7 @@
   <event-file>events/SystemEdge.events.xml</event-file>
   <event-file>events/SwissQual.events.xml</event-file>
   <event-file>events/TransPath.events.xml</event-file>
+  <event-file>events/Trendmicro.events.xml</event-file>
   <event-file>events/TrippLite.events.xml</event-file>
   <event-file>events/TUT.events.xml</event-file>
   <event-file>events/UPS-MIB.events.xml</event-file>
