@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<events>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.18334</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>2</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/konica/minolta/traps/CallService</uei>
+    <event-label>Call service</event-label>
+    <descr>Please call service. For details see: http://%interface%</descr>
+    <logmsg dest="logndisplay">CallService</logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.18334</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>3</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/konica/minolta/traps/PaperJam</uei>
+    <event-label>Paper jam</event-label>
+    <descr>A paperjam has occured. For details see: http://%interface%</descr>
+    <logmsg dest="logndisplay">PaperJam</logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.18334</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>4</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/konica/minolta/traps/NoPaper</uei>
+    <event-label>No paper</event-label>
+    <descr>Paper tray is empty. For details see: http://%interface%</descr>
+    <logmsg dest="logndisplay">NoPaper</logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.18334</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>5</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/konica/minolta/traps/TonerEmpty</uei>
+    <event-label>Toner empty</event-label>
+    <descr>Toner is empty. %parm[all]% For details see: http://%interface%</descr>
+    <logmsg dest="logndisplay">TonerEmpty</logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.18334</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/konica/minolta/traps/StapleEmpty</uei>
+    <event-label>Staple empty</event-label>
+    <descr>Staple supply empty. Please refill staple supply. For details see: http://%interface%</descr>
+    <logmsg dest="logndisplay">StapleEmpty</logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.18334</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>7</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/konica/minolta/traps/RemainingOutputTray</uei>
+    <event-label>Paper remaining output tray</event-label>
+    <descr>%parm=[#1]%</descr>
+    <logmsg dest="logndisplay">%parm=[#1]%</logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.18334</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>8</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/konica/minolta/traps/PunchDustFull</uei>
+    <event-label>Punch dust full</event-label>
+    <descr>Punch dust full. Please remove punch waste. For details see: http://%interface%</descr>
+    <logmsg dest="logndisplay">PunchDust</logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.18334</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>9</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/konica/minolta/traps/MaintenanceRequired</uei>
+    <event-label>Maintenance required</event-label>
+    <descr>Maintenance required. Please call service. For details see: http://%interface%</descr>
+    <logmsg dest="logndisplay">MaintenanceRequired</logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.18334</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>10</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/konica/minolta/traps/JobEnd</uei>
+    <event-label>Job end</event-label>
+    <descr>A job has been ended.</descr>
+    <logmsg dest="logndisplay">JobEnded</logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.18334</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>12</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/konica/minolta/traps/WasteTonerFull</uei>
+    <event-label>Waste toner full</event-label>
+    <descr>Waste toner is full. Please insert a new waste container. For details see: http://%interface%</descr>
+    <logmsg dest="logndisplay">WasteTonerFull</logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.18334</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>13</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/konica/minolta/traps/LifeLimitImagingUnit</uei>
+    <event-label>Life limit imaging unit</event-label>
+    <descr>Imaging unit has been reached life limit. Please replace this unit. For details see: http://%interface%</descr>
+    <logmsg dest="logndisplay">LifeLimitImagingUnit</logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.18334</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>14</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/konica/minolta/traps/LifeLimitFuserUnit</uei>
+    <event-label>Life limit fuser unit</event-label>
+    <descr>Fuser unit has been reached life limit. Please replace this unit. For details see: http://%interface%</descr>
+    <logmsg dest="logndisplay">LifeLimitFuserUnit</logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.18334</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>15</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/konica/minolta/traps/LifeLimitTransferRoller</uei>
+    <event-label>Life limit transfer roller</event-label>
+    <descr>Transfer roller has been reached life limit. Please replace this unit. For details see: http://%interface%</descr>
+    <logmsg dest="logndisplay">LifeLimitTransferRoller</logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.18334</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>16</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/konica/minolta/traps/LifeLimitTransferBelt</uei>
+    <event-label>Life limit transfer belt</event-label>
+    <descr>Transfer belt has been reached life limit. Please replace this unit. For details see: http://%interface%</descr>
+    <logmsg dest="logndisplay">LifeLimitTransferBelt</logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.18334</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>17</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/konica/minolta/traps/LifeLimitOtherParts</uei>
+    <event-label>Life limit other parts</event-label>
+    <descr>Some parts reached life limit. Please replace them. For details see: http://%interface%</descr>
+    <logmsg dest="logndisplay">LifeLimitOtherParts</logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.18334</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>18</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/konica/minolta/traps/OperatorCall</uei>
+    <event-label>Operator call</event-label>
+    <descr>Please call operator. For details see: http://%interface%</descr>
+    <logmsg dest="logndisplay">OperatorCall</logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.18334</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>19</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/konica/minolta/traps/JobEnd</uei>
+    <event-label>Job end</event-label>
+    <descr>A job has been ended.</descr>
+    <logmsg dest="logndisplay">JobEnded</logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.18334</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>20</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/konica/minolta/traps/JobError</uei>
+    <event-label>Job error</event-label>
+    <descr>While executing a job, an error occured. For details see: http://%interface%</descr>
+    <logmsg dest="logndisplay">JobError</logmsg>
+    <severity>Warning</severity>
+  </event>
+</events>
