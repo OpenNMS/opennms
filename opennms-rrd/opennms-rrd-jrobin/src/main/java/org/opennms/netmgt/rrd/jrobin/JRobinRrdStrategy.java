@@ -734,8 +734,8 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
 
 	private void processRrdFontArgument(final RrdGraphDef graphDef, final String argParm) {
 	    final String[] argValue = tokenize(argParm, ":", false);
-	    if (argValue.length < 2 || argValue.length > 3) {
-	        LogUtils.warnf(this, "invalid number of arguments (%d) for font argument %s", argValue.length, argParm);
+	    if (argValue.length != 3) {
+	        LogUtils.warnf(this, "invalid number of arguments (%d != 3) for font argument %s", argValue.length, argParm);
 	        return;
 	    }
 	    int newPointSize = 0;
@@ -770,6 +770,8 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
 	        // If we have a font specified, try to get a font object for it.
 	        if (argValue[2] != null && argValue[2].length() > 0) {
 	            final int origPointSize = font.getSize();
+
+                    // Get our new font
 	            font = Font.decode(argValue[2]);
 
 	            // Font.decode() returns a 12 px font size, by default unless you specify
