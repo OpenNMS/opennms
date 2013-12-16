@@ -32,7 +32,7 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.netmgt.config.UserFactory,
+	import="
 	org.opennms.netmgt.config.UserManager,
 	org.opennms.netmgt.config.users.User,
     org.springframework.web.context.WebApplicationContext,

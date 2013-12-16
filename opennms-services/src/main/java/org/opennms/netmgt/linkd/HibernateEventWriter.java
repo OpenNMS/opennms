@@ -700,17 +700,9 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
         return m_nodeDao;
     }
 
-    public void setNodeDao(final NodeDao nodeDao) {
-        m_nodeDao = nodeDao;
-    }
-
     @Override
     public IpInterfaceDao getIpInterfaceDao() {
         return m_ipInterfaceDao;
-    }
-
-    public void setIpInterfaceDao(final IpInterfaceDao ipInterfaceDao) {
-        m_ipInterfaceDao = ipInterfaceDao;
     }
 
     @Override
@@ -718,49 +710,25 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
         return m_snmpInterfaceDao;
     }
 
-    public void setSnmpInterfaceDao(final SnmpInterfaceDao snmpInterfaceDao) {
-        m_snmpInterfaceDao = snmpInterfaceDao;
-    }
-
     @Override
     public AtInterfaceDao getAtInterfaceDao() {
         return m_atInterfaceDao;
-    }
-
-    public void setAtInterfaceDao(final AtInterfaceDao atInterfaceDao) {
-        m_atInterfaceDao = atInterfaceDao;
     }
 
     public VlanDao getVlanDao() {
         return m_vlanDao;
     }
 
-    public void setVlanDao(final VlanDao vlanDao) {
-        m_vlanDao = vlanDao;
-    }
-
     public StpNodeDao getStpNodeDao() {
         return m_stpNodeDao;
-    }
-
-    public void setStpNodeDao(final StpNodeDao stpNodeDao) {
-        m_stpNodeDao = stpNodeDao;
     }
 
     public StpInterfaceDao getStpInterfaceDao() {
         return m_stpInterfaceDao;
     }
 
-    public void setStpInterfaceDao(final StpInterfaceDao stpInterfaceDao) {
-        m_stpInterfaceDao = stpInterfaceDao;
-    }
-
     public IpRouteInterfaceDao getIpRouteInterfaceDao() {
         return m_ipRouteInterfaceDao;
-    }
-
-    public void setIpRouteInterfaceDao(final IpRouteInterfaceDao ipRouteInterfaceDao) {
-        m_ipRouteInterfaceDao = ipRouteInterfaceDao;
     }
 
     public DataLinkInterfaceDao getDataLinkInterfaceDao() {

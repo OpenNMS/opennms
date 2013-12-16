@@ -38,7 +38,6 @@
         java.util.*,
         org.opennms.core.utils.InetAddressUtils,
         org.opennms.netmgt.model.OnmsNode,
-		org.opennms.core.utils.WebSecurityUtils,
 		org.opennms.web.element.*,
 		org.opennms.web.svclayer.ResourceService,
 		org.springframework.web.context.WebApplicationContext,
@@ -90,7 +89,7 @@
     Service[] telnetServices = NetworkElementFactory.getInstance(getServletContext()).getServicesOnNode(nodeId, this.telnetServiceId);
     
     if( telnetServices != null && telnetServices.length > 0 ) {
-        ArrayList ips = new ArrayList();
+        ArrayList<InetAddress> ips = new ArrayList<InetAddress>();
         for( int i=0; i < telnetServices.length; i++ ) {
             ips.add(InetAddressUtils.addr(telnetServices[i].getIpAddress()));
         }
@@ -107,7 +106,7 @@
     Service[] httpServices = NetworkElementFactory.getInstance(getServletContext()).getServicesOnNode(nodeId, this.httpServiceId);
 
     if( httpServices != null && httpServices.length > 0 ) {
-        ArrayList ips = new ArrayList();
+        ArrayList<InetAddress> ips = new ArrayList<InetAddress>();
         for( int i=0; i < httpServices.length; i++ ) {
             ips.add(InetAddressUtils.addr(httpServices[i].getIpAddress()));
         }

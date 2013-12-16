@@ -30,6 +30,7 @@
 --%>
 
 <%@ page language="java" contentType="text/html" session="true" import="
+	org.opennms.web.api.Util,
 	org.opennms.web.controller.ksc.CustomGraphChooseResourceController,
 	org.opennms.web.controller.ksc.CustomGraphChooseParentResourceController,
 	org.opennms.web.controller.ksc.CustomGraphEditDetailsController
@@ -37,7 +38,7 @@
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<% final String baseHref = org.opennms.web.api.Util.calculateUrlBase(request); %>
+<c:set var="baseHref" value="<%=Util.calculateUrlBase(request)%>"/>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Key SNMP Customized Performance Reports" />

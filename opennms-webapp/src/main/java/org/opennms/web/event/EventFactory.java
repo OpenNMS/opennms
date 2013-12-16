@@ -38,6 +38,7 @@ import java.util.Vector;
 
 import javax.servlet.ServletContext;
 
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -83,7 +84,7 @@ public class EventFactory {
         }
 
         int eventCount = 0;
-        final Connection conn = Vault.getDbConnection();
+        final Connection conn = DataSourceFactory.getInstance().getConnection();
         final DBUtils d = new DBUtils(EventFactory.class, conn);
         try {
             StringBuffer select = new StringBuffer("SELECT COUNT(EVENTID) AS EVENTCOUNT FROM EVENTS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) WHERE ");
@@ -134,7 +135,7 @@ public class EventFactory {
         }
 
         int[] eventCounts = new int[8];
-        final Connection conn = Vault.getDbConnection();
+        final Connection conn = DataSourceFactory.getInstance().getConnection();
         final DBUtils d = new DBUtils(EventFactory.class, conn);
 
         try {
@@ -182,7 +183,7 @@ public class EventFactory {
      */
     public static Event getEvent(int eventId) throws SQLException {
         Event event = null;
-        final Connection conn = Vault.getDbConnection();
+        final Connection conn = DataSourceFactory.getInstance().getConnection();
         final DBUtils d = new DBUtils(EventFactory.class, conn);
 
         try {
@@ -313,7 +314,7 @@ public class EventFactory {
         }
 
         Event[] events = null;
-        final Connection conn = Vault.getDbConnection();
+        final Connection conn = DataSourceFactory.getInstance().getConnection();
         final DBUtils d = new DBUtils(EventFactory.class, conn);
 
         try {
@@ -446,7 +447,7 @@ public class EventFactory {
         }
 
         int eventCount = 0;
-        final Connection conn = Vault.getDbConnection();
+        final Connection conn = DataSourceFactory.getInstance().getConnection();
         final DBUtils d = new DBUtils(EventFactory.class, conn);
 
         try {
@@ -868,7 +869,7 @@ public class EventFactory {
         }
 
         Event[] events = null;
-        final Connection conn = Vault.getDbConnection();
+        final Connection conn = DataSourceFactory.getInstance().getConnection();
         final DBUtils d = new DBUtils(EventFactory.class, conn);
 
         try {
@@ -968,7 +969,7 @@ public class EventFactory {
             update.append(")");
             update.append(" AND EVENTACKUSER IS NULL");
 
-            final Connection conn = Vault.getDbConnection();
+            final Connection conn = DataSourceFactory.getInstance().getConnection();
             final DBUtils d = new DBUtils(EventFactory.class, conn);
 
             try {
@@ -1021,7 +1022,7 @@ public class EventFactory {
 
         final DBUtils d = new DBUtils(EventFactory.class);
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
             PreparedStatement stmt = conn.prepareStatement(update.toString());
@@ -1066,7 +1067,7 @@ public class EventFactory {
 
         final DBUtils d = new DBUtils(EventFactory.class);
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
             PreparedStatement stmt = conn.prepareStatement("UPDATE EVENTS SET EVENTACKUSER=?, EVENTACKTIME=? WHERE EVENTACKUSER IS NULL");
@@ -1126,7 +1127,7 @@ public class EventFactory {
 
             DBUtils d = new DBUtils(EventFactory.class);
             try {
-                Connection conn = Vault.getDbConnection();
+                Connection conn = DataSourceFactory.getInstance().getConnection();
                 d.watch(conn);
 
                 PreparedStatement stmt = conn.prepareStatement(update.toString());
@@ -1160,7 +1161,7 @@ public class EventFactory {
 
         final DBUtils d = new DBUtils(EventFactory.class);
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
             PreparedStatement stmt = conn.prepareStatement(update.toString());
@@ -1186,7 +1187,7 @@ public class EventFactory {
         final DBUtils d = new DBUtils(EventFactory.class);
 
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
             PreparedStatement stmt = conn.prepareStatement("UPDATE EVENTS SET EVENTACKUSER=NULL, EVENTACKTIME=NULL WHERE EVENTACKUSER IS NOT NULL");

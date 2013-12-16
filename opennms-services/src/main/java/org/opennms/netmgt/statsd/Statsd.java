@@ -48,6 +48,7 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.CronTriggerBean;
 import org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean;
 import org.springframework.transaction.TransactionStatus;
@@ -68,11 +69,21 @@ public class Statsd implements SpringServiceDaemon {
 
     private static final String LOG4J_CATEGORY = "statsd";
 
+    @Autowired
     private NodeDao m_nodeDao;
+
+    @Autowired
     private ResourceDao m_resourceDao;
+
+    @Autowired
     private RrdDao m_rrdDao;
+
+    @Autowired
     private FilterDao m_filterDao;
+
+    @Autowired
     private TransactionTemplate m_transactionTemplate;
+
     private ReportPersister m_reportPersister;
     private Scheduler m_scheduler;
     private ReportDefinitionBuilder m_reportDefinitionBuilder;
@@ -262,28 +273,12 @@ public class Statsd implements SpringServiceDaemon {
     }
 
     /**
-     * @param nodeDao the nodeDao to set
-     */
-    public void setNodeDao(NodeDao nodeDao) {
-        this.m_nodeDao = nodeDao;
-    }
-
-    /**
      * <p>getResourceDao</p>
      *
      * @return a {@link org.opennms.netmgt.dao.api.ResourceDao} object.
      */
     public ResourceDao getResourceDao() {
         return m_resourceDao;
-    }
-
-    /**
-     * <p>setResourceDao</p>
-     *
-     * @param resourceDao a {@link org.opennms.netmgt.dao.api.ResourceDao} object.
-     */
-    public void setResourceDao(ResourceDao resourceDao) {
-        m_resourceDao = resourceDao;
     }
 
     /**
@@ -296,15 +291,6 @@ public class Statsd implements SpringServiceDaemon {
     }
 
     /**
-     * <p>setRrdDao</p>
-     *
-     * @param rrdDao a {@link org.opennms.netmgt.dao.api.RrdDao} object.
-     */
-    public void setRrdDao(RrdDao rrdDao) {
-        m_rrdDao = rrdDao;
-    }
-
-    /**
      * <p>getTransactionTemplate</p>
      *
      * @return a {@link org.springframework.transaction.support.TransactionTemplate} object.
@@ -313,15 +299,6 @@ public class Statsd implements SpringServiceDaemon {
         return m_transactionTemplate;
     }
 
-    /**
-     * <p>setTransactionTemplate</p>
-     *
-     * @param transactionTemplate a {@link org.springframework.transaction.support.TransactionTemplate} object.
-     */
-    public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
-        m_transactionTemplate = transactionTemplate;
-    }
-    
     /**
      * <p>getReportPersister</p>
      *
@@ -383,15 +360,6 @@ public class Statsd implements SpringServiceDaemon {
      */
     public FilterDao getFilterDao() {
         return m_filterDao;
-    }
-
-    /**
-     * <p>setFilterDao</p>
-     *
-     * @param filterDao a {@link org.opennms.netmgt.filter.FilterDao} object.
-     */
-    public void setFilterDao(FilterDao filterDao) {
-        m_filterDao = filterDao;
     }
 
     /**

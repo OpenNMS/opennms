@@ -33,13 +33,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.Set;
 
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.resource.db.SimpleDbConnectionFactory;
@@ -97,7 +97,7 @@ public class ServerDataSource implements DataSourceInterface {
 	
 			try{
 				if(opennmsConn==null || opennmsConn.isClosed()){
-					opennmsConn = Vault.getDbConnection();
+					opennmsConn = DataSourceFactory.getInstance().getConnection();
 				}
 				String url=(String)params.get("url");
 				String driver=(String)params.get("driver");
@@ -141,7 +141,7 @@ public class ServerDataSource implements DataSourceInterface {
 		LOG.debug("Finalizing...closing db connections");
 		super.finalize();
 		if(opennmsConn!=null){
-			Vault.releaseDbConnection(opennmsConn);
+			opennmsConn.close();
 		}
 		if(externalConn!=null && !externalConn.isClosed()){
 			externalConn.close();

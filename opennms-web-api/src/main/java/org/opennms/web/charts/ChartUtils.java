@@ -31,13 +31,13 @@ package org.opennms.web.charts;
 import java.awt.Color;
 import java.awt.Paint;
 import java.awt.image.BufferedImage;
-import java.beans.PropertyVetoException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -448,6 +448,18 @@ public abstract class ChartUtils {
         return null;
     }
     
+    /**
+     * Helper method used to fetch an Iterator for all defined Charts
+     *
+     * @return <code>BarChart</code> Iterator
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
+    public static Collection<BarChart> getChartCollection() throws IOException, MarshalException, ValidationException {
+        return ChartConfigFactory.getInstance().getConfiguration().getBarChartCollection();
+    }
+
     /**
      * Helper method used to fetch an Iterator for all defined Charts
      *

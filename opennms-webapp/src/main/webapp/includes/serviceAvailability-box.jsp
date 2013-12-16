@@ -40,8 +40,8 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="java.util.*,
-	    java.io.IOException,
+	import="
+		java.io.IOException,
 		org.exolab.castor.xml.MarshalException,
 		org.exolab.castor.xml.ValidationException,
 		org.opennms.web.category.*,

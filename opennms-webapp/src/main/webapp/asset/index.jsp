@@ -48,7 +48,7 @@
 
 <%
     Asset[] allAssets = this.model.getAllAssets();
-    ArrayList assetsList = new ArrayList();
+    ArrayList<Asset> assetsList = new ArrayList<Asset>();
 
     for( int i=0; i < allAssets.length; i++ ) {
         if( !"".equals(allAssets[i].getAssetNumber()) ) {

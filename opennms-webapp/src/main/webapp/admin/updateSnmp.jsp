@@ -32,12 +32,13 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.netmgt.EventConstants,
+	import="
+		org.opennms.netmgt.EventConstants,
 		org.opennms.netmgt.xml.event.Event,
 		org.opennms.core.utils.WebSecurityUtils,
 		org.opennms.web.servlet.MissingParameterException,
-		org.opennms.web.api.Util,
-		org.opennms.core.utils.InetAddressUtils"
+		org.opennms.web.api.Util
+	"
 %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>

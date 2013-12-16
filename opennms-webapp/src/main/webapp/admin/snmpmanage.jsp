@@ -32,8 +32,7 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="java.io.File,
-		java.util.*,
+	import="java.util.*,
 		org.opennms.web.element.NetworkElementFactory,
 		org.opennms.web.admin.nodeManagement.*
 	"
@@ -45,7 +44,7 @@
 
 <%
     HttpSession userSession = request.getSession(false);
-    List nodes = null;
+    List<SnmpManagedNode> nodes = null;
     Integer lineItems= new Integer(0);
     
     interfaceIndex = 0;
@@ -54,7 +53,7 @@
 	throw new ServletException("session is null");
     }
 
-    nodes = (List)userSession.getAttribute("listAllnodes.snmpmanage.jsp");
+    nodes = (List<SnmpManagedNode>)userSession.getAttribute("listAllnodes.snmpmanage.jsp");
     lineItems = (Integer)userSession.getAttribute("lineNodeItems.snmpmanage.jsp");
 
     if (nodes == null) {
@@ -137,7 +136,7 @@
 <jsp:include page="/includes/footer.jsp" flush="true"/>
 
 <%!
-      public String buildTableRows(List nodes, int start, int stop)
+      public String buildTableRows(List<SnmpManagedNode> nodes, int start, int stop)
       	throws java.sql.SQLException
       {
           StringBuffer row = new StringBuffer();
@@ -145,7 +144,7 @@
           for (int i = start; i < stop; i++)
           {
                 
-                SnmpManagedNode curNode = (SnmpManagedNode)nodes.get(i);
+                SnmpManagedNode curNode = nodes.get(i);
                 String nodelabel = NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(curNode.getNodeID());
 		int nodeid = curNode.getNodeID();
                  

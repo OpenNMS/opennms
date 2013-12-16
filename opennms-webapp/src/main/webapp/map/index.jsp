@@ -50,8 +50,8 @@
 </div>
 </center>	
 
-<script language="JavaScript" type="text/javascript" src="js/jquery/jquery.js"></script>
-<script language="JavaScript" type="text/javascript" src="js/jquery/jquery.history.js"></script>
+<script type="text/javascript" src="js/jquery/jquery.js"></script>
+<script type="text/javascript" src="js/jquery/jquery.history.js"></script>
 
 <script type="text/javascript">
 

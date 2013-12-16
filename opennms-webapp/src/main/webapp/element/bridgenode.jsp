@@ -38,7 +38,6 @@
 				org.opennms.core.utils.WebSecurityUtils,
 				java.util.*,
 				java.net.*,
-				java.util.regex.Pattern,
                 org.opennms.core.utils.InetAddressUtils,
                 org.opennms.web.svclayer.ResourceService,
                 org.springframework.web.context.WebApplicationContext,

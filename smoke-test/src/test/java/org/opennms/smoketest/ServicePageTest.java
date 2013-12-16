@@ -123,11 +123,12 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
         clickAndWait("link=Admin");
         clickAndWait("link=Configure Users, Groups and On-Call Roles");
         clickAndWait("link=Configure Users");
-        clickAndWait("link=Add New User");
+        clickAndWait("link=Add new user");
         selenium.type("id=userID", "SmokeTestUser");
         selenium.type("id=pass1", "SmokeTestPassword");
         selenium.type("id=pass2", "SmokeTestPassword");
         clickAndWait("id=doOK");
+        waitForElement("id=saveUserButton");
         clickAndWait("id=saveUserButton");
         waitForElement("id=users(SmokeTestUser).doDetails");
     }
@@ -141,10 +142,12 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
         selenium.type("id=groupName", "SmokeTestGroup");
         selenium.type("id=groupComment", "Test");
         clickAndWait("id=doOK");
+        waitForElement("name=finish");
         clickAndWait("name=finish");
-        clickAndWait("//div[@id='content']/form/table/tbody/tr[4]/td[2]/a/img");
+        clickAndWait("//div[@id='content']/form/table/tbody/tr[4]/td[2]/a/i");
         selenium.addSelection("name=availableUsers", "label=SmokeTestUser");
         selenium.click("xpath=/html/body/div[2]/form/table[2]/tbody/tr[2]/td/table/tbody/tr[2]/td/p/input[2]");
+        waitForElement("name=finish");
         clickAndWait("name=finish");
         clickAndWait("link=SmokeTestGroup");
         waitForText("SmokeTestUser");
@@ -202,10 +205,10 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
         clickAndWait("link=Admin");
         clickAndWait("link=Configure Users, Groups and On-Call Roles");
         clickAndWait("link=Configure Groups");
-        selenium.click("//div[@id='content']/form/table/tbody/tr[4]/td/a/img");
+        selenium.click("//div[@id='content']/form/table/tbody/tr[4]/td/a/i");
         clickAndWait("link=Users and Groups");
         clickAndWait("link=Configure Users");
-        selenium.click("xpath=//html/body/div[2]/form/table/tbody/tr[2]/td/a/img");  
+        selenium.click("xpath=//html/body/div[2]/form/table/tbody/tr[2]/td/a/i");  
     }
 
 }

@@ -50,9 +50,9 @@ public class FiltersTag extends TagSupport {
 
     private static final String TEMPLATE = "{LEADING}{FILTERS}";
 
-    private static final String FILTER_TEMPLATE = "<span class=\"filter\">{FILTER_DESCRIPTION}{REMOVE_FILTER_LINK}</span> ";
+    private static final String FILTER_TEMPLATE = "<span class=\"filter\">{FILTER_DESCRIPTION} {REMOVE_FILTER_LINK}</span> ";
 
-    private static final String REMOVE_FILTER_TEMPLATE = "<a href=\"{REMOVE_LINK}\" title=\"{REMOVE_LINK_TITLE}\">[-]</a>";
+    private static final String REMOVE_FILTER_TEMPLATE = "<a href=\"{REMOVE_LINK}\" title=\"{REMOVE_LINK_TITLE}\"><i class=\"fa fa-minus-square-o\"></i></a>";
 
     private String showRemoveLink;
 

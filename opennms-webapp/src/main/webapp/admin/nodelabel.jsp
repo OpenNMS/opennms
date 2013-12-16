@@ -34,12 +34,10 @@
 	session="true"
 	import="
 	  org.opennms.netmgt.utils.NodeLabel,
-    org.opennms.netmgt.model.OnmsNode.NodeType,
     org.opennms.netmgt.model.OnmsNode.NodeLabelSource,
 		org.opennms.web.servlet.MissingParameterException,
 		org.opennms.core.utils.WebSecurityUtils,
-		java.util.*,
-		java.sql.*
+		java.util.*
 	"
 %>
 

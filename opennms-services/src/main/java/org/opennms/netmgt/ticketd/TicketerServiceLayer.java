@@ -30,6 +30,7 @@ package org.opennms.netmgt.ticketd;
 
 import java.util.Map;
 
+import org.opennms.api.integration.ticketing.Plugin;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -37,9 +38,6 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @version $Id: $
  */
 @Transactional
 public interface TicketerServiceLayer {
@@ -80,4 +78,10 @@ public interface TicketerServiceLayer {
 	 *
 	 */
 	public void reloadTicketer();
+
+	/**
+	 * Set the ticketer plugin.
+	 *
+	 */
+	public void setTicketerPlugin(Plugin ticketerPlugin);
 }

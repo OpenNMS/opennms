@@ -28,33 +28,28 @@
 
 package org.opennms.core.resource;
 
-import javax.sql.DataSource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
+import java.util.StringTokenizer;
 
 /**
- * The Vault handles policies for allocating/deallocating scarce resources and
- * stores application configuration properties.
+ * The Vault stores application configuration properties.
  *
  * <p>
  * Since our code might be deployed in different environments, this class
- * provides a deployment-neutral way of retrieving scarce resources and
- * configuration properties. Our application code may be deployed as a daemon,
- * command-line interface, graphical user interface, applet, or servlet. Some of
- * the scarce resources we might like to have allocation policies for are
- * database connections, socket connections, RMI connections, CORBA connections,
- * or open temporary files.
+ * provides a deployment-neutral way of retrieving configuration properties. 
  * </p>
  *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
  */
-public class Vault {
+public abstract class Vault {
 
     /**
      * Holds all the application configuration properties.
@@ -66,67 +61,6 @@ public class Vault {
      * The default is <em>/opt/OpenNMS</em>.
      */
     private static String homeDir = "/opt/opennms/";
-
-    private static DataSource s_dataSource;
-
-    /**
-     * Private, empty constructor so that this class cannot be instantiated.
-     */
-    private Vault() {
-    }
-
-    /**
-     * <p>setDataSource</p>
-     *
-     * @param dataSource a {@link javax.sql.DataSource} object.
-     */
-    public static void setDataSource(DataSource dataSource) {
-        if (dataSource == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        s_dataSource = dataSource;
-    }
-
-    /**
-     * <p>getDataSource</p>
-     *
-     * @return a {@link javax.sql.DataSource} object.
-     */
-    public static DataSource getDataSource() {
-        if (s_dataSource == null) {
-            throw new IllegalStateException("You must set a DataSource before requesting a data source.");
-        }
-        
-        return s_dataSource;
-    }
-    
-    /**
-     * Retrieve a database connection from the datasource.
-     *
-     * @return a {@link java.sql.Connection} object.
-     * @throws java.sql.SQLException if any.
-     */
-    public static Connection getDbConnection() throws SQLException {
-        if (s_dataSource == null) {
-            throw new IllegalStateException("You must set a DataSource before requesting a database connection.");
-        }
-
-        return s_dataSource.getConnection();
-    }
-
-    /**
-     * Release a database connection.
-     *
-     * @param connection
-     *            the connection to release
-     * @throws java.sql.SQLException
-     *             If a SQL error occurs while calling connection.close() on the
-     *             connection.
-     */
-    public static void releaseDbConnection(Connection connection) throws SQLException {
-        connection.close();
-    }
 
     /**
      * Set the application configuration properties.

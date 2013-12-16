@@ -31,8 +31,6 @@
 
 <%@page language="java" contentType="text/html" session="true" import="org.opennms.web.api.Util, org.opennms.core.utils.WebSecurityUtils, org.opennms.web.servlet.*,
 org.opennms.web.element.*,
-java.util.*,
-java.io.*,
 org.opennms.web.element.NetworkElementFactory" %>
 <%
 
@@ -92,7 +90,7 @@ function doCommand(){
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
 <br/>
 
-<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<table width="100%">
   <tr>
     <td align="left">
       <table>

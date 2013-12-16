@@ -36,13 +36,10 @@
 			org.opennms.web.notification.filter.*,
                 org.opennms.web.api.Authentication,
 		java.util.*,
-		java.sql.SQLException,
 		java.io.UnsupportedEncodingException,
 		org.opennms.web.event.Event,
 		org.opennms.web.filter.Filter,
-		org.opennms.web.element.NetworkElementFactory,
-		org.opennms.core.utils.WebSecurityUtils,
-		org.opennms.netmgt.model.OnmsSeverity
+		org.opennms.core.utils.WebSecurityUtils
 	"
 %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -72,16 +69,10 @@
         throw new ServletException( "Missing a required attribute." );
     }
 
-    // Make 'action' the opposite of the current acknowledgement state
-    String action = AcknowledgeType.ACKNOWLEDGED.getShortName();
-    if (parms.ackType != null && parms.ackType == AcknowledgeType.ACKNOWLEDGED) {
-        action = AcknowledgeType.UNACKNOWLEDGED.getShortName();
-    }
-
-    pageContext.setAttribute("addPositiveFilter", "[+]");
-    pageContext.setAttribute("addNegativeFilter", "[-]");
-    pageContext.setAttribute("addBeforeFilter", "[&gt;]");
-    pageContext.setAttribute("addAfterFilter", "[&lt;]");
+    pageContext.setAttribute("addPositiveFilter", "<i class=\"fa fa-plus-square-o\"></i>");
+    pageContext.setAttribute("addNegativeFilter", "<i class=\"fa fa-minus-square-o\"></i>");
+    pageContext.setAttribute("addBeforeFilter", "<i class=\"fa fa-toggle-right\"></i>");
+    pageContext.setAttribute("addAfterFilter", "<i class=\"fa fa-toggle-left\"></i>");
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -91,6 +82,8 @@
   <jsp:param name="breadcrumb" value="<a href='notification/index.jsp' title='Notice System Page'>Notices</a>" />
   <jsp:param name="breadcrumb" value="List" />
 </jsp:include>
+
+<link rel="stylesheet" href="css/font-awesome-4.0.3/css/font-awesome.min.css">
 
 <script type="text/javascript" >
     function checkAllCheckboxes() {
@@ -239,7 +232,7 @@
             <% } %>
           </td>
           <td class="bright divider" rowspan="2"><%=eventSeverity%></td>
-          <td class="divider"><%=org.opennms.web.api.Util.formatDateToUIString(notification.getTimeSent())%></td>
+          <td class="divider"><fmt:formatDate value="<%=notification.getTimeSent()%>" type="BOTH" /></td>
           <td class="divider">
           <% final String responder = notification.getResponder(); %>
           <% if (responder != null) { %>
@@ -252,9 +245,9 @@
             </td>
           <td class="divider">
             <%if (notification.getTimeReplied()!=null) { %>
-              <%=org.opennms.web.api.Util.formatDateToUIString(notification.getTimeReplied())%>
+              <fmt:formatDate value="<%=notification.getTimeReplied()%>" type="BOTH" />
             <% } %>
-					</td>
+          </td>
           <td class="divider">
             <% if(notification.getNodeId() != 0 ) { %>
               <% Filter nodeFilter = new NodeFilter(notification.getNodeId()); %>

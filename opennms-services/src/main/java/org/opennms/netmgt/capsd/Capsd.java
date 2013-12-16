@@ -136,7 +136,7 @@ public class Capsd extends AbstractServiceDaemon {
         // Thread.dumpStack();
 
         // Stop the broadcast event receiver
-        m_eventListener.stop();
+        m_eventListener.close();
 
         // Stop the Suspect Event Processor thread pool
         m_suspectRunner.shutdown();

@@ -186,7 +186,7 @@ public class DefaultReportService implements ReportService,InitializingBean {
                                                                        File.separator + report.getReportTemplate() );
         
         if(report.getReportEngine().equals("jdbc")){
-            Connection connection = DataSourceFactory.getDataSource().getConnection();
+            Connection connection = DataSourceFactory.getInstance().getConnection();
             jasperPrint = JasperFillManager.fillReport(jasperReport,
                                                        paramListToMap(report.getParameterCollection()),
                                                        connection );

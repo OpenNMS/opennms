@@ -32,11 +32,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
-<%@page import="java.util.Set"%>
-
-<%@page import="org.opennms.netmgt.provision.persist.foreignsource.ForeignSource" %>
-<%@page import="org.opennms.web.servlet.XssRequestWrapper" %>
-
 <jsp:include page="/includes/header.jsp" flush="false" >
 	<jsp:param name="title" value="Requisition Node" />
 	<jsp:param name="headTitle" value="Provisioning Requisitions" />
@@ -163,7 +158,7 @@
 				<td>Access Method:</td>
 				<td>
 					<select name="accessMethod" >
-					<option value="" selected="true">--</option>
+					<option value="" selected="selected">--</option>
 					<option value="rsh">RSH</option>
 					<option value="ssh">SSH</option>
 					<option value="telnet">Telnet</option>
