@@ -200,6 +200,11 @@ public class VertexHopGraphProvider implements GraphProvider {
 			m_vertices.addAll(refs);
             setDirty(true);
 		}
+
+        public void removeAll(Collection<VertexRef> refs) {
+            m_vertices.removeAll(refs);
+            setDirty(true);
+        }
     }
 
     private final GraphProvider m_delegate;
