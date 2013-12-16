@@ -1,14 +1,6 @@
 package org.opennms.features.topology.app.internal;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -21,6 +13,7 @@ import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.MapViewManager;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.support.SemanticZoomLevelCriteria;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
@@ -419,6 +412,19 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
         }
 
         unselectVerticesWhichAreNotVisibleAnymore(m_graph, m_selectionManager);
+
+        for(Criteria criteria : getCriteria()){
+            if(criteria instanceof VertexHopGraphProvider.FocusNodeHopCriteria){
+                VertexHopGraphProvider.FocusNodeHopCriteria focusCriteria = (VertexHopGraphProvider.FocusNodeHopCriteria) criteria;
+                List<VertexRef> vertexRefs = new LinkedList<VertexRef>();
+                for(VertexRef vRef : focusCriteria.getVertices()){
+                    if(!displayVertices.contains(vRef)){
+                        vertexRefs.add(vRef);
+                    }
+                }
+                focusCriteria.removeAll(vertexRefs);
+            }
+        }
     }
 
     // we have to find out if each selected vertex is still displayable,
