@@ -617,13 +617,27 @@ public abstract class AbstractQueryManager implements QueryManager {
 
         for (final SnmpStore ent : snmpcoll.getIpRouteTable()) {
 
-        	IpRouteCollectorEntry route = (IpRouteCollectorEntry) ent;
+            IpRouteCollectorEntry route = (IpRouteCollectorEntry) ent;
          	
             final InetAddress nexthop = route.getIpRouteNextHop();
             final InetAddress routedest = route.getIpRouteDest();
             final InetAddress routemask = route.getIpRouteMask();
-
             LOG.debug("processRouteTable: processing routedest/routemask/routenexthop {}/{}/{}",str(routedest),str(routemask),str(nexthop));
+
+            if (getLinkd().saveRouteTable(snmpcoll.getPackageName())) {
+                OnmsIpRouteInterface ipRouteInterface = route.getOnmsIpRouteInterface(new OnmsIpRouteInterface());
+                if (ipRouteInterface != null) {
+                    LOG.debug("processRouteTable: persisting {}",
+                              ipRouteInterface);
+                    ipRouteInterface.setNode(onmsNode);
+                    ipRouteInterface.setLastPollTime(scanTime);
+                    ipRouteInterface.setStatus(StatusType.ACTIVE);
+    
+                    saveIpRouteInterface(ipRouteInterface);
+                } else {
+                    LOG.warn("processRouteTable: cannot persist routing table entry routedest/routemask/routenexthop {}/{}/{}",str(routedest),str(routemask),str(nexthop));
+                }
+            }
 
             if (nexthop == null) {
                 LOG.warn("processRouteTable: next hop not found on node {}. Skipping.", node.getNodeId());
@@ -740,19 +754,6 @@ public abstract class AbstractQueryManager implements QueryManager {
             }
         }
         node.setRouteInterfaces(routeInterfaces);
-
-        if (getLinkd().saveRouteTable(snmpcoll.getPackageName())) {
-	        for (final SnmpStore ent : snmpcoll.getIpRouteTable()) {
-	        	IpRouteCollectorEntry route = (IpRouteCollectorEntry) ent;
-	            OnmsIpRouteInterface ipRouteInterface = route.getOnmsIpRouteInterface(new OnmsIpRouteInterface());
-			LOG.debug("processRouteTable: persisting {}", ipRouteInterface);
-	            ipRouteInterface.setNode(onmsNode);
-	        	ipRouteInterface.setLastPollTime(scanTime);
-	            ipRouteInterface.setStatus(StatusType.ACTIVE);
-	            
-	            saveIpRouteInterface(ipRouteInterface);
-	        }
-        }
     }
 
     protected void processVlanTable(final OnmsNode onmsNode, final LinkableNode node, final SnmpCollection snmpcoll, final Date scanTime) {
