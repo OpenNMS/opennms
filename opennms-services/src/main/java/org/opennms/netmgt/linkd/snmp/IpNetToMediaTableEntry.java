@@ -171,6 +171,7 @@ public final class IpNetToMediaTableEntry extends SnmpStore {
                 }
 	    } catch (IllegalArgumentException e) {
 	        LOG.warn("IllegalArgumentException", e);
+	        return getDisplayString(IpNetToMediaTableEntry.INTM_PHYSADDR);
 	    }
 	    return null;
 	}
