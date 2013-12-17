@@ -32,8 +32,6 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
-import javax.sql.DataSource;
-
 /**
  * <p>QueryManager interface.</p>
  *
@@ -92,15 +90,6 @@ public interface QueryManager {
     public int getServiceCountForInterface(String ipaddr) throws SQLException;
 
     /**
-     * <p>getInterfacesWithService</p>
-     *
-     * @param svcName a {@link java.lang.String} object.
-     * @throws java.sql.SQLException if any.
-     * @return a {@link java.util.List} object.
-     */
-    public List<IfKey> getInterfacesWithService(String svcName) throws SQLException;
-
-    /**
      * <p>getServiceLostDate</p>
      *
      * @param nodeId a int.
@@ -110,21 +99,6 @@ public interface QueryManager {
      * @return a {@link java.util.Date} object.
      */
     public Date getServiceLostDate(int nodeId, String ipAddr, String svcName, int serviceId);
-
-    /**
-     * <p>setDataSource</p>
-     *
-     * @param dataSource a {@link javax.sql.DataSource} object.
-     */
-    public void setDataSource(DataSource dataSource);
-    
-    /**
-     * <p>getDataSource</p>
-     *
-     * @return a {@link javax.sql.DataSource} object.
-     */
-    @Deprecated
-    public DataSource getDataSource();
 
     /**
      * <p>openOutage</p>

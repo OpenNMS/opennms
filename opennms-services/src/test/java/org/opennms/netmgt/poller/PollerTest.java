@@ -185,7 +185,7 @@ public class PollerTest {
 		m_eventMgr.addEventListener(m_outageAnticipator);
 		m_eventMgr.setSynchronous(false);
 		
-		QueryManager queryManager = new DefaultQueryManager();
+		DefaultQueryManager queryManager = new DefaultQueryManager();
 		queryManager.setDataSource(m_db);
 		
 		DefaultPollContext pollContext = new DefaultPollContext();

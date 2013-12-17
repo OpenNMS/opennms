@@ -35,22 +35,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.sql.DataSource;
-
-import org.opennms.netmgt.poller.IfKey;
 import org.opennms.netmgt.poller.QueryManager;
 
 public class MockQueryManager implements QueryManager {
-
-    @Override
-    public void setDataSource(DataSource dataSource) {
-        // Don't do anything because this one doesn't use the database.
-    }
-    
-    @Override
-    public DataSource getDataSource() {
-        return null;
-    }
 
     /**
      * Comment for <code>m_network</code>
@@ -88,8 +75,7 @@ public class MockQueryManager implements QueryManager {
         return new ArrayList<Integer>(serviceIds);
     }
 
-    @Override
-    public List<IfKey> getInterfacesWithService(final String svcName) throws SQLException {
+    List<IfKey> getInterfacesWithService(final String svcName) throws SQLException {
         final List<IfKey> ifKeys = new ArrayList<IfKey>();
 
         MockVisitor gatherInterfaces = new MockVisitorAdapter() {

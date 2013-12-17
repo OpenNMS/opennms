@@ -73,7 +73,7 @@ public class DefaultQueryManager implements QueryManager {
     /**
      * SQL statement used to query the 'ifServices' for a nodeid/ipaddr/service
      * combination on the receipt of a 'nodeGainedService' to make sure there is
-     * atleast one row where the service status for the tuple is 'A'.
+     * at least one row where the service status for the tuple is 'A'.
      */
     final static String SQL_COUNT_IFSERVICE_STATUS = "select count(*) FROM ifServices, service WHERE nodeid=? AND ipaddr=? AND status='A' AND ifServices.serviceid=service.serviceid AND service.servicename=?";
 
@@ -94,26 +94,13 @@ public class DefaultQueryManager implements QueryManager {
     
     private DataSource m_dataSource;
 
-    /** {@inheritDoc} */
-    @Override
     public void setDataSource(DataSource dataSource) {
         m_dataSource = dataSource;
     }
 
-    /**
-     * <p>getDataSource</p>
-     *
-     * @return a {@link javax.sql.DataSource} object.
-     */
-    @Override
-    public DataSource getDataSource() {
-        return m_dataSource;
-    }
-
     private Connection getConnection() throws SQLException {
-        return getDataSource().getConnection();
+        return m_dataSource.getConnection();
     }
-
 
     /** {@inheritDoc} */
     @Override
@@ -265,41 +252,6 @@ public class DefaultQueryManager implements QueryManager {
 
     /** {@inheritDoc} */
     @Override
-    public List<IfKey> getInterfacesWithService(String svcName) throws SQLException {
-        List<IfKey> ifkeys = new ArrayList<IfKey>();
-        final DBUtils d = new DBUtils(getClass());
-
-        try {
-            
-        java.sql.Connection dbConn = getConnection();
-        d.watch(dbConn);
-
-        LOG.debug("scheduleExistingInterfaces: dbConn = {}, svcName = {}", dbConn, svcName);
-
-        PreparedStatement stmt = dbConn.prepareStatement(DefaultQueryManager.SQL_RETRIEVE_INTERFACES);
-        d.watch(stmt);
-        stmt.setString(1, svcName); // Service name
-        ResultSet rs = stmt.executeQuery();
-        d.watch(rs);
-
-        // Iterate over result set and schedule each
-        // interface/service
-        // pair which passes the criteria
-        //
-        while (rs.next()) {
-            IfKey key = new IfKey(rs.getInt(1), rs.getString(2));
-            ifkeys.add(key);
-        }
-
-        } finally {
-            d.cleanUp();
-        }
-        
-        return ifkeys;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public Date getServiceLostDate(int nodeId, String ipAddr, String svcName, int serviceId) {
         LOG.debug("getting last known status for address: {} service: {}", ipAddr, svcName);
 
@@ -403,7 +355,7 @@ public class DefaultQueryManager implements QueryManager {
             try {
                 LOG.info("openOutage: opening outage for {}:{}:{} with cause {}:{}", nodeId, ipAddr, svcName, dbId, time);
                 
-                SingleResultQuerier srq = new SingleResultQuerier(getDataSource(), outageIdSQL);
+                SingleResultQuerier srq = new SingleResultQuerier(m_dataSource, outageIdSQL);
                 srq.execute();
                 Object outageId = srq.getResult();
                 
@@ -421,7 +373,7 @@ public class DefaultQueryManager implements QueryManager {
                         convertEventTimeToTimeStamp(time),
                 };
 
-                Updater updater = new Updater(getDataSource(), sql);
+                Updater updater = new Updater(m_dataSource, sql);
                 updater.execute(values);
                 notUpdated = false;
             } catch (Throwable e) {
@@ -456,7 +408,7 @@ public class DefaultQueryManager implements QueryManager {
                         Integer.valueOf(serviceId),
                 };
 
-                Updater updater = new Updater(getDataSource(), sql);
+                Updater updater = new Updater(m_dataSource, sql);
                 updater.execute(values);
                 notUpdated = false;
             } catch (Throwable e) {
@@ -483,7 +435,7 @@ public class DefaultQueryManager implements QueryManager {
                     ipAddr,
                 };
 
-            Updater updater = new Updater(getDataSource(), sql);
+            Updater updater = new Updater(m_dataSource, sql);
             updater.execute(values);
         } catch (Throwable e) {
             LOG.error(" Error reparenting outage for {}:{} to {}", oldNodeId, ipAddr, newNodeId, e);
@@ -500,7 +452,7 @@ public class DefaultQueryManager implements QueryManager {
     public int getServiceID(String serviceName) {
         if (serviceName == null) return -1;
 
-        SingleResultQuerier querier = new SingleResultQuerier(getDataSource(), "select serviceId from service where serviceName = ?");
+        SingleResultQuerier querier = new SingleResultQuerier(m_dataSource, "select serviceId from service where serviceName = ?");
         querier.execute(serviceName);
         final Integer result = (Integer)querier.getResult();
         return result == null ? -1 : result.intValue();
@@ -510,7 +462,7 @@ public class DefaultQueryManager implements QueryManager {
     @Override
     public String[] getCriticalPath(int nodeId) {
         final String[] cpath = new String[2];
-        Querier querier = new Querier(getDataSource(), "SELECT criticalpathip, criticalpathservicename FROM pathoutage where nodeid=?") {
+        Querier querier = new Querier(m_dataSource, "SELECT criticalpathip, criticalpathservicename FROM pathoutage where nodeid=?") {
     
             @Override
             public void processRow(ResultSet rs) throws SQLException {
@@ -534,7 +486,7 @@ public class DefaultQueryManager implements QueryManager {
     @Override
     public List<String[]> getNodeServices(int nodeId){
         final LinkedList<String[]> servicemap = new LinkedList<String[]>();
-        Querier querier = new Querier(getDataSource(),SQL_FETCH_INTERFACES_AND_SERVICES_ON_NODE) {
+        Querier querier = new Querier(m_dataSource,SQL_FETCH_INTERFACES_AND_SERVICES_ON_NODE) {
             
             @Override
             public void processRow(ResultSet rs) throws SQLException {

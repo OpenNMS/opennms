@@ -47,7 +47,6 @@ import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.model.events.EventUtils;
-import org.opennms.netmgt.poller.IfKey;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.QueryManager;
 import org.opennms.netmgt.poller.ServiceMonitor;
@@ -482,7 +481,7 @@ public class MockNetworkTest extends TestCase {
     }
 
     public void testQueryManager() throws Exception {
-        QueryManager queryManager = new MockQueryManager(m_network);
+        MockQueryManager queryManager = new MockQueryManager(m_network);
         assertNotNull(queryManager);
 
         assertTrue(queryManager.activeServiceExists("Test", 1, "192.168.1.1", "ICMP"));
