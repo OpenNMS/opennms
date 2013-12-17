@@ -40,50 +40,50 @@ import java.net.InetAddress;
 public interface MonitoredService {
 
     /**
-     * Returns a URL representation of the service to monitor and its parameters
+     * Returns a URL representation of the service to monitor and its parameters.
      */
     String getSvcUrl();
 
     /**
-     * Returns the svcName associated with this monitored service
+     * Returns the svcName associated with this monitored service.
      *
      * @return the svcName
      */
     String getSvcName();
 
     /**
-     * Returns the ipAddr string associated with this monitored service
+     * Returns the ipAddr string associated with this monitored service.
      *
      * @return the ipAddr string
      */
     String getIpAddr();
 
     /**
-     * Returns the nodeId of the node that this service is associated with
+     * Returns the nodeId of the node that this service is associated with.
      *
      * @return the nodeid
      */
     int getNodeId();
 
     /**
-     * Returns the label of the node that this service is associated with
+     * Returns the label of the node that this service is associated with.
      *
      * @return the nodelabel
      */
     String getNodeLabel();
 
     /**
-     * Returns the Netinterface object for this service.  This netinterface object is
-     * guarenteed to be the same each time init or poll is called
+     * Returns the {@link NetworkInterface} object for this service.  This {@link NetworkInterface} object is
+     * guaranteed to be the same each time init or poll is called.
      *
-     * @return the Netinterface
+     * @return the {@link NetworkInterface}
      */
     NetworkInterface<InetAddress> getNetInterface();
 
     /**
-     * Returns the InetAddress associated with the service
+     * Returns the {@link InetAddress} associated with the service
      *
-     * @return the InetAddress
+     * @return the {@link InetAddress}
      */
     InetAddress getAddress();
 
