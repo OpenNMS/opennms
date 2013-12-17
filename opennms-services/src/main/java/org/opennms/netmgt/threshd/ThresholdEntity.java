@@ -41,6 +41,7 @@ import java.util.Set;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.threshd.ThresholdEvaluatorState.Status;
+import org.opennms.netmgt.threshd.ThresholdingVisitor.ThresholdingResult;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Value;
@@ -296,7 +297,7 @@ public final class ThresholdEntity implements Cloneable {
                     dsValue = RrdUtils.fetchLastValueInRange(rrdFile.getAbsolutePath(), datasource, latParms.getInterval(), latParms.getRange());
                 }
             } else {
-                throw new ThresholdingException("expr types not yet implemented", LatencyThresholder.THRESHOLDING_FAILED);
+                throw new ThresholdingException("expr types not yet implemented", ThresholdingResult.THRESHOLDING_FAILED);
             }
 
             LOG.debug("Last value from dataSource '{}' was {}", datasource, dsValue);

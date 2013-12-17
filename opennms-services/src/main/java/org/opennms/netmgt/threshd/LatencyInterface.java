@@ -39,6 +39,7 @@ import org.opennms.netmgt.config.threshd.Threshold;
 import org.opennms.netmgt.dao.support.RrdFileConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.poller.NetworkInterface;
+import org.opennms.netmgt.threshd.ThresholdingVisitor.ThresholdingResult;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,11 +52,26 @@ import org.slf4j.LoggerFactory;
  */
 public class LatencyInterface {
 
-        
-        private static final Logger LOG = LoggerFactory.getLogger(LatencyInterface.class);
-        
-        private NetworkInterface<InetAddress> m_iface;
-	private String m_serviceName;
+    /**
+     * Interface attribute key used to store the interface's node id
+     */
+    private static final String RRD_REPOSITORY_KEY = "org.opennms.netmgt.collectd.LatencyThresholder.RrdRepository";
+
+    /**
+     * Interface attribute key used to store configured thresholds
+     */
+    private static final String THRESHOLD_MAP_KEY = "org.opennms.netmgt.collectd.LatencyThresholder.ThresholdMap";
+
+    /**
+     * Interface attribute key used to store the interface's node id
+     */
+    private static final String NODE_ID_KEY = "org.opennms.netmgt.collectd.SnmpThresholder.NodeId";
+
+    private static final Logger LOG = LoggerFactory.getLogger(LatencyInterface.class);
+
+    private NetworkInterface<InetAddress> m_iface;
+
+    private String m_serviceName;
 
 	/**
 	 * <p>Constructor for LatencyInterface.</p>
@@ -81,7 +97,7 @@ public class LatencyInterface {
 	    NetworkInterface<InetAddress> iface = getNetworkInterface();
 		// ThresholdEntity map attributes
 	    //
-	    Map<String, ThresholdEntity> thresholdMap = iface.getAttribute(LatencyThresholder.THRESHOLD_MAP_KEY);
+	    Map<String, ThresholdEntity> thresholdMap = iface.getAttribute(THRESHOLD_MAP_KEY);
 	    return Collections.unmodifiableMap(thresholdMap);
 	}
 
@@ -103,11 +119,11 @@ public class LatencyInterface {
 	    NetworkInterface<InetAddress> iface = getNetworkInterface();
 	
 		int nodeId = -1;
-	    Integer tmp = iface.getAttribute(LatencyThresholder.NODE_ID_KEY);
+	    Integer tmp = iface.getAttribute(NODE_ID_KEY);
 	    if (tmp != null)
 	        nodeId = tmp.intValue();
 	    if (nodeId == -1) {
-	        throw new ThresholdingException("Threshold checking failed for " + getServiceName() + "/" + getHostAddress() + ", missing nodeId.", LatencyThresholder.THRESHOLDING_FAILED);
+	        throw new ThresholdingException("Threshold checking failed for " + getServiceName() + "/" + getHostAddress() + ", missing nodeId.", ThresholdingResult.THRESHOLDING_FAILED);
 	    }
 	    return nodeId;
 	}
@@ -122,15 +138,15 @@ public class LatencyInterface {
 	}
 
 	File getLatencyDir() throws ThresholdingException {
-		String repository = getNetworkInterface().getAttribute(LatencyThresholder.RRD_REPOSITORY_KEY);
+		String repository = getNetworkInterface().getAttribute(RRD_REPOSITORY_KEY);
 	    LOG.debug("check: rrd repository=", repository);
 	    // Get File object representing the
 	    // '/opt/OpenNMS/share/rrd/<svc_name>/<ipAddress>/' directory
 	    File latencyDir = new File(repository + File.separator + getHostAddress());
 	    if (!latencyDir.exists()) {
-	        throw new ThresholdingException("Latency directory for " + getServiceName() + "/" + getHostAddress() + " does not exist. Threshold checking failed for " + getHostAddress(), LatencyThresholder.THRESHOLDING_FAILED);
+	        throw new ThresholdingException("Latency directory for " + getServiceName() + "/" + getHostAddress() + " does not exist. Threshold checking failed for " + getHostAddress(), ThresholdingResult.THRESHOLDING_FAILED);
 	    } else if (!RrdFileConstants.isValidRRDLatencyDir(latencyDir)) {
-	        throw new ThresholdingException("Latency directory for " + getServiceName() + "/" + getHostAddress() + " is not a valid RRD latency directory. Threshold checking failed for " + getHostAddress(), LatencyThresholder.THRESHOLDING_FAILED);
+	        throw new ThresholdingException("Latency directory for " + getServiceName() + "/" + getHostAddress() + " is not a valid RRD latency directory. Threshold checking failed for " + getHostAddress(), ThresholdingResult.THRESHOLDING_FAILED);
 	    }
 	    return latencyDir;
 	}
