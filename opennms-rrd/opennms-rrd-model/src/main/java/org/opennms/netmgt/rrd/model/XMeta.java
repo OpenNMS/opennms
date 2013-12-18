@@ -35,6 +35,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  * The Class Meta.
@@ -42,32 +43,25 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Alejandro Galue <agalue@opennms.org>
  */
 @XmlRootElement(name="meta")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.PROPERTY)
 public class XMeta {
 
     /** The start time expressed in seconds since 1970-01-01 UTC. */
-    @XmlElement
     private Long start;
 
     /** The end time expressed in seconds since 1970-01-01 UTC. */
-    @XmlElement
     private Long end;
 
     /** The step (interval) time expressed in seconds. */
-    @XmlElement
-    private Integer step;
+    private Long step;
 
     /** The number of rows. */
-    @XmlElement
-    private Integer rows;
+    private Long rows;
 
     /** The number of columns. */
-    @XmlElement
-    private Integer columns;
+    private Long columns;
 
     /** The legend entries. */
-    @XmlElement(name="entry")
-    @XmlElementWrapper(name="legend")
     private List<String> legends = new ArrayList<String>();
 
     /**
@@ -76,6 +70,8 @@ public class XMeta {
      * 
      * @return the start
      */
+    @XmlElement
+    @XmlJavaTypeAdapter(LongAdapter.class)
     public Long getStart() {
         return start;
     }
@@ -95,6 +91,8 @@ public class XMeta {
      *
      * @return the end
      */
+    @XmlElement
+    @XmlJavaTypeAdapter(LongAdapter.class)
     public Long getEnd() {
         return end;
     }
@@ -114,7 +112,9 @@ public class XMeta {
      * 
      * @return the step
      */
-    public Integer getStep() {
+    @XmlElement
+    @XmlJavaTypeAdapter(LongAdapter.class)
+    public Long getStep() {
         return step;
     }
 
@@ -123,7 +123,7 @@ public class XMeta {
      *
      * @param step the new step
      */
-    public void setStep(Integer step) {
+    public void setStep(Long step) {
         this.step = step;
     }
 
@@ -132,7 +132,9 @@ public class XMeta {
      *
      * @return the rows
      */
-    public Integer getRows() {
+    @XmlElement
+    @XmlJavaTypeAdapter(LongAdapter.class)
+    public Long getRows() {
         return rows;
     }
 
@@ -141,7 +143,7 @@ public class XMeta {
      *
      * @param rows the new rows
      */
-    public void setRows(Integer rows) {
+    public void setRows(Long rows) {
         this.rows = rows;
     }
 
@@ -150,7 +152,9 @@ public class XMeta {
      *
      * @return the columns
      */
-    public Integer getColumns() {
+    @XmlElement
+    @XmlJavaTypeAdapter(LongAdapter.class)
+    public Long getColumns() {
         return columns;
     }
 
@@ -159,7 +163,7 @@ public class XMeta {
      *
      * @param columns the new columns
      */
-    public void setColumns(Integer columns) {
+    public void setColumns(Long columns) {
         this.columns = columns;
     }
 
@@ -168,6 +172,8 @@ public class XMeta {
      *
      * @return the legend entries
      */
+    @XmlElement(name="entry")
+    @XmlElementWrapper(name="legend")
     public List<String> getLegends() {
         return legends;
     }

@@ -32,10 +32,6 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.netmgt.config.*,
-		java.util.*,
-		org.opennms.netmgt.config.users.*
-	"
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >

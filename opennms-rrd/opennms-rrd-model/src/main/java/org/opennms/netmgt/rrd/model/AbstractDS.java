@@ -41,7 +41,7 @@ public abstract class AbstractDS {
     private String name;
 
     /** The minimum heartbeat. */
-    private Integer minHeartbeat = 0;
+    private Long minHeartbeat = 0L;
 
     /** The minimum value of the data source. Defaults to 'U' */
     private Double min = null;
@@ -56,7 +56,7 @@ public abstract class AbstractDS {
     private Double value = 0.0;
 
     /** The unknown seconds. */
-    private Integer unknownSec = 0;
+    private Long unknownSec = 0L;
 
     /**
      * Gets the name.
@@ -84,7 +84,8 @@ public abstract class AbstractDS {
      * @return the minimum heartbeat
      */
     @XmlElement(name="minimal_heartbeat")
-    public Integer getMinHeartbeat() {
+    @XmlJavaTypeAdapter(LongAdapter.class)
+    public Long getMinHeartbeat() {
         return minHeartbeat;
     }
 
@@ -93,7 +94,7 @@ public abstract class AbstractDS {
      *
      * @param minHeartbeat the new minimum heartbeat
      */
-    public void setMinHeartbeat(Integer minHeartbeat) {
+    public void setMinHeartbeat(Long minHeartbeat) {
         this.minHeartbeat = minHeartbeat;
     }
 
@@ -103,6 +104,7 @@ public abstract class AbstractDS {
      * @return the minimum value
      */
     @XmlElement
+    @XmlJavaTypeAdapter(DoubleAdapter.class)
     public Double getMin() {
         return min;
     }
@@ -122,6 +124,7 @@ public abstract class AbstractDS {
      * @return the maximum value
      */
     @XmlElement
+    @XmlJavaTypeAdapter(DoubleAdapter.class)
     public Double getMax() {
         return max;
     }
@@ -161,6 +164,7 @@ public abstract class AbstractDS {
      * @return the value
      */
     @XmlElement
+    @XmlJavaTypeAdapter(DoubleAdapter.class)
     public Double getValue() {
         return value;
     }
@@ -180,7 +184,8 @@ public abstract class AbstractDS {
      * @return the unknown seconds
      */
     @XmlElement(name="unknown_sec")
-    public Integer getUnknownSec() {
+    @XmlJavaTypeAdapter(LongAdapter.class)
+    public Long getUnknownSec() {
         return unknownSec;
     }
 
@@ -189,7 +194,7 @@ public abstract class AbstractDS {
      *
      * @param unknownSec the new unknown seconds
      */
-    public void setUnknownSec(Integer unknownSec) {
+    public void setUnknownSec(Long unknownSec) {
         this.unknownSec = unknownSec;
     }
 

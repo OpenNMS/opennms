@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -25,9 +25,32 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+package org.opennms.netmgt.rrd.model.v3;
 
-package org.opennms.web.element;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-public class DaoNetworkElementFactory {
+/**
+ * The Class CFTypeAdapter.
+ * <p>The XML representation sometimes contain spaces when defining the data source.</p>
+ * 
+ * @author Alejandro Galue <agalue@opennms.org>
+ */
+public class CFTypeAdapter extends XmlAdapter<String, CFType> {
+
+    /* (non-Javadoc)
+     * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
+     */
+    @Override
+    public String marshal(CFType type) throws Exception {
+        return type == null ? null : type.value();
+    }
+
+    /* (non-Javadoc)
+     * @see javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
+     */
+    @Override
+    public CFType unmarshal(String value) throws Exception {
+        return value == null ? null : CFType.fromValue(value.trim());
+    }
 
 }

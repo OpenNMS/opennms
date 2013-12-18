@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * The Class Row.
@@ -41,11 +42,10 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Alejandro Galue <agalue@opennms.org>
  */
 @XmlRootElement(name="row")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.PROPERTY)
 public class Row {
 
     /** The values. */
-    @XmlElement(name="v")
     private List<Double> values = new ArrayList<Double>();
 
     /**
@@ -53,6 +53,7 @@ public class Row {
      *
      * @return the values
      */
+    @XmlElement(name="v")
     public List<Double> getValues() {
         return values;
     }
@@ -71,6 +72,7 @@ public class Row {
      *
      * @return true, if all the values are NaN.
      */
+    @XmlTransient
     public boolean isNan() {
         for (Double v : values) {
             if (!v.isNaN()) {

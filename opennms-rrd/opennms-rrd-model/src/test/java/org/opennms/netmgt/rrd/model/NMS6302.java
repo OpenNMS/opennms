@@ -25,43 +25,32 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+package org.opennms.netmgt.rrd.model;
 
-package org.opennms.web.admin.views;
+import java.io.File;
 
-import java.io.IOException;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.opennms.netmgt.config.ViewFactory;
+import org.junit.Assert;
+import org.junit.Test;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.rrd.model.v3.RRDv3;
 
 /**
- * A servlet that handles deleting an existing view
- *
- * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * The Test Class for NMS6302.
+ * 
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
-public class DeleteViewServlet extends HttpServlet {
+public class NMS6302 {
+
     /**
-     * 
+     * Test JRobin parse.
+     *
+     * @throws Exception the exception
      */
-    private static final long serialVersionUID = 5700775415816346802L;
-
-    /** {@inheritDoc} */
-    @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String viewName = request.getParameter("viewName");
-
-        // now save to the xml file
-        try {
-            ViewFactory viewFactory = ViewFactory.getInstance();
-            viewFactory.deleteView(viewName);
-        } catch (Throwable e) {
-            throw new ServletException("Error deleting view " + viewName, e);
-        }
-
-        response.sendRedirect("list.jsp");
+    @Test
+    public void testJrobinParse() throws Exception {
+        RRDv3 rrd = JaxbUtils.unmarshal(RRDv3.class, new File("src/test/resources/ifHCOutOctets.xml"), true);
+        Assert.assertNotNull(rrd);
     }
+
 }
+

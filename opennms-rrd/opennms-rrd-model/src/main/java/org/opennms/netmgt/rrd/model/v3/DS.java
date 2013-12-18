@@ -89,6 +89,7 @@ public class DS extends AbstractDS {
      *
      * @return the CDEF
      */
+    @XmlElement
     public String getCdef() {
         return cdef;
     }

@@ -119,7 +119,7 @@ public class ManageNodesServlet extends HttpServlet {
 
         final DBUtils d = new DBUtils(getClass());
         try {
-            Connection connection = Vault.getDbConnection();
+            Connection connection = DataSourceFactory.getInstance().getConnection();
             d.watch(connection);
             try {
                 connection.setAutoCommit(false);

@@ -92,7 +92,7 @@
 
 <h3>View Role</h3>
 
-<table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black">
+<table width="100%" border="1" bordercolor="black">
 	         <tr>
     		    		<td bgcolor="#999999"><b>Name</b></td>
 				<td><c:out value="${role.name}"/></td>
@@ -132,7 +132,7 @@
 				</form>
 			</td>
 		<td colspan="4">
-			<table  border="1" cellspacing="0" cellpadding="2" bordercolor="black">
+			<table  border="1" bordercolor="black">
 			<caption>
 				<a href="javascript:prevMonth()">&#139;&#139;&#139;</a>&nbsp;
 				<B><c:out value="${calendar.monthAndYear}"/></B>&nbsp;
@@ -165,7 +165,7 @@
 	<tr align="right">
 		<td>&nbsp;</td>
 		<td>
-		<table border="0">
+		<table>
 		<tr>
 		<td>
 		<form action="<c:url value='${reqUrl}'/>" method="post" name="doneForm">

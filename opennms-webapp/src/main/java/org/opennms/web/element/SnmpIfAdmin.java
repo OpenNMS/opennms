@@ -38,6 +38,7 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.sql.SQLException;
 
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -189,7 +190,7 @@ public class SnmpIfAdmin {
     private void setIfAdminStatusInDB(int ifindex, int value) throws SQLException {
         final DBUtils d = new DBUtils(getClass());
         try {
-            java.sql.Connection conn = org.opennms.core.resource.Vault.getDbConnection();
+            java.sql.Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
             java.sql.PreparedStatement stmt = conn.prepareStatement("update snmpinterface set snmpifadminstatus = ? where nodeid = ? and snmpifindex=?;");
             d.watch(stmt);

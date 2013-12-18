@@ -41,11 +41,7 @@
 	contentType="text/html"
 	session="true"
 	import="
-		org.opennms.netmgt.EventConstants,
-		org.opennms.web.element.ElementUtil,
-		org.opennms.web.element.Interface,
-		org.opennms.web.outage.*,
-		java.util.*
+		org.opennms.web.outage.*
 	"
 %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>

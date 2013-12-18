@@ -70,10 +70,10 @@
 
 <%!
     //useful constant strings
-    public static final String ZOOM_IN_ICON = "[+]";
-    public static final String DISCARD_ICON = "[-]";
-    public static final String BEFORE_ICON  = "[&gt;]";
-    public static final String AFTER_ICON   = "[&lt;]";
+    public static final String ZOOM_IN_ICON = "<i class=\"fa fa-plus-square-o\"></i>";
+    public static final String DISCARD_ICON = "<i class=\"fa fa-minus-square-o\"></i>";
+    public static final String BEFORE_ICON  = "<i class=\"fa fa-toggle-right\"></i>";
+    public static final String AFTER_ICON   = "<i class=\"fa fa-toggle-left\"></i>";
     
     public static final DateFormat DATE_FORMAT = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM);
 %>
@@ -97,6 +97,8 @@
   <jsp:param name="breadcrumb" value="<a href='outage/index.jsp' title='Outages System Page'>Outages</a>" />
   <jsp:param name="breadcrumb" value="List" />
 </jsp:include>
+
+<link rel="stylesheet" href="css/font-awesome-4.0.3/css/font-awesome.min.css">
 
     <% if( outageCount > 0 ) { %>
       <% String baseUrl = OutageUtil.makeLink(request, parms); %>

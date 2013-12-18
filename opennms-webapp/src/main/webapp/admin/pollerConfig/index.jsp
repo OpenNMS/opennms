@@ -32,13 +32,10 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="java.io.File,
-		java.util.*,
-		org.opennms.netmgt.config.capsd.*,
+	import="java.util.*,
 		org.opennms.netmgt.config.poller.*,
 		org.opennms.netmgt.config.PollerConfigFactory,
 		org.opennms.netmgt.config.PollerConfig,
-		org.opennms.netmgt.config.CapsdConfigFactory,
 		org.opennms.core.resource.Vault,
 		org.opennms.core.utils.BundleLists,
 		org.opennms.core.utils.ConfigFileConstants,
@@ -47,8 +44,8 @@
 %>
 
 <%
-	HashMap scanablePlugin = new HashMap();
-	HashMap scanableUserPlugin = new HashMap();
+	HashMap<String,Service> scanablePlugin = new HashMap<String,Service>();
+	HashMap<String,Service> scanableUserPlugin = new HashMap<String,Service>();
 //	String protocols[] = {"SMTP", "FTP", "Postgres", "MSExchange", "MySQL", "IMAP", "POP3", "TCP", "HTTP"};
 
 	String homeDir = Vault.getHomeDir();
@@ -58,9 +55,8 @@
  
         props.load( new FileInputStream( ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONF_FILE_NAME )));
 	protoMap = getQueries();
-        String[] protocols = BundleLists.parseBundleList( this.props.getProperty( "services" ));
  
-	java.util.List polledPlugins = new ArrayList();
+	java.util.List<String> polledPlugins = new ArrayList<String>();
 	PollerConfig pollerFactory = null;
 	PollerConfiguration pollerConfig = null;
 	try
@@ -70,22 +66,19 @@
 		pollerConfig = pollerFactory.getConfiguration();
 	     	if(pollerConfig != null)
      		{
-        		Collection packColl = pollerConfig.getPackageCollection();
+        		Collection<org.opennms.netmgt.config.poller.Package> packColl = pollerConfig.getPackageCollection();
         		if(packColl != null)
         		{
-                		Iterator iter = (Iterator)packColl.iterator();
+                		Iterator<org.opennms.netmgt.config.poller.Package> iter = packColl.iterator();
                 		if(iter.hasNext())
                 		{
-                        		org.opennms.netmgt.config.poller.Package pkg = (org.opennms.netmgt.config.poller.Package)iter.next();
+                        		org.opennms.netmgt.config.poller.Package pkg = iter.next();
                         		if(pkg != null)
                         		{
-                                		Collection svcCollection = pkg.getServiceCollection();
+                                		Collection<org.opennms.netmgt.config.poller.Service> svcCollection = pkg.getServiceCollection();
                                 		if(svcCollection != null)
                                 		{
-                                        		Iterator svcIter = svcCollection.iterator();
-                                        		while(svcIter.hasNext())
-                                        		{
-                                                		org.opennms.netmgt.config.poller.Service svcs = (org.opennms.netmgt.config.poller.Service)svcIter.next();
+                                				for (Service svcs : svcCollection) {
                                                 		if(svcs != null)
                                                 		{
 									if(svcs.getUserDefined().equals("true"))
@@ -122,35 +115,32 @@
 %>
 
 <%!
-	Map protoMap;
+	Map<String,String> protoMap;
         Properties props = new java.util.Properties();
 	String[] sortedProtocols;
-    	public Map getQueries() {
-		Map queries = new HashMap();
+    	public Map<String,String> getQueries() {
+		Map<String,String> queries = new HashMap<String,String>();
 
         	if( this.protoMap == null ) {
             		String[] protocols = BundleLists.parseBundleList( this.props.getProperty( "services" ));
 			sortedProtocols = new String[protocols.length];
-            		this.protoMap = new TreeMap();
+            		this.protoMap = new TreeMap<String,String>();
  
-			TreeMap sortTmp = new TreeMap();
+			TreeMap<String,String> sortTmp = new TreeMap<String,String>();
             		for( int i = 0; i < protocols.length; i++ )
             		{
                 		this.protoMap.put(this.props.getProperty( "service." + protocols[i] + ".protocol" ), protocols[i]);
 				sortTmp.put(protocols[i], "service." + protocols[i] + ".protocol");
             		}	
 				
-			Set keys = sortTmp.keySet();
-			Iterator sortIter = keys.iterator();
+			Set<String> keys = sortTmp.keySet();
 			int i = 0;
-			while(sortIter.hasNext())
-			{
-				String key = (String)sortIter.next();
+			for (String key : keys) {
 				sortedProtocols[i++] = key;
 			}
         	}
  
-        	return( queries );
+        	return queries;
     	}
 
     	public String getProtocol(String servicename)
@@ -216,23 +206,18 @@
 	<td class="standardheader">Port</td>
       </tr>
       <%
-	Set scanned = (Set) scanablePlugin.keySet();
-	Iterator iterator = scanned.iterator();
+	Set<String> scanned = scanablePlugin.keySet();
 	int rowCounter = 0;
-	while(iterator.hasNext())
-	{
-		String servicename = (String)iterator.next();
+	for (String servicename : scanned) {
 		Service svc = (Service)scanablePlugin.get(servicename);
 		if(svc != null)
 		{
-			String user = request.getRemoteUser();
-			String status = svc.getStatus();
 			String port = "<b>-</b>";
 
-			Enumeration param = svc.enumerateParameter();
+			Enumeration<Parameter> param = svc.enumerateParameter();
 			while(param.hasMoreElements())
 			{
-				Parameter parameter = (Parameter)param.nextElement();
+				Parameter parameter = param.nextElement();
 				if(parameter != null)
 				{
 					if(parameter.getKey().equals("port") || parameter.getKey().equals("ports"))
@@ -269,7 +254,7 @@
 	</table>
 
 	<%
-        Set userscanned = (Set) scanableUserPlugin.keySet();
+        Set<String> userscanned = scanableUserPlugin.keySet();
 	if(userscanned.size() > 0)
 	{
 	%>
@@ -286,21 +271,16 @@
       </tr>
 	<%
 
-        iterator = userscanned.iterator();
-        while(iterator.hasNext())
-        {
-                String servicename = (String)iterator.next();
+        for (String servicename : userscanned) {
                 Service svc = (Service)scanableUserPlugin.get(servicename);
                 if(svc != null)
                 {
-                        String user = request.getRemoteUser();
-                        String status = svc.getStatus();
                         String port = "<b>-</b>";
 
-                        Enumeration param = svc.enumerateParameter();
+                        Enumeration<Parameter> param = svc.enumerateParameter();
                         while(param.hasMoreElements())
                         {
-                                Parameter parameter = (Parameter)param.nextElement();
+                                Parameter parameter = param.nextElement();
                                 if(parameter != null)
                                 {
                                         if(parameter.getKey().equals("port") || parameter.getKey().equals("ports"))

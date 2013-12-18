@@ -40,7 +40,7 @@
 <%@page language="java"
         contentType="text/html"
         session="true"
-        import="org.opennms.web.outage.*" %>
+%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 

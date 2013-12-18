@@ -86,7 +86,7 @@
 
 <form method="post" name="escalations" action="" >
       <%=Util.makeHiddenTags(request)%>
-      <table width="50%" cellspacing="2" cellpadding="2" border="0">
+      <table width="50%">
         <tr>
           <td valign="top" align="left">
             <%=displayTargets(request.getParameterValues("users"), request.getParameterValues("groups"))%>

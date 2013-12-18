@@ -101,7 +101,7 @@
         <input type="hidden" name="criticalSvc" value="<%=criticalSvc%>"/>
         <input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_VALIDATE_PATH_OUTAGE%>"/>
         <% if (showNodes != null && showNodes.equals("on")) { %>
-          <table width="50%" cellspacing="2" cellpadding="2" border="1">
+          <table width="50%" border="1">
             <tr bgcolor="#999999">
               <td>
                 <b>Node ID</b>
@@ -131,11 +131,8 @@
       throws FilterParseException
   {
           StringBuffer buffer = new StringBuffer();
-          SortedMap nodes = FilterDaoFactory.getInstance().getNodeMap(rule);
-          Iterator i = nodes.keySet().iterator();
-          while(i.hasNext())
-          {
-              Integer key = (Integer)i.next();
+          SortedMap<Integer,String> nodes = FilterDaoFactory.getInstance().getNodeMap(rule);
+          for (Integer key : nodes.keySet()) {
               buffer.append("<tr><td width=\"50%\" valign=\"top\">").append(key).append("</td>");
               buffer.append("<td width=\"50%\">");
               buffer.append(nodes.get(key));

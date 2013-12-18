@@ -32,7 +32,7 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="java.util.*,
+	import="
 		org.opennms.web.api.Util,
 		org.opennms.core.utils.WebSecurityUtils,
 		org.opennms.netmgt.config.*,
@@ -74,7 +74,7 @@
     <form method="post" name="groupIntervals" action="admin/notification/destinationWizard" >
       <%=Util.makeHiddenTags(request)%>
       <input type="hidden" name="sourcePage" value="groupIntervals.jsp"/>
-      <table width="50%" cellspacing="2" cellpadding="2" border="0">
+      <table width="50%">
         <tr>
           <td valign="top" align="left">
           <%=intervalTable(newPath, 

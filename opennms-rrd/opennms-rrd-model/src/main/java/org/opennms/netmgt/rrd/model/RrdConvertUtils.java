@@ -27,21 +27,23 @@
  *******************************************************************************/
 package org.opennms.netmgt.rrd.model;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.sax.SAXSource;
 
 import org.jrobin.core.RrdDb;
 import org.jrobin.core.RrdException;
-import org.opennms.core.utils.StringUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.rrd.model.v1.RRDv1;
 import org.opennms.netmgt.rrd.model.v3.RRDv3;
-import org.springframework.util.FileCopyUtils;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * The Class RRD Conversion Utilities.
@@ -83,24 +85,17 @@ public class RrdConvertUtils {
         if (rrdBinary == null) {
             throw new IllegalArgumentException("rrd.binary property must be set");
         }
-        String command = rrdBinary + " dump " + sourceFile.getAbsolutePath();
-        String[] commandArray = StringUtils.createCommandArray(command, '@');
-        RRDv3 rrd = null;
-        Process process = Runtime.getRuntime().exec(commandArray);
-        byte[] byteArray = FileCopyUtils.copyToByteArray(process.getInputStream());
-        String errors = FileCopyUtils.copyToString(new InputStreamReader(process.getErrorStream()));
-        if (errors.length() > 0) {
-            throw new RrdException("RRDtool command fail: " + errors);
-        }
-        BufferedReader reader = null;
         try {
-            InputStream is = new ByteArrayInputStream(byteArray);
-            reader = new BufferedReader(new InputStreamReader(is));
-            rrd = JaxbUtils.unmarshal(RRDv3.class, reader);
-        } finally {
-            reader.close();
+            XMLReader xmlReader = XMLReaderFactory.createXMLReader();
+            xmlReader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            Process process = Runtime.getRuntime().exec(new String[] {rrdBinary, "dump", sourceFile.getAbsolutePath()});
+            SAXSource source = new SAXSource(xmlReader, new InputSource(new InputStreamReader(process.getInputStream())));
+            JAXBContext jc = JAXBContext.newInstance(RRDv3.class);
+            Unmarshaller u = jc.createUnmarshaller();
+            return (RRDv3) u.unmarshal(source);
+        } catch (Exception e) {
+            throw new RrdException("Can't parse RRD Dump", e);
         }
-        return rrd;
     }
 
     /**
@@ -132,16 +127,15 @@ public class RrdConvertUtils {
         if (rrdBinary == null) {
             throw new IllegalArgumentException("rrd.binary property must be set");
         }
-        File xmlDest = new File(targetFile + ".xml");
-        JaxbUtils.marshal(rrd, new FileWriter(xmlDest));
-        String command = rrdBinary + " restore " + xmlDest.getAbsolutePath() + " " + targetFile.getAbsolutePath();
-        String[] commandArray = StringUtils.createCommandArray(command, '@');
-        Process process = Runtime.getRuntime().exec(commandArray);
-        String errors = FileCopyUtils.copyToString(new InputStreamReader(process.getErrorStream()));
-        if (errors.length() > 0) {
-            throw new RrdException("RRDtool command fail: " + errors);
+        try {
+            File xmlDest = new File(targetFile + ".xml");
+            JaxbUtils.marshal(rrd, new FileWriter(xmlDest));
+            Process process = Runtime.getRuntime().exec(new String[]{ rrdBinary, "restore", xmlDest.getAbsolutePath(), targetFile.getAbsolutePath() });
+            process.waitFor();
+            xmlDest.delete();
+        } catch (Exception e) {
+            throw new RrdException("Can't restore RRD", e);
         }
-        xmlDest.delete();
     }
 
     /**

@@ -44,9 +44,6 @@
 	import="org.opennms.core.utils.WebSecurityUtils,
 		org.opennms.web.category.*,
 		org.opennms.web.element.*,
-		org.opennms.netmgt.model.OnmsNode,
-		java.util.*,
-        org.springframework.util.Assert,
         org.opennms.web.servlet.MissingParameterException
 	"
 %>

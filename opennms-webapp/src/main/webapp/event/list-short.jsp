@@ -96,16 +96,12 @@
     }
 
     //useful constant strings
-    String addPositiveFilterString = "[+]";
-    String addNegativeFilterString = "[-]";
-    String addBeforeDateFilterString = "[&gt;]";
-    String addAfterDateFilterString  = "[&lt;]";    
+    String addPositiveFilterString = "<i class=\"fa fa-plus-square-o\"></i>";
+    String addNegativeFilterString = "<i class=\"fa fa-minus-square-o\"></i>";
+    String addBeforeDateFilterString = "<i class=\"fa fa-toggle-right\"></i>";
+    String addAfterDateFilterString  = "<i class=\"fa fa-toggle-left\"></i>";
 %>
 
-
-
-
-<%@page import="org.opennms.web.event.AcknowledgeType"%>
 <%@page import="org.opennms.web.event.SortStyle"%><jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Event List" />
   <jsp:param name="headTitle" value="List" />
@@ -113,6 +109,8 @@
   <jsp:param name="breadcrumb" value="<a href= 'event/index' title='Events System Page'>Events</a>" />
   <jsp:param name="breadcrumb" value="List" />
 </jsp:include>
+
+<link rel="stylesheet" href="css/font-awesome-4.0.3/css/font-awesome.min.css">
 
   <script type="text/javascript">
     function checkAllCheckboxes() {

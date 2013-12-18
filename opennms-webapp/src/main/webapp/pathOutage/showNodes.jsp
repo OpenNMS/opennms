@@ -31,9 +31,8 @@
 
 <%@page language="java" contentType="text/html" session="true"
 	import="java.sql.Connection,
-			java.util.Iterator,
 			java.util.List,
-			org.opennms.core.resource.Vault,
+			org.opennms.core.db.DataSourceFactory,
 			org.opennms.core.utils.DBUtils,
 			org.opennms.web.pathOutage.*
 " %>
@@ -68,12 +67,10 @@
           <th>Status</th>
           </tr>
 
-<%        Iterator<String> iter = nodeList.iterator();
-          final Connection conn = Vault.getDbConnection();
+<%        final Connection conn = DataSourceFactory.getInstance().getConnection();
           final DBUtils d = new DBUtils(PathOutageFactory.class, conn);
           try {
-              while( iter.hasNext() ) {
-                  String nodeid = iter.next();
+              for (String nodeid : nodeList) {
                   String labelColor[] = PathOutageFactory.getLabelAndStatus(nodeid, conn); %>
                   <tr class="CellStatus">
                   <td><a href="element/node.jsp?node=<%= nodeid %>"><%= labelColor[0] %></a></td>

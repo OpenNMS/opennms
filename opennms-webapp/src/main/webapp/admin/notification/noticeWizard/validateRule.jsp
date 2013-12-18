@@ -93,7 +93,7 @@
 
 <h3>Check the TCP/IP addresses below to ensure that the rule has given the expected results. If it hasn't click the
           'Rebuild' link below the table. If the results look good continue by clicking the 'Next' link also below the table.</h3>
-      <table width="100%" cellspacing="0" cellpadding="0" border="0">
+      <table width="100%">
         <tr>
           <td width="10%">Current Rule:
           </td>
@@ -105,7 +105,7 @@
         <%=Util.makeHiddenTags(request)%>
         <input type="hidden" name="userAction" value=""/>
         <input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_VALIDATE%>"/>
-        <table width="25%" cellspacing="2" cellpadding="2" border="1">
+        <table width="25%" border="1">
           <tr bgcolor="#999999">
             <td width="50%">
               <b>Interfaces</b>
@@ -116,7 +116,7 @@
           </tr>
           <%=buildInterfaceTable(newRule, services, notServices)%>
         </table>
-        <table width="100%" cellspacing="2" cellpadding="2" border="0">
+        <table width="100%">
          <tr> 
           <td>
            <a HREF="javascript:rebuild()">&#139;&#139;&#139; Rebuild</a>&nbsp;&nbsp;&nbsp;

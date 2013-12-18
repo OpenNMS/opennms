@@ -7,7 +7,8 @@
 	<section id="issues-current-release">
 		<title>Current Release</title>
 		<para>
-			There are no known major issues in the current release.
+			The simple topology provider (and by extension, the VMware provider) for the topology
+			UI currently do not work.  They will return in a future 1.13 release.
 		</para>
 	</section>
 

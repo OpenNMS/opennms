@@ -122,7 +122,7 @@
     <tr>
       <td valign="top">
         <h4>Event Notifications</h4>
-        <table width="100%" cellspacing="2" cellpadding="2" border="1">
+        <table width="100%" border="1">
           <tr bgcolor="#999999">
             <td colspan="3">
               <b>Actions</b>

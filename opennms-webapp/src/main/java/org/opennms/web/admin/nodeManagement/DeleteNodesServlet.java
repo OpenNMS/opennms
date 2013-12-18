@@ -140,7 +140,7 @@ public class DeleteNodesServlet extends HttpServlet {
         final DBUtils d = new DBUtils(getClass());
 
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
             PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT ipaddr FROM ipinterface WHERE nodeid=?");

@@ -33,7 +33,6 @@
 	contentType="text/html"
 	session="true"
 	import="java.util.*,
-		org.opennms.web.api.Util,
 		org.opennms.netmgt.config.*,
 		org.opennms.netmgt.config.destinationPaths.*
 	"
@@ -178,7 +177,7 @@
     <% for (int i = 0; i < targetLinks.size(); i++) { %>
      <tr>
        <td>
-        <table width="15%" bgcolor="#999999" cellspacing="2" cellpadding="2" border="1">
+        <table width="15%" bgcolor="#999999" border="1">
           <tr>
             <td width="10%">
               <b>

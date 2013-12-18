@@ -90,10 +90,10 @@
 						<option ${selected} value='${thisDsType.key}'>${thisDsType.value}</option>
     				</c:forEach>
     			</select></td>
- 			<td class="standard"><input type="text" name="dsLabel" size=30" value="${threshold.dsLabel}"/></td>
-    		<td class="standard"><input type="text" name="value" size=10" value="${threshold.value}"/></td>
-    		<td class="standard"><input type="text" name="rearm" size=10" value="${threshold.rearm}"/></td>
-    		<td class="standard"><input type="text" name="trigger" size=10" value="${threshold.trigger}"/></td>
+ 			<td class="standard"><input type="text" name="dsLabel" size="30" value="${threshold.dsLabel}"/></td>
+    		<td class="standard"><input type="text" name="value" size="10" value="${threshold.value}"/></td>
+    		<td class="standard"><input type="text" name="rearm" size="10" value="${threshold.rearm}"/></td>
+    		<td class="standard"><input type="text" name="trigger" size="10" value="${threshold.trigger}"/></td>
     	</tr>
     </table>
     <table class="normal">
@@ -140,8 +140,8 @@
             <td><input type="submit" name="submitAction" value="${updateButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/></td>          
           </c:when>
           <c:otherwise>
-            <td class="standard"><input type="text" disabled="true" size="60" value="${filter.field}"/></td>
-            <td class="standard"><input type="text" disabled="true" size="60" value="${filter.content}"/></td>
+            <td class="standard"><input type="text" disabled="disabled" size="60" value="${filter.field}"/></td>
+            <td class="standard"><input type="text" disabled="disabled" size="60" value="${filter.content}"/></td>
             <td><input type="submit" name="submitAction" value="${editButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>
                 <input type="submit" name="submitAction" value="${deleteButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>
                 <input type="submit" name="submitAction" value="${moveUpButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>

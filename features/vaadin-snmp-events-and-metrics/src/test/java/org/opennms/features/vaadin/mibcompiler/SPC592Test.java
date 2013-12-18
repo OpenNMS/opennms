@@ -51,7 +51,7 @@ import org.opennms.netmgt.xml.eventconf.Maskelement;
  * 
  * @author <a href="mailto:agalue@opennms.org">Jeff Gehlbach</a> 
  */
-public class SPC592 {
+public class SPC592Test {
 
     /** The Constant MIB_DIR. */
     protected static final File MIB_DIR = new File("src/test/resources");

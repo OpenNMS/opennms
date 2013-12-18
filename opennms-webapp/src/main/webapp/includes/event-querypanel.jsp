@@ -32,10 +32,6 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="java.util.*,
-		org.opennms.web.element.NetworkElementFactory,
-		org.opennms.web.event.*
-		"
 %>
 
 <script type="text/javascript">

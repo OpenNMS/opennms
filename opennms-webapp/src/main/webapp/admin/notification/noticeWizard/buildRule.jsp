@@ -86,7 +86,7 @@
       action="admin/notification/noticeWizard/notificationWizard" >
       <input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_RULE%>"/>
       <input type="hidden" name="nextPage" value=""/>
-      <table width="100%" cellspacing="2" cellpadding="2" border="0">
+      <table width="100%">
         <tr>
           <td valign="top" align="left">
             <p>Filtering on TCP/IP address uses a very flexible format, allowing you
@@ -157,20 +157,20 @@
     public String buildServiceOptions(String rule)
         throws SQLException
     {
-        List services = NotificationFactory.getInstance().getServiceNames();
+        List<String> services = NotificationFactory.getInstance().getServiceNames();
         StringBuffer buffer = new StringBuffer();
         
-        for (int i = 0; i < services.size(); i++)
+        for (String service : services)
         {
-            int serviceIndex = rule.indexOf((String)services.get(i));
+            int serviceIndex = rule.indexOf(service);
             //check for !is<service name>
             if (serviceIndex>0 && rule.charAt(serviceIndex-3) != '!')
             {
-                buffer.append("<option selected VALUE='" + services.get(i) + "'>" + services.get(i) + "</option>");
+                buffer.append("<option selected VALUE='" + service + "'>" + service + "</option>");
             }
             else
             {
-                buffer.append("<option VALUE='" + services.get(i) + "'>" + services.get(i) + "</option>");
+                buffer.append("<option VALUE='" + service + "'>" + service + "</option>");
             }
         }
         
@@ -180,7 +180,7 @@
     public String buildNotServiceOptions(String rule)
         throws SQLException
     {
-        List services = NotificationFactory.getInstance().getServiceNames();
+        List<String> services = NotificationFactory.getInstance().getServiceNames();
         StringBuffer buffer = new StringBuffer();
         
         for (int i = 0; i < services.size(); i++)
@@ -207,11 +207,6 @@
     {
         org.apache.regexp.RE dirRegEx = null;
         dirRegEx = new org.apache.regexp.RE( ".+\\..+\\..+\\..+");
-        
-        if (dirRegEx == null)
-        {
-            return "*.*.*.*";
-        }
         
         StringTokenizer tokens = new StringTokenizer(rule, " ");
         while(tokens.hasMoreTokens())

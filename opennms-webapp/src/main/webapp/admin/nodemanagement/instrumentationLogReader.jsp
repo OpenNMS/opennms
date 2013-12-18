@@ -35,7 +35,6 @@
 %>
 
 <%@page import="org.opennms.util.ilr.Collector"%>
-<%@page import="org.opennms.util.ilr.Filter"%>
 <%@page import="java.io.*"%>
 <%@page import="org.slf4j.*"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
@@ -109,37 +108,35 @@ pageContext.setAttribute("searchString",searchString);
 
 
 %>
-<c_rt:set var="nan" value="<%=java.lang.Double.NaN%>"/>
-<div style="float:left;">
-<form id="ILRfilter" action="admin/nodemanagement/instrumentationLogReader.jsp" method=get>
-<tableborder="0" cellpadding="0" cellspacing="0">
-<th>Filtering</th>
-<br>
-<input type="text" name="searchString" size=15 value="${searchString}"></td>
-<input type="submit" value="Submit">
+
+<body>
+<c:set var="nan" value="<%=java.lang.Double.NaN%>"/>
+<h3>Filtering</h3>
+
+<form id="ILRfilter" action="admin/nodemanagement/instrumentationLogReader.jsp" method="get" style="display:inline">
+	<input type="text" name="searchString" size="15" value="${searchString}"/>
+	<input type="submit" value="Submit"/>
 </form>
-</div>
-<div style="padding-top:20px">
-<form action="admin/nodemanagement/instrumentationLogReader.jsp" method=get>
-<input type="hidden" name="searchString" value="">
-<input type="submit" value="Reset">
+
+<form id="ILRreset" action="admin/nodemanagement/instrumentationLogReader.jsp" method="get" style="display:inline">
+	<input type="hidden" name="searchString" value=""/>
+	<input type="submit" value="Reset"/>
 </form>
-</div>
 
 <c:choose>
 	<c:when test="${filesMatched == 0}">
 		<script type="text/javascript">
-			alert ("Instrumentation.log either does not exist or is empty. Check to see if you have it set to DEBUG in log4j.properties")
+			alert ("instrumentation.log either does not exist or is empty. Check to see if you have it set to DEBUG in log4j2.properties")
 		</script>
 	</c:when>
 </c:choose>
 
-<br/>
+<br/><br/>
 <p>
-StartTime: ${collector.startTime == null ? "N/A" : collector.startTime}
+Start time: ${collector.startTime == null ? "N/A" : collector.startTime}
 </p>
 <p>
-EndTime: ${collector.endTime == null ? "N/A" : collector.endTime}
+End time: ${collector.endTime == null ? "N/A" : collector.endTime}
 </p>
 <p>
 Duration: ${collector.formattedDuration}
@@ -155,7 +152,7 @@ Threads Used: ${collector.threadCount}
 <p>
 No service collector data is available. Be sure that the <strong>Collectd</strong> and
 <strong>Instrumentation</strong> appenders are set to log at <strong>DEBUG</strong> in
-the <em>log4j.properties</em> configuration file.
+the <em>log4j2.properties</em> configuration file.
 </p>
 </c:if>
 
@@ -345,3 +342,4 @@ the <em>log4j.properties</em> configuration file.
 
 	<hr />
 <jsp:include page="/includes/footer.jsp" flush="false"/>
+</body>

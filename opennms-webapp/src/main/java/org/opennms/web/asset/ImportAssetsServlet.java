@@ -48,7 +48,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
-import org.opennms.core.resource.Vault;
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.web.api.Util;
@@ -319,7 +319,7 @@ public class ImportAssetsServlet extends HttpServlet {
 
         final DBUtils d = new DBUtils(getClass());
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
             Statement stmt = conn.createStatement();

@@ -35,7 +35,6 @@
         import="java.util.List,
         org.opennms.core.resource.Vault,
         org.opennms.core.utils.InetAddressUtils,
-        org.opennms.core.utils.WebSecurityUtils,
         org.opennms.web.controller.alarm.*,
         org.opennms.web.alarm.*,
         org.opennms.web.servlet.XssRequestWrapper,

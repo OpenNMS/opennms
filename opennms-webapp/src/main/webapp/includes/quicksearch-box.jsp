@@ -34,13 +34,12 @@
 	session="true"
 	import="
 		java.util.*,
-		org.opennms.web.element.*,
-		org.opennms.web.asset.*
+		org.opennms.web.element.*
 	"
 %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%
-  pageContext.setAttribute("serviceNameMap", new TreeMap(NetworkElementFactory.getInstance(getServletContext()).getServiceNameToIdMap()).entrySet());
+  pageContext.setAttribute("serviceNameMap", new TreeMap<String,Integer>(NetworkElementFactory.getInstance(getServletContext()).getServiceNameToIdMap()).entrySet());
 %>
 <h3 class="o-box">Quick Search</h3>
 <div class="boxWrapper">

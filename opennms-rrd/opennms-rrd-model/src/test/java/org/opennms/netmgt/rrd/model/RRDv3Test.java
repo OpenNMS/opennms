@@ -60,16 +60,16 @@ public class RRDv3Test {
         Assert.assertEquals(new Long(1233926670), rrd.getLastUpdate());
         Assert.assertEquals("ifInDiscards", rrd.getDataSources().get(0).getName());
         Assert.assertEquals(DSType.COUNTER, rrd.getDataSources().get(0).getType());
-        Assert.assertEquals(new Integer(0), rrd.getDataSources().get(0).getUnknownSec());
+        Assert.assertEquals(new Long(0), rrd.getDataSources().get(0).getUnknownSec());
 
         Assert.assertEquals(CFType.AVERAGE, rrd.getRras().get(0).getConsolidationFunction());
-        Assert.assertEquals(new Integer(1), rrd.getRras().get(0).getPdpPerRow());
+        Assert.assertEquals(new Long(1), rrd.getRras().get(0).getPdpPerRow());
 
-        Assert.assertEquals(new Integer(1), rrd.getRras().get(0).getPdpPerRow());
+        Assert.assertEquals(new Long(1), rrd.getRras().get(0).getPdpPerRow());
         Assert.assertEquals(new Long(1233321900), rrd.getStartTimestamp(rrd.getRras().get(0)));
-        Assert.assertEquals(new Integer(12), rrd.getRras().get(1).getPdpPerRow());
+        Assert.assertEquals(new Long(12), rrd.getRras().get(1).getPdpPerRow());
         Assert.assertEquals(new Long(1228572000), rrd.getStartTimestamp(rrd.getRras().get(1)));
-        Assert.assertEquals(new Integer(288), rrd.getRras().get(4).getPdpPerRow());
+        Assert.assertEquals(new Long(288), rrd.getRras().get(4).getPdpPerRow());
         Assert.assertEquals(new Long(1202342400), rrd.getStartTimestamp(rrd.getRras().get(4)));
     }
 

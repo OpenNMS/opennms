@@ -99,14 +99,10 @@ public class DefaultCategoryStatusServiceTest extends TestCase {
 	
 		View view = new View();
 		Section section = new Section();
-		org.opennms.netmgt.config.views.Category category = new org.opennms.netmgt.config.views.Category();
 		
 		section.setSectionName("Section One");
 		section.addCategory("Category One");
 		
-		category.setLabel("Category One");
-		//category.setCategoryComment("Category One Comment");
-	
 		OnmsOutage outage = new OnmsOutage();
 		Collection<OnmsOutage> outages = new ArrayList<OnmsOutage>();
 		
@@ -137,7 +133,7 @@ public class DefaultCategoryStatusServiceTest extends TestCase {
 		
 		
 		expect(viewDisplayDao.getView()).andReturn(view);
-		expect(categoryDao.getCategoryByLabel( category.getLabel() ) ).andReturn(createCategoryFromLabel(category.getLabel()));
+		expect(categoryDao.getCategoryByLabel("Category One")).andReturn(createCategoryFromLabel("Category One"));
 		expect(outageDao.matchingCurrentOutages(isA(ServiceSelector.class))).andReturn(outages);
 		
 		

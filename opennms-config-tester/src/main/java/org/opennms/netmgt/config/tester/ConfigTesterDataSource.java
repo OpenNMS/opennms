@@ -91,7 +91,7 @@ class ConfigTesterDataSource implements DataSource {
 		throw e;
 	}
 
-	private SQLException createException() {
+	private static SQLException createException() {
 		return new SQLException("No database connections should be requested when reading a configuration file, dude.");
 	}
 	

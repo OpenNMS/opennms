@@ -29,7 +29,7 @@
 
 --%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.api.Util, org.opennms.core.utils.WebSecurityUtils, org.opennms.web.servlet.*,org.opennms.web.element.*,java.util.*,java.io.*,org.opennms.web.element.NetworkElementFactory" %>
+<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.api.Util, org.opennms.core.utils.WebSecurityUtils, org.opennms.web.servlet.*,org.opennms.web.element.*,org.opennms.web.element.NetworkElementFactory" %>
 
 <%
 
@@ -241,7 +241,7 @@ function doNextRequest() {
 
 <br/>
 
-<table width="80%" cellpadding="0" cellspacing="0" border="0">
+<table width="80%">
   <tr>
     <td align="left">
       <table>

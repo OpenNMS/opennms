@@ -46,10 +46,10 @@
 	<jsp:param name="headTitle" value="Provisioning Requisitions" />
 	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
 	<jsp:param name="breadcrumb" value="<a href='admin/provisioningGroups.htm'>Provisioning Requisitions</a>" />
-	<jsp:param name="breadcrumb" value="Edit Foreign Source Definition" />
+	<jsp:param name="breadcrumb" value="Edit Scanning Behavior Definition" />
 </jsp:include>
 
-<h3>Foreign Source Name: ${fn:escapeXml(foreignSourceEditForm.foreignSourceName)}</h3>
+<h3>Scanning Behavior Name: ${fn:escapeXml(foreignSourceEditForm.foreignSourceName)}</h3>
 
 <tree:form commandName="foreignSourceEditForm"> 
 
@@ -71,7 +71,7 @@
 
 	<tree:tree root="${foreignSourceEditForm.formData}" childProperty="detectors" var="detector" varStatus="detectorIter">
 		<tree:nodeForm>
-			<tree:field label="name" property="name" />
+			<tree:field label="name" property="name" size="32" />
 			<tree:select label="class" property="pluginClass" fieldSize="${classFieldWidth}" items="${detectorTypes}" />
 			<c:if test="${!empty detector.availableParameterKeys}">
 				<tree:action label="[Add Parameter]"  action="addParameter" />
@@ -80,8 +80,8 @@
 
 		<tree:tree root="${detector}" childProperty="parameters" var="parameter" varStatus="detectorParameterIter">
 			<tree:nodeForm>
-				<tree:select label="key" property="key" items="${parameter.availableParameterKeys}" />
-				<tree:field label="value" property="value" />
+				<tree:select label="key" property="key" items="${parameter.availableParameterKeys}" fieldSize="24" />
+				<tree:field label="value" property="value" size="96" />
 			</tree:nodeForm>
 		</tree:tree>
 	</tree:tree>
@@ -93,7 +93,7 @@
 	<tree:tree root="${foreignSourceEditForm.formData}" childProperty="policies" var="policy" varStatus="policyIter">
 	   <c:set var="showDelete" value="true" scope="request" />
 		<tree:nodeForm>
-			<tree:field label="name" property="name" />
+			<tree:field label="name" property="name" size="32" />
 			<tree:select label="class" property="pluginClass" fieldSize="${classFieldWidth}" items="${policyTypes}" />
 			<c:if test="${!empty policy.availableParameterKeys}">
 				<tree:action label="[Add Parameter]"  action="addParameter" />
@@ -109,7 +109,7 @@
 						<tree:readOnlyField label="key" property="key" />
 						<c:choose>
 							<c:when test="${empty pluginInfo[policy.pluginClass].requiredItems[parameter.key]}">
-		                		<tree:field label="value" property="value" />
+						<tree:field label="value" property="value" size="96" />
 							</c:when>
 							<c:otherwise>
 		                		<tree:select label="value" property="value" fieldSize="${valueFieldWidth}" items="${pluginInfo[policy.pluginClass].requiredItems[parameter.key]}" />
@@ -120,8 +120,8 @@
 				<c:otherwise>
 					<c:set var="showDelete" value="true" scope="request" />
 					<tree:nodeForm>
-						<tree:select label="key" property="key" items="${parameter.availableParameterKeys}" />
-	               		<tree:field label="value" property="value" />
+						<tree:select label="key" property="key" items="${parameter.availableParameterKeys}" fieldSize="24" />
+				<tree:field label="value" property="value" size="96" />
 					</tree:nodeForm>
 				</c:otherwise>
 			</c:choose>

@@ -42,7 +42,6 @@
 		org.opennms.netmgt.model.OnmsNode,
 		org.opennms.core.utils.WebSecurityUtils,
 		org.opennms.web.element.*,
-		org.opennms.web.event.*,
 		org.opennms.web.api.Authentication,
 		org.opennms.web.svclayer.ResourceService
 	"
@@ -170,12 +169,8 @@
     }
 
     //find if SNMP is on this node 
-    boolean isSnmp = false;
     Service[] snmpServices = factory.getServicesOnNode(nodeId, this.snmpServiceId);
 
-    if( snmpServices != null && snmpServices.length > 0 ) 
-	isSnmp = true;
-    
     boolean isBridge = factory.isBridgeNode(nodeId);
     boolean isRouteIP = factory.isRouteInfoNode(nodeId);
 

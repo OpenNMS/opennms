@@ -53,7 +53,7 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Initializ
      */
     @Override
     public DataSource getObject() throws Exception {
-        return DataSourceFactory.getDataSource();
+        return DataSourceFactory.getInstance();
     }
 
     /**
@@ -63,7 +63,7 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Initializ
      */
     @Override
     public Class<? extends DataSource> getObjectType() {
-        return (DataSourceFactory.getDataSource() == null ? DataSource.class : DataSourceFactory.getDataSource().getClass());
+        return (DataSourceFactory.getInstance() == null ? DataSource.class : DataSourceFactory.getInstance().getClass());
     }
 
     /**
@@ -83,7 +83,7 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Initializ
      */
     @Override
     public void afterPropertiesSet() throws Exception {
-        Vault.setDataSource(DataSourceFactory.getInstance()); // Fix for Bug 4117
+        // Do nothing
     }
 
     /**

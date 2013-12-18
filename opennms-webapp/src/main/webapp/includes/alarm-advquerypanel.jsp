@@ -44,9 +44,8 @@
 %>
 <%
     //get the service names, in alpha order
-    Map serviceNameMap = new TreeMap(NetworkElementFactory.getInstance(getServletContext()).getServiceNameToIdMap());
-    Set serviceNameSet = serviceNameMap.keySet();
-    Iterator serviceNameIterator = serviceNameSet.iterator();
+    Map<String,Integer> serviceNameMap = new TreeMap<String,Integer>(NetworkElementFactory.getInstance(getServletContext()).getServiceNameToIdMap());
+    Set<String> serviceNameSet = serviceNameMap.keySet();
  
     //get the current time values
     Calendar now = Calendar.getInstance();
@@ -56,10 +55,10 @@
 %>
 
 <form action="alarm/query" method="get">
-  <table width="100%" border="0" cellpadding="2" cellspacing="0">
+  <table width="100%">
     <tr>
       <td valign="top">
-        <table width="100%" border="0" cellpadding="2" cellspacing="0" >
+        <table width="100%">
           <tr>
             <td>Alarm Text Contains:</td>
             <td>TCP/IP Address Like:</td>
@@ -98,8 +97,7 @@
               <select name="service" size="1">
                 <option selected><%=AlarmUtil.ANY_SERVICES_OPTION%></option>
 
-                <% while( serviceNameIterator.hasNext() ) { %>
-                  <% String name = (String)serviceNameIterator.next(); %>
+                <% for (String name : serviceNameSet) { %>
                   <option value="<%=serviceNameMap.get(name)%>"><%=name%></option>
                 <% } %>
               </select>
