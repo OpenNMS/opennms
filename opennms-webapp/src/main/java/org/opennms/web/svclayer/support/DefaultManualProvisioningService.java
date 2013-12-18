@@ -577,13 +577,13 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
      * 
      * Removes leading and trailing whitespace from fields that should not have any
      */
-    private void trimWhitespace(Requisition req) {
-        for (RequisitionNode node : req.getNodes()) {
+    private void trimWhitespace(final Requisition req) {
+        for (final RequisitionNode node : req.getNodes()) {
             node.setForeignId(node.getForeignId().trim());
-            node.setParentForeignSource(node.getParentForeignSource().trim());
-            node.setParentForeignId(node.getParentForeignId().trim());
-            for (RequisitionInterface intf : node.getInterfaces()) {
-                intf.setIpAddr(intf.getIpAddr().trim());
+            if (node.getParentForeignSource() != null) node.setParentForeignSource(node.getParentForeignSource().trim());
+            if (node.getParentForeignId() != null) node.setParentForeignId(node.getParentForeignId().trim());
+            for (final RequisitionInterface intf : node.getInterfaces()) {
+                if (intf.getIpAddr() != null) intf.setIpAddr(intf.getIpAddr().trim());
             }
         }
     }
