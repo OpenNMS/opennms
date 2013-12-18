@@ -288,46 +288,72 @@ public abstract class AbstractQueryManager implements QueryManager {
         node.setIsisInterfaces(isisinterfaces);
     }
     
-    protected void processOspf(final LinkableNode node, final SnmpCollection snmpcoll, final Date scanTime) {
-        
+    protected void processOspf(final LinkableNode node,
+            final SnmpCollection snmpcoll, final Date scanTime) {
+
         InetAddress ospfRouterId = snmpcoll.getOspfGeneralGroup().getOspfRouterId();
 
-        LOG.debug("processOspf: ospf node/ospfrouterid: {}/{}", node.getNodeId(), str(ospfRouterId));
+        LOG.debug("processOspf: node {}: ospf router id: {}",
+                  node.getNodeId(), str(ospfRouterId));
         if (m_zeroAddress.equals(ospfRouterId)) {
-            LOG.info("processOspf: invalid ospf ruoter id. node/ospfrouterid: {}/{}. Skipping!", node.getNodeId(), str(ospfRouterId));
+            LOG.info("processOspf: node {}: invalid ospf ruoter id: ospfrouterid: {}. Skipping!",
+                     node.getNodeId(), str(ospfRouterId));
             return;
         }
-        
+
         node.setOspfRouterId(ospfRouterId);
 
         List<OspfNbrInterface> ospfinterfaces = new ArrayList<OspfNbrInterface>();
-        
-        for (final OspfNbrTableEntry ospfNbrTableEntry: snmpcoll.getOspfNbrTable()) {
+
+        for (final OspfNbrTableEntry ospfNbrTableEntry : snmpcoll.getOspfNbrTable()) {
             InetAddress ospfNbrRouterId = ospfNbrTableEntry.getOspfNbrRouterId();
             InetAddress ospfNbrIpAddr = ospfNbrTableEntry.getOspfNbrIpAddress();
-            LOG.debug("processOspf: addind ospf node/ospfnbraddress/ospfnbrrouterid: {}/{}/{}", node.getNodeId(), str(ospfNbrIpAddr),str(ospfNbrRouterId));
-            if (m_zeroAddress.equals(ospfNbrIpAddr) || m_zeroAddress.equals(ospfNbrRouterId)) {
-                LOG.info("processOspf: ospf invalid ip address for node/ospfnbraddress/ospfnbrrouterid: {}/{}/{}", node.getNodeId(), str(ospfNbrIpAddr),str(ospfNbrRouterId));
+            LOG.debug("processOspf: node {}: ospf nei: ospfnbraddress/ospfnbrrouterid: {}/{}",
+                      node.getNodeId(), str(ospfNbrIpAddr),
+                      str(ospfNbrRouterId));
+            if (m_zeroAddress.equals(ospfNbrIpAddr)
+                    || m_zeroAddress.equals(ospfNbrRouterId)) {
+                LOG.info("processOspf: node {}: ospf nei found invalid ip address: ospfnbraddress/ospfnbrrouterid: {}/{}",
+                         node.getNodeId(), str(ospfNbrIpAddr),
+                         str(ospfNbrRouterId));
                 continue;
             }
             Integer ifIndex = ospfNbrTableEntry.getOspfNbrAddressLessIndex();
-            LOG.debug("processOspf: ospf node/ospfnbraddress/ospfnbrrouterid/ospfnbrAddressLessIfIndex: {}/{}/{}/{}", node.getNodeId(), str(ospfNbrIpAddr),str(ospfNbrRouterId),ifIndex);
+            LOG.debug("processOspf: node {}: ospf nei ospfnbrAddressLessIfIndex {} for: ospfnbraddress/ospfnbrrouterid: {}/{}",
+                      node.getNodeId(), ifIndex, str(ospfNbrIpAddr),
+                      str(ospfNbrRouterId));
             List<OnmsIpInterface> ipinterfaces = getIpInterfaceDao().findByIpAddress(str(ospfNbrIpAddr));
-            for (OnmsIpInterface ipinterface:ipinterfaces ) {
-                
-                if (ifIndex.intValue() == 0) 
+            for (OnmsIpInterface ipinterface : ipinterfaces) {
+
+                if (ifIndex.intValue() == 0)
                     ifIndex = ipinterface.getIfIndex();
-                LOG.debug("processOspf: ospf node/ospfnbraddress/ospfnbrrouterid/ifIndex: {}/{}/{}/{}", ipinterface.getNode().getId(), str(ospfNbrIpAddr),str(ospfNbrRouterId),ifIndex);
+                LOG.debug("processOspf: node {}: ospf nei nodeid/ifindex {}/{} for: ospfnbraddress/ospfnbrrouterid: {}/{}",
+                          node.getNodeId(),ipinterface.getNode().getId(), ifIndex, str(ospfNbrIpAddr),
+                          str(ospfNbrRouterId));
                 if (ifIndex != null && ifIndex.intValue() > 0) {
-                    OspfNbrInterface ospfinterface = new OspfNbrInterface(ospfNbrRouterId);
+                    OspfNbrInterface ospfinterface = new OspfNbrInterface(
+                                                                          ospfNbrRouterId);
                     ospfinterface.setOspfNbrNodeId(ipinterface.getNode().getId());
                     ospfinterface.setOspfNbrIpAddr(ospfNbrIpAddr);
-                    ospfinterface.setOspfNbrNetMask(getSnmpInterfaceDao().findByNodeIdAndIfIndex(ipinterface.getNode().getId(), ifIndex).getNetMask());
+
+                    OnmsSnmpInterface snmpinterface = getSnmpInterfaceDao().findByNodeIdAndIfIndex(ipinterface.getNode().getId(),
+                                                                                                   ifIndex);
+                    if (snmpinterface != null && snmpinterface.getNetMask() != null)
+                        ospfinterface.setOspfNbrNetMask(snmpinterface.getNetMask());
+                    else
+                        ospfinterface.setOspfNbrNetMask(InetAddressUtils.getInetAddress("255.255.255.252"));
+
                     ospfinterface.setOspfNbrIfIndex(ifIndex);
-                    LOG.debug("processOspf: adding ospf interface. node/ospfinterface: {}/{}", node.getNodeId(), ospfinterface);
+                    LOG.debug("processOspf: node {}: found ospf nei netmask {} for: ospfnbraddress/ospfnbrrouterid: {}/{}",
+                              node.getNodeId(), str(ospfinterface.getOspfNbrNetMask()),
+                              str(ospfNbrIpAddr), str(ospfNbrRouterId));
+                    LOG.debug("processOspf: node {}: adding ospf nei interface: ospfinterface: {}",
+                              node.getNodeId(), ospfinterface);
                     ospfinterfaces.add(ospfinterface);
                 } else {
-                    LOG.info("processOspf: ospf invalid if index. node/ospfnbraddress/ospfnbrrouterid/ifIndex: {}/{}/{}/{}. Skipping!", node.getNodeId(), str(ospfNbrIpAddr),str(ospfNbrRouterId),ifIndex);
+                    LOG.info("processOspf: node {}: ospf nei invalid ifindex {} for: ospfnbraddress/ospfnbrrouterid: {}/{}. Skipping!",
+                             node.getNodeId(), ifIndex, str(ospfNbrIpAddr),
+                             str(ospfNbrRouterId));
                 }
             }
         }
