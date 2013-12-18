@@ -162,18 +162,15 @@ public final class IpNetToMediaTableEntry extends SnmpStore {
                     // But that's OK, as long as we can convert it into a string, that's fine. 
                     return hexString;
                 } else {
-                    hexString = getDisplayString(IpNetToMediaTableEntry.INTM_PHYSADDR);
                     // This is the normal case that most agents conform to: the value is an ASCII 
                     // string representing the colon-separated MAC address. We just need to reformat 
                     // it to remove the colons and convert it into a 12-character string.
-                    if (hexString != null && hexString.length() == 12 )
-                        return normalizeMacAddress(getDisplayString(IpNetToMediaTableEntry.INTM_PHYSADDR));
+                    return normalizeMacAddress(getDisplayString(IpNetToMediaTableEntry.INTM_PHYSADDR));
                 }
 	    } catch (IllegalArgumentException e) {
 	        LOG.warn("IllegalArgumentException", e);
-	        return getDisplayString(IpNetToMediaTableEntry.INTM_PHYSADDR);
 	    }
-	    return null;
+            return getDisplayString(IpNetToMediaTableEntry.INTM_PHYSADDR);
 	}
 	
 	/**
