@@ -30,6 +30,7 @@ package org.opennms.netmgt.mock;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -136,4 +137,37 @@ public class MockQueryManager implements QueryManager {
     public List<java.lang.String[]> getNodeServices(int nodeId) {
         return null;
     }
+
+	@Override
+	public void closeOutagesForUnmanagedServices() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void closeOutagesForNode(Date closeDate, int eventId, int nodeId) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void closeOutagesForInterface(Date closeDate, int eventId,
+			int nodeId, String ipAddr) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void closeOutagesForService(Date closeDate, int eventId, int nodeId,
+			String ipAddr, String serviceName) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateServiceStatus(int nodeId, String ipAddr,
+			String serviceName, String status) {
+		// TODO Auto-generated method stub
+		
+	}
 }

@@ -29,6 +29,7 @@
 package org.opennms.netmgt.poller;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -45,7 +46,7 @@ public interface QueryManager {
      * @throws java.sql.SQLException if any.
      * @return a {@link java.lang.String} object.
      */
-    public String getNodeLabel(int nodeId) throws SQLException;
+    String getNodeLabel(int nodeId) throws SQLException;
 
     /**
      * <p>openOutage</p>
@@ -57,7 +58,7 @@ public interface QueryManager {
      * @param time a {@link java.lang.String} object.
      * @param outageIdSQL a {@link java.lang.String} object.
      */
-    public void openOutage(String outageIdSQL, int nodeId, String ipAddr, String svcName, int dbid, String time);
+    void openOutage(String outageIdSQL, int nodeId, String ipAddr, String svcName, int dbid, String time);
 
     /**
      * <p>resolveOutage</p>
@@ -68,7 +69,7 @@ public interface QueryManager {
      * @param dbid a int.
      * @param time a {@link java.lang.String} object.
      */
-    public void resolveOutage(int nodeId, String ipAddr, String svcName, int dbid, String time);
+    void resolveOutage(int nodeId, String ipAddr, String svcName, int dbid, String time);
 
     /**
      * <p>reparentOutages</p>
@@ -77,7 +78,7 @@ public interface QueryManager {
      * @param oldNodeId a int.
      * @param newNodeId a int.
      */
-    public void reparentOutages(String ipAddr, int oldNodeId, int newNodeId);
+    void reparentOutages(String ipAddr, int oldNodeId, int newNodeId);
 
     /**
      * <p>getCriticalPath</p>
@@ -85,12 +86,22 @@ public interface QueryManager {
      * @param nodeId a int.
      * @return an array of {@link java.lang.String} objects.
      */
-    public String[] getCriticalPath(int nodeId);
+    String[] getCriticalPath(int nodeId);
     
     /**
      * @param nodeId
      * @return
      */
-    public List<String[]> getNodeServices(int nodeId);
-    
+    List<String[]> getNodeServices(int nodeId);
+
+    void closeOutagesForUnmanagedServices();
+
+    void closeOutagesForNode(Date closeDate, int eventId, int nodeId);
+
+    void closeOutagesForInterface(Date closeDate, int eventId, int nodeId, String ipAddr);
+
+    void closeOutagesForService(Date closeDate, int eventId, int nodeId, String ipAddr, String serviceName);
+
+    void updateServiceStatus(int nodeId, String ipAddr, String serviceName, String status);
+
 }

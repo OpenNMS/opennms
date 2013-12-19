@@ -346,7 +346,7 @@ final class PollerEventProcessor implements EventListener {
             closeDate = new Date();
         }
         
-        getPoller().closeOutagesForNode(closeDate, event.getDbid(), nodeId.intValue());
+        getPoller().getQueryManager().closeOutagesForNode(closeDate, event.getDbid(), nodeId.intValue());
 
         
         PollableNode node = getNetwork().getNode(nodeId.intValue());
@@ -429,7 +429,7 @@ final class PollerEventProcessor implements EventListener {
             closeDate = new Date();
         }
         
-        getPoller().closeOutagesForInterface(closeDate, event.getDbid(), nodeId.intValue(), InetAddressUtils.str(ipAddr));
+        getPoller().getQueryManager().closeOutagesForInterface(closeDate, event.getDbid(), nodeId.intValue(), InetAddressUtils.str(ipAddr));
 
         
         PollableInterface iface = getNetwork().getInterface(nodeId.intValue(), ipAddr);
@@ -463,7 +463,7 @@ final class PollerEventProcessor implements EventListener {
             closeDate = new Date();
         }
         
-        getPoller().closeOutagesForService(closeDate, event.getDbid(), nodeId.intValue(), InetAddressUtils.str(ipAddr), service);
+        getPoller().getQueryManager().closeOutagesForService(closeDate, event.getDbid(), nodeId.intValue(), InetAddressUtils.str(ipAddr), service);
         
         PollableService svc = getNetwork().getService(nodeId.intValue(), ipAddr, service);
         if (svc == null) {
@@ -633,7 +633,7 @@ final class PollerEventProcessor implements EventListener {
                closeDate = new Date();
            }
            
-           getPoller().closeOutagesForService(closeDate, event.getDbid(), nodeId.intValue(), row[0], row[1]);
+           getPoller().getQueryManager().closeOutagesForService(closeDate, event.getDbid(), nodeId.intValue(), row[0], row[1]);
            
            PollableService svc = getNetwork().getService(nodeId.intValue(),addr,row[1]);
            

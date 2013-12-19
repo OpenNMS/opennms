@@ -127,9 +127,12 @@ public class QueryManagerDaoImpl implements QueryManager {
         }
     }
     
-    /** {@inheritDoc} */
     @Override
     public void openOutage(String outageIdSQL, int nodeId, String ipAddr, String svcName, int dbId, String time) {
+        openOutage(nodeId, ipAddr, svcName, dbId, time);
+    }
+
+    private void openOutage(int nodeId, String ipAddr, String svcName, int dbId, String time) {
         
         int attempt = 0;
         boolean notUpdated = true;
@@ -138,14 +141,6 @@ public class QueryManagerDaoImpl implements QueryManager {
         while (attempt < 2 && notUpdated) {
             try {
                 LOG.info("openOutage: opening outage for {}:{}:{} with cause {}:{}", nodeId, ipAddr, svcName, dbId, time);
-                
-                SingleResultQuerier srq = new SingleResultQuerier(getDataSource(), outageIdSQL);
-                srq.execute();
-                Object outageId = srq.getResult();
-                
-                if (outageId == null) {
-                    throw (new Exception("Null outageId returned from Querier with SQL: "+outageIdSQL));
-                }
                 
                 String sql = "insert into outages (outageId, svcLostEventId, nodeId, ipAddr, serviceId, ifLostService) values ("+outageId+", ?, ?, ?, ?, ?)";
                 

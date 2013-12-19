@@ -280,6 +280,83 @@ public class DefaultQueryManager implements QueryManager {
         return servicemap;
         
     }
+
+    /**
+     * 
+     */
+    @Override
+    public void closeOutagesForUnmanagedServices() {
+        Timestamp closeTime = new Timestamp((new java.util.Date()).getTime());
+
+        final String DB_CLOSE_OUTAGES_FOR_UNMANAGED_SERVICES = "UPDATE outages set ifregainedservice = ? where outageid in (select outages.outageid from outages, ifservices where ((outages.nodeid = ifservices.nodeid) AND (outages.ipaddr = ifservices.ipaddr) AND (outages.serviceid = ifservices.serviceid) AND ((ifservices.status = 'D') OR (ifservices.status = 'F') OR (ifservices.status = 'U')) AND (outages.ifregainedservice IS NULL)))";
+        Updater svcUpdater = new Updater(m_dataSource, DB_CLOSE_OUTAGES_FOR_UNMANAGED_SERVICES);
+        svcUpdater.execute(closeTime);
+        
+        final String DB_CLOSE_OUTAGES_FOR_UNMANAGED_INTERFACES = "UPDATE outages set ifregainedservice = ? where outageid in (select outages.outageid from outages, ipinterface where ((outages.nodeid = ipinterface.nodeid) AND (outages.ipaddr = ipinterface.ipaddr) AND ((ipinterface.ismanaged = 'F') OR (ipinterface.ismanaged = 'U')) AND (outages.ifregainedservice IS NULL)))";
+        Updater ifUpdater = new Updater(m_dataSource, DB_CLOSE_OUTAGES_FOR_UNMANAGED_INTERFACES);
+        ifUpdater.execute(closeTime);
+        
+
+
+    }
     
+    /**
+     * <p>closeOutagesForNode</p>
+     *
+     * @param closeDate a {@link java.util.Date} object.
+     * @param eventId a int.
+     * @param nodeId a int.
+     */
+    @Override
+    public void closeOutagesForNode(Date closeDate, int eventId, int nodeId) {
+        Timestamp closeTime = new Timestamp(closeDate.getTime());
+        final String DB_CLOSE_OUTAGES_FOR_NODE = "UPDATE outages set ifregainedservice = ?, svcRegainedEventId = ? where outages.nodeId = ? AND (outages.ifregainedservice IS NULL)";
+        Updater svcUpdater = new Updater(m_dataSource, DB_CLOSE_OUTAGES_FOR_NODE);
+        svcUpdater.execute(closeTime, Integer.valueOf(eventId), Integer.valueOf(nodeId));
+    }
     
+    /**
+     * <p>closeOutagesForInterface</p>
+     *
+     * @param closeDate a {@link java.util.Date} object.
+     * @param eventId a int.
+     * @param nodeId a int.
+     * @param ipAddr a {@link java.lang.String} object.
+     */
+    @Override
+    public void closeOutagesForInterface(Date closeDate, int eventId, int nodeId, String ipAddr) {
+        Timestamp closeTime = new Timestamp(closeDate.getTime());
+        final String DB_CLOSE_OUTAGES_FOR_IFACE = "UPDATE outages set ifregainedservice = ?, svcRegainedEventId = ? where outages.nodeId = ? AND outages.ipAddr = ? AND (outages.ifregainedservice IS NULL)";
+        Updater svcUpdater = new Updater(m_dataSource, DB_CLOSE_OUTAGES_FOR_IFACE);
+        svcUpdater.execute(closeTime, Integer.valueOf(eventId), Integer.valueOf(nodeId), ipAddr);
+    }
+    
+    /**
+     * <p>closeOutagesForService</p>
+     *
+     * @param closeDate a {@link java.util.Date} object.
+     * @param eventId a int.
+     * @param nodeId a int.
+     * @param ipAddr a {@link java.lang.String} object.
+     * @param serviceName a {@link java.lang.String} object.
+     */
+    @Override
+    public void closeOutagesForService(Date closeDate, int eventId, int nodeId, String ipAddr, String serviceName) {
+        Timestamp closeTime = new Timestamp(closeDate.getTime());
+        final String DB_CLOSE_OUTAGES_FOR_SERVICE = "UPDATE outages set ifregainedservice = ?, svcRegainedEventId = ? where outageid in (select outages.outageid from outages, service where outages.nodeid = ? AND outages.ipaddr = ? AND outages.serviceid = service.serviceId AND service.servicename = ? AND outages.ifregainedservice IS NULL)";
+        Updater svcUpdater = new Updater(m_dataSource, DB_CLOSE_OUTAGES_FOR_SERVICE);
+        svcUpdater.execute(closeTime, Integer.valueOf(eventId), Integer.valueOf(nodeId), ipAddr, serviceName);
+    }
+
+    @Override
+    public void updateServiceStatus(int nodeId, String ipAddr, String serviceName, String status) {
+        final String sql = "UPDATE ifservices SET status = ? WHERE id " +
+        		" IN (SELECT ifs.id FROM ifservices AS ifs JOIN service AS svc ON ifs.serviceid = svc.serviceid " +
+        		" WHERE ifs.nodeId = ? AND ifs.ipAddr = ? AND svc.servicename = ?)"; 
+
+        Updater updater = new Updater(m_dataSource, sql);
+        updater.execute(status, nodeId, ipAddr, serviceName);
+        
+    }
+
 }

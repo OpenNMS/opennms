@@ -51,10 +51,6 @@ import org.opennms.netmgt.poller.ServiceMonitorLocator;
  * <p>PollerConfig interface.</p>
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- *
- * TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Style - Code Templates
- * @version $Id: $
  */
 public interface PollerConfig {
 
@@ -316,6 +312,8 @@ public interface PollerConfig {
      * <p>getNextOutageIdSql</p>
      *
      * @return a {@link java.lang.String} object.
+     * 
+     * @deprecated We should be using DAOs that autoincrement.
      */
     String getNextOutageIdSql();
     
