@@ -291,6 +291,12 @@ public class JdbcFilterDaoTest implements InitializingBean {
     }
 
     @Test
+    @Transactional
+    public void testGetIpv6InterfaceWithServiceStatement() throws Exception {
+        assertEquals("SQL from getIpv6InterfaceWithServiceStatement", "SELECT DISTINCT ipInterface.ipAddr, service.serviceName, node.nodeID FROM ipInterface JOIN ifServices ON (ipInterface.id = ifServices.ipInterfaceId) JOIN service ON (ifServices.serviceID = service.serviceID) JOIN node ON (ipInterface.nodeID = node.nodeID) WHERE IPLIKE(ipInterface.ipaddr, '*:*:*:*:*:*:*:*')", m_dao.getInterfaceWithServiceStatement("ipaddr IPLIKE *:*:*:*:*:*:*:*"));
+    }
+
+    @Test
     @JUnitTemporaryDatabase // Not sure exactly why this test requires a fresh database but it fails without it :/
     public void testWalkNodes() throws Exception {
         final List<OnmsNode> nodes = new ArrayList<OnmsNode>();
