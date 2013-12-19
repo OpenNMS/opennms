@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.poller;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -36,35 +35,50 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.sql.DataSource;
-
+import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.Order;
+import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.Querier;
 import org.opennms.core.utils.SingleResultQuerier;
 import org.opennms.core.utils.Updater;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.OutageDao;
+import org.opennms.netmgt.dao.api.ServiceTypeDao;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsOutage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * <p>DefaultQueryManager class.</p>
+ * <p>QueryManagerDaoImpl class.</p>
  *
  * @author brozow
- *
- * TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Style - Code Templates
- * @version $Id: $
  */
-public class DefaultQueryManager implements QueryManager {
-    
-    private static final Logger LOG = LoggerFactory.getLogger(DefaultQueryManager.class);
+public class QueryManagerDaoImpl implements QueryManager {
 
-    private static final String SQL_RETRIEVE_SERVICE_STATUS = "SELECT ifregainedservice,iflostservice FROM outages WHERE nodeid = ? AND ipaddr = ? AND serviceid = ? AND iflostservice = (SELECT max(iflostservice) FROM outages WHERE nodeid = ? AND ipaddr = ? AND serviceid = ?)";
+    private static final Logger LOG = LoggerFactory.getLogger(QueryManagerDaoImpl.class);
+
+    @Autowired
+    private IpInterfaceDao m_ipInterfaceDao;
+
+    @Autowired
+    private ServiceTypeDao m_serviceTypeDao;
+
+    @Autowired
+    private OutageDao m_outageDao;
+
+    @Autowired
+    private MonitoredServiceDao m_monitoredServiceDao;
 
     /**
      * SQL statement used to query the 'ifServices' for a nodeid/ipaddr/service
@@ -74,28 +88,12 @@ public class DefaultQueryManager implements QueryManager {
     private static final String SQL_COUNT_IFSERVICE_STATUS = "select count(*) FROM ifServices, service WHERE nodeid=? AND ipaddr=? AND status='A' AND ifServices.serviceid=service.serviceid AND service.servicename=?";
 
     /**
-     * SQL statement used to count the active ifservices on the specified ip
-     * address.
-     */
-    private static final String SQL_COUNT_IFSERVICES_TO_POLL = "SELECT COUNT(*) FROM ifservices WHERE status = 'A' AND ipaddr = ?";
-
-    /**
      * SQL statement used to retrieve an active ifservice for the scheduler to
      * poll.
      */
     private static final String SQL_FETCH_IFSERVICES_TO_POLL = "SELECT if.serviceid FROM ifservices if, service s WHERE if.serviceid = s.serviceid AND if.status = 'A' AND if.ipaddr = ?";
 
     private static final String SQL_FETCH_INTERFACES_AND_SERVICES_ON_NODE ="SELECT ipaddr,servicename FROM ifservices,service WHERE nodeid= ? AND ifservices.serviceid=service.serviceid";
-
-    private DataSource m_dataSource;
-
-    public void setDataSource(DataSource dataSource) {
-        m_dataSource = dataSource;
-    }
-
-    private Connection getConnection() throws SQLException {
-        return m_dataSource.getConnection();
-    }
 
     /** {@inheritDoc} */
     @Override
@@ -108,7 +106,7 @@ public class DefaultQueryManager implements QueryManager {
             dbConn = getConnection();
             d.watch(dbConn);
 
-            stmt = dbConn.prepareStatement(DefaultQueryManager.SQL_COUNT_IFSERVICE_STATUS);
+            stmt = dbConn.prepareStatement(QueryManagerDaoImpl.SQL_COUNT_IFSERVICE_STATUS);
             d.watch(stmt);
 
             stmt.setInt(1, nodeId);
@@ -141,7 +139,7 @@ public class DefaultQueryManager implements QueryManager {
             dbConn = getConnection();
             d.watch(dbConn);
             List<Integer> serviceIds = new ArrayList<Integer>();
-            stmt = dbConn.prepareStatement(DefaultQueryManager.SQL_FETCH_IFSERVICES_TO_POLL);
+            stmt = dbConn.prepareStatement(QueryManagerDaoImpl.SQL_FETCH_IFSERVICES_TO_POLL);
             d.watch(stmt);
             stmt.setString(1, ipaddr);
             rs = stmt.executeQuery();
@@ -216,32 +214,17 @@ public class DefaultQueryManager implements QueryManager {
         return nodeLabel;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Count the active monitored services on the specified IP address.
+     */
     @Override
     public int getServiceCountForInterface(String ipaddr) throws SQLException {
-        java.sql.Connection dbConn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        final DBUtils d = new DBUtils(getClass());
-        int count = -1;
-        try {
-            dbConn = getConnection();
-            d.watch(dbConn);
-            // Count active services to poll
-            stmt = dbConn.prepareStatement(DefaultQueryManager.SQL_COUNT_IFSERVICES_TO_POLL);
-            d.watch(stmt);
-
-            stmt.setString(1, ipaddr);
-
-            rs = stmt.executeQuery();
-            d.watch(rs);
-            while (rs.next()) {
-                count = rs.getInt(1);
-                LOG.debug("restartPollingInterfaceHandler: count active ifservices to poll for interface: {}", ipaddr);
-            }
-        } finally {
-            d.cleanUp();
+        int count = 0;
+        List<OnmsIpInterface> ifaces = m_ipInterfaceDao.findByIpAddress(ipaddr);
+        for (OnmsIpInterface iface : ifaces) {
+            count += iface.getMonitoredServiceCount();
         }
+        LOG.debug("getServiceCountForInterface: count active ifservices to poll for interface: {}: {}", ipaddr, count);
         return count;
     }
 
@@ -250,58 +233,36 @@ public class DefaultQueryManager implements QueryManager {
     public Date getServiceLostDate(int nodeId, String ipAddr, int serviceId) {
         LOG.debug("getting last known status for address: {} service: {}", ipAddr, serviceId);
 
-        Date svcLostDate = null;
         // Convert service name to service identifier
         //
         if (serviceId < 0) {
             LOG.warn("Failed to retrieve service identifier for interface {} and service '{}'", ipAddr, serviceId);
-            return svcLostDate;
+            return null;
         }
 
-        PreparedStatement outagesQuery = null;
-        ResultSet outagesResult = null;
-        Timestamp regainedDate = null;
-        Timestamp lostDate = null;
+        Date regainedDate = null;
+        Date lostDate = null;
 
-        Connection dbConn = null;
-        final DBUtils d = new DBUtils(getClass());
-        try {
-            dbConn = getConnection();
-            d.watch(dbConn);
-            // get the outage information for this service on this ip address
-            outagesQuery = dbConn.prepareStatement(DefaultQueryManager.SQL_RETRIEVE_SERVICE_STATUS);
-            d.watch(outagesQuery);
+        Criteria criteria = new Criteria(OnmsOutage.class);
+        criteria.addRestriction(new EqRestriction("monitoredService.ipInterface.node.id", nodeId));
+        criteria.addRestriction(new EqRestriction("monitoredService.ipInterface.ipAddress", ipAddr));
+        criteria.addRestriction(new EqRestriction("monitoredService.serviceType.id", serviceId));
+        criteria.setOrders(Arrays.asList(new Order[] { Order.desc("ifLostService") }));
+        criteria.setLimit(1);
+        List<OnmsOutage> outage = m_outageDao.findMatching(criteria);
 
-            // add the values for the main query
-            outagesQuery.setInt(1, nodeId);
-            outagesQuery.setString(2, ipAddr);
-            outagesQuery.setInt(3, serviceId);
-
-            // add the values for the subquery
-            outagesQuery.setInt(4, nodeId);
-            outagesQuery.setString(5, ipAddr);
-            outagesQuery.setInt(6, serviceId);
-
-            outagesResult = outagesQuery.executeQuery();
-            d.watch(outagesResult);
-
-            // if there was a result then the service has been down before,
-            if (outagesResult.next()) {
-                regainedDate = outagesResult.getTimestamp(1);
-                lostDate = outagesResult.getTimestamp(2);
-                LOG.debug("getServiceLastKnownStatus: lostDate: {}", lostDate);
-            }
+        if (outage.size() == 1) {
+            regainedDate = outage.get(0).getIfRegainedService();
+            lostDate = outage.get(0).getIfLostService();
+            LOG.debug("getServiceLostDate: lostDate: {}", lostDate);
+        } else if (outage.size() == 0) {
             // the service has never been down, need to use current date for
             // both
-            else {
-                Date currentDate = new Date(System.currentTimeMillis());
-                regainedDate = new Timestamp(currentDate.getTime());
-                lostDate = new Timestamp(currentDate.getTime());
-            }
-        } catch (SQLException sqlE) {
-            LOG.error("SQL exception while retrieving last known service status for {}/{}", ipAddr, serviceId);
-        } finally {
-            d.cleanUp();
+            Date currentDate = new Date(System.currentTimeMillis());
+            regainedDate = currentDate;
+            lostDate = currentDate;
+        } else {
+            throw new IllegalStateException("getServiceLostDate: Unexpected number of outages found for query: " + outage.size());
         }
 
         // Now use retrieved outage times to determine current status
@@ -311,14 +272,14 @@ public class DefaultQueryManager implements QueryManager {
         //
         if (lostDate != null) {
             // If the service was never regained then simply
-            // assign the svc lost date.
+            // assign the service lost date.
             if (regainedDate == null) {
-                svcLostDate = new Date(lostDate.getTime());
-                LOG.debug("getServiceLastKnownStatus: svcLostDate: {}", svcLostDate);
+                LOG.debug("getServiceLastKnownStatus: svcLostDate: {}", lostDate);
+                return lostDate;
             }
         }
 
-        return svcLostDate;
+        return null;
     }
     
     
@@ -350,7 +311,7 @@ public class DefaultQueryManager implements QueryManager {
             try {
                 LOG.info("openOutage: opening outage for {}:{}:{} with cause {}:{}", nodeId, ipAddr, svcName, dbId, time);
                 
-                SingleResultQuerier srq = new SingleResultQuerier(m_dataSource, outageIdSQL);
+                SingleResultQuerier srq = new SingleResultQuerier(getDataSource(), outageIdSQL);
                 srq.execute();
                 Object outageId = srq.getResult();
                 
@@ -368,7 +329,7 @@ public class DefaultQueryManager implements QueryManager {
                         convertEventTimeToTimeStamp(time),
                 };
 
-                Updater updater = new Updater(m_dataSource, sql);
+                Updater updater = new Updater(getDataSource(), sql);
                 updater.execute(values);
                 notUpdated = false;
             } catch (Throwable e) {
@@ -403,7 +364,7 @@ public class DefaultQueryManager implements QueryManager {
                         Integer.valueOf(serviceId),
                 };
 
-                Updater updater = new Updater(m_dataSource, sql);
+                Updater updater = new Updater(getDataSource(), sql);
                 updater.execute(values);
                 notUpdated = false;
             } catch (Throwable e) {
@@ -430,7 +391,7 @@ public class DefaultQueryManager implements QueryManager {
                     ipAddr,
                 };
 
-            Updater updater = new Updater(m_dataSource, sql);
+            Updater updater = new Updater(getDataSource(), sql);
             updater.execute(values);
         } catch (Throwable e) {
             LOG.error(" Error reparenting outage for {}:{} to {}", oldNodeId, ipAddr, newNodeId, e);
@@ -438,26 +399,11 @@ public class DefaultQueryManager implements QueryManager {
         
     }
 
-    /**
-     * <p>getServiceID</p>
-     *
-     * @param serviceName a {@link java.lang.String} object.
-     * @return a int.
-     */
-    public int getServiceID(String serviceName) {
-        if (serviceName == null) return -1;
-
-        SingleResultQuerier querier = new SingleResultQuerier(m_dataSource, "select serviceId from service where serviceName = ?");
-        querier.execute(serviceName);
-        final Integer result = (Integer)querier.getResult();
-        return result == null ? -1 : result.intValue();
-    }
-
     /** {@inheritDoc} */
     @Override
     public String[] getCriticalPath(int nodeId) {
         final String[] cpath = new String[2];
-        Querier querier = new Querier(m_dataSource, "SELECT criticalpathip, criticalpathservicename FROM pathoutage where nodeid=?") {
+        Querier querier = new Querier(getDataSource(), "SELECT criticalpathip, criticalpathservicename FROM pathoutage where nodeid=?") {
     
             @Override
             public void processRow(ResultSet rs) throws SQLException {
@@ -481,7 +427,7 @@ public class DefaultQueryManager implements QueryManager {
     @Override
     public List<String[]> getNodeServices(int nodeId){
         final LinkedList<String[]> servicemap = new LinkedList<String[]>();
-        Querier querier = new Querier(m_dataSource,SQL_FETCH_INTERFACES_AND_SERVICES_ON_NODE) {
+        Querier querier = new Querier(getDataSource(),SQL_FETCH_INTERFACES_AND_SERVICES_ON_NODE) {
             
             @Override
             public void processRow(ResultSet rs) throws SQLException {

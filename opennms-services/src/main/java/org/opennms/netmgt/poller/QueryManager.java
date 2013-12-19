@@ -36,10 +36,6 @@ import java.util.List;
  * <p>QueryManager interface.</p>
  *
  * @author brozow
- *
- * TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Style - Code Templates
- * @version $Id: $
  */
 public interface QueryManager {
     /**
@@ -98,7 +94,7 @@ public interface QueryManager {
      * @param serviceId a int.
      * @return a {@link java.util.Date} object.
      */
-    public Date getServiceLostDate(int nodeId, String ipAddr, String svcName, int serviceId);
+    public Date getServiceLostDate(int nodeId, String ipAddr, int serviceId);
 
     /**
      * <p>openOutage</p>

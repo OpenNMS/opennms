@@ -114,7 +114,7 @@ public class MockQueryManager implements QueryManager {
     }
 
     @Override
-    public Date getServiceLostDate(int nodeId, String ipAddr, String svcName, int serviceId) {
+    public Date getServiceLostDate(int nodeId, String ipAddr, int serviceId) {
         return null;
     }
     @Override
