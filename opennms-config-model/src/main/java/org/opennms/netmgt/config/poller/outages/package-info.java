@@ -2,7 +2,7 @@
  * This file is part of OpenNMS(R).
  *
  * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -27,5 +27,5 @@
  *******************************************************************************/
 
 @XmlSchema(namespace = "http://xmlns.opennms.org/xsd/config/poller/outages", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
-package org.opennms.netmgt.config.poller;
+package org.opennms.netmgt.config.poller.outages;
 import javax.xml.bind.annotation.XmlSchema;

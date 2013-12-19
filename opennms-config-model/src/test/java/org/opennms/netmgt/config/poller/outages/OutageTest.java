@@ -26,44 +26,42 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.poller;
+package org.opennms.netmgt.config.poller.outages;
 
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTest;
+import org.opennms.core.test.xml.XmlTestNoCastor;
 
-public class InterfaceTest extends XmlTest<Interface> {
+public class OutageTest extends XmlTestNoCastor<Outage> {
 
-    public InterfaceTest(final Interface sampleObject, final String sampleXml, final String schemaFile) {
+    public OutageTest(final Outage sampleObject, final String sampleXml, final String schemaFile) {
         super(sampleObject, sampleXml, schemaFile);
     }
     
     @Parameters
     public static Collection<Object[]> data() throws ParseException {
-        final Interface intf1 = new Interface();
-        intf1.setAddress("100.10.0.1");
-        final Interface intf2 = new Interface();
-        intf2.setAddress("2001:100::1");
-        final Interface intf3 = new Interface();
-        intf3.setAddress("match-any");
+        final Outage outage = new Outage();
+        outage.setName("junit test");
+        outage.setType("weekly");
+        final Interface intf = new Interface();
+        intf.setAddress("match-any");
+        outage.addInterface(intf);
+        final Time time = new Time();
+        time.setDay("monday");
+        time.setBegins("13:30:00");
+        time.setEnds("14:45:00");
+        outage.addTime(time);
         
         return Arrays.asList(new Object[][] {
             {
-                intf1,
-                "<interface address='100.10.0.1'/>\n",
-                "target/classes/xsds/poll-outages.xsd"
-            },
-            {
-                intf2,
-                "<interface address='2001:100::1'/>\n",
-                "target/classes/xsds/poll-outages.xsd"
-            },
-            {
-                intf3,
-                "<interface address='match-any'/>\n",
+                outage,
+                "<outage name='junit test' type='weekly'>\n" +
+                "    <time day='monday' begins='13:30:00' ends='14:45:00'/>\n" +
+                "    <interface address='match-any'/>\n" +
+                "</outage>\n",
                 "target/classes/xsds/poll-outages.xsd"
             }
         });
