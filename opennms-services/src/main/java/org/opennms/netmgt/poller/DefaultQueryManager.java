@@ -29,13 +29,11 @@
 package org.opennms.netmgt.poller;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -55,35 +53,12 @@ import org.slf4j.LoggerFactory;
  * <p>DefaultQueryManager class.</p>
  *
  * @author brozow
- *
- * TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Style - Code Templates
- * @version $Id: $
+ * 
+ * @deprecated Use {@link QueryManagerDaoImpl} instead of this class which relies on JDBC.
  */
 public class DefaultQueryManager implements QueryManager {
     
     private static final Logger LOG = LoggerFactory.getLogger(DefaultQueryManager.class);
-
-    private static final String SQL_RETRIEVE_SERVICE_STATUS = "SELECT ifregainedservice,iflostservice FROM outages WHERE nodeid = ? AND ipaddr = ? AND serviceid = ? AND iflostservice = (SELECT max(iflostservice) FROM outages WHERE nodeid = ? AND ipaddr = ? AND serviceid = ?)";
-
-    /**
-     * SQL statement used to query the 'ifServices' for a nodeid/ipaddr/service
-     * combination on the receipt of a 'nodeGainedService' to make sure there is
-     * at least one row where the service status for the tuple is 'A'.
-     */
-    private static final String SQL_COUNT_IFSERVICE_STATUS = "select count(*) FROM ifServices, service WHERE nodeid=? AND ipaddr=? AND status='A' AND ifServices.serviceid=service.serviceid AND service.servicename=?";
-
-    /**
-     * SQL statement used to count the active ifservices on the specified ip
-     * address.
-     */
-    private static final String SQL_COUNT_IFSERVICES_TO_POLL = "SELECT COUNT(*) FROM ifservices WHERE status = 'A' AND ipaddr = ?";
-
-    /**
-     * SQL statement used to retrieve an active ifservice for the scheduler to
-     * poll.
-     */
-    private static final String SQL_FETCH_IFSERVICES_TO_POLL = "SELECT if.serviceid FROM ifservices if, service s WHERE if.serviceid = s.serviceid AND if.status = 'A' AND if.ipaddr = ?";
 
     private static final String SQL_FETCH_INTERFACES_AND_SERVICES_ON_NODE ="SELECT ipaddr,servicename FROM ifservices,service WHERE nodeid= ? AND ifservices.serviceid=service.serviceid";
 
@@ -95,96 +70,6 @@ public class DefaultQueryManager implements QueryManager {
 
     private Connection getConnection() throws SQLException {
         return m_dataSource.getConnection();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean activeServiceExists(String whichEvent, int nodeId, String ipAddr, String serviceName) {
-        java.sql.Connection dbConn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        final DBUtils d = new DBUtils(getClass());
-        try {
-            dbConn = getConnection();
-            d.watch(dbConn);
-
-            stmt = dbConn.prepareStatement(DefaultQueryManager.SQL_COUNT_IFSERVICE_STATUS);
-            d.watch(stmt);
-
-            stmt.setInt(1, nodeId);
-            stmt.setString(2, ipAddr);
-            stmt.setString(3, serviceName);
-
-            rs = stmt.executeQuery();
-            d.watch(rs);
-            while (rs.next()) {
-                return rs.getInt(1) > 0;
-            }
-
-            LOG.debug("{} {}/{}/{} active", whichEvent, nodeId, ipAddr, serviceName);
-        } catch (SQLException sqlE) {
-            LOG.error("SQLException during check to see if nodeid/ip/service is active", sqlE);
-        } finally {
-            d.cleanUp();
-        }
-        return false;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public List<Integer> getActiveServiceIdsForInterface(String ipaddr) throws SQLException {
-        final DBUtils d = new DBUtils(getClass());
-        java.sql.Connection dbConn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        try {
-            dbConn = getConnection();
-            d.watch(dbConn);
-            List<Integer> serviceIds = new ArrayList<Integer>();
-            stmt = dbConn.prepareStatement(DefaultQueryManager.SQL_FETCH_IFSERVICES_TO_POLL);
-            d.watch(stmt);
-            stmt.setString(1, ipaddr);
-            rs = stmt.executeQuery();
-            d.watch(rs);
-            LOG.debug("restartPollingInterfaceHandler: retrieve active service to poll on interface: {}", ipaddr);
-
-            while (rs.next()) {
-                serviceIds.add(rs.getInt(1));
-            }
-            return serviceIds;
-        } finally {
-            d.cleanUp();
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public int getNodeIDForInterface(String ipaddr) throws SQLException {
-        int nodeid = -1;
-        java.sql.Connection dbConn = null;
-        Statement stmt = null;
-        ResultSet rs = null;
-        final DBUtils d = new DBUtils(getClass());
-        try {
-            // Get database connection from the factory
-            dbConn = getConnection();
-            d.watch(dbConn);
-
-            // Issue query and extract nodeLabel from result set
-            stmt = dbConn.createStatement();
-            d.watch(stmt);
-            String sql = "SELECT node.nodeid FROM node, ipinterface WHERE ipinterface.ipaddr='" + ipaddr + "' AND ipinterface.nodeid=node.nodeid";
-            rs = stmt.executeQuery(sql);
-            d.watch(rs);
-            if (rs.next()) {
-                nodeid = rs.getInt(1);
-                LOG.debug("getNodeLabel: ipaddr={} nodeid={}", ipaddr, nodeid);
-            }
-        } finally {
-            d.cleanUp();
-        }
-
-        return nodeid;
     }
 
     /** {@inheritDoc} */
@@ -216,112 +101,6 @@ public class DefaultQueryManager implements QueryManager {
         return nodeLabel;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public int getServiceCountForInterface(String ipaddr) throws SQLException {
-        java.sql.Connection dbConn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        final DBUtils d = new DBUtils(getClass());
-        int count = -1;
-        try {
-            dbConn = getConnection();
-            d.watch(dbConn);
-            // Count active services to poll
-            stmt = dbConn.prepareStatement(DefaultQueryManager.SQL_COUNT_IFSERVICES_TO_POLL);
-            d.watch(stmt);
-
-            stmt.setString(1, ipaddr);
-
-            rs = stmt.executeQuery();
-            d.watch(rs);
-            while (rs.next()) {
-                count = rs.getInt(1);
-                LOG.debug("restartPollingInterfaceHandler: count active ifservices to poll for interface: {}", ipaddr);
-            }
-        } finally {
-            d.cleanUp();
-        }
-        return count;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Date getServiceLostDate(int nodeId, String ipAddr, int serviceId) {
-        LOG.debug("getting last known status for address: {} service: {}", ipAddr, serviceId);
-
-        Date svcLostDate = null;
-        // Convert service name to service identifier
-        //
-        if (serviceId < 0) {
-            LOG.warn("Failed to retrieve service identifier for interface {} and service '{}'", ipAddr, serviceId);
-            return svcLostDate;
-        }
-
-        PreparedStatement outagesQuery = null;
-        ResultSet outagesResult = null;
-        Timestamp regainedDate = null;
-        Timestamp lostDate = null;
-
-        Connection dbConn = null;
-        final DBUtils d = new DBUtils(getClass());
-        try {
-            dbConn = getConnection();
-            d.watch(dbConn);
-            // get the outage information for this service on this ip address
-            outagesQuery = dbConn.prepareStatement(DefaultQueryManager.SQL_RETRIEVE_SERVICE_STATUS);
-            d.watch(outagesQuery);
-
-            // add the values for the main query
-            outagesQuery.setInt(1, nodeId);
-            outagesQuery.setString(2, ipAddr);
-            outagesQuery.setInt(3, serviceId);
-
-            // add the values for the subquery
-            outagesQuery.setInt(4, nodeId);
-            outagesQuery.setString(5, ipAddr);
-            outagesQuery.setInt(6, serviceId);
-
-            outagesResult = outagesQuery.executeQuery();
-            d.watch(outagesResult);
-
-            // if there was a result then the service has been down before,
-            if (outagesResult.next()) {
-                regainedDate = outagesResult.getTimestamp(1);
-                lostDate = outagesResult.getTimestamp(2);
-                LOG.debug("getServiceLastKnownStatus: lostDate: {}", lostDate);
-            }
-            // the service has never been down, need to use current date for
-            // both
-            else {
-                Date currentDate = new Date(System.currentTimeMillis());
-                regainedDate = new Timestamp(currentDate.getTime());
-                lostDate = new Timestamp(currentDate.getTime());
-            }
-        } catch (SQLException sqlE) {
-            LOG.error("SQL exception while retrieving last known service status for {}/{}", ipAddr, serviceId);
-        } finally {
-            d.cleanUp();
-        }
-
-        // Now use retrieved outage times to determine current status
-        // of the service. If there was an error and we were unable
-        // to retrieve the outage times the default of AVAILABLE will
-        // be returned.
-        //
-        if (lostDate != null) {
-            // If the service was never regained then simply
-            // assign the svc lost date.
-            if (regainedDate == null) {
-                svcLostDate = new Date(lostDate.getTime());
-                LOG.debug("getServiceLastKnownStatus: svcLostDate: {}", svcLostDate);
-            }
-        }
-
-        return svcLostDate;
-    }
-    
-    
     /**
      * <p>convertEventTimeToTimeStamp</p>
      *

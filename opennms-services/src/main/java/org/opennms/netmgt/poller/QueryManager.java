@@ -29,7 +29,6 @@
 package org.opennms.netmgt.poller;
 
 import java.sql.SQLException;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -38,34 +37,6 @@ import java.util.List;
  * @author brozow
  */
 public interface QueryManager {
-    /**
-     * <p>activeServiceExists</p>
-     *
-     * @param whichEvent a {@link java.lang.String} object.
-     * @param nodeId a int.
-     * @param ipAddr a {@link java.lang.String} object.
-     * @param serviceName a {@link java.lang.String} object.
-     * @return a boolean.
-     */
-    public boolean activeServiceExists(String whichEvent, int nodeId, String ipAddr, String serviceName);
-
-    /**
-     * <p>getActiveServiceIdsForInterface</p>
-     *
-     * @param ipaddr a {@link java.lang.String} object.
-     * @throws java.sql.SQLException if any.
-     * @return a {@link java.util.List} object.
-     */
-    public List<Integer> getActiveServiceIdsForInterface(String ipaddr) throws SQLException;
-
-    /**
-     * <p>getNodeIDForInterface</p>
-     *
-     * @param ipaddr a {@link java.lang.String} object.
-     * @throws java.sql.SQLException if any.
-     * @return a int.
-     */
-    public int getNodeIDForInterface(String ipaddr) throws SQLException;
 
     /**
      * <p>getNodeLabel</p>
@@ -75,26 +46,6 @@ public interface QueryManager {
      * @return a {@link java.lang.String} object.
      */
     public String getNodeLabel(int nodeId) throws SQLException;
-
-    /**
-     * <p>getServiceCountForInterface</p>
-     *
-     * @param ipaddr a {@link java.lang.String} object.
-     * @throws java.sql.SQLException if any.
-     * @return a int.
-     */
-    public int getServiceCountForInterface(String ipaddr) throws SQLException;
-
-    /**
-     * <p>getServiceLostDate</p>
-     *
-     * @param nodeId a int.
-     * @param ipAddr a {@link java.lang.String} object.
-     * @param svcName a {@link java.lang.String} object.
-     * @param serviceId a int.
-     * @return a {@link java.util.Date} object.
-     */
-    public Date getServiceLostDate(int nodeId, String ipAddr, int serviceId);
 
     /**
      * <p>openOutage</p>
@@ -127,8 +78,6 @@ public interface QueryManager {
      * @param newNodeId a int.
      */
     public void reparentOutages(String ipAddr, int oldNodeId, int newNodeId);
-    
-    
 
     /**
      * <p>getCriticalPath</p>
@@ -138,6 +87,10 @@ public interface QueryManager {
      */
     public String[] getCriticalPath(int nodeId);
     
+    /**
+     * @param nodeId
+     * @return
+     */
     public List<String[]> getNodeServices(int nodeId);
     
 }

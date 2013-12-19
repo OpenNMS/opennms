@@ -30,7 +30,6 @@ package org.opennms.netmgt.mock;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -51,13 +50,11 @@ public class MockQueryManager implements QueryManager {
         this.m_network = network;
     }
 
-    @Override
-    public boolean activeServiceExists(String whichEvent, int nodeId, String ipAddr, String serviceName) {
+    boolean activeServiceExists(String whichEvent, int nodeId, String ipAddr, String serviceName) {
         return m_network.getService(nodeId, ipAddr, serviceName) != null;
     }
 
-    @Override
-    public List<Integer> getActiveServiceIdsForInterface(final String ipaddr) throws SQLException {
+    List<Integer> getActiveServiceIdsForInterface(final String ipaddr) throws SQLException {
         final Set<Integer> serviceIds = new HashSet<Integer>();
 
         MockVisitor gatherServices = new MockVisitorAdapter() {
@@ -96,10 +93,8 @@ public class MockQueryManager implements QueryManager {
         return ifKeys;
     }
 
-    @Override
-    public int getNodeIDForInterface(final String ipaddr) throws SQLException {
+    int getNodeIDForInterface(final String ipaddr) throws SQLException {
         return m_network.getNodeIdForInterface(ipaddr);
-
     }
 
     @Override
@@ -108,15 +103,10 @@ public class MockQueryManager implements QueryManager {
         return (node == null ? null : node.getLabel());
     }
 
-    @Override
-    public int getServiceCountForInterface(String ipaddr) throws SQLException {
+    int getServiceCountForInterface(String ipaddr) throws SQLException {
         return getActiveServiceIdsForInterface(ipaddr).size();
     }
 
-    @Override
-    public Date getServiceLostDate(int nodeId, String ipAddr, int serviceId) {
-        return null;
-    }
     @Override
     public void openOutage(String outageIdSQL, int nodeId, String ipAddr, String svcName, int dbid, String time) {
         // TODO Auto-generated method stub
