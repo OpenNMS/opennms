@@ -31,6 +31,7 @@ package org.opennms.netmgt.dao.api;
 import java.util.Collection;
 import java.util.List;
 
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.model.outage.OutageSummary;
@@ -54,7 +55,12 @@ public interface OutageDao extends OnmsDao<OnmsOutage, Integer> {
      * @return a {@link java.util.Collection} object.
      */
     Collection<OnmsOutage> currentOutages();
-    
+
+    /**
+     * <p>currentOutageForService</p>
+     */
+    OnmsOutage currentOutageForService(OnmsMonitoredService service);
+
     /**
      * <p>matchingCurrentOutages</p>
      *
