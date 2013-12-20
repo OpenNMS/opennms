@@ -14,9 +14,7 @@ public class CategoryHopCriteriaFactory {
 	}
 	
 	public CategoryHopCriteria getCriteria(String categoryName) {
-		CategoryHopCriteria retval = new CategoryHopCriteria(categoryName);
-		retval.setCategoryDao(m_categoryDao);
-		retval.setNodeDao(m_nodeDao);
+		CategoryHopCriteria retval = new CategoryHopCriteria(categoryName, m_nodeDao, m_categoryDao);
 		return retval;
 	}
 }

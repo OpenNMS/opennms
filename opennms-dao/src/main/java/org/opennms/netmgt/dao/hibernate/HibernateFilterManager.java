@@ -46,6 +46,7 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 public class HibernateFilterManager implements FilterManager {
     
     private HibernateTemplate m_template;
+    private String[] m_authorizationGroups;
     
     
     /**
@@ -65,6 +66,7 @@ public class HibernateFilterManager implements FilterManager {
      */
     @Override
     public void disableAuthorizationFilter() {
+        m_authorizationGroups = null;
         HibernateCallback<Object> cb = new HibernateCallback<Object>() {
 
             @Override
@@ -78,6 +80,16 @@ public class HibernateFilterManager implements FilterManager {
         m_template.execute(cb);
     }
 
+    @Override
+    public String[] getAuthorizationGroups() {
+        return m_authorizationGroups;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return m_authorizationGroups != null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     /* (non-Javadoc)
      * @see org.opennms.netmgt.model.FilterManager#enableAuthorizationFilter(java.lang.String[])
      */
@@ -88,6 +100,7 @@ public class HibernateFilterManager implements FilterManager {
      */
     @Override
     public void enableAuthorizationFilter(final String[] authorizationGroups) {
+        m_authorizationGroups = authorizationGroups;
         HibernateCallback<Object> cb = new HibernateCallback<Object>() {
 
             @Override

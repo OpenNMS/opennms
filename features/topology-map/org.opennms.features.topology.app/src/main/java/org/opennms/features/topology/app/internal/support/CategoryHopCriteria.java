@@ -1,17 +1,9 @@
 package org.opennms.features.topology.app.internal.support;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
-import org.opennms.features.topology.api.topo.AbstractVertex;
-import org.opennms.features.topology.api.topo.AbstractVertexRef;
-import org.opennms.features.topology.api.topo.CollapsibleCriteria;
-import org.opennms.features.topology.api.topo.RefComparator;
-import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.api.topo.*;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -25,8 +17,10 @@ public class CategoryHopCriteria extends VertexHopCriteria implements Collapsibl
 	private boolean m_collapsed = false;
 	private CategoryVertex m_collapsedVertex;
 
-	public static class CategoryVertex extends AbstractVertex {
-		public CategoryVertex(String namespace, String id, String label) {
+	public static class CategoryVertex extends AbstractVertex implements GroupRef {
+		private Set<VertexRef> m_children = new HashSet<VertexRef>();
+
+        public CategoryVertex(String namespace, String id, String label) {
 			super(namespace, id, label);
 			setIconKey("group");
 		}
@@ -35,13 +29,30 @@ public class CategoryHopCriteria extends VertexHopCriteria implements Collapsibl
 		public boolean isGroup() {
 			return true;
 		}
-	}
+
+        @Override
+        public Set<VertexRef> getChildren() {
+            return m_children;
+        }
+
+        public void setChildren(Set<VertexRef> children) {
+            m_children = children;
+        }
+    }
 
 	public CategoryHopCriteria(String categoryName) {
 		m_categoryName = categoryName;
 		setLabel(m_categoryName);
 		m_collapsedVertex = new CategoryVertex("category", "category:" + m_categoryName, m_categoryName);
+
 	}
+
+    public CategoryHopCriteria(String categoryName, NodeDao nodeDao, CategoryDao categoryDao){
+        this(categoryName);
+        setNodeDao(nodeDao);
+        setCategoryDao(categoryDao);
+        m_collapsedVertex.setChildren(getVertices());
+    }
 
 	public CategoryDao getCategoryDao() {
 		return m_categoryDao;
