@@ -34,7 +34,7 @@
 			java.util.List,
 			org.opennms.core.db.DataSourceFactory,
 			org.opennms.core.utils.DBUtils,
-			org.opennms.web.pathOutage.*
+			org.opennms.netmgt.poller.PathOutageFactory
 " %>
 
 <jsp:include page="/includes/header.jsp" flush="false">

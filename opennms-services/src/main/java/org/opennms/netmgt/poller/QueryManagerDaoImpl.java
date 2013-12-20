@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.poller;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -36,11 +35,13 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.sql.DataSource;
+
+import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.Querier;
 import org.opennms.core.utils.Updater;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
@@ -81,7 +82,8 @@ public class QueryManagerDaoImpl implements QueryManager {
     @Autowired
     private MonitoredServiceDao m_monitoredServiceDao;
 
-    private static final String SQL_FETCH_INTERFACES_AND_SERVICES_ON_NODE ="SELECT ipaddr,servicename FROM ifservices,service WHERE nodeid= ? AND ifservices.serviceid=service.serviceid";
+    @Autowired
+    DataSource m_dataSource;
 
     /** {@inheritDoc} */
     @Override
@@ -135,8 +137,6 @@ public class QueryManagerDaoImpl implements QueryManager {
             outage.setIfRegainedService(convertEventTimeToTimeStamp(time));
             m_outageDao.saveOrUpdate(outage);
         }
-
-        String sql = "update outages set svcRegainedEventId=?, ifRegainedService=? where nodeId = ? and ipAddr = ? and serviceId = ? and ifRegainedService is null";
     }
 
     /** {@inheritDoc} */
@@ -152,7 +152,7 @@ public class QueryManagerDaoImpl implements QueryManager {
                     ipAddr,
                 };
 
-            Updater updater = new Updater(getDataSource(), sql);
+            Updater updater = new Updater(m_dataSource, sql);
             updater.execute(values);
         } catch (Throwable e) {
             LOG.error(" Error reparenting outage for {}:{} to {}", oldNodeId, ipAddr, newNodeId, e);
@@ -160,54 +160,95 @@ public class QueryManagerDaoImpl implements QueryManager {
         
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public String[] getCriticalPath(int nodeId) {
-        final String[] cpath = new String[2];
-        Querier querier = new Querier(getDataSource(), "SELECT criticalpathip, criticalpathservicename FROM pathoutage where nodeid=?") {
-    
-            @Override
-            public void processRow(ResultSet rs) throws SQLException {
-                cpath[0] = rs.getString(1);
-                cpath[1] = rs.getString(2);
-            }
-    
-        };
-        querier.execute(Integer.valueOf(nodeId));
-    
-        if (cpath[0] == null || cpath[0].equals("")) {
-            cpath[0] = OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathIp();
-            cpath[1] = "ICMP";
-        }
-        if (cpath[1] == null || cpath[1].equals("")) {
-            cpath[1] = "ICMP";
-        }
-        return cpath;
-    }
-
     @Override
     public List<String[]> getNodeServices(int nodeId){
         final LinkedList<String[]> servicemap = new LinkedList<String[]>();
-        Querier querier = new Querier(getDataSource(),SQL_FETCH_INTERFACES_AND_SERVICES_ON_NODE) {
-            
-            @Override
-            public void processRow(ResultSet rs) throws SQLException {
-               
-                String[] row = new String[2];
-                row[0] = rs.getString(1);
-                row[1] = rs.getString(2);
-                
-                servicemap.add(row);
-                
-            }
-            
-        };
-        
-        querier.execute(Integer.valueOf(nodeId));
-        
+
+        Criteria criteria = new Criteria(OnmsMonitoredService.class);
+        criteria.addRestriction(new EqRestriction("ipInterface.node.id", nodeId));
+        for (OnmsMonitoredService service : m_monitoredServiceDao.findMatching(criteria)) {
+            servicemap.add(new String[] { service.getIpAddressAsString(), service.getServiceName() });
+        }
+
         return servicemap;
+    }
+
+    /**
+     * 
+     */
+    @Override
+    public void closeOutagesForUnmanagedServices() {
+        Timestamp closeTime = new Timestamp((new java.util.Date()).getTime());
+
+        final String DB_CLOSE_OUTAGES_FOR_UNMANAGED_SERVICES = "UPDATE outages set ifregainedservice = ? where outageid in (select outages.outageid from outages, ifservices where ((outages.nodeid = ifservices.nodeid) AND (outages.ipaddr = ifservices.ipaddr) AND (outages.serviceid = ifservices.serviceid) AND ((ifservices.status = 'D') OR (ifservices.status = 'F') OR (ifservices.status = 'U')) AND (outages.ifregainedservice IS NULL)))";
+        Updater svcUpdater = new Updater(m_dataSource, DB_CLOSE_OUTAGES_FOR_UNMANAGED_SERVICES);
+        svcUpdater.execute(closeTime);
         
+        final String DB_CLOSE_OUTAGES_FOR_UNMANAGED_INTERFACES = "UPDATE outages set ifregainedservice = ? where outageid in (select outages.outageid from outages, ipinterface where ((outages.nodeid = ipinterface.nodeid) AND (outages.ipaddr = ipinterface.ipaddr) AND ((ipinterface.ismanaged = 'F') OR (ipinterface.ismanaged = 'U')) AND (outages.ifregainedservice IS NULL)))";
+        Updater ifUpdater = new Updater(m_dataSource, DB_CLOSE_OUTAGES_FOR_UNMANAGED_INTERFACES);
+        ifUpdater.execute(closeTime);
+        
+
+
     }
     
+    /**
+     * <p>closeOutagesForNode</p>
+     *
+     * @param closeDate a {@link java.util.Date} object.
+     * @param eventId a int.
+     * @param nodeId a int.
+     */
+    @Override
+    public void closeOutagesForNode(Date closeDate, int eventId, int nodeId) {
+        Timestamp closeTime = new Timestamp(closeDate.getTime());
+        final String DB_CLOSE_OUTAGES_FOR_NODE = "UPDATE outages set ifregainedservice = ?, svcRegainedEventId = ? where outages.nodeId = ? AND (outages.ifregainedservice IS NULL)";
+        Updater svcUpdater = new Updater(m_dataSource, DB_CLOSE_OUTAGES_FOR_NODE);
+        svcUpdater.execute(closeTime, Integer.valueOf(eventId), Integer.valueOf(nodeId));
+    }
     
+    /**
+     * <p>closeOutagesForInterface</p>
+     *
+     * @param closeDate a {@link java.util.Date} object.
+     * @param eventId a int.
+     * @param nodeId a int.
+     * @param ipAddr a {@link java.lang.String} object.
+     */
+    @Override
+    public void closeOutagesForInterface(Date closeDate, int eventId, int nodeId, String ipAddr) {
+        Timestamp closeTime = new Timestamp(closeDate.getTime());
+        final String DB_CLOSE_OUTAGES_FOR_IFACE = "UPDATE outages set ifregainedservice = ?, svcRegainedEventId = ? where outages.nodeId = ? AND outages.ipAddr = ? AND (outages.ifregainedservice IS NULL)";
+        Updater svcUpdater = new Updater(m_dataSource, DB_CLOSE_OUTAGES_FOR_IFACE);
+        svcUpdater.execute(closeTime, Integer.valueOf(eventId), Integer.valueOf(nodeId), ipAddr);
+    }
+    
+    /**
+     * <p>closeOutagesForService</p>
+     *
+     * @param closeDate a {@link java.util.Date} object.
+     * @param eventId a int.
+     * @param nodeId a int.
+     * @param ipAddr a {@link java.lang.String} object.
+     * @param serviceName a {@link java.lang.String} object.
+     */
+    @Override
+    public void closeOutagesForService(Date closeDate, int eventId, int nodeId, String ipAddr, String serviceName) {
+        Timestamp closeTime = new Timestamp(closeDate.getTime());
+        final String DB_CLOSE_OUTAGES_FOR_SERVICE = "UPDATE outages set ifregainedservice = ?, svcRegainedEventId = ? where outageid in (select outages.outageid from outages, service where outages.nodeid = ? AND outages.ipaddr = ? AND outages.serviceid = service.serviceId AND service.servicename = ? AND outages.ifregainedservice IS NULL)";
+        Updater svcUpdater = new Updater(m_dataSource, DB_CLOSE_OUTAGES_FOR_SERVICE);
+        svcUpdater.execute(closeTime, Integer.valueOf(eventId), Integer.valueOf(nodeId), ipAddr, serviceName);
+    }
+
+    @Override
+    public void updateServiceStatus(int nodeId, String ipAddr, String serviceName, String status) {
+        final String sql = "UPDATE ifservices SET status = ? WHERE id " +
+        		" IN (SELECT ifs.id FROM ifservices AS ifs JOIN service AS svc ON ifs.serviceid = svc.serviceid " +
+        		" WHERE ifs.nodeId = ? AND ifs.ipAddr = ? AND svc.servicename = ?)"; 
+
+        Updater updater = new Updater(m_dataSource, sql);
+        updater.execute(status, nodeId, ipAddr, serviceName);
+        
+    }
+
 }

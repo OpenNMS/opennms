@@ -232,31 +232,6 @@ public class DefaultQueryManager implements QueryManager {
         return result == null ? -1 : result.intValue();
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public String[] getCriticalPath(int nodeId) {
-        final String[] cpath = new String[2];
-        Querier querier = new Querier(m_dataSource, "SELECT criticalpathip, criticalpathservicename FROM pathoutage where nodeid=?") {
-    
-            @Override
-            public void processRow(ResultSet rs) throws SQLException {
-                cpath[0] = rs.getString(1);
-                cpath[1] = rs.getString(2);
-            }
-    
-        };
-        querier.execute(Integer.valueOf(nodeId));
-    
-        if (cpath[0] == null || cpath[0].equals("")) {
-            cpath[0] = OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathIp();
-            cpath[1] = "ICMP";
-        }
-        if (cpath[1] == null || cpath[1].equals("")) {
-            cpath[1] = "ICMP";
-        }
-        return cpath;
-    }
-
     @Override
     public List<String[]> getNodeServices(int nodeId){
         final LinkedList<String[]> servicemap = new LinkedList<String[]>();

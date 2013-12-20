@@ -129,11 +129,6 @@ public class MockQueryManager implements QueryManager {
     }
 
     @Override
-    public String[] getCriticalPath(int nodeId) {
-        throw new UnsupportedOperationException("MockQueryManager.getCriticalPath is not yet implemented");
-    }
-
-    @Override
     public List<java.lang.String[]> getNodeServices(int nodeId) {
         return null;
     }

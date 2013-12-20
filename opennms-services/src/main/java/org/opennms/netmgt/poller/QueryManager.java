@@ -41,6 +41,8 @@ public interface QueryManager {
 
     /**
      * <p>getNodeLabel</p>
+     * 
+     * @deprecated Use the NodeDao to fetch values like this.
      *
      * @param nodeId a int.
      * @throws java.sql.SQLException if any.
@@ -62,6 +64,8 @@ public interface QueryManager {
 
     /**
      * <p>resolveOutage</p>
+     * 
+     * @deprecated Fetch outages by primary key instead of the nodeid/ipAddr/service tuple.
      *
      * @param nodeId a int.
      * @param ipAddr a {@link java.lang.String} object.
@@ -81,14 +85,8 @@ public interface QueryManager {
     void reparentOutages(String ipAddr, int oldNodeId, int newNodeId);
 
     /**
-     * <p>getCriticalPath</p>
-     *
-     * @param nodeId a int.
-     * @return an array of {@link java.lang.String} objects.
-     */
-    String[] getCriticalPath(int nodeId);
-    
-    /**
+     * @deprecated Use the DAOs to fetch services by primary key instead.
+     * 
      * @param nodeId
      * @return
      */
