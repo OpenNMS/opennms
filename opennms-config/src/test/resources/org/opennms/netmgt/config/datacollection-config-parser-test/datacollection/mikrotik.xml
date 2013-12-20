@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<datacollection-group name="Mikrotik">
+
+    <!-- Mikrotik Resource Types -->
+
+    <resourceType name="mtxrWlStatIndex" label="Local PtP or SU Interface (Mikrotik)"
+                  resourceLabel="${mtxrWlStatSsid}">
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="mtxrWlRtabAddr" label="Subscriber or Remote Radio (Mikrotik)"
+                 resourceLabel="SU ${index}">
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+      <!-- Mikrotik MIBs -->
+
+      <group name="mtxrWlStatIndex" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.14988.1.1.1.1.1.2" instance="mtxrWlStatIndex" alias="mtxrWlStatTxRate"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.14988.1.1.1.1.1.3" instance="mtxrWlStatIndex" alias="mtxrWlStatRxRate"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.14988.1.1.1.1.1.4" instance="mtxrWlStatIndex" alias="mtxrWlStatStrength" type="Integer32" />
+        <mibObj oid=".1.3.6.1.4.1.14988.1.1.1.1.1.5" instance="mtxrWlStatIndex" alias="mtxrWlStatSsid"     type="String" />
+        <mibObj oid=".1.3.6.1.4.1.14988.1.1.1.1.1.6" instance="mtxrWlStatIndex" alias="mtxrWlStatBssid"    type="OctetString" /> 
+        <mibObj oid=".1.3.6.1.4.1.14988.1.1.1.1.1.7" instance="mtxrWlStatIndex" alias="mtxrWlStatFreq"     type="Integer32" />
+      </group>
+
+      <group name="mtxrWlRtabAddr" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.14988.1.1.1.2.1.1" instance="mtxrWlRtabAddr" alias="mtxrWlRtabAddr"      type="OctetString" /> 
+        <mibObj oid=".1.3.6.1.4.1.14988.1.1.1.2.1.3" instance="mtxrWlRtabAddr" alias="mtxrWlRtabStrength"  type="Integer32" />
+        <mibObj oid=".1.3.6.1.4.1.14988.1.1.1.2.1.4" instance="mtxrWlRtabAddr" alias="mtxrWlRtabTxBytes"   type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.14988.1.1.1.2.1.5" instance="mtxrWlRtabAddr" alias="mtxrWlRtabRxBytes"   type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.14988.1.1.1.2.1.6" instance="mtxrWlRtabAddr" alias="mtxrWlRtabTxPackets" type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.14988.1.1.1.2.1.7" instance="mtxrWlRtabAddr" alias="mtxrWlRtabRxPackets" type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.14988.1.1.1.2.1.8" instance="mtxrWlRtabAddr" alias="mtxrWlRtabTxRate"    type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.14988.1.1.1.2.1.9" instance="mtxrWlRtabAddr" alias="mtxrWlRtabRxRate"    type="Gauge32" />
+      </group>        
+
+      <group name="mtxrHealth" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.14988.1.1.3.1" instance="0" alias="mtxrHlCoreVolt"      type="Integer32" />
+        <mibObj oid=".1.3.6.1.4.1.14988.1.1.3.2" instance="0" alias="mtxrHlThreePtThreeV" type="Integer32" />
+        <mibObj oid=".1.3.6.1.4.1.14988.1.1.3.3" instance="0" alias="mtxrHlFiveVolt"      type="Integer32" />
+        <mibObj oid=".1.3.6.1.4.1.14988.1.1.3.4" instance="0" alias="mtxrHlTwelveVolt"    type="Integer32" />
+        <mibObj oid=".1.3.6.1.4.1.14988.1.1.3.5" instance="0" alias="mtxrHlSensorTemp"    type="Integer32" />
+        <mibObj oid=".1.3.6.1.4.1.14988.1.1.3.6" instance="0" alias="mtxrHlCpuTemp"       type="Integer32" />
+        <mibObj oid=".1.3.6.1.4.1.14988.1.1.3.7" instance="0" alias="mtxrHlBoardTemp"     type="Integer32" />
+      </group>     
+
+      <systemDef name="Mikrotik Wireless Router">
+        <sysoidMask>.1.3.6.1.4.1.14988.</sysoidMask>
+        <collect>
+          <includeGroup>mtxrWlStatIndex</includeGroup>
+          <includeGroup>mtxrWlRtabAddr</includeGroup>
+          <includeGroup>mtxrHealth</includeGroup>
+        </collect>
+      </systemDef>
+
+</datacollection-group>
