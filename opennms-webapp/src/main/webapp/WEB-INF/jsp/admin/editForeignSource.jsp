@@ -46,10 +46,10 @@
 	<jsp:param name="headTitle" value="Provisioning Requisitions" />
 	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
 	<jsp:param name="breadcrumb" value="<a href='admin/provisioningGroups.htm'>Provisioning Requisitions</a>" />
-	<jsp:param name="breadcrumb" value="Edit Scanning Behavior Definition" />
+	<jsp:param name="breadcrumb" value="Edit Foreign Source Definition" />
 </jsp:include>
 
-<h3>Scanning Behavior Name: ${fn:escapeXml(foreignSourceEditForm.foreignSourceName)}</h3>
+<h3>Foreign Source Name: ${fn:escapeXml(foreignSourceEditForm.foreignSourceName)}</h3>
 
 <tree:form commandName="foreignSourceEditForm"> 
 
