@@ -29,6 +29,7 @@
 package org.opennms.netmgt.rrd.jrobin;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -733,24 +734,68 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
 		return def;
 	}
 
-	private void processRrdFontArgument(RrdGraphDef graphDef, String argParm) {
-		/*
-		String[] argValue = tokenize(argParm, ":", true);
-		if (argValue[0].equals("DEFAULT")) {
-			int newPointSize = Integer.parseInt(argValue[1]);
-			graphDef.setSmallFont(graphDef.getSmallFont().deriveFont(newPointSize));
-		} else if (argValue[0].equals("TITLE")) {
-			int newPointSize = Integer.parseInt(argValue[1]);
-			graphDef.setLargeFont(graphDef.getLargeFont().deriveFont(newPointSize));
-		} else {
-			try {
-				Font font = Font.createFont(Font.TRUETYPE_FONT, new File(argValue[0]));
-			} catch (Throwable e) {
-				// oh well, fall back to existing font stuff
-				LOG.warn("unable to create font from font argument {}", argParm, e);
-			}
-		}
-		*/
+	private void processRrdFontArgument(final RrdGraphDef graphDef, final String argParm) {
+	    final String[] argValue = tokenize(argParm, ":", false);
+	    if (argValue.length != 3) {
+	        LOG.warn("invalid number of arguments ({} != 3) for font argument {}", argValue.length, argParm);
+	        return;
+	    }
+	    int newPointSize = 0;
+	    try {
+	        newPointSize = Integer.parseInt(argValue[1]);
+	    } catch (final NumberFormatException e) {
+	        LOG.warn("Failed to parse {} as an integer: {}", argValue[1], e.getMessage(), e);
+	    }
+	    int fontTag;
+	    Font font;
+
+	    if (argValue[0].equals("DEFAULT")) {
+	        fontTag = RrdGraphDef.FONTTAG_DEFAULT;
+	    } else if (argValue[0].equals("TITLE")) {
+	        fontTag = RrdGraphDef.FONTTAG_TITLE;
+	    } else if (argValue[0].equals("AXIS")) {
+	        fontTag = RrdGraphDef.FONTTAG_AXIS;
+	    } else if (argValue[0].equals("UNIT")) {
+	        fontTag = RrdGraphDef.FONTTAG_UNIT;
+	    } else if (argValue[0].equals("LEGEND")) {
+	        fontTag = RrdGraphDef.FONTTAG_LEGEND;
+	    } else if (argValue[0].equals("WATERMARK")) {
+	        fontTag = RrdGraphDef.FONTTAG_WATERMARK;
+	    } else {
+	        LOG.warn("invalid font tag {}", argValue[0]);
+	        return;
+	    }
+
+	    try {
+	        font = graphDef.getFont(fontTag);
+
+	        // If we have a font specified, try to get a font object for it.
+	        if (argValue[2] != null && argValue[2].length() > 0) {
+	            final int origPointSize = font.getSize();
+
+                    // Get our new font
+	            font = Font.decode(argValue[2]);
+
+	            // Font.decode() returns a 12 px font size, by default unless you specify
+	            // a font size in the font name pattern.
+	            if (newPointSize > 0) {
+	                font = font.deriveFont((float) newPointSize);
+	            } else {
+	                font = font.deriveFont((float) origPointSize);
+	            }
+	        } else {
+	            // If we don't have a font name specified, then we just adjust the font size.
+	            font = font.deriveFont((float) newPointSize);
+	        }
+
+	        if (fontTag == RrdGraphDef.FONTTAG_DEFAULT) {
+	            graphDef.setFont(fontTag, font, true, newPointSize == 0);
+	        } else {
+	            graphDef.setFont(fontTag, font);
+	        }
+	    } catch (final Throwable e) {
+	        LOG.warn("unable to create font from font argument {}", argParm, e);
+	    }
 	}
 
     private String[] tokenize(final String line, final String delimiters, final boolean processQuotes) {
