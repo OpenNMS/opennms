@@ -171,8 +171,8 @@ final public class TcpMonitor extends AbstractServiceMonitor {
                 LOG.debug("poll: responseTime= {}ms", responseTime);
 
                 //Could it be a regex?
-                if(strBannerMatch.charAt(0)=='~'){
-                  if(!response.matches(strBannerMatch.substring(1)))
+                if (strBannerMatch.charAt(0)=='~'){
+                  if (!response.matches(strBannerMatch.substring(1)))
                     serviceStatus = PollStatus.unavailable("Banner does not match Regex '"+strBannerMatch+"'");
                   else
                     serviceStatus = PollStatus.available(responseTime);
