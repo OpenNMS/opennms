@@ -179,14 +179,7 @@ final public class PrTableMonitor extends SnmpMonitorStrategy {
 
             //Check the arraylist and construct return value
             if (errorStringReturn.size() > 0) {
-              String errormsg="";
-              int j = 0;
-              while (errorStringReturn.size() > j) {
-                errormsg+=errorStringReturn.get(j);
-                if (j < (errorStringReturn.size()-1)) { errormsg+= "\n"; }
-                j++;
-              }
-              return PollStatus.unavailable(errormsg);
+              return PollStatus.unavailable(errorStringReturn.toString());
             }
             else {
               return status;
