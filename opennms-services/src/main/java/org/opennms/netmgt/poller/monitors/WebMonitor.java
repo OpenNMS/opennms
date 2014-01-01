@@ -93,6 +93,11 @@ public class WebMonitor extends AbstractServiceMonitor {
             ub.setHost(hostAddress);
             ub.setPort(ParameterMap.getKeyedInteger(map, "port", DEFAULT_PORT));
             ub.setPath(ParameterMap.getKeyedString(map, "path", DEFAULT_PATH));
+
+            String queryString = ParameterMap.getKeyedString(map,"queryString",null);
+            if (queryString != null)
+                ub.setQuery(queryString);
+
             HttpGet getMethod = new HttpGet(ub.build());
             httpClient.getParams().setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, ParameterMap.getKeyedInteger(map, "timeout", DEFAULT_TIMEOUT));
             httpClient.getParams().setIntParameter(CoreConnectionPNames.SO_TIMEOUT, ParameterMap.getKeyedInteger(map, "timeout", DEFAULT_TIMEOUT));

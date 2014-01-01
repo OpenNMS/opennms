@@ -76,6 +76,8 @@ public class WebClient implements Client<WebRequest, WebResponse> {
 
     private String path;
 
+    private String queryString;
+
     public WebClient() {
         m_httpClient = new DefaultHttpClient();
     }
@@ -87,6 +89,8 @@ public class WebClient implements Client<WebRequest, WebResponse> {
         ub.setHost(InetAddressUtils.str(address));
         ub.setPort(port);
         ub.setPath(path);
+        if (queryString != null)
+            ub.setQuery(queryString);
         m_httpMethod = new HttpGet(ub.build());
         setTimeout(timeout);
     }
@@ -118,6 +122,11 @@ public class WebClient implements Client<WebRequest, WebResponse> {
     public void setPath(String path) {
         this.path = path;
     }
+
+    public void setQueryString(String queryString) {
+        this.queryString = queryString;
+    }
+
 
     public void setSchema(String schema) {
         this.schema = schema;        

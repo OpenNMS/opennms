@@ -76,6 +76,8 @@ public class WebDetector extends BasicDetector<WebRequest, WebResponse> {
     
     private String schema = "http";
 
+    private String queryString;
+
     /**
      * Default constructor
      */
@@ -122,6 +124,7 @@ public class WebDetector extends BasicDetector<WebRequest, WebResponse> {
         client.setSchema(getSchema());
         client.setUserAgent(getUserAgent());
         client.setVirtualHost(getVirtualHost(), getPort());
+        client.setQueryString(getQueryString());
         client.setUseHttpV1(isUseHttpV1());
         if (isAuthEnabled()) {
             client.setAuth(getAuthUser(), getAuthPassword());
@@ -160,6 +163,14 @@ public class WebDetector extends BasicDetector<WebRequest, WebResponse> {
 
     public void setVirtualHost(String virtualHost) {
         this.virtualHost = virtualHost;
+    }
+
+    public String getQueryString() {
+        return queryString;
+    }
+
+    public void setQueryString(String queryString) {
+        this.queryString = queryString;
     }
 
     public boolean isUseHttpV1() {
