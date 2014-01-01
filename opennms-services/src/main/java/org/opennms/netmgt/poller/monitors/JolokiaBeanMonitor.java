@@ -194,14 +194,14 @@ final public class JolokiaBeanMonitor extends AbstractServiceMonitor {
 
 
                 //Could it be a regex?
-                if(strBannerMatch.charAt(0)=='~'){
-                  if(!response.matches(strBannerMatch.substring(1)))
+                if (strBannerMatch.charAt(0)=='~'){
+                  if (!response.matches(strBannerMatch.substring(1)))
                     serviceStatus = PollStatus.unavailable("Banner does not match Regex '"+strBannerMatch+"'");
                   else  
                     serviceStatus = PollStatus.available(responseTime);
                 }
                 else {
-                  if(response.equals(strBannerMatch))
+                  if (response.indexOf(strBannerMatch) > -1)
                     serviceStatus = PollStatus.available(responseTime);
                   else
                     serviceStatus = PollStatus.unavailable("Did not find expected Text '"+strBannerMatch+"'");
