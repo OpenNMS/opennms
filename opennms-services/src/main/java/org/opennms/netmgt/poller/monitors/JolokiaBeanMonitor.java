@@ -165,17 +165,17 @@ final public class JolokiaBeanMonitor extends AbstractServiceMonitor {
                 //Default Inputs
                 if (strInput1.equals("default") && strInput2.equals("default")) {
                   log().debug("JolokiaBeanMonitor - execute bean: " + strBeanName + " method: " + strMethodName);
-                  execReq = new J4pExecRequest(strBeanName, strMethodName); 
+                  execReq = new J4pExecRequest(strBeanName, strMethodName);
                 }
                 else if (!strInput1.equals("default") && strInput2.equals("default")) {
                 //Single Input
                   log().debug("JolokiaBeanMonitor - execute bean: " + strBeanName + " method: " + strMethodName + " args: " + strInput1);
-                  execReq = new J4pExecRequest(strBeanName, strMethodName, strInput1); 
+                  execReq = new J4pExecRequest(strBeanName, strMethodName, strInput1);
                 }
                 else {
                 //Double Input
                   log().debug("JolokiaBeanMonitor - execute bean: " + strBeanName + " method: " + strMethodName + " args: " + strInput1 + " " + strInput2);
-                  execReq = new J4pExecRequest(strBeanName, strMethodName, strInput1, strInput2); 
+                  execReq = new J4pExecRequest(strBeanName, strMethodName, strInput1, strInput2);
                 }
 
                 execReq.setPreferredHttpMethod("POST");
@@ -197,7 +197,7 @@ final public class JolokiaBeanMonitor extends AbstractServiceMonitor {
                 if (strBannerMatch.charAt(0)=='~'){
                   if (!response.matches(strBannerMatch.substring(1)))
                     serviceStatus = PollStatus.unavailable("Banner does not match Regex '"+strBannerMatch+"'");
-                  else  
+                  else
                     serviceStatus = PollStatus.available(responseTime);
                 }
                 else {
