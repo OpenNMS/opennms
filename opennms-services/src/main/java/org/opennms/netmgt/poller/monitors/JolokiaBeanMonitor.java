@@ -75,14 +75,20 @@ final public class JolokiaBeanMonitor extends AbstractServiceMonitor {
     private static final int DEFAULT_TIMEOUT = 3000; // 3 second timeout on
                                                         // read()
 
+    public static final String PARAMETER_URL = "url";
+    public static final String PARAMETER_USERNAME = "auth-username";
+    public static final String PARAMETER_PASSWORD = "auth-password";
     public static final String PARAMETER_BANNER = "banner";
     public static final String PARAMETER_PORT = "port";
     public static final String PARAMETER_BEANNAME = "beanname";
+    public static final String PARAMETER_ATTRNAME = "attrname";
+    public static final String PARAMETER_ATTRPATH = "attrpath";
     public static final String PARAMETER_METHODNAME = "methodname";
     public static final String PARAMETER_METHODINPUT1 = "input1";
     public static final String PARAMETER_METHODINPUT2 = "input2";
 
-    public static final String DEFAULT_METHODINPUT = "default";
+    public static final String DEFAULT_URL = "http://${ipaddr}:${port}/jolokia";
+
 
     /**
      * {@inheritDoc}
@@ -114,6 +120,21 @@ final public class JolokiaBeanMonitor extends AbstractServiceMonitor {
         //
         int port = ParameterMap.getKeyedInteger(parameters, PARAMETER_PORT, DEFAULT_PORT);
 
+        //URL
+        String strURL = ParameterMap.getKeyedString(parameters, PARAMETER_URL, DEFAULT_URL);
+
+        //Username
+        String strUser = ParameterMap.getKeyedString(parameters, PARAMETER_USERNAME, null);
+
+        //Password
+        String strPasswd = ParameterMap.getKeyedString(parameters, PARAMETER_PASSWORD, null);
+
+        //AttrName
+        String strAttrName = ParameterMap.getKeyedString(parameters, PARAMETER_ATTRNAME, null);
+
+        //AttrPath
+        String strAttrPath = ParameterMap.getKeyedString(parameters, PARAMETER_ATTRPATH, null);
+
         //BeanName
         //
         String strBeanName = ParameterMap.getKeyedString(parameters, PARAMETER_BEANNAME, null);
@@ -124,8 +145,8 @@ final public class JolokiaBeanMonitor extends AbstractServiceMonitor {
 
         //Optional Inputs
         //
-        String strInput1 = ParameterMap.getKeyedString(parameters, PARAMETER_METHODINPUT1, DEFAULT_METHODINPUT);
-        String strInput2 = ParameterMap.getKeyedString(parameters, PARAMETER_METHODINPUT2, DEFAULT_METHODINPUT);
+        String strInput1 = ParameterMap.getKeyedString(parameters, PARAMETER_METHODINPUT1, null);
+        String strInput2 = ParameterMap.getKeyedString(parameters, PARAMETER_METHODINPUT2, null);
 
         // BannerMatch
         //
@@ -140,6 +161,13 @@ final public class JolokiaBeanMonitor extends AbstractServiceMonitor {
           log().debug("poll: address = " + hostAddress + ", port = " + port + ", " + tracker);
         }
 
+        strURL = strURL.replace("${ipaddr}", hostAddress);
+        strURL = strURL.replace("${port}", ((Integer) port).toString());
+
+		    if (log().isDebugEnabled()) {
+          log().debug("poll: final URL address = " + strURL);
+        }
+
         // Give it a whirl
         //
         PollStatus serviceStatus = PollStatus.unavailable();
@@ -148,9 +176,15 @@ final public class JolokiaBeanMonitor extends AbstractServiceMonitor {
             try {
                 tracker.startAttempt();
 
-                J4pClient j4pClient = new J4pClient("http://"+hostAddress+":"+port+"/jolokia");
+                J4pClient j4pClient = new J4pClient(strURL);
                 j4pClient.connectionTimeout(tracker.getSoTimeout());
-                log().debug("JolokiaBeanMonitor: connected to host: " + ipv4Addr + " on port: " + port);
+
+                if (strUser != null && strPasswd != null) {
+                  j4pClient.user(strUser);
+                  j4pClient.password(strPasswd);
+                }
+
+                log().debug("JolokiaBeanMonitor: connected to URLhost: " + strURL);
 
                 // We're connected, so upgrade status to unresponsive
                 serviceStatus = PollStatus.unresponsive();
@@ -160,30 +194,44 @@ final public class JolokiaBeanMonitor extends AbstractServiceMonitor {
                     break;
                 }
 
-                J4pExecRequest execReq;
+                //Exec a method or poll an attribute?
+                String response;
 
-                //Default Inputs
-                if (strInput1.equals("default") && strInput2.equals("default")) {
-                  log().debug("JolokiaBeanMonitor - execute bean: " + strBeanName + " method: " + strMethodName);
-                  execReq = new J4pExecRequest(strBeanName, strMethodName);
+                if (strAttrName != null) {
+                  J4pReadRequest readReq = new J4pReadRequest(strBeanName, strAttrName);
+                  readReq.setPreferredHttpMethod("POST");
+                  if (strAttrPath != null)
+                      readReq.setPath(strAttrPath);
+
+                  J4pReadResponse resp = j4pClient.execute(readReq);
+                  response = resp.getValue().toString();
                 }
-                else if (!strInput1.equals("default") && strInput2.equals("default")) {
-                //Single Input
-                  log().debug("JolokiaBeanMonitor - execute bean: " + strBeanName + " method: " + strMethodName + " args: " + strInput1);
-                  execReq = new J4pExecRequest(strBeanName, strMethodName, strInput1);
-                }
+
                 else {
-                //Double Input
-                  log().debug("JolokiaBeanMonitor - execute bean: " + strBeanName + " method: " + strMethodName + " args: " + strInput1 + " " + strInput2);
-                  execReq = new J4pExecRequest(strBeanName, strMethodName, strInput1, strInput2);
-                }
+                  J4pExecRequest execReq;
 
-                execReq.setPreferredHttpMethod("POST");
-                J4pExecResponse resp = j4pClient.execute(execReq);
+                  //Default Inputs
+                  if (strInput1 == null  && strInput2 == null) {
+                    log().debug("JolokiaBeanMonitor - execute bean: " + strBeanName + " method: " + strMethodName);
+                    execReq = new J4pExecRequest(strBeanName, strMethodName);
+                  }
+                  else if (strInput1 != null && strInput2 == null) {
+                  //Single Input
+                    log().debug("JolokiaBeanMonitor - execute bean: " + strBeanName + " method: " + strMethodName + " args: " + strInput1);
+                    execReq = new J4pExecRequest(strBeanName, strMethodName, strInput1);
+                  }
+                  else {
+                  //Double Input
+                    log().debug("JolokiaBeanMonitor - execute bean: " + strBeanName + " method: " + strMethodName + " args: " + strInput1 + " " + strInput2);
+                    execReq = new J4pExecRequest(strBeanName, strMethodName, strInput1, strInput2);
+                  }
+
+                  execReq.setPreferredHttpMethod("POST");
+                  J4pExecResponse resp = j4pClient.execute(execReq);
+                  response = resp.getValue().toString();
+                }
 
                 double responseTime = tracker.elapsedTimeInMillis();
-
-                String response = resp.getValue().toString();
 
                 if (response == null)
                   continue;
@@ -192,12 +240,11 @@ final public class JolokiaBeanMonitor extends AbstractServiceMonitor {
                   log().debug("poll: responseTime= " + responseTime + "ms");
                 }
 
-
                 //Could it be a regex?
                 if (strBannerMatch.charAt(0)=='~'){
                   if (!response.matches(strBannerMatch.substring(1)))
                     serviceStatus = PollStatus.unavailable("Banner does not match Regex '"+strBannerMatch+"'");
-                  else
+                  else  
                     serviceStatus = PollStatus.available(responseTime);
                 }
                 else {
