@@ -363,12 +363,14 @@ public abstract class AbstractQueryManager implements QueryManager {
                                                                           ospfNbrRouterId);
                     ospfinterface.setOspfNbrNodeId(ipinterface.getNode().getId());
                     ospfinterface.setOspfNbrIpAddr(ospfNbrIpAddr);
+
                     OnmsSnmpInterface snmpinterface = getSnmpInterfaceDao().findByNodeIdAndIfIndex(ipinterface.getNode().getId(),
                                                                                                    ifIndex);
                     if (snmpinterface != null && snmpinterface.getNetMask() != null)
                         ospfinterface.setOspfNbrNetMask(snmpinterface.getNetMask());
                     else
                         ospfinterface.setOspfNbrNetMask(InetAddressUtils.getInetAddress("255.255.255.252"));
+
                     ospfinterface.setOspfNbrIfIndex(ifIndex);
                     LOG.debug("processOspf: node {}: found ospf nei netmask {} for: ospfnbraddress/ospfnbrrouterid: {}/{}",
                               node.getNodeId(), str(ospfinterface.getOspfNbrNetMask()),
