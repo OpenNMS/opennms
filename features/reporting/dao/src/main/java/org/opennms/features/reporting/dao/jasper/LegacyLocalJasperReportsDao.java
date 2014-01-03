@@ -97,9 +97,6 @@ public class LegacyLocalJasperReportsDao implements LocalJasperReportsDao {
      */
     @Override
     public void loadConfiguration() throws Exception {
-        InputStream stream = null;
-        long lastModified;
-
         File file = null;
         try {
             file = m_configResource.getFile();
@@ -107,13 +104,6 @@ public class LegacyLocalJasperReportsDao implements LocalJasperReportsDao {
             logger.error("Resource '{}' does not seem to have an underlying File object.", m_configResource);
         }
 
-        if (file != null) {
-            lastModified = file.lastModified();
-            stream = new FileInputStream(file);
-        } else {
-            lastModified = System.currentTimeMillis();
-            stream = m_configResource.getInputStream();
-        }
         setLocalJasperReports(JAXB.unmarshal(file, LocalJasperReports.class));
         Assert.notNull(m_LocalJasperReports, "unmarshall config file returned a null value.");
         logger.debug("Unmarshalling config file '{}'", file.getAbsolutePath());
