@@ -133,70 +133,78 @@ public class Criteria implements Cloneable {
         return Collections.unmodifiableList(m_orders);
     }
 
-    public void setOrders(final Collection<? extends Order> orderCollection) {
-        if (m_orders == orderCollection) return;
+    public Criteria setOrders(final Collection<? extends Order> orderCollection) {
+        if (m_orders == orderCollection) return this;
         m_orders.clear();
         if (orderCollection != null) {
             m_orders.addAll(orderCollection);
         }
+        return this;
     }
 
     public Collection<Fetch> getFetchTypes() {
         return Collections.unmodifiableList(new ArrayList<Fetch>(m_fetchTypes));
     }
 
-    public void setFetchTypes(final Collection<? extends Fetch> fetchTypes) {
-        if (m_fetchTypes == fetchTypes) return;
+    public Criteria setFetchTypes(final Collection<? extends Fetch> fetchTypes) {
+        if (m_fetchTypes == fetchTypes) return this;
         m_fetchTypes.clear();
         m_fetchTypes.addAll(fetchTypes);
+        return this;
     }
 
     public Collection<Alias> getAliases() {
         return Collections.unmodifiableList(m_aliases);
     }
 
-    public void setAliases(final Collection<? extends Alias> aliases) {
-        if (m_aliases == aliases) return;
+    public Criteria setAliases(final Collection<? extends Alias> aliases) {
+        if (m_aliases == aliases) return this;
         m_aliases.clear();
         m_aliases.addAll(aliases);
+        return this;
     }
 
     public Collection<Restriction> getRestrictions() {
         return Collections.unmodifiableList(new ArrayList<Restriction>(m_restrictions));
     }
 
-    public void setRestrictions(Collection<? extends Restriction> restrictions) {
-        if (m_restrictions == restrictions) return;
+    public Criteria setRestrictions(Collection<? extends Restriction> restrictions) {
+        if (m_restrictions == restrictions) return this;
         m_restrictions.clear();
         m_restrictions.addAll(restrictions);
+        return this;
     }
 
-    public void addRestriction(final Restriction restriction) {
+    public Criteria addRestriction(final Restriction restriction) {
         m_restrictions.add(restriction);
+        return this;
     }
 
     public boolean isDistinct() {
         return m_distinct;
     }
 
-    public void setDistinct(final boolean distinct) {
+    public Criteria setDistinct(final boolean distinct) {
         m_distinct = distinct;
+        return this;
     }
 
     public Integer getLimit() {
         return m_limit;
     }
 
-    public void setLimit(final Integer limit) {
+    public Criteria setLimit(final Integer limit) {
         m_limit = limit;
+        return this;
     }
 
     public Integer getOffset() {
         return m_offset;
     }
 
-    public void setOffset(final Integer offset) {
+    public Criteria setOffset(final Integer offset) {
         m_offset = offset;
+        return this;
     }
 
     public Class<?> getType(final String path) throws IntrospectionException {
