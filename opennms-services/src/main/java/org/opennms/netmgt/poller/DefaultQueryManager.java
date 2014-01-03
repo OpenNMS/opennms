@@ -45,7 +45,6 @@ import org.opennms.core.utils.Querier;
 import org.opennms.core.utils.SingleResultQuerier;
 import org.opennms.core.utils.Updater;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

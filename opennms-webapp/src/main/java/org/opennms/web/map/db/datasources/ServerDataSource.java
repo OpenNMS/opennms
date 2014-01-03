@@ -41,7 +41,6 @@ import java.util.Set;
 
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.logging.Logging;
-import org.opennms.core.resource.Vault;
 import org.opennms.core.resource.db.SimpleDbConnectionFactory;
 import org.opennms.web.map.MapsConstants;
 import org.slf4j.Logger;

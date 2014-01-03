@@ -28,13 +28,26 @@
 
 package org.opennms.netmgt.collectd;
 
-import com.vmware.vim25.mo.ManagedEntity;
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.rmi.RemoteException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.netmgt.collectd.vmware.vijava.*;
+import org.opennms.netmgt.collectd.vmware.vijava.VmwareCollectionAttributeType;
+import org.opennms.netmgt.collectd.vmware.vijava.VmwareCollectionResource;
+import org.opennms.netmgt.collectd.vmware.vijava.VmwareCollectionSet;
+import org.opennms.netmgt.collectd.vmware.vijava.VmwareMultiInstanceCollectionResource;
+import org.opennms.netmgt.collectd.vmware.vijava.VmwarePerformanceValues;
+import org.opennms.netmgt.collectd.vmware.vijava.VmwareSingleInstanceCollectionResource;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
 import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.config.vmware.vijava.Attrib;
@@ -49,12 +62,7 @@ import org.opennms.protocols.vmware.VmwareViJavaAccess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.UndeclaredThrowableException;
-import java.net.MalformedURLException;
-import java.rmi.RemoteException;
-import java.util.*;
+import com.vmware.vim25.mo.ManagedEntity;
 
 /**
  * The Class VmwareCollector
