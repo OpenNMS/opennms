@@ -33,7 +33,7 @@ import org.opennms.netmgt.model.alarm.AlarmSummary;
 
 import java.util.List;
 
-public interface AlarmDao extends OnmsDao<OnmsAlarm, Integer> {
+public interface AlarmDao extends LegacyOnmsDao<OnmsAlarm, Integer> {
 
     OnmsAlarm findByReductionKey(String reductionKey);
 

@@ -40,7 +40,7 @@ import org.opennms.netmgt.model.outage.OutageSummary;
 /**
  * <p>OutageDao interface.</p>
  */
-public interface OutageDao extends OnmsDao<OnmsOutage, Integer> {
+public interface OutageDao extends LegacyOnmsDao<OnmsOutage, Integer> {
 
     /**
      * <p>currentOutageCount</p>

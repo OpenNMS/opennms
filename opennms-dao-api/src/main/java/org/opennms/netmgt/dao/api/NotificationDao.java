@@ -33,6 +33,6 @@ import org.opennms.netmgt.model.OnmsNotification;
 /**
  * <p>NotificationDao interface.</p>
  */
-public interface NotificationDao extends OnmsDao<OnmsNotification, Integer> {
+public interface NotificationDao extends LegacyOnmsDao<OnmsNotification, Integer> {
 
 }

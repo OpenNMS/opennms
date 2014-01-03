@@ -28,24 +28,28 @@
 
 package org.opennms.netmgt.dao.api;
 
-import org.opennms.netmgt.model.OnmsEvent;
-
-import java.util.Date;
+import java.io.Serializable;
 import java.util.List;
 
-public interface EventDao extends LegacyOnmsDao<OnmsEvent, Integer> {
+import org.opennms.core.criteria.Criteria;
+import org.opennms.netmgt.model.OnmsCriteria;
 
-    int deletePreviousEventsForAlarm(final Integer id, final OnmsEvent e);
+/**
+ * @deprecated DAO interfaces that inherit from this should be refactored to no longer
+ * use the {@link OnmsCriteria} functions.
+ * 
+ * @param <T> The type of the Entity this DAO is intended to manage.
+ * @param <K> The key of the Entity.
+ */
+public interface LegacyOnmsDao<T, K extends Serializable> extends OnmsDao<T,K> {
+    
+    /**
+     * @deprecated use {@link #findMatching(Criteria)} instead.
+     */
+    List<T> findMatching(OnmsCriteria criteria);
 
     /**
-     * Returns a list of events which have been created
-     * AFTER date and the uei of each event matches one uei entry of the ueiList.
-     *
-     * @param ueiList list with uei's
-     * @param date    the date after which all events are loaded.
-     * @return a list of events which have been created
-     *         AFTER date and the uei of each event matches one uei entry of the ueiList.
+     * @deprecated use {@link #countMatching(Criteria)} instead.
      */
-    List<OnmsEvent> getEventsAfterDate(List<String> ueiList, Date date);
-
+    int countMatching(final OnmsCriteria onmsCrit);
 }

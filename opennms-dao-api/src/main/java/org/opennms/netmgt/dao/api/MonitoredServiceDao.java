@@ -42,7 +42,7 @@ import org.opennms.netmgt.model.ServiceSelector;
  * @author Craig Gallen
  * @author David Hustace
  */
-public interface MonitoredServiceDao extends OnmsDao<OnmsMonitoredService, Integer> {
+public interface MonitoredServiceDao extends LegacyOnmsDao<OnmsMonitoredService, Integer> {
 
     /**
      * <p>get</p>
