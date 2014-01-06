@@ -597,11 +597,19 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
      */
     private void trimWhitespace(Requisition req) {
         for (RequisitionNode node : req.getNodes()) {
-            node.setForeignId(node.getForeignId().trim());
-            node.setParentForeignSource(node.getParentForeignSource().trim());
-            node.setParentForeignId(node.getParentForeignId().trim());
+            if (node.getForeignId() != null) {
+                node.setForeignId(node.getForeignId().trim());
+            }
+            if (node.getParentForeignSource() != null) {
+                node.setParentForeignSource(node.getParentForeignSource().trim());
+            }
+            if (node.getParentForeignId() != null) {
+                node.setParentForeignId(node.getParentForeignId().trim());
+            }
             for (RequisitionInterface intf : node.getInterfaces()) {
-                intf.setIpAddr(intf.getIpAddr().trim());
+                if (intf.getIpAddr() != null) {
+                    intf.setIpAddr(intf.getIpAddr().trim());
+                }
             }
         }
     }
