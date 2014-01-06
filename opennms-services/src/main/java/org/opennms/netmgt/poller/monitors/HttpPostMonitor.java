@@ -33,6 +33,8 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -52,12 +54,12 @@ import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.auth.AuthScope;
 
-import org.apache.log4j.Level;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
+import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
@@ -71,7 +73,7 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
  * @author cliles
  */
 
-@Distributable
+@Distributable(DistributionContext.DAEMON)
 final public class HttpPostMonitor extends AbstractServiceMonitor {
 
     /**
@@ -88,7 +90,7 @@ final public class HttpPostMonitor extends AbstractServiceMonitor {
      * Default timeout. Specifies how long (in milliseconds) to block waiting
      * for data from the monitored interface.
      */
-    private static final int DEFAULT_TIMEOUT = 3000; // 3 second timeout on read()
+    private static final int DEFAULT_TIMEOUT = 3000;
 
     public static final String DEFAULT_MIMETYPE = "text/xml";
     public static final String DEFAULT_CHARSET = "utf-8";
@@ -106,6 +108,8 @@ final public class HttpPostMonitor extends AbstractServiceMonitor {
     public static final String PARAMETER_USERNAME = "auth-username";
     public static final String PARAMETER_PASSWORD = "auth-password";
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(HttpPostMonitor.class);
+
 
     /**
      * {@inheritDoc}
@@ -121,20 +125,15 @@ final public class HttpPostMonitor extends AbstractServiceMonitor {
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface<InetAddress> iface = svc.getNetInterface();
 
-        //
         // Process parameters
-        //
 
-        //
         // Get interface address from NetworkInterface
-        //
         if (iface.getType() != NetworkInterface.TYPE_INET)
           throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_INET currently supported");
 
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
         // Port
-        //
         int port = ParameterMap.getKeyedInteger(parameters, PARAMETER_PORT, DEFAULT_PORT);
 
         //URI
@@ -146,34 +145,28 @@ final public class HttpPostMonitor extends AbstractServiceMonitor {
         //Password
         String strPasswd = ParameterMap.getKeyedString(parameters, PARAMETER_PASSWORD, null);
 
-        // BannerMatch
+        //BannerMatch
         String strBannerMatch = ParameterMap.getKeyedString(parameters, PARAMETER_BANNER, null);
 
-        // Scheme
+        //Scheme
         String strScheme = ParameterMap.getKeyedString(parameters, PARAMETER_SCHEME, DEFAULT_SCHEME);
 
-        // Payload
+        //Payload
         String strPayload = ParameterMap.getKeyedString(parameters, PARAMETER_PAYLOAD, null);
 
-        // Mimetype
+        //Mimetype
         String strMimetype = ParameterMap.getKeyedString(parameters, PARAMETER_MIMETYPE, DEFAULT_MIMETYPE);
 
-        // Charset
+        //Charset
         String strCharset = ParameterMap.getKeyedString(parameters, PARAMETER_CHARSET, DEFAULT_CHARSET);
 
-
-
-        // Get the address instance.
-        //
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
         final String hostAddress = InetAddressUtils.str(ipv4Addr);
-		    if (log().isDebugEnabled()) {
-          log().debug("poll: address = " + hostAddress + ", port = " + port + ", " + tracker);
-        }
+        
+        LOGGER.debug("poll: address = " + hostAddress + ", port = " + port + ", " + tracker);
 
         // Give it a whirl
-        //
         PollStatus serviceStatus = PollStatus.unavailable();
 
         for (tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt()) {
@@ -203,31 +196,23 @@ final public class HttpPostMonitor extends AbstractServiceMonitor {
                 StringBuilder sb = new StringBuilder(strScheme);
                 sb.append("://").append(hostAddress).append(":").append(port).append(strURI);
 
-                if (log().isDebugEnabled()) {
-                  log().debug("HttpPostMonitor: Constructed URL is " + sb);
-                }
+                LOGGER.debug("HttpPostMonitor: Constructed URL is " + sb);
 
                 HttpPost post = new HttpPost(new URI(sb.toString()));
                 post.setEntity(postReq);
                 HttpResponse response = client.execute(httpHost, post);
 
-                if (log().isDebugEnabled()) {
-                  log().debug("HttpPostMonitor: Status Line is " + response.getStatusLine());
-                }
+                LOGGER.debug("HttpPostMonitor: Status Line is " + response.getStatusLine());
 
                 if (response.getStatusLine().getStatusCode() > 399) {
-                  log().warn("HttpPostMonitor: Got response status code " + response.getStatusLine().getStatusCode());
-                  if (log().isDebugEnabled()) {
-                    log().debug("HttpPostMonitor: Received server response: " + response.getStatusLine());
-                    log().debug("HttpPostMonitor: Failing on bad status code");
-                  }
-                  serviceStatus = PollStatus.unavailable("HTTP(S) Status code " + response.getStatusLine().getStatusCode());
-                  break;
+                    LOGGER.info("HttpPostMonitor: Got response status code " + response.getStatusLine().getStatusCode());
+                    LOGGER.debug("HttpPostMonitor: Received server response: " + response.getStatusLine());
+                    LOGGER.debug("HttpPostMonitor: Failing on bad status code");
+                    serviceStatus = PollStatus.unavailable("HTTP(S) Status code " + response.getStatusLine().getStatusCode());
+                    break;
                 }
 
-                if (log().isDebugEnabled()) {
-                  log().debug("HttpPostMonitor: Response code is valid");
-                }
+                LOGGER.debug("HttpPostMonitor: Response code is valid");
                 double responseTime = tracker.elapsedTimeInMillis();
 
                 HttpEntity entity = response.getEntity();
@@ -235,44 +220,45 @@ final public class HttpPostMonitor extends AbstractServiceMonitor {
                 String Strresponse = IOUtils.toString(responseStream);
 
                 if (Strresponse == null)
-                  continue;
-                if (log().isDebugEnabled()) {
-                  log().debug("HttpPostMonitor: banner = " + Strresponse);
-                  log().debug("HttpPostMonitor: responseTime= " + responseTime + "ms");
-                }
+                    continue;
+
+                LOGGER.debug("HttpPostMonitor: banner = " + Strresponse);
+                LOGGER.debug("HttpPostMonitor: responseTime= " + responseTime + "ms");
 
                 //Could it be a regex?
                 if (strBannerMatch.charAt(0)=='~'){
-                  if (!Strresponse.matches(strBannerMatch.substring(1))) {
-                    serviceStatus = PollStatus.unavailable("Banner does not match Regex '"+strBannerMatch+"'");
-                    break;
-                  }
-                  else {
-                    serviceStatus = PollStatus.available(responseTime);
-                  }
+                    if (!Strresponse.matches(strBannerMatch.substring(1))) {
+                        serviceStatus = PollStatus.unavailable("Banner does not match Regex '"+strBannerMatch+"'");
+                        break;
+                    }
+                    else {
+                        serviceStatus = PollStatus.available(responseTime);
+                    }
                 }
                 else {
-                  if (Strresponse.indexOf(strBannerMatch) > -1) {
-                    serviceStatus = PollStatus.available(responseTime);
-                  }
-                  else {
-                    serviceStatus = PollStatus.unavailable("Did not find expected Text '"+strBannerMatch+"'");
-                    break;
-                  }
+                    if (Strresponse.indexOf(strBannerMatch) > -1) {
+                        serviceStatus = PollStatus.available(responseTime);
+                    }
+                    else {
+                        serviceStatus = PollStatus.unavailable("Did not find expected Text '"+strBannerMatch+"'");
+                        break;
+                    }
                 }
 
             } catch (URISyntaxException e) {
-                serviceStatus = logDown(Level.WARN, "URISyntaxException: " + e);
+                String reason = "URISyntaxException for URI: " + strURI + " " + e.getMessage();
+                LOGGER.debug(reason, e);
+                serviceStatus = PollStatus.unavailable(reason);
                 break;
             } catch (Exception e) {
-                serviceStatus = logDown(Level.DEBUG, "Exception: " + e);
+                String reason = "Exception: " + e.getMessage();
+                LOGGER.debug(reason, e);
+                serviceStatus = PollStatus.unavailable(reason);
                 break;
             }
         }
 
-        //
         // return the status of the service
-        //
         return serviceStatus;
     }
 
