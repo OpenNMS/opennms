@@ -158,7 +158,7 @@ final public class HttpPostMonitor extends AbstractServiceMonitor {
         // Mimetype
         String strMimetype = ParameterMap.getKeyedString(parameters, PARAMETER_MIMETYPE, DEFAULT_MIMETYPE);
 
-        // Charset 
+        // Charset
         String strCharset = ParameterMap.getKeyedString(parameters, PARAMETER_CHARSET, DEFAULT_CHARSET);
 
 
@@ -179,7 +179,7 @@ final public class HttpPostMonitor extends AbstractServiceMonitor {
         for (tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt()) {
             try {
                 tracker.startAttempt();
-      
+
                 HttpHost httpHost = new HttpHost(hostAddress, port);
                 HttpParams clientParams = new BasicHttpParams();
                 clientParams.setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, tracker.getSoTimeout());
@@ -224,7 +224,7 @@ final public class HttpPostMonitor extends AbstractServiceMonitor {
                   serviceStatus = PollStatus.unavailable("HTTP(S) Status code " + response.getStatusLine().getStatusCode());
                   break;
                 }
-          
+
                 if (log().isDebugEnabled()) {
                   log().debug("HttpPostMonitor: Response code is valid");
                 }
@@ -247,7 +247,7 @@ final public class HttpPostMonitor extends AbstractServiceMonitor {
                     serviceStatus = PollStatus.unavailable("Banner does not match Regex '"+strBannerMatch+"'");
                     break;
                   }
-                  else {  
+                  else {
                     serviceStatus = PollStatus.available(responseTime);
                   }
                 }
