@@ -42,6 +42,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.xml.ValidateUsing;
+
 /**
  * Top-level element for the actiond-configuration.xml configuration file.
  *
@@ -49,6 +51,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "actiond-configuration")
 @XmlAccessorType(XmlAccessType.FIELD)
+@ValidateUsing("actiond-configuration.xsd")
 public class ActiondConfiguration implements Serializable {
     private static final long serialVersionUID = 1978139055248268440L;
 
@@ -63,14 +66,14 @@ public class ActiondConfiguration implements Serializable {
      * launches the next process.
      */
     @XmlAttribute(name = "max-outstanding-actions")
-    private Integer _maxOutstandingActions;
+    private Integer m_maxOutstandingActions;
 
     /**
      * The maximum time that a launched process can take to complete. If
      * execution time exceeds this time, the launched process is terminated.
      */
     @XmlAttribute(name = "max-process-time")
-    private Long _maxProcessTime;
+    private Long m_maxProcessTime;
 
     // ----------------/
     // - Constructors -/
@@ -97,24 +100,26 @@ public class ActiondConfiguration implements Serializable {
      * @return true if the objects are equal.
      */
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        ActiondConfiguration other = (ActiondConfiguration) obj;
-        if (_maxOutstandingActions == null) {
-            if (other._maxOutstandingActions != null)
+    public boolean equals(final Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
+
+        final ActiondConfiguration other = (ActiondConfiguration) obj;
+        if (m_maxOutstandingActions == null) {
+            if (other.m_maxOutstandingActions != null) {
                 return false;
-        } else if (!_maxOutstandingActions.equals(other._maxOutstandingActions))
+            }
+        } else if (!m_maxOutstandingActions.equals(other.m_maxOutstandingActions)) {
             return false;
-        if (_maxProcessTime == null) {
-            if (other._maxProcessTime != null)
+        }
+        if (m_maxProcessTime == null) {
+            if (other.m_maxProcessTime != null) {
                 return false;
-        } else if (!_maxProcessTime.equals(other._maxProcessTime))
+            }
+        } else if (!m_maxProcessTime.equals(other.m_maxProcessTime)) {
             return false;
+        }
         return true;
     }
 
@@ -128,8 +133,8 @@ public class ActiondConfiguration implements Serializable {
      *
      * @return the value of field 'MaxOutstandingActions'.
      */
-    public int getMaxOutstandingActions() {
-        return _maxOutstandingActions == null ? 10 : _maxOutstandingActions;
+    public Integer getMaxOutstandingActions() {
+        return m_maxOutstandingActions == null ? 10 : m_maxOutstandingActions;
     }
 
     /**
@@ -140,8 +145,8 @@ public class ActiondConfiguration implements Serializable {
      *
      * @return the value of field 'MaxProcessTime'.
      */
-    public long getMaxProcessTime() {
-        return _maxProcessTime == null ? 120000 : _maxProcessTime;
+    public Long getMaxProcessTime() {
+        return m_maxProcessTime == null ? 120000 : m_maxProcessTime;
     }
 
     /**
@@ -156,13 +161,8 @@ public class ActiondConfiguration implements Serializable {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime
-                * result
-                + ((_maxOutstandingActions == null) ? 0
-                                                   : _maxOutstandingActions.hashCode());
-        result = prime
-                * result
-                + ((_maxProcessTime == null) ? 0 : _maxProcessTime.hashCode());
+        result = prime * result + ((m_maxOutstandingActions == null) ? 0 : m_maxOutstandingActions.hashCode());
+        result = prime * result + ((m_maxProcessTime == null) ? 0 : m_maxProcessTime.hashCode());
         return result;
     }
 
@@ -177,8 +177,8 @@ public class ActiondConfiguration implements Serializable {
      * @param maxOutstandingActions
      *            the value of field 'maxOutstandingActions'.
      */
-    public void setMaxOutstandingActions(final int maxOutstandingActions) {
-        this._maxOutstandingActions = maxOutstandingActions;
+    public void setMaxOutstandingActions(final Integer maxOutstandingActions) {
+        m_maxOutstandingActions = maxOutstandingActions;
     }
 
     /**
@@ -190,7 +190,7 @@ public class ActiondConfiguration implements Serializable {
      * @param maxProcessTime
      *            the value of field 'maxProcessTime'.
      */
-    public void setMaxProcessTime(final long maxProcessTime) {
-        this._maxProcessTime = maxProcessTime;
+    public void setMaxProcessTime(final Long maxProcessTime) {
+        m_maxProcessTime = maxProcessTime;
     }
 }

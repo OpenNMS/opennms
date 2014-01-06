@@ -33,6 +33,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 
@@ -40,10 +41,10 @@ import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.core.xml.CastorUtils;
-import org.opennms.netmgt.config.poller.PollerConfiguration;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -227,10 +228,13 @@ public final class PollerConfigFactory extends PollerConfigManager {
                 m_currentVersion = cfgFile.lastModified();
                 LOG.debug("init: config file path: {}", cfgFile.getPath());
                 InputStream stream = null;
+                InputStreamReader sr = null;
                 try {
                     stream = new FileInputStream(cfgFile);
-                    m_config = CastorUtils.unmarshal(PollerConfiguration.class, stream);
+                    sr = new InputStreamReader(stream);
+                    m_config = JaxbUtils.unmarshal(PollerConfiguration.class, sr);
                 } finally {
+                    IOUtils.closeQuietly(sr);
                     IOUtils.closeQuietly(stream);
                 }
                 init();

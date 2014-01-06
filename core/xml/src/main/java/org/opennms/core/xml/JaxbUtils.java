@@ -39,7 +39,9 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -50,16 +52,29 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventHandler;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchema;
+import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.transform.Source;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
 import org.apache.commons.io.IOUtils;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.io.Resource;
+import org.springframework.core.type.filter.AnnotationTypeFilter;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLFilter;
@@ -67,8 +82,10 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 public abstract class JaxbUtils {
-
     private static final Logger LOG = LoggerFactory.getLogger(JaxbUtils.class);
+
+    private static final Class<?>[] EMPTY_CLASS_LIST = new Class<?>[0];
+    private static final Source[] EMPTY_SOURCE_LIST = new Source[0];
 
     private static final class LoggingValidationEventHandler implements ValidationEventHandler {
 
@@ -87,6 +104,7 @@ public abstract class JaxbUtils {
     private static ThreadLocal<Map<Class<?>, Unmarshaller>> m_unMarshallers = new ThreadLocal<Map<Class<?>, Unmarshaller>>();
     private static final Map<Class<?>,JAXBContext> m_contexts = Collections.synchronizedMap(new WeakHashMap<Class<?>,JAXBContext>());
     private static final Map<Class<?>,Schema> m_schemas = Collections.synchronizedMap(new WeakHashMap<Class<?>,Schema>());
+    private static final Map<String,Class<?>> m_elementClasses = Collections.synchronizedMap(new WeakHashMap<String,Class<?>>());
     private static final boolean VALIDATE_IF_POSSIBLE = true;
 
     private JaxbUtils() {
@@ -98,11 +116,70 @@ public abstract class JaxbUtils {
         return jaxbWriter.toString();
     }
 
+    public static Class<?> getClassForElement(final String elementName) {
+        if (elementName == null) return null;
+
+        final Class<?> existing = m_elementClasses.get(elementName);
+        if (existing != null) return existing;
+
+        final ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(true);
+        scanner.addIncludeFilter(new AnnotationTypeFilter(XmlRootElement.class));
+        for (final BeanDefinition bd : scanner.findCandidateComponents("org.opennms")) {
+            final String className = bd.getBeanClassName();
+            try {
+                final Class<?> clazz = Class.forName(className);
+                final XmlRootElement annotation = clazz.getAnnotation(XmlRootElement.class);
+                if (annotation == null) {
+                    LOG.warn("Somehow found class {} but it has no @XmlRootElement annotation! Skipping.", className);
+                    continue;
+                }
+                if (elementName.equalsIgnoreCase(annotation.name())) {
+                    LOG.trace("Found class {} for element name {}", className, elementName);
+                    m_elementClasses.put(elementName, clazz);
+                    return clazz;
+                }
+            } catch (final ClassNotFoundException e) {
+                LOG.warn("Unable to get class object from class name {}. Skipping.", className, e);
+            }
+        }
+        return null;
+    }
+
+    public static <T> List<String> getNamespacesForClass(final Class<T> clazz) {
+        final List<String> namespaces = new ArrayList<String>();
+        final XmlSeeAlso seeAlso = clazz.getAnnotation(XmlSeeAlso.class);
+        if (seeAlso != null) {
+            for (final Class<?> c : seeAlso.value()) {
+                namespaces.addAll(getNamespacesForClass(c));
+            }
+        }
+        return namespaces;
+    }
+
+    public static Node marshalToNode(final Object obj) {
+        try {
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setNamespaceAware(true);
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Document doc = db.newDocument();
+    
+            final Marshaller jaxbMarshaller = getMarshallerFor(obj, null);
+            jaxbMarshaller.marshal(obj, doc);
+            return doc;
+        } catch (final ParserConfigurationException e) {
+            throw EXCEPTION_TRANSLATOR.translate("marshalling " + obj.getClass().getSimpleName(), e);
+        } catch (final JAXBException e) {
+            throw EXCEPTION_TRANSLATOR.translate("marshalling " + obj.getClass().getSimpleName(), e);
+        }
+    }
+
     public static void marshal(final Object obj, final Writer writer) {
         final Marshaller jaxbMarshaller = getMarshallerFor(obj, null);
         try {
             jaxbMarshaller.marshal(obj, writer);
         } catch (final JAXBException e) {
+            throw EXCEPTION_TRANSLATOR.translate("marshalling " + obj.getClass().getSimpleName(), e);
+        } catch (final FactoryConfigurationError e) {
             throw EXCEPTION_TRANSLATOR.translate("marshalling " + obj.getClass().getSimpleName(), e);
         }
     }
@@ -188,21 +265,22 @@ public abstract class JaxbUtils {
         }
     }
 
-    public static <T> XMLFilter getXMLFilterForClass(final Class<T> clazz) throws SAXException {
-        final XMLFilter filter;
+    public static <T> String getNamespaceForClass(final Class<T> clazz) throws SAXException {
         final XmlSchema schema = clazz.getPackage().getAnnotation(XmlSchema.class);
         if (schema != null) {
             final String namespace = schema.namespace();
             if (namespace != null && !"".equals(namespace)) {
-                LOG.trace("found namespace {} for class {}", namespace, clazz);
-                filter = new SimpleNamespaceFilter(namespace, true);
-            } else {
-                filter = new SimpleNamespaceFilter("", false);
+                return namespace;
             }
-        } else {
-            filter = new SimpleNamespaceFilter("", false);
         }
+        return null;
+    }
 
+    public static <T> XMLFilter getXMLFilterForClass(final Class<T> clazz) throws SAXException {
+        final String namespace = getNamespaceForClass(clazz);
+        XMLFilter filter = namespace == null? new SimpleNamespaceFilter("", false) : new SimpleNamespaceFilter(namespace, true);
+
+        LOG.trace("namespace filter for class {}: {}", clazz, filter);
         final XMLReader xmlReader = XMLReaderFactory.createXMLReader();
         filter.setParent(xmlReader);
         return filter;
@@ -233,13 +311,16 @@ public abstract class JaxbUtils {
             }
             final Marshaller marshaller = context.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
-            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            if (context.getClass().getName().startsWith("org.eclipse.persistence.jaxb")) {
+                marshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, new EmptyNamespacePrefixMapper());
+            }
             final Schema schema = getValidatorFor(clazz);
             marshaller.setSchema(schema);
             if (jaxbContext == null) marshallers.put(clazz, marshaller);
 
             return marshaller;
-        } catch (JAXBException e) {
+        } catch (final JAXBException e) {
             throw EXCEPTION_TRANSLATOR.translate("creating XML marshaller", e);
         }
     }
@@ -297,15 +378,47 @@ public abstract class JaxbUtils {
         return unmarshaller;
     }
 
+    private static List<Class<?>> getAllRelatedClasses(final Class<?> clazz) {
+        final List<Class<?>> classes = new ArrayList<Class<?>>();
+        classes.add(clazz);
+
+        final XmlSeeAlso seeAlso = clazz.getAnnotation(XmlSeeAlso.class);
+        if (seeAlso != null && seeAlso.value() != null) {
+            for (final Class<?> c : seeAlso.value()) {
+                classes.addAll(getAllRelatedClasses(c));
+            }
+        }
+
+        LOG.trace("getAllRelatedClasses({}): {}", clazz, classes);
+        return classes;
+    }
+
     private static JAXBContext getContextFor(final Class<?> clazz) throws JAXBException {
+        LOG.trace("Getting context for class {}", clazz);
         final JAXBContext context;
         if (m_contexts.containsKey(clazz)) {
             context = m_contexts.get(clazz);
         } else {
-            context = JAXBContext.newInstance(clazz);
+            final List<Class<?>> allRelatedClasses = getAllRelatedClasses(clazz);
+            LOG.trace("Creating new context for classes: {}", allRelatedClasses);
+            context = JAXBContext.newInstance(allRelatedClasses.toArray(EMPTY_CLASS_LIST));
             m_contexts.put(clazz, context);
         }
         return context;
+    }
+
+    private static List<String> getSchemaFilesFor(final Class<?> clazz) {
+        final List<String> schemaFiles = new ArrayList<String>();
+        for (final Class<?> c : getAllRelatedClasses(clazz)) {
+            final ValidateUsing annotation = c.getAnnotation(ValidateUsing.class);
+            if (annotation == null || annotation.value() == null) {
+                LOG.warn("@ValidateUsing is missing from class {}", c);
+                continue;
+            } else {
+                schemaFiles.add(annotation.value());
+            }
+        }
+        return schemaFiles;
     }
 
     private static Schema getValidatorFor(final Class<?> clazz) {
@@ -315,50 +428,61 @@ public abstract class JaxbUtils {
             return m_schemas.get(clazz);
         }
 
-        final ValidateUsing schemaFileAnnotation = clazz.getAnnotation(ValidateUsing.class);
-        if (schemaFileAnnotation == null || schemaFileAnnotation.value() == null) {
+        final List<Source> sources = new ArrayList<Source>();
+        final SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+
+        for (final String schemaFileName : getSchemaFilesFor(clazz)) {
+            InputStream schemaInputStream = null;
+            try {
+                Object schemaSource = null;
+                if (schemaInputStream == null) {
+                    final File schemaFile = new File(System.getProperty("opennms.home") + "/share/xsds/" + schemaFileName);
+                    if (schemaFile.exists()) {
+                        schemaSource = schemaFile;
+                        schemaInputStream = new FileInputStream(schemaFile);
+                    };
+                }
+                if (schemaInputStream == null) {
+                    final File schemaFile = new File("target/xsds/" + schemaFileName);
+                    if (schemaFile.exists()) {
+                        schemaSource = schemaFile;
+                        schemaInputStream = new FileInputStream(schemaFile);
+                    };
+                }
+                if (schemaInputStream == null) {
+                    final URL schemaResource = Thread.currentThread().getContextClassLoader().getResource("xsds/" + schemaFileName);
+                    if (schemaResource == null) {
+                        LOG.debug("Unable to load resource xsds/{} from the classpath.", schemaFileName);
+                    } else {
+                        schemaSource = schemaResource;
+                        schemaInputStream = schemaResource.openStream();
+                    }
+                }
+                if (schemaInputStream == null) {
+                    LOG.trace("Did not find a suitable XSD.  Skipping.");
+                    continue;
+                } else {
+                    LOG.trace("Found schema source {} related to {}", schemaSource, clazz);
+                    sources.add(new StreamSource(schemaInputStream));
+                }
+            } catch (final Throwable t) {
+                LOG.warn("an error occurred while attempting to load {} for validation", schemaFileName);
+                continue;
+            }
+        }
+
+        if (sources.size() == 0) {
+            LOG.warn("No schema files found for validating {}", clazz);
             return null;
         }
 
-        final String schemaFileName = schemaFileAnnotation.value();
-        InputStream schemaInputStream = null;
         try {
-            final SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
-            if (schemaInputStream == null) {
-                final File schemaFile = new File(System.getProperty("opennms.home") + "/share/xsds/" + schemaFileName);
-                if (schemaFile.exists()) {
-                    LOG.trace("using file {}", schemaFile);
-                    schemaInputStream = new FileInputStream(schemaFile);
-                };
-            }
-            if (schemaInputStream == null) {
-                final File schemaFile = new File("target/xsds/" + schemaFileName);
-                if (schemaFile.exists()) {
-                    LOG.trace("using file {}", schemaFile);
-                    schemaInputStream = new FileInputStream(schemaFile);
-                };
-            }
-            if (schemaInputStream == null) {
-                final URL schemaResource = Thread.currentThread().getContextClassLoader().getResource("xsds/" + schemaFileName);
-                if (schemaResource == null) {
-                    LOG.debug("Unable to load resource xsds/{} from the classpath.", schemaFileName);
-                } else {
-                    LOG.trace("using resource {} from classpath", schemaResource);
-                    schemaInputStream = schemaResource.openStream();
-                }
-            }
-            if (schemaInputStream == null) {
-                LOG.trace("Did not find a suitable XSD.  Skipping.");
-                return null;
-            }
-            final Schema schema = factory.newSchema(new StreamSource(schemaInputStream));
+            final Schema schema = factory.newSchema(sources.toArray(EMPTY_SOURCE_LIST));
             m_schemas.put(clazz, schema);
             return schema;
-        } catch (final Throwable t) {
-            LOG.warn("an error occurred while attempting to load {} for validation", schemaFileName, t);
+        } catch (final SAXException e) {
+            LOG.warn("an error occurred while attempting to load schema validation files for class {}", clazz);
             return null;
-        } finally {
-            IOUtils.closeQuietly(schemaInputStream);
         }
     }
 }

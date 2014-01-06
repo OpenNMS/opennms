@@ -120,4 +120,9 @@ public class SimpleNamespaceFilter extends XMLFilterImpl {
             m_addedNamespace = true;
         }
     }
+    
+    @Override
+    public String toString() {
+        return "SimpleNamespaceFilter[namespaceUri=" + m_namespaceUri + ",addNamespace=" + m_addNamespace + "]";
+    }
 }

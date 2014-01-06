@@ -33,6 +33,7 @@ import static org.opennms.core.utils.InetAddressUtils.toIpAddrBytes;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -51,14 +52,13 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.IpListFromUrl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.core.xml.MarshallingResourceFailureException;
 import org.opennms.netmgt.config.poller.CriticalService;
 import org.opennms.netmgt.config.poller.ExcludeRange;
@@ -74,6 +74,8 @@ import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>Abstract PollerConfigManager class.</p>
@@ -99,7 +101,13 @@ abstract public class PollerConfigManager implements PollerConfig {
     public PollerConfigManager(final InputStream stream, final String localServer, final boolean verifyServer) throws MarshalException, ValidationException {
         m_localServer = localServer;
         m_verifyServer = verifyServer;
-        m_config = CastorUtils.unmarshal(PollerConfiguration.class, stream);
+        InputStreamReader isr = null;
+        try {
+            isr = new InputStreamReader(stream);
+            m_config = JaxbUtils.unmarshal(PollerConfiguration.class, isr);
+        } finally {
+            IOUtils.closeQuietly(isr);
+        }
         setUpInternalData();
     }
 

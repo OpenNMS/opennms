@@ -36,8 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.CapsdDbSyncer;
 import org.opennms.netmgt.config.CapsdConfig;
@@ -51,6 +49,8 @@ import org.opennms.netmgt.config.poller.Rrd;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventIpcManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>OpenNMSProvisioner class.</p>
@@ -466,7 +466,7 @@ public class OpenNMSProvisioner implements Provisioner {
         
         final Map<String, Object> m = new HashMap<String, Object>();
         m.put("serviceid", serviceId);
-        m.put("interval", Integer.valueOf((int)svc.getInterval()));
+        m.put("interval", svc.getInterval() == null? null : svc.getInterval().intValue());
         
         for(int i = 0; i < svc.getParameterCount(); i++) {
         	final Parameter param = svc.getParameter(i);
@@ -511,7 +511,7 @@ public class OpenNMSProvisioner implements Provisioner {
             final Downtime dt = pkg.getDowntime(i);
             final String suffix = (i == 0 ? "" : ""+i);
             if ((dt.hasEnd()) || (dt.getDelete() != null && !"false".equals(dt.getDelete()))) {
-                m.put("downtime_interval"+suffix, Integer.valueOf((int)dt.getInterval()));
+                m.put("downtime_interval"+suffix, dt.getInterval() == null? null : dt.getInterval().intValue());
                 int duration = (!dt.hasEnd() ? Integer.MAX_VALUE : (int)(dt.getEnd() - dt.getBegin()));
                 m.put("downtime_duration"+suffix, Integer.valueOf(duration));
             }   

@@ -201,7 +201,7 @@ public class PollerBackEndTest extends TestCase {
 
         Service service = new Service();
         service.setName(serviceName);
-        service.setInterval(serviceInterval);
+        service.setInterval(Long.valueOf(serviceInterval));
 
         for(int i = 0; i < parms.length-1; i+=2) {
             String key = parms[i];

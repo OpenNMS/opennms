@@ -1,0 +1,12 @@
+#Mon Jan 06 12:29:24 EST 2014
+org.opennms.netmgt.config.mailtransporttest.ReadmailTest=org.opennms.netmgt.config.mailtransporttest.descriptors.ReadmailTestDescriptor
+org.opennms.netmgt.config.mailtransporttest.SendmailProtocol=org.opennms.netmgt.config.mailtransporttest.descriptors.SendmailProtocolDescriptor
+org.opennms.netmgt.config.mailtransporttest.SendmailMessage=org.opennms.netmgt.config.mailtransporttest.descriptors.SendmailMessageDescriptor
+org.opennms.netmgt.config.mailtransporttest.MailTest=org.opennms.netmgt.config.mailtransporttest.descriptors.MailTestDescriptor
+org.opennms.netmgt.config.mailtransporttest.SendmailTest=org.opennms.netmgt.config.mailtransporttest.descriptors.SendmailTestDescriptor
+org.opennms.netmgt.config.mailtransporttest.ReadmailHost=org.opennms.netmgt.config.mailtransporttest.descriptors.ReadmailHostDescriptor
+org.opennms.netmgt.config.mailtransporttest.JavamailProperty=org.opennms.netmgt.config.mailtransporttest.descriptors.JavamailPropertyDescriptor
+org.opennms.netmgt.config.mailtransporttest.MailTransportTest=org.opennms.netmgt.config.mailtransporttest.descriptors.MailTransportTestDescriptor
+org.opennms.netmgt.config.mailtransporttest.UserAuth=org.opennms.netmgt.config.mailtransporttest.descriptors.UserAuthDescriptor
+org.opennms.netmgt.config.mailtransporttest.ReadmailProtocol=org.opennms.netmgt.config.mailtransporttest.descriptors.ReadmailProtocolDescriptor
+org.opennms.netmgt.config.mailtransporttest.SendmailHost=org.opennms.netmgt.config.mailtransporttest.descriptors.SendmailHostDescriptor

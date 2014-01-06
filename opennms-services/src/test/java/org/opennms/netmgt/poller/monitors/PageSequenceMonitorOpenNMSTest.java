@@ -67,7 +67,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 //@JUnitHttpServer(port=10342)
 public class PageSequenceMonitorOpenNMSTest /* implements SystemReportPlugin */ {
 
-    PageSequenceMonitor m_monitor;
+    AbstractServiceMonitor m_monitor;
     Map<String, Object> m_params;
 
 
