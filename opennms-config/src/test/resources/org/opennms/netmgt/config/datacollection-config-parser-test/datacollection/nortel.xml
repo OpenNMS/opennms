@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<datacollection-group name="Nortel">
+
+      <!-- NORTEL mibs -->
+      <group name="bay-router" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.18.3.3.2.5.1.1.9"  instance="0" alias="wfkernelTasksTotal"  type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.18.3.3.2.5.1.1.10" instance="0" alias="wfkernelTasksInQue"  type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.18.3.3.2.5.1.1.3"  instance="0" alias="wfkernelMemoryFree"  type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.18.3.3.2.5.1.1.3"  instance="0" alias="wfkernelBuffersFree" type="counter" />
+      </group>
+
+      <systemDef name="NORTEL Routers">
+        <sysoidMask>.1.3.6.1.4.1.18.</sysoidMask>
+        <collect>
+          <includeGroup>bay-router</includeGroup>
+        </collect>
+      </systemDef>
+
+</datacollection-group>

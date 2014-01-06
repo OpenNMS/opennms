@@ -340,7 +340,11 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
     @XmlAttribute(name="snmp-primary")
     @XmlJavaTypeAdapter(PrimaryTypeAdapter.class)
     public PrimaryType getSnmpPrimary() {
-        return m_snmpPrimary;
+        if (m_snmpPrimary == null) {
+            return PrimaryType.NOT_ELIGIBLE;
+        } else {
+            return m_snmpPrimary;
+        }
     }
 
     /**

@@ -105,7 +105,7 @@ import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 @SuppressWarnings("serial")
 @Theme("topo_default")
 @JavaScript({
-	"http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js",
+	"CFInstall.min.js",
 	"chromeFrameCheck.js"
 })
 @PreserveOnRefresh

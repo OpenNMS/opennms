@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<datacollection-group name="WMI">
+
+     <!-- Resource Type for WMI TCP/IP Network Interfaces -->
+     <resourceType name="wmiTcpipNetworkInterface" label="Windows TCP/IP Network Interface"
+                  resourceLabel="${wmiIpNetIfName}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+     <!-- Resource Type for WMI CPUs -->
+     <resourceType name="wmiOSCpu" label="Windows Processor"
+                  resourceLabel="CPU ${wmiOSCpuName}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+     <!-- Resource Type for WMI Physical Disks -->
+     <resourceType name="wmiPhysicalDisk" label="Windows Physical Disk"
+                  resourceLabel="${wmiPDName}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+     <!-- Resource Type for WMI Logical Disks -->
+     <resourceType name="wmiLogicalDisk" label="Windows Logical Disk"
+                  resourceLabel="${wmiLDName}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+     <!-- Resource Type for WMI Web Requests -->
+     <resourceType name="wmiW3" label="Windows Web Requests" resourceLabel="${wmiW3Name}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+</datacollection-group>
