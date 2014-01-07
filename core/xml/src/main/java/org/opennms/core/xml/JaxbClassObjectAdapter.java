@@ -55,21 +55,13 @@ public class JaxbClassObjectAdapter extends XmlAdapter<Object, Object> {
             final String s = JaxbUtils.marshal(from);
             final DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             final Document doc = builder.parse(new ByteArrayInputStream(s.getBytes()));
-            final Node node = doc;
+            final Node node = doc.getDocumentElement();
             LOG.debug("marshal: node = {}", node);
             return node;
         } catch (final Exception e) {
             final IllegalArgumentException ex = new IllegalArgumentException("Unable to marshal object " + from, e);
             LOG.debug("ex = {}", ex, ex);
             throw ex;
-            /*
-            LOG.debug("Failed to marshal as JAXB.  Trying Castor.", e);
-            final StringWriter sw = new StringWriter();
-            CastorUtils.marshalWithTranslatedExceptions(from, sw);
-            final String text = sw.toString();
-            LOG.debug("marshal: text = {}", text);
-            return text == null? "" : text;
-            */
         }
     }
 

@@ -55,9 +55,6 @@ import javax.xml.bind.ValidationEventHandler;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchema;
 import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.transform.Source;
 import javax.xml.transform.sax.SAXSource;
@@ -73,9 +70,6 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.io.Resource;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLFilter;
@@ -155,24 +149,6 @@ public abstract class JaxbUtils {
             }
         }
         return namespaces;
-    }
-
-    public static Node marshalToNode(final Object obj) {
-        try {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            dbf.setNamespaceAware(true);
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document doc = db.newDocument();
-            final Element e = doc.getDocumentElement();
-
-            final Marshaller jaxbMarshaller = getMarshallerFor(obj, null);
-            jaxbMarshaller.marshal(obj, e);
-            return e;
-        } catch (final ParserConfigurationException e) {
-            throw EXCEPTION_TRANSLATOR.translate("marshalling " + obj.getClass().getSimpleName(), e);
-        } catch (final JAXBException e) {
-            throw EXCEPTION_TRANSLATOR.translate("marshalling " + obj.getClass().getSimpleName(), e);
-        }
     }
 
     public static void marshal(final Object obj, final Writer writer) {
@@ -403,7 +379,9 @@ public abstract class JaxbUtils {
         } else {
             final List<Class<?>> allRelatedClasses = getAllRelatedClasses(clazz);
             LOG.trace("Creating new context for classes: {}", allRelatedClasses);
-            context = JAXBContext.newInstance(allRelatedClasses.toArray(EMPTY_CLASS_LIST));
+            context = org.eclipse.persistence.jaxb.JAXBContext.newInstance(allRelatedClasses.toArray(EMPTY_CLASS_LIST));
+            // context = JAXBContext.newInstance(allRelatedClasses.toArray(EMPTY_CLASS_LIST));
+            LOG.debug("Context for {}: {}", allRelatedClasses, context);
             m_contexts.put(clazz, context);
         }
         return context;
