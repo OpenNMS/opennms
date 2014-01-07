@@ -74,6 +74,7 @@ import org.springframework.context.annotation.ClassPathScanningCandidateComponen
 import org.springframework.core.io.Resource;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -162,10 +163,11 @@ public abstract class JaxbUtils {
             dbf.setNamespaceAware(true);
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document doc = db.newDocument();
-    
+            final Element e = doc.getDocumentElement();
+
             final Marshaller jaxbMarshaller = getMarshallerFor(obj, null);
-            jaxbMarshaller.marshal(obj, doc.getDocumentElement());
-            return doc;
+            jaxbMarshaller.marshal(obj, e);
+            return e;
         } catch (final ParserConfigurationException e) {
             throw EXCEPTION_TRANSLATOR.translate("marshalling " + obj.getClass().getSimpleName(), e);
         } catch (final JAXBException e) {

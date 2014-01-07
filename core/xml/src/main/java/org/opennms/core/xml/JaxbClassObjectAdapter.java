@@ -1,9 +1,14 @@
 package org.opennms.core.xml;
 
+import java.io.ByteArrayInputStream;
+
 import javax.xml.bind.annotation.adapters.XmlAdapter;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.ls.DOMImplementationLS;
@@ -47,7 +52,10 @@ public class JaxbClassObjectAdapter extends XmlAdapter<Object, Object> {
         if (from == null) return null;
 
         try {
-            final Node node = JaxbUtils.marshalToNode(from);
+            final String s = JaxbUtils.marshal(from);
+            final DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            final Document doc = builder.parse(new ByteArrayInputStream(s.getBytes()));
+            final Node node = doc;
             LOG.debug("marshal: node = {}", node);
             return node;
         } catch (final Exception e) {
