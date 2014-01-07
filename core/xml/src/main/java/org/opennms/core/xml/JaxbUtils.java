@@ -164,7 +164,7 @@ public abstract class JaxbUtils {
             Document doc = db.newDocument();
     
             final Marshaller jaxbMarshaller = getMarshallerFor(obj, null);
-            jaxbMarshaller.marshal(obj, doc);
+            jaxbMarshaller.marshal(obj, doc.getDocumentElement());
             return doc;
         } catch (final ParserConfigurationException e) {
             throw EXCEPTION_TRANSLATOR.translate("marshalling " + obj.getClass().getSimpleName(), e);
