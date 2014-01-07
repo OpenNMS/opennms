@@ -302,3 +302,30 @@ div.v-table-header-wrap {
 }
 
 /** End Search Box Styles **/
+
+/** HUD Display Styles **/
+.topoHudDisplay {
+	border-width: 1px;
+	border-style: outset;
+	border-color: gray;
+	border-collapse: collapse;
+
+}
+
+.topoHudDisplay td{
+	border-width: 1px;
+	padding: 2px;
+	border-style: inset;
+	border-color: gray;
+	background-color: white;
+	-moz-border-radius: ;
+}
+
+.topoHudDisplay th{
+	border-width: 1px;
+	padding: 2px;
+	border-style: inset;
+	border-color: gray;
+	background-color: white;
+	-moz-border-radius: ;
+}

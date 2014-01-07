@@ -552,7 +552,12 @@ public class VertexHopGraphProvider implements GraphProvider {
 		m_delegate.clearVertices();
 	}
 
-	@Override
+    @Override
+    public int getVertexTotalCount() {
+        return m_delegate.getVertexTotalCount();
+    }
+
+    @Override
 	public String getEdgeNamespace() {
 		return m_delegate.getEdgeNamespace();
 	}
