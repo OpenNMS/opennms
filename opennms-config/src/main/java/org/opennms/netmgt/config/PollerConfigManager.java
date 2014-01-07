@@ -34,7 +34,6 @@ import static org.opennms.core.utils.InetAddressUtils.toIpAddrBytes;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.StringWriter;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,9 +52,6 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.io.IOUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.IpListFromUrl;
 import org.opennms.core.xml.JaxbUtils;
@@ -95,10 +91,8 @@ abstract public class PollerConfigManager implements PollerConfig {
      * @param stream a {@link java.io.InputStream} object.
      * @param localServer a {@link java.lang.String} object.
      * @param verifyServer a boolean.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public PollerConfigManager(final InputStream stream, final String localServer, final boolean verifyServer) throws MarshalException, ValidationException {
+    public PollerConfigManager(final InputStream stream, final String localServer, final boolean verifyServer) {
         m_localServer = localServer;
         m_verifyServer = verifyServer;
         InputStreamReader isr = null;
@@ -134,11 +128,9 @@ abstract public class PollerConfigManager implements PollerConfig {
      * <p>update</p>
      *
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     @Override
-    public abstract void update() throws IOException, MarshalException, ValidationException;
+    public abstract void update() throws IOException;
 
     /**
      * <p>saveXml</p>
@@ -198,21 +190,17 @@ abstract public class PollerConfigManager implements PollerConfig {
     /**
      * Saves the current in-memory configuration to disk and reloads
      *
-     * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     @Override
-    public void save() throws MarshalException, IOException, ValidationException {
+    public void save() throws IOException {
         try {
             getWriteLock().lock();
             // marshal to a string first, then write the string to the file. This
             // way the original config
             // isn't lost if the XML from the marshal is hosed.
-            final StringWriter stringWriter = new StringWriter();
-            Marshaller.marshal(m_config, stringWriter);
-            saveXml(stringWriter.toString());
-        
+            saveXml(JaxbUtils.marshal(m_config));
+
             update();
         } finally {
             getWriteLock().unlock();

@@ -200,7 +200,7 @@ public class OpenNMSProvisionerTest {
         }
 
         @Override
-        public void update() throws IOException, MarshalException, ValidationException {
+        public void update() throws IOException {
             m_config = JaxbUtils.unmarshal(PollerConfiguration.class, m_xml);
             setUpInternalData();
         }

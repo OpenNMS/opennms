@@ -8,3 +8,4 @@ tomcat
 www-test
 war
 .gwt
+/target

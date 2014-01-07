@@ -9,7 +9,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSSerializer;
@@ -27,12 +26,19 @@ public class JaxbClassObjectAdapter extends XmlAdapter<Object, Object> {
         LOG.debug("unmarshal: from = ({}){}", (from == null? null : from.getClass()), from);
         if (from == null) return null;
 
-        if (from instanceof Element) {
-            final Element e = (Element)from;
+        if (from instanceof Node) {
+            final Node e = (Node)from;
             e.normalize();
-            final Class<?> clazz = JaxbUtils.getClassForElement(e.getNodeName());
+            final String nodeName = e.getNodeName();
+            final Class<?> clazz = JaxbUtils.getClassForElement(nodeName);
 
+            LOG.debug("class type = {} (node name = {})", clazz, nodeName);
             // JAXB has already turned this into an element, but we need to re-parse the XML.
+
+            if (clazz == null) {
+                LOG.warn("Unable to determine object type for node name {}", nodeName);
+                return from;
+            }
 
             final DOMImplementationLS lsImpl = (DOMImplementationLS)e.getOwnerDocument().getImplementation().getFeature("LS", "3.0");
             LSSerializer serializer = lsImpl.createLSSerializer();
