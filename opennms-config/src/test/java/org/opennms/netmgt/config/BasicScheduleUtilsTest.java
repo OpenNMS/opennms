@@ -49,7 +49,7 @@ import org.opennms.core.utils.Owner;
 import org.opennms.core.utils.TimeInterval;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.groups.Schedule;
-import org.opennms.netmgt.config.poller.Outage;
+import org.opennms.netmgt.config.poller.outages.Outage;
 
 public class BasicScheduleUtilsTest extends IntervalTestCase {
 

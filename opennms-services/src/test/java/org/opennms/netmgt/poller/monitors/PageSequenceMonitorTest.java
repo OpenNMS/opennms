@@ -63,7 +63,7 @@ import org.springframework.test.context.ContextConfiguration;
 @JUnitHttpServer(port=10342)
 public class PageSequenceMonitorTest {
 
-    PageSequenceMonitor m_monitor;
+    AbstractServiceMonitor m_monitor;
     Map<String, Object> m_params;
 
     @Before

@@ -34,6 +34,7 @@
 	java.util.*,
 	org.opennms.netmgt.config.*,
 	org.opennms.netmgt.config.poller.*,
+	org.opennms.netmgt.config.poller.outages.*,
 	org.opennms.web.element.*,
 	org.opennms.netmgt.model.OnmsNode,
 	org.opennms.netmgt.model.OnmsNode.NodeType,
@@ -190,43 +191,43 @@ div.nodeintbox {
 		<td><%=pollFactory.getOutageType(outageName)%></td>
 		<td><div class="nodeintbox">
 		<%
-			org.opennms.netmgt.config.poller.Node[] nodeList = pollFactory.getNodeIds(outageName);
-				for (int j = 0; j < nodeList.length; j++) {
-					OnmsNode elementNode = NetworkElementFactory.getInstance(getServletContext()).getNode(nodeList[j].getId());
+		    org.opennms.netmgt.config.poller.outages.Node[] nodeList = pollFactory.getNodeIds(outageName);
+						for (int j = 0; j < nodeList.length; j++) {
+							OnmsNode elementNode = NetworkElementFactory.getInstance(getServletContext()).getNode(nodeList[j].getId());
 		%> <%=elementNode == null || elementNode.getType() == NodeType.DELETED ? "Node: Node ID " + nodeList[j].getId() + " Not Found" : "Node: " + elementNode.getLabel()%><br/>
 		<%
-			}
-				org.opennms.netmgt.config.poller.Interface[] interfaceList = pollFactory.getInterfaces(outageName);
-				for (int j = 0; j < interfaceList.length; j++) {
-					StringBuffer display;
-					String rawAddress = interfaceList[j].getAddress();
-					if ("match-any".equals(rawAddress)) {
-						display = new StringBuffer("All nodes/interfaces");
-					} else {
-						display = new StringBuffer();
-						List<Integer> nodeids = NetworkElementFactory.getInstance(getServletContext()).getNodeIdsWithIpLike(rawAddress);
-						//org.opennms.web.element.Interface[] interfaces = NetworkElementFactory.getInstance(getServletContext()).getInterfacesWithIpAddress(rawAddress);
-						if (nodeids.size() == 0) {
-							display.append("Intfc: " + rawAddress + " Not Found<br/>");
-						}
-						for (Integer nodeid: nodeids) {
-							org.opennms.web.element.Interface thisInterface = NetworkElementFactory.getInstance(getServletContext()).getInterface(nodeid,rawAddress);
-							if (thisInterface.isManagedChar()=='D') {
-								display.append("Intfc: " + thisInterface.getIpAddress() + " Not Found<br/>");
+		    }
+						org.opennms.netmgt.config.poller.outages.Interface[] interfaceList = pollFactory.getInterfaces(outageName);
+						for (int j = 0; j < interfaceList.length; j++) {
+							StringBuffer display;
+							String rawAddress = interfaceList[j].getAddress();
+							if ("match-any".equals(rawAddress)) {
+								display = new StringBuffer("All nodes/interfaces");
 							} else {
-								if (thisInterface.getHostname() != null && !thisInterface.getHostname().equals(thisInterface.getIpAddress())) {
-									display.append("Intfc: " + thisInterface.getIpAddress() + " " + thisInterface.getHostname());
-								} else {
-									display.append("Intfc: " + thisInterface.getIpAddress());
+								display = new StringBuffer();
+								List<Integer> nodeids = NetworkElementFactory.getInstance(getServletContext()).getNodeIdsWithIpLike(rawAddress);
+								//org.opennms.web.element.Interface[] interfaces = NetworkElementFactory.getInstance(getServletContext()).getInterfacesWithIpAddress(rawAddress);
+								if (nodeids.size() == 0) {
+									display.append("Intfc: " + rawAddress + " Not Found<br/>");
 								}
-								if (thisInterface.isManaged()) {
-									display.append("<br/>");
-								} else {
-									display.append(" (unmanaged)<br/>");
+								for (Integer nodeid: nodeids) {
+									org.opennms.web.element.Interface thisInterface = NetworkElementFactory.getInstance(getServletContext()).getInterface(nodeid,rawAddress);
+									if (thisInterface.isManagedChar()=='D') {
+										display.append("Intfc: " + thisInterface.getIpAddress() + " Not Found<br/>");
+									} else {
+										if (thisInterface.getHostname() != null && !thisInterface.getHostname().equals(thisInterface.getIpAddress())) {
+											display.append("Intfc: " + thisInterface.getIpAddress() + " " + thisInterface.getHostname());
+										} else {
+											display.append("Intfc: " + thisInterface.getIpAddress());
+										}
+										if (thisInterface.isManaged()) {
+											display.append("<br/>");
+										} else {
+											display.append(" (unmanaged)<br/>");
+										}
+									}
 								}
 							}
-						}
-					}
 		%><%=display%>
 		<%
 			}
@@ -234,17 +235,17 @@ div.nodeintbox {
 		</td>
 		<td><div class="nodeintbox">
 		<%
-			org.opennms.netmgt.config.poller.Time[] outageTimes = pollFactory.getOutageTimes(outageName);
-				for (int j = 0; j < outageTimes.length; j++) {
-					org.opennms.netmgt.config.poller.Time thisOutageTime = outageTimes[j];
-					String rawDay = thisOutageTime.getDay();
-					String day = rawDay;
-					if ("daily".equals(pollFactory.getOutageType(outageName)))
-						day = "";
-					if ("weekly".equals(pollFactory.getOutageType(outageName)))
-						day = (rawDay == null) ? "" : (String) shortDayNames.get(rawDay);
-					if ("specific".equals(pollFactory.getOutageType(outageName)))
-						day = "";
+		    org.opennms.netmgt.config.poller.outages.Time[] outageTimes = pollFactory.getOutageTimes(outageName);
+						for (int j = 0; j < outageTimes.length; j++) {
+							org.opennms.netmgt.config.poller.outages.Time thisOutageTime = outageTimes[j];
+							String rawDay = thisOutageTime.getDay();
+							String day = rawDay;
+							if ("daily".equals(pollFactory.getOutageType(outageName)))
+								day = "";
+							if ("weekly".equals(pollFactory.getOutageType(outageName)))
+								day = (rawDay == null) ? "" : (String) shortDayNames.get(rawDay);
+							if ("specific".equals(pollFactory.getOutageType(outageName)))
+								day = "";
 		%><%=day%> <%=thisOutageTime.getBegins()%> -<%="specific".equals(pollFactory.getOutageType(outageName)) ? "<br/>" : ""%>
 		<%=thisOutageTime.getEnds()%><br/>
 		<%

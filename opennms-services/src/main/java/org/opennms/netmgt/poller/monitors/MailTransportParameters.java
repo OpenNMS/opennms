@@ -309,7 +309,8 @@ public class MailTransportParameters {
         if (getSendTest() == null) {
             throw new IllegalStateException("Request for send mailparmaters invalid due to no sendmail specification in config");
         }
-        return (int)getSendTest().getSendmailHost().getPort();
+        final Long port = getSendTest().getSendmailHost().getPort();
+        return port == null? 0 : port.intValue();
     }
 
     /**
@@ -420,7 +421,8 @@ public class MailTransportParameters {
      * @return a int.
      */
     public int getReadTestPort() {
-        return (int)getReadTest().getReadmailHost().getPort();
+        final Long port = getReadTest().getReadmailHost().getPort();
+        return port == null? 0 : port.intValue();
     }
 
     /**
