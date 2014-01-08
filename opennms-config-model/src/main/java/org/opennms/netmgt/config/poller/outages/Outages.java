@@ -61,41 +61,42 @@ import org.xml.sax.ContentHandler;
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("poll-outages.xsd")
 public class Outages implements Serializable {
+    private static final Outage[] EMPTY_OUTAGE_LIST = new Outage[0];
+
     private static final long serialVersionUID = 2135204624761990598L;
 
     /**
      * A scheduled outage
      */
     @XmlElement(name="outage")
-    private List<Outage> _outageList;
+    private List<Outage> m_outages = new ArrayList<Outage>();
 
 
     public Outages() {
         super();
-        this._outageList = new ArrayList<Outage>();
     }
 
     /**
      * Adds a new Scheduled Outage
      * 
-     * @param vOutage
+     * @param outage
      * @throws java.lang.IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
-    public void addOutage(final Outage vOutage) throws IndexOutOfBoundsException {
-        this._outageList.add(vOutage);
+    public void addOutage(final Outage outage) throws IndexOutOfBoundsException {
+        m_outages.add(outage);
     }
 
     /**
      * Adds a new Scheduled Outage
      * 
      * @param index
-     * @param vOutage
+     * @param outage
      * @throws java.lang.IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
-    public void addOutage( final int index, final Outage vOutage) throws IndexOutOfBoundsException {
-        this._outageList.add(index, vOutage);
+    public void addOutage( final int index, final Outage outage) throws IndexOutOfBoundsException {
+        m_outages.add(index, outage);
     }
 
     /**
@@ -105,7 +106,7 @@ public class Outages implements Serializable {
      * collection
      */
     public Enumeration<Outage> enumerateOutage() {
-        return Collections.enumeration(this._outageList);
+        return Collections.enumeration(m_outages);
     }
 
     /**
@@ -122,12 +123,12 @@ public class Outages implements Serializable {
         if (obj instanceof Outages) {
 
             Outages temp = (Outages)obj;
-            if (this._outageList != null) {
-                if (temp._outageList == null) return false;
-                else if (!(this._outageList.equals(temp._outageList))) 
+            if (m_outages != null) {
+                if (temp.m_outages == null) return false;
+                else if (!(m_outages.equals(temp.m_outages))) 
                     return false;
             }
-            else if (temp._outageList != null)
+            else if (temp.m_outages != null)
                 return false;
             return true;
         }
@@ -144,12 +145,7 @@ public class Outages implements Serializable {
      * org.opennms.netmgt.config.poller.Outage at the given index
      */
     public Outage getOutage(final int index) throws IndexOutOfBoundsException {
-        // check bounds for index
-        if (index < 0 || index >= this._outageList.size()) {
-            throw new IndexOutOfBoundsException("getOutage: Index value '" + index + "' not in range [0.." + (this._outageList.size() - 1) + "]");
-        }
-
-        return _outageList.get(index);
+        return m_outages.get(index);
     }
 
     /**
@@ -162,19 +158,18 @@ public class Outages implements Serializable {
      * @return this collection as an Array
      */
     public Outage[] getOutage() {
-        Outage[] array = new Outage[0];
-        return this._outageList.toArray(array);
+        return m_outages.toArray(EMPTY_OUTAGE_LIST);
     }
 
     /**
      * Method getOutageCollection.Returns a reference to
-     * '_outageList'. No type checking is performed on any
+     * 'm_outages'. No type checking is performed on any
      * modifications to the Vector.
      * 
      * @return a reference to the Vector backing this class
      */
     public List<Outage> getOutageCollection() {
-        return this._outageList;
+        return new ArrayList<Outage>(m_outages);
     }
 
     /**
@@ -183,7 +178,7 @@ public class Outages implements Serializable {
      * @return the size of this collection
      */
     public int getOutageCount() {
-        return this._outageList.size();
+        return m_outages.size();
     }
 
     /**
@@ -198,8 +193,8 @@ public class Outages implements Serializable {
     public int hashCode() {
         int result = 17;
 
-        if (_outageList != null) {
-            result = 37 * result + _outageList.hashCode();
+        if (m_outages != null) {
+            result = 37 * result + m_outages.hashCode();
         }
 
         return result;
@@ -214,7 +209,7 @@ public class Outages implements Serializable {
     public boolean isValid() {
         try {
             validate();
-        } catch (ValidationException vex) {
+        } catch (final ValidationException vex) {
             return false;
         }
         return true;
@@ -227,7 +222,7 @@ public class Outages implements Serializable {
      * collection
      */
     public Iterator<Outage> iterateOutage() {
-        return this._outageList.iterator();
+        return m_outages.iterator();
     }
 
     /**
@@ -263,18 +258,17 @@ public class Outages implements Serializable {
     /**
      */
     public void removeAllOutage() {
-        this._outageList.clear();
+        m_outages.clear();
     }
 
     /**
      * Method removeOutage.
      * 
-     * @param vOutage
+     * @param outage
      * @return true if the object was removed from the collection.
      */
-    public boolean removeOutage(final Outage vOutage) {
-        boolean removed = _outageList.remove(vOutage);
-        return removed;
+    public boolean removeOutage(final Outage outage) {
+        return m_outages.remove(outage);
     }
 
     /**
@@ -284,62 +278,55 @@ public class Outages implements Serializable {
      * @return the element removed from the collection
      */
     public Outage removeOutageAt(final int index) {
-        return this._outageList.remove(index);
+        return m_outages.remove(index);
     }
 
     /**
      * 
      * 
      * @param index
-     * @param vOutage
+     * @param outage
      * @throws java.lang.IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
-    public void setOutage(final int index, final Outage vOutage) throws IndexOutOfBoundsException {
-        // check bounds for index
-        if (index < 0 || index >= this._outageList.size()) {
-            throw new IndexOutOfBoundsException("setOutage: Index value '" + index + "' not in range [0.." + (this._outageList.size() - 1) + "]");
-        }
-
-        this._outageList.set(index, vOutage);
+    public void setOutage(final int index, final Outage outage) throws IndexOutOfBoundsException {
+        m_outages.set(index, outage);
     }
 
     /**
      * 
      * 
-     * @param vOutageArray
+     * @param outages
      */
-    public void setOutage(final Outage[] vOutageArray) {
-        //-- copy array
-        _outageList.clear();
-
-        for (int i = 0; i < vOutageArray.length; i++) {
-            this._outageList.add(vOutageArray[i]);
+    public void setOutage(final Outage[] outages) {
+        m_outages.clear();
+        for (final Outage outage : outages) {
+            m_outages.add(outage);
         }
     }
 
     /**
-     * Sets the value of '_outageList' by copying the given Vector.
+     * Sets the value of 'm_outages' by copying the given Vector.
      * All elements will be checked for type safety.
      * 
-     * @param vOutageList the Vector to copy.
+     * @param outages the Vector to copy.
      */
-    public void setOutage(final List<Outage> vOutageList) {
-        // copy vector
-        this._outageList.clear();
-
-        this._outageList.addAll(vOutageList);
+    public void setOutage(final List<Outage> outages) {
+        if (outages != m_outages) {
+            m_outages.clear();
+            m_outages.addAll(outages);
+        }
     }
 
     /**
-     * Sets the value of '_outageList' by setting it to the given
+     * Sets the value of 'm_outages' by setting it to the given
      * Vector. No type checking is performed.
      * @deprecated
      * 
-     * @param outageList the Vector to set.
+     * @param outages the Vector to set.
      */
-    public void setOutageCollection(final List<Outage> outageList) {
-        this._outageList = outageList;
+    public void setOutageCollection(final List<Outage> outages) {
+        m_outages = new ArrayList<Outage>(outages);
     }
 
     /**
@@ -369,4 +356,8 @@ public class Outages implements Serializable {
         new Validator().validate(this);
     }
 
+    @Override
+    public String toString() {
+        return "Outages[outages=" + m_outages + "]";
+    }
 }

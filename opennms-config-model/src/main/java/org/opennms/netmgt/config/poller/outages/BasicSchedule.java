@@ -60,53 +60,54 @@ import org.xml.sax.ContentHandler;
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("poll-outages.xsd")
 public class BasicSchedule implements java.io.Serializable {
-    private static final long serialVersionUID = 8140458365613931426L;
+    private static final long serialVersionUID = 4415207395024013808L;
+
+    private static final Time[] EMPTY_TIME_LIST = new Time[0];
 
     /**
      * outage name
      */
     @XmlAttribute(name="name")
-    private String _name;
+    private String m_name;
 
     /**
      * outage type
      */
     @XmlAttribute(name="type")
-    private String _type;
+    private String m_type;
 
     /**
      * defines start/end time for the outage
      */
     @XmlElement(name="time")
-    private List<Time> _timeList;
+    private List<Time> m_times = new ArrayList<Time>();
 
 
     public BasicSchedule() {
         super();
-        this._timeList = new ArrayList<Time>();
     }
 
     /**
      * 
      * 
-     * @param vTime
+     * @param time
      * @throws java.lang.IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
-    public void addTime(final Time vTime) throws IndexOutOfBoundsException {
-        this._timeList.add(vTime);
+    public void addTime(final Time time) throws IndexOutOfBoundsException {
+        m_times.add(time);
     }
 
     /**
      * 
      * 
      * @param index
-     * @param vTime
+     * @param time
      * @throws java.lang.IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
-    public void addTime(final int index, final Time vTime) throws IndexOutOfBoundsException {
-        this._timeList.add(index, vTime);
+    public void addTime(final int index, final Time time) throws IndexOutOfBoundsException {
+        m_times.add(index, time);
     }
 
     /**
@@ -116,48 +117,7 @@ public class BasicSchedule implements java.io.Serializable {
      * collection
      */
     public Enumeration<Time> enumerateTime() {
-        return Collections.enumeration(this._timeList);
-    }
-
-    /**
-     * Overrides the java.lang.Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
-    @Override
-    public boolean equals(
-            final java.lang.Object obj) {
-        if ( this == obj )
-            return true;
-
-        if (obj instanceof BasicSchedule) {
-
-            BasicSchedule temp = (BasicSchedule)obj;
-            if (this._name != null) {
-                if (temp._name == null) return false;
-                else if (!(this._name.equals(temp._name))) 
-                    return false;
-            }
-            else if (temp._name != null)
-                return false;
-            if (this._type != null) {
-                if (temp._type == null) return false;
-                else if (!(this._type.equals(temp._type))) 
-                    return false;
-            }
-            else if (temp._type != null)
-                return false;
-            if (this._timeList != null) {
-                if (temp._timeList == null) return false;
-                else if (!(this._timeList.equals(temp._timeList))) 
-                    return false;
-            }
-            else if (temp._timeList != null)
-                return false;
-            return true;
-        }
-        return false;
+        return Collections.enumeration(m_times);
     }
 
     /**
@@ -167,7 +127,7 @@ public class BasicSchedule implements java.io.Serializable {
      * @return the value of field 'Name'.
      */
     public String getName() {
-        return this._name;
+        return m_name;
     }
 
     /**
@@ -180,12 +140,7 @@ public class BasicSchedule implements java.io.Serializable {
      * org.opennms.netmgt.config.poller.Time at the given index
      */
     public Time getTime(final int index) throws IndexOutOfBoundsException {
-        // check bounds for index
-        if (index < 0 || index >= this._timeList.size()) {
-            throw new IndexOutOfBoundsException("getTime: Index value '" + index + "' not in range [0.." + (this._timeList.size() - 1) + "]");
-        }
-
-        return _timeList.get(index);
+        return m_times.get(index);
     }
 
     /**
@@ -198,19 +153,18 @@ public class BasicSchedule implements java.io.Serializable {
      * @return this collection as an Array
      */
     public Time[] getTime() {
-        Time[] array = new Time[0];
-        return this._timeList.toArray(array);
+        return m_times.toArray(EMPTY_TIME_LIST);
     }
 
     /**
-     * Method getTimeCollection.Returns a reference to '_timeList'.
+     * Method getTimeCollection.Returns a reference to 'm_times'.
      * No type checking is performed on any modifications to the
      * Vector.
      * 
      * @return a reference to the Vector backing this class
      */
     public List<Time> getTimeCollection() {
-        return this._timeList;
+        return new ArrayList<Time>(m_times);
     }
 
     /**
@@ -219,7 +173,7 @@ public class BasicSchedule implements java.io.Serializable {
      * @return the size of this collection
      */
     public int getTimeCount() {
-        return this._timeList.size();
+        return m_times.size();
     }
 
     /**
@@ -229,32 +183,7 @@ public class BasicSchedule implements java.io.Serializable {
      * @return the value of field 'Type'.
      */
     public String getType() {
-        return this._type;
-    }
-
-    /**
-     * Overrides the java.lang.Object.hashCode method.
-     * <p>
-     * The following steps came from <b>Effective Java Programming
-     * Language Guide</b> by Joshua Bloch, Chapter 3
-     * 
-     * @return a hash code value for the object.
-     */
-    @Override
-    public int hashCode() {
-        int result = 17;
-
-        if (_name != null) {
-            result = 37 * result + _name.hashCode();
-        }
-        if (_type != null) {
-            result = 37 * result + _type.hashCode();
-        }
-        if (_timeList != null) {
-            result = 37 * result + _timeList.hashCode();
-        }
-
-        return result;
+        return m_type;
     }
 
     /**
@@ -262,10 +191,11 @@ public class BasicSchedule implements java.io.Serializable {
      * 
      * @return true if this object is valid according to the schema
      */
+    @Deprecated
     public boolean isValid() {
         try {
             validate();
-        } catch (ValidationException vex) {
+        } catch (final ValidationException vex) {
             return false;
         }
         return true;
@@ -278,7 +208,7 @@ public class BasicSchedule implements java.io.Serializable {
      * collection
      */
     public Iterator<Time> iterateTime() {
-        return this._timeList.iterator();
+        return m_times.iterator();
     }
 
     /**
@@ -314,17 +244,17 @@ public class BasicSchedule implements java.io.Serializable {
     /**
      */
     public void removeAllTime() {
-        this._timeList.clear();
+        m_times.clear();
     }
 
     /**
      * Method removeTime.
      * 
-     * @param vTime
+     * @param time
      * @return true if the object was removed from the collection.
      */
-    public boolean removeTime(final Time vTime) {
-        return _timeList.remove(vTime);
+    public boolean removeTime(final Time time) {
+        return m_times.remove(time);
     }
 
     /**
@@ -334,7 +264,7 @@ public class BasicSchedule implements java.io.Serializable {
      * @return the element removed from the collection
      */
     public Time removeTimeAt(final int index) {
-        return this._timeList.remove(index);
+        return m_times.remove(index);
     }
 
     /**
@@ -344,62 +274,55 @@ public class BasicSchedule implements java.io.Serializable {
      * @param name the value of field 'name'.
      */
     public void setName(final String name) {
-        this._name = name;
+        m_name = name;
     }
 
     /**
      * 
      * 
      * @param index
-     * @param vTime
+     * @param time
      * @throws java.lang.IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
-    public void setTime(final int index, final Time vTime) throws IndexOutOfBoundsException {
-        // check bounds for index
-        if (index < 0 || index >= this._timeList.size()) {
-            throw new IndexOutOfBoundsException("setTime: Index value '" + index + "' not in range [0.." + (this._timeList.size() - 1) + "]");
-        }
-
-        this._timeList.set(index, vTime);
+    public void setTime(final int index, final Time time) throws IndexOutOfBoundsException {
+        m_times.set(index, time);
     }
 
     /**
      * 
      * 
-     * @param vTimeArray
+     * @param times
      */
-    public void setTime(final Time[] vTimeArray) {
-        //-- copy array
-        _timeList.clear();
-
-        for (int i = 0; i < vTimeArray.length; i++) {
-            this._timeList.add(vTimeArray[i]);
+    public void setTime(final Time[] times) {
+        m_times.clear();
+        for (final Time time : times) {
+            m_times.add(time);
         }
     }
 
     /**
-     * Sets the value of '_timeList' by copying the given Vector.
+     * Sets the value of 'm_times' by copying the given Vector.
      * All elements will be checked for type safety.
      * 
-     * @param vTimeList the Vector to copy.
+     * @param times the Vector to copy.
      */
-    public void setTime(final List<Time> vTimeList) {
-        // copy vector
-        this._timeList.clear();
-
-        this._timeList.addAll(vTimeList);
+    public void setTime(final List<Time> times) {
+        if (times != m_times) {
+            m_times.clear();
+            m_times.addAll(times);
+        }
     }
 
     /**
-     * Sets the value of '_timeList' by setting it to the given
+     * Sets the value of 'm_times' by setting it to the given
      * Vector. No type checking is performed.
      * @deprecated
      * 
-     * @param timeList the Vector to set.
+     * @param times the Vector to set.
      */
-    public void setTimeCollection(final List<Time> timeList) {
-        this._timeList = timeList;
+    public void setTimeCollection(final List<Time> times) {
+        m_times = new ArrayList<Time>(times);
     }
 
     /**
@@ -409,7 +332,7 @@ public class BasicSchedule implements java.io.Serializable {
      * @param type the value of field 'type'.
      */
     public void setType(final String type) {
-        this._type = type;
+        m_type = type;
     }
 
     /**
@@ -437,6 +360,52 @@ public class BasicSchedule implements java.io.Serializable {
     @Deprecated
     public void validate() throws ValidationException {
         new Validator().validate(this);
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((m_name == null) ? 0 : m_name.hashCode());
+        result = prime * result + ((m_times == null) ? 0 : m_times.hashCode());
+        result = prime * result + ((m_type == null) ? 0 : m_type.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof BasicSchedule)) {
+            return false;
+        }
+        final BasicSchedule other = (BasicSchedule) obj;
+        if (m_name == null) {
+            if (other.m_name != null) {
+                return false;
+            }
+        } else if (!m_name.equals(other.m_name)) {
+            return false;
+        }
+        if (m_times == null) {
+            if (other.m_times != null) {
+                return false;
+            }
+        } else if (!m_times.equals(other.m_times)) {
+            return false;
+        }
+        if (m_type == null) {
+            if (other.m_type != null) {
+                return false;
+            }
+        } else if (!m_type.equals(other.m_type)) {
+            return false;
+        }
+        return true;
     }
 
 }

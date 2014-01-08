@@ -26,6 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-@XmlSchema(namespace = "http://xmlns.opennms.org/xsd/config/poller/outages", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+@XmlSchema(
+    namespace = "http://xmlns.opennms.org/xsd/config/poller/outages",
+    elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED
+)
 package org.opennms.netmgt.config.poller.outages;
 import javax.xml.bind.annotation.XmlSchema;
+

@@ -371,7 +371,7 @@ public abstract class JaxbUtils {
         return classes;
     }
 
-    private static JAXBContext getContextFor(final Class<?> clazz) throws JAXBException {
+    public static JAXBContext getContextFor(final Class<?> clazz) throws JAXBException {
         LOG.trace("Getting context for class {}", clazz);
         final JAXBContext context;
         if (m_contexts.containsKey(clazz)) {

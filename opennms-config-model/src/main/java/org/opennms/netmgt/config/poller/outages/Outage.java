@@ -48,7 +48,6 @@ import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.exolab.castor.xml.Validator;
-
 import org.opennms.core.xml.ValidateUsing;
 import org.xml.sax.ContentHandler;
 
@@ -61,72 +60,73 @@ import org.xml.sax.ContentHandler;
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("poll-outages.xsd")
 public class Outage extends BasicSchedule implements Serializable {
-    private static final long serialVersionUID = 8039170922077782745L;
+    private static final long serialVersionUID = -2187904465632591493L;
+
+    private static final Node[] EMPTY_NODE_LIST = new Node[0];
+    private static final Interface[] EMPTY_INTERFACE_LIST = new Interface[0];
 
     /**
      * List of interfaces to which the outage
      *  applies.
      */
     @XmlElement(name="interface")
-    private List<Interface> _interfaceList;
+    private List<Interface> m_interfaces = new ArrayList<Interface>();
 
     /**
      * List of nodes to which the outage
      *  applies.
      */
     @XmlElement(name="node")
-    private List<Node> _nodeList;
+    private List<Node> m_nodes = new ArrayList<Node>();
 
     public Outage() {
         super();
-        this._interfaceList = new ArrayList<Interface>();
-        this._nodeList = new ArrayList<Node>();
     }
 
     /**
      * 
      * 
-     * @param vInterface
+     * @param iface
      * @throws java.lang.IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
-    public void addInterface(final Interface vInterface) throws IndexOutOfBoundsException {
-        this._interfaceList.add(vInterface);
-    }
-
-    /**
-     * 
-     * 
-     * @param index
-     * @param vInterface
-     * @throws java.lang.IndexOutOfBoundsException if the index
-     * given is outside the bounds of the collection
-     */
-    public void addInterface(final int index, final Interface vInterface) throws IndexOutOfBoundsException {
-        this._interfaceList.add(index, vInterface);
-    }
-
-    /**
-     * 
-     * 
-     * @param vNode
-     * @throws java.lang.IndexOutOfBoundsException if the index
-     * given is outside the bounds of the collection
-     */
-    public void addNode(final Node vNode) throws IndexOutOfBoundsException {
-        this._nodeList.add(vNode);
+    public void addInterface(final Interface iface) throws IndexOutOfBoundsException {
+        m_interfaces.add(iface);
     }
 
     /**
      * 
      * 
      * @param index
-     * @param vNode
+     * @param iface
      * @throws java.lang.IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
-    public void addNode(final int index, final Node vNode) throws IndexOutOfBoundsException {
-        this._nodeList.add(index, vNode);
+    public void addInterface(final int index, final Interface iface) throws IndexOutOfBoundsException {
+        m_interfaces.add(index, iface);
+    }
+
+    /**
+     * 
+     * 
+     * @param node
+     * @throws java.lang.IndexOutOfBoundsException if the index
+     * given is outside the bounds of the collection
+     */
+    public void addNode(final Node node) throws IndexOutOfBoundsException {
+        m_nodes.add(node);
+    }
+
+    /**
+     * 
+     * 
+     * @param index
+     * @param node
+     * @throws java.lang.IndexOutOfBoundsException if the index
+     * given is outside the bounds of the collection
+     */
+    public void addNode(final int index, final Node node) throws IndexOutOfBoundsException {
+        m_nodes.add(index, node);
     }
 
     /**
@@ -136,7 +136,7 @@ public class Outage extends BasicSchedule implements Serializable {
      * collection
      */
     public Enumeration<Interface> enumerateInterface() {
-        return Collections.enumeration(this._interfaceList);
+        return Collections.enumeration(m_interfaces);
     }
 
     /**
@@ -146,43 +146,7 @@ public class Outage extends BasicSchedule implements Serializable {
      * collection
      */
     public Enumeration<Node> enumerateNode() {
-        return Collections.enumeration(this._nodeList);
-    }
-
-    /**
-     * Overrides the java.lang.Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
-    @Override
-    public boolean equals(final Object obj) {
-        if ( this == obj )
-            return true;
-
-        if (super.equals(obj)==false)
-            return false;
-
-        if (obj instanceof Outage) {
-
-            Outage temp = (Outage)obj;
-            if (this._interfaceList != null) {
-                if (temp._interfaceList == null) return false;
-                else if (!(this._interfaceList.equals(temp._interfaceList))) 
-                    return false;
-            }
-            else if (temp._interfaceList != null)
-                return false;
-            if (this._nodeList != null) {
-                if (temp._nodeList == null) return false;
-                else if (!(this._nodeList.equals(temp._nodeList))) 
-                    return false;
-            }
-            else if (temp._nodeList != null)
-                return false;
-            return true;
-        }
-        return false;
+        return Collections.enumeration(m_nodes);
     }
 
     /**
@@ -195,12 +159,7 @@ public class Outage extends BasicSchedule implements Serializable {
      * org.opennms.netmgt.config.poller.Interface at the given index
      */
     public Interface getInterface(final int index) throws IndexOutOfBoundsException {
-        // check bounds for index
-        if (index < 0 || index >= this._interfaceList.size()) {
-            throw new IndexOutOfBoundsException("getInterface: Index value '" + index + "' not in range [0.." + (this._interfaceList.size() - 1) + "]");
-        }
-
-        return _interfaceList.get(index);
+        return m_interfaces.get(index);
     }
 
     /**
@@ -213,19 +172,18 @@ public class Outage extends BasicSchedule implements Serializable {
      * @return this collection as an Array
      */
     public Interface[] getInterface() {
-        Interface[] array = new Interface[0];
-        return this._interfaceList.toArray(array);
+        return m_interfaces.toArray(EMPTY_INTERFACE_LIST);
     }
 
     /**
      * Method getInterfaceCollection.Returns a reference to
-     * '_interfaceList'. No type checking is performed on any
+     * 'm_interfaces'. No type checking is performed on any
      * modifications to the Vector.
      * 
      * @return a reference to the Vector backing this class
      */
     public List<Interface> getInterfaceCollection() {
-        return this._interfaceList;
+        return new ArrayList<Interface>(m_interfaces);
     }
 
     /**
@@ -234,7 +192,7 @@ public class Outage extends BasicSchedule implements Serializable {
      * @return the size of this collection
      */
     public int getInterfaceCount() {
-        return this._interfaceList.size();
+        return m_interfaces.size();
     }
 
     /**
@@ -247,12 +205,7 @@ public class Outage extends BasicSchedule implements Serializable {
      * org.opennms.netmgt.config.poller.Node at the given index
      */
     public Node getNode(final int index) throws IndexOutOfBoundsException {
-        // check bounds for index
-        if (index < 0 || index >= this._nodeList.size()) {
-            throw new IndexOutOfBoundsException("getNode: Index value '" + index + "' not in range [0.." + (this._nodeList.size() - 1) + "]");
-        }
-
-        return _nodeList.get(index);
+        return m_nodes.get(index);
     }
 
     /**
@@ -265,19 +218,18 @@ public class Outage extends BasicSchedule implements Serializable {
      * @return this collection as an Array
      */
     public Node[] getNode() {
-        Node[] array = new Node[0];
-        return this._nodeList.toArray(array);
+        return m_nodes.toArray(EMPTY_NODE_LIST);
     }
 
     /**
-     * Method getNodeCollection.Returns a reference to '_nodeList'.
+     * Method getNodeCollection.Returns a reference to 'm_nodes'.
      * No type checking is performed on any modifications to the
      * Vector.
      * 
      * @return a reference to the Vector backing this class
      */
     public List<Node> getNodeCollection() {
-        return this._nodeList;
+        return new ArrayList<Node>(m_nodes);
     }
 
     /**
@@ -286,29 +238,7 @@ public class Outage extends BasicSchedule implements Serializable {
      * @return the size of this collection
      */
     public int getNodeCount() {
-        return this._nodeList.size();
-    }
-
-    /**
-     * Overrides the java.lang.Object.hashCode method.
-     * <p>
-     * The following steps came from <b>Effective Java Programming
-     * Language Guide</b> by Joshua Bloch, Chapter 3
-     * 
-     * @return a hash code value for the object.
-     */
-    @Override
-    public int hashCode() {
-        int result = 17;
-
-        if (_interfaceList != null) {
-            result = 37 * result + _interfaceList.hashCode();
-        }
-        if (_nodeList != null) {
-            result = 37 * result + _nodeList.hashCode();
-        }
-
-        return result;
+        return m_nodes.size();
     }
 
     /**
@@ -321,7 +251,7 @@ public class Outage extends BasicSchedule implements Serializable {
     public boolean isValid() {
         try {
             validate();
-        } catch (ValidationException vex) {
+        } catch (final ValidationException vex) {
             return false;
         }
         return true;
@@ -334,7 +264,7 @@ public class Outage extends BasicSchedule implements Serializable {
      * collection
      */
     public Iterator<Interface> iterateInterface() {
-        return this._interfaceList.iterator();
+        return m_interfaces.iterator();
     }
 
     /**
@@ -344,7 +274,7 @@ public class Outage extends BasicSchedule implements Serializable {
      * collection
      */
     public Iterator<Node> iterateNode() {
-        return this._nodeList.iterator();
+        return m_nodes.iterator();
     }
 
     /**
@@ -382,23 +312,23 @@ public class Outage extends BasicSchedule implements Serializable {
     /**
      */
     public void removeAllInterface() {
-        this._interfaceList.clear();
+        m_interfaces.clear();
     }
 
     /**
      */
     public void removeAllNode() {
-        this._nodeList.clear();
+        m_nodes.clear();
     }
 
     /**
      * Method removeInterface.
      * 
-     * @param vInterface
+     * @param iface
      * @return true if the object was removed from the collection.
      */
-    public boolean removeInterface(final Interface vInterface) {
-        return _interfaceList.remove(vInterface);
+    public boolean removeInterface(final Interface iface) {
+        return m_interfaces.remove(iface);
     }
 
     /**
@@ -408,17 +338,17 @@ public class Outage extends BasicSchedule implements Serializable {
      * @return the element removed from the collection
      */
     public Interface removeInterfaceAt(final int index) {
-        return this._interfaceList.remove(index);
+        return m_interfaces.remove(index);
     }
 
     /**
      * Method removeNode.
      * 
-     * @param vNode
+     * @param node
      * @return true if the object was removed from the collection.
      */
-    public boolean removeNode(final Node vNode) {
-        return _nodeList.remove(vNode);
+    public boolean removeNode(final Node node) {
+        return m_nodes.remove(node);
     }
 
     /**
@@ -428,117 +358,103 @@ public class Outage extends BasicSchedule implements Serializable {
      * @return the element removed from the collection
      */
     public Node removeNodeAt(final int index) {
-        return this._nodeList.remove(index);
+        return m_nodes.remove(index);
     }
 
     /**
      * 
      * 
      * @param index
-     * @param vInterface
+     * @param iface
      * @throws java.lang.IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
-    public void setInterface(final int index, final Interface vInterface) throws IndexOutOfBoundsException {
-        // check bounds for index
-        if (index < 0 || index >= this._interfaceList.size()) {
-            throw new IndexOutOfBoundsException("setInterface: Index value '" + index + "' not in range [0.." + (this._interfaceList.size() - 1) + "]");
-        }
-
-        this._interfaceList.set(index, vInterface);
+    public void setInterface(final int index, final Interface iface) throws IndexOutOfBoundsException {
+        m_interfaces.set(index, iface);
     }
 
     /**
      * 
      * 
-     * @param vInterfaceArray
+     * @param interfaces
      */
-    public void setInterface(final Interface[] vInterfaceArray) {
-        //-- copy array
-        _interfaceList.clear();
-
-        for (int i = 0; i < vInterfaceArray.length; i++) {
-            this._interfaceList.add(vInterfaceArray[i]);
+    public void setInterface(final Interface[] interfaces) {
+        m_interfaces.clear();
+        for (final Interface iface : interfaces) {
+            m_interfaces.add(iface);
         }
     }
 
     /**
-     * Sets the value of '_interfaceList' by copying the given
+     * Sets the value of 'm_interfaces' by copying the given
      * Vector. All elements will be checked for type safety.
      * 
-     * @param vInterfaceList the Vector to copy.
+     * @param interfaces the Vector to copy.
      */
-    public void setInterface(final List<Interface> vInterfaceList) {
-        // copy vector
-        this._interfaceList.clear();
-
-        this._interfaceList.addAll(vInterfaceList);
+    public void setInterface(final List<Interface> interfaces) {
+        if (interfaces != m_interfaces) {
+            m_interfaces.clear();
+            m_interfaces.addAll(interfaces);
+        }
     }
 
     /**
-     * Sets the value of '_interfaceList' by setting it to the
+     * Sets the value of 'm_interfaces' by setting it to the
      * given Vector. No type checking is performed.
      * @deprecated
      * 
-     * @param _interfaceList the Vector to set.
+     * @param m_interfaces the Vector to set.
      */
-    public void setInterfaceCollection(final List<Interface> _interfaceList) {
-        this._interfaceList = _interfaceList;
+    public void setInterfaceCollection(final List<Interface> interfaces) {
+        m_interfaces = new ArrayList<Interface>(interfaces);
     }
 
     /**
      * 
      * 
      * @param index
-     * @param vNode
+     * @param nodes
      * @throws java.lang.IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
-    public void setNode(final int index, final Node vNode) throws IndexOutOfBoundsException {
-        // check bounds for index
-        if (index < 0 || index >= this._nodeList.size()) {
-            throw new IndexOutOfBoundsException("setNode: Index value '" + index + "' not in range [0.." + (this._nodeList.size() - 1) + "]");
-        }
-
-        this._nodeList.set(index, vNode);
+    public void setNode(final int index, final Node nodes) throws IndexOutOfBoundsException {
+        m_nodes.set(index, nodes);
     }
 
     /**
      * 
      * 
-     * @param vNodeArray
+     * @param nodes
      */
-    public void setNode(final Node[] vNodeArray) {
-        //-- copy array
-        _nodeList.clear();
-
-        for (int i = 0; i < vNodeArray.length; i++) {
-            this._nodeList.add(vNodeArray[i]);
+    public void setNode(final Node[] nodes) {
+        m_nodes.clear();
+        for (final Node node : nodes) {
+            m_nodes.add(node);
         }
     }
 
     /**
-     * Sets the value of '_nodeList' by copying the given Vector.
+     * Sets the value of 'm_nodes' by copying the given Vector.
      * All elements will be checked for type safety.
      * 
-     * @param vNodeList the Vector to copy.
+     * @param nodes the Vector to copy.
      */
-    public void setNode(final List<Node> vNodeList) {
-        // copy vector
-        this._nodeList.clear();
-
-        this._nodeList.addAll(vNodeList);
+    public void setNode(final List<Node> nodes) {
+        if (nodes != m_nodes) {
+            m_nodes.clear();
+            m_nodes.addAll(nodes);
+        }
     }
 
     /**
-     * Sets the value of '_nodeList' by setting it to the given
+     * Sets the value of 'm_nodes' by setting it to the given
      * Vector. No type checking is performed.
      * @deprecated
      * 
-     * @param nodeList the Vector to set.
+     * @param nodes the Vector to set.
      */
-    public void setNodeCollection(final List<Node> nodeList) {
-        this._nodeList = nodeList;
+    public void setNodeCollection(final List<Node> nodes) {
+        m_nodes = new ArrayList<Node>(nodes);
     }
 
     /**
@@ -569,4 +485,50 @@ public class Outage extends BasicSchedule implements Serializable {
         new Validator().validate(this);
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((m_interfaces == null) ? 0 : m_interfaces.hashCode());
+        result = prime * result + ((m_nodes == null) ? 0 : m_nodes.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (!(obj instanceof Outage)) {
+            return false;
+        }
+        final Outage other = (Outage) obj;
+        if (m_interfaces == null) {
+            if (other.m_interfaces != null) {
+                return false;
+            }
+        } else if (!m_interfaces.equals(other.m_interfaces)) {
+            return false;
+        }
+        if (m_nodes == null) {
+            if (other.m_nodes != null) {
+                return false;
+            }
+        } else if (!m_nodes.equals(other.m_nodes)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Outage[name=" + getName() +
+                ",type=" + getType() +
+                ",times=" + getTime() +
+                ",interfaces=" + m_interfaces +
+                ",nodes=" + m_nodes + "]";
+    }
 }

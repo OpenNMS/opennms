@@ -45,6 +45,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.NotifdConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfigManager;
@@ -175,7 +176,7 @@ public class ScheduledOutagesRestServiceTest extends AbstractSpringJerseyRestTes
                 + "</notifd-configuration>");
         NotifdConfigFactory.init();
 
-        m_jaxbContext = JAXBContext.newInstance(Outage.class);
+        m_jaxbContext = JaxbUtils.getContextFor(Outage.class);
     }
 
     // This is required in order to avoid override configuration files in opennms-base-assembly
