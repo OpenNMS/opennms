@@ -80,25 +80,12 @@ public class VHudDisplay extends Composite {
         initWidget(m_grid);
 
         m_providerLabel.getElement().getStyle().setFontWeight(Style.FontWeight.BOLD);
-        m_providerLabel.getElement().getStyle().setFontSize(11.0, Style.Unit.PX);
-
         vertexLabel.getElement().getStyle().setFontWeight(Style.FontWeight.BOLD);
-        vertexLabel.getElement().getStyle().setFontSize(11.0, Style.Unit.PX);
-
         edgeLabel.getElement().getStyle().setFontWeight(Style.FontWeight.BOLD);
-        edgeLabel.getElement().getStyle().setFontSize(11.0, Style.Unit.PX);
-
         focusLabel.getElement().getStyle().setFontWeight(Style.FontWeight.BOLD);
-        focusLabel.getElement().getStyle().setFontSize(11.0, Style.Unit.PX);
-
         selectionLabel.getElement().getStyle().setFontWeight(Style.FontWeight.BOLD);
-        selectionLabel.getElement().getStyle().setFontSize(11.0, Style.Unit.PX);
-
         contextLabel.getElement().getStyle().setFontWeight(Style.FontWeight.BOLD);
-        contextLabel.getElement().getStyle().setFontSize(11.0, Style.Unit.PX);
-
         totalLabel.getElement().getStyle().setFontWeight(Style.FontWeight.BOLD);
-        totalLabel.getElement().getStyle().setFontSize(11.0, Style.Unit.PX);
     }
 
     public void setProviderLabel(String provider){

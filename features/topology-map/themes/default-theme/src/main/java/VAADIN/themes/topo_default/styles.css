@@ -305,7 +305,7 @@ div.v-table-header-wrap {
 
 /** HUD Display Styles **/
 .topoHudDisplay {
-	border-width: 1px;
+	border-width: 2px;
 	border-style: outset;
 	border-color: gray;
 	border-collapse: collapse;
@@ -319,6 +319,7 @@ div.v-table-header-wrap {
 	border-color: gray;
 	background-color: white;
 	-moz-border-radius: ;
+	text-align: right;
 }
 
 .topoHudDisplay th{
