@@ -54,12 +54,14 @@ export JAVA_HOME
 case "$1" in
   start)
 	echo -n "Starting $DESC: $NAME"
-	$DAEMON start > /dev/null
+	DAEMON_MESSAGES=$($DAEMON start)
+	# hide message if opennms says it's ok
+	echo $OUTPUT | grep -v "Starting OpenNMS: ok"
 	echo "."
 	;;
   stop)
 	echo -n "Stopping $DESC: $NAME"
-	$DAEMON stop > /dev/null
+	DAEMON_MESSAGES=$($DAEMON stop)
 	rm -f /var/run/$NAME.pid
 	echo "."
 	;;
