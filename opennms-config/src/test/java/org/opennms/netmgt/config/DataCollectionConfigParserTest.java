@@ -32,6 +32,9 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.util.Map;
 
+import java.net.URISyntaxException;
+import java.util.Map;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
