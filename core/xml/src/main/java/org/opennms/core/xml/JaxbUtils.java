@@ -392,7 +392,7 @@ public abstract class JaxbUtils {
         for (final Class<?> c : getAllRelatedClasses(clazz)) {
             final ValidateUsing annotation = c.getAnnotation(ValidateUsing.class);
             if (annotation == null || annotation.value() == null) {
-                LOG.warn("@ValidateUsing is missing from class {}", c);
+                LOG.debug("@ValidateUsing is missing from class {}", c);
                 continue;
             } else {
                 schemaFiles.add(annotation.value());
@@ -452,7 +452,7 @@ public abstract class JaxbUtils {
         }
 
         if (sources.size() == 0) {
-            LOG.warn("No schema files found for validating {}", clazz);
+            LOG.debug("No schema files found for validating {}", clazz);
             return null;
         }
 
