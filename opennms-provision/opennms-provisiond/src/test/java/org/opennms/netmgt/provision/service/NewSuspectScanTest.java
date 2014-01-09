@@ -254,6 +254,7 @@ public class NewSuspectScanTest extends ProvisioningTestCase implements Initiali
         anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).setInterface(InetAddressUtils.addr("172.20.2.201")).setService("SNMP").getEvent());
         anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).setInterface(InetAddressUtils.addr("172.20.2.204")).setService("SNMP").getEvent());
         anticipator.anticipateEvent(new EventBuilder(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).setInterface(InetAddressUtils.addr("172.20.2.201")).getEvent());
+        anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_LABEL_CHANGED_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).getEvent())
         anticipator.anticipateEvent(new EventBuilder(EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
 
         String foreignSource = "Testie";
@@ -353,6 +354,7 @@ public class NewSuspectScanTest extends ProvisioningTestCase implements Initiali
         anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).setInterface(ip).getEvent());
         anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).setInterface(ip).setService("SNMP").getEvent());
         anticipator.anticipateEvent(new EventBuilder(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).setInterface(ip).getEvent());
+        anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_LABEL_CHANGED_EVENT_UEI, "Provisiond").setNodeid(1).getEvent());
         anticipator.anticipateEvent(new EventBuilder(EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
 
         final NewSuspectScan scan = m_provisioner.createNewSuspectScan(ip, null);
