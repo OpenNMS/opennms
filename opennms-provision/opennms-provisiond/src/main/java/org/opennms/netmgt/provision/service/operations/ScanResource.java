@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 
 /**
  * <p>ScanResource class.</p>
@@ -102,9 +103,9 @@ public class ScanResource {
                 m_node.setSysName(value);
                 // If the node is labeled as just the IP address from the newSuspect that created it,
                 // use the SNMP sysName value instead and update the label source to indicate this
-                if ("A".equals(m_node.getLabelSource())) {
+                if (m_node.getLabelSource() == NodeLabelSource.ADDRESS) {
                     m_node.setLabel(value);
-                    m_node.setLabelSource("S");
+                    m_node.setLabelSource(NodeLabelSource.SYSNAME);
                 }
             }
             
