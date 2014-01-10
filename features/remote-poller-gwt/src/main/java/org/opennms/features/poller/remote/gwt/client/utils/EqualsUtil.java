@@ -82,7 +82,7 @@ public class EqualsUtil {
 	   * @return a boolean.
 	   */
 	  static public boolean areEqual(float aThis, float aThat){
-		  return Float.valueOf(aThis) == Float.valueOf(aThat);
+		  return areEqual(Float.valueOf(aThis), Float.valueOf(aThat));
 	  }
 
 	  /**
@@ -93,7 +93,7 @@ public class EqualsUtil {
 	   * @return a boolean.
 	   */
 	  static public boolean areEqual(double aThis, double aThat){
-		  return Double.valueOf(aThis) == Double.valueOf(aThat);
+		  return areEqual(Double.valueOf(aThis), Double.valueOf(aThat));
 	  }
 
 	  /**
