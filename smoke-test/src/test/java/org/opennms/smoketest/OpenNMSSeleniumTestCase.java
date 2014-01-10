@@ -29,6 +29,9 @@
 package org.opennms.smoketest;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -36,8 +39,12 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.LogUtils;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverBackedSelenium;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.phantomjs.PhantomJSDriver;
+import org.openqa.selenium.phantomjs.PhantomJSDriverService;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.thoughtworks.selenium.SeleneseTestBase;
 import com.thoughtworks.selenium.SeleniumException;
@@ -45,6 +52,8 @@ import com.thoughtworks.selenium.SeleniumException;
 public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
     protected static final long LOAD_TIMEOUT = 60000;
     protected static final String BASE_URL = "http://localhost:8980/";
+    private static final Logger LOG = LoggerFactory.getLogger(OpenNMSSeleniumTestCase.class);
+    private static final boolean usePhantomJS = Boolean.getBoolean("smoketest.usePhantomJS");
 
     @Before
     public void setUp() throws Exception {
@@ -53,32 +62,27 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
 
         WebDriver driver = null;
 
-        // Google Chrome if chrome driver property is set
-        final String chromeDriverLocation = System.getProperty("webdriver.chrome.driver");
-        if (chromeDriverLocation != null) {
-            final File chromeDriverFile = new File(chromeDriverLocation);
-            if (chromeDriverFile.exists() && chromeDriverFile.canExecute()) {
-                System.err.println("using chrome driver");
-                driver = new ChromeDriver();
-            }
-        }
-
         final String driverClass = System.getProperty("webdriver.class");
         if (driverClass != null) {
             driver = (WebDriver)Class.forName(driverClass).newInstance();
         }
 
-        // otherwise, Firefox
+        // otherwise, PhantomJS if found, or fall back to Firefox
         if (driver == null) {
-            //final File phantomJS = new File("/usr/local/bin/phantomjs");
-            //if (phantomJS.exists()) {
-            //    final DesiredCapabilities caps = new DesiredCapabilities();
-            //    caps.setCapability(PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY, "/usr/local/bin/phantomjs");
-            //    driver = new PhantomJSDriver(caps);
-            //} else {
+            if (usePhantomJS) {
+                final File phantomJS = findPhantomJS();
+                if (phantomJS != null) {
+                    final DesiredCapabilities caps = new DesiredCapabilities();
+                    caps.setCapability(PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY, phantomJS.toString());
+                    driver = new PhantomJSDriver(caps);
+                }
+            }
+            if (driver == null) {
                 driver = new FirefoxDriver();
-            //}
+            }
         }
+
+        LOG.debug("Using driver: {}", driver);
 
         selenium = new WebDriverBackedSelenium(driver, BASE_URL);
         selenium.open("/opennms/login.jsp");
@@ -86,6 +90,34 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
         selenium.type("name=j_password", "admin");
         selenium.click("name=Login");
         waitForPageToLoad();
+    }
+
+    private File findPhantomJS() {
+        final String os = System.getProperty("os.name").toLowerCase();
+        final String extension = (os.indexOf("win") >= 0)? ".exe" : "";
+
+        final String path = System.getenv("PATH");
+        if (path == null) {
+            LOG.debug("findPhantomJS(): Unable to get PATH.");
+            final File phantomFile = new File("/usr/local/bin/phantomjs" + extension);
+            LOG.debug("findPhantomJS(): trying {}", phantomFile);
+            if (phantomFile.exists() && phantomFile.canExecute()) {
+                return phantomFile;
+            }
+        } else {
+            final List<String> paths = new ArrayList<String>(Arrays.asList(path.split(File.pathSeparator)));
+            paths.add("/usr/local/bin");
+            paths.add("/usr/local/sbin");
+            LOG.debug("findPhantomJS(): paths = {}", paths);
+            for (final String directory : paths) {
+                final File phantomFile = new File(directory + File.separator + "phantomjs" + extension);
+                LOG.debug("findPhantomJS(): trying {}", phantomFile);
+                if (phantomFile.exists() && phantomFile.canExecute()) {
+                    return phantomFile;
+                }
+            }
+        }
+        return null;
     }
 
     @After
@@ -101,16 +133,18 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
     }
 
     protected void frontPage() throws Exception {
-        selenium.open("/opennms/index.jsp");
+        selenium.open("/opennms/");
         waitForPageToLoad();
     }
 
     protected void clickAndWait(final String pattern) {
+        LOG.debug("clickAndWait({})", pattern);
         selenium.click(pattern);
         waitForPageToLoad();
     }
 
     protected void clickAndVerifyText(final String pattern, final String expectedText) {
+        LOG.debug("clickAndVerifyText({}, {})", pattern, expectedText);
         clickAndWait(pattern);
         assertTrue("'" + expectedText + " must exist in page", selenium.isTextPresent(expectedText));
     }
@@ -134,6 +168,7 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
     }
 
     protected void waitForText(final String expectedText, final long timeout, boolean failOnError) throws InterruptedException {
+        LOG.debug("waitForText({}, {}, {})", expectedText, timeout, failOnError);
         if (!selenium.isTextPresent(expectedText)) {
             final long timeoutTime = System.currentTimeMillis() + timeout;
             while (!selenium.isTextPresent(expectedText) && System.currentTimeMillis() <= timeoutTime) {
@@ -161,6 +196,7 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
     }
 
     protected void waitForHtmlSource(final String expectedText, final long timeout, boolean failOnError) throws InterruptedException {
+        LOG.debug("waitForHtmlSource({}, {}, {})", expectedText, timeout, failOnError);
         if (!selenium.getHtmlSource().contains(expectedText)) {
             final long timeoutTime = System.currentTimeMillis() + timeout;
             while (!selenium.getHtmlSource().contains(expectedText) && System.currentTimeMillis() <= timeoutTime) {
