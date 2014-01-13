@@ -45,9 +45,6 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.thoughtworks.selenium.SeleneseTestBase;
 import com.thoughtworks.selenium.SeleniumException;
 
@@ -55,7 +52,6 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
     protected static final Logger LOG = LoggerFactory.getLogger(OpenNMSSeleniumTestCase.class);
     protected static final long LOAD_TIMEOUT = 60000;
     protected static final String BASE_URL = "http://localhost:8980/";
-    private static final Logger LOG = LoggerFactory.getLogger(OpenNMSSeleniumTestCase.class);
     private static final boolean usePhantomJS = Boolean.getBoolean("smoketest.usePhantomJS");
 
     @Before
