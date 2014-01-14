@@ -35,24 +35,31 @@ import java.util.Collection;
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.xml.XmlTestNoCastor;
 
-public class ActiondConfigurationTest extends
-        XmlTestNoCastor<ActiondConfiguration> {
+public class ActiondConfigurationTest extends XmlTestNoCastor<ActiondConfiguration> {
 
-    public ActiondConfigurationTest(final ActiondConfiguration sampleObject,
-            final String sampleXml, final String schemaFile) {
+    public ActiondConfigurationTest(final ActiondConfiguration sampleObject, final String sampleXml, final String schemaFile) {
         super(sampleObject, sampleXml, schemaFile);
     }
 
     @Parameters
     public static Collection<Object[]> data() throws ParseException {
+        final ActiondConfiguration actiondConfig = new ActiondConfiguration(5, 1000);
 
-        ActiondConfiguration actiondConfig = new ActiondConfiguration(5, 1000);
-
-        return Arrays.asList(new Object[][] { {
+        return Arrays.asList(new Object[][] {
+            {
                 actiondConfig,
                 "<actiond-configuration max-outstanding-actions=\"5\" "
                         + "max-process-time=\"1000\">"
                         + "</actiond-configuration>",
-                "target/classes/xsds/actiond-configuration.xsd", }, });
+                "target/classes/xsds/actiond-configuration.xsd",
+            },
+            {
+                actiondConfig,
+                "<actiond-configuration max-outstanding-actions=\"5\" "
+                        + "max-process-time=\"1000\">\n   "
+                        + "</actiond-configuration>",
+                "target/classes/xsds/actiond-configuration.xsd",
+            }
+        });
     }
 }

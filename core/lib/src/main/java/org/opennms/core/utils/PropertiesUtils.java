@@ -29,6 +29,7 @@
 package org.opennms.core.utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -97,11 +98,17 @@ public abstract class PropertiesUtils {
      * @return The string with appropriate substitutions made.
      * @param mapArray a {@link java.util.Map} object.
      */
-    public static String substitute(String initialString, Map<String,String>... mapArray) {
+    public static String substitute(String initialString, Map<String,Object>... mapArray) {
         String workingString = initialString;
-        for (Map<String,String> properties : mapArray) {
-            if (properties != null)
-                workingString = substitute(workingString, new MapBasedSymbolTable(properties), PLACEHOLDER_PREFIX, PLACEHOLDER_SUFFIX, new ArrayList<String>());
+        for (final Map<String,Object> properties : mapArray) {
+            final Map<String,String> convertedProperties = new HashMap<String,String>();
+            for (final Map.Entry<String,Object> entry : properties.entrySet()) {
+                final Object value = entry.getValue();
+                convertedProperties.put(entry.getKey(), value == null? null : value.toString());
+            }
+            if (properties != null) {
+                workingString = substitute(workingString, new MapBasedSymbolTable(convertedProperties), PLACEHOLDER_PREFIX, PLACEHOLDER_SUFFIX, new ArrayList<String>());
+            }
         }
         return workingString;
     }

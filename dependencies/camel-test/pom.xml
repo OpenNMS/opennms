@@ -15,7 +15,6 @@
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-test</artifactId>
       <version>${camelVersion}</version>
-      <scope>test</scope>
       <exclusions>
         <exclusion>
           <groupId>javax.xml.bind</groupId>

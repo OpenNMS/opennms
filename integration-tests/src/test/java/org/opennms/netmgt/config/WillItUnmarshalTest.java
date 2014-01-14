@@ -1,9 +1,16 @@
 package org.opennms.netmgt.config;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+import static org.opennms.core.test.ConfigurationTestUtils.getDaemonEtcDirectory;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+
 import junit.framework.AssertionFailedError;
+
 import org.apache.commons.io.FileUtils;
 import org.exolab.castor.util.LocalConfiguration;
 import org.junit.Before;
@@ -13,17 +20,14 @@ import org.junit.runners.Parameterized;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.core.xml.JaxbUtils;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
-import org.opennms.netmgt.config.accesspointmonitor.AccessPointMonitorConfig;
-import org.opennms.netmgt.config.actiond.ActiondConfiguration;
-import org.opennms.netmgt.config.ami.AmiConfig;
-import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.features.reporting.model.basicreport.LegacyLocalReportsDefinition;
 import org.opennms.features.reporting.model.jasperreport.LocalJasperReports;
 import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryConfig;
 import org.opennms.netmgt.alarmd.northbounder.syslog.SyslogNorthbounderConfig;
+import org.opennms.netmgt.config.accesspointmonitor.AccessPointMonitorConfig;
 import org.opennms.netmgt.config.ackd.AckdConfiguration;
+import org.opennms.netmgt.config.actiond.ActiondConfiguration;
+import org.opennms.netmgt.config.ami.AmiConfig;
 import org.opennms.netmgt.config.archiver.events.EventsArchiverConfiguration;
 import org.opennms.netmgt.config.capsd.CapsdConfiguration;
 import org.opennms.netmgt.config.categories.Catinfo;
@@ -51,8 +55,8 @@ import org.opennms.netmgt.config.notifd.NotifdConfiguration;
 import org.opennms.netmgt.config.notificationCommands.NotificationCommands;
 import org.opennms.netmgt.config.notifications.Notifications;
 import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
-import org.opennms.netmgt.config.poller.Outages;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
+import org.opennms.netmgt.config.poller.outages.Outages;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.netmgt.config.rancid.adapter.RancidConfiguration;
 import org.opennms.netmgt.config.reportd.ReportdConfiguration;
@@ -84,12 +88,9 @@ import org.opennms.netmgt.config.wmi.WmiConfig;
 import org.opennms.netmgt.config.wmi.WmiDatacollectionConfig;
 import org.opennms.netmgt.config.xmlrpcd.XmlrpcdConfiguration;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
-import static org.opennms.core.test.ConfigurationTestUtils.getDaemonEtcDirectory;
+import org.opennms.netmgt.xml.eventconf.Events;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 
 /**
  * This is an integration test checking if all provided example XML files can be
@@ -111,7 +112,7 @@ import static org.opennms.core.test.ConfigurationTestUtils.getDaemonEtcDirectory
 @RunWith(value = Parameterized.class)
 public class WillItUnmarshalTest {
     private static final String CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY = "org.exolab.castor.xml.lenient.sequence.order";
-    
+
     /**
      * Possible implementations for resource loading.
      */
@@ -129,36 +130,36 @@ public class WillItUnmarshalTest {
         JAXB,
         CASTOR
     }
-    
+
     /**
      * A list of test parameters to execute.
      * 
      * See {@link #files()} for detailed information.
      */
     public static final ArrayList<Object[]> FILES = new ArrayList<Object[]>();
-    
+
     private static void addFile(final Source source, final String file, final Class<?> clazz, final Impl impl, final boolean lenient, final String exceptionMessage) {
         FILES.add(new Object[] {source, file, clazz, impl, lenient, exceptionMessage});
     }
-    
+
     private static void addFile(final Source source, final String file, final Class<?> clazz, final Impl impl, final String exceptionMessage) {
         addFile(source, file, clazz, impl, false, exceptionMessage);
     }
-    
+
     private static void addFile(final Source source, final String file, final Class<?> clazz, final Impl impl, final boolean lenient) {
         addFile(source, file, clazz, impl, lenient, null);
     }
-    
+
     private static void addFile(final Source source, final String file, final Class<?> clazz, final Impl impl) {
         addFile(source, file, clazz, impl, false, null);
     }
-    
+
     static {
         addFile(Source.SPRING, "eventconf-good-ordering.xml", Events.class, Impl.JAXB);
         addFile(Source.SPRING, "eventconf-bad-ordering.xml", Events.class, Impl.JAXB, true);
-        
+
         addFile(Source.SPRING, "eventconf-bad-element.xml", Events.class, Impl.JAXB, "Invalid content was found starting with element 'bad-element'.");
-        
+
         addFile(Source.CONFIG, "access-point-monitor-configuration.xml", AccessPointMonitorConfig.class, Impl.CASTOR);
         addFile(Source.CONFIG, "actiond-configuration.xml", ActiondConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "ami-config.xml", AmiConfig.class, Impl.JAXB);
@@ -188,7 +189,7 @@ public class WillItUnmarshalTest {
         addFile(Source.CONFIG, "ksc-performance-reports.xml", ReportsList.class, Impl.CASTOR);
         addFile(Source.CONFIG, "linkd-configuration.xml", LinkdConfiguration.class, Impl.CASTOR);
         addFile(Source.EXAMPLE, "linkd-configuration.xml", LinkdConfiguration.class, Impl.CASTOR);
-        addFile(Source.EXAMPLE, "mail-transport-test.xml", MailTransportTest.class, Impl.CASTOR);
+        addFile(Source.EXAMPLE, "mail-transport-test.xml", MailTransportTest.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "hyperic-integration/imports-HQ.xml", Requisition.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "hyperic-integration/imports-opennms-admin.xml", Requisition.class, Impl.JAXB);
         addFile(Source.CONFIG, "monitoring-locations.xml", MonitoringLocationsConfiguration.class, Impl.CASTOR);
@@ -201,10 +202,10 @@ public class WillItUnmarshalTest {
         addFile(Source.CONFIG, "opennms-datasources.xml", DataSourceConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "opennms-server.xml", LocalServer.class, Impl.CASTOR);
         addFile(Source.EXAMPLE, "opennms-server.xml", LocalServer.class, Impl.CASTOR);
-        addFile(Source.CONFIG, "poll-outages.xml", Outages.class, Impl.CASTOR);
-        addFile(Source.EXAMPLE, "poll-outages.xml", Outages.class, Impl.CASTOR);
-        addFile(Source.CONFIG, "poller-configuration.xml", PollerConfiguration.class, Impl.CASTOR);
-        addFile(Source.EXAMPLE, "poller-configuration.xml", PollerConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "poll-outages.xml", Outages.class, Impl.JAXB);
+        addFile(Source.EXAMPLE, "poll-outages.xml", Outages.class, Impl.JAXB);
+        addFile(Source.CONFIG, "poller-configuration.xml", PollerConfiguration.class, Impl.JAXB);
+        addFile(Source.EXAMPLE, "poller-configuration.xml", PollerConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "rtc-configuration.xml", RTCConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "scriptd-configuration.xml", ScriptdConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "syslog-northbounder-configuration.xml", SyslogNorthbounderConfig.class, Impl.JAXB);
@@ -264,7 +265,7 @@ public class WillItUnmarshalTest {
         addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection/Jvm/1.6/JvmLegacy.xml", Mbeans.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection/OpenNMS/1.10/OpenNMSBasic0.xml", Mbeans.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection/OpenNMS/1.10/OpenNMSLegacy.xml", Mbeans.class, Impl.JAXB);
-        
+
         // Add all event files
         for (final File file : FileUtils.listFiles(new File(getDaemonEtcDirectory(), "events"),
                                                    new String[] { "xml" },
@@ -274,7 +275,7 @@ public class WillItUnmarshalTest {
                     Events.class,
                     Impl.CASTOR);
         }
-        
+
         // Add all datacollection group files
         for (final File file : FileUtils.listFiles(new File(getDaemonEtcDirectory(), "datacollection"),
                                                    new String[] { "xml" },
@@ -285,7 +286,7 @@ public class WillItUnmarshalTest {
                     Impl.JAXB);
         }
     }
-    
+
     /**
      * The list of files to test.
      * 
@@ -309,20 +310,20 @@ public class WillItUnmarshalTest {
     public static Collection<Object[]> files() {
         return FILES;
     }
-    
+
     private final Source source;
     private final String file;
     private final Class<?> clazz;
     private final Impl impl;
     private final boolean lenient;
     private final String exception;
-    
+
     public WillItUnmarshalTest(final Source source,
-                               final String file,
-                               final Class<?> clazz,
-                               final Impl impl,
-                               final boolean lenient,
-                               final String exception) {
+            final String file,
+            final Class<?> clazz,
+            final Impl impl,
+            final boolean lenient,
+            final String exception) {
         this.source = source;
         this.file = file;
         this.clazz = clazz;
@@ -330,45 +331,45 @@ public class WillItUnmarshalTest {
         this.lenient = lenient;
         this.exception = exception;
     }
-    
+
     @Before
     public void setUp() throws Exception {
         // Reload castor properties every time
         LocalConfiguration.getInstance().getProperties().clear();
         LocalConfiguration.getInstance().getProperties().load(ConfigurationTestUtils.getInputStreamForResource(this, "/castor.properties"));
     }
-    
+
     @Test
     public void testUnmarshalling() {
         // Be conservative about what we ship, so don't be lenient
         if (this.lenient == false) {
             LocalConfiguration.getInstance().getProperties().remove(CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY);
         }
-        
+
         final Resource resource = this.createResource();
-        
+
         // Assert that resource is valied
         assertNotNull("Resource must not be null", resource);
-        
+
         // Unmarshall the config file
         Object result = null;
         try {
             switch (impl) {
-                case CASTOR:
-                    result = CastorUtils.unmarshal(this.clazz, resource);
-                    break;
+            case CASTOR:
+                result = CastorUtils.unmarshal(this.clazz, resource);
+                break;
 
-                case JAXB:
-                    result = JaxbUtils.unmarshal(this.clazz, resource);
-                    break;
+            case JAXB:
+                result = JaxbUtils.unmarshal(this.clazz, resource);
+                break;
 
-                default:
-                    fail("Implementation unknown: " + this.impl);
+            default:
+                fail("Implementation unknown: " + this.impl);
             }
-        
+
             // Assert that unmarshalling returned a valid result
             assertNotNull("Unmarshalled instance must not be null", result);
-            
+
         } catch(AssertionFailedError ex) {
             throw ex;
 
@@ -377,7 +378,7 @@ public class WillItUnmarshalTest {
             // match - if not the test failed
             if (this.exception != null) {
                 assertEquals(this.exception, exception.toString());
-                
+
             } else {
                 fail("Unexpected exception: " + ex);
             }
@@ -394,20 +395,20 @@ public class WillItUnmarshalTest {
         // Create a resource for the config file to unmarshall using the
         // configured source
         switch (this.source) {
-            case CONFIG:
-                return new FileSystemResource(ConfigurationTestUtils.getFileForConfigFile(file));
-                
-            case EXAMPLE:
-                return new FileSystemResource(ConfigurationTestUtils.getFileForConfigFile("examples/" + file));
-                
-            case SPRING:
-                return ConfigurationTestUtils.getSpringResourceForResource(this, this.file);
-                
-            case ABSOLUTE:
-                return new FileSystemResource(this.file);
-            
-            default:
-                throw new RuntimeException("Source unknown: " + this.source);
+        case CONFIG:
+            return new FileSystemResource(ConfigurationTestUtils.getFileForConfigFile(file));
+
+        case EXAMPLE:
+            return new FileSystemResource(ConfigurationTestUtils.getFileForConfigFile("examples/" + file));
+
+        case SPRING:
+            return ConfigurationTestUtils.getSpringResourceForResource(this, this.file);
+
+        case ABSOLUTE:
+            return new FileSystemResource(this.file);
+
+        default:
+            throw new RuntimeException("Source unknown: " + this.source);
         }
     }
 }

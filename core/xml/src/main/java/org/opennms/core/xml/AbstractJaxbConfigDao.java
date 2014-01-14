@@ -47,9 +47,9 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public abstract class AbstractJaxbConfigDao<K, V> implements InitializingBean {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(AbstractJaxbConfigDao.class);
-	
+
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractJaxbConfigDao.class);
+
     private Class<K> m_jaxbClass;
     private String m_description;
     private Resource m_configResource;
@@ -67,7 +67,7 @@ public abstract class AbstractJaxbConfigDao<K, V> implements InitializingBean {
      */
     public AbstractJaxbConfigDao(final Class<K> entityClass, final String description) {
         super();
-        
+
         m_jaxbClass = entityClass;
         m_description = description;
     }
@@ -88,15 +88,15 @@ public abstract class AbstractJaxbConfigDao<K, V> implements InitializingBean {
      */
     protected V loadConfig(final Resource resource) {
         long startTime = System.currentTimeMillis();
-        
+
         LOG.debug("Loading {} configuration from {}", m_description, resource);
 
         V config = translateConfig(JaxbUtils.unmarshal(m_jaxbClass, resource));
-        
+
         long endTime = System.currentTimeMillis();
-        
+
         LOG.info("Loaded {} in {} ms", getDescription(), (endTime - startTime));
-        
+
         return config;
     }
 
@@ -106,7 +106,7 @@ public abstract class AbstractJaxbConfigDao<K, V> implements InitializingBean {
     @Override
     public void afterPropertiesSet() {
         Assert.state(m_configResource != null, "property configResource must be set and be non-null");
-    
+
         final V config = loadConfig(m_configResource);
         m_container = new FileReloadContainer<V>(config, m_configResource, m_callback);
 
@@ -132,7 +132,7 @@ public abstract class AbstractJaxbConfigDao<K, V> implements InitializingBean {
     public void setConfigResource(final Resource configResource) {
         m_configResource = configResource;
     }
-    
+
     /**
      * <p>getContainer</p>
      *
@@ -141,7 +141,7 @@ public abstract class AbstractJaxbConfigDao<K, V> implements InitializingBean {
     public FileReloadContainer<V> getContainer() {
         return m_container;
     }
-    
+
     public class JaxbReloadCallback implements FileReloadCallback<V> {
         @Override
         public V reload(final V object, final Resource resource) {
@@ -169,7 +169,7 @@ public abstract class AbstractJaxbConfigDao<K, V> implements InitializingBean {
             m_container.setReloadCheckInterval(m_reloadCheckInterval);
         }
     }
-    
+
     /**
      * <p>getDescription</p>
      *

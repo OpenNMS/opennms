@@ -50,7 +50,7 @@ public class ISOMLayoutAlgorithm extends AbstractLayoutAlgorithm {
 		
 		protected final Layout m_layout;
 
-		public NonStupidISOMLayout(edu.uci.ics.jung.graph.Graph<VertexRef,EdgeRef> g, Layout graphLayout) {
+        public NonStupidISOMLayout(edu.uci.ics.jung.graph.Graph<VertexRef,EdgeRef> g, Layout graphLayout) {
 			super(g);
 			m_layout = graphLayout;
 		}
@@ -63,7 +63,12 @@ public class ISOMLayoutAlgorithm extends AbstractLayoutAlgorithm {
 		public void setInitializer(Transformer<VertexRef,Point2D> ignoreMe) {
 			super.setInitializer(initializer(m_layout));
 		}
-	}
+
+        @Override
+        public boolean done() {
+            return getGraph().getVertexCount() > 0 ? super.done() : true;
+        }
+    }
 
 	@Override
 	public void updateLayout(final GraphContainer graphContainer) {

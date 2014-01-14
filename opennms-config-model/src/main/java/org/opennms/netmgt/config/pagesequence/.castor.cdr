@@ -1,0 +1,5 @@
+#Fri Dec 20 16:41:59 EST 2013
+org.opennms.netmgt.config.pagesequence.Page=org.opennms.netmgt.config.pagesequence.descriptors.PageDescriptor
+org.opennms.netmgt.config.pagesequence.SessionVariable=org.opennms.netmgt.config.pagesequence.descriptors.SessionVariableDescriptor
+org.opennms.netmgt.config.pagesequence.Parameter=org.opennms.netmgt.config.pagesequence.descriptors.ParameterDescriptor
+org.opennms.netmgt.config.pagesequence.PageSequence=org.opennms.netmgt.config.pagesequence.descriptors.PageSequenceDescriptor

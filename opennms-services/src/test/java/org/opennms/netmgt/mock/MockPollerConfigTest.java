@@ -108,14 +108,14 @@ public class MockPollerConfigTest extends TestCase {
             svcCount++;
             if ("ICMP".equals(svc.getName())) {
                 icmpFound = true;
-                assertEquals(500L, svc.getInterval());
+                assertEquals(Long.valueOf(500L), svc.getInterval());
             }
             else if ("HTTP".equals(svc.getName())) {
                 httpFound = true;
-                assertEquals(750L, svc.getInterval());
+                assertEquals(Long.valueOf(750L), svc.getInterval());
             }
             else {
-                assertEquals(1000L, svc.getInterval());
+                assertEquals(Long.valueOf(1000L), svc.getInterval());
             }
         }
         

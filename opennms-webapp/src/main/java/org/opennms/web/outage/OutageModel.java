@@ -257,8 +257,8 @@ public class OutageModel {
     /**
      * <p>filterNodesWithCurrentOutages</p>
      *
-     * @param nodes an array of {@link org.opennms.web.element.Node} objects.
-     * @return an array of {@link org.opennms.web.element.Node} objects.
+     * @param nodes an array of {@link org.opennms.netmgt.config.poller.outages.Node} objects.
+     * @return an array of {@link org.opennms.netmgt.config.poller.outages.Node} objects.
      * @throws java.sql.SQLException if any.
      */
     public OnmsNode[] filterNodesWithCurrentOutages(List<OnmsNode> nodes) throws SQLException {
