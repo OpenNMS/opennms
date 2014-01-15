@@ -37,7 +37,6 @@ import java.net.URL;
  * immutable(except for error count)
  *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
 public class HttpPostInfo {
     /**
@@ -176,7 +175,6 @@ public class HttpPostInfo {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((m_catlabel == null) ? 0 : m_catlabel.hashCode());
-        result = prime * result + m_errors;
         result = prime * result + ((m_passwd == null) ? 0 : m_passwd.hashCode());
         result = prime * result + ((m_url == null) ? 0 : m_url.toExternalForm().hashCode());
         result = prime * result + ((m_user == null) ? 0 : m_user.hashCode());
@@ -199,7 +197,6 @@ public class HttpPostInfo {
         } else if (!m_catlabel.equals(other.m_catlabel)) {
             return false;
         }
-        if (m_errors != other.m_errors) return false;
         if (m_passwd == null) {
             if (other.m_passwd != null) return false;
         } else if (!m_passwd.equals(other.m_passwd)) {

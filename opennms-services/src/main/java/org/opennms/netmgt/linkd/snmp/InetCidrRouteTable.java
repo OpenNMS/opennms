@@ -32,8 +32,6 @@ import java.net.InetAddress;
 
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * <P>InetCidrRouteTable uses a SnmpSession to collect the ipRouteTable entries
@@ -48,7 +46,6 @@ import org.slf4j.LoggerFactory;
 public class InetCidrRouteTable extends SnmpTable<InetCidrRouteTableEntry>
 {
     
-    private static final Logger LOG = LoggerFactory.getLogger(InetCidrRouteTable.class);
    /**
     * <P>Constructs an InetCidrRouteTable object that is used to collect
     * the address elements from the remote agent. Once all

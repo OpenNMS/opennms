@@ -49,7 +49,7 @@
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			threednsTrapVSRedToGreen trap received&lt;/p&gt;
 		</logmsg>
-	<severity>Cleared</severity>
+	<severity>Normal</severity>
 	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
                 alarm-type="2" 
                 auto-clean="false" 
@@ -78,7 +78,7 @@
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			threednsTrapServerRedToGreen trap received&lt;/p&gt;
 		</logmsg>
-	<severity>Cleared</severity>
+	<severity>Normal</severity>
 	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
                 alarm-type="2" 
                 auto-clean="false" 
@@ -248,7 +248,7 @@
 			ipAddressString=%parm[#2]% 
 			memberPort=%parm[#3]%&lt;/p&gt;
 		</logmsg>
-	<severity>Cleared</severity>
+	<severity>Normal</severity>
 	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" 
                 alarm-type="2" 
                 auto-clean="false" 
@@ -437,7 +437,7 @@
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bigipAgentStart trap received&lt;/p&gt;
 		</logmsg>
-	<severity>Cleared</severity>
+	<severity>Normal</severity>
 	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
                 alarm-type="2" 
                 auto-clean="false" 
@@ -762,7 +762,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p&gt;&lt;table&gt
 			bigipNotifyObjNode=%parm[#2]% 
 			bigipNotifyObjPort=%parm[#3]%&lt;/p&gt;
 		</logmsg>
-	<severity>Cleared</severity>
+	<severity>Normal</severity>
 	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" 
                 alarm-type="2" 
                 auto-clean="false" 
@@ -837,7 +837,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p&gt;&lt;table&gt
 			bigipNotifyObjMsg=%parm[#1]% 
 			bigipNotifyObjNode=%parm[#2]%&lt;/p&gt;
 		</logmsg>
-	<severity>Cleared</severity>
+	<severity>Normal</severity>
 	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" 
                 alarm-type="2" 
                 auto-clean="false" 
@@ -995,7 +995,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p&gt;&lt;table&gt
 			bigipFeatureOnline trap received 
 			bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;
 		</logmsg>
-	<severity>Cleared</severity>
+	<severity>Normal</severity>
 	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
                 alarm-type="2" 
                 auto-clean="false" 
@@ -1534,5 +1534,1622 @@ properly.&lt;/p&gt;&lt;table&gt;
 	<severity>Minor</severity>
 	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
 </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>36</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipSslLimitExceeded</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipSslLimitExceeded</event-label>
+        <descr>&lt;p&gt;The SSL license limits are exceeded, 
+		either for TPS (Transactions Per Second) or 
+		for MPS (Megabits Per Second).&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipSslLimitExceeded trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>37</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipExternalLinkChange</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipExternalLinkChange</event-label>
+        <descr>&lt;p&gt;An external interface link status changes.  
+		For a fixed port, this is an occurrence when network cables 
+		are connected  or removed, and the network is reconfigured; 
+		for a pluggable port (such as a SFP or XFP port), this happens 
+		when the pluggable unit is plugged in or unplugged, 
+		or when a cable is connected or removed from a plugged port.  
+		The possible values are UP, DOWN, DISABLED, or UNPOPULATED.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipExternalLinkChange trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>38</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipAsmRequestBlocked</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipAsmRequestBlocked</event-label>
+        <descr>&lt;p&gt;The HTTP request was blocked because it issued (at least one)
+		violation(s) which is marked as blocking at the current active 
+		policy in Application Security Module.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipAsmRequestBlocked trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>39</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipAsmRequestViolation</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipAsmRequestViolation</event-label>
+        <descr>&lt;p&gt;The HTTP request issued a violation to the current active policy. 
+		This violation is marked as an alerting violation in that policy
+		in Application Security Module.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipAsmRequestViolation trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>40</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipGtmPoolAvail</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipGtmPoolAvail</event-label>
+        <descr>&lt;p&gt;A pool is becoming available in global traffic management module.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipGtmPoolAvail trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>41</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipGtmPoolNotAvail</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipGtmPoolNotAvail</event-label>
+        <descr>&lt;p&gt;A pool is becoming unavailable in global traffic management module.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipGtmPoolNotAvail trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <operinstruct></operinstruct>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>42</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipGtmPoolDisabled</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipGtmPoolDisabled</event-label>
+        <descr>&lt;p&gt;A pool is disabled in global traffic management module.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipGtmPoolDisabled trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>43</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipGtmPoolEnabled</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipGtmPoolEnabled</event-label>
+        <descr>&lt;p&gt;A pool is enabled in global traffic management module.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipGtmPoolEnabled trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>44</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipGtmLinkAvail</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipGtmLinkAvail</event-label>
+        <descr>&lt;p&gt;A link is becoming available in global traffic management module.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipGtmLinkAvail trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>45</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipGtmLinkNotAvail</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipGtmLinkNotAvail</event-label>
+        <descr>&lt;p&gt;A link is becoming unavailable in global traffic management module.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipGtmLinkNotAvail trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>46</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipGtmLinkDisabled</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipGtmLinkDisabled</event-label>
+        <descr>&lt;p&gt;A link is disabled in global traffic management module.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipGtmLinkDisabled trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>47</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipGtmLinkEnabled</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipGtmLinkEnabled</event-label>
+        <descr>&lt;p&gt;A link is enabled in global traffic management module.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipGtmLinkEnabled trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>48</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipGtmWideIpAvail</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipGtmWideIpAvail</event-label>
+        <descr>&lt;p&gt;A wide IP is becoming available in global traffic management module.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipGtmWideIpAvail trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>49</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipGtmWideIpNotAvail</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipGtmWideIpNotAvail</event-label>
+        <descr>&lt;p&gt;A wide IP is becoming unavailable in global traffic management module.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipGtmWideIpNotAvail trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>50</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipGtmWideIpDisabled</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipGtmWideIpDisabled</event-label>
+        <descr>&lt;p&gt;A wide IP is disabled in global traffic management module.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipGtmWideIpDisabled trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>51</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipGtmWideIpEnabled</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipGtmWideIpEnabled</event-label>
+        <descr>&lt;p&gt;A wide IP is enabled in global traffic management module.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipGtmWideIpEnabled trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>52</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipGtmPoolMbrAvail</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipGtmPoolMbrAvail</event-label>
+        <descr>&lt;p&gt;A pool member is becoming available in global traffic management module.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipGtmPoolMbrAvail trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>53</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipGtmPoolMbrNotAvail</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipGtmPoolMbrNotAvail</event-label>
+        <descr>&lt;p&gt;A pool member is becoming unavailable in global traffic management module.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipGtmPoolMbrNotAvail trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>54</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipGtmPoolMbrDisabled</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipGtmPoolMbrDisabled</event-label>
+        <descr>&lt;p&gt;A pool member is disabled in global traffic management module.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipGtmPoolMbrDisabled trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>55</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipGtmPoolMbrEnabled</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipGtmPoolMbrEnabled</event-label>
+        <descr>&lt;p&gt;A pool member is enabled in global traffic management module.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipGtmPoolMbrEnabled trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>56</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipGtmServerAvail</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipGtmServerAvail</event-label>
+        <descr>&lt;p&gt;A server is becoming available in global traffic management module.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipGtmServerAvail trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>57</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipGtmServerNotAvail</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipGtmServerNotAvail</event-label>
+        <descr>&lt;p&gt;A server is becoming unavailable in global traffic management module.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipGtmServerNotAvail trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>58</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipGtmServerDisabled</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipGtmServerDisabled</event-label>
+        <descr>&lt;p&gt;A server is disabled in global traffic management module.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipGtmServerDisabled trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>59</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipGtmServerEnabled</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipGtmServerEnabled</event-label>
+        <descr>&lt;p&gt;A server is enabled in global traffic management module.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipGtmServerEnabled trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>60</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipGtmVsAvail</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipGtmVsAvail</event-label>
+        <descr>&lt;p&gt;A virtual server is becoming available in global traffic management module.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipGtmVsAvail trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>61</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipGtmVsNotAvail</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipGtmVsNotAvail</event-label>
+        <descr>&lt;p&gt;A virtual server is becoming unavailable in global traffic management module.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipGtmVsNotAvail trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>62</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipGtmVsDisabled</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipGtmVsDisabled</event-label>
+        <descr>&lt;p&gt;A virtual server is disabled in global traffic management module.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipGtmVsDisabled trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>63</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipGtmVsEnabled</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipGtmVsEnabled</event-label>
+        <descr>&lt;p&gt;A virtual server is enabled in global traffic management module.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipGtmVsEnabled trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>64</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipGtmDcAvail</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipGtmDcAvail</event-label>
+        <descr>&lt;p&gt;A data center is becoming available in global traffic management module.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipGtmDcAvail trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>65</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipGtmDcNotAvail</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipGtmDcNotAvail</event-label>
+        <descr>&lt;p&gt;A data center is becoming unavailable in global traffic management module.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipGtmDcNotAvail trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Critical</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>66</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipGtmDcDisabled</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipGtmDcDisabled</event-label>
+        <descr>&lt;p&gt;A data center is disabled in global traffic management module.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipGtmDcDisabled trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>67</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipGtmDcEnabled</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipGtmDcEnabled</event-label>
+        <descr>&lt;p&gt;A data center is enabled in global traffic management module.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipGtmDcEnabled trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>68</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipHardDiskFailure</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipHardDiskFailure</event-label>
+        <descr>&lt;p&gt;The hard disk is failing.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipHardDiskFailure trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>69</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipGtmAppObjAvail</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipGtmAppObjAvail</event-label>
+        <descr>&lt;p&gt;An application object is becoming available in global management module.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipGtmAppObjAvail trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>70</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipGtmAppObjNotAvail</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipGtmAppObjNotAvail</event-label>
+        <descr>&lt;p&gt;An application object is becoming unavailable in global management module.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipGtmAppObjNotAvail trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>71</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipGtmAppAvail</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipGtmAppAvail</event-label>
+        <descr>&lt;p&gt;An application is becoming available in global management module.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipGtmAppAvail trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>72</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipGtmAppNotAvail</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipGtmAppNotAvail</event-label>
+        <descr>&lt;p&gt;An application is becoming unavailable in global management module.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipGtmAppNotAvail trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>73</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipGtmJoinedGroup</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipGtmJoinedGroup</event-label>
+        <descr>&lt;p&gt;BIG-IP GTM joined sync group.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipGtmJoinedGroup trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>74</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipGtmLeftGroup</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipGtmLeftGroup</event-label>
+        <descr>&lt;p&gt;BIG-IP GTM left sync group.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipGtmLeftGroup trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>75</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipStandByFail</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipStandByFail</event-label>
+        <descr>&lt;p&gt;In failover condition, this standby will not be able to go active.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipStandByFail trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>76</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipInetPortExhaustion</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipInetPortExhaustion</event-label>
+        <descr>&lt;p&gt;The inet port is exhausted.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipInetPortExhaustion trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>77</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipGtmBoxAvail</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipGtmBoxAvail</event-label>
+        <descr>&lt;p&gt;The box is becoming available in global management module.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipGtmBoxAvail trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>78</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipGtmBoxNotAvail</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipGtmBoxNotAvail</event-label>
+        <descr>&lt;p&gt;The box is becoming unavailable in global management module.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipGtmBoxNotAvail trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>79</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipAsmFtpRequestBlocked</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipAsmFtpRequestBlocked</event-label>
+        <descr>&lt;p&gt;The FTP request was blocked because it issued (at least one)
+		violation(s) which is marked as blocking at the current active
+		policy in Application Security Module.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipAsmFtpRequestBlocked trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>80</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipAsmFtpRequestViolation</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipAsmFtpRequestViolation</event-label>
+        <descr>&lt;p&gt;The FTP request issued a violation to the current active
+		policy. This violation is marked as an alerting violation 
+		in that policy in Application Security Module.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipAsmFtpRequestViolation trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>81</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipGtmBig3dSslCertExpired</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipGtmBig3dSslCertExpired</event-label>
+        <descr>&lt;p&gt;BIG-IP GTM BIG3D SSL Cert has expired.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipGtmBig3dSslCertExpired trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Major</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>82</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipGtmBig3dSslCertWillExpire</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipGtmBig3dSslCertWillExpire</event-label>
+        <descr>&lt;p&gt;BIG-IP GTM BIG3D SSL Cert will expire.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipGtmBig3dSslCertWillExpire trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>83</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipGtmSslCertExpired</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipGtmSslCertExpired</event-label>
+        <descr>&lt;p&gt;BIG-IP GTM SSL Cert has expired.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipGtmSslCertExpired trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Major</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>84</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipGtmSslCertWillExpire</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipGtmSslCertWillExpire</event-label>
+        <descr>&lt;p&gt;BIG-IP GTM SSL Cert will expire.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipGtmSslCertWillExpire trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>85</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipAsmSmtpRequestBlocked</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipAsmSmtpRequestBlocked</event-label>
+        <descr>&lt;p&gt;The FTP request was blocked because it issued (at least one)
+		violation(s) which is marked as blocking at the current active
+		policy in Application Security Module.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipAsmSmtpRequestBlocked trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>86</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipAsmSmtpRequestViolation</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipAsmSmtpRequestViolation</event-label>
+        <descr>&lt;p&gt;The FTP request issued a violation to the current active
+		policy. This violation is marked as an alerting violation 
+		in that policy in Application Security Module.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipAsmSmtpRequestViolation trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>87</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipBladeTempHigh</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipBladeTempHigh</event-label>
+        <descr>&lt;p&gt;Blade temperature is too high.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipBladeTempHigh trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>88</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipBladeNoPower</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipBladeNoPower</event-label>
+        <descr>&lt;p&gt;A blade lost power. The blade may be pulled out&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipBladeNoPower trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>89</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipClusterdNoResponse</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipClusterdNoResponse</event-label>
+        <descr>&lt;p&gt;The cluster daemon failed to respond for 10 or more seconds.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipClusterdNoResponse trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>90</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipBladeOffline</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipBladeOffline</event-label>
+        <descr>&lt;p&gt;A blade has failed - offline.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipBladeOffline trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>91</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipAsmDosAttackDetected</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipAsmDosAttackDetected</event-label>
+        <descr>&lt;p&gt;DoS attack detected by Application Security Module.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipAsmDosAttackDetected trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.3375.2.4</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>92</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/F5/traps/bigipAsmBruteForceAttackDetected</uei>
+        <event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipAsmBruteForceAttackDetected</event-label>
+        <descr>&lt;p&gt;Brute force attack detected by Application Security Module.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bigipNotifyObjMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	bigipAsmBruteForceAttackDetected trap received
+	bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
 <!-- End of auto generated data from MIB: F5-BIGIP-COMMON-MIB -->
 </events>

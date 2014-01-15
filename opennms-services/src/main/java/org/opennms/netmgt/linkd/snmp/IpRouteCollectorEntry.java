@@ -118,6 +118,8 @@ public abstract class IpRouteCollectorEntry extends SnmpStore {
     }
     
     public OnmsIpRouteInterface getOnmsIpRouteInterface(OnmsIpRouteInterface ipRouteInterface) {
+        if (getIpRouteDest() == null || getIpRouteIfIndex() == null || getIpRouteMask() == null || getIpRouteNextHop() == null )
+            return null;
     	ipRouteInterface.setRouteDest(str(getIpRouteDest()));
         ipRouteInterface.setRouteIfIndex(getIpRouteIfIndex());
         ipRouteInterface.setRouteMask(str(getIpRouteMask()));

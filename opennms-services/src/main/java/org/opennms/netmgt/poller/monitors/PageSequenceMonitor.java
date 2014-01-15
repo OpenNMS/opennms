@@ -81,10 +81,10 @@ import org.opennms.core.utils.EmptyKeyRelaxedTrustSSLContext;
 import org.opennms.core.utils.HttpResponseRange;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.MatchTable;
-import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.pagesequence.Page;
 import org.opennms.netmgt.config.pagesequence.PageSequence;
 import org.opennms.netmgt.config.pagesequence.Parameter;
@@ -113,10 +113,11 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
         
         TimeoutTracker m_tracker;
         public SequenceTracker(Map<String, Object> parameterMap, int defaultSequenceRetry, int defaultTimeout) {
-            Map<String, Object> parameters = new HashMap<String, Object>();
-            parameters.put("retry", ParameterMap.getKeyedInteger(parameterMap, "sequence-retry", defaultSequenceRetry));
-            parameters.put("timeout", ParameterMap.getKeyedInteger(parameterMap, "timeout", defaultTimeout));
-            parameters.put("strict-timeout", ParameterMap.getKeyedBoolean(parameterMap, "strict-timeout", false));
+            final Map<String, Object> parameters = new HashMap<String, Object>();
+
+            parameters.put("retry", getKeyedInteger(parameterMap, "sequence-retry", defaultSequenceRetry));
+            parameters.put("timeout", getKeyedInteger(parameterMap, "timeout", defaultTimeout));
+            parameters.put("strict-timeout", getKeyedBoolean(parameterMap, "strict-timeout", false));
             m_tracker = new TimeoutTracker(parameters, defaultSequenceRetry, defaultTimeout);
         }
         public void reset() {
@@ -168,9 +169,9 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
         final PageSequence m_sequence;
         final List<HttpPage> m_pages;
         Properties m_sequenceProperties;
-        Map<String,String> m_parameters = new HashMap<String,String>();
+        Map<String,Object> m_parameters = new HashMap<String,Object>();
 
-        HttpPageSequence(PageSequence sequence) {
+        HttpPageSequence(final PageSequence sequence) {
             m_sequence = sequence;
 
             m_pages = new ArrayList<HttpPage>(m_sequence.getPageCount());
@@ -181,11 +182,11 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
             m_sequenceProperties = new Properties();
         }
 
-        public Map<String,String> getParameters() {
+        public Map<String,Object> getParameters() {
             return m_parameters;
         }
 
-        public void setParameters(Map<String,String> parameters) {
+        public void setParameters(final Map<String,Object> parameters) {
             m_parameters = parameters;
         }
 
@@ -219,7 +220,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
             return m_sequenceProperties;
         }
 
-        protected void setSequenceProperties(Properties newProps) {
+        protected void setSequenceProperties(final Properties newProps) {
             m_sequenceProperties = newProps;
         }
 
@@ -233,17 +234,18 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
     }
 
     public static class PageSequenceHttpPost extends HttpPost implements PageSequenceHttpUriRequest {
-        public PageSequenceHttpPost(URI uri) {
+        public PageSequenceHttpPost(final URI uri) {
             super(uri);
         }
 
         @Override
-        public void setQueryParameters(List<NameValuePair> parms) {
+        public void setQueryParameters(final List<NameValuePair> parms) {
             try {
-                UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parms, "UTF-8");
+                final UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parms, "UTF-8");
                 this.setEntity(entity);
-            } catch (UnsupportedEncodingException e) {
+            } catch (final UnsupportedEncodingException e) {
                 // Should never happen
+                LOG.debug("Unsupported encoding", e);
             }
         }
     }
@@ -575,8 +577,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
     public static class PageSequenceMonitorParameters {
         public static final String KEY = PageSequenceMonitorParameters.class.getName();
 
-        @SuppressWarnings({ "unchecked" })
-        static synchronized PageSequenceMonitorParameters get(Map parameterMap) {
+        static synchronized PageSequenceMonitorParameters get(final Map<String,Object> parameterMap) {
             PageSequenceMonitorParameters parms = (PageSequenceMonitorParameters) parameterMap.get(KEY);
             if (parms == null) {
                 parms = new PageSequenceMonitorParameters(parameterMap);
@@ -585,27 +586,42 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
             return parms;
         }
 
-        private final Map<String, String> m_parameterMap;
+        private final Map<String, Object> m_parameterMap;
         private final HttpParams m_clientParams;
         private final HttpPageSequence m_pageSequence;
 
         @SuppressWarnings("unchecked")
-        PageSequenceMonitorParameters(Map<String, String> parameterMap) {
+        PageSequenceMonitorParameters(final Map<String, Object> parameterMap) {
             m_parameterMap = parameterMap;
-            String pageSequence = getStringParm("page-sequence", null);
+
+            Object pageSequence = getKeyedObject(parameterMap, "page-sequence", null);
+
             if (pageSequence == null) {
                 throw new IllegalArgumentException("page-sequence must be set in monitor parameters");
             }
+
+            /* if we get an actual PageSequence object, we need
+             * to do substitution on it first, so turn it back into
+             * a string temporarily.
+             */
+            if (pageSequence instanceof PageSequence) {
+                pageSequence = JaxbUtils.marshal(pageSequence);
+            } else if (pageSequence instanceof String) {
+                // don't need to do anything
+            } else {
+                throw new IllegalArgumentException("Unsure how to deal with Page Sequence of type " + pageSequence.getClass());
+            }
+
             // Perform parameter expansion on the page-sequence string
-            pageSequence = PropertiesUtils.substitute(pageSequence, m_parameterMap);
-            PageSequence sequence = parsePageSequence(pageSequence);
+            pageSequence = PropertiesUtils.substitute((String)pageSequence, m_parameterMap);
+            PageSequence sequence = parsePageSequence((String)pageSequence);
             m_pageSequence = new HttpPageSequence(sequence);
             m_pageSequence.setParameters(m_parameterMap);
 
             m_clientParams = createClientParams();
         }
 
-        Map<String, String> getParameterMap() {
+        Map<String, Object> getParameterMap() {
             return m_parameterMap;
         }
 
@@ -626,14 +642,6 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
 
         }
 
-        private String getStringParm(String key, String deflt) {
-            return ParameterMap.getKeyedString(getParameterMap(), key, deflt);
-        }
-
-        private int getIntParm(String key, int defValue) {
-            return ParameterMap.getKeyedInteger(getParameterMap(), key, defValue);
-        }
-
         private HttpParams createClientParams() {
             HttpParams clientParams = new BasicHttpParams();
             clientParams.setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, getTimeout());
@@ -645,11 +653,11 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
         }
 
         public int getRetries() {
-            return getIntParm("retry", PageSequenceMonitor.DEFAULT_RETRY);
+            return getKeyedInteger(m_parameterMap, "retry", DEFAULT_RETRY);
         }
 
         public int getTimeout() {
-            return getIntParm("timeout", PageSequenceMonitor.DEFAULT_TIMEOUT);
+            return getKeyedInteger(m_parameterMap, "timeout", DEFAULT_TIMEOUT);
         }
 
         public HttpParams getClientParams() {

@@ -318,7 +318,7 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
         assertTrue(m_linkd.runSingleSnmpCollection(cisco1700.getId()));
         assertTrue(m_linkd.runSingleSnmpCollection(cisco1700b.getId()));
 
-        for (LinkableNode node: m_linkd.getLinkableNodes()) {
+        for (LinkableNode node: m_linkd.getLinkableNodesOnPackage("example1")) {
         	int nodeid = node.getNodeId();
         	printNode(m_nodeDao.get(nodeid));
         	for (RouterInterface route: node.getRouteInterfaces()) {

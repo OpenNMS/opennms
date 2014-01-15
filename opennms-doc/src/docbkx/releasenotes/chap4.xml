@@ -5,7 +5,7 @@
   <subtitle>Supported UNIX-like OSes</subtitle>
 
   <para>OpenNMS is written almost entirely in Java, and should be able to run
-  on any system that supports the Sun Java Virtual Machine -- OpenNMS 1.3.x and
+  on any system that supports the Sun Java Virtual Machine -- OpenNMS 1.13.x and
   higher requires Java 5 or higher.  There are requirements for
   other programs such as PostgreSQL and Perl, but the JDK is the key requirement
   as most of the other packages can be compiled from source.</para>

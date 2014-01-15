@@ -40,6 +40,7 @@ import org.opennms.netmgt.model.FilterManager;
 public class HibernateFilterManager implements FilterManager {
     
     private SessionFactory m_sessionFactory;
+    private String[] m_authorizationGroups;
     
     
     /**
@@ -59,7 +60,18 @@ public class HibernateFilterManager implements FilterManager {
      */
     @Override
     public void disableAuthorizationFilter() {
+        m_authorizationGroups = null;
         m_sessionFactory.getCurrentSession().disableFilter(AUTH_FILTER_NAME);
+    }
+
+    @Override
+    public String[] getAuthorizationGroups() {
+        return m_authorizationGroups;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return m_authorizationGroups != null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     /* (non-Javadoc)
@@ -72,6 +84,7 @@ public class HibernateFilterManager implements FilterManager {
      */
     @Override
     public void enableAuthorizationFilter(final String[] authorizationGroups) {
+        m_authorizationGroups = authorizationGroups;
         m_sessionFactory.getCurrentSession().enableFilter(AUTH_FILTER_NAME).setParameterList("userGroups", authorizationGroups);
     }
 }

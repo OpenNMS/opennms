@@ -51,4 +51,8 @@ public interface FilterManager {
      */
     public void disableAuthorizationFilter();
 
+    public String[] getAuthorizationGroups();
+
+    public boolean isEnabled();
+
 }

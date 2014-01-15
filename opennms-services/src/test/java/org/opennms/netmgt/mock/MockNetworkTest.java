@@ -442,11 +442,11 @@ public class MockNetworkTest extends TestCase {
         while (svcs.hasMoreElements()) {
             Service svc = (Service) svcs.nextElement();
             if ("ICMP".equals(svc.getName()))
-                assertEquals(500L, svc.getInterval());
+                assertEquals(Long.valueOf(500L), svc.getInterval());
             else if ("HTTP".equals(svc.getName()))
-                assertEquals(750L, svc.getInterval());
+                assertEquals(Long.valueOf(750L), svc.getInterval());
             else
-                assertEquals(1000L, svc.getInterval());
+                assertEquals(Long.valueOf(1000L), svc.getInterval());
         }
 
         // ensure that setting the thread worked

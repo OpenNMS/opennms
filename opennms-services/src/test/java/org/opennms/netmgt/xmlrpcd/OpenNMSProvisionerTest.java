@@ -36,7 +36,6 @@ import static org.junit.Assert.fail;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +51,7 @@ import org.opennms.core.db.XADataSourceFactory;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.JdbcCapsdDbSyncer;
 import org.opennms.netmgt.config.CapsdConfigFactory;
@@ -202,10 +201,9 @@ public class OpenNMSProvisionerTest {
             save();
         }
 
-        @SuppressWarnings("deprecation")
         @Override
-        public void update() throws IOException, MarshalException, ValidationException {
-            m_config = CastorUtils.unmarshal(PollerConfiguration.class, new StringReader(m_xml));
+        public void update() throws IOException {
+            m_config = JaxbUtils.unmarshal(PollerConfiguration.class, m_xml);
             setUpInternalData();
         }
 
@@ -256,7 +254,7 @@ public class OpenNMSProvisionerTest {
         assertNotNull(pkg);
         Service svc = mgr.getServiceInPackage(svcName, pkg);
         assertNotNull(svc);
-        assertEquals(interval, svc.getInterval());
+        assertEquals(Long.valueOf(interval), svc.getInterval());
         assertNotNull("Unables to find monitor for svc "+svcName+" in origonal config", m_pollerConfig.getServiceMonitor(svcName));
         assertNotNull("Unable to find monitor for svc "+svcName, mgr.getServiceMonitor(svcName));
         

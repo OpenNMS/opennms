@@ -66,6 +66,7 @@
 			<tr>
 			<th>Linked to <%=nodeId%> and <%=ifIndex%></th>
 			<th width="10%">Status</th>
+			<th>Discovery Protocol</th>
 			<th>Last Scan</th>
 			 
 <%--
@@ -121,6 +122,10 @@
             <% } else { %>
      			&nbsp;
 		    <% } %>
+		    </td>
+
+		    <td class="standard">
+             	<%=linkInterface.getProtocol()%>
 		    </td>
 
 		    <td class="standard">

@@ -41,6 +41,7 @@ public class RedoLayoutOperation implements Operation {
     public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
         if (operationContext != null && operationContext.getGraphContainer() != null) {
             operationContext.getGraphContainer().getBaseTopology().refresh();
+            operationContext.getGraphContainer().setDirty(true);
             operationContext.getGraphContainer().redoLayout();
         }
         return null;

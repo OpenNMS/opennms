@@ -46,6 +46,7 @@ public class LinkInterface
         private final Interface m_linkedInterface;
         private final String  m_lastPollTime;
         private final String  m_status;
+        private final String  m_protocol;
         private final Integer m_linktypeid;
         
 	private final Integer m_nodeId;
@@ -78,7 +79,11 @@ public class LinkInterface
             m_linkedInterface = linkedIface;
             m_lastPollTime = Util.formatDateToUIString(dl.getLastPollTime()); 
             m_status = StatusType.getStatusString(dl.getStatus().getCharCode());
-            m_linktypeid = dl.getLinkTypeId();                
+            m_linktypeid = dl.getLinkTypeId();
+            if (dl.getProtocol() == null)
+                m_protocol = "&nbsp";
+            else 
+                m_protocol = dl.getProtocol().toString();
         }
 
 		/**
@@ -95,6 +100,10 @@ public class LinkInterface
 				str.append("Link Type Id = " + m_linktypeid + "\n" );
                 str.append("Status= " + m_status + "\n" );
                 return str.toString();
+        }
+
+        public String getProtocol() {
+            return m_protocol;
         }
 
         public Integer getNodeId() {

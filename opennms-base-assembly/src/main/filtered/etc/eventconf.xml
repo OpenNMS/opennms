@@ -2038,6 +2038,7 @@
   <event-file>events/GGSN.events.xml</event-file>
   <event-file>events/Groupwise.events.xml</event-file>
   <event-file>events/HP.events.xml</event-file>
+  <event-file>events/HWg.Poseidon.events.xml</event-file>
   <event-file>events/Hyperic.events.xml</event-file>
   <event-file>events/IBM.events.xml</event-file>
   <event-file>events/IBM-UMS.events.xml</event-file>
@@ -2054,6 +2055,7 @@
   <event-file>events/Junos.events.xml</event-file>
   <event-file>events/JunosV1.events.xml</event-file>
   <event-file>events/K5Systems.events.xml</event-file>
+  <event-file>events/Konica.events.xml</event-file>
   <event-file>events/LLDP.events.xml</event-file>
   <event-file>events/Liebert.events.xml</event-file>
   <event-file>events/Liebert.600SM.events.xml</event-file>
@@ -2116,6 +2118,7 @@
   <event-file>events/SystemEdge.events.xml</event-file>
   <event-file>events/SwissQual.events.xml</event-file>
   <event-file>events/TransPath.events.xml</event-file>
+  <event-file>events/Trendmicro.events.xml</event-file>
   <event-file>events/TrippLite.events.xml</event-file>
   <event-file>events/TUT.events.xml</event-file>
   <event-file>events/UPS-MIB.events.xml</event-file>

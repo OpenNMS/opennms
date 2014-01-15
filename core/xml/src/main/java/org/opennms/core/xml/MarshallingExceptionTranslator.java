@@ -30,12 +30,8 @@ package org.opennms.core.xml;
 
 import java.io.IOException;
 
-import javax.xml.bind.JAXBException;
-
-import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.springframework.dao.DataAccessException;
-import org.xml.sax.SAXException;
 
 /**
  * This is modeled after the Spring SQLExceptionTrnaslator.
@@ -54,7 +50,7 @@ public class MarshallingExceptionTranslator {
     public DataAccessException translate(final String task, final IOException e) {
         return new MarshallingResourceFailureException("Failed to perform IO while " + task + ": " + e, e);
     }
-    
+
     /**
      * <p>translate</p>
      *
@@ -65,23 +61,26 @@ public class MarshallingExceptionTranslator {
     public DataAccessException translate(final String task, final ValidationException e) {
         return new MarshallingResourceFailureException("Failed to validate XML file while " + task + ": " + e, e);
     }
-    
+
     /**
      * <p>translate</p>
      *
      * @param task a {@link java.lang.String} object.
-     * @param e a {@link org.exolab.castor.xml.MarshalException} object.
+     * @param e an {@link Exception} object.
      * @return a {@link org.springframework.dao.DataAccessException} object.
      */
-    public DataAccessException translate(final String task, final MarshalException e) {
+    public DataAccessException translate(final String task, final Exception e) {
         return new MarshallingResourceFailureException("Failed to marshal/unmarshal XML file while " + task + ": " + e, e);
     }
 
-	public DataAccessException translate(final String task, final JAXBException e) {
+    /**
+     * <p>translate</p>
+     *
+     * @param task a {@link java.lang.String} object.
+     * @param e an {@link Error} object.
+     * @return a {@link org.springframework.dao.DataAccessException} object.
+     */
+    public DataAccessException translate(final String task, final Error e) {
         return new MarshallingResourceFailureException("Failed to marshal/unmarshal XML file while " + task + ": " + e, e);
-	}
-
-	public DataAccessException translate(final String task, final SAXException e) {
-        return new MarshallingResourceFailureException("Failed to marshal/unmarshal XML file while " + task + ": " + e, e);
-	}
+    }
 }

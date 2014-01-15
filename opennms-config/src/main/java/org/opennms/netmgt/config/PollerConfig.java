@@ -36,8 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
@@ -373,19 +371,15 @@ public interface PollerConfig {
      * <p>update</p>
      *
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public void update() throws IOException, MarshalException, ValidationException;
+    public void update() throws IOException;
     
     /**
      * <p>save</p>
      *
-     * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public void save() throws MarshalException, IOException, ValidationException;
+    public void save() throws IOException;
 
     
     /**

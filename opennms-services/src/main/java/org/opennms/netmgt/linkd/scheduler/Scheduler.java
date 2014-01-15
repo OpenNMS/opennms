@@ -118,7 +118,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 		m_status = START_PENDING;
 		m_runner = Executors.newFixedThreadPool(
 			maxSize,
-			new LogPreservingThreadFactory(getClass().getSimpleName(), maxSize, false)
+			new LogPreservingThreadFactory(getClass().getSimpleName(), maxSize, true)
 		);
 		m_queues = new ConcurrentSkipListMap<Long,PeekableFifoQueue<ReadyRunnable>>();
 		m_scheduled = 0;

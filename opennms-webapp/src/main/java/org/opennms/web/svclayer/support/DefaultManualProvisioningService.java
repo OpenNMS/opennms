@@ -318,6 +318,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
     public Requisition saveProvisioningGroup(final String groupName, final Requisition group) {
         m_writeLock.lock();
         try {
+            trimWhitespace(group);
             group.setForeignSource(groupName);
             m_pendingForeignSourceRepository.save(group);
             m_pendingForeignSourceRepository.flush();
@@ -586,6 +587,30 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
             return PropertyUtils.getProperties(new OnmsAssetRecord());
         } finally {
             m_readLock.unlock();
+        }
+    }
+    
+    /**
+     * <p>trimWhitespace</p>
+     * 
+     * Removes leading and trailing whitespace from fields that should not have any
+     */
+    private void trimWhitespace(Requisition req) {
+        for (RequisitionNode node : req.getNodes()) {
+            if (node.getForeignId() != null) {
+                node.setForeignId(node.getForeignId().trim());
+            }
+            if (node.getParentForeignSource() != null) {
+                node.setParentForeignSource(node.getParentForeignSource().trim());
+            }
+            if (node.getParentForeignId() != null) {
+                node.setParentForeignId(node.getParentForeignId().trim());
+            }
+            for (RequisitionInterface intf : node.getInterfaces()) {
+                if (intf.getIpAddr() != null) {
+                    intf.setIpAddr(intf.getIpAddr().trim());
+                }
+            }
         }
     }
 

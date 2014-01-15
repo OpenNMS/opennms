@@ -50,7 +50,7 @@ public class RrdXportTest {
     public void parseXport() throws Exception {
         RrdXport xport = JaxbUtils.unmarshal(RrdXport.class, new File("src/test/resources/rrd-xport.xml"));
         Assert.assertNotNull(xport);
-        Assert.assertEquals(new Integer(300), xport.getMeta().getStep());
+        Assert.assertEquals(new Long(300), xport.getMeta().getStep());
         Assert.assertEquals(new Long(1206312900), xport.getMeta().getStart());
         Assert.assertEquals(new Long(1206316500), xport.getMeta().getEnd());
         Assert.assertEquals("load average 5min", xport.getMeta().getLegends().get(0));

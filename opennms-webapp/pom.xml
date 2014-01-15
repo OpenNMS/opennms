@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>1.13.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-webapp</artifactId>
@@ -667,6 +667,22 @@
       <scope>${onmsLibScope}</scope>
     </dependency>
     -->
+    <dependency>
+        <groupId>net.sf.jung</groupId>
+        <artifactId>jung-api</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>net.sf.jung</groupId>
+        <artifactId>jung-graph-impl</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>net.sf.jung</groupId>
+        <artifactId>jung-algorithms</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>net.sf.jung</groupId>
+        <artifactId>jung-visualization</artifactId>
+    </dependency>
 
     <!-- test dependencies -->
     <dependency>

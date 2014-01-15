@@ -28,8 +28,12 @@
 
 package org.opennms.features.topology.plugins.browsers;
 
+import com.google.gwt.thirdparty.guava.common.base.Function;
+import com.google.gwt.thirdparty.guava.common.collect.Collections2;
 import org.opennms.core.criteria.restrictions.AnyRestriction;
 import org.opennms.core.criteria.restrictions.Restriction;
+import org.opennms.features.topology.api.topo.GroupRef;
+import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.LoggerFactory;
 
@@ -82,6 +86,19 @@ abstract class NodeIdFocusToRestrictionsConverter {
                     nodeIdList.add(Integer.valueOf(eachRef.getId()));
                 } catch (NumberFormatException e) {
                     LoggerFactory.getLogger(this.getClass()).warn("Cannot filter nodes with ID: {}", eachRef.getId());
+                }
+            } else if( ((Vertex)eachRef).isGroup() && "category".equals(eachRef.getNamespace()) ){
+                try{
+                    GroupRef group = (GroupRef) eachRef;
+                    nodeIdList.addAll(Collections2.transform(group.getChildren(), new Function<VertexRef, Integer>(){
+                        @Override
+                        public Integer apply(VertexRef input) {
+                            return Integer.valueOf(input.getId());
+                        }
+                    }));
+                } catch (ClassCastException e){
+                    LoggerFactory.getLogger(this.getClass()).warn("Cannot filter category with ID: {} children: {}", eachRef.getId(), ((GroupRef) eachRef).getChildren());
+
                 }
             }
         }

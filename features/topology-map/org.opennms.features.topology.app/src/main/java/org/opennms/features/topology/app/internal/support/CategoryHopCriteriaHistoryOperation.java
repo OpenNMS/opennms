@@ -29,8 +29,12 @@ public class CategoryHopCriteriaHistoryOperation implements HistoryOperation {
 
 		String setting = settings.get(getClass().getName());
 		if (setting != null && setting.length() > 0) {
-			for (String category : setting.split(DELIMITER)) {
-				container.addCriteria(m_categoryHopCriteriaFactory.getCriteria(category));
+			for (String categorySettings : setting.split(DELIMITER)) {
+                String categoryName = categorySettings.split("\\|")[0];
+                String collapsed = categorySettings.split("\\|")[1];
+                CategoryHopCriteria hopCriteria = m_categoryHopCriteriaFactory.getCriteria(categoryName);
+                hopCriteria.setCollapsed(collapsed.toLowerCase().equals("true"));
+                container.addCriteria(hopCriteria);
 			}
 		}
 	}
@@ -41,7 +45,7 @@ public class CategoryHopCriteriaHistoryOperation implements HistoryOperation {
 		if (criteria.size() > 0) {
 			Set<String> retval = new TreeSet<String>();
 			for (CategoryHopCriteria criterium : criteria) {
-				retval.add(criterium.getLabel());
+				retval.add(criterium.getLabel() + "|" + criterium.isCollapsed());
 			}
 			return Collections.singletonMap(getClass().getName(), StringUtils.collectionToDelimitedString(retval, DELIMITER));
 		} else {

@@ -56,12 +56,12 @@ public class RRDv1Test {
         Assert.assertEquals(new Long(1381503600), rrd.getLastUpdate());
         Assert.assertEquals("temp", rrd.getDataSources().get(0).getName());
         Assert.assertEquals(DSType.GAUGE, rrd.getDataSources().get(0).getType());
-        Assert.assertEquals(new Integer(0), rrd.getDataSources().get(0).getUnknownSec());
+        Assert.assertEquals(new Long(0), rrd.getDataSources().get(0).getUnknownSec());
 
         Assert.assertEquals(CFType.AVERAGE, rrd.getRras().get(0).getConsolidationFunction());
-        Assert.assertEquals(new Integer(1), rrd.getRras().get(0).getPdpPerRow());
+        Assert.assertEquals(new Long(1), rrd.getRras().get(0).getPdpPerRow());
 
-        Assert.assertEquals(new Integer(1), rrd.getRras().get(0).getPdpPerRow());
+        Assert.assertEquals(new Long(1), rrd.getRras().get(0).getPdpPerRow());
         Assert.assertEquals(new Long(1381488900), rrd.getStartTimestamp(rrd.getRras().get(0)));
     }
 
