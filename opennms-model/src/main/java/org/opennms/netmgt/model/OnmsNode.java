@@ -129,8 +129,16 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     /** nullable persistent field */
     private String m_label;
 
+    @Transient
+    @XmlTransient
+    private String m_oldLabel;
+
     /** nullable persistent field */
     private NodeLabelSource m_labelSource;
+
+    @Transient
+    @XmlTransient
+    private NodeLabelSource m_oldLabelSource;
 
     /** nullable persistent field */
     private String m_netBiosName;
@@ -455,7 +463,11 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
      *
      * @param nodelabel a {@link java.lang.String} object.
      */
-    public void setLabel(String nodelabel) {
+    public void setLabel(final String nodelabel) {
+        if (m_label != nodelabel && m_label != null && m_oldLabel == null) {
+            // LOG.debug("setLabel(): old label = {}, new label = {}", m_label, nodelabel);
+            m_oldLabel = m_label;
+        }
         m_label = nodelabel;
     }
 
@@ -526,7 +538,11 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
      *
      * @param nodelabelsource a {@link java.lang.String} object.
      */
-    public void setLabelSource(NodeLabelSource nodelabelsource) {
+    public void setLabelSource(final NodeLabelSource nodelabelsource) {
+        if (m_labelSource != nodelabelsource && m_labelSource != null && m_oldLabelSource == null) {
+            // LOG.debug("setLabelSource(): old source = {}, new source = {}", m_labelSource, nodelabelsource);
+            m_oldLabelSource = m_labelSource;
+        }
         m_labelSource = nodelabelsource;
     }
 
@@ -1142,31 +1158,53 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
      * @param scannedNode a {@link org.opennms.netmgt.model.OnmsNode} object.
      */
     public void mergeNodeAttributes(OnmsNode scannedNode, EventForwarder eventForwarder) {
-        if (hasNewValue(scannedNode.getLabel(), getLabel())) {
+        final String scannedLabel = scannedNode.getLabel();
+
+        boolean send = false;
+
+        // LOG.debug("mergeNodeAttributes(): scanned = {}", scannedNode);
+        // LOG.debug("mergeNodeAttributes(): existing = {}", this);
+        // LOG.debug("mergeNodeAttributes(): oldLabel = {}", m_oldLabel);
+
+        if (m_oldLabel != null || m_oldLabelSource != null) {
+            send = true;
+        } else if (hasNewValue(scannedLabel, m_label)) {
+            m_oldLabel = m_label;
+            m_oldLabelSource = m_labelSource;
+            send = true;
+        }
+
+        if (send) {
+            LOG.debug("mergeNodeAttributes(): sending NODE_LABEL_CHANGED_EVENT_UEI");
             // Create a NODE_LABEL_CHANGED_EVENT_UEI event
             final EventBuilder bldr = new EventBuilder(EventConstants.NODE_LABEL_CHANGED_EVENT_UEI, "OnmsNode.mergeNodeAttributes");
 
             bldr.setNodeid(scannedNode.getId());
             bldr.setHost("host");
 
-            if (getLabel() != null) {
-                bldr.addParam(EventConstants.PARM_OLD_NODE_LABEL, getLabel());
-                if (getLabelSource() != null) {
-                    bldr.addParam(EventConstants.PARM_OLD_NODE_LABEL_SOURCE, getLabelSource().toString());
+            if (m_oldLabel != null) {
+                bldr.addParam(EventConstants.PARM_OLD_NODE_LABEL, m_oldLabel);
+                if (m_oldLabelSource != null) {
+                    bldr.addParam(EventConstants.PARM_OLD_NODE_LABEL_SOURCE, m_oldLabelSource.toString());
                 }
             }
 
-            if (scannedNode.getLabel() != null) {
-                bldr.addParam(EventConstants.PARM_NEW_NODE_LABEL, scannedNode.getLabel());
+            if (scannedLabel != null) {
+                bldr.addParam(EventConstants.PARM_NEW_NODE_LABEL, scannedLabel);
                 if (scannedNode.getLabelSource() != null) {
                     bldr.addParam(EventConstants.PARM_NEW_NODE_LABEL_SOURCE, scannedNode.getLabelSource().toString());
                 }
             }
 
+            m_oldLabel = null;
+            m_oldLabelSource = null;
+
             eventForwarder.sendNow(bldr.getEvent());
 
             // Update the node label value
-            setLabel(scannedNode.getLabel());
+            m_label = scannedLabel;
+        } else {
+            LOG.debug("mergeNodeAttributes(): skipping event.");
         }
     
         if (hasNewValue(scannedNode.getForeignSource(), getForeignSource())) {
