@@ -476,7 +476,12 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 		}
 	}
 
-	/**
+    @Override
+    public int getVertexTotalCount() {
+        return m_baseGraphProvider.getVertexTotalCount();
+    }
+
+    /**
 	 * @deprecated Use {@link #containsVertexId(VertexRef id)} instead.
 	 */
 	@Override
@@ -666,7 +671,12 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 			// Do nothing
 		}
 
-		@Override
+        @Override
+        public int getVertexTotalCount() {
+            return 0;
+        }
+
+        @Override
 		public boolean setParent(VertexRef child, VertexRef parent) {
 			return false;
 		}
