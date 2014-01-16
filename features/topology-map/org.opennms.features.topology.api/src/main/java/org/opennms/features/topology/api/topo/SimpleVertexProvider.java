@@ -256,7 +256,12 @@ public class SimpleVertexProvider implements VertexProvider {
 		fireVerticesRemoved(all);
 	}
 
-	/**
+    @Override
+    public int getVertexTotalCount() {
+        return m_vertexMap.size();
+    }
+
+    /**
 	 * @deprecated You should search by the namespace and ID tuple instead
 	 */
 	@Override

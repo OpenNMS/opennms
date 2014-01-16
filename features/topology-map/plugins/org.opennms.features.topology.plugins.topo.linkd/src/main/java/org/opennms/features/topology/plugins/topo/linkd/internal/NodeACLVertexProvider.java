@@ -307,4 +307,9 @@ public class NodeACLVertexProvider implements GraphProvider {
     public void clearVertices() {
         m_delegate.clearVertices();
     }
+
+    @Override
+    public int getVertexTotalCount() {
+        return m_delegate.getVertexTotalCount();
+    }
 }
