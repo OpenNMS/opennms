@@ -28,19 +28,21 @@
 
 package org.opennms.netmgt.poller;
 
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 import java.text.ParseException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.sql.DataSource;
-
+import org.opennms.core.criteria.Alias;
+import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.restrictions.AnyRestriction;
 import org.opennms.core.criteria.restrictions.EqRestriction;
+import org.opennms.core.criteria.restrictions.NullRestriction;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.Updater;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -82,12 +84,9 @@ public class QueryManagerDaoImpl implements QueryManager {
     @Autowired
     private MonitoredServiceDao m_monitoredServiceDao;
 
-    @Autowired
-    DataSource m_dataSource;
-
     /** {@inheritDoc} */
     @Override
-    public String getNodeLabel(int nodeId) throws SQLException {
+    public String getNodeLabel(int nodeId) {
         return m_nodeDao.get(nodeId).getLabel();
     }
 
@@ -97,11 +96,9 @@ public class QueryManagerDaoImpl implements QueryManager {
      * @param time a {@link java.lang.String} object.
      * @return a {@link java.sql.Timestamp} object.
      */
-    private static Timestamp convertEventTimeToTimeStamp(String time) {
+    private static Date convertEventTimeToTimeStamp(String time) {
         try {
-            Date date = EventConstants.parseToDate(time);
-            Timestamp eventTime = new Timestamp(date.getTime());
-            return eventTime;
+            return EventConstants.parseToDate(time);
         } catch (ParseException e) {
             throw new IllegalArgumentException("Invalid date format: " + time, e);
         }
@@ -144,16 +141,25 @@ public class QueryManagerDaoImpl implements QueryManager {
     public void reparentOutages(String ipAddr, int oldNodeId, int newNodeId) {
         try {
             LOG.info("reparenting outages for {}:{} to new node {}", oldNodeId, ipAddr, newNodeId);
-            String sql = "update outages set nodeId = ? where nodeId = ? and ipaddr = ?";
-            
-            Object[] values = {
-                    Integer.valueOf(newNodeId),
-                    Integer.valueOf(oldNodeId),
-                    ipAddr,
-                };
 
-            Updater updater = new Updater(m_dataSource, sql);
-            updater.execute(values);
+            Criteria criteria = new Criteria(OnmsOutage.class);
+            criteria.setAliases(Arrays.asList(new Alias[] {
+                new Alias("monitoredService.ipInterface", "ipInterface", JoinType.LEFT_JOIN),
+                new Alias("ipInterface.node", "node", JoinType.LEFT_JOIN),
+            }));
+            criteria.addRestriction(new EqRestriction("node.id", oldNodeId));
+            criteria.addRestriction(new EqRestriction("ipInterface.ipAddress", addr(ipAddr)));
+            List<OnmsOutage> outages = m_outageDao.findMatching(criteria);
+
+            for (OnmsOutage outage : outages) {
+                OnmsMonitoredService service = m_monitoredServiceDao.get(newNodeId, addr(ipAddr), outage.getServiceId());
+                if (service == null) {
+                    LOG.warn(" Cannot find monitored service to reparent outage from {}:{} to {}", oldNodeId, ipAddr, newNodeId);
+                } else {
+                    outage.setMonitoredService(service);
+                    m_outageDao.save(outage);
+                }
+            }
         } catch (Throwable e) {
             LOG.error(" Error reparenting outage for {}:{} to {}", oldNodeId, ipAddr, newNodeId, e);
         }
@@ -165,7 +171,11 @@ public class QueryManagerDaoImpl implements QueryManager {
         final LinkedList<String[]> servicemap = new LinkedList<String[]>();
 
         Criteria criteria = new Criteria(OnmsMonitoredService.class);
-        criteria.addRestriction(new EqRestriction("ipInterface.node.id", nodeId));
+        criteria.setAliases(Arrays.asList(new Alias[] {
+            new Alias("monitoredService.ipInterface", "ipInterface", JoinType.LEFT_JOIN),
+            new Alias("ipInterface.node", "node", JoinType.LEFT_JOIN)
+        }));
+        criteria.addRestriction(new EqRestriction("node.id", nodeId));
         for (OnmsMonitoredService service : m_monitoredServiceDao.findMatching(criteria)) {
             servicemap.add(new String[] { service.getIpAddressAsString(), service.getServiceName() });
         }
@@ -178,18 +188,39 @@ public class QueryManagerDaoImpl implements QueryManager {
      */
     @Override
     public void closeOutagesForUnmanagedServices() {
-        Timestamp closeTime = new Timestamp((new java.util.Date()).getTime());
-
-        final String DB_CLOSE_OUTAGES_FOR_UNMANAGED_SERVICES = "UPDATE outages set ifregainedservice = ? where outageid in (select outages.outageid from outages, ifservices where ((outages.nodeid = ifservices.nodeid) AND (outages.ipaddr = ifservices.ipaddr) AND (outages.serviceid = ifservices.serviceid) AND ((ifservices.status = 'D') OR (ifservices.status = 'F') OR (ifservices.status = 'U')) AND (outages.ifregainedservice IS NULL)))";
-        Updater svcUpdater = new Updater(m_dataSource, DB_CLOSE_OUTAGES_FOR_UNMANAGED_SERVICES);
-        svcUpdater.execute(closeTime);
+        Date closeDate = new java.util.Date();
+        Criteria criteria = new Criteria(OnmsOutage.class);
+        criteria.setAliases(Arrays.asList(new Alias[] {
+            new Alias("monitoredService", "monitoredService", JoinType.LEFT_JOIN)
+        }));
+        criteria.addRestriction(new AnyRestriction(
+            new EqRestriction("monitoredService.status", "D"),
+            new EqRestriction("monitoredService.status", "F"),
+            new EqRestriction("monitoredService.status", "U")
+        ));
+        criteria.addRestriction(new NullRestriction("ifRegainedService"));
+        List<OnmsOutage> outages = m_outageDao.findMatching(criteria);
         
-        final String DB_CLOSE_OUTAGES_FOR_UNMANAGED_INTERFACES = "UPDATE outages set ifregainedservice = ? where outageid in (select outages.outageid from outages, ipinterface where ((outages.nodeid = ipinterface.nodeid) AND (outages.ipaddr = ipinterface.ipaddr) AND ((ipinterface.ismanaged = 'F') OR (ipinterface.ismanaged = 'U')) AND (outages.ifregainedservice IS NULL)))";
-        Updater ifUpdater = new Updater(m_dataSource, DB_CLOSE_OUTAGES_FOR_UNMANAGED_INTERFACES);
-        ifUpdater.execute(closeTime);
+        for (OnmsOutage outage : outages) {
+            outage.setIfRegainedService(closeDate);
+            m_outageDao.save(outage);
+        }
+
+        criteria = new Criteria(OnmsOutage.class);
+        criteria.setAliases(Arrays.asList(new Alias[] {
+            new Alias("monitoredService.ipInterface", "ipInterface", JoinType.LEFT_JOIN)
+        }));
+        criteria.addRestriction(new AnyRestriction(
+            new EqRestriction("ipInterface.isManaged", "F"),
+            new EqRestriction("ipInterface.isManaged", "U")
+        ));
+        criteria.addRestriction(new NullRestriction("ifRegainedService"));
+        outages = m_outageDao.findMatching(criteria);
         
-
-
+        for (OnmsOutage outage : outages) {
+            outage.setIfRegainedService(closeDate);
+            m_outageDao.save(outage);
+        }
     }
     
     /**
@@ -201,10 +232,20 @@ public class QueryManagerDaoImpl implements QueryManager {
      */
     @Override
     public void closeOutagesForNode(Date closeDate, int eventId, int nodeId) {
-        Timestamp closeTime = new Timestamp(closeDate.getTime());
-        final String DB_CLOSE_OUTAGES_FOR_NODE = "UPDATE outages set ifregainedservice = ?, svcRegainedEventId = ? where outages.nodeId = ? AND (outages.ifregainedservice IS NULL)";
-        Updater svcUpdater = new Updater(m_dataSource, DB_CLOSE_OUTAGES_FOR_NODE);
-        svcUpdater.execute(closeTime, Integer.valueOf(eventId), Integer.valueOf(nodeId));
+        Criteria criteria = new Criteria(OnmsOutage.class);
+        criteria.setAliases(Arrays.asList(new Alias[] {
+            new Alias("monitoredService.ipInterface", "ipInterface", JoinType.LEFT_JOIN),
+            new Alias("ipInterface.node", "node", JoinType.LEFT_JOIN)
+        }));
+        criteria.addRestriction(new EqRestriction("node.id", nodeId));
+        criteria.addRestriction(new NullRestriction("ifRegainedService"));
+        List<OnmsOutage> outages = m_outageDao.findMatching(criteria);
+        
+        for (OnmsOutage outage : outages) {
+            outage.setIfRegainedService(closeDate);
+            outage.setServiceRegainedEvent(m_eventDao.get(eventId));
+            m_outageDao.save(outage);
+        }
     }
     
     /**
@@ -217,10 +258,21 @@ public class QueryManagerDaoImpl implements QueryManager {
      */
     @Override
     public void closeOutagesForInterface(Date closeDate, int eventId, int nodeId, String ipAddr) {
-        Timestamp closeTime = new Timestamp(closeDate.getTime());
-        final String DB_CLOSE_OUTAGES_FOR_IFACE = "UPDATE outages set ifregainedservice = ?, svcRegainedEventId = ? where outages.nodeId = ? AND outages.ipAddr = ? AND (outages.ifregainedservice IS NULL)";
-        Updater svcUpdater = new Updater(m_dataSource, DB_CLOSE_OUTAGES_FOR_IFACE);
-        svcUpdater.execute(closeTime, Integer.valueOf(eventId), Integer.valueOf(nodeId), ipAddr);
+        Criteria criteria = new Criteria(OnmsOutage.class);
+        criteria.setAliases(Arrays.asList(new Alias[] {
+            new Alias("monitoredService.ipInterface", "ipInterface", JoinType.LEFT_JOIN),
+            new Alias("ipInterface.node", "node", JoinType.LEFT_JOIN)
+        }));
+        criteria.addRestriction(new EqRestriction("node.id", nodeId));
+        criteria.addRestriction(new EqRestriction("ipInterface.ipAddress", addr(ipAddr)));
+        criteria.addRestriction(new NullRestriction("ifRegainedService"));
+        List<OnmsOutage> outages = m_outageDao.findMatching(criteria);
+        
+        for (OnmsOutage outage : outages) {
+            outage.setIfRegainedService(closeDate);
+            outage.setServiceRegainedEvent(m_eventDao.get(eventId));
+            m_outageDao.save(outage);
+        }
     }
     
     /**
@@ -234,21 +286,43 @@ public class QueryManagerDaoImpl implements QueryManager {
      */
     @Override
     public void closeOutagesForService(Date closeDate, int eventId, int nodeId, String ipAddr, String serviceName) {
-        Timestamp closeTime = new Timestamp(closeDate.getTime());
-        final String DB_CLOSE_OUTAGES_FOR_SERVICE = "UPDATE outages set ifregainedservice = ?, svcRegainedEventId = ? where outageid in (select outages.outageid from outages, service where outages.nodeid = ? AND outages.ipaddr = ? AND outages.serviceid = service.serviceId AND service.servicename = ? AND outages.ifregainedservice IS NULL)";
-        Updater svcUpdater = new Updater(m_dataSource, DB_CLOSE_OUTAGES_FOR_SERVICE);
-        svcUpdater.execute(closeTime, Integer.valueOf(eventId), Integer.valueOf(nodeId), ipAddr, serviceName);
+        Criteria criteria = new Criteria(OnmsOutage.class);
+        criteria.setAliases(Arrays.asList(new Alias[] {
+            new Alias("monitoredService.ipInterface", "ipInterface", JoinType.LEFT_JOIN),
+            new Alias("monitoredService.serviceType", "serviceType", JoinType.LEFT_JOIN),
+            new Alias("ipInterface.node", "node", JoinType.LEFT_JOIN)
+        }));
+        criteria.addRestriction(new EqRestriction("node.id", nodeId));
+        criteria.addRestriction(new EqRestriction("ipInterface.ipAddress", addr(ipAddr)));
+        criteria.addRestriction(new EqRestriction("serviceType.name", serviceName));
+        criteria.addRestriction(new NullRestriction("ifRegainedService"));
+        List<OnmsOutage> outages = m_outageDao.findMatching(criteria);
+        
+        for (OnmsOutage outage : outages) {
+            outage.setIfRegainedService(closeDate);
+            outage.setServiceRegainedEvent(m_eventDao.get(eventId));
+            m_outageDao.save(outage);
+        }
     }
 
     @Override
     public void updateServiceStatus(int nodeId, String ipAddr, String serviceName, String status) {
-        final String sql = "UPDATE ifservices SET status = ? WHERE id " +
-        		" IN (SELECT ifs.id FROM ifservices AS ifs JOIN service AS svc ON ifs.serviceid = svc.serviceid " +
-        		" WHERE ifs.nodeId = ? AND ifs.ipAddr = ? AND svc.servicename = ?)"; 
-
-        Updater updater = new Updater(m_dataSource, sql);
-        updater.execute(status, nodeId, ipAddr, serviceName);
+        Criteria criteria = new Criteria(OnmsMonitoredService.class);
+        criteria.setAliases(Arrays.asList(new Alias[] {
+            new Alias("monitoredService.ipInterface", "ipInterface", JoinType.LEFT_JOIN),
+            new Alias("monitoredService.serviceType", "serviceType", JoinType.LEFT_JOIN),
+            new Alias("ipInterface.node", "node", JoinType.LEFT_JOIN)
+        }));
+        criteria.addRestriction(new EqRestriction("node.id", nodeId));
+        criteria.addRestriction(new EqRestriction("ipInterface.ipAddress", addr(ipAddr)));
+        criteria.addRestriction(new EqRestriction("serviceType.name", serviceName));
+        criteria.addRestriction(new NullRestriction("ifRegainedService"));
+        List<OnmsMonitoredService> services = m_monitoredServiceDao.findMatching(criteria);
         
+        for (OnmsMonitoredService service : services) {
+            service.setStatus(status);
+            m_monitoredServiceDao.save(service);
+        }
     }
 
 }
