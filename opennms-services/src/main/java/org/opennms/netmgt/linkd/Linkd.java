@@ -57,7 +57,6 @@ import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
@@ -79,22 +78,18 @@ public class Linkd extends AbstractServiceDaemon {
     protected static final String LOG_PREFIX = "linkd";
 
     /**
-     * Rescan scheduler thread
+     *  scheduler thread
      */
-    @Autowired
     private Scheduler m_scheduler;
 
     /**
-     * The DB connection read and write handler
+     * data handler
      */
-    @Autowired
     private QueryManager m_queryMgr;
 
     /**
-     * Linkd Configuration Initialization
+     * Linkd Configuration
      */
-
-    @Autowired
     private LinkdConfig m_linkdConfig;
 
     /**
@@ -159,12 +154,8 @@ public class Linkd extends AbstractServiceDaemon {
         Assert.state(m_eventForwarder != null,
                 "must set the eventForwarder property");
 
-        // FIXME: circular dependency
-        m_queryMgr.setLinkd(this);
-
         m_activepackages = new ArrayList<String>();
 
-        // initialize the ipaddrsentevents
         m_newSuspectEventsIpAddr = Collections.synchronizedSet(new TreeSet<InetAddress>(new InetAddressComparator()));
         m_newSuspectEventsIpAddr.add(InetAddressUtils.ONE_TWENTY_SEVEN);
         m_newSuspectEventsIpAddr.add(InetAddressUtils.ZEROS);
@@ -180,7 +171,7 @@ public class Linkd extends AbstractServiceDaemon {
 
     private void scheduleCollection(List<LinkableSnmpNode> nodes) {
         for (final LinkableSnmpNode node : nodes) {
-            scheduleCollectionForNode(node);
+            schedule(node);
         }
     }
 
@@ -191,17 +182,17 @@ public class Linkd extends AbstractServiceDaemon {
      * 
      * @param node
      */
-    private void scheduleCollectionForNode(final LinkableSnmpNode node) {
+    private void schedule(final LinkableSnmpNode node) {
 
         for (final SnmpCollection snmpcoll : getSnmpCollections(node.getNodeId(),
                                                                 node.getSnmpPrimaryIpAddr(),
                                                                 node.getSysoid())) {
             if (getActivePackages().contains(snmpcoll.getPackageName())) {
-                LOG.debug("ScheduleCollectionForNode: package active: {}", snmpcoll.getPackageName());
+                LOG.debug("schedule: package active: {}", snmpcoll.getPackageName());
             } else {
                 // schedule discovery link
                 m_nodes.put(snmpcoll.getPackageName(), new ArrayList<LinkableNode>());
-                LOG.debug("ScheduleCollectionForNode: Scheduling Discovery Link for Active Package: {}", snmpcoll.getPackageName());
+                LOG.debug("schedule: Scheduling Discovery Link for Active Package: {}", snmpcoll.getPackageName());
                 final DiscoveryLink discovery = this.getDiscoveryLink(snmpcoll.getPackageName());
                 if (discovery.getScheduler() == null) {
                     discovery.setScheduler(m_scheduler);
@@ -214,7 +205,7 @@ public class Linkd extends AbstractServiceDaemon {
                 snmpcoll.setScheduler(m_scheduler);
             }
             m_nodes.get(snmpcoll.getPackageName()).add(new LinkableNode(node));
-            LOG.debug("ScheduleCollectionForNode: Scheduling SNMP Collection for Package/NodeId: {}/{}/{}", snmpcoll.getPackageName(), node.getNodeId(), snmpcoll.getInfo());
+            LOG.debug("schedule: Scheduling SNMP Collection for Package/NodeId: {}/{}/{}", snmpcoll.getPackageName(), node.getNodeId(), snmpcoll.getInfo());
             snmpcoll.schedule();
         }
     }
@@ -479,8 +470,7 @@ public class Linkd extends AbstractServiceDaemon {
 
     public boolean scheduleNodeCollection(int nodeid) {
 
-        LinkableSnmpNode node = getNode(nodeid);
-        if (node != null) {
+        if (isScheduled(nodeid)) {
             LOG.debug("scheduleNodeCollection: Found Scheduled Linkable node {}. Skipping ", nodeid);
             return false;
         }
@@ -489,12 +479,12 @@ public class Linkd extends AbstractServiceDaemon {
 
         // First of all get Linkable Node
         LOG.debug("scheduleNodeCollection: Loading node {} from database", nodeid);
-        node = m_queryMgr.getSnmpNode(nodeid);
+        LinkableSnmpNode node = m_queryMgr.getSnmpNode(nodeid);
         if (node == null) {
-            LOG.debug("scheduleNodeCollection: Failed to get linkable node from database with ID {}. Exiting", nodeid);
+            LOG.debug("scheduleNodeCollection: Failed to get linkable node from database with nodeid {}. Exiting", nodeid);
             return false;
         }
-        scheduleCollectionForNode(node);
+        schedule(node);
         return true;
     }
 
@@ -521,15 +511,15 @@ public class Linkd extends AbstractServiceDaemon {
 
     void wakeUpNodeCollection(int nodeid) {
 
-        LinkableSnmpNode node = getNode(nodeid);
 
-        if (node == null) {
+        if (isScheduled(nodeid)) {
             LOG.warn("wakeUpNodeCollection: node not found during scheduling with ID {}", nodeid);
             scheduleNodeCollection(nodeid);
         } else {
             // get collections
             // get readyRunnuble
             // wakeup RR
+            LinkableSnmpNode node = m_queryMgr.getSnmpNode(nodeid);
             Collection<SnmpCollection> collections = getSnmpCollections(nodeid,
                                                                         node.getSnmpPrimaryIpAddr(),
                                                                         node.getSysoid());
@@ -606,14 +596,13 @@ public class Linkd extends AbstractServiceDaemon {
 
         m_queryMgr.update(nodeid, StatusType.INACTIVE);
 
-        LinkableSnmpNode node = getNode(nodeid);
-
-        if (node == null) {
+        if (isScheduled(nodeid)) {
             LOG.warn("suspendNodeCollection: found null ReadyRunnable");
         } else {
             // get collections
             // get readyRunnuble
             // suspend RR
+            LinkableSnmpNode node = m_queryMgr.getSnmpNode(nodeid);
             Collection<SnmpCollection> collections = getSnmpCollections(nodeid,
                                                                         node.getSnmpPrimaryIpAddr(),
                                                                         node.getSysoid());
@@ -728,15 +717,15 @@ public class Linkd extends AbstractServiceDaemon {
         }
     }
 
-    LinkableSnmpNode getNode(int nodeid) {
+    boolean isScheduled(int nodeid) {
         synchronized (m_nodes) {
             for (String pkg: m_nodes.keySet()) {
                 for (LinkableNode node : m_nodes.get(pkg)) {
                     if (node.getNodeId() == nodeid)
-                        return node.getLinkableSnmpNode();
+                        return false;
                 }
             }
-            return null;
+            return true;
         }
     }
 
@@ -786,8 +775,6 @@ public class Linkd extends AbstractServiceDaemon {
      */
     public void setQueryManager(QueryManager queryMgr) {
         m_queryMgr = queryMgr;
-        // TODO: Circular; refactor so this can be set in spring
-        queryMgr.setLinkd(this);
     }
 
     /**
