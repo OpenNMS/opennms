@@ -59,7 +59,7 @@ public final class DiscoveryLink implements ReadyRunnable {
     private static final Logger LOG = LoggerFactory.getLogger(DiscoveryLink.class);
 
     private String packageName;
-
+    
     private List<NodeToNodeLink> m_links = new ArrayList<NodeToNodeLink>();
 
     private List<MacToNodeLink> m_maclinks = new ArrayList<MacToNodeLink>();
@@ -111,18 +111,18 @@ public final class DiscoveryLink implements ReadyRunnable {
     /**
      * The interval default value 30 min
      */
-    private long snmp_poll_interval = 1800000;
+    private long m_interval = 1800000;
 
     /**
      * The interval default value 5 min It is the time in ms after snmp
      * collection is started
      */
-    private long discovery_interval = 300000;
+    private long discovery_delay = 300000;
 
     /**
      * The initial sleep time default value 10 min
      */
-    private long initial_sleep_time = 600000;
+    private long m_initial_sleep_time = 600000;
 
     private Linkd m_linkd;
 
@@ -244,7 +244,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 
         // rescheduling activities
         isRunned = true;
-        reschedule();
+        schedule();
     }
 
     protected void populateMacToAtInterface() {
@@ -938,19 +938,10 @@ public final class DiscoveryLink implements ReadyRunnable {
             throw new IllegalStateException(
                     "schedule: Cannot schedule a service whose scheduler is set to null");
 
-        m_scheduler.schedule(discovery_interval + initial_sleep_time, this);
-    }
-
-    /**
-     * Schedule again the job
-     * 
-     * @return
-     */
-    private void reschedule() {
-        if (m_scheduler == null)
-            throw new IllegalStateException(
-                    "rescedule: Cannot schedule a service whose scheduler is set to null");
-        m_scheduler.schedule(snmp_poll_interval, this);
+        if (isRunned)
+            m_scheduler.schedule(m_interval, this);
+        else
+            m_scheduler.schedule(discovery_delay + m_initial_sleep_time, this);
     }
 
     /**
@@ -961,7 +952,7 @@ public final class DiscoveryLink implements ReadyRunnable {
      * @return Returns the initial_sleep_time.
      */
     public long getInitialSleepTime() {
-        return initial_sleep_time;
+        return m_initial_sleep_time;
     }
 
     /**
@@ -973,7 +964,7 @@ public final class DiscoveryLink implements ReadyRunnable {
      *            The initial_sleep_timeto set.
      */
     public void setInitialSleepTime(long initial_sleep_time) {
-        this.initial_sleep_time = initial_sleep_time;
+        m_initial_sleep_time = initial_sleep_time;
     }
 
     /**
@@ -995,8 +986,8 @@ public final class DiscoveryLink implements ReadyRunnable {
      * 
      * @return Returns the discovery_link_interval.
      */
-    public long getDiscoveryInterval() {
-        return discovery_interval;
+    public long getDiscoveryDelay() {
+        return discovery_delay;
     }
 
     /**
@@ -1007,8 +998,8 @@ public final class DiscoveryLink implements ReadyRunnable {
      * @param interval
      *            The discovery_link_interval to set.
      */
-    public void setSnmpPollInterval(long interval) {
-        this.snmp_poll_interval = interval;
+    public void setInterval(long interval) {
+        m_interval = interval;
     }
 
     /**
@@ -1018,8 +1009,8 @@ public final class DiscoveryLink implements ReadyRunnable {
      * 
      * @return Returns the discovery_link_interval.
      */
-    public long getSnmpPollInterval() {
-        return snmp_poll_interval;
+    public long getInterval() {
+        return m_interval;
     }
 
     /**
@@ -1031,7 +1022,7 @@ public final class DiscoveryLink implements ReadyRunnable {
      *            The discovery_link_interval to set.
      */
     public void setDiscoveryInterval(long interval) {
-        this.discovery_interval = interval;
+        this.discovery_delay = interval;
     }
 
     /**
@@ -1101,10 +1092,10 @@ public final class DiscoveryLink implements ReadyRunnable {
             throw new IllegalStateException(
                     "unschedule: Cannot schedule a service whose scheduler is set to null");
         if (isRunned) {
-            m_scheduler.unschedule(this, snmp_poll_interval);
+            m_scheduler.unschedule(this, m_interval);
         } else {
-            m_scheduler.unschedule(this, snmp_poll_interval
-                                   + initial_sleep_time + discovery_interval);
+            m_scheduler.unschedule(this, m_interval
+                                   + m_initial_sleep_time + discovery_delay);
         }
     }
 
@@ -1178,14 +1169,17 @@ public final class DiscoveryLink implements ReadyRunnable {
      */
     @Override
     public String getInfo() {
-        return " Ready Runnable Discovery Link discoveryUsingBridge/discoveryUsingCdp/discoveryUsingRoutes/DiscoveryUsingLldp/DiscoveryUsingOspf/discoveryUsingIsis/package: "
-                + discoveryUsingBridge() + "/"
-                + discoveryUsingCdp()    +"/"
-                + discoveryUsingRoutes() + "/"
-                + discoveryUsingLldp()   + "/"
-                + discoveryUsingOspf()   + "/"
-                + discoveryUsingIsis()   + "/"
-                + getPackageName();
+        return " Ready Runnable DiscoveryLink " 
+                + " package=" + getPackageName() 
+                + " sleep=" + getInitialSleepTime() 
+                + " discovery=" + getDiscoveryDelay() 
+                + " interval=" + getInterval() 
+                + " discoveryUsingBridge=" + discoveryUsingBridge() 
+                + " discoveryUsingCdp=" + discoveryUsingCdp()    
+                + " discoveryUsingRoutes=" + discoveryUsingRoutes() 
+                + " discoveryUsingLldp" + discoveryUsingLldp()   
+                + " discoveryUsingOspf=" + discoveryUsingOspf()   
+                + " discoveryUsingIsis=" + discoveryUsingIsis();
     }
 
     /**

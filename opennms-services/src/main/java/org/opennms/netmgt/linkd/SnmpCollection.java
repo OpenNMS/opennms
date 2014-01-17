@@ -905,15 +905,15 @@ public final class SnmpCollection implements ReadyRunnable {
         return "ReadyRunnable SnmpCollection" + " ip=" + str(getTarget())
                 + " port=" + getPort() + " community=" + getReadCommunity()
                 + " package=" + getPackageName()
-                + " collectBridge="
-                + getCollectBridge() + " collectStpNode="
-                + getCollectStp() + " collectCdp="
-                + getCollectCdp() + " collectIpRoute="
-                + getCollectIpRoute()+ " collectLldp="
-                + getCollectLldp() + " collectOspf="
-                + getCollectOspf() + " collectIsis="
-                + getCollectIsIs();
-
+                + " initial=" + getInitialSleepTime()
+                + " interval=" + getPollInterval()
+                + " collectBridge=" + getCollectBridge() 
+                + " collectStpNode=" + getCollectStp() 
+                + " collectCdp=" + getCollectCdp()
+                + " collectIpRoute=" + getCollectIpRoute()
+                + " collectLldp=" + getCollectLldp() 
+                + " collectOspf=" + getCollectOspf() 
+                + " collectIsis=" + getCollectIsIs();
     }
 
     public boolean getCollectLldp() {

@@ -192,20 +192,22 @@ public class Linkd extends AbstractServiceDaemon {
             } else {
                 // schedule discovery link
                 m_nodes.put(snmpcoll.getPackageName(), new ArrayList<LinkableNode>());
-                LOG.debug("schedule: Scheduling Discovery Link for Active Package: {}", snmpcoll.getPackageName());
-                final DiscoveryLink discovery = this.getDiscoveryLink(snmpcoll.getPackageName());
+                final DiscoveryLink discovery = getDiscoveryLink(snmpcoll.getPackageName());
                 if (discovery.getScheduler() == null) {
                     discovery.setScheduler(m_scheduler);
                 }
+                LOG.debug("schedule: Package: {}. Scheduling {}", discovery.getPackageName(), discovery.getInfo());
                 discovery.schedule();
                 addPackage(snmpcoll.getPackageName());
 
             }
+            
             if (snmpcoll.getScheduler() == null) {
                 snmpcoll.setScheduler(m_scheduler);
             }
+            
             m_nodes.get(snmpcoll.getPackageName()).add(new LinkableNode(node));
-            LOG.debug("schedule: Scheduling SNMP Collection for Package/NodeId: {}/{}/{}", snmpcoll.getPackageName(), node.getNodeId(), snmpcoll.getInfo());
+            LOG.debug("schedule: Package/NodeId: {}/{}. Scheduling {}", snmpcoll.getPackageName(), node.getNodeId(), snmpcoll.getInfo());
             snmpcoll.schedule();
         }
     }
@@ -222,7 +224,7 @@ public class Linkd extends AbstractServiceDaemon {
         discoveryLink.setPackageName(pkg.getName());
         discoveryLink.setInitialSleepTime(m_linkdConfig.getInitialSleepTime());
 
-        discoveryLink.setSnmpPollInterval(pkg.hasSnmp_poll_interval() ? pkg.getSnmp_poll_interval()
+        discoveryLink.setInterval(pkg.hasSnmp_poll_interval() ? pkg.getSnmp_poll_interval()
             : m_linkdConfig.getSnmpPollInterval());
         discoveryLink.setDiscoveryInterval(pkg.hasDiscovery_link_interval() ? pkg.getDiscovery_link_interval()
             : m_linkdConfig.getDiscoveryLinkInterval());
@@ -237,7 +239,7 @@ public class Linkd extends AbstractServiceDaemon {
         discoveryLink.setDiscoveryUsingOspf(pkg.hasUseOspfDiscovery() ? pkg.getUseOspfDiscovery()
             : m_linkdConfig.useOspfDiscovery());
         discoveryLink.setDiscoveryUsingIsIs(pkg.hasUseIsisDiscovery() ? pkg.getUseIsisDiscovery()
-                                                                      : m_linkdConfig.useIsIsDiscovery());
+            : m_linkdConfig.useIsIsDiscovery());
         return discoveryLink;
     }
 
@@ -246,7 +248,7 @@ public class Linkd extends AbstractServiceDaemon {
      * 
      * @param nodeid
      */
-    public SnmpCollection getSnmpCollection(final int nodeid,
+    protected SnmpCollection getSnmpCollection(final int nodeid,
             final InetAddress ipaddr, final String sysoid,
             final String pkgName) {
         final Package pkg = m_linkdConfig.getPackage(pkgName);
@@ -263,7 +265,7 @@ public class Linkd extends AbstractServiceDaemon {
      * 
      * @param nodeid
      */
-    public List<SnmpCollection> getSnmpCollections(int nodeid,
+    private List<SnmpCollection> getSnmpCollections(int nodeid,
                                                    final InetAddress ipaddr, final String sysoid) {
         List<SnmpCollection> snmpcolls = new ArrayList<SnmpCollection>();
 
@@ -274,7 +276,7 @@ public class Linkd extends AbstractServiceDaemon {
         return snmpcolls;
     }
 
-    public SnmpCollection createCollection(int nodeid,
+    private SnmpCollection createCollection(int nodeid,
             final InetAddress ipaddr) {
         SnmpCollection coll = null;
         try {
