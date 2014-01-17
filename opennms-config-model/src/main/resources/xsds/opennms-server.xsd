@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema
+	targetNamespace="http://xmlns.opennms.org/xsd/config/localServer"
+	xmlns="http://www.w3.org/2001/XMLSchema"
+	elementFormDefault="qualified">
+	<annotation>
+		<documentation>XML Schema for the opennms-server.xml configuration file.</documentation>
+	</annotation>
+
+	<element name="local-server">
+		<annotation>
+			<documentation>Top-level element for the opennms-server.xml configuration file.</documentation>
+		</annotation>
+
+		<complexType>
+			<simpleContent>
+				<extension base="string">
+					<attribute default="localhost" name="server-name" type="string" use="optional" />
+					<attribute default="" name="defaultCriticalPathIp" type="string" use="optional" />
+					<attribute default="" name="defaultCriticalPathService" type="string" use="optional" />
+					<attribute default="1500" name="defaultCriticalPathTimeout" use="optional">
+						<simpleType>
+							<restriction base="int">
+								<minInclusive value="1" />
+							</restriction>
+						</simpleType>
+					</attribute>
+					<attribute default="0" name="defaultCriticalPathRetries" use="optional">
+						<simpleType>
+							<restriction base="int">
+								<minInclusive value="0" />
+							</restriction>
+						</simpleType>
+					</attribute>
+
+					<attribute default="false" name="verify-server" use="optional">
+						<annotation>
+							<documentation>
+								A flag to indicate if poller has to identify the
+								nms server to restrict services to poll.
+							</documentation>
+						</annotation>
+
+						<simpleType>
+							<restriction base="string">
+								<pattern value="(true|false)" />
+							</restriction>
+						</simpleType>
+					</attribute>
+				</extension>
+			</simpleContent>
+		</complexType>
+	</element>
+</schema>

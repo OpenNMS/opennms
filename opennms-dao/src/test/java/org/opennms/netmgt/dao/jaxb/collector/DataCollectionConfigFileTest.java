@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.castor.collector;
+package org.opennms.netmgt.dao.jaxb.collector;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
@@ -35,6 +35,8 @@ import java.lang.reflect.Method;
 import junit.framework.TestCase;
 
 import org.opennms.netmgt.dao.castor.InvocationAnticipator;
+import org.opennms.netmgt.dao.jaxb.collector.DataCollectionConfigFile;
+import org.opennms.netmgt.dao.jaxb.collector.DataCollectionVisitor;
 import org.springframework.core.io.ClassPathResource;
 
 public class DataCollectionConfigFileTest extends TestCase {

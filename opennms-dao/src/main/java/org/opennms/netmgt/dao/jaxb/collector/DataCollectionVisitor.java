@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.castor.collector;
+package org.opennms.netmgt.dao.jaxb.collector;
 
 import org.opennms.netmgt.config.datacollection.Collect;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;

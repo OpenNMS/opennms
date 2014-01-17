@@ -26,74 +26,55 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.castor.collector;
+package org.opennms.netmgt.dao.jaxb.collector;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Iterator;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.collectd.Collector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
 
 public class CollectdConfigFile {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(CollectdConfigFile.class);
-	
-	File m_file;
-	
-	/**
-	 * <p>Constructor for CollectdConfigFile.</p>
-	 *
-	 * @param file a {@link java.io.File} object.
-	 */
-	public CollectdConfigFile(File file) {
-		m_file = file;
-	}
-	
-	/**
-	 * <p>visit</p>
-	 *
-	 * @param visitor a {@link org.opennms.netmgt.dao.castor.collector.CollectdConfigVisitor} object.
-	 */
-	public void visit(CollectdConfigVisitor visitor) {
+
+    File m_file;
+
+    /**
+     * <p>Constructor for CollectdConfigFile.</p>
+     *
+     * @param file a {@link java.io.File} object.
+     */
+    public CollectdConfigFile(File file) {
+        m_file = file;
+    }
+
+    /**
+     * <p>visit</p>
+     *
+     * @param visitor a {@link org.opennms.netmgt.dao.jaxb.collector.CollectdConfigVisitor} object.
+     */
+    public void visit(CollectdConfigVisitor visitor) {
         CollectdConfiguration collectdConfiguration = getCollectdConfiguration();
         visitor.visitCollectdConfiguration(collectdConfiguration);
-        
+
         for (Iterator<Collector> it = collectdConfiguration.getCollectorCollection().iterator(); it.hasNext();) {
             Collector collector = it.next();
             doVisit(collector, visitor);
         }
         visitor.completeCollectdConfiguration(collectdConfiguration);
     }
-	
-	private void doVisit(Collector collector, CollectdConfigVisitor visitor) {
+
+    private void doVisit(Collector collector, CollectdConfigVisitor visitor) {
         visitor.visitCollectorCollection(collector);
         visitor.completeCollectorCollection(collector);
     }
 
     private CollectdConfiguration getCollectdConfiguration() {
-		try {
-			return CastorUtils.unmarshal(CollectdConfiguration.class, new FileSystemResource(m_file));
-		} catch (MarshalException e) {
-			throw runtimeException("Syntax error in "+m_file, e);
-		} catch (ValidationException e) {
-			throw runtimeException("invalid attribute in "+m_file, e);
-        } catch (FileNotFoundException e) {
-            throw runtimeException("Unable to find file "+m_file, e);
-        } catch (IOException e) {
-            throw runtimeException("Unable to find access "+m_file, e);
-		}
-	}
-
-	private RuntimeException runtimeException(String msg, Exception e) {
-		LOG.error(msg, e);
-		return new RuntimeException(msg, e);
-	}
+        return JaxbUtils.unmarshal(CollectdConfiguration.class, new FileSystemResource(m_file));
+    }
 }

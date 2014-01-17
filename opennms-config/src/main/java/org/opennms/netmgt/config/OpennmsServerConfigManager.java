@@ -29,10 +29,10 @@
 package org.opennms.netmgt.config;
 
 import java.io.InputStream;
+import java.io.InputStreamReader;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.xml.CastorUtils;
+import org.apache.commons.io.IOUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.server.LocalServer;
 
 /**
@@ -48,11 +48,15 @@ public class OpennmsServerConfigManager {
      * <p>Constructor for OpennmsServerConfigManager.</p>
      *
      * @param is a {@link java.io.InputStream} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    protected OpennmsServerConfigManager(final InputStream is) throws MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(LocalServer.class, is);
+    protected OpennmsServerConfigManager(final InputStream is) {
+        InputStreamReader isr = null;
+        try {
+            isr = new InputStreamReader(is);
+            m_config = JaxbUtils.unmarshal(LocalServer.class, isr);
+        } finally {
+            IOUtils.closeQuietly(isr);
+        }
     }
 
     /**

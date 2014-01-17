@@ -243,7 +243,7 @@ public class CollectdIntegrationTest extends TestCase {
         final Service collector = new Service();
         collector.setName("SNMP");
         collector.setStatus("on");
-        collector.setInterval(3000);
+        collector.setInterval(3000l);
         
         Parameter parm = new Parameter();
         parm.setKey(TEST_KEY_PARM_NAME);
