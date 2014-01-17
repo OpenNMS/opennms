@@ -32,6 +32,7 @@ import org.opennms.netmgt.model.OnmsAccessPointCollection;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsIpInterfaceList;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.model.events.EventProxyException;
@@ -291,7 +292,7 @@ public class DefaultPollingContext implements PollingContext {
         OnmsIpInterfaceList ifaces = new OnmsIpInterfaceList();
         // Only poll the primary interface
         final Criteria criteria = new Criteria(OnmsIpInterface.class);
-        criteria.addRestriction(new EqRestriction("isSnmpPrimary", "P"));
+        criteria.addRestriction(new EqRestriction("isSnmpPrimary", PrimaryType.PRIMARY));
 
         List<OnmsIpInterface> allValidIfaces = getIpInterfaceDao().findMatching(criteria);
         for (OnmsIpInterface iface : allValidIfaces) {
