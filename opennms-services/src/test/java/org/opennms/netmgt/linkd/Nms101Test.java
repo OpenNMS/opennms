@@ -168,7 +168,6 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
 
 
         assertEquals(false, m_linkdConfig.isAutoDiscoveryEnabled());
-        assertEquals(false, m_linkdConfig.enableDiscoveryDownload());
         assertEquals(false, m_linkdConfig.forceIpRouteDiscoveryOnEthernet());
 
         assertEquals(false, m_linkdConfig.hasClassName(".1.3.6.1.4.1.2636.1.1.1.1.9"));

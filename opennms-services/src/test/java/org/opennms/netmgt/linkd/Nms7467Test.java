@@ -178,7 +178,6 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
 
         
         assertEquals(false, m_linkdConfig.isAutoDiscoveryEnabled());
-        assertEquals(false, m_linkdConfig.enableDiscoveryDownload());
         assertEquals(true,m_linkdConfig.isVlanDiscoveryEnabled());
         assertEquals(true,m_linkdConfig.useCdpDiscovery());
         assertEquals(true,m_linkdConfig.useIpRouteDiscovery());
@@ -199,7 +198,6 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertEquals("example1",example1.getName());
         assertEquals(false, example1.hasAutoDiscovery());
         assertEquals(false, example1.hasDiscovery_link_interval());
-        assertEquals(false,example1.hasEnableDiscoveryDownload());
         assertEquals(false,example1.hasEnableVlanDiscovery());
         assertEquals(false,example1.hasForceIpRouteDiscoveryOnEthernet());
         assertEquals(false,example1.hasSaveRouteTable());

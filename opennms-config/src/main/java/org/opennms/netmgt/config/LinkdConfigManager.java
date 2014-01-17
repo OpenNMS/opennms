@@ -505,18 +505,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
         if (m_config.hasSaveStpNodeTable()) return m_config.getSaveStpNodeTable();
         return true;
     }
-    
-    /**
-     * <p>enableDiscoveryDownload</p>
-     *
-     * @return a boolean.
-     */
-    @Override
-    public boolean enableDiscoveryDownload() {
-        if (m_config.hasEnableDiscoveryDownload()) return m_config.getEnableDiscoveryDownload();
-        return false;
-    }   
-    
+        
     /**
      * <p>saveStpInterfaceTable</p>
      *
