@@ -1,4 +1,4 @@
-package org.opennms.netmgt.linkd.nb;
+package org.opennms.netmgt.linkd;
 
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode.NodeType;

@@ -41,7 +41,7 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.linkd.nb.Nms0001NetworkBuilder;
+import org.opennms.netmgt.linkd.Nms0001NetworkBuilder;
 import org.opennms.netmgt.linkd.snmp.IsIsSystemObjectGroup.IsisAdminState;
 import org.opennms.netmgt.linkd.snmp.IsisISAdjTableEntry.IsisISAdjNeighSysType;
 import org.opennms.netmgt.linkd.snmp.IsisISAdjTableEntry.IsisISAdjState;
