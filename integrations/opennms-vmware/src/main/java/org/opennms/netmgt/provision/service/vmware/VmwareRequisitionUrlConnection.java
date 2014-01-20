@@ -695,7 +695,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
 
                     // add memory
                     try {
-                        node.putAsset(new RequisitionAsset("memory", Math.round(hostSystem.getHardware().getMemorySize()/1000000f) + " MB"));
+                        node.putAsset(new RequisitionAsset("ram", Math.round(hostSystem.getHardware().getMemorySize()/1000000f) + " MB"));
                     } catch (Exception e) {
                         logger.debug("Can't find Memory information for {}", hostSystem.getName());
                     }
@@ -760,7 +760,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
 
                     // add memory
                     try {
-                        node.putAsset(new RequisitionAsset("memory", virtualMachine.getConfig().getHardware().getMemoryMB() + " MB"));
+                        node.putAsset(new RequisitionAsset("ram", virtualMachine.getConfig().getHardware().getMemoryMB() + " MB"));
                     } catch (Exception e) {
                         logger.debug("Can't find Memory information for {}", virtualMachine.getName());
                     }
