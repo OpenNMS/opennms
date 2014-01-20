@@ -6,7 +6,7 @@ import org.opennms.netmgt.model.OnmsNode.NodeType;
 public class Nms4930NetworkBuilder extends LinkdNetworkBuilder {
 
 	@SuppressWarnings("deprecation")
-	public void buildNetwork4005() {
+	public void buildNetwork4930() {
         NetworkBuilder nb = getNetworkBuilder();
         
         nb.addNode("cisco1").setForeignSource("linkd").setForeignId("cisco1").setSysObjectId(".1.3.6.1.4.1.9.1.122").setType(NodeType.ACTIVE);

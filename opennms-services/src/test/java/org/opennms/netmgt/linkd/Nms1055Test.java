@@ -32,128 +32,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
-import java.util.Properties;
-
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.opennms.core.test.MockLogAppender;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
-import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.LinkdConfig;
-import org.opennms.netmgt.config.LinkdConfigFactory;
 import org.opennms.netmgt.config.linkd.Package;
-import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.linkd.nb.Nms1055NetworkBuilder;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.test.JUnitConfigurationEnvironment;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.test.context.ContextConfiguration;
 
-@RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations= {
-        "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
-        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
-        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-linkd.xml",
-        "classpath:/META-INF/opennms/applicationContext-linkdTest.xml",
-        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
-})
-@JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
-@JUnitTemporaryDatabase
-public class Nms1055Test extends Nms1055NetworkBuilder implements InitializingBean {
-
-    @Autowired
-    private Linkd m_linkd;
-
-    private LinkdConfig m_linkdConfig;
-
-    @Autowired
-    private NodeDao m_nodeDao;
-
-    @Autowired
-    private SnmpInterfaceDao m_snmpInterfaceDao;
-
-    
-    @Autowired
-    private DataLinkInterfaceDao m_dataLinkInterfaceDao;
-        
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
-    }
-
-    @Before
-    public void setUp() throws Exception {
-        Properties p = new Properties();
-        p.setProperty("log4j.logger.org.hibernate.SQL", "WARN");
-        p.setProperty("log4j.logger.org.hibernate.cfg", "WARN");
-        p.setProperty("log4j.logger.org.springframework","WARN");
-        p.setProperty("log4j.logger.com.mchange.v2.resourcepool", "WARN");
-        MockLogAppender.setupLogging(p);
-
-        super.setNodeDao(m_nodeDao);
-        super.setSnmpInterfaceDao(m_snmpInterfaceDao);
-
-    }
-
-    @Before
-    public void setUpLinkdConfiguration() throws Exception {
-        LinkdConfigFactory.init();
-        final Resource config = new ClassPathResource("etc/linkd-configuration.xml");
-        final LinkdConfigFactory factory = new LinkdConfigFactory(-1L, config.getInputStream());
-        LinkdConfigFactory.setInstance(factory);
-        m_linkdConfig = LinkdConfigFactory.getInstance();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        for (final OnmsNode node : m_nodeDao.findAll()) {
-            m_nodeDao.delete(node);
-        }
-        m_nodeDao.flush();
-    }
-    
-    @Test
-    public void testAbstractQueryManagerforLldp() {
-        m_nodeDao.save(getDelaware());
-        m_nodeDao.flush();
-        
-        HibernateEventWriter queryManager = (HibernateEventWriter)m_linkd.getQueryManager();
-        /*
-         *         DELAWARE_IF_IFNAME_MAP.put(517, "ge-0/0/1");
-         *         DELAWARE_IF_IFALIAS_MAP.put(517, "test");
-         */
-        assertEquals(517, queryManager.getFromSysnameIfAlias(DELAWARE_NAME, "test").getIfIndex().intValue());
-        assertEquals(517, queryManager.getFromSysnameIfName(DELAWARE_NAME, "ge-0/0/1").getIfIndex().intValue());
-
-        /*
-         * DELAWARE_IF_MAC_MAP.put(585, "0022830951f5");
-         */
-        assertEquals(585, queryManager.getFromSysnameMacAddress(DELAWARE_NAME, "0022830951f5").getIfIndex().intValue());
-        /*
-         * DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("10.155.69.17"), 13);
-         */
-        assertEquals(13, queryManager.getFromSysnameIpAddress(DELAWARE_NAME, InetAddressUtils.addr("10.155.69.17")).getIfIndex().intValue());
-   
-        /*
-         * DELAWARE_IF_IFALIAS_MAP.put(574, "<To_Penrose>");
-         */
-        assertEquals(574, queryManager.getFromSysnameIfAlias(DELAWARE_NAME, "<To_Penrose>").getIfIndex().intValue());
-    }
+public class Nms1055Test extends Nms1055NetworkBuilder {
 
     /*
      * Penrose: baseBridgeAddress = 80711f8fafd0
@@ -250,6 +138,28 @@ public class Nms1055Test extends Nms1055NetworkBuilder implements InitializingBe
         m_nodeDao.save(getSanjose());
         m_nodeDao.save(getRiovista());
         m_nodeDao.flush();
+
+        HibernateEventWriter queryManager = (HibernateEventWriter)m_linkd.getQueryManager();
+        /*
+         *         DELAWARE_IF_IFNAME_MAP.put(517, "ge-0/0/1");
+         *         DELAWARE_IF_IFALIAS_MAP.put(517, "test");
+         */
+        assertEquals(517, queryManager.getFromSysnameIfAlias(DELAWARE_NAME, "test").getIfIndex().intValue());
+        assertEquals(517, queryManager.getFromSysnameIfName(DELAWARE_NAME, "ge-0/0/1").getIfIndex().intValue());
+
+        /*
+         * DELAWARE_IF_MAC_MAP.put(585, "0022830951f5");
+         */
+        assertEquals(585, queryManager.getFromSysnameMacAddress(DELAWARE_NAME, "0022830951f5").getIfIndex().intValue());
+        /*
+         * DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("10.155.69.17"), 13);
+         */
+        assertEquals(13, queryManager.getFromSysnameIpAddress(DELAWARE_NAME, InetAddressUtils.addr("10.155.69.17")).getIfIndex().intValue());
+   
+        /*
+         * DELAWARE_IF_IFALIAS_MAP.put(574, "<To_Penrose>");
+         */
+        assertEquals(574, queryManager.getFromSysnameIfAlias(DELAWARE_NAME, "<To_Penrose>").getIfIndex().intValue());
 
         Package example1 = m_linkdConfig.getPackage("example1");
         assertEquals(false, example1.hasForceIpRouteDiscoveryOnEthernet());

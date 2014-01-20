@@ -32,8 +32,29 @@ import static org.junit.Assert.assertEquals;
 
 
 import org.junit.Test;
+import org.opennms.core.utils.InetAddressUtils;
 
-public class DiscoveryLinkBasicTest  {
+public class LinkdBaseTest  {
+
+    @Test
+    public void testDiscoveryOspfGetSubNetAddress() throws Exception {
+        DiscoveryLink discovery = new DiscoveryLink();
+        OspfNbrInterface ospfinterface = new OspfNbrInterface(InetAddressUtils.addr("192.168.9.1"));
+        ospfinterface.setOspfNbrIpAddr(InetAddressUtils.addr("192.168.15.45"));
+
+        ospfinterface.setOspfNbrNetMask(InetAddressUtils.addr("255.255.255.0"));        
+        assertEquals(InetAddressUtils.addr("192.168.15.0"), discovery.getSubnetAddress(ospfinterface));
+        
+        ospfinterface.setOspfNbrNetMask(InetAddressUtils.addr("255.255.0.0"));
+        assertEquals(InetAddressUtils.addr("192.168.0.0"), discovery.getSubnetAddress(ospfinterface));
+
+        ospfinterface.setOspfNbrNetMask(InetAddressUtils.addr("255.255.255.252"));
+        assertEquals(InetAddressUtils.addr("192.168.15.44"), discovery.getSubnetAddress(ospfinterface));
+
+        ospfinterface.setOspfNbrNetMask(InetAddressUtils.addr("255.255.255.240"));
+        assertEquals(InetAddressUtils.addr("192.168.15.32"), discovery.getSubnetAddress(ospfinterface));
+
+    }
 
     @Test
     public void testBridgePortFromDesignatedBridgePort() {
@@ -41,8 +62,6 @@ public class DiscoveryLinkBasicTest  {
         assertEquals(5781, 8191 & Integer.parseInt("9695",16));
         assertEquals(4230, 8191 & Integer.parseInt("9086",16));
         assertEquals(110, 8191 & Integer.parseInt("806e",16));
-        
      }
-
 
 }

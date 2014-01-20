@@ -39,34 +39,16 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Properties;
 import java.util.Set;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.hibernate.criterion.Restrictions;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.opennms.core.test.MockLogAppender;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
-import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.LinkdConfig;
-import org.opennms.netmgt.config.LinkdConfigFactory;
 import org.opennms.netmgt.config.linkd.Package;
-import org.opennms.netmgt.dao.api.AtInterfaceDao;
-import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
-import org.opennms.netmgt.dao.api.IpRouteInterfaceDao;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.dao.api.StpInterfaceDao;
-import org.opennms.netmgt.dao.api.StpNodeDao;
-import org.opennms.netmgt.dao.api.VlanDao;
 import org.opennms.netmgt.linkd.nb.Nms7467NetworkBuilder;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsAtInterface;
@@ -77,95 +59,9 @@ import org.opennms.netmgt.model.OnmsStpInterface;
 import org.opennms.netmgt.model.OnmsStpNode;
 import org.opennms.netmgt.model.OnmsStpNode.BridgeBaseType;
 import org.opennms.netmgt.model.OnmsStpNode.StpProtocolSpecification;
-import org.opennms.test.JUnitConfigurationEnvironment;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-@RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations= {
-        "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
-        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
-        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-linkd.xml",
-        "classpath:/META-INF/opennms/applicationContext-linkdTest.xml",
-        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
-})
-@JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
-@JUnitTemporaryDatabase
-public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBean {
-
-    @Autowired
-    private Linkd m_linkd;
-
-    private LinkdConfig m_linkdConfig;
-
-    @Autowired
-    private NodeDao m_nodeDao;
-
-    @Autowired
-    private SnmpInterfaceDao m_snmpInterfaceDao;
-
-    @Autowired
-    private StpNodeDao m_stpNodeDao;
-    
-    @Autowired
-    private StpInterfaceDao m_stpInterfaceDao;
-    
-    @Autowired
-    private IpRouteInterfaceDao m_ipRouteInterfaceDao;
-    
-    @Autowired
-    private AtInterfaceDao m_atInterfaceDao;
-    
-    @Autowired
-    private VlanDao m_vlanDao;
-    
-    @Autowired
-    private DataLinkInterfaceDao m_dataLinkInterfaceDao;
-        
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
-    }
-
-    @Before
-    public void setUp() throws Exception {
-        Properties p = new Properties();
-        p.setProperty("log4j.logger.org.hibernate.SQL", "WARN");
-        p.setProperty("log4j.logger.org.hibernate.cfg", "WARN");
-        p.setProperty("log4j.logger.org.springframework","WARN");
-        p.setProperty("log4j.logger.com.mchange.v2.resourcepool", "WARN");
-        p.setProperty("log4j.logger.org.opennms.netmgt.config", "WARN");
-        p.setProperty("log4j.logger.org.opennms.netmgt.config", "WARN");
-        
-        super.setNodeDao(m_nodeDao);
-        super.setSnmpInterfaceDao(m_snmpInterfaceDao);
-        MockLogAppender.setupLogging(p);
-
-    }
-
-    @Before
-    public void setUpLinkdConfiguration() throws Exception {
-        LinkdConfigFactory.init();
-        final Resource config = new ClassPathResource("etc/linkd-configuration.xml");
-        final LinkdConfigFactory factory = new LinkdConfigFactory(-1L, config.getInputStream());
-        LinkdConfigFactory.setInstance(factory);
-        m_linkdConfig = LinkdConfigFactory.getInstance();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        for (final OnmsNode node : m_nodeDao.findAll()) {
-            m_nodeDao.delete(node);
-        }
-        m_nodeDao.flush();
-    }
+public class Nms7467Test extends Nms7467NetworkBuilder {
 
     @Test
     public void testDefaultConfiguration() throws MarshalException, ValidationException, IOException {
@@ -356,6 +252,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
 
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource="classpath:linkd/nms7467/"+CISCO_WS_C2948_IP+"-walk.txt")
@@ -454,6 +351,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertEquals(50, m_stpInterfaceDao.findAll().size());        
     }
     
+    @SuppressWarnings("deprecation")
     @Test
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=CISCO_C870_IP, port=161, resource="classpath:linkd/nms7467/"+CISCO_C870_IP+"-walk.txt")
@@ -577,6 +475,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=NETGEAR_SW_108_IP, port=161, resource="classpath:linkd/nms7467/"+NETGEAR_SW_108_IP+"-walk.txt")
@@ -680,6 +579,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=LINUX_UBUNTU_IP, port=161, resource="classpath:linkd/nms7467/"+LINUX_UBUNTU_IP+"-walk.txt")
@@ -764,6 +664,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
 
     }
     
+    @SuppressWarnings("deprecation")
     @Test
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=DARWIN_10_8_IP, port=161, resource="classpath:linkd/nms7467/"+DARWIN_10_8_IP+"-walk.txt")

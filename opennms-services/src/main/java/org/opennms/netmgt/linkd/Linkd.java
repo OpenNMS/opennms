@@ -140,6 +140,14 @@ public class Linkd extends AbstractServiceDaemon {
      */
     public Linkd() {
         super(LOG_PREFIX);
+        m_nodes = new HashMap<String, List<LinkableNode>>();;
+        Assert.notNull(m_nodes);
+        m_activepackages = new ArrayList<String>();
+        Assert.notNull(m_activepackages);
+        m_newSuspectEventsIpAddr = Collections.synchronizedSet(new TreeSet<InetAddress>(new InetAddressComparator()));
+        m_newSuspectEventsIpAddr.add(InetAddressUtils.ONE_TWENTY_SEVEN);
+        m_newSuspectEventsIpAddr.add(InetAddressUtils.ZEROS);
+        Assert.notNull(m_newSuspectEventsIpAddr);
     }
 
     /**
@@ -154,16 +162,17 @@ public class Linkd extends AbstractServiceDaemon {
         Assert.state(m_eventForwarder != null,
                 "must set the eventForwarder property");
 
-        m_activepackages = new ArrayList<String>();
+        Assert.state(m_queryMgr != null,
+                "must set the queryManager property");
 
-        m_newSuspectEventsIpAddr = Collections.synchronizedSet(new TreeSet<InetAddress>(new InetAddressComparator()));
-        m_newSuspectEventsIpAddr.add(InetAddressUtils.ONE_TWENTY_SEVEN);
-        m_newSuspectEventsIpAddr.add(InetAddressUtils.ZEROS);
+        Assert.state(m_linkdConfig != null,
+                "must set the linkdConfig property");
 
-        m_nodes = new HashMap<String, List<LinkableNode>>();;
+        Assert.state(m_scheduler != null,
+                "must set the scheduler property");
+
         m_queryMgr.updateDeletedNodes();
 
-        Assert.notNull(m_nodes);
         scheduleCollection(m_queryMgr.getSnmpNodeList());
 
         LOG.info("init: LINKD CONFIGURATION INITIALIZED");
@@ -724,10 +733,10 @@ public class Linkd extends AbstractServiceDaemon {
             for (String pkg: m_nodes.keySet()) {
                 for (LinkableNode node : m_nodes.get(pkg)) {
                     if (node.getNodeId() == nodeid)
-                        return false;
+                        return true;
                 }
             }
-            return true;
+            return false;
         }
     }
 
