@@ -33,8 +33,6 @@ import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Collection;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.CollectdConfig;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.CollectdPackage;
@@ -67,12 +65,6 @@ public class CollectorConfigDaoImpl implements CollectorConfigDao {
         try {
             // XXX was reload(); this doesn't work well from unit tests, however
             CollectdConfigFactory.init();
-        } catch (MarshalException ex) {
-            LOG.error("loadConfigFactory: Failed to load collectd configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (ValidationException ex) {
-            LOG.error("loadConfigFactory: Failed to load collectd configuration", ex);
-            throw new UndeclaredThrowableException(ex);
         } catch (IOException ex) {
             LOG.error("loadConfigFactory: Failed to load collectd configuration", ex);
             throw new UndeclaredThrowableException(ex);

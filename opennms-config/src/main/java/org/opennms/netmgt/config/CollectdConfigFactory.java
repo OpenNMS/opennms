@@ -29,18 +29,17 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import org.apache.commons.io.IOUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.core.xml.CastorUtils;
-import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.springframework.util.Assert;
 
 /**
@@ -104,22 +103,10 @@ public class CollectdConfigFactory {
      * 
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      */
-    private CollectdConfigFactory(String configFile, String localServer, boolean verifyServer) throws IOException, MarshalException, ValidationException {
-        InputStream stream = null;
-        try {
-            stream = new FileInputStream(configFile);
-            CollectdConfiguration config = CastorUtils.unmarshal(CollectdConfiguration.class, stream);
-            m_collectdConfig = new CollectdConfig(config, localServer, verifyServer);
-        } finally {
-            if (stream != null) {
-                IOUtils.closeQuietly(stream);
-            }
-        }
+    private CollectdConfigFactory(String configFile, String localServer, boolean verifyServer) throws IOException {
+        CollectdConfiguration config = JaxbUtils.unmarshal(CollectdConfiguration.class, new File(configFile));
+        m_collectdConfig = new CollectdConfig(config, localServer, verifyServer);
     }
 
     /**
@@ -128,12 +115,16 @@ public class CollectdConfigFactory {
      * @param stream a {@link java.io.InputStream} object.
      * @param localServer a {@link java.lang.String} object.
      * @param verifyServer a boolean.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public CollectdConfigFactory(InputStream stream, String localServer, boolean verifyServer) throws MarshalException, ValidationException {
-        CollectdConfiguration config = CastorUtils.unmarshal(CollectdConfiguration.class, stream);
-        m_collectdConfig = new CollectdConfig(config, localServer, verifyServer);
+    public CollectdConfigFactory(final InputStream stream, final String localServer, boolean verifyServer) {
+        InputStreamReader isr = null;
+        try {
+            isr = new InputStreamReader(stream);
+            CollectdConfiguration config = JaxbUtils.unmarshal(CollectdConfiguration.class, isr);
+            m_collectdConfig = new CollectdConfig(config, localServer, verifyServer);
+        } finally {
+            IOUtils.closeQuietly(isr);
+        }
     }
 
     /**
@@ -142,15 +133,9 @@ public class CollectdConfigFactory {
      *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public static synchronized void init() throws IOException, MarshalException, ValidationException {
+    public static synchronized void init() throws IOException {
         if (isInitialized()) {
             // init already called return; to reload, reload() will need to be called
             return;
@@ -170,33 +155,30 @@ public class CollectdConfigFactory {
      *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read/loaded
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public static synchronized void reload() throws IOException, MarshalException, ValidationException {
+    public static synchronized void reload() throws IOException {
         m_singleton = null;
-
         init();
     }
 
     /**
      * Saves the current in-memory configuration to disk and reloads
      *
-     * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public synchronized void saveCurrent() throws MarshalException, IOException, ValidationException {
+    public synchronized void saveCurrent() throws IOException {
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME);
 
         CollectdConfiguration config = m_collectdConfig.getConfig();
 
-        CastorUtils.marshalViaString(config, cfgFile);
+        FileWriter writer = null;
+        try {
+            writer = new FileWriter(cfgFile);
+            JaxbUtils.marshal(config, writer);
+        } finally {
+            IOUtils.closeQuietly(writer);
+        }
 
         reload();
     }

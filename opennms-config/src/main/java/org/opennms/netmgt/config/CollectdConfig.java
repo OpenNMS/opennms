@@ -48,24 +48,22 @@ public class CollectdConfig {
      * @param localServer local server name from opennms-server.xml
      * @param verifyServer verify server option from opennms-server.xml
      */
-    protected CollectdConfig(CollectdConfiguration config, String localServer, boolean verifyServer) {
+    protected CollectdConfig(final CollectdConfiguration config, final String localServer, final boolean verifyServer) {
         m_config = config;
         m_localServer = localServer;
         m_verifyServer = verifyServer;
 
 //      instantiateCollectors();
-
         createPackageObjects(localServer, verifyServer);
-
         initialize(localServer, verifyServer);
 
     }
 
-    private void createPackageObjects(String localServer, boolean verifyServer) {
+    private void createPackageObjects(final String localServer, final boolean verifyServer) {
         m_packages = new LinkedList<CollectdPackage>();
-        Enumeration<Package> pkgEnum = m_config.enumeratePackage();
+        final Enumeration<Package> pkgEnum = m_config.enumeratePackage();
         while (pkgEnum.hasMoreElements()) {
-            Package pkg = pkgEnum.nextElement();
+            final Package pkg = pkgEnum.nextElement();
             m_packages.add(new CollectdPackage(pkg, localServer, verifyServer));
         }
     }
@@ -107,14 +105,13 @@ public class CollectdConfig {
      * @param verifyServer2
      * @param verifyServer TODO
      */
-    protected void createPackageIpListMap(String localServer, boolean verifyServer) {
+    protected void createPackageIpListMap(final String localServer, final boolean verifyServer) {
 
         // Multiple threads maybe asking for the m_pkgIpMap field so create
         // with temp map then assign when finished.
 
-        for (Iterator<CollectdPackage> it = getPackages().iterator(); it.hasNext();) {
-            CollectdPackage wpkg = it.next();
-            wpkg.createIpList(localServer, verifyServer);
+        for (final Iterator<CollectdPackage> it = getPackages().iterator(); it.hasNext();) {
+            it.next().createIpList(localServer, verifyServer);
         }
     }
     
@@ -131,7 +128,7 @@ public class CollectdConfig {
      * @param localServer TODO
      * @param verifyServer TODO
      */
-    protected void initialize(String localServer, boolean verifyServer)  {
+    protected void initialize(final String localServer, final boolean verifyServer)  {
         createPackageIpListMap(localServer, verifyServer);
 
     }
@@ -142,9 +139,9 @@ public class CollectdConfig {
      * @param name a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.config.CollectdPackage} object.
      */
-    public CollectdPackage getPackage(String name) {
-        for (Iterator<CollectdPackage> it = getPackages().iterator(); it.hasNext();) {
-            CollectdPackage wpkg = it.next();
+    public CollectdPackage getPackage(final String name) {
+        for (final Iterator<CollectdPackage> it = getPackages().iterator(); it.hasNext();) {
+            final CollectdPackage wpkg = it.next();
             if (wpkg.getName().equals(name)) {
                 return wpkg;
             }
@@ -159,9 +156,9 @@ public class CollectdConfig {
      *            The domain name to check
      * @return True if the domain exists
      */
-    public boolean domainExists(String name) {
-        for (Iterator<CollectdPackage> it = getPackages().iterator(); it.hasNext();) {
-            CollectdPackage wpkg = it.next();
+    public boolean domainExists(final String name) {
+        for (final Iterator<CollectdPackage> it = getPackages().iterator(); it.hasNext();) {
+            final CollectdPackage wpkg = it.next();
             if ((wpkg.ifAliasDomain() != null)
                     && wpkg.ifAliasDomain().equals(name)) {
                 return true;

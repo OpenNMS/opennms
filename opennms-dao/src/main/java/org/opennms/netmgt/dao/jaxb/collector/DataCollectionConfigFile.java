@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.castor.collector;
+package org.opennms.netmgt.dao.jaxb.collector;
 
 import java.io.File;
 import java.util.Iterator;
@@ -61,7 +61,7 @@ public class DataCollectionConfigFile {
 	/**
 	 * <p>visit</p>
 	 *
-	 * @param visitor a {@link org.opennms.netmgt.dao.castor.collector.DataCollectionVisitor} object.
+	 * @param visitor a {@link org.opennms.netmgt.dao.jaxb.collector.DataCollectionVisitor} object.
 	 */
 	public void visit(DataCollectionVisitor visitor) {
         DatacollectionConfig dataCollectionConfig = getDataCollectionConfig();

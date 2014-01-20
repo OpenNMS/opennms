@@ -168,8 +168,8 @@ public class WillItUnmarshalTest {
         addFile(Source.EXAMPLE, "capsd-configuration.xml", CapsdConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "categories.xml", Catinfo.class, Impl.CASTOR);
         addFile(Source.CONFIG, "chart-configuration.xml", ChartConfiguration.class, Impl.CASTOR);
-        addFile(Source.CONFIG, "collectd-configuration.xml", CollectdConfiguration.class, Impl.CASTOR);
-        addFile(Source.EXAMPLE, "collectd-configuration.xml", CollectdConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "collectd-configuration.xml", CollectdConfiguration.class, Impl.JAXB);
+        addFile(Source.EXAMPLE, "collectd-configuration.xml", CollectdConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "database-reports.xml", LegacyLocalReportsDefinition.class, Impl.JAXB);
         addFile(Source.CONFIG, "database-schema.xml", DatabaseSchema.class, Impl.CASTOR);
         addFile(Source.CONFIG, "datacollection-config.xml", DatacollectionConfig.class, Impl.JAXB);
@@ -200,8 +200,8 @@ public class WillItUnmarshalTest {
         addFile(Source.CONFIG, "notifications.xml", Notifications.class, Impl.CASTOR);
         addFile(Source.EXAMPLE, "notifications.xml", Notifications.class, Impl.CASTOR);
         addFile(Source.CONFIG, "opennms-datasources.xml", DataSourceConfiguration.class, Impl.CASTOR);
-        addFile(Source.CONFIG, "opennms-server.xml", LocalServer.class, Impl.CASTOR);
-        addFile(Source.EXAMPLE, "opennms-server.xml", LocalServer.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "opennms-server.xml", LocalServer.class, Impl.JAXB);
+        addFile(Source.EXAMPLE, "opennms-server.xml", LocalServer.class, Impl.JAXB);
         addFile(Source.CONFIG, "poll-outages.xml", Outages.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "poll-outages.xml", Outages.class, Impl.JAXB);
         addFile(Source.CONFIG, "poller-configuration.xml", PollerConfiguration.class, Impl.JAXB);
@@ -256,7 +256,7 @@ public class WillItUnmarshalTest {
         addFile(Source.CONFIG, "vmware-config.xml", VmwareConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "vmware-datacollection-config.xml", VmwareDatacollectionConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "vmware-cim-datacollection-config.xml", VmwareCimDatacollectionConfig.class, Impl.JAXB);
-        addFile(Source.EXAMPLE, "jvm-datacollection/collectd-configuration.xml", CollectdConfiguration.class, Impl.CASTOR);
+        addFile(Source.EXAMPLE, "jvm-datacollection/collectd-configuration.xml", CollectdConfiguration.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection-config.xml", JmxDatacollectionConfig.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection/ActiveMQ/5.6/ActiveMQBasic0.xml", Mbeans.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection/Cassandra/1.1.2/CassandraBasic0.xml", Mbeans.class, Impl.JAXB);
