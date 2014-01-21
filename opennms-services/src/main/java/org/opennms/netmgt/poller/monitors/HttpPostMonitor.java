@@ -53,6 +53,11 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.auth.AuthScope;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.conn.scheme.Scheme;  
+import org.apache.http.conn.ssl.AllowAllHostnameVerifier;  
+import org.apache.http.conn.ssl.SSLSocketFactory;  
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
@@ -96,6 +101,7 @@ final public class HttpPostMonitor extends AbstractServiceMonitor {
     public static final String DEFAULT_CHARSET = "utf-8";
     public static final String DEFAULT_URI = "/";
     public static final String DEFAULT_SCHEME = "http";
+    public static final boolean DEFAULT_SSLFILTER = false;
 
     public static final String PARAMETER_SCHEME = "scheme";
     public static final String PARAMETER_PORT = "port";
@@ -104,6 +110,7 @@ final public class HttpPostMonitor extends AbstractServiceMonitor {
     public static final String PARAMETER_MIMETYPE = "mimetype";
     public static final String PARAMETER_CHARSET = "charset";
     public static final String PARAMETER_BANNER = "banner";
+    public static final String PARAMETER_SSLFILTER = "usesslfiler";
 
     public static final String PARAMETER_USERNAME = "auth-username";
     public static final String PARAMETER_PASSWORD = "auth-password";
@@ -160,6 +167,10 @@ final public class HttpPostMonitor extends AbstractServiceMonitor {
         //Charset
         String strCharset = ParameterMap.getKeyedString(parameters, PARAMETER_CHARSET, DEFAULT_CHARSET);
 
+        //SSLFilter
+        boolean boolSSLFilter = ParameterMap.getKeyedBoolean(parameters, PARAMETER_SSLFILTER, DEFAULT_SSLFILTER);
+
+        // Get the address instance.
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
         final String hostAddress = InetAddressUtils.str(ipv4Addr);
@@ -173,12 +184,13 @@ final public class HttpPostMonitor extends AbstractServiceMonitor {
             try {
                 tracker.startAttempt();
 
-                HttpHost httpHost = new HttpHost(hostAddress, port);
                 HttpParams clientParams = new BasicHttpParams();
                 clientParams.setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, tracker.getSoTimeout());
                 clientParams.setIntParameter(CoreConnectionPNames.SO_TIMEOUT, tracker.getSoTimeout());
                 DefaultHttpClient client = new DefaultHttpClient(clientParams);
                 client.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(DEFAULT_RETRY, false));
+                if (boolSSLFilter) 
+                    client.getConnectionManager().getSchemeRegistry().register(new Scheme(strScheme, port, new SSLSocketFactory(new TrustSelfSignedStrategy(), new AllowAllHostnameVerifier())));
                 HttpEntity postReq;
 
                 if (strUser != null && strPasswd != null) {
@@ -193,14 +205,17 @@ final public class HttpPostMonitor extends AbstractServiceMonitor {
                   break;
                 }
 
-                StringBuilder sb = new StringBuilder(strScheme);
-                sb.append("://").append(hostAddress).append(":").append(port).append(strURI);
+                URIBuilder ub = new URIBuilder();
+                ub.setScheme(strScheme);
+                ub.setHost(hostAddress);
+                ub.setPort(port);
+                ub.setPath(strURI);
 
-                LOGGER.debug("HttpPostMonitor: Constructed URL is " + sb);
+                LOGGER.debug("HttpPostMonitor: Constructed URL is " + ub.toString());
 
-                HttpPost post = new HttpPost(new URI(sb.toString()));
+                HttpPost post = new HttpPost(ub.build());
                 post.setEntity(postReq);
-                HttpResponse response = client.execute(httpHost, post);
+                HttpResponse response = client.execute(post);
 
                 LOGGER.debug("HttpPostMonitor: Status Line is " + response.getStatusLine());
 
