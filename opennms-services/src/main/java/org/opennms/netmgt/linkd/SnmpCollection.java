@@ -396,7 +396,6 @@ public final class SnmpCollection implements ReadyRunnable {
             runCollection();
         }
         runned = true;
-        reschedule();
     }
     
     private class TrackerBuilder {
@@ -716,17 +715,10 @@ public final class SnmpCollection implements ReadyRunnable {
         if (m_scheduler == null)
             throw new IllegalStateException(
                                             "Cannot schedule a service whose scheduler is set to null");
-        m_scheduler.schedule(initial_sleep_time, this);
-    }
-
-    /**
-	 * 
-	 */
-    private void reschedule() {
-        if (m_scheduler == null)
-            throw new IllegalStateException(
-                                            "Cannot schedule a service whose scheduler is set to null");
-        m_scheduler.schedule(poll_interval, this);
+        if (runned)
+            m_scheduler.schedule(poll_interval, this);
+        else
+            m_scheduler.schedule(initial_sleep_time, this);
     }
 
     /**

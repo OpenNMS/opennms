@@ -244,7 +244,6 @@ public final class DiscoveryLink implements ReadyRunnable {
 
         // rescheduling activities
         isRunned = true;
-        schedule();
     }
 
     protected void populateMacToAtInterface() {

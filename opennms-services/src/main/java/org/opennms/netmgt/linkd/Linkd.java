@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -93,16 +94,11 @@ public class Linkd extends AbstractServiceDaemon {
     private LinkdConfig m_linkdConfig;
 
     /**
-     * Map that contains for package Linkable Nodes.
+     * List Linkable Nodes.
      */
-    private Map<String,List<LinkableNode>> m_nodes;
+    private List<LinkableNode> m_nodes;
 
     private Map<String, Map<String, List<AtInterface>>> m_macToAtinterface = new HashMap<String, Map<String, List<AtInterface>>>();
-
-    /**
-     * List that contains SnmpCollection package names.
-     */
-    private List<String> m_activepackages;
 
     /**
      * the list of {@link java.net.InetAddress} for which new suspect event is
@@ -140,10 +136,8 @@ public class Linkd extends AbstractServiceDaemon {
      */
     public Linkd() {
         super(LOG_PREFIX);
-        m_nodes = new HashMap<String, List<LinkableNode>>();;
+        m_nodes = new ArrayList<LinkableNode>();
         Assert.notNull(m_nodes);
-        m_activepackages = new ArrayList<String>();
-        Assert.notNull(m_activepackages);
         m_newSuspectEventsIpAddr = Collections.synchronizedSet(new TreeSet<InetAddress>(new InetAddressComparator()));
         m_newSuspectEventsIpAddr.add(InetAddressUtils.ONE_TWENTY_SEVEN);
         m_newSuspectEventsIpAddr.add(InetAddressUtils.ZEROS);
@@ -173,12 +167,12 @@ public class Linkd extends AbstractServiceDaemon {
 
         m_queryMgr.updateDeletedNodes();
 
-        scheduleCollection(m_queryMgr.getSnmpNodeList());
+        schedule(m_queryMgr.getSnmpNodeList());
 
         LOG.info("init: LINKD CONFIGURATION INITIALIZED");
     }
 
-    private void scheduleCollection(List<LinkableSnmpNode> nodes) {
+    private void schedule(List<LinkableSnmpNode> nodes) {
         for (final LinkableSnmpNode node : nodes) {
             schedule(node);
         }
@@ -196,29 +190,36 @@ public class Linkd extends AbstractServiceDaemon {
         for (final SnmpCollection snmpcoll : getSnmpCollections(node.getNodeId(),
                                                                 node.getSnmpPrimaryIpAddr(),
                                                                 node.getSysoid())) {
-            if (getActivePackages().contains(snmpcoll.getPackageName())) {
+            if (isDiscoveryLinkScheduled(snmpcoll.getPackageName())) {
                 LOG.debug("schedule: package active: {}", snmpcoll.getPackageName());
             } else {
                 // schedule discovery link
-                m_nodes.put(snmpcoll.getPackageName(), new ArrayList<LinkableNode>());
                 final DiscoveryLink discovery = getDiscoveryLink(snmpcoll.getPackageName());
                 if (discovery.getScheduler() == null) {
                     discovery.setScheduler(m_scheduler);
                 }
                 LOG.debug("schedule: Package: {}. Scheduling {}", discovery.getPackageName(), discovery.getInfo());
                 discovery.schedule();
-                addPackage(snmpcoll.getPackageName());
-
             }
             
             if (snmpcoll.getScheduler() == null) {
                 snmpcoll.setScheduler(m_scheduler);
             }
             
-            m_nodes.get(snmpcoll.getPackageName()).add(new LinkableNode(node));
-            LOG.debug("schedule: Package/NodeId: {}/{}. Scheduling {}", snmpcoll.getPackageName(), node.getNodeId(), snmpcoll.getInfo());
+            m_nodes.add(new LinkableNode(node, snmpcoll.getPackageName()));
+            LOG.debug("schedule: NodeId: {}. Scheduling {}", node.getNodeId(), snmpcoll.getInfo());
             snmpcoll.schedule();
         }
+    }
+
+    private boolean isDiscoveryLinkScheduled(String packageName) {
+         synchronized (m_nodes) {
+            for (LinkableNode node: m_nodes) {
+                if (packageName.equals(node.getPackageName()))
+                    return true;
+            }
+        }
+        return false;
     }
 
     /** {@inheritDoc} */
@@ -390,10 +391,6 @@ public class Linkd extends AbstractServiceDaemon {
         //
         LOG.debug("start: Starting linkd scheduler");
         m_scheduler.start();
-
-        // Set the status of the service as running.
-        //
-
     }
 
     /**
@@ -442,9 +439,14 @@ public class Linkd extends AbstractServiceDaemon {
      * @return a {@link java.util.Collection} object.
      */
     public Collection<LinkableNode> getLinkableNodesOnPackage(String pkg) {
+        List<LinkableNode> nodes = new ArrayList<LinkableNode>();
         synchronized (m_nodes) {
-            return m_nodes.get(pkg);
+            for (LinkableNode node : m_nodes){
+                if (node.getPackageName().equals(pkg))
+                    nodes.add(node);
+            }
         }
+        return nodes;
     }
 
     /**
@@ -461,22 +463,6 @@ public class Linkd extends AbstractServiceDaemon {
     public boolean isInterfaceInPackage(InetAddress ipaddr, String pkg) {
         return m_linkdConfig.isInterfaceInPackage(ipaddr,
                                                   m_linkdConfig.getPackage(pkg));
-    }
-
-    /**
-     * <p>
-     * isInterfaceInPackageRange
-     * </p>
-     * 
-     * @param ipaddr
-     *            a {@link java.lang.String} object.
-     * @param pkg
-     *            a {@link java.lang.String} object.
-     * @return a boolean.
-     */
-    public boolean isInterfaceInPackageRange(InetAddress ipaddr, String pkg) {
-        return m_linkdConfig.isInterfaceInPackageRange(ipaddr,
-                                                       m_linkdConfig.getPackage(pkg));
     }
 
     public boolean scheduleNodeCollection(int nodeid) {
@@ -523,7 +509,7 @@ public class Linkd extends AbstractServiceDaemon {
     void wakeUpNodeCollection(int nodeid) {
 
 
-        if (isScheduled(nodeid)) {
+        if (!isScheduled(nodeid)) {
             LOG.warn("wakeUpNodeCollection: node not found during scheduling with ID {}", nodeid);
             scheduleNodeCollection(nodeid);
         } else {
@@ -607,7 +593,7 @@ public class Linkd extends AbstractServiceDaemon {
 
         m_queryMgr.update(nodeid, StatusType.INACTIVE);
 
-        if (isScheduled(nodeid)) {
+        if (!isScheduled(nodeid)) {
             LOG.warn("suspendNodeCollection: found null ReadyRunnable");
         } else {
             // get collections
@@ -650,19 +636,22 @@ public class Linkd extends AbstractServiceDaemon {
         LOG.debug("Updating SNMP collection for {}", str(snmpcoll.getTarget()));
         LinkableNode node = removeNode(snmpcoll.getPackageName(),snmpcoll.getTarget());
         if (node == null) {
-            LOG.error("No node found for SNMP collection: {} unscheduling!", snmpcoll.getInfo());
-            m_scheduler.unschedule(snmpcoll);
-            return;
+            LOG.error("No linkable node found for SNMP collection: {}!", snmpcoll.getInfo());
         }
 
-        node = new LinkableNode(node.getLinkableSnmpNode());
-
+        LinkableSnmpNode snmpNode = m_queryMgr.getSnmpNode(node.getNodeId());
+        if (snmpNode == null) {
+            LOG.info("No node found in database for SNMP collection: {} unscheduling!", snmpcoll.getInfo());
+            return;
+        }
+        node = new LinkableNode(snmpNode,snmpcoll.getPackageName());
         node = m_queryMgr.storeSnmpCollection(node, snmpcoll);
         if (node != null) {
             synchronized (m_nodes) {
-                m_nodes.get(snmpcoll.getPackageName()).add(node);
+                m_nodes.add(node);
             }
         }
+        snmpcoll.schedule();
     }
 
     /**
@@ -675,6 +664,7 @@ public class Linkd extends AbstractServiceDaemon {
     void updateDiscoveryLinkCollection(final DiscoveryLink discover) {
 
         m_queryMgr.storeDiscoveryLink(discover);
+        discover.schedule();
     }
 
     /**
@@ -699,7 +689,7 @@ public class Linkd extends AbstractServiceDaemon {
         if (m_newSuspectEventsIpAddr.contains(ipaddress)) {
             LOG.info("sendNewSuspectEvent: nothing to send, suspect event previously sent for IP address: {}", str(ipaddress));
             return;
-        } else if (!isInterfaceInPackageRange(ipaddress, pkgName)) {
+        } else if (!isInterfaceInPackage(ipaddress, pkgName)) {
             LOG.info("sendNewSuspectEvent: nothing to send for IP address: {}, not in package: {}", str(ipaddress), pkgName);
             return;
         }
@@ -730,11 +720,9 @@ public class Linkd extends AbstractServiceDaemon {
 
     boolean isScheduled(int nodeid) {
         synchronized (m_nodes) {
-            for (String pkg: m_nodes.keySet()) {
-                for (LinkableNode node : m_nodes.get(pkg)) {
-                    if (node.getNodeId() == nodeid)
-                        return true;
-                }
+            for (LinkableNode node : m_nodes) {
+                if (node.getNodeId() == nodeid)
+                    return true;
             }
             return false;
         }
@@ -743,29 +731,26 @@ public class Linkd extends AbstractServiceDaemon {
     private LinkableSnmpNode removeNode(int nodeid) {
         LinkableSnmpNode snmpnode=null;
         synchronized (m_nodes) {
-            for (String pkg: m_nodes.keySet()) {
-                Iterator<LinkableNode> ite = m_nodes.get(pkg).iterator();
-                while (ite.hasNext()) {
-                    LinkableNode curNode = ite.next();
-                    if (curNode.getNodeId() == nodeid) {
-                        ite.remove();
-                    }
+            Iterator<LinkableNode> ite = m_nodes.iterator();
+            while (ite.hasNext()) {
+                LinkableNode curNode = ite.next();
+                if (curNode.getNodeId() == nodeid) {
+                    snmpnode = curNode.getLinkableSnmpNode();
+                    ite.remove();
                 }
             }
             return snmpnode;
         }
     }
 
-    private LinkableNode removeNode(String packageName, InetAddress ipaddr) {
+    protected LinkableNode removeNode(String packageName, InetAddress ipaddr) {
         synchronized (m_nodes) {
-            if (m_nodes.containsKey(packageName)) {
-                Iterator<LinkableNode> ite = m_nodes.get(packageName).iterator();
-                while (ite.hasNext()) {
-                    LinkableNode curNode = ite.next();
-                    if (curNode.getSnmpPrimaryIpAddr().equals(ipaddr)) {
-                        ite.remove();
-                        return curNode;
-                    }
+            Iterator<LinkableNode> ite = m_nodes.iterator();
+            while (ite.hasNext()) {
+                LinkableNode curNode = ite.next();
+                if (curNode.getSnmpPrimaryIpAddr().equals(ipaddr) && curNode.getPackageName().equals(packageName)) {
+                    ite.remove();
+                    return curNode;
                 }
             }
         }
@@ -850,18 +835,6 @@ public class Linkd extends AbstractServiceDaemon {
         this.m_eventForwarder = eventForwarder;
     }
 
-    public List<String> getActivePackages() {
-        synchronized (m_activepackages) {
-            return Collections.unmodifiableList(m_activepackages);
-        }
-    }
-
-    public void addPackage(final String packageName) {
-        synchronized (m_activepackages) {
-            m_activepackages.add(packageName);
-        }
-    }
-
     // Here all the information related to the
     // mapping between ipaddress and mac address are stored
     public void addAtInterface(final String packageName, final AtInterface atinterface) {
@@ -921,15 +894,19 @@ public class Linkd extends AbstractServiceDaemon {
             final Map<String, List<AtInterface>> interfaces = m_macToAtinterface.get(packageName);
             if (interfaces != null) interfaces.clear();
         }
-        
-        synchronized (m_nodes) {
-            final List<LinkableNode> nodes = m_nodes.get(packageName);
-            if (nodes != null) nodes.clear();
-            
-        }
     }
 
     public String getSource() {
         return "linkd";
+    }
+
+
+    public Set<String> getActivePackages() {
+        Set<String> packages = new HashSet<String>();
+        synchronized (m_nodes) {
+            for (LinkableNode node: m_nodes)
+                packages.add(node.getPackageName());
+        }
+        return packages;
     }
 }

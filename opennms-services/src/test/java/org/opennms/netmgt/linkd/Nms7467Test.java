@@ -107,11 +107,24 @@ public class Nms7467Test extends Nms7467NetworkBuilder {
         assertEquals(false, m_linkdConfig.isInterfaceInPackage(InetAddressUtils.addr(CISCO_C870_IP), example1));
         
         m_nodeDao.save(getCiscoC870());
+        m_nodeDao.save(getCiscoWsC2948());
         m_nodeDao.flush();
         
         m_linkdConfig.update();
-        assertEquals(true, m_linkdConfig.isInterfaceInPackage(InetAddressUtils.addr(CISCO_C870_IP), example1));
         
+        assertEquals(true, m_linkdConfig.isInterfaceInPackage(InetAddressUtils.addr(CISCO_C870_IP), example1));
+        assertEquals(true, m_linkdConfig.isInterfaceInPackage(InetAddressUtils.addr(CISCO_WS_C2948_IP), example1));
+        
+        final OnmsNode ciscorouter = m_nodeDao.findByForeignId("linkd", CISCO_C870_NAME);
+        final OnmsNode ciscows = m_nodeDao.findByForeignId("linkd", CISCO_WS_C2948_NAME);
+        assertTrue(m_linkd.scheduleNodeCollection(ciscorouter.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(ciscows.getId()));
+
+        LinkableNode lciscorouter = m_linkd.removeNode("example1", InetAddressUtils.addr(CISCO_C870_IP));
+        assertNotNull(lciscorouter);
+        assertEquals(ciscorouter.getId().intValue(),lciscorouter.getNodeId() );
+
+        assertEquals(1, m_linkd.getActivePackages().size());
     }
     
     @Test
