@@ -26,26 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.threshd;
+package org.opennms.netmgt.dao.api;
 
-/*
- * 
- * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- */
+import java.io.Serializable;
+import java.util.List;
+
+import org.opennms.core.criteria.Criteria;
+import org.opennms.netmgt.model.OnmsCriteria;
+
 /**
- * <p>JBossThresholder class.</p>
- *
- * @author ranger
- * @version $Id: $
+ * @deprecated DAO interfaces that inherit from this should be refactored to no longer
+ * use the {@link OnmsCriteria} functions.
+ * 
+ * @param <T> The type of the Entity this DAO is intended to manage.
+ * @param <K> The key of the Entity.
  */
-public class JBossThresholder extends JMXThresholder {
+public interface LegacyOnmsDao<T, K extends Serializable> extends OnmsDao<T,K> {
     
     /**
-     * <p>Constructor for JBossThresholder.</p>
+     * @deprecated use {@link #findMatching(Criteria)} instead.
      */
-    public JBossThresholder() {
-        super();
-        setServiceName("jboss");
-    }
+    List<T> findMatching(OnmsCriteria criteria);
+
+    /**
+     * @deprecated use {@link #countMatching(Criteria)} instead.
+     */
+    int countMatching(final OnmsCriteria onmsCrit);
 }

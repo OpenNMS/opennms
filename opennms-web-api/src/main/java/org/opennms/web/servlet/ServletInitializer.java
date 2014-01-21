@@ -39,7 +39,6 @@ import java.util.Properties;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
-import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.resource.Vault;
 import org.slf4j.Logger;

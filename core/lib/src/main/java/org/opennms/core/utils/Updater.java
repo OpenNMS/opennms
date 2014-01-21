@@ -39,9 +39,7 @@ import javax.sql.DataSource;
  *
  * @author brozow
  *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
- * @version $Id: $
+ * @deprecated Use DAO functions instead of raw JDBC calls
  */
 public class Updater extends JDBCTemplate {
     

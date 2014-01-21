@@ -2,6 +2,7 @@ package org.opennms.netmgt.accesspointmonitor;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -13,7 +14,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.hibernate.criterion.Restrictions;
+import org.opennms.core.criteria.Alias;
+import org.opennms.core.criteria.Alias.JoinType;
+import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.accesspointmonitor.poller.AccessPointPoller;
 import org.opennms.netmgt.config.accesspointmonitor.AccessPointMonitorConfig;
@@ -21,16 +25,16 @@ import org.opennms.netmgt.config.accesspointmonitor.Package;
 import org.opennms.netmgt.dao.AccessPointDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.model.AccessPointStatus;
 import org.opennms.netmgt.model.OnmsAccessPoint;
 import org.opennms.netmgt.model.OnmsAccessPointCollection;
-import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsIpInterfaceList;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
@@ -287,8 +291,8 @@ public class DefaultPollingContext implements PollingContext {
 
         OnmsIpInterfaceList ifaces = new OnmsIpInterfaceList();
         // Only poll the primary interface
-        final OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
-        criteria.add(Restrictions.sqlRestriction("issnmpprimary = 'P'"));
+        final Criteria criteria = new Criteria(OnmsIpInterface.class);
+        criteria.addRestriction(new EqRestriction("isSnmpPrimary", PrimaryType.PRIMARY));
 
         List<OnmsIpInterface> allValidIfaces = getIpInterfaceDao().findMatching(criteria);
         for (OnmsIpInterface iface : allValidIfaces) {
@@ -304,8 +308,11 @@ public class DefaultPollingContext implements PollingContext {
      * Return the IP address of the first interface on the node
      */
     protected InetAddress getNodeIpAddress(OnmsNode node) {
-        final OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
-        criteria.add(Restrictions.sqlRestriction("nodeid = " + node.getId()));
+        final Criteria criteria = new Criteria(OnmsIpInterface.class)
+            .setAliases(Arrays.asList(new Alias[] {
+                new Alias("node", "node", JoinType.LEFT_JOIN)
+            }))
+            .addRestriction(new EqRestriction("node.id", node.getId()));
         List<OnmsIpInterface> matchingIfaces = getIpInterfaceDao().findMatching(criteria);
         return matchingIfaces.get(0).getIpAddress();
     }

@@ -40,7 +40,7 @@
         java.sql.SQLException,
         org.opennms.core.soa.ServiceRegistry,
         org.opennms.core.utils.InetAddressUtils,
-        org.opennms.web.pathOutage.*,
+	org.opennms.netmgt.poller.PathOutageFactory,
         org.opennms.web.api.Authentication,
         org.opennms.web.svclayer.ResourceService,
         org.opennms.web.asset.Asset,
@@ -140,7 +140,7 @@
 %>
 
 <%
-    OnmsNode node_db = ElementUtil.getNodeByParams(request, getServletContext());
+	OnmsNode node_db = ElementUtil.getNodeByParams(request, getServletContext());
     int nodeId = node_db.getId();
     
     Map<String, Object> nodeModel = new TreeMap<String, Object>();
@@ -164,7 +164,7 @@
     
     nodeModel.put("resources", m_resourceService.findNodeChildResources(node_db));
     nodeModel.put("vlans", NetworkElementFactory.getInstance(getServletContext()).getVlansOnNode(nodeId));
-    nodeModel.put("criticalPath", PathOutageFactory.getCriticalPath(nodeId));
+    nodeModel.put("criticalPath", PathOutageFactory.getPrettyCriticalPath(nodeId));
     nodeModel.put("noCriticalPath", PathOutageFactory.NO_CRITICAL_PATH);
     nodeModel.put("admin", request.isUserInRole(Authentication.ROLE_ADMIN));
     

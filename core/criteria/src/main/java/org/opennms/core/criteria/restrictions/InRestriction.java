@@ -28,12 +28,17 @@
 
 package org.opennms.core.criteria.restrictions;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 public class InRestriction extends AttributeValueRestriction {
 
     public InRestriction(final String attribute, final Collection<?> collection) {
         super(RestrictionType.IN, attribute, collection);
+    }
+
+    public InRestriction(final String attribute, final Object[] collection) {
+        this(attribute, Arrays.asList(collection));
     }
 
     public Collection<?> getValues() {

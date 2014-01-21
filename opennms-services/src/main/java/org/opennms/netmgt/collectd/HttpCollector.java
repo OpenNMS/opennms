@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -37,7 +36,6 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
-import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -83,7 +81,6 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.EmptyKeyRelaxedTrustProvider;
 import org.opennms.core.utils.EmptyKeyRelaxedTrustSSLContext;
 import org.opennms.core.utils.InetAddressUtils;

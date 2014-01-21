@@ -28,11 +28,10 @@
 
 package org.opennms.netmgt.dao.api;
 
-import org.opennms.core.criteria.Criteria;
-import org.opennms.netmgt.model.OnmsCriteria;
-
 import java.io.Serializable;
 import java.util.List;
+
+import org.opennms.core.criteria.Criteria;
 
 /**
  * OnmsDao interface.
@@ -62,18 +61,8 @@ public interface OnmsDao<T, K extends Serializable> {
     
     List<T> findMatching(Criteria criteria);
 
-    /**
-     * @deprecated use {@link #findMatching(Criteria)} instead.
-     */
-    List<T> findMatching(OnmsCriteria criteria);
-
     int countMatching(final Criteria onmsCrit);
 
-    /**
-     * @deprecated use {@link #countMatching(Criteria)} instead.
-     */
-    int countMatching(final OnmsCriteria onmsCrit);
-    
     T get(K id);
 
     T load(K id);

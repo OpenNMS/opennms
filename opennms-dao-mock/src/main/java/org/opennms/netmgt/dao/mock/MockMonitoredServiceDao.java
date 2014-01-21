@@ -1,7 +1,5 @@
 package org.opennms.netmgt.dao.mock;
 
-import static org.opennms.core.utils.InetAddressUtils.addr;
-
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -58,19 +56,9 @@ public class MockMonitoredServiceDao extends AbstractMockDao<OnmsMonitoredServic
     }
 
     @Override
-    public OnmsMonitoredService get(final Integer nodeId, final String ipAddr, final Integer ifIndex, final Integer serviceId) {
+    public OnmsMonitoredService get(final Integer nodeId, final InetAddress ipAddress, final Integer serviceId) {
         for (final OnmsMonitoredService svc : findAll()) {
-            if (svc.getNodeId() == nodeId && svc.getIpAddress().equals(addr(ipAddr)) && ifIndex == svc.getIfIndex() && serviceId == svc.getId()) {
-                return svc;
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public OnmsMonitoredService get(final Integer nodeId, final String ipAddr, final Integer serviceId) {
-        for (final OnmsMonitoredService svc : findAll()) {
-            if (svc.getNodeId() == nodeId && svc.getIpAddress().equals(ipAddr) && serviceId == svc.getId()) {
+            if (svc.getNodeId() == nodeId && svc.getIpAddress().equals(ipAddress) && serviceId == svc.getId()) {
                 return svc;
             }
         }

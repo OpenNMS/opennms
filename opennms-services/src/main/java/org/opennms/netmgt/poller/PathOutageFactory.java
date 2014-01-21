@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.pathOutage;
+package org.opennms.netmgt.poller;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -37,7 +37,9 @@ import java.util.List;
 
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.Querier;
 import org.opennms.core.utils.WebSecurityUtils;
+import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 
 /**
  * The source for all path outage business objects (nodes, critical path IPs,
@@ -48,7 +50,7 @@ import org.opennms.core.utils.WebSecurityUtils;
  * @version $Id: $
  * @since 1.8.1
  */
-public class PathOutageFactory extends Object {
+public abstract class PathOutageFactory {
 
     private static final String GET_CRITICAL_PATHS = "SELECT DISTINCT criticalpathip, criticalpathservicename FROM pathoutage ORDER BY criticalpathip, criticalpathservicename";
 
@@ -117,7 +119,7 @@ public class PathOutageFactory extends Object {
      * @return a {@link java.lang.String} object.
      * @throws java.sql.SQLException if any.
      */
-    public static String getCriticalPath(int nodeID) throws SQLException {
+    public static String getPrettyCriticalPath(int nodeID) throws SQLException {
         final DBUtils d = new DBUtils(PathOutageFactory.class);
         String result = NO_CRITICAL_PATH;
 
@@ -137,6 +139,29 @@ public class PathOutageFactory extends Object {
         }
 
         return result;
+    }
+
+    public static String[] getCriticalPath(int nodeId) {
+        final String[] cpath = new String[2];
+        Querier querier = new Querier(DataSourceFactory.getInstance(), GET_CRITICAL_PATH_BY_NODEID) {
+    
+            @Override
+            public void processRow(ResultSet rs) throws SQLException {
+                cpath[0] = rs.getString(1);
+                cpath[1] = rs.getString(2);
+            }
+    
+        };
+        querier.execute(Integer.valueOf(nodeId));
+    
+        if (cpath[0] == null || cpath[0].equals("")) {
+            cpath[0] = OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathIp();
+            cpath[1] = "ICMP";
+        }
+        if (cpath[1] == null || cpath[1].equals("")) {
+            cpath[1] = "ICMP";
+        }
+        return cpath;
     }
 
     /**

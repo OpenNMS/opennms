@@ -33,7 +33,7 @@
 	import="
 		java.util.List,
 		org.opennms.netmgt.config.OpennmsServerConfigFactory,
-		org.opennms.web.pathOutage.*
+		org.opennms.netmgt.poller.PathOutageFactory
 	"
 %>
 

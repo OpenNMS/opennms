@@ -37,7 +37,6 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.opennms.core.db.DataSourceFactory;
-import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.core.utils.Querier;
 import org.opennms.core.utils.RowProcessor;

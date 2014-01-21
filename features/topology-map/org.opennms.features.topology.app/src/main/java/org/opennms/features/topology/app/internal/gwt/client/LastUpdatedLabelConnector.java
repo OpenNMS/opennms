@@ -29,10 +29,8 @@
 package org.opennms.features.topology.app.internal.gwt.client;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.AbstractComponentConnector;
-import com.vaadin.shared.AbstractComponentState;
 import com.vaadin.shared.ui.Connect;
 
 @Connect(org.opennms.features.topology.app.internal.ui.LastUpdatedLabel.class)
