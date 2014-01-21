@@ -78,6 +78,8 @@ public class WebDetector extends BasicDetector<WebRequest, WebResponse> {
 
     private String queryString;
 
+    private boolean useSSLFilter = false;
+
     /**
      * Default constructor
      */
@@ -119,13 +121,15 @@ public class WebDetector extends BasicDetector<WebRequest, WebResponse> {
 
     @Override
     protected Client<WebRequest, WebResponse> getClient() {
-        final WebClient client = new WebClient();
+        final WebClient client = new WebClient(isUseSSLFilter());
+
         client.setPath(getPath());
         client.setSchema(getSchema());
         client.setUserAgent(getUserAgent());
         client.setVirtualHost(getVirtualHost(), getPort());
         client.setQueryString(getQueryString());
         client.setUseHttpV1(isUseHttpV1());
+        client.setUseSSLFilter(isUseSSLFilter());
         if (isAuthEnabled()) {
             client.setAuth(getAuthUser(), getAuthPassword());
             client.setAuthPreemtive(isAuthPreemtive());
@@ -171,6 +175,14 @@ public class WebDetector extends BasicDetector<WebRequest, WebResponse> {
 
     public void setQueryString(String queryString) {
         this.queryString = queryString;
+    }
+
+    public boolean isUseSSLFilter() {
+        return useSSLFilter;
+    }
+
+    public void setUseSSLFilter(boolean useSSLFilter) {
+        this.useSSLFilter = useSSLFilter;
     }
 
     public boolean isUseHttpV1() {

@@ -32,6 +32,11 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Map.Entry;
 
+import org.apache.http.conn.scheme.Scheme;  
+import org.apache.http.conn.ssl.AllowAllHostnameVerifier;  
+import org.apache.http.conn.ssl.SSLSocketFactory;  
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
+
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
@@ -78,8 +83,19 @@ public class WebClient implements Client<WebRequest, WebResponse> {
 
     private String queryString;
 
-    public WebClient() {
-        m_httpClient = new DefaultHttpClient();
+    private boolean useSSLFilter;
+
+    public WebClient(boolean override) {
+        if (override) {
+            m_httpClient = new DefaultHttpClient();
+            try {
+              m_httpClient.getConnectionManager().getSchemeRegistry().register(new Scheme("https", 443, new SSLSocketFactory(new TrustSelfSignedStrategy(), new AllowAllHostnameVerifier())));
+            }
+            catch (Exception e){
+            }
+        } else {
+            m_httpClient = new DefaultHttpClient();
+        }
     }
 
     @Override
@@ -91,6 +107,7 @@ public class WebClient implements Client<WebRequest, WebResponse> {
         ub.setPath(path);
         if (queryString != null)
             ub.setQuery(queryString);
+
         m_httpMethod = new HttpGet(ub.build());
         setTimeout(timeout);
     }
@@ -127,6 +144,9 @@ public class WebClient implements Client<WebRequest, WebResponse> {
         this.queryString = queryString;
     }
 
+    public void setUseSSLFilter(boolean sslFilter) {
+        this.useSSLFilter = sslFilter;
+    }
 
     public void setSchema(String schema) {
         this.schema = schema;        
