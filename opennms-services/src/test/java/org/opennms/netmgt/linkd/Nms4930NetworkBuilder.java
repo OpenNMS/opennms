@@ -3,7 +3,7 @@ package org.opennms.netmgt.linkd;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 
-public class Nms4930NetworkBuilder extends LinkdNetworkBuilder {
+public class Nms4930NetworkBuilder extends LinkdTestBuilder {
 
 	@SuppressWarnings("deprecation")
 	public void buildNetwork4930() {

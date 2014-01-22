@@ -42,7 +42,7 @@ import org.opennms.netmgt.model.OnmsNode;
  * @author <a href="mailto:alejandro@opennms.org">Alejandro Galue</a>
  */
 
-public abstract class Nms17216NetworkBuilder extends LinkdNetworkBuilder {
+public abstract class Nms17216NetworkBuilder extends LinkdTestBuilder {
 
     protected static final String ROUTER1_IP = "192.168.100.245";
     protected static final String ROUTER1_NAME = "Router1";

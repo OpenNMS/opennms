@@ -40,7 +40,7 @@ import org.opennms.netmgt.model.OnmsNode;
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  */
 
-public abstract class Nms007NetworkBuilder extends LinkdNetworkBuilder {
+public abstract class Nms007NetworkBuilder extends LinkdTestBuilder {
 
     protected static final String FireFly170_IP = "192.168.168.170";
     protected static final String FireFly170_NAME = "FireFly_170";
