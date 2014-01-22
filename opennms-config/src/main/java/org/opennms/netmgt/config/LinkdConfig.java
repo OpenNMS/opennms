@@ -145,13 +145,6 @@ public interface LinkdConfig {
     int getThreads();
 
     /**
-     * <p>enableDiscoveryDownload</p>
-     *
-     * @return a boolean.
-     */
-    boolean enableDiscoveryDownload();
-
-    /**
      * <p>useIpRouteDiscovery</p>
      *
      * @return a boolean.

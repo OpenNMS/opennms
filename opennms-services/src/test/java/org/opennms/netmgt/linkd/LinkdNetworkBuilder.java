@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.linkd.nb;
+package org.opennms.netmgt.linkd;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -35,10 +35,26 @@ import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.utils.BeanUtils;
+import org.opennms.netmgt.config.LinkdConfig;
+import org.opennms.netmgt.config.LinkdConfigFactory;
+import org.opennms.netmgt.dao.api.AtInterfaceDao;
+import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.IpRouteInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.dao.api.StpInterfaceDao;
+import org.opennms.netmgt.dao.api.StpNodeDao;
+import org.opennms.netmgt.dao.api.VlanDao;
 import org.opennms.netmgt.linkd.CdpInterface;
 import org.opennms.netmgt.linkd.Linkd;
 import org.opennms.netmgt.linkd.RouterInterface;
@@ -51,6 +67,12 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.SnmpInterfaceBuilder;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
+import org.opennms.test.JUnitConfigurationEnvironment;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.test.context.ContextConfiguration;
 
 /**
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
@@ -58,15 +80,97 @@ import org.opennms.netmgt.model.OnmsNode.NodeType;
  * @author <a href="mailto:alejandro@opennms.org">Alejandro Galue</a>
  */
 
-public abstract class LinkdNetworkBuilder {
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations= {
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:/META-INF/opennms/applicationContext-linkd.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
+})
+@JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
+@JUnitTemporaryDatabase
+public abstract class LinkdNetworkBuilder implements InitializingBean {
 
-    protected SnmpInterfaceDao m_snmpInterfaceDao;
+    private boolean firstTest=true;
 
-    protected IpInterfaceDao m_ipInterfaceDao;
+    @Autowired
+    protected Linkd m_linkd;
 
+    @Autowired
+    protected LinkdConfig m_linkdConfig;
+
+    @Autowired
     protected NodeDao m_nodeDao;
     
+    @Autowired
+    protected SnmpInterfaceDao m_snmpInterfaceDao;
+
+    @Autowired
+    protected IpInterfaceDao m_ipInterfaceDao;
+
+    @Autowired
+    protected DataLinkInterfaceDao m_dataLinkInterfaceDao;
+        
+    @Autowired
+    protected StpNodeDao m_stpNodeDao;
+    
+    @Autowired
+    protected StpInterfaceDao m_stpInterfaceDao;
+    
+    @Autowired
+    protected IpRouteInterfaceDao m_ipRouteInterfaceDao;
+    
+    @Autowired
+    protected AtInterfaceDao m_atInterfaceDao;
+
+    @Autowired
+    protected VlanDao m_vlanDao;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+    
     NetworkBuilder m_networkBuilder;
+
+    @Before
+    public void setUp() throws Exception {
+        if (firstTest) {
+            setUpLogging();
+        } else {
+            setUpLinkdConfiguration();
+        }
+        firstTest = false;
+    }
+    
+    public void setUpLogging() throws Exception {
+        Properties p = new Properties();
+        p.setProperty("log4j.logger.org.hibernate.SQL", "WARN");
+        p.setProperty("log4j.logger.org.hibernate.cfg", "WARN");
+        p.setProperty("log4j.logger.org.springframework","WARN");
+        p.setProperty("log4j.logger.com.mchange.v2.resourcepool", "WARN");
+        MockLogAppender.setupLogging(p);
+    }
+
+    public void setUpLinkdConfiguration() throws Exception {
+        LinkdConfigFactory.init();
+        final Resource config = new ClassPathResource("etc/linkd-configuration.xml");
+        final LinkdConfigFactory factory = new LinkdConfigFactory(-1L, config.getInputStream());
+        LinkdConfigFactory.setInstance(factory);
+        m_linkdConfig = LinkdConfigFactory.getInstance();
+        m_linkd.setLinkdConfig(m_linkdConfig);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        for (final OnmsNode node : m_nodeDao.findAll()) {
+            m_nodeDao.delete(node);
+        }
+        m_nodeDao.flush();
+    }
 
     protected void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
