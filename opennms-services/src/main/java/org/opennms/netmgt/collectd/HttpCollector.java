@@ -97,6 +97,7 @@ import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.config.collector.CollectionSetVisitor;
 import org.opennms.netmgt.config.collector.Persister;
 import org.opennms.netmgt.config.collector.ServiceParameters;
+import org.opennms.netmgt.config.collector.ServiceParameters.ParameterName;
 import org.opennms.netmgt.config.httpdatacollection.Attrib;
 import org.opennms.netmgt.config.httpdatacollection.HttpCollection;
 import org.opennms.netmgt.config.httpdatacollection.Parameter;
@@ -117,7 +118,7 @@ public class HttpCollector implements ServiceCollector {
     private static final Logger LOG = LoggerFactory.getLogger(HttpCollector.class);
 
     private static final int DEFAULT_RETRY_COUNT = 2;
-    private static final String DEFAULT_SO_TIMEOUT = "3000";
+    private static final int DEFAULT_SO_TIMEOUT = 3000;
 
     private static final NumberFormat PARSER;
 
@@ -170,10 +171,10 @@ public class HttpCollector implements ServiceCollector {
         }
 
         public void collect() {
-            String collectionName=ParameterMap.getKeyedString(m_parameters, "collection", null);
+            String collectionName=ParameterMap.getKeyedString(m_parameters, ParameterName.COLLECTION.toString(), null);
             if(collectionName==null) {
                 //Look for the old configuration style:
-            	collectionName=ParameterMap.getKeyedString(m_parameters, "http-collection", null);
+            	collectionName=ParameterMap.getKeyedString(m_parameters, ParameterName.HTTP_COLLECTION.toString(), null);
             }
             if (collectionName==null) {
                 LOG.debug("no collection name found in parameters");
@@ -252,9 +253,9 @@ public class HttpCollector implements ServiceCollector {
 	public int getPort() { // This method has been created to deal with NMS-4886
 	    int port = getUriDef().getUrl().getPort();
 	    // Check for service assigned port if UriDef port is not supplied (i.e., is equal to the default port 80)
-	    if (port == 80 && m_parameters.containsKey("port")) {
+	    if (port == 80 && m_parameters.containsKey(ParameterName.PORT.toString())) {
 	        try {
-	            port = Integer.parseInt(m_parameters.get("port").toString());
+	            port = Integer.parseInt(m_parameters.get(ParameterName.PORT.toString()).toString());
 	            LOG.debug("getPort: using service provided HTTP port {}", port);
 	        } catch (Exception e) {
 	            LOG.warn("Malformed HTTP port on service definition.");
@@ -297,9 +298,9 @@ public class HttpCollector implements ServiceCollector {
                 registry.register(lenient);
             }
 
-            String key = "retry";
-            if (collectionSet.getParameters().containsKey("retries")) {
-                key = "retries";
+            String key = ParameterName.RETRY.toString();
+            if (collectionSet.getParameters().containsKey(ParameterName.RETRIES.toString())) {
+                key = ParameterName.RETRIES.toString();
             }
             Integer retryCount = ParameterMap.getKeyedInteger(collectionSet.getParameters(), key, DEFAULT_RETRY_COUNT);
             client.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(retryCount, false));
@@ -624,8 +625,8 @@ public class HttpCollector implements ServiceCollector {
     private static HttpParams buildParams(final HttpCollectionSet collectionSet) {
         HttpParams params = new BasicHttpParams();
         params.setParameter(CoreProtocolPNames.PROTOCOL_VERSION, computeVersion(collectionSet.getUriDef()));
-        params.setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, Integer.parseInt(ParameterMap.getKeyedString(collectionSet.getParameters(), "timeout", DEFAULT_SO_TIMEOUT)));
-        params.setIntParameter(CoreConnectionPNames.SO_TIMEOUT, Integer.parseInt(ParameterMap.getKeyedString(collectionSet.getParameters(), "timeout", DEFAULT_SO_TIMEOUT)));
+        params.setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, ParameterMap.getKeyedInteger(collectionSet.getParameters(), ParameterName.TIMEOUT.toString(), DEFAULT_SO_TIMEOUT));
+        params.setIntParameter(CoreConnectionPNames.SO_TIMEOUT, ParameterMap.getKeyedInteger(collectionSet.getParameters(), ParameterName.TIMEOUT.toString(), DEFAULT_SO_TIMEOUT));
         params.setParameter(ClientPNames.COOKIE_POLICY, CookiePolicy.BROWSER_COMPATIBILITY);
 
         //review the httpclient code, looks like virtual host is checked for null

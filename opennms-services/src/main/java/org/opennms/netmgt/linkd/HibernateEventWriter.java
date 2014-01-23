@@ -755,7 +755,6 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
         return null;
     }
 
-    @SuppressWarnings("deprecation")
     @Transactional
     @Override
     protected OnmsSnmpInterface getFromSysnameIfName(String lldpRemSysname,
@@ -773,7 +772,6 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
         return null;
     }
 
-    @SuppressWarnings("deprecation")
     @Transactional
     @Override
     protected OnmsSnmpInterface getFromSysnameIfIndex(String lldpRemSysname,
@@ -791,7 +789,6 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
         return null;
     }
 
-    @SuppressWarnings("deprecation")
     @Transactional
     @Override
     protected OnmsSnmpInterface getFromSysnameMacAddress(String lldpRemSysname,
@@ -809,7 +806,6 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
         return null;
     }
 
-    @SuppressWarnings("deprecation")
     @Transactional
     @Override
     protected OnmsSnmpInterface getFromSysnameIfAlias(String lldpRemSysname,

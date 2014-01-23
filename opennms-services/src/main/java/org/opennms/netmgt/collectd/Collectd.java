@@ -566,8 +566,7 @@ public class Collectd extends AbstractServiceDaemon implements
             }
 
             // Is the interface in the package?
-            final String ipAddress = str(iface.getIpAddress());
-			if (!wpkg.interfaceInPackage(ipAddress)) {
+            if (!wpkg.interfaceInPackage(iface)) {
                 LOG.debug("getSpecificationsForInterface: address/service: {}/{} not scheduled, interface does not belong to package: {}", iface, svcName, wpkg.getName());
                 continue;
             }
