@@ -110,7 +110,7 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
                 agentConfig.setAuthPassPhrase(value);
             } else if ("auth-protocol".equalsIgnoreCase(key)) {
                 agentConfig.setAuthProtocol(value);
-            } else if ("priv-passprhase".equalsIgnoreCase(key)) {
+            } else if ("priv-passphrase".equalsIgnoreCase(key)) {
                 agentConfig.setPrivPassPhrase(value);
             } else if ("priv-protocol".equalsIgnoreCase(key)) {
                 agentConfig.setPrivProtocol(value);
@@ -178,7 +178,7 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
             buff.append(", Security name: ").append(getSecurityName());
             buff.append(", auth-passphrase: ").append(getAuthPassPhrase());
             buff.append(", auth-protocol: ").append(getAuthProtocol());
-            buff.append(", priv-passprhase: ").append(getPrivPassPhrase());
+            buff.append(", priv-passphrase: ").append(getPrivPassPhrase());
             buff.append(", priv-protocol: ").append(getPrivProtocol());
             buff.append(", Context name: ").append(getContextName());
             buff.append(", Engine ID: ").append(getEngineId());
