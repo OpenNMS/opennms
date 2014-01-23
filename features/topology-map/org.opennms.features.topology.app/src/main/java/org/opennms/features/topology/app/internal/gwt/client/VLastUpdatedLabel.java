@@ -28,14 +28,11 @@
 
 package org.opennms.features.topology.app.internal.gwt.client;
 
+import java.util.Date;
+
 import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.i18n.client.LocaleInfo;
-import com.google.gwt.i18n.client.constants.TimeZoneConstants;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
-
-import com.google.gwt.i18n.client.TimeZone;
-import java.util.Date;
 
 public class VLastUpdatedLabel extends Composite {
 

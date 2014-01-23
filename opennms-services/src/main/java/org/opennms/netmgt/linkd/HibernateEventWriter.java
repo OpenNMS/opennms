@@ -32,12 +32,14 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.hibernate.criterion.Restrictions;
+import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Alias.JoinType;
+import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.utils.BeanUtils;
@@ -55,7 +57,6 @@ import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsAtInterface;
-import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsIpRouteInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -355,7 +356,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
             m_dataLinkInterfaceDao.saveOrUpdate(link);
         }
         m_dataLinkInterfaceDao.deactivateIfOlderThan(now,source);
-        m_dataLinkInterfaceDao.deleteIfOlderThan(new Date(now.getTime()-3*discoveryLink.getSnmpPollInterval()),source);
+        m_dataLinkInterfaceDao.deleteIfOlderThan(new Date(now.getTime()-3*discoveryLink.getInterval()),source);
         m_dataLinkInterfaceDao.flush();
     }
 
@@ -758,10 +759,12 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
     @Override
     protected OnmsSnmpInterface getFromSysnameIfName(String lldpRemSysname,
             String lldpRemPortid) {
-        final OnmsCriteria criteria = new OnmsCriteria(OnmsSnmpInterface.class);
-        criteria.createAlias("node", "node");
-        criteria.add(Restrictions.eq("node.sysName", lldpRemSysname));
-        criteria.add(Restrictions.eq("ifName", lldpRemPortid));
+        final Criteria criteria = new Criteria(OnmsSnmpInterface.class);
+        criteria.setAliases(Arrays.asList(new Alias[] {
+            new Alias("node", "node", JoinType.LEFT_JOIN)
+        }));
+        criteria.addRestriction(new EqRestriction("node.sysName", lldpRemSysname));
+        criteria.addRestriction(new EqRestriction("ifName", lldpRemPortid));
         final List<OnmsSnmpInterface> interfaces = getSnmpInterfaceDao().findMatching(criteria);
         if (interfaces != null && !interfaces.isEmpty() && interfaces.size() == 1) {
             return interfaces.get(0);
@@ -773,10 +776,12 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
     @Override
     protected OnmsSnmpInterface getFromSysnameIfIndex(String lldpRemSysname,
             Integer lldpRemPortid) {
-        final OnmsCriteria criteria = new OnmsCriteria(OnmsSnmpInterface.class);
-        criteria.createAlias("node", "node");
-        criteria.add(Restrictions.eq("node.sysName", lldpRemSysname));
-        criteria.add(Restrictions.eq("ifIndex", lldpRemPortid));
+        final Criteria criteria = new Criteria(OnmsSnmpInterface.class);
+        criteria.setAliases(Arrays.asList(new Alias[] {
+            new Alias("node", "node", JoinType.LEFT_JOIN)
+        }));
+        criteria.addRestriction(new EqRestriction("node.sysName", lldpRemSysname));
+        criteria.addRestriction(new EqRestriction("ifIndex", lldpRemPortid));
         final List<OnmsSnmpInterface> interfaces = getSnmpInterfaceDao().findMatching(criteria);
         if (interfaces != null && !interfaces.isEmpty() && interfaces.size() == 1) {
             return interfaces.get(0);
@@ -788,10 +793,12 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
     @Override
     protected OnmsSnmpInterface getFromSysnameMacAddress(String lldpRemSysname,
             String lldpRemPortid) {
-        final OnmsCriteria criteria = new OnmsCriteria(OnmsSnmpInterface.class);
-        criteria.createAlias("node", "node");
-        criteria.add(Restrictions.eq("node.sysName", lldpRemSysname));
-        criteria.add(Restrictions.eq("physAddr", lldpRemPortid));
+        final Criteria criteria = new Criteria(OnmsSnmpInterface.class);
+        criteria.setAliases(Arrays.asList(new Alias[] {
+            new Alias("node", "node", JoinType.LEFT_JOIN)
+        }));
+        criteria.addRestriction(new EqRestriction("node.sysName", lldpRemSysname));
+        criteria.addRestriction(new EqRestriction("physAddr", lldpRemPortid));
         final List<OnmsSnmpInterface> interfaces = getSnmpInterfaceDao().findMatching(criteria);
         if (interfaces != null && !interfaces.isEmpty() && interfaces.size() == 1) {
             return interfaces.get(0);
@@ -803,10 +810,12 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
     @Override
     protected OnmsSnmpInterface getFromSysnameIfAlias(String lldpRemSysname,
             String lldpRemPortid) {
-        final OnmsCriteria criteria = new OnmsCriteria(OnmsSnmpInterface.class);
-        criteria.createAlias("node", "node");
-        criteria.add(Restrictions.eq("node.sysName", lldpRemSysname));
-        criteria.add(Restrictions.eq("ifAlias", lldpRemPortid));
+        final Criteria criteria = new Criteria(OnmsSnmpInterface.class);
+        criteria.setAliases(Arrays.asList(new Alias[] {
+            new Alias("node", "node", JoinType.LEFT_JOIN)
+        }));
+        criteria.addRestriction(new EqRestriction("node.sysName", lldpRemSysname));
+        criteria.addRestriction(new EqRestriction("ifAlias", lldpRemPortid));
         final List<OnmsSnmpInterface> interfaces = getSnmpInterfaceDao().findMatching(criteria);
         if (interfaces != null && !interfaces.isEmpty() && interfaces.size() == 1) {
             return interfaces.get(0);

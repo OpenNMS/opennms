@@ -103,19 +103,6 @@
 				</annotation>
 			</attribute>
 
-			<attribute name="enable-discovery-download" type="boolean"
-				use="optional" default="false">
-				<annotation>
-					<documentation>
-						Whether Discovery Link should try to get 
-						specific snmp bridge info probably lost in snmp data collection.
-						Should be enabled only in very complex network
-						where snmpCollection often fails.
-						Enabling this flags slows the discovery process a lot.   
-					</documentation>
-				</annotation>
-			</attribute>
-
 			<attribute name="enable-vlan-discovery" type="boolean"
 				use="optional" default="true">
 				<annotation>
@@ -453,14 +440,6 @@
 			</attribute>
 
 			<attribute name="auto-discovery" type="boolean">
-				<annotation>
-					<documentation>
-						OverWrite default value of link-configuration corresponding attribute	
-					</documentation>
-				</annotation>
-			</attribute>
-
-			<attribute name="enable-discovery-download" type="boolean">
 				<annotation>
 					<documentation>
 						OverWrite default value of link-configuration corresponding attribute	

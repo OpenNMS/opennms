@@ -30,7 +30,6 @@ package org.opennms.netmgt.notifd.jmx;
 
 import java.lang.reflect.UndeclaredThrowableException;
 
-import org.opennms.core.db.DataSourceFactory;
 import org.opennms.netmgt.config.DestinationPathFactory;
 import org.opennms.netmgt.config.GroupFactory;
 import org.opennms.netmgt.config.NotifdConfigFactory;

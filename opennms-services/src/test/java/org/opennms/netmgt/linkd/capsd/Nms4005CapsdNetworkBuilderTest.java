@@ -36,6 +36,7 @@ import java.util.Properties;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -46,7 +47,7 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.capsd.Capsd;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.linkd.nb.Nms4005NetworkBuilder;
+import org.opennms.netmgt.linkd.Nms4005NetworkBuilder;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +60,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author <a href="mailto:alejandro@opennms.org">Alejandro Galue</a>
  */
 
+@Ignore
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",

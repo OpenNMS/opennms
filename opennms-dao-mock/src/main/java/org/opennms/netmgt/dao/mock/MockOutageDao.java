@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opennms.netmgt.dao.api.OutageDao;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.model.outage.OutageSummary;
@@ -29,6 +30,11 @@ public class MockOutageDao extends AbstractMockDao<OnmsOutage, Integer> implemen
 
     @Override
     public Collection<OnmsOutage> currentOutages() {
+        throw new UnsupportedOperationException("Not yet implemented!");
+    }
+
+    @Override
+    public OnmsOutage currentOutageForService(OnmsMonitoredService service) {
         throw new UnsupportedOperationException("Not yet implemented!");
     }
 

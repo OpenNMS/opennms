@@ -39,6 +39,8 @@ public class LinkableNode {
 
     private final LinkableSnmpNode m_snmpnode;
 
+    private final String m_packageName;
+    
     private String m_cdpDeviceId;
 
     private String m_lldpSysname;
@@ -140,8 +142,13 @@ public class LinkableNode {
      * @param sysoid
      *            a {@link java.lang.String} object.
      */
-    public LinkableNode(final LinkableSnmpNode snmpnode) {
+    public LinkableNode(final LinkableSnmpNode snmpnode, final String packageName) {
         m_snmpnode = snmpnode;
+        m_packageName = packageName;
+    }
+
+    public String getPackageName() {
+        return m_packageName;
     }
 
     public LinkableSnmpNode getLinkableSnmpNode() {

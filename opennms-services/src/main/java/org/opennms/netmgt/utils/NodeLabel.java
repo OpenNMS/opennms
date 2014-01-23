@@ -38,7 +38,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.opennms.core.db.DataSourceFactory;
-import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;

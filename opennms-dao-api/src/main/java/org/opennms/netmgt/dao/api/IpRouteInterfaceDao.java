@@ -33,7 +33,7 @@ import java.util.Date;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsIpRouteInterface;
 
-public interface IpRouteInterfaceDao extends OnmsDao<OnmsIpRouteInterface, Integer> {
+public interface IpRouteInterfaceDao extends LegacyOnmsDao<OnmsIpRouteInterface, Integer> {
 
 	void markDeletedIfNodeDeleted();
 

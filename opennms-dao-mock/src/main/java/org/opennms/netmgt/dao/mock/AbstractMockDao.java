@@ -16,9 +16,9 @@ import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.LegacyOnmsDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.OnmsDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.model.OnmsCriteria;
@@ -28,7 +28,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
-public abstract class AbstractMockDao<T, K extends Serializable> implements OnmsDao<T, K>, InitializingBean {
+public abstract class AbstractMockDao<T, K extends Serializable> implements LegacyOnmsDao<T, K>, InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractMockDao.class);
 
     @Autowired

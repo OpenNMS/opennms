@@ -26,9 +26,22 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.linkd.capsd;
+package org.opennms.netmgt.linkd;
 
 import static org.junit.Assert.assertTrue;
+import static org.opennms.netmgt.linkd.Nms7467NetworkBuilder.CISCO_C870_IP;
+import static org.opennms.netmgt.linkd.Nms7467NetworkBuilder.CISCO_C870_IP_IF_MAP;
+import static org.opennms.netmgt.linkd.Nms7467NetworkBuilder.CISCO_C870_IF_MAC_MAP;
+import static org.opennms.netmgt.linkd.Nms7467NetworkBuilder.CISCO_C870_IP_PRIMARY;
+import static org.opennms.netmgt.linkd.Nms7467NetworkBuilder.CISCO_WS_C2948_IP;
+import static org.opennms.netmgt.linkd.Nms7467NetworkBuilder.CISCO_WS_C2948_IF_MAC_MAP;
+import static org.opennms.netmgt.linkd.Nms7467NetworkBuilder.NETGEAR_SW_108_IP;
+import static org.opennms.netmgt.linkd.Nms7467NetworkBuilder.NETGEAR_SW_108_IF_MAC_MAP;
+import static org.opennms.netmgt.linkd.Nms7467NetworkBuilder.LINUX_UBUNTU_IP;
+import static org.opennms.netmgt.linkd.Nms7467NetworkBuilder.LINUX_UBUNTU_IP_IF_MAP;
+import static org.opennms.netmgt.linkd.Nms7467NetworkBuilder.LINUX_UBUNTU_IF_MAC_MAP;
+import static org.opennms.netmgt.linkd.Nms7467NetworkBuilder.DARWIN_10_8_IP;
+import static org.opennms.netmgt.linkd.Nms7467NetworkBuilder.DARWIN_10_8_IF_MAC_MAP;
 
 import java.io.IOException;
 import java.util.List;
@@ -46,7 +59,6 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.capsd.Capsd;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.linkd.nb.Nms7467NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -78,7 +90,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
 @JUnitTemporaryDatabase
-public class Nms7467CapsdIntegrationTest extends Nms7467NetworkBuilder implements InitializingBean {
+public class Nms7467CapsdIntegrationTest implements InitializingBean {
 
 
     @Autowired

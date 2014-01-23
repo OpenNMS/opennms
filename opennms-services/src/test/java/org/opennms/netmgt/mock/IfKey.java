@@ -26,26 +26,49 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.threshd;
+package org.opennms.netmgt.mock;
 
-/*
- * 
- * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- */
 /**
- * <p>JBossThresholder class.</p>
+ * <p>IfKey class.</p>
  *
- * @author ranger
+ * @author brozow
+ *
+ * TODO To change the template for this generated type comment go to Window -
+ * Preferences - Java - Code Style - Code Templates
  * @version $Id: $
  */
-public class JBossThresholder extends JMXThresholder {
-    
+public class IfKey {
+    private int m_nodeId;
+
+    private String m_ipAddr;
+
     /**
-     * <p>Constructor for JBossThresholder.</p>
+     * <p>Constructor for IfKey.</p>
+     *
+     * @param nodeId a int.
+     * @param ipAddr a {@link java.lang.String} object.
      */
-    public JBossThresholder() {
-        super();
-        setServiceName("jboss");
+    public IfKey(int nodeId, String ipAddr) {
+        m_nodeId = nodeId;
+        m_ipAddr = ipAddr;
     }
+
+    /**
+     * <p>getNodeId</p>
+     *
+     * @return a int.
+     */
+    public int getNodeId() {
+        return m_nodeId;
+    }
+
+    /**
+     * <p>getIpAddr</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getIpAddr() {
+        return m_ipAddr;
+    }
+
 }

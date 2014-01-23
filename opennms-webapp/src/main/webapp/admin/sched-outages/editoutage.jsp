@@ -40,7 +40,7 @@
         org.opennms.core.utils.DBUtils,
         org.opennms.core.utils.WebSecurityUtils,
         org.opennms.web.element.*,
-        org.opennms.web.pathOutage.*,
+	org.opennms.netmgt.poller.PathOutageFactory,
         org.opennms.netmgt.model.OnmsNode,
         org.opennms.netmgt.EventConstants,
         org.opennms.netmgt.xml.event.Event,

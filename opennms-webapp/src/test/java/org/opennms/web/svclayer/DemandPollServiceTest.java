@@ -47,7 +47,6 @@ import org.opennms.core.criteria.Criteria;
 import org.opennms.netmgt.dao.api.DemandPollDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.model.DemandPoll;
-import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -176,18 +175,6 @@ public class DemandPollServiceTest extends TestCase {
         public int countMatching(Criteria criteria) {
             throw new UnsupportedOperationException("not yet implemented");
         }
-
-                @Override
-        public List<DemandPoll> findMatching(OnmsCriteria criteria) {
-            throw new UnsupportedOperationException("not yet implemeneted");
-        }
-
-                @Override
-        public int countMatching(OnmsCriteria criteria) {
-            throw new UnsupportedOperationException("not yet implemented");
-        }
-		
-		
 	}
 	
 	public void testPollMonitoredService() throws EventProxyException {

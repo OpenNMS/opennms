@@ -74,7 +74,9 @@ import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
-import org.hibernate.criterion.Restrictions;
+import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.restrictions.EqRestriction;
+import org.opennms.core.criteria.restrictions.GtRestriction;
 import org.opennms.netmgt.config.ackd.Parameter;
 import org.opennms.netmgt.dao.api.AckdConfigurationDao;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
@@ -82,7 +84,6 @@ import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -257,16 +258,16 @@ public class HypericAckProcessor implements AckProcessor {
      */
     public List<OnmsAlarm> fetchUnclearedHypericAlarms() {
         // Query for existing, unacknowledged alarms in OpenNMS that were generated based on Hyperic alerts
-        OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class, "alarm");
+        Criteria criteria = new Criteria(OnmsAlarm.class);
 
         // criteria.add(Restrictions.isNull("alarmAckUser"));
 
         // Restrict to Hyperic alerts
-        criteria.add(Restrictions.eq("uei", "uei.opennms.org/external/hyperic/alert"));
+        criteria.addRestriction(new EqRestriction("uei", "uei.opennms.org/external/hyperic/alert"));
 
         // Only consider alarms that are above severity NORMAL
         // {@see org.opennms.netmgt.model.OnmsSeverity}
-        criteria.add(Restrictions.gt("severity", OnmsSeverity.NORMAL));
+        criteria.addRestriction(new GtRestriction("severity", OnmsSeverity.NORMAL));
 
         // TODO Figure out how to query by parameters (maybe necessary)
 

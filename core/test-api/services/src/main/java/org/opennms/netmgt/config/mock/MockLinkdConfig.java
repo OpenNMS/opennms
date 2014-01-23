@@ -101,11 +101,6 @@ public class MockLinkdConfig implements LinkdConfig {
     }
 
     @Override
-    public boolean enableDiscoveryDownload() {
-        return false;
-    }
-
-    @Override
     public boolean useIpRouteDiscovery() {
         return false;
     }

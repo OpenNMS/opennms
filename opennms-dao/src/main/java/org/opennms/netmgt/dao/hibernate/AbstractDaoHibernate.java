@@ -78,7 +78,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     /** {@inheritDoc} */
     @Override
     public void lock() {
-        getHibernateTemplate().get(AccessLock.class, m_lockName, LockMode.UPGRADE);
+        getHibernateTemplate().get(AccessLock.class, m_lockName, LockMode.PESSIMISTIC_WRITE);
     }
 
     /** {@inheritDoc} */
@@ -311,7 +311,6 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
-    @Override
     public List<T> findMatching(final OnmsCriteria onmsCrit) throws DataAccessException {
         onmsCrit.resultsOfType(m_entityClass); //FIXME: why is this here?
         
@@ -328,7 +327,6 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     }
     
     /** {@inheritDoc} */
-    @Override
     public int countMatching(final OnmsCriteria onmsCrit) throws DataAccessException {
         final HibernateCallback<Integer> callback = new HibernateCallback<Integer>() {
             @Override

@@ -37,7 +37,7 @@ import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 /**
  * <p>DataLinkInterfaceDao interface.</p>
  */
-public interface DataLinkInterfaceDao extends OnmsDao<DataLinkInterface, Integer>{
+public interface DataLinkInterfaceDao extends LegacyOnmsDao<DataLinkInterface, Integer>{
     /**
      * <p>findAll</p>
      *

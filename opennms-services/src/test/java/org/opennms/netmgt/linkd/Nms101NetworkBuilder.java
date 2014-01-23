@@ -1,4 +1,4 @@
-package org.opennms.netmgt.linkd.nb;
+package org.opennms.netmgt.linkd;
 
 import java.net.InetAddress;
 import java.util.HashMap;

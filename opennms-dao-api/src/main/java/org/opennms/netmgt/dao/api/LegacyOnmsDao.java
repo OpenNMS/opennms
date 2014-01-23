@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,23 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.linkd;
+package org.opennms.netmgt.dao.api;
 
-import static org.junit.Assert.assertEquals;
+import java.io.Serializable;
+import java.util.List;
 
+import org.opennms.core.criteria.Criteria;
+import org.opennms.netmgt.model.OnmsCriteria;
 
-import org.junit.Test;
+/**
+ * @deprecated DAO interfaces that inherit from this should be refactored to no longer
+ * use the {@link OnmsCriteria} functions.
+ * 
+ * @param <T> The type of the Entity this DAO is intended to manage.
+ * @param <K> The key of the Entity.
+ */
+public interface LegacyOnmsDao<T, K extends Serializable> extends OnmsDao<T,K> {
+    
+    /**
+     * @deprecated use {@link #findMatching(Criteria)} instead.
+     */
+    List<T> findMatching(OnmsCriteria criteria);
 
-public class DiscoveryLinkBasicTest  {
-
-    @Test
-    public void testBridgePortFromDesignatedBridgePort() {
-        assertEquals(5826, 8191 & Integer.parseInt("96c2",16));
-        assertEquals(5781, 8191 & Integer.parseInt("9695",16));
-        assertEquals(4230, 8191 & Integer.parseInt("9086",16));
-        assertEquals(110, 8191 & Integer.parseInt("806e",16));
-        
-     }
-
-
+    /**
+     * @deprecated use {@link #countMatching(Criteria)} instead.
+     */
+    int countMatching(final OnmsCriteria onmsCrit);
 }

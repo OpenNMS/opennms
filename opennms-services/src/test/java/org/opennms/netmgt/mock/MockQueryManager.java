@@ -35,22 +35,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.sql.DataSource;
-
-import org.opennms.netmgt.poller.IfKey;
 import org.opennms.netmgt.poller.QueryManager;
 
 public class MockQueryManager implements QueryManager {
-
-    @Override
-    public void setDataSource(DataSource dataSource) {
-        // Don't do anything because this one doesn't use the database.
-    }
-    
-    @Override
-    public DataSource getDataSource() {
-        return null;
-    }
 
     /**
      * Comment for <code>m_network</code>
@@ -64,13 +51,11 @@ public class MockQueryManager implements QueryManager {
         this.m_network = network;
     }
 
-    @Override
-    public boolean activeServiceExists(String whichEvent, int nodeId, String ipAddr, String serviceName) {
+    boolean activeServiceExists(String whichEvent, int nodeId, String ipAddr, String serviceName) {
         return m_network.getService(nodeId, ipAddr, serviceName) != null;
     }
 
-    @Override
-    public List<Integer> getActiveServiceIdsForInterface(final String ipaddr) throws SQLException {
+    List<Integer> getActiveServiceIdsForInterface(final String ipaddr) throws SQLException {
         final Set<Integer> serviceIds = new HashSet<Integer>();
 
         MockVisitor gatherServices = new MockVisitorAdapter() {
@@ -88,8 +73,7 @@ public class MockQueryManager implements QueryManager {
         return new ArrayList<Integer>(serviceIds);
     }
 
-    @Override
-    public List<IfKey> getInterfacesWithService(final String svcName) throws SQLException {
+    List<IfKey> getInterfacesWithService(final String svcName) throws SQLException {
         final List<IfKey> ifKeys = new ArrayList<IfKey>();
 
         MockVisitor gatherInterfaces = new MockVisitorAdapter() {
@@ -110,10 +94,8 @@ public class MockQueryManager implements QueryManager {
         return ifKeys;
     }
 
-    @Override
-    public int getNodeIDForInterface(final String ipaddr) throws SQLException {
+    int getNodeIDForInterface(final String ipaddr) throws SQLException {
         return m_network.getNodeIdForInterface(ipaddr);
-
     }
 
     @Override
@@ -122,15 +104,10 @@ public class MockQueryManager implements QueryManager {
         return (node == null ? null : node.getLabel());
     }
 
-    @Override
-    public int getServiceCountForInterface(String ipaddr) throws SQLException {
+    int getServiceCountForInterface(String ipaddr) throws SQLException {
         return getActiveServiceIdsForInterface(ipaddr).size();
     }
 
-    @Override
-    public Date getServiceLostDate(int nodeId, String ipAddr, String svcName, int serviceId) {
-        return null;
-    }
     @Override
     public void openOutage(String outageIdSQL, int nodeId, String ipAddr, String svcName, int dbid, String time) {
         // TODO Auto-generated method stub
@@ -152,12 +129,40 @@ public class MockQueryManager implements QueryManager {
     }
 
     @Override
-    public String[] getCriticalPath(int nodeId) {
-        throw new UnsupportedOperationException("MockQueryManager.getCriticalPath is not yet implemented");
-    }
-
-    @Override
     public List<java.lang.String[]> getNodeServices(int nodeId) {
         return null;
     }
+
+	@Override
+	public void closeOutagesForUnmanagedServices() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void closeOutagesForNode(Date closeDate, int eventId, int nodeId) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void closeOutagesForInterface(Date closeDate, int eventId,
+			int nodeId, String ipAddr) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void closeOutagesForService(Date closeDate, int eventId, int nodeId,
+			String ipAddr, String serviceName) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateServiceStatus(int nodeId, String ipAddr,
+			String serviceName, String status) {
+		// TODO Auto-generated method stub
+		
+	}
 }

@@ -42,32 +42,17 @@ import org.opennms.netmgt.model.ServiceSelector;
  * @author Craig Gallen
  * @author David Hustace
  */
-public interface MonitoredServiceDao extends OnmsDao<OnmsMonitoredService, Integer> {
+public interface MonitoredServiceDao extends LegacyOnmsDao<OnmsMonitoredService, Integer> {
 
     /**
      * <p>get</p>
      * 
-     * @deprecated Use {@link #get(Integer, InetAddress, Integer, Integer)} instead
-     *
      * @param nodeId a {@link java.lang.Integer} object.
-     * @param ipAddr a {@link java.lang.String} object.
-     * @param ifIndex a {@link java.lang.Integer} object.
+     * @param ipAddress a {@link java.net.InetAddress} object.
      * @param serviceId a {@link java.lang.Integer} object.
      * @return a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
      */
-    OnmsMonitoredService get(Integer nodeId, String ipAddr, Integer ifIndex, Integer serviceId);
-
-    /**
-     * <p>get</p> 
-     *
-     * @param nodeId a {@link java.lang.Integer} object.
-     * @param ipAddr a {@link java.lang.String} object.
-     * @param serviceId a {@link java.lang.Integer} object.
-     * @return a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
-     */
-    OnmsMonitoredService get(Integer nodeId, String ipAddr, Integer serviceId);
-
-    
+    OnmsMonitoredService get(Integer nodeId, InetAddress ipAddress, Integer serviceId);
 
     /**
      * <p>get</p>

@@ -39,14 +39,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.opennms.core.utils.ByteArrayComparator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.opennms.netmgt.config.collectd.ExcludeRange;
 import org.opennms.netmgt.config.collectd.IncludeRange;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Service;
 import org.opennms.netmgt.filter.FilterDaoFactory;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 public class CollectdPackage {
     private static final Logger LOG = LoggerFactory.getLogger(CollectdPackage.class);
 	private Package m_pkg;
@@ -224,6 +224,27 @@ public class CollectdPackage {
 	 *
 	 * <strong>Note: </strong>Evaluation of the interface against a package
 	 * filter will only work if the IP is already in the database.
+	 *
+	 * @param iface
+	 *            The interface to test against the package.
+	 * @return True if the interface is included in the package, false
+	 *         otherwise.
+	 */
+	public boolean interfaceInPackage(final OnmsIpInterface iface) {
+		return interfaceInPackage(iface.getIpAddressAsString());
+	}
+
+	/**
+	 * This method is used to determine if the named interface is included in
+	 * the passed package definition. If the interface belongs to the package
+	 * then a value of true is returned. If the interface does not belong to the
+	 * package a false value is returned.
+	 *
+	 * <strong>Note: </strong>Evaluation of the interface against a package
+	 * filter will only work if the IP is already in the database.
+	 *
+	 * @deprecated This function should take normal model objects instead of bare IP 
+	 * addresses. Move this implementation into {@link #interfaceInPackage(OnmsIpInterface)}.
 	 *
 	 * @param iface
 	 *            The interface to test against the package.

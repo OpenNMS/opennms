@@ -83,16 +83,21 @@ import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.core.io.FileSystemResource;
 
 public class LatencyStoringServiceMonitorAdaptorTest {
-    private EasyMockUtils m_mocks = new EasyMockUtils();
-    private PollerConfig m_pollerConfig = m_mocks.createMock(PollerConfig.class);
+    private EasyMockUtils m_mocks;
 
+    private PollerConfig m_pollerConfig;
+
+    private RrdStrategy<Object,Object> m_rrdStrategy;
+
+    @Before
     // Cannot avoid this warning since there is no way to fetch the class object for an interface
     // that uses generics
     @SuppressWarnings("unchecked")
-    private RrdStrategy<Object,Object> m_rrdStrategy = m_mocks.createMock(RrdStrategy.class);
-
-    @Before
     public void setUp() throws Exception {
+        m_mocks = new EasyMockUtils();
+        m_pollerConfig = m_mocks.createMock(PollerConfig.class);
+        m_rrdStrategy = m_mocks.createMock(RrdStrategy.class);
+
         MockLogAppender.setupLogging();
 
         RrdUtils.setStrategy(new NullRrdStrategy());
@@ -165,16 +170,23 @@ public class LatencyStoringServiceMonitorAdaptorTest {
         sb.append("<interface address=\"match-any\"/>");
         sb.append("</outage>");
         sb.append("</outages>");
+        
         File file = new File("target/poll-outages.xml");
         FileWriter writer = new FileWriter(file);
         writer.write(sb.toString());
         writer.close();
+        
+        PollOutagesConfigFactory oldFactory = PollOutagesConfigFactory.getInstance();
         PollOutagesConfigFactory.setInstance(new PollOutagesConfigFactory(new FileSystemResource(file)));
         PollOutagesConfigFactory.getInstance().afterPropertiesSet();
         
         EventAnticipator anticipator = new EventAnticipator();
         executeThresholdTest(anticipator);
         anticipator.verifyAnticipated();
+        
+        // Reset the state of the PollOutagesConfigFactory for any subsequent tests
+        PollOutagesConfigFactory.setInstance(oldFactory);
+        file.delete();
     }
 
     @SuppressWarnings("unchecked")

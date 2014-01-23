@@ -33,7 +33,7 @@ import java.util.Date;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsStpNode;
 
-public interface StpNodeDao extends OnmsDao<OnmsStpNode, Integer> {
+public interface StpNodeDao extends LegacyOnmsDao<OnmsStpNode, Integer> {
 
 	void markDeletedIfNodeDeleted();
 
