@@ -35,6 +35,8 @@ import java.util.LinkedList;
 
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.collectd.Package;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 public class CollectdConfig {
     private CollectdConfiguration m_config;
     private Collection<CollectdPackage> m_packages;
@@ -168,9 +170,58 @@ public class CollectdConfig {
     }
 
     /**
+     * Returns true if the specified service's interface is included by at least one
+     * package which has the specified service and that service is enabled (set
+     * to "on").
+     *
+     * @param service
+     *            {@link OnmsMonitoredService} to check
+     * @return true if Collectd config contains a package which includes the
+     *         specified interface and has the specified service enabled.
+     */
+    public boolean isServiceCollectionEnabled(final OnmsMonitoredService service) {
+        return isServiceCollectionEnabled(service.getIpInterface(), service.getServiceName());
+    }
+
+    /**
      * Returns true if the specified interface is included by at least one
      * package which has the specified service and that service is enabled (set
      * to "on").
+     *
+     * @param iface
+     *            {@link OnmsIpInterface} to lookup
+     * @param svcName
+     *            The service name to lookup
+     * @return true if Collectd config contains a package which includes the
+     *         specified interface and has the specified service enabled.
+     */
+    public boolean isServiceCollectionEnabled(final OnmsIpInterface iface, final String svcName) {
+        for (final Iterator<CollectdPackage> it = getPackages().iterator(); it.hasNext();) {
+            final CollectdPackage wpkg = it.next();
+
+            // Does the package include the interface?
+            if (wpkg.interfaceInPackage(iface)) {
+                // Yes, now see if package includes
+                // the service and service is enabled
+                //
+                if (wpkg.serviceInPackageAndEnabled(svcName)) {
+                    // Thats all we need to know...
+                	return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Returns true if the specified interface is included by at least one
+     * package which has the specified service and that service is enabled (set
+     * to "on").
+     *
+     * @deprecated This function should take normal model objects instead of bare IP addresses
+     * and service names. Use {@link CollectdConfig#isServiceCollectionEnabled(OnmsIpInterface, String)}
+     * instead.
      *
      * @param ipAddr
      *            IP address of the interface to lookup

@@ -41,10 +41,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class OnmsMonitoringLocationDefinition implements Serializable {
 
-    private static final long serialVersionUID = 1389369619460044379L;
+    private static final long serialVersionUID = -8271267205352524478L;
 
     private String m_area;
     private String m_name;
+    private String m_collectionPackageName;
     private String m_pollingPackageName;
     private String m_geolocation;
     private String m_coordinates;
@@ -149,6 +150,24 @@ public class OnmsMonitoringLocationDefinition implements Serializable {
      */
     public void setName(final String name) {
         m_name = name;
+    }
+
+    /**
+     * <p>getCollectionPackageName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getCollectionPackageName() {
+        return m_collectionPackageName;
+    }
+
+    /**
+     * <p>setCollectionPackageName</p>
+     *
+     * @param collectionPackageName a {@link java.lang.String} object.
+     */
+    public void setCollectionPackageName(final String collectionPackageName) {
+        m_collectionPackageName = collectionPackageName;
     }
 
     /**

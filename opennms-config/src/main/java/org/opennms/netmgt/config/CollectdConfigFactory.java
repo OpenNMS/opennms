@@ -38,15 +38,10 @@ import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
-
-/**
- * @author <a href="mailto:jamesz@opennms.com">James Zuo</a>
- * @author <a href="mailto:mike@opennms.org">Mike Davidson</a>
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
- */
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -59,8 +54,9 @@ import org.springframework.util.Assert;
  * <em>init()</em> is called before calling any other method to ensure the
  * config is loaded before accessing other convenience methods.
  *
- * @author ranger
- * @version $Id: $
+ * @author <a href="mailto:jamesz@opennms.com">James Zuo</a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson</a>
+ * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
  */
 public class CollectdConfigFactory {
     private static final Logger LOG = LoggerFactory.getLogger(CollectdConfigFactory.class);
@@ -250,6 +246,10 @@ public class CollectdConfigFactory {
      * Returns true if the specified interface is included by at least one
      * package which has the specified service and that service is enabled (set
      * to "on").
+     *
+     * @deprecated This function should take normal model objects instead of bare IP addresses
+     * and service names. Use {@link CollectdConfig#isServiceCollectionEnabled(OnmsIpInterface, String)}
+     * instead.
      *
      * @param ipAddr
      *            IP address of the interface to lookup
