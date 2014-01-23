@@ -31,26 +31,70 @@ package org.opennms.netmgt.linkd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.linkd.Package;
+import org.opennms.netmgt.linkd.snmp.MtxrWlRtabTable;
+import org.opennms.netmgt.linkd.snmp.MtxrWlRtabTableEntry;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.snmp.CollectionTracker;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.netmgt.snmp.SnmpWalker;
 
 public class Nms102Test extends Nms102NetworkBuilder {
-	
-    @Before
-    public void setUpForceDisvoeryOnEthernet() {
-    for (Package pkg : Collections.list(m_linkdConfig.enumeratePackage())) {
-            pkg.setForceIpRouteDiscoveryOnEthernet(true);
+	    
+    @Test
+    @JUnitSnmpAgents(value={
+        @JUnitSnmpAgent(host=MIKROTIK_IP, port=161, resource="classpath:linkd/nms102/"+MIKROTIK_NAME+"-"+MIKROTIK_IP+"-walk.txt")
+    })
+    public void testMtxrWlRtabTableCollection() throws Exception {
+        
+        String name = "mtxrWlRtabTable";
+
+        // froh
+        MtxrWlRtabTable m_mtxrWlRtabTable = new MtxrWlRtabTable(InetAddressUtils.addr(MIKROTIK_IP));
+        CollectionTracker[] tracker = new CollectionTracker[0];
+        tracker = new CollectionTracker[]{m_mtxrWlRtabTable};
+        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(MIKROTIK_IP));
+        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
+        walker.start();
+
+        try {
+            walker.waitFor();
+        } catch (final InterruptedException e) {
+
+        }
+        
+        Collection<MtxrWlRtabTableEntry> m_m_mtxrWlRtabTableEntryCollection = m_mtxrWlRtabTable.getEntries();
+        assertEquals(4, m_m_mtxrWlRtabTableEntryCollection.size());
+        
+        int i=0;
+        for (MtxrWlRtabTableEntry entry: m_m_mtxrWlRtabTableEntryCollection) {
+            assertEquals(2, entry.getMtxrWlRtabIface().intValue());
+            switch (i) {
+                case 0: assertEquals("0015999f07ef", entry.getMtxrWlRtabAddr());
+                        break;
+                case 1: assertEquals("001b63cda9fd", entry.getMtxrWlRtabAddr());
+                        break;
+                case 2: assertEquals("60334b0817a8", entry.getMtxrWlRtabAddr());
+                        break;
+                case 3: assertEquals("f0728c99994d", entry.getMtxrWlRtabAddr());
+                        break;
+                default: assertEquals(true, false);
+                        break;
+            }
+            i++;
         }
     }
-    
     /*
      *  Discover the following topology
      * 
@@ -81,6 +125,10 @@ public class Nms102Test extends Nms102NetworkBuilder {
         final OnmsNode mac2 = m_nodeDao.findByForeignId("linkd", MAC2_NAME);
         final OnmsNode samsung = m_nodeDao.findByForeignId("linkd", SAMSUNG_NAME);
         final OnmsNode mikrotik = m_nodeDao.findByForeignId("linkd", MIKROTIK_NAME);
+
+        for (Package pkg : Collections.list(m_linkdConfig.enumeratePackage())) {
+            pkg.setForceIpRouteDiscoveryOnEthernet(true);
+        }
 
         assertTrue(m_linkd.scheduleNodeCollection(mac1.getId()));
         assertTrue(m_linkd.scheduleNodeCollection(mac2.getId()));
