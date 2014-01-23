@@ -31,7 +31,6 @@ package org.opennms.netmgt.dao.hibernate;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.StringWriter;
 import java.io.Writer;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -42,12 +41,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.ValidationException;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.core.xml.MarshallingResourceFailureException;
 import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.config.monitoringLocations.MonitoringLocationsConfiguration;
@@ -80,8 +76,6 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
      * Constructor that also initializes the required XML configurations
      *
      * @throws IOException if any.
-     * @throws MarshalException if any.
-     * @throws ValidationException if any.
      */
     public LocationMonitorDaoHibernate() {
         super(OnmsLocationMonitor.class);
@@ -162,27 +156,20 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
     }
     
     //TODO: figure out way to synchronize this
-    //TODO: write a castor template for the DAOs to use and do optimistic
+    //TODO: write a jaxb template for the DAOs to use and do optimistic
     //      locking.
     /**
      * <p>saveMonitoringConfig</p>
      */
     protected void saveMonitoringConfig() {
         String xml = null;
-        final StringWriter writer = new StringWriter();
         try {
-            Marshaller.marshal(m_monitoringLocationsConfiguration, writer);
-            xml = writer.toString();
+            xml = JaxbUtils.marshal(m_monitoringLocationsConfiguration);
             saveXml(xml);
-        } catch (final MarshalException e) {
-            throw new MarshallingResourceFailureException("saveMonitoringConfig: couldn't marshal confg: \n"+
-                   (xml != null ? xml : ""), e);
-        } catch (final ValidationException e) {
-            throw new MarshallingResourceFailureException("saveMonitoringConfig: couldn't validate confg: \n"+
-                    (xml != null ? xml : ""), e);
         } catch (final IOException e) {
-            throw new MarshallingResourceFailureException("saveMonitoringConfig: couldn't write confg: \n"+
-                    (xml != null ? xml : ""), e);
+            throw new MarshallingResourceFailureException("saveMonitoringConfig: couldn't write confg: \n"+ (xml != null ? xml : ""), e);
+        } catch (final Exception e) {
+            throw new MarshallingResourceFailureException("saveMonitoringConfig: couldn't marshal confg: \n"+ (xml != null ? xml : ""), e);
         }
     }
     
@@ -194,7 +181,7 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
      */
     protected void saveXml(final String xml) throws IOException {
         if (xml != null) {
-        	final Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_monitoringLocationConfigResource.getFile()), "UTF-8");
+            final Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_monitoringLocationConfigResource.getFile()), "UTF-8");
             fileWriter.write(xml);
             fileWriter.flush();
             fileWriter.close();
@@ -213,8 +200,6 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
 
     /**
      * Initializes all required XML configuration files
-     * @throws MarshalException
-     * @throws ValidationException
      * @throws IOException
      */
     private void initializeConfigurations() {
@@ -224,12 +209,9 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
     /**
      * Initializes the monitoring  locations configuration file
      * @throws IOException
-     * @throws MarshalException
-     * @throws ValidationException
      */
     private void initializeMonitoringLocationDefinition() {
-        m_monitoringLocationsConfiguration = CastorUtils.unmarshalWithTranslatedExceptions(MonitoringLocationsConfiguration.class, m_monitoringLocationConfigResource);
-        
+        m_monitoringLocationsConfiguration = JaxbUtils.unmarshal(MonitoringLocationsConfiguration.class, m_monitoringLocationConfigResource);
         createLocationDefMap();
     }
     
