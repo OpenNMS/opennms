@@ -704,8 +704,8 @@ public abstract class AbstractQueryManager implements QueryManager {
             if (routemetric1 == null || routemetric1 == -1) {
                 LOG.info("processRouteTable: Route metric1 is invalid or \" not used\". checking the route status.");
                 final Integer routestatus = route.getIpRouteStatus();
-                if ( routestatus == null || routestatus.intValue() != IpRouteCollectorEntry.IP_ROUTE_ACTIVE_STATUS) {
-                    LOG.info("processRouteTable: Route status {} is not active or null. ", routestatus);
+                if ( routestatus != null && routestatus.intValue() != IpRouteCollectorEntry.IP_ROUTE_ACTIVE_STATUS) {
+                    LOG.info("processRouteTable: Route status {} is not active. Skipping", routestatus);
                     continue;
                 } 
             }
