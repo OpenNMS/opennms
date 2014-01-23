@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema" 
-        targetNamespace="http://xmlns.opennms.org/xsd/config/monitoring-locations"
-        xmlns:tags="http://xmlns.opennms.org/xsd/config/tags"
-        xmlns:this="http://xmlns.opennms.org/xsd/config/monitoring-locations" 
-		  xmlns:tns="http://www.opennms.org/monitoring-locations"
-		  elementFormDefault="qualified">
-
-  <import namespace="http://xmlns.opennms.org/xsd/config/tags" schemaLocation="tags.xsd"/>
+	targetNamespace="http://xmlns.opennms.org/xsd/config/monitoring-locations"
+	xmlns:this="http://xmlns.opennms.org/xsd/config/monitoring-locations"
+	elementFormDefault="qualified">
 
   <element name="monitoring-locations-configuration">
     <annotation>
@@ -50,14 +46,38 @@
     </annotation>
     <complexType>
       <sequence>
-        <element ref="tags:tags" minOccurs="0" maxOccurs="1" />
+         <element ref="this:tags" minOccurs="0" maxOccurs="1" />
       </sequence>
       <attribute name="location-name" type="string" use="required" />
       <attribute name="monitoring-area" type="string" use="required" />
       <attribute name="polling-package-name" type="string" use="required" />
+      <attribute name="collection-package-name" type="string" use="optional" />
       <attribute name="geolocation" type="string" use="optional" />
       <attribute name="coordinates" type="string" use="optional" />
       <attribute name="priority" type="integer" use="optional" default="100" />
     </complexType>
+  </element>
+
+  <element name="tags">
+    <annotation>
+      <documentation>A collection of tags.</documentation>
+    </annotation>
+    
+    <complexType>
+      <sequence>
+        <element minOccurs="0" maxOccurs="unbounded" ref="this:tag" />
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="tag">
+    <annotation>
+      <documentation>An arbitrary metadata "tag" that can be associated with other configs.</documentation>
+    </annotation>
+
+    <complexType>
+      <attribute name="name" type="string" />
+    </complexType>
+
   </element>
 </schema>
