@@ -50,6 +50,7 @@ import org.opennms.netmgt.linkd.snmp.IsisISAdjTable;
 import org.opennms.netmgt.linkd.snmp.LldpLocTable;
 import org.opennms.netmgt.linkd.snmp.LldpLocalGroup;
 import org.opennms.netmgt.linkd.snmp.LldpRemTable;
+import org.opennms.netmgt.linkd.snmp.MtxrWlRtabTable;
 import org.opennms.netmgt.linkd.snmp.OspfGeneralGroup;
 import org.opennms.netmgt.linkd.snmp.OspfNbrTable;
 import org.opennms.netmgt.linkd.snmp.SnmpTable;
@@ -129,6 +130,16 @@ public final class SnmpCollection implements ReadyRunnable {
     private boolean m_collectBridge = false;
 
     /**
+     * A boolean used to decide if you can collect Ip Net To Media Table
+     */
+    private boolean m_collectIpNetToMedia = false;
+
+    /**
+     * A boolean used to decide if you can collect Wireless R Table
+     */
+    private boolean m_collectWifi = false;
+
+    /**
      * A boolean used to decide if you can collect CDP Table
      */
     private boolean m_collectCdp = false;
@@ -148,6 +159,8 @@ public final class SnmpCollection implements ReadyRunnable {
      */
     private boolean m_collectIsIs = false;
 
+    public MtxrWlRtabTable m_mtxrWlRtabTable;
+    
     public LldpLocalGroup m_lldpLocalGroup;
     public LldpLocTable m_lldpLocTable;
     public LldpRemTable m_lldpRemTable;
@@ -223,6 +236,14 @@ public final class SnmpCollection implements ReadyRunnable {
         m_agentConfig = config;
         m_nodeid = nodeid;
         m_address = m_agentConfig.getEffectiveAddress();
+    }
+
+    boolean hasMtxrWlRtabTable() {
+        return (m_mtxrWlRtabTable != null && !m_mtxrWlRtabTable.failed() && !m_mtxrWlRtabTable.isEmpty());
+    }
+
+    MtxrWlRtabTable getMtxrWlRtabTable() {
+        return m_mtxrWlRtabTable;
     }
 
     boolean hasIsIsSysObjectGroup() {
@@ -453,23 +474,32 @@ public final class SnmpCollection implements ReadyRunnable {
         m_isisCircTable = new IsisCircTable(m_address);
         
         m_isisISAdjTable = new IsisISAdjTable(m_address);
+        
+        m_mtxrWlRtabTable = new MtxrWlRtabTable(m_address);
 
         if (m_collectIpRoute) {
         	m_ipRoute = createClass(m_ipRouteClass, m_address);
         }
 
-		if (m_collectVlan) {
-			m_vlanTable = createClass(m_vlanClass, m_address);
-		}
+	if (m_collectVlan) {
+		m_vlanTable = createClass(m_vlanClass, m_address);
+	}
 		
+	LOG.debug("run: address {} package {}: collecting on agent: {}", str(m_address), getPackageName(), m_agentConfig);
 
-		LOG.debug("run: collecting : {}", m_agentConfig);
-		LOG.debug("run: collectVlan/collectIpRoute/collectStp/m_collectBridge/m_collectCdp/m_collectLldp/m_collectOspf/m_collectIsIs: {}/{}/{}/{}/{}/{}/{}/{}", m_collectVlan, m_collectIpRoute, m_collectStp, m_collectBridge, m_collectCdp,m_collectLldp,m_collectOspf,m_collectIsIs);
+        LOG.info("run: address {} package {}: collectIpNetToMedia: {}",str(m_address), getPackageName(),m_collectIpNetToMedia);
+        LOG.info("run: address {} package {}: collectOspf: {}",str(m_address), getPackageName(),m_collectOspf);
+        LOG.info("run: address {} package {}: collectIsIs: {}",str(m_address), getPackageName(),m_collectIsIs);
+        LOG.info("run: address {} package {}: collectLldp: {}",str(m_address), getPackageName(),m_collectLldp);
+        LOG.info("run: address {} package {}: collectIpRoute: {}",str(m_address), getPackageName(),m_collectIpRoute);
+        LOG.info("run: address {} package {}: collectCdp: {}",str(m_address), getPackageName(),m_collectCdp);
+	LOG.info("run: address {} package {}: collectVlan: {}",str(m_address), getPackageName(),m_collectVlan);
+        LOG.info("run: address {} package {}: collectWifi: {}",str(m_address), getPackageName(),m_collectWifi);
 
         SnmpWalker walker = null;
 
         TrackerBuilder bldr = new TrackerBuilder();
-        if (m_collectBridge) {
+        if (m_collectIpNetToMedia) {
         	bldr.add("ipNetToMediaTable", m_ipNetToMedia);
         }
         if (m_collectOspf) {
@@ -490,9 +520,12 @@ public final class SnmpCollection implements ReadyRunnable {
         if (m_collectVlan && m_vlanTable != null) {
         	bldr.add("vlanTable", m_vlanTable);
         }
+        if (m_collectWifi && m_mtxrWlRtabTable != null) {
+            bldr.add("mtxrWlRtabTable", m_mtxrWlRtabTable);
+        }
         
         
-        LOG.debug("run: Collecting {} from {}", bldr.getMessage(), str(m_agentConfig.getEffectiveAddress()));
+        LOG.debug("run: package {}: Collecting {} from {}", getPackageName(),bldr.getMessage(), str(m_agentConfig.getEffectiveAddress()));
 
         if (!bldr.isEmpty()) {
             walker = SnmpUtils.createWalker(m_agentConfig, bldr.getMessage(), bldr.getTrackers());
@@ -524,7 +557,7 @@ public final class SnmpCollection implements ReadyRunnable {
             LOG.info("run: failed to collect lldpLocTable for {}", hostAddress);
         if (m_collectLldp && !this.hasLldpRemTable())
             LOG.info("run: failed to collect lldpRemTable for {}", hostAddress);
-        if (m_collectBridge && !this.hasIpNetToMediaTable())
+        if (m_collectIpNetToMedia && !this.hasIpNetToMediaTable())
             LOG.info("run: failed to collect ipNetToMediaTable for {}", hostAddress);
         if (m_collectIpRoute && m_ipRoute != null && !this.hasRouteTable())
             LOG.info("run: failed to collect ipRouteTable for {}", hostAddress);
@@ -536,10 +569,8 @@ public final class SnmpCollection implements ReadyRunnable {
             LOG.info("run: failed to collect cdpCacheTable for []", hostAddress);
         if (m_collectVlan && m_vlanTable != null && !this.hasVlanTable())
             LOG.info("run: failed to collect VLAN for {}", hostAddress);
-        // Schedule SNMP VLAN collection only on VLAN.
-        // If it has not VLAN collection no data download is done.
-
-        // OnmsVlan vlan = null;
+        if (m_collectWifi && m_mtxrWlRtabTable != null && !this.hasMtxrWlRtabTable())
+            LOG.info("run: failed to collect Wifi for {}", hostAddress);
         
         
 
@@ -579,6 +610,7 @@ public final class SnmpCollection implements ReadyRunnable {
         m_isisSystemObjectGroup = null;
         m_isisCircTable = null;
         m_isisISAdjTable = null;
+        m_mtxrWlRtabTable = null;
 
         m_snmpVlanCollection.clear();
 
@@ -620,6 +652,8 @@ public final class SnmpCollection implements ReadyRunnable {
 	}
 
     private void runAndSaveSnmpVlanCollection(OnmsVlan vlan) {
+        LOG.info("runAndSaveSnmpVlanCollection: address {} package {}: collectStp: {}",str(m_address), getPackageName(),m_collectStp);
+        LOG.info("runAndSaveSnmpVlanCollection: address {} package {}: collectBridge: {}",str(m_address), getPackageName(),m_collectBridge);
         SnmpVlanCollection snmpvlancollection = new SnmpVlanCollection(
                                                                        m_agentConfig,
                                                                        m_collectStp,
@@ -935,6 +969,29 @@ public final class SnmpCollection implements ReadyRunnable {
      * @param bridgeForwardingTable
      *            a boolean.
      */
+    public void collectIpNetToMedia(boolean collectIpNetToMedia) {
+        m_collectIpNetToMedia = collectIpNetToMedia;
+    }
+
+    /**
+     * <p>
+     * getCollectBridgeForwardingTable
+     * </p>
+     * 
+     * @return a boolean.
+     */
+    public boolean getCollectIpNetToMedia() {
+        return m_collectIpNetToMedia;
+    }
+
+    /**
+     * <p>
+     * collectBridgeForwardingTable
+     * </p>
+     * 
+     * @param bridgeForwardingTable
+     *            a boolean.
+     */
     public void collectBridge(boolean bridgeForwardingTable) {
         m_collectBridge = bridgeForwardingTable;
     }
@@ -1040,6 +1097,14 @@ public final class SnmpCollection implements ReadyRunnable {
 
     public boolean getCollectIsIs() {
        return m_collectIsIs;
+    }
+
+    public void collectWifi(boolean collectWifi) {        
+        m_collectWifi = collectWifi;
+    }
+
+    public boolean getCollectWifi() {
+       return m_collectWifi;
     }
 
 }

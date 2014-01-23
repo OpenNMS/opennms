@@ -99,6 +99,8 @@ public final class DiscoveryLink implements ReadyRunnable {
 
     private boolean discoveryUsingIsis = true;
 
+    private boolean discoveryUsingWifi = true;
+
     private boolean suspendCollection = false;
 
     private boolean isRunned = false;
@@ -1294,6 +1296,29 @@ public final class DiscoveryLink implements ReadyRunnable {
      */
     public void setDiscoveryUsingCdp(boolean discoveryUsingCdp) {
         this.discoveryUsingCdp = discoveryUsingCdp;
+    }
+
+    /**
+     * <p>
+     * discoveryUsingWifi
+     * </p>
+     * 
+     * @return a boolean.
+     */
+    public boolean discoveryUsingWifi() {
+        return discoveryUsingWifi;
+    }
+
+    /**
+     * <p>
+     * Setter for the field <code>discoveryUsingWifi</code>.
+     * </p>
+     * 
+     * @param discoveryUsingCdp
+     *            a boolean.
+     */
+    public void setDiscoveryUsingWifi(boolean discoveryUsingWifi) {
+        this.discoveryUsingWifi = discoveryUsingWifi;
     }
 
     /**
