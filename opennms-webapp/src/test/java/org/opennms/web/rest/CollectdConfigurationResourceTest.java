@@ -28,7 +28,9 @@
 
 package org.opennms.web.rest;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -37,6 +39,8 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,10 +83,25 @@ public class CollectdConfigurationResourceTest extends AbstractSpringJerseyRestT
     public void testCollectdConfig() throws Exception {
         sendRequest(GET, "/config/foo/collectd", 404);
 
-        final String xml = sendRequest(GET, "/config/RDU/collectd", 200);
+        String xml = sendRequest(GET, "/config/RDU/collectd", 200);
         assertFalse(xml.contains("vmware3"));
         assertFalse(xml.contains("example2"));
         assertTrue(xml.contains("JBoss4"));
+
+        CollectdConfiguration config = JaxbUtils.unmarshal(CollectdConfiguration.class, xml);
+        assertNotNull(config);
+        assertEquals(1, config.getPackages().size());
+        assertEquals("example1", config.getPackages().get(0).getName());
+        assertEquals(4, config.getCollectors().size());
+
+        xml = sendRequest(GET, "/config/00002/collectd", 404);
+
+        xml = sendRequest(GET, "/config/00003/collectd", 200);
+        config = JaxbUtils.unmarshal(CollectdConfiguration.class, xml);
+        assertNotNull(config);
+        assertEquals(1, config.getPackages().size());
+        assertEquals("example2", config.getPackages().get(0).getName());
+        assertEquals(1, config.getCollectors().size());
     }
 
 }
