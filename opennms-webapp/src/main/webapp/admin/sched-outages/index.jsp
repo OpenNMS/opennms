@@ -77,9 +77,7 @@
 				thisPackage.removeOutageCalendar(deleteName); //Will quietly do nothing if outage doesn't exist
 			}
 	
-			org.opennms.netmgt.config.poller.Package[] pollingPackages = PollerConfigFactory.getInstance().getConfiguration().getPackage();
-			for (int i = 0; i < pollingPackages.length; i++) {
-				org.opennms.netmgt.config.poller.Package thisPackage = pollingPackages[i];
+			for (final org.opennms.netmgt.config.poller.Package thisPackage : PollerConfigFactory.getInstance().getConfiguration().getPackages()) {
 				thisPackage.removeOutageCalendar(deleteName); //Will quietly do nothing if outage doesn't exist
 			}
 	
@@ -162,9 +160,8 @@ div.nodeintbox {
 					PollerConfigFactory.init(); //Force init
 			
 					List<String> pollingOutages = new ArrayList<String>();
-					org.opennms.netmgt.config.poller.Package[] pollingPackages = PollerConfigFactory.getInstance().getConfiguration().getPackage();
-					for (int i = 0; i < pollingPackages.length; i++) {
-						pollingOutages.addAll(pollingPackages[i].getOutageCalendars());
+					for (final org.opennms.netmgt.config.poller.Package pkg : PollerConfigFactory.getInstance().getConfiguration().getPackages()) {
+						pollingOutages.addAll(pkg.getOutageCalendars());
 					}
 			
 					ThreshdConfigFactory.init();

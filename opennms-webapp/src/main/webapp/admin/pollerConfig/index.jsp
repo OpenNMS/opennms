@@ -213,10 +213,7 @@
 		{
 			String port = "<b>-</b>";
 
-			Enumeration<Parameter> param = svc.enumerateParameter();
-			while(param.hasMoreElements())
-			{
-				Parameter parameter = param.nextElement();
+			for (final Parameter parameter : svc.getParameters()) {
 				if(parameter != null)
 				{
 					if(parameter.getKey().equals("port") || parameter.getKey().equals("ports"))
@@ -276,10 +273,7 @@
                 {
                         String port = "<b>-</b>";
 
-                        Enumeration<Parameter> param = svc.enumerateParameter();
-                        while(param.hasMoreElements())
-                        {
-                                Parameter parameter = param.nextElement();
+                        for (final Parameter parameter : svc.getParameters()) {
                                 if(parameter != null)
                                 {
                                         if(parameter.getKey().equals("port") || parameter.getKey().equals("ports"))
