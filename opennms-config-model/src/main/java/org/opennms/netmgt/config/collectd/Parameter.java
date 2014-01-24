@@ -7,22 +7,12 @@
 
 package org.opennms.netmgt.config.collectd;
 
-import java.io.IOException;
-import java.io.Reader;
 import java.io.Serializable;
-import java.io.Writer;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.exolab.castor.xml.Validator;
-import org.xml.sax.ContentHandler;
 
 /**
  * Parameters to be used for collecting this service.
@@ -32,17 +22,11 @@ import org.xml.sax.ContentHandler;
 @XmlRootElement(name="parameter")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Parameter implements Serializable {
-    private static final long serialVersionUID = -2110376267724429610L;
+    private static final long serialVersionUID = -1405161959286612604L;
 
-    /**
-     * Field m_key.
-     */
     @XmlAttribute(name="key")
     private String m_key;
 
-    /**
-     * Field m_value.
-     */
     @XmlAttribute(name="value")
     private String m_value;
 
@@ -56,107 +40,20 @@ public class Parameter implements Serializable {
         m_value = value;
     }
 
-    /**
-     * Returns the value of field 'key'.
-     * 
-     * @return the value of field 'Key'.
-     */
     public String getKey() {
         return m_key;
     }
 
-    /**
-     * Returns the value of field 'value'.
-     * 
-     * @return the value of field 'Value'.
-     */
-    public String getValue() {
-        return m_value;
-    }
-
-    /**
-     * Method isValid.
-     * 
-     * @return true if this object is valid according to the schema
-     */
-    public boolean isValid() {
-        try {
-            validate();
-        } catch (final ValidationException vex) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * 
-     * 
-     * @param out
-     * @throws MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     * @throws ValidationException if this
-     * object is an invalid instance according to the schema
-     */
-    public void marshal(final Writer out) throws MarshalException, ValidationException {
-        Marshaller.marshal(this, out);
-    }
-
-    /**
-     * 
-     * 
-     * @param handler
-     * @throws IOException if an IOException occurs during
-     * marshaling
-     * @throws ValidationException if this
-     * object is an invalid instance according to the schema
-     * @throws MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     */
-    public void marshal(final ContentHandler handler) throws IOException, MarshalException, ValidationException {
-        Marshaller.marshal(this, handler);
-    }
-
-    /**
-     * Sets the value of field 'key'.
-     * 
-     * @param key the value of field 'key'.
-     */
     public void setKey(final String key) {
         m_key = key;
     }
 
-    /**
-     * Sets the value of field 'value'.
-     * 
-     * @param value the value of field 'value'.
-     */
+    public String getValue() {
+        return m_value;
+    }
+
     public void setValue(final String value) {
         m_value = value;
-    }
-
-    /**
-     * Method unmarshal.
-     * 
-     * @param reader
-     * @throws MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     * @throws ValidationException if this
-     * object is an invalid instance according to the schema
-     * @return the unmarshaled
-     * Parameter
-     */
-    public static Parameter unmarshal(final Reader reader) throws MarshalException, ValidationException {
-        return (Parameter) Unmarshaller.unmarshal(Parameter.class, reader);
-    }
-
-    /**
-     * 
-     * 
-     * @throws ValidationException if this
-     * object is an invalid instance according to the schema
-     */
-    public void validate() throws ValidationException {
-        new Validator().validate(this);
     }
 
     @Override

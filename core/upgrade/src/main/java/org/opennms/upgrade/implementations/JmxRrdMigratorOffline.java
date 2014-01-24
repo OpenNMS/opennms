@@ -609,7 +609,7 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
      * @return the service property value
      */
     private String getSvcPropertyValue(Service svc, String propertyName) {
-        for (org.opennms.netmgt.config.collectd.Parameter p : svc.getParameterCollection()) {
+        for (org.opennms.netmgt.config.collectd.Parameter p : svc.getParameters()) {
             if (p.getKey().equals(propertyName)) {
                 return p.getValue();
             }

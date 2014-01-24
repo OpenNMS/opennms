@@ -97,14 +97,10 @@ public class MockPollerConfigTest extends TestCase {
         assertTrue(m_pollerConfig.isInterfaceInPackage("192.168.1.1", pkg));
         assertFalse(m_pollerConfig.isInterfaceInPackage("192.168.1.7", pkg));
 
-        Enumeration<Service> svcs = pkg.enumerateService();
-        assertNotNull(svcs);
-        
         int svcCount = 0;
         boolean icmpFound = false;
         boolean httpFound = false;
-        while (svcs.hasMoreElements()) {
-            Service svc = svcs.nextElement();
+        for (final Service svc : pkg.getServices()) {
             svcCount++;
             if ("ICMP".equals(svc.getName())) {
                 icmpFound = true;

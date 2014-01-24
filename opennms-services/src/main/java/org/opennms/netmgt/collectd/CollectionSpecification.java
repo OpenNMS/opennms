@@ -171,7 +171,7 @@ public class CollectionSpecification {
     	final Map<String, Object> m = new TreeMap<String, Object>();
         m.put("SERVICE", m_svcName);
         StringBuffer sb;
-        Collection<Parameter> params = getService().getParameterCollection();
+        Collection<Parameter> params = getService().getParameters();
         for (Parameter p : params) {
             if (LOG.isDebugEnabled()) {
                 sb = new StringBuffer();

@@ -34,8 +34,8 @@ public class CollectdConfiguration implements Serializable {
     private Integer m_threads;
 
     /**
-     * Package encapsulating addresses eligible to have
-     *  SNMP data collected from them.
+     * Package encapsulating addresses eligible to have SNMP data collected
+     * from them.
      */
     @XmlElement(name="package")
     private List<Package> m_packages = new ArrayList<Package>();

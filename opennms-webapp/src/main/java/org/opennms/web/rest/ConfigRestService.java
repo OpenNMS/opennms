@@ -60,12 +60,12 @@ public class ConfigRestService extends OnmsRestService {
     @Context
     private ResourceContext m_context;
 
-    @Path("{location}/poller")
+    @Path("{location}/polling")
     public PollerConfigurationResource getPollerConfiguration() {
         return m_context.getResource(PollerConfigurationResource.class);
     }
 
-    @Path("{location}/collectd")
+    @Path("{location}/collection")
     public CollectdConfigurationResource getCollectdConfigurationResource() throws ConfigurationResourceException {
         return m_context.getResource(CollectdConfigurationResource.class);
     }

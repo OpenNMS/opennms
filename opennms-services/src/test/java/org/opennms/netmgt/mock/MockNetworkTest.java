@@ -435,10 +435,7 @@ public class MockNetworkTest extends TestCase {
         // ensure a sample interface is in the package
         assertTrue(pollerConfig.isInterfaceInPackage("192.168.1.1", pkg));
 
-        Enumeration<Service> svcs = pkg.enumerateService();
-        assertNotNull(svcs);
-        while (svcs.hasMoreElements()) {
-            Service svc = (Service) svcs.nextElement();
+        for (final Service svc : pkg.getServices()) {
             if ("ICMP".equals(svc.getName()))
                 assertEquals(Long.valueOf(500L), svc.getInterval());
             else if ("HTTP".equals(svc.getName()))
@@ -550,7 +547,7 @@ public class MockNetworkTest extends TestCase {
         Package pkg = m_pollerConfig.getPackage("TestPackage");
         assertNotNull(pkg);
 
-        Collection<String> outages = pkg.getOutageCalendarCollection();
+        Collection<String> outages = pkg.getOutageCalendars();
         assertTrue(outages.contains("outage1"));
         assertTrue(outages.contains("outage2"));
 

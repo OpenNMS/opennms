@@ -29,9 +29,7 @@
 package org.opennms.web.rest;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,7 +38,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.config.collectd.CollectdConfiguration;
+import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,9 +68,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class CollectdConfigurationResourceTest extends AbstractSpringJerseyRestTestCase {
+public class PollerConfigurationResourceTest extends AbstractSpringJerseyRestTestCase {
     @SuppressWarnings("unused")
-    private static final Logger LOG = LoggerFactory.getLogger(CollectdConfigurationResourceTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PollerConfigurationResourceTest.class);
 
     @Override
     protected void afterServletStart() throws Exception {
@@ -80,28 +78,29 @@ public class CollectdConfigurationResourceTest extends AbstractSpringJerseyRestT
     }
     
     @Test
-    public void testCollectdConfig() throws Exception {
-        sendRequest(GET, "/config/foo/collection", 404);
+    public void testPollerConfig() throws Exception {
+        sendRequest(GET, "/config/foo/polling", 404);
 
-        String xml = sendRequest(GET, "/config/RDU/collection", 200);
-        assertFalse(xml.contains("vmware3"));
-        assertFalse(xml.contains("example2"));
-        assertTrue(xml.contains("JBoss4"));
-
-        CollectdConfiguration config = JaxbUtils.unmarshal(CollectdConfiguration.class, xml);
+        String xml = sendRequest(GET, "/config/RDU/polling", 200);
+        PollerConfiguration config = JaxbUtils.unmarshal(PollerConfiguration.class, xml);
         assertNotNull(config);
         assertEquals(1, config.getPackages().size());
         assertEquals("example1", config.getPackages().get(0).getName());
-        assertEquals(4, config.getCollectors().size());
+        assertEquals(17, config.getMonitors().size());
 
-        xml = sendRequest(GET, "/config/00002/collection", 404);
-
-        xml = sendRequest(GET, "/config/00003/collection", 200);
-        config = JaxbUtils.unmarshal(CollectdConfiguration.class, xml);
+        xml = sendRequest(GET, "/config/00002/polling", 200);
+        config = JaxbUtils.unmarshal(PollerConfiguration.class, xml);
         assertNotNull(config);
         assertEquals(1, config.getPackages().size());
         assertEquals("example2", config.getPackages().get(0).getName());
-        assertEquals(1, config.getCollectors().size());
+        assertEquals(1, config.getMonitors().size());
+
+        xml = sendRequest(GET, "/config/00003/polling", 200);
+        config = JaxbUtils.unmarshal(PollerConfiguration.class, xml);
+        assertNotNull(config);
+        assertEquals(1, config.getPackages().size());
+        assertEquals("example2", config.getPackages().get(0).getName());
+        assertEquals(1, config.getMonitors().size());
     }
 
 }

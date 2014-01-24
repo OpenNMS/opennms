@@ -218,7 +218,7 @@ public class LatencyStoringServiceMonitorAdaptorTest {
         Package pkg = new Package();
         Rrd rrd = new Rrd();
         rrd.setStep(step);
-        rrd.setRra(rras);
+        rrd.setRras(rras);
         pkg.setRrd(rrd);
         
         expect(m_pollerConfig.getRRAList(pkg)).andReturn(rras);
