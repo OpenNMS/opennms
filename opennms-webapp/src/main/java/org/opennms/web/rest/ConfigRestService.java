@@ -33,14 +33,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
-import org.opennms.core.config.api.ConfigurationResource;
 import org.opennms.core.config.api.ConfigurationResourceException;
-import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.web.rest.config.CollectdConfigurationResource;
 import org.opennms.web.rest.config.PollerConfigurationResource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -56,8 +51,6 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Scope("prototype")
 @Path("config")
 public class ConfigRestService extends OnmsRestService {
-    private static final Logger LOG = LoggerFactory.getLogger(ConfigRestService.class);
-
     @Context 
     private UriInfo m_uriInfo;
 
@@ -66,9 +59,6 @@ public class ConfigRestService extends OnmsRestService {
 
     @Context
     private ResourceContext m_context;
-
-    @Autowired
-    private ConfigurationResource<CollectdConfiguration> m_collectdConfigResource;
 
     @Path("{location}/poller")
     public PollerConfigurationResource getPollerConfiguration() {

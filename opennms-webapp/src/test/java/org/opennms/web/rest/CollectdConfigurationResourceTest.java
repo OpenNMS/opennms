@@ -28,6 +28,7 @@
 
 package org.opennms.web.rest;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -76,9 +77,12 @@ public class CollectdConfigurationResourceTest extends AbstractSpringJerseyRestT
     
     @Test
     public void testCollectdConfig() throws Exception {
-        final String xml = sendRequest(GET, "/config/foo/collectd", 200);
-        assertTrue(xml.contains("vmware3"));
+        sendRequest(GET, "/config/foo/collectd", 404);
 
+        final String xml = sendRequest(GET, "/config/RDU/collectd", 200);
+        assertFalse(xml.contains("vmware3"));
+        assertFalse(xml.contains("example2"));
+        assertTrue(xml.contains("JBoss4"));
     }
 
 }

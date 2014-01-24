@@ -382,7 +382,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
         getOutage(outageName); // Validate if outageName exists.
         if (action.equals(ConfigAction.ADD)) {
             CollectdPackage pkg = getCollectdPackage(packageName);
-            if (!pkg.getPackage().getOutageCalendarCollection().contains(outageName))
+            if (!pkg.getPackage().getOutageCalendars().contains(outageName))
                 pkg.getPackage().addOutageCalendar(outageName);
         }
         if (action.equals(ConfigAction.REMOVE)) {

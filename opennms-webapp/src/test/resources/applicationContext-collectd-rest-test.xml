@@ -9,4 +9,24 @@
 
 	<context:annotation-config />
 
+	<bean name="collectd-configuration.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">
+		<constructor-arg value="org.opennms.netmgt.config.collectd.CollectdConfiguration" />
+		<constructor-arg value="file:target/test-classes/config-rest/collectd-configuration.xml" />
+	</bean>
+
+	<bean name="datacollection-config.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">
+		<constructor-arg value="org.opennms.netmgt.config.datacollection.DatacollectionConfig" />
+		<constructor-arg value="file:target/test-classes/config-rest/datacollection-config.xml" />
+	</bean>
+
+	<bean name="monitoring-locations.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">
+		<constructor-arg value="org.opennms.netmgt.config.monitoringLocations.MonitoringLocationsConfiguration" />
+		<constructor-arg value="file:target/test-classes/config-rest/monitoring-locations.xml" />
+	</bean>
+
+	<bean name="poller-configuration.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">
+		<constructor-arg value="org.opennms.netmgt.config.poller.PollerConfiguration" />
+		<constructor-arg value="file:target/test-classes/config-rest/poller-configuration.xml" />
+	</bean>
+	
 </beans>

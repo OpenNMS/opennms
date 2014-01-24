@@ -286,7 +286,7 @@ public class CollectionSpecification {
          * interface then break and return true. Otherwise process the
          * next outage.
          */ 
-        for (String outageName : m_package.getPackage().getOutageCalendarCollection()) {
+        for (String outageName : m_package.getPackage().getOutageCalendars()) {
             // Does the outage apply to the current time?
             if (outageFactory.isCurTimeInOutage(outageName)) {
                 // Does the outage apply to this interface?

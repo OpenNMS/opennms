@@ -4,9 +4,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTest;
+import org.opennms.core.test.xml.XmlTestNoCastor;
 
-public class CollectdConfigurationTest extends XmlTest<CollectdConfiguration> {
+public class CollectdConfigurationTest extends XmlTestNoCastor<CollectdConfiguration> {
 
     public CollectdConfigurationTest(final CollectdConfiguration sampleObject, final Object sampleXml) {
         super(sampleObject, sampleXml, null);

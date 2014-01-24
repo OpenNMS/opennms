@@ -94,7 +94,7 @@ public class CollectorConfigDaoImpl implements CollectorConfigDao {
      */
     @Override
     public Collection<Collector> getCollectors() {
-        return getConfig().getConfig().getCollectorCollection();
+        return getConfig().getConfig().getCollectors();
     }
 
     /**

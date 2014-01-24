@@ -21,7 +21,7 @@ import org.opennms.core.xml.ValidateUsing;
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("monitoring-locations.xsd")
 public class MonitoringLocationsConfiguration implements Serializable {
-    private static final long serialVersionUID = -4161877313652912271L;
+    private static final long serialVersionUID = 4774677097952128710L;
 
     @XmlElementWrapper(name="locations")
     @XmlElement(name="location-def")
@@ -45,6 +45,15 @@ public class MonitoringLocationsConfiguration implements Serializable {
         } else {
             m_locations = new ArrayList<LocationDef>(locations);
         }
+    }
+
+    public LocationDef getLocation(final String location) {
+        for (final LocationDef def : m_locations) {
+            if (def.getLocationName().equals(location)) {
+                return def;
+            }
+        }
+        return null;
     }
 
     public void addLocation(final LocationDef location) {

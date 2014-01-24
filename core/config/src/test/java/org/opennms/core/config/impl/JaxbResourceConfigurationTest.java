@@ -36,8 +36,8 @@ public class JaxbResourceConfigurationTest {
         assertNotNull(collectd);
         final CollectdConfiguration config = collectd.get();
         assertNotNull(config);
-        assertEquals(5, config.getPackageCount());
-        assertEquals("vmware3", config.getPackage(0).getName());
+        assertEquals(5, config.getPackages().size());
+        assertEquals("vmware3", config.getPackages().get(0).getName());
     }
 
     @Test
@@ -48,8 +48,8 @@ public class JaxbResourceConfigurationTest {
         assertNotNull(collectd);
         final CollectdConfiguration config = collectd.get();
         assertNotNull(config);
-        assertEquals(5, config.getPackageCount());
-        assertEquals("vmware3", config.getPackage(0).getName());
+        assertEquals(5, config.getPackages().size());
+        assertEquals("vmware3", config.getPackages().get(0).getName());
     }
 
     @Test(expected=org.opennms.core.config.api.ConfigurationResourceException.class)
@@ -67,15 +67,15 @@ public class JaxbResourceConfigurationTest {
         assertNotNull(collectd);
         CollectdConfiguration config = collectd.get();
         assertNotNull(config);
-        assertEquals(5, config.getPackageCount());
-        config.removePackage(config.getPackage(0));
-        assertEquals("vmware4", config.getPackage(0).getName());
-        assertEquals(4, config.getPackageCount());
+        assertEquals(5, config.getPackages().size());
+        config.removePackage(config.getPackages().get(0));
+        assertEquals("vmware4", config.getPackages().get(0).getName());
+        assertEquals(4, config.getPackages().size());
         collectd.save(config);
 
         config = collectd.get();
         assertNotNull(config);
-        assertEquals(4, config.getPackageCount());
-        assertEquals("vmware4", config.getPackage(0).getName());
+        assertEquals(4, config.getPackages().size());
+        assertEquals("vmware4", config.getPackages().get(0).getName());
     }
 }

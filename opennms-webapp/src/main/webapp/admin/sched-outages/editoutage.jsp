@@ -365,8 +365,8 @@ Could not find an outage to edit because no outage name parameter was specified 
 	Map<org.opennms.netmgt.config.collectd.Package, List<String>> collectionOutages = new HashMap<org.opennms.netmgt.config.collectd.Package, List<String>>();
 	for (CollectdPackage pkg : CollectdConfigFactory.getInstance().getCollectdConfig().getPackages()) {
 		org.opennms.netmgt.config.collectd.Package thisPackage = pkg.getPackage();
-		collectionOutages.put(thisPackage, thisPackage.getOutageCalendarCollection());
-		if (thisPackage.getOutageCalendarCollection().contains(theOutage.getName())) {
+		collectionOutages.put(thisPackage, thisPackage.getOutageCalendars());
+		if (thisPackage.getOutageCalendars().contains(theOutage.getName())) {
 			enabledOutages.add("collect-" + thisPackage.getName());
 		}
 	}
