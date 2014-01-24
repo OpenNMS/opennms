@@ -192,8 +192,8 @@ public class WillItUnmarshalTest {
         addFile(Source.EXAMPLE, "mail-transport-test.xml", MailTransportTest.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "hyperic-integration/imports-HQ.xml", Requisition.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "hyperic-integration/imports-opennms-admin.xml", Requisition.class, Impl.JAXB);
-        addFile(Source.CONFIG, "monitoring-locations.xml", MonitoringLocationsConfiguration.class, Impl.CASTOR);
-        addFile(Source.EXAMPLE, "monitoring-locations.xml", MonitoringLocationsConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "monitoring-locations.xml", MonitoringLocationsConfiguration.class, Impl.JAXB);
+        addFile(Source.EXAMPLE, "monitoring-locations.xml", MonitoringLocationsConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "notifd-configuration.xml", NotifdConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "notificationCommands.xml", NotificationCommands.class, Impl.CASTOR);
         addFile(Source.EXAMPLE, "notificationCommands.xml", NotificationCommands.class, Impl.CASTOR);

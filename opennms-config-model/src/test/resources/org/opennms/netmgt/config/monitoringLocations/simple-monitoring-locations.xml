@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<monitoring-locations-configuration 
+  xmlns="http://www.opennms.org/xsd/config/monitoring-locations" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/monitoring-locations 
+                      http://www.opennms.org/xsd/config/monitoring-locations.xsd ">
+  <locations>
+    <location-def location-name="RDU" monitoring-area="raleigh" polling-package-name="raleigh" geolocation="35.7174,-79.1619" />
+  </locations>
+</monitoring-locations-configuration>

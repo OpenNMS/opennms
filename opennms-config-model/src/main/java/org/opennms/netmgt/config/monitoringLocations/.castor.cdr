@@ -1,0 +1,4 @@
+#Tue Jan 21 15:10:52 EST 2014
+org.opennms.netmgt.config.monitoringLocations.Locations=org.opennms.netmgt.config.monitoringLocations.descriptors.LocationsDescriptor
+org.opennms.netmgt.config.monitoringLocations.LocationDef=org.opennms.netmgt.config.monitoringLocations.descriptors.LocationDefDescriptor
+org.opennms.netmgt.config.monitoringLocations.MonitoringLocationsConfiguration=org.opennms.netmgt.config.monitoringLocations.descriptors.MonitoringLocationsConfigurationDescriptor

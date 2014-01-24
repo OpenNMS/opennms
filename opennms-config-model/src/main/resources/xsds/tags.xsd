@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema targetNamespace="http://xmlns.opennms.org/xsd/config/tags"
-        xmlns="http://www.w3.org/2001/XMLSchema"
-		  xmlns:this="http://xmlns.opennms.org/xsd/config/tags"
-		  elementFormDefault="qualified">
+<schema
+	targetNamespace="http://xmlns.opennms.org/xsd/config/tags"
+	xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:this="http://xmlns.opennms.org/xsd/config/tags"
+	elementFormDefault="qualified">
+
   <annotation>
     <documentation>XML Schema for metadata tags.</documentation>
   </annotation>
 
   <element name="tags">
     <annotation>
-      <documentation>An collection of tags.</documentation>
+      <documentation>A collection of tags.</documentation>
     </annotation>
     
     <complexType>

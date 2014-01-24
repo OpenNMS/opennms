@@ -8,8 +8,17 @@ import org.opennms.core.test.xml.XmlTest;
 
 public class CollectdConfigurationTest extends XmlTest<CollectdConfiguration> {
 
-    public CollectdConfigurationTest(final CollectdConfiguration sampleObject, final Object sampleXml, final String schemaFile, final String[] ignoredNamespaces, final String[] ignoredPrefixes) {
-        super(sampleObject, sampleXml, schemaFile, ignoredNamespaces, ignoredPrefixes);
+    public CollectdConfigurationTest(final CollectdConfiguration sampleObject, final Object sampleXml) {
+        super(sampleObject, sampleXml, null);
+    }
+
+    @Override
+    protected boolean ignoreNamespace(final String namespace) {
+        return "http://xmlns.opennms.org/xsd/config/collectd".equals(namespace);
+    }
+    
+    protected String getSchemaFile() {
+        return "target/classes/xsds/collectd-configuration.xsd";
     }
 
     @Parameters
@@ -44,10 +53,7 @@ public class CollectdConfigurationTest extends XmlTest<CollectdConfiguration> {
                             "                class-name=\"org.opennms.netmgt.collectd.SnmpCollector\" />\n" + 
                             "        <collector service=\"OpenNMS-JVM\"\n" + 
                             "                class-name=\"org.opennms.netmgt.collectd.Jsr160Collector\" />\n" + 
-                            "</collectd-configuration>",
-                            "target/classes/xsds/collectd-configuration.xsd",
-                            new String[] { "http://xmlns.opennms.org/xsd/config/collectd" },
-                            new String[] { }
+                            "</collectd-configuration>"
                 }
         });
     }

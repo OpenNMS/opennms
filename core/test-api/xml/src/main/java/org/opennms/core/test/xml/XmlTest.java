@@ -35,6 +35,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URI;
@@ -59,6 +60,7 @@ import javax.xml.xpath.XPathFactory;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Difference;
+import org.custommonkey.xmlunit.NodeDetail;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Before;
 import org.junit.Test;
@@ -71,7 +73,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 import org.xml.sax.XMLFilter;
 
 @RunWith(Parameterized.class)
@@ -81,27 +82,21 @@ abstract public class XmlTest<T> {
     private T m_sampleObject;
     private Object m_sampleXml;
     private String m_schemaFile;
-    private static List<String> m_ignoredNamespaces = new ArrayList<String>();
-    private static List<String> m_ignoredPrefixes   = new ArrayList<String>();
 
     public XmlTest(final T sampleObject, final Object sampleXml, final String schemaFile) {
-        this(sampleObject, sampleXml, schemaFile, null, null);
-    }
-
-    public XmlTest(final T sampleObject, final Object sampleXml, final String schemaFile, final String[] ignoredNamespaces, final String[] ignoredPrefixes) {
         m_sampleObject = sampleObject;
         m_sampleXml = sampleXml;
         m_schemaFile = schemaFile;
-        if (ignoredNamespaces != null) {
-            for (final String ignore : ignoredNamespaces) {
-                m_ignoredNamespaces.add(ignore);
-            }
-        }
-        if (ignoredPrefixes != null) {
-            for (final String ignore : ignoredPrefixes) {
-                m_ignoredPrefixes.add(ignore);
-            }
-        }
+    }
+
+    @Before
+    public void setUp() {
+        MockLogAppender.setupLogging(true);
+        XMLUnit.setIgnoreWhitespace(true);
+        XMLUnit.setIgnoreAttributeOrder(true);
+        XMLUnit.setIgnoreComments(true);
+        XMLUnit.setIgnoreDiffBetweenTextAndCDATA(true);
+        XMLUnit.setNormalize(true);
     }
 
     protected T getSampleObject() {
@@ -115,6 +110,8 @@ abstract public class XmlTest<T> {
             return IOUtils.toString((URI)m_sampleXml);
         } else if (m_sampleXml instanceof URL) {
             return IOUtils.toString((URL)m_sampleXml);
+        } else if (m_sampleXml instanceof InputStream) {
+            return IOUtils.toString((InputStream)m_sampleXml);
         } else {
             return m_sampleXml.toString();
         }
@@ -124,27 +121,70 @@ abstract public class XmlTest<T> {
         return new ByteArrayInputStream(getSampleXml().getBytes());
     }
 
+    protected String getSchemaFile() {
+        return m_schemaFile;
+    }
+
     @SuppressWarnings("unchecked")
     private Class<T> getSampleClass() {
         return (Class<T>) getSampleObject().getClass();
     }
 
-    @Before
-    public void setUp() {
-        MockLogAppender.setupLogging(true);
-        XMLUnit.setIgnoreWhitespace(true);
-        XMLUnit.setIgnoreAttributeOrder(true);
-        XMLUnit.setIgnoreComments(true);
-        XMLUnit.setIgnoreDiffBetweenTextAndCDATA(true);
-        XMLUnit.setNormalize(true);
-    }
-
-    public static boolean ignoreAllNamespaceDifferences() {
+    protected boolean ignoreNamespace(final String namespace) {
         return true;
     }
 
-    public static boolean ignoreAllPrefixDifferences() {
+    protected boolean ignorePrefix(final String prefix) {
+        return true;
+    }
+
+    protected boolean ignoreDifference(final Difference d) {
         return false;
+    }
+
+    protected void validateXmlString(final String xml) throws Exception {
+        if (getSchemaFile() == null) {
+            LOG.warn("skipping validation, schema file not set");
+            return;
+        }
+
+        final SchemaFactory schemaFactory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+        final File schemaFile = new File(getSchemaFile());
+        LOG.debug("Validating using schema file: {}", schemaFile);
+        final Schema schema = schemaFactory.newSchema(schemaFile);
+
+        final SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
+        saxParserFactory.setValidating(true);
+        saxParserFactory.setNamespaceAware(true);
+        saxParserFactory.setSchema(schema);
+
+        assertTrue("make sure our SAX implementation can validate", saxParserFactory.isValidating());
+
+        final Validator validator = schema.newValidator();
+        final ByteArrayInputStream inputStream = new ByteArrayInputStream(xml.getBytes());
+        final Source source = new StreamSource(inputStream);
+
+        validator.validate(source);
+    }
+
+    protected String marshalToXmlWithCastor() {
+        LOG.debug("Reference Object: {}", getSampleObject());
+
+        final StringWriter writer = new StringWriter();
+        CastorUtils.marshalWithTranslatedExceptions(getSampleObject(), writer);
+        final String xml = writer.toString();
+        LOG.debug("Castor XML: {}", xml);
+        return xml;
+    }
+
+    protected String marshalToXmlWithJaxb() {
+        LOG.debug("Reference Object: {}", getSampleObject());
+
+        final StringWriter writer = new StringWriter();
+        JaxbUtils.marshal(getSampleObject(), writer);
+        final String xml = writer.toString();
+        LOG.debug("JAXB XML: {}", xml);
+        return xml;
     }
 
     @Test
@@ -206,10 +246,11 @@ abstract public class XmlTest<T> {
 
     @Test
     public void validateJaxbXmlAgainstSchema() throws Exception {
-        LOG.debug("Validating against XSD: {}", m_schemaFile);
+        final String schemaFile = getSchemaFile();
+        LOG.debug("Validating against XSD: {}", schemaFile);
         javax.xml.bind.Unmarshaller unmarshaller = JaxbUtils.getUnmarshallerFor(getSampleClass(), null, true);
         final SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
-        final Schema schema = factory.newSchema(new StreamSource(m_schemaFile));
+        final Schema schema = factory.newSchema(new StreamSource(schemaFile));
         unmarshaller.setSchema(schema);
         unmarshaller.setEventHandler(new ValidationEventHandler() {
             @Override
@@ -230,114 +271,16 @@ abstract public class XmlTest<T> {
         }
     }
 
-    protected void validateXmlString(final String xml) throws Exception {
-        if (m_schemaFile == null) {
-            LOG.warn("skipping validation, schema file not set");
-            return;
-        }
-
-        final SchemaFactory schemaFactory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
-        final File schemaFile = new File(m_schemaFile);
-        LOG.debug("Validating using schema file: {}", schemaFile);
-        final Schema schema = schemaFactory.newSchema(schemaFile);
-
-        final SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
-        saxParserFactory.setValidating(true);
-        saxParserFactory.setNamespaceAware(true);
-        saxParserFactory.setSchema(schema);
-
-        assertTrue("make sure our SAX implementation can validate", saxParserFactory.isValidating());
-
-        final Validator validator = schema.newValidator();
-        final ByteArrayInputStream inputStream = new ByteArrayInputStream(xml.getBytes());
-        final Source source = new StreamSource(inputStream);
-
-        validator.validate(source);
+    public static void assertXmlEquals(final String expectedXml, final String actualXml) {
+        
     }
 
-    protected String marshalToXmlWithCastor() {
-        LOG.debug("Reference Object: {}", getSampleObject());
-
-        final StringWriter writer = new StringWriter();
-        CastorUtils.marshalWithTranslatedExceptions(getSampleObject(), writer);
-        final String xml = writer.toString();
-        LOG.debug("Castor XML: {}", xml);
-        return xml;
-    }
-
-    protected String marshalToXmlWithJaxb() {
-        LOG.debug("Reference Object: {}", getSampleObject());
-
-        final StringWriter writer = new StringWriter();
-        JaxbUtils.marshal(getSampleObject(), writer);
-        final String xml = writer.toString();
-        LOG.debug("JAXB XML: {}", xml);
-        return xml;
-    }
-
-    public static void assertXmlEquals(final String expectedXml, final String actualXml) throws Exception {
+    protected void _assertXmlEquals(final String expectedXml, final String actualXml) {
         final List<Difference> differences = getDifferences(expectedXml, actualXml);
         if (differences.size() > 0) {
             LOG.debug("XML:\n\n{}\n\n...does not match XML:\n\n{}", expectedXml, actualXml);
         }
         assertEquals("number of XMLUnit differences between the expected xml and the actual xml should be 0", 0, differences.size());
-    }
-
-    protected static List<Difference> getDifferences(final String xmlA, final String xmlB) throws SAXException, IOException {
-        final DetailedDiff myDiff = new DetailedDiff(XMLUnit.compareXML(xmlA, xmlB));
-        final List<Difference> retDifferences = new ArrayList<Difference>();
-        @SuppressWarnings("unchecked")
-        final List<Difference> allDifferences = myDiff.getAllDifferences();
-        if (allDifferences.size() > 0) {
-            DIFFERENCES: for (final Difference d : allDifferences) {
-                final String control = d.getControlNodeDetail().getValue();
-                final String test = d.getTestNodeDetail().getValue();
-
-                if (d.getDescription().equals("namespace URI")) {
-                    for (final String namespace : m_ignoredNamespaces) {
-                        if (control != null && !"null".equals(control)) {
-                            if (control.equalsIgnoreCase(namespace)) {
-                                LOG.trace("Ignoring {}: {}", d.getDescription(), d);
-                                continue DIFFERENCES;
-                            }
-                        }
-                        if (test != null && !"null".equals(test)) {
-                            if (test.equalsIgnoreCase(namespace)) {
-                                LOG.trace("Ignoring {}: {}", d.getDescription(), d);
-                                continue DIFFERENCES;
-                            }
-                        }
-                    }
-                    if (ignoreAllNamespaceDifferences()) {
-                        LOG.trace("Found difference: {}: {} (IGNORED, ignoreAllNamespaceDifferences=true)", d.getDescription(), d);
-                        continue DIFFERENCES;
-                    }
-                } else if (d.getDescription().equals("namespace prefix")) {
-                    for (final String namespace : m_ignoredPrefixes) {
-                        if (control != null && !"null".equals(control)) {
-                            if (control.equalsIgnoreCase(namespace)) {
-                                LOG.trace("Ignoring {}: {}", d.getDescription(), d);
-                                continue DIFFERENCES;
-                            }
-                        }
-                        if (test != null && !"null".equals(test)) {
-                            if (test.equalsIgnoreCase(namespace)) {
-                                LOG.trace("Ignoring {}: {}", d.getDescription(), d);
-                                continue DIFFERENCES;
-                            }
-                        }
-                    }
-                    if (ignoreAllPrefixDifferences()) {
-                        LOG.trace("Found difference: {}: {} (IGNORED, ignoreAllPrefixDifferences=true)", d.getDescription(), d);
-                        continue DIFFERENCES;
-                    }
-                }
-
-                LOG.warn("Found difference: {}: {}", d.getDescription(), d);
-                retDifferences.add(d);
-            }
-        }
-        return retDifferences;
     }
 
     public static void assertXpathDoesNotMatch(final String xml, final String expression) throws XPathExpressionException {
@@ -356,6 +299,66 @@ abstract public class XmlTest<T> {
     public static void assertXpathMatches(final String description, final String xml, final String expression) throws XPathExpressionException {
         final NodeList nodes = xpathGetNodesMatching(xml, expression);
         assertTrue(description == null? ("Must get at least one node back from the query '" + expression + "'") : description, nodes != null && nodes.getLength() != 0);
+    }
+
+    protected List<Difference> getDifferences(final String xmlA, final String xmlB) {
+        DetailedDiff myDiff;
+        try {
+            myDiff = new DetailedDiff(XMLUnit.compareXML(xmlA, xmlB));
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
+        final List<Difference> retDifferences = new ArrayList<Difference>();
+        @SuppressWarnings("unchecked")
+        final List<Difference> allDifferences = myDiff.getAllDifferences();
+        if (allDifferences.size() > 0) {
+            DIFFERENCES: for (final Difference d : allDifferences) {
+                final NodeDetail controlNodeDetail = d.getControlNodeDetail();
+                final String control = controlNodeDetail.getValue();
+                final NodeDetail testNodeDetail = d.getTestNodeDetail();
+                final String test = testNodeDetail.getValue();
+
+                if (d.getDescription().equals("namespace URI")) {
+                    if (control != null && !"null".equals(control)) {
+                        if (ignoreNamespace(control.toLowerCase())) {
+                            LOG.trace("Ignoring {}: {}", d.getDescription(), d);
+                            continue DIFFERENCES;
+                        }
+                    }
+                    if (test != null && !"null".equals(test)) {
+                        if (ignoreNamespace(test.toLowerCase())) {
+                            LOG.trace("Ignoring {}: {}", d.getDescription(), d);
+                            continue DIFFERENCES;
+                        }
+                    }
+                } else if (d.getDescription().equals("namespace prefix")) {
+                    if (control != null && !"null".equals(control)) {
+                        if (ignorePrefix(control.toLowerCase())) {
+                            LOG.trace("Ignoring {}: {}", d.getDescription(), d);
+                            continue DIFFERENCES;
+                        }
+                    }
+                    if (test != null && !"null".equals(test)) {
+                        if (ignorePrefix(test.toLowerCase())) {
+                            LOG.trace("Ignoring {}: {}", d.getDescription(), d);
+                            continue DIFFERENCES;
+                        }
+                    }
+                } else if (d.getDescription().equals("xsi:schemaLocation attribute")) {
+                    LOG.debug("Schema location '{}' does not match.  Ignoring.", controlNodeDetail.getValue() == null? testNodeDetail.getValue() : controlNodeDetail.getValue());
+                    continue DIFFERENCES;
+                }
+
+                if (ignoreDifference(d)) {
+                    LOG.debug("ignoreDifference matched.  Ignoring difference: {}: {}", d.getDescription(), d);
+                    continue DIFFERENCES;
+                } else {
+                    LOG.warn("Found difference: {}: {}", d.getDescription(), d);
+                    retDifferences.add(d);
+                }
+            }
+        }
+        return retDifferences;
     }
 
     protected static NodeList xpathGetNodesMatching(final String xml, final String expression) throws XPathExpressionException {

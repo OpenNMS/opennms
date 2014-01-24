@@ -3,28 +3,29 @@ package org.opennms.netmgt.config.poller;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Properties;
 
-import org.junit.Before;
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.MockLogAppender;
-import org.opennms.core.test.MockLogger;
 import org.opennms.core.test.xml.XmlTestNoCastor;
 import org.opennms.netmgt.config.pagesequence.Page;
 import org.opennms.netmgt.config.pagesequence.PageSequence;
 
 public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration> {
-    public PollerConfigurationTest(final PollerConfiguration sampleObject, final Object sampleXml, final String schemaFile, final String[] ignoredNamespaces, final String[] ignoredPrefixes) {
-        super(sampleObject, sampleXml, schemaFile, ignoredNamespaces, ignoredPrefixes);
+    public PollerConfigurationTest(final PollerConfiguration sampleObject, final Object sampleXml) {
+        super(sampleObject, sampleXml, null);
     }
 
-    @Before
-    public void setUp() {
-        super.setUp();
-        final Properties props = new Properties();
-        props.put(MockLogger.LOG_KEY_PREFIX + "org.opennms.core.xml.JaxbUtils", "TRACE");
-        props.put(MockLogger.LOG_KEY_PREFIX + "org.opennms.core.xml.JaxbClassObjectAdapter", "TRACE");
-        MockLogAppender.setupLogging(true, props);
+    @Override
+    protected boolean ignoreNamespace(final String namespace) {
+        return "http://xmlns.opennms.org/xsd/config/poller".equals(namespace) || "http://xmlns.opennms.org/xsd/page-sequence".equals(namespace);
+    }
+    
+    @Override
+    protected boolean ignorePrefix(final String prefix) {
+        return "ps".equals(prefix);
+    }
+
+    protected String getSchemaFile() {
+        return "target/classes/xsds/poller-configuration.xsd";
     }
 
     @Parameters
@@ -41,24 +42,15 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
                     + "      <downtime begin=\"0\" delete=\"true\"/>"
                     + "   </package>"
                     + "   <monitor service=\"ICMP\" class-name=\"org.opennms.netmgt.poller.monitors.IcmpMonitor\"/>"
-                    + "</poller-configuration>",
-                    "target/classes/xsds/poller-configuration.xsd",
-                    new String[] { "http://xmlns.opennms.org/xsd/config/poller", "http://xmlns.opennms.org/xsd/page-sequence" },
-                    new String[] { "ps" }
+                    + "</poller-configuration>"
                 },
                 {
                     getSimplePollerConfiguration(),
-                    new File("target/test-classes/org/opennms/netmgt/config/poller/simple-poller-configuration.xml"),
-                    "target/classes/xsds/poller-configuration.xsd",
-                    new String[] { "http://xmlns.opennms.org/xsd/config/poller", "http://xmlns.opennms.org/xsd/page-sequence" },
-                    new String[] { "ps" }
+                    new File("target/test-classes/org/opennms/netmgt/config/poller/simple-poller-configuration.xml")
                 },
                 {
                     get18PollerConfiguration(),
-                    new File("target/test-classes/org/opennms/netmgt/config/poller/poller-configuration-1.8.xml"),
-                    "target/classes/xsds/poller-configuration.xsd",
-                    new String[] { "http://xmlns.opennms.org/xsd/config/poller", "http://xmlns.opennms.org/xsd/page-sequence" },
-                    new String[] { "ps" }
+                    new File("target/test-classes/org/opennms/netmgt/config/poller/poller-configuration-1.8.xml")
                 }
         });
     }
