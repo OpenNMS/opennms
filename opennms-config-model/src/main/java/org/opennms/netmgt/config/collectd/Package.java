@@ -76,6 +76,13 @@ public class Package implements Serializable {
     private String m_storeByNodeID;
 
     /**
+     * The name of the domain covered by this collection package. Defaults to
+     * package name.
+     */
+    @XmlElement(name="ifAliasDomain")
+    private String m_ifAliasDomain;
+
+    /**
      * Flag for controlling how interfaces are selected for data collection by
      * domain/ifAlias. If true, storage will occur for any interface on the
      * node found to have an valid ifAlias. Otherwise data will be stored only
@@ -83,13 +90,6 @@ public class Package implements Serializable {
      */
     @XmlElement(name="storFlagOverride")
     private String m_storFlagOverride;
-
-    /**
-     * The name of the domain covered by this collection package. Defaults to
-     * package name.
-     */
-    @XmlElement(name="ifAliasDomain")
-    private String m_ifAliasDomain;
 
     /**
      * A character or string for terminating ifAlias text. In effect, any text
