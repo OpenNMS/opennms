@@ -39,6 +39,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.GraphDao;
 import org.opennms.netmgt.dao.ResourceDao;
+import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
@@ -168,7 +169,7 @@ public class DefaultResourceService implements ResourceService, InitializingBean
     public List<OnmsResource> findNodeChildResources(OnmsNode node) {
         List<OnmsResource> resources = new ArrayList<OnmsResource>();
         if (node != null) {
-            if (Boolean.getBoolean("org.opennms.rrd.storeByForeignSource")) {
+            if (ResourceTypeUtils.isStoreByForeignSource()) {
                 String source = node.getForeignSource() + ':' + node.getForeignId();
                 resources.addAll(findNodeSourceChildResources(source));
             } else {

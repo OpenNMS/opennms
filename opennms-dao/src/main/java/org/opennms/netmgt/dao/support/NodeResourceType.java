@@ -117,7 +117,7 @@ public class NodeResourceType implements OnmsResourceType {
      * @return a {@link org.opennms.netmgt.model.OnmsResource} object.
      */
     public OnmsResource createChildResource(OnmsNode node) {
-        NodeChildResourceLoader loader = new NodeChildResourceLoader(node.getId());
+        NodeChildResourceLoader loader = new NodeChildResourceLoader(node.getId(), node.getForeignSource(), node.getForeignId());
         OnmsResource r = new OnmsResource(node.getId().toString(), node.getLabel(), this, s_emptyAttributeSet, new LazyList<OnmsResource>(loader));
         r.setEntity(node);
         loader.setParent(r);
@@ -128,10 +128,12 @@ public class NodeResourceType implements OnmsResourceType {
     
     private class NodeChildResourceLoader implements LazyList.Loader<OnmsResource> {
         private int m_nodeId;
+        private String m_nodeSource;
         private OnmsResource m_parent;
         
-        public NodeChildResourceLoader(int nodeId) {
+        public NodeChildResourceLoader(int nodeId, String foreignSource, String foreignId) {
             m_nodeId = nodeId;
+            m_nodeSource = foreignSource + ':' + foreignId;
         }
         
         public void setParent(OnmsResource parent) {
@@ -141,11 +143,21 @@ public class NodeResourceType implements OnmsResourceType {
         public List<OnmsResource> load() {
             List<OnmsResource> children = new LinkedList<OnmsResource>();
 
-            for (OnmsResourceType resourceType : getResourceTypesForNode(m_nodeId)) {
-                for (OnmsResource resource : resourceType.getResourcesForNode(m_nodeId)) {
-                    resource.setParent(m_parent);
-                    children.add(resource);
-                    log().debug("load: adding resource " + resource.toString());
+            if (ResourceTypeUtils.isStoreByForeignSource()) {
+                for (OnmsResourceType resourceType : getResourceTypesForNodeSource(m_nodeSource, m_nodeId)) {
+                    for (OnmsResource resource : resourceType.getResourcesForNodeSource(m_nodeSource, m_nodeId)) {
+                        resource.setParent(m_parent);
+                        children.add(resource);
+                        log().debug("load: adding resource " + resource.toString());
+                    }
+                }
+            } else {
+                for (OnmsResourceType resourceType : getResourceTypesForNode(m_nodeId)) {
+                    for (OnmsResource resource : resourceType.getResourcesForNode(m_nodeId)) {
+                        resource.setParent(m_parent);
+                        children.add(resource);
+                        log().debug("load: adding resource " + resource.toString());
+                    }
                 }
             }
 
@@ -161,7 +173,17 @@ public class NodeResourceType implements OnmsResourceType {
             }
             return resourceTypes;
         }
-        
+
+        private Collection<OnmsResourceType> getResourceTypesForNodeSource(String nodeSource, int nodeId) {
+            Collection<OnmsResourceType> resourceTypes = new LinkedList<OnmsResourceType>();
+            for (OnmsResourceType resourceType : m_resourceDao.getResourceTypes()) {
+                if (resourceType.isResourceTypeOnNodeSource(nodeSource, nodeId)) {
+                    resourceTypes.add(resourceType);
+                }
+            }
+            return resourceTypes;
+        }
+
         private ThreadCategory log() {
             return ThreadCategory.getInstance(NodeResourceType.class);
         }   
