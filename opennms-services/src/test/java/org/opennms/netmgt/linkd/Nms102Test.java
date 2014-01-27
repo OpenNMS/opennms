@@ -32,7 +32,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
@@ -40,6 +39,8 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.config.linkd.Filter;
+import org.opennms.netmgt.config.linkd.IncludeRange;
 import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.linkd.snmp.MtxrWlRtabTable;
 import org.opennms.netmgt.linkd.snmp.MtxrWlRtabTableEntry;
@@ -112,7 +113,7 @@ public class Nms102Test extends Nms102NetworkBuilder {
         @JUnitSnmpAgent(host=MAC1_IP, port=161, resource="classpath:linkd/nms102/"+"mac-"+MAC1_IP+"-walk.txt"),
         @JUnitSnmpAgent(host=MAC2_IP, port=161, resource="classpath:linkd/nms102/"+"mac-"+MAC2_IP+"-walk.txt")
     })
-    public void testLinks() throws Exception {
+    public void testWifiLinksWithExclusiveConf() throws Exception {
 
     	m_nodeDao.save(getMac1());
         m_nodeDao.save(getMac2());
@@ -125,15 +126,22 @@ public class Nms102Test extends Nms102NetworkBuilder {
         final OnmsNode mac2 = m_nodeDao.findByForeignId("linkd", MAC2_NAME);
         final OnmsNode samsung = m_nodeDao.findByForeignId("linkd", SAMSUNG_NAME);
         final OnmsNode mikrotik = m_nodeDao.findByForeignId("linkd", MIKROTIK_NAME);
+        final OnmsNode mobile = m_nodeDao.findByForeignId("linkd", "mobile");
 
-        for (Package pkg : Collections.list(m_linkdConfig.enumeratePackage())) {
-            pkg.setForceIpRouteDiscoveryOnEthernet(true);
-        }
+        Package example1 = m_linkdConfig.getPackage("example1");
+        example1.setUseBridgeDiscovery(false);
+        example1.setUseIpRouteDiscovery(false);
+        example1.setEnableVlanDiscovery(false);
+        example1.setUseOspfDiscovery(false);
+        example1.setUseLldpDiscovery(false);
+        example1.setUseIsisDiscovery(false);
+        example1.setUseCdpDiscovery(false);
 
         assertTrue(m_linkd.scheduleNodeCollection(mac1.getId()));
         assertTrue(m_linkd.scheduleNodeCollection(mac2.getId()));
         assertTrue(m_linkd.scheduleNodeCollection(samsung.getId()));
         assertTrue(m_linkd.scheduleNodeCollection(mikrotik.getId()));
+        assertTrue(!m_linkd.scheduleNodeCollection(mobile.getId()));
  
         assertTrue(m_linkd.runSingleSnmpCollection(mac1.getId()));
         assertTrue(m_linkd.runSingleSnmpCollection(mac2.getId()));
@@ -147,7 +155,187 @@ public class Nms102Test extends Nms102NetworkBuilder {
             printLink(link);
         }
 
+        assertEquals("we should have found 4 data links", 4, ifaces.size());
+    }
+
+    @Test
+    @JUnitSnmpAgents(value={
+        @JUnitSnmpAgent(host=MIKROTIK_IP, port=161, resource="classpath:linkd/nms102/"+MIKROTIK_NAME+"-"+MIKROTIK_IP+"-walk.txt"),
+        @JUnitSnmpAgent(host=SAMSUNG_IP, port=161, resource="classpath:linkd/nms102/"+SAMSUNG_NAME+"-"+SAMSUNG_IP+"-walk.txt"),
+        @JUnitSnmpAgent(host=MAC1_IP, port=161, resource="classpath:linkd/nms102/"+"mac-"+MAC1_IP+"-walk.txt"),
+        @JUnitSnmpAgent(host=MAC2_IP, port=161, resource="classpath:linkd/nms102/"+"mac-"+MAC2_IP+"-walk.txt")
+    })
+    public void testWifiLinksWithDefaultConf() throws Exception {
+
+        m_nodeDao.save(getMac1());
+        m_nodeDao.save(getMac2());
+        m_nodeDao.save(getMikrotik());
+        m_nodeDao.save(getSamsung());
+        m_nodeDao.save(getNodeWithoutSnmp("mobile", "192.168.0.13"));
+        m_nodeDao.flush();
+        
+        final OnmsNode mac1 = m_nodeDao.findByForeignId("linkd", MAC1_NAME);
+        final OnmsNode mac2 = m_nodeDao.findByForeignId("linkd", MAC2_NAME);
+        final OnmsNode samsung = m_nodeDao.findByForeignId("linkd", SAMSUNG_NAME);
+        final OnmsNode mikrotik = m_nodeDao.findByForeignId("linkd", MIKROTIK_NAME);
+        final OnmsNode mobile = m_nodeDao.findByForeignId("linkd", "mobile");
+
+        assertTrue(m_linkd.scheduleNodeCollection(mac1.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(mac2.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(samsung.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(mikrotik.getId()));
+        assertTrue(!m_linkd.scheduleNodeCollection(mobile.getId()));
+ 
+        assertTrue(m_linkd.runSingleSnmpCollection(mac1.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(mac2.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(samsung.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(mikrotik.getId()));
+ 
+        assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
+        
+        final List<DataLinkInterface> ifaces = m_dataLinkInterfaceDao.findAll();
+        for (final DataLinkInterface link: ifaces) {
+            printLink(link);
+        }
+
+        assertEquals("we should have found 4 data links", 4, ifaces.size());
+    }
+
+    @Test
+    @JUnitSnmpAgents(value={
+        @JUnitSnmpAgent(host=MIKROTIK_IP, port=161, resource="classpath:linkd/nms102/"+MIKROTIK_NAME+"-"+MIKROTIK_IP+"-walk.txt"),
+        @JUnitSnmpAgent(host=SAMSUNG_IP, port=161, resource="classpath:linkd/nms102/"+SAMSUNG_NAME+"-"+SAMSUNG_IP+"-walk.txt"),
+        @JUnitSnmpAgent(host=MAC1_IP, port=161, resource="classpath:linkd/nms102/"+"mac-"+MAC1_IP+"-walk.txt"),
+        @JUnitSnmpAgent(host=MAC2_IP, port=161, resource="classpath:linkd/nms102/"+"mac-"+MAC2_IP+"-walk.txt")
+    })
+    public void testLinksWithIpRoute() throws Exception {
+
+        m_nodeDao.save(getMac1());
+        m_nodeDao.save(getMac2());
+        m_nodeDao.save(getMikrotik());
+        m_nodeDao.save(getSamsung());
+        m_nodeDao.save(getNodeWithoutSnmp("mobile", "192.168.0.13"));
+        m_nodeDao.flush();
+        
+        final OnmsNode mac1 = m_nodeDao.findByForeignId("linkd", MAC1_NAME);
+        final OnmsNode mac2 = m_nodeDao.findByForeignId("linkd", MAC2_NAME);
+        final OnmsNode samsung = m_nodeDao.findByForeignId("linkd", SAMSUNG_NAME);
+        final OnmsNode mikrotik = m_nodeDao.findByForeignId("linkd", MIKROTIK_NAME);
+        final OnmsNode mobile = m_nodeDao.findByForeignId("linkd", "mobile");
+
+        Package example1 = m_linkdConfig.getPackage("example1");
+        example1.setUseIpRouteDiscovery(true);
+        example1.setForceIpRouteDiscoveryOnEthernet(true);
+
+        assertTrue(m_linkd.scheduleNodeCollection(mac1.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(mac2.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(samsung.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(mikrotik.getId()));
+        assertTrue(!m_linkd.scheduleNodeCollection(mobile.getId()));
+ 
+        assertTrue(m_linkd.runSingleSnmpCollection(mac1.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(mac2.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(samsung.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(mikrotik.getId()));
+ 
+        assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
+        
+        final List<DataLinkInterface> ifaces = m_dataLinkInterfaceDao.findAll();
+        for (final DataLinkInterface link: ifaces) {
+            printLink(link);
+        }
+
+        assertEquals("we should have found 7 data links", 7, ifaces.size());
+    }
+
+    @Test
+    @JUnitSnmpAgents(value={
+        @JUnitSnmpAgent(host=MIKROTIK_IP, port=161, resource="classpath:linkd/nms102/"+MIKROTIK_NAME+"-"+MIKROTIK_IP+"-walk.txt"),
+        @JUnitSnmpAgent(host=SAMSUNG_IP, port=161, resource="classpath:linkd/nms102/"+SAMSUNG_NAME+"-"+SAMSUNG_IP+"-walk.txt"),
+        @JUnitSnmpAgent(host=MAC1_IP, port=161, resource="classpath:linkd/nms102/"+"mac-"+MAC1_IP+"-walk.txt"),
+        @JUnitSnmpAgent(host=MAC2_IP, port=161, resource="classpath:linkd/nms102/"+"mac-"+MAC2_IP+"-walk.txt")
+    })
+    public void testLinksTwoPackage() throws Exception {
+
+        m_nodeDao.save(getMac1());
+        m_nodeDao.save(getMac2());
+        m_nodeDao.save(getMikrotik());
+        m_nodeDao.save(getSamsung());
+        m_nodeDao.save(getNodeWithoutSnmp("mobile", "192.168.0.13"));
+        m_nodeDao.flush();
+        
+        final OnmsNode mac1 = m_nodeDao.findByForeignId("linkd", MAC1_NAME);
+        final OnmsNode mac2 = m_nodeDao.findByForeignId("linkd", MAC2_NAME);
+        final OnmsNode samsung = m_nodeDao.findByForeignId("linkd", SAMSUNG_NAME);
+        final OnmsNode mikrotik = m_nodeDao.findByForeignId("linkd", MIKROTIK_NAME);
+        final OnmsNode mobile = m_nodeDao.findByForeignId("linkd", "mobile");
+
+        
+        Package example1 = m_linkdConfig.getPackage("example1");
+        example1.setUseBridgeDiscovery(false);
+        example1.setSaveStpInterfaceTable(false);
+        example1.setSaveStpNodeTable(false);
+        example1.setUseIpRouteDiscovery(false);
+        example1.setEnableVlanDiscovery(false);
+        example1.setUseOspfDiscovery(false);
+        example1.setUseLldpDiscovery(false);
+        example1.setUseIsisDiscovery(false);
+        example1.setUseCdpDiscovery(false);
+        example1.setUseIpRouteDiscovery(true);
+        example1.setForceIpRouteDiscoveryOnEthernet(true);
+        example1.setUseWifiDiscovery(false);
+        
+        Package example2 = new Package();
+        example2.setName("example2");
+        Filter filter = new Filter();
+        filter.setContent("IPADDR != '0.0.0.0'");
+        example2.setFilter(filter);
+        IncludeRange range = new IncludeRange();
+        range.setBegin("1.1.1.1");
+        range.setEnd("255.255.255.255");
+        example2.addIncludeRange(range);
+        example2.setUseBridgeDiscovery(false);
+        example2.setSaveStpInterfaceTable(false);
+        example2.setSaveStpNodeTable(false);
+        example2.setUseIpRouteDiscovery(false);
+        example2.setSaveRouteTable(false);
+        example2.setEnableVlanDiscovery(false);
+        example2.setUseOspfDiscovery(false);
+        example2.setUseLldpDiscovery(false);
+        example2.setUseIsisDiscovery(false);
+        example2.setUseCdpDiscovery(false);
+        example2.setUseIpRouteDiscovery(false);
+        example2.setUseWifiDiscovery(true);
+        m_linkdConfig.getConfiguration().addPackage(example2);
+        
+        assertTrue(m_linkd.scheduleNodeCollection(mac1.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(mac2.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(samsung.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(mikrotik.getId()));
+        assertTrue(!m_linkd.scheduleNodeCollection(mobile.getId()));
+ 
+        assertTrue(m_linkd.runSingleSnmpCollection(mac1.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(mac2.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(samsung.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(mikrotik.getId()));
+ 
+        assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
+        final List<DataLinkInterface> ifaces = m_dataLinkInterfaceDao.findAll();
+        for (final DataLinkInterface link: ifaces) {
+            printLink(link);
+        }
+
         assertEquals("we should have found 3 data links", 3, ifaces.size());
+
+        assertTrue(m_linkd.runSingleLinkDiscovery("example2"));
+        
+        final List<DataLinkInterface> ifacesAll = m_dataLinkInterfaceDao.findAll();
+        for (final DataLinkInterface link: ifacesAll) {
+            printLink(link);
+        }
+
+        assertEquals("we should have found 7 data links", 7, ifacesAll.size());
+
     }
 
 }

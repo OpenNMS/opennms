@@ -131,6 +131,10 @@ public class LinkableNode {
     private Map<Integer, Integer> m_bridgePortIfindex = new HashMap<Integer, Integer>();
 
     /**
+     * The Wifi Mac address to Interface Index map
+     */
+    private Map<Integer, Set<String>> m_wifiIfIndexMac = new HashMap<Integer,Set<String>>();
+    /**
      * <p>
      * Constructor for LinkableNode.
      * </p>
@@ -336,6 +340,18 @@ public class LinkableNode {
 
     public String getBridgeIdentifier(final Integer vlan) {
         return m_vlanBridgeIdentifiers.get(vlan);
+    }
+
+    public void addWifiMacAddress(final Integer ifindex, final String macAddress) {
+        Set<String> macs = new HashSet<String>();
+        if (m_wifiIfIndexMac.containsKey(ifindex))
+            macs = m_wifiIfIndexMac.get(ifindex);
+        macs.add(macAddress);
+        m_wifiIfIndexMac.put(ifindex, macs);
+    }
+ 
+    public Map<Integer,Set<String>> getWifiMacIfIndexMap() {
+        return m_wifiIfIndexMac;
     }
 
     public void addMacAddress(final int bridgeport, final String macAddress,

@@ -186,6 +186,8 @@ public abstract class LinkdTestHelper implements InitializingBean {
         System.out.println("parentifindex: " + parentifindex);        
         if (parentifindex > 0)
             System.out.println("parentifname: " + m_snmpInterfaceDao.findByNodeIdAndIfIndex(nodeparent,parentifindex).getIfName());
+        System.out.println("source: " + datalinkinterface.getSource());        
+        System.out.println("protocol: " + datalinkinterface.getProtocol());        
         System.out.println("--------------------------------------");
         System.out.println("");
 

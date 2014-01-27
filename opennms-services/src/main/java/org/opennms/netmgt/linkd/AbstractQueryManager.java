@@ -57,6 +57,7 @@ import org.opennms.netmgt.linkd.snmp.IsisISAdjTableEntry.IsisISAdjState;
 import org.opennms.netmgt.linkd.snmp.LldpLocTableEntry;
 import org.opennms.netmgt.linkd.snmp.LldpMibConstants;
 import org.opennms.netmgt.linkd.snmp.LldpRemTableEntry;
+import org.opennms.netmgt.linkd.snmp.MtxrWlRtabTableEntry;
 import org.opennms.netmgt.linkd.snmp.OspfNbrTableEntry;
 import org.opennms.netmgt.linkd.snmp.QBridgeDot1dTpFdbTableEntry;
 import org.opennms.netmgt.linkd.snmp.Vlan;
@@ -315,7 +316,14 @@ public abstract class AbstractQueryManager implements QueryManager {
         }
         node.setIsisInterfaces(isisinterfaces);
     }
-    
+
+    protected void processWifi(final LinkableNode node,
+            final SnmpCollection snmpcoll, final Date scanTime) {
+        for (final MtxrWlRtabTableEntry entry : snmpcoll.getMtxrWlRtabTable().getEntries()) {
+            node.addWifiMacAddress(entry.getMtxrWlRtabIface(), entry.getMtxrWlRtabAddr());
+        }
+    }
+
     protected void processOspf(final LinkableNode node,
             final SnmpCollection snmpcoll, final Date scanTime) {
 

@@ -1941,6 +1941,28 @@
      <logmsg dest="logndisplay">&lt;p&gt;Linkd %parm[runnable]% suspended.&lt;/p&gt;</logmsg>
      <severity>Warning</severity>
   </event>
+  <event>
+     <uei>uei.opennms.org/internal/linkd/linkDiscoveryStarted</uei>
+     <event-label>OpenNMS-defined Linkd Event: linkDiscoveryStarted</event-label>
+     <descr>&lt;p&gt;The Linkd process has started its attempt to discover links.&lt;/p&gt;</descr>
+     <logmsg dest="logndisplay">&lt;p&gt;Linkd %parm[runnable]% started.&lt;/p&gt;</logmsg>
+     <severity>Normal</severity>
+  </event>
+  <event>
+     <uei>uei.opennms.org/internal/linkd/linkDiscoveryCompleted</uei>
+     <event-label>OpenNMS-defined Linkd Event: linkDiscoveryCompleted</event-label>
+     <descr>&lt;p&gt;The Linkd process has finished its attempt to discover links.&lt;/p&gt;</descr>
+     <logmsg dest="logndisplay">&lt;p&gt;Linkd %parm[runnable]% completed.&lt;/p&gt;</logmsg>
+     <severity>Normal</severity>
+  </event>
+  <event>
+     <uei>uei.opennms.org/internal/linkd/linkDiscoverySuspended</uei>
+     <event-label>OpenNMS-defined Linkd Event: linkDiscoverySuspended</event-label>
+     <descr>&lt;p&gt;The Linkd process suspended its attempt to discover links.&lt;/p&gt;</descr>
+     <logmsg dest="logndisplay">&lt;p&gt;Linkd %parm[runnable]% suspended.&lt;/p&gt;</logmsg>
+     <severity>Warning</severity>
+  </event>
+
 
 
   <event-file>events/Translator.default.events.xml</event-file>

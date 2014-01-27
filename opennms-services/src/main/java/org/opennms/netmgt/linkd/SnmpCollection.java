@@ -402,19 +402,37 @@ public final class SnmpCollection implements ReadyRunnable {
      * thread context synchronization must be added.
      * </p>
      */
+    private void sendSuspendedEvent() {
+        sendEvent(new EventBuilder("uei.opennms.org/internal/linkd/nodeLinkDiscoverySuspended",
+                                   "Linkd"));
+    }
+
+    private void sendStartedEvent() {
+        sendEvent(new EventBuilder("uei.opennms.org/internal/linkd/nodeLinkDiscoveryStarted",
+                                                "Linkd"));
+    }
+
+    private void sendCompletedEvent() {
+        sendEvent(new EventBuilder("uei.opennms.org/internal/linkd/nodeLinkDiscoveryCompleted",
+                                           "Linkd"));
+    }
+
+    private void sendEvent(EventBuilder builder) {
+        builder.setNodeid(m_nodeid);
+        builder.setInterface(m_address);
+        builder.addParam("runnable", "snmpCollection/"+getPackageName());
+        m_linkd.getEventForwarder().sendNow(builder.getEvent());
+    }
+    
     @Override
     public void run() {
         if (suspendCollection) {
-            EventBuilder builder = new EventBuilder(
-                    "uei.opennms.org/internal/linkd/nodeLinkDiscoverySuspended",
-                    "Linkd");
-            builder.setNodeid(m_nodeid);
-            builder.setInterface(m_address);
-            builder.addParam("runnable", "snmpCollection");
-            m_linkd.getEventForwarder().sendNow(builder.getEvent());
+            sendSuspendedEvent();
             LOG.debug("run: address: {} Suspended!", str(m_address));
         } else {
+            sendStartedEvent();
             runCollection();
+            sendCompletedEvent();
         }
         runned = true;
     }
@@ -440,14 +458,6 @@ public final class SnmpCollection implements ReadyRunnable {
     }
 
     private void runCollection() {
-
-        EventBuilder builder = new EventBuilder(
-                                                "uei.opennms.org/internal/linkd/nodeLinkDiscoveryStarted",
-                                                "Linkd");
-        builder.setNodeid(m_nodeid);
-        builder.setInterface(m_address);
-        builder.addParam("runnable", "snmpCollection");
-        m_linkd.getEventForwarder().sendNow(builder.getEvent());
 
         final String hostAddress = str(m_address);
 
@@ -613,15 +623,6 @@ public final class SnmpCollection implements ReadyRunnable {
         m_mtxrWlRtabTable = null;
 
         m_snmpVlanCollection.clear();
-
-        builder = new EventBuilder(
-                                   "uei.opennms.org/internal/linkd/nodeLinkDiscoveryCompleted",
-                                   "Linkd");
-        builder.setNodeid(m_nodeid);
-        builder.setInterface(m_address);
-        builder.addParam("runnable", "snmpCollection");
-        m_linkd.getEventForwarder().sendNow(builder.getEvent());
-
     }
 
 	@SuppressWarnings("unchecked")
@@ -936,10 +937,12 @@ public final class SnmpCollection implements ReadyRunnable {
                 + " collectBridge=" + getCollectBridge() 
                 + " collectStpNode=" + getCollectStp() 
                 + " collectCdp=" + getCollectCdp()
+                + " collectIpnetToMedia=" + getCollectIpNetToMedia()
                 + " collectIpRoute=" + getCollectIpRoute()
                 + " collectLldp=" + getCollectLldp() 
                 + " collectOspf=" + getCollectOspf() 
-                + " collectIsis=" + getCollectIsIs();
+                + " collectIsis=" + getCollectIsIs()
+                + " collectWifi=" + getCollectWifi();
     }
 
     public boolean getCollectLldp() {

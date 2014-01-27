@@ -198,7 +198,7 @@ public class Linkd extends AbstractServiceDaemon {
                 if (discovery.getScheduler() == null) {
                     discovery.setScheduler(m_scheduler);
                 }
-                LOG.debug("schedule: Package: {}. Scheduling {}", discovery.getPackageName(), discovery.getInfo());
+                LOG.debug("schedule:. Scheduling {}", discovery.getInfo());
                 discovery.schedule();
             }
             
@@ -359,7 +359,7 @@ public class Linkd extends AbstractServiceDaemon {
         final boolean useBridgeDiscovery = (pkg.hasUseBridgeDiscovery() ? pkg.getUseBridgeDiscovery()
             : m_linkdConfig.useBridgeDiscovery());
         final boolean useWifiDiscovery = (pkg.hasUseWifiDiscovery() ? pkg.getUseWifiDiscovery()
-                                                                      : m_linkdConfig.useBridgeDiscovery());
+                                                                      : m_linkdConfig.useWifiDiscovery());
         coll.setIpRouteClass(ipRouteClassName);
         coll.setInitialSleepTime(initialSleepTime);
         coll.setPollInterval(snmpPollInterval);
