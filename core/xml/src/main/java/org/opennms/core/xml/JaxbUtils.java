@@ -414,18 +414,17 @@ public abstract class JaxbUtils {
         for (final String schemaFileName : getSchemaFilesFor(clazz)) {
             InputStream schemaInputStream = null;
             try {
-                Object schemaSource = null;
                 if (schemaInputStream == null) {
                     final File schemaFile = new File(System.getProperty("opennms.home") + "/share/xsds/" + schemaFileName);
                     if (schemaFile.exists()) {
-                        schemaSource = schemaFile;
+                        LOG.trace("Found schema file {} related to {}", schemaFile, clazz);
                         schemaInputStream = new FileInputStream(schemaFile);
                     };
                 }
                 if (schemaInputStream == null) {
                     final File schemaFile = new File("target/xsds/" + schemaFileName);
                     if (schemaFile.exists()) {
-                        schemaSource = schemaFile;
+                        LOG.trace("Found schema file {} related to {}", schemaFile, clazz);
                         schemaInputStream = new FileInputStream(schemaFile);
                     };
                 }
@@ -434,7 +433,7 @@ public abstract class JaxbUtils {
                     if (schemaResource == null) {
                         LOG.debug("Unable to load resource xsds/{} from the classpath.", schemaFileName);
                     } else {
-                        schemaSource = schemaResource;
+                        LOG.trace("Found schema resource {} related to {}", schemaResource, clazz);
                         schemaInputStream = schemaResource.openStream();
                     }
                 }
@@ -442,7 +441,6 @@ public abstract class JaxbUtils {
                     LOG.trace("Did not find a suitable XSD.  Skipping.");
                     continue;
                 } else {
-                    LOG.trace("Found schema source {} related to {}", schemaSource, clazz);
                     sources.add(new StreamSource(schemaInputStream));
                 }
             } catch (final Throwable t) {
@@ -456,12 +454,14 @@ public abstract class JaxbUtils {
             return null;
         }
 
+        LOG.trace("Schema sources: {}", sources);
+
         try {
             final Schema schema = factory.newSchema(sources.toArray(EMPTY_SOURCE_LIST));
             m_schemas.put(clazz, schema);
             return schema;
         } catch (final SAXException e) {
-            LOG.warn("an error occurred while attempting to load schema validation files for class {}", clazz);
+            LOG.warn("an error occurred while attempting to load schema validation files for class {}", clazz, e);
             return null;
         }
     }

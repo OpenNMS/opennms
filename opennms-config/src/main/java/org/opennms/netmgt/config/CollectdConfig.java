@@ -29,7 +29,6 @@
 package org.opennms.netmgt.config;
 
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -63,9 +62,7 @@ public class CollectdConfig {
 
     private void createPackageObjects(final String localServer, final boolean verifyServer) {
         m_packages = new LinkedList<CollectdPackage>();
-        final Enumeration<Package> pkgEnum = m_config.enumeratePackage();
-        while (pkgEnum.hasMoreElements()) {
-            final Package pkg = pkgEnum.nextElement();
+        for (final Package pkg : m_config.getPackages()) {
             m_packages.add(new CollectdPackage(pkg, localServer, verifyServer));
         }
     }

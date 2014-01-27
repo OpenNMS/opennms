@@ -38,7 +38,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,12 +55,12 @@ import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
+import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.ServiceSelector;
-import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.poller.DistributionContext;
@@ -274,10 +273,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
 
     private Map<String, Object> getParameterMap(final Service serviceConfig) {
         final Map<String, Object> paramMap = new HashMap<String, Object>();
-        final Enumeration<Parameter> serviceParms = serviceConfig.enumerateParameter();
-        while(serviceParms.hasMoreElements()) {
-            final Parameter serviceParm = serviceParms.nextElement();
-
+        for (final Parameter serviceParm : serviceConfig.getParameters()) {
             String value = serviceParm.getValue();
             if (value == null) {
                 value = (serviceParm.getAnyObject() == null ? "" : serviceParm.getAnyObject().toString());

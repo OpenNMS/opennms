@@ -6,10 +6,7 @@
         @XmlNs(prefix="ps", namespaceURI="http://xmlns.opennms.org/xsd/page-sequence")
     }
 )
-@XmlPrefix("poller")
 package org.opennms.netmgt.config.poller;
 import javax.xml.bind.annotation.XmlNs;
 import javax.xml.bind.annotation.XmlSchema;
-
-import org.opennms.core.xml.XmlPrefix;
 

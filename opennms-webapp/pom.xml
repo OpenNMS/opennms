@@ -405,6 +405,11 @@
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.config</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>felix-dependencies</artifactId>
       <type>pom</type>
@@ -698,6 +703,12 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-services</artifactId>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-dao-mock</artifactId>
       <scope>test</scope>
     </dependency>
@@ -725,6 +736,10 @@
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.rest</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.snmp</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>

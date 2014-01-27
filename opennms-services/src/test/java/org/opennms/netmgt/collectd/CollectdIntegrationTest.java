@@ -249,7 +249,7 @@ public class CollectdIntegrationTest extends TestCase {
         parm.setKey(TEST_KEY_PARM_NAME);
         parm.setValue(m_key);
         
-        collector.setParameter(Collections.singletonList(parm));
+        collector.setParameters(Collections.singletonList(parm));
         
         pkg.addService(collector);
         

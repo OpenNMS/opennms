@@ -33,7 +33,6 @@ import static org.opennms.core.utils.InetAddressUtils.isInetAddressInRange;
 import static org.opennms.core.utils.InetAddressUtils.toIpAddrBytes;
 
 import java.net.InetAddress;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -73,9 +72,9 @@ public class CollectdPackage {
 	}
 
 	private void createIncludeURLs(Package pkg) {
-		Enumeration<String> urlEnum = pkg.enumerateIncludeUrl();
-		while (urlEnum.hasMoreElements()) {
-			m_includeURLs.add(new IncludeURL(urlEnum.nextElement()));
+		Iterator<String> urlEnum = pkg.getIncludeUrls().iterator();
+		while (urlEnum.hasNext()) {
+			m_includeURLs.add(new IncludeURL(urlEnum.next()));
 		}
 	}
 	
@@ -101,9 +100,9 @@ public class CollectdPackage {
 		Package pkg = getPackage();
 		boolean result = false;
 	
-		Enumeration<Service> esvcs = pkg.enumerateService();
-		while (result == false && esvcs.hasMoreElements()) {
-			Service tsvc = esvcs.nextElement();
+		Iterator<Service> esvcs = pkg.getServices().iterator();
+		while (result == false && esvcs.hasNext()) {
+			Service tsvc = esvcs.next();
 			if (tsvc.getName().equalsIgnoreCase(svcName)) {
 				// Ok its in the package. Now check the
 				// status of the service
@@ -116,7 +115,7 @@ public class CollectdPackage {
 	}
 
 	protected boolean hasSpecific(byte[] addr) {
-	    for (String espec : getPackage().getSpecific()) {
+	    for (final String espec : getPackage().getSpecifics()) {
 	        if (new ByteArrayComparator().compare(toIpAddrBytes(espec), addr) == 0) {
 	            return true;
 	        }
@@ -132,11 +131,11 @@ public class CollectdPackage {
 	 */
 	protected boolean hasIncludeRange(String addr) {
 		Package pkg = getPackage();
-		if (pkg.getIncludeRangeCount() == 0 && pkg.getSpecificCount() == 0) {
+		if (pkg.getIncludeRanges().size() == 0 && pkg.getSpecifics().size() == 0) {
 		    return true;
 		}
 
-		for (IncludeRange rng : pkg.getIncludeRange()) {
+		for (final IncludeRange rng : pkg.getIncludeRanges()) {
 		    if (isInetAddressInRange(addr, rng.getBegin(), rng.getEnd())) {
 		        return true;
 		    }
@@ -154,7 +153,7 @@ public class CollectdPackage {
 	}
 
 	protected boolean hasExcludeRange(String addr, boolean has_specific) {
-	    for (ExcludeRange rng : getPackage().getExcludeRange()) {
+	    for (ExcludeRange rng : getPackage().getExcludeRanges()) {
 	        if (isInetAddressInRange(addr, rng.getBegin(), rng.getEnd())) {
 	            return true;
 	        }
@@ -318,7 +317,7 @@ public class CollectdPackage {
 	 * @return a {@link org.opennms.netmgt.config.collectd.Service} object.
 	 */
 	public Service getService(final String svcName) {
-        final List<Service> pkgSvcs = m_pkg.getServiceCollection();
+        final List<Service> pkgSvcs = m_pkg.getServices();
         
         for (Service svc : pkgSvcs) {
             if (svc.getName().equalsIgnoreCase(svcName))

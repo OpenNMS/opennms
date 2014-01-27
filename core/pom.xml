@@ -24,6 +24,7 @@
   <modules>
     <module>api</module>
     <module>build</module>
+    <module>config</module>
     <module>criteria</module>
     <module>daemon</module>
     <module>db</module>

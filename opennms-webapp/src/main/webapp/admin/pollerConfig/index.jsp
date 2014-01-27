@@ -44,13 +44,13 @@
 %>
 
 <%
-	HashMap<String,Service> scanablePlugin = new HashMap<String,Service>();
+    HashMap<String,Service> scanablePlugin = new HashMap<String,Service>();
 	HashMap<String,Service> scanableUserPlugin = new HashMap<String,Service>();
 //	String protocols[] = {"SMTP", "FTP", "Postgres", "MSExchange", "MySQL", "IMAP", "POP3", "TCP", "HTTP"};
 
 	String homeDir = Vault.getHomeDir();
         if( homeDir == null ) {
-            throw new IllegalArgumentException( "Cannot take null parameters." );
+    throw new IllegalArgumentException( "Cannot take null parameters." );
         }
  
         props.load( new FileInputStream( ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONF_FILE_NAME )));
@@ -66,21 +66,21 @@
 		pollerConfig = pollerFactory.getConfiguration();
 	     	if(pollerConfig != null)
      		{
-        		Collection<org.opennms.netmgt.config.poller.Package> packColl = pollerConfig.getPackageCollection();
+        		Collection<org.opennms.netmgt.config.poller.Package> packColl = pollerConfig.getPackages();
         		if(packColl != null)
         		{
-                		Iterator<org.opennms.netmgt.config.poller.Package> iter = packColl.iterator();
-                		if(iter.hasNext())
+        		Iterator<org.opennms.netmgt.config.poller.Package> iter = packColl.iterator();
+        		if(iter.hasNext())
+        		{
+        		org.opennms.netmgt.config.poller.Package pkg = iter.next();
+        		if(pkg != null)
+        		{
+                		Collection<org.opennms.netmgt.config.poller.Service> svcCollection = pkg.getServices();
+                		if(svcCollection != null)
                 		{
-                        		org.opennms.netmgt.config.poller.Package pkg = iter.next();
-                        		if(pkg != null)
-                        		{
-                                		Collection<org.opennms.netmgt.config.poller.Service> svcCollection = pkg.getServiceCollection();
-                                		if(svcCollection != null)
+                				for (Service svcs : svcCollection) {
+                                		if(svcs != null)
                                 		{
-                                				for (Service svcs : svcCollection) {
-                                                		if(svcs != null)
-                                                		{
 									if(svcs.getUserDefined().equals("true"))
 									{
 										scanableUserPlugin.put(svcs.getName(), svcs);
@@ -89,16 +89,16 @@
 									{
 										scanablePlugin.put(svcs.getName(), svcs);
 									}
-                                                        		String status = svcs.getStatus();
-                                                        		if(status != null && status.equals("on"))
-                                                        		{
+                                        		String status = svcs.getStatus();
+                                        		if(status != null && status.equals("on"))
+                                        		{
 										polledPlugins.add(svcs.getName());
-                                                        		}
-                                                		}
                                         		}
                                 		}
                         		}
                 		}
+        		}
+        		}
         		}
 		}
 
@@ -111,7 +111,6 @@
 	{
 		throw new ServletException(e);
 	}
-
 %>
 
 <%!
@@ -214,10 +213,7 @@
 		{
 			String port = "<b>-</b>";
 
-			Enumeration<Parameter> param = svc.enumerateParameter();
-			while(param.hasMoreElements())
-			{
-				Parameter parameter = param.nextElement();
+			for (final Parameter parameter : svc.getParameters()) {
 				if(parameter != null)
 				{
 					if(parameter.getKey().equals("port") || parameter.getKey().equals("ports"))
@@ -277,10 +273,7 @@
                 {
                         String port = "<b>-</b>";
 
-                        Enumeration<Parameter> param = svc.enumerateParameter();
-                        while(param.hasMoreElements())
-                        {
-                                Parameter parameter = param.nextElement();
+                        for (final Parameter parameter : svc.getParameters()) {
                                 if(parameter != null)
                                 {
                                         if(parameter.getKey().equals("port") || parameter.getKey().equals("ports"))

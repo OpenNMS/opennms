@@ -43,12 +43,12 @@
 	"
 %>
 <%
-	HashMap<String,Service> scanablePlugin = new HashMap<String,Service>();
+    HashMap<String,Service> scanablePlugin = new HashMap<String,Service>();
 	HashMap<String,Service> scanableUserPlugin = new HashMap<String,Service>();
 
 	String homeDir = Vault.getHomeDir();
         if( homeDir == null ) {
-            throw new IllegalArgumentException( "Cannot take null parameters." );
+    throw new IllegalArgumentException( "Cannot take null parameters." );
         }
  
         props.load( new FileInputStream( ConfigFileConstants.getFile( ConfigFileConstants.POLLER_CONF_FILE_NAME )));
@@ -65,40 +65,40 @@
 		pollerConfig = pollerFactory.getConfiguration();
 	     	if(pollerConfig != null)
      		{
-        		Collection<org.opennms.netmgt.config.poller.Package> packColl = pollerConfig.getPackageCollection();
+        		Collection<org.opennms.netmgt.config.poller.Package> packColl = pollerConfig.getPackages();
         		if(packColl != null)
         		{
-                		Iterator<org.opennms.netmgt.config.poller.Package> iter = packColl.iterator();
-                		if(iter.hasNext())
+        		Iterator<org.opennms.netmgt.config.poller.Package> iter = packColl.iterator();
+        		if(iter.hasNext())
+        		{
+        		org.opennms.netmgt.config.poller.Package pkg = iter.next();
+        		if(pkg != null)
+        		{
+                		Collection<org.opennms.netmgt.config.poller.Service> svcCollection = pkg.getServices();
+                		if(svcCollection != null)
                 		{
-                        		org.opennms.netmgt.config.poller.Package pkg = iter.next();
-                        		if(pkg != null)
-                        		{
-                                		Collection<org.opennms.netmgt.config.poller.Service> svcCollection = pkg.getServiceCollection();
-                                		if(svcCollection != null)
+                				for (Service svcs : svcCollection) {
+                                		if(svcs != null)
                                 		{
-                                				for (Service svcs : svcCollection) {
-                                                		if(svcs != null)
-                                                		{
-                                                        if("true".equals(svcs.getUserDefined()))
-                                                        {
-                                                          scanableUserPlugin.put(svcs.getName(), svcs);
-                                                        }
-                                                        else
-                                                        {
-                                                          scanablePlugin.put(svcs.getName(), svcs);
-                                                        }
+                                        if("true".equals(svcs.getUserDefined()))
+                                        {
+                                          scanableUserPlugin.put(svcs.getName(), svcs);
+                                        }
+                                        else
+                                        {
+                                          scanablePlugin.put(svcs.getName(), svcs);
+                                        }
 
-                                                     		String status = svcs.getStatus();
-                                                     		if(status != null && "on".equals(status))
-                                                     		{
-                                                            polledPlugins.add(svcs.getName());
-                                                     		}
-                                                		}
-                                        		}
+                                     		String status = svcs.getStatus();
+                                     		if(status != null && "on".equals(status))
+                                     		{
+                                            polledPlugins.add(svcs.getName());
+                                     		}
                                 		}
                         		}
                 		}
+        		}
+        		}
         		}
 		}
 
@@ -111,7 +111,6 @@
 	{
 		throw new ServletException(e);
 	}
-
 %><%!
 	Map<String,String> protoMap;
         Properties props = new java.util.Properties();

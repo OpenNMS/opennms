@@ -171,7 +171,7 @@ public class CollectionSpecification {
     	final Map<String, Object> m = new TreeMap<String, Object>();
         m.put("SERVICE", m_svcName);
         StringBuffer sb;
-        Collection<Parameter> params = getService().getParameterCollection();
+        Collection<Parameter> params = getService().getParameters();
         for (Parameter p : params) {
             if (LOG.isDebugEnabled()) {
                 sb = new StringBuffer();
@@ -286,7 +286,7 @@ public class CollectionSpecification {
          * interface then break and return true. Otherwise process the
          * next outage.
          */ 
-        for (String outageName : m_package.getPackage().getOutageCalendarCollection()) {
+        for (String outageName : m_package.getPackage().getOutageCalendars()) {
             // Does the outage apply to the current time?
             if (outageFactory.isCurTimeInOutage(outageName)) {
                 // Does the outage apply to this interface?

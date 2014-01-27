@@ -62,7 +62,7 @@ public class CollectdConfigFile {
         CollectdConfiguration collectdConfiguration = getCollectdConfiguration();
         visitor.visitCollectdConfiguration(collectdConfiguration);
 
-        for (Iterator<Collector> it = collectdConfiguration.getCollectorCollection().iterator(); it.hasNext();) {
+        for (Iterator<Collector> it = collectdConfiguration.getCollectors().iterator(); it.hasNext();) {
             Collector collector = it.next();
             doVisit(collector, visitor);
         }

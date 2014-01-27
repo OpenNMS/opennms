@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<monitoring-locations-configuration
+    xmlns="http://xmlns.opennms.org/xsd/config/monitoring-locations">
+
+   	<locations>
+		<location-def location-name="RDU" monitoring-area="East Coast"
+			polling-package-name="example1" collection-package-name="example1"
+			geolocation="Research Triangle Park, NC" coordinates="35.715751,-79.16262"
+			priority="1">
+			<ns1:tags xmlns:ns1="http://xmlns.opennms.org/xsd/config/tags" />
+		</location-def>
+		<location-def location-name="00002" monitoring-area="IN"
+			polling-package-name="example2"
+			geolocation="2 Open St., Network, MS 00002" coordinates="38.2096,-85.8704" priority="100">
+			<ns2:tags xmlns:ns2="http://xmlns.opennms.org/xsd/config/tags">
+				<tag name="even" />
+			</ns2:tags>
+		</location-def>
+		<location-def location-name="00003" monitoring-area="IN"
+			polling-package-name="example2" collection-package-name="example2"
+			geolocation="2 Open St., Network, MS 00002" coordinates="38.2096,-85.8704" priority="100">
+			<ns2:tags xmlns:ns2="http://xmlns.opennms.org/xsd/config/tags">
+				<tag name="odd" />
+			</ns2:tags>
+		</location-def>
+			</locations>
+</monitoring-locations-configuration>

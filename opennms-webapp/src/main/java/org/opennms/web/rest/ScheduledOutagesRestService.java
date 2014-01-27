@@ -382,7 +382,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
         getOutage(outageName); // Validate if outageName exists.
         if (action.equals(ConfigAction.ADD)) {
             CollectdPackage pkg = getCollectdPackage(packageName);
-            if (!pkg.getPackage().getOutageCalendarCollection().contains(outageName))
+            if (!pkg.getPackage().getOutageCalendars().contains(outageName))
                 pkg.getPackage().addOutageCalendar(outageName);
         }
         if (action.equals(ConfigAction.REMOVE)) {
@@ -407,7 +407,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
         getOutage(outageName); // Validate if outageName exists.
         if (action.equals(ConfigAction.ADD)) {
             org.opennms.netmgt.config.poller.Package pkg = getPollerdPackage(packageName);
-            if (!pkg.getOutageCalendarCollection().contains(outageName))
+            if (!pkg.getOutageCalendars().contains(outageName))
                 pkg.addOutageCalendar(outageName);
         }
         if (action.equals(ConfigAction.REMOVE)) {
@@ -415,7 +415,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
             pkg.removeOutageCalendar(outageName);
         }
         if (action.equals(ConfigAction.REMOVE_FROM_ALL)) {
-            for (org.opennms.netmgt.config.poller.Package pkg : PollerConfigFactory.getInstance().getConfiguration().getPackage()) {
+            for (org.opennms.netmgt.config.poller.Package pkg : PollerConfigFactory.getInstance().getConfiguration().getPackages()) {
                 pkg.removeOutageCalendar(outageName);
             }
         }

@@ -343,7 +343,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 	// ******* Threshd outages config *********
 	ThreshdConfigFactory.init();
 	Map<org.opennms.netmgt.config.threshd.Package, List<String>> thresholdOutages = new HashMap<org.opennms.netmgt.config.threshd.Package, List<String>>();
-	for (org.opennms.netmgt.config.threshd.Package thisPackage : ThreshdConfigFactory.getInstance().getConfiguration().getPackage()) {
+	for (org.opennms.netmgt.config.threshd.Package thisPackage : ThreshdConfigFactory.getInstance().getConfiguration().getPackageCollection()) {
 		thresholdOutages.put(thisPackage, thisPackage.getOutageCalendarCollection());
 		if (thisPackage.getOutageCalendarCollection().contains(theOutage.getName())) {
 			enabledOutages.add("threshold-" + thisPackage.getName());
@@ -353,9 +353,9 @@ Could not find an outage to edit because no outage name parameter was specified 
 	// ******* Polling outages config *********
 	PollerConfigFactory.init();
 	Map<org.opennms.netmgt.config.poller.Package, List<String>> pollingOutages = new HashMap<org.opennms.netmgt.config.poller.Package, List<String>>();
-	for (org.opennms.netmgt.config.poller.Package thisPackage : PollerConfigFactory.getInstance().getConfiguration().getPackage()) {
-		pollingOutages.put(thisPackage, thisPackage.getOutageCalendarCollection());
-		if (thisPackage.getOutageCalendarCollection().contains(theOutage.getName())) {
+	for (org.opennms.netmgt.config.poller.Package thisPackage : PollerConfigFactory.getInstance().getConfiguration().getPackages()) {
+		pollingOutages.put(thisPackage, thisPackage.getOutageCalendars());
+		if (thisPackage.getOutageCalendars().contains(theOutage.getName())) {
 			enabledOutages.add("polling-" + thisPackage.getName());
 		}
 	}
@@ -365,8 +365,8 @@ Could not find an outage to edit because no outage name parameter was specified 
 	Map<org.opennms.netmgt.config.collectd.Package, List<String>> collectionOutages = new HashMap<org.opennms.netmgt.config.collectd.Package, List<String>>();
 	for (CollectdPackage pkg : CollectdConfigFactory.getInstance().getCollectdConfig().getPackages()) {
 		org.opennms.netmgt.config.collectd.Package thisPackage = pkg.getPackage();
-		collectionOutages.put(thisPackage, thisPackage.getOutageCalendarCollection());
-		if (thisPackage.getOutageCalendarCollection().contains(theOutage.getName())) {
+		collectionOutages.put(thisPackage, thisPackage.getOutageCalendars());
+		if (thisPackage.getOutageCalendars().contains(theOutage.getName())) {
 			enabledOutages.add("collect-" + thisPackage.getName());
 		}
 	}
