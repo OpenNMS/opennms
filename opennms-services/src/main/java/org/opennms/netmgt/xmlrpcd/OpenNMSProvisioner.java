@@ -30,6 +30,7 @@ package org.opennms.netmgt.xmlrpcd;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -311,12 +312,11 @@ public class OpenNMSProvisioner implements Provisioner {
         dt.setBegin(0);
         dt.setEnd(downTimeDuration);
         dt.setInterval(downTimeInterval);
-        pkg.addDowntime(dt);
 
         final Downtime dt2 = new Downtime();
         dt2.setBegin(downTimeDuration);
         dt2.setInterval(interval);
-        pkg.addDowntime(dt2);
+        pkg.setDowntimes(Arrays.asList(dt, dt2));
         return pkg;
     }
 
@@ -504,14 +504,14 @@ public class OpenNMSProvisioner implements Provisioner {
             
             m.put(key, val);
         }
-
+        
         final List<Downtime> downtimes = pkg.getDowntimes();
         for(int i = 0; i < downtimes.size(); i++) {
             final Downtime dt = downtimes.get(i);
             final String suffix = (i == 0 ? "" : ""+i);
-            if ((dt.getEnd() != null) || (dt.getDelete() != null && !"false".equals(dt.getDelete()))) {
+            if ((dt.hasEnd()) || (dt.getDelete() != null && !"false".equals(dt.getDelete()))) {
                 m.put("downtime_interval"+suffix, dt.getInterval() == null? null : dt.getInterval().intValue());
-                int duration = (dt.getEnd() == null ? Integer.MAX_VALUE : (int)(dt.getEnd() - dt.getBegin()));
+                int duration = (!dt.hasEnd() ? Integer.MAX_VALUE : (int)(dt.getEnd() - dt.getBegin()));
                 m.put("downtime_duration"+suffix, Integer.valueOf(duration));
             }   
         }

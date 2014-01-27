@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement(name="downtime")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Downtime implements Serializable {
-    private static final long serialVersionUID = -2044430784875447733L;
+    private static final long serialVersionUID = -2436661386464207644L;
 
     /**
      * Start of the interval.
@@ -95,7 +95,11 @@ public class Downtime implements Serializable {
     public void setEnd(final Integer end) {
         m_end = end == null? null : end.longValue();
     }
-    
+
+    public boolean hasEnd() {
+        return m_end != null;
+    }
+
     /**
      * Attribute that determines if service is to be deleted when down
      * continuously until the start time.
@@ -107,7 +111,7 @@ public class Downtime implements Serializable {
     public void setDelete(final String delete) {
         m_delete = delete;
     }
-    
+
     /**
      * Interval at which service is to be polled between the specified start
      * and end when service has been continuously down.
@@ -183,5 +187,4 @@ public class Downtime implements Serializable {
     public String toString() {
         return "Downtime [begin=" + m_begin + ", end=" + m_end + ", delete=" + m_delete + ", interval=" + m_interval + "]";
     }
-
 }
