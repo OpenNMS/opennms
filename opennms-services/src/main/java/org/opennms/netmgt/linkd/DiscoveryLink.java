@@ -176,6 +176,7 @@ public final class DiscoveryLink implements ReadyRunnable {
      */
     @Override
     public void run() {
+        runned=true;
         if (suspendCollection) {
             sendSuspendedEvent();
             LOG.warn("run: linkd collections are suspended!");
@@ -184,7 +185,6 @@ public final class DiscoveryLink implements ReadyRunnable {
             discoverLinks();
             sendCompletedEvent();
         }
-        runned = true;
     }
         
     private void discoverLinks() {   
@@ -1118,8 +1118,7 @@ public final class DiscoveryLink implements ReadyRunnable {
         if (runned) {
             m_scheduler.unschedule(this, m_interval);
         } else {
-            m_scheduler.unschedule(this, m_interval
-                                   + m_initial_sleep_time + discovery_delay);
+            m_scheduler.unschedule(this, m_initial_sleep_time + discovery_delay);
         }
     }
 

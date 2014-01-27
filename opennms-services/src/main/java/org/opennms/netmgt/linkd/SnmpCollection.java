@@ -426,6 +426,7 @@ public final class SnmpCollection implements ReadyRunnable {
     
     @Override
     public void run() {
+        runned = true;
         if (suspendCollection) {
             sendSuspendedEvent();
             LOG.debug("run: address: {} Suspended!", str(m_address));
@@ -434,7 +435,6 @@ public final class SnmpCollection implements ReadyRunnable {
             runCollection();
             sendCompletedEvent();
         }
-        runned = true;
     }
     
     private class TrackerBuilder {

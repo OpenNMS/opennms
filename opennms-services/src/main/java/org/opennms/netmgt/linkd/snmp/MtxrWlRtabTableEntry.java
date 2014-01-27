@@ -65,9 +65,9 @@ public class MtxrWlRtabTableEntry extends SnmpStore {
     @Override
     public void storeResult(SnmpResult res) {
             int iface = res.getInstance().getLastSubId();
+            super.storeResult(res);
             super.storeResult(new SnmpResult(SnmpObjId.get(MTRX_WL_RTAB_IFACE_OID), res.getInstance(), 
                         SnmpUtils.getValueFactory().getInt32(iface)));
-            super.storeResult(res);
     }
 
 
