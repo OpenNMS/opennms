@@ -40,7 +40,7 @@
         org.opennms.core.utils.DBUtils,
         org.opennms.core.utils.WebSecurityUtils,
         org.opennms.web.element.*,
-	org.opennms.netmgt.poller.PathOutageFactory,
+        org.opennms.netmgt.poller.PathOutageFactory,
         org.opennms.netmgt.model.OnmsNode,
         org.opennms.netmgt.EventConstants,
         org.opennms.netmgt.xml.event.Event,
@@ -361,9 +361,9 @@ Could not find an outage to edit because no outage name parameter was specified 
 	}
 
 	// ******* Collectd outages config *********
-	CollectdConfigFactory.init();
+	CollectdConfigFactory collectdConfig = new CollectdConfigFactory();
 	Map<org.opennms.netmgt.config.collectd.Package, List<String>> collectionOutages = new HashMap<org.opennms.netmgt.config.collectd.Package, List<String>>();
-	for (CollectdPackage pkg : CollectdConfigFactory.getInstance().getCollectdConfig().getPackages()) {
+	for (CollectdPackage pkg : collectdConfig.getCollectdConfig().getPackages()) {
 		org.opennms.netmgt.config.collectd.Package thisPackage = pkg.getPackage();
 		collectionOutages.put(thisPackage, thisPackage.getOutageCalendars());
 		if (thisPackage.getOutageCalendars().contains(theOutage.getName())) {
@@ -503,7 +503,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 				pollFactory.saveCurrent();
 				NotifdConfigFactory.getInstance().saveCurrent();
 				ThreshdConfigFactory.getInstance().saveCurrent();
-				CollectdConfigFactory.getInstance().saveCurrent();
+				collectdConfig.saveCurrent();
 				PollerConfigFactory.getInstance().save();
 				sendOutagesChangedEvent();
 	

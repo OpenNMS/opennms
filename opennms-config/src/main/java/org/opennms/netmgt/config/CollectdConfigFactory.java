@@ -29,6 +29,7 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,13 +42,12 @@ import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.Assert;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
- * Collection Daemon from the collectd-configuration xml file.
+ * Collection Daemon from the collectd-configuration.xml file.
  *
- * A mapping of the configured URLs to the iplist they contain is built at
+ * A mapping of the configured URLs to the IP list they contain is built at
  * init() time so as to avoid numerous file reads.
  *
  * <strong>Note: </strong>Users of this class should make sure the
@@ -60,49 +60,46 @@ import org.springframework.util.Assert;
  */
 public class CollectdConfigFactory {
     private static final Logger LOG = LoggerFactory.getLogger(CollectdConfigFactory.class);
-    final static String SELECT_METHOD_MIN = "min";
-
-    /**
-     * The singleton instance of this factory.  Null if the factory hasn't been
-     * initialized.
-     */
-    private static CollectdConfigFactory m_singleton = null;
-
-    /**
-     * A boolean flag to indicate If a filter rule against the local NMS server
-     * has to be used.
-     */
-    //private static boolean m_verifyServer;
-
-    /**
-     * Name of the local NMS server.
-     */
-    //private static String m_localServer;
+    public static final String SELECT_METHOD_MIN = "min";
 
     private CollectdConfig m_collectdConfig;
+    private final Object m_collectdConfigMutex = new Object();
 
-    /**
-     * This method is used to rebuild the package agaist iplist mapping when
-     * needed. When a node gained service event occurs, collectd has to
-     * determine which package the ip/service combination is in, but if the
-     * interface is a newly added one, the package iplist should be rebuilt so
-     * that collectd could know which package this ip/service pair is in.
-     */
-    public synchronized void rebuildPackageIpListMap() {
-        m_collectdConfig.rebuildPackageIpListMap();
+    private final String m_fileName;
+    private final String m_serverName;
+    private final boolean m_verifyServer;
+
+    static {
+        // Make sure that the OpennmsServerConfigFactory is initialized
+        try {
+            OpennmsServerConfigFactory.init();
+        } catch (IOException e) {
+            LOG.error(e.getMessage(), e);
+        }
+    }
+
+    public CollectdConfigFactory() throws IOException {
+        m_fileName = ConfigFileConstants.getFile(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME).getPath();
+        m_serverName = OpennmsServerConfigFactory.getInstance().getServerName();
+        m_verifyServer = OpennmsServerConfigFactory.getInstance().verifyServer();
+
+        init(new FileInputStream(m_fileName), m_serverName, m_verifyServer);
     }
 
     /**
-     * Private constructor
-     * @param verifyServer 
-     * @param localServer 
+     * For testing purposes only.
      * 
-     * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be read
+     * @param stream
+     * @param serverName
+     * @param verifyServer
+     * @throws IOException
      */
-    private CollectdConfigFactory(String configFile, String localServer, boolean verifyServer) throws IOException {
-        CollectdConfiguration config = JaxbUtils.unmarshal(CollectdConfiguration.class, new File(configFile));
-        m_collectdConfig = new CollectdConfig(config, localServer, verifyServer);
+    public CollectdConfigFactory(InputStream stream, String serverName, boolean verifyServer) throws IOException {
+        m_fileName = null;
+        m_serverName = serverName;
+        m_verifyServer = verifyServer;
+
+        init(stream, m_serverName, m_verifyServer);
     }
 
     /**
@@ -111,39 +108,19 @@ public class CollectdConfigFactory {
      * @param stream a {@link java.io.InputStream} object.
      * @param localServer a {@link java.lang.String} object.
      * @param verifyServer a boolean.
+     * @throws IOException 
      */
-    public CollectdConfigFactory(final InputStream stream, final String localServer, boolean verifyServer) {
+    private void init(final InputStream stream, final String localServer, boolean verifyServer) throws IOException {
         InputStreamReader isr = null;
         try {
             isr = new InputStreamReader(stream);
             CollectdConfiguration config = JaxbUtils.unmarshal(CollectdConfiguration.class, isr);
-            m_collectdConfig = new CollectdConfig(config, localServer, verifyServer);
+            synchronized (m_collectdConfigMutex) {
+                m_collectdConfig = new CollectdConfig(config, localServer, verifyServer);
+            }
         } finally {
             IOUtils.closeQuietly(isr);
         }
-    }
-
-    /**
-     * Load the config from the default config file and create the singleton
-     * instance of this factory.
-     *
-     * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be read
-     * @throws java.io.IOException if any.
-     */
-    public static synchronized void init() throws IOException {
-        if (isInitialized()) {
-            // init already called return; to reload, reload() will need to be called
-            return;
-        }
-
-        OpennmsServerConfigFactory.init();
-
-        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME);
-
-        LOG.debug("init: config file path: {}", cfgFile.getPath());
-
-        setInstance(new CollectdConfigFactory(cfgFile.getPath(), OpennmsServerConfigFactory.getInstance().getServerName(), OpennmsServerConfigFactory.getInstance().verifyServer()));
     }
 
     /**
@@ -153,9 +130,8 @@ public class CollectdConfigFactory {
      *                Thrown if the specified config file cannot be read/loaded
      * @throws java.io.IOException if any.
      */
-    public static synchronized void reload() throws IOException {
-        m_singleton = null;
-        init();
+    public void reload() throws IOException {
+        init(new FileInputStream(m_fileName), m_serverName, m_verifyServer);
     }
 
     /**
@@ -163,10 +139,13 @@ public class CollectdConfigFactory {
      *
      * @throws java.io.IOException if any.
      */
-    public synchronized void saveCurrent() throws IOException {
+    public void saveCurrent() throws IOException {
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME);
 
-        CollectdConfiguration config = m_collectdConfig.getConfig();
+        CollectdConfiguration config = null;
+        synchronized (m_collectdConfigMutex) {
+            config = m_collectdConfig.getConfig();
+        }
 
         FileWriter writer = null;
         try {
@@ -180,34 +159,14 @@ public class CollectdConfigFactory {
     }
 
     /**
-     * Return the singleton instance of this factory.
-     *
-     * @return The current factory instance.
-     * @throws java.lang.IllegalStateException
-     *             Thrown if the factory has not yet been initialized.
-     */
-    public static synchronized CollectdConfigFactory getInstance() {
-        Assert.state(isInitialized(), "The factory has not been initialized");
-
-        return m_singleton;
-    }
-
-    /**
-     * <p>setInstance</p>
-     *
-     * @param instance a {@link org.opennms.netmgt.config.CollectdConfigFactory} object.
-     */
-    public static synchronized void setInstance(CollectdConfigFactory instance) {
-        m_singleton = instance;
-    }
-
-    /**
      * <p>getCollectdConfig</p>
      *
      * @return a {@link org.opennms.netmgt.config.CollectdConfig} object.
      */
     public CollectdConfig getCollectdConfig() {
-        return m_collectdConfig;
+        synchronized (m_collectdConfigMutex) {
+            return m_collectdConfig;
+        }
     }
 
     /**
@@ -217,7 +176,9 @@ public class CollectdConfigFactory {
      * @return a {@link org.opennms.netmgt.config.CollectdPackage} object.
      */
     public CollectdPackage getPackage(String name) {
-        return m_collectdConfig.getPackage(name);
+        synchronized (m_collectdConfigMutex) {
+            return m_collectdConfig.getPackage(name);
+        }
     }
 
     /**
@@ -227,8 +188,10 @@ public class CollectdConfigFactory {
      *            The package name to check
      * @return True if the package exists
      */
-    public synchronized boolean packageExists(String name) {
-        return m_collectdConfig.getPackage(name) != null;
+    public boolean packageExists(String name) {
+        synchronized (m_collectdConfigMutex) {
+            return m_collectdConfig.getPackage(name) != null;
+        }
     }
 
     /**
@@ -239,7 +202,9 @@ public class CollectdConfigFactory {
      * @return True if the domain exists
      */
     public boolean domainExists(String name) {
-        return m_collectdConfig.domainExists(name);
+        synchronized (m_collectdConfigMutex) {
+            return m_collectdConfig.domainExists(name);
+        }
     }
 
     /**
@@ -259,10 +224,8 @@ public class CollectdConfigFactory {
      *         specified interface and has the specified service enabled.
      */
     public boolean isServiceCollectionEnabled(final String ipAddr, final String svcName) {
-        return m_collectdConfig.isServiceCollectionEnabled(ipAddr, svcName);
-    }
-
-    private static boolean isInitialized() {
-        return m_singleton != null;
+        synchronized (m_collectdConfigMutex) {
+            return m_collectdConfig.isServiceCollectionEnabled(ipAddr, svcName);
+        }
     }
 }

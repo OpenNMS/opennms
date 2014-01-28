@@ -105,7 +105,10 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     UriInfo m_uriInfo;
     
     @Autowired
-    protected PollOutagesConfigFactory m_configFactory;
+    protected PollOutagesConfigFactory m_pollOutagesConfigFactory;
+
+    @Autowired
+    protected CollectdConfigFactory m_collectdConfigFactory;
 
     @Autowired
     protected EventProxy m_eventProxy;
@@ -116,7 +119,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
         readLock();
         try {
             Outages outages = new Outages();
-            outages.setOutage(m_configFactory.getOutages());
+            outages.setOutage(m_pollOutagesConfigFactory.getOutages());
             return outages;
         } finally {
             readUnlock();
@@ -129,7 +132,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     public Outage getOutage(@PathParam("outageName") String outageName) throws IllegalArgumentException {
         readLock();
         try {
-            Outage outage = m_configFactory.getOutage(outageName);
+            Outage outage = m_pollOutagesConfigFactory.getOutage(outageName);
             if (outage == null) throw new IllegalArgumentException("Scheduled outage " + outageName + " does not exist.");
             return outage;
         } finally {
@@ -143,15 +146,15 @@ public class ScheduledOutagesRestService extends OnmsRestService {
         writeLock();
         try {
             if (newOutage == null) throw getException(Status.BAD_REQUEST, "Outage object can't be null");
-            Outage oldOutage = m_configFactory.getOutage(newOutage.getName());
+            Outage oldOutage = m_pollOutagesConfigFactory.getOutage(newOutage.getName());
             if (oldOutage == null) {
                 LOG.debug("saveOrUpdateOutage: adding outage {}", newOutage.getName());
-                m_configFactory.addOutage(newOutage);
+                m_pollOutagesConfigFactory.addOutage(newOutage);
             } else {
                 LOG.debug("saveOrUpdateOutage: updating outage {}", newOutage.getName());
-                m_configFactory.replaceOutage(oldOutage, newOutage);
+                m_pollOutagesConfigFactory.replaceOutage(oldOutage, newOutage);
             }
-            m_configFactory.saveCurrent();
+            m_pollOutagesConfigFactory.saveCurrent();
             sendConfigChangedEvent();
             return Response.seeOther(getRedirectUri(m_uriInfo, newOutage.getName())).build();
         } catch (Exception e) {
@@ -171,8 +174,8 @@ public class ScheduledOutagesRestService extends OnmsRestService {
             updatePollerd(ConfigAction.REMOVE_FROM_ALL, outageName, null);
             updateThreshd(ConfigAction.REMOVE_FROM_ALL, outageName, null);
             updateNotifd(ConfigAction.REMOVE, outageName);
-            m_configFactory.removeOutage(outageName);
-            m_configFactory.saveCurrent();
+            m_pollOutagesConfigFactory.removeOutage(outageName);
+            m_pollOutagesConfigFactory.saveCurrent();
             sendConfigChangedEvent();
             return Response.ok().build();
         } catch (Exception e) {
@@ -310,7 +313,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
         readLock();
         try {
             Outage outage = getOutage(outageName);
-            Boolean inOutage = m_configFactory.isNodeIdInOutage(nodeId, outage) && m_configFactory.isCurTimeInOutage(outage);
+            Boolean inOutage = m_pollOutagesConfigFactory.isNodeIdInOutage(nodeId, outage) && m_pollOutagesConfigFactory.isCurTimeInOutage(outage);
             return inOutage.toString();
         } finally {
             readUnlock();
@@ -323,8 +326,8 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     public String isNodeInOutage(@PathParam("nodeId") Integer nodeId) {
         readLock();
         try {
-            for (Outage outage : m_configFactory.getOutages()) {
-                if (m_configFactory.isNodeIdInOutage(nodeId, outage) && m_configFactory.isCurTimeInOutage(outage)) {
+            for (Outage outage : m_pollOutagesConfigFactory.getOutages()) {
+                if (m_pollOutagesConfigFactory.isNodeIdInOutage(nodeId, outage) && m_pollOutagesConfigFactory.isCurTimeInOutage(outage)) {
                     return Boolean.TRUE.toString();
                 }
             }
@@ -342,7 +345,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
         try {
             validateAddress(ipAddr);
             Outage outage = getOutage(outageName);
-            Boolean inOutage = m_configFactory.isInterfaceInOutage(ipAddr, outage) && m_configFactory.isCurTimeInOutage(outage);
+            Boolean inOutage = m_pollOutagesConfigFactory.isInterfaceInOutage(ipAddr, outage) && m_pollOutagesConfigFactory.isCurTimeInOutage(outage);
             return inOutage.toString();
         } finally {
             readUnlock();
@@ -355,8 +358,8 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     public String isInterfaceInOutage(@PathParam("ipAddr") String ipAddr) {
         readLock();
         try {
-            for (Outage outage : m_configFactory.getOutages()) {
-                if (m_configFactory.isInterfaceInOutage(ipAddr, outage) && m_configFactory.isCurTimeInOutage(outage)) {
+            for (Outage outage : m_pollOutagesConfigFactory.getOutages()) {
+                if (m_pollOutagesConfigFactory.isInterfaceInOutage(ipAddr, outage) && m_pollOutagesConfigFactory.isCurTimeInOutage(outage)) {
                     return Boolean.TRUE.toString();
                 }
             }
@@ -390,15 +393,15 @@ public class ScheduledOutagesRestService extends OnmsRestService {
             pkg.getPackage().removeOutageCalendar(outageName);
         }
         if (action.equals(ConfigAction.REMOVE_FROM_ALL)) {
-            for (CollectdPackage pkg : CollectdConfigFactory.getInstance().getCollectdConfig().getPackages()) {
+            for (CollectdPackage pkg : m_collectdConfigFactory.getCollectdConfig().getPackages()) {
                 pkg.getPackage().removeOutageCalendar(outageName);
             }
         }
-        CollectdConfigFactory.getInstance().saveCurrent();
+        m_collectdConfigFactory.saveCurrent();
     }
 
     private CollectdPackage getCollectdPackage(String packageName) throws IllegalArgumentException {
-        CollectdPackage pkg = CollectdConfigFactory.getInstance().getPackage(packageName);
+        CollectdPackage pkg = m_collectdConfigFactory.getPackage(packageName);
         if (pkg == null) throw new IllegalArgumentException("Collectd package " + packageName + " does not exist.");
         return pkg;
     }

@@ -331,8 +331,6 @@ public class HttpCollectorTest implements TestContextAware, InitializingBean {
     public void testPersistApacheStatsViaCapsd() throws Exception {
         // TODO: Do we need this init? applicationContext-collectdTest.xml should take care of this
         CollectdConfigFactory collectdConfig = new CollectdConfigFactory(ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/capsd/collectd-configuration.xml"), "nms1", false);
-        CollectdConfigFactory.setInstance(collectdConfig);
-        CollectdConfigFactory.init();
 
         // Add the HTTP collector to capsd
         m_collectd.setServiceCollector("HTTP", m_collector);

@@ -56,8 +56,6 @@ public class CollectdConfig {
 
 //      instantiateCollectors();
         createPackageObjects(localServer, verifyServer);
-        initialize(localServer, verifyServer);
-
     }
 
     private void createPackageObjects(final String localServer, final boolean verifyServer) {
@@ -95,54 +93,15 @@ public class CollectdConfig {
     }
 
     /**
-     * This method is used to establish package agaist iplist mapping, with
-     * which, the iplist is selected per package via the configured filter rules
-     * from the database.
-     *
-     * @param localServer2
-     * @param localServer TODO
-     * @param verifyServer2
-     * @param verifyServer TODO
-     */
-    protected void createPackageIpListMap(final String localServer, final boolean verifyServer) {
-
-        // Multiple threads maybe asking for the m_pkgIpMap field so create
-        // with temp map then assign when finished.
-
-        for (final Iterator<CollectdPackage> it = getPackages().iterator(); it.hasNext();) {
-            it.next().createIpList(localServer, verifyServer);
-        }
-    }
-    
-    /**
-     * <p>rebuildPackageIpListMap</p>
-     */
-    public void rebuildPackageIpListMap() {
-        createPackageIpListMap(m_localServer, m_verifyServer);
-    }
-
-    /**
-     * <p>initialize</p>
-     *
-     * @param localServer TODO
-     * @param verifyServer TODO
-     */
-    protected void initialize(final String localServer, final boolean verifyServer)  {
-        createPackageIpListMap(localServer, verifyServer);
-
-    }
-
-    /**
      * <p>getPackage</p>
      *
      * @param name a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.config.CollectdPackage} object.
      */
     public CollectdPackage getPackage(final String name) {
-        for (final Iterator<CollectdPackage> it = getPackages().iterator(); it.hasNext();) {
-            final CollectdPackage wpkg = it.next();
-            if (wpkg.getName().equals(name)) {
-                return wpkg;
+        for (CollectdPackage pkg : getPackages()) {
+            if (pkg.getName().equals(name)) {
+                return pkg;
             }
         }
         return null;
@@ -156,10 +115,9 @@ public class CollectdConfig {
      * @return True if the domain exists
      */
     public boolean domainExists(final String name) {
-        for (final Iterator<CollectdPackage> it = getPackages().iterator(); it.hasNext();) {
-            final CollectdPackage wpkg = it.next();
-            if ((wpkg.ifAliasDomain() != null)
-                    && wpkg.ifAliasDomain().equals(name)) {
+        for (CollectdPackage pkg : getPackages()) {
+            if ((pkg.ifAliasDomain() != null)
+                    && pkg.ifAliasDomain().equals(name)) {
                 return true;
             }
         }
@@ -193,8 +151,7 @@ public class CollectdConfig {
      *         specified interface and has the specified service enabled.
      */
     public boolean isServiceCollectionEnabled(final OnmsIpInterface iface, final String svcName) {
-        for (final Iterator<CollectdPackage> it = getPackages().iterator(); it.hasNext();) {
-            final CollectdPackage wpkg = it.next();
+        for (CollectdPackage wpkg : getPackages()) {
 
             // Does the package include the interface?
             if (wpkg.interfaceInPackage(iface)) {
@@ -228,8 +185,7 @@ public class CollectdConfig {
      *         specified interface and has the specified service enabled.
      */
     public boolean isServiceCollectionEnabled(final String ipAddr, final String svcName) {
-        for (final Iterator<CollectdPackage> it = getPackages().iterator(); it.hasNext();) {
-        	final CollectdPackage wpkg = it.next();
+        for (CollectdPackage wpkg : getPackages()) {
 
             // Does the package include the interface?
             //

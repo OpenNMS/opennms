@@ -102,6 +102,7 @@ public class LegacyAvailabilityDataService implements AvailabilityDataService {
                     try {
                         String commonRule = m_catFactory.getEffectiveRule(categoryName);
 
+                        FilterDaoFactory.getInstance().flushActiveIpAddressListCache();
                         final List<InetAddress> nodeIPs = FilterDaoFactory.getInstance().getActiveIPAddressList(commonRule);
                         LOG.debug("Number of IPs satisfying rule: {}", nodeIPs.size());
 

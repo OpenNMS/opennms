@@ -80,10 +80,10 @@
 			for (final org.opennms.netmgt.config.poller.Package thisPackage : PollerConfigFactory.getInstance().getConfiguration().getPackages()) {
 				thisPackage.removeOutageCalendar(deleteName); //Will quietly do nothing if outage doesn't exist
 			}
-	
-			for (Iterator<CollectdPackage> iter = CollectdConfigFactory.getInstance().getCollectdConfig().getPackages().iterator(); iter.hasNext();) {
-				org.opennms.netmgt.config.collectd.Package thisPackage = iter.next().getPackage();
-				thisPackage.removeOutageCalendar(deleteName); //Will quietly do nothing if outage doesn't exist
+
+			CollectdConfigFactory collectdConfig = new CollectdConfigFactory();
+			for (CollectdPackage thisPackage : collectdConfig.getCollectdConfig().getPackages()) {
+				thisPackage.getPackage().removeOutageCalendar(deleteName); //Will quietly do nothing if outage doesn't exist
 			}
 	
 			NotifdConfigFactory.getInstance().getConfiguration().removeOutageCalendar(deleteName);
@@ -91,7 +91,7 @@
 			pollFactory.saveCurrent();
 			NotifdConfigFactory.getInstance().saveCurrent();
 			ThreshdConfigFactory.getInstance().saveCurrent();
-			CollectdConfigFactory.getInstance().saveCurrent();
+			collectdConfig.saveCurrent();
 			PollerConfigFactory.getInstance().save();
 			sendOutagesChangedEvent();
 		} finally {
@@ -171,12 +171,10 @@ div.nodeintbox {
 						thresholdingOutages.addAll(thresholdingPackages[i].getOutageCalendarCollection());
 					}
 			
-					CollectdConfigFactory.init();
 					List<String> collectionOutages = new ArrayList<String>();
-			
-					for (Iterator<CollectdPackage> iter = CollectdConfigFactory.getInstance().getCollectdConfig().getPackages().iterator(); iter.hasNext();) {
-						org.opennms.netmgt.config.collectd.Package thisPackage = iter.next().getPackage();
-						collectionOutages.addAll(thisPackage.getOutageCalendars());
+					CollectdConfigFactory collectdConfig = new CollectdConfigFactory();
+					for (CollectdPackage thisPackage : collectdConfig.getCollectdConfig().getPackages()) {
+						collectionOutages.addAll(thisPackage.getPackage().getOutageCalendars());
 					}
 			
 					for (int i = 0; i < outages.length; i++) {

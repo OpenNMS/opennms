@@ -131,7 +131,7 @@ public class ScheduledOutagesRestServiceTest extends AbstractSpringJerseyRestTes
                 + "</package>"
                 + "<collector service=\"SNMP\" class-name=\"org.opennms.netmgt.collectd.SnmpCollector\"/>"
                 + "</collectd-configuration>");
-        CollectdConfigFactory.setInstance(new CollectdConfigFactory(new FileInputStream(collectdConfig), "localhost", false));
+        CollectdConfigFactory collectdConfigFactory = new CollectdConfigFactory(new FileInputStream(collectdConfig), "localhost", false);
 
         // Setup Pollerd Configuration
         File pollerdConfig = new File(etc, "poller-configuration.xml");

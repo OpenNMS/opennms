@@ -123,11 +123,6 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
         printMainSettings();
         if (isInstalledVersionGreaterOrEqual(1, 12, 2)) {
             try {
-                CollectdConfigFactory.init();
-            } catch (Exception e) {
-                throw new OnmsUpgradeException("Can't initialize collectd-configuration.xml because " + e.getMessage());
-            }
-            try {
                 JMXDataCollectionConfigFactory.init();
             } catch (Exception e) {
                 throw new OnmsUpgradeException("Can't initialize jmx-datacollection-config.xml because " + e.getMessage());
@@ -361,7 +356,7 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
             jmxResourceDirectories = new ArrayList<File>();
             CollectdConfiguration config;
             try {
-                config = CollectdConfigFactory.getInstance().getCollectdConfig().getConfig();
+                config = new CollectdConfigFactory().getCollectdConfig().getConfig();
             } catch (Exception e) {
                 throw new OnmsUpgradeException("Can't upgrade the JRBs because " + e.getMessage(), e);
             }

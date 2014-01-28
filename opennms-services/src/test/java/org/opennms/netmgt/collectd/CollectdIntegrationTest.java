@@ -46,9 +46,12 @@ import org.easymock.EasyMock;
 import org.easymock.IAnswer;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.InsufficientInformationException;
+import org.opennms.netmgt.config.CollectdConfig;
+import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
+import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.config.collectd.Filter;
 import org.opennms.netmgt.config.collectd.Package;
@@ -56,7 +59,6 @@ import org.opennms.netmgt.config.collectd.Parameter;
 import org.opennms.netmgt.config.collectd.Service;
 import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.config.collector.CollectionSetVisitor;
-import org.opennms.netmgt.dao.api.CollectorConfigDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
@@ -92,7 +94,9 @@ public class CollectdIntegrationTest extends TestCase {
     private EventIpcManager m_eventIpcManager;
     private Collectd m_collectd;
     private EasyMockUtils m_mockUtils;
-    private CollectorConfigDao m_collectorConfigDao;
+    private CollectdConfigFactory m_collectdConfigFactory;
+    private CollectdConfig m_collectdConfig;
+    private CollectdConfiguration m_collectdConfiguration;
     private String m_key;
     private MockServiceCollector m_serviceCollector;
 
@@ -142,9 +146,13 @@ public class CollectdIntegrationTest extends TestCase {
         param.setValue(m_key);
         collector.addParameter(param);
         
-        m_collectorConfigDao = m_mockUtils.createMock(CollectorConfigDao.class);
-        EasyMock.expect(m_collectorConfigDao.getCollectors()).andReturn(Collections.singleton(collector)).anyTimes();
-        EasyMock.expect(m_collectorConfigDao.getSchedulerThreads()).andReturn(1).anyTimes();
+        m_collectdConfigFactory = m_mockUtils.createMock(CollectdConfigFactory.class);
+        m_collectdConfig = m_mockUtils.createMock(CollectdConfig.class);
+        m_collectdConfiguration = m_mockUtils.createMock(CollectdConfiguration.class);
+        EasyMock.expect(m_collectdConfigFactory.getCollectdConfig()).andReturn(m_collectdConfig).anyTimes();
+        EasyMock.expect(m_collectdConfig.getConfig()).andReturn(m_collectdConfiguration).anyTimes();
+        EasyMock.expect(m_collectdConfiguration.getCollectors()).andReturn(Collections.singletonList(collector)).anyTimes();
+        EasyMock.expect(m_collectdConfig.getThreads()).andReturn(1).anyTimes();
 
         m_ifaceDao = m_mockUtils.createMock(IpInterfaceDao.class);
         m_nodeDao = m_mockUtils.createMock(NodeDao.class);
@@ -171,7 +179,7 @@ public class CollectdIntegrationTest extends TestCase {
         List<OnmsIpInterface> initialIfs = Collections.emptyList();
         EasyMock.expect(m_ifaceDao.findByServiceType(snmp.getName())).andReturn(initialIfs).anyTimes();
         
-        m_collectorConfigDao.rebuildPackageIpListMap();
+        m_filterDao.flushActiveIpAddressListCache();
         
         EasyMock.expect(m_nodeDao.load(1)).andReturn(nodeBuilder.getNode()).anyTimes();
         
@@ -184,11 +192,12 @@ public class CollectdIntegrationTest extends TestCase {
         final MockTransactionTemplate transTemplate = new MockTransactionTemplate();
         transTemplate.afterPropertiesSet();
 
-        m_collectd.setCollectorConfigDao(m_collectorConfigDao);
+        m_collectd.setCollectdConfigFactory(m_collectdConfigFactory);
         m_collectd.setEventIpcManager(m_eventIpcManager);
         m_collectd.setTransactionTemplate(transTemplate);
         m_collectd.setIpInterfaceDao(m_ifaceDao);
         m_collectd.setNodeDao(m_nodeDao);
+        m_collectd.setFilterDao(m_filterDao);
         
         // Inits the class
         m_collectd.afterPropertiesSet();
@@ -253,7 +262,7 @@ public class CollectdIntegrationTest extends TestCase {
         
         pkg.addService(collector);
         
-        EasyMock.expect(m_collectorConfigDao.getPackages()).andAnswer(new IAnswer<Collection<CollectdPackage>>() {
+        EasyMock.expect(m_collectdConfig.getPackages()).andAnswer(new IAnswer<Collection<CollectdPackage>>() {
 
             @Override
             public Collection<CollectdPackage> answer() throws Throwable {

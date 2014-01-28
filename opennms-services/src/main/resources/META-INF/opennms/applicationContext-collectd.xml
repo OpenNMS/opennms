@@ -19,8 +19,6 @@
     <context:annotation-config />
     <tx:annotation-driven/>
 
-    <bean name="collectorConfigDao" class="org.opennms.netmgt.collectd.CollectorConfigDaoImpl"/>
-
     <bean id="daemon" class="org.opennms.netmgt.collectd.Collectd">
       <property name="eventIpcManager" ref="eventIpcManager"/>
     </bean>

@@ -33,12 +33,12 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.collectd.Parameter;
 import org.opennms.netmgt.config.collectd.Service;
 import org.opennms.netmgt.config.collector.CollectionSet;
-import org.opennms.netmgt.dao.api.CollectorConfigDao;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.RrdRepository;
 import org.slf4j.Logger;
@@ -308,7 +308,7 @@ public class CollectionSpecification {
      *
      * @param collectorConfigDao a {@link org.opennms.netmgt.dao.api.CollectorConfigDao} object.
      */
-    public void refresh(CollectorConfigDao collectorConfigDao) {
+    public void refresh(CollectdConfigFactory collectorConfigDao) {
         CollectdPackage refreshedPackage = collectorConfigDao.getPackage(getPackageName());
         if (refreshedPackage != null) {
             setPackage(refreshedPackage);
