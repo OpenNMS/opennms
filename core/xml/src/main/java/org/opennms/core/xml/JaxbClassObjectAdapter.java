@@ -18,12 +18,12 @@ public class JaxbClassObjectAdapter extends XmlAdapter<Object, Object> {
 
     public JaxbClassObjectAdapter() {
         super();
-        LOG.info("Initializing JaxbClassObjectAdapter.");
+        LOG.debug("Initializing JaxbClassObjectAdapter.");
     }
 
     @Override
     public Object unmarshal(final Object from) throws Exception {
-        LOG.debug("unmarshal: from = ({}){}", (from == null? null : from.getClass()), from);
+        LOG.trace("unmarshal: from = ({}){}", (from == null? null : from.getClass()), from);
         if (from == null) return null;
 
         if (from instanceof Node) {
@@ -32,7 +32,7 @@ public class JaxbClassObjectAdapter extends XmlAdapter<Object, Object> {
             final String nodeName = e.getNodeName();
             final Class<?> clazz = JaxbUtils.getClassForElement(nodeName);
 
-            LOG.debug("class type = {} (node name = {})", clazz, nodeName);
+            LOG.trace("class type = {} (node name = {})", clazz, nodeName);
             // JAXB has already turned this into an element, but we need to re-parse the XML.
 
             if (clazz == null) {
@@ -54,7 +54,7 @@ public class JaxbClassObjectAdapter extends XmlAdapter<Object, Object> {
 
     @Override
     public Object marshal(final Object from) throws Exception {
-        LOG.debug("marshal: from = ({}){}", (from == null? null : from.getClass()), from);
+        LOG.trace("marshal: from = ({}){}", (from == null? null : from.getClass()), from);
         if (from == null) return null;
 
         try {
@@ -62,11 +62,11 @@ public class JaxbClassObjectAdapter extends XmlAdapter<Object, Object> {
             final DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             final Document doc = builder.parse(new ByteArrayInputStream(s.getBytes()));
             final Node node = doc.getDocumentElement();
-            LOG.debug("marshal: node = {}", node);
+            LOG.trace("marshal: node = {}", node);
             return node;
         } catch (final Exception e) {
             final IllegalArgumentException ex = new IllegalArgumentException("Unable to marshal object " + from, e);
-            LOG.debug("ex = {}", ex, ex);
+            LOG.error("Unable to marshal object {}", from, ex);
             throw ex;
         }
     }

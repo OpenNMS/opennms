@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.web.servlet.MissingParameterException;
@@ -66,20 +67,21 @@ public class ChooseResourceController extends AbstractController implements Init
         if (resourceId == null) {
             String resourceType = WebSecurityUtils.sanitizeString(request.getParameter("parentResourceType"));
             String resource = WebSecurityUtils.sanitizeString(request.getParameter("parentResource"));
+            boolean isStoreByForeignSource = ResourceTypeUtils.isStoreByForeignSource();
             if (request.getParameter("parentResourceType") == null) {
                 throw new MissingParameterException("parentResourceType", requiredParameters);
             }
             if (request.getParameter("parentResource") == null) {
                 throw new MissingParameterException("parentResource", requiredParameters);
             }
-            if (resourceType.equals("node") && Boolean.getBoolean("org.opennms.rrd.storeByForeignSource")) {
+            if (resourceType.equals("node") && isStoreByForeignSource) {
                 OnmsNode node = m_nodeDao.get(resource);
                 if (node != null && node.getForeignSource() != null && node.getForeignId() != null) {
                     resourceType = "nodeSource";
                     resource = node.getForeignSource() + ':' + node.getForeignId();
                 }
             }
-            if (resourceType.equals("nodeSource") && !Boolean.getBoolean("org.opennms.rrd.storeByForeignSource")) {
+            if (resourceType.equals("nodeSource") && !isStoreByForeignSource) {
                 OnmsNode node = m_nodeDao.get(resource);
                 if (node != null && node.getForeignSource() != null && node.getForeignId() != null) {
                     resourceType = "node";

@@ -161,6 +161,15 @@ public abstract class ResourceTypeUtils {
     }
 
     /**
+     * <p>isStoreByForeignSource</p>
+     *
+     * @return a boolean.
+     */
+    public static boolean isStoreByForeignSource() {
+        return Boolean.getBoolean("org.opennms.rrd.storeByForeignSourcep");
+    }
+
+    /**
      * <p>isResponseTime</p>
      *
      * @param relativePath a {@link java.lang.String} object.
