@@ -512,6 +512,17 @@
       		</lifecycleMappingMetadata>
       	</configuration>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>sonar-maven-plugin</artifactId>
+        <version>2.2</version>
+        <dependencies>
+          <dependency>
+            <groupId>postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+          </dependency>
+        </dependencies>
+      </plugin>
     </plugins>
   </pluginManagement>
    <plugins>
