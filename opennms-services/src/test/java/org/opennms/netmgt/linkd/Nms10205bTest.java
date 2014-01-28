@@ -51,6 +51,7 @@ import org.opennms.netmgt.linkd.snmp.OspfIfTableEntry;
 import org.opennms.netmgt.linkd.snmp.OspfNbrTable;
 import org.opennms.netmgt.linkd.snmp.OspfNbrTableEntry;
 import org.opennms.netmgt.model.DataLinkInterface;
+import org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -450,7 +451,7 @@ Address          Interface              State     ID               Pri  Dead
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
 
         final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
-        assertEquals(15, links.size());
+        assertEquals(27, links.size());
         
         /*
 
@@ -478,11 +479,6 @@ Bagmane         ge-1/0/2.0      (540)  ----> J6350_42          ge-0/0/2.0      (
 
 Space-EX-SW1    ge-0/0/0.0      (1361)  ----> Space-EX-SW2     ge-0/0/0.0      (531)    lldp            ****3   810
 Space_ex_sw1    ge-0/0/0.0      (1361)  ----> Space_ex_sw2     ge-0/0/0.0      (531)    next hop router ****3   810
-
-        Here you clearly see 15 links but globally linkd saves only 12 nodes.
-        The problem is that somewhere is stated that nodeid,ifindex must be unique.
-        This means that the links with * are overwritten. because the iproute strategy follows the 
-        lldp strategy then the route link is saved.
         
         Linkd is able to find the topology using the next hop router
         and lldp among the core nodes:
@@ -502,46 +498,88 @@ Space_ex_sw1    ge-0/0/0.0      (1361)  ----> Space_ex_sw2     ge-0/0/0.0      (
         int start = getStartPoint(links);
         for (final DataLinkInterface datalinkinterface: links) {
             int id = datalinkinterface.getId().intValue();
+
             if (start == id) {
-                //checkLink(delhi, mumbai, 28503, 519, datalinkinterface);
                 checkLink(mumbai, delhi, 519, 28503, datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+            } else if (start+12 == id ) {
+                checkLink(delhi, mumbai, 28503, 519, datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
             } else if (start+1 == id ) {
-                //checkLink(bangalore, mumbai, 2401, 507, datalinkinterface);
                 checkLink(mumbai,bangalore,507,2401,datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+            } else if (start+13 == id ) {
+                checkLink(bangalore, mumbai, 2401, 507, datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
             } else if (start+2 == id ) {
-            	//checkLink(bagmane, mumbai, 534, 977, datalinkinterface);
                 checkLink(mumbai, bagmane, 977, 534, datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+            } else if (start+14 == id ) {
+                checkLink(bagmane, mumbai, 534, 977, datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
             } else if (start+3 == id ) {
-            	//checkLink(mysore, mumbai, 508, 978, datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
                 checkLink(mumbai, mysore, 978, 508, datalinkinterface);
+            } else if (start+15 == id ) {
+                checkLink(mysore, mumbai, 508, 978, datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
             } else if (start+4 == id ) {
-            	//checkLink(bangalore, delhi, 2397, 3674, datalinkinterface);
                 checkLink( delhi,bangalore, 3674, 2397, datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+            } else if (start+16 == id ) {
+                checkLink(bangalore, delhi, 2397, 3674, datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
             } else if (start+5 == id ) {
-            	//checkLink(spaceexsw1, delhi, 528, 28520, datalinkinterface);
                 checkLink(delhi, spaceexsw1,  17619,528, datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+            } else if (start+17 == id ) {
+                checkLink(spaceexsw1, delhi, 528, 17619, datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
+            } else if (start+24 == id ) {
+                checkLink(spaceexsw1, delhi, 528, 28520, datalinkinterface);
+                assertEquals(DiscoveryProtocol.lldp, datalinkinterface.getProtocol());
             } else if (start+6 == id ) {
-                //checkLink(spaceexsw2, bangalore, 551, 2398, datalinkinterface);
                 checkLink(bangalore, spaceexsw2, 2398, 551, datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+            } else if (start+19 == id ) {
+                checkLink(spaceexsw2, bangalore, 551, 2398, datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
             } else if (start+7 == id ) {
-                //checkLink(bagmane, bangalore, 1732, 2396, datalinkinterface);
                 checkLink(bangalore, bagmane, 2396, 1732, datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+            } else if (start+18 == id ) {
+                checkLink(bagmane, bangalore, 1732, 2396, datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
             } else if (start+8 == id ) {
-                //checkLink(mysore, bagmane, 520, 654, datalinkinterface);
                 checkLink(bagmane , mysore, 654, 520, datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+            } else if (start+20 == id ) {
+                checkLink(mysore, bagmane, 520, 654, datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
             } else if (start+9 == id ) {
                 checkLink(bagmane, j635042, 540, 549, datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+            } else if (start+21 == id ) {
+                checkLink(j635042, bagmane, 549, 540 , datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
+            } else if (start+25 == id ) {
+                checkLink(j635042, bagmane, 549, 514, datalinkinterface);
+                assertEquals(DiscoveryProtocol.lldp, datalinkinterface.getProtocol());
             } else if (start+10 == id ) {
-                //checkLink(spaceexsw2, spaceexsw1, 531, 1361, datalinkinterface);
                 checkLink(spaceexsw1, spaceexsw2, 1361, 531, datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+            } else if (start+22 == id ) {
+                checkLink(spaceexsw2, spaceexsw1, 531, 1361, datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
+            } else if (start+26 == id ) {
+                checkLink(spaceexsw2, spaceexsw1, 531, 1361, datalinkinterface);
+                assertEquals(DiscoveryProtocol.lldp, datalinkinterface.getProtocol());
             } else if (start+11 == id ) {
                 checkLink(spaceexsw2, mumbai,  34,508, datalinkinterface);
-            } else if (start+12 == id ) {
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+            } else if (start+23 == id ) {
                 checkLink(bagmane, delhi, 513, 28519, datalinkinterface);
-            } else if (start+13 == id ) {
-                checkLink(spaceexsw1, delhi, 528, 28520, datalinkinterface);
-            } else if (start+14 == id ) {
-                checkLink(j635042, bagmane, 549, 514, datalinkinterface);
+                assertEquals(DiscoveryProtocol.lldp, datalinkinterface.getProtocol());
             } else  {
             	checkLink(mumbai,mumbai,-1,-1,datalinkinterface);
             }
@@ -685,6 +723,7 @@ it has a link to Mysore that does not support LLDP
         int start = getStartPoint(links);
         for (final DataLinkInterface datalinkinterface: links) {
             int id = datalinkinterface.getId().intValue();
+            assertEquals(DiscoveryProtocol.lldp, datalinkinterface.getProtocol());
             if (start == id) {
             	checkLink(bagmane, delhi, 513, 28519, datalinkinterface);
             } else if (start+1 == id ) {
@@ -860,6 +899,7 @@ Space_ex_sw1    ge-0/0/0.0      (1361)  ----> Space_ex_sw2     ge-0/0/0.0      (
         int start = getStartPoint(links);
         for (final DataLinkInterface datalinkinterface: links) {
             int id = datalinkinterface.getId().intValue();
+            assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
             if (start == id ) {
                 checkLink(delhi, mumbai, 28503, 519, datalinkinterface);
             } else if (start+1 == id) {

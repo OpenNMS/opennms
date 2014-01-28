@@ -46,6 +46,7 @@ import org.opennms.netmgt.linkd.snmp.LldpLocalGroup;
 import org.opennms.netmgt.linkd.snmp.LldpRemTable;
 import org.opennms.netmgt.linkd.snmp.LldpRemTableEntry;
 import org.opennms.netmgt.model.DataLinkInterface;
+import org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -487,66 +488,91 @@ public class Nms1055Test extends Nms1055NetworkBuilder {
 
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
 
-        assertEquals(15,m_dataLinkInterfaceDao.countAll());
+        assertEquals(22,m_dataLinkInterfaceDao.countAll());
         final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
                 
         final int start = getStartPoint(links);
         for (final DataLinkInterface datalinkinterface: links) {
             Integer linkid = datalinkinterface.getId();
+            
             if ( linkid == start) {
-                // penrose   -> phoenix     --ip route next hop
-                //checkLink(phoenix, penrose, 564, 644, datalinkinterface);
-                checkLink(penrose, phoenix, 644, 564, datalinkinterface);
+                checkLink(penrose,phoenix , 644, 564, datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol()); 
+            } else if (linkid == start+6 ) {
+                checkLink(phoenix, penrose, 564, 644, datalinkinterface);
+               assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol()); 
             } else if (linkid == start+1 ) {
-                // penrose  -> delaware --ip route next hop
-                //checkLink(delaware, penrose, 598, 535, datalinkinterface);
                 checkLink(penrose, delaware, 535, 598, datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol()); 
+            } else if (linkid == start+5 ) {
+                checkLink(delaware, penrose, 598, 535, datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol()); 
             } else if (linkid == start+2) {
-                // phoenix  -> austin --ip route next hop
-                //checkLink(austin,phoenix,554,565,datalinkinterface);
                 checkLink(phoenix,austin,565,554,datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol()); 
+            } else if (linkid == start+7) {
+                checkLink(austin,phoenix,554,565,datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
             } else if (linkid == start+3) {
-                // phoenix  -> sanjose --ip route next hop
-                //checkLink(phoenix,sanjose,566,564,datalinkinterface);
                 checkLink(sanjose,phoenix,564,566,datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol()); 
+            } else if (linkid == start+8) {
+                checkLink(sanjose,phoenix,564,566,datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
             } else if (linkid == start+4) {
-                // austin  -> sanjose --ip route next hop
-                //checkLink(austin, sanjose, 586, 8562, datalinkinterface);
                 checkLink(sanjose,austin, 8562, 586, datalinkinterface);
-            } else if (linkid == start+5) {
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol()); 
+            } else if (linkid == start+9) {
+                checkLink(sanjose,austin, 8562, 586, datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
+            } else if (linkid == start+10) {
                 // penrose xe-1/0/0 -> delaware xe-1/0/0 --lldp
                 checkLink(delaware, penrose, 574, 510, datalinkinterface);
-            } else if (linkid == start+6) {
+                assertEquals(DiscoveryProtocol.lldp, datalinkinterface.getProtocol());
+            } else if (linkid == start+11) {
                 // penrose xe-1/0/1 -> phoenix xe-0/0/1  --lldp
                 checkLink(phoenix, penrose, 509, 511, datalinkinterface);   
-            } else if (linkid == start+7) {
+                assertEquals(DiscoveryProtocol.lldp, datalinkinterface.getProtocol());
+            } else if (linkid == start+12) {
                 // penrose ge-1/3/1 -> delaware ge-0/0/6 --lldp
                 checkLink(delaware, penrose, 522, 525, datalinkinterface);
-            } else if (linkid == start+8) {
+                assertEquals(DiscoveryProtocol.lldp, datalinkinterface.getProtocol());
+            } else if (linkid == start+13) {
                 // penrose ge-1/2/1 -> riovista ge-0/0/0.0  --lldp
                 // this link is also discovered using the bridge strategy
-                checkLink(riovista, penrose, 584, 515, datalinkinterface);                   
-            } else if ( linkid == start+9) {
+                checkLink(riovista, penrose, 584, 515, datalinkinterface);
+                assertEquals(DiscoveryProtocol.lldp, datalinkinterface.getProtocol());
+            } else if ( linkid == start+14) {
                 // delaware xe-1/0/1 -> austin xe-0/0/1  --lldp
                 checkLink(austin, delaware, 509, 575, datalinkinterface);                   
-            } else if (linkid == start+10 ) {
+                assertEquals(DiscoveryProtocol.lldp, datalinkinterface.getProtocol());
+            } else if (linkid == start+15 ) {
                 // delaware ge-0/2/0 -> riovista ge-0/0/46.0  --lldp
                 // this link is also discovered using the bridge strategy
                 checkLink(riovista, delaware, 503, 540, datalinkinterface);
-            } else if (linkid == start+11) {
+                assertEquals(DiscoveryProtocol.lldp, datalinkinterface.getProtocol());
+            } else if (linkid == start+16) {
                 // phoenix ge-1/0/3 -> sanjose ge-1/0/0  --lldp
                 checkLink(sanjose, phoenix, 516, 515, datalinkinterface);                   
-            } else if (linkid == start+12) {
+                assertEquals(DiscoveryProtocol.lldp, datalinkinterface.getProtocol());
+            } else if (linkid == start+17) {
                 // phoenix ge-0/2/0 -> austin ge-0/0/46.0  --lldp
-                checkLink(austin, phoenix, 508, 508, datalinkinterface);                   
-            } else if (linkid == start+13) {
+                checkLink(austin, phoenix, 508, 508, datalinkinterface);
+                assertEquals(DiscoveryProtocol.lldp, datalinkinterface.getProtocol());
+            } else if (linkid == start+18) {
                 // austin ge-1/0/3 -> sanjose ge-1/0/1  --lldp
                 checkLink(sanjose, austin, 517, 515, datalinkinterface);                
-            } else if (linkid == start+14) {
-                // penrose ae0 -> delaware ae0 --rstp
+                assertEquals(DiscoveryProtocol.lldp, datalinkinterface.getProtocol());
+            } else if (linkid == start+19) {
+                checkLink(penrose,riovista,515,584,datalinkinterface);
+                assertEquals(DiscoveryProtocol.bridge, datalinkinterface.getProtocol());
+            } else if (linkid == start+20) {
                 checkLink(penrose,delaware,2693,658,datalinkinterface);
+                assertEquals(DiscoveryProtocol.bridge, datalinkinterface.getProtocol());
+            } else if (linkid == start+21) {
+                checkLink(delaware,riovista,540,503,datalinkinterface);
+                assertEquals(DiscoveryProtocol.bridge, datalinkinterface.getProtocol());
             } else {
-                // error
                 checkLink(penrose,penrose,-1,-1,datalinkinterface);
             }
         }

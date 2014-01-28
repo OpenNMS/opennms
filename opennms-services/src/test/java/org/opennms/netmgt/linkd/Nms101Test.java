@@ -41,6 +41,7 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.model.DataLinkInterface;
+import org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol;
 import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -258,10 +259,13 @@ public class Nms101Test extends Nms101NetworkBuilder {
         
         final List<DataLinkInterface> ifaces = m_dataLinkInterfaceDao.findAll();
         for (final DataLinkInterface link: ifaces) {
-            printLink(link);
+            if (link.getProtocol() == DiscoveryProtocol.iproute)
+                checkLink(cisco7200a, cisco7200b, 2, 4, link);
+            else if (link.getProtocol() ==  DiscoveryProtocol.cdp)
+                checkLink(cisco7200b, cisco7200a, 4, 2, link);
         }
 
-        assertEquals("we should have found 1 data links", 1, ifaces.size());
+        assertEquals("we should have found 2 data links", 2, ifaces.size());
     }
 
     /*
@@ -330,22 +334,25 @@ public class Nms101Test extends Nms101NetworkBuilder {
     	m_nodeDao.save(getCisco3600());
     	m_nodeDao.flush();
     	
-        final OnmsNode cisco3700 = m_nodeDao.findByForeignId("linkd", CISCO3600_NAME);
-        final OnmsNode cisco3600 = m_nodeDao.findByForeignId("linkd", CISCO3700_NAME);
-        assertTrue(m_linkd.scheduleNodeCollection(cisco3600.getId()));
+        final OnmsNode cisco3600 = m_nodeDao.findByForeignId("linkd", CISCO3600_NAME);
+        final OnmsNode cisco3700 = m_nodeDao.findByForeignId("linkd", CISCO3700_NAME);
         assertTrue(m_linkd.scheduleNodeCollection(cisco3700.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(cisco3600.getId()));
  
-        assertTrue(m_linkd.runSingleSnmpCollection(cisco3600.getId()));
         assertTrue(m_linkd.runSingleSnmpCollection(cisco3700.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(cisco3600.getId()));
  
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
         
         final List<DataLinkInterface> ifaces = m_dataLinkInterfaceDao.findAll();
         for (final DataLinkInterface link: ifaces) {
-            printLink(link);
+            if (link.getProtocol() == DiscoveryProtocol.iproute)
+                checkLink(cisco3600, cisco3700, 1, 3, link);
+            else if (link.getProtocol() ==  DiscoveryProtocol.cdp)
+                checkLink(cisco3600, cisco3700, 1, 3, link);
         }
 
-        assertEquals("we should have found 1 data links", 1, ifaces.size());
+        assertEquals("we should have found 2 data links", 2, ifaces.size());
     }
 
 
@@ -410,12 +417,52 @@ public class Nms101Test extends Nms101NetworkBuilder {
 
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
         
-        final List<DataLinkInterface> ifaces = m_dataLinkInterfaceDao.findAll();
-        for (final DataLinkInterface link: ifaces) {
-            printLink(link);
+        final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
+        int start = getStartPoint(links);
+        for (final DataLinkInterface link: links) {
+            int id = link.getId().intValue();
+            if (id == start) {
+                checkLink(laptop, cisco7200a, 10, 3, link);
+                assertEquals(DiscoveryProtocol.iproute, link.getProtocol());
+            } else if (id == start+1) {
+                checkLink(cisco7200a, cisco7200b, 2, 4, link);
+                assertEquals(DiscoveryProtocol.iproute, link.getProtocol());
+            } else if (id == start+10) {
+                checkLink(cisco7200b, cisco7200a, 4, 2, link);
+                assertEquals(DiscoveryProtocol.cdp, link.getProtocol());
+            } else if (id == start+2) {
+                checkLink(cisco7200b, cisco2691, 1, 4, link);
+                assertEquals(DiscoveryProtocol.iproute, link.getProtocol());
+            } else if (id == start+8) {
+                checkLink(cisco2691,cisco7200b , 4, 1, link);
+                assertEquals(DiscoveryProtocol.cdp, link.getProtocol());
+            } else if (id == start+3) {
+                checkLink(cisco7200b, cisco3700, 2, 1, link);
+                assertEquals(DiscoveryProtocol.iproute, link.getProtocol());
+            } else if (id == start+9) {
+                checkLink(cisco3700, cisco7200b, 1, 2, link);
+                assertEquals(DiscoveryProtocol.cdp, link.getProtocol());
+            } else if (id == start+4) {
+                checkLink(cisco1700, cisco2691, 2, 2, link);
+                assertEquals(DiscoveryProtocol.iproute, link.getProtocol());
+            } else if (id == start+7) {
+                checkLink(cisco1700, cisco2691, 2, 2, link);
+                assertEquals(DiscoveryProtocol.cdp, link.getProtocol());
+            } else if (id == start+6) {
+                checkLink(cisco3600, cisco2691, 2, 1, link);
+                assertEquals(DiscoveryProtocol.cdp, link.getProtocol());
+            } else if (id == start+5) {
+                checkLink(cisco3600, cisco3700, 1, 3, link);
+                assertEquals(DiscoveryProtocol.iproute, link.getProtocol());
+            } else if (id == start+11) {
+                checkLink(cisco3600, cisco3700, 1, 3, link);
+                assertEquals(DiscoveryProtocol.cdp, link.getProtocol());
+            } else {
+                assertEquals(false, true);
+            }
         }
 
-        assertEquals("we should have found 7 data links", 7, ifaces.size());
+        assertEquals("we should have found 12 data links", 12, links.size());
     }
     
     
