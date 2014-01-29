@@ -49,7 +49,6 @@ import junit.framework.TestCase;
 import org.easymock.EasyMock;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.netmgt.config.CollectdConfig;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
@@ -94,7 +93,8 @@ public class CollectdTest extends TestCase {
     private FilterDao m_filterDao;
     private Collectd m_collectd;
     private MockScheduler m_scheduler;
-    private CollectdConfig m_collectdConfig;
+    private CollectdConfiguration m_collectdConfig;
+    private CollectdConfigFactory m_collectdConfigFactory;
 
     @Override
     protected void setUp() throws Exception {
@@ -318,8 +318,8 @@ public class CollectdTest extends TestCase {
         setupInterface(iface);
         setupTransactionManager();
   
-        expect(m_collectdConfig.getPackages()).andReturn(Collections.singleton(getCollectionPackageThatMatchesSNMP()));
-        expect(m_collectdConfig.interfaceInPackage(iface, getCollectionPackageThatMatchesSNMP())).andReturn(true);
+        expect(m_collectdConfig.getPackages()).andReturn(Collections.singletonList(getCollectionPackageThatMatchesSNMP()));
+        expect(m_collectdConfigFactory.interfaceInPackage(iface, getCollectionPackageThatMatchesSNMP())).andReturn(true);
         
         m_easyMockUtils.replayAll();
 
@@ -383,12 +383,10 @@ public class CollectdTest extends TestCase {
         collector.setService(svcName);
         collector.setClassName(MockServiceCollector.class.getName());
 
-        CollectdConfigFactory m_collectdConfigFactory = m_easyMockUtils.createMock(CollectdConfigFactory.class);
-        m_collectdConfig = m_easyMockUtils.createMock(CollectdConfig.class);
-        CollectdConfiguration m_collectdConfiguration = m_easyMockUtils.createMock(CollectdConfiguration.class);
+        m_collectdConfigFactory = m_easyMockUtils.createMock(CollectdConfigFactory.class);
+        m_collectdConfig = m_easyMockUtils.createMock(CollectdConfiguration.class);
         expect(m_collectdConfigFactory.getCollectdConfig()).andReturn(m_collectdConfig).anyTimes();
-        expect(m_collectdConfig.getConfig()).andReturn(m_collectdConfiguration).anyTimes();
-        expect(m_collectdConfiguration.getCollectors()).andReturn(Collections.singletonList(collector)).anyTimes();
+        expect(m_collectdConfig.getCollectors()).andReturn(Collections.singletonList(collector)).anyTimes();
         expect(m_collectdConfig.getThreads()).andReturn(1).anyTimes();
 
         m_collectd.setCollectdConfigFactory(m_collectdConfigFactory);

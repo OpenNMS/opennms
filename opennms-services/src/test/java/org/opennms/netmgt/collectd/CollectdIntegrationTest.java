@@ -28,10 +28,10 @@
 
 package org.opennms.netmgt.collectd;
 
-import static org.opennms.core.utils.InetAddressUtils.addr;
-import static org.opennms.core.utils.InetAddressUtils.str;
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.eq;
+import static org.opennms.core.utils.InetAddressUtils.addr;
+import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -46,7 +46,6 @@ import junit.framework.TestCase;
 import org.easymock.EasyMock;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.InsufficientInformationException;
-import org.opennms.netmgt.config.CollectdConfig;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
@@ -94,7 +93,6 @@ public class CollectdIntegrationTest extends TestCase {
     private Collectd m_collectd;
     private EasyMockUtils m_mockUtils;
     private CollectdConfigFactory m_collectdConfigFactory;
-    private CollectdConfig m_collectdConfig;
     private CollectdConfiguration m_collectdConfiguration;
     private String m_key;
     private MockServiceCollector m_serviceCollector;
@@ -146,12 +144,10 @@ public class CollectdIntegrationTest extends TestCase {
         collector.addParameter(param);
         
         m_collectdConfigFactory = m_mockUtils.createMock(CollectdConfigFactory.class);
-        m_collectdConfig = m_mockUtils.createMock(CollectdConfig.class);
         m_collectdConfiguration = m_mockUtils.createMock(CollectdConfiguration.class);
-        EasyMock.expect(m_collectdConfigFactory.getCollectdConfig()).andReturn(m_collectdConfig).anyTimes();
-        EasyMock.expect(m_collectdConfig.getConfig()).andReturn(m_collectdConfiguration).anyTimes();
+        EasyMock.expect(m_collectdConfigFactory.getCollectdConfig()).andReturn(m_collectdConfiguration).anyTimes();
         EasyMock.expect(m_collectdConfiguration.getCollectors()).andReturn(Collections.singletonList(collector)).anyTimes();
-        EasyMock.expect(m_collectdConfig.getThreads()).andReturn(1).anyTimes();
+        EasyMock.expect(m_collectdConfiguration.getThreads()).andReturn(1).anyTimes();
         
         m_ifaceDao = m_mockUtils.createMock(IpInterfaceDao.class);
         m_nodeDao = m_mockUtils.createMock(NodeDao.class);
@@ -261,8 +257,8 @@ public class CollectdIntegrationTest extends TestCase {
         
         pkg.addService(collector);
         
-        EasyMock.expect(m_collectdConfig.getPackages()).andReturn(Collections.singleton(pkg));
-        EasyMock.expect(m_collectdConfig.interfaceInPackage(anyObject(OnmsIpInterface.class), eq(pkg))).andReturn(true);
+        EasyMock.expect(m_collectdConfiguration.getPackages()).andReturn(Collections.singletonList(pkg));
+        EasyMock.expect(m_collectdConfigFactory.interfaceInPackage(anyObject(OnmsIpInterface.class), eq(pkg))).andReturn(true);
     }
 
     public static class MockServiceCollector implements ServiceCollector {

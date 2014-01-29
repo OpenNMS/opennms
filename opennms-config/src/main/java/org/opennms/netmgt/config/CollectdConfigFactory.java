@@ -28,19 +28,27 @@
 
 package org.opennms.netmgt.config;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+import static org.opennms.core.utils.InetAddressUtils.toIpAddrBytes;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.collectd.Package;
+import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +71,7 @@ public class CollectdConfigFactory {
     private static final Logger LOG = LoggerFactory.getLogger(CollectdConfigFactory.class);
     public static final String SELECT_METHOD_MIN = "min";
 
-    private CollectdConfig m_collectdConfig;
+    private CollectdConfiguration m_collectdConfig;
     private final Object m_collectdConfigMutex = new Object();
 
     private final String m_fileName;
@@ -117,7 +125,7 @@ public class CollectdConfigFactory {
             isr = new InputStreamReader(stream);
             CollectdConfiguration config = JaxbUtils.unmarshal(CollectdConfiguration.class, isr);
             synchronized (m_collectdConfigMutex) {
-                m_collectdConfig = new CollectdConfig(config, localServer, verifyServer);
+                m_collectdConfig = config;
             }
         } finally {
             IOUtils.closeQuietly(isr);
@@ -145,7 +153,7 @@ public class CollectdConfigFactory {
 
         CollectdConfiguration config = null;
         synchronized (m_collectdConfigMutex) {
-            config = m_collectdConfig.getConfig();
+            config = m_collectdConfig;
         }
 
         FileWriter writer = null;
@@ -164,21 +172,9 @@ public class CollectdConfigFactory {
      *
      * @return a {@link org.opennms.netmgt.config.CollectdConfig} object.
      */
-    public CollectdConfig getCollectdConfig() {
+    public CollectdConfiguration getCollectdConfig() {
         synchronized (m_collectdConfigMutex) {
             return m_collectdConfig;
-        }
-    }
-
-    /**
-     * <p>getPackage</p>
-     *
-     * @param name a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.config.CollectdPackage} object.
-     */
-    public Package getPackage(String name) {
-        synchronized (m_collectdConfigMutex) {
-            return m_collectdConfig.getPackage(name);
         }
     }
 
@@ -196,16 +192,83 @@ public class CollectdConfigFactory {
     }
 
     /**
+     * <p>getPackage</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.config.CollectdPackage} object.
+     */
+    public Package getPackage(final String name) {
+        synchronized (m_collectdConfigMutex) {
+            for (Package pkg : m_collectdConfig.getPackages()) {
+                if (pkg.getName().equals(name)) {
+                    return pkg;
+                }
+            }
+            return null;
+        }
+    }
+
+    /**
      * Returns true if collection domain exists
      *
      * @param name
      *            The domain name to check
      * @return True if the domain exists
      */
-    public boolean domainExists(String name) {
+    public boolean domainExists(final String name) {
         synchronized (m_collectdConfigMutex) {
-            return m_collectdConfig.domainExists(name);
+            for (Package pkg : m_collectdConfig.getPackages()) {
+                if ((pkg.getIfAliasDomain() != null)
+                        && pkg.getIfAliasDomain().equals(name)) {
+                    return true;
+                }
+            }
+            return false;
         }
+    }
+
+    /**
+     * Returns true if the specified service's interface is included by at least one
+     * package which has the specified service and that service is enabled (set
+     * to "on").
+     *
+     * @param service
+     *            {@link OnmsMonitoredService} to check
+     * @return true if Collectd config contains a package which includes the
+     *         specified interface and has the specified service enabled.
+     */
+    public boolean isServiceCollectionEnabled(final OnmsMonitoredService service) {
+        return isServiceCollectionEnabled(service.getIpInterface(), service.getServiceName());
+    }
+
+    /**
+     * Returns true if the specified interface is included by at least one
+     * package which has the specified service and that service is enabled (set
+     * to "on").
+     *
+     * @param iface
+     *            {@link OnmsIpInterface} to lookup
+     * @param svcName
+     *            The service name to lookup
+     * @return true if Collectd config contains a package which includes the
+     *         specified interface and has the specified service enabled.
+     */
+    public boolean isServiceCollectionEnabled(final OnmsIpInterface iface, final String svcName) {
+        for (Package wpkg : m_collectdConfig.getPackages()) {
+
+            // Does the package include the interface?
+            if (interfaceInPackage(iface, wpkg)) {
+                // Yes, now see if package includes
+                // the service and service is enabled
+                //
+                if (wpkg.serviceInPackageAndEnabled(svcName)) {
+                    // Thats all we need to know...
+                	return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -226,7 +289,129 @@ public class CollectdConfigFactory {
      */
     public boolean isServiceCollectionEnabled(final String ipAddr, final String svcName) {
         synchronized (m_collectdConfigMutex) {
-            return m_collectdConfig.isServiceCollectionEnabled(ipAddr, svcName);
+            for (Package wpkg : m_collectdConfig.getPackages()) {
+
+                // Does the package include the interface?
+                //
+                if (interfaceInPackage(ipAddr, wpkg)) {
+                    // Yes, now see if package includes
+                    // the service and service is enabled
+                    //
+                    if (wpkg.serviceInPackageAndEnabled(svcName)) {
+                        // Thats all we need to know...
+                    	return true;
+                    }
+                }
+            }
+
+            return false;
         }
+    }
+
+    private static String getFilterRule(String filter, String localServer, boolean verifyServer) {
+        StringBuffer filterRules = new StringBuffer(filter);
+    
+        if (verifyServer) {
+            filterRules.append(" & (serverName == ");
+            filterRules.append('\"');
+            filterRules.append(localServer);
+            filterRules.append('\"');
+            filterRules.append(")");
+        }
+        return filterRules.toString();
+    }
+
+    public boolean interfaceInFilter(String iface, Package pkg) {
+        String filter = pkg.getFilter().getContent();
+        if (iface == null) return false;
+        final InetAddress ifaceAddress = addr(iface);
+
+        boolean filterPassed = false;
+
+        // get list of IPs in this package
+        List<InetAddress> ipList = Collections.emptyList();
+
+        //
+        // Get a list of IP address per package against the filter rules from
+        // database and populate the package, IP list map.
+        //
+        String filterRules = getFilterRule(filter, m_serverName, m_verifyServer);
+        
+        LOG.debug("interfaceInFilter: package is {}. filter rules are {}", pkg.getName(), filterRules);
+        try {
+            ipList = FilterDaoFactory.getInstance().getActiveIPAddressList(filterRules);
+            filterPassed = ipList.contains(ifaceAddress);
+            if (!filterPassed) {
+                LOG.debug("interfaceInFilter: Interface {} passed filter for package {}?: false", iface, pkg.getName());
+            }
+        } catch (Throwable t) {
+            LOG.error("interfaceInFilter: Failed to map package: {} to an IP List with filter \"{}\"", pkg.getName(), pkg.getFilter().getContent(), t);
+        }
+
+        return filterPassed;
+    }
+
+    /**
+     * This method is used to determine if the named interface is included in
+     * the passed package definition. If the interface belongs to the package
+     * then a value of true is returned. If the interface does not belong to the
+     * package a false value is returned.
+     *
+     * <strong>Note: </strong>Evaluation of the interface against a package
+     * filter will only work if the IP is already in the database.
+     *
+     * @deprecated This function should take normal model objects instead of bare IP 
+     * addresses. Move this implementation into {@link #interfaceInPackage(OnmsIpInterface)}.
+     *
+     * @param iface
+     *            The interface to test against the package.
+     * @return True if the interface is included in the package, false
+     *         otherwise.
+     */
+    public boolean interfaceInPackage(final String iface, Package pkg) {
+        boolean filterPassed = interfaceInFilter(iface, pkg);
+
+        if (!filterPassed) {
+            return false;
+        }
+
+        //
+        // Ensure that the interface is in the specific list or
+        // that it is in the include range and is not excluded
+        //
+
+        byte[] addr = toIpAddrBytes(iface);
+
+        boolean has_range_include = pkg.hasIncludeRange(iface);
+        boolean has_specific = pkg.hasSpecific(addr);
+
+        has_specific = pkg.hasSpecificUrl(iface, has_specific);
+        boolean has_range_exclude = pkg.hasExcludeRange(iface);
+
+        boolean packagePassed = has_specific || (has_range_include && !has_range_exclude);
+        if(packagePassed) {
+            LOG.info("interfaceInPackage: Interface {} passed filter and specific/range for package {}?: {}", iface, pkg.getName(), packagePassed);
+        } else {
+            LOG.debug("interfaceInPackage: Interface {} passed filter and specific/range for package {}?: {}", iface, pkg.getName(), packagePassed);
+        }
+        return packagePassed;
+    }
+
+    /**
+     * This method is used to determine if the named interface is included in
+     * the passed package definition. If the interface belongs to the package
+     * then a value of true is returned. If the interface does not belong to the
+     * package a false value is returned.
+     *
+     * <strong>Note: </strong>Evaluation of the interface against a package
+     * filter will only work if the IP is already in the database.
+     *
+     * @param iface
+     *            The interface to test against the package.
+     * @return True if the interface is included in the package, false
+     *         otherwise.
+     */
+    public boolean interfaceInPackage(final OnmsIpInterface iface, Package pkg) {
+        return interfaceInPackage(iface.getIpAddressAsString(), pkg);
     }
 }
