@@ -1290,7 +1290,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
 	
 		int comparison = new ByteArrayComparator().compare(currentIf.getAddress(), oldPrimary.getAddress());
 		
-		if (method.equals(m_collectdConfig.SELECT_METHOD_MIN)) {
+		if (method.equals(CollectdConfigFactory.SELECT_METHOD_MIN)) {
 			// Smallest address wins
 			if (comparison < 0) {
                 /*

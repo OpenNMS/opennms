@@ -49,7 +49,6 @@ import org.opennms.core.test.http.annotations.JUnitHttpServer;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.CollectdConfigFactory;
-import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.config.collectd.Filter;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Parameter;
@@ -418,8 +417,7 @@ public class HttpCollectorTest implements TestContextAware, InitializingBean {
         service.addParameter(portParm);
         pkg.addService(service);
 
-        CollectdPackage wpkg = new CollectdPackage(pkg, "default", false);
-        CollectionSpecification collectionSpecification = new CollectionSpecification(wpkg, svcName, collector);
+        CollectionSpecification collectionSpecification = new CollectionSpecification(pkg, svcName, collector);
         collectionSpecification.initialize(m_collectionAgent);
 
         CollectionSet collectionSet = collectionSpecification.collect(m_collectionAgent);

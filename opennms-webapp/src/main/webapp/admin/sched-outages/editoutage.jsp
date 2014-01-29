@@ -34,6 +34,7 @@
         session="true"
         import="java.util.*,
         org.opennms.netmgt.config.*,
+        org.opennms.netmgt.config.collectd.Package,
         org.opennms.netmgt.config.poller.*,
         org.opennms.netmgt.config.poller.outages.*,
         org.opennms.core.db.DataSourceFactory,
@@ -363,8 +364,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 	// ******* Collectd outages config *********
 	CollectdConfigFactory collectdConfig = new CollectdConfigFactory();
 	Map<org.opennms.netmgt.config.collectd.Package, List<String>> collectionOutages = new HashMap<org.opennms.netmgt.config.collectd.Package, List<String>>();
-	for (CollectdPackage pkg : collectdConfig.getCollectdConfig().getPackages()) {
-		org.opennms.netmgt.config.collectd.Package thisPackage = pkg.getPackage();
+	for (Package thisPackage : collectdConfig.getCollectdConfig().getPackages()) {
 		collectionOutages.put(thisPackage, thisPackage.getOutageCalendars());
 		if (thisPackage.getOutageCalendars().contains(theOutage.getName())) {
 			enabledOutages.add("collect-" + thisPackage.getName());

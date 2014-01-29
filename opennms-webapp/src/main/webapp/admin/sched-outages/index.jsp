@@ -33,6 +33,7 @@
 	import="
 	java.util.*,
 	org.opennms.netmgt.config.*,
+	org.opennms.netmgt.config.collectd.Package,
 	org.opennms.netmgt.config.poller.*,
 	org.opennms.netmgt.config.poller.outages.*,
 	org.opennms.web.element.*,
@@ -82,8 +83,8 @@
 			}
 
 			CollectdConfigFactory collectdConfig = new CollectdConfigFactory();
-			for (CollectdPackage thisPackage : collectdConfig.getCollectdConfig().getPackages()) {
-				thisPackage.getPackage().removeOutageCalendar(deleteName); //Will quietly do nothing if outage doesn't exist
+			for (Package thisPackage : collectdConfig.getCollectdConfig().getPackages()) {
+				thisPackage.removeOutageCalendar(deleteName); //Will quietly do nothing if outage doesn't exist
 			}
 	
 			NotifdConfigFactory.getInstance().getConfiguration().removeOutageCalendar(deleteName);
@@ -173,8 +174,8 @@ div.nodeintbox {
 			
 					List<String> collectionOutages = new ArrayList<String>();
 					CollectdConfigFactory collectdConfig = new CollectdConfigFactory();
-					for (CollectdPackage thisPackage : collectdConfig.getCollectdConfig().getPackages()) {
-						collectionOutages.addAll(thisPackage.getPackage().getOutageCalendars());
+					for (Package thisPackage : collectdConfig.getCollectdConfig().getPackages()) {
+						collectionOutages.addAll(thisPackage.getOutageCalendars());
 					}
 			
 					for (int i = 0; i < outages.length; i++) {

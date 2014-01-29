@@ -33,7 +33,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
-import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.config.collectd.Filter;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Parameter;
@@ -59,8 +58,7 @@ public abstract class CollectorTestUtils {
         service.addParameter(collectionParm);
         pkg.addService(service);
 
-        CollectdPackage wpkg = new CollectdPackage(pkg, "default", false);
-        CollectionSpecification spec = new CollectionSpecification(wpkg, svcName, svcCollector);
+        CollectionSpecification spec = new CollectionSpecification(pkg, svcName, svcCollector);
         return spec;
     }
 

@@ -49,14 +49,15 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.capsd.InsufficientInformationException;
+import org.opennms.netmgt.config.CollectdConfig;
 import org.opennms.netmgt.config.CollectdConfigFactory;
-import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.config.collectd.Collector;
+import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -553,13 +554,14 @@ public class Collectd extends AbstractServiceDaemon implements
     public Collection<CollectionSpecification> getSpecificationsForInterface(OnmsIpInterface iface, String svcName) {
         Collection<CollectionSpecification> matchingPkgs = new LinkedList<CollectionSpecification>();
 
+        CollectdConfig collectdConfig = m_collectdConfigFactory.getCollectdConfig();
 
         /*
          * Compare interface/service pair against each collectd package
          * For each match, create new SnmpCollector object and
          * schedule it for collection
          */
-        for(CollectdPackage wpkg : m_collectdConfigFactory.getCollectdConfig().getPackages()) {
+        for(Package wpkg : collectdConfig.getPackages()) {
             /*
              * Make certain the the current service is in the package
              * and enabled!
@@ -570,7 +572,7 @@ public class Collectd extends AbstractServiceDaemon implements
             }
 
             // Is the interface in the package?
-            if (!wpkg.interfaceInPackage(iface)) {
+            if (!collectdConfig.interfaceInPackage(iface, wpkg)) {
                 LOG.debug("getSpecificationsForInterface: address/service: {}/{} not scheduled, interface does not belong to package: {}", iface, svcName, wpkg.getName());
                 continue;
             }

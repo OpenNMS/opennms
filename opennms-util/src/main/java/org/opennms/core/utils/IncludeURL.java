@@ -26,11 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config;
+package org.opennms.core.utils;
 
 import java.util.List;
-
-import org.opennms.core.utils.IpListFromUrl;
 
 /**
  * <p>IncludeURL class.</p>
@@ -102,7 +100,7 @@ public class IncludeURL {
 	 *            The interface to test against the package's URL
 	 * @return True if the interface is included in the url, false otherwise.
 	 */
-	boolean interfaceInUrl(String addr) {
+	public boolean interfaceInUrl(String addr) {
 		
 		boolean bRet = false;
 	
@@ -115,7 +113,7 @@ public class IncludeURL {
 		return bRet;
 	}
 
-	void createIpList() {
+	public void createIpList() {
 		List<String> iplist = IpListFromUrl.parse(getName());
 		if (iplist.size() > 0) {
 			setIpList(iplist);

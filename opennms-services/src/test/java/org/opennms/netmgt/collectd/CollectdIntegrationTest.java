@@ -30,10 +30,11 @@ package org.opennms.netmgt.collectd;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.core.utils.InetAddressUtils.str;
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.eq;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -43,12 +44,10 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import org.easymock.EasyMock;
-import org.easymock.IAnswer;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.InsufficientInformationException;
 import org.opennms.netmgt.config.CollectdConfig;
 import org.opennms.netmgt.config.CollectdConfigFactory;
-import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
@@ -153,7 +152,7 @@ public class CollectdIntegrationTest extends TestCase {
         EasyMock.expect(m_collectdConfig.getConfig()).andReturn(m_collectdConfiguration).anyTimes();
         EasyMock.expect(m_collectdConfiguration.getCollectors()).andReturn(Collections.singletonList(collector)).anyTimes();
         EasyMock.expect(m_collectdConfig.getThreads()).andReturn(1).anyTimes();
-
+        
         m_ifaceDao = m_mockUtils.createMock(IpInterfaceDao.class);
         m_nodeDao = m_mockUtils.createMock(NodeDao.class);
         
@@ -241,7 +240,7 @@ public class CollectdIntegrationTest extends TestCase {
     private void createGetPackagesExpectation(OnmsMonitoredService svc) {
         String rule = "ipaddr = '"+ str(svc.getIpAddress())+"'";
         
-        EasyMock.expect(m_filterDao.getActiveIPAddressList(rule)).andReturn(Collections.singletonList(svc.getIpAddress()));
+        //EasyMock.expect(m_filterDao.getActiveIPAddressList(rule)).andReturn(Collections.singletonList(svc.getIpAddress()));
         
         final Package pkg = new Package();
         pkg.setName("testPackage");
@@ -262,16 +261,8 @@ public class CollectdIntegrationTest extends TestCase {
         
         pkg.addService(collector);
         
-        EasyMock.expect(m_collectdConfig.getPackages()).andAnswer(new IAnswer<Collection<CollectdPackage>>() {
-
-            @Override
-            public Collection<CollectdPackage> answer() throws Throwable {
-                CollectdPackage cPkg = new CollectdPackage(pkg, "localhost", false);
-                return Collections.singleton(cPkg);
-            }
-            
-        });
-        
+        EasyMock.expect(m_collectdConfig.getPackages()).andReturn(Collections.singleton(pkg));
+        EasyMock.expect(m_collectdConfig.interfaceInPackage(anyObject(OnmsIpInterface.class), eq(pkg))).andReturn(true);
     }
 
     public static class MockServiceCollector implements ServiceCollector {

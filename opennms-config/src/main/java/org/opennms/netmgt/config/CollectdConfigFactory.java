@@ -39,6 +39,7 @@ import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
+import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -175,7 +176,7 @@ public class CollectdConfigFactory {
      * @param name a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.config.CollectdPackage} object.
      */
-    public CollectdPackage getPackage(String name) {
+    public Package getPackage(String name) {
         synchronized (m_collectdConfigMutex) {
             return m_collectdConfig.getPackage(name);
         }

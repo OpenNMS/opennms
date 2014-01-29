@@ -45,11 +45,11 @@ import javax.ws.rs.core.UriInfo;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.CollectdConfigFactory;
-import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.config.NotifdConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
+import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.poller.outages.Outage;
 import org.opennms.netmgt.config.poller.outages.Outages;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -384,24 +384,24 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     private void updateCollectd(ConfigAction action, String outageName, String packageName) throws Exception {
         getOutage(outageName); // Validate if outageName exists.
         if (action.equals(ConfigAction.ADD)) {
-            CollectdPackage pkg = getCollectdPackage(packageName);
-            if (!pkg.getPackage().getOutageCalendars().contains(outageName))
-                pkg.getPackage().addOutageCalendar(outageName);
+            Package pkg = getCollectdPackage(packageName);
+            if (!pkg.getOutageCalendars().contains(outageName))
+                pkg.addOutageCalendar(outageName);
         }
         if (action.equals(ConfigAction.REMOVE)) {
-            CollectdPackage pkg = getCollectdPackage(packageName);
-            pkg.getPackage().removeOutageCalendar(outageName);
+            Package pkg = getCollectdPackage(packageName);
+            pkg.removeOutageCalendar(outageName);
         }
         if (action.equals(ConfigAction.REMOVE_FROM_ALL)) {
-            for (CollectdPackage pkg : m_collectdConfigFactory.getCollectdConfig().getPackages()) {
-                pkg.getPackage().removeOutageCalendar(outageName);
+            for (Package pkg : m_collectdConfigFactory.getCollectdConfig().getPackages()) {
+                pkg.removeOutageCalendar(outageName);
             }
         }
         m_collectdConfigFactory.saveCurrent();
     }
 
-    private CollectdPackage getCollectdPackage(String packageName) throws IllegalArgumentException {
-        CollectdPackage pkg = m_collectdConfigFactory.getPackage(packageName);
+    private Package getCollectdPackage(String packageName) throws IllegalArgumentException {
+        Package pkg = m_collectdConfigFactory.getPackage(packageName);
         if (pkg == null) throw new IllegalArgumentException("Collectd package " + packageName + " does not exist.");
         return pkg;
     }

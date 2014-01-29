@@ -51,7 +51,6 @@ import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.config.CollectdConfig;
 import org.opennms.netmgt.config.CollectdConfigFactory;
-import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
@@ -187,7 +186,7 @@ public class CollectdTest extends TestCase {
         ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(ConfigurationTestUtils.getInputStreamForConfigFile("thresholds.xml")));
     }
 
-    private static CollectdPackage getCollectionPackageThatMatchesSNMP() {
+    private static Package getCollectionPackageThatMatchesSNMP() {
         Package pkg = new Package();
         pkg.setName("pkg");
         Filter filter = new Filter();
@@ -207,7 +206,7 @@ public class CollectdTest extends TestCase {
         svc.addParameter(parm);
         svc.setStatus("on");
 
-        return new CollectdPackage(pkg, "localhost", false);
+        return pkg;
     }
 
     @Override
@@ -320,6 +319,7 @@ public class CollectdTest extends TestCase {
         setupTransactionManager();
   
         expect(m_collectdConfig.getPackages()).andReturn(Collections.singleton(getCollectionPackageThatMatchesSNMP()));
+        expect(m_collectdConfig.interfaceInPackage(iface, getCollectionPackageThatMatchesSNMP())).andReturn(true);
         
         m_easyMockUtils.replayAll();
 
