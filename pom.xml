@@ -3036,6 +3036,13 @@
       <name>OpenNMS Repository</name>
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </repository>
+    <repository>
+      <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
+      <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
+      <id>central</id>
+      <name>Maven Central</name>
+      <url>http://maven.opennms.org/content/groups/maven.org-release2</url>
+    </repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>
