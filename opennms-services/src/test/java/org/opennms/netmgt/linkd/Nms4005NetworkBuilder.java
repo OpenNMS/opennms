@@ -7,7 +7,7 @@ import java.util.Map;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
 
-public class Nms4005NetworkBuilder extends LinkdNetworkBuilder {
+public class Nms4005NetworkBuilder extends LinkdTestBuilder {
 
     protected static final String R1_IP = "10.1.1.2";
     protected static final String R1_NAME = "R1";

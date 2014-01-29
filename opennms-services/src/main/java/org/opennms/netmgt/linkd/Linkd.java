@@ -198,7 +198,7 @@ public class Linkd extends AbstractServiceDaemon {
                 if (discovery.getScheduler() == null) {
                     discovery.setScheduler(m_scheduler);
                 }
-                LOG.debug("schedule: Package: {}. Scheduling {}", discovery.getPackageName(), discovery.getInfo());
+                LOG.debug("schedule:. Scheduling {}", discovery.getInfo());
                 discovery.schedule();
             }
             
@@ -250,6 +250,8 @@ public class Linkd extends AbstractServiceDaemon {
             : m_linkdConfig.useOspfDiscovery());
         discoveryLink.setDiscoveryUsingIsIs(pkg.hasUseIsisDiscovery() ? pkg.getUseIsisDiscovery()
             : m_linkdConfig.useIsIsDiscovery());
+        discoveryLink.setDiscoveryUsingWifi(pkg.hasUseWifiDiscovery() ? pkg.getUseWifiDiscovery()
+            : m_linkdConfig.useWifiDiscovery());
         return discoveryLink;
     }
 
@@ -328,6 +330,7 @@ public class Linkd extends AbstractServiceDaemon {
         return pkg.hasForceIpRouteDiscoveryOnEthernet() ? pkg.getForceIpRouteDiscoveryOnEthernet()
             : m_linkdConfig.forceIpRouteDiscoveryOnEthernet();
     }
+    
     private void populateSnmpCollection(final SnmpCollection coll,
             final Package pkg, final String sysoid) {
         coll.setPackageName(pkg.getName());
@@ -355,6 +358,8 @@ public class Linkd extends AbstractServiceDaemon {
                                                                     : m_linkdConfig.useIsIsDiscovery());
         final boolean useBridgeDiscovery = (pkg.hasUseBridgeDiscovery() ? pkg.getUseBridgeDiscovery()
             : m_linkdConfig.useBridgeDiscovery());
+        final boolean useWifiDiscovery = (pkg.hasUseWifiDiscovery() ? pkg.getUseWifiDiscovery()
+                                                                      : m_linkdConfig.useWifiDiscovery());
         coll.setIpRouteClass(ipRouteClassName);
         coll.setInitialSleepTime(initialSleepTime);
         coll.setPollInterval(snmpPollInterval);
@@ -365,6 +370,8 @@ public class Linkd extends AbstractServiceDaemon {
         coll.collectIsIs(useIsIsDiscovery);
         coll.collectBridge(useBridgeDiscovery);
         coll.collectStp(useBridgeDiscovery || saveStpNodeTable(pkg.getName()) || saveStpInterfaceTable(pkg.getName()));
+        coll.collectIpNetToMedia(useWifiDiscovery || useBridgeDiscovery);
+        coll.collectWifi(useWifiDiscovery && sysoid.startsWith(".1.3.6.1.4.1.14988."));
 
         if ( (pkg.hasEnableVlanDiscovery()  && pkg.getEnableVlanDiscovery()) 
                 || 

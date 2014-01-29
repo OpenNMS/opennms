@@ -42,7 +42,7 @@ import org.opennms.netmgt.model.OnmsNode;
  * @author <a href="mailto:alejandro@opennms.org">Alejandro Galue</a>
  */
 
-public abstract class Nms1055NetworkBuilder extends LinkdNetworkBuilder {
+public abstract class Nms1055NetworkBuilder extends LinkdTestBuilder {
 
     protected static final String PENROSE_IP = "10.155.69.16";
     protected static final String PENROSE_NAME = "penrose-mx480";

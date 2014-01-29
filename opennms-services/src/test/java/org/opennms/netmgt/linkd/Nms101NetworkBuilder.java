@@ -7,7 +7,7 @@ import java.util.Map;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
 
-public class Nms101NetworkBuilder extends LinkdNetworkBuilder {
+public class Nms101NetworkBuilder extends LinkdTestBuilder {
 
     protected static final String LAPTOP_IP = "10.1.1.2";
     protected static final String LAPTOP_NAME = "laptop";

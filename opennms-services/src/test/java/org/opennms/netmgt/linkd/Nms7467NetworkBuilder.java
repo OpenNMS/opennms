@@ -92,7 +92,7 @@ import org.opennms.netmgt.model.OnmsNode;
  * 
  */
 
-public abstract class Nms7467NetworkBuilder extends LinkdNetworkBuilder {
+public abstract class Nms7467NetworkBuilder extends LinkdTestBuilder {
     
     /*
      * The following parameters

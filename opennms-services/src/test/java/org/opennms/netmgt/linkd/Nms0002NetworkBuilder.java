@@ -40,7 +40,7 @@ import org.opennms.netmgt.model.OnmsNode;
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  */
 
-public abstract class Nms0002NetworkBuilder extends LinkdNetworkBuilder {
+public abstract class Nms0002NetworkBuilder extends LinkdTestBuilder {
 
     protected static final String Rluck001_IP = "10.4.79.250";
     protected static final String Rluck001_NAME = "r-de-juet-luck-001";

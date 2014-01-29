@@ -131,6 +131,11 @@ public class MockLinkdConfig implements LinkdConfig {
     }
 
     @Override
+    public boolean useWifiDiscovery() {
+        return false;
+    }
+
+    @Override
     public boolean saveStpNodeTable() {
         return false;
     }

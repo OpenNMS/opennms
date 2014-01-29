@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.linkd.capsd;
+package org.opennms.netmgt.linkd;
 
 import static org.junit.Assert.assertTrue;
 
@@ -36,7 +36,6 @@ import java.util.Properties;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -46,8 +45,6 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.capsd.Capsd;
-import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.linkd.Nms10205aNetworkBuilder;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,12 +52,12 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:antonio@opennme.it">Antonio Russo</a>
- * @author <a href="mailto:alejandro@opennms.org">Alejandro Galue</a>
+ * 
+ * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * This class is useful for generating the linkd network builder
+ * classes. 
+ * 
  */
-
-@Ignore
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
@@ -78,12 +75,12 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
 @JUnitTemporaryDatabase
-public class Nms10205aCapsdNetworkBuilderTest extends Nms10205aNetworkBuilder implements InitializingBean {
+public class LinkdTestCapsdNetworkBuilder extends LinkdTestHelper implements InitializingBean {
 
+    private final static String IP = "192.168.0.1";
+    private final static String CLASSPATH = "classpath:linkd//nms102/mikrotik-192.168.0.1-walk.txt";
+    private final static String ROOT= "MIKROTIK";
     
-    @Autowired
-    private IpInterfaceDao m_interfaceDao;
-
     @Autowired
     private Capsd m_capsd;
     
@@ -97,59 +94,23 @@ public class Nms10205aCapsdNetworkBuilderTest extends Nms10205aNetworkBuilder im
         Properties p = new Properties();
         p.setProperty("log4j.logger.org.hibernate.SQL", "WARN");
 
-        super.setIpInterfaceDao(m_interfaceDao);
-        
         MockLogAppender.setupLogging(p);
         assertTrue("Capsd must not be null", m_capsd != null);        
     }
 
+
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=MUMBAI_IP, port=161, resource="classpath:linkd/nms10205/"+MUMBAI_NAME+"_"+MUMBAI_IP+".txt"),
-            @JUnitSnmpAgent(host=CHENNAI_IP, port=161, resource="classpath:linkd/nms10205/"+CHENNAI_NAME+"_"+CHENNAI_IP+".txt"),
-            @JUnitSnmpAgent(host=DELHI_IP, port=161, resource="classpath:linkd/nms10205/"+DELHI_NAME+"_"+DELHI_IP+".txt"),
-            @JUnitSnmpAgent(host=BANGALORE_IP, port=161, resource="classpath:linkd/nms10205/"+BANGALORE_NAME+"_"+BANGALORE_IP+".txt"),
-            @JUnitSnmpAgent(host=BAGMANE_IP, port=161, resource="classpath:linkd/nms10205/"+BAGMANE_NAME+"_"+BAGMANE_IP+".txt"),
-            @JUnitSnmpAgent(host=MYSORE_IP, port=161, resource="classpath:linkd/nms10205/"+MYSORE_NAME+"_"+MYSORE_IP+".txt"),
-            @JUnitSnmpAgent(host=SPACE_EX_SW1_IP, port=161, resource="classpath:linkd/nms10205/"+SPACE_EX_SW1_NAME+"_"+SPACE_EX_SW1_IP+".txt"),
-            @JUnitSnmpAgent(host=SPACE_EX_SW2_IP, port=161, resource="classpath:linkd/nms10205/"+SPACE_EX_SW2_NAME+"_"+SPACE_EX_SW2_IP+".txt"),
-            @JUnitSnmpAgent(host=J6350_41_IP, port=161, resource="classpath:linkd/nms10205/"+J6350_41_NAME+"_"+J6350_41_IP+".txt"),
-            @JUnitSnmpAgent(host=J6350_42_IP, port=161, resource="classpath:linkd/nms10205/"+"J6350-42_"+J6350_42_IP+".txt"),
-            @JUnitSnmpAgent(host=SRX_100_IP, port=161, resource="classpath:linkd/nms10205/"+"SRX-100_"+SRX_100_IP+".txt"),
-            @JUnitSnmpAgent(host=SSG550_IP, port=161, resource="classpath:linkd/nms10205/"+SSG550_NAME+"_"+SSG550_IP+".txt")
+            @JUnitSnmpAgent(host = IP, port = 161, resource = CLASSPATH),
     })
     @Transactional
-    public final void testCapsdNms10205a() throws MarshalException, ValidationException, IOException {
+    public final void testCapsd() throws MarshalException, ValidationException, IOException {
         m_capsd.init();
         m_capsd.start();
-        
-        m_capsd.scanSuspectInterface(MUMBAI_IP);
-        m_capsd.scanSuspectInterface(CHENNAI_IP);
-        m_capsd.scanSuspectInterface(DELHI_IP);
-        m_capsd.scanSuspectInterface(BANGALORE_IP);
-        m_capsd.scanSuspectInterface(BAGMANE_IP);
-        m_capsd.scanSuspectInterface(MYSORE_IP);
-        m_capsd.scanSuspectInterface(SPACE_EX_SW1_IP);
-        m_capsd.scanSuspectInterface(SPACE_EX_SW2_IP);
-        m_capsd.scanSuspectInterface(J6350_41_IP);
-        m_capsd.scanSuspectInterface(J6350_42_IP);
-        m_capsd.scanSuspectInterface(SRX_100_IP);
-        m_capsd.scanSuspectInterface(SSG550_IP);
-        
-        printNode(MUMBAI_IP,"MUMBAI");
-        printNode(CHENNAI_IP,"CHENNAI");
-        printNode(DELHI_IP,"DELHI");
-        printNode(BANGALORE_IP,"BANGALORE");
-        printNode(BAGMANE_IP,"BAGMANE");
-        printNode(MYSORE_IP,"MYSORE");
-        printNode(SPACE_EX_SW1_IP,"SPACE_EX_SW1");
-        printNode(SPACE_EX_SW2_IP,"SPACE_EX_SW2");
-        printNode(J6350_41_IP,"J6350_41");
-        printNode(J6350_42_IP,"J6350_42");
-        printNode(SRX_100_IP,"SRX_100");
-        printNode(SSG550_IP,"SSG550");
+        m_capsd.scanSuspectInterface(IP);
+
+        printNode(IP,ROOT);
         
         m_capsd.stop();
-    }        
-
+    }
 }

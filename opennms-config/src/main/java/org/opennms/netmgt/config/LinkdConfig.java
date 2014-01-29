@@ -196,6 +196,13 @@ public interface LinkdConfig {
     boolean useIsIsDiscovery();
 
     /**
+     * <p>useWifiDiscovery</p>
+     *
+     * @return a boolean.
+     */
+    boolean useWifiDiscovery();
+
+    /**
      * <p>saveStpNodeTable</p>
      *
      * @return a boolean.

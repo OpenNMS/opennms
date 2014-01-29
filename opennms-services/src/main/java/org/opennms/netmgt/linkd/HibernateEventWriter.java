@@ -219,7 +219,12 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
             LOG.debug("no node found!");
             return null;
         }
-
+        
+        LOG.debug("storeSnmpCollection: wifi hasMtxrWlRtabTable: {}", snmpColl.hasMtxrWlRtabTable());
+        if (snmpColl.hasMtxrWlRtabTable()) {
+            processWifi(node,snmpColl,scanTime);
+        }
+        
         LOG.debug("storeSnmpCollection: ospf hasOspfGeneralGroup/hasOspfNbrTable: {}/{}", snmpColl.hasOspfGeneralGroup(),snmpColl.hasOspfNbrTable());
         if (snmpColl.hasOspfGeneralGroup() && snmpColl.hasOspfNbrTable()) {
             processOspf(node,snmpColl,scanTime);
@@ -267,9 +272,9 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
         return node;
     }
 
-    private DataLinkInterface getDatabaseLink(Collection<DataLinkInterface> links, int nodeparentid,int parentifindex) {
+    private DataLinkInterface getDatabaseLink(Collection<DataLinkInterface> links, int nodeparentid,int parentifindex, DiscoveryProtocol protocol) {
         for (DataLinkInterface link: links) {
-            if (link.getNodeParentId().intValue() == nodeparentid && link.getParentIfIndex().intValue() == parentifindex) {
+            if (link.getNodeParentId().intValue() == nodeparentid && link.getParentIfIndex().intValue() == parentifindex && link.getProtocol() == protocol ) {
                 LOG.info("storeDiscoveryLink: found link {} on database.", link);
                 return link;
             }
@@ -288,7 +293,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
             
             LOG.debug("storeDiscoveryLink: parsing link {}.",lk);
             DataLinkInterface link = getDatabaseLink(m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(Integer.valueOf(lk.getNodeId()),
-                                                                                       Integer.valueOf(lk.getIfindex())),lk.getNodeparentid(),lk.getParentifindex());
+                                                                                       Integer.valueOf(lk.getIfindex())),lk.getNodeparentid(),lk.getParentifindex(),lk.getProtocol());
 
             if (link == null) {
                 LOG.info("storeDiscoveryLink: no found interface on database for link {}. Creating a new one",lk);
@@ -300,15 +305,15 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
                                           lk.getParentifindex(),
                                           StatusType.ACTIVE,
                                           now);
+                link.setProtocol(lk.getProtocol());
             } else {
                 link.setStatus(StatusType.ACTIVE);
                 link.setLastPollTime(now);
             }
             link.setSource(source);
-            link.setProtocol(lk.getProtocol());
 
             DataLinkInterface reverselink = getDatabaseLink(m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(Integer.valueOf(lk.getNodeparentid()),
-                                                                                                          Integer.valueOf(lk.getParentifindex())), lk.getNodeId(), lk.getIfindex());
+                                                                                                          Integer.valueOf(lk.getParentifindex())), lk.getNodeId(), lk.getIfindex(), lk.getProtocol());
             if (reverselink != null ) {
                 LOG.info("storeDiscoveryLink: Deleting found reverse link {}.", reverselink);
                 m_dataLinkInterfaceDao.delete(reverselink);
@@ -317,44 +322,6 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
             m_dataLinkInterfaceDao.saveOrUpdate(link);
         }
 
-        // FIXME remove this is you use mac address in DiscoveryLink memory
-        LOG.debug("storeDiscoveryLink: Parsing mac address links");
-        for (final MacToNodeLink lkm : discoveryLink.getMacLinks()) {
-            final Collection<OnmsAtInterface> atInterfaces = m_atInterfaceDao.findByMacAddress(lkm.getMacAddress());
-            if (atInterfaces.size() == 0) {
-                LOG.debug("storeDiscoveryLink: No nodeid found on DB for mac address {} on link. Skipping.", lkm.getMacAddress());
-                continue;
-            }
-            if (atInterfaces.size() > 1) {
-                LOG.debug("storeDiscoveryLink: More than one atInterface returned for the mac address {}. Duplicated ip/mac address. Skipping ", lkm.getMacAddress());
-                continue;
-            }
-            final OnmsAtInterface atInterface = atInterfaces.iterator().next();
-            if (!m_linkd.isInterfaceInPackage(atInterface.getIpAddress(),
-                                              discoveryLink.getPackageName())) {
-                LOG.debug("storeDiscoveryLink: IP address {} not found on package {}.  Skipping.", atInterface.getIpAddress(),discoveryLink.getPackageName());
-                continue;
-            }
-
-            DataLinkInterface link = getDatabaseLink(m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(atInterface.getNode().getId(),
-                                                                                                  atInterface.getIfIndex()), lkm.getNodeparentid(), lkm.getParentifindex());
-            if (link == null) {
-                link = new DataLinkInterface(
-                                            atInterface.getNode(),
-                                            atInterface.getIfIndex(),
-                                            lkm.getNodeparentid(),
-                                            lkm.getParentifindex(),
-                                            StatusType.ACTIVE,
-                                            now);
-            } else {
-                link.setStatus(StatusType.ACTIVE);
-                link.setLastPollTime(now);
-            }
-            link.setSource(source);
-            link.setProtocol(DiscoveryProtocol.bridge);
-            LOG.debug("storeDiscoveryLink: Storing {}", link);
-            m_dataLinkInterfaceDao.saveOrUpdate(link);
-        }
         m_dataLinkInterfaceDao.deactivateIfOlderThan(now,source);
         m_dataLinkInterfaceDao.deleteIfOlderThan(new Date(now.getTime()-3*discoveryLink.getInterval()),source);
         m_dataLinkInterfaceDao.flush();

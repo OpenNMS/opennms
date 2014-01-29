@@ -497,6 +497,17 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     }
 
     /**
+     * <p>useWifiDiscovery</p>
+     *
+     * @return a boolean.
+     */
+    @Override
+    public boolean useWifiDiscovery() {
+        if (m_config.hasUseWifiDiscovery()) return m_config.getUseWifiDiscovery();
+        return true;
+    }
+
+    /**
      * <p>saveStpNodeTable</p>
      *
      * @return a boolean.
