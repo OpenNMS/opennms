@@ -34,7 +34,7 @@
   <parent>
     <artifactId>opennms-correlation</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>1.13.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-correlator</artifactId>
@@ -117,7 +117,7 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>postgresql</groupId>
+      <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
       <scope>test</scope>
     </dependency>

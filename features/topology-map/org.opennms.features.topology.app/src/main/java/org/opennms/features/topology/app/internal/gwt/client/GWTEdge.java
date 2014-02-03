@@ -57,7 +57,6 @@ public final class GWTEdge extends JavaScriptObject {
         return this.id;
     }-*/;
     
-    @SuppressWarnings("unused")
     private final native boolean isSelected() /*-{
         return this.selected === undefined ? false : this.selected;
     }-*/;

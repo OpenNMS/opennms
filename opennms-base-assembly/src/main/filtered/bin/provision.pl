@@ -224,6 +224,8 @@ Set a property on a node, given the foreign source and foreign id.  Valid proper
 
 =item * node-label
 
+=item * parent-foreign-source
+
 =item * parent-foreign-id
 
 =item * parent-node-label
@@ -357,7 +359,7 @@ sub cmd_interface {
 
 Add a service to the interface identified by the given foreign source, node ID, and IP address.
 
-=item B<service remove E<lt>foreign-source<gt> E<lt>foreign-idE<gt> E<lt>ip-addressE<gt> E<lt>service-nameE<gt>>
+=item B<service remove E<lt>foreign-sourceE<gt> E<lt>foreign-idE<gt> E<lt>ip-addressE<gt> E<lt>service-nameE<gt>>
 
 Remove a service from the interface identified by the given foreign source, node ID, and IP address.
 
@@ -457,7 +459,7 @@ Add an asset to the node identified by the given foreign source and node foreign
 
 Remove an asset from the node identified by the given foreign source and node foreign ID.
 
-=item B<asset set E<lt>foreign-source<gt> E<lt>foreign-idE<gt> E<lt>keyE<gt> E<lt>valueE<gt>>
+=item B<asset set E<lt>foreign-sourceE<gt> E<lt>foreign-idE<gt> E<lt>keyE<gt> E<lt>valueE<gt>>
 
 Set an asset value given the node foreign source, foreign ID, and asset key.
 
@@ -644,6 +646,9 @@ sub put {
 	$put->content_type('application/x-www-form-urlencoded');
 	$put->content($arguments);
 	my $response = $BROWSER->request($put);
+	if ($response->is_redirect && $response->header('Location')) {
+		return $response;
+	}
 	if ($response->is_success) {
 		return $response;
 	}
@@ -656,6 +661,9 @@ sub remove {
 
 	my $delete = HTTP::Request->new(DELETE => $url_root . $base . '/' . $path );
 	my $response = $BROWSER->request($delete);
+	if ($response->is_redirect && $response->header('Location')) {
+		return $response;
+	}
 	if ($response->is_success) {
 		return $response;
 	}
@@ -673,6 +681,9 @@ sub post {
 	$post->content_type('application/xml');
 	$post->content($twig->sprint);
 	my $response = $BROWSER->request($post);
+	if ($response->is_redirect && $response->header('Location')) {
+		return $response;
+	}
 	if ($response->is_success) {
 		return $response;
 	}
@@ -712,8 +723,12 @@ sub dump_requisition {
 sub dump_node {
 	my $node = shift;
 
+	my @parent_info;
+	push (@parent_info, "foreign Label: " . $node->{'att'}->{'parent-node-label'}) if $node->{'att'}->{'parent-node-label'};
+	push (@parent_info, "foreign ID: " . $node->{'att'}->{'parent-foreign-id'}) if $node->{'att'}->{'parent-foreign-id'};
+	push (@parent_info, "foreign Source: " . $node->{'att'}->{'parent-foreign-source'}) if $node->{'att'}->{'parent-foreign-source'};
 	print ("    * ", $node->{'att'}->{'node-label'}, " (foreign ID: ", $node->{'att'}->{'foreign-id'}, ")\n");
-	print ("      * parent: ", $node->{'att'}->{'parent-node-label'}, " (foreign ID: ", $node->{'att'}->{'parent-foreign-id'}, ")\n") if ($node->{'att'}->{'parent-node-label'} or $node->{'att'}->{'parent-foreign-id'});
+	print ("      * parent: (", join(", ", @parent_info), ")\n") if ($node->{'att'}->{'parent-node-label'} or $node->{'att'}->{'parent-foreign-id'});
 	print ("      * city: ", $node->{'att'}->{'city'}, "\n") if ($node->{'att'}->{'city'});
 	print ("      * building: ", $node->{'att'}->{'building'}, "\n") if ($node->{'att'}->{'building'});
 	print ("      * assets:\n") if ($node->descendants('asset'));

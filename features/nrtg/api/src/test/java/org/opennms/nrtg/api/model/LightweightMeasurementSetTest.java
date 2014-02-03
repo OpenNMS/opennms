@@ -28,7 +28,7 @@
 
 package org.opennms.nrtg.api.model;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import java.util.Date;
 import java.util.HashMap;

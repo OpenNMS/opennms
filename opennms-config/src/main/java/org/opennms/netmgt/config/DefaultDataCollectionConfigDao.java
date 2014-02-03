@@ -32,6 +32,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -148,6 +149,11 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
             return Collections.emptyList();
         }
 
+        final Systems systems = collection.getSystems();
+        if (systems == null) {
+            return Collections.emptyList();
+        }
+
         // First build a list of SystemDef objects which "match" the passed
         // sysoid and IP address parameters. The SystemDef object must match
         // on both the sysoid AND the IP address.
@@ -184,7 +190,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
 
         final List<SystemDef> systemList = new ArrayList<SystemDef>();
 
-        for (final SystemDef system : collection.getSystems().getSystemDefCollection()) {
+        for (final SystemDef system : systems.getSystemDefCollection()) {
             // Match on sysoid?
             boolean bMatchSysoid = false;
 
@@ -629,6 +635,16 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
             }
         }
         return groups;
+    }
+
+    @Override
+    public void reload() {
+        loadConfig(getConfigResource());
+    }
+
+    @Override
+    public Date getLastUpdate() {
+        return new Date(getContainer().getLastUpdate());
     }
 
 }

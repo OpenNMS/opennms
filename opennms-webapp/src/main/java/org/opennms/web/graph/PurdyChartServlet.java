@@ -38,7 +38,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.netmgt.charts.ChartUtils;
+import org.opennms.web.charts.ChartUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 /**

@@ -416,7 +416,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
      * <p>stop</p>
      */
     @Override
-    public void stop() {
+    public void close() {
         m_subscriptionService.removeEventListener(this);
     }
 
@@ -427,7 +427,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
      */
     @Override
     public void destroy() throws Exception {
-        stop();
+        close();
     }
 
     /**

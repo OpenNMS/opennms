@@ -8,6 +8,10 @@
                 class-name="org.opennms.netmgt.linkd.snmp.IpRouteTable">
        		<specific>1.51</specific>
        </vendor>
+        <vendor vendor_name="samsung" sysoidRootMask=".1.3.6.1.4.1.236.11"
+                class-name="org.opennms.netmgt.linkd.snmp.IpRouteTable">
+       		<specific>5.1</specific>
+       </vendor>
        <vendor vendor_name="cisco" sysoidRootMask=".1.3.6.1.4.1.9"
                 class-name="org.opennms.netmgt.linkd.snmp.IpRouteTable">
        		<specific>1.569</specific>
@@ -91,6 +95,7 @@
             <specific>1.359</specific>
             <specific>1.366</specific>
             <specific>1.367</specific>
+            <specific>1.368</specific>
             <specific>1.400</specific>
             <specific>1.427</specific>
             <specific>1.428</specific>
@@ -130,6 +135,7 @@
             <specific>1.748</specific>
             <specific>1.798</specific>
             <specific>1.799</specific>
+            <specific>1.1165</specific> 
             <specific>1.1208</specific>
             <specific>1.1226</specific>
             <specific>5.7</specific>

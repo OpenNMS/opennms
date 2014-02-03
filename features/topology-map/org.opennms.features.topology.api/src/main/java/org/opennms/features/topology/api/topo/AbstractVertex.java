@@ -44,10 +44,14 @@ public class AbstractVertex extends AbstractVertexRef implements Vertex {
 	private String m_ipAddr ="127.0.0.1";
 	private Integer m_nodeID;
 
+	@Deprecated
 	public AbstractVertex(String namespace, String id) {
 		super(namespace, id);
 	}
 
+    public AbstractVertex(String namespace, String id, String label){
+        super(namespace, id, label);
+    }
 	/**
 	 * @deprecated Use namespace/id tuple
 	 */
@@ -116,6 +120,7 @@ public class AbstractVertex extends AbstractVertexRef implements Vertex {
 	 */
 	@Override
 	public final void setParent(VertexRef parent) {
+		if (this.equals(parent)) return;
 		m_parent = parent;
 	}
 

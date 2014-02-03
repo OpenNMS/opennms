@@ -28,12 +28,6 @@
 
 package org.opennms.netmgt.passive.jmx;
 
-import java.beans.PropertyVetoException;
-import java.io.IOException;
-import java.sql.SQLException;
-
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
@@ -66,23 +60,6 @@ public class PassiveStatusd extends AbstractServiceDaemon implements PassiveStat
      */
     @Override
     protected void onInit() {
-        try {
-            DataSourceFactory.init();
-        } catch (MarshalException e) {
-            LOG.error("Could not unmarshall configuration", e);
-        } catch (ValidationException e) {
-            LOG.error("validation error ", e);
-        } catch (IOException e) {
-            LOG.error("IOException: ", e);
-        } catch (ClassNotFoundException e) {
-            LOG.error("Unable to initialize database: {}", e.getMessage(), e);
-        } catch (SQLException e) {
-            LOG.error("SQLException: ", e);
-        } catch (PropertyVetoException e) {
-            LOG.error("PropertyVetoException: {}", e.getMessage(), e);
-        }
-        // XXX We don't throw an exception?
-        
         EventIpcManagerFactory.init();
         EventIpcManager mgr = EventIpcManagerFactory.getIpcManager();
 

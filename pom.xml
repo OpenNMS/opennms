@@ -4,13 +4,23 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>1.13.0-SNAPSHOT</version>
+  <version>1.13.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
   <description>
     OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization.
   </description>
+  <licenses>
+    <license>
+      <name>GNU General Public License</name>
+      <url>http://www.gnu.org/licenses/gpl.html</url>
+      <comments>
+        This Maven metadata is provided for informational purposes only. For specific licensing 
+        questions, please contact: OpenNMS(R) Licensing (license@opennms.org)
+      </comments>
+    </license>
+  </licenses>
   <issueManagement>
     <system>Jira</system>
     <url>http://issues.opennms.org/</url>
@@ -114,11 +124,9 @@
     <module>opennms-provision</module>
     <module>opennms-enterprise-reporting</module>
     <module>opennms-services</module>
-    <module>opennms-import</module>
     <module>opennms-jetty</module>
     <module>opennms-correlation</module>
     <module>opennms-reporting</module>
-    <module>opennms-qosdaemon</module>
     <module>opennms-web-api</module>
     <module>opennms-web-dependencies</module>
     <module>opennms-webapp</module>
@@ -135,13 +143,13 @@
   </extensions>
   <pluginManagement>
     <plugins>    
-<!--
+      <!--
       <plugin>
         <groupId>ch.elca.el4j.maven.plugins</groupId>
         <artifactId>maven-depgraph-plugin</artifactId>
         <version>1.9</version>
       </plugin>
--->
+      -->
       <plugin>
         <groupId>org.apache.servicemix.tooling</groupId>
         <artifactId>depends-maven-plugin</artifactId>
@@ -181,7 +189,7 @@
       <plugin>
         <groupId>org.opennms.maven.plugins</groupId>
         <artifactId>features-maven-plugin</artifactId>
-        <version>1.0.1</version>
+        <version>1.0.2-SNAPSHOT</version>
         <executions>
           <execution>
             <id>features.xml</id>
@@ -284,6 +292,22 @@
         <version>1.4</version>
       </plugin>
       <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>buildnumber-maven-plugin</artifactId>
+        <version>1.2</version>
+        <configuration>
+          <doCheck>false</doCheck>
+          <getRevisionOnlyOnce>true</getRevisionOnlyOnce>
+          <revisionOnScmFailure>0</revisionOnScmFailure>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>validate</phase>
+            <goals><goal>create</goal></goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jxr-plugin</artifactId>
         <version>2.3</version>
@@ -357,7 +381,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
-        <version>2.3</version>
+        <version>2.4</version>
         <configuration>
           <archiveClasses>true</archiveClasses>
           <outputFileNameMapping>@{artifactId}@-@{baseVersion}@.@{extension}@</outputFileNameMapping>
@@ -370,10 +394,26 @@
           </archive>
         </configuration>
       </plugin>
+      <!-- Make sure that this version of gmaven roughly matches the version of groovy that we depend on -->
       <plugin>
-        <groupId>org.codehaus.groovy.maven</groupId>
+        <groupId>org.codehaus.gmaven</groupId>
         <artifactId>gmaven-plugin</artifactId>
-        <version>1.0</version>
+        <version>1.3</version>
+        <configuration>
+          <providerSelection>1.7</providerSelection>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.codehaus.gmaven.runtime</groupId>
+            <artifactId>gmaven-runtime-1.7</artifactId>
+            <version>1.3</version>
+          </dependency>
+          <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>1.7.5</version>
+          </dependency>
+        </dependencies>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -392,131 +432,184 @@
       </plugin>
       <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
       <plugin>
-      	<groupId>org.eclipse.m2e</groupId>
-      	<artifactId>lifecycle-mapping</artifactId>
-      	<version>1.0.0</version>
-      	<configuration>
-      		<lifecycleMappingMetadata>
-      			<pluginExecutions>
-      				<pluginExecution>
-      					<pluginExecutionFilter>
-      						<groupId>org.codehaus.groovy.maven</groupId>
-      						<artifactId>gmaven-plugin</artifactId>
-      						<versionRange>[1.0,)</versionRange>
-      						<goals>
-      							<goal>execute</goal>
-      						</goals>
-      					</pluginExecutionFilter>
-      					<action>
-      						<ignore/>
-      					</action>
-      				</pluginExecution>
-      				<pluginExecution>
-      					<pluginExecutionFilter>
-      						<groupId>org.codehaus.groovy.maven</groupId>
-      						<artifactId>gmaven-plugin</artifactId>
-      						<versionRange>[1.0,)</versionRange>
-      						<goals>
-      							<goal>compile</goal>
-      							<goal>testCompile</goal>
-      						</goals>
-      					</pluginExecutionFilter>
-      					<action>
-      						<execute/>
-      					</action>
-      				</pluginExecution>
-      				<pluginExecution>
-      					<pluginExecutionFilter>
-      						<groupId>
-      							org.codehaus.mojo.webstart
-      						</groupId>
-      						<artifactId>
-      							webstart-maven-plugin
-      						</artifactId>
-      						<versionRange>[0.9,)</versionRange>
-      						<goals>
-      							<goal>jnlp-download-servlet</goal>
-      						</goals>
-      					</pluginExecutionFilter>
-      					<action>
-      						<ignore/>
-      					</action>
-      				</pluginExecution>
-      				<pluginExecution>
-      					<pluginExecutionFilter>
-      						<groupId>
-      							com.sun.tools.jxc.maven2
-      						</groupId>
-      						<artifactId>
-      							maven-jaxb-schemagen-plugin
-      						</artifactId>
-      						<versionRange>[1.2,)</versionRange>
-      						<goals>
-      							<goal>generate</goal>
-      						</goals>
-      					</pluginExecutionFilter>
-      					<action>
-      						<ignore/>
-      					</action>
-      				</pluginExecution>
-      				<pluginExecution>
-      					<pluginExecutionFilter>
-      						<groupId>
-      							org.mortbay.jetty
-      						</groupId>
-      						<artifactId>
-      							jetty-jspc-maven-plugin
-      						</artifactId>
-      						<versionRange>[1.0,)</versionRange>
-      						<goals>
-      							<goal>jspc</goal>
-      						</goals>
-      					</pluginExecutionFilter>
-      					<action>
-      						<ignore/>
-      					</action>
-      				</pluginExecution>
-                  <pluginExecution>
-                    <pluginExecutionFilter>
-                      <groupId>org.codehaus.mojo</groupId>
-                      <artifactId>build-helper-plugin</artifactId>
-                      <versionRange>[1.0,)</versionRange>
-                      <goals>
-                        <goal>add-source</goal>
-                      </goals>
-                    </pluginExecutionFilter>
-                    <action>
-                      <execute>
-                        <runOnConfiguration>true</runOnConfiguration>
-                        <runOnIncremental>true</runOnIncremental>
-                      </execute>
-                    </action>
-                  </pluginExecution>
-                  <pluginExecution>
-                    <pluginExecutionFilter>
-                      <groupId>org.opennms.maven.plugins</groupId>
-                      <artifactId>castor-maven-plugin</artifactId>
-                      <versionRange>[1.0,)</versionRange>
-                      <goals>
-                        <!--
-                        <goal>add-test-source</goal>
-                        <goal>add-resource</goal>
-                        <goal>add-test-resource</goal>
-                        -->
-                        <goal>add-source</goal>
-                        <goal>generate</goal>
-                      </goals>
-                    </pluginExecutionFilter>
-                    <action>
-                      <execute>
-                        <runOnConfiguration>true</runOnConfiguration>
-                        <runOnIncremental>true</runOnIncremental>
-                      </execute>
-                    </action>
-                  </pluginExecution>
-      			</pluginExecutions>
-      		</lifecycleMappingMetadata>
-      	</configuration>
+        <groupId>org.eclipse.m2e</groupId>
+        <artifactId>lifecycle-mapping</artifactId>
+        <version>1.0.0</version>
+        <configuration>
+          <lifecycleMappingMetadata>
+            <pluginExecutions>
+              <pluginExecution>
+                <pluginExecutionFilter>
+                  <groupId>org.codehaus.gmaven</groupId>
+                  <artifactId>gmaven-plugin</artifactId>
+                  <versionRange>[1.0,)</versionRange>
+                  <goals>
+                    <goal>execute</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                  <ignore/>
+                </action>
+              </pluginExecution>
+              <pluginExecution>
+                <pluginExecutionFilter>
+                  <groupId>org.codehaus.gmaven</groupId>
+                  <artifactId>gmaven-plugin</artifactId>
+                  <versionRange>[1.0,)</versionRange>
+                  <goals>
+                    <goal>compile</goal>
+                    <goal>testCompile</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                  <execute/>
+                </action>
+              </pluginExecution>
+              <pluginExecution>
+                <pluginExecutionFilter>
+                  <groupId>org.codehaus.mojo</groupId>
+                  <artifactId>webstart-maven-plugin</artifactId>
+                  <versionRange>[0.9,)</versionRange>
+                  <goals>
+                    <goal>jnlp-download-servlet</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                  <ignore/>
+                </action>
+              </pluginExecution>
+              <pluginExecution>
+                <pluginExecutionFilter>
+                  <groupId>org.codehaus.mojo</groupId>
+                  <artifactId>axistools-maven-plugin</artifactId>
+                  <versionRange>[1.4,)</versionRange>
+                  <goals>
+                    <goal>wsdl2java</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                  <ignore/>
+                </action>
+              </pluginExecution>
+              <pluginExecution>
+                <pluginExecutionFilter>
+                  <groupId>com.sun.tools.jxc.maven2</groupId>
+                  <artifactId>maven-jaxb-schemagen-plugin</artifactId>
+                  <versionRange>[1.2,)</versionRange>
+                  <goals>
+                    <goal>generate</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                  <ignore/>
+                </action>
+              </pluginExecution>
+              <pluginExecution>
+                <pluginExecutionFilter>
+                  <groupId>org.mortbay.jetty</groupId>
+                  <artifactId>jetty-jspc-maven-plugin</artifactId>
+                  <versionRange>[1.0,)</versionRange>
+                  <goals>
+                    <goal>jspc</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                  <ignore/>
+                </action>
+              </pluginExecution>
+              <pluginExecution>
+                <pluginExecutionFilter>
+                  <groupId>org.codehaus.mojo</groupId>
+                  <artifactId>build-helper-maven-plugin</artifactId>
+                  <versionRange>[1.0,)</versionRange>
+                  <goals>
+                    <goal>add-source</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                  <execute>
+                    <runOnConfiguration>true</runOnConfiguration>
+                    <runOnIncremental>true</runOnIncremental>
+                  </execute>
+                </action>
+              </pluginExecution>
+              <pluginExecution>
+                <pluginExecutionFilter>
+                  <groupId>org.opennms.maven.plugins</groupId>
+                  <artifactId>castor-maven-plugin</artifactId>
+                  <versionRange>[1.0,)</versionRange>
+                  <goals>
+                    <!--
+                    <goal>add-test-source</goal>
+                    <goal>add-resource</goal>
+                    <goal>add-test-resource</goal>
+                    -->
+                    <goal>add-source</goal>
+                    <goal>generate</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                  <execute>
+                    <runOnConfiguration>true</runOnConfiguration>
+                    <runOnIncremental>true</runOnIncremental>
+                  </execute>
+                </action>
+              </pluginExecution>
+              <pluginExecution>
+                <pluginExecutionFilter>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-dependency-plugin</artifactId>
+                  <versionRange>[1.0.0,)</versionRange>
+                  <goals>
+                    <goal>copy</goal>
+                    <goal>copy-dependencies</goal>
+                    <goal>unpack</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                  <ignore/>
+                </action>
+              </pluginExecution>
+              <pluginExecution>
+                <pluginExecutionFilter>
+                  <groupId>org.apache.servicemix.tooling </groupId>
+                  <artifactId>depends-maven-plugin</artifactId>
+                  <versionRange>[1.2,)</versionRange>
+                  <goals>
+                    <goal>generate-depends-file</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                  <execute/>
+                </action>
+              </pluginExecution>
+              <pluginExecution>
+                <pluginExecutionFilter>
+                  <groupId>org.codehaus.mojo</groupId>
+                  <artifactId>gwt-maven-plugin</artifactId>
+                  <versionRange>[2.5.1,)</versionRange>
+                  <goals>
+                    <goal>resources</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                  <ignore/>
+                </action>
+              </pluginExecution>
+            </pluginExecutions>
+          </lifecycleMappingMetadata>
+        </configuration>
+      </plugin>    
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>sonar-maven-plugin</artifactId>
+        <version>2.2</version>
+        <dependencies>
+          <dependency>
+            <groupId>postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </pluginManagement>
@@ -540,10 +633,14 @@
      <plugin>
        <groupId>org.apache.maven.plugins</groupId>
        <artifactId>maven-resources-plugin</artifactId>
-       <version>2.5</version>
+       <version>2.6</version>
        <configuration>
           <encoding>UTF-8</encoding>
           <escapeString>\</escapeString>
+          <delimiters>
+            <delimiter>${*}</delimiter>
+          </delimiters>
+          <useDefaultDelimiters>false</useDefaultDelimiters>
        </configuration>
      </plugin>
      <plugin>
@@ -581,6 +678,7 @@
           <source>1.6</source>
           <target>1.6</target>
           <encoding>UTF-8</encoding>
+          <optimize>true</optimize>
         </configuration>
       </plugin>
       <plugin>
@@ -762,7 +860,7 @@
     <maven.surefire.report.plugin.version>2.15</maven.surefire.report.plugin.version>
     <maven.eclipse.plugin.version>2.8</maven.eclipse.plugin.version>
     <maven.pax.plugin.version>1.5</maven.pax.plugin.version>
-    <antlr.version>2.7.6</antlr.version>
+    <antlr.version>2.7.7</antlr.version>
 
     <!-- turn down the default DEBUG logLevel. Override on the command line if you want -->
     <mock.logLevel>WARN</mock.logLevel>
@@ -779,7 +877,7 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>1.13.0.SNAPSHOT</opennms.osgi.version>
+    <opennms.osgi.version>1.13.1.SNAPSHOT</opennms.osgi.version>
     <maven.metadata.legacy>true</maven.metadata.legacy>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
@@ -844,21 +942,23 @@
     <commonsBeanutilsVersion>1.8.3</commonsBeanutilsVersion>
     <commonsCodecVersion>1.7</commonsCodecVersion>
     <commonsCollectionsVersion>3.2.1</commonsCollectionsVersion>
-    <commonsIoVersion>2.0.1</commonsIoVersion>
+    <commonsIoVersion>2.4</commonsIoVersion>
     <commonsLangVersion>2.6</commonsLangVersion>
     <commonsLoggingVersion>99.99.99-use-jcl-over-slf4j</commonsLoggingVersion>
     <commonsValidatorVersion>1.3.1</commonsValidatorVersion>
-    <gwtVersion>2.3.0</gwtVersion>
-    <gwtPluginVersion>2.3.0-1</gwtPluginVersion>
+    <ecjVersion>4.2.2</ecjVersion>
+    <guavaVersion>13.0</guavaVersion>
+    <gwtVersion>2.5.1</gwtVersion>
+    <gwtPluginVersion>2.5.1</gwtPluginVersion>
     <httpcoreVersion>4.2.4</httpcoreVersion>
     <httpclientVersion>4.2.5</httpclientVersion>
     <jasperreportsVersion>3.7.6</jasperreportsVersion>
-    <jettyVersion>7.6.10.v20130312</jettyVersion>
-    <karafVersion>2.3.1</karafVersion>
+    <jettyVersion>7.6.12.v20130726</jettyVersion>
+    <karafVersion>2.3.2</karafVersion>
     <felixVersion>2.2.0</felixVersion>
     <liquibaseVersion>2.0.5</liquibaseVersion>
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
-    <log4j2Version>2.0-beta8</log4j2Version>
+    <log4j2Version>2.0-beta9</log4j2Version>
     <minaVersion>2.0.7</minaVersion>
     <paxExamVersion>2.6.0</paxExamVersion>
     <oroVersion>2.0.8</oroVersion>
@@ -870,22 +970,18 @@
     <xercesVersion>2.9.1</xercesVersion>
     <xmlApisVersion>1.4.01</xmlApisVersion>
 
-    <springVersion>3.0.7.RELEASE</springVersion>
+    <springVersion>3.2.3.RELEASE</springVersion>
     <!-- ALWAYS change aspectj to match the version referenced in the spring poms -->
-    <aspectjVersion>1.6.8</aspectjVersion>
+    <aspectjVersion>1.7.1</aspectjVersion>
     <springWebFlowVersion>2.3.0.RELEASE</springWebFlowVersion>
     <springSecurityVersion>3.1.0.RELEASE</springSecurityVersion>
     <springLdapVersion>3.1.0.RELEASE</springLdapVersion>
 
     <!-- moved here from topology features -->
     <jungVersion>2.0.1</jungVersion>
-    <!--
-    <vaadinVersion>6.8.2</vaadinVersion>
-    <vaadinVersion>7.0.0.rc2</vaadinVersion>
-    -->
-    <vaadinVersion>7.1.0</vaadinVersion>
+    <vaadinVersion>7.1.7</vaadinVersion>
     <vaadin.plugin.version>${vaadinVersion}</vaadin.plugin.version>
-    <paxVaadinVersion>0.3.0-SNAPSHOT</paxVaadinVersion>
+    <paxVaadinVersion>0.3.1-SNAPSHOT</paxVaadinVersion>
 
   </properties>
 
@@ -1025,6 +1121,12 @@
         <module>opennms-tools</module>
       </modules>
     </profile>
+    <profile>
+      <id>build-bamboo</id>
+      <modules>
+        <module>opennms-full-assembly</module>
+      </modules>
+    </profile>
 
     <profile>
       <id>jdk7+</id>
@@ -1086,6 +1188,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.config</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.criteria</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -1137,6 +1244,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.upgrade</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.xml</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -1168,6 +1280,12 @@
       <dependency>
         <groupId>org.opennms.core.test-api</groupId>
         <artifactId>org.opennms.core.test-api.http</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core.test-api</groupId>
+        <artifactId>org.opennms.core.test-api.rest</artifactId>
         <version>${project.version}</version>
         <scope>test</scope>
       </dependency>
@@ -1259,6 +1377,12 @@
         <groupId>org.opennms.assemblies</groupId>
         <artifactId>org.opennms.assemblies.http-remoting</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.assemblies</groupId>
+        <artifactId>opennms-remote-poller-windows</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms.features</groupId>
@@ -1428,6 +1552,12 @@
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>activemq-web-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>atomikos-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
       </dependency>
@@ -1655,6 +1785,13 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
+        <artifactId>opennms-services</artifactId>
+        <type>test-jar</type>
+        <version>${project.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
         <artifactId>opennms-base-assembly</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -1684,6 +1821,11 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-detector-datagram</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-detector-generic</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -1766,11 +1908,6 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-import</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
         <groupId>org.opennms.features</groupId>
         <artifactId>opennms-integration-otrs</artifactId>
         <version>${project.version}</version>
@@ -1847,11 +1984,6 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-qosdaemon</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
         <groupId>org.opennms.assemblies</groupId>
         <artifactId>org.opennms.assemblies.jmx-config-generator-onejar</artifactId>
         <version>${project.version}</version>
@@ -1890,6 +2022,11 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-rrd-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-rrd-model</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -1997,13 +2134,6 @@
         <version>${project.version}</version>
         <type>tar.gz</type>
         <classifier>meta-inf</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-webapp</artifactId>
-        <version>${project.version}</version>
-        <type>tar.gz</type>
-        <classifier>web-inf</classifier>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
@@ -2193,11 +2323,6 @@
         <version>2.2.2</version>
       </dependency>
       <dependency>
-        <groupId>c3p0</groupId>
-        <artifactId>c3p0</artifactId>
-        <version>0.9.1.2</version>
-      </dependency>
-      <dependency>
         <groupId>commons-beanutils</groupId>
         <artifactId>commons-beanutils</artifactId>
         <version>${commonsBeanutilsVersion}</version>
@@ -2383,7 +2508,7 @@
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>10.0.1</version>
+        <version>${guavaVersion}</version>
       </dependency>
       <dependency>
         <groupId>com.google.gwt</groupId>
@@ -2659,6 +2784,11 @@
         <version>1.2.0.v201112081803</version>
       </dependency>
       <dependency>
+        <groupId>org.eclipse.jdt.core.compiler</groupId>
+        <artifactId>ecj</artifactId>
+        <version>4.2.2</version>
+      </dependency>
+      <dependency>
         <groupId>org.osgi</groupId>
         <artifactId>org.osgi.core</artifactId>
         <version>${osgiVersion}</version>
@@ -2672,6 +2802,17 @@
         <groupId>org.osgi</groupId>
         <artifactId>org.osgi.enterprise</artifactId>
         <version>${osgiEnterpriseVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jolokia</groupId>
+        <artifactId>jolokia-client-java</artifactId>
+        <version>1.1.5</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>commons-logging</artifactId>
+          <groupId>commons-logging</groupId>
+        </exclusion>
+      </exclusions>
       </dependency>
       <dependency>
         <groupId>jivesoftware</groupId>
@@ -2812,9 +2953,9 @@
         <version>2.5.1-final-20040804</version>
       </dependency>
       <dependency>
-        <groupId>postgresql</groupId>
+        <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>9.1-901.jdbc4</version>
+        <version>9.3-1100-jdbc4</version>
       </dependency>
       <dependency>
         <groupId>rome</groupId>
@@ -2866,13 +3007,13 @@
       <dependency>
         <groupId>xmlunit</groupId>
         <artifactId>xmlunit</artifactId>
-        <version>1.3</version>
+        <version>1.5</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-jexl</artifactId>
-        <version>2.0.1</version>
+        <version>2.1.1</version>
         <exclusions>
           <exclusion>
             <groupId>commons-logging</groupId>
@@ -2894,6 +3035,13 @@
       <id>opennms-repo</id>
       <name>OpenNMS Repository</name>
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+    </repository>
+    <repository>
+      <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
+      <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
+      <id>central</id>
+      <name>Maven Central</name>
+      <url>http://maven.opennms.org/content/groups/maven.org-release2</url>
     </repository>
   </repositories>
   <pluginRepositories>

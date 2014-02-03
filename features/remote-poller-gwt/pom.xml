@@ -3,13 +3,13 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>1.13.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.remote-poller-gwt</artifactId>
   <packaging>war</packaging>
-  <name>OpenNMS Remote Poller GWT UI</name>
+  <name>OpenNMS Features Remote Poller GWT UI</name>
   <properties>
     <moduleName>org.opennms.features.poller.remote.gwt.client.Application</moduleName>
     <moduleHtml>index.html</moduleHtml>

@@ -28,10 +28,13 @@
 
 package org.opennms.features.topology.api;
 
+import java.util.List;
+
 public interface IconRepository {
 
     boolean contains(String type);
 
-    String getIconUrl(String type);
+    String getSVGIconId(String type);
 
+    List<String> getSVGIconFiles();
 }

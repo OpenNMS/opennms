@@ -3,17 +3,40 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:tx="http://www.springframework.org/schema/tx"
   xmlns:context="http://www.springframework.org/schema/context"
-  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
-    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+  xmlns:util="http://www.springframework.org/schema/util"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xmlns:jdbc="http://www.springframework.org/schema/jdbc" 
+  xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+  xsi:schemaLocation="
+  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+  http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.2.xsd
+  http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+  http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+">
 
   <tx:annotation-driven />
   <context:annotation-config />
 
-  <bean name="monitorDisconnectedTimeout" class="java.lang.Integer">
-    <constructor-arg>
-      <value>600000</value>
-    </constructor-arg>
+  <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="properties">
+      <props>
+        <prop key="opennms.pollerBackend.monitorCheckInterval">10000</prop>
+        <prop key="opennms.pollerBackend.disconnectedTimeout">600000</prop>
+        <prop key="opennms.pollerBackend.minimumConfigurationReloadInterval">300000</prop>
+      </props>
+    </property>
+    <!-- 
+      We need to ignore unresolvable placeholders since multiple PropertyPlaceholderConfigurer
+      preprocessors are in use inside this context which is initialized in beanRefContext.xml.
+
+      https://jira.springsource.org/browse/SPR-6428
+
+      TODO: Fix this behavior after upgrading to Spring 3.1.
+    -->
+    <property name="ignoreUnresolvablePlaceholders" value="true"/>
+    <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
   </bean>
 
   <bean name="daemon" class="org.opennms.netmgt.poller.remote.support.DefaultPollerBackEnd">
@@ -22,7 +45,8 @@
     <property name="pollerConfig" ref="pollerConfig" />
     <property name="timeKeeper" ref="timeKeeper" />
     <property name="eventIpcManager" ref="eventIpcManager" />
-    <property name="disconnectedTimeout" ref="monitorDisconnectedTimeout" />
+    <property name="disconnectedTimeout" value="${opennms.pollerBackend.disconnectedTimeout}" />
+    <property name="minimumConfigurationReloadInterval" value="${opennms.pollerBackend.minimumConfigurationReloadInterval}" />
   </bean>
   
   <bean name="backend" class="org.opennms.netmgt.poller.remote.support.ExceptionProtectedPollerBackEnd">
@@ -43,14 +67,8 @@
     <property name="targetMethod" value="checkForDisconnectedMonitors" />
   </bean>
 
-  <bean name="monitorCheckInterval" class="java.lang.Long">
-    <constructor-arg>
-      <value>10000</value>
-    </constructor-arg>
-  </bean>
-
   <bean id="monitorCheckTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
-    <property name="repeatInterval" ref="monitorCheckInterval" />
+    <property name="repeatInterval" value="${opennms.pollerBackend.monitorCheckInterval}" />
     <property name="jobDetail" ref="methodInvokingJobDetail" />
   </bean>
 

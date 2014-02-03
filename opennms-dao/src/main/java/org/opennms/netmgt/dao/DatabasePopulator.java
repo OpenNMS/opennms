@@ -28,7 +28,11 @@
 
 package org.opennms.netmgt.dao;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
@@ -43,6 +47,7 @@ import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.NotificationDao;
+import org.opennms.netmgt.dao.api.OnmsDao;
 import org.opennms.netmgt.dao.api.OnmsMapDao;
 import org.opennms.netmgt.dao.api.OnmsMapElementDao;
 import org.opennms.netmgt.dao.api.OutageDao;
@@ -71,13 +76,12 @@ import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsUserNotification;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.transaction.support.TransactionOperations;
 
 /**
  * Populates a test database with some entities (nodes, interfaces, services).
@@ -107,6 +111,31 @@ import org.springframework.transaction.support.TransactionTemplate;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
 public class DatabasePopulator {
+	
+	public static interface Extension<T extends OnmsDao> {
+		DaoSupport<T> getDaoSupport();
+		void onPopulate(DatabasePopulator populator, T dao);
+		void onShutdown(DatabasePopulator populator, T dao);
+	}
+	
+	public static class DaoSupport<T extends OnmsDao> {
+		private final Class<T> daoClass;
+		private final T daoObject;
+		
+		public DaoSupport(Class<T> daoClass, T daoObject) {
+			this.daoClass = daoClass;
+			this.daoObject = daoObject;
+		}
+		
+		public Class<T> getDaoClass() {
+			return this.daoClass;
+		}
+		
+		public T getDao() {
+			return this.daoObject;
+		}
+	}
+	
     private static final Logger LOG = LoggerFactory.getLogger(DatabasePopulator.class);
 
     private DistPollerDao m_distPollerDao;
@@ -137,7 +166,36 @@ public class DatabasePopulator {
     private OnmsNode m_node6;
     
     private boolean m_populateInSeparateTransaction = true;
+    private final List<Extension> extensions = new ArrayList<Extension>();
+    
+    private Map<Class<? super OnmsDao>, OnmsDao> daoRegistry = new HashMap<Class<? super OnmsDao>, OnmsDao>();
+    
+    public <T extends OnmsDao> T lookupDao(Class<? super OnmsDao> daoClass) {
+    	for (Class<? super OnmsDao> eachDaoClass : daoRegistry.keySet()) {
+    		if (eachDaoClass.isAssignableFrom(daoClass)) {
+    			return (T)daoRegistry.get(eachDaoClass);
+    		}
+    	}
+    	return null;
+    }
 
+    public void registerDao(Class<? super OnmsDao> daoClass, OnmsDao dao) {
+    	if (dao == null || daoClass == null) return;
+    	// check if not already added
+    	for (Class<? super OnmsDao> eachDaoClass : daoRegistry.keySet()) {
+    		if (eachDaoClass.isAssignableFrom(daoClass)) {
+    			return; // a super class for this is already added (ignore)
+    		}
+    	}
+    	// adding
+    	daoRegistry.put(daoClass, dao);
+    }
+    
+    public void addExtension(Extension extension) {
+    	if (extension == null) return;
+    	extensions.add(extension);
+    }
+    
     public boolean populateInSeparateTransaction() {
         return m_populateInSeparateTransaction;
     }
@@ -191,6 +249,19 @@ public class DatabasePopulator {
         for (final OnmsServiceType service : m_serviceTypeDao.findAll()) {
             m_serviceTypeDao.delete(service);
         }
+        
+        LOG.debug("= DatabasePopulatorExtension Reset Starting =");
+    	for (Extension eachExtension : extensions) {
+    			DaoSupport daoSupport = eachExtension.getDaoSupport();
+    			OnmsDao dao = daoSupport != null && daoSupport.getDaoClass() != null ? lookupDao(daoSupport.getDaoClass()) : null;
+
+    			eachExtension.onShutdown(this, dao);
+    			if (dao != null) {
+    				dao.flush();
+    			}
+    	}
+    	LOG.debug("= DatabasePopulatorExtension Reset Finished =");
+        
         m_dataLinkInterfaceDao.flush();
         m_outageDao.flush();
         m_userNotificationDao.flush();
@@ -201,6 +272,7 @@ public class DatabasePopulator {
         m_ipInterfaceDao.flush();
         m_nodeDao.flush();
         m_serviceTypeDao.flush();
+        
         LOG.debug("==== DatabasePopulator Reset Finished ====");
     }
 
@@ -314,6 +386,21 @@ public class DatabasePopulator {
         def.setPriority(1L);
         m_locationMonitorDao.saveMonitoringLocationDefinition(def);
 
+        LOG.debug("= DatabasePopulatorExtension Populate Starting =");
+        for (Extension eachExtension : extensions) {
+        	DaoSupport daoSupport = eachExtension.getDaoSupport();
+        	OnmsDao dao = daoSupport != null ? daoSupport.getDao() : null;
+        	Class<? super OnmsDao> daoClass = daoSupport != null ? daoSupport.getDaoClass() : null;
+        	registerDao(daoClass, dao);
+
+        	dao = lookupDao(daoClass);
+        	eachExtension.onPopulate(this, dao);
+        	if (dao != null) {
+        		dao.flush();
+        	}
+        }
+        LOG.debug("= DatabasePopulatorExtension Populate Finished =");
+        
         LOG.debug("==== DatabasePopulator Finished ====");
     }
 
@@ -338,7 +425,7 @@ public class DatabasePopulator {
     }
 
     private OnmsNode buildNode1(final NetworkBuilder builder) {
-        setNode1(builder.addNode("node1").setForeignSource("imported:").setForeignId("1").setType("A").getNode());
+        setNode1(builder.addNode("node1").setForeignSource("imported:").setForeignId("1").setType(NodeType.ACTIVE).getNode());
         builder.addCategory(getCategory("DEV_AC"));
         builder.addCategory(getCategory("IMP_mid"));
         builder.addCategory(getCategory("OPS_Online"));
@@ -377,12 +464,11 @@ public class DatabasePopulator {
             .setIfSpeed(10000000)
             .addIpInterface("fe80:0000:0000:0000:aaaa:bbbb:cccc:dddd%5").setIsManaged("M").setIsSnmpPrimary("N");
         builder.addService(getService("ICMP"));
-        final OnmsNode node1 = builder.getCurrentNode();
-        return node1;
+        return builder.getCurrentNode();
     }
 
     private OnmsNode buildNode2(final NetworkBuilder builder) {
-        builder.addNode("node2").setForeignSource("imported:").setForeignId("2").setType("A");
+        builder.addNode("node2").setForeignSource("imported:").setForeignId("2").setType(NodeType.ACTIVE);
         builder.addCategory(getCategory("IMP_mid"));
         builder.addCategory(getCategory("Servers"));
         builder.setBuilding("HQ");
@@ -395,12 +481,11 @@ public class DatabasePopulator {
         builder.addInterface("192.168.2.3").setIsManaged("M").setIsSnmpPrimary("N");
         builder.addService(getService("ICMP"));
         builder.addAtInterface(getNode1(), "192.168.2.1", "AA:BB:CC:DD:EE:FF").setIfIndex(1).setLastPollTime(new Date()).setStatus('A');
-        OnmsNode node2 = builder.getCurrentNode();
-        return node2;
+        return builder.getCurrentNode();
     }
 
     private OnmsNode buildNode3(final NetworkBuilder builder) {
-        builder.addNode("node3").setForeignSource("imported:").setForeignId("3").setType("A");
+        builder.addNode("node3").setForeignSource("imported:").setForeignId("3").setType(NodeType.ACTIVE);
         builder.addCategory(getCategory("OPS_Online"));
         builder.addInterface("192.168.3.1").setIsManaged("M").setIsSnmpPrimary("P");
         builder.addService(getService("ICMP"));
@@ -410,12 +495,11 @@ public class DatabasePopulator {
         builder.addService(getService("HTTP"));
         builder.addInterface("192.168.3.3").setIsManaged("M").setIsSnmpPrimary("N");
         builder.addService(getService("ICMP"));
-        OnmsNode node3 = builder.getCurrentNode();
-        return node3;
+        return builder.getCurrentNode();
     }
 
     private OnmsNode buildNode4(final NetworkBuilder builder) {
-        builder.addNode("node4").setForeignSource("imported:").setForeignId("4").setType("A");
+        builder.addNode("node4").setForeignSource("imported:").setForeignId("4").setType(NodeType.ACTIVE);
         builder.addCategory(getCategory("DEV_AC"));
         builder.addInterface("192.168.4.1").setIsManaged("M").setIsSnmpPrimary("P");
         builder.addService(getService("ICMP"));
@@ -425,13 +509,12 @@ public class DatabasePopulator {
         builder.addService(getService("HTTP"));
         builder.addInterface("192.168.4.3").setIsManaged("M").setIsSnmpPrimary("N");
         builder.addService(getService("ICMP"));
-        OnmsNode node4 = builder.getCurrentNode();
-        return node4;
+        return builder.getCurrentNode();
     }
 
     private OnmsNode buildNode5(final NetworkBuilder builder) {
         //This node purposely doesn't have a foreignId style assetNumber
-        builder.addNode("alternate-node1").setType("A").getAssetRecord().setAssetNumber("5");
+        builder.addNode("alternate-node1").setType(NodeType.ACTIVE).getAssetRecord().setAssetNumber("5");
         builder.addCategory(getCategory("DEV_AC"));
         builder.addCategory(getCategory("Switches"));
         builder.addInterface("10.1.1.1").setIsManaged("M").setIsSnmpPrimary("P");
@@ -442,13 +525,12 @@ public class DatabasePopulator {
         builder.addService(getService("HTTP"));
         builder.addInterface("10.1.1.3").setIsManaged("M").setIsSnmpPrimary("N");
         builder.addService(getService("ICMP"));
-        OnmsNode node5 = builder.getCurrentNode();
-        return node5;
+        return builder.getCurrentNode();
     }
 
     private OnmsNode buildNode6(final NetworkBuilder builder) {
         //This node purposely doesn't have a assetNumber and is used by a test to check the category
-        builder.addNode("alternate-node2").setType("A").getAssetRecord().setDisplayCategory("category1");
+        builder.addNode("alternate-node2").setType(NodeType.ACTIVE).getAssetRecord().setDisplayCategory("category1");
         builder.addCategory(getCategory("DEV_AC"));
         builder.addInterface("10.1.2.1").setIsManaged("M").setIsSnmpPrimary("P");
         builder.addService(getService("ICMP"));
@@ -458,8 +540,7 @@ public class DatabasePopulator {
         builder.addService(getService("HTTP"));
         builder.addInterface("10.1.2.3").setIsManaged("M").setIsSnmpPrimary("N");
         builder.addService(getService("ICMP"));
-        OnmsNode node6 = builder.getCurrentNode();
-        return node6;
+        return builder.getCurrentNode();
     }
 
     private OnmsEvent buildEvent(final OnmsDistPoller distPoller) {

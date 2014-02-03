@@ -31,8 +31,8 @@ package org.opennms.web.controller.distributed;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.web.api.Authentication;
 import org.opennms.web.command.LocationMonitorIdCommand;
-import org.opennms.web.springframework.security.Authentication;
 import org.opennms.web.svclayer.DistributedPollerService;
 import org.opennms.web.svclayer.LocationMonitorListModel;
 import org.springframework.beans.factory.InitializingBean;

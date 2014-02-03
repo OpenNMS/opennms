@@ -135,7 +135,7 @@ public class ResourceDataSource implements JRDataSource {
             String jniStrategy = System.getProperty("org.opennms.rrd.strategyClass");
             String rrdFileExtension = System.getProperty("org.opennms.rrd.fileExtension");
             
-            if(jniStrategy != null && jniStrategy.contains("JniStrategy")) {
+            if(jniStrategy != null && jniStrategy.contains("JniRrdStrategy")) {
                 if(rrdFileExtension != null) {
                     return rrdFileExtension;
                 }else {
@@ -187,7 +187,7 @@ public class ResourceDataSource implements JRDataSource {
     }
 
     private Object computeValueForField(JRField field) {
-        if(field.getName().toLowerCase().equals("path")) {
+        if(field.getName().equalsIgnoreCase("path")) {
             String pathField = m_paths.get(m_currentRow);
             System.err.println("path field:[" + pathField + "]");
             return m_paths.get(m_currentRow);

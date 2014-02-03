@@ -32,6 +32,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,6 +41,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.web.servlet.MissingParameterException;
 import org.springframework.util.Assert;
 
@@ -55,7 +57,7 @@ public abstract class ElementUtil {
      * Do not use directly. Call {@link #getNodeStatusMap 
      * getInterfaceStatusMap} instead.
      */
-    private static final Map<Character, String> m_nodeStatusMap;
+    private static final EnumMap<NodeType, String> m_nodeStatusMap;
 
     /**
      * Do not use directly. Call {@link #getInterfaceStatusMap 
@@ -76,10 +78,10 @@ public abstract class ElementUtil {
     private static final Map<Character, String> m_serviceStatusMap;
 
     static {
-        m_nodeStatusMap = new HashMap<Character, String>();
-        m_nodeStatusMap.put('A', "Active");
-        m_nodeStatusMap.put(' ', "Unknown");
-        m_nodeStatusMap.put('D', "Deleted");
+        m_nodeStatusMap = new EnumMap<NodeType,String>(NodeType.class);
+        m_nodeStatusMap.put(NodeType.ACTIVE, "Active");
+        m_nodeStatusMap.put(NodeType.UNKNOWN, "Unknown");
+        m_nodeStatusMap.put(NodeType.DELETED, "Deleted");
         
         m_interfaceStatusMap = new HashMap<Character, String>();
         m_interfaceStatusMap.put('M', "Managed");
@@ -439,7 +441,7 @@ public abstract class ElementUtil {
     public static String getNodeStatusString(OnmsNode node) {
         Assert.notNull(node, "node argument cannot be null");
 
-        return getNodeStatusString(node.getType().charAt(0));
+        return getNodeStatusString(node.getType());
     }
 
     /**
@@ -449,7 +451,7 @@ public abstract class ElementUtil {
      * @param c a char.
      * @return a {@link java.lang.String} object.
      */
-    public static String getNodeStatusString(char c) {
+    public static String getNodeStatusString(NodeType c) {
         return m_nodeStatusMap.get(c);
     }
     
@@ -589,30 +591,29 @@ public abstract class ElementUtil {
      * <p>getNodeByParams</p>
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @param nodeIdParam a {@link java.lang.String} object.
+     * @param nodeLookupParam a {@link java.lang.String} object.
      * @return a {@link OnmsNode} object.
      * @throws javax.servlet.ServletException if any.
      * @throws java.sql.SQLException if any.
      */
     public static OnmsNode getNodeByParams(HttpServletRequest request,
-            String nodeIdParam, ServletContext servletContext) throws ServletException, SQLException {
-        if (request.getParameter(nodeIdParam) == null) {
-            throw new MissingParameterException(nodeIdParam, new String[] { "node" });
+            String nodeLookupParam, ServletContext servletContext) throws ServletException, SQLException {
+        if (request.getParameter(nodeLookupParam) == null) {
+            throw new MissingParameterException(nodeLookupParam, new String[] { "node" });
         }
 
-        String nodeIdString = request.getParameter(nodeIdParam);
-
-        int nodeId;
-
-        try {
-            nodeId = Integer.parseInt(nodeIdString);
-        } catch (NumberFormatException e) {
-            throw new ElementIdNotFoundException("Wrong data type for \""
-                    + nodeIdParam + "\", should be integer", nodeIdString, 
-                    "node", "element/node.jsp", "node", "element/nodeList.htm");
+        String nodeLookupString = request.getParameter(nodeLookupParam);
+        if (!nodeLookupString.contains(":")) {
+            try {
+                Integer.parseInt(nodeLookupString);
+            } catch (NumberFormatException e) {
+                throw new ElementIdNotFoundException("Wrong data type for \""
+                        + nodeLookupString + "\", should be integer", nodeLookupString, 
+                        "node", "element/node.jsp", "node", "element/nodeList.htm");
+            }
         }
 
-        OnmsNode node = NetworkElementFactory.getInstance(servletContext).getNode(nodeId);
+        OnmsNode node = NetworkElementFactory.getInstance(servletContext).getNode(nodeLookupString);
 
         if (node == null) {
             throw new ElementNotFoundException("No such node in database", "node", "element/node.jsp", "node", "element/nodeList.htm");

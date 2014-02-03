@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema
+	targetNamespace="http://xmlns.opennms.org/xsd/config/tags"
+	xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:this="http://xmlns.opennms.org/xsd/config/tags"
+	elementFormDefault="qualified">
+
+  <annotation>
+    <documentation>XML Schema for metadata tags.</documentation>
+  </annotation>
+
+  <element name="tags">
+    <annotation>
+      <documentation>A collection of tags.</documentation>
+    </annotation>
+    
+    <complexType>
+      <sequence>
+        <element minOccurs="0" maxOccurs="unbounded" ref="this:tag" />
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="tag">
+    <annotation>
+      <documentation>An arbitrary metadata "tag" that can be associated with other configs.</documentation>
+    </annotation>
+
+    <complexType>
+      <attribute name="name" type="string" />
+    </complexType>
+
+  </element>
+
+</schema>

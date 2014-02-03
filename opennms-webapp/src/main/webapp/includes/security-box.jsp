@@ -39,7 +39,7 @@
 
 <%@page language="java" contentType="text/html" session="true"  %>
 
-<table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
+<table width="100%" border="1" bordercolor="black" bgcolor="#cccccc">
   <tr> 
     <td colspan="2" BGCOLOR="#999999"><b>Servers&nbsp;&amp;&nbsp;Services</b></td>
   </tr>
@@ -70,7 +70,7 @@
 </table>    
 
 <br/>
-<table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc" >
+<table width="100%" border="1" bordercolor="black" bgcolor="#cccccc" >
   <tr> 
     <td colspan="2" bgcolor="#999999" ><b><a href="somewhere3">Security</a></b></td>
   </tr>

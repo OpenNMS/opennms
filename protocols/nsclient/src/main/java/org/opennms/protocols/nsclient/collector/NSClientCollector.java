@@ -28,20 +28,17 @@
 
 package org.opennms.protocols.nsclient.collector;
 
-import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
-import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collectd.AbstractCollectionAttribute;
 import org.opennms.netmgt.collectd.AbstractCollectionResource;
@@ -352,7 +349,6 @@ public class NSClientCollector implements ServiceCollector {
         m_scheduledNodes.clear();
         initNSClientPeerFactory();
         initNSClientCollectionConfig();
-        initDatabaseConnectionFactory();
         initializeRrdRepository();
     }
 
@@ -406,30 +402,6 @@ public class NSClientCollector implements ServiceCollector {
             if (!f.mkdirs()) {
                 throw new RuntimeException("Unable to create RRD file " + "repository.  Path doesn't already exist and could not make directory: " + DataCollectionConfigFactory.getInstance().getRrdPath());
             }
-        }
-    }
-
-    private void initDatabaseConnectionFactory() {
-        try {
-            DataSourceFactory.init();
-        } catch (IOException e) {
-            LOG.error("initDatabaseConnectionFactory: IOException getting database connection", e);
-            throw new UndeclaredThrowableException(e);
-        } catch (MarshalException e) {
-            LOG.error("initDatabaseConnectionFactory: Marshall Exception getting database connection", e);
-            throw new UndeclaredThrowableException(e);
-        } catch (ValidationException e) {
-            LOG.error("initDatabaseConnectionFactory: Validation Exception getting database connection", e);
-            throw new UndeclaredThrowableException(e);
-        } catch (SQLException e) {
-            LOG.error("initDatabaseConnectionFactory: Failed getting connection to the database.", e);
-            throw new UndeclaredThrowableException(e);
-        } catch (PropertyVetoException e) {
-            LOG.error("initDatabaseConnectionFactory: Failed getting connection to the database.", e);
-            throw new UndeclaredThrowableException(e);
-        } catch (ClassNotFoundException e) {
-            LOG.error("initDatabaseConnectionFactory: Failed loading database driver.", e);
-            throw new UndeclaredThrowableException(e);
         }
     }
 

@@ -128,8 +128,7 @@ public class NodeSnmpResourceType implements OnmsResourceType {
     /** {@inheritDoc} */
     @Override
     public List<OnmsResource> getResourcesForDomain(String domain) {
-        List<OnmsResource> empty = Collections.emptyList();
-        return empty;
+        return Collections.emptyList();
     }
 
     /** {@inheritDoc} */

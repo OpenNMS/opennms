@@ -1,10 +1,10 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS ResourceType, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS ResourceType, Inc.
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ * OpenNMS(R) is a registered trademark of The OpenNMS ResourceType, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -27,23 +27,23 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.List;
 
 import org.opennms.features.vaadin.api.Logger;
+import org.opennms.features.vaadin.config.EditorToolbar;
 import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
-import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.ResourceType;
-import org.opennms.netmgt.config.datacollection.StorageStrategy;
-import org.opennms.netmgt.dao.support.IndexStorageStrategy;
 
-import com.vaadin.data.util.BeanItem;
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.Runo;
 
 /**
  * The Class ResourceTypePanel.
@@ -51,85 +51,116 @@ import com.vaadin.ui.themes.Runo;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class ResourceTypePanel extends VerticalLayout {
-
-    /** The form. */
-    private final ResourceTypeForm form;
-
-    /** The table. */
-    private final ResourceTypeTable table;
-
-    /** The add button. */
-    private final Button add;
+public class ResourceTypePanel extends Panel {
 
     /** The isNew flag. True, if the resource type is new. */
     private boolean isNew;
+
+    /** The resource type table. */
+    private final ResourceTypeTable resourceTypeTable;
 
     /**
      * Instantiates a new resource type panel.
      *
      * @param dataCollectionConfigDao the OpenNMS Data Collection Configuration DAO
-     * @param source the OpenNMS Data Collection Group object
+     * @param source the OpenNMS Data Collection ResourceType object
      * @param logger the logger object
      */
     public ResourceTypePanel(final DataCollectionConfigDao dataCollectionConfigDao, final DatacollectionGroup source, final Logger logger) {
-        addStyleName(Runo.PANEL_LIGHT);
 
-        form = new ResourceTypeForm() {
+        if (dataCollectionConfigDao == null)
+            throw new RuntimeException("dataCollectionConfigDao cannot be null.");
+
+        if (source == null)
+            throw new RuntimeException("source cannot be null.");
+
+        addStyleName("light");
+
+        resourceTypeTable = new ResourceTypeTable(source.getResourceTypeCollection());
+
+        final ResourceTypeForm resourceTypeForm = new ResourceTypeForm();
+        resourceTypeForm.setVisible(false);
+
+        final EditorToolbar bottomToolbar = new EditorToolbar() {
             @Override
-            public void saveResourceType(ResourceType resourceType) {
-                if (isNew) {
-                    table.addResourceType(resourceType);
-                    logger.info("Resource type " + resourceType.getName() + " has been created.");
-                } else {
-                    logger.info("Resource type " + resourceType.getName() + " has been updated.");
+            public void save() {
+                ResourceType resourceType = resourceTypeForm.getResourceType();
+                logger.info("Resource Type " + resourceType.getName() + " has been " + (isNew ? "created." : "updated."));
+                try {
+                    resourceTypeForm.getFieldGroup().commit();
+                    resourceTypeForm.setReadOnly(true);
+                    resourceTypeTable.refreshRowCache();
+                } catch (CommitException e) {
+                    String msg = "Can't save the changes: " + e.getMessage();
+                    logger.error(msg);
+                    Notification.show(msg, Notification.Type.ERROR_MESSAGE);
                 }
-                table.refreshRowCache();
             }
             @Override
-            public void deleteResourceType(ResourceType resourceType) {
-                logger.info("Resource type " + resourceType.getName() + " has been removed.");
-                table.removeItem(resourceType.getName());
-                table.refreshRowCache();
+            public void delete() {
+                Object resourceTypeId = resourceTypeTable.getValue();
+                if (resourceTypeId != null) {
+                    ResourceType resourceType = resourceTypeTable.getResourceType(resourceTypeId);
+                    logger.info("SNMP ResourceType " + resourceType.getName() + " has been removed.");
+                    resourceTypeTable.select(null);
+                    resourceTypeTable.removeItem(resourceTypeId);
+                    resourceTypeTable.refreshRowCache();
+                }
+            }
+            @Override
+            public void edit() {
+                resourceTypeForm.setReadOnly(false);
+            }
+            @Override
+            public void cancel() {
+                resourceTypeForm.getFieldGroup().discard();
+                resourceTypeForm.setReadOnly(true);
             }
         };
+        bottomToolbar.setVisible(false);
 
-        table = new ResourceTypeTable(source) {
+        resourceTypeTable.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
-            public void updateExternalSource(BeanItem<ResourceType> item) {
-                form.setItemDataSource(item, Arrays.asList(ResourceTypeForm.FORM_ITEMS));
-                form.setVisible(true);
-                form.setReadOnly(true);
-                setIsNew(false);
+            public void valueChange(ValueChangeEvent event) {
+                Object resourceTypeId = resourceTypeTable.getValue();
+                if (resourceTypeId != null) {
+                    resourceTypeForm.setResourceType(resourceTypeTable.getResourceType(resourceTypeId));
+                }
+                resourceTypeForm.setReadOnly(true);
+                resourceTypeForm.setVisible(resourceTypeId != null);
+                bottomToolbar.setReadOnly(true);
+                bottomToolbar.setVisible(resourceTypeId != null);
             }
-        };
+        });   
 
-        add = new Button("Add Resource Type", new Button.ClickListener() {
+        final Button add = new Button("Add Resource Type", new Button.ClickListener() {
             @Override
-            public void buttonClick(Button.ClickEvent event) {
-                ResourceType rt = new ResourceType();
-                rt.setName("New Resource Type");
-                rt.setLabel("New Resource Type");
-                rt.setResourceLabel("{index}");
-                PersistenceSelectorStrategy persistence = new PersistenceSelectorStrategy();
-                persistence.setClazz("org.opennms.netmgt.collectd.PersistAllSelectorStrategy"); // To avoid requires opennms-services
-                rt.setPersistenceSelectorStrategy(persistence);
-                StorageStrategy storage = new StorageStrategy();
-                storage.setClazz(IndexStorageStrategy.class.getName());
-                rt.setStorageStrategy(storage);
-                table.updateExternalSource(new BeanItem<ResourceType>(rt));
-                form.setReadOnly(false);
+            public void buttonClick(ClickEvent event) {
+                resourceTypeTable.addResourceType(resourceTypeForm.createBasicResourceType());
+                resourceTypeForm.setReadOnly(false);
+                bottomToolbar.setReadOnly(false);
                 setIsNew(true);
             }
         });
 
-        setSpacing(true);
-        setMargin(true);
-        addComponent(table);
-        addComponent(add);
-        addComponent(form);
+        final VerticalLayout mainLayout = new VerticalLayout();
+        mainLayout.setSpacing(true);
+        mainLayout.setMargin(true);
+        mainLayout.addComponent(resourceTypeTable);
+        mainLayout.addComponent(add);
+        mainLayout.addComponent(resourceTypeForm);
+        mainLayout.addComponent(bottomToolbar);
+        mainLayout.setComponentAlignment(add, Alignment.MIDDLE_RIGHT);
+        setContent(mainLayout);
+    }
 
-        setComponentAlignment(add, Alignment.MIDDLE_RIGHT);
+    /**
+     * Sets the value of the ifNew flag.
+     *
+     * @param isNew true, if the resourceType is new.
+     */
+    public void setIsNew(boolean isNew) {
+        this.isNew = isNew;
     }
 
     /**
@@ -137,22 +168,8 @@ public class ResourceTypePanel extends VerticalLayout {
      *
      * @return the resource types
      */
-    @SuppressWarnings("unchecked")
-    public Collection<ResourceType> getResourceTypes() {
-        final Collection<ResourceType> types = new ArrayList<ResourceType>();
-        for (Object itemId : table.getContainerDataSource().getItemIds()) {
-            types.add(((BeanItem<ResourceType>)table.getContainerDataSource().getItem(itemId)).getBean());
-        }
-        return types;
-    }
-
-    /**
-     * Sets the value of the ifNew flag.
-     *
-     * @param isNew true, if the resource type is new.
-     */
-    public void setIsNew(boolean isNew) {
-        this.isNew = isNew;
+    public List<ResourceType> getResourceTypes() {
+        return resourceTypeTable.getResourceTypes();
     }
 
 }

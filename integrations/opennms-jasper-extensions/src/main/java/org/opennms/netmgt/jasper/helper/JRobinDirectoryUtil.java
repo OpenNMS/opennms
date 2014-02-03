@@ -39,102 +39,139 @@ import net.sf.jasperreports.engine.util.JRProperties;
 import org.opennms.core.utils.RrdLabelUtils;
 
 public class JRobinDirectoryUtil {
-    
+
     public boolean isStoreByGroup() {
         return JRProperties.getBooleanProperty("org.opennms.rrd.storeByGroup") || Boolean.getBoolean("org.opennms.rrd.storeByGroup");
     }
-    
+
+    public boolean isStoreByForeignSource() {
+        return JRProperties.getBooleanProperty("org.opennms.rrd.storeByForeignSource") || Boolean.getBoolean("org.opennms.rrd.storeByForeignSource");
+    }
+
+    public String getNodeLevelResourceDirectory(String rrdDirectory, String nodeId, String foreignSource, String foreignId) {
+        StringBuffer directory = new StringBuffer();
+        directory.append(rrdDirectory)
+        .append(File.separator);
+        if (isStoreByForeignSource()) {
+            directory.append("fs")
+            .append(File.separator)
+            .append(foreignSource)
+            .append(File.separator)
+            .append(foreignId);
+        } else {
+            directory.append(nodeId);
+        }
+        return directory.toString();
+    }
+
     public String getIfInOctetsDataSource(String rrdDirectory, String nodeId, String iFace) throws IOException {
+        if (isStoreByForeignSource()) {
+            throw new IllegalArgumentException("getIfInOctetsDataSource(String,String,String) can't be used if storeByForeignSource is enabled.");
+        }
+        return getIfInOctetsDataSource(rrdDirectory, nodeId, null, null, iFace);
+    }
+
+    public String getIfInOctetsDataSource(String rrdDirectory, String nodeId, String foreignSource, String foreignId, String iFace) throws IOException {
         StringBuffer directory = new StringBuffer();
-        directory.append(rrdDirectory)
-            .append(File.separator)
-            .append(nodeId)
-            .append(File.separator)
-            .append(iFace);
-        
-        if(!isStoreByGroup()) {
-            if(checkIfHCExists("ifHCInOctets", directory.toString())) {
+        directory.append(getNodeLevelResourceDirectory(rrdDirectory, nodeId, foreignSource, foreignId))
+        .append(File.separator)
+        .append(iFace);
+
+        if (!isStoreByGroup()) {
+            if (checkIfHCExists("ifHCInOctets", directory.toString())) {
                 return "ifHCInOctets";
-            }else {
+            } else {
                 return "ifInOctets";
             }
-        }else {
-            if(checkDsPropertyFileFor("ifHCInOctets", directory.toString())) {
+        } else {
+            if (checkDsPropertyFileFor("ifHCInOctets", directory.toString())) {
                 return "ifHCInOctets";
-            }else {
+            } else {
                 return "ifInOctets";
             }
         }
     }
-    
-    public String getIfOutOctetsDataSource(String rrdDirectory, String nodeId,String iFace) throws IOException {
+
+    public String getIfOutOctetsDataSource(String rrdDirectory, String nodeId, String iFace) throws IOException {
+        if (isStoreByForeignSource()) {
+            throw new IllegalArgumentException("getIfOutOctetsDataSource(String,String,String) can't be used if storeByForeignSource is enabled.");
+        }
+        return getIfOutOctetsDataSource(rrdDirectory, nodeId, null, null, iFace);
+    }
+
+    public String getIfOutOctetsDataSource(String rrdDirectory, String nodeId, String foreignSource, String foreignId, String iFace) throws IOException {
         StringBuffer directory = new StringBuffer();
-        directory.append(rrdDirectory)
-            .append(File.separator)
-            .append(nodeId)
-            .append(File.separator)
-            .append(iFace);
-        
-        if(!isStoreByGroup()) {
-            
-            if(checkIfHCExists("ifHCOutOctets", directory.toString())) {
+        directory.append(getNodeLevelResourceDirectory(rrdDirectory, nodeId, foreignSource, foreignId))
+        .append(File.separator)
+        .append(iFace);
+
+        if (!isStoreByGroup()) {
+            if (checkIfHCExists("ifHCOutOctets", directory.toString())) {
                 return "ifHCOutOctets";
-            }else {
+            } else {
                 return "ifOutOctets";
             }
-            
-        }else {
-           
-            if(checkDsPropertyFileFor("ifHCOutOctets", directory.toString())) {
+        } else {
+            if (checkDsPropertyFileFor("ifHCOutOctets", directory.toString())) {
                 return "ifHCOutOctets";
-            }else {
+            } else {
                 return "ifOutOctets";
             }
         }
     }
-    
+
     private boolean checkDsPropertyFileFor(String ifOctetsDS, String directory) throws IOException {
-        File f = new File(directory.toString() + "" + File.separator + "ds.properties");
-        if(f.exists()) {
+        File f = new File(directory, "ds.properties");
+        if (f.exists()) {
             Properties prop = new Properties();
             FileInputStream fis = new FileInputStream(f);
             prop.load(fis);
             fis.close();
-            
             return prop.get(ifOctetsDS) != null ? true : false;
-        }else {
+        } else {
             return false;
         }
-        
+
     }
 
-    public String getIfInOctetsJrb(String rrdDirectory, String nodeId,String iFace) throws FileNotFoundException, IOException {
-        return getOctetsFile(rrdDirectory, nodeId, iFace, "ifHCInOctets", "ifInOctets");
-    }
-    
-    public String getIfOutOctetsJrb(String rrdDirectory, String nodeId,String iFace) throws FileNotFoundException, IOException {
-        return getOctetsFile(rrdDirectory, nodeId, iFace, "ifHCOutOctets", "ifOutOctets");
+    public String getIfInOctetsJrb(String rrdDirectory, String nodeId, String iFace) throws FileNotFoundException, IOException {
+        if (isStoreByForeignSource()) {
+            throw new IllegalArgumentException("getIfInOctetsJrb(String,String,String) can't be used if storeByForeignSource is enabled.");
+        }
+        return getOctetsFile(rrdDirectory, nodeId, null, null, iFace, "ifHCInOctets", "ifInOctets");
     }
 
-    private String getOctetsFile(String rrdDirectory, String nodeId, String iFace, String ifHCFilename, String ifFilename) throws FileNotFoundException, IOException {
+    public String getIfInOctetsJrb(String rrdDirectory, String nodeId, String foreignSource, String foreignId, String iFace) throws FileNotFoundException, IOException {
+        return getOctetsFile(rrdDirectory, nodeId, foreignSource, foreignId, iFace, "ifHCInOctets", "ifInOctets");
+    }
+
+    public String getIfOutOctetsJrb(String rrdDirectory, String nodeId, String iFace) throws FileNotFoundException, IOException {
+        if (isStoreByForeignSource()) {
+            throw new IllegalArgumentException("getIfOutOctetsJrb(String,String,String) can't be used if storeByForeignSource is enabled.");
+        }
+        return getOctetsFile(rrdDirectory, nodeId, null, null, iFace, "ifHCOutOctets", "ifOutOctets");
+    }
+
+    public String getIfOutOctetsJrb(String rrdDirectory, String nodeId, String foreignSource, String foreignId, String iFace) throws FileNotFoundException, IOException {
+        return getOctetsFile(rrdDirectory, nodeId, foreignSource, foreignId, iFace, "ifHCOutOctets", "ifOutOctets");
+    }
+
+    private String getOctetsFile(String rrdDirectory, String nodeId, String foreignSource, String foreignId, String iFace, String ifHCFilename, String ifFilename) throws FileNotFoundException, IOException {
         StringBuffer directory = new StringBuffer();
-        directory.append(rrdDirectory)
-            .append(File.separator)
-            .append(nodeId)
-            .append(File.separator)
-            .append(iFace);
-        
-        if(isStoreByGroup()) {
+        directory.append(getNodeLevelResourceDirectory(rrdDirectory, nodeId, foreignSource, foreignId))
+        .append(File.separator)
+        .append(iFace);
+
+        if (isStoreByGroup()) {
             appendStoreByGroup(directory);
-        }else {
-            
-            if(checkIfHCExists(ifHCFilename, directory.toString())) {
+        } else {
+            if (checkIfHCExists(ifHCFilename, directory.toString())) {
                 directory.append(File.separator).append(ifHCFilename).append(getExtension());
-            }else {
+            } else {
                 directory.append(File.separator).append(ifFilename).append(getExtension());
             }
         }
-        
+
         return  directory.toString();
     }
 
@@ -142,35 +179,33 @@ public class JRobinDirectoryUtil {
         File ifOctets = new File(dir + "" + File.separator + ifHCFilename + getExtension());
         return ifOctets.exists();
     }
-    
+
     private String getExtension() {
-        if(JRProperties.getProperty("org.opennms.rrd.fileExtension") != null) {
+        if (JRProperties.getProperty("org.opennms.rrd.fileExtension") != null) {
             return JRProperties.getProperty("org.opennms.rrd.fileExtension");
-        }else if(System.getProperty("org.opennms.rrd.fileExtension") != null) {
+        } else if (System.getProperty("org.opennms.rrd.fileExtension") != null) {
             return System.getProperty("org.opennms.rrd.fileExtension");
-        }else {
-            if(System.getProperty("org.opennms.rrd.strategyClass") != null) {
+        } else {
+            if (System.getProperty("org.opennms.rrd.strategyClass") != null) {
                 return System.getProperty("org.opennms.rrd.strategyClass", "UnknownStrategy").endsWith("JRobinRrdStrategy") ? ".jrb" : ".rrd";
             }
             return ".jrb";
         }
-        
     }
 
     private void appendStoreByGroup(StringBuffer directory) throws FileNotFoundException, IOException {
         File f = new File(directory.toString() + "" + File.separator + "ds.properties");
-        if(f.exists()) {
+        if (f.exists()) {
             Properties prop = new Properties();
             FileInputStream fis = new FileInputStream(f);
             prop.load(fis);
             fis.close();
-            
-            if(prop.get("ifHCInOctets") != null) {
+
+            if (prop.get("ifHCInOctets") != null) {
                 directory.append(File.separator).append((String) prop.get("ifHCInOctets")).append(getExtension());
-            }else {
+            } else {
                 directory.append(File.separator).append((String) prop.get("ifInOctets")).append(getExtension());
             }
-            
         }
     }
 

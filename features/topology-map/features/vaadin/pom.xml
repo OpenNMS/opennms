@@ -4,14 +4,14 @@
   <parent>
     <groupId>org.opennms.features.topology</groupId>
     <artifactId>features</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>1.13.1-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.osgi.features.topology</groupId>
   <artifactId>vaadin</artifactId>
 
-  <name>OpenNMS :: Topology :: Vaadin + Dependencies</name>
+  <name>OpenNMS Features :: Topology :: Vaadin + Dependencies</name>
 
   <description>The Vaadin web application framework.</description>
 
@@ -29,7 +29,7 @@
           <bundles>
             <bundle>wrap:mvn:org.vaadin.addons/refresher/1.2.1.7</bundle>
             <bundle>wrap:mvn:org.vaadin.addons/contextmenu/4.2.1</bundle>
-            <bundle>wrap:mvn:org.vaadin.addons/messagebox/1.1.1</bundle>
+            <bundle>wrap:mvn:org.vaadin.addon/confirmdialog/2.0.4</bundle>
           </bundles>
         </configuration>
       </plugin>
@@ -68,13 +68,11 @@
     <dependency>
         <groupId>org.jsoup</groupId>
         <artifactId>jsoup</artifactId>
-        <version>1.7.2</version>
     </dependency>
     
     <dependency>
       <groupId>org.ops4j.pax.vaadin</groupId>
       <artifactId>service</artifactId>
-      <version>0.2.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -93,9 +91,9 @@
     	<version>1.2.1.7</version>
     </dependency>
     <dependency>
-      <groupId>org.vaadin.addons</groupId>
-      <artifactId>messagebox</artifactId>
-      <version>1.1.1</version>
+      <groupId>org.vaadin.addon</groupId>
+      <artifactId>confirmdialog</artifactId>
+      <version>2.0.4</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.themes</groupId>

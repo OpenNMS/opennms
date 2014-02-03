@@ -178,7 +178,7 @@ public class CollectionMath {
 	
 	/**
 	 * Utility method, converts a {@link Number} {@link List} into a {@link BigDecimal} {@link List}
-	 * @param list a {@link List} of {@link Number} values
+	 * @param c a {@link List} of {@link Number} values
 	 * @return a {@link List} of {@link BigDecimal} values
 	 */
 	private static List<BigDecimal> convertNumberToBigDecimal(List<? extends Number> c) {

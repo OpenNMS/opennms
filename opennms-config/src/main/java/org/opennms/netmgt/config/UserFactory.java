@@ -37,6 +37,7 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 
+import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
@@ -52,11 +53,6 @@ public class UserFactory extends UserManager {
      * The static singleton instance of the UserFactory
      */
     private static UserManager instance;
-
-    /**
-     * File path of users.xml
-     */
-    protected File usersFile;
 
     /**
      * Boolean indicating if the init() method has been called
@@ -156,10 +152,14 @@ public class UserFactory extends UserManager {
     @Override
     protected void saveXML(String writerString) throws IOException {
         if (writerString != null) {
-            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_usersConfFile), "UTF-8");
-            fileWriter.write(writerString);
-            fileWriter.flush();
-            fileWriter.close();
+            Writer fileWriter = null;
+            try {
+                fileWriter = new OutputStreamWriter(new FileOutputStream(m_usersConfFile), "UTF-8");
+                fileWriter.write(writerString);
+                fileWriter.flush();
+            } finally {
+                IOUtils.closeQuietly(fileWriter);
+            }
         }
     }
 
@@ -173,11 +173,13 @@ public class UserFactory extends UserManager {
         if (m_usersConfFile == null) {
             return true;
         } else {
+            final long fileLastModified = m_usersConfFile.lastModified();
+
             // Check to see if the file size has changed
             if (m_fileSize != m_usersConfFile.length()) {
                 return true;
             // Check to see if the timestamp has changed
-            } else if (m_lastModified != m_usersConfFile.lastModified()) {
+            } else if (m_lastModified != fileLastModified) {
                 return true;
             } else {
                 return false;

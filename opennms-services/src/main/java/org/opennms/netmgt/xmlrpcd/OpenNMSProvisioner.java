@@ -30,14 +30,13 @@ package org.opennms.netmgt.xmlrpcd;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.CapsdDbSyncer;
 import org.opennms.netmgt.config.CapsdConfig;
@@ -51,6 +50,8 @@ import org.opennms.netmgt.config.poller.Rrd;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventIpcManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>OpenNMSProvisioner class.</p>
@@ -280,9 +281,7 @@ public class OpenNMSProvisioner implements Provisioner {
      * @return a {@link org.opennms.netmgt.config.poller.Parameter} object.
      */
     public Parameter findParamterWithKey(final Service svc, final String key) {
-    	final Enumeration<Parameter> e = svc.enumerateParameter();
-        while(e.hasMoreElements()) {
-            final Parameter parameter = (Parameter)e.nextElement();
+        for (final Parameter parameter : svc.getParameters()) {
             if (key.equals(parameter.getKey())) {
                 return parameter;
             }
@@ -317,7 +316,7 @@ public class OpenNMSProvisioner implements Provisioner {
         final Downtime dt2 = new Downtime();
         dt2.setBegin(downTimeDuration);
         dt2.setInterval(interval);
-        pkg.setDowntime(new Downtime[] { dt, dt2 });
+        pkg.setDowntimes(Arrays.asList(dt, dt2));
         return pkg;
     }
 
@@ -466,10 +465,9 @@ public class OpenNMSProvisioner implements Provisioner {
         
         final Map<String, Object> m = new HashMap<String, Object>();
         m.put("serviceid", serviceId);
-        m.put("interval", Integer.valueOf((int)svc.getInterval()));
+        m.put("interval", svc.getInterval() == null? null : svc.getInterval().intValue());
         
-        for(int i = 0; i < svc.getParameterCount(); i++) {
-        	final Parameter param = svc.getParameter(i);
+        for (final Parameter param : svc.getParameters()) {
             String key = param.getKey();
             final String valStr = param.getValue();
             Object val = valStr;
@@ -507,11 +505,12 @@ public class OpenNMSProvisioner implements Provisioner {
             m.put(key, val);
         }
         
-        for(int i = 0; i < pkg.getDowntimeCount(); i++) {
-            final Downtime dt = pkg.getDowntime(i);
+        final List<Downtime> downtimes = pkg.getDowntimes();
+        for(int i = 0; i < downtimes.size(); i++) {
+            final Downtime dt = downtimes.get(i);
             final String suffix = (i == 0 ? "" : ""+i);
             if ((dt.hasEnd()) || (dt.getDelete() != null && !"false".equals(dt.getDelete()))) {
-                m.put("downtime_interval"+suffix, Integer.valueOf((int)dt.getInterval()));
+                m.put("downtime_interval"+suffix, dt.getInterval() == null? null : dt.getInterval().intValue());
                 int duration = (!dt.hasEnd() ? Integer.MAX_VALUE : (int)(dt.getEnd() - dt.getBegin()));
                 m.put("downtime_duration"+suffix, Integer.valueOf(duration));
             }   

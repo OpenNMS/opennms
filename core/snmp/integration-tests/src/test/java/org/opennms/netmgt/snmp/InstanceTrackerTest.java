@@ -135,7 +135,7 @@ public class InstanceTrackerTest extends TestCase {
     }
     
     public void testInstanceListTrackerWithAllResults() {
-        String instances[] = { "1", "3", "5" };
+        String[] instances = { "1", "3", "5" };
         CollectionTracker it = new InstanceListTracker(m_sysNameOid, toCommaSeparated(instances));
         
         SnmpObjId[] oids = new SnmpObjId[instances.length];
@@ -148,7 +148,7 @@ public class InstanceTrackerTest extends TestCase {
     }
     
     public void testInstanceListTrackerWithNoResults() {
-        String instances[] = { "1", "3", "5" };
+        String[] instances = { "1", "3", "5" };
         CollectionTracker it = new InstanceListTracker(m_sysNameOid, toCommaSeparated(instances));
         
         SnmpObjId[] expectedOids = new SnmpObjId[instances.length];

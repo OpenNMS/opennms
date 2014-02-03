@@ -38,13 +38,9 @@ import org.opennms.features.vaadin.mibcompiler.services.PrefabGraphDumper;
 import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.model.PrefabGraph;
+import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.Runo;
-
-import de.steinwedel.vaadin.MessageBox;
-import de.steinwedel.vaadin.MessageBox.ButtonType;
-import de.steinwedel.vaadin.MessageBox.EventListener;
 
 /**
  * The Class Data Collection Window.
@@ -71,7 +67,7 @@ public class DataCollectionWindow extends Window {
         setClosable(false);
         setDraggable(false);
         setResizable(false);
-        addStyleName(Runo.WINDOW_DIALOG);
+        addStyleName("dialog");
         setSizeFull();
         setContent(new DataCollectionGroupPanel(dataCollectionConfigDao, dcGroup, logger) {
             @Override
@@ -80,25 +76,21 @@ public class DataCollectionWindow extends Window {
             }
             @Override
             public void success() {
-                MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
-                                               "Graph Templates",
-                                               MessageBox.Icon.QUESTION,
-                                               "Do you want to generate the default graph templates?<br/>All the existing templates will be overriden.",
-                                               new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
-                                               new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
-                mb.addStyleName(Runo.WINDOW_DIALOG);
-                mb.show(new EventListener() {
-                    @Override
-                    public void buttonClicked(ButtonType buttonType) {
-                        if (buttonType == MessageBox.ButtonType.YES) {
+                ConfirmDialog.show(getUI(),
+                                   "Graph Templates",
+                                   "Do you want to generate the default graph templates?\nAll the existing templates will be overriden.",
+                                   "Yes",
+                                   "No",
+                                   new ConfirmDialog.Listener() {
+                    public void onClose(ConfirmDialog dialog) {
+                        if (dialog.isConfirmed()) {
                             generateGraphTemplates(parser, logger);
                         }
-                        close();
                     }
                 });
             }
             @Override
-            public void failure() {
+            public void failure(String reason) {
                 close();
             }
         });

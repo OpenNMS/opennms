@@ -43,6 +43,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.TreeMap;
 
+import org.apache.commons.codec.binary.Base64;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
@@ -482,7 +483,11 @@ public class WmiPeerFactory {
      * @return a string containing the password. will return the default if none is set.
      */
     private String determinePassword(Definition def) {
-        return (def.getPassword() == null ? (m_config.getPassword() == null ? WmiAgentConfig.DEFAULT_PASSWORD :m_config.getPassword()) : def.getPassword());
+        String literalPass = (def.getPassword() == null ? (m_config.getPassword() == null ? WmiAgentConfig.DEFAULT_PASSWORD :m_config.getPassword()) : def.getPassword());
+        if (literalPass.endsWith("===")) {
+            return new String(Base64.decodeBase64(literalPass));
+        }
+        return literalPass;
     }
 
     /**

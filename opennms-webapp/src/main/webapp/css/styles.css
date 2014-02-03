@@ -194,6 +194,26 @@
 
 
 /*  --------------------------------------------------
+   :: TOOLTIP
+   -------------------------------------------------- */
+.tooltip {
+    position: absolute;
+    display: none;
+    padding: 10px;
+    background-color: #EEE;
+    z-index: 1000;
+    max-width: 250px;
+    border: 1px solid #999;
+}
+
+img.info {
+    background:url(../css/images/ui-icons_454545_256x240.png);
+    width: 16px;
+    height: 16px;
+    background-position: -16px -144px;
+}
+
+/*  --------------------------------------------------
     :: Layout (Onms Column Layout)
     -------------------------------------------------- */
     
@@ -225,6 +245,7 @@
     :: Tables
     -------------------------------------------------- */
     table {
+        border-spacing: 0;
         border-collapse: collapse;
         width: 100%;
         margin-top: 0;
@@ -528,7 +549,7 @@
 /* --------------------------------------------------
     :: Pagination
     -------------------------------------------------- */
-	pagination {
+	.pagination {
 	        height: 1%; /* IE tweak (holly hack) */
 	        width: auto;
 	        text-align: right;
@@ -582,6 +603,7 @@
 	    border: 1px solid #CCC;
 	    background-color: #DDD;
 	    padding: 3px 4px;
+        line-height: 25px;
 	}
 	
 	/* Online Report Page Styles */
@@ -718,6 +740,33 @@
     }
 
 /* --------------------------------------------------
+ :: Style for alert status
+ -------------------------------------------------- */
+div .alert {
+    padding: 10pt;
+}
+
+div .alert-error {
+    color: #FF3300;
+    background-color: #FFD7CD;
+}
+
+div .alert-success {
+    color: #336600;
+    background-color: #D7E1CD;
+}
+
+div .alert-info {
+    color: #999;
+    background-color: #EEE;
+}
+
+div .alert-warning {
+    color: #FFCC00;
+    background-color: #FFF5CD;
+}
+
+/* --------------------------------------------------
     :: Style for notification status
     -------------------------------------------------- */
 #notificationOff{
@@ -727,7 +776,15 @@
 #notificationOn{
 	color: #73d216;
 }
-	
+
+/* --------------------------------------------------
+    :: Style was marked as deprecated and should be
+    -------------------------------------------------- */
+#graph-results
+{
+	text-align: center;
+}
+
 /* --------------------------------------------------
     :: Deprecated Styles, Please do not uncomment, these
        will eventually be removed after testing.

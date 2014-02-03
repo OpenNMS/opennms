@@ -1,6 +1,7 @@
 package org.opennms.netmgt.dao.mock;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -64,6 +65,16 @@ public class MockDataCollectionConfigDao implements DataCollectionConfigDao {
 
     @Override
     public List<String> getAvailableMibGroups() {
+        throw new UnsupportedOperationException("Not yet implemented!");
+    }
+
+    @Override
+    public void reload() {
+        throw new UnsupportedOperationException("Not yet implemented!");
+    }
+
+    @Override
+    public Date getLastUpdate() {
         throw new UnsupportedOperationException("Not yet implemented!");
     }
 

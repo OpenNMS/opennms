@@ -147,4 +147,20 @@ public interface CapsdDbSyncer {
      */
     String getServiceName(Integer id);
 
+    /**
+     * @param addrString
+     * @param string
+     * @return
+     */
+    boolean isServiceCollectionEnabled(String addrString, String string);
+
+    /**
+     * <p>determinePrimarySnmpInterface</p>
+     *
+     * @param addressList a {@link java.util.List} object.
+     * @param strict a boolean.
+     * @return a {@link java.net.InetAddress} object.
+     */
+    InetAddress determinePrimarySnmpInterface(List<InetAddress> addressList, boolean strict);
+
 }

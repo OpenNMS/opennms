@@ -60,7 +60,7 @@ public class RtTicketerPlugin implements Plugin {
     private String m_openStatus;
     private String m_closedStatus;
     private String m_cancelledStatus;
-    private List<Integer> m_validOpenStatus;
+    private List<String> m_validOpenStatus;
     private List<String> m_validClosedStatus;
     private List<String> m_validCancelledStatus;
 
@@ -214,7 +214,7 @@ public class RtTicketerPlugin implements Plugin {
      * @return a String representing the RT Status of the ticket.
      */
 	
-	private String openNMSToRTState(final Ticket.State state) {
+	public String openNMSToRTState(final Ticket.State state) {
 
 		String rtStatus;
 		
@@ -255,7 +255,7 @@ public class RtTicketerPlugin implements Plugin {
      * @return the converted <code>org.opennms.netmgt.ticketd.Ticket.State</code>
      */
 	
-    private Ticket.State rtToOpenNMSState(final String rtStatus) {
+    public Ticket.State rtToOpenNMSState(final String rtStatus) {
     	
         if (m_validOpenStatus.contains(rtStatus)) {
         	LOG.debug("RT status {} matched OpenNMS state Open", rtStatus);

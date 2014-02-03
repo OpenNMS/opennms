@@ -49,8 +49,6 @@ public class NegativeServiceFilter extends NotEqualOrNullFilter<Integer> {
     private ServletContext m_servletContext;
     private ApplicationContext m_appContext;
 
-    protected int serviceId;
-
     /**
      * <p>Constructor for NegativeServiceFilter.</p>
      *

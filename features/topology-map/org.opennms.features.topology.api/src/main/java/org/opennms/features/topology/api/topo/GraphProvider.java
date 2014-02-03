@@ -29,6 +29,8 @@
 package org.opennms.features.topology.api.topo;
 
 import java.net.MalformedURLException;
+import java.util.Map;
+import java.util.Set;
 
 import javax.xml.bind.JAXBException;
 
@@ -38,7 +40,7 @@ public interface GraphProvider extends VertexProvider, EdgeProvider {
 
 	void load(String filename) throws MalformedURLException, JAXBException;
 
-    public void refresh();
+	void refresh();
 
 	void resetContainer();
 
@@ -51,17 +53,27 @@ public interface GraphProvider extends VertexProvider, EdgeProvider {
 	 */
 	Vertex addVertex(int x, int y);
 
+	/**
+	 * This function indicates support for (mostly legacy) grouping operations.
+	 * If true then addGroup() should work as expected.
+	 */
+	boolean groupingSupported();
+
 	Vertex addGroup(String label, String iconKey);
 
 	EdgeRef[] getEdgeIdsForVertex(VertexRef vertex);
+
+	/**
+	 * This function can be used for efficiency when you need the {@link EdgeRef}
+	 * instances for a large number of vertices.
+	 */
+	Map<VertexRef,Set<EdgeRef>> getEdgeIdsForVertices(VertexRef... vertex);
 
 	void addEdges(Edge... edges);
 
 	void removeEdges(EdgeRef... edges);
 
-        @Override
-	boolean setParent(VertexRef vertexId, VertexRef parentId);
-
 	Edge connectVertices(VertexRef sourceVertextId, VertexRef targetVertextId);
 
+    Criteria getDefaultCriteria();
 }

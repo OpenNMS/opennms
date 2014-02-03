@@ -35,7 +35,7 @@ import java.io.IOException;
 /**
  * <P>
  * DNSInputStrean extends a ByteArrayInputStream and has methods to decode the
- * data of a DNS response to an address resquest.
+ * data of a DNS response to an address request.
  * </P>
  */
 public class DNSInputStream extends ByteArrayInputStream {
@@ -208,7 +208,11 @@ public class DNSInputStream extends ByteArrayInputStream {
         //
         final int offset = readShort() & 0x3fff;
         final DNSInputStream dnsIn = new DNSInputStream(buf, offset, buf.length - offset);
-        return dnsIn.readDomainName();
+        try {
+            return dnsIn.readDomainName();
+        } finally {
+            dnsIn.close();
+        }
     }
 
     /**

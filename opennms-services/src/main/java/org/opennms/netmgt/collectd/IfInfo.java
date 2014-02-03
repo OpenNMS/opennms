@@ -31,6 +31,7 @@ package org.opennms.netmgt.collectd;
 
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Map;
 
 import org.opennms.core.utils.AlphaNumeric;
@@ -213,12 +214,18 @@ public final class IfInfo extends SnmpCollectionResource {
         return getResourceType().getCollection();
     }
 
-    /** {@inheritDoc} */
+    /** {@inheritDoc} 
+     * @throws FileNotFoundException */
     @Override
-    public File getResourceDir(RrdRepository repository) {
+    public File getResourceDir(RrdRepository repository) throws FileNotFoundException {
+        String label = getLabel();
         File rrdBaseDir = repository.getRrdBaseDir();
-        File dir = new File (rrdBaseDir, getCollectionAgent().getStorageDir().toString());
-        return new File(dir, getLabel());
+        File dir = new File(rrdBaseDir, getCollectionAgent().getStorageDir().toString());
+        if (label == null || "".equals(label)) {
+            throw new FileNotFoundException("Could not construct resource directory because label is null or blank: nodeId: " + getNodeId() + ", rrdRepository: " + repository.toString());
+        } else {
+            return new File(dir, label);
+        }
     }
 
     /**

@@ -34,10 +34,21 @@ public class DefaultMapViewManager implements MapViewManager{
     }
     @Override
     public void setMapBounds(BoundingBox boundingBox) {
-        m_mapBounds = boundingBox;
-        m_center = m_mapBounds.getCenter();
-        
-        fireUpdate();
+        if (!m_mapBounds.equals(boundingBox)) {
+            if(boundingBox.getHeight() < m_viewPortHeight/2){
+                //Don't allow the height to be less than half the viewport height
+                m_mapBounds = new BoundingBox(boundingBox.getCenter(), boundingBox.getWidth(), m_viewPortHeight/2);
+            } else {
+                m_mapBounds = boundingBox;
+            }
+
+            m_center = m_mapBounds.getCenter();
+            fireUpdate();
+        }
+
+        if(m_mapBounds.getWidth() < m_viewPortWidth && m_mapBounds.getHeight() < m_viewPortHeight){
+            m_mapBounds = m_mapBounds.computeWithAspectRatio(getViewPortAspectRatio());
+        }
     }
     @Override
     public void setViewPort(int width, int height) {
@@ -71,10 +82,12 @@ public class DefaultMapViewManager implements MapViewManager{
         m_scale = scale;
         m_scale = Math.min(1.0, m_scale);
         m_scale = Math.max(0.0, m_scale);
-        m_scale = ((int)Math.round(m_scale*10))/10.0;
+        m_scale = ((double)Math.round(m_scale * 10.0))/10.0;
+
         Point oldCenter = m_center;
         m_center = center;
-        
+
+        // TODO: Sonar is warning on the equals comparison of m_scale and oldScale
         if(m_scale != oldScale || !oldCenter.equals(m_center)) {
             fireUpdate();
         }
@@ -87,10 +100,10 @@ public class DefaultMapViewManager implements MapViewManager{
             //throw new IllegalStateException("View port and maps bounds must be set");
         }
         BoundingBox mPrime = m_mapBounds.computeWithAspectRatio(getViewPortAspectRatio());
-        int width = (int) (Math.pow(mPrime.getWidth(), 1 - m_scale) * Math.pow(m_viewPortWidth/2, m_scale));
-        int height = (int) (Math.pow(mPrime.getHeight(), 1 - m_scale) * Math.pow(m_viewPortHeight/2, m_scale));
+        int width = (int)Math.round(Math.pow((double)mPrime.getWidth(), 1.0 - m_scale) * Math.pow((double)m_viewPortWidth/2.0, m_scale));
+        int height = (int)Math.round(Math.pow((double)mPrime.getHeight(), 1.0 - m_scale) * Math.pow((double)m_viewPortHeight/2.0, m_scale));
         
-        return new BoundingBox(m_center, width, height); 
+        return new BoundingBox(m_center, width, height);
     }
     
     @Override
@@ -105,10 +118,12 @@ public class DefaultMapViewManager implements MapViewManager{
         m_scale = scale;
         m_scale = Math.min(1.0, m_scale);
         m_scale = Math.max(0.0, m_scale);
+        m_scale = ((double)Math.round(m_scale * 10.0))/10.0;
+
+        // TODO: Sonar is warning on the equals comparison of m_scale and oldScale
         if(oldScale != m_scale) {
             fireUpdate();
         }
-        
     }
     
     @Override
@@ -120,16 +135,16 @@ public class DefaultMapViewManager implements MapViewManager{
         m_scale = Math.log(bbPrime.getWidth()/(double)mPrime.getWidth()) / Math.log( (m_viewPortWidth/2.0) / (double)mPrime.getWidth());
         m_scale = Math.min(1.0, m_scale);
         m_scale = Math.max(0.0, m_scale);
-        m_scale = (int)(Math.round(m_scale*10))/10.0;
+        m_scale = ((double)Math.round(m_scale * 10.0))/10.0;
         
         Point oldCenter = m_center;
         m_center = boundingBox.getCenter();
         
         BoundingBox newBoundingBox = getCurrentBoundingBox();
+        // TODO: Sonar is warning on the equals comparison of m_scale and oldScale
         if(!oldCenter.equals(m_center) || oldScale != m_scale || !oldBoundingBox.equals(newBoundingBox)) {
             fireUpdate();
         }
-        
     }
 
     @Override

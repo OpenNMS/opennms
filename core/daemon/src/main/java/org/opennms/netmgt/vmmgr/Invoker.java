@@ -49,7 +49,6 @@ import org.opennms.netmgt.config.service.Service;
 import org.opennms.netmgt.config.service.types.InvokeAtType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 
 /**
  * <p>
@@ -301,7 +300,7 @@ public class Invoker {
             throw t;
         }
 
-        LOG.debug("Invocation successful.");
+	LOG.debug("Invocation {} successful for MBean {}", invoke.getMethod(), mbean.getObjectName());
 
         return object;
     }

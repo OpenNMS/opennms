@@ -54,7 +54,6 @@ public class CachingForeignSourceRepository extends AbstractForeignSourceReposit
 	private final WriteLock m_writeLock = m_globalLock.writeLock();
 
 	private ForeignSourceRepository m_foreignSourceRepository;
-	private long m_refreshInterval;
 
 	private Set<String> m_dirtyForeignSources = new HashSet<String>();
 	private Set<String> m_dirtyRequisitions   = new HashSet<String>();
@@ -66,7 +65,7 @@ public class CachingForeignSourceRepository extends AbstractForeignSourceReposit
 	private ScheduledExecutorService m_executor;
 
 	public CachingForeignSourceRepository() {
-		m_refreshInterval = Long.getLong("org.opennms.netmgt.provision.persist.cacheRefreshInterval", 300000);
+		long refreshInterval = Long.getLong("org.opennms.netmgt.provision.persist.cacheRefreshInterval", 300000);
 
 		final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
 		executor.setContinueExistingPeriodicTasksAfterShutdownPolicy(false);
@@ -74,7 +73,7 @@ public class CachingForeignSourceRepository extends AbstractForeignSourceReposit
 		m_executor = executor;
 
 		// every refreshInterval milliseconds, save any modifications, and clean out existing cached data
-		m_executor.scheduleAtFixedRate(getRefreshRunnable(), m_refreshInterval, m_refreshInterval, TimeUnit.MILLISECONDS);
+		m_executor.scheduleAtFixedRate(getRefreshRunnable(), refreshInterval, refreshInterval, TimeUnit.MILLISECONDS);
 	}
 
 	protected void writeUnlock() {

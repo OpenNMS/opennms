@@ -29,11 +29,13 @@ package org.opennms.features.vaadin.dashboard.config.ui;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.validator.AbstractStringValidator;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
 import org.opennms.features.vaadin.dashboard.config.DashletSelector;
 import org.opennms.features.vaadin.dashboard.model.DashletConfigurationWindow;
 import org.opennms.features.vaadin.dashboard.model.DashletFactory;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
+import org.opennms.features.vaadin.dashboard.model.Wallboard;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
@@ -59,7 +61,10 @@ public class DashletSpecEditor extends Panel {
      * The {@link NativeSelect} instance for selecting available dashlet factories.
      */
     private NativeSelect m_dashletSelect;
-
+    /**
+     * Title textfield
+     */
+    private TextField m_titleField;
     /**
      * Helper variable for disabling saving of data.
      */
@@ -110,55 +115,9 @@ public class DashletSpecEditor extends Panel {
         setWidth(100.0f, Unit.PERCENTAGE);
 
         GridLayout gridLayout = new GridLayout();
-        gridLayout.setColumns(4);
+        gridLayout.setColumns(6);
         gridLayout.setRows(1);
-
         gridLayout.setMargin(true);
-
-        /**
-         * Setting up the dashlet selection
-         */
-
-        m_dashletSelect = new NativeSelect();
-
-        m_dashletSelect.setCaption("Dashlet");
-
-        updateDashletSelection(dashletSelector.getDashletFactoryList());
-
-        m_dashletSelect.setImmediate(true);
-        m_dashletSelect.setNewItemsAllowed(false);
-        m_dashletSelect.setNullSelectionItemId("Undefined");
-        m_dashletSelect.select(dashletSpec.getDashletName());
-
-        m_dashletSelect.addValueChangeListener(new Property.ValueChangeListener() {
-            public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
-                if (m_savingDisabled) {
-                    return;
-                }
-
-                if (valueChangeEvent.getProperty().getValue() == null) {
-                    m_dashletSpec.setDashletName("Undefined");
-                } else {
-                    m_dashletSpec.setDashletName(valueChangeEvent.getProperty().getValue().toString());
-                }
-
-                m_dashletSpec.getParameters().clear();
-
-                Map<String, String> requiredParameters = m_dashletSelector.getDashletFactoryForName(m_dashletSpec.getDashletName()).getRequiredParameters();
-
-                for (Map.Entry<String, String> entry : requiredParameters.entrySet()) {
-                    m_dashletSpec.getParameters().put(entry.getKey(), entry.getValue());
-                }
-
-                m_propertiesButton.setEnabled(requiredParameters.size() > 0);
-
-                WallboardProvider.getInstance().save();
-                ((WallboardConfigUI) getUI()).notifyMessage("Data saved", "Dashlet");
-            }
-        });
-
-        FormLayout f1 = new FormLayout();
-        f1.addComponent(m_dashletSelect);
 
         /**
          * Priority field setup, layout and adding listener and validator
@@ -167,6 +126,7 @@ public class DashletSpecEditor extends Panel {
         priorityField.setValue(String.valueOf(dashletSpec.getPriority()));
         priorityField.setImmediate(true);
         priorityField.setCaption("Priority");
+        priorityField.setDescription("Priority of this dashlet");
 
         priorityField.addValidator(new AbstractStringValidator("Only numbers allowed here") {
             @Override
@@ -197,6 +157,7 @@ public class DashletSpecEditor extends Panel {
         boostPriorityField.setValue(String.valueOf(dashletSpec.getBoostPriority()));
         boostPriorityField.setImmediate(true);
         boostPriorityField.setCaption("Boost-Priority");
+        boostPriorityField.setDescription("Boost priority of this dashlet");
 
         boostPriorityField.addValidator(new AbstractStringValidator("Only numbers allowed here") {
             @Override
@@ -220,7 +181,6 @@ public class DashletSpecEditor extends Panel {
             }
         });
 
-
         /**
          * Duration field setup, layout and adding listener and validator
          */
@@ -228,6 +188,7 @@ public class DashletSpecEditor extends Panel {
         durationField.setValue(String.valueOf(dashletSpec.getDuration()));
         durationField.setImmediate(true);
         durationField.setCaption("Duration");
+        durationField.setDescription("Duration for this dashlet");
 
         durationField.addValidator(new AbstractStringValidator("Only numbers allowed here") {
             @Override
@@ -258,6 +219,7 @@ public class DashletSpecEditor extends Panel {
         boostDurationField.setValue(String.valueOf(dashletSpec.getBoostDuration()));
         boostDurationField.setImmediate(true);
         boostDurationField.setCaption("Boost-Duration");
+        boostDurationField.setDescription("Boost duration for this dashlet");
 
         boostDurationField.addValidator(new AbstractStringValidator("Only numbers allowed here") {
             @Override
@@ -280,6 +242,77 @@ public class DashletSpecEditor extends Panel {
                 }
             }
         });
+
+        boolean boostable = m_dashletSelector.getDashletFactoryForName(m_dashletSpec.getDashletName()).isBoostable();
+
+        boostPriorityField.setEnabled(boostable);
+        boostDurationField.setEnabled(boostable);
+
+        /**
+         * Setting up the dashlet selection
+         */
+
+        m_dashletSelect = new NativeSelect();
+
+        m_dashletSelect.setCaption("Dashlet");
+
+        updateDashletSelection(dashletSelector.getDashletFactoryList());
+
+        m_dashletSelect.setImmediate(true);
+        m_dashletSelect.setNewItemsAllowed(false);
+        m_dashletSelect.setNullSelectionItemId("Undefined");
+        m_dashletSelect.select(dashletSpec.getDashletName());
+        m_dashletSelect.setDescription("Dashlet selection");
+
+        m_dashletSelect.addValueChangeListener(new Property.ValueChangeListener() {
+            public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
+                if (m_savingDisabled) {
+                    return;
+                }
+
+                if (valueChangeEvent.getProperty().getValue() == null) {
+                    m_dashletSpec.setDashletName("Undefined");
+                } else {
+                    m_dashletSpec.setDashletName(valueChangeEvent.getProperty().getValue().toString());
+                }
+
+                m_dashletSpec.getParameters().clear();
+
+                Map<String, String> requiredParameters = m_dashletSelector.getDashletFactoryForName(m_dashletSpec.getDashletName()).getRequiredParameters();
+
+                for (Map.Entry<String, String> entry : requiredParameters.entrySet()) {
+                    m_dashletSpec.getParameters().put(entry.getKey(), entry.getValue());
+                }
+
+                m_propertiesButton.setEnabled(requiredParameters.size() > 0);
+
+                boolean boostable = m_dashletSelector.getDashletFactoryForName(m_dashletSpec.getDashletName()).isBoostable();
+
+                boostPriorityField.setEnabled(boostable);
+                boostDurationField.setEnabled(boostable);
+
+                WallboardProvider.getInstance().save();
+                ((WallboardConfigUI) getUI()).notifyMessage("Data saved", "Dashlet");
+            }
+        });
+
+        m_titleField = new TextField();
+        m_titleField.setValue(dashletSpec.getTitle());
+        m_titleField.setImmediate(true);
+        m_titleField.setCaption("Title");
+        m_titleField.setDescription("Title for this dashlet instance");
+
+        m_titleField.addValueChangeListener(new Property.ValueChangeListener() {
+            public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
+                m_dashletSpec.setTitle((String) valueChangeEvent.getProperty().getValue());
+                WallboardProvider.getInstance().save();
+                ((WallboardConfigUI) getUI()).notifyMessage("Data saved", "Title");
+            }
+        });
+
+        FormLayout f1 = new FormLayout();
+        f1.addComponent(m_dashletSelect);
+        f1.addComponent(m_titleField);
 
         /**
          * Adding the required input fields and buttons to several {@link FormLayout} instances for better layout.
@@ -308,11 +341,13 @@ public class DashletSpecEditor extends Panel {
         m_propertiesButton.setEnabled(m_dashletSelector.getDashletFactoryForName(m_dashletSpec.getDashletName()).getRequiredParameters().size() > 0);
 
         m_propertiesButton.setStyleName("small");
+        m_propertiesButton.setDescription("Open properties dialog for this dashlet");
 
         /**
          * ...and the remove button
          */
         Button removeButton = new Button("Remove");
+        removeButton.setDescription("Remove this dashlet entry");
 
         FormLayout f4 = new FormLayout();
         f4.addComponent(m_propertiesButton);
@@ -326,13 +361,62 @@ public class DashletSpecEditor extends Panel {
 
         removeButton.setStyleName("small");
 
+        Button upButton = new Button();
+        upButton.setStyleName("small");
+        upButton.setIcon(new ThemeResource("../runo/icons/16/arrow-up.png"));
+        upButton.setDescription("Move this a dashlet entry one position up");
+
+        Button downButton = new Button();
+        downButton.setStyleName("small");
+        downButton.setIcon(new ThemeResource("../runo/icons/16/arrow-down.png"));
+        downButton.setDescription("Move this a dashlet entry one position down");
+
+        FormLayout f5 = new FormLayout();
+        f5.addComponent(upButton);
+        f5.addComponent(downButton);
+
+        Button previewButton = new Button("Preview");
+        previewButton.setStyleName("small");
+        previewButton.setDescription("Preview this single dashlet entry");
+
+        Wallboard wallboard = new Wallboard();
+        wallboard.getDashletSpecs().add(m_dashletSpec);
+
+        previewButton.addClickListener(new PreviewClickListener(this, wallboard));
+
+        FormLayout f6 = new FormLayout();
+        f6.addComponent(previewButton);
+
+        upButton.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                m_wallboardEditor.swapDashletSpec(m_dashletSpec, -1);
+            }
+        });
+
+        downButton.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                m_wallboardEditor.swapDashletSpec(m_dashletSpec, +1);
+            }
+        });
+
         /**
          * Adding the different {@link FormLayout} instances to a {@link GridLayout}
          */
+        f1.setMargin(true);
+        f2.setMargin(true);
+        f3.setMargin(true);
+        f4.setMargin(true);
+        f5.setMargin(true);
+        f6.setMargin(true);
+
         gridLayout.addComponent(f1);
         gridLayout.addComponent(f2);
         gridLayout.addComponent(f3);
         gridLayout.addComponent(f4);
+        gridLayout.addComponent(f5);
+        gridLayout.addComponent(f6);
 
         setContent(gridLayout);
     }

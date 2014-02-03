@@ -51,7 +51,6 @@
 %>
 
 <%
-    HttpSession user = request.getSession(true);
 	String uei=request.getParameter("uei");
 	Map<String, Notification> allNotifications=NotificationFactory.getInstance().getNotifications();
 	List<Notification> notifsForUEI=new ArrayList<Notification>();
@@ -106,7 +105,7 @@
 </form>
 
 <h2>Existing Notifications for UEI <%=uei%></h2>
-      <table width="50%" cellspacing="2" cellpadding="2" border="0">
+      <table width="50%">
       	 <tr><th>Name</th><th>Description</th><th>Rule</th><th>Destination path</th><th>Varbinds</th><th>Actions</th></tr>
       <% for(Notification notif : notifsForUEI) { 
           	String varbindDescription="";

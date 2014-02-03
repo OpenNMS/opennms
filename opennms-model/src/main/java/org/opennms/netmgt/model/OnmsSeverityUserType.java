@@ -74,7 +74,7 @@ public class OnmsSeverityUserType implements UserType {
 
     @Override
     public int hashCode(final Object x) throws HibernateException {
-        return x.hashCode();
+        return x == null ? 0 : x.hashCode();
     }
 
     @Override

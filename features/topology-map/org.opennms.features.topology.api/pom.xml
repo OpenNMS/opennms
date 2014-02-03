@@ -5,7 +5,7 @@
     <relativePath>../poms/compiled/</relativePath>
     <groupId>org.opennms.features.topology.build</groupId>
     <artifactId>compiled-bundle-settings</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>1.13.1-SNAPSHOT</version>
   </parent>
 
   <properties>
@@ -32,19 +32,29 @@
     </dependency>
     -->
     <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jaxb-dependencies</artifactId>
+      <groupId>org.opennms.osgi</groupId>
+      <artifactId>opennms-osgi-core</artifactId>
       <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+          <groupId>org.opennms.dependencies</groupId>
+          <artifactId>jaxb-dependencies</artifactId>
+          <type>pom</type>
+          <scope>provided</scope>
+      </dependency>
+    <dependency>
+      <groupId>org.opennms.osgi.features.topology</groupId>
+      <artifactId>vaadin</artifactId>
       <type>pom</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.osgi.features.topology</groupId>
-      <artifactId>vaadin</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
+	   <groupId>javax.servlet</groupId>
+	   <artifactId>servlet-api</artifactId>
+	   <scope>provided</scope>
+	</dependency>
+
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
@@ -67,6 +77,7 @@
 	   <artifactId>org.osgi.compendium</artifactId>
 	   <scope>provided</scope>
 	</dependency>
+
 	<dependency>
 	   <groupId>junit</groupId>
 	   <artifactId>junit</artifactId>
@@ -74,24 +85,5 @@
 	</dependency>
 	
   </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.3.7</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Bundle-RequiredExecutionEnvironment>JavaSE-1.6</Bundle-RequiredExecutionEnvironment>
-                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <Bundle-Version>${project.version}</Bundle-Version>
-                        <Bundle-Activator>org.opennms.features.topology.api.osgi.internal.Activator</Bundle-Activator>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>

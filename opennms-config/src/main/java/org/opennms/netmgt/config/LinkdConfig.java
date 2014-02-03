@@ -145,13 +145,6 @@ public interface LinkdConfig {
     int getThreads();
 
     /**
-     * <p>enableDiscoveryDownload</p>
-     *
-     * @return a boolean.
-     */
-    boolean enableDiscoveryDownload();
-
-    /**
      * <p>useIpRouteDiscovery</p>
      *
      * @return a boolean.
@@ -194,6 +187,20 @@ public interface LinkdConfig {
      * @return a boolean.
      */
     boolean useOspfDiscovery();
+
+    /**
+     * <p>useIsIsDiscovery</p>
+     *
+     * @return a boolean.
+     */
+    boolean useIsIsDiscovery();
+
+    /**
+     * <p>useWifiDiscovery</p>
+     *
+     * @return a boolean.
+     */
+    boolean useWifiDiscovery();
 
     /**
      * <p>saveStpNodeTable</p>

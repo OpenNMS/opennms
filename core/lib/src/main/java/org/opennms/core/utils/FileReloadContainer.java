@@ -107,6 +107,7 @@ public class FileReloadContainer<T> {
     private FileReloadCallback<T> m_callback;
     private long m_reloadCheckInterval = DEFAULT_RELOAD_CHECK_INTERVAL;
     private long m_lastReloadCheck;
+    private long m_lastUpdate;
     
     /**
      * Creates a new container with an object and a file underlying that
@@ -140,7 +141,12 @@ public class FileReloadContainer<T> {
             m_lastFileSize = m_file.length();
         } catch (final IOException e) {
             // Do nothing... we'll fall back to using the InputStream
-        	LOG.info("Resource '{}' does not seem to have an underlying File object; assuming this is not an auto-reloadable file resource", resource, e);
+            if (LOG.isTraceEnabled()) {
+                // if we've got trace turned on, show the stack, but chances are, we don't care about it
+                LOG.trace("Resource '{}' does not seem to have an underlying File object; assuming this is not an auto-reloadable file resource", resource, e);
+            } else {
+                LOG.info("Resource '{}' does not seem to have an underlying File object; assuming this is not an auto-reloadable file resource", resource);
+            }
         }
         
         m_lastReloadCheck = System.currentTimeMillis();
@@ -224,6 +230,7 @@ public class FileReloadContainer<T> {
         } else {
             m_object = object;
         }
+        m_lastUpdate = System.currentTimeMillis();
     }
 
     /**
@@ -256,5 +263,14 @@ public class FileReloadContainer<T> {
      */
     public void setReloadCheckInterval(final long reloadCheckInterval) {
         m_reloadCheckInterval = reloadCheckInterval;
+    }
+
+    /**
+     * Get the timestamp in milliseconds of the last time the file was reloaded.
+     * 
+     * @return the timestamp
+     */
+    public long getLastUpdate() {
+        return m_lastUpdate;
     }
 }

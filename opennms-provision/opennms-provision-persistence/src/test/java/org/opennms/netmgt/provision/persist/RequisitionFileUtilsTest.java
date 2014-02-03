@@ -54,7 +54,9 @@ public class RequisitionFileUtilsTest {
     @Test
     public void testDeleteSnapshots() throws Exception {
         RequisitionFileUtils.createSnapshot(m_repository, "test", new Date());
+        Thread.sleep(1);
         RequisitionFileUtils.createSnapshot(m_repository, "test", new Date());
+        Thread.sleep(1);
         RequisitionFileUtils.createSnapshot(m_repository, "test", new Date());
         
         List<File> snapshots = RequisitionFileUtils.findSnapshots(m_repository, "test");

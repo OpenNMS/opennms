@@ -25,14 +25,11 @@
  */
 package org.opennms.features.jmxconfiggenerator.webui;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.management.remote.JMXConnector;
-
+import com.vaadin.annotations.Theme;
+import com.vaadin.data.util.BeanItem;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.ui.*;
+import com.vaadin.ui.Notification.Type;
 import org.opennms.features.jmxconfiggenerator.Starter;
 import org.opennms.features.jmxconfiggenerator.graphs.GraphConfigGenerator;
 import org.opennms.features.jmxconfiggenerator.graphs.JmxConfigReader;
@@ -41,30 +38,19 @@ import org.opennms.features.jmxconfiggenerator.jmxconfig.JmxDatacollectionConfig
 import org.opennms.features.jmxconfiggenerator.webui.data.ModelChangeListener;
 import org.opennms.features.jmxconfiggenerator.webui.data.ServiceConfig;
 import org.opennms.features.jmxconfiggenerator.webui.data.UiModel;
-import org.opennms.features.jmxconfiggenerator.webui.ui.ConfigForm;
-import org.opennms.features.jmxconfiggenerator.webui.ui.ConfigResultView;
-import org.opennms.features.jmxconfiggenerator.webui.ui.HeaderPanel;
-import org.opennms.features.jmxconfiggenerator.webui.ui.IntroductionView;
-import org.opennms.features.jmxconfiggenerator.webui.ui.ModelChangeRegistry;
-import org.opennms.features.jmxconfiggenerator.webui.ui.ProgressWindow;
-import org.opennms.features.jmxconfiggenerator.webui.ui.UiState;
+import org.opennms.features.jmxconfiggenerator.webui.ui.*;
 import org.opennms.features.jmxconfiggenerator.webui.ui.mbeans.MBeansView;
 import org.opennms.xmlns.xsd.config.jmx_datacollection.JmxDatacollectionConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.annotations.Theme;
-import com.vaadin.data.util.BeanItem;
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Notification.Type;
-
+import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXServiceURL;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 @Theme(Config.STYLE_NAME)
 @SuppressWarnings("serial")

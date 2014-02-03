@@ -47,14 +47,14 @@ import org.opennms.netmgt.config.BasicScheduleUtils;
 import org.opennms.netmgt.config.PollOutagesConfigManager;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Downtime;
-import org.opennms.netmgt.config.poller.Interface;
-import org.opennms.netmgt.config.poller.Node;
-import org.opennms.netmgt.config.poller.Outage;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.poller.Service;
-import org.opennms.netmgt.config.poller.Time;
+import org.opennms.netmgt.config.poller.outages.Interface;
+import org.opennms.netmgt.config.poller.outages.Node;
+import org.opennms.netmgt.config.poller.outages.Outage;
+import org.opennms.netmgt.config.poller.outages.Time;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.poller.DistributionContext;
@@ -104,7 +104,7 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
     public Iterable<Parameter> parameters(final Service svc) {
         getReadLock().lock();
         try {
-            return svc.getParameterCollection();
+            return svc.getParameters();
         } finally {
             getReadLock().unlock();
         }
@@ -243,7 +243,8 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
     }
 
     public void clearDowntime() {
-        m_currentPkg.removeAllDowntime();
+        final List<Downtime> emptyList = Collections.emptyList();
+        m_currentPkg.setDowntimes(emptyList);;
     }
 
     public void addPackage(String name) {
@@ -265,7 +266,7 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
     }
 
     private Service findService(Package pkg, String svcName) {
-        for (Service svc : pkg.getServiceCollection()) {
+        for (Service svc : pkg.getServices()) {
             if (svcName.equals(svc.getName())) {
                 return svc;
             }
@@ -338,7 +339,7 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
 
     @Override
     public boolean isInterfaceInPackage(final String iface, final Package pkg) {
-        for (final String ipAddr : pkg.getSpecificCollection()) {
+        for (final String ipAddr : pkg.getSpecifics()) {
             if (ipAddr.equals(iface))
                 return true;
         }
@@ -386,7 +387,7 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
 
     @Override
     public boolean isServiceInPackageAndEnabled(final String svcName, final Package pkg) {
-        for (final Service svc : pkg.getServiceCollection()) {
+        for (final Service svc : pkg.getServices()) {
             if (svc.getName().equals(svcName))
                 return true;
         }

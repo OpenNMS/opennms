@@ -63,6 +63,8 @@ public interface FilterDao {
      */
     public Map<InetAddress, Set<String>> getIPAddressServiceMap(String rule) throws FilterParseException;
 
+    void flushActiveIpAddressListCache();
+
     /**
      * Get the (non-deleted) IP addresses that match the specified rule.
      *

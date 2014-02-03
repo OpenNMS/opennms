@@ -205,7 +205,7 @@ public class InventoryService implements InitializingBean {
 
         nodeModel.put("id", rancidName);
         nodeModel.put("db_id", nodeid);
-        nodeModel.put("status_general", ElementUtil.getNodeStatusString(node.getType().charAt(0)));
+        nodeModel.put("status_general", ElementUtil.getNodeStatusString(node.getType()));
 
         // TODO find a method to get root service for URL
         nodeModel.put("url", m_cp.getUrl()+m_cp.getDirectory());

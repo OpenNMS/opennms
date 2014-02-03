@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<?castor class-name="org.opennms.netmgt.poller.PollerConfiguration"?>
+<poller-configuration threads="30" 
+                      pathOutageEnabled="false"
+                      serviceUnresponsiveEnabled="false"
+                      nextOutageId="SELECT nextval('outageNxtId')"
+                      xmlrpc="false">
+  <node-outage status="on" pollAllIfNoCriticalServiceDefined="true">
+    <critical-service name="ICMP" />
+  </node-outage>
+  <package name="example1">
+    <filter>IPADDR != '0.0.0.0'</filter>
+    <specific>0.0.0.0</specific>
+    <include-range begin="1.1.1.1" end="254.254.254.254" />
+    <include-url>file:/Users/ranger/rcs/opennms-work/target/opennms-1.13.0-SNAPSHOT/etc/include</include-url>
+    <rrd step="300">
+      <rra>RRA:AVERAGE:0.5:1:2016</rra>
+      <rra>RRA:AVERAGE:0.5:12:1488</rra>
+      <rra>RRA:AVERAGE:0.5:288:366</rra>
+      <rra>RRA:MAX:0.5:288:366</rra>
+      <rra>RRA:MIN:0.5:288:366</rra>
+    </rrd>
+    <service name="ICMP" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="2" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="rrd-repository" value="/Users/ranger/rcs/opennms-work/target/opennms-1.13.0-SNAPSHOT/share/rrd/response" />
+      <parameter key="rrd-base-name" value="icmp" />
+      <parameter key="ds-name" value="icmp" />
+    </service>
+
+    <outage-calendar>zzz from poll-outages.xml zzz</outage-calendar>
+
+    <downtime interval="30000" begin="0" end="300000" /><!-- 30s, 0, 5m -->
+    <downtime interval="300000" begin="300000" end="43200000" /><!-- 5m, 5m, 12h -->
+    <downtime interval="600000" begin="43200000" end="432000000" /><!-- 10m, 12h, 5d -->
+    <downtime begin="432000000" delete="true" /><!-- anything after 5 days delete -->
+
+  </package>
+
+  <monitor service="ICMP" class-name="org.opennms.netmgt.poller.monitors.IcmpMonitor" />
+
+</poller-configuration>    

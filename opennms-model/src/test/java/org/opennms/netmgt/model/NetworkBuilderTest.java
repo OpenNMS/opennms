@@ -37,6 +37,7 @@ import java.util.Date;
 
 import org.junit.Test;
 import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
 
 public class NetworkBuilderTest {
     @Test
@@ -88,7 +89,7 @@ public class NetworkBuilderTest {
     @Test
     public void testDuplicateServiceAndCategoryNames() {
         final NetworkBuilder builder = new NetworkBuilder("localhost", "127.0.0.1");
-        builder.addNode("node1").setForeignSource("imported:").setForeignId("1").setType("A");
+        builder.addNode("node1").setForeignSource("imported:").setForeignId("1").setType(NodeType.ACTIVE);
         builder.addCategory("DEV_AC");
         builder.addCategory("IMP_mid");
         builder.addCategory("OPS_Online");
@@ -130,7 +131,7 @@ public class NetworkBuilderTest {
         assertEquals("node1", node1.getLabel());
         assertEquals("imported:", node1.getForeignSource());
         assertEquals("1", node1.getForeignId());
-        assertEquals("A", node1.getType());
+        assertEquals(NodeType.ACTIVE, node1.getType());
         assertEquals("127.0.0.1", node1.getDistPoller().getIpAddress());
         assertNull(node1.getSysContact());
         assertEquals(4, node1.getSnmpInterfaces().size());
@@ -155,7 +156,7 @@ public class NetworkBuilderTest {
         assertEquals("ICMP", svc.getServiceName());
         assertEquals(2, svc.getIfIndex().intValue());
 
-        builder.addNode("node2").setForeignSource("imported:").setForeignId("2").setType("A");
+        builder.addNode("node2").setForeignSource("imported:").setForeignId("2").setType(NodeType.ACTIVE);
         builder.addCategory("IMP_mid");
         builder.addCategory("Servers");
         builder.setBuilding("HQ");

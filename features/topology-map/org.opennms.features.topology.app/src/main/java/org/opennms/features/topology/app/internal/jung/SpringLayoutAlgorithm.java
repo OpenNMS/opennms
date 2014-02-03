@@ -45,11 +45,11 @@ public class SpringLayoutAlgorithm extends AbstractLayoutAlgorithm {
 
 	@Override
 	public void updateLayout(final GraphContainer graphContainer) {
-		
+
 		Graph g = graphContainer.getGraph();
-		
+
 		final Layout graphLayout = g.getLayout();
-		
+
 		SparseGraph<VertexRef, EdgeRef> jungGraph = new SparseGraph<VertexRef, EdgeRef>();
 
 		Collection<? extends Vertex> vertices = g.getDisplayVertices();
@@ -57,34 +57,27 @@ public class SpringLayoutAlgorithm extends AbstractLayoutAlgorithm {
 		for(VertexRef v : vertices) {
 			jungGraph.addVertex(v);
 		}
-		
+
 		Collection<? extends Edge> edges = g.getDisplayEdges();
-		
+
 		for(Edge e : edges) {
 			jungGraph.addEdge(e, e.getSource().getVertex(), e.getTarget().getVertex());
 		}
-		
 
-		
 		SpringLayout<VertexRef, EdgeRef> layout = new SpringLayout<VertexRef, EdgeRef>(jungGraph);
+		layout.setForceMultiplier(SPRING_FORCE_MULTIPLIER);
+		layout.setRepulsionRange(SPRING_LAYOUT_REPULSION);
 		layout.setInitializer(initializer(graphLayout));
 		layout.setSize(selectLayoutSize(graphContainer));
-		layout.setRepulsionRange(LAYOUT_REPULSION);
-		
+
 		int count = 0;
 		while(!layout.done() && count < 700) {
 			layout.step();
 			count++;
 		}
-		
-		
+
 		for(VertexRef v : vertices) {
 			graphLayout.setLocation(v, (int)layout.getX(v), (int)layout.getY(v));
 		}
-		
-		
-		
-		
 	}
-
 }

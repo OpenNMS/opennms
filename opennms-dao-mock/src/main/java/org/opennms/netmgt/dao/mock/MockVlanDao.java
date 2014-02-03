@@ -63,7 +63,7 @@ public class MockVlanDao extends AbstractMockDao<OnmsVlan,Integer> implements Vl
         final List<OnmsVlan> vlans = new ArrayList<OnmsVlan>();
         for (final OnmsVlan vlan : findAll()) {
             if (vlan.getNode() != null && vlan.getNode().getId() != nodeId) continue;
-            if (vlan.getLastPollTime() != null || vlan.getLastPollTime().before(scanTime)) {
+            if (vlan.getLastPollTime() != null && vlan.getLastPollTime().before(scanTime)) {
                 vlans.add(vlan);
             }
         }

@@ -64,12 +64,12 @@ public class TimeRange {
         }, LAST_YEAR {
             @Override
             public Date getStartDate() {
-                return new Date(new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR) - 1, 0, 1).getTimeInMillis());
+                return new Date(new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR) - 1, Calendar.JANUARY, 1).getTimeInMillis());
             }
             
             @Override
             public Date getEndDate() {
-                return new Date(new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR) - 1, 12, 0, 23, 59, 59).getTimeInMillis());
+                return new Date(new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR) - 1, Calendar.UNDECIMBER, 0, 23, 59, 59).getTimeInMillis());
             }
             
         },THIS_MONTH {
@@ -81,7 +81,7 @@ public class TimeRange {
         }, THIS_YEAR {
             @Override
             public Date getStartDate() {
-                return new Date(new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), 0, 1).getTimeInMillis());
+                return new Date(new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), Calendar.JANUARY, 1).getTimeInMillis());
             }
             
         };

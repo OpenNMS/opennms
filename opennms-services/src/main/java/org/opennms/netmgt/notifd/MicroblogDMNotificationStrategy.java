@@ -85,12 +85,11 @@ public class MicroblogDMNotificationStrategy extends MicroblogNotificationStrate
         
         String fullMessage = buildMessageBody(arguments);
         
-        LOG.debug("Dispatching microblog DM notification for user '{}' at base URL '{}' with destination user '{}' and message '{}'", svc.getUserId(), svc.getBaseURL(), destUser, fullMessage);
+        LOG.debug("Dispatching microblog DM notification at base URL '{}' with destination user '{}' and message '{}'", svc.getConfiguration().getClientURL(), destUser, fullMessage);
         try {
             response = svc.sendDirectMessage(destUser, fullMessage);
         } catch (TwitterException e) {
-            LOG.error("Microblog notification failed");
-            LOG.info("Failed to send DM for user '{}' at service URL '{}' to destination user '{}', caught exception", svc.getUserId(), svc.getBaseURL(), destUser, e);
+            LOG.error("Microblog notification failed at service URL '{}' to destination user '{}'", svc.getConfiguration().getClientURL(), destUser, e);
             return 1;
         }
         

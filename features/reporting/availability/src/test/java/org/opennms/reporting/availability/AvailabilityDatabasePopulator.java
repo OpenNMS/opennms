@@ -32,7 +32,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
@@ -61,6 +61,7 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -166,7 +167,7 @@ public class AvailabilityDatabasePopulator {
         
         setNode1(builder.addNode("test1.availability.opennms.org").
                  setId(1).
-                 setType("A").
+                 setType(NodeType.ACTIVE).
                  getNode());
         Assert.assertNotNull("newly built node 1 should not be null", getNode1());
         builder.addCategory(ac);
@@ -186,7 +187,7 @@ public class AvailabilityDatabasePopulator {
             //setForeignSource("imported:").
             
             //setForeignId("2").
-            setType("A");
+            setType(NodeType.ACTIVE);
         builder.addCategory(mid);
         builder.addCategory(catServers);
         builder.setBuilding("HQ");

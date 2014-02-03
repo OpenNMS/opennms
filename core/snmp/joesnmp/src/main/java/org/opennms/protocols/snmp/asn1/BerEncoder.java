@@ -432,7 +432,7 @@ public class BerEncoder implements AsnEncoder {
         //
         Object[] rVals = new Object[3];
         rVals[0] = lenVals[0];
-        rVals[1] = new Byte(asnType);
+        rVals[1] = Byte.valueOf(asnType);
         rVals[2] = lenVals[1];
 
         //

@@ -28,24 +28,28 @@
 
 package org.opennms.features.topology.plugins.browsers;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.lang.ArrayUtils;
-import org.opennms.features.topology.api.HasExtraComponents;
-import org.opennms.netmgt.dao.api.AlarmRepository;
-
 import com.vaadin.data.Container;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.themes.BaseTheme;
+import org.apache.commons.lang.ArrayUtils;
+import org.opennms.features.topology.api.HasExtraComponents;
+import org.opennms.netmgt.dao.api.AlarmRepository;
+import org.opennms.osgi.EventProxy;
+import org.opennms.osgi.VaadinApplicationContext;
+import org.opennms.osgi.VaadinApplicationContextAware;
+import org.opennms.web.api.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 @SuppressWarnings("serial")
-public class AlarmTable extends SelectionAwareTable implements HasExtraComponents {
+public class AlarmTable extends SelectionAwareTable implements HasExtraComponents, VaadinApplicationContextAware {
 
 	private static final String ACTION_CLEAR = "Clear";
 	private static final String ACTION_ESCALATE = "Escalate";
@@ -54,7 +58,10 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 
 	private static final long serialVersionUID = -1384405693333129773L;
 
-	private class CheckboxButton extends Button {
+    private EventProxy m_eventProxy;
+    private VaadinApplicationContext vaadinApplicationContext;
+
+    private class CheckboxButton extends Button {
 
 		private static final long serialVersionUID = -3595363303361200441L;
 
@@ -122,20 +129,6 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 		}
 	}
 
-	private class RefreshLinkButton extends Button {
-	    
-	    private RefreshLinkButton(String caption) {
-	        super(caption);
-	        setStyleName(BaseTheme.BUTTON_LINK);
-	        addClickListener(new ClickListener() {
-                @Override
-                public void buttonClick(ClickEvent event) {
-                    AlarmTable.this.refreshRowCache();
-                }
-	        });
-	    }
-	}
-	
 	private class SelectAllButton extends Button {
 
 		private CheckboxGenerator m_generator;
@@ -178,7 +171,6 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 
 	private final CheckboxButton m_submitButton;
 	private final NativeSelect m_ackCombo;
-	private final Button m_refreshButton = new RefreshLinkButton("Refresh");
 	private final SelectAllButton m_selectAllButton = new SelectAllButton("Select All");
 	private final ResetSelectionButton m_resetButton = new ResetSelectionButton("Deselect All");
 	private final AlarmRepository m_alarmRepo;
@@ -213,14 +205,15 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 	}
 
 	@Override
-	@SuppressWarnings("unchecked") // Because Aries Blueprint cannot handle generics
+	@SuppressWarnings("rawtypes") // Because Aries Blueprint cannot handle generics
 	public void setColumnGenerators(final Map generators) {
 		super.setColumnGenerators(generators);
 		for (final Object key : generators.keySet()) {
-			// If any of the column generators are {@link CheckboxGenerator} instances,
-			// then connect it to the buttons.
+            // If any of the column generators are {@link CheckboxGenerator} instances,
+            // then connect it to the buttons.
 			try {
-				CheckboxGenerator generator = (CheckboxGenerator)generators.get(key);
+                Object generatorObj = generators.get(key);
+                CheckboxGenerator generator = (CheckboxGenerator) generatorObj;
 				m_submitButton.setCheckboxGenerator(generator);
 				m_selectAllButton.setCheckboxGenerator(generator);
 				m_resetButton.setCheckboxGenerator(generator);
@@ -232,16 +225,24 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 
 	@Override
 	public Component[] getExtraComponents() {
-		return new Component[] {
-		        m_refreshButton,
+		if (SecurityContextHolder.getContext().toString().contains(Authentication.ROLE_READONLY)) {
+			return new Component[0];
+		} else {
+			return new Component[] {
 				m_selectAllButton,
 				m_resetButton,
 				m_ackCombo,
 				m_submitButton
-		};
+			};
+		}
 	}
-	
+
+    @Override
+    public void setVaadinApplicationContext(VaadinApplicationContext vaadinApplicationContext) {
+        this.vaadinApplicationContext = vaadinApplicationContext;
+    }
+
 	private String getUser() {
-	    return "admin"; // TODO use real user name
+        return vaadinApplicationContext.getUsername();
 	}
 }

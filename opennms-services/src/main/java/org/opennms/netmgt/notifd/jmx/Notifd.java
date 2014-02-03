@@ -30,7 +30,6 @@ package org.opennms.netmgt.notifd.jmx;
 
 import java.lang.reflect.UndeclaredThrowableException;
 
-import org.opennms.core.db.DataSourceFactory;
 import org.opennms.netmgt.config.DestinationPathFactory;
 import org.opennms.netmgt.config.GroupFactory;
 import org.opennms.netmgt.config.NotifdConfigFactory;
@@ -87,13 +86,6 @@ public class Notifd extends AbstractServiceDaemon implements NotifdMBean {
             throw new UndeclaredThrowableException(t);
         }
         
-        try {
-            DataSourceFactory.init();
-        } catch (Throwable t) {
-            LOG.error("start: Failed to init database connection factory.", t);
-            throw new UndeclaredThrowableException(t);
-        }
-
         try {
             GroupFactory.init();
         } catch (Throwable t) {

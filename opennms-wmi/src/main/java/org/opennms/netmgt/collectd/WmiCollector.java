@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,7 +38,6 @@ import java.util.Map;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.collectd.wmi.WmiAgentState;
 import org.opennms.netmgt.collectd.wmi.WmiCollectionAttributeType;
@@ -121,7 +120,7 @@ public class WmiCollector implements ServiceCollector {
                 // Collect the data
                 try {
                     // Tell the agent to connect
-                    agentState.connect();
+                    agentState.connect(wpm.getWmiNamespace());
 
                     // And retrieve the client object for working.
                     client = (WmiClient) agentState.getWmiClient();
@@ -199,7 +198,7 @@ public class WmiCollector implements ServiceCollector {
     }
 
     private boolean isGroupAvailable(final WmiAgentState agentState, final Wpm wpm) {
-        LOG.debug("Checking availability of group {}", wpm.getName());
+        LOG.debug("Checking availability of group {} via object {} of class {} in namespace {}", wpm.getName(), wpm.getKeyvalue(), wpm.getWmiClass(), wpm.getWmiNamespace());
         WmiManager manager = null;
 
         /*
@@ -211,6 +210,7 @@ public class WmiCollector implements ServiceCollector {
         try {
             // Get and initialize the WmiManager
             manager = agentState.getManager();
+            manager.setNamespace(wpm.getWmiNamespace());
             manager.init();
 
             final WmiParams params = new WmiParams(WmiParams.WMI_OPERATION_INSTANCEOF, "not-applicable", "NOOP", wpm.getWmiClass(), wpm.getKeyvalue());
@@ -247,7 +247,6 @@ public class WmiCollector implements ServiceCollector {
         m_scheduledNodes.clear();
         initWMIPeerFactory();
         initWMICollectionConfig();
-        initDatabaseConnectionFactory();
         initializeRrdRepository();
     }
 
@@ -301,15 +300,6 @@ public class WmiCollector implements ServiceCollector {
             if (!f.mkdirs()) {
                 throw new RuntimeException("Unable to create RRD file repository.  Path doesn't already exist and could not make directory: " + DataCollectionConfigFactory.getInstance().getRrdPath());
             }
-        }
-    }
-
-    private void initDatabaseConnectionFactory() {
-        try {
-            DataSourceFactory.init();
-        } catch (final Exception e) {
-            LOG.error("initDatabaseConnectionFactory: Error initializing DataSourceFactory.", e);
-            throw new UndeclaredThrowableException(e);
         }
     }
 

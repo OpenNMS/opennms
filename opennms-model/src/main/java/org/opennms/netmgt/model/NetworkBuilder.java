@@ -35,6 +35,8 @@ import java.util.Set;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
+import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
@@ -136,13 +138,13 @@ public class NetworkBuilder {
             return m_node.getAssetRecord();
         }
 
-        public NodeBuilder setLabelSource(final String labelSource) {
+        public NodeBuilder setLabelSource(final NodeLabelSource labelSource) {
             m_node.setLabelSource(labelSource);
             return this;
 
         }
 
-        public NodeBuilder setType(final String type) {
+        public NodeBuilder setType(final NodeType type) {
             m_node.setType(type);
             return this;
         }

@@ -316,24 +316,24 @@ public class SnmpPortal extends Object {
                                 usedBuffers.addLast(buf);
                             }
                             continue;
-                        } catch (Exception e) {
+                        } catch (final Exception e) {
                             if (!m_isClosing) {
                                 boolean handled = true;
                                 try {
-                                    Class<?> loggerC = Class.forName("org.opennms.core.utils.ThreadCategory");
+                                    final Class<?> loggerC = Class.forName("org.opennms.core.utils.ThreadCategory");
 
                                     Class<?>[] methodParmList = { Class.class };
-                                    Method loggerM = loggerC.getMethod("getInstance", methodParmList);
-
                                     Object[] parmList = { this.getClass() };
-                                    Object loggerI = loggerM.invoke(null, parmList);
+
+                                    final Method loggerM = loggerC.getMethod("getInstance", methodParmList);
+                                    final Object loggerI = loggerM.invoke(null, parmList);
 
                                     methodParmList = new Class[] { Object.class, Throwable.class };
-                                    Method infoM = loggerC.getMethod("info", methodParmList);
+                                    final Method infoM = loggerC.getMethod("info", methodParmList);
 
                                     parmList = new Object[] { "An unknown error occured decoding the packet", e };
                                     infoM.invoke(loggerI, parmList);
-                                } catch (Throwable t) {
+                                } catch (final Exception logException) {
                                     handled = false;
                                 }
 
@@ -400,7 +400,7 @@ public class SnmpPortal extends Object {
                             parmList = new Object[] { ostream };
                             debugM.invoke(loggerI, parmList);
                         }
-                    } catch (Throwable t) {
+                    } catch (final Exception loggingException) {
                         handled = false;
                     }
 
@@ -409,7 +409,7 @@ public class SnmpPortal extends Object {
                         SnmpUtil.dumpHex(System.out, pkt.getData(), 0, pkt.getLength());
                     }
                     m_handler.processBadDatagram(pkt);
-                } catch (AsnDecodingException err) {
+                } catch (final AsnDecodingException err) {
                     boolean handled = true;
                     try {
                         Class<?> loggerC = Class.forName("org.opennms.core.utils.ThreadCategory");
@@ -442,7 +442,7 @@ public class SnmpPortal extends Object {
                             parmList = new Object[] { ostream };
                             debugM.invoke(loggerI, parmList);
                         }
-                    } catch (Throwable t) {
+                    } catch (final Exception loggingException) {
                         handled = false;
                     }
 
@@ -451,7 +451,7 @@ public class SnmpPortal extends Object {
                         SnmpUtil.dumpHex(System.out, pkt.getData(), 0, pkt.getLength());
                     }
                     m_handler.processBadDatagram(pkt);
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     if (!m_isClosing) {
                         boolean handled = true;
                         try {
@@ -468,7 +468,7 @@ public class SnmpPortal extends Object {
 
                             parmList = new Object[] { "An unknown error occured decoding the packet", e };
                             infoM.invoke(loggerI, parmList);
-                        } catch (Throwable t) {
+                        } catch (final Exception loggingException) {
                             handled = false;
                         }
 

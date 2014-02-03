@@ -29,9 +29,6 @@
 package org.opennms.netmgt.provision.service;
 
 import static org.opennms.core.utils.InetAddressUtils.str;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 
 import java.net.InetAddress;
 
@@ -39,10 +36,11 @@ import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.tasks.RunInBatch;
 import org.opennms.core.tasks.Task;
-
 import org.opennms.netmgt.config.SnmpAgentConfigFactory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventForwarder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>NewSuspectScan class.</p>
@@ -57,7 +55,8 @@ public class NewSuspectScan implements RunInBatch {
     private EventForwarder m_eventForwarder;
     private SnmpAgentConfigFactory m_agentConfigFactory;
     private DefaultTaskCoordinator m_taskCoordinator;
-
+	private String m_foreignSource;
+	
     /**
      * <p>Constructor for NewSuspectScan.</p>
      *
@@ -67,12 +66,13 @@ public class NewSuspectScan implements RunInBatch {
      * @param agentConfigFactory a {@link org.opennms.netmgt.config.SnmpAgentConfigFactory} object.
      * @param taskCoordinator a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
      */
-    public NewSuspectScan(final InetAddress ipAddress, final ProvisionService provisionService, final EventForwarder eventForwarder, final SnmpAgentConfigFactory agentConfigFactory, final DefaultTaskCoordinator taskCoordinator) {
+    public NewSuspectScan(final InetAddress ipAddress, final ProvisionService provisionService, final EventForwarder eventForwarder, final SnmpAgentConfigFactory agentConfigFactory, final DefaultTaskCoordinator taskCoordinator, String foreignSource) {
         m_ipAddress = ipAddress;
         m_provisionService = provisionService;
         m_eventForwarder = eventForwarder;
         m_agentConfigFactory = agentConfigFactory;
         m_taskCoordinator = taskCoordinator;
+        m_foreignSource = foreignSource;
     }
     
     /**
@@ -97,17 +97,16 @@ public class NewSuspectScan implements RunInBatch {
      */
     protected void scanUndiscoveredNode(final BatchTask phase) {
     	final String addrString = str(m_ipAddress);
-		LOG.info("Attempting to scan new suspect address {}", addrString);
-        final OnmsNode node = m_provisionService.createUndiscoveredNode(addrString);
-        
+		LOG.info("Attempting to scan new suspect address {} for foreign source {}", addrString, m_foreignSource);
+		
+        final OnmsNode node = m_provisionService.createUndiscoveredNode(addrString, m_foreignSource);
         if (node != null) {
 
-            phase.getBuilder().addSequence(
-                    new NodeInfoScan(node, m_ipAddress, null, createScanProgress(), m_agentConfigFactory, m_provisionService, null),
-                    new IpInterfaceScan(node.getId(), m_ipAddress, null, m_provisionService),
-                    new NodeScan(node.getId(), null, null, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator)
-            );
-
+        	phase.getBuilder().addSequence(
+        			new NodeInfoScan(node, m_ipAddress, null, createScanProgress(), m_agentConfigFactory, m_provisionService, null),
+        			new IpInterfaceScan(node.getId(), m_ipAddress, null, m_provisionService),
+        			new NodeScan(node.getId(), null, null, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator)
+        			);
         }
     }
 

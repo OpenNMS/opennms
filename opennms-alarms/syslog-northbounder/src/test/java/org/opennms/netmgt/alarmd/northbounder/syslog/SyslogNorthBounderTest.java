@@ -286,7 +286,7 @@ public class SyslogNorthBounderTest {
                 Assert.assertTrue(message.contains("NODE:p-brane"));
                 break;
             case 3:
-                Assert.assertTrue("Alarm (OnmsSeverity: "+OnmsSeverity.get(i)+") = LEVEL_NOTICE.", message.contains("NOTICE"));
+                Assert.assertTrue("Alarm (OnmsSeverity: "+OnmsSeverity.get(i)+") = LEVEL_WARN.", message.contains("WARN"));
                 Assert.assertTrue(message.contains("NODE:p-brane"));
                 break;
             case 4:

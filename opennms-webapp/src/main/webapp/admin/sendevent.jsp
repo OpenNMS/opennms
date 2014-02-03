@@ -33,12 +33,11 @@
 	session="true"
 	import="
 		java.io.*,
-		java.util.*, java.util.Map.Entry,
-		java.net.InetAddress, java.net.UnknownHostException,
+		java.util.*,
 		org.opennms.netmgt.config.*,
-		org.opennms.netmgt.config.notifications.*,
 		org.opennms.core.utils.BundleLists,
 		org.opennms.core.utils.ConfigFileConstants,
+		org.opennms.core.utils.InetAddressUtils,
 		org.opennms.netmgt.xml.eventconf.Event,
 		org.springframework.core.io.FileSystemResource
 	"
@@ -57,15 +56,7 @@
 	}
 %>
 <%
-    HttpSession user = request.getSession(true);
-
-    String hostName = "localhost";
-    try {
-	java.net.InetAddress localMachine = java.net.InetAddress.getLocalHost();
-        hostName = localMachine.getHostName();
-    } catch(java.net.UnknownHostException uhe) {
-	//handle exception
-    }
+    String hostName = InetAddressUtils.getLocalHostName();
 %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Send Event" />
@@ -197,7 +188,7 @@
 <form method="post" name="sendevent"
       id="form.sendevent"
       action="admin/postevent.jsp" >
-      <table width="50%" cellspacing="2" cellpadding="2" border="0">
+      <table width="50%">
         <tr>
           <td valign="top" align="left">
             <h4>Events</h4>
@@ -205,6 +196,14 @@
                <option value="">--Select One--</option>
                <%=buildEventSelect()%>
             </select>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top" align="left">
+            <div class="ui-widget">
+              <label>UUID:</label>
+              <input id="uuid" name="uuid" type="text" value="" size="64" />
+            </div>
           </td>
         </tr>
         <tr>
@@ -289,16 +288,13 @@
     public String buildEventSelect()
       throws IOException, FileNotFoundException
     {
-        List events = m_eventConfDao.getEventsByLabel();
+        List<Event> events = m_eventConfDao.getEventsByLabel();
         StringBuffer buffer = new StringBuffer();
 
         List<String> excludeList = getExcludeList();
 	TreeMap<String, String> sortedMap = new TreeMap<String, String>();
 
-        Iterator i = events.iterator();
-
-        while(i.hasNext()) {
-            org.opennms.netmgt.xml.eventconf.Event e = (org.opennms.netmgt.xml.eventconf.Event)i.next();
+        for (Event e : events) {
 
             String uei = e.getUei();
             //System.out.println(uei);

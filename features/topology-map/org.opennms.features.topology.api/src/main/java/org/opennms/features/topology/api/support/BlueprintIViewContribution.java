@@ -28,47 +28,70 @@
 
 package org.opennms.features.topology.api.support;
 
-import com.vaadin.server.Resource;
-import com.vaadin.ui.Component;
 import org.opennms.features.topology.api.IViewContribution;
 import org.opennms.features.topology.api.WidgetContext;
-import org.opennms.features.topology.api.osgi.VaadinApplicationContext;
+import org.opennms.osgi.EventProxy;
+import org.opennms.osgi.EventProxyAware;
+import org.opennms.osgi.VaadinApplicationContext;
+import org.opennms.osgi.VaadinApplicationContextAware;
+import org.osgi.framework.BundleContext;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 
+import com.vaadin.server.Resource;
+import com.vaadin.ui.Component;
+
 public class BlueprintIViewContribution implements IViewContribution {
+    private final BlueprintContainer m_container;
+    private final String m_beanId;
+    private String m_title;
 
-	private final BlueprintContainer m_container;
-	private final String m_beanName;
-	private String m_title;
-
-	public BlueprintIViewContribution(BlueprintContainer container, String beanName) {
-		m_container = container;
-		m_beanName = beanName;
-	}
-
-    @Override
-    public Component getView(VaadinApplicationContext applicationContext, WidgetContext widgetContext) {
-        // Get the component by asking the blueprint container to instantiate a prototype bean
-        Component component = (Component)m_container.getComponentInstance(m_beanName);
-        applicationContext.getEventStorage().addPossibleEventConsumer(component);
-        return component;
-
+    public BlueprintIViewContribution(final BlueprintContainer container, final String beanId) {
+        m_container = container;
+        m_beanId = beanId;
     }
 
-	/**
-	 * Returns null.
-	 */
-	@Override
-	public Resource getIcon() {
-		return null;
-	}
+    @Override
+    public Component getView(final VaadinApplicationContext vaadinApplicationContext, final WidgetContext widgetContext) {
+        // Get the component by asking the blueprint container to instantiate a prototype bean
+        final Component component = (Component)m_container.getComponentInstance(m_beanId);
+        final BundleContext bundleContext = (BundleContext) m_container.getComponentInstance("blueprintBundleContext");
+        final EventProxy eventProxy = vaadinApplicationContext.getEventProxy(bundleContext);
+        eventProxy.addPossibleEventConsumer(component);
 
-	@Override
-	public String getTitle() {
-		return m_title;
-	}
+        injectEventProxy(component, eventProxy);
+        injectVaadinApplicationContext(component, vaadinApplicationContext);
 
-	public void setTitle(String title) {
-		m_title = title;
-	}
+        return component;
+    }
+
+    private void injectEventProxy(final Component component, final EventProxy eventProxy) {
+        if(component instanceof EventProxyAware){
+            ((EventProxyAware)component).setEventProxy(eventProxy);
+        }
+    }
+
+    private void injectVaadinApplicationContext(final Component component, final VaadinApplicationContext vaadinApplicationContext) {
+        if (component instanceof VaadinApplicationContextAware) {
+            ((VaadinApplicationContextAware)component).setVaadinApplicationContext(vaadinApplicationContext);
+        }
+    }
+
+    @Override
+    public Resource getIcon() {
+        return null;
+    }
+
+    @Override
+    public String getTitle() {
+        return m_title;
+    }
+
+    public void setTitle(String title) {
+        m_title = title;
+    }
+
+    @Override
+    public String toString() {
+        return "BlueprintIViewContribution [container=" + m_container + ", beanId=" + m_beanId + ", title=" + m_title + "]";
+    }
 }

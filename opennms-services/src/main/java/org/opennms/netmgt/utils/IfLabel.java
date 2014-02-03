@@ -36,7 +36,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.opennms.core.resource.Vault;
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.core.utils.Querier;
 import org.opennms.core.utils.RowProcessor;
@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:larry@opennms.org">Lawrence Karnowski </a>
  * @author <a href="mailto:seth@opennms.org">Seth Leger </a>
  */
-public class IfLabel extends Object {
+public class IfLabel {
 
 	private static final Logger LOG = LoggerFactory.getLogger(IfLabel.class);
 	
@@ -81,7 +81,7 @@ public class IfLabel extends Object {
 
         // first I have to strip off the MAC address from the end, if there is
         // one
-        int dashIndex = ifLabel.lastIndexOf("-");
+        int dashIndex = ifLabel.lastIndexOf('-');
 
         if (dashIndex >= 0) {
             desc = ifLabel.substring(0, dashIndex);
@@ -103,7 +103,7 @@ public class IfLabel extends Object {
                 "    OR snmpifname ilike '"+queryDesc+"')";
         LOG.debug("getInterfaceInfoFromLabel: query is: {}", query);
         
-        Querier q = new Querier(Vault.getDataSource(), query, new RowProcessor() {
+        Querier q = new Querier(DataSourceFactory.getInstance(), query, new RowProcessor() {
 
             @Override
             public void processRow(ResultSet rs) throws SQLException {
@@ -164,7 +164,7 @@ public class IfLabel extends Object {
         
         final ArrayList<String> list = new ArrayList<String>();
         
-        Querier q = new Querier(Vault.getDataSource(), query, new RowProcessor() {
+        Querier q = new Querier(DataSourceFactory.getInstance(), query, new RowProcessor() {
             @Override
             public void processRow(ResultSet rs) throws SQLException {
                 String name = rs.getString("snmpifname");
@@ -217,7 +217,7 @@ public class IfLabel extends Object {
         		"   AND ipinterface.nodeid = "+nodeId+
         		"   AND ipinterface.ipaddr = '"+inetAddr+"'";
         
-        Querier q = new Querier(Vault.getDataSource(), query, new RowProcessor() {
+        Querier q = new Querier(DataSourceFactory.getInstance(), query, new RowProcessor() {
             @Override
             public void processRow(ResultSet rs) throws SQLException {
                 String name = rs.getString("snmpifname");
@@ -281,7 +281,7 @@ public class IfLabel extends Object {
         		"   AND ipinterface.ifindex= "+ifIndex;
         
         
-        Querier q = new Querier(Vault.getDataSource(), query, new RowProcessor() {
+        Querier q = new Querier(DataSourceFactory.getInstance(), query, new RowProcessor() {
 
             @Override
             public void processRow(ResultSet rs) throws SQLException {
@@ -334,7 +334,7 @@ public class IfLabel extends Object {
                 "   AND snmpifindex= "+ifIndex;
         
         
-        Querier q = new Querier(Vault.getDataSource(), query, new RowProcessor() {
+        Querier q = new Querier(DataSourceFactory.getInstance(), query, new RowProcessor() {
 
             @Override
             public void processRow(ResultSet rs) throws SQLException {

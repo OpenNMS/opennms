@@ -381,7 +381,7 @@ public final class BroadcastEventProcessor implements EventListener {
             if (newTask != null) {
                 noticeQueue.putItem(now, newTask);
             }
-        } else if (targetName.indexOf("@") > -1) {
+        } else if (targetName.indexOf('@') > -1) {
             NotificationTask newTask = makeEmailTask(now, params, noticeId, targetName, commands, null, null);
 
             if (newTask != null) {
@@ -633,7 +633,7 @@ public final class BroadcastEventProcessor implements EventListener {
             count = getUserManager().countUsersWithRole(targetName);
         } else if (getUserManager().hasUser(targetName)) {
             count = 1;
-        } else if (targetName.indexOf("@") > -1) {
+        } else if (targetName.indexOf('@') > -1) {
             count = 1;
         }
 
@@ -742,7 +742,7 @@ public final class BroadcastEventProcessor implements EventListener {
             } else if (getUserManager().hasUser(targetName)) {
                 NotificationTask[] userTasks = { makeUserTask(startTime, params, noticeId, targetName, targets[i].getCommand(), targetSiblings, autoNotify) };
                 tasks = userTasks;
-            } else if (targetName.indexOf("@") > -1) {
+            } else if (targetName.indexOf('@') > -1) {
             	// Bug 2027 -- get the command name from the Notifd config instead of using default of "email"
             	String[] emailCommands = { getNotifdConfigManager().getConfiguration().getEmailAddressCommand() };
                 NotificationTask[] emailTasks = { makeEmailTask(startTime, params, noticeId, targetName, emailCommands, targetSiblings, autoNotify) };

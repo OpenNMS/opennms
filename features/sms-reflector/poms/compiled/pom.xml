@@ -3,11 +3,11 @@
   <parent>
     <groupId>org.opennms.features.sms-reflector.build</groupId>
     <artifactId>shared-plugin-settings</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>1.13.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>compiled-bundle-settings</artifactId>
-  <name>sms-reflector - bundle instructions</name>
+  <name>OpenNMS Features SMS-Reflector - bundle instructions</name>
   <packaging>pom</packaging>
   <build>
     <resources>
@@ -52,7 +52,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.3.2</version>
         <configuration>
           <source>1.6</source>
           <target>1.6</target>

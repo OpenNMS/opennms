@@ -56,15 +56,6 @@
     if( nodeIdString != null ) {
         nodeFilter = "&amp;filter=node%3D" + nodeIdString;
     }
-
-		// @i18n
-		String status = "Unknown";
-		try {
-				NotifdConfigFactory.init();
-				status = NotifdConfigFactory.getInstance().getPrettyStatus();
-		} catch (Throwable e) { 
-			// If factory can't be initialized, status is already 'Unknown'
-		}
 %>
 
 <h3 class="o-box"><a href="notification/index.jsp">Notification</a></h3>

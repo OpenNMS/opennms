@@ -49,7 +49,7 @@ import net.jradius.packet.attribute.RadiusAttribute;
 
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.web.springframework.security.Authentication;
+import org.opennms.web.api.Authentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationServiceException;

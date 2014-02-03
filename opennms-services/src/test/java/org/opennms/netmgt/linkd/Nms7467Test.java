@@ -29,140 +29,41 @@
 package org.opennms.netmgt.linkd;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.Set;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.hibernate.criterion.Restrictions;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.opennms.core.test.MockLogAppender;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.criteria.Alias;
+import org.opennms.core.criteria.Alias.JoinType;
+import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
-import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.LinkdConfig;
-import org.opennms.netmgt.config.LinkdConfigFactory;
 import org.opennms.netmgt.config.linkd.Package;
-import org.opennms.netmgt.dao.api.AtInterfaceDao;
-import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
-import org.opennms.netmgt.dao.api.IpRouteInterfaceDao;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.dao.api.StpInterfaceDao;
-import org.opennms.netmgt.dao.api.StpNodeDao;
-import org.opennms.netmgt.dao.api.VlanDao;
-import org.opennms.netmgt.linkd.nb.Nms7467NetworkBuilder;
 import org.opennms.netmgt.model.DataLinkInterface;
-import org.opennms.netmgt.model.OnmsCriteria;
+import org.opennms.netmgt.model.OnmsAtInterface;
 import org.opennms.netmgt.model.OnmsIpRouteInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsStpInterface;
 import org.opennms.netmgt.model.OnmsStpNode;
 import org.opennms.netmgt.model.OnmsStpNode.BridgeBaseType;
 import org.opennms.netmgt.model.OnmsStpNode.StpProtocolSpecification;
-import org.opennms.test.JUnitConfigurationEnvironment;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-@RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations= {
-        "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
-        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
-        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-linkd.xml",
-        "classpath:/META-INF/opennms/applicationContext-linkdTest.xml",
-        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
-})
-@JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
-@JUnitTemporaryDatabase
-public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBean {
-
-    @Autowired
-    private Linkd m_linkd;
-
-    private LinkdConfig m_linkdConfig;
-
-    @Autowired
-    private NodeDao m_nodeDao;
-
-    @Autowired
-    private SnmpInterfaceDao m_snmpInterfaceDao;
-
-    @Autowired
-    private StpNodeDao m_stpNodeDao;
-    
-    @Autowired
-    private StpInterfaceDao m_stpInterfaceDao;
-    
-    @Autowired
-    private IpRouteInterfaceDao m_ipRouteInterfaceDao;
-    
-    @Autowired
-    private AtInterfaceDao m_atInterfaceDao;
-    
-    @Autowired
-    private VlanDao m_vlanDao;
-    
-    @Autowired
-    private DataLinkInterfaceDao m_dataLinkInterfaceDao;
-        
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
-    }
-
-    @Before
-    public void setUp() throws Exception {
-        Properties p = new Properties();
-        p.setProperty("log4j.logger.org.hibernate.SQL", "WARN");
-        p.setProperty("log4j.logger.org.hibernate.cfg", "WARN");
-        p.setProperty("log4j.logger.org.springframework","WARN");
-        p.setProperty("log4j.logger.com.mchange.v2.resourcepool", "WARN");
-        p.setProperty("log4j.logger.org.opennms.netmgt.config", "WARN");
-        p.setProperty("log4j.logger.org.opennms.netmgt.config", "WARN");
-        
-        super.setNodeDao(m_nodeDao);
-        super.setSnmpInterfaceDao(m_snmpInterfaceDao);
-        MockLogAppender.setupLogging(p);
-
-    }
-
-    @Before
-    public void setUpLinkdConfiguration() throws Exception {
-        LinkdConfigFactory.init();
-        final Resource config = new ClassPathResource("etc/linkd-configuration.xml");
-        final LinkdConfigFactory factory = new LinkdConfigFactory(-1L, config.getInputStream());
-        LinkdConfigFactory.setInstance(factory);
-        m_linkdConfig = LinkdConfigFactory.getInstance();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        for (final OnmsNode node : m_nodeDao.findAll()) {
-            m_nodeDao.delete(node);
-        }
-        m_nodeDao.flush();
-    }
+public class Nms7467Test extends Nms7467NetworkBuilder {
 
     @Test
     public void testDefaultConfiguration() throws MarshalException, ValidationException, IOException {
@@ -175,13 +76,13 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
 
         
         assertEquals(false, m_linkdConfig.isAutoDiscoveryEnabled());
-        assertEquals(false, m_linkdConfig.enableDiscoveryDownload());
         assertEquals(true,m_linkdConfig.isVlanDiscoveryEnabled());
         assertEquals(true,m_linkdConfig.useCdpDiscovery());
         assertEquals(true,m_linkdConfig.useIpRouteDiscovery());
         assertEquals(true,m_linkdConfig.useBridgeDiscovery());
         assertEquals(true,m_linkdConfig.useOspfDiscovery());
         assertEquals(true,m_linkdConfig.useLldpDiscovery());
+        assertEquals(true,m_linkdConfig.useIsIsDiscovery());
 
         assertEquals(true,m_linkdConfig.saveRouteTable());
         assertEquals(true,m_linkdConfig.saveStpNodeTable());
@@ -195,7 +96,6 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertEquals("example1",example1.getName());
         assertEquals(false, example1.hasAutoDiscovery());
         assertEquals(false, example1.hasDiscovery_link_interval());
-        assertEquals(false,example1.hasEnableDiscoveryDownload());
         assertEquals(false,example1.hasEnableVlanDiscovery());
         assertEquals(false,example1.hasForceIpRouteDiscoveryOnEthernet());
         assertEquals(false,example1.hasSaveRouteTable());
@@ -205,15 +105,29 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertEquals(false,example1.hasUseBridgeDiscovery());
         assertEquals(false,example1.hasUseCdpDiscovery());
         assertEquals(false,example1.hasUseIpRouteDiscovery());
+        assertEquals(false,example1.hasUseIsisDiscovery());
         
         assertEquals(false, m_linkdConfig.isInterfaceInPackage(InetAddressUtils.addr(CISCO_C870_IP), example1));
         
         m_nodeDao.save(getCiscoC870());
+        m_nodeDao.save(getCiscoWsC2948());
         m_nodeDao.flush();
         
         m_linkdConfig.update();
-        assertEquals(true, m_linkdConfig.isInterfaceInPackage(InetAddressUtils.addr(CISCO_C870_IP), example1));
         
+        assertEquals(true, m_linkdConfig.isInterfaceInPackage(InetAddressUtils.addr(CISCO_C870_IP), example1));
+        assertEquals(true, m_linkdConfig.isInterfaceInPackage(InetAddressUtils.addr(CISCO_WS_C2948_IP), example1));
+        
+        final OnmsNode ciscorouter = m_nodeDao.findByForeignId("linkd", CISCO_C870_NAME);
+        final OnmsNode ciscows = m_nodeDao.findByForeignId("linkd", CISCO_WS_C2948_NAME);
+        assertTrue(m_linkd.scheduleNodeCollection(ciscorouter.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(ciscows.getId()));
+
+        LinkableNode lciscorouter = m_linkd.removeNode("example1", InetAddressUtils.addr(CISCO_C870_IP));
+        assertNotNull(lciscorouter);
+        assertEquals(ciscorouter.getId().intValue(),lciscorouter.getNodeId() );
+
+        assertEquals(1, m_linkd.getActivePackages().size());
     }
     
     @Test
@@ -224,7 +138,24 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
             @JUnitSnmpAgent(host=NETGEAR_SW_108_IP, port=161, resource="classpath:linkd/nms7467/"+NETGEAR_SW_108_IP+"-walk.txt"),
             @JUnitSnmpAgent(host=LINUX_UBUNTU_IP, port=161, resource="classpath:linkd/nms7467/"+LINUX_UBUNTU_IP+"-walk.txt")
     })
+    // mrgarrison:172.20.1.5:-1   -------- ciscoswitch:172.20.1.7:47 ---bridge
+    // workstation:172.20.1.101:-1-------- ciscoswitch:172.20.1.7:47 ---bridge
+    // mrmakay:172.20.1.1:3       -------- ciscoswitch:172.20.1.7:52 ---cdp
+    // mrmakay:172.20.1.1:13      -------- ciscoswitch:172.20.1.7:52 ---bridge 
+    // mrmakay:172.20.1.1:12      -------- ciscoswitch:172.20.1.7:52 ---bridge 
+    // linuxubuntu:172.20.1.14:4  -------- ciscoswitch:172.20.1.7:11 ---bridge
+    // ng108switch:172.20.1.8:8   -------- ciscoswitch:172.20.1.7:9  ---bridge
+    // mac:172.20.1.28:4          -------- ng108switch:172.20.1.8:1  ---bridge
     public void testAllTogether() throws Exception {
+
+        Package example1 = m_linkdConfig.getPackage("example1");
+        example1.setUseLldpDiscovery(false);
+        example1.setUseOspfDiscovery(false);
+        example1.setUseIsisDiscovery(false);
+        example1.setUseIpRouteDiscovery(false);
+        example1.setForceIpRouteDiscoveryOnEthernet(false);
+        example1.setSaveRouteTable(true);
+        example1.setUseCdpDiscovery(true);
 
         m_nodeDao.save(getCiscoC870());
         m_nodeDao.save(getCiscoWsC2948());
@@ -263,59 +194,77 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertTrue(m_linkd.runSingleSnmpCollection(mac.getId()));
         assertTrue(m_linkd.runSingleSnmpCollection(linux.getId()));
         
-        final Collection<LinkableNode> linkables = m_linkd.getLinkableNodes();
+        final Collection<LinkableNode> linkables = m_linkd.getLinkableNodesOnPackage("example1");
         assertEquals(5, linkables.size());       
 
+        for (OnmsAtInterface onmsat: m_atInterfaceDao.findAll()) {
+            printAtInterface(onmsat);
+        }
         assertEquals(0,m_dataLinkInterfaceDao.countAll());
                                        
         assertEquals(5, m_linkd.getLinkableNodesOnPackage("example1").size());
 
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
 
+        for (DataLinkInterface link: m_dataLinkInterfaceDao.findAll())
+            printLink(link);
+        assertEquals(8,m_dataLinkInterfaceDao.countAll());
         
-        final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
-        assertEquals(9,links.size());
         //
-        final DataLinkInterface mactongsw108link = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(mac.getId(),4);
+        final DataLinkInterface mactongsw108link = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(mac.getId(),4).iterator().next();
         
         assertEquals(mac.getId(), mactongsw108link.getNode().getId());
         assertEquals(4,mactongsw108link.getIfIndex().intValue());
         assertEquals(ngsw108.getId(), mactongsw108link.getNodeParentId());
         assertEquals(1, mactongsw108link.getParentIfIndex().intValue());        
 
-        final DataLinkInterface ngsw108linktociscows = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(ngsw108.getId(), 8);
+        final DataLinkInterface ngsw108linktociscows = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(ngsw108.getId(), 8).iterator().next();
         
         assertEquals(ngsw108.getId(), ngsw108linktociscows.getNode().getId());
         assertEquals(8,ngsw108linktociscows.getIfIndex().intValue());
         assertEquals(ciscows.getId(), ngsw108linktociscows.getNodeParentId());
         assertEquals(9, ngsw108linktociscows.getParentIfIndex().intValue());
 
-        final DataLinkInterface ciscorouterlinktociscows2 = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(ciscows.getId(), 52);
+        final DataLinkInterface ciscorouterlinktociscows2 = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(ciscows.getId(), 52).iterator().next();
         assertEquals(ciscows.getId(), ciscorouterlinktociscows2.getNode().getId());
         assertEquals(52, ciscorouterlinktociscows2.getIfIndex().intValue());
         assertEquals(ciscorouter.getId(), ciscorouterlinktociscows2.getNodeParentId());
         assertEquals(3, ciscorouterlinktociscows2.getParentIfIndex().intValue());
 
-        final DataLinkInterface linuxubuntulinktociscows = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(linux.getId(), 4);
+        final DataLinkInterface linuxubuntulinktociscows = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(linux.getId(), 4).iterator().next();
         
         assertEquals(linux.getId(), linuxubuntulinktociscows.getNode().getId());
         assertEquals(4,linuxubuntulinktociscows.getIfIndex().intValue());
         assertEquals(ciscows.getId(), linuxubuntulinktociscows.getNodeParentId());
         assertEquals(11, linuxubuntulinktociscows.getParentIfIndex().intValue());
 
-        final DataLinkInterface workstationlinktociscows = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(workstation.getId(), -1);
+        final DataLinkInterface workstationlinktociscows = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(workstation.getId(), -1).iterator().next();
         
         assertEquals(workstation.getId(), workstationlinktociscows.getNode().getId());
         assertEquals(-1,workstationlinktociscows.getIfIndex().intValue());
         assertEquals(ciscows.getId(), workstationlinktociscows.getNodeParentId());
         assertEquals(47, workstationlinktociscows.getParentIfIndex().intValue());
 
-        final DataLinkInterface ciscoaplinktociscows = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(ciscoap.getId(), -1);
+        final DataLinkInterface ciscoaplinktociscows = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(ciscoap.getId(), -1).iterator().next();
         
         assertEquals(ciscoap.getId(), ciscoaplinktociscows.getNode().getId());
         assertEquals(-1, ciscoaplinktociscows.getIfIndex().intValue());
         assertEquals(ciscows.getId(), ciscoaplinktociscows.getNodeParentId());
         assertEquals(47,ciscoaplinktociscows.getParentIfIndex().intValue());
+        
+
+        Thread.sleep(5000);
+
+        assertTrue(m_linkd.runSingleSnmpCollection(ciscorouter.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(ciscows.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(ngsw108.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(mac.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(linux.getId()));
+
+        assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
+
+        assertEquals(8,m_dataLinkInterfaceDao.countAll());
+
     }
 
     @Test
@@ -330,6 +279,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         Package example1 = m_linkdConfig.getPackage("example1");
         example1.setUseLldpDiscovery(false);
         example1.setUseOspfDiscovery(false);
+        example1.setUseIsisDiscovery(false);
         example1.setForceIpRouteDiscoveryOnEthernet(true);
         
         final OnmsNode ciscosw = m_nodeDao.findByForeignId("linkd", CISCO_WS_C2948_NAME);
@@ -339,8 +289,8 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertTrue(m_linkd.runSingleSnmpCollection(ciscosw.getId()));
 
         // linkd has 1 linkable node
-        assertEquals(1, m_linkd.getLinkableNodes().size());
-        LinkableNode linkNode = m_linkd.getLinkableNodes().iterator().next();
+        assertEquals(1, m_linkd.getLinkableNodesOnPackage("example1").size());
+        LinkableNode linkNode = m_linkd.getLinkableNodesOnPackage("example1").iterator().next();
         
         // linkabble node is not null
         assertTrue(linkNode != null);
@@ -381,14 +331,18 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         * CISCO_WS_C2948_IP:172.20.1.7:0002baaacffe:3:me1
         */
         
-        assertEquals("should have saved 1 ip to mac",1, m_linkd.getAtInterfaces(packageName).size());        
-        AtInterface at = m_linkd.getAtInterfaces(packageName).get("0002baaacffe").get(0);
+        final List<AtInterface> atInterfaces = m_linkd.getAtInterfaces(packageName, "0002baaacffe");
+        assertNotNull(atInterfaces);
+        assertEquals(1, atInterfaces.size());
+        AtInterface at = atInterfaces.get(0);
         assertEquals(CISCO_WS_C2948_IP,at.getIpAddress().getHostAddress());
         assertEquals(3, at.getIfIndex().intValue());
         // Now Let's test the database
-        final OnmsCriteria criteria = new OnmsCriteria(OnmsIpRouteInterface.class);
-        criteria.createAlias("node", "node");
-        criteria.add(Restrictions.eq("node.id", ciscosw.getId()));
+        final Criteria criteria = new Criteria(OnmsIpRouteInterface.class);
+        criteria.setAliases(Arrays.asList(new Alias[] {
+            new Alias("node", "node", JoinType.LEFT_JOIN)
+        }));
+        criteria.addRestriction(new EqRestriction("node.id", ciscosw.getId()));
 
         // 2 route entry in database
         assertEquals(2, m_ipRouteInterfaceDao.findMatching(criteria).size());
@@ -424,7 +378,8 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         Package example1 = m_linkdConfig.getPackage("example1");
         example1.setUseLldpDiscovery(false);
         example1.setUseOspfDiscovery(false);
-        
+        example1.setUseIsisDiscovery(false);
+
         final OnmsNode ciscorouter = m_nodeDao.findByForeignId("linkd", CISCO_C870_NAME);
 
         assertTrue(m_linkd.scheduleNodeCollection(ciscorouter.getId()));
@@ -432,8 +387,8 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertTrue(m_linkd.runSingleSnmpCollection(ciscorouter.getId()));
 
         // linkd has 1 linkable node
-        assertEquals(1, m_linkd.getLinkableNodes().size());
-        LinkableNode linkNode = m_linkd.getLinkableNodes().iterator().next();
+        assertEquals(1, m_linkd.getLinkableNodesOnPackage("example1").size());
+        LinkableNode linkNode = m_linkd.getLinkableNodesOnPackage("example1").iterator().next();
         
         // linkabble node is not null
         assertTrue(linkNode != null);
@@ -473,12 +428,14 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         * CISCO_C870:10.255.255.2:001f6cd034e7:12:Vlan1
         * CISCO_C870:65.41.39.146:00000c03b09e:14:BVI1
         */
+
+        final Set<String> macAddresses = m_linkd.getMacAddressesOnPackage(packageName);
+        assertEquals(2, macAddresses.size());
+        List<AtInterface> ats = m_linkd.getAtInterfaces(packageName, "001f6cd034e7");
+        assertNotNull(ats);
         
-        assertEquals("should have saved 2 ip to mac",2, m_linkd.getAtInterfaces(packageName).size());        
-        
-        List<AtInterface> ats = m_linkd.getAtInterfaces(packageName).get("001f6cd034e7");
         assertEquals(3, ats.size());
-        for (AtInterface at :ats) {
+        for (final AtInterface at :ats) {
             if( at.getIpAddress().getHostAddress().equals("172.20.1.1"))
                 assertEquals(12, at.getIfIndex().intValue());
             else if( at.getIpAddress().getHostAddress().equals("172.20.2.1"))
@@ -489,7 +446,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
                 assertTrue("ip: "+ at.getIpAddress().getHostAddress() + "does not match any known ip address", false);
         }
 
-        ats = m_linkd.getAtInterfaces(packageName).get("00000c03b09e");
+        ats = m_linkd.getAtInterfaces(packageName, "00000c03b09e");
         assertEquals(1, ats.size());
         for (AtInterface at : ats) {
             if( at.getIpAddress().getHostAddress().equals("65.41.39.146"))
@@ -501,11 +458,13 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         
         // Now Let's test the database
         //0 atinterface in database
-        assertEquals(4, m_atInterfaceDao.findAll().size());
+        assertEquals(4, m_atInterfaceDao.countAll());
 
-        final OnmsCriteria criteria = new OnmsCriteria(OnmsIpRouteInterface.class);
-        criteria.createAlias("node", "node");
-        criteria.add(Restrictions.eq("node.id", ciscorouter.getId()));
+        final Criteria criteria = new Criteria(OnmsIpRouteInterface.class);
+        criteria.setAliases(Arrays.asList(new Alias[] {
+            new Alias("node", "node", JoinType.LEFT_JOIN)
+        }));
+        criteria.addRestriction(new EqRestriction("node.id", ciscorouter.getId()));
         final List<OnmsIpRouteInterface> iproutes = m_ipRouteInterfaceDao.findMatching(criteria);
         // 7 route entry in database
         for (OnmsIpRouteInterface iproute: iproutes) {
@@ -548,8 +507,8 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertTrue(m_linkd.runSingleSnmpCollection(ngsw108.getId()));
 
         // linkd has 1 linkable node
-        assertEquals(1, m_linkd.getLinkableNodes().size());
-        LinkableNode linkNode = m_linkd.getLinkableNodes().iterator().next();
+        assertEquals(1, m_linkd.getLinkableNodesOnPackage("example1").size());
+        LinkableNode linkNode = m_linkd.getLinkableNodesOnPackage("example1").iterator().next();
         
         // linkabble node is not null
         assertTrue(linkNode != null);
@@ -590,15 +549,16 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         * Transparent Bridge
         */
         
-        assertEquals("should have saved 1 ip to mac",1, m_linkd.getAtInterfaces(packageName).size());        
+        final Set<String> macAddresses = m_linkd.getMacAddressesOnPackage(packageName);
+        assertNotNull(macAddresses);
+        assertEquals(1, macAddresses.size());
+        List<AtInterface> ats = m_linkd.getAtInterfaces(packageName, "00223ff00b7b");
         
-        List<AtInterface> ats = m_linkd.getAtInterfaces(packageName).get("00223ff00b7b");
-        assertEquals(1, ats.size());
         for (AtInterface at : ats) {
             if( at.getIpAddress().getHostAddress().equals("172.20.1.8"))
                 assertTrue(at.getIfIndex().intValue() == -1);
             else 
-                assertTrue("ip: "+ at.getIpAddress().getHostAddress() + "does not match any known ip address", false);
+                fail("ip: "+ at.getIpAddress().getHostAddress() + "does not match any known ip address");
         }
 
         
@@ -606,9 +566,11 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         //1 atinterface in database: has itself in ipadress to media
         assertEquals(1, m_atInterfaceDao.findAll().size());
 
-        final OnmsCriteria criteria = new OnmsCriteria(OnmsIpRouteInterface.class);
-        criteria.createAlias("node", "node");
-        criteria.add(Restrictions.eq("node.id", ngsw108.getId()));
+        final Criteria criteria = new Criteria(OnmsIpRouteInterface.class);
+        criteria.setAliases(Arrays.asList(new Alias[] {
+            new Alias("node", "node", JoinType.LEFT_JOIN)
+        }));
+        criteria.addRestriction(new EqRestriction("node.id", ngsw108.getId()));
         final List<OnmsIpRouteInterface> iproutes = m_ipRouteInterfaceDao.findMatching(criteria);
         // 7 route entry in database
         for (OnmsIpRouteInterface iproute: iproutes) {
@@ -650,8 +612,8 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertTrue(m_linkd.runSingleSnmpCollection(linux.getId()));
 
         // linkd has 1 linkable node
-        assertEquals(1, m_linkd.getLinkableNodes().size());
-        LinkableNode linkNode = m_linkd.getLinkableNodes().iterator().next();
+        assertEquals(1, m_linkd.getLinkableNodesOnPackage("example1").size());
+        LinkableNode linkNode = m_linkd.getLinkableNodesOnPackage("example1").iterator().next();
         
         // linkabble node is not null
         assertTrue(linkNode != null);
@@ -679,10 +641,13 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         * 
         */
         
-        assertEquals("should have saved 1 ip to mac",1, m_linkd.getAtInterfaces(packageName).size());        
+        final Set<String> macAddresses = m_linkd.getMacAddressesOnPackage(packageName);
+        assertNotNull(macAddresses);
+        assertEquals(1, macAddresses.size());
+
+        List<AtInterface> ats = m_linkd.getAtInterfaces(packageName, "406186e28b53");
+        assertEquals("should have saved 1 ip to mac",1, ats.size());        
         
-        List<AtInterface> ats = m_linkd.getAtInterfaces(packageName).get("406186e28b53");
-        assertEquals(1, ats.size());
         for (AtInterface at : ats) {
             if( at.getIpAddress().getHostAddress().equals("172.20.1.14"))
                 assertTrue(at.getIfIndex().intValue() == 4);
@@ -695,9 +660,11 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         //0 atinterface in database
         assertEquals(0, m_atInterfaceDao.findAll().size());
 
-        final OnmsCriteria criteria = new OnmsCriteria(OnmsIpRouteInterface.class);
-        criteria.createAlias("node", "node");
-        criteria.add(Restrictions.eq("node.id", linux.getId()));
+        final Criteria criteria = new Criteria(OnmsIpRouteInterface.class);
+        criteria.setAliases(Arrays.asList(new Alias[] {
+            new Alias("node", "node", JoinType.LEFT_JOIN)
+        }));
+        criteria.addRestriction(new EqRestriction("node.id", linux.getId()));
         final List<OnmsIpRouteInterface> iproutes = m_ipRouteInterfaceDao.findMatching(criteria);
         // 4 route entry in database
         for (OnmsIpRouteInterface iproute: iproutes) {
@@ -727,6 +694,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         Package example1 = m_linkdConfig.getPackage("example1");
         example1.setUseLldpDiscovery(false);
         example1.setUseOspfDiscovery(false);
+        example1.setUseIsisDiscovery(false);
 
         m_linkdConfig.update();
 
@@ -737,8 +705,8 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertTrue(m_linkd.runSingleSnmpCollection(mac.getId()));
 
         // linkd has 1 linkable node
-        assertEquals(1, m_linkd.getLinkableNodes().size());
-        LinkableNode linkNode = m_linkd.getLinkableNodes().iterator().next();
+        assertEquals(1, m_linkd.getLinkableNodesOnPackage("example1").size());
+        LinkableNode linkNode = m_linkd.getLinkableNodesOnPackage("example1").iterator().next();
         
         // linkabble node is not null
         assertTrue(linkNode != null);
@@ -766,10 +734,14 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         *  
         */
         
-        assertEquals("should have saved 1 ip to mac",1, m_linkd.getAtInterfaces(packageName).size());        
+        final Set<String> macAddresses = m_linkd.getMacAddressesOnPackage(packageName);
+        assertNotNull(macAddresses);
+        assertEquals(1, macAddresses.size());
+
+        List<AtInterface> ats = m_linkd.getAtInterfaces(packageName, "0026b0ed8fb8");
+        assertNotNull(ats);
+        assertEquals("should have saved 1 ip to mac",1, ats.size());        
         
-        List<AtInterface> ats = m_linkd.getAtInterfaces(packageName).get("0026b0ed8fb8");
-        assertEquals(1, ats.size());
         for (AtInterface at : ats) {
             if( at.getIpAddress().getHostAddress().equals("172.20.1.28"))
                 assertTrue(at.getIfIndex().intValue() == 4);
@@ -782,9 +754,11 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         //0 atinterface in database
         assertEquals(0, m_atInterfaceDao.findAll().size());
 
-        final OnmsCriteria criteria = new OnmsCriteria(OnmsIpRouteInterface.class);
-        criteria.createAlias("node", "node");
-        criteria.add(Restrictions.eq("node.id", mac.getId()));
+        final Criteria criteria = new Criteria(OnmsIpRouteInterface.class);
+        criteria.setAliases(Arrays.asList(new Alias[] {
+            new Alias("node", "node", JoinType.LEFT_JOIN)
+        }));
+        criteria.addRestriction(new EqRestriction("node.id", mac.getId()));
         final List<OnmsIpRouteInterface> iproutes = m_ipRouteInterfaceDao.findMatching(criteria);
         // 4 route entry in database
         for (OnmsIpRouteInterface iproute: iproutes) {
@@ -897,7 +871,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         for (final DataLinkInterface link: links) {
         	printLink(link);
         }
-        assertEquals(2,links.size());
+        assertEquals(1,links.size());
         
         final DataLinkInterface ngsw108linktociscows = links.get(0);
         
@@ -941,7 +915,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
         
         final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
-        assertEquals(2,links.size());
+        assertEquals(1,links.size());
         
         final DataLinkInterface linuxubuntulinktociscows = links.get(0);
         
@@ -974,16 +948,20 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
 
         assertTrue(m_linkd.runSingleSnmpCollection(ciscows.getId()));
 
-        assertEquals(1, m_linkd.getLinkableNodes().size());
-        LinkableNode linkNode = m_linkd.getLinkableNodes().iterator().next();
+        assertEquals(1, m_linkd.getLinkableNodesOnPackage("example1").size());
+        LinkableNode linkNode = m_linkd.getLinkableNodesOnPackage("example1").iterator().next();
         
         // linkable node is not null
         assertTrue(linkNode != null);
         
-        final Map<String, List<AtInterface>> mactoatinterfacemap = m_linkd.getAtInterfaces("example1");
-        assertEquals(2,mactoatinterfacemap.size());
-        
-        assertEquals(1, mactoatinterfacemap.get(WORKSTATION_MAC).size());
+        final Set<String> macAddresses = m_linkd.getMacAddressesOnPackage("example1");
+        assertEquals(2, macAddresses.size());
+
+        //final Map<String, List<AtInterface>> mactoatinterfacemap = m_linkd.getAtInterfaces("example1");
+        //assertEquals(2,mactoatinterfacemap.size());
+
+        final List<AtInterface> ats = m_linkd.getAtInterfaces("example1", WORKSTATION_MAC);
+        assertEquals(1, ats.size());
         
         assertEquals(0,m_dataLinkInterfaceDao.countAll());
         
@@ -994,7 +972,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
         
         final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
-        assertEquals(2,links.size());
+        assertEquals(1,links.size());
         
         final DataLinkInterface workstationlinktociscows = links.get(0);
         
@@ -1012,8 +990,8 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         
         HibernateEventWriter db = (HibernateEventWriter)m_linkd.getQueryManager();
         
-        final int nodeid = db.getNodeidFromIp(InetAddressUtils.addr(CISCO_C870_IP)).get(0);
-        assertEquals(m_nodeDao.findByForeignId("linkd", CISCO_C870_NAME).getId().intValue(), nodeid);
+        final OnmsNode node = db.getNodeidFromIp(InetAddressUtils.addr(CISCO_C870_IP)).get(0);
+        assertEquals(m_nodeDao.findByForeignId("linkd", CISCO_C870_NAME).getId(), node.getId());
     }
     
     @Test 
@@ -1050,6 +1028,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         example1.setUseOspfDiscovery(false);
         example1.setUseIpRouteDiscovery(false);
         example1.setUseBridgeDiscovery(false);
+        example1.setUseIsisDiscovery(false);
         example1.setUseCdpDiscovery(true);
         
         example1.setSaveRouteTable(false);
@@ -1072,7 +1051,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertTrue(m_linkd.runSingleSnmpCollection(ciscows.getId()));
         assertTrue(m_linkd.runSingleSnmpCollection(ciscorouter.getId()));
         
-        final Collection<LinkableNode> linkables = m_linkd.getLinkableNodes();
+        final Collection<LinkableNode> linkables = m_linkd.getLinkableNodesOnPackage("example1");
         assertEquals(2, linkables.size());
         
         for (LinkableNode lnode: linkables) {
@@ -1116,6 +1095,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
        example1.setUseOspfDiscovery(false);
        example1.setUseIpRouteDiscovery(false);
        example1.setUseBridgeDiscovery(false);
+       example1.setUseIsisDiscovery(false);
        example1.setUseCdpDiscovery(true);
        
        example1.setSaveRouteTable(false);
@@ -1136,13 +1116,13 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
 
        assertTrue(m_linkd.runSingleSnmpCollection(ciscows.getId()));
        
-       final Collection<LinkableNode> linkables = m_linkd.getLinkableNodes();
+       final Collection<LinkableNode> linkables = m_linkd.getLinkableNodesOnPackage("example1");
        assertEquals(1, linkables.size());
        
        for (LinkableNode lnode: linkables) {
            if (ciscows.getId() == lnode.getNodeId()) {
                assertEquals(true, lnode.hasCdpInterfaces());
-               assertEquals(1, lnode.getCdpInterfaces().size());
+               assertEquals(2, lnode.getCdpInterfaces().size());
            } else {
                assertTrue("Found node not added!!!!!",false);
            }

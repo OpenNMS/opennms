@@ -35,22 +35,29 @@ public class LldpRemInterface {
 	
     private final Integer m_lldpRemChassidSubtype;
     private final String m_lldpRemChassisid;
+    private final Integer m_lldpRemNodeid;
     private final Integer m_lldpRemIfIndex;
     private final Integer m_lldpLocIfIndex;
 
 
     public LldpRemInterface(Integer lldpRemChassidSubtype,
-            String lldpRemChassisid, Integer lldpRemIfIndex,
+            String lldpRemChassisid, Integer lldpRemNodeid,Integer lldpRemIfIndex,
             Integer lldpLocIfIndex) {
         super();
         m_lldpRemChassidSubtype = lldpRemChassidSubtype;
         m_lldpRemChassisid = lldpRemChassisid;
+        m_lldpRemNodeid = lldpRemNodeid;
         m_lldpRemIfIndex = lldpRemIfIndex;
         m_lldpLocIfIndex = lldpLocIfIndex;
     }
 	
     
-	public Integer getLldpRemChassidSubtype() {
+    public Integer getLldpRemNodeid() {
+        return m_lldpRemNodeid;
+    }
+
+
+    public Integer getLldpRemChassidSubtype() {
         return m_lldpRemChassidSubtype;
     }
 
@@ -79,6 +86,7 @@ public class LldpRemInterface {
 	    return new ToStringBuilder(this)
 	    .append("lldpRemChassidSubtype", m_lldpRemChassidSubtype)
 	    .append("lldpRemChassisid", m_lldpRemChassisid)
+            .append("lldpRemNodeid", m_lldpRemNodeid)
 	    .append("lldpRemIfIndex", m_lldpRemIfIndex)
 	    .append("lldpLocIfIndex", m_lldpLocIfIndex)
 	    .toString();

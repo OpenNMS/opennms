@@ -128,7 +128,7 @@ final String baseHref = Util.calculateUrlBase( request );
         <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/print.css" media="print" />
     </c:when>
   </c:choose>
-  <link rel="shortcut icon" href="favicon.ico" />
+  <link rel="shortcut icon" href="<%= baseHref %>favicon.ico" />
   <c:forEach var="link" items="${paramValues.link}">
     <c:out value="${link}" escapeXml="false" />
   </c:forEach>
@@ -219,6 +219,15 @@ final String baseHref = Util.calculateUrlBase( request );
 	</div>
 	</c:otherwise>
 </c:choose>
+
+<%--
+    Added javascript snippet to hide the header if not displayed in a toplevel window (iFrame).
+--%>
+<script type='text/javascript'>
+    if (window.location != window.parent.location) {
+        document.getElementById('header').style.display = 'none';
+    }
+</script>
 
 <!-- Body -->
 <%-- This <div> tag is unmatched in this file (its matching tag is in the

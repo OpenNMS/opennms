@@ -29,17 +29,9 @@
 package org.opennms.features.topology.api.topo;
 
 import java.util.Collection;
-
+import java.util.Map;
 
 public interface StatusProvider {
 
-    public Status getStatusForVertex(VertexRef vertex);
-    public Collection<Status> getStatusForVertices(Collection<VertexRef> vertices);
-    public String getNamespace();
-
-    StatusProvider NULL = new StatusProvider() {
-            @Override public Status getStatusForVertex(VertexRef vertex) { return null; }
-            @Override public Collection<Status> getStatusForVertices(Collection<VertexRef> vertices) { return null; }
-            @Override public String getNamespace() { return null; }
-        };
+	public Map<VertexRef, Status> getStatusForVertices(VertexProvider vertexProvider, Collection<VertexRef> vertices, Criteria[] criteria);
 }

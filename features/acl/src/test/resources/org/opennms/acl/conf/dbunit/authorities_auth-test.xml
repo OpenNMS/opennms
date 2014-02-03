@@ -1,7 +1,0 @@
-<!DOCTYPE dataset SYSTEM "src/test/resources/org/opennms/acl/conf/dbunit/database-schema.dtd">
-<dataset>
-  <authorities_authentication username="max" authority="ROLE_ADMIN" id="37"/>
-  <authorities_authentication username="max" authority="tre" id="38"/>
-  <authorities_authentication username="max" authority="due" id="39"/>
-  <authorities_authentication username="max" authority="quattro" id="40"/>
-</dataset>

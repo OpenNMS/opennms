@@ -34,8 +34,8 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
-
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.ConfigurationTestUtils;
@@ -66,11 +66,11 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 
-public class OpenNMSTestCase extends TestCase {
+public class OpenNMSTestCase {
     protected static MockDatabase m_db;
     protected static MockNetwork m_network;
     protected static Eventd m_eventd;
@@ -134,9 +134,8 @@ public class OpenNMSTestCase extends TestCase {
         m_version = version;
     }
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         MockUtil.println("------------ Begin Test "+this+" --------------------------");
         MockLogAppender.setupLogging();
         
@@ -240,23 +239,17 @@ public class OpenNMSTestCase extends TestCase {
         m_network.createStandardNetwork();
     }
     
-    @Override
+    @After
     public void runTest() throws Throwable {
-        try {
-            super.runTest();
-            MockLogAppender.assertNoWarningsOrGreater();
-        } finally {
-            MockUtil.println("------------ End Test "+this+" --------------------------");
-        }
+        MockLogAppender.assertNoWarningsOrGreater();
+        MockUtil.println("------------ End Test "+this+" --------------------------");
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         if(m_runSupers) {
             if (isStartEventd()) m_eventd.stop();
         }
-
-        super.tearDown();
     }
 
     protected void setStartEventd(boolean startEventd) {
@@ -285,7 +278,7 @@ public class OpenNMSTestCase extends TestCase {
         m_eventProxy = eventProxy;
     }
 
-    public SimpleJdbcTemplate getJdbcTemplate() {
+    public JdbcTemplate getJdbcTemplate() {
         return m_db.getJdbcTemplate();
     }
 

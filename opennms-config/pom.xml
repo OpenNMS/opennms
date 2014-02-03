@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>1.13.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-config</artifactId>
@@ -30,7 +30,8 @@
             <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Export-Package>
-              org.opennms.netmgt.config.*;version="${project.version}"
+              org.opennms.netmgt.config.*;version="${project.version}",
+              org.opennms.netmgt.filter.*;version="${project.version}"
             </Export-Package>
           </instructions>
         </configuration>
@@ -58,6 +59,10 @@
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jasypt-dependencies</artifactId>
       <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.config</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
@@ -104,7 +109,7 @@
       <artifactId>jakarta-regexp</artifactId>
     </dependency>
     <dependency>
-      <groupId>postgresql</groupId>
+      <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
       <scope>test</scope>
     </dependency>

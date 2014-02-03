@@ -42,8 +42,7 @@
         org.opennms.netmgt.config.poller.Service,
         org.opennms.netmgt.config.poller.Parameter,
         org.opennms.netmgt.model.OnmsMonitoredService,
-        org.opennms.netmgt.poller.ServiceMonitor,
-        org.opennms.web.springframework.security.Authentication
+        org.opennms.netmgt.poller.ServiceMonitor
 	"
 %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -66,9 +65,9 @@
     while (en.hasMoreElements()) {
         Package pkg = en.nextElement();
         if (!pkg.getRemote() &&
-            pollerCfgFactory.isServiceInPackageAndEnabled(serviceName, pkg) &&
-            pollerCfgFactory.isInterfaceInPackage(ipAddr, pkg)) {
-            lastPkg = pkg;
+    pollerCfgFactory.isServiceInPackageAndEnabled(serviceName, pkg) &&
+    pollerCfgFactory.isInterfaceInPackage(ipAddr, pkg)) {
+    lastPkg = pkg;
         }
     }
     pageContext.setAttribute("packageName", lastPkg == null ? "N/A" : lastPkg.getName());
@@ -79,19 +78,19 @@
     Map<String,String> parameters = new TreeMap<String,String>();
     Map<String,String> xmlParams  = new TreeMap<String,String>();
     if (lastPkg != null) {
-        for (Service s : lastPkg.getServiceCollection()) {
-            if (s.getName().equalsIgnoreCase(serviceName)) {
-                for (Parameter p : s.getParameterCollection()) {
-                    if (p.getKey().toLowerCase().equals("password")) {
-                        continue; // Hide passwords for security reasons
-                    }
-                    if (p.getValue() == null) {
-                        xmlParams.put(p.getKey(), p.getAnyObject().toString().replaceAll("<","&lt;").replaceAll(">", "&gt;").replaceAll("[\\r\\n]+", "<br/>"));
-                    } else {
-                        parameters.put(p.getKey(), p.getValue());
-                    }
-                }
-            }
+        for (Service s : lastPkg.getServices()) {
+    if (s.getName().equalsIgnoreCase(serviceName)) {
+        for (Parameter p : s.getParameters()) {
+    if (p.getKey().toLowerCase().equals("password")) {
+        continue; // Hide passwords for security reasons
+    }
+    if (p.getValue() == null) {
+        xmlParams.put(p.getKey(), p.getAnyObject().toString().replaceAll("<","&lt;").replaceAll(">", "&gt;").replaceAll("[\\r\\n]+", "<br/>"));
+    } else {
+        parameters.put(p.getKey(), p.getValue());
+    }
+        }
+    }
         }
         pageContext.setAttribute("parameters", parameters);
         pageContext.setAttribute("xmlParams", xmlParams);

@@ -86,7 +86,7 @@ public class AccessPointStatusUserType implements UserType {
 
     @Override
     public int hashCode(final Object x) {
-        return x.hashCode();
+        return x == null ? 0 : x.hashCode();
     }
 
     @Override

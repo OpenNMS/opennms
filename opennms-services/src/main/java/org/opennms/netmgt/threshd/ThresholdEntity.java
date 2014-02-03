@@ -32,13 +32,16 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.threshd.ThresholdEvaluatorState.Status;
+import org.opennms.netmgt.threshd.ThresholdingVisitor.ThresholdingResult;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Value;
@@ -137,7 +140,10 @@ public final class ThresholdEntity implements Cloneable {
      */
     public Collection<String> getRequiredDatasources() {
         if (hasThresholds()) {
-            return getThresholdConfig().getRequiredDatasources();
+            final Set<String> dataSources = new HashSet<String>();
+            dataSources.addAll(getThresholdConfig().getRequiredDatasources());
+            dataSources.addAll(getThresholdConfig().getFilterDatasources());
+            return dataSources;
         } else {
             throw new IllegalStateException("No thresholds have been added.");
         }
@@ -291,7 +297,7 @@ public final class ThresholdEntity implements Cloneable {
                     dsValue = RrdUtils.fetchLastValueInRange(rrdFile.getAbsolutePath(), datasource, latParms.getInterval(), latParms.getRange());
                 }
             } else {
-                throw new ThresholdingException("expr types not yet implemented", LatencyThresholder.THRESHOLDING_FAILED);
+                throw new ThresholdingException("expr types not yet implemented", ThresholdingResult.THRESHOLDING_FAILED);
             }
 
             LOG.debug("Last value from dataSource '{}' was {}", datasource, dsValue);
@@ -366,7 +372,7 @@ public final class ThresholdEntity implements Cloneable {
      * @param entity a {@link org.opennms.netmgt.threshd.ThresholdEntity} object.
      */
     public void merge(ThresholdEntity entity) {
-        if (getThresholdConfig().identical(entity.getThresholdConfig()) == false) {
+        if (getThresholdConfig().equals(entity.getThresholdConfig()) == false) {
             sendRearmForTriggeredStates();
             getThresholdConfig().merge(entity.getThresholdConfig());
         }

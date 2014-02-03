@@ -67,6 +67,6 @@ public class SaveOperation implements Operation {
 
     @Override
     public String getId() {
-        return null;
+        return getClass().getSimpleName();
     }
 }

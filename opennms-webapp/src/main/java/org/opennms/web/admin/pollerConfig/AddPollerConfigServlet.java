@@ -105,11 +105,11 @@ public class AddPollerConfigServlet extends HttpServlet {
         }
 
         pollerServices = new HashMap<String, Service>();
-        Collection<org.opennms.netmgt.config.poller.Package> packageColl = pollerConfig.getPackageCollection();
+        Collection<org.opennms.netmgt.config.poller.Package> packageColl = pollerConfig.getPackages();
         if (packageColl != null && packageColl.size() > 0) {
             firstPackage = packageColl.iterator().next();
             for (org.opennms.netmgt.config.poller.Package pkg : packageColl) {
-                for(Service svcProp : pkg.getServiceCollection()) {
+                for(Service svcProp : pkg.getServices()) {
                     pollerServices.put(svcProp.getName(), svcProp);
                 }
             }
@@ -180,9 +180,9 @@ public class AddPollerConfigServlet extends HttpServlet {
         for (ProtocolPlugin svc : capsdConfig.getProtocolPluginCollection()) {
             if (svc.getProtocol().equals(name)) {
                 // delete from the poller configuration.
-                for (Service pollersvc : pkg.getServiceCollection()) {
+                for (Service pollersvc : pkg.getServices()) {
                     if (pollersvc.getName().equals(name)) {
-                        Collection<Service> tmpPoller = pkg.getServiceCollection();
+                        Collection<Service> tmpPoller = pkg.getServices();
                         if (tmpPoller.contains(pollersvc) && pollersvc.getName().equals(name)) {
                             tmpPoller.remove(pollersvc);
                             response.sendRedirect(Util.calculateUrlBase(request, "/admin/error.jsp?error=1&name=" + name));
@@ -216,7 +216,7 @@ public class AddPollerConfigServlet extends HttpServlet {
             newprop = new org.opennms.netmgt.config.capsd.Property();
             if (port != null && !port.equals("")) {
                 newprop.setValue(port);
-                if (port.indexOf(":") == -1) {
+                if (port.indexOf(':') == -1) {
                     newprop.setKey("port");
                 } else {
                     newprop.setKey("ports");
@@ -229,7 +229,7 @@ public class AddPollerConfigServlet extends HttpServlet {
                 } else {
                     port = (String) props.get("service." + protocol + ".port");
                     newprop.setValue(port);
-                    if (port.indexOf(":") == -1) {
+                    if (port.indexOf(':') == -1) {
                         newprop.setKey("port");
                     } else {
                         newprop.setKey("ports");
@@ -285,7 +285,7 @@ public class AddPollerConfigServlet extends HttpServlet {
     private boolean addPollerInfo(PollerConfiguration pollerConfig, org.opennms.netmgt.config.poller.Package pkg, Properties props, String bPolled, String name, String port, String user, String protocol, HttpServletResponse response, HttpServletRequest request) throws ServletException, IOException {
         // Check to see if the name is duplicate of the already specified names
         // first.
-        for (Service svc : pkg.getServiceCollection()) {
+        for (Service svc : pkg.getServices()) {
             if (svc.getName().equals(name)) {
                 response.sendRedirect(Util.calculateUrlBase(request, "admin/error.jsp?error=1&name=" + name));
                 return false;
@@ -303,7 +303,7 @@ public class AddPollerConfigServlet extends HttpServlet {
             newService.setName(name);
             newService.setUserDefined("true");
 
-            Collection<Monitor> monitorColl = pollerConfig.getMonitorCollection();
+            Collection<Monitor> monitorColl = pollerConfig.getMonitors();
             Monitor newMonitor = new Monitor();
             String monitor = (String) props.get("service." + protocol + ".monitor");
             if (monitor != null) {
@@ -360,17 +360,19 @@ public class AddPollerConfigServlet extends HttpServlet {
             }
 
             newprop.setValue(port);
-            if (port.indexOf(":") != -1) {
+            if (port.indexOf(':') != -1) {
                 newprop.setKey("ports");
             } else { 
                 newprop.setKey("port");
             }
             if (newMonitor != null && newService != null) {
+                final List<Monitor> monitors = pollerConfig.getMonitors();
                 if (monitorColl == null) {
-                    pollerConfig.addMonitor(0, newMonitor);
+                    monitors.add(0, newMonitor);
                 } else {
-                    pollerConfig.addMonitor(newMonitor);
+                    monitors.add(newMonitor);
                 }
+                pollerConfig.setMonitors(monitors);
                 newService.addParameter(newprop);
                 pkg.addService(newService);
             }

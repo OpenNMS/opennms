@@ -6,12 +6,12 @@
 		<relativePath>../topology-map/poms/compiled/</relativePath>
 		<groupId>org.opennms.features.topology.build</groupId>
 		<artifactId>compiled-bundle-settings</artifactId>
-		<version>1.13.0-SNAPSHOT</version>
+		<version>1.13.1-SNAPSHOT</version>
 	</parent>
 	<groupId>org.opennms.features</groupId>
 	<artifactId>vaadin-node-maps</artifactId>
 	<packaging>bundle</packaging>
-	<name>OpenNMS Node Maps</name>
+	<name>OpenNMS Features Node Maps</name>
 	<description>
     OpenNMS Vaadin UI for displaying nodes on geographical maps using assets records.
   </description>
@@ -57,15 +57,12 @@
                 <version>${vaadin.plugin.version}</version>
                 <configuration>
                     <extraJvmArgs>-Xmx1g -Xss1024k</extraJvmArgs>
-                    <webappDirectory>${basedir}/target/gwt/VAADIN/widgetsets
-                    </webappDirectory>
-                    <hostedWebapp>${basedir}/target/gwt/VAADIN/widgetsets
-                    </hostedWebapp>
+                    <webappDirectory>${basedir}/target/gwt/VAADIN/widgetsets</webappDirectory>
+                    <hostedWebapp>${basedir}/target/gwt/VAADIN/widgetsets</hostedWebapp>
                     <noServer>true</noServer>
-                    <!-- Remove draftCompile when project is ready -->
-                    <draftCompile>true</draftCompile>
-                    <compileReport>true</compileReport>
-                    <style>OBF</style>
+                    <draftCompile>false</draftCompile>
+                    <compileReport>false</compileReport>
+                    <style>DETAILED</style>
                     <strict>true</strict>
                     <runTarget>http://localhost:8980/opennms/node-maps</runTarget>
                     <gwtSdkFirstInClasspath>true</gwtSdkFirstInClasspath>
@@ -84,6 +81,18 @@
                         </goals>
                     </execution>
                 </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.google.gwt</groupId>
+                        <artifactId>gwt-dev</artifactId>
+                        <version>${gwtVersion}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.google.gwt</groupId>
+                        <artifactId>gwt-user</artifactId>
+                        <version>${gwtVersion}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
 
 			<plugin>
@@ -154,6 +163,12 @@
 			<artifactId>org.osgi.compendium</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.opennms.osgi</groupId>
+			<artifactId>opennms-osgi-core</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
 
 		<!-- Vaadin Dependencies -->
 
@@ -168,8 +183,21 @@
 			<type>pom</type>
 			<scope>provided</scope>
 		</dependency>
+
 		<!-- Node Maps Dependencies -->
 
+		<dependency>
+			<groupId>org.opennms.features.topology</groupId>
+			<artifactId>api</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.opennms.features.topology.plugins</groupId>
+			<artifactId>browsers</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.opennms.features.geocoder</groupId>
 			<artifactId>org.opennms.features.geocoder.api</artifactId>
@@ -177,7 +205,7 @@
 		<dependency>
 			<groupId>org.discotools.gwt.leaflet</groupId>
 			<artifactId>gwtl-core</artifactId>
-			<version>0.3-ONMS-20130305-1</version>
+			<version>0.3-ONMS-20131014-1</version>
 			<optional>true</optional>
 			<scope>provided</scope>
 		</dependency>
@@ -233,13 +261,19 @@
 		<dependency>
 			<groupId>org.powermock</groupId>
 			<artifactId>powermock-module-junit4</artifactId>
-			<version>1.5</version>
+			<version>1.5.1</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.powermock</groupId>
 			<artifactId>powermock-api-easymock</artifactId>
-			<version>1.5</version>
+			<version>1.5.1</version>
+			<scope>test</scope>
+		</dependency>  
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-api-mockito</artifactId>
+			<version>1.5.1</version>
 			<scope>test</scope>
 		</dependency>  
 		<dependency>

@@ -51,11 +51,13 @@ import javax.sql.DataSource;
 
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressComparator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.filter.Table;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.util.Assert;
 
 /**
@@ -70,7 +72,8 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
     private static final Pattern SQL_QUOTE_PATTERN = Pattern.compile("'(?:[^']|'')*'|\"(?:[^\"]|\"\")*\"");
 	private static final Pattern SQL_ESCAPED_PATTERN = Pattern.compile("###@(\\d+)@###");
 	private static final Pattern SQL_VALUE_COLUMN_PATTERN = Pattern.compile("[a-zA-Z0-9_\\-]*[a-zA-Z][a-zA-Z0-9_\\-]*");
-	private static final Pattern SQL_IPLIKE_PATTERN = Pattern.compile("(\\w+)\\s+IPLIKE\\s+([0-9.*,-]+|###@\\d+@###)", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+	private static final Pattern SQL_IPLIKE_PATTERN = Pattern.compile("(\\w+)\\s+IPLIKE\\s+([0-9a-f.:*,-]+|###@\\d+@###)", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+	private static final String SQL_IPLIKE6_RHS_REGEX = "^[0-9A-Fa-f:*,-]+$";
 
 	private DataSource m_dataSource;
     private DatabaseSchemaConfigFactory m_databaseSchemaConfigFactory;
@@ -235,9 +238,14 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
         return ipServices;
     }
 
+    @Override
+    @CacheEvict(value="activeIpAddressList", allEntries=true)
+    public void flushActiveIpAddressListCache() {}
+
     /**
      * {@inheritDoc}
      */
+    @Cacheable("activeIpAddressList")
     @Override
     public List<InetAddress> getActiveIPAddressList(final String rule) throws FilterParseException {
     	return getIPAddressList(rule, true);
@@ -626,6 +634,8 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
                     regex.appendReplacement(tempStringBuff, addColumn(tables, "ipAddr") + " NOT IN (SELECT ifServices.ipAddr FROM ifServices, service WHERE service.serviceName ='" + regex.group().substring(5) + "' AND service.serviceID = ifServices.serviceID)");
                 } else if (regex.group().startsWith("catinc")) {
                     regex.appendReplacement(tempStringBuff, addColumn(tables, "nodeID") + " IN (SELECT category_node.nodeID FROM category_node, categories WHERE categories.categoryID = category_node.categoryID AND categories.categoryName = '" + regex.group().substring(6) + "')");
+                } else if (regex.group().matches(SQL_IPLIKE6_RHS_REGEX)) {
+                    // Do nothing, it's apparently an IPv6 IPLIKE expression right-hand side
                 } else {
                     // Call addColumn() on each column
                     regex.appendReplacement(tempStringBuff, addColumn(tables, regex.group()));

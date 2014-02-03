@@ -39,7 +39,6 @@
 <%@page import="org.springframework.util.Assert"%>
 
 <%@page import="org.opennms.netmgt.EventConstants"%>
-<%@page import="org.opennms.core.utils.WebSecurityUtils"%>
 <%@page import="org.opennms.web.servlet.XssRequestWrapper"%>
 <%@page import="org.opennms.web.event.Event"%>
 <%@page import="org.opennms.web.event.AcknowledgeType"%>
@@ -91,7 +90,7 @@
   <jsp:param name="title" value="Event Detail" />
   <jsp:param name="headTitle" value="Detail" />
   <jsp:param name="headTtitle" value="Events" />
-  <jsp:param name="breadcrumb" value="<a href='event/index.jsp'>Events</a>" />
+  <jsp:param name="breadcrumb" value="<a href='event/index'>Events</a>" />
   <jsp:param name="breadcrumb" value="Detail" />
 </jsp:include>
 	 <% if (event == null ) { %>
@@ -123,7 +122,7 @@
         
         <tr  class="<%= event.getSeverity().getLabel() %>">
           <th>Time</th>
-          <td><%=org.opennms.web.api.Util.formatDateToUIString(event.getTime())%></td>
+          <td><fmt:formatDate value="<%=event.getTime()%>" type="BOTH" /></td>
           <th>Interface</th>
           <td>
             <% if( event.getIpAddress() != null ) { %>
@@ -142,7 +141,16 @@
           </td>
           <% if ("true".equals(acknowledgeEvent)) { %>
           <th>Time&nbsp;Acknowledged</th>
-          <td><%=event.getAcknowledgeTime()!=null ? org.opennms.web.api.Util.formatDateToUIString(event.getAcknowledgeTime()) : "&nbsp;"%></td>
+          <td>
+          <c:choose>
+            <c:when test="<%=event.getAcknowledgeTime() != null%>">
+              <fmt:formatDate value="<%=event.getAcknowledgeTime()%>" type="BOTH" />
+            </c:when>
+            <c:otherwise>
+              &nbsp;
+            </c:otherwise>
+          </c:choose>
+          </td>
           <% } else { %>
           <td colspan="2">&nbsp;</td>
           <% } %>
@@ -222,7 +230,7 @@
       </table>
 
       <% 
-      if( ( request.isUserInRole( org.opennms.web.springframework.security.Authentication.ROLE_ADMIN ) || !request.isUserInRole( org.opennms.web.springframework.security.Authentication.ROLE_READONLY ) ) && "true".equals(acknowledgeEvent)) { %>
+      if( ( request.isUserInRole( org.opennms.web.api.Authentication.ROLE_ADMIN ) || !request.isUserInRole( org.opennms.web.api.Authentication.ROLE_READONLY ) ) && "true".equals(acknowledgeEvent)) { %>
         <form method="post" action="event/acknowledge">
           <input type="hidden" name="actionCode" value="<%=action%>" />
           <input type="hidden" name="event" value="<%=event.getId()%>"/>

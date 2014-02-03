@@ -3,12 +3,12 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>sms-reflector</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>1.13.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.sms-reflector.build</groupId>
   <artifactId>provision</artifactId>
-  <name>sms-reflector - imported bundles</name>
+  <name>OpenNMS Features SMS-Reflector - imported bundles</name>
   <packaging>pom</packaging>
   <!--
    | imported (non-local) bundles are listed here as dependencies
@@ -16,7 +16,7 @@
    | with <optional>true</optional>
   -->
   <properties>
-    <spring.version>3.0.7.RELEASE</spring.version>
+    <spring.version>3.2.3.RELEASE</spring.version>
     <spring.osgi.version>1.2.1</spring.osgi.version>
   </properties>
   <dependencies>
@@ -116,27 +116,22 @@
     <dependency>
       <groupId>org.hibernate.javax.persistence</groupId>
       <artifactId>hibernate-jpa-2.0-api</artifactId>
-      <version>1.0.0.Final</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.poller</groupId>
       <artifactId>org.opennms.features.poller.api</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.phonebook</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.api</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.lib</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>javax.xml.bind</groupId>
@@ -171,12 +166,10 @@
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.tasks</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.soa</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.felix</groupId>

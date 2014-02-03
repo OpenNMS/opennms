@@ -4,11 +4,11 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>1.13.1-SNAPSHOT</version>
   </parent>
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.system-report</artifactId>
-  <name>OpenNMS System Report</name>
+  <name>OpenNMS Features System Report</name>
   <packaging>jar</packaging>
   <build>
     <resources>
@@ -91,4 +91,15 @@
       <scope>test</scope>
     </dependency>
     </dependencies>
+
+  <repositories>
+    <repository>
+      <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
+      <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
+      <id>opennms-repo</id>
+      <name>OpenNMS Maven Repository</name>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+    </repository>
+  </repositories>
+
 </project>

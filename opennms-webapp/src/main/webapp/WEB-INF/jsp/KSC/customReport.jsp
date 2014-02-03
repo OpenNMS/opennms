@@ -84,7 +84,7 @@
     function cancelReport()
     {
         if (confirm("Do you really want to cancel configuration changes?")) {
-            setLocation("index.jsp");
+            setLocation("KSC/index.htm");
         }
     }
     
@@ -102,7 +102,7 @@
           <input type="text" name="<%=FormProcReportController.Parameters.report_title%>" value="${title}" size="80" maxlength="80"/>
         </p>
 
-            <table class="normal" width="100%" border="2">
+            <table class="normal" width="100%" border="1">
               <c:if test="${fn:length(resultSets) > 0}">
                 <c:forEach var="graphNum" begin="0" end="${fn:length(resultSets) - 1}">
                   <c:set var="resultSet" value="${resultSets[graphNum]}"/>

@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,7 +32,8 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.web.springframework.security.Authentication,
+	import="org.opennms.web.api.Authentication,
+		org.opennms.core.db.DataSourceFactory,
 		org.opennms.core.resource.Vault,
 		org.opennms.core.utils.WebSecurityUtils,
 		org.opennms.core.utils.DBUtils,
@@ -47,10 +48,10 @@
     String dbName;
     String dbVersion;
     try {
-      Connection conn = Vault.getDbConnection();
+      Connection conn = DataSourceFactory.getInstance().getConnection();
       d.watch(conn);
-      dbName = Vault.getDbConnection().getMetaData().getDatabaseProductName();
-      dbVersion = Vault.getDbConnection().getMetaData().getDatabaseProductVersion();
+      dbName = conn.getMetaData().getDatabaseProductName();
+      dbVersion = conn.getMetaData().getDatabaseProductVersion();
    	} catch (Exception e) {
    	  dbName = "Unknown";
       dbVersion = "Unknown";
@@ -116,7 +117,7 @@
 <div class="boxWrapper">
 <p>
   The <a href="http://www.opennms.org/">OpenNMS&reg;</a> software, as
-  distributed here, is copyright &copy; 2002-2013
+  distributed here, is copyright &copy; 2002-2014
   <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a>.
   <a href="http://www.opennms.org/">OpenNMS&reg;</a> is a registered
   trademark of <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a>

@@ -30,6 +30,18 @@ public class SavedHistoryTest {
 				new BoundingBox(0,0,100,100), 
 				locations,
 				Collections.singleton(vert2),
+				Collections.<VertexRef>emptySet(),
+				settings
+		);
+		JAXB.marshal(savedHistory, System.out);
+
+		// Specify a focus node
+		savedHistory = new SavedHistory(
+				0, 
+				new BoundingBox(0,0,100,100), 
+				locations,
+				Collections.singleton(vert2),
+				Collections.singleton(vert1),
 				settings
 		);
 		JAXB.marshal(savedHistory, System.out);

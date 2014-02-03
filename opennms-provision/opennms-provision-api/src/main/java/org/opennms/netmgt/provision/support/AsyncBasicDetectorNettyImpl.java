@@ -186,32 +186,34 @@ public abstract class AsyncBasicDetectorNettyImpl<Request, Response> extends Asy
         public void operationComplete(ChannelFuture future) {
             final Throwable cause = future.getCause();
 
-            if(cause instanceof IOException) {
-                if (m_retries == 0) {
-                    LOG.info("Service {} detected false",getServiceName());
-                    future.setFailure(new ServiceDetectionFailedException());
+            if (cause != null) {
+                if(cause instanceof IOException) {
+                    if (m_retries == 0) {
+                        LOG.info("Service {} detected false",getServiceName());
+                        future.setFailure(new ServiceDetectionFailedException());
+                    } else {
+                        LOG.info("Connection exception occurred {} for service {}, retrying attempt {}", cause, getServiceName(), m_retries);
+                        // Get an ephemeral port on the localhost interface
+                        final InetSocketAddress localAddress = new InetSocketAddress(InetAddressUtils.getLocalHostAddress(), 0);
+
+                        // Disconnect the channel
+                        //future.getChannel().disconnect().awaitUninterruptibly();
+                        //future.getChannel().unbind().awaitUninterruptibly();
+
+                        // Remove the current RetryChannelHandler
+                        future.removeListener(this);
+                        // Add a new listener with 1 fewer retry
+                        LOG.error("RETRIES {}", m_retries);
+                        future.addListener(new RetryChannelFutureListener(m_remoteAddress, m_retries - 1));
+                        // Reconnect the channel
+                        future.getChannel().bind(localAddress);
+                        future.getChannel().connect(m_remoteAddress);
+                    }
                 } else {
-                    LOG.info("Connection exception occurred {} for service {}, retrying attempt {}", cause, getServiceName(), m_retries);
-                    // Get an ephemeral port on the localhost interface
-                    final InetSocketAddress localAddress = new InetSocketAddress(InetAddressUtils.getLocalHostAddress(), 0);
-
-                    // Disconnect the channel
-                    //future.getChannel().disconnect().awaitUninterruptibly();
-                    //future.getChannel().unbind().awaitUninterruptibly();
-
-                    // Remove the current RetryChannelHandler
-                    future.removeListener(this);
-                    // Add a new listener with 1 fewer retry
-                    LOG.error("RETRIES {}", m_retries);
-                    future.addListener(new RetryChannelFutureListener(m_remoteAddress, m_retries - 1));
-                    // Reconnect the channel
-                    future.getChannel().bind(localAddress);
-                    future.getChannel().connect(m_remoteAddress);
+                    LOG.info("Threw a Throwable and detection is false for service {}", getServiceName(), cause);
+                    future.setFailure(new ServiceDetectionFailedException());
                 }
-            } else if(cause instanceof Throwable) {
-                LOG.info("Threw a Throwable and detection is false for service {}", getServiceName(), cause);
-                future.setFailure(new ServiceDetectionFailedException());
-            } 
+            }
         }
     }
 

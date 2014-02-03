@@ -67,7 +67,7 @@ public class SnmpObjectId extends Object implements SnmpSyntax, Cloneable, Seria
      * @return Returns an array of integers converted from the string. If an
      *         error occurs then a null is returned.
      */
-    private static int[] convert(String idstr) {
+    private static int[] convert(final String idstr) {
         //
         // ids is the counter
         // idArray is the array of characters

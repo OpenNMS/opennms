@@ -34,7 +34,9 @@
 <%@page import="java.text.DateFormat"%>
 <%@page import="java.util.Date"%>
 
+<%@page import="org.opennms.netmgt.model.OnmsNode"%>
 <%@page import="org.opennms.web.element.ElementUtil"%>
+<%@page import="org.opennms.web.element.NetworkElementFactory"%>
 <%@page import="org.opennms.web.filter.Filter"%>
 <%@page import="org.opennms.web.outage.Outage"%>
 <%@page import="org.opennms.web.outage.OutageQueryParms"%>
@@ -42,6 +44,8 @@
 <%@page import="org.opennms.web.outage.SortStyle"%>
 <%@page import="org.opennms.web.outage.filter.NodeFilter"%>
 <%@page import="org.opennms.web.outage.filter.NegativeNodeFilter"%>
+<%@page import="org.opennms.web.outage.filter.ForeignSourceFilter"%>
+<%@page import="org.opennms.web.outage.filter.NegativeForeignSourceFilter"%>
 <%@page import="org.opennms.web.outage.filter.InterfaceFilter"%>
 <%@page import="org.opennms.web.outage.filter.NegativeInterfaceFilter"%>
 <%@page import="org.opennms.web.outage.filter.ServiceFilter"%>
@@ -66,10 +70,10 @@
 
 <%!
     //useful constant strings
-    public static final String ZOOM_IN_ICON = "[+]";
-    public static final String DISCARD_ICON = "[-]";
-    public static final String BEFORE_ICON  = "[&gt;]";
-    public static final String AFTER_ICON   = "[&lt;]";
+    public static final String ZOOM_IN_ICON = "<i class=\"fa fa-plus-square-o\"></i>";
+    public static final String DISCARD_ICON = "<i class=\"fa fa-minus-square-o\"></i>";
+    public static final String BEFORE_ICON  = "<i class=\"fa fa-toggle-right\"></i>";
+    public static final String AFTER_ICON   = "<i class=\"fa fa-toggle-left\"></i>";
     
     public static final DateFormat DATE_FORMAT = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM);
 %>
@@ -94,6 +98,8 @@
   <jsp:param name="breadcrumb" value="List" />
 </jsp:include>
 
+<link rel="stylesheet" href="css/font-awesome-4.0.3/css/font-awesome.min.css">
+
     <% if( outageCount > 0 ) { %>
       <% String baseUrl = OutageUtil.makeLink(request, parms); %>
       <jsp:include page="/includes/resultsIndex.jsp" flush="false" >
@@ -107,6 +113,7 @@
     <table>
       <tr>
         <th><%=this.makeSortLink(request, parms, SortStyle.ID,                SortStyle.REVERSE_ID,                "id",                        "ID" )%></th>
+        <th><%=this.makeSortLink(request, parms, SortStyle.FOREIGNSOURCE,     SortStyle.REVERSE_FOREIGNSOURCE,     "foreignsource",             "Foreign Source" )%></th>
         <th><%=this.makeSortLink(request, parms, SortStyle.NODE,              SortStyle.REVERSE_NODE,              "node",                      "Node")%></th>
         <th><%=this.makeSortLink(request, parms, SortStyle.INTERFACE,         SortStyle.REVERSE_INTERFACE,         "interface",                 "Interface")%></th>
         <th><%=this.makeSortLink(request, parms, SortStyle.SERVICE,           SortStyle.REVERSE_SERVICE,           "service",                   "Service")%></th>
@@ -125,7 +132,20 @@
           <td>
             <a href="outage/detail.htm?id=<%=outages[i].getId()%>"><%=outages[i].getId()%></a>
           </td>
-          
+
+          <!-- foreign source -->
+          <td class="noWrap">
+            <% if(outages[i].getNodeId() != 0 ) { %>
+              <% OnmsNode node = NetworkElementFactory.getInstance(getServletContext()).getNode(outages[i].getNodeId()); %>
+              <%=node.getForeignSource()%></a>
+              <% Filter foreignSourceFilter = new ForeignSourceFilter(node.getForeignSource(), getServletContext()); %>
+              <% if( !parms.filters.contains(foreignSourceFilter) ) { %>
+                  <a href="<%=OutageUtil.makeLink( request, parms, foreignSourceFilter, true)%>" title="Show only outages for this foreign source"><%=ZOOM_IN_ICON%></a>
+                  <a href="<%=OutageUtil.makeLink( request, parms, new NegativeForeignSourceFilter(node.getForeignSource(), getServletContext()), true)%>" title="Do not show outages for this foreign source"><%=DISCARD_ICON%></a>
+              <% } %>
+            <% } %>
+          </td>
+
           <!-- node -->
           <td class="noWrap">
             <% if(outages[i].getNodeId() != 0 ) { %>             
@@ -175,10 +195,10 @@
                 <c:out value="<%=outages[i].getServiceName()%>"/>
               <% } %>                
               
-              <% Filter serviceFilter = new ServiceFilter(outages[i].getServiceId()); %>
+              <% Filter serviceFilter = new ServiceFilter(outages[i].getServiceId(), getServletContext()); %>
               <% if( !parms.filters.contains( serviceFilter )) { %>
                   <a href="<%=OutageUtil.makeLink( request, parms, serviceFilter, true)%>" title="Show only outages with this service type"><%=ZOOM_IN_ICON%></a>
-                  <a href="<%=OutageUtil.makeLink( request, parms, new NegativeServiceFilter(outages[i].getServiceId()), true)%>" title="Do not show outages for this service"><%=DISCARD_ICON%></a>
+                  <a href="<%=OutageUtil.makeLink( request, parms, new NegativeServiceFilter(outages[i].getServiceId(), getServletContext()), true)%>" title="Do not show outages for this service"><%=DISCARD_ICON%></a>
               <% } %>              
             <% } %>          
           </td>

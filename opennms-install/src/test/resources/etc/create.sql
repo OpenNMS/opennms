@@ -1,6 +1,7 @@
 --# create.sql -- SQL to build the initial tables for the OpenNMS Project
 --#
 --# Modifications:
+--# 2013 Nov 15: Added protocol field in datalinkinterface table
 --# 2009 Sep 29: Added linkTypeId field in datalinkinterface table
 --# 2009 Mar 27: Added Users, Groups tables
 --# 2009 Jan 28: Added Acks tables - david@opennms.org
@@ -77,6 +78,7 @@ drop table groups cascade;
 drop table group_user cascade;
 drop table category_user cascade;
 drop table category_group cascade;
+drop table filterfavorites cascade;
 
 drop sequence catNxtId;
 drop sequence nodeNxtId;
@@ -94,6 +96,9 @@ drop sequence reportNxtId;
 drop sequence reportCatalogNxtId;
 drop sequence mapNxtId;
 drop sequence opennmsNxtId;  --# should be used for all sequences, eventually
+drop sequence filternextid;
+
+drop index filternamesidx;
 
 --# Begin quartz persistence 
 
@@ -196,6 +201,11 @@ create sequence pollResultNxtId minvalue 1;
 --#          sequence,   column, table
 --# install: mapNxtId mapid map
 create sequence mapNxtId minvalue 1;
+
+--# Sequence for the filterid column in the filterfavorites table
+--#          sequence, column, table
+--# install: filternextid filterid filterfavorites
+create sequence filternextid minvalue 1;
 
 
 --# A table to use to manage upsert access
@@ -1207,7 +1217,7 @@ create table assets (
         vmwaremanagedobjectid	varchar(70),
         vmwaremanagedentitytype	varchar(70),
         vmwaremanagementserver	varchar(70),
-        vmwaretopologyinfo	varchar(1023),
+        vmwaretopologyinfo	text,
         vmwarestate	varchar(255),
         
     constraint pk_assetID primary key (id),
@@ -1846,6 +1856,7 @@ create index iprouteinterface_rnh_idx on iprouteinterface(routenexthop);
 --#                      'G' - Good
 --#                      'B' - Bad
 --#                      'X' - Admin Down
+--#  protocol          : the protocol used to discover the link (bridge,iproute,isis,ospf,cdp,lldp)  
 --#  linkTypeId        : An Integer (corresponding at iftype for cables links) indicating the type  
 --#  lastPollTime      : The last time when this information was retrived
 --#  source            : The source of the data link.  Defaults to 'linkd', but can be different
@@ -1860,6 +1871,7 @@ create table datalinkinterface (
     nodeparentid     integer not null,
     parentIfIndex    integer not null,
     status           char(1) not null,
+    protocol         varchar(31),
     linkTypeId       integer,
     lastPollTime     timestamp not null,
     source           varchar(64) not null default 'linkd',
@@ -2411,3 +2423,16 @@ create table accesspoints (
 
 create index accesspoint_package_idx on accesspoints(pollingpackage);
 
+--##################################################################
+--# The following command should populate the filterfavorites table
+--##################################################################
+CREATE TABLE filterfavorites (
+  filterid INTEGER NOT NULL,
+  username VARCHAR(50) NOT NULL,
+  filtername VARCHAR(50) NOT NULL,
+  page VARCHAR(25) NOT NULL,
+  filter VARCHAR(255) NOT NULL,
+
+  CONSTRAINT pk_filterid PRIMARY KEY (filterid)
+);
+CREATE INDEX filternamesidx ON filterfavorites (username, filtername, page);

@@ -32,97 +32,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
-import java.util.Properties;
-
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.opennms.core.test.MockLogAppender;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
-import org.opennms.core.utils.BeanUtils;
-import org.opennms.netmgt.config.LinkdConfig;
-import org.opennms.netmgt.config.LinkdConfigFactory;
 import org.opennms.netmgt.config.linkd.Package;
-import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.linkd.nb.Nms10205aNetworkBuilder;
 import org.opennms.netmgt.model.DataLinkInterface;
+import org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.test.JUnitConfigurationEnvironment;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.test.context.ContextConfiguration;
 
-@RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations= {
-        "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
-        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
-        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-linkd.xml",
-        "classpath:/META-INF/opennms/applicationContext-linkdTest.xml",
-        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
-})
-@JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
-@JUnitTemporaryDatabase
-public class Nms10205aTest extends Nms10205aNetworkBuilder implements InitializingBean {
-
-    @Autowired
-    private Linkd m_linkd;
-
-    private LinkdConfig m_linkdConfig;
-
-    @Autowired
-    private NodeDao m_nodeDao;
-    
-    @Autowired
-    private SnmpInterfaceDao m_snmpInterfaceDao;
-    
-    @Autowired
-    private DataLinkInterfaceDao m_dataLinkInterfaceDao;
-        
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
-    }
-
-    @Before
-    public void setUp() throws Exception {
-        Properties p = new Properties();
-        p.setProperty("log4j.logger.org.hibernate.SQL", "WARN");
-        p.setProperty("log4j.logger.org.hibernate.cfg", "WARN");
-        p.setProperty("log4j.logger.org.springframework","WARN");
-        p.setProperty("log4j.logger.com.mchange.v2.resourcepool", "WARN");
-        MockLogAppender.setupLogging(p);
-
-        super.setNodeDao(m_nodeDao);
-        super.setSnmpInterfaceDao(m_snmpInterfaceDao);
-    }
-
-    @Before
-    public void setUpLinkdConfiguration() throws Exception {
-        LinkdConfigFactory.init();
-        final Resource config = new ClassPathResource("etc/linkd-configuration.xml");
-        final LinkdConfigFactory factory = new LinkdConfigFactory(-1L, config.getInputStream());
-        LinkdConfigFactory.setInstance(factory);
-        m_linkdConfig = LinkdConfigFactory.getInstance();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        for (final OnmsNode node : m_nodeDao.findAll()) {
-            m_nodeDao.delete(node);
-        }
-        m_nodeDao.flush();
-    }
+public class Nms10205aTest extends Nms10205aNetworkBuilder {
 
     /*
      *  The 
@@ -217,7 +135,8 @@ public class Nms10205aTest extends Nms10205aNetworkBuilder implements Initializi
 
         final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
         
-        assertEquals(9, links.size());
+        assertEquals(19, links.size());
+        
         
         // Linkd is able to find partially the topology using the next hop router
         // among the core nodes:
@@ -239,28 +158,71 @@ public class Nms10205aTest extends Nms10205aNetworkBuilder implements Initializi
         
         int start = getStartPoint(links);
         for (final DataLinkInterface datalinkinterface: links) {
+            
+            
             int id = datalinkinterface.getId().intValue();
+            // mumbai delhi
             if (start == id ) {
+                checkLink(mumbai, delhi, 519, 28503, datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+            } else if (start+11 == id ) {
                 checkLink(delhi, mumbai, 28503, 519, datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
             } else if (start+1 == id ) {
+                checkLink(mumbai, bangalore, 507, 2401, datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+            } else if (start+12 == id ) {
                 checkLink(bangalore, mumbai, 2401, 507, datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
             } else if (start+2 == id ) {
+                checkLink(mumbai, bagmane, 977, 534, datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+            } else if (start+13 == id ) {
                 checkLink(bagmane, mumbai, 534, 977, datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
             } else if (start+3 == id ) {
+                checkLink(mumbai, mysore, 978, 508, datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+            } else if (start+14 == id ) {
                 checkLink(mysore, mumbai, 508, 978, datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
             } else if (start+4 == id ) {
+                checkLink(mumbai, chennai, 520, 528, datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+            } else if (start+10 == id ) {
                 checkLink(chennai, mumbai, 528, 520, datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
             } else if (start+5 == id ) {
+                checkLink(chennai, mysore, 517, 505, datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+            } else if (start+15 == id ) {
                 checkLink(mysore, chennai, 505, 517, datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
             } else if (start+6 == id ) {
-               checkLink(bangalore, delhi, 2397, 3674, datalinkinterface);
+               checkLink(delhi, bangalore, 3674, 2397, datalinkinterface);
+               assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+            } else if (start+16 == id ) {
+                checkLink(bangalore, delhi, 2397, 3674, datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
             } else if (start+7 == id ) {
+                checkLink(bangalore, bagmane, 2396, 1732, datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+            } else if (start+17 == id ) {
                 checkLink(bagmane, bangalore, 1732, 2396, datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
             } else if (start+8 == id ) {
+                checkLink(bagmane, mysore, 654, 520, datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+            } else if (start+18 == id ) {
                 checkLink(mysore, bagmane, 520, 654, datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
+            } else if (start+9 == id ) {
+                checkLink(spaceexsw2, mumbai, 34, 508, datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
             } else {
                 checkLink(mumbai,mumbai,-1,-1,datalinkinterface);
             }
+
         }
     }
     
@@ -304,6 +266,7 @@ public class Nms10205aTest extends Nms10205aNetworkBuilder implements Initializi
         example1.setUseCdpDiscovery(false);
         example1.setUseBridgeDiscovery(false);
         example1.setUseIpRouteDiscovery(false);
+        example1.setUseIsisDiscovery(false);
         
         example1.setSaveRouteTable(false);
         example1.setSaveStpInterfaceTable(false);
@@ -360,6 +323,7 @@ public class Nms10205aTest extends Nms10205aNetworkBuilder implements Initializi
         int start = getStartPoint(links);
         for (final DataLinkInterface datalinkinterface: links) {
             int id = datalinkinterface.getId().intValue();
+            assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
             if (start == id ) {
                 checkLink(chennai, mumbai, 528, 520, datalinkinterface);
             } else if (start+1 == id ) {

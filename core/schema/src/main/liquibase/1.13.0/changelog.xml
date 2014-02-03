@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:opennms="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+    <changeSet author="MVR" id="1.13.0-introduce-filters-for-alarms-and-events">
+        <createTable tableName="filterfavorites">
+            <column name="filterid" type="int">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="pk_filterid"/>
+            </column>
+            <column name="username" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="filtername" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="page" type="varchar(25)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="filter" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createSequence sequenceName="filternextid"/>
+
+        <rollback>
+            <dropTable tableName="filterfavorites"/>
+            <dropSequence sequenceName="filternextid"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet author="MVR" id="1.13.0-createSequences-for-filters-table">
+        <validCheckSum>ANY</validCheckSum>
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="filterfavorites"/>
+            <columnExists tableName="filterfavorites" columnName="filterid"/>
+        </preConditions>
+        <opennms:setSequence sequenceName="filternextid">
+            <opennms:table column="filterid" name="filterfavorites"/>
+        </opennms:setSequence>
+    </changeSet>
+
+    <changeSet author="MVR" id="1.13.0-addIndex-for-filters">
+        <createIndex indexName="filternamesidx"
+                     tableName="filterfavorites"
+                     unique="true">
+            <column name="username" type="varchar(255)"/>
+            <column name="filtername" type="varchar(255)"/>
+            <column name="page" type="varchar(255)"/>
+        </createIndex>
+
+        <rollback>
+            <dropIndex tableName="filterfavorites" indexName="filternamesidx" />
+        </rollback>
+    </changeSet>
+    
+    <changeSet author="rssntn67" id="1.13.0-add-protocol-to-datalinkinterface">
+      <addColumn tableName="datalinkinterface">
+        <column name="protocol" type="varchar(31)" />
+      </addColumn>
+      <rollback>
+        <dropColumn tableName="datalinkinterface" columnName="protocol" />
+      </rollback>
+    </changeSet>
+    
+</databaseChangeLog>

@@ -101,6 +101,8 @@ public class BSFClient implements Client<BSFRequest, BSFResponse> {
                 // bsfManager.declareBean("node_label", svc.getNodeLabel(), String.class);
                 bsfManager.declareBean("svc_name", m_serviceName, String.class);
                 bsfManager.declareBean("results", m_results, HashMap.class);
+                bsfManager.declareBean("port", port, Integer.class);
+                bsfManager.declareBean("timeout", timeout, Integer.class);
 
                 for (final Entry<String, Object> entry : map.entrySet()) {
                     bsfManager.declareBean(entry.getKey(), entry.getValue(), String.class);

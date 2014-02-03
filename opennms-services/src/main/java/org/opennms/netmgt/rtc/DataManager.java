@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.rtc;
 
-import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
@@ -86,7 +85,7 @@ import org.xml.sax.SAXException;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public class DataManager extends Object {
+public class DataManager {
     
     private static final Logger LOG = LoggerFactory.getLogger(DataManager.class);
     
@@ -114,7 +113,7 @@ public class DataManager extends Object {
 		}
 
 		// This is called exactly once for each unique (node ID, IP address, service name) tuple
-		public void processIfService(RTCNodeKey key) {
+		public synchronized void processIfService(RTCNodeKey key) {
 		    for (RTCCategory cat : m_categories.values()) {
 				if (catContainsIfService(cat, key)) {
 					RTCNode rtcN = getRTCNode(key);
@@ -384,30 +383,7 @@ public class DataManager extends Object {
     }
 
 	private DataSource getConnectionFactory() {
-		DataSource connFactory;
-		try {
-		    DataSourceFactory.init();
-		    connFactory = DataSourceFactory.getInstance();
-		} catch (IOException ex) {
-		    LOG.warn("Failed to load database config", ex);
-		    throw new UndeclaredThrowableException(ex);
-		} catch (MarshalException ex) {
-		    LOG.warn("Failed to unmarshall database config", ex);
-		    throw new UndeclaredThrowableException(ex);
-		} catch (ValidationException ex) {
-		    LOG.warn("Failed to unmarshall database config", ex);
-		    throw new UndeclaredThrowableException(ex);
-        } catch (ClassNotFoundException ex) {
-            LOG.warn("Failed to get database connection", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (SQLException ex) {
-            LOG.warn("Failed to get database connection", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (PropertyVetoException ex) {
-            LOG.warn("Failed to get database connection", ex);
-            throw new UndeclaredThrowableException(ex);
-        }
-		return connFactory;
+		return DataSourceFactory.getInstance();
 	}
 
     /**

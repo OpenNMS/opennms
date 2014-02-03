@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,12 +43,13 @@ import org.slf4j.LoggerFactory;
 
 public class SimpleEdgeProvider implements EdgeProvider {
 	
-	private static abstract class MatchingCriteria implements Criteria {
+	private static class MatchingCriteria extends Criteria {
 		
 		private String m_namespace;
-		
-		public MatchingCriteria(String namespace) {
+		private String m_regex;
+		public MatchingCriteria(String namespace, String regex) {
 			m_namespace = namespace;
+            m_regex = regex;
 		}
 
 		@Override
@@ -59,22 +61,34 @@ public class SimpleEdgeProvider implements EdgeProvider {
 		public String getNamespace() {
 			return m_namespace;
 		}
-		
-		public abstract boolean matches(Edge edge);
+
+        @Override
+        public int hashCode() {
+            return m_namespace.hashCode() * 31 + m_regex.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj instanceof MatchingCriteria) {
+                MatchingCriteria c = (MatchingCriteria) obj;
+                return c.getNamespace().equals(this.getNamespace()) && c.m_regex.equals(this.m_regex);
+            }else {
+                return false;
+            }
+
+        }
+
+        public  boolean matches(Edge edge){
+            return edge.getLabel().matches(m_regex);
+        }
 		
 	}
 	
 	public static Criteria labelMatches(String namespace, final String regex) {
-		return new MatchingCriteria(namespace) {
-			
-			@Override
-			public boolean matches(Edge edge) {
-				return edge.getLabel().matches(regex);
-			}
-		}; 
-	}
-	
-	private final String m_namespace;
+        return new MatchingCriteria(namespace, regex);
+    }
+
+    private final String m_namespace;
 	private final Map<String, Edge> m_edgeMap = new LinkedHashMap<String, Edge>();
 	private final Set<EdgeListener> m_listeners = new CopyOnWriteArraySet<EdgeListener>();
 	private final String m_contributesTo;
@@ -124,11 +138,6 @@ public class SimpleEdgeProvider implements EdgeProvider {
 	}
 
 	@Override
-	public List<Edge> getEdges() {
-		return Collections.unmodifiableList(new ArrayList<Edge>(m_edgeMap.values()));
-	}
-
-	@Override
 	public List<Edge> getEdges(Collection<? extends EdgeRef> references) {
 		List<Edge> edges = new ArrayList<Edge>();
 		for(EdgeRef ref : references) {
@@ -137,7 +146,7 @@ public class SimpleEdgeProvider implements EdgeProvider {
 				edges.add(edge);
 			}
 		}
-		return edges;
+		return Collections.unmodifiableList(edges);
 	}
 
 	private void fireEdgeSetChanged() {
@@ -184,7 +193,7 @@ public class SimpleEdgeProvider implements EdgeProvider {
 				LoggerFactory.getLogger(this.getClass()).warn("Discarding invalid edge: {}", edge);
 				continue;
 			}
-			LoggerFactory.getLogger(this.getClass()).debug("Adding edge: {}", edge);
+			LoggerFactory.getLogger(this.getClass()).trace("Adding edge: {}", edge);
 			m_edgeMap.put(edge.getId(), edge);
 		}
 	}
@@ -214,25 +223,29 @@ public class SimpleEdgeProvider implements EdgeProvider {
 	}
 
 	@Override
-	public List<Edge> getEdges(Criteria c) {
-		MatchingCriteria criteria = (MatchingCriteria) c;
-		
+	public List<Edge> getEdges(Criteria... criteria) {
 		List<Edge> edges = new ArrayList<Edge>();
-		
-		for(Edge e : getEdges()) {
-			if (criteria.matches(e)) {
-				edges.add(e);
-			}
+		for (Edge edge : m_edgeMap.values()) {
+			edges.add(edge.clone());
 		}
-		return edges;
 
-	}
+		for (Criteria criterium : criteria) {
+			try {
+				MatchingCriteria matchingCriteria = (MatchingCriteria)criterium;
+				for(Iterator<Edge> itr = edges.iterator(); itr.hasNext();) {
+					Edge next = itr.next();
+					if (
+						matchingCriteria.getType() == Criteria.ElementType.EDGE &&
+						matchingCriteria.getNamespace() == getEdgeNamespace() &&
+						!matchingCriteria.matches(next)
+					) {
+						itr.remove();
+					}
+				}
+			} catch (ClassCastException e) {}
+		}
 
-	@Override
-	public boolean matches(EdgeRef edgeRef, Criteria c) {
-		MatchingCriteria criteria = (MatchingCriteria)c;
-		
-		return criteria.matches(getEdge(edgeRef));
+		return Collections.unmodifiableList(edges);
 	}
 
 	@Override

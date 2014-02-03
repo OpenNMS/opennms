@@ -173,13 +173,16 @@ public class JrbToXml extends Thread {
     public void convertToXml(String path) throws RrdException, IOException {
         RrdDb rrdDb = getRrdDbReference(path + JrbToRrdConverter.FILE_TYPE.JRB.ext());
 
+        RandomAccessFile file = null;
         try {
             byte[] buf = rrdDb.getXml().getBytes();
-            FileChannel writeChannel = new RandomAccessFile(path + JrbToRrdConverter.FILE_TYPE.XML.ext(), "rw").getChannel();
+            file = new RandomAccessFile(path + JrbToRrdConverter.FILE_TYPE.XML.ext(), "rw");
+            FileChannel writeChannel = file.getChannel();
             ByteBuffer wrBuf = writeChannel.map(FileChannel.MapMode.READ_WRITE, 0, buf.length);
             wrBuf.put(buf);
             writeChannel.close();
         } finally {
+        	if (file != null) file.close();
             releaseRrdDbReference(rrdDb);
         }
     }

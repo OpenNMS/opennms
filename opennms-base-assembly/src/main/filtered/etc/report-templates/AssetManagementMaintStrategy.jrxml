@@ -220,6 +220,7 @@ ORDER BY
 		<defaultValueExpression><![CDATA["YYYY-MM-DD"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="COMPANY_LOGO" class="java.lang.String">
+		<parameterDescription><![CDATA[Company logo]]></parameterDescription>
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/assets/images/company-logo.png"]]></defaultValueExpression>
 	</parameter>
 	<queryString>

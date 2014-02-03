@@ -42,12 +42,14 @@ import org.springframework.util.Assert;
  */
 public enum SortStyle {
     NODE("node"),
+    FOREIGNSOURCE("foreignsource"),
     INTERFACE("interface"),
     SERVICE("service"),
     IFLOSTSERVICE("iflostservice"),
     IFREGAINEDSERVICE("ifregainedservice"),
     ID("id"),
     REVERSE_NODE("rev_node"),
+    REVERSE_FOREIGNSOURCE("rev_foreignsource"),
     REVERSE_INTERFACE("rev_interface"),
     REVERSE_SERVICE("rev_service"),
     REVERSE_IFLOSTSERVICE("rev_iflostservice"),
@@ -128,6 +130,12 @@ public enum SortStyle {
             break;
         case REVERSE_NODE:
             clause = " ORDER BY NODELABEL DESC";
+            break;
+        case FOREIGNSOURCE:
+            clause = " ORDER BY FOREIGNSOURCE ASC";
+            break;
+        case REVERSE_FOREIGNSOURCE:
+            clause = " ORDER BY FOREIGNSOURCE DESC";
             break;
         case INTERFACE:
             clause = " ORDER BY IPADDR ASC";

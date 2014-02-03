@@ -57,7 +57,7 @@ public class CommandProviderShellCommand extends OsgiCommandSupport {
     			String function = null;
 
     			// Implements OSGi API
-    			@SuppressWarnings("unchecked")
+    			@SuppressWarnings("rawtypes")
 				final List properties = data.getServiceProperties();
     			for (final Object o : properties) {
     				final MapEntry entry = (MapEntry)o;

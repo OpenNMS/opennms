@@ -1,16 +1,14 @@
 package org.opennms.features.topology.app.internal;
 
 import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.List;
-
 import javax.xml.bind.JAXBException;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
+import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -24,7 +22,9 @@ public class GCFilterableContainerTest {
         GraphProvider provider = new AbstractTopologyProvider("test") {
             @Override public void save() { }
             @Override public void refresh() { }
-            @Override public void load(String filename) throws MalformedURLException, JAXBException { 
+            @Override public Criteria getDefaultCriteria() { return null; }
+
+            @Override public void load(String filename) throws MalformedURLException, JAXBException {
                 resetContainer();
                 
                 String vId1 = getNextVertexId();
@@ -67,7 +67,7 @@ public class GCFilterableContainerTest {
         }
         
         // group must have no parent
-        Assert.assertEquals(null, graphContainer.getBaseTopology().getVertex(groupId).getParent());
+        Assert.assertEquals(null, graphContainer.getBaseTopology().getVertex(groupId, graphContainer.getCriteria()).getParent());
     }
     
 }

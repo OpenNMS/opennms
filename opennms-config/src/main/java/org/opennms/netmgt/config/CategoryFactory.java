@@ -192,8 +192,8 @@ public final class CategoryFactory implements CatFactory {
      */
     @Override
     public Catinfo getConfig() {
-        getReadLock().lock();
         try {
+            getReadLock().lock();
             return m_config;
         } finally {
             getReadLock().unlock();
@@ -207,8 +207,8 @@ public final class CategoryFactory implements CatFactory {
      *            category group to be added
      */
     public void addCategoryGroup(final Categorygroup group) {
-        getWriteLock().lock();
         try {
+            getWriteLock().lock();
             m_config.addCategorygroup(group);
         } finally {
             getWriteLock().unlock();
@@ -223,9 +223,9 @@ public final class CategoryFactory implements CatFactory {
      * @return true if categorygroup is successfully replaced
      */
     public boolean replaceCategoryGroup(final Categorygroup group) {
-        getWriteLock().lock();
-        
         try {
+            getWriteLock().lock();
+
             final String groupname = group.getName();
     
             for (int i = 0; i < m_config.getCategorygroupCount(); i++) {
@@ -249,8 +249,8 @@ public final class CategoryFactory implements CatFactory {
      * @return true if categorygroup is successfully deleted
      */
     public boolean deleteCategoryGroup(final Categorygroup group) {
-        getWriteLock().lock();
         try {
+            getWriteLock().lock();
             return m_config.removeCategorygroup(group);
         } finally {
             getWriteLock().unlock();
@@ -265,9 +265,9 @@ public final class CategoryFactory implements CatFactory {
      * @return true if categorygroup is successfully deleted
      */
     public boolean deleteCategoryGroup(final String groupname) {
-        getWriteLock().lock();
-        
         try {
+            getWriteLock().lock();
+
             boolean deleted = false;
     
             final Enumeration<Categorygroup> enumCG = m_config.enumerateCategorygroup();
@@ -296,8 +296,8 @@ public final class CategoryFactory implements CatFactory {
      *         group
      */
     public boolean addCategory(final String groupname, final Category cat) {
-        getWriteLock().lock();
         try {
+            getWriteLock().lock();
             Enumeration<Categorygroup> enumCG = m_config.enumerateCategorygroup();
             while (enumCG.hasMoreElements()) {
                 Categorygroup cg = enumCG.nextElement();
@@ -325,8 +325,8 @@ public final class CategoryFactory implements CatFactory {
      *         category group
      */
     public boolean replaceCategory(final String groupname, final Category cat) {
-        getWriteLock().lock();
         try {
+            getWriteLock().lock();
             final Enumeration<Categorygroup> enumCG = m_config.enumerateCategorygroup();
             while (enumCG.hasMoreElements()) {
                 final Categorygroup cg = enumCG.nextElement();
@@ -363,8 +363,8 @@ public final class CategoryFactory implements CatFactory {
      *         category group
      */
     public boolean deleteCategory(final String groupname, final Category cat) {
-        getWriteLock().lock();
         try {
+            getWriteLock().lock();
             final Enumeration<Categorygroup> enumCG = m_config.enumerateCategorygroup();
             while (enumCG.hasMoreElements()) {
                 final Categorygroup cg = enumCG.nextElement();
@@ -392,8 +392,8 @@ public final class CategoryFactory implements CatFactory {
      *         category group
      */
     public boolean deleteCategory(final String groupname, final String catlabel) {
-        getWriteLock().lock();
         try {
+            getWriteLock().lock();
             final Enumeration<Categorygroup> enumCG = m_config.enumerateCategorygroup();
             while (enumCG.hasMoreElements()) {
                 final Categorygroup cg = enumCG.nextElement();
@@ -425,8 +425,8 @@ public final class CategoryFactory implements CatFactory {
      */
     @Override
     public Category getCategory(final String name) {
-        getReadLock().lock();
         try {
+            getReadLock().lock();
             for (final Categorygroup cg: m_config.getCategorygroupCollection()) {
                 for (final Category cat : cg.getCategories().getCategoryCollection()) {
                     if (cat.getLabel().equals(name)) {
@@ -497,13 +497,12 @@ public final class CategoryFactory implements CatFactory {
      */
     @Override
     public String getEffectiveRule(final String catlabel) {
-        getReadLock().lock();
         try {
+            getReadLock().lock();
             for (final Categorygroup cg : m_config.getCategorygroupCollection()) {
                 for (final Category cat : cg.getCategories().getCategoryCollection()) {
                     if (cat.getLabel().equals(catlabel)) {
-                        String catRule = "(" + cg.getCommon().getRule() + ") & (" + cat.getRule() + ")";
-                        return catRule;
+                        return "(" + cg.getCommon().getRule() + ") & (" + cat.getRule() + ")";
                     }
                 }
             }

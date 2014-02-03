@@ -30,19 +30,20 @@ package org.opennms.reporting.core.svclayer.support;
 
 import java.io.File;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.criterion.Order;
 import org.opennms.api.reporting.ReportException;
 import org.opennms.api.reporting.ReportFormat;
 import org.opennms.api.reporting.ReportService;
+import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.Order;
 import org.opennms.core.logging.Logging;
 import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.opennms.features.reporting.repository.global.GlobalReportRepository;
 import org.opennms.netmgt.dao.api.ReportCatalogDao;
-import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.ReportCatalogEntry;
 import org.opennms.reporting.core.svclayer.ReportServiceLocator;
 import org.opennms.reporting.core.svclayer.ReportStoreService;
@@ -108,8 +109,10 @@ public class DefaultReportStoreService implements ReportStoreService {
      */
     @Override
     public List<ReportCatalogEntry> getAll() {
-        final OnmsCriteria onmsCrit = new OnmsCriteria(ReportCatalogEntry.class);
-        onmsCrit.addOrder(Order.desc("date"));
+        final Criteria onmsCrit = new Criteria(ReportCatalogEntry.class);
+        onmsCrit.setOrders(Arrays.asList(new Order[] {
+            Order.desc("date")
+        }));
         return m_reportCatalogDao.findMatching(onmsCrit);
     }
     

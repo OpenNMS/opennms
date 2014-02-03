@@ -28,12 +28,18 @@
 
 package org.opennms.netmgt.config;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 import org.opennms.core.test.IntervalTestCase;
@@ -43,6 +49,7 @@ import org.opennms.core.utils.Owner;
 import org.opennms.core.utils.TimeInterval;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.groups.Schedule;
+import org.opennms.netmgt.config.poller.outages.Outage;
 
 public class BasicScheduleUtilsTest extends IntervalTestCase {
 
@@ -233,6 +240,45 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
         }
         
         assertTimeIntervalSequence(expected.toArray(new OwnedInterval[]{}), intervals);
+    }
+    
+    @Test
+    public void testNms6013IsTimeInScheduleWithDay() throws Exception {
+        String schedSpec = "" +
+                "<outage name=\"debtoct\" type=\"weekly\"> \n" + 
+                "    <time day=\"monday\" begins=\"00:00:00\" ends=\"08:30:00\"/> \n" + 
+                "    <time day=\"monday\" begins=\"16:15:00\" ends=\"23:59:59\"/> \n" + 
+                "    <time day=\"tuesday\" begins=\"00:00:00\" ends=\"08:30:00\"/> \n" + 
+                "    <time day=\"tuesday\" begins=\"16:15:00\" ends=\"23:59:59\"/> \n" + 
+                "    <time day=\"wednesday\" begins=\"00:00:00\" ends=\"08:30:00\"/> \n" + 
+                "    <time day=\"wednesday\" begins=\"16:15:00\" ends=\"23:59:59\"/> \n" + 
+                "    <time day=\"thursday\" begins=\"00:00:00\" ends=\"08:30:00\"/> \n" + 
+                "    <time day=\"thursday\" begins=\"16:15:00\" ends=\"23:59:59\"/> \n" + 
+                "    <time day=\"friday\" begins=\"00:00:00\" ends=\"08:30:00\"/> \n" + 
+                "    <time day=\"friday\" begins=\"16:15:00\" ends=\"23:59:59\"/> \n" + 
+                "    <time day=\"saturday\" begins=\"00:00:00\" ends=\"23:59:59\"/> \n" + 
+                "    <time day=\"sunday\" begins=\"00:00:00\" ends=\"23:59:59\"/> \n" + 
+                "    <interface address=\"10.85.34.61\"/> \n" +
+                "</outage> \n";
+        final Outage out = CastorUtils.unmarshal(Outage.class, new ByteArrayInputStream(schedSpec.getBytes()));
+        final BasicSchedule schedule = BasicScheduleUtils.getBasicOutageSchedule(out);
+
+        final Map<Calendar,Boolean> daySchedules = new HashMap<Calendar,Boolean>();
+        daySchedules.put(new GregorianCalendar(2013, 7, 5, 9, 0),  false); // monday, august 5, 9:00am
+        daySchedules.put(new GregorianCalendar(2013, 7, 5, 17, 0), true);  // monday, august 5, 17:00pm
+        daySchedules.put(new GregorianCalendar(2013, 7, 6, 1, 0),  true);  // tuesday, august 6, 1:00am
+        daySchedules.put(new GregorianCalendar(2013, 7, 6, 10, 0), false); // tuesday, august 6, 10:00am
+        daySchedules.put(new GregorianCalendar(2013, 7, 7, 1, 0),  true);  // wednesday, august 7, 1:00am
+        daySchedules.put(new GregorianCalendar(2013, 7, 7, 13, 0),  false); // wednesday, august 7, 1:00pm
+        daySchedules.put(new GregorianCalendar(2013, 7, 7, 23, 0),  true);  // wednesday, august 7, 11:004m
+
+        for (final Map.Entry<Calendar,Boolean> entry : daySchedules.entrySet()) {
+            if (entry.getValue()) {
+                assertTrue(entry.getKey().getTime() + " should be in the schedule", BasicScheduleUtils.isTimeInSchedule(entry.getKey(), schedule));
+            } else {
+                assertFalse(entry.getKey().getTime() + " should not be in the schedule", BasicScheduleUtils.isTimeInSchedule(entry.getKey(), schedule));
+            }
+        }
     }
 
 }

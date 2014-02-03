@@ -27,26 +27,17 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.netmgt.config.DataCollectionConfigDao;
-import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.Group;
-import org.opennms.netmgt.config.datacollection.ResourceType;
 
+import com.vaadin.data.fieldgroup.FieldGroup;
+import com.vaadin.data.fieldgroup.PropertyId;
 import com.vaadin.data.util.BeanItem;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Form;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.themes.Runo;
-
-import de.steinwedel.vaadin.MessageBox;
-import de.steinwedel.vaadin.MessageBox.ButtonType;
-import de.steinwedel.vaadin.MessageBox.EventListener;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.TextField;
 
 /**
  * The Class Event Form.
@@ -55,67 +46,58 @@ import de.steinwedel.vaadin.MessageBox.EventListener;
  */
 // TODO when a new resource type is added, the resourceType list passed to GroupFieldFactory must be updated.
 @SuppressWarnings("serial")
-public abstract class GroupForm extends Form implements ClickListener {
+public class GroupForm extends CustomComponent {
 
-    /** The Constant FORM_ITEMS. */
-    public static final String[] FORM_ITEMS = new String[] {
-        "name",
-        "ifType",
-        "mibObjCollection"
-    };
+    /** The name. */
+    @PropertyId("name")
+    final TextField name = new TextField("Group Name");
 
-    /** The Edit button. */
-    private final Button edit = new Button("Edit");
+    /** The if type. */
+    @PropertyId("ifType")
+    final ComboBox ifType = new ComboBox("ifType Filter");
 
-    /** The Delete button. */
-    private final Button delete = new Button("Delete");
+    /** The mib objs. */
+    @PropertyId("mibObjCollection")
+    final MibObjField mibObjs; 
 
-    /** The Save button. */
-    private final Button save = new Button("Save");
+    /** The Event editor. */
+    private final FieldGroup groupEditor = new FieldGroup();
 
-    /** The Cancel button. */
-    private final Button cancel = new Button("Cancel");
+    /** The event layout. */
+    private final FormLayout groupLayout = new FormLayout();
 
     /**
      * Instantiates a new group form.
-     * 
-     * @param dataCollectionConfigDao the OpenNMS Data Collection Configuration DAO
-     * @param source the OpenNMS Data Collection Group object
+     *
+     * @param resourceTypes the resource types
      */
-    public GroupForm(final DataCollectionConfigDao dataCollectionConfigDao, final DatacollectionGroup source) {
+    public GroupForm(final List<String> resourceTypes) {
         setCaption("MIB Group Detail");
-        setBuffered(true);
-        setVisible(false);
+        groupLayout.setMargin(true);
 
-        // Adding all resource types already defined on this source
-        final List<String> resourceTypes = new ArrayList<String>();
-        for (ResourceType type : source.getResourceTypeCollection()) {
-            resourceTypes.add(type.getName());
-        }
-        // Adding all defined resource types
-        resourceTypes.addAll(dataCollectionConfigDao.getConfiguredResourceTypes().keySet());
+        name.setRequired(true);
+        name.setWidth("100%");
+        groupLayout.addComponent(name);
 
-        setFormFieldFactory(new GroupFieldFactory(resourceTypes));
-        initToolbar();
-    }
+        ifType.addItem("ignore");
+        ifType.addItem("all");
+        ifType.setNullSelectionAllowed(false);
+        ifType.setRequired(true);
+        ifType.setImmediate(true);
+        ifType.setNewItemsAllowed(true);
+        groupLayout.addComponent(ifType);
 
-    /**
-     * Initialize the Toolbar.
-     */
-    private void initToolbar() {
-        save.addClickListener(this);
-        cancel.addClickListener(this);
-        edit.addClickListener(this);
-        delete.addClickListener(this);
+        mibObjs = new MibObjField(resourceTypes);
+        mibObjs.setCaption("MIB Objects");
+        mibObjs.setRequired(true);
+        mibObjs.setImmediate(true);
+        mibObjs.setWidth("100%");
+        groupLayout.addComponent(mibObjs);
 
-        HorizontalLayout toolbar = new HorizontalLayout();
-        toolbar.setSpacing(true);
-        toolbar.addComponent(edit);
-        toolbar.addComponent(delete);
-        toolbar.addComponent(save);
-        toolbar.addComponent(cancel);
+        setGroup(createBasicGroup());
+        groupEditor.bindMemberFields(this);
 
-        setFooter(toolbar);
+        setCompositionRoot(groupLayout);
     }
 
     /**
@@ -124,81 +106,54 @@ public abstract class GroupForm extends Form implements ClickListener {
      * @return the group
      */
     @SuppressWarnings("unchecked")
-    private Group getGroup() {
-        if (getItemDataSource() instanceof BeanItem) {
-            BeanItem<Group> item = (BeanItem<Group>) getItemDataSource();
-            return item.getBean();
-        }
-        return null;
+    public Group getGroup() {
+        return ((BeanItem<Group>) groupEditor.getItemDataSource()).getBean();
+    }
+
+    /**
+     * Sets the group.
+     *
+     * @param group the new group
+     */
+    public void setGroup(Group group) {
+        groupEditor.setItemDataSource(new BeanItem<Group>(group));
+    }
+
+    /**
+     * Creates the basic group.
+     *
+     * @return the group
+     */
+    public Group createBasicGroup() {
+        Group group = new Group();
+        group.setName("New Group");
+        group.setIfType("ignore");
+        return group;
+    }
+
+    /**
+     * Gets the field group.
+     *
+     * @return the field group
+     */
+    public FieldGroup getFieldGroup() {
+        return groupEditor;
     }
 
     /* (non-Javadoc)
-     * @see com.vaadin.ui.Form#setReadOnly(boolean)
+     * @see com.vaadin.ui.AbstractComponent#setReadOnly(boolean)
      */
     @Override
     public void setReadOnly(boolean readOnly) {
         super.setReadOnly(readOnly);
-        save.setVisible(!readOnly);
-        cancel.setVisible(!readOnly);
-        edit.setVisible(readOnly);
-        delete.setVisible(readOnly);
+        groupEditor.setReadOnly(readOnly);
     }
 
     /* (non-Javadoc)
-     * @see com.vaadin.ui.Button.ClickListener#buttonClick(com.vaadin.ui.Button.ClickEvent)
+     * @see com.vaadin.ui.AbstractComponent#isReadOnly()
      */
     @Override
-    public void buttonClick(ClickEvent event) {
-        Button source = event.getButton();
-        if (source == save) {
-            if (isValid()) {
-                commit();
-                setReadOnly(true);
-                saveGroup(getGroup());
-            } else {
-                Notification.show("There are errors on the MIB Groups", Notification.Type.WARNING_MESSAGE);
-            }
-        }
-        if (source == cancel) {
-            discard();
-            setReadOnly(true);
-        }
-        if (source == edit) {
-            setReadOnly(false);
-        }
-        if (source == delete) {
-            // FIXME You cannot delete a group if it is being used on any systemDef
-            MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
-                                           "Are you sure?",
-                                           MessageBox.Icon.QUESTION,
-                                           "Do you really want to remove the Group " + getGroup().getName() + "?<br/>This action cannot be undone.",
-                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
-                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
-            mb.addStyleName(Runo.WINDOW_DIALOG);
-            mb.show(new EventListener() {
-                @Override
-                public void buttonClicked(ButtonType buttonType) {
-                    if (buttonType == MessageBox.ButtonType.YES) {
-                        setVisible(false);
-                        deleteGroup(getGroup());
-                    }
-                }
-            });
-        }
+    public boolean isReadOnly() {
+        return super.isReadOnly() && groupEditor.isReadOnly();
     }
-
-    /**
-     * Save group.
-     *
-     * @param group the group
-     */
-    public abstract void saveGroup(Group group);
-
-    /**
-     * Delete group.
-     *
-     * @param group the group
-     */
-    public abstract void deleteGroup(Group group);
-
 }

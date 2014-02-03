@@ -2,6 +2,7 @@ package org.opennms.protocols.vmware;
 
 import com.vmware.vim25.mo.HostSystem;
 import com.vmware.vim25.mo.ManagedEntity;
+
 import org.apache.commons.cli.*;
 import org.sblim.wbem.cim.CIMObject;
 
@@ -100,13 +101,13 @@ public class VmwareCimQuery {
 
                     try {
                         cimObjects = vmwareViJavaAccess.queryCimObjects(hostSystem, "CIM_NumericSensor");
-                    } catch (RemoteException remoteException) {
+                    } catch (Exception e) {
                         System.out.println("Exception:");
-                        remoteException.printStackTrace();
+                        e.printStackTrace();
                         continue;
                     }
 
-                    if (cimObjects != null) {
+                    if (cimObjects != null) { // FIXME queryCimObjects returns an empty list or a filled list, but never null
                         System.out.println(cimObjects.size() + " sensor(s) found!");
                         for (CIMObject cimObject : cimObjects) {
                             String healthState = vmwareViJavaAccess.getPropertyOfCimObject(cimObject, "HealthState");
@@ -158,7 +159,7 @@ public class VmwareCimQuery {
         usage(options, cmd, null, null);
     }
 
-    public static void main(String args[]) throws ParseException {
+    public static void main(String[] args) throws ParseException {
         String hostname, username, password;
 
         final Options options = new Options();

@@ -47,8 +47,6 @@ import java.util.regex.Pattern;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.Base64;
 import org.opennms.core.utils.InetAddressUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.capsd.DbIpInterfaceEntry;
 import org.opennms.netmgt.model.capsd.DbSnmpInterfaceEntry;
@@ -57,6 +55,8 @@ import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Snmp;
 import org.opennms.netmgt.xml.event.Tticket;
 import org.opennms.netmgt.xml.event.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * EventUtil is used primarily for the event parm expansion - has methods used
@@ -753,7 +753,7 @@ public final class EventUtil {
             src = src.replaceFirst(sepLiteral, "");
         }
         
-        String components[] = src.split(sepLiteral);
+        String[] components = src.split(sepLiteral);
         int startIndex, endIndex;
         if ((Math.abs(offset) > components.length) || (offset == 0)) {
             return null;
@@ -971,6 +971,7 @@ public final class EventUtil {
 	 * Retrieve nodeLabel from the node table of the database given a particular
 	 * nodeId.
 	 * 
+	 * @deprecated Replace with standard DAO calls instead of using JDBC
 	 * @param nodeId
 	 *            Node identifier
 	 * 
@@ -995,7 +996,7 @@ public final class EventUtil {
 		                .executeQuery("SELECT nodelabel FROM node WHERE nodeid="
 		                        + String.valueOf(nodeId));
 		        if (rs.next()) {
-		            nodeLabel = (String) rs.getString("nodelabel");
+		            nodeLabel = rs.getString("nodelabel");
 		        }
 		    } finally {
 		        // Close the statement
@@ -1026,6 +1027,7 @@ public final class EventUtil {
 	 * Retrieve ifAlias from the snmpinterface table of the database given a particular
 	 * nodeId and ipAddr.
 	 *
+     * @deprecated Replace with standard DAO calls instead of using JDBC
 	 * @param nodeId
 	 *            Node identifier
 	 * @param ipAddr
@@ -1108,6 +1110,7 @@ public final class EventUtil {
     /**
      * Helper method.
      * 
+     * @deprecated Replace with standard DAO calls instead of using JDBC
      * @param parm
      * @param event
      * @return The value of an asset field based on the nodeid of the event 
@@ -1128,7 +1131,7 @@ public final class EventUtil {
                     stmt = dbConn.createStatement();
                     ResultSet rs = stmt.executeQuery("SELECT " + assetField + " FROM assets WHERE nodeid=" + String.valueOf(nodeId));
                          if (rs.next()) {
-                             retParmVal = (String) rs.getString(assetField);
+                             retParmVal = rs.getString(assetField);
                          }
                   } catch (SQLException sqlE) {
                                 // do nothing

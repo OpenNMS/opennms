@@ -34,8 +34,8 @@
 	session="true"
 	import="org.opennms.core.utils.WebSecurityUtils,
 		org.opennms.web.element.*,
-		org.opennms.netmgt.model.OnmsNode,
-		org.opennms.web.servlet.MissingParameterException"
+		org.opennms.netmgt.model.OnmsNode
+	"
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >

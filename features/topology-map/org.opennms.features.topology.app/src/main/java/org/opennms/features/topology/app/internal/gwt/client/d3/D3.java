@@ -273,6 +273,10 @@ public class D3 extends JavaScriptObject {
 		
     }-*/;
 
+    public final native <T extends JavaScriptObject> D3 data() /*-{
+        return this.data();
+    }-*/;
+
     public final native D3 text(JavaScriptObject textFunc) /*-{
         return this.text(textFunc);
     }-*/;
@@ -437,5 +441,13 @@ public class D3 extends JavaScriptObject {
         return this.style(style);
     }-*/;
 
+    public final native void injectSVGDef(String file) /*-{
+         $wnd.d3.xml(file, function(svg){
 
+            var newSVG = $wnd.document.importNode(svg.documentElement, true);
+            var defsTag = $wnd.document.getElementsByTagName("defs")[0];
+            defsTag.appendChild(newSVG);
+
+        });
+    }-*/;
 }

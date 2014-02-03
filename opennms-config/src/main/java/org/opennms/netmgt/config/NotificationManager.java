@@ -812,11 +812,15 @@ public abstract class NotificationManager {
             } else {
                 statement.setNull(7, Types.INTEGER);
             }
-    
+
             // eventID field
             final String eventID = params.get("eventID");
-            statement.setInt(8, Integer.parseInt(eventID));
-    
+            if (eventID != null && !eventID.trim().equals("") && !eventID.trim().equals("0") && !eventID.equalsIgnoreCase("null") && !eventID.equalsIgnoreCase("%eventid%")) {
+                statement.setInt(8, Integer.parseInt(eventID));
+            } else {
+                statement.setNull(8, Types.INTEGER);
+            }
+
             statement.setString(9, params.get("eventUEI"));
             
             // notifications subject field
@@ -1005,13 +1009,11 @@ public abstract class NotificationManager {
 	        notice.setNumericMessage(newNotice.getNumericMessage());
 	        notice.setStatus(newNotice.getStatus());
 	        notice.setVarbind(newNotice.getVarbind());
-           
-	        Parameter parameters[] = newNotice.getParameter();
-	        for (int i = 0; i < parameters.length; i++) {
+	        notice.getParameterCollection().clear(); // Required to avoid NMS-5948
+	        for (Parameter parameter : newNotice.getParameterCollection()) {
 		            Parameter newParam = new Parameter();
-		            newParam.setName(parameters[i].getName());
-		            newParam.setValue(parameters[i].getValue());
-
+		            newParam.setName(parameter.getName());
+		            newParam.setValue(parameter.getValue());
 		            notice.addParameter(newParam);
 	        } 
                 saveCurrent();

@@ -4,14 +4,14 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>topology</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>1.13.1-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.topology</groupId>
   <artifactId>plugins</artifactId>
 
-  <name>OpenNMS :: Topology :: Plugins</name>
+  <name>OpenNMS Features :: Topology :: Plugins</name>
 
   <packaging>pom</packaging>
 
@@ -22,7 +22,6 @@
     <module>org.opennms.features.topology.plugins.ncs</module>
     <module>org.opennms.features.topology.plugins.netutils</module>
     <module>org.opennms.features.topology.plugins.ssh</module>
-    <module>org.opennms.features.topology.plugins.status</module>
     <module>org.opennms.features.topology.plugins.topo.history</module>
     <module>org.opennms.features.topology.plugins.topo.linkd</module>
     <module>org.opennms.features.topology.plugins.topo.onmsdao</module>

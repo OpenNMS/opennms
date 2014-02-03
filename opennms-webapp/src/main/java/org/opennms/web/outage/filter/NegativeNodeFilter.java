@@ -45,8 +45,6 @@ public class NegativeNodeFilter extends NotEqualOrNullFilter<Integer> {
     /** Constant <code>TYPE="nodenot"</code> */
     public static final String TYPE = "nodenot";
 
-    protected int nodeId;
-
     private ServletContext m_servletContext;
 
     /**

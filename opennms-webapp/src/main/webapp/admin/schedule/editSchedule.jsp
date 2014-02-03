@@ -38,9 +38,9 @@
 		<c:set value="schedule[${currentSchedIndex}]" var="schedId" />
 		<form action="" method="post">
 			<label for="<c:out value="${schedId}.name"/>">Name:</label>
-			<input id="<c:out value="${schedId}.name"/>" type="text" readonly="true" value="<c:out value="${currentSchedule.name}"/>"/>
+			<input id="<c:out value="${schedId}.name"/>" type="text" readonly="readonly" value="<c:out value="${currentSchedule.name}"/>"/>
 			<label for="<c:out value="${schedId}.type"/>">Type:</label>
-			<input id="<c:out value="${schedId}.type"/>" type="text" readonly="true" value="<c:out value="${currentSchedule.type}"/>"/>
+			<input id="<c:out value="${schedId}.type"/>" type="text" readonly="readonly" value="<c:out value="${currentSchedule.type}"/>"/>
 			
 		</form>
 	</body>

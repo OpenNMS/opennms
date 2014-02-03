@@ -46,7 +46,7 @@ public class Schedule {
     private static final Logger LOG = LoggerFactory.getLogger(Schedule.class);
 
 	/** Constant <code>random</code> */
-	public static final Random random = new Random();
+	private static final Random random = new Random();
 	
     private final ReadyRunnable m_schedulable;
     private final ScheduleInterval m_interval;

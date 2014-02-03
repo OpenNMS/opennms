@@ -39,8 +39,8 @@
 
 <%
 	UserManager userFactory;
-  	Map users = null;
-	HashMap usersHash = new HashMap();
+  	Map<String,User> users = null;
+	HashMap<String,String> usersHash = new HashMap<String,String>();
 	String curUserName = null;
 	
 	try
@@ -54,9 +54,7 @@
 		throw new ServletException("User:list " + e.getMessage());
 	}
 
-	Iterator i = users.keySet().iterator();
-	while (i.hasNext()) {
-		User curUser = (User)users.get(i.next());
+	for (User curUser : users.values()) {
 		usersHash.put(curUser.getUserId(), curUser.getFullName());
 	}
 

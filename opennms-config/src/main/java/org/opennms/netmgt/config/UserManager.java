@@ -47,6 +47,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.apache.commons.lang.StringUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
@@ -148,6 +149,8 @@ public abstract class UserManager {
      * @throws java.lang.Exception if any.
      */
     public void saveUser(final String name, final User details) throws Exception {
+        update();
+
         m_writeLock.lock();
         
         try {
@@ -167,28 +170,33 @@ public abstract class UserManager {
         _saveCurrent();
     }
     
-    public void save(final OnmsUser user) throws Exception {
+    public void save(final OnmsUser onmsUser) throws Exception {
+        update();
+
         m_writeLock.lock();
         
         try {
-            User castorUser = _getUser(user.getUsername());
+            User castorUser = _getUser(onmsUser.getUsername());
             if (castorUser == null) {
                 castorUser = new User();
-                castorUser.setUserId(user.getUsername());
+                castorUser.setUserId(onmsUser.getUsername());
             }
-            castorUser.setFullName(user.getFullName());
-            castorUser.setUserComments(user.getComments());
+            castorUser.setFullName(onmsUser.getFullName());
+            castorUser.setUserComments(onmsUser.getComments());
+
+            // Contact info
+            _setContact(castorUser, ContactType.email, onmsUser.getEmail());
             
             final Password pass = new Password();
-            pass.setContent(user.getPassword());
-            pass.setSalt(user.getPasswordSalted());
+            pass.setContent(onmsUser.getPassword());
+            pass.setSalt(onmsUser.getPasswordSalted());
             castorUser.setPassword(pass);
     
-            if (user.getDutySchedule() != null) {
-                castorUser.setDutySchedule(user.getDutySchedule());
+            if (onmsUser.getDutySchedule() != null) {
+                castorUser.setDutySchedule(onmsUser.getDutySchedule());
             }
             
-            _writeUser(user.getUsername(), castorUser);
+            _writeUser(onmsUser.getUsername(), castorUser);
         } finally {
             m_writeLock.unlock();
         }
@@ -234,7 +242,6 @@ public abstract class UserManager {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public boolean isUserOnDuty(final String user, final Calendar time) throws IOException, MarshalException, ValidationException {
-    
         update();
     
         m_readLock.lock();
@@ -264,7 +271,6 @@ public abstract class UserManager {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public Map<String, User> getUsers() throws IOException, MarshalException, ValidationException {
-    
         update();
     
         m_readLock.lock();
@@ -276,6 +282,8 @@ public abstract class UserManager {
     }
 
     public OnmsUserList getOnmsUserList() throws MarshalException, ValidationException, IOException {
+        update();
+
         final OnmsUserList list = new OnmsUserList();
 
         m_readLock.lock();
@@ -293,8 +301,9 @@ public abstract class UserManager {
     }
     
     public OnmsUser getOnmsUser(final String username) throws MarshalException, ValidationException, IOException {
+        update();
+
         m_readLock.lock();
-        
         try {
             return _getOnmsUser(username);
         } finally {
@@ -312,8 +321,20 @@ public abstract class UserManager {
         user.setPassword(castorUser.getPassword().getContent());
         user.setPasswordSalted(castorUser.getPassword().getSalt());
         user.setDutySchedule(castorUser.getDutyScheduleCollection());
-   
+        user.setEmail(_getContactInfo(castorUser, ContactType.email));
         return user;
+    }
+    
+    private Contact _getContact(final String userId, final ContactType contactType) {
+    	User user = _getUser(userId);
+    	if (user != null && contactType != null) {
+    		for (Contact eachContact : user.getContactCollection()) {
+    			if (contactType.name().equals(eachContact.getType())) {
+    				return eachContact;
+    			}
+    		}
+    	}
+    	return null;
     }
     
     /**
@@ -326,7 +347,6 @@ public abstract class UserManager {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public boolean hasUser(final String userName) throws IOException, MarshalException, ValidationException {
-    
         update();
 
         m_readLock.lock();
@@ -346,7 +366,6 @@ public abstract class UserManager {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public List<String> getUserNames() throws IOException, MarshalException, ValidationException {
-    
         update();
 
         m_readLock.lock();
@@ -374,7 +393,6 @@ public abstract class UserManager {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public User getUser(final String name) throws IOException, MarshalException, ValidationException {
-    
         update();
 
         m_readLock.lock();
@@ -461,7 +479,42 @@ public abstract class UserManager {
     public String getMicroblogName(final User user) throws MarshalException, ValidationException, FileNotFoundException, IOException {
         return getContactInfo(user, ContactType.microblog.toString());
     }
+    
+    public void setContactInfo(final String userId, final ContactType contactType, final String contactValue) throws Exception {
+    	 update();
+         m_writeLock.lock();
+         
+         try {
+             final User user = _getUser(userId);
+             if (user != null) {
+            	 _setContact(user, contactType, contactValue);
+             }
+             _saveCurrent();
+         } finally {
+             m_writeLock.unlock();
+         }
+	}
+    
+    private void _setContact(final User user, final ContactType contactType, final String value) {
+        if (user != null && !StringUtils.isEmpty(value)) {
+        	Contact contact = _getContact(user.getUserId(), contactType);
+        	if (contact == null) {
+        		contact = new Contact();
+        		user.addContact(contact);
+        	}
+        	contact.setInfo(value);
+    		contact.setType(contactType.name());
+        }
+    }
 
+    /**
+     * @see {@link #getContactInfo(String, String)} 
+     */
+    public String getContactInfo(final String userId, final ContactType contactType) throws MarshalException, ValidationException, IOException {
+    	if (userId == null || contactType == null) return null;
+    	return getContactInfo(userId, contactType.name());
+	}
+    
     /**
      * Get the contact info given a command string
      *
@@ -508,6 +561,10 @@ public abstract class UserManager {
         }
     }
 
+    private String _getContactInfo(final User user, final ContactType contactType) {
+    	return _getContactInfo(user, contactType.name());
+    }
+    
     private String _getContactInfo(final User user, final String command) {
         if (user == null) return "";
         
@@ -668,7 +725,6 @@ public abstract class UserManager {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public String getXMPPAddress(final String userID) throws IOException, MarshalException, ValidationException {
-
         update();
         
         m_readLock.lock();
@@ -690,7 +746,6 @@ public abstract class UserManager {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public String getXMPPAddress(final User user) throws IOException, MarshalException, ValidationException {
-
         update();
 
         m_readLock.lock();
@@ -883,6 +938,8 @@ public abstract class UserManager {
      * @throws java.lang.Exception if any.
      */
     public void saveUsers(final Collection<User> usersList) throws Exception {
+        update();
+
         m_writeLock.lock();
         
         try {
@@ -974,6 +1031,8 @@ public abstract class UserManager {
      * @throws java.lang.Exception if any.
      */
     public void renameUser(final String oldName, final String newName) throws Exception {
+        update();
+
         m_writeLock.lock();
         
         try {
@@ -1016,6 +1075,8 @@ public abstract class UserManager {
      * @throws java.lang.Exception if any.
      */
     public void setEncryptedPassword(final String userID, final String aPassword, final boolean salted) throws Exception {
+        update();
+
         m_writeLock.lock();
         
         try {
@@ -1043,6 +1104,8 @@ public abstract class UserManager {
      * @throws java.lang.Exception if any.
      */
     public void setUnencryptedPassword(final String userID, final String aPassword) throws Exception {
+        update();
+
         m_writeLock.lock();
         
         try {
@@ -1289,6 +1352,8 @@ public abstract class UserManager {
      * @throws java.io.IOException if any.
      */
     public boolean hasRole(final String roleid) throws MarshalException, ValidationException, IOException {
+        update();
+
         m_readLock.lock();
         try {
             return m_groupManager.getRole(roleid) != null;
@@ -1307,6 +1372,8 @@ public abstract class UserManager {
      * @throws java.io.IOException if any.
      */
     public int countUsersWithRole(final String roleid) throws MarshalException, ValidationException, IOException {
+        update();
+
         m_readLock.lock();
         try {
             final String[] users = _getUsersWithRole(roleid);

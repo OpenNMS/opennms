@@ -149,7 +149,7 @@ public abstract class PageableList extends Composite {
 
     protected void calculateAndSetTotalPages(final int size) {
         if(size > getTotalListItemsPerPage()) {
-            int totalPages = (int) Math.ceil(size / getTotalListItemsPerPage());
+            int totalPages = (int)Math.ceil((double)size / (double)getTotalListItemsPerPage());
             if(totalPages == 0) {
                 totalPages = 1;
             }

@@ -220,7 +220,7 @@ public class WebDetectorTest implements InitializingBean {
             @Override
             public void init() throws Exception {
                 super.init();
-                setServerSocket(new ServerSocket(9000, 0, InetAddress.getLocalHost()));
+                setServerSocket(new ServerSocket(0, 0, InetAddress.getLocalHost()));
                 addResponseHandler(contains("GET"), shutdownServer(httpResponse));
             }
         };

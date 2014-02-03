@@ -5,6 +5,8 @@
     <bean id="summaryDashletFactory" class="org.opennms.features.vaadin.dashboard.dashlets.SummaryDashletFactory" scope="singleton">
         <argument ref="alarmDao"/>
         <property name="name" value="Summary"/>
+        <property name="boostable" value="true"/>
+        <property name="dashboardSuitable" value="true"/>
         <property name="requiredParameters">
             <map>
                 <entry key="timeslot" value="3600"/>

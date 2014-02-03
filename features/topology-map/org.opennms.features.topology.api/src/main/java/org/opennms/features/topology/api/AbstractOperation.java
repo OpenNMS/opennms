@@ -28,11 +28,17 @@
 
 package org.opennms.features.topology.api;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 import java.util.List;
 
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.LoggerFactory;
+
+import com.vaadin.server.Page;
+import com.vaadin.server.VaadinServlet;
 
 public abstract class AbstractOperation implements Operation {
 
@@ -54,6 +60,11 @@ public abstract class AbstractOperation implements Operation {
         return false;
     }
 
+    @Override
+    public String getId() {
+        return getClass().getSimpleName();
+    }
+
     protected static String getLabelValue(final OperationContext operationContext, final VertexRef target) {
         Vertex vertex = getVertexItem(operationContext, target);
         return vertex == null ? null : vertex.getLabel();
@@ -69,13 +80,23 @@ public abstract class AbstractOperation implements Operation {
         return vertex == null ? null : vertex.getNodeID();
     }
 
-	protected static Vertex getVertexItem(final OperationContext operationContext, final VertexRef target) {
-		Vertex vertex = operationContext.getGraphContainer().getBaseTopology().getVertex(target);
-		if (vertex == null) {
-			LoggerFactory.getLogger(AbstractOperation.class).debug("Null vertex found for vertex reference: {}:{}", target.getNamespace(), target.getId());
-			return null;
-		} else {
-			return vertex;
-		}
-	}
+    protected static Vertex getVertexItem(final OperationContext operationContext, final VertexRef target) {
+        Vertex vertex = operationContext.getGraphContainer().getBaseTopology().getVertex(target, operationContext.getGraphContainer().getCriteria());
+        if (vertex == null) {
+            LoggerFactory.getLogger(AbstractOperation.class).debug("Null vertex found for vertex reference: {}:{}", target.getNamespace(), target.getId());
+            return null;
+        } else {
+            return vertex;
+        }
+    }
+    
+    protected String getFullUrl(final String urlFragment) {
+        final URI currentLocation = Page.getCurrent().getLocation();
+        final String contextRoot = VaadinServlet.getCurrent().getServletContext().getContextPath();
+        try {
+            return new URL(currentLocation.toURL(), contextRoot + "/" + urlFragment).toString();
+        } catch (final MalformedURLException e) {
+            throw new RuntimeException("Failed to create full URL from current location: " + currentLocation + ", context root: " + contextRoot + ", url: " + urlFragment);
+        }
+    }
 }

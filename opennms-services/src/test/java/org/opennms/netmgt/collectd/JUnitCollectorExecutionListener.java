@@ -62,6 +62,8 @@ public class JUnitCollectorExecutionListener extends AbstractTestExecutionListen
 
     @Override
     public void beforeTestMethod(TestContext testContext) throws Exception {
+        m_fileAnticipator = new FileAnticipator();
+
         JUnitCollector config = findCollectorAnnotation(testContext);
         if (config == null) {
             return;
@@ -83,7 +85,6 @@ public class JUnitCollectorExecutionListener extends AbstractTestExecutionListen
         is.close();
 
         // set up temporary directories for RRD files
-        m_fileAnticipator = new FileAnticipator();
         m_snmpRrdDirectory = m_fileAnticipator.tempDir("snmp");
         m_snmpRrdDirectory.mkdirs();
         testContext.setAttribute("fileAnticipator", m_fileAnticipator);

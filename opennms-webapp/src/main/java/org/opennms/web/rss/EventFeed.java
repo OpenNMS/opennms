@@ -92,7 +92,7 @@ public class EventFeed extends AbstractFeed {
                     filters.add(new SeverityFilter(severityId));
                 } catch (NumberFormatException e) {
                     for (OnmsSeverity sev : OnmsSeverity.values()) {
-                        if (sev.getLabel().toLowerCase().equals(parameter.toLowerCase())) {
+                        if (sev.getLabel().equalsIgnoreCase(parameter)) {
                             filters.add(new SeverityFilter(sev));
                             break;
                         }

@@ -42,7 +42,11 @@ import java.util.NavigableSet;
 import java.util.TreeSet;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.AlarmDao;
@@ -51,21 +55,61 @@ import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.test.JUnitConfigurationEnvironment;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@WebAppConfiguration
+@ContextConfiguration(locations={
+        "classpath:/org/opennms/web/rest/applicationContext-test.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-service.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-reportingCore.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockEventProxy.xml",
+        "classpath:/applicationContext-jersey-test.xml",
+        "classpath:/META-INF/opennms/applicationContext-reporting.xml",
+        "classpath:/META-INF/opennms/applicationContext-mock-usergroup.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
+        "file:src/main/webapp/WEB-INF/applicationContext-spring-security.xml",
+        "file:src/main/webapp/WEB-INF/applicationContext-jersey.xml"
+})
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase
 public class AlarmRestServiceTest extends AbstractSpringJerseyRestTestCase {
-    private DatabasePopulator m_databasePopulator;
+	@Autowired
+	TransactionTemplate m_template;
 
-    @Override
-    protected void afterServletStart() {
-        MockLogAppender.setupLogging(true, "DEBUG");
-        final WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
-        m_databasePopulator = context.getBean("databasePopulator", DatabasePopulator.class);
-        m_databasePopulator.populateDatabase();
-    }
+	private DatabasePopulator m_databasePopulator;
+
+	@Override
+	protected void afterServletStart() {
+		MockLogAppender.setupLogging(true, "DEBUG");
+		final WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
+		m_databasePopulator = context.getBean("databasePopulator", DatabasePopulator.class);
+		m_template.execute(new TransactionCallbackWithoutResult() {
+
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				m_databasePopulator.populateDatabase();
+			}
+		});
+	}
 
     @Test
+    @JUnitTemporaryDatabase
     public void testAlarms() throws Exception {
         String xml = sendRequest(GET, "/alarms", parseParamData("orderBy=lastEventTime&order=desc&alarmAckUser=null&limit=1"), 200);
         assertTrue(xml.contains("This is a test alarm"));
@@ -76,6 +120,7 @@ public class AlarmRestServiceTest extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testAlarmQueryByNode() throws Exception {
         String xml = sendRequest(GET, "/alarms", parseParamData("nodeId=6&limit=1"), 200);
         assertTrue(xml.contains("<alarms"));
@@ -88,6 +133,7 @@ public class AlarmRestServiceTest extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testAlarmQueryBySeverityEquals() throws Exception {
         String xml = null;
 
@@ -99,6 +145,7 @@ public class AlarmRestServiceTest extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testAlarmQueryBySeverityLessThan() throws Exception {
         String xml = null;
 
@@ -113,6 +160,7 @@ public class AlarmRestServiceTest extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testAlarmQueryBySeverityGreaterThan() throws Exception {
         String xml = null;
 
@@ -127,6 +175,8 @@ public class AlarmRestServiceTest extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    @Transactional
+    @JUnitTemporaryDatabase
     public void testAlarmUpdates() throws Exception {
         createAlarm(OnmsSeverity.MAJOR);
 
@@ -177,6 +227,8 @@ public class AlarmRestServiceTest extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    @JUnitTemporaryDatabase
+    @Transactional
     public void testComplexQuery() throws Exception {
         String xml = null;
         final Map<String, String> parameters = new HashMap<String, String>();

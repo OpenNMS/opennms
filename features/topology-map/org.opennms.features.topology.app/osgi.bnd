@@ -8,3 +8,4 @@ Vaadin-Widgetsets: org.opennms.features.topology.app.internal.gwt.TopologyAppWid
 #Export-Package: org.opennms.*
 Embed-Dependency: jung*|colt|concurrent|collections-generic
 Embed-Transitive: true
+OnmsAutoExportServices: true

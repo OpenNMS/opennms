@@ -40,16 +40,44 @@ import javax.xml.bind.JAXBContext;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.snmpinfo.SnmpInfo;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.web.WebAppConfiguration;
 
-/*
+/**
  * TODO
  * 1. Need to figure it out how to create a Mock for EventProxy to validate events sent by RESTful service
  */
-
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@WebAppConfiguration
+@ContextConfiguration(locations={
+        "classpath:/org/opennms/web/rest/applicationContext-test.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-service.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-reportingCore.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockEventProxy.xml",
+        "classpath:/applicationContext-jersey-test.xml",
+        "classpath:/META-INF/opennms/applicationContext-reporting.xml",
+        "classpath:/META-INF/opennms/applicationContext-mock-usergroup.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
+        "file:src/main/webapp/WEB-INF/applicationContext-spring-security.xml",
+        "file:src/main/webapp/WEB-INF/applicationContext-jersey.xml"
+})
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase
 public class SnmpConfigRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
 	private static final int DEFAULT_PORT = 9161;

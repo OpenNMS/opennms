@@ -166,7 +166,7 @@ public enum CriteriaRestriction {
      */
     public static CriteriaRestriction valueOfIgnoreCase(String name) {
         for (CriteriaRestriction criteriaRestriction : values()) {
-            if (criteriaRestriction.name().toLowerCase().equals(name.toLowerCase())) {
+            if (criteriaRestriction.name().equalsIgnoreCase(name)) {
                 return criteriaRestriction;
             }
         }
@@ -215,6 +215,7 @@ public enum CriteriaRestriction {
                     } else {
                         listOfObjects.add(object);
                     }
+                    break;
                 }
                 case IntegerValue: {
                     Class clazz = Integer.class;
@@ -227,6 +228,7 @@ public enum CriteriaRestriction {
                     } else {
                         listOfObjects.add(object);
                     }
+                    break;
                 }
                 case StringValue: {
                     Class clazz = String.class;
@@ -239,6 +241,7 @@ public enum CriteriaRestriction {
                     } else {
                         listOfObjects.add(object);
                     }
+                    break;
                 }
                 default: {
                     break;

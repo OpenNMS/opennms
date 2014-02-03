@@ -39458,4 +39458,2216 @@ when a virtual context is removed/deleted.&lt;/p&gt;&lt;table&gt;
 	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
 </event>
 <!-- End of auto generated data from MIB: CISCO-MODULE-VIRTUALIZATION-MIB -->
+<!-- Start of mib2events auto-generated data for MIB: CISCO-IF-EXTENSION-MIB -->
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.9.9.276</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>1</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Cisco/ciscoIfExtensionMIB/traps/cieLinkDown</uei>
+    <event-label>CISCO-IF-EXTENSION-MIB defined trap event: cieLinkDown</event-label>
+    <descr>
+&lt;p&gt;A cisco specific linkDown notification
+signifies that the SNMP entity, acting in an
+agent role, has detected that the ifOperStatus
+object for one of its communication links is
+about to enter the down state from some other
+state (but not from the notPresent state).
+The varbinds for this notification indicate the
+interface information of the communication
+link.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ifAdminStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		up(1)
+		down(2)
+		testing(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ifOperStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		up(1)
+		down(2)
+		testing(3)
+		unknown(4)
+		dormant(5)
+		notPresent(6)
+		lowerLayerDown(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ifName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ifType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		regular1822(2)
+		hdh1822(3)
+		ddnX25(4)
+		rfc877x25(5)
+		ethernetCsmacd(6)
+		iso88023Csmacd(7)
+		iso88024TokenBus(8)
+		iso88025TokenRing(9)
+		iso88026Man(10)
+		starLan(11)
+		proteon10Mbit(12)
+		proteon80Mbit(13)
+		hyperchannel(14)
+		fddi(15)
+		lapb(16)
+		sdlc(17)
+		ds1(18)
+		e1(19)
+		basicISDN(20)
+		primaryISDN(21)
+		propPointToPointSerial(22)
+		ppp(23)
+		softwareLoopback(24)
+		eon(25)
+		ethernet3Mbit(26)
+		nsip(27)
+		slip(28)
+		ultra(29)
+		ds3(30)
+		sip(31)
+		frameRelay(32)
+		rs232(33)
+		para(34)
+		arcnet(35)
+		arcnetPlus(36)
+		atm(37)
+		miox25(38)
+		sonet(39)
+		x25ple(40)
+		iso88022llc(41)
+		localTalk(42)
+		smdsDxi(43)
+		frameRelayService(44)
+		v35(45)
+		hssi(46)
+		hippi(47)
+		modem(48)
+		aal5(49)
+		sonetPath(50)
+		sonetVT(51)
+		smdsIcip(52)
+		propVirtual(53)
+		propMultiplexor(54)
+		ieee80212(55)
+		fibreChannel(56)
+		hippiInterface(57)
+		frameRelayInterconnect(58)
+		aflane8023(59)
+		aflane8025(60)
+		cctEmul(61)
+		fastEther(62)
+		isdn(63)
+		v11(64)
+		v36(65)
+		g703at64k(66)
+		g703at2mb(67)
+		qllc(68)
+		fastEtherFX(69)
+		channel(70)
+		ieee80211(71)
+		ibm370parChan(72)
+		escon(73)
+		dlsw(74)
+		isdns(75)
+		isdnu(76)
+		lapd(77)
+		ipSwitch(78)
+		rsrb(79)
+		atmLogical(80)
+		ds0(81)
+		ds0Bundle(82)
+		bsc(83)
+		async(84)
+		cnr(85)
+		iso88025Dtr(86)
+		eplrs(87)
+		arap(88)
+		propCnls(89)
+		hostPad(90)
+		termPad(91)
+		frameRelayMPI(92)
+		x213(93)
+		adsl(94)
+		radsl(95)
+		sdsl(96)
+		vdsl(97)
+		iso88025CRFPInt(98)
+		myrinet(99)
+		voiceEM(100)
+		voiceFXO(101)
+		voiceFXS(102)
+		voiceEncap(103)
+		voiceOverIp(104)
+		atmDxi(105)
+		atmFuni(106)
+		atmIma(107)
+		pppMultilinkBundle(108)
+		ipOverCdlc(109)
+		ipOverClaw(110)
+		stackToStack(111)
+		virtualIpAddress(112)
+		mpc(113)
+		ipOverAtm(114)
+		iso88025Fiber(115)
+		tdlc(116)
+		gigabitEthernet(117)
+		hdlc(118)
+		lapf(119)
+		v37(120)
+		x25mlp(121)
+		x25huntGroup(122)
+		trasnpHdlc(123)
+		interleave(124)
+		fast(125)
+		ip(126)
+		docsCableMaclayer(127)
+		docsCableDownstream(128)
+		docsCableUpstream(129)
+		a12MppSwitch(130)
+		tunnel(131)
+		coffee(132)
+		ces(133)
+		atmSubInterface(134)
+		l2vlan(135)
+		l3ipvlan(136)
+		l3ipxvlan(137)
+		digitalPowerline(138)
+		mediaMailOverIp(139)
+		dtm(140)
+		dcn(141)
+		ipForward(142)
+		msdsl(143)
+		ieee1394(144)
+		if-gsn(145)
+		dvbRccMacLayer(146)
+		dvbRccDownstream(147)
+		dvbRccUpstream(148)
+		atmVirtual(149)
+		mplsTunnel(150)
+		srp(151)
+		voiceOverAtm(152)
+		voiceOverFrameRelay(153)
+		idsl(154)
+		compositeLink(155)
+		ss7SigLink(156)
+		propWirelessP2P(157)
+		frForward(158)
+		rfc1483(159)
+		usb(160)
+		ieee8023adLag(161)
+		bgppolicyaccounting(162)
+		frf16MfrBundle(163)
+		h323Gatekeeper(164)
+		h323Proxy(165)
+		mpls(166)
+		mfSigLink(167)
+		hdsl2(168)
+		shdsl(169)
+		ds1FDL(170)
+		pos(171)
+		dvbAsiIn(172)
+		dvbAsiOut(173)
+		plc(174)
+		nfas(175)
+		tr008(176)
+		gr303RDT(177)
+		gr303IDT(178)
+		isup(179)
+		propDocsWirelessMaclayer(180)
+		propDocsWirelessDownstream(181)
+		propDocsWirelessUpstream(182)
+		hiperlan2(183)
+		propBWAp2Mp(184)
+		sonetOverheadChannel(185)
+		digitalWrapperOverheadChannel(186)
+		aal2(187)
+		radioMAC(188)
+		atmRadio(189)
+		imt(190)
+		mvl(191)
+		reachDSL(192)
+		frDlciEndPt(193)
+		atmVciEndPt(194)
+		opticalChannel(195)
+		opticalTransport(196)
+		propAtm(197)
+		voiceOverCable(198)
+		infiniband(199)
+		teLink(200)
+		q2931(201)
+		virtualTg(202)
+		sipTg(203)
+		sipSig(204)
+		docsCableUpstreamChannel(205)
+		econet(206)
+		pon155(207)
+		pon622(208)
+		bridge(209)
+		linegroup(210)
+		voiceEMFGD(211)
+		voiceFGDEANA(212)
+		voiceDID(213)
+		mpegTransport(214)
+		sixToFour(215)
+		gtp(216)
+		pdnEtherLoop1(217)
+		pdnEtherLoop2(218)
+		opticalChannelGroup(219)
+		homepna(220)
+		gfp(221)
+		ciscoISLvlan(222)
+		actelisMetaLOOP(223)
+		fcipLink(224)
+		rpr(225)
+		qam(226)
+		lmp(227)
+		cblVectaStar(228)
+		docsCableMCmtsDownstream(229)
+		adsl2(230)
+		macSecControlledIF(231)
+		macSecUncontrolledIF(232)
+		aviciOpticalEther(233)
+		atmbond(234)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+    <logmsg dest="logndisplay">&lt;p&gt;
+	cieLinkDown trap received
+	ifIndex=%parm[#1]%
+	ifAdminStatus=%parm[#2]%
+	ifOperStatus=%parm[#3]%
+	ifName=%parm[#4]%
+	ifType=%parm[#5]%&lt;/p&gt;
+	</logmsg>
+    <severity>Minor</severity>
+    <varbindsdecode>
+      <parmid>parm[#2]</parmid>
+      <decode varbinddecodedstring="up" varbindvalue="1"/>
+      <decode varbinddecodedstring="down" varbindvalue="2"/>
+      <decode varbinddecodedstring="testing" varbindvalue="3"/>
+    </varbindsdecode>
+    <varbindsdecode>
+      <parmid>parm[#3]</parmid>
+      <decode varbinddecodedstring="up" varbindvalue="1"/>
+      <decode varbinddecodedstring="down" varbindvalue="2"/>
+      <decode varbinddecodedstring="testing" varbindvalue="3"/>
+      <decode varbinddecodedstring="unknown" varbindvalue="4"/>
+      <decode varbinddecodedstring="dormant" varbindvalue="5"/>
+      <decode varbinddecodedstring="notPresent" varbindvalue="6"/>
+      <decode varbinddecodedstring="lowerLayerDown" varbindvalue="7"/>
+    </varbindsdecode>
+    <varbindsdecode>
+      <parmid>parm[#5]</parmid>
+      <decode varbinddecodedstring="other" varbindvalue="1"/>
+      <decode varbinddecodedstring="regular1822" varbindvalue="2"/>
+      <decode varbinddecodedstring="hdh1822" varbindvalue="3"/>
+      <decode varbinddecodedstring="ddnX25" varbindvalue="4"/>
+      <decode varbinddecodedstring="rfc877x25" varbindvalue="5"/>
+      <decode varbinddecodedstring="ethernetCsmacd" varbindvalue="6"/>
+      <decode varbinddecodedstring="iso88023Csmacd" varbindvalue="7"/>
+      <decode varbinddecodedstring="iso88024TokenBus" varbindvalue="8"/>
+      <decode varbinddecodedstring="iso88025TokenRing" varbindvalue="9"/>
+      <decode varbinddecodedstring="iso88026Man" varbindvalue="10"/>
+      <decode varbinddecodedstring="starLan" varbindvalue="11"/>
+      <decode varbinddecodedstring="proteon10Mbit" varbindvalue="12"/>
+      <decode varbinddecodedstring="proteon80Mbit" varbindvalue="13"/>
+      <decode varbinddecodedstring="hyperchannel" varbindvalue="14"/>
+      <decode varbinddecodedstring="fddi" varbindvalue="15"/>
+      <decode varbinddecodedstring="lapb" varbindvalue="16"/>
+      <decode varbinddecodedstring="sdlc" varbindvalue="17"/>
+      <decode varbinddecodedstring="ds1" varbindvalue="18"/>
+      <decode varbinddecodedstring="e1" varbindvalue="19"/>
+      <decode varbinddecodedstring="basicISDN" varbindvalue="20"/>
+      <decode varbinddecodedstring="primaryISDN" varbindvalue="21"/>
+      <decode varbinddecodedstring="propPointToPointSerial" varbindvalue="22"/>
+      <decode varbinddecodedstring="ppp" varbindvalue="23"/>
+      <decode varbinddecodedstring="softwareLoopback" varbindvalue="24"/>
+      <decode varbinddecodedstring="eon" varbindvalue="25"/>
+      <decode varbinddecodedstring="ethernet3Mbit" varbindvalue="26"/>
+      <decode varbinddecodedstring="nsip" varbindvalue="27"/>
+      <decode varbinddecodedstring="slip" varbindvalue="28"/>
+      <decode varbinddecodedstring="ultra" varbindvalue="29"/>
+      <decode varbinddecodedstring="ds3" varbindvalue="30"/>
+      <decode varbinddecodedstring="sip" varbindvalue="31"/>
+      <decode varbinddecodedstring="frameRelay" varbindvalue="32"/>
+      <decode varbinddecodedstring="rs232" varbindvalue="33"/>
+      <decode varbinddecodedstring="para" varbindvalue="34"/>
+      <decode varbinddecodedstring="arcnet" varbindvalue="35"/>
+      <decode varbinddecodedstring="arcnetPlus" varbindvalue="36"/>
+      <decode varbinddecodedstring="atm" varbindvalue="37"/>
+      <decode varbinddecodedstring="miox25" varbindvalue="38"/>
+      <decode varbinddecodedstring="sonet" varbindvalue="39"/>
+      <decode varbinddecodedstring="x25ple" varbindvalue="40"/>
+      <decode varbinddecodedstring="iso88022llc" varbindvalue="41"/>
+      <decode varbinddecodedstring="localTalk" varbindvalue="42"/>
+      <decode varbinddecodedstring="smdsDxi" varbindvalue="43"/>
+      <decode varbinddecodedstring="frameRelayService" varbindvalue="44"/>
+      <decode varbinddecodedstring="v35" varbindvalue="45"/>
+      <decode varbinddecodedstring="hssi" varbindvalue="46"/>
+      <decode varbinddecodedstring="hippi" varbindvalue="47"/>
+      <decode varbinddecodedstring="modem" varbindvalue="48"/>
+      <decode varbinddecodedstring="aal5" varbindvalue="49"/>
+      <decode varbinddecodedstring="sonetPath" varbindvalue="50"/>
+      <decode varbinddecodedstring="sonetVT" varbindvalue="51"/>
+      <decode varbinddecodedstring="smdsIcip" varbindvalue="52"/>
+      <decode varbinddecodedstring="propVirtual" varbindvalue="53"/>
+      <decode varbinddecodedstring="propMultiplexor" varbindvalue="54"/>
+      <decode varbinddecodedstring="ieee80212" varbindvalue="55"/>
+      <decode varbinddecodedstring="fibreChannel" varbindvalue="56"/>
+      <decode varbinddecodedstring="hippiInterface" varbindvalue="57"/>
+      <decode varbinddecodedstring="frameRelayInterconnect" varbindvalue="58"/>
+      <decode varbinddecodedstring="aflane8023" varbindvalue="59"/>
+      <decode varbinddecodedstring="aflane8025" varbindvalue="60"/>
+      <decode varbinddecodedstring="cctEmul" varbindvalue="61"/>
+      <decode varbinddecodedstring="fastEther" varbindvalue="62"/>
+      <decode varbinddecodedstring="isdn" varbindvalue="63"/>
+      <decode varbinddecodedstring="v11" varbindvalue="64"/>
+      <decode varbinddecodedstring="v36" varbindvalue="65"/>
+      <decode varbinddecodedstring="g703at64k" varbindvalue="66"/>
+      <decode varbinddecodedstring="g703at2mb" varbindvalue="67"/>
+      <decode varbinddecodedstring="qllc" varbindvalue="68"/>
+      <decode varbinddecodedstring="fastEtherFX" varbindvalue="69"/>
+      <decode varbinddecodedstring="channel" varbindvalue="70"/>
+      <decode varbinddecodedstring="ieee80211" varbindvalue="71"/>
+      <decode varbinddecodedstring="ibm370parChan" varbindvalue="72"/>
+      <decode varbinddecodedstring="escon" varbindvalue="73"/>
+      <decode varbinddecodedstring="dlsw" varbindvalue="74"/>
+      <decode varbinddecodedstring="isdns" varbindvalue="75"/>
+      <decode varbinddecodedstring="isdnu" varbindvalue="76"/>
+      <decode varbinddecodedstring="lapd" varbindvalue="77"/>
+      <decode varbinddecodedstring="ipSwitch" varbindvalue="78"/>
+      <decode varbinddecodedstring="rsrb" varbindvalue="79"/>
+      <decode varbinddecodedstring="atmLogical" varbindvalue="80"/>
+      <decode varbinddecodedstring="ds0" varbindvalue="81"/>
+      <decode varbinddecodedstring="ds0Bundle" varbindvalue="82"/>
+      <decode varbinddecodedstring="bsc" varbindvalue="83"/>
+      <decode varbinddecodedstring="async" varbindvalue="84"/>
+      <decode varbinddecodedstring="cnr" varbindvalue="85"/>
+      <decode varbinddecodedstring="iso88025Dtr" varbindvalue="86"/>
+      <decode varbinddecodedstring="eplrs" varbindvalue="87"/>
+      <decode varbinddecodedstring="arap" varbindvalue="88"/>
+      <decode varbinddecodedstring="propCnls" varbindvalue="89"/>
+      <decode varbinddecodedstring="hostPad" varbindvalue="90"/>
+      <decode varbinddecodedstring="termPad" varbindvalue="91"/>
+      <decode varbinddecodedstring="frameRelayMPI" varbindvalue="92"/>
+      <decode varbinddecodedstring="x213" varbindvalue="93"/>
+      <decode varbinddecodedstring="adsl" varbindvalue="94"/>
+      <decode varbinddecodedstring="radsl" varbindvalue="95"/>
+      <decode varbinddecodedstring="sdsl" varbindvalue="96"/>
+      <decode varbinddecodedstring="vdsl" varbindvalue="97"/>
+      <decode varbinddecodedstring="iso88025CRFPInt" varbindvalue="98"/>
+      <decode varbinddecodedstring="myrinet" varbindvalue="99"/>
+      <decode varbinddecodedstring="voiceEM" varbindvalue="100"/>
+      <decode varbinddecodedstring="voiceFXO" varbindvalue="101"/>
+      <decode varbinddecodedstring="voiceFXS" varbindvalue="102"/>
+      <decode varbinddecodedstring="voiceEncap" varbindvalue="103"/>
+      <decode varbinddecodedstring="voiceOverIp" varbindvalue="104"/>
+      <decode varbinddecodedstring="atmDxi" varbindvalue="105"/>
+      <decode varbinddecodedstring="atmFuni" varbindvalue="106"/>
+      <decode varbinddecodedstring="atmIma" varbindvalue="107"/>
+      <decode varbinddecodedstring="pppMultilinkBundle" varbindvalue="108"/>
+      <decode varbinddecodedstring="ipOverCdlc" varbindvalue="109"/>
+      <decode varbinddecodedstring="ipOverClaw" varbindvalue="110"/>
+      <decode varbinddecodedstring="stackToStack" varbindvalue="111"/>
+      <decode varbinddecodedstring="virtualIpAddress" varbindvalue="112"/>
+      <decode varbinddecodedstring="mpc" varbindvalue="113"/>
+      <decode varbinddecodedstring="ipOverAtm" varbindvalue="114"/>
+      <decode varbinddecodedstring="iso88025Fiber" varbindvalue="115"/>
+      <decode varbinddecodedstring="tdlc" varbindvalue="116"/>
+      <decode varbinddecodedstring="gigabitEthernet" varbindvalue="117"/>
+      <decode varbinddecodedstring="hdlc" varbindvalue="118"/>
+      <decode varbinddecodedstring="lapf" varbindvalue="119"/>
+      <decode varbinddecodedstring="v37" varbindvalue="120"/>
+      <decode varbinddecodedstring="x25mlp" varbindvalue="121"/>
+      <decode varbinddecodedstring="x25huntGroup" varbindvalue="122"/>
+      <decode varbinddecodedstring="trasnpHdlc" varbindvalue="123"/>
+      <decode varbinddecodedstring="interleave" varbindvalue="124"/>
+      <decode varbinddecodedstring="fast" varbindvalue="125"/>
+      <decode varbinddecodedstring="ip" varbindvalue="126"/>
+      <decode varbinddecodedstring="docsCableMaclayer" varbindvalue="127"/>
+      <decode varbinddecodedstring="docsCableDownstream" varbindvalue="128"/>
+      <decode varbinddecodedstring="docsCableUpstream" varbindvalue="129"/>
+      <decode varbinddecodedstring="a12MppSwitch" varbindvalue="130"/>
+      <decode varbinddecodedstring="tunnel" varbindvalue="131"/>
+      <decode varbinddecodedstring="coffee" varbindvalue="132"/>
+      <decode varbinddecodedstring="ces" varbindvalue="133"/>
+      <decode varbinddecodedstring="atmSubInterface" varbindvalue="134"/>
+      <decode varbinddecodedstring="l2vlan" varbindvalue="135"/>
+      <decode varbinddecodedstring="l3ipvlan" varbindvalue="136"/>
+      <decode varbinddecodedstring="l3ipxvlan" varbindvalue="137"/>
+      <decode varbinddecodedstring="digitalPowerline" varbindvalue="138"/>
+      <decode varbinddecodedstring="mediaMailOverIp" varbindvalue="139"/>
+      <decode varbinddecodedstring="dtm" varbindvalue="140"/>
+      <decode varbinddecodedstring="dcn" varbindvalue="141"/>
+      <decode varbinddecodedstring="ipForward" varbindvalue="142"/>
+      <decode varbinddecodedstring="msdsl" varbindvalue="143"/>
+      <decode varbinddecodedstring="ieee1394" varbindvalue="144"/>
+      <decode varbinddecodedstring="if-gsn" varbindvalue="145"/>
+      <decode varbinddecodedstring="dvbRccMacLayer" varbindvalue="146"/>
+      <decode varbinddecodedstring="dvbRccDownstream" varbindvalue="147"/>
+      <decode varbinddecodedstring="dvbRccUpstream" varbindvalue="148"/>
+      <decode varbinddecodedstring="atmVirtual" varbindvalue="149"/>
+      <decode varbinddecodedstring="mplsTunnel" varbindvalue="150"/>
+      <decode varbinddecodedstring="srp" varbindvalue="151"/>
+      <decode varbinddecodedstring="voiceOverAtm" varbindvalue="152"/>
+      <decode varbinddecodedstring="voiceOverFrameRelay" varbindvalue="153"/>
+      <decode varbinddecodedstring="idsl" varbindvalue="154"/>
+      <decode varbinddecodedstring="compositeLink" varbindvalue="155"/>
+      <decode varbinddecodedstring="ss7SigLink" varbindvalue="156"/>
+      <decode varbinddecodedstring="propWirelessP2P" varbindvalue="157"/>
+      <decode varbinddecodedstring="frForward" varbindvalue="158"/>
+      <decode varbinddecodedstring="rfc1483" varbindvalue="159"/>
+      <decode varbinddecodedstring="usb" varbindvalue="160"/>
+      <decode varbinddecodedstring="ieee8023adLag" varbindvalue="161"/>
+      <decode varbinddecodedstring="bgppolicyaccounting" varbindvalue="162"/>
+      <decode varbinddecodedstring="frf16MfrBundle" varbindvalue="163"/>
+      <decode varbinddecodedstring="h323Gatekeeper" varbindvalue="164"/>
+      <decode varbinddecodedstring="h323Proxy" varbindvalue="165"/>
+      <decode varbinddecodedstring="mpls" varbindvalue="166"/>
+      <decode varbinddecodedstring="mfSigLink" varbindvalue="167"/>
+      <decode varbinddecodedstring="hdsl2" varbindvalue="168"/>
+      <decode varbinddecodedstring="shdsl" varbindvalue="169"/>
+      <decode varbinddecodedstring="ds1FDL" varbindvalue="170"/>
+      <decode varbinddecodedstring="pos" varbindvalue="171"/>
+      <decode varbinddecodedstring="dvbAsiIn" varbindvalue="172"/>
+      <decode varbinddecodedstring="dvbAsiOut" varbindvalue="173"/>
+      <decode varbinddecodedstring="plc" varbindvalue="174"/>
+      <decode varbinddecodedstring="nfas" varbindvalue="175"/>
+      <decode varbinddecodedstring="tr008" varbindvalue="176"/>
+      <decode varbinddecodedstring="gr303RDT" varbindvalue="177"/>
+      <decode varbinddecodedstring="gr303IDT" varbindvalue="178"/>
+      <decode varbinddecodedstring="isup" varbindvalue="179"/>
+      <decode varbinddecodedstring="propDocsWirelessMaclayer" varbindvalue="180"/>
+      <decode varbinddecodedstring="propDocsWirelessDownstream" varbindvalue="181"/>
+      <decode varbinddecodedstring="propDocsWirelessUpstream" varbindvalue="182"/>
+      <decode varbinddecodedstring="hiperlan2" varbindvalue="183"/>
+      <decode varbinddecodedstring="propBWAp2Mp" varbindvalue="184"/>
+      <decode varbinddecodedstring="sonetOverheadChannel" varbindvalue="185"/>
+      <decode varbinddecodedstring="digitalWrapperOverheadChannel" varbindvalue="186"/>
+      <decode varbinddecodedstring="aal2" varbindvalue="187"/>
+      <decode varbinddecodedstring="radioMAC" varbindvalue="188"/>
+      <decode varbinddecodedstring="atmRadio" varbindvalue="189"/>
+      <decode varbinddecodedstring="imt" varbindvalue="190"/>
+      <decode varbinddecodedstring="mvl" varbindvalue="191"/>
+      <decode varbinddecodedstring="reachDSL" varbindvalue="192"/>
+      <decode varbinddecodedstring="frDlciEndPt" varbindvalue="193"/>
+      <decode varbinddecodedstring="atmVciEndPt" varbindvalue="194"/>
+      <decode varbinddecodedstring="opticalChannel" varbindvalue="195"/>
+      <decode varbinddecodedstring="opticalTransport" varbindvalue="196"/>
+      <decode varbinddecodedstring="propAtm" varbindvalue="197"/>
+      <decode varbinddecodedstring="voiceOverCable" varbindvalue="198"/>
+      <decode varbinddecodedstring="infiniband" varbindvalue="199"/>
+      <decode varbinddecodedstring="teLink" varbindvalue="200"/>
+      <decode varbinddecodedstring="q2931" varbindvalue="201"/>
+      <decode varbinddecodedstring="virtualTg" varbindvalue="202"/>
+      <decode varbinddecodedstring="sipTg" varbindvalue="203"/>
+      <decode varbinddecodedstring="sipSig" varbindvalue="204"/>
+      <decode varbinddecodedstring="docsCableUpstreamChannel" varbindvalue="205"/>
+      <decode varbinddecodedstring="econet" varbindvalue="206"/>
+      <decode varbinddecodedstring="pon155" varbindvalue="207"/>
+      <decode varbinddecodedstring="pon622" varbindvalue="208"/>
+      <decode varbinddecodedstring="bridge" varbindvalue="209"/>
+      <decode varbinddecodedstring="linegroup" varbindvalue="210"/>
+      <decode varbinddecodedstring="voiceEMFGD" varbindvalue="211"/>
+      <decode varbinddecodedstring="voiceFGDEANA" varbindvalue="212"/>
+      <decode varbinddecodedstring="voiceDID" varbindvalue="213"/>
+      <decode varbinddecodedstring="mpegTransport" varbindvalue="214"/>
+      <decode varbinddecodedstring="sixToFour" varbindvalue="215"/>
+      <decode varbinddecodedstring="gtp" varbindvalue="216"/>
+      <decode varbinddecodedstring="pdnEtherLoop1" varbindvalue="217"/>
+      <decode varbinddecodedstring="pdnEtherLoop2" varbindvalue="218"/>
+      <decode varbinddecodedstring="opticalChannelGroup" varbindvalue="219"/>
+      <decode varbinddecodedstring="homepna" varbindvalue="220"/>
+      <decode varbinddecodedstring="gfp" varbindvalue="221"/>
+      <decode varbinddecodedstring="ciscoISLvlan" varbindvalue="222"/>
+      <decode varbinddecodedstring="actelisMetaLOOP" varbindvalue="223"/>
+      <decode varbinddecodedstring="fcipLink" varbindvalue="224"/>
+      <decode varbinddecodedstring="rpr" varbindvalue="225"/>
+      <decode varbinddecodedstring="qam" varbindvalue="226"/>
+      <decode varbinddecodedstring="lmp" varbindvalue="227"/>
+      <decode varbinddecodedstring="cblVectaStar" varbindvalue="228"/>
+      <decode varbinddecodedstring="docsCableMCmtsDownstream" varbindvalue="229"/>
+      <decode varbinddecodedstring="adsl2" varbindvalue="230"/>
+      <decode varbinddecodedstring="macSecControlledIF" varbindvalue="231"/>
+      <decode varbinddecodedstring="macSecUncontrolledIF" varbindvalue="232"/>
+      <decode varbinddecodedstring="aviciOpticalEther" varbindvalue="233"/>
+      <decode varbinddecodedstring="atmbond" varbindvalue="234"/>
+    </varbindsdecode>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.9.9.276</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>2</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Cisco/ciscoIfExtensionMIB/traps/cieLinkUp</uei>
+    <event-label>CISCO-IF-EXTENSION-MIB defined trap event: cieLinkUp</event-label>
+    <descr>
+&lt;p&gt;A cisco specific linkUp trap signifies that
+the SNMP entity, acting in an agent role, has
+detected that the ifOperStatus object for one
+of its communication links left the down state
+and transitioned into some other state (but not
+into the notPresent state). The varbinds for
+this notification indicate the interface
+information of the communication link.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ifAdminStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		up(1)
+		down(2)
+		testing(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ifOperStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		up(1)
+		down(2)
+		testing(3)
+		unknown(4)
+		dormant(5)
+		notPresent(6)
+		lowerLayerDown(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ifName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ifType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		regular1822(2)
+		hdh1822(3)
+		ddnX25(4)
+		rfc877x25(5)
+		ethernetCsmacd(6)
+		iso88023Csmacd(7)
+		iso88024TokenBus(8)
+		iso88025TokenRing(9)
+		iso88026Man(10)
+		starLan(11)
+		proteon10Mbit(12)
+		proteon80Mbit(13)
+		hyperchannel(14)
+		fddi(15)
+		lapb(16)
+		sdlc(17)
+		ds1(18)
+		e1(19)
+		basicISDN(20)
+		primaryISDN(21)
+		propPointToPointSerial(22)
+		ppp(23)
+		softwareLoopback(24)
+		eon(25)
+		ethernet3Mbit(26)
+		nsip(27)
+		slip(28)
+		ultra(29)
+		ds3(30)
+		sip(31)
+		frameRelay(32)
+		rs232(33)
+		para(34)
+		arcnet(35)
+		arcnetPlus(36)
+		atm(37)
+		miox25(38)
+		sonet(39)
+		x25ple(40)
+		iso88022llc(41)
+		localTalk(42)
+		smdsDxi(43)
+		frameRelayService(44)
+		v35(45)
+		hssi(46)
+		hippi(47)
+		modem(48)
+		aal5(49)
+		sonetPath(50)
+		sonetVT(51)
+		smdsIcip(52)
+		propVirtual(53)
+		propMultiplexor(54)
+		ieee80212(55)
+		fibreChannel(56)
+		hippiInterface(57)
+		frameRelayInterconnect(58)
+		aflane8023(59)
+		aflane8025(60)
+		cctEmul(61)
+		fastEther(62)
+		isdn(63)
+		v11(64)
+		v36(65)
+		g703at64k(66)
+		g703at2mb(67)
+		qllc(68)
+		fastEtherFX(69)
+		channel(70)
+		ieee80211(71)
+		ibm370parChan(72)
+		escon(73)
+		dlsw(74)
+		isdns(75)
+		isdnu(76)
+		lapd(77)
+		ipSwitch(78)
+		rsrb(79)
+		atmLogical(80)
+		ds0(81)
+		ds0Bundle(82)
+		bsc(83)
+		async(84)
+		cnr(85)
+		iso88025Dtr(86)
+		eplrs(87)
+		arap(88)
+		propCnls(89)
+		hostPad(90)
+		termPad(91)
+		frameRelayMPI(92)
+		x213(93)
+		adsl(94)
+		radsl(95)
+		sdsl(96)
+		vdsl(97)
+		iso88025CRFPInt(98)
+		myrinet(99)
+		voiceEM(100)
+		voiceFXO(101)
+		voiceFXS(102)
+		voiceEncap(103)
+		voiceOverIp(104)
+		atmDxi(105)
+		atmFuni(106)
+		atmIma(107)
+		pppMultilinkBundle(108)
+		ipOverCdlc(109)
+		ipOverClaw(110)
+		stackToStack(111)
+		virtualIpAddress(112)
+		mpc(113)
+		ipOverAtm(114)
+		iso88025Fiber(115)
+		tdlc(116)
+		gigabitEthernet(117)
+		hdlc(118)
+		lapf(119)
+		v37(120)
+		x25mlp(121)
+		x25huntGroup(122)
+		trasnpHdlc(123)
+		interleave(124)
+		fast(125)
+		ip(126)
+		docsCableMaclayer(127)
+		docsCableDownstream(128)
+		docsCableUpstream(129)
+		a12MppSwitch(130)
+		tunnel(131)
+		coffee(132)
+		ces(133)
+		atmSubInterface(134)
+		l2vlan(135)
+		l3ipvlan(136)
+		l3ipxvlan(137)
+		digitalPowerline(138)
+		mediaMailOverIp(139)
+		dtm(140)
+		dcn(141)
+		ipForward(142)
+		msdsl(143)
+		ieee1394(144)
+		if-gsn(145)
+		dvbRccMacLayer(146)
+		dvbRccDownstream(147)
+		dvbRccUpstream(148)
+		atmVirtual(149)
+		mplsTunnel(150)
+		srp(151)
+		voiceOverAtm(152)
+		voiceOverFrameRelay(153)
+		idsl(154)
+		compositeLink(155)
+		ss7SigLink(156)
+		propWirelessP2P(157)
+		frForward(158)
+		rfc1483(159)
+		usb(160)
+		ieee8023adLag(161)
+		bgppolicyaccounting(162)
+		frf16MfrBundle(163)
+		h323Gatekeeper(164)
+		h323Proxy(165)
+		mpls(166)
+		mfSigLink(167)
+		hdsl2(168)
+		shdsl(169)
+		ds1FDL(170)
+		pos(171)
+		dvbAsiIn(172)
+		dvbAsiOut(173)
+		plc(174)
+		nfas(175)
+		tr008(176)
+		gr303RDT(177)
+		gr303IDT(178)
+		isup(179)
+		propDocsWirelessMaclayer(180)
+		propDocsWirelessDownstream(181)
+		propDocsWirelessUpstream(182)
+		hiperlan2(183)
+		propBWAp2Mp(184)
+		sonetOverheadChannel(185)
+		digitalWrapperOverheadChannel(186)
+		aal2(187)
+		radioMAC(188)
+		atmRadio(189)
+		imt(190)
+		mvl(191)
+		reachDSL(192)
+		frDlciEndPt(193)
+		atmVciEndPt(194)
+		opticalChannel(195)
+		opticalTransport(196)
+		propAtm(197)
+		voiceOverCable(198)
+		infiniband(199)
+		teLink(200)
+		q2931(201)
+		virtualTg(202)
+		sipTg(203)
+		sipSig(204)
+		docsCableUpstreamChannel(205)
+		econet(206)
+		pon155(207)
+		pon622(208)
+		bridge(209)
+		linegroup(210)
+		voiceEMFGD(211)
+		voiceFGDEANA(212)
+		voiceDID(213)
+		mpegTransport(214)
+		sixToFour(215)
+		gtp(216)
+		pdnEtherLoop1(217)
+		pdnEtherLoop2(218)
+		opticalChannelGroup(219)
+		homepna(220)
+		gfp(221)
+		ciscoISLvlan(222)
+		actelisMetaLOOP(223)
+		fcipLink(224)
+		rpr(225)
+		qam(226)
+		lmp(227)
+		cblVectaStar(228)
+		docsCableMCmtsDownstream(229)
+		adsl2(230)
+		macSecControlledIF(231)
+		macSecUncontrolledIF(232)
+		aviciOpticalEther(233)
+		atmbond(234)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+    <logmsg dest="logndisplay">&lt;p&gt;
+	cieLinkUp trap received
+	ifIndex=%parm[#1]%
+	ifAdminStatus=%parm[#2]%
+	ifOperStatus=%parm[#3]%
+	ifName=%parm[#4]%
+	ifType=%parm[#5]%&lt;/p&gt;
+	</logmsg>
+    <severity>Normal</severity>
+    <varbindsdecode>
+      <parmid>parm[#2]</parmid>
+      <decode varbinddecodedstring="up" varbindvalue="1"/>
+      <decode varbinddecodedstring="down" varbindvalue="2"/>
+      <decode varbinddecodedstring="testing" varbindvalue="3"/>
+    </varbindsdecode>
+    <varbindsdecode>
+      <parmid>parm[#3]</parmid>
+      <decode varbinddecodedstring="up" varbindvalue="1"/>
+      <decode varbinddecodedstring="down" varbindvalue="2"/>
+      <decode varbinddecodedstring="testing" varbindvalue="3"/>
+      <decode varbinddecodedstring="unknown" varbindvalue="4"/>
+      <decode varbinddecodedstring="dormant" varbindvalue="5"/>
+      <decode varbinddecodedstring="notPresent" varbindvalue="6"/>
+      <decode varbinddecodedstring="lowerLayerDown" varbindvalue="7"/>
+    </varbindsdecode>
+    <varbindsdecode>
+      <parmid>parm[#5]</parmid>
+      <decode varbinddecodedstring="other" varbindvalue="1"/>
+      <decode varbinddecodedstring="regular1822" varbindvalue="2"/>
+      <decode varbinddecodedstring="hdh1822" varbindvalue="3"/>
+      <decode varbinddecodedstring="ddnX25" varbindvalue="4"/>
+      <decode varbinddecodedstring="rfc877x25" varbindvalue="5"/>
+      <decode varbinddecodedstring="ethernetCsmacd" varbindvalue="6"/>
+      <decode varbinddecodedstring="iso88023Csmacd" varbindvalue="7"/>
+      <decode varbinddecodedstring="iso88024TokenBus" varbindvalue="8"/>
+      <decode varbinddecodedstring="iso88025TokenRing" varbindvalue="9"/>
+      <decode varbinddecodedstring="iso88026Man" varbindvalue="10"/>
+      <decode varbinddecodedstring="starLan" varbindvalue="11"/>
+      <decode varbinddecodedstring="proteon10Mbit" varbindvalue="12"/>
+      <decode varbinddecodedstring="proteon80Mbit" varbindvalue="13"/>
+      <decode varbinddecodedstring="hyperchannel" varbindvalue="14"/>
+      <decode varbinddecodedstring="fddi" varbindvalue="15"/>
+      <decode varbinddecodedstring="lapb" varbindvalue="16"/>
+      <decode varbinddecodedstring="sdlc" varbindvalue="17"/>
+      <decode varbinddecodedstring="ds1" varbindvalue="18"/>
+      <decode varbinddecodedstring="e1" varbindvalue="19"/>
+      <decode varbinddecodedstring="basicISDN" varbindvalue="20"/>
+      <decode varbinddecodedstring="primaryISDN" varbindvalue="21"/>
+      <decode varbinddecodedstring="propPointToPointSerial" varbindvalue="22"/>
+      <decode varbinddecodedstring="ppp" varbindvalue="23"/>
+      <decode varbinddecodedstring="softwareLoopback" varbindvalue="24"/>
+      <decode varbinddecodedstring="eon" varbindvalue="25"/>
+      <decode varbinddecodedstring="ethernet3Mbit" varbindvalue="26"/>
+      <decode varbinddecodedstring="nsip" varbindvalue="27"/>
+      <decode varbinddecodedstring="slip" varbindvalue="28"/>
+      <decode varbinddecodedstring="ultra" varbindvalue="29"/>
+      <decode varbinddecodedstring="ds3" varbindvalue="30"/>
+      <decode varbinddecodedstring="sip" varbindvalue="31"/>
+      <decode varbinddecodedstring="frameRelay" varbindvalue="32"/>
+      <decode varbinddecodedstring="rs232" varbindvalue="33"/>
+      <decode varbinddecodedstring="para" varbindvalue="34"/>
+      <decode varbinddecodedstring="arcnet" varbindvalue="35"/>
+      <decode varbinddecodedstring="arcnetPlus" varbindvalue="36"/>
+      <decode varbinddecodedstring="atm" varbindvalue="37"/>
+      <decode varbinddecodedstring="miox25" varbindvalue="38"/>
+      <decode varbinddecodedstring="sonet" varbindvalue="39"/>
+      <decode varbinddecodedstring="x25ple" varbindvalue="40"/>
+      <decode varbinddecodedstring="iso88022llc" varbindvalue="41"/>
+      <decode varbinddecodedstring="localTalk" varbindvalue="42"/>
+      <decode varbinddecodedstring="smdsDxi" varbindvalue="43"/>
+      <decode varbinddecodedstring="frameRelayService" varbindvalue="44"/>
+      <decode varbinddecodedstring="v35" varbindvalue="45"/>
+      <decode varbinddecodedstring="hssi" varbindvalue="46"/>
+      <decode varbinddecodedstring="hippi" varbindvalue="47"/>
+      <decode varbinddecodedstring="modem" varbindvalue="48"/>
+      <decode varbinddecodedstring="aal5" varbindvalue="49"/>
+      <decode varbinddecodedstring="sonetPath" varbindvalue="50"/>
+      <decode varbinddecodedstring="sonetVT" varbindvalue="51"/>
+      <decode varbinddecodedstring="smdsIcip" varbindvalue="52"/>
+      <decode varbinddecodedstring="propVirtual" varbindvalue="53"/>
+      <decode varbinddecodedstring="propMultiplexor" varbindvalue="54"/>
+      <decode varbinddecodedstring="ieee80212" varbindvalue="55"/>
+      <decode varbinddecodedstring="fibreChannel" varbindvalue="56"/>
+      <decode varbinddecodedstring="hippiInterface" varbindvalue="57"/>
+      <decode varbinddecodedstring="frameRelayInterconnect" varbindvalue="58"/>
+      <decode varbinddecodedstring="aflane8023" varbindvalue="59"/>
+      <decode varbinddecodedstring="aflane8025" varbindvalue="60"/>
+      <decode varbinddecodedstring="cctEmul" varbindvalue="61"/>
+      <decode varbinddecodedstring="fastEther" varbindvalue="62"/>
+      <decode varbinddecodedstring="isdn" varbindvalue="63"/>
+      <decode varbinddecodedstring="v11" varbindvalue="64"/>
+      <decode varbinddecodedstring="v36" varbindvalue="65"/>
+      <decode varbinddecodedstring="g703at64k" varbindvalue="66"/>
+      <decode varbinddecodedstring="g703at2mb" varbindvalue="67"/>
+      <decode varbinddecodedstring="qllc" varbindvalue="68"/>
+      <decode varbinddecodedstring="fastEtherFX" varbindvalue="69"/>
+      <decode varbinddecodedstring="channel" varbindvalue="70"/>
+      <decode varbinddecodedstring="ieee80211" varbindvalue="71"/>
+      <decode varbinddecodedstring="ibm370parChan" varbindvalue="72"/>
+      <decode varbinddecodedstring="escon" varbindvalue="73"/>
+      <decode varbinddecodedstring="dlsw" varbindvalue="74"/>
+      <decode varbinddecodedstring="isdns" varbindvalue="75"/>
+      <decode varbinddecodedstring="isdnu" varbindvalue="76"/>
+      <decode varbinddecodedstring="lapd" varbindvalue="77"/>
+      <decode varbinddecodedstring="ipSwitch" varbindvalue="78"/>
+      <decode varbinddecodedstring="rsrb" varbindvalue="79"/>
+      <decode varbinddecodedstring="atmLogical" varbindvalue="80"/>
+      <decode varbinddecodedstring="ds0" varbindvalue="81"/>
+      <decode varbinddecodedstring="ds0Bundle" varbindvalue="82"/>
+      <decode varbinddecodedstring="bsc" varbindvalue="83"/>
+      <decode varbinddecodedstring="async" varbindvalue="84"/>
+      <decode varbinddecodedstring="cnr" varbindvalue="85"/>
+      <decode varbinddecodedstring="iso88025Dtr" varbindvalue="86"/>
+      <decode varbinddecodedstring="eplrs" varbindvalue="87"/>
+      <decode varbinddecodedstring="arap" varbindvalue="88"/>
+      <decode varbinddecodedstring="propCnls" varbindvalue="89"/>
+      <decode varbinddecodedstring="hostPad" varbindvalue="90"/>
+      <decode varbinddecodedstring="termPad" varbindvalue="91"/>
+      <decode varbinddecodedstring="frameRelayMPI" varbindvalue="92"/>
+      <decode varbinddecodedstring="x213" varbindvalue="93"/>
+      <decode varbinddecodedstring="adsl" varbindvalue="94"/>
+      <decode varbinddecodedstring="radsl" varbindvalue="95"/>
+      <decode varbinddecodedstring="sdsl" varbindvalue="96"/>
+      <decode varbinddecodedstring="vdsl" varbindvalue="97"/>
+      <decode varbinddecodedstring="iso88025CRFPInt" varbindvalue="98"/>
+      <decode varbinddecodedstring="myrinet" varbindvalue="99"/>
+      <decode varbinddecodedstring="voiceEM" varbindvalue="100"/>
+      <decode varbinddecodedstring="voiceFXO" varbindvalue="101"/>
+      <decode varbinddecodedstring="voiceFXS" varbindvalue="102"/>
+      <decode varbinddecodedstring="voiceEncap" varbindvalue="103"/>
+      <decode varbinddecodedstring="voiceOverIp" varbindvalue="104"/>
+      <decode varbinddecodedstring="atmDxi" varbindvalue="105"/>
+      <decode varbinddecodedstring="atmFuni" varbindvalue="106"/>
+      <decode varbinddecodedstring="atmIma" varbindvalue="107"/>
+      <decode varbinddecodedstring="pppMultilinkBundle" varbindvalue="108"/>
+      <decode varbinddecodedstring="ipOverCdlc" varbindvalue="109"/>
+      <decode varbinddecodedstring="ipOverClaw" varbindvalue="110"/>
+      <decode varbinddecodedstring="stackToStack" varbindvalue="111"/>
+      <decode varbinddecodedstring="virtualIpAddress" varbindvalue="112"/>
+      <decode varbinddecodedstring="mpc" varbindvalue="113"/>
+      <decode varbinddecodedstring="ipOverAtm" varbindvalue="114"/>
+      <decode varbinddecodedstring="iso88025Fiber" varbindvalue="115"/>
+      <decode varbinddecodedstring="tdlc" varbindvalue="116"/>
+      <decode varbinddecodedstring="gigabitEthernet" varbindvalue="117"/>
+      <decode varbinddecodedstring="hdlc" varbindvalue="118"/>
+      <decode varbinddecodedstring="lapf" varbindvalue="119"/>
+      <decode varbinddecodedstring="v37" varbindvalue="120"/>
+      <decode varbinddecodedstring="x25mlp" varbindvalue="121"/>
+      <decode varbinddecodedstring="x25huntGroup" varbindvalue="122"/>
+      <decode varbinddecodedstring="trasnpHdlc" varbindvalue="123"/>
+      <decode varbinddecodedstring="interleave" varbindvalue="124"/>
+      <decode varbinddecodedstring="fast" varbindvalue="125"/>
+      <decode varbinddecodedstring="ip" varbindvalue="126"/>
+      <decode varbinddecodedstring="docsCableMaclayer" varbindvalue="127"/>
+      <decode varbinddecodedstring="docsCableDownstream" varbindvalue="128"/>
+      <decode varbinddecodedstring="docsCableUpstream" varbindvalue="129"/>
+      <decode varbinddecodedstring="a12MppSwitch" varbindvalue="130"/>
+      <decode varbinddecodedstring="tunnel" varbindvalue="131"/>
+      <decode varbinddecodedstring="coffee" varbindvalue="132"/>
+      <decode varbinddecodedstring="ces" varbindvalue="133"/>
+      <decode varbinddecodedstring="atmSubInterface" varbindvalue="134"/>
+      <decode varbinddecodedstring="l2vlan" varbindvalue="135"/>
+      <decode varbinddecodedstring="l3ipvlan" varbindvalue="136"/>
+      <decode varbinddecodedstring="l3ipxvlan" varbindvalue="137"/>
+      <decode varbinddecodedstring="digitalPowerline" varbindvalue="138"/>
+      <decode varbinddecodedstring="mediaMailOverIp" varbindvalue="139"/>
+      <decode varbinddecodedstring="dtm" varbindvalue="140"/>
+      <decode varbinddecodedstring="dcn" varbindvalue="141"/>
+      <decode varbinddecodedstring="ipForward" varbindvalue="142"/>
+      <decode varbinddecodedstring="msdsl" varbindvalue="143"/>
+      <decode varbinddecodedstring="ieee1394" varbindvalue="144"/>
+      <decode varbinddecodedstring="if-gsn" varbindvalue="145"/>
+      <decode varbinddecodedstring="dvbRccMacLayer" varbindvalue="146"/>
+      <decode varbinddecodedstring="dvbRccDownstream" varbindvalue="147"/>
+      <decode varbinddecodedstring="dvbRccUpstream" varbindvalue="148"/>
+      <decode varbinddecodedstring="atmVirtual" varbindvalue="149"/>
+      <decode varbinddecodedstring="mplsTunnel" varbindvalue="150"/>
+      <decode varbinddecodedstring="srp" varbindvalue="151"/>
+      <decode varbinddecodedstring="voiceOverAtm" varbindvalue="152"/>
+      <decode varbinddecodedstring="voiceOverFrameRelay" varbindvalue="153"/>
+      <decode varbinddecodedstring="idsl" varbindvalue="154"/>
+      <decode varbinddecodedstring="compositeLink" varbindvalue="155"/>
+      <decode varbinddecodedstring="ss7SigLink" varbindvalue="156"/>
+      <decode varbinddecodedstring="propWirelessP2P" varbindvalue="157"/>
+      <decode varbinddecodedstring="frForward" varbindvalue="158"/>
+      <decode varbinddecodedstring="rfc1483" varbindvalue="159"/>
+      <decode varbinddecodedstring="usb" varbindvalue="160"/>
+      <decode varbinddecodedstring="ieee8023adLag" varbindvalue="161"/>
+      <decode varbinddecodedstring="bgppolicyaccounting" varbindvalue="162"/>
+      <decode varbinddecodedstring="frf16MfrBundle" varbindvalue="163"/>
+      <decode varbinddecodedstring="h323Gatekeeper" varbindvalue="164"/>
+      <decode varbinddecodedstring="h323Proxy" varbindvalue="165"/>
+      <decode varbinddecodedstring="mpls" varbindvalue="166"/>
+      <decode varbinddecodedstring="mfSigLink" varbindvalue="167"/>
+      <decode varbinddecodedstring="hdsl2" varbindvalue="168"/>
+      <decode varbinddecodedstring="shdsl" varbindvalue="169"/>
+      <decode varbinddecodedstring="ds1FDL" varbindvalue="170"/>
+      <decode varbinddecodedstring="pos" varbindvalue="171"/>
+      <decode varbinddecodedstring="dvbAsiIn" varbindvalue="172"/>
+      <decode varbinddecodedstring="dvbAsiOut" varbindvalue="173"/>
+      <decode varbinddecodedstring="plc" varbindvalue="174"/>
+      <decode varbinddecodedstring="nfas" varbindvalue="175"/>
+      <decode varbinddecodedstring="tr008" varbindvalue="176"/>
+      <decode varbinddecodedstring="gr303RDT" varbindvalue="177"/>
+      <decode varbinddecodedstring="gr303IDT" varbindvalue="178"/>
+      <decode varbinddecodedstring="isup" varbindvalue="179"/>
+      <decode varbinddecodedstring="propDocsWirelessMaclayer" varbindvalue="180"/>
+      <decode varbinddecodedstring="propDocsWirelessDownstream" varbindvalue="181"/>
+      <decode varbinddecodedstring="propDocsWirelessUpstream" varbindvalue="182"/>
+      <decode varbinddecodedstring="hiperlan2" varbindvalue="183"/>
+      <decode varbinddecodedstring="propBWAp2Mp" varbindvalue="184"/>
+      <decode varbinddecodedstring="sonetOverheadChannel" varbindvalue="185"/>
+      <decode varbinddecodedstring="digitalWrapperOverheadChannel" varbindvalue="186"/>
+      <decode varbinddecodedstring="aal2" varbindvalue="187"/>
+      <decode varbinddecodedstring="radioMAC" varbindvalue="188"/>
+      <decode varbinddecodedstring="atmRadio" varbindvalue="189"/>
+      <decode varbinddecodedstring="imt" varbindvalue="190"/>
+      <decode varbinddecodedstring="mvl" varbindvalue="191"/>
+      <decode varbinddecodedstring="reachDSL" varbindvalue="192"/>
+      <decode varbinddecodedstring="frDlciEndPt" varbindvalue="193"/>
+      <decode varbinddecodedstring="atmVciEndPt" varbindvalue="194"/>
+      <decode varbinddecodedstring="opticalChannel" varbindvalue="195"/>
+      <decode varbinddecodedstring="opticalTransport" varbindvalue="196"/>
+      <decode varbinddecodedstring="propAtm" varbindvalue="197"/>
+      <decode varbinddecodedstring="voiceOverCable" varbindvalue="198"/>
+      <decode varbinddecodedstring="infiniband" varbindvalue="199"/>
+      <decode varbinddecodedstring="teLink" varbindvalue="200"/>
+      <decode varbinddecodedstring="q2931" varbindvalue="201"/>
+      <decode varbinddecodedstring="virtualTg" varbindvalue="202"/>
+      <decode varbinddecodedstring="sipTg" varbindvalue="203"/>
+      <decode varbinddecodedstring="sipSig" varbindvalue="204"/>
+      <decode varbinddecodedstring="docsCableUpstreamChannel" varbindvalue="205"/>
+      <decode varbinddecodedstring="econet" varbindvalue="206"/>
+      <decode varbinddecodedstring="pon155" varbindvalue="207"/>
+      <decode varbinddecodedstring="pon622" varbindvalue="208"/>
+      <decode varbinddecodedstring="bridge" varbindvalue="209"/>
+      <decode varbinddecodedstring="linegroup" varbindvalue="210"/>
+      <decode varbinddecodedstring="voiceEMFGD" varbindvalue="211"/>
+      <decode varbinddecodedstring="voiceFGDEANA" varbindvalue="212"/>
+      <decode varbinddecodedstring="voiceDID" varbindvalue="213"/>
+      <decode varbinddecodedstring="mpegTransport" varbindvalue="214"/>
+      <decode varbinddecodedstring="sixToFour" varbindvalue="215"/>
+      <decode varbinddecodedstring="gtp" varbindvalue="216"/>
+      <decode varbinddecodedstring="pdnEtherLoop1" varbindvalue="217"/>
+      <decode varbinddecodedstring="pdnEtherLoop2" varbindvalue="218"/>
+      <decode varbinddecodedstring="opticalChannelGroup" varbindvalue="219"/>
+      <decode varbinddecodedstring="homepna" varbindvalue="220"/>
+      <decode varbinddecodedstring="gfp" varbindvalue="221"/>
+      <decode varbinddecodedstring="ciscoISLvlan" varbindvalue="222"/>
+      <decode varbinddecodedstring="actelisMetaLOOP" varbindvalue="223"/>
+      <decode varbinddecodedstring="fcipLink" varbindvalue="224"/>
+      <decode varbinddecodedstring="rpr" varbindvalue="225"/>
+      <decode varbinddecodedstring="qam" varbindvalue="226"/>
+      <decode varbinddecodedstring="lmp" varbindvalue="227"/>
+      <decode varbinddecodedstring="cblVectaStar" varbindvalue="228"/>
+      <decode varbinddecodedstring="docsCableMCmtsDownstream" varbindvalue="229"/>
+      <decode varbinddecodedstring="adsl2" varbindvalue="230"/>
+      <decode varbinddecodedstring="macSecControlledIF" varbindvalue="231"/>
+      <decode varbinddecodedstring="macSecUncontrolledIF" varbindvalue="232"/>
+      <decode varbinddecodedstring="aviciOpticalEther" varbindvalue="233"/>
+      <decode varbinddecodedstring="atmbond" varbindvalue="234"/>
+    </varbindsdecode>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" clear-key="uei.opennms.org/vendor/Cisco/ciscoIfExtensionMIB/traps/cieLinkDown:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" auto-clean="false" />
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.9.9.276</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>3</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Cisco/ciscoIfExtensionMIB/traps/cieDelayedLinkUpDownNotif</uei>
+    <event-label>CISCO-IF-EXTENSION-MIB defined trap event: cieDelayedLinkUpDownNotif</event-label>
+    <descr>
+&lt;p&gt;This notification indicates when an interface's operational
+status has transitioned and remained in that state for a time
+specified by cieDelayedLinkUpDownDelay.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ifAdminStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		up(1)
+		down(2)
+		testing(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ifOperStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		up(1)
+		down(2)
+		testing(3)
+		unknown(4)
+		dormant(5)
+		notPresent(6)
+		lowerLayerDown(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ifName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ifType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		regular1822(2)
+		hdh1822(3)
+		ddnX25(4)
+		rfc877x25(5)
+		ethernetCsmacd(6)
+		iso88023Csmacd(7)
+		iso88024TokenBus(8)
+		iso88025TokenRing(9)
+		iso88026Man(10)
+		starLan(11)
+		proteon10Mbit(12)
+		proteon80Mbit(13)
+		hyperchannel(14)
+		fddi(15)
+		lapb(16)
+		sdlc(17)
+		ds1(18)
+		e1(19)
+		basicISDN(20)
+		primaryISDN(21)
+		propPointToPointSerial(22)
+		ppp(23)
+		softwareLoopback(24)
+		eon(25)
+		ethernet3Mbit(26)
+		nsip(27)
+		slip(28)
+		ultra(29)
+		ds3(30)
+		sip(31)
+		frameRelay(32)
+		rs232(33)
+		para(34)
+		arcnet(35)
+		arcnetPlus(36)
+		atm(37)
+		miox25(38)
+		sonet(39)
+		x25ple(40)
+		iso88022llc(41)
+		localTalk(42)
+		smdsDxi(43)
+		frameRelayService(44)
+		v35(45)
+		hssi(46)
+		hippi(47)
+		modem(48)
+		aal5(49)
+		sonetPath(50)
+		sonetVT(51)
+		smdsIcip(52)
+		propVirtual(53)
+		propMultiplexor(54)
+		ieee80212(55)
+		fibreChannel(56)
+		hippiInterface(57)
+		frameRelayInterconnect(58)
+		aflane8023(59)
+		aflane8025(60)
+		cctEmul(61)
+		fastEther(62)
+		isdn(63)
+		v11(64)
+		v36(65)
+		g703at64k(66)
+		g703at2mb(67)
+		qllc(68)
+		fastEtherFX(69)
+		channel(70)
+		ieee80211(71)
+		ibm370parChan(72)
+		escon(73)
+		dlsw(74)
+		isdns(75)
+		isdnu(76)
+		lapd(77)
+		ipSwitch(78)
+		rsrb(79)
+		atmLogical(80)
+		ds0(81)
+		ds0Bundle(82)
+		bsc(83)
+		async(84)
+		cnr(85)
+		iso88025Dtr(86)
+		eplrs(87)
+		arap(88)
+		propCnls(89)
+		hostPad(90)
+		termPad(91)
+		frameRelayMPI(92)
+		x213(93)
+		adsl(94)
+		radsl(95)
+		sdsl(96)
+		vdsl(97)
+		iso88025CRFPInt(98)
+		myrinet(99)
+		voiceEM(100)
+		voiceFXO(101)
+		voiceFXS(102)
+		voiceEncap(103)
+		voiceOverIp(104)
+		atmDxi(105)
+		atmFuni(106)
+		atmIma(107)
+		pppMultilinkBundle(108)
+		ipOverCdlc(109)
+		ipOverClaw(110)
+		stackToStack(111)
+		virtualIpAddress(112)
+		mpc(113)
+		ipOverAtm(114)
+		iso88025Fiber(115)
+		tdlc(116)
+		gigabitEthernet(117)
+		hdlc(118)
+		lapf(119)
+		v37(120)
+		x25mlp(121)
+		x25huntGroup(122)
+		trasnpHdlc(123)
+		interleave(124)
+		fast(125)
+		ip(126)
+		docsCableMaclayer(127)
+		docsCableDownstream(128)
+		docsCableUpstream(129)
+		a12MppSwitch(130)
+		tunnel(131)
+		coffee(132)
+		ces(133)
+		atmSubInterface(134)
+		l2vlan(135)
+		l3ipvlan(136)
+		l3ipxvlan(137)
+		digitalPowerline(138)
+		mediaMailOverIp(139)
+		dtm(140)
+		dcn(141)
+		ipForward(142)
+		msdsl(143)
+		ieee1394(144)
+		if-gsn(145)
+		dvbRccMacLayer(146)
+		dvbRccDownstream(147)
+		dvbRccUpstream(148)
+		atmVirtual(149)
+		mplsTunnel(150)
+		srp(151)
+		voiceOverAtm(152)
+		voiceOverFrameRelay(153)
+		idsl(154)
+		compositeLink(155)
+		ss7SigLink(156)
+		propWirelessP2P(157)
+		frForward(158)
+		rfc1483(159)
+		usb(160)
+		ieee8023adLag(161)
+		bgppolicyaccounting(162)
+		frf16MfrBundle(163)
+		h323Gatekeeper(164)
+		h323Proxy(165)
+		mpls(166)
+		mfSigLink(167)
+		hdsl2(168)
+		shdsl(169)
+		ds1FDL(170)
+		pos(171)
+		dvbAsiIn(172)
+		dvbAsiOut(173)
+		plc(174)
+		nfas(175)
+		tr008(176)
+		gr303RDT(177)
+		gr303IDT(178)
+		isup(179)
+		propDocsWirelessMaclayer(180)
+		propDocsWirelessDownstream(181)
+		propDocsWirelessUpstream(182)
+		hiperlan2(183)
+		propBWAp2Mp(184)
+		sonetOverheadChannel(185)
+		digitalWrapperOverheadChannel(186)
+		aal2(187)
+		radioMAC(188)
+		atmRadio(189)
+		imt(190)
+		mvl(191)
+		reachDSL(192)
+		frDlciEndPt(193)
+		atmVciEndPt(194)
+		opticalChannel(195)
+		opticalTransport(196)
+		propAtm(197)
+		voiceOverCable(198)
+		infiniband(199)
+		teLink(200)
+		q2931(201)
+		virtualTg(202)
+		sipTg(203)
+		sipSig(204)
+		docsCableUpstreamChannel(205)
+		econet(206)
+		pon155(207)
+		pon622(208)
+		bridge(209)
+		linegroup(210)
+		voiceEMFGD(211)
+		voiceFGDEANA(212)
+		voiceDID(213)
+		mpegTransport(214)
+		sixToFour(215)
+		gtp(216)
+		pdnEtherLoop1(217)
+		pdnEtherLoop2(218)
+		opticalChannelGroup(219)
+		homepna(220)
+		gfp(221)
+		ciscoISLvlan(222)
+		actelisMetaLOOP(223)
+		fcipLink(224)
+		rpr(225)
+		qam(226)
+		lmp(227)
+		cblVectaStar(228)
+		docsCableMCmtsDownstream(229)
+		adsl2(230)
+		macSecControlledIF(231)
+		macSecUncontrolledIF(232)
+		aviciOpticalEther(233)
+		atmbond(234)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cieIfOperStatusCause&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		none(2)
+		hwFailure(3)
+		loopbackDiagFailure(4)
+		errorDisabled(5)
+		swFailure(6)
+		linkFailure(7)
+		offline(8)
+		nonParticipating(9)
+		initializing(10)
+		vsanInactive(11)
+		adminDown(12)
+		channelAdminDown(13)
+		channelOperSuspended(14)
+		channelConfigurationInProgress(15)
+		rcfInProgress(16)
+		elpFailureIsolation(17)
+		escFailureIsolation(18)
+		domainOverlapIsolation(19)
+		domainAddrAssignFailureIsolation(20)
+		domainOtherSideEportIsolation(21)
+		domainInvalidRcfReceived(22)
+		domainManagerDisabled(23)
+		zoneMergeFailureIsolation(24)
+		vsanMismatchIsolation(25)
+		parentDown(26)
+		srcPortNotBound(27)
+		interfaceRemoved(28)
+		fcotNotPresent(29)
+		fcotVendorNotSupported(30)
+		incompatibleAdminMode(31)
+		incompatibleAdminSpeed(32)
+		suspendedByMode(33)
+		suspendedBySpeed(34)
+		suspendedByWWN(35)
+		domainMaxReTxFailure(36)
+		eppFailure(37)
+		portVsanMismatchIsolation(38)
+		loopbackIsolation(39)
+		upgradeInProgress(40)
+		incompatibleAdminRxBbCredit(41)
+		incompatibleAdminRxBufferSize(42)
+		portChannelMembersDown(43)
+		zoneRemoteNoRespIsolation(44)
+		firstPortUpAsEport(45)
+		firstPortNotUp(46)
+		peerFCIPPortClosedConnection(47)
+		peerFCIPPortResetConnection(48)
+		fcipPortMaxReTx(49)
+		fcipPortKeepAliveTimerExpire(50)
+		fcipPortPersistTimerExpire(51)
+		fcipPortSrcLinkDown(52)
+		fcipPortSrcAdminDown(53)
+		fcipPortAdminCfgChange(54)
+		fcipSrcPortRemoved(55)
+		fcipSrcModuleNotOnline(56)
+		invalidConfig(57)
+		portBindFailure(58)
+		portFabricBindFailure(59)
+		noCommonVsanIsolation(60)
+		ficonVsanDown(61)
+		invalidAttachment(62)
+		portBlocked(63)
+		incomAdminRxBbCreditPerBuf(64)
+		tooManyInvalidFlogis(65)
+		deniedDueToPortBinding(66)
+		elpFailureRevMismatch(67)
+		elpFailureClassFParamErr(68)
+		elpFailureClassNParamErr(69)
+		elpFailureUnknownFlowCtlCode(70)
+		elpFailureInvalidFlowCtlParam(71)
+		elpFailureInvalidPortName(72)
+		elpFailureInvalidSwitchName(73)
+		elpFailureRatovEdtovMismatch(74)
+		elpFailureLoopbackDetected(75)
+		elpFailureInvalidTxBbCredit(76)
+		elpFailureInvalidPayloadSize(77)
+		bundleMisCfg(78)
+		bitErrRuntimeThreshExceeded(79)
+		linkFailLinkReset(80)
+		linkFailPortInitFail(81)
+		linkFailPortUnusable(82)
+		linkFailLossOfSignal(83)
+		linkFailLossOfSync(84)
+		linkFailNosRcvd(85)
+		linkFailOLSRcvd(86)
+		linkFailDebounceTimeout(87)
+		linkFailLrRcvd(88)
+		linkFailCreditLoss(89)
+		linkFailRxQOverflow(90)
+		linkFailTooManyInterrupts(91)
+		linkFailLipRcvdBb(92)
+		linkFailBbCreditLoss(93)
+		linkFailOpenPrimSignalTimeout(94)
+		linkFailOpenPrimSignalReturned(95)
+		linkFailLipF8Rcvd(96)
+		linkFailLineCardPortShutdown(97)
+		fcspAuthenfailure(98)
+		fcotChecksumError(99)
+		ohmsExtLoopbackTest(100)
+		invalidFabricBindExchange(101)
+		tovMismatch(102)
+		ficonNotEnabled(103)
+		ficonNoPortNumber(104)
+		ficonBeingEnabled(105)
+		ePortProhibited(106)
+		portGracefulShutdown(107)
+		trunkNotFullyActive(108)
+		fabricBindingSwitchWwnNotFound(109)
+		fabricBindingDomainInvalid(110)
+		fabricBindingDbMismatch(111)
+		fabricBindingNoRspFromPeer(112)
+		dpvmVsanSuspended(113)
+		dpvmVsanNotFound(114)
+		trackedPortDown(115)
+		ecSuspendedOnLoop(116)
+		isolateBundleMisCfg(117)
+		noPeerBundleSupport(118)
+		portBringupIsolation(119)
+		domainNotAllowedIsolated(120)
+		virtualIvrDomainOverlapIsolation(121)
+		outOfService(122)
+		portAuthFailed(123)
+		bundleStandby(124)
+		portConnectorTypeErr(125)
+		errorDisabledReInitLmtReached(126)
+		ficonDupPortNum(127)
+		localRcf(128)
+		twoSwitchesWithSameWWN(129)
+		invalidOtherSidePrincEFPReqRecd(130)
+		domainOther(131)
+		elpFailureAllZeroPeerWWNRcvd(132)
+		preferredPathIsolation(133)
+		fcRedirectIsolation(134)
+		portActLicenseNotAvailable(135)
+		sdmIsolation(136)
+		fcidAllocationFailed(137)
+		externallyDisabled(138)
+		unavailableNPVUpstreamPort(139)
+		unavailableNPVPrefUpstreamPort(140)
+		sfpReadError(141)
+		stickyDownOnLinkFailure(142)
+		tooManyLinkFlapsErr(143)
+		unidirectionalUDLD(144)
+		txRxLoopUDLD(145)
+		neighborMismatchUDLD(146)
+		authzPending(147)
+		hotStdbyInBundle(148)
+		incompleteConfig(149)
+		incompleteTunnelCfg(150)
+		hwProgrammingFailed(151)
+		tunnelDstUnreachable(152)
+		suspendByMtu(153)
+		sfpInvalid(154)
+		sfpAbsent(155)
+		portCapabilitiesUnknown(156)
+		channelErrDisabled(157)
+		vrfMismatch(158)
+		vrfForwardReferencing(159)
+		dupTunnelConfigDetected(160)
+		primaryVLANDown(161)
+		vrfUnusable(162)
+		errDisableHandShkFailure(163)
+		errDisabledBPDUGuard(164)
+		dot1xSecViolationErrDisabled(165)
+		emptyEchoUDLD(166)
+		vfTaggingCapErr(167)
+		portDisabled(168)
+		tunnelModeNotConfigured(169)
+		tunnelSrcNotConfigured(170)
+		tunnelDstNotConfigured(171)
+		tunnelUnableToResolveSrcIP(172)
+		tunnelUnableToResolveDstIP(173)
+		tunnelVrfDown(174)
+		sifAdminDown(175)
+		phyIntfDown(176)
+		ifSifLimitExceeded(177)
+		sifHoldDown(178)
+		noFcoe(179)
+		dcxCompatMismatch(180)
+		isolateBundleLimitExceeded(181)
+		sifNotBound(182)
+		errDisabledLacpMiscfg(183)
+		satFabricIfDown(184)
+		invalidSatFabricIf(185)
+		noRemoteChassis(186)
+		vicEnableNotReceived(187)
+		vicDisableReceived(188)
+		vlanVsanMappingNotEnabled(189)
+		stpNotFwdingInFcoeMappedVlan(190)
+		moduleOffline(191)
+		udldAggModeLinkFailure(192)
+		stpInconsVpcPeerDisabled(193)
+		setPortStateFailed(194)
+		suspendedByVpc(195)
+		vpcCfgInProgress(196)
+		vpcPeerLinkDown(197)
+		vpcNoRspFromPeer(198)
+		protoPortSuspend(199)
+		tunnelSrcDown(200)
+		cdpInfoUnavailable(201)
+		fexSfpInvalid(202)
+		errDisabledIpConflict(203)
+		fcotClkRateMismatch(204)
+		portGuardTrustSecViolation(205)
+		sdpTimeout(206)
+		satIncompatTopo(207)
+		waitForFlogi(208)
+		satNotConfigured(209)
+		npivNotEnabledInUpstream(210)
+		vsanMismatchWithUpstreamSwPort(211)
+		portGuardBitErrRate(212)
+		portGuardSigLoss(213)
+		portGuardSyncLoss(214)
+		portGuardLinkReset(215)
+		portGuardCreditLoss(216)
+		ipQosMgrPolicyAppFailure(217)
+		pauseRateLimitErrDisabled(218)
+		lstGrpUplinkDown(219)
+		stickyDnLinkFailure(220)
+		routerMacFailure(221)
+		dcxMultipleMsapIds(222)
+		dcxHundredPdusRcvdNoAck(223)
+		enmSatIncompatibleUplink(224)
+		enmLoopDetected(225)
+		nonStickyExternallyDisabled(226)
+		subGroupIdNotAssigned(227)
+		vemUnlicensed(228)
+		profileNotFound(229)
+		nonExistentVlan(230)
+		vlanInvalidType(231)
+		vlanDown(232)
+		vpcPeerUpgrade(233)
+		ipQosDcbxpCompatFailure(234)
+		nonCiscoHbaVfTag(235)
+		domainIdConfigMismatch(236)
+		sfpSpeedMismatch(237)
+		xcvrInitializing(238)
+		xcvrAbsent(239)
+		xcvrInvalid(240)
+		vfcBindingInvalid(241)
+		vlanNotFcoeEnabled(242)
+		pvlanNativeVlanErr(243)
+		ethL2VlanDown(244)
+		ethIntfInvalidBinding(245)
+		pmonFailure(246)
+		l3NotReady(247)
+		speedMismatch(248)
+		flowControlMismatch(249)
+		vdcMode(250)
+		suspendedDueToMinLinks(251)
+		enmPinFailLinkDown(252)
+		inactiveM1PortFpathActiveVlan(253)
+		parentPortDown(254)
+		moduleRemoved(255)
+		corePortMct(256)
+		nonCorePortMct(257)
+		ficonInorderNotActive(258)
+		invalidEncapsulation(259)
+		modemLineDeasserted(260)
+		ipSecHndshkInProgress(261)
+		sfpEthCompliantErr(262)
+		cellularModemUnattached(263)
+		outOfGlblRxBuffers(264)
+		sfpFcCompliantErr(265)
+		ethIntfNotLicensed(266)
+		domainIdsInvalid(267)
+		fabricNameInvalid(268)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+    <logmsg dest="logndisplay">&lt;p&gt;
+	cieDelayedLinkUpDownNotif trap received
+	ifAdminStatus=%parm[#1]%
+	ifOperStatus=%parm[#2]%
+	ifName=%parm[#3]%
+	ifType=%parm[#4]%
+	cieIfOperStatusCause=%parm[#5]%&lt;/p&gt;
+	</logmsg>
+    <severity>Warning</severity>
+    <varbindsdecode>
+      <parmid>parm[#1]</parmid>
+      <decode varbinddecodedstring="up" varbindvalue="1"/>
+      <decode varbinddecodedstring="down" varbindvalue="2"/>
+      <decode varbinddecodedstring="testing" varbindvalue="3"/>
+    </varbindsdecode>
+    <varbindsdecode>
+      <parmid>parm[#2]</parmid>
+      <decode varbinddecodedstring="up" varbindvalue="1"/>
+      <decode varbinddecodedstring="down" varbindvalue="2"/>
+      <decode varbinddecodedstring="testing" varbindvalue="3"/>
+      <decode varbinddecodedstring="unknown" varbindvalue="4"/>
+      <decode varbinddecodedstring="dormant" varbindvalue="5"/>
+      <decode varbinddecodedstring="notPresent" varbindvalue="6"/>
+      <decode varbinddecodedstring="lowerLayerDown" varbindvalue="7"/>
+    </varbindsdecode>
+    <varbindsdecode>
+      <parmid>parm[#4]</parmid>
+      <decode varbinddecodedstring="other" varbindvalue="1"/>
+      <decode varbinddecodedstring="regular1822" varbindvalue="2"/>
+      <decode varbinddecodedstring="hdh1822" varbindvalue="3"/>
+      <decode varbinddecodedstring="ddnX25" varbindvalue="4"/>
+      <decode varbinddecodedstring="rfc877x25" varbindvalue="5"/>
+      <decode varbinddecodedstring="ethernetCsmacd" varbindvalue="6"/>
+      <decode varbinddecodedstring="iso88023Csmacd" varbindvalue="7"/>
+      <decode varbinddecodedstring="iso88024TokenBus" varbindvalue="8"/>
+      <decode varbinddecodedstring="iso88025TokenRing" varbindvalue="9"/>
+      <decode varbinddecodedstring="iso88026Man" varbindvalue="10"/>
+      <decode varbinddecodedstring="starLan" varbindvalue="11"/>
+      <decode varbinddecodedstring="proteon10Mbit" varbindvalue="12"/>
+      <decode varbinddecodedstring="proteon80Mbit" varbindvalue="13"/>
+      <decode varbinddecodedstring="hyperchannel" varbindvalue="14"/>
+      <decode varbinddecodedstring="fddi" varbindvalue="15"/>
+      <decode varbinddecodedstring="lapb" varbindvalue="16"/>
+      <decode varbinddecodedstring="sdlc" varbindvalue="17"/>
+      <decode varbinddecodedstring="ds1" varbindvalue="18"/>
+      <decode varbinddecodedstring="e1" varbindvalue="19"/>
+      <decode varbinddecodedstring="basicISDN" varbindvalue="20"/>
+      <decode varbinddecodedstring="primaryISDN" varbindvalue="21"/>
+      <decode varbinddecodedstring="propPointToPointSerial" varbindvalue="22"/>
+      <decode varbinddecodedstring="ppp" varbindvalue="23"/>
+      <decode varbinddecodedstring="softwareLoopback" varbindvalue="24"/>
+      <decode varbinddecodedstring="eon" varbindvalue="25"/>
+      <decode varbinddecodedstring="ethernet3Mbit" varbindvalue="26"/>
+      <decode varbinddecodedstring="nsip" varbindvalue="27"/>
+      <decode varbinddecodedstring="slip" varbindvalue="28"/>
+      <decode varbinddecodedstring="ultra" varbindvalue="29"/>
+      <decode varbinddecodedstring="ds3" varbindvalue="30"/>
+      <decode varbinddecodedstring="sip" varbindvalue="31"/>
+      <decode varbinddecodedstring="frameRelay" varbindvalue="32"/>
+      <decode varbinddecodedstring="rs232" varbindvalue="33"/>
+      <decode varbinddecodedstring="para" varbindvalue="34"/>
+      <decode varbinddecodedstring="arcnet" varbindvalue="35"/>
+      <decode varbinddecodedstring="arcnetPlus" varbindvalue="36"/>
+      <decode varbinddecodedstring="atm" varbindvalue="37"/>
+      <decode varbinddecodedstring="miox25" varbindvalue="38"/>
+      <decode varbinddecodedstring="sonet" varbindvalue="39"/>
+      <decode varbinddecodedstring="x25ple" varbindvalue="40"/>
+      <decode varbinddecodedstring="iso88022llc" varbindvalue="41"/>
+      <decode varbinddecodedstring="localTalk" varbindvalue="42"/>
+      <decode varbinddecodedstring="smdsDxi" varbindvalue="43"/>
+      <decode varbinddecodedstring="frameRelayService" varbindvalue="44"/>
+      <decode varbinddecodedstring="v35" varbindvalue="45"/>
+      <decode varbinddecodedstring="hssi" varbindvalue="46"/>
+      <decode varbinddecodedstring="hippi" varbindvalue="47"/>
+      <decode varbinddecodedstring="modem" varbindvalue="48"/>
+      <decode varbinddecodedstring="aal5" varbindvalue="49"/>
+      <decode varbinddecodedstring="sonetPath" varbindvalue="50"/>
+      <decode varbinddecodedstring="sonetVT" varbindvalue="51"/>
+      <decode varbinddecodedstring="smdsIcip" varbindvalue="52"/>
+      <decode varbinddecodedstring="propVirtual" varbindvalue="53"/>
+      <decode varbinddecodedstring="propMultiplexor" varbindvalue="54"/>
+      <decode varbinddecodedstring="ieee80212" varbindvalue="55"/>
+      <decode varbinddecodedstring="fibreChannel" varbindvalue="56"/>
+      <decode varbinddecodedstring="hippiInterface" varbindvalue="57"/>
+      <decode varbinddecodedstring="frameRelayInterconnect" varbindvalue="58"/>
+      <decode varbinddecodedstring="aflane8023" varbindvalue="59"/>
+      <decode varbinddecodedstring="aflane8025" varbindvalue="60"/>
+      <decode varbinddecodedstring="cctEmul" varbindvalue="61"/>
+      <decode varbinddecodedstring="fastEther" varbindvalue="62"/>
+      <decode varbinddecodedstring="isdn" varbindvalue="63"/>
+      <decode varbinddecodedstring="v11" varbindvalue="64"/>
+      <decode varbinddecodedstring="v36" varbindvalue="65"/>
+      <decode varbinddecodedstring="g703at64k" varbindvalue="66"/>
+      <decode varbinddecodedstring="g703at2mb" varbindvalue="67"/>
+      <decode varbinddecodedstring="qllc" varbindvalue="68"/>
+      <decode varbinddecodedstring="fastEtherFX" varbindvalue="69"/>
+      <decode varbinddecodedstring="channel" varbindvalue="70"/>
+      <decode varbinddecodedstring="ieee80211" varbindvalue="71"/>
+      <decode varbinddecodedstring="ibm370parChan" varbindvalue="72"/>
+      <decode varbinddecodedstring="escon" varbindvalue="73"/>
+      <decode varbinddecodedstring="dlsw" varbindvalue="74"/>
+      <decode varbinddecodedstring="isdns" varbindvalue="75"/>
+      <decode varbinddecodedstring="isdnu" varbindvalue="76"/>
+      <decode varbinddecodedstring="lapd" varbindvalue="77"/>
+      <decode varbinddecodedstring="ipSwitch" varbindvalue="78"/>
+      <decode varbinddecodedstring="rsrb" varbindvalue="79"/>
+      <decode varbinddecodedstring="atmLogical" varbindvalue="80"/>
+      <decode varbinddecodedstring="ds0" varbindvalue="81"/>
+      <decode varbinddecodedstring="ds0Bundle" varbindvalue="82"/>
+      <decode varbinddecodedstring="bsc" varbindvalue="83"/>
+      <decode varbinddecodedstring="async" varbindvalue="84"/>
+      <decode varbinddecodedstring="cnr" varbindvalue="85"/>
+      <decode varbinddecodedstring="iso88025Dtr" varbindvalue="86"/>
+      <decode varbinddecodedstring="eplrs" varbindvalue="87"/>
+      <decode varbinddecodedstring="arap" varbindvalue="88"/>
+      <decode varbinddecodedstring="propCnls" varbindvalue="89"/>
+      <decode varbinddecodedstring="hostPad" varbindvalue="90"/>
+      <decode varbinddecodedstring="termPad" varbindvalue="91"/>
+      <decode varbinddecodedstring="frameRelayMPI" varbindvalue="92"/>
+      <decode varbinddecodedstring="x213" varbindvalue="93"/>
+      <decode varbinddecodedstring="adsl" varbindvalue="94"/>
+      <decode varbinddecodedstring="radsl" varbindvalue="95"/>
+      <decode varbinddecodedstring="sdsl" varbindvalue="96"/>
+      <decode varbinddecodedstring="vdsl" varbindvalue="97"/>
+      <decode varbinddecodedstring="iso88025CRFPInt" varbindvalue="98"/>
+      <decode varbinddecodedstring="myrinet" varbindvalue="99"/>
+      <decode varbinddecodedstring="voiceEM" varbindvalue="100"/>
+      <decode varbinddecodedstring="voiceFXO" varbindvalue="101"/>
+      <decode varbinddecodedstring="voiceFXS" varbindvalue="102"/>
+      <decode varbinddecodedstring="voiceEncap" varbindvalue="103"/>
+      <decode varbinddecodedstring="voiceOverIp" varbindvalue="104"/>
+      <decode varbinddecodedstring="atmDxi" varbindvalue="105"/>
+      <decode varbinddecodedstring="atmFuni" varbindvalue="106"/>
+      <decode varbinddecodedstring="atmIma" varbindvalue="107"/>
+      <decode varbinddecodedstring="pppMultilinkBundle" varbindvalue="108"/>
+      <decode varbinddecodedstring="ipOverCdlc" varbindvalue="109"/>
+      <decode varbinddecodedstring="ipOverClaw" varbindvalue="110"/>
+      <decode varbinddecodedstring="stackToStack" varbindvalue="111"/>
+      <decode varbinddecodedstring="virtualIpAddress" varbindvalue="112"/>
+      <decode varbinddecodedstring="mpc" varbindvalue="113"/>
+      <decode varbinddecodedstring="ipOverAtm" varbindvalue="114"/>
+      <decode varbinddecodedstring="iso88025Fiber" varbindvalue="115"/>
+      <decode varbinddecodedstring="tdlc" varbindvalue="116"/>
+      <decode varbinddecodedstring="gigabitEthernet" varbindvalue="117"/>
+      <decode varbinddecodedstring="hdlc" varbindvalue="118"/>
+      <decode varbinddecodedstring="lapf" varbindvalue="119"/>
+      <decode varbinddecodedstring="v37" varbindvalue="120"/>
+      <decode varbinddecodedstring="x25mlp" varbindvalue="121"/>
+      <decode varbinddecodedstring="x25huntGroup" varbindvalue="122"/>
+      <decode varbinddecodedstring="trasnpHdlc" varbindvalue="123"/>
+      <decode varbinddecodedstring="interleave" varbindvalue="124"/>
+      <decode varbinddecodedstring="fast" varbindvalue="125"/>
+      <decode varbinddecodedstring="ip" varbindvalue="126"/>
+      <decode varbinddecodedstring="docsCableMaclayer" varbindvalue="127"/>
+      <decode varbinddecodedstring="docsCableDownstream" varbindvalue="128"/>
+      <decode varbinddecodedstring="docsCableUpstream" varbindvalue="129"/>
+      <decode varbinddecodedstring="a12MppSwitch" varbindvalue="130"/>
+      <decode varbinddecodedstring="tunnel" varbindvalue="131"/>
+      <decode varbinddecodedstring="coffee" varbindvalue="132"/>
+      <decode varbinddecodedstring="ces" varbindvalue="133"/>
+      <decode varbinddecodedstring="atmSubInterface" varbindvalue="134"/>
+      <decode varbinddecodedstring="l2vlan" varbindvalue="135"/>
+      <decode varbinddecodedstring="l3ipvlan" varbindvalue="136"/>
+      <decode varbinddecodedstring="l3ipxvlan" varbindvalue="137"/>
+      <decode varbinddecodedstring="digitalPowerline" varbindvalue="138"/>
+      <decode varbinddecodedstring="mediaMailOverIp" varbindvalue="139"/>
+      <decode varbinddecodedstring="dtm" varbindvalue="140"/>
+      <decode varbinddecodedstring="dcn" varbindvalue="141"/>
+      <decode varbinddecodedstring="ipForward" varbindvalue="142"/>
+      <decode varbinddecodedstring="msdsl" varbindvalue="143"/>
+      <decode varbinddecodedstring="ieee1394" varbindvalue="144"/>
+      <decode varbinddecodedstring="if-gsn" varbindvalue="145"/>
+      <decode varbinddecodedstring="dvbRccMacLayer" varbindvalue="146"/>
+      <decode varbinddecodedstring="dvbRccDownstream" varbindvalue="147"/>
+      <decode varbinddecodedstring="dvbRccUpstream" varbindvalue="148"/>
+      <decode varbinddecodedstring="atmVirtual" varbindvalue="149"/>
+      <decode varbinddecodedstring="mplsTunnel" varbindvalue="150"/>
+      <decode varbinddecodedstring="srp" varbindvalue="151"/>
+      <decode varbinddecodedstring="voiceOverAtm" varbindvalue="152"/>
+      <decode varbinddecodedstring="voiceOverFrameRelay" varbindvalue="153"/>
+      <decode varbinddecodedstring="idsl" varbindvalue="154"/>
+      <decode varbinddecodedstring="compositeLink" varbindvalue="155"/>
+      <decode varbinddecodedstring="ss7SigLink" varbindvalue="156"/>
+      <decode varbinddecodedstring="propWirelessP2P" varbindvalue="157"/>
+      <decode varbinddecodedstring="frForward" varbindvalue="158"/>
+      <decode varbinddecodedstring="rfc1483" varbindvalue="159"/>
+      <decode varbinddecodedstring="usb" varbindvalue="160"/>
+      <decode varbinddecodedstring="ieee8023adLag" varbindvalue="161"/>
+      <decode varbinddecodedstring="bgppolicyaccounting" varbindvalue="162"/>
+      <decode varbinddecodedstring="frf16MfrBundle" varbindvalue="163"/>
+      <decode varbinddecodedstring="h323Gatekeeper" varbindvalue="164"/>
+      <decode varbinddecodedstring="h323Proxy" varbindvalue="165"/>
+      <decode varbinddecodedstring="mpls" varbindvalue="166"/>
+      <decode varbinddecodedstring="mfSigLink" varbindvalue="167"/>
+      <decode varbinddecodedstring="hdsl2" varbindvalue="168"/>
+      <decode varbinddecodedstring="shdsl" varbindvalue="169"/>
+      <decode varbinddecodedstring="ds1FDL" varbindvalue="170"/>
+      <decode varbinddecodedstring="pos" varbindvalue="171"/>
+      <decode varbinddecodedstring="dvbAsiIn" varbindvalue="172"/>
+      <decode varbinddecodedstring="dvbAsiOut" varbindvalue="173"/>
+      <decode varbinddecodedstring="plc" varbindvalue="174"/>
+      <decode varbinddecodedstring="nfas" varbindvalue="175"/>
+      <decode varbinddecodedstring="tr008" varbindvalue="176"/>
+      <decode varbinddecodedstring="gr303RDT" varbindvalue="177"/>
+      <decode varbinddecodedstring="gr303IDT" varbindvalue="178"/>
+      <decode varbinddecodedstring="isup" varbindvalue="179"/>
+      <decode varbinddecodedstring="propDocsWirelessMaclayer" varbindvalue="180"/>
+      <decode varbinddecodedstring="propDocsWirelessDownstream" varbindvalue="181"/>
+      <decode varbinddecodedstring="propDocsWirelessUpstream" varbindvalue="182"/>
+      <decode varbinddecodedstring="hiperlan2" varbindvalue="183"/>
+      <decode varbinddecodedstring="propBWAp2Mp" varbindvalue="184"/>
+      <decode varbinddecodedstring="sonetOverheadChannel" varbindvalue="185"/>
+      <decode varbinddecodedstring="digitalWrapperOverheadChannel" varbindvalue="186"/>
+      <decode varbinddecodedstring="aal2" varbindvalue="187"/>
+      <decode varbinddecodedstring="radioMAC" varbindvalue="188"/>
+      <decode varbinddecodedstring="atmRadio" varbindvalue="189"/>
+      <decode varbinddecodedstring="imt" varbindvalue="190"/>
+      <decode varbinddecodedstring="mvl" varbindvalue="191"/>
+      <decode varbinddecodedstring="reachDSL" varbindvalue="192"/>
+      <decode varbinddecodedstring="frDlciEndPt" varbindvalue="193"/>
+      <decode varbinddecodedstring="atmVciEndPt" varbindvalue="194"/>
+      <decode varbinddecodedstring="opticalChannel" varbindvalue="195"/>
+      <decode varbinddecodedstring="opticalTransport" varbindvalue="196"/>
+      <decode varbinddecodedstring="propAtm" varbindvalue="197"/>
+      <decode varbinddecodedstring="voiceOverCable" varbindvalue="198"/>
+      <decode varbinddecodedstring="infiniband" varbindvalue="199"/>
+      <decode varbinddecodedstring="teLink" varbindvalue="200"/>
+      <decode varbinddecodedstring="q2931" varbindvalue="201"/>
+      <decode varbinddecodedstring="virtualTg" varbindvalue="202"/>
+      <decode varbinddecodedstring="sipTg" varbindvalue="203"/>
+      <decode varbinddecodedstring="sipSig" varbindvalue="204"/>
+      <decode varbinddecodedstring="docsCableUpstreamChannel" varbindvalue="205"/>
+      <decode varbinddecodedstring="econet" varbindvalue="206"/>
+      <decode varbinddecodedstring="pon155" varbindvalue="207"/>
+      <decode varbinddecodedstring="pon622" varbindvalue="208"/>
+      <decode varbinddecodedstring="bridge" varbindvalue="209"/>
+      <decode varbinddecodedstring="linegroup" varbindvalue="210"/>
+      <decode varbinddecodedstring="voiceEMFGD" varbindvalue="211"/>
+      <decode varbinddecodedstring="voiceFGDEANA" varbindvalue="212"/>
+      <decode varbinddecodedstring="voiceDID" varbindvalue="213"/>
+      <decode varbinddecodedstring="mpegTransport" varbindvalue="214"/>
+      <decode varbinddecodedstring="sixToFour" varbindvalue="215"/>
+      <decode varbinddecodedstring="gtp" varbindvalue="216"/>
+      <decode varbinddecodedstring="pdnEtherLoop1" varbindvalue="217"/>
+      <decode varbinddecodedstring="pdnEtherLoop2" varbindvalue="218"/>
+      <decode varbinddecodedstring="opticalChannelGroup" varbindvalue="219"/>
+      <decode varbinddecodedstring="homepna" varbindvalue="220"/>
+      <decode varbinddecodedstring="gfp" varbindvalue="221"/>
+      <decode varbinddecodedstring="ciscoISLvlan" varbindvalue="222"/>
+      <decode varbinddecodedstring="actelisMetaLOOP" varbindvalue="223"/>
+      <decode varbinddecodedstring="fcipLink" varbindvalue="224"/>
+      <decode varbinddecodedstring="rpr" varbindvalue="225"/>
+      <decode varbinddecodedstring="qam" varbindvalue="226"/>
+      <decode varbinddecodedstring="lmp" varbindvalue="227"/>
+      <decode varbinddecodedstring="cblVectaStar" varbindvalue="228"/>
+      <decode varbinddecodedstring="docsCableMCmtsDownstream" varbindvalue="229"/>
+      <decode varbinddecodedstring="adsl2" varbindvalue="230"/>
+      <decode varbinddecodedstring="macSecControlledIF" varbindvalue="231"/>
+      <decode varbinddecodedstring="macSecUncontrolledIF" varbindvalue="232"/>
+      <decode varbinddecodedstring="aviciOpticalEther" varbindvalue="233"/>
+      <decode varbinddecodedstring="atmbond" varbindvalue="234"/>
+    </varbindsdecode>
+    <varbindsdecode>
+      <parmid>parm[#5]</parmid>
+      <decode varbinddecodedstring="other" varbindvalue="1"/>
+      <decode varbinddecodedstring="none" varbindvalue="2"/>
+      <decode varbinddecodedstring="hwFailure" varbindvalue="3"/>
+      <decode varbinddecodedstring="loopbackDiagFailure" varbindvalue="4"/>
+      <decode varbinddecodedstring="errorDisabled" varbindvalue="5"/>
+      <decode varbinddecodedstring="swFailure" varbindvalue="6"/>
+      <decode varbinddecodedstring="linkFailure" varbindvalue="7"/>
+      <decode varbinddecodedstring="offline" varbindvalue="8"/>
+      <decode varbinddecodedstring="nonParticipating" varbindvalue="9"/>
+      <decode varbinddecodedstring="initializing" varbindvalue="10"/>
+      <decode varbinddecodedstring="vsanInactive" varbindvalue="11"/>
+      <decode varbinddecodedstring="adminDown" varbindvalue="12"/>
+      <decode varbinddecodedstring="channelAdminDown" varbindvalue="13"/>
+      <decode varbinddecodedstring="channelOperSuspended" varbindvalue="14"/>
+      <decode varbinddecodedstring="channelConfigurationInProgress" varbindvalue="15"/>
+      <decode varbinddecodedstring="rcfInProgress" varbindvalue="16"/>
+      <decode varbinddecodedstring="elpFailureIsolation" varbindvalue="17"/>
+      <decode varbinddecodedstring="escFailureIsolation" varbindvalue="18"/>
+      <decode varbinddecodedstring="domainOverlapIsolation" varbindvalue="19"/>
+      <decode varbinddecodedstring="domainAddrAssignFailureIsolation" varbindvalue="20"/>
+      <decode varbinddecodedstring="domainOtherSideEportIsolation" varbindvalue="21"/>
+      <decode varbinddecodedstring="domainInvalidRcfReceived" varbindvalue="22"/>
+      <decode varbinddecodedstring="domainManagerDisabled" varbindvalue="23"/>
+      <decode varbinddecodedstring="zoneMergeFailureIsolation" varbindvalue="24"/>
+      <decode varbinddecodedstring="vsanMismatchIsolation" varbindvalue="25"/>
+      <decode varbinddecodedstring="parentDown" varbindvalue="26"/>
+      <decode varbinddecodedstring="srcPortNotBound" varbindvalue="27"/>
+      <decode varbinddecodedstring="interfaceRemoved" varbindvalue="28"/>
+      <decode varbinddecodedstring="fcotNotPresent" varbindvalue="29"/>
+      <decode varbinddecodedstring="fcotVendorNotSupported" varbindvalue="30"/>
+      <decode varbinddecodedstring="incompatibleAdminMode" varbindvalue="31"/>
+      <decode varbinddecodedstring="incompatibleAdminSpeed" varbindvalue="32"/>
+      <decode varbinddecodedstring="suspendedByMode" varbindvalue="33"/>
+      <decode varbinddecodedstring="suspendedBySpeed" varbindvalue="34"/>
+      <decode varbinddecodedstring="suspendedByWWN" varbindvalue="35"/>
+      <decode varbinddecodedstring="domainMaxReTxFailure" varbindvalue="36"/>
+      <decode varbinddecodedstring="eppFailure" varbindvalue="37"/>
+      <decode varbinddecodedstring="portVsanMismatchIsolation" varbindvalue="38"/>
+      <decode varbinddecodedstring="loopbackIsolation" varbindvalue="39"/>
+      <decode varbinddecodedstring="upgradeInProgress" varbindvalue="40"/>
+      <decode varbinddecodedstring="incompatibleAdminRxBbCredit" varbindvalue="41"/>
+      <decode varbinddecodedstring="incompatibleAdminRxBufferSize" varbindvalue="42"/>
+      <decode varbinddecodedstring="portChannelMembersDown" varbindvalue="43"/>
+      <decode varbinddecodedstring="zoneRemoteNoRespIsolation" varbindvalue="44"/>
+      <decode varbinddecodedstring="firstPortUpAsEport" varbindvalue="45"/>
+      <decode varbinddecodedstring="firstPortNotUp" varbindvalue="46"/>
+      <decode varbinddecodedstring="peerFCIPPortClosedConnection" varbindvalue="47"/>
+      <decode varbinddecodedstring="peerFCIPPortResetConnection" varbindvalue="48"/>
+      <decode varbinddecodedstring="fcipPortMaxReTx" varbindvalue="49"/>
+      <decode varbinddecodedstring="fcipPortKeepAliveTimerExpire" varbindvalue="50"/>
+      <decode varbinddecodedstring="fcipPortPersistTimerExpire" varbindvalue="51"/>
+      <decode varbinddecodedstring="fcipPortSrcLinkDown" varbindvalue="52"/>
+      <decode varbinddecodedstring="fcipPortSrcAdminDown" varbindvalue="53"/>
+      <decode varbinddecodedstring="fcipPortAdminCfgChange" varbindvalue="54"/>
+      <decode varbinddecodedstring="fcipSrcPortRemoved" varbindvalue="55"/>
+      <decode varbinddecodedstring="fcipSrcModuleNotOnline" varbindvalue="56"/>
+      <decode varbinddecodedstring="invalidConfig" varbindvalue="57"/>
+      <decode varbinddecodedstring="portBindFailure" varbindvalue="58"/>
+      <decode varbinddecodedstring="portFabricBindFailure" varbindvalue="59"/>
+      <decode varbinddecodedstring="noCommonVsanIsolation" varbindvalue="60"/>
+      <decode varbinddecodedstring="ficonVsanDown" varbindvalue="61"/>
+      <decode varbinddecodedstring="invalidAttachment" varbindvalue="62"/>
+      <decode varbinddecodedstring="portBlocked" varbindvalue="63"/>
+      <decode varbinddecodedstring="incomAdminRxBbCreditPerBuf" varbindvalue="64"/>
+      <decode varbinddecodedstring="tooManyInvalidFlogis" varbindvalue="65"/>
+      <decode varbinddecodedstring="deniedDueToPortBinding" varbindvalue="66"/>
+      <decode varbinddecodedstring="elpFailureRevMismatch" varbindvalue="67"/>
+      <decode varbinddecodedstring="elpFailureClassFParamErr" varbindvalue="68"/>
+      <decode varbinddecodedstring="elpFailureClassNParamErr" varbindvalue="69"/>
+      <decode varbinddecodedstring="elpFailureUnknownFlowCtlCode" varbindvalue="70"/>
+      <decode varbinddecodedstring="elpFailureInvalidFlowCtlParam" varbindvalue="71"/>
+      <decode varbinddecodedstring="elpFailureInvalidPortName" varbindvalue="72"/>
+      <decode varbinddecodedstring="elpFailureInvalidSwitchName" varbindvalue="73"/>
+      <decode varbinddecodedstring="elpFailureRatovEdtovMismatch" varbindvalue="74"/>
+      <decode varbinddecodedstring="elpFailureLoopbackDetected" varbindvalue="75"/>
+      <decode varbinddecodedstring="elpFailureInvalidTxBbCredit" varbindvalue="76"/>
+      <decode varbinddecodedstring="elpFailureInvalidPayloadSize" varbindvalue="77"/>
+      <decode varbinddecodedstring="bundleMisCfg" varbindvalue="78"/>
+      <decode varbinddecodedstring="bitErrRuntimeThreshExceeded" varbindvalue="79"/>
+      <decode varbinddecodedstring="linkFailLinkReset" varbindvalue="80"/>
+      <decode varbinddecodedstring="linkFailPortInitFail" varbindvalue="81"/>
+      <decode varbinddecodedstring="linkFailPortUnusable" varbindvalue="82"/>
+      <decode varbinddecodedstring="linkFailLossOfSignal" varbindvalue="83"/>
+      <decode varbinddecodedstring="linkFailLossOfSync" varbindvalue="84"/>
+      <decode varbinddecodedstring="linkFailNosRcvd" varbindvalue="85"/>
+      <decode varbinddecodedstring="linkFailOLSRcvd" varbindvalue="86"/>
+      <decode varbinddecodedstring="linkFailDebounceTimeout" varbindvalue="87"/>
+      <decode varbinddecodedstring="linkFailLrRcvd" varbindvalue="88"/>
+      <decode varbinddecodedstring="linkFailCreditLoss" varbindvalue="89"/>
+      <decode varbinddecodedstring="linkFailRxQOverflow" varbindvalue="90"/>
+      <decode varbinddecodedstring="linkFailTooManyInterrupts" varbindvalue="91"/>
+      <decode varbinddecodedstring="linkFailLipRcvdBb" varbindvalue="92"/>
+      <decode varbinddecodedstring="linkFailBbCreditLoss" varbindvalue="93"/>
+      <decode varbinddecodedstring="linkFailOpenPrimSignalTimeout" varbindvalue="94"/>
+      <decode varbinddecodedstring="linkFailOpenPrimSignalReturned" varbindvalue="95"/>
+      <decode varbinddecodedstring="linkFailLipF8Rcvd" varbindvalue="96"/>
+      <decode varbinddecodedstring="linkFailLineCardPortShutdown" varbindvalue="97"/>
+      <decode varbinddecodedstring="fcspAuthenfailure" varbindvalue="98"/>
+      <decode varbinddecodedstring="fcotChecksumError" varbindvalue="99"/>
+      <decode varbinddecodedstring="ohmsExtLoopbackTest" varbindvalue="100"/>
+      <decode varbinddecodedstring="invalidFabricBindExchange" varbindvalue="101"/>
+      <decode varbinddecodedstring="tovMismatch" varbindvalue="102"/>
+      <decode varbinddecodedstring="ficonNotEnabled" varbindvalue="103"/>
+      <decode varbinddecodedstring="ficonNoPortNumber" varbindvalue="104"/>
+      <decode varbinddecodedstring="ficonBeingEnabled" varbindvalue="105"/>
+      <decode varbinddecodedstring="ePortProhibited" varbindvalue="106"/>
+      <decode varbinddecodedstring="portGracefulShutdown" varbindvalue="107"/>
+      <decode varbinddecodedstring="trunkNotFullyActive" varbindvalue="108"/>
+      <decode varbinddecodedstring="fabricBindingSwitchWwnNotFound" varbindvalue="109"/>
+      <decode varbinddecodedstring="fabricBindingDomainInvalid" varbindvalue="110"/>
+      <decode varbinddecodedstring="fabricBindingDbMismatch" varbindvalue="111"/>
+      <decode varbinddecodedstring="fabricBindingNoRspFromPeer" varbindvalue="112"/>
+      <decode varbinddecodedstring="dpvmVsanSuspended" varbindvalue="113"/>
+      <decode varbinddecodedstring="dpvmVsanNotFound" varbindvalue="114"/>
+      <decode varbinddecodedstring="trackedPortDown" varbindvalue="115"/>
+      <decode varbinddecodedstring="ecSuspendedOnLoop" varbindvalue="116"/>
+      <decode varbinddecodedstring="isolateBundleMisCfg" varbindvalue="117"/>
+      <decode varbinddecodedstring="noPeerBundleSupport" varbindvalue="118"/>
+      <decode varbinddecodedstring="portBringupIsolation" varbindvalue="119"/>
+      <decode varbinddecodedstring="domainNotAllowedIsolated" varbindvalue="120"/>
+      <decode varbinddecodedstring="virtualIvrDomainOverlapIsolation" varbindvalue="121"/>
+      <decode varbinddecodedstring="outOfService" varbindvalue="122"/>
+      <decode varbinddecodedstring="portAuthFailed" varbindvalue="123"/>
+      <decode varbinddecodedstring="bundleStandby" varbindvalue="124"/>
+      <decode varbinddecodedstring="portConnectorTypeErr" varbindvalue="125"/>
+      <decode varbinddecodedstring="errorDisabledReInitLmtReached" varbindvalue="126"/>
+      <decode varbinddecodedstring="ficonDupPortNum" varbindvalue="127"/>
+      <decode varbinddecodedstring="localRcf" varbindvalue="128"/>
+      <decode varbinddecodedstring="twoSwitchesWithSameWWN" varbindvalue="129"/>
+      <decode varbinddecodedstring="invalidOtherSidePrincEFPReqRecd" varbindvalue="130"/>
+      <decode varbinddecodedstring="domainOther" varbindvalue="131"/>
+      <decode varbinddecodedstring="elpFailureAllZeroPeerWWNRcvd" varbindvalue="132"/>
+      <decode varbinddecodedstring="preferredPathIsolation" varbindvalue="133"/>
+      <decode varbinddecodedstring="fcRedirectIsolation" varbindvalue="134"/>
+      <decode varbinddecodedstring="portActLicenseNotAvailable" varbindvalue="135"/>
+      <decode varbinddecodedstring="sdmIsolation" varbindvalue="136"/>
+      <decode varbinddecodedstring="fcidAllocationFailed" varbindvalue="137"/>
+      <decode varbinddecodedstring="externallyDisabled" varbindvalue="138"/>
+      <decode varbinddecodedstring="unavailableNPVUpstreamPort" varbindvalue="139"/>
+      <decode varbinddecodedstring="unavailableNPVPrefUpstreamPort" varbindvalue="140"/>
+      <decode varbinddecodedstring="sfpReadError" varbindvalue="141"/>
+      <decode varbinddecodedstring="stickyDownOnLinkFailure" varbindvalue="142"/>
+      <decode varbinddecodedstring="tooManyLinkFlapsErr" varbindvalue="143"/>
+      <decode varbinddecodedstring="unidirectionalUDLD" varbindvalue="144"/>
+      <decode varbinddecodedstring="txRxLoopUDLD" varbindvalue="145"/>
+      <decode varbinddecodedstring="neighborMismatchUDLD" varbindvalue="146"/>
+      <decode varbinddecodedstring="authzPending" varbindvalue="147"/>
+      <decode varbinddecodedstring="hotStdbyInBundle" varbindvalue="148"/>
+      <decode varbinddecodedstring="incompleteConfig" varbindvalue="149"/>
+      <decode varbinddecodedstring="incompleteTunnelCfg" varbindvalue="150"/>
+      <decode varbinddecodedstring="hwProgrammingFailed" varbindvalue="151"/>
+      <decode varbinddecodedstring="tunnelDstUnreachable" varbindvalue="152"/>
+      <decode varbinddecodedstring="suspendByMtu" varbindvalue="153"/>
+      <decode varbinddecodedstring="sfpInvalid" varbindvalue="154"/>
+      <decode varbinddecodedstring="sfpAbsent" varbindvalue="155"/>
+      <decode varbinddecodedstring="portCapabilitiesUnknown" varbindvalue="156"/>
+      <decode varbinddecodedstring="channelErrDisabled" varbindvalue="157"/>
+      <decode varbinddecodedstring="vrfMismatch" varbindvalue="158"/>
+      <decode varbinddecodedstring="vrfForwardReferencing" varbindvalue="159"/>
+      <decode varbinddecodedstring="dupTunnelConfigDetected" varbindvalue="160"/>
+      <decode varbinddecodedstring="primaryVLANDown" varbindvalue="161"/>
+      <decode varbinddecodedstring="vrfUnusable" varbindvalue="162"/>
+      <decode varbinddecodedstring="errDisableHandShkFailure" varbindvalue="163"/>
+      <decode varbinddecodedstring="errDisabledBPDUGuard" varbindvalue="164"/>
+      <decode varbinddecodedstring="dot1xSecViolationErrDisabled" varbindvalue="165"/>
+      <decode varbinddecodedstring="emptyEchoUDLD" varbindvalue="166"/>
+      <decode varbinddecodedstring="vfTaggingCapErr" varbindvalue="167"/>
+      <decode varbinddecodedstring="portDisabled" varbindvalue="168"/>
+      <decode varbinddecodedstring="tunnelModeNotConfigured" varbindvalue="169"/>
+      <decode varbinddecodedstring="tunnelSrcNotConfigured" varbindvalue="170"/>
+      <decode varbinddecodedstring="tunnelDstNotConfigured" varbindvalue="171"/>
+      <decode varbinddecodedstring="tunnelUnableToResolveSrcIP" varbindvalue="172"/>
+      <decode varbinddecodedstring="tunnelUnableToResolveDstIP" varbindvalue="173"/>
+      <decode varbinddecodedstring="tunnelVrfDown" varbindvalue="174"/>
+      <decode varbinddecodedstring="sifAdminDown" varbindvalue="175"/>
+      <decode varbinddecodedstring="phyIntfDown" varbindvalue="176"/>
+      <decode varbinddecodedstring="ifSifLimitExceeded" varbindvalue="177"/>
+      <decode varbinddecodedstring="sifHoldDown" varbindvalue="178"/>
+      <decode varbinddecodedstring="noFcoe" varbindvalue="179"/>
+      <decode varbinddecodedstring="dcxCompatMismatch" varbindvalue="180"/>
+      <decode varbinddecodedstring="isolateBundleLimitExceeded" varbindvalue="181"/>
+      <decode varbinddecodedstring="sifNotBound" varbindvalue="182"/>
+      <decode varbinddecodedstring="errDisabledLacpMiscfg" varbindvalue="183"/>
+      <decode varbinddecodedstring="satFabricIfDown" varbindvalue="184"/>
+      <decode varbinddecodedstring="invalidSatFabricIf" varbindvalue="185"/>
+      <decode varbinddecodedstring="noRemoteChassis" varbindvalue="186"/>
+      <decode varbinddecodedstring="vicEnableNotReceived" varbindvalue="187"/>
+      <decode varbinddecodedstring="vicDisableReceived" varbindvalue="188"/>
+      <decode varbinddecodedstring="vlanVsanMappingNotEnabled" varbindvalue="189"/>
+      <decode varbinddecodedstring="stpNotFwdingInFcoeMappedVlan" varbindvalue="190"/>
+      <decode varbinddecodedstring="moduleOffline" varbindvalue="191"/>
+      <decode varbinddecodedstring="udldAggModeLinkFailure" varbindvalue="192"/>
+      <decode varbinddecodedstring="stpInconsVpcPeerDisabled" varbindvalue="193"/>
+      <decode varbinddecodedstring="setPortStateFailed" varbindvalue="194"/>
+      <decode varbinddecodedstring="suspendedByVpc" varbindvalue="195"/>
+      <decode varbinddecodedstring="vpcCfgInProgress" varbindvalue="196"/>
+      <decode varbinddecodedstring="vpcPeerLinkDown" varbindvalue="197"/>
+      <decode varbinddecodedstring="vpcNoRspFromPeer" varbindvalue="198"/>
+      <decode varbinddecodedstring="protoPortSuspend" varbindvalue="199"/>
+      <decode varbinddecodedstring="tunnelSrcDown" varbindvalue="200"/>
+      <decode varbinddecodedstring="cdpInfoUnavailable" varbindvalue="201"/>
+      <decode varbinddecodedstring="fexSfpInvalid" varbindvalue="202"/>
+      <decode varbinddecodedstring="errDisabledIpConflict" varbindvalue="203"/>
+      <decode varbinddecodedstring="fcotClkRateMismatch" varbindvalue="204"/>
+      <decode varbinddecodedstring="portGuardTrustSecViolation" varbindvalue="205"/>
+      <decode varbinddecodedstring="sdpTimeout" varbindvalue="206"/>
+      <decode varbinddecodedstring="satIncompatTopo" varbindvalue="207"/>
+      <decode varbinddecodedstring="waitForFlogi" varbindvalue="208"/>
+      <decode varbinddecodedstring="satNotConfigured" varbindvalue="209"/>
+      <decode varbinddecodedstring="npivNotEnabledInUpstream" varbindvalue="210"/>
+      <decode varbinddecodedstring="vsanMismatchWithUpstreamSwPort" varbindvalue="211"/>
+      <decode varbinddecodedstring="portGuardBitErrRate" varbindvalue="212"/>
+      <decode varbinddecodedstring="portGuardSigLoss" varbindvalue="213"/>
+      <decode varbinddecodedstring="portGuardSyncLoss" varbindvalue="214"/>
+      <decode varbinddecodedstring="portGuardLinkReset" varbindvalue="215"/>
+      <decode varbinddecodedstring="portGuardCreditLoss" varbindvalue="216"/>
+      <decode varbinddecodedstring="ipQosMgrPolicyAppFailure" varbindvalue="217"/>
+      <decode varbinddecodedstring="pauseRateLimitErrDisabled" varbindvalue="218"/>
+      <decode varbinddecodedstring="lstGrpUplinkDown" varbindvalue="219"/>
+      <decode varbinddecodedstring="stickyDnLinkFailure" varbindvalue="220"/>
+      <decode varbinddecodedstring="routerMacFailure" varbindvalue="221"/>
+      <decode varbinddecodedstring="dcxMultipleMsapIds" varbindvalue="222"/>
+      <decode varbinddecodedstring="dcxHundredPdusRcvdNoAck" varbindvalue="223"/>
+      <decode varbinddecodedstring="enmSatIncompatibleUplink" varbindvalue="224"/>
+      <decode varbinddecodedstring="enmLoopDetected" varbindvalue="225"/>
+      <decode varbinddecodedstring="nonStickyExternallyDisabled" varbindvalue="226"/>
+      <decode varbinddecodedstring="subGroupIdNotAssigned" varbindvalue="227"/>
+      <decode varbinddecodedstring="vemUnlicensed" varbindvalue="228"/>
+      <decode varbinddecodedstring="profileNotFound" varbindvalue="229"/>
+      <decode varbinddecodedstring="nonExistentVlan" varbindvalue="230"/>
+      <decode varbinddecodedstring="vlanInvalidType" varbindvalue="231"/>
+      <decode varbinddecodedstring="vlanDown" varbindvalue="232"/>
+      <decode varbinddecodedstring="vpcPeerUpgrade" varbindvalue="233"/>
+      <decode varbinddecodedstring="ipQosDcbxpCompatFailure" varbindvalue="234"/>
+      <decode varbinddecodedstring="nonCiscoHbaVfTag" varbindvalue="235"/>
+      <decode varbinddecodedstring="domainIdConfigMismatch" varbindvalue="236"/>
+      <decode varbinddecodedstring="sfpSpeedMismatch" varbindvalue="237"/>
+      <decode varbinddecodedstring="xcvrInitializing" varbindvalue="238"/>
+      <decode varbinddecodedstring="xcvrAbsent" varbindvalue="239"/>
+      <decode varbinddecodedstring="xcvrInvalid" varbindvalue="240"/>
+      <decode varbinddecodedstring="vfcBindingInvalid" varbindvalue="241"/>
+      <decode varbinddecodedstring="vlanNotFcoeEnabled" varbindvalue="242"/>
+      <decode varbinddecodedstring="pvlanNativeVlanErr" varbindvalue="243"/>
+      <decode varbinddecodedstring="ethL2VlanDown" varbindvalue="244"/>
+      <decode varbinddecodedstring="ethIntfInvalidBinding" varbindvalue="245"/>
+      <decode varbinddecodedstring="pmonFailure" varbindvalue="246"/>
+      <decode varbinddecodedstring="l3NotReady" varbindvalue="247"/>
+      <decode varbinddecodedstring="speedMismatch" varbindvalue="248"/>
+      <decode varbinddecodedstring="flowControlMismatch" varbindvalue="249"/>
+      <decode varbinddecodedstring="vdcMode" varbindvalue="250"/>
+      <decode varbinddecodedstring="suspendedDueToMinLinks" varbindvalue="251"/>
+      <decode varbinddecodedstring="enmPinFailLinkDown" varbindvalue="252"/>
+      <decode varbinddecodedstring="inactiveM1PortFpathActiveVlan" varbindvalue="253"/>
+      <decode varbinddecodedstring="parentPortDown" varbindvalue="254"/>
+      <decode varbinddecodedstring="moduleRemoved" varbindvalue="255"/>
+      <decode varbinddecodedstring="corePortMct" varbindvalue="256"/>
+      <decode varbinddecodedstring="nonCorePortMct" varbindvalue="257"/>
+      <decode varbinddecodedstring="ficonInorderNotActive" varbindvalue="258"/>
+      <decode varbinddecodedstring="invalidEncapsulation" varbindvalue="259"/>
+      <decode varbinddecodedstring="modemLineDeasserted" varbindvalue="260"/>
+      <decode varbinddecodedstring="ipSecHndshkInProgress" varbindvalue="261"/>
+      <decode varbinddecodedstring="sfpEthCompliantErr" varbindvalue="262"/>
+      <decode varbinddecodedstring="cellularModemUnattached" varbindvalue="263"/>
+      <decode varbinddecodedstring="outOfGlblRxBuffers" varbindvalue="264"/>
+      <decode varbinddecodedstring="sfpFcCompliantErr" varbindvalue="265"/>
+      <decode varbinddecodedstring="ethIntfNotLicensed" varbindvalue="266"/>
+      <decode varbinddecodedstring="domainIdsInvalid" varbindvalue="267"/>
+      <decode varbinddecodedstring="fabricNameInvalid" varbindvalue="268"/>
+    </varbindsdecode>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false" />
+  </event>
+<!-- End of mib2events auto-generated data for MIB: CISCO-IF-EXTENSION-MIB -->
 </events>

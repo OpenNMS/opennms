@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -187,7 +186,7 @@ public class DefaultReportService implements ReportService,InitializingBean {
                                                                        File.separator + report.getReportTemplate() );
         
         if(report.getReportEngine().equals("jdbc")){
-            Connection connection = DataSourceFactory.getDataSource().getConnection();
+            Connection connection = DataSourceFactory.getInstance().getConnection();
             jasperPrint = JasperFillManager.fillReport(jasperReport,
                                                        paramListToMap(report.getParameterCollection()),
                                                        connection );
@@ -256,7 +255,7 @@ public class DefaultReportService implements ReportService,InitializingBean {
         for(Parameter parm : parameters)
             parmMap.put(parm.getName(), parm.getValue());
         
-        return Collections.unmodifiableMap(parmMap);
+        return parmMap;
     }
 
 }

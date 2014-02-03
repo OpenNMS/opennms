@@ -344,11 +344,13 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         m_writeLock.lock();
         try {
             LOG.debug("Deleting requisition {} from {} (if necessary)", requisition.getForeignSource(), m_requisitionPath);
-            final File deleteFile = RequisitionFileUtils.getOutputFileForRequisition(m_requisitionPath, requisition);
-            if (deleteFile.exists()) {
-                if (!deleteFile.delete()) {
-                    throw new ForeignSourceRepositoryException("unable to delete requisition file " + deleteFile);
+            final File fileToDelete = RequisitionFileUtils.getOutputFileForRequisition(m_requisitionPath, requisition);
+            if (fileToDelete.exists()) {
+                if (!fileToDelete.delete()) {
+                    throw new ForeignSourceRepositoryException("Unable to delete requisition file " + fileToDelete);
                 }
+            } else {
+                LOG.debug("File {} does not exist.", fileToDelete);
             }
         } finally {
             m_writeLock.unlock();
@@ -402,11 +404,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
     public URL getRequisitionURL(final String foreignSource) throws ForeignSourceRepositoryException {
         m_readLock.lock();
         try {
-            final Requisition requisition = getRequisition(foreignSource);
-            if (requisition == null) {
-                return null;
-            }
-            return RequisitionFileUtils.getOutputFileForRequisition(m_requisitionPath, requisition).toURI().toURL();
+            return RequisitionFileUtils.getOutputFileForRequisition(m_requisitionPath, foreignSource).toURI().toURL();
         } catch (final MalformedURLException e) {
             throw new ForeignSourceRepositoryException("an error occurred getting the requisition URL", e);
         } finally {

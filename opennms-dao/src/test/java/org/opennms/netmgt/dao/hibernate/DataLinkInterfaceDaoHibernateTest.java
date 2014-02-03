@@ -29,10 +29,12 @@
 package org.opennms.netmgt.dao.hibernate;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -47,6 +49,7 @@ import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.DataLinkInterface;
+import org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsNode;
@@ -151,11 +154,38 @@ public class DataLinkInterfaceDaoHibernateTest implements InitializingBean {
     }
 
     @Test
+    @Transactional
+    public void testFindByNodeIdAndifIndex() {
+        Collection<DataLinkInterface> dlfindbynodeidifindex = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(m_databasePopulator.getNode2().getId(), 1);
+        assertEquals(1, dlfindbynodeidifindex.size());
+        for (DataLinkInterface link: dlfindbynodeidifindex) {
+            assertEquals(m_databasePopulator.getNode2().getId(), link.getNodeId());
+            assertEquals(1, link.getIfIndex().intValue());
+        }
+
+        Collection<DataLinkInterface> node1ifindex1 = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(m_databasePopulator.getNode1().getId(), 2); 
+        assertEquals(1,node1ifindex1.size());
+        for (DataLinkInterface link: node1ifindex1) {
+            assertEquals(m_databasePopulator.getNode1().getId(), link.getNodeId());
+            assertEquals(2, link.getIfIndex().intValue());
+        }
+        
+        Collection<DataLinkInterface> node1ifindex1parent = m_dataLinkInterfaceDao.findByParentNodeIdAndIfIndex(m_databasePopulator.getNode1().getId(), 1); 
+        assertEquals(3,node1ifindex1parent.size());
+        for (DataLinkInterface link: node1ifindex1parent) {
+            assertEquals(m_databasePopulator.getNode1().getId(), link.getNodeParentId());
+            assertEquals(1, link.getParentIfIndex().intValue());
+        }
+        
+    }
+
+    @Test
     @Transactional // why is this necessary?
     public void testSaveDataLinkInterface() {
         // Create a new data link interface and save it.
         DataLinkInterface dli = new DataLinkInterface(m_databasePopulator.getNode2(), 2, m_databasePopulator.getNode1().getId(), 1, StatusType.UNKNOWN, new Date());
         dli.setLinkTypeId(101);
+        dli.setProtocol(DiscoveryProtocol.NA);
         m_dataLinkInterfaceDao.save(dli);
         m_dataLinkInterfaceDao.flush();
 
@@ -171,6 +201,7 @@ public class DataLinkInterfaceDaoHibernateTest implements InitializingBean {
         assertEquals(dli.getStatus(), dli2.getStatus());
         assertEquals(dli.getLinkTypeId(), dli2.getLinkTypeId());
         assertEquals(dli.getLastPollTime(), dli2.getLastPollTime());
+        assertEquals(dli.getProtocol(), dli2.getProtocol());
         assertEquals(dli.getSource(), "linkd");
     }
 
@@ -196,6 +227,7 @@ public class DataLinkInterfaceDaoHibernateTest implements InitializingBean {
         assertEquals(dli.getStatus(), dli2.getStatus());
         assertEquals(dli.getLinkTypeId(), dli2.getLinkTypeId());
         assertEquals(dli.getLastPollTime(), dli2.getLastPollTime());
+        assertNull(dli2.getProtocol());
         assertEquals(dli.getSource(), "rest");
     }
 

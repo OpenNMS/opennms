@@ -39,7 +39,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.AlarmDao;
@@ -48,11 +52,38 @@ import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@WebAppConfiguration
+@ContextConfiguration(locations={
+        "classpath:/org/opennms/web/rest/applicationContext-test.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-service.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-reportingCore.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockEventProxy.xml",
+        "classpath:/applicationContext-jersey-test.xml",
+        "classpath:/META-INF/opennms/applicationContext-reporting.xml",
+        "classpath:/META-INF/opennms/applicationContext-mock-usergroup.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
+        "file:src/main/webapp/WEB-INF/applicationContext-spring-security.xml",
+        "file:src/main/webapp/WEB-INF/applicationContext-jersey.xml"
+})
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase
+@Transactional
 public class AlarmStatsRestServiceTest extends AbstractSpringJerseyRestTestCase {
     private static final Logger LOG = LoggerFactory.getLogger(AlarmStatsRestServiceTest.class);
     private DatabasePopulator m_databasePopulator;

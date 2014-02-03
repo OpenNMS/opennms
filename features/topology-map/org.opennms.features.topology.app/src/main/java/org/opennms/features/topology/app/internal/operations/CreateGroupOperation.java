@@ -46,18 +46,18 @@ import com.vaadin.data.util.PropertysetItem;
 import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.data.validator.AbstractValidator;
 import com.vaadin.data.validator.StringLengthValidator;
-import com.vaadin.server.UserError;
 import com.vaadin.server.AbstractErrorMessage.ContentMode;
 import com.vaadin.server.ErrorMessage.ErrorLevel;
+import com.vaadin.server.UserError;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Form;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 
 public class CreateGroupOperation implements Constants, Operation {
 
@@ -78,8 +78,11 @@ public class CreateGroupOperation implements Constants, Operation {
 
 			@Override
 			public void setValue(String newValue) throws ReadOnlyException, ConversionException {
-				if (newValue == null) super.setValue(newValue);
-				if (newValue instanceof String) super.setValue(((String)newValue).trim());
+				if (newValue == null) {
+					super.setValue(newValue);
+				} else {
+					super.setValue(newValue.trim());
+				}
 			}
 
 			@Override
@@ -204,8 +207,7 @@ public class CreateGroupOperation implements Constants, Operation {
 			@Override
 			protected boolean isValidValue(String value) {
 				if (value == null) return false;
-				if ( !(value instanceof String)) return false;
-				return !((String)value).trim().isEmpty();
+				return !value.trim().isEmpty();
 			}
 
 			@Override
@@ -252,7 +254,11 @@ public class CreateGroupOperation implements Constants, Operation {
 
 	@Override
 	public boolean display(List<VertexRef> targets, OperationContext operationContext) {
-		return true;
+		if (operationContext.getGraphContainer().getBaseTopology().groupingSupported()) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
@@ -262,6 +268,6 @@ public class CreateGroupOperation implements Constants, Operation {
 
 	@Override
 	public String getId() {
-		return null;
+		return getClass().getSimpleName();
 	}
 }

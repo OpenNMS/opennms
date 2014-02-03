@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.opennms.core.resource.Vault;
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.slf4j.Logger;
@@ -63,12 +63,16 @@ public class AssetModel {
      */
     public Asset getAsset(int nodeId) throws SQLException {
         Asset asset = null;
-        Connection conn = Vault.getDbConnection();
 
+        final DBUtils d = new DBUtils(getClass());
         try {
+            Connection conn = DataSourceFactory.getInstance().getConnection();
+            d.watch(conn);
             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM ASSETS WHERE NODEID=?");
+            d.watch(stmt);
             stmt.setInt(1, nodeId);
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
 
             Asset[] assets = rs2Assets(rs);
 
@@ -76,11 +80,8 @@ public class AssetModel {
             if (assets.length > 0) {
                 asset = assets[0];
             }
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return asset;
@@ -97,7 +98,7 @@ public class AssetModel {
 
         final DBUtils d = new DBUtils(getClass());
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM ASSETS");
             d.watch(stmt);
@@ -123,7 +124,7 @@ public class AssetModel {
 
         final DBUtils d = new DBUtils(getClass());
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
             PreparedStatement stmt = conn.prepareStatement("INSERT INTO ASSETS (nodeID,category,manufacturer,vendor,modelNumber,serialNumber,description,circuitId,assetNumber,operatingSystem,rack,slot,port,region,division,department,address1,address2,city,state,zip,building,floor,room,vendorPhone,vendorFax,userLastModified,lastModifiedDate,dateInstalled,lease,leaseExpires,supportPhone,maintContract,vendorAssetNumber,maintContractExpires,displayCategory,notifyCategory,pollerCategory,thresholdCategory,comment,username,password,enable,connection,autoenable,cpu,ram,storagectrl,hdd1,hdd2,hdd3,hdd4,hdd5,hdd6,numpowersupplies,inputpower,additionalhardware,admin,snmpcommunity,rackunitheight,longitude,latitude,country) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
@@ -209,7 +210,7 @@ public class AssetModel {
 
         final DBUtils d = new DBUtils(getClass());
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
             PreparedStatement stmt = conn.prepareStatement("UPDATE ASSETS SET category=?,manufacturer=?,vendor=?,modelNumber=?,serialNumber=?,description=?,circuitId=?,assetNumber=?,operatingSystem=?,rack=?,slot=?,port=?,region=?,division=?,department=?,address1=?,address2=?,city=?,state=?,zip=?,building=?,floor=?,room=?,vendorPhone=?,vendorFax=?,userLastModified=?,lastModifiedDate=?,dateInstalled=?,lease=?,leaseExpires=?,supportPhone=?,maintContract=?,vendorAssetNumber=?,maintContractExpires=?,displayCategory=?,notifyCategory=?,pollerCategory=?,thresholdCategory=?,comment=?, username=?, password=?,enable=?,connection=?,autoenable=?,cpu=?,ram=?,storagectrl=?,hdd1=?,hdd2=?,hdd3=?,hdd4=?,hdd5=?,hdd6=?,numpowersupplies=?,inputpower=?,additionalhardware=?,admin=?,snmpcommunity=?,rackunitheight=?,longitude=?,latitude=?,country=? WHERE nodeid=?");
@@ -329,7 +330,7 @@ public class AssetModel {
 
         final DBUtils d = new DBUtils(AssetModel.class);
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
             PreparedStatement stmt = conn.prepareStatement("SELECT ASSETS.NODEID, NODE.NODELABEL, ASSETS." + columnName + " FROM ASSETS, NODE WHERE LOWER(ASSETS." + columnName + ") LIKE ? AND ASSETS.NODEID=NODE.NODEID ORDER BY NODE.NODELABEL");
             d.watch(stmt);
@@ -360,7 +361,7 @@ public class AssetModel {
 
         final DBUtils d = new DBUtils(AssetModel.class);
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
             PreparedStatement stmt = conn.prepareStatement("select nodeid, nodelabel from node where nodeid in (select nodeid from assets where coalesce(manufacturer,'') != '' or coalesce(vendor,'') != '' or coalesce(modelNumber,'') != '' or coalesce(serialNumber,'') != '' or coalesce(description,'') != '' or coalesce(circuitId,'') != '' or coalesce(assetNumber,'') != '' or coalesce(operatingSystem,'') != '' or coalesce(rack,'') != '' or coalesce(slot,'') != '' or coalesce(port,'') != '' or coalesce(region,'') != '' or coalesce(division,'') != '' or coalesce(department,'') != '' or coalesce(address1,'') != '' or coalesce(address2,'') != '' or coalesce(city,'') != '' or coalesce(state,'') != '' or coalesce(zip,'') != '' or coalesce(building,'') != '' or coalesce(floor,'') != '' or coalesce(room,'') != '' or coalesce(vendorPhone,'') != '' or coalesce(vendorFax,'') != '' or coalesce(dateInstalled,'') != '' or coalesce(lease,'') != '' or coalesce(leaseExpires,'') != '' or coalesce(supportPhone,'') != '' or coalesce(maintContract,'') != '' or coalesce(vendorAssetNumber,'') != '' or coalesce(maintContractExpires,'') != '' or coalesce(displayCategory,'') != '' or coalesce(notifyCategory,'') != '' or coalesce(pollerCategory,'') != '' or coalesce(thresholdCategory,'') != '' or coalesce(comment,'') != '' or coalesce(username,'') != '' or coalesce(password,'') != '' or coalesce(enable,'') != '' or coalesce(connection,'') != '' or coalesce(autoenable,'') != '' or coalesce(cpu,'') != '' or coalesce(ram,'') != '' or coalesce(storagectrl,'') != '' or coalesce(hdd1,'') != '' or coalesce(hdd2,'') != '' or coalesce(hdd3,'') != '' or coalesce(hdd4,'') != '' or coalesce(hdd5,'') != '' or coalesce(hdd6,'') != '' or coalesce(numpowersupplies,'') != '' or coalesce(inputpower,'') != '' or coalesce(additionalhardware,'') != '' or coalesce(admin,'') != '' or coalesce(snmpcommunity,'') != '' or coalesce(rackunitheight,'') != '')");
             d.watch(stmt);

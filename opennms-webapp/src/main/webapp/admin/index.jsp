@@ -161,7 +161,7 @@
             <%String status = "Unknown";
                 try {
                     NotifdConfigFactory.init();
-                    status = NotifdConfigFactory.getInstance().getPrettyStatus();
+                    status = NotifdConfigFactory.getPrettyStatus();
                 } catch (Throwable e) { /*if factory can't be initialized, status is already 'Unknown'*/ }
             %>
             <p align="right">Notification Status:
@@ -190,7 +190,7 @@
     <div class="boxWrapper">
         <ul class="plain">  
             <li><a href="admin/applications.htm">Manage Applications</a></li>
-            <li><a href="distributed/locationMonitorList.htm">Manage Location Monitors</a></li>
+            <li><a href="distributed/locationMonitorList.htm">Manage Remote Pollers</a></li>
         </ul>
     </div>
 
@@ -291,12 +291,10 @@
                 </p>
         -->        
 
-
-
-        <p><b>Manage applications</b> and <b>Manage Location Monitors</b>: Distributed Monitoring Configuration.
+        <p><b>Manage Applications</b> and <b>Manage Remote Pollers</b>: Configure and administer 
+        the operation of remote pollers that report back to this OpenNMS server to provide distributed
+        status information.
         </p>
-
-
 
     </div>
 </div>

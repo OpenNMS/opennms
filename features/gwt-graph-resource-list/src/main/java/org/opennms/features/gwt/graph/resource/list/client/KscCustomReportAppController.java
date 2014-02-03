@@ -40,17 +40,19 @@ import com.google.gwt.user.client.ui.HasWidgets;
 
 public class KscCustomReportAppController implements Presenter {
 
+    private final boolean m_isReadOnly;
     private JsArray<ResourceListItem> m_resourceList;
     private String m_baseUrl;
 
-    public KscCustomReportAppController(JsArray<ResourceListItem> resourceList, String baseUrl) {
+    public KscCustomReportAppController(JsArray<ResourceListItem> resourceList, String baseUrl, boolean readOnly) {
         m_resourceList = resourceList;
         m_baseUrl = baseUrl;
+        m_isReadOnly = readOnly;
     }
 
     @Override
     public void go(HasWidgets container) {
-        new KscCustomReportListPresenter(new DefaultResourceListViewImpl(), new SearchPopup(), m_resourceList, new KscCustomSelectionView(), m_baseUrl).go(container);
+        new KscCustomReportListPresenter(new DefaultResourceListViewImpl(), new SearchPopup(), m_resourceList, new KscCustomSelectionView(m_isReadOnly), m_baseUrl).go(container);
 
     }
 

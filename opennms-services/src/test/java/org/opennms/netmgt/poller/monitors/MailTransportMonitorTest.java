@@ -30,24 +30,22 @@ package org.opennms.netmgt.poller.monitors;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
-import java.io.StringReader;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.InvalidPropertiesFormatException;
 import java.util.Map;
 import java.util.Properties;
 
-import org.hibernate.lob.ReaderInputStream;
-import org.opennms.core.test.MockLogAppender;
-import org.opennms.core.utils.InetAddressUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.mock.MockMonitoredService;
@@ -126,14 +124,14 @@ public class MailTransportMonitorTest {
     public void testLoadXmlProperties() throws InvalidPropertiesFormatException, IOException {
         Properties props = new Properties();
         
-        Reader reader = new StringReader("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
-                "<!DOCTYPE properties SYSTEM \"http://java.sun.com/dtd/properties.dtd\">\n" + 
-                "<properties>\n" + 
-                "<comment>Hi</comment>\n" + 
-                "<entry key=\"foo\">1</entry>\n" + 
-                "<entry key=\"fu\">baz</entry>\n" + 
-                "</properties>");
-        InputStream stream = new ReaderInputStream(reader );
+        StringBuffer reader = new StringBuffer().append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n") 
+                .append("<!DOCTYPE properties SYSTEM \"http://java.sun.com/dtd/properties.dtd\">\n") 
+                .append("<properties>\n") 
+                .append("<comment>Hi</comment>\n") 
+                .append("<entry key=\"foo\">1</entry>\n") 
+                .append("<entry key=\"fu\">baz</entry>\n") 
+                .append("</properties>");
+        InputStream stream = new ByteArrayInputStream(reader.toString().getBytes("UTF-8"));
         props.loadFromXML(stream);
         assertEquals("1", props.get("foo"));
     }

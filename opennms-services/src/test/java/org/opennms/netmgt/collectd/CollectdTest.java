@@ -50,9 +50,9 @@ import org.easymock.EasyMock;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.config.CollectdConfigFactory;
-import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
+import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.config.collectd.Filter;
 import org.opennms.netmgt.config.collectd.Package;
@@ -61,9 +61,9 @@ import org.opennms.netmgt.config.collectd.Service;
 import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.config.collector.CollectionSetVisitor;
 import org.opennms.netmgt.config.collector.ServiceParameters;
-import org.opennms.netmgt.dao.api.CollectorConfigDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
@@ -86,28 +86,20 @@ import org.springframework.transaction.support.SimpleTransactionStatus;
 import org.springframework.transaction.support.TransactionTemplate;
 
 public class CollectdTest extends TestCase {
-    
-    EasyMockUtils m_easyMockUtils = new EasyMockUtils();
 
-    private Collectd m_collectd;
+    private final EasyMockUtils m_easyMockUtils = new EasyMockUtils();
 
-    private FilterDao m_filterDao;
-    private EventIpcManager m_eventIpcManager;
-    private CollectorConfigDao m_collectorConfigDao;
-    private NodeDao m_nodeDao;
     private IpInterfaceDao m_ipIfDao;
-    private ServiceCollector m_collector;
-
+    private FilterDao m_filterDao;
+    private Collectd m_collectd;
     private MockScheduler m_scheduler;
-    
-    private PlatformTransactionManager m_transactionManager;
-    
-
-    private CollectdPackage m_collectdPackage;
-
+    private CollectdConfiguration m_collectdConfig;
+    private CollectdConfigFactory m_collectdConfigFactory;
 
     @Override
     protected void setUp() throws Exception {
+        EventIpcManager m_eventIpcManager;
+        NodeDao m_nodeDao;
 
         MockLogAppender.setupLogging();
 
@@ -118,10 +110,8 @@ public class CollectdTest extends TestCase {
         // Test setup
         m_eventIpcManager = m_easyMockUtils.createMock(EventIpcManager.class);
         EventIpcManagerFactory.setIpcManager(m_eventIpcManager);
-        m_collectorConfigDao = m_easyMockUtils.createMock(CollectorConfigDao.class);
         m_nodeDao = m_easyMockUtils.createMock(NodeDao.class);
         m_ipIfDao = m_easyMockUtils.createMock(IpInterfaceDao.class);
-        m_collector = m_easyMockUtils.createMock(ServiceCollector.class);
         m_scheduler = new MockScheduler();
 
         m_eventIpcManager.addEventListener(isA(EventListener.class));
@@ -159,6 +149,7 @@ public class CollectdTest extends TestCase {
 //
 //        DataSourceFactory.setInstance(m_db);
 
+        // Mock the FilterDao without using EasyMockUtils so that it can be verified separately
         m_filterDao = EasyMock.createMock(FilterDao.class);
         List<InetAddress> allIps = new ArrayList<InetAddress>();
         allIps.add(addr("192.168.1.1"));
@@ -166,8 +157,8 @@ public class CollectdTest extends TestCase {
         allIps.add(addr("192.168.1.3"));
         allIps.add(addr("192.168.1.4"));
         allIps.add(addr("192.168.1.5"));
-        expect(m_filterDao.getActiveIPAddressList("IPADDR IPLIKE *.*.*.*")).andReturn(allIps).atLeastOnce();
-        expect(m_filterDao.getActiveIPAddressList("IPADDR IPLIKE 1.1.1.1")).andReturn(new ArrayList<InetAddress>(0)).atLeastOnce();
+        expect(m_filterDao.getActiveIPAddressList("IPADDR IPLIKE *.*.*.*")).andReturn(allIps).anyTimes();
+        expect(m_filterDao.getActiveIPAddressList("IPADDR IPLIKE 1.1.1.1")).andReturn(new ArrayList<InetAddress>(0)).anyTimes();
         EasyMock.replay(m_filterDao);
         FilterDaoFactory.setInstance(m_filterDao);
 
@@ -178,16 +169,24 @@ public class CollectdTest extends TestCase {
         factory.afterPropertiesSet();
         PollOutagesConfigFactory.setInstance(factory);
 
-        CollectdConfigFactory collectdConfig = new CollectdConfigFactory(ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/config/collectd-testdata.xml"), "nms1", false);
-        CollectdConfigFactory.setInstance(collectdConfig);
+        final MockTransactionTemplate transTemplate = new MockTransactionTemplate();
+        transTemplate.afterPropertiesSet();
 
         m_collectd = new Collectd();
-        m_collectd.setEventIpcManager(getEventIpcManager());
-        m_collectd.setCollectorConfigDao(getCollectorConfigDao());
-        m_collectd.setNodeDao(getNodeDao());
-        m_collectd.setIpInterfaceDao(getIpInterfaceDao());
+        m_collectd.setEventIpcManager(m_eventIpcManager);
+        //m_collectd.setCollectdConfigFactory(m_collectdConfigFactory);
+        m_collectd.setNodeDao(m_nodeDao);
+        m_collectd.setIpInterfaceDao(m_ipIfDao);
+        m_collectd.setFilterDao(m_filterDao);
         m_collectd.setScheduler(m_scheduler);
+        m_collectd.setTransactionTemplate(transTemplate);
+        //m_collectd.afterPropertiesSet();
 
+        
+        ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(ConfigurationTestUtils.getInputStreamForConfigFile("thresholds.xml")));
+    }
+
+    private static Package getCollectionPackageThatMatchesSNMP() {
         Package pkg = new Package();
         pkg.setName("pkg");
         Filter filter = new Filter();
@@ -207,47 +206,25 @@ public class CollectdTest extends TestCase {
         svc.addParameter(parm);
         svc.setStatus("on");
 
-        m_collectdPackage = new CollectdPackage(pkg, "localhost", false);
-        
-        ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(ConfigurationTestUtils.getInputStreamForConfigFile("thresholds.xml")));
+        return pkg;
     }
 
     @Override
-    public void runTest() throws Throwable {
+    protected void runTest() throws Throwable {
         super.runTest();
+
         // FIXME: we get a Threshd warning still if we enable this  :(
         // MockLogAppender.assertNoWarningsOrGreater();
+
         EasyMock.verify(m_filterDao);
     }
-    
 
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
     }
 
-
-    private ServiceCollector getCollector() {
-        return m_collector;
-    }
-    
-    private NodeDao getNodeDao() {
-        return m_nodeDao;
-    }
-
-    private IpInterfaceDao getIpInterfaceDao() {
-        return m_ipIfDao;
-    }
-
-    private CollectorConfigDao getCollectorConfigDao() {
-        return m_collectorConfigDao;
-    }
-
-    private EventIpcManager getEventIpcManager() {
-        return m_eventIpcManager;
-    }
-
-    private OnmsIpInterface getInterface() {
+    private static OnmsIpInterface getInterface() {
         OnmsNode node = new OnmsNode();
         node.setId(1);
         OnmsIpInterface iface = new OnmsIpInterface("192.168.1.1", node);
@@ -255,24 +232,29 @@ public class CollectdTest extends TestCase {
         return iface;
     }
 
-    public void testCreate() throws CollectionInitializationException {
-        
+    public void testCreate() throws Exception {
+
+        setupCollector("SNMP", false);
         setupTransactionManager();
-        
-        String svcName = "SNMP";
-        setupCollector(svcName);
-        setupTransactionManager();
-        
+
+        // Use a mock scheduler to track calls to the Collectd scheduler
         Scheduler m_scheduler = m_easyMockUtils.createMock(Scheduler.class);
         m_collectd.setScheduler(m_scheduler);
-        
+
+        // Expect one task to be scheduled
         m_scheduler.schedule(eq(0L), isA(ReadyRunnable.class));
+
+        // Expect the scheduler to be started and stopped during Collectd
+        // start() and stop()
         m_scheduler.start();
         m_scheduler.stop();
 
         m_easyMockUtils.replayAll();
-        
-        m_collectd.init();
+
+        // Initialize Collectd
+        m_collectd.afterPropertiesSet();
+
+        // Start and stop collectd
         m_collectd.start();
         m_collectd.stop();
 
@@ -304,17 +286,20 @@ public class CollectdTest extends TestCase {
 		assertEquals("Overriding read community failed.", "notPublic", s);
     }
 
-    public void testNoMatchingSpecs() throws CollectionInitializationException {
-        String svcName = "SNMP";
+    /**
+     * 
+     * @throws Exception
+     */
+    public void testNoMatchingSpecs() throws Exception {
 
-        setupCollector(svcName);
-        expect(m_ipIfDao.findByServiceType(svcName)).andReturn(new ArrayList<OnmsIpInterface>(0));
-
+        setupCollector("SNMP", false);
+        expect(m_ipIfDao.findByServiceType("SNMP")).andReturn(new ArrayList<OnmsIpInterface>(0));
         setupTransactionManager();
 
         m_easyMockUtils.replayAll();
 
-        m_collectd.init();
+        m_collectd.afterPropertiesSet();
+
         m_collectd.start();
 
         m_scheduler.next();
@@ -326,46 +311,22 @@ public class CollectdTest extends TestCase {
         m_easyMockUtils.verifyAll();
     }
 
-    public void testOneMatchingSpec() throws CollectionException, CollectionInitializationException {
-        String svcName = "SNMP";
+    public void testOneMatchingSpec() throws Exception {
         OnmsIpInterface iface = getInterface();
 
-        setupCollector(svcName);
-        
-        m_collector.initialize(isA(CollectionAgent.class), isAMap(String.class, Object.class));
-        CollectionSet collectionSetResult=new CollectionSet() {
-        	private Date m_timestamp = new Date();
-                @Override
-            public int getStatus() {
-                return ServiceCollector.COLLECTION_SUCCEEDED;
-            }
-
-                @Override
-            public void visit(CollectionSetVisitor visitor) {
-                visitor.visitCollectionSet(this);   
-                visitor.completeCollectionSet(this);
-            }
-
-                @Override
-			public boolean ignorePersist() {
-				return false;
-			}
-			
-                @Override
-			public Date getCollectionTimestamp() {
-				return m_timestamp;
-			}
-        };      
-        expect(m_collector.collect(isA(CollectionAgent.class), isA(EventProxy.class), isAMap(String.class, Object.class))).andReturn(collectionSetResult);
+        setupCollector("SNMP", true);
         setupInterface(iface);
-        
         setupTransactionManager();
   
-        expect(m_collectorConfigDao.getPackages()).andReturn(Collections.singleton(m_collectdPackage));
+        expect(m_collectdConfig.getPackages()).andReturn(Collections.singletonList(getCollectionPackageThatMatchesSNMP()));
+        expect(m_collectdConfigFactory.interfaceInPackage(iface, getCollectionPackageThatMatchesSNMP())).andReturn(true);
         
         m_easyMockUtils.replayAll();
 
-        m_collectd.init();
+        assertEquals("scheduler entry count", 0, m_scheduler.getEntryCount());
+
+        m_collectd.afterPropertiesSet();
+
         m_collectd.start();
         
         m_scheduler.next();
@@ -380,31 +341,27 @@ public class CollectdTest extends TestCase {
     }
 
     @SuppressWarnings("unchecked")
-    private <K> Collection<K> isACollection(Class<K> innerClass) {
+    private static <K> Collection<K> isACollection(Class<K> innerClass) {
         return isA(Collection.class);
     }
-
-    /*
-    @SuppressWarnings("unchecked")
-    private <K> List<K> isAList(Class<K> innerClass) {
-        return isA(List.class);
-    }
-    */
 
     @SuppressWarnings("unchecked")
     private static <K, V> Map<K, V> isAMap(Class<K> keyClass, Class<V> valueClass) {
         return isA(Map.class);
     }
 
+    /**
+     * Add a dummy transaction manager that has mock calls to commit() and rollback()
+     */
     private void setupTransactionManager() {
-        m_transactionManager = m_easyMockUtils.createMock(PlatformTransactionManager.class);
+        PlatformTransactionManager m_transactionManager = m_easyMockUtils.createMock(PlatformTransactionManager.class);
         TransactionTemplate transactionTemplate = new TransactionTemplate(m_transactionManager);
         m_collectd.setTransactionTemplate(transactionTemplate);
         
         expect(m_transactionManager.getTransaction(isA(TransactionDefinition.class))).andReturn(new SimpleTransactionStatus()).anyTimes();
         m_transactionManager.rollback(isA(TransactionStatus.class));
         expectLastCall().anyTimes();
-        m_transactionManager.commit(isA(TransactionStatus.class)); //anyTimes();
+        m_transactionManager.commit(isA(TransactionStatus.class));
         expectLastCall().anyTimes();
     }
 
@@ -413,21 +370,26 @@ public class CollectdTest extends TestCase {
         expect(m_ipIfDao.load(iface.getId())).andReturn(iface).atLeastOnce();
     }
 
-    private void setupCollector(String svcName) throws CollectionInitializationException {
+    private void setupCollector(String svcName, boolean successfulInit) throws CollectionInitializationException {
+        ServiceCollector svcCollector = m_easyMockUtils.createMock(ServiceCollector.class);
+        if (successfulInit) {
+            svcCollector.initialize(isA(CollectionAgent.class), isAMap(String.class, Object.class));
+        }
+        svcCollector.initialize(Collections.<String,String>emptyMap());
+        MockServiceCollector.setDelegate(svcCollector);
+
+        // Tell the config to use the MockServiceCollector for the specified service
         Collector collector = new Collector();
         collector.setService(svcName);
         collector.setClassName(MockServiceCollector.class.getName());
-        
-        MockServiceCollector.setDelegate(getCollector());
-        
-        EasyMockUtils m_mockUtils = new EasyMockUtils();
-        m_collectd.setNodeDao(m_mockUtils.createMock(NodeDao.class));
-        // Setup expectation
-        Map<String,String> empty = Collections.emptyMap();
-        m_collector.initialize(empty);
 
-        
-        expect(m_collectorConfigDao.getCollectors()).andReturn(Collections.singleton(collector));
+        m_collectdConfigFactory = m_easyMockUtils.createMock(CollectdConfigFactory.class);
+        m_collectdConfig = m_easyMockUtils.createMock(CollectdConfiguration.class);
+        expect(m_collectdConfigFactory.getCollectdConfig()).andReturn(m_collectdConfig).anyTimes();
+        expect(m_collectdConfig.getCollectors()).andReturn(Collections.singletonList(collector)).anyTimes();
+        expect(m_collectdConfig.getThreads()).andReturn(1).anyTimes();
+
+        m_collectd.setCollectdConfigFactory(m_collectdConfigFactory);
     }
 
     
@@ -444,7 +406,29 @@ public class CollectdTest extends TestCase {
         
         @Override
         public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> parameters) throws CollectionException {
-            return s_delegate.collect(agent, eproxy, parameters);
+            return new CollectionSet() {
+                private Date m_timestamp = new Date();
+                @Override
+                public int getStatus() {
+                    return ServiceCollector.COLLECTION_SUCCEEDED;
+                }
+
+                @Override
+                public void visit(CollectionSetVisitor visitor) {
+                    visitor.visitCollectionSet(this);   
+                    visitor.completeCollectionSet(this);
+                }
+
+                @Override
+                public boolean ignorePersist() {
+                    return false;
+                }
+
+                @Override
+                public Date getCollectionTimestamp() {
+                    return m_timestamp;
+                }
+            };
         }
 
         @Override

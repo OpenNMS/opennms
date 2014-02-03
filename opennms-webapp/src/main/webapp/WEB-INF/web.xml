@@ -4,13 +4,13 @@
 		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
 
-  <jsp-config>
-    <jsp-property-group>
-        <url-pattern>*.jsp</url-pattern>
-        <page-encoding>UTF-8</page-encoding>
-    </jsp-property-group>
-  </jsp-config>
-		 
+    <jsp-config>
+        <jsp-property-group>
+            <url-pattern>*.jsp</url-pattern>
+            <page-encoding>UTF-8</page-encoding>
+        </jsp-property-group>
+    </jsp-config>
+
   <display-name>opennms</display-name>
 
   <!-- Uncomment this to set the webapp timeout to infinite.
@@ -58,6 +58,16 @@
   </context-param>
 
   <!-- WARMERGE: insert context-param -->  
+
+  <filter>
+    <!-- This filter has to come before other filters. -->
+    <filter-name>characterEncodingFilter</filter-name>
+    <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+    <init-param>
+        <param-name>encoding</param-name>
+        <param-value>UTF-8</param-value>
+    </init-param>
+  </filter>
 
   <filter>
     <!--  note the name of this filter is important and is used in the app contexts -->
@@ -143,6 +153,11 @@
   </filter>
 
   <!-- WARMERGE: insert filter -->
+
+  <filter-mapping>
+    <filter-name>characterEncodingFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
 
   <filter-mapping>
     <filter-name>openSessionInViewFilter</filter-name>
@@ -390,7 +405,7 @@
     </init-param>
     <init-param>
       <param-name>com.sun.jersey.config.property.packages</param-name>
-      <param-value>org.opennms.web.rest</param-value>
+      <param-value>org.opennms.web.rest;org.opennms.web.rest.config</param-value>
     </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>
@@ -492,7 +507,7 @@
     <servlet-class>org.opennms.web.admin.notification.noticeWizard.NotificationWizardServlet</servlet-class>
   </servlet>
   
-  <!-- Servlets for configuration of users groups and views -->
+  <!-- Servlets for configuration of users groups -->
   <servlet>
     <!-- servlet for passing parameters to the user modify jsp -->
     <servlet-name>modifyUser</servlet-name>
@@ -545,38 +560,6 @@
   	<servlet-class>org.opennms.web.admin.roles.UserRoleServlet</servlet-class>
   </servlet>
   
-  <servlet>
-    <!-- servlet for passing parameters to the view modify jsp -->
-    <servlet-name>modifyView</servlet-name>
-    <servlet-class>org.opennms.web.admin.views.ModifyViewServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- servlet for updating the local view info during modification-->
-    <servlet-name>updateView</servlet-name>
-    <servlet-class>org.opennms.web.admin.views.UpdateViewServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- servlet for saving the local view info during modification-->
-    <servlet-name>saveView</servlet-name>
-    <servlet-class>org.opennms.web.admin.views.SaveViewServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- servlet for renaming the local view info during modification-->
-    <servlet-name>renameView</servlet-name>
-    <servlet-class>org.opennms.web.admin.views.RenameViewServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- servlet for adding a new view-->
-    <servlet-name>addNewView</servlet-name>
-    <servlet-class>org.opennms.web.admin.views.AddNewViewServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- servlet for deleting a view-->
-    <servlet-name>deleteView</servlet-name>
-    <servlet-class>org.opennms.web.admin.views.DeleteViewServlet</servlet-class>
-  </servlet>
-
-
 <!-- Servlets for user account self-service -->
   <!-- servlet for self-service password change entry point-->
   <servlet>
@@ -820,7 +803,7 @@
     <url-pattern>/admin/notification/noticeWizard/notificationWizard</url-pattern>
   </servlet-mapping>
     
-  <!-- servlet mapping for configuring users groups and views -->
+  <!-- servlet mapping for configuring users groups -->
   <!-- user configuration servlets -->
   <!-- converted to Controller -->
   <servlet-mapping>
@@ -857,13 +840,19 @@
     <url-pattern>/admin/userGroupView/users/removeDutySchedules</url-pattern>
   </servlet-mapping>
   <!-- end of user configuration servlets -->
-  
+
   <!-- group configuration servlets -->
   <servlet-mapping>
     <servlet-name>dispatcher</servlet-name>
     <url-pattern>/admin/userGroupView/groups/modifyGroup</url-pattern>
   </servlet-mapping>
   <!-- end of group configuration servlets -->
+  <!-- set UserGroup for user dynamically -->
+  <servlet-mapping>
+      <servlet-name>dispatcher</servlet-name>
+      <url-pattern>/support/groups/setACLUserGroups</url-pattern>
+  </servlet-mapping>
+  <!-- end -->
   
   <servlet-mapping>
     <servlet-name>admin-roles</servlet-name>
@@ -875,34 +864,7 @@
     <url-pattern>/roles</url-pattern>
   </servlet-mapping>
 
-  <!-- view configuration servlets -->
-  <servlet-mapping>
-    <servlet-name>modifyView</servlet-name>
-    <url-pattern>/admin/userGroupView/views/modifyView</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>updateView</servlet-name>
-    <url-pattern>/admin/userGroupView/views/updateView</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>saveView</servlet-name>
-    <url-pattern>/admin/userGroupView/views/saveView</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>renameView</servlet-name>
-    <url-pattern>/admin/userGroupView/views/renameView</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>addNewView</servlet-name>
-    <url-pattern>/admin/userGroupView/views/addNewView</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>deleteView</servlet-name>
-    <url-pattern>/admin/userGroupView/views/deleteView</url-pattern>
-  </servlet-mapping>
-  <!-- end of group configuration servlets -->
-  
-  <!-- end of user groups and views configuration servlets -->
+  <!-- end of user groups configuration servlets -->
 
   <servlet-mapping>
     <servlet-name>nodeLabelChange</servlet-name>
@@ -1040,10 +1002,26 @@
     <url-pattern>*.map</url-pattern>
   </servlet-mapping>
   
-  <servlet-mapping>
-    <servlet-name>dispatcher</servlet-name>
-    <url-pattern>*.htm</url-pattern>
-  </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>dispatcher</servlet-name>
+        <url-pattern>*.htm</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>dispatcher</servlet-name>
+        <url-pattern>/alarm/index</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>dispatcher</servlet-name>
+        <url-pattern>/alarm/list</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>dispatcher</servlet-name>
+        <url-pattern>/alarm/createFavorite</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>dispatcher</servlet-name>
+        <url-pattern>/alarm/deleteFavorite</url-pattern>
+    </servlet-mapping>
   <servlet-mapping>
     <servlet-name>dispatcher</servlet-name>
     <url-pattern>/alarm/acknowledge</url-pattern>
@@ -1066,8 +1044,20 @@
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>dispatcher</servlet-name>
+    <url-pattern>/event/index</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>dispatcher</servlet-name>
+    <url-pattern>/event/createFavorite</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>dispatcher</servlet-name>
+    <url-pattern>/event/deleteFavorite</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>dispatcher</servlet-name>
     <url-pattern>/event/list</url-pattern>
-  </servlet-mapping>    
+  </servlet-mapping>
   <servlet-mapping>
     <servlet-name>dispatcher</servlet-name>
     <url-pattern>/event/detail.jsp</url-pattern>
@@ -1114,7 +1104,7 @@
     <location>/errors/categorynotfound.jsp</location>
   </error-page>
   <error-page>
-    <exception-type>org.opennms.web.MissingParameterException</exception-type>
+    <exception-type>org.opennms.web.servlet.MissingParameterException</exception-type>
     <location>/errors/missingparam.jsp</location>
   </error-page>
   <error-page>

@@ -36,9 +36,9 @@ import java.io.StringWriter;
 import java.io.Writer;
 
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.core.xml.JaxbUtils;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
@@ -51,9 +51,6 @@ import org.springframework.core.io.Resource;
  * 
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @version $Id: $
  */
 public final class PollOutagesConfigFactory extends PollOutagesConfigManager {
     /**
@@ -182,13 +179,12 @@ public final class PollOutagesConfigFactory extends PollOutagesConfigManager {
 
         try {
             // Marshal to a string first, then write the string to the file.
-            // This
-            // way the original configuration isn't lost if the XML from the
+            // This way the original configuration isn't lost if the XML from the
             // marshal is hosed.
-            StringWriter stringWriter = new StringWriter();
-            Marshaller.marshal(getConfig(), stringWriter);
+            final StringWriter stringWriter = new StringWriter();
+            JaxbUtils.marshal(getConfig(), stringWriter);
 
-            String xmlString = stringWriter.toString();
+            final String xmlString = stringWriter.toString();
             if (xmlString != null) {
                 saveXML(xmlString);
             }
@@ -205,7 +201,7 @@ public final class PollOutagesConfigFactory extends PollOutagesConfigManager {
 
         try {
             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.POLL_OUTAGES_CONFIG_FILE_NAME);
-    
+
             Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), "UTF-8");
             fileWriter.write(xmlString);
             fileWriter.flush();

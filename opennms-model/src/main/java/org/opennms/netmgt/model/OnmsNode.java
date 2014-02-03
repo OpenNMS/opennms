@@ -67,14 +67,18 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.Type;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.events.AddEventVisitor;
 import org.opennms.netmgt.model.events.DeleteEventVisitor;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
+import org.opennms.netmgt.xml.bind.NodeLabelSourceXmlAdapter;
+import org.opennms.netmgt.xml.bind.NodeTypeXmlAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.style.ToStringCreator;
@@ -91,13 +95,9 @@ import org.springframework.core.style.ToStringCreator;
 @Table(name="node")
 @SecondaryTable(name="pathOutage")
 @Filter(name=FilterManager.AUTH_FILTER_NAME, condition="exists (select distinct x.nodeid from node x join category_node cn on x.nodeid = cn.nodeid join category_group cg on cn.categoryId = cg.categoryId where x.nodeid = nodeid and cg.groupId in (:userGroups))")
-public class OnmsNode extends OnmsEntity implements Serializable,
-        Comparable<OnmsNode> {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(OnmsNode.class);
-
-
-    private static final long serialVersionUID = -5736397583719151493L;
+public class OnmsNode extends OnmsEntity implements Serializable, Comparable<OnmsNode> {
+    private static final long serialVersionUID = -2081288277603435617L;
+    private static final Logger LOG = LoggerFactory.getLogger(OnmsNode.class);
 
     /** identifier field */
     private Integer m_id;
@@ -109,7 +109,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
     private OnmsNode m_parent;
 
     /** nullable persistent field */
-    private String m_type;
+    private NodeType m_type;
 
     /** nullable persistent field */
     private String m_sysObjectId;
@@ -129,8 +129,16 @@ public class OnmsNode extends OnmsEntity implements Serializable,
     /** nullable persistent field */
     private String m_label;
 
+    @Transient
+    @XmlTransient
+    private String m_oldLabel;
+
     /** nullable persistent field */
-    private String m_labelSource;
+    private NodeLabelSource m_labelSource;
+
+    @Transient
+    @XmlTransient
+    private NodeLabelSource m_oldLabelSource;
 
     /** nullable persistent field */
     private String m_netBiosName;
@@ -285,6 +293,34 @@ public class OnmsNode extends OnmsEntity implements Serializable,
         m_parent = parent;
     }
 
+    public enum NodeType {
+        /**
+         * The character returned if the node is active
+         */
+        ACTIVE('A'),
+
+        /**
+         * The character returned if the node is deleted
+         */
+        DELETED('D'),
+
+        /**
+         * The character returned if the node type is unset/unknown.
+         */
+        UNKNOWN(' ');
+        
+        private final char value;
+        
+        NodeType(char c) {
+            value = c;
+        }
+        
+        @Override
+        public String toString() {
+            return String.valueOf(value);
+        }
+    }
+
     /**
      * Flag indicating status of node
      * - 'A' - active
@@ -296,7 +332,9 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      */
     @XmlAttribute(name="type")
     @Column(name="nodeType", length=1)
-    public String getType() {
+    @Type(type="org.opennms.netmgt.model.NodeTypeUserType")
+    @XmlJavaTypeAdapter(NodeTypeXmlAdapter.class)
+    public NodeType getType() {
         return m_type;
     }
 
@@ -305,7 +343,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      *
      * @param nodetype a {@link java.lang.String} object.
      */
-    public void setType(String nodetype) {
+    public void setType(NodeType nodetype) {
         m_type = nodetype;
     }
 
@@ -425,8 +463,55 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      *
      * @param nodelabel a {@link java.lang.String} object.
      */
-    public void setLabel(String nodelabel) {
+    public void setLabel(final String nodelabel) {
+        if (m_label != nodelabel && m_label != null && m_oldLabel == null) {
+            // LOG.debug("setLabel(): old label = {}, new label = {}", m_label, nodelabel);
+            m_oldLabel = m_label;
+        }
         m_label = nodelabel;
+    }
+
+    public enum NodeLabelSource {
+        /**
+         * Label source set by user
+         */
+        USER('U'),
+
+        /**
+         * Label source set by netbios
+         */
+        NETBIOS('N'),
+
+        /**
+         * Label source set by hostname
+         */
+        HOSTNAME('H'),
+
+        /**
+         * Label source set by SNMP sysname
+         */
+        SYSNAME('S'),
+
+        /**
+         * Label source set by IP Address
+         */
+        ADDRESS('A'),
+
+        /**
+         * Label source unset/unknown
+         */
+        UNKNOWN(' ');
+
+        private final char value;
+
+        NodeLabelSource(char c) {
+            value = c;
+        }
+
+        @Override
+        public String toString() {
+            return String.valueOf(value);
+        }
     }
 
     /**
@@ -442,7 +527,9 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      */
     @XmlElement(name="labelSource")
     @Column(name="nodeLabelSource", length=1)
-    public String getLabelSource() {
+    @Type(type="org.opennms.netmgt.model.NodeLabelSourceUserType")
+    @XmlJavaTypeAdapter(NodeLabelSourceXmlAdapter.class)
+    public NodeLabelSource getLabelSource() {
         return m_labelSource;
     }
 
@@ -451,7 +538,11 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      *
      * @param nodelabelsource a {@link java.lang.String} object.
      */
-    public void setLabelSource(String nodelabelsource) {
+    public void setLabelSource(final NodeLabelSource nodelabelsource) {
+        if (m_labelSource != nodelabelsource && m_labelSource != null && m_oldLabelSource == null) {
+            // LOG.debug("setLabelSource(): old source = {}, new source = {}", m_labelSource, nodelabelsource);
+            m_oldLabelSource = m_labelSource;
+        }
         m_labelSource = nodelabelsource;
     }
 
@@ -819,6 +910,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
     public String toString() {
         ToStringCreator retval = new ToStringCreator(this);
         retval.append("id", m_id);
+        retval.append("labelSource", m_labelSource == null ? null : m_labelSource.toString());
         retval.append("label", m_label);
         retval.append("parent.id", getParent() == null ? null : getParent().getId());
         retval.append("createTime", m_createTime);
@@ -828,7 +920,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
         retval.append("sysDescription", m_sysDescription);
         retval.append("sysLocation", m_sysLocation);
         retval.append("sysContact", m_sysContact);
-        retval.append("type", m_type);
+        retval.append("type", m_type == null ? null : m_type.toString());
         retval.append("operatingSystem", m_operatingSystem);
         return retval.toString();
     }
@@ -1066,27 +1158,53 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      * @param scannedNode a {@link org.opennms.netmgt.model.OnmsNode} object.
      */
     public void mergeNodeAttributes(OnmsNode scannedNode, EventForwarder eventForwarder) {
-        if (hasNewValue(scannedNode.getLabel(), getLabel())) {
+        final String scannedLabel = scannedNode.getLabel();
+
+        boolean send = false;
+
+        // LOG.debug("mergeNodeAttributes(): scanned = {}", scannedNode);
+        // LOG.debug("mergeNodeAttributes(): existing = {}", this);
+        // LOG.debug("mergeNodeAttributes(): oldLabel = {}", m_oldLabel);
+
+        if (m_oldLabel != null || m_oldLabelSource != null) {
+            send = true;
+        } else if (hasNewValue(scannedLabel, m_label)) {
+            m_oldLabel = m_label;
+            m_oldLabelSource = m_labelSource;
+            send = true;
+        }
+
+        if (send) {
+            LOG.debug("mergeNodeAttributes(): sending NODE_LABEL_CHANGED_EVENT_UEI");
             // Create a NODE_LABEL_CHANGED_EVENT_UEI event
-            EventBuilder bldr = new EventBuilder(EventConstants.NODE_LABEL_CHANGED_EVENT_UEI, "OnmsNode.mergeNodeAttributes");
+            final EventBuilder bldr = new EventBuilder(EventConstants.NODE_LABEL_CHANGED_EVENT_UEI, "OnmsNode.mergeNodeAttributes");
 
             bldr.setNodeid(scannedNode.getId());
             bldr.setHost("host");
 
-            if (getLabel() != null) {
-                bldr.addParam(EventConstants.PARM_OLD_NODE_LABEL, getLabel());
-                bldr.addParam(EventConstants.PARM_OLD_NODE_LABEL_SOURCE, getLabelSource());
+            if (m_oldLabel != null) {
+                bldr.addParam(EventConstants.PARM_OLD_NODE_LABEL, m_oldLabel);
+                if (m_oldLabelSource != null) {
+                    bldr.addParam(EventConstants.PARM_OLD_NODE_LABEL_SOURCE, m_oldLabelSource.toString());
+                }
             }
 
-            if (scannedNode.getLabel() != null) {
-                bldr.addParam(EventConstants.PARM_NEW_NODE_LABEL, scannedNode.getLabel());
-                bldr.addParam(EventConstants.PARM_NEW_NODE_LABEL_SOURCE, scannedNode.getLabelSource());
+            if (scannedLabel != null) {
+                bldr.addParam(EventConstants.PARM_NEW_NODE_LABEL, scannedLabel);
+                if (scannedNode.getLabelSource() != null) {
+                    bldr.addParam(EventConstants.PARM_NEW_NODE_LABEL_SOURCE, scannedNode.getLabelSource().toString());
+                }
             }
+
+            m_oldLabel = null;
+            m_oldLabelSource = null;
 
             eventForwarder.sendNow(bldr.getEvent());
 
             // Update the node label value
-            setLabel(scannedNode.getLabel());
+            m_label = scannedLabel;
+        } else {
+            LOG.debug("mergeNodeAttributes(): skipping event.");
         }
     
         if (hasNewValue(scannedNode.getForeignSource(), getForeignSource())) {
@@ -1114,7 +1232,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
         }
         
         mergeAgentAttributes(scannedNode);
-        
+
         mergeAdditionalCategories(scannedNode);
     }
     

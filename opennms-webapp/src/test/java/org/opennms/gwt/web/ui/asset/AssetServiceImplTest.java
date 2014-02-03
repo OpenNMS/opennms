@@ -41,6 +41,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.TemporaryDatabaseExecutionListener;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.gwt.web.ui.asset.server.AssetServiceImpl;
 import org.opennms.gwt.web.ui.asset.shared.AssetCommand;
 import org.opennms.netmgt.dao.DatabasePopulator;
@@ -51,7 +52,7 @@ import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.OpenNMSConfigurationExecutionListener;
-import org.opennms.web.springframework.security.Authentication;
+import org.opennms.web.api.Authentication;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,6 +80,7 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 	        "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
 		"classpath*:/META-INF/opennms/component-dao.xml" })
 @JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase
 public class AssetServiceImplTest implements InitializingBean {
 
 	@Autowired

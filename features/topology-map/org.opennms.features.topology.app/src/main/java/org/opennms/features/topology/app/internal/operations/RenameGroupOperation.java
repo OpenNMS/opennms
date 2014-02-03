@@ -48,11 +48,11 @@ import com.vaadin.data.util.PropertysetItem;
 import com.vaadin.data.validator.AbstractValidator;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Form;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 
 public class RenameGroupOperation implements Constants, Operation {
 
@@ -95,7 +95,7 @@ public class RenameGroupOperation implements Constants, Operation {
 				//Object parentKey = targets.get(0);
 				//Object parentId = graphContainer.getVertexItemIdForVertexKey(parentKey);
 				VertexRef parentId = targets.get(0);
-				Vertex parentVertex = parentId == null ? null : graphContainer.getBaseTopology().getVertex(parentId);
+				Vertex parentVertex = parentId == null ? null : graphContainer.getBaseTopology().getVertex(parentId, graphContainer.getCriteria());
 				Item parentItem = parentVertex == null ? null : parentVertex.getItem();
 
 				if (parentItem != null) {
@@ -190,10 +190,14 @@ public class RenameGroupOperation implements Constants, Operation {
 
 	@Override
 	public boolean display(List<VertexRef> targets, OperationContext operationContext) {
-		return targets != null && 
-		targets.size() == 1 && 
-		targets.get(0) != null 
-		;
+		if (operationContext.getGraphContainer().getBaseTopology().groupingSupported()) {
+			return targets != null && 
+					targets.size() == 1 && 
+					targets.get(0) != null 
+					;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
@@ -202,7 +206,8 @@ public class RenameGroupOperation implements Constants, Operation {
 		return targets != null && 
 		targets.size() == 1 && 
 		targets.get(0) != null && 
-		operationContext.getGraphContainer().getBaseTopology().getVertex(targets.get(0)).isGroup()
+		operationContext.getGraphContainer().getBaseTopology().getVertex(targets.get(0), operationContext.getGraphContainer().getCriteria()) != null &&
+		operationContext.getGraphContainer().getBaseTopology().getVertex(targets.get(0), operationContext.getGraphContainer().getCriteria()).isGroup()
 		;
 	}
 

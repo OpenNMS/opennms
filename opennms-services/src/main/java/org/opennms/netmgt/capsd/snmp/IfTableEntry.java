@@ -29,6 +29,8 @@
 package org.opennms.netmgt.capsd.snmp;
 
 import org.opennms.netmgt.snmp.AbstractSnmpStore;
+import org.opennms.netmgt.snmp.NamedSnmpVar;
+import org.opennms.netmgt.snmp.SnmpStore;
 
 
 /**

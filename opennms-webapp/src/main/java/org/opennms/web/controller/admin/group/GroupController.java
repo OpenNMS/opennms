@@ -51,8 +51,8 @@ import org.opennms.netmgt.config.users.DutySchedule;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.OnmsMapDao;
 import org.opennms.netmgt.model.OnmsMap;
-import org.opennms.web.group.WebGroup;
 import org.opennms.web.group.WebGroupRepository;
+import org.opennms.web.group.WebGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -282,7 +282,7 @@ public class GroupController extends AbstractController implements InitializingB
         if (!defaultMap.equals(""))
             newGroup.setDefaultMap(defaultMap);
         
-        String users[] = request.getParameterValues("selectedUsers");
+        String[] users = request.getParameterValues("selectedUsers");
         
         List<String> userList = users == null ? Collections.<String>emptyList() : Arrays.asList(users);
         

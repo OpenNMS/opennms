@@ -50,13 +50,9 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.Runo;
-
-import de.steinwedel.vaadin.MessageBox;
-import de.steinwedel.vaadin.MessageBox.ButtonType;
-import de.steinwedel.vaadin.MessageBox.EventListener;
 
 import org.slf4j.LoggerFactory;
+import org.vaadin.dialogs.ConfirmDialog;
 
 /**
  * The Class MIB Compiler Panel.
@@ -65,6 +61,8 @@ import org.slf4j.LoggerFactory;
  */
 @SuppressWarnings("serial")
 public class MibCompilerPanel extends Panel {
+
+    /** The Constant LOG. */
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(MibCompilerPanel.class);
 
     /** The Constant PENDING. */
@@ -186,7 +184,7 @@ public class MibCompilerPanel extends Panel {
 
         // Panel Setup
         setSizeFull();
-        addStyleName(Runo.PANEL_LIGHT);
+        addStyleName("light");
         layout.setComponentAlignment(upload, Alignment.TOP_RIGHT);
         layout.setExpandRatio(mibsTree, 1);
 
@@ -236,17 +234,14 @@ public class MibCompilerPanel extends Panel {
             public void handleAction(Action action, Object sender, Object target) {
                 final String fileName = (String) target;
                 if (action == ACTION_DELETE) {
-                    MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
-                                                   "Are you sure?",
-                                                   MessageBox.Icon.QUESTION,
-                                                   "Do you really want to delete " + fileName + "?<br/>This cannot be undone.",
-                                                   new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
-                                                   new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
-                    mb.addStyleName(Runo.WINDOW_DIALOG);
-                    mb.show(new EventListener() {
-                        @Override
-                        public void buttonClicked(ButtonType buttonType) {
-                            if (buttonType == MessageBox.ButtonType.YES) {
+                    ConfirmDialog.show(getUI(),
+                                       "Are you sure?",
+                                       "Do you really want to delete " + fileName + "?\nThis cannot be undone.",
+                                       "Yes",
+                                       "No",
+                                       new ConfirmDialog.Listener() {
+                        public void onClose(ConfirmDialog dialog) {
+                            if (dialog.isConfirmed()) {
                                 String source = mibsTree.getParent(fileName).toString();
                                 File file = new File(PENDING.equals(source) ? MIBS_PENDING_DIR : MIBS_COMPILED_DIR, fileName);
                                 if (file.delete()) {
@@ -270,12 +265,25 @@ public class MibCompilerPanel extends Panel {
                 if (action == ACTION_COMPILE) {
                     if (parseMib(logger, new File(MIBS_PENDING_DIR, fileName))) {
                         // Renaming the file to be sure that the target name is correct and always has a file extension.
-                        String mibFileName = mibParser.getMibName() + MIB_FILE_EXTENTION;
-                        logger.info("Renaming file " + fileName + " to " + mibFileName);
-                        mibsTree.removeItem(target);
-                        addTreeItem(mibFileName, COMPILED);
-                        File file = new File(MIBS_PENDING_DIR, fileName);
-                        file.renameTo(new File(MIBS_COMPILED_DIR, mibFileName));
+                        final String mibFileName = mibParser.getMibName() + MIB_FILE_EXTENTION;
+                        final File currentFile = new File(MIBS_PENDING_DIR, fileName);
+                        final File suggestedFile = new File(MIBS_COMPILED_DIR, mibFileName);
+                        if (suggestedFile.exists()) {
+                            ConfirmDialog.show(getUI(),
+                                               "Are you sure?",
+                                                   "The MIB " + mibFileName + " already exist on the compiled directory?<br/>Override the existing file could break other compiled mibs, so proceed with caution.<br/>This cannot be undone.",
+                                                   "Yes",
+                                                   "No",
+                                                   new ConfirmDialog.Listener() {
+                                public void onClose(ConfirmDialog dialog) {
+                                    if (dialog.isConfirmed()) {
+                                        renameFile(logger, currentFile, suggestedFile);
+                                    }
+                                }
+                            });
+                        } else {
+                            renameFile(logger, currentFile, suggestedFile);
+                        }
                     }
                 }
                 if (action == ACTION_EVENTS) {
@@ -286,6 +294,20 @@ public class MibCompilerPanel extends Panel {
                 }
             }
         });
+    }
+
+    /**
+     * Rename file.
+     *
+     * @param logger the logger
+     * @param currentFile the current file
+     * @param suggestedFile the suggested file
+     */
+    private void renameFile(Logger logger, File currentFile, File suggestedFile) {
+        logger.info("Renaming file " + currentFile.getName() + " to " + suggestedFile.getName());
+        mibsTree.removeItem(currentFile.getName());
+        addTreeItem(suggestedFile.getName(), COMPILED);
+        currentFile.renameTo(suggestedFile);
     }
 
     /**
@@ -364,7 +386,9 @@ public class MibCompilerPanel extends Panel {
                 try {
                     logger.info("Found " + events.getEventCount() + " events.");
                     final String eventsFileName = fileName.replaceFirst("\\..*$", ".events.xml");
-                    final EventWindow w = new EventWindow(eventsDao, eventsProxy, eventsFileName, events, logger);
+                    final File configDir = new File(ConfigFileConstants.getHome(), "etc/events/");
+                    final File eventFile = new File(configDir, eventsFileName);
+                    final EventWindow w = new EventWindow(eventsDao, eventsProxy, eventFile, events, logger);
                     getUI().addWindow(w);
                 } catch (Throwable t) {
                     Notification.show(t.getMessage(), Notification.Type.ERROR_MESSAGE);

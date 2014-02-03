@@ -44,6 +44,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.IPLike;
@@ -121,8 +122,8 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      * @param resource a {@link org.springframework.core.io.Resource} object.
      */
     public SnmpPeerFactory(final Resource resource) {
-        SnmpPeerFactory.getWriteLock().lock();
         try {
+            SnmpPeerFactory.getWriteLock().lock();
         	m_config = JaxbUtils.unmarshal(SnmpConfig.class, resource);
         } finally {
             SnmpPeerFactory.getWriteLock().unlock();
@@ -139,8 +140,8 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      * @deprecated Use code for InputStream instead to avoid character set issues
      */
     public SnmpPeerFactory(final Reader rdr) throws IOException {
-        SnmpPeerFactory.getWriteLock().lock();
         try {
+            SnmpPeerFactory.getWriteLock().lock();
         	m_config = JaxbUtils.unmarshal(SnmpConfig.class, rdr);
         } finally {
             SnmpPeerFactory.getWriteLock().unlock();
@@ -151,8 +152,8 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      * A constructor that takes a config string for use mostly in tests
      */
     public SnmpPeerFactory(final String configString) throws IOException {
-        SnmpPeerFactory.getWriteLock().lock();
         try {
+            SnmpPeerFactory.getWriteLock().lock();
             m_config = JaxbUtils.unmarshal(SnmpConfig.class, configString);
         } finally {
             SnmpPeerFactory.getWriteLock().unlock();
@@ -165,8 +166,8 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      * @param stream a {@link java.io.InputStream} object.
      */
     public SnmpPeerFactory(final InputStream stream) {
-        SnmpPeerFactory.getWriteLock().lock();
         try {
+            SnmpPeerFactory.getWriteLock().lock();
         	m_config = JaxbUtils.unmarshal(SnmpConfig.class, new InputSource(stream), null);
         } finally {
             SnmpPeerFactory.getWriteLock().unlock();
@@ -196,8 +197,8 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static void init() throws IOException {
-        SnmpPeerFactory.getWriteLock().lock();
         try {
+            SnmpPeerFactory.getWriteLock().lock();
             if (m_loaded) {
                 // init already called - return
                 // to reload, reload() will need to be called
@@ -232,10 +233,10 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         // isn't lost if the XML from the marshal is hosed.
         final String marshalledConfig = marshallConfig();
 
-        SnmpPeerFactory.getWriteLock().lock();
         FileOutputStream out = null;
         Writer fileWriter = null;
         try {
+            SnmpPeerFactory.getWriteLock().lock();
             if (marshalledConfig != null) {
             	out = new FileOutputStream(file);
                 fileWriter = new OutputStreamWriter(out, "UTF-8");
@@ -259,8 +260,8 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      *             Thrown if the factory has not yet been initialized.
      */
     public static SnmpPeerFactory getInstance() {
-        SnmpPeerFactory.getReadLock().lock();
         try {
+            SnmpPeerFactory.getReadLock().lock();
             if (!m_loaded) {
                 throw new IllegalStateException("The factory has not been initialized");
             }
@@ -277,8 +278,8 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      * @param configFile a {@link java.io.File} object.
      */
     public static void setFile(final File configFile) {
-        SnmpPeerFactory.getWriteLock().lock();
         try {
+            SnmpPeerFactory.getWriteLock().lock();
             final File oldFile = m_configFile;
             m_configFile = configFile;
             
@@ -299,8 +300,8 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      * @throws java.io.IOException if any.
      */
     public static File getFile() throws IOException {
-        SnmpPeerFactory.getReadLock().lock();
         try {
+            SnmpPeerFactory.getReadLock().lock();
             if (m_configFile == null) {
                 setFile(ConfigFileConstants.getFile(ConfigFileConstants.SNMP_CONF_FILE_NAME));
             }
@@ -316,8 +317,8 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      * @param singleton a {@link org.opennms.netmgt.config.SnmpPeerFactory} object.
      */
     public static void setInstance(final SnmpPeerFactory singleton) {
-        SnmpPeerFactory.getWriteLock().lock();
         try {
+            SnmpPeerFactory.getWriteLock().lock();
             m_singleton = singleton;
             m_loaded = true;
         } finally {
@@ -332,8 +333,8 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     }
     
     private SnmpAgentConfig getAgentConfig(final InetAddress agentInetAddress, final int requestedSnmpVersion) {
-        SnmpPeerFactory.getReadLock().lock();
         try {
+            SnmpPeerFactory.getReadLock().lock();
             if (m_config == null) {
                 final SnmpAgentConfig agentConfig = new SnmpAgentConfig(agentInetAddress);
                 if (requestedSnmpVersion == VERSION_UNSPECIFIED) {
@@ -414,10 +415,10 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         agentConfig.setPrivProtocol(determinePrivProtocol(def));
         agentConfig.setReadCommunity(determineReadCommunity(def));
         agentConfig.setWriteCommunity(determineWriteCommunity(def));
-        agentConfig.setEngineId(determineEngineId(def));
-        agentConfig.setEnterpriseId(determineEnterpriseId(def));
-        agentConfig.setContextEngineId(determineContextEngineId(def));
         agentConfig.setContextName(determineContextName(def));
+        agentConfig.setEngineId(determineEngineId(def));
+        agentConfig.setContextEngineId(determineContextEngineId(def));
+        agentConfig.setEnterpriseId(determineEnterpriseId(def));
     }
     
 	/**
@@ -521,7 +522,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      */
     private String determineAuthProtocol(final Definition def) {
         final String authProtocol = (def.getAuthProtocol() == null ? m_config.getAuthProtocol() : def.getAuthProtocol());
-        if (authProtocol == null) {
+        if (authProtocol == null && determineAuthPassPhrase(def) != null) {
             return SnmpAgentConfig.DEFAULT_AUTH_PROTOCOL;
         }
         return authProtocol;
@@ -536,9 +537,12 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      */
     private String determineAuthPassPhrase(final Definition def) {
         final String authPassPhrase = (def.getAuthPassphrase() == null ? m_config.getAuthPassphrase() : def.getAuthPassphrase());
+        // Forcing a default is wrong, because if it is not explicitly defined, probably it means that it should not be used, and SNMP4J expect null for optional parameters.
+        /*
         if (authPassPhrase == null) {
             return SnmpAgentConfig.DEFAULT_AUTH_PASS_PHRASE;
         }
+        */
         return authPassPhrase;
     }
 
@@ -551,9 +555,12 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      */
     private String determinePrivPassPhrase(final Definition def) {
         final String privPassPhrase = (def.getPrivacyPassphrase() == null ? m_config.getPrivacyPassphrase() : def.getPrivacyPassphrase());
+        // Forcing a default is wrong, because if it is not explicitly defined, probably it means that it should not be used, and SNMP4J expect null for optional parameters.
+        /*
         if (privPassPhrase == null) {
             return SnmpAgentConfig.DEFAULT_PRIV_PASS_PHRASE;
         }
+        */
         return privPassPhrase;
     }
 
@@ -566,7 +573,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      */
     private String determinePrivProtocol(final Definition def) {
         final String authPrivProtocol = (def.getPrivacyProtocol() == null ? m_config.getPrivacyProtocol() : def.getPrivacyProtocol());
-        if (authPrivProtocol == null) {
+        if (authPrivProtocol == null && determinePrivPassPhrase(def) != null) {
             return SnmpAgentConfig.DEFAULT_PRIV_PROTOCOL;
         }
         return authPrivProtocol;
@@ -597,8 +604,8 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         // if no security level configuration exists use
         int securityLevel = SnmpAgentConfig.NOAUTH_NOPRIV;
 
-        final String authPassPhrase = (def.getAuthPassphrase() == null ? m_config.getAuthPassphrase() : def.getAuthPassphrase());
-        final String privPassPhrase = (def.getPrivacyPassphrase() == null ? m_config.getPrivacyPassphrase() : def.getPrivacyPassphrase());
+        final String authPassPhrase = (StringUtils.isBlank(def.getAuthPassphrase()) ? m_config.getAuthPassphrase() : def.getAuthPassphrase());
+        final String privPassPhrase = (StringUtils.isBlank(def.getPrivacyPassphrase()) ? m_config.getPrivacyPassphrase() : def.getPrivacyPassphrase());
 
         if (authPassPhrase == null) {
             securityLevel = SnmpAgentConfig.NOAUTH_NOPRIV;
@@ -614,6 +621,45 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     }
 
     /**
+     * Helper method to find a context name to use from the snmp-config.
+     * @param def
+     * @return
+     */
+    private String determineContextName(final Definition def) {
+        final String contextName = (def.getContextName() == null ? m_config.getContextName() : def.getContextName());
+        if (contextName == null) {
+            return SnmpAgentConfig.DEFAULT_CONTEXT_NAME;
+        }
+        return contextName;
+    }
+    
+    /**
+     * Helper method to find an engine ID to use from the snmp-config.
+     * @param def
+     * @return
+     */
+    private String determineEngineId(final Definition def) {
+        final String engineId = (def.getEngineId() == null ? m_config.getEngineId() : def.getEngineId());
+        if (engineId == null) {
+            return SnmpAgentConfig.DEFAULT_ENGINE_ID;
+        }
+        return engineId;
+    }
+
+    /**
+     * Helper method to find a context engine ID to use from the snmp-config.
+     * @param def
+     * @return
+     */
+    private String determineContextEngineId(final Definition def) {
+        final String contextEngineId = (def.getContextEngineId() == null ? m_config.getContextEngineId() : def.getContextEngineId());
+        if (contextEngineId == null) {
+            return SnmpAgentConfig.DEFAULT_CONTEXT_ENGINE_ID;
+        }
+        return contextEngineId;
+    }
+    
+    /**
      * Helper method to search the snmp-config for a port
      * @param def
      * @return
@@ -622,39 +668,6 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         return (def.getPort() == 0 ? (m_config.getPort() == 0 ? DEFAULT_SNMP_PORT : m_config.getPort()) : def.getPort());
     }
 
-    /**
-     * Helper method to search the snmp-config for a engineId
-     * @param def
-     * @return
-     */
-	private String determineEngineId(Definition def) {
-		if (def.getEngineId() != null) return def.getEngineId();
-		if (m_config.getEngineId() != null) return m_config.getEngineId();
-		return null;
-	}
-    
-	 /**
-     * Helper method to search the snmp-config for a contextEngineId
-     * @param def
-     * @return 
-     */
-    private String determineContextEngineId(Definition def) {
-    	if (def.getContextEngineId() != null) return def.getContextEngineId();
-    	if (m_config.getContextEngineId() != null) return m_config.getContextEngineId();
-    	return null;
-	}
-    
-    /**
-     * Helper method to search the snmp-config for a contextName
-     * @param def
-     * @return 
-     */
-    private String determineContextName(Definition def) {
-    	if (def.getContextName() != null) return def.getContextName();
-    	if (m_config.getContextName() != null) return m_config.getContextName();
-    	return null;
-	}
-    
     /**
      * Helper method to search the snmp-config for a enterpriseId
      * @param def
@@ -729,8 +742,8 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      * @return a {@link org.opennms.netmgt.config.snmp.SnmpConfig} object.
      */
     public static SnmpConfig getSnmpConfig() {
-        SnmpPeerFactory.getReadLock().lock();
         try {
+            SnmpPeerFactory.getReadLock().lock();
             return m_config;
         } finally {
             SnmpPeerFactory.getReadLock().unlock();
@@ -749,8 +762,8 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      * @param info a {@link org.opennms.netmgt.config.SnmpEventInfo} object.
      */
     public void define(final SnmpEventInfo info) {
-        getWriteLock().lock();
         try {
+            getWriteLock().lock();
         	final SnmpConfigManager mgr = new SnmpConfigManager(m_config);
             mgr.mergeIntoConfig(info.createDef());
         } finally {
@@ -765,9 +778,8 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      * @return Marshalled SnmpConfig
      */
     public static String marshallConfig() {
-        SnmpPeerFactory.getReadLock().lock();
-
         try {
+            SnmpPeerFactory.getReadLock().lock();
             String marshalledConfig = null;
             StringWriter writer = null;
             try {

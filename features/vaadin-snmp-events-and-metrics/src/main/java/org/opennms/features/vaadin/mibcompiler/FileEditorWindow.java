@@ -40,7 +40,6 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.themes.Runo;
 
 /**
  * The File Editor Window.
@@ -77,7 +76,7 @@ public class FileEditorWindow extends Window implements Button.ClickListener {
         this.logger = logger;
 
         setCaption((readOnly ? "View" : "Edit") + " MIB");
-        addStyleName(Runo.WINDOW_DIALOG);
+        addStyleName("dialog");
         setModal(true);
         setClosable(false);
         setWidth("800px");
@@ -85,7 +84,6 @@ public class FileEditorWindow extends Window implements Button.ClickListener {
 
         editor = new TextArea();
         editor.setPropertyDataSource(new TextFileProperty(file));
-        editor.setBuffered(true);
         editor.setImmediate(false);
         editor.setSizeFull();
         editor.setRows(30);

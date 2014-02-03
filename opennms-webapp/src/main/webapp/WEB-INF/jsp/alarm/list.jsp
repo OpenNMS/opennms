@@ -31,44 +31,28 @@
 
 <%@page language="java" contentType="text/html" session="true" %>
   
+<%@page import="org.opennms.core.utils.InetAddressUtils" %>
+<%@page import="org.opennms.netmgt.model.OnmsAlarm" %>
+<%@page import="org.opennms.netmgt.model.OnmsFilterFavorite"%>
+<%@page import="org.opennms.web.alarm.AcknowledgeType" %>
+<%@page import="org.opennms.web.alarm.SortStyle" %>
+<%@page import="org.opennms.web.alarm.filter.*" %>
+<%@page import="org.opennms.web.api.Authentication" %>
+<%@page import="org.opennms.web.api.Util" %>
+<%@page import="org.opennms.web.controller.alarm.AlarmSeverityChangeController" %>
+<%@page import="org.opennms.web.filter.Filter"%>
+<%@page import="org.opennms.web.filter.NormalizedQueryParameters" %>
+<%@page import="org.opennms.web.servlet.XssRequestWrapper" %>
+<%@page import="org.opennms.web.tags.filters.AlarmFilterCallback" %>
+<%@page import="org.opennms.web.tags.filters.FilterCallback" %>
+<%@page import="org.opennms.web.tags.select.FilterFavoriteSelectTagHandler" %>
 <%@page import="java.util.ArrayList" %>
 <%@page import="java.util.List" %>
-
-<%@page import="org.opennms.web.api.Util"%>
-<%@page import="org.opennms.core.utils.InetAddressUtils" %>
-<%@page import="org.opennms.core.utils.WebSecurityUtils" %>
-<%@page import="org.opennms.web.servlet.XssRequestWrapper" %>
-<%@page import="org.opennms.web.springframework.security.Authentication" %>
-
-<%@page import="org.opennms.web.controller.alarm.AcknowledgeAlarmController" %>
-<%@page import="org.opennms.web.controller.alarm.AlarmSeverityChangeController" %>
-
-<%@page import="org.opennms.netmgt.model.OnmsAlarm"%>
-
-<%@page import="org.opennms.web.filter.Filter" %>
-<%@page import="org.opennms.web.alarm.AlarmQueryParms" %>
-<%@page import="org.opennms.web.alarm.SortStyle" %>
-<%@page import="org.opennms.web.alarm.AcknowledgeType" %>
-<%@page import="org.opennms.web.alarm.AlarmUtil" %>
-<%@page import="org.opennms.web.alarm.filter.ExactUEIFilter" %>
-<%@page import="org.opennms.web.alarm.filter.NegativeExactUEIFilter" %>
-<%@page import="org.opennms.web.alarm.filter.SeverityFilter" %>
-<%@page import="org.opennms.web.alarm.filter.NegativeSeverityFilter" %>
-<%@page import="org.opennms.web.alarm.filter.NodeFilter" %>
-<%@page import="org.opennms.web.alarm.filter.NegativeNodeFilter" %>
-<%@page import="org.opennms.web.alarm.filter.InterfaceFilter" %>
-<%@page import="org.opennms.web.alarm.filter.NegativeInterfaceFilter" %>
-<%@page import="org.opennms.web.alarm.filter.ServiceFilter" %>
-<%@page import="org.opennms.web.alarm.filter.NegativeServiceFilter" %>
-<%@page import="org.opennms.web.alarm.filter.AfterLastEventTimeFilter" %>
-<%@page import="org.opennms.web.alarm.filter.BeforeLastEventTimeFilter" %>
-<%@page import="org.opennms.web.alarm.filter.AfterFirstEventTimeFilter" %>
-<%@page import="org.opennms.web.alarm.filter.BeforeFirstEventTimeFilter" %>
-<%@page import="org.opennms.web.alarm.filter.NegativeAcknowledgedByFilter"%>
-<%@page import="org.opennms.web.alarm.filter.AcknowledgedByFilter"%>
+<%@page import="org.opennms.web.tags.FavoriteTag" %>
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@taglib uri="../../taglib.tld" prefix="onms" %>
 
 <%--
   This page is written to be the display (view) portion of the AlarmQueryServlet
@@ -87,8 +71,9 @@
 
     //required attributes
     OnmsAlarm[] alarms = (OnmsAlarm[])req.getAttribute( "alarms" );
-    int alarmCount = req.getAttribute("alarmCount") == null ? -1 : (Integer)req.getAttribute("alarmCount");
-    AlarmQueryParms parms = (AlarmQueryParms)req.getAttribute( "parms" );
+    long alarmCount = req.getAttribute("alarmCount") == null ? -1 : (Long)req.getAttribute("alarmCount");
+    NormalizedQueryParameters parms = (NormalizedQueryParameters)req.getAttribute( "parms" );
+    FilterCallback callback = (AlarmFilterCallback) req.getAttribute("callback");
 
     if( alarms == null || parms == null ) {
         throw new ServletException( "Missing either the alarms or parms request attribute." );
@@ -96,28 +81,30 @@
 
     // Make 'action' the opposite of the current acknowledgement state
     String action = AcknowledgeType.ACKNOWLEDGED.getShortName();
-    if (parms.ackType != null && parms.ackType == AcknowledgeType.ACKNOWLEDGED) {
+    if (parms.getAckType() != null && parms.getAckType().equals(AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType())) {
         action = AcknowledgeType.UNACKNOWLEDGED.getShortName();
     }
 
-    pageContext.setAttribute("addPositiveFilter", "[+]");
-    pageContext.setAttribute("addNegativeFilter", "[-]");
-    pageContext.setAttribute("addBeforeFilter", "[&gt;]");
-    pageContext.setAttribute("addAfterFilter", "[&lt;]");
-    
-    final String baseHref = org.opennms.web.api.Util.calculateUrlBase(request);
+    // optional bookmark
+    final OnmsFilterFavorite favorite = (OnmsFilterFavorite) req.getAttribute("favorite");
+
+    pageContext.setAttribute("addPositiveFilter", "<i class=\"fa fa-plus-square-o\"></i>");
+    pageContext.setAttribute("addNegativeFilter", "<i class=\"fa fa-minus-square-o\"></i>");
+    pageContext.setAttribute("addBeforeFilter", "<i class=\"fa fa-toggle-right\"></i>");
+    pageContext.setAttribute("addAfterFilter", "<i class=\"fa fa-toggle-left\"></i>");
+    pageContext.setAttribute("filterFavoriteSelectTagHandler", new FilterFavoriteSelectTagHandler("All Alarms"));
 %>
-
-
+<c:set var="baseHref" value="<%=Util.calculateUrlBase(request)%>"/>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Alarm List" />
   <jsp:param name="headTitle" value="List" />
   <jsp:param name="headTitle" value="Alarms" />
-  <jsp:param name="breadcrumb" value="<a href='${baseHref}alarm/index.jsp' title='Alarms System Page'>Alarms</a>" />
+  <jsp:param name="breadcrumb" value="<a href='${baseHref}alarm/index.htm' title='Alarms System Page'>Alarms</a>" />
   <jsp:param name="breadcrumb" value="List" />
 </jsp:include>
 
+<link rel="stylesheet" href="css/font-awesome-4.0.3/css/font-awesome.min.css">
 
   <script type="text/javascript">
     function checkAllCheckboxes() {
@@ -205,23 +192,30 @@
         }
     }
 
+    function changeFavorite(selectElement) {
+        var selectedOption = selectElement.options[selectElement.selectedIndex];
+        var favoriteId = selectedOption.value.split(';')[0];
+        var filter = selectedOption.value.split(';')[1];
+        window.location.href = "<%=req.getContextPath()%>/alarm/list?display=<%=parms.getDisplay()%>&favoriteId=" + favoriteId + '&' + filter;
+    }
+
   </script>
 
 
       <!-- menu -->
       <div id="linkbar">
       <ul>
-      <li><a href="<%=this.makeLink( parms, new ArrayList<Filter>())%>" title="Remove all search constraints" >View all alarms</a></li>
+      <li><a href="<%=this.makeLink(callback, parms, new ArrayList<Filter>(), favorite)%>" title="Remove all search constraints" >View all alarms</a></li>
       <li><a href="alarm/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a></li>
       <c:choose>
         <c:when test="${param.display == 'long'}">
-      <li><a href="<%=this.makeLink(parms, "short")%>" title="Summary List of Alarms">Short Listing</a></li>
+      <li><a href="<%=this.makeLink(callback, parms, "short", favorite)%>" title="Summary List of Alarms">Short Listing</a></li>
         </c:when>
         <c:otherwise>
-      <li><a href="<%=this.makeLink(parms, "long")%>" title="Detailed List of Alarms">Long Listing</a></li>
+      <li><a href="<%=this.makeLink(callback, parms, "long", favorite)%>" title="Detailed List of Alarms">Long Listing</a></li>
         </c:otherwise>
       </c:choose>
-      <li><a href="javascript:void()" onclick="javascript:window.open('<%=Util.calculateUrlBase(req, "alarm/severity.jsp")%>','', 'fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=no,resizable=yes,directories=no,location=no,width=525,height=158')" title="Open a window explaining the alarm severities">Severity Legend</a></li>
+      <li><a onclick="javascript:window.open('<%=Util.calculateUrlBase(req, "alarm/severity.jsp")%>','alarm_severity_legend', 'fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=no,resizable=yes,directories=no,location=no,width=525,height=330')" title="Open a window explaining the alarm severities">Severity Legend</a></li>
       
       <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
         <% if ( alarmCount > 0 ) { %>
@@ -232,10 +226,10 @@
               <input type="hidden" name="actionCode" value="<%=action%>" />
               <%=Util.makeHiddenTags(req)%>
             </form>
-            <% if( parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) { %> 
+            <% if( parms.getAckType().equals(AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType()) ) { %>
               <a href="javascript:void()" onclick="if (confirm('Are you sure you want to acknowledge all alarms in the current search including those not shown on your screen?  (<%=alarmCount%> total alarms)')) { document.acknowledge_by_filter_form.submit(); }" title="Acknowledge all alarms that match the current search constraints, even those not shown on the screen">Acknowledge entire search</a>
             <% } else { %>
-              <a href="javascript:void()" onclick="if (confirm('Are you sure you want to unacknowledge all alarms in the current search including those not shown on your screen)?  (<%=alarmCount%> total alarms)')) { document.acknowledge_by_filter_form.submit(); }" title="Unacknowledge all alarms that match the current search constraints, even those not shown on the screen">Unacknowledge entire search</a>
+              <a href="#javascript:void()" onclick="if (confirm('Are you sure you want to unacknowledge all alarms in the current search including those not shown on your screen)?  (<%=alarmCount%> total alarms)')) { document.acknowledge_by_filter_form.submit(); }" title="Unacknowledge all alarms that match the current search constraints, even those not shown on the screen">Unacknowledge entire search</a>
             <% } %>
           </li>
         <% } %>
@@ -244,34 +238,53 @@
       </div>
       <!-- end menu -->
 
-
+            <% if( parms.getFilters().size() > 0 || AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) || AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) ) { %>
+                <div>
+                <p>
+                    Favorites:
+                    <onms:select
+                            defaultText="All Alarms"
+                            elements='${favorites}'
+                            selected='${favorite}'
+                            handler='${filterFavoriteSelectTagHandler}'
+                            onChange='changeFavorite(this)'/>
+                </p>
+            <% } %>
             <jsp:include page="/includes/alarm-querypanel.jsp" flush="false" />
-          
+
+            <% if( parms.getFilters().size() > 0 || AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) || AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) ) { %>
+                <p>
+                    <onms:filters
+                            context="/alarm/list"
+                            favorite="${favorite}"
+                            parameters="${parms}"
+                            showRemoveLink="true"
+                            showAcknowledgeFilter="true"
+                            acknowledgeFilterPrefix="Alarm(s)"
+                            acknowledgeFilterSuffix="alarm(s)"
+                            callback="${callback}" />
+
+                    <onms:favorite
+                            favorite="${favorite}"
+                            parameters="${parms}"
+                            callback="${callback}"
+                            context="/alarm/list"
+                            createFavoriteController="/alarm/createFavorite"
+                            deleteFavoriteController="/alarm/deleteFavorite"
+                            onDeselect="<%=FavoriteTag.Action.CLEAR_FILTERS%>"/>
+                </p>
+                </div>
+            <% } %>
+            <onms:alert/>
+
             <% if( alarmCount > 0 ) { %>
-              <% String baseUrl = this.makeLink(parms); %>
+              <% String baseUrl = this.makeLink(callback, parms, favorite); %>
               <jsp:include page="/includes/resultsIndex.jsp" flush="false" >
                 <jsp:param name="count"    value="<%=alarmCount%>" />
                 <jsp:param name="baseurl"  value="<%=baseUrl%>"    />
-                <jsp:param name="limit"    value="<%=parms.limit%>"      />
-                <jsp:param name="multiple" value="<%=parms.multiple%>"   />
+                <jsp:param name="limit"    value="<%=parms.getLimit()%>"      />
+                <jsp:param name="multiple" value="<%=parms.getMultiple()%>"   />
               </jsp:include>
-            <% } %>          
-
-
-            <% if( parms.filters.size() > 0 || parms.ackType == AcknowledgeType.UNACKNOWLEDGED || parms.ackType == AcknowledgeType.ACKNOWLEDGED ) { %>
-              <% int length = parms.filters.size(); %>
-              <p>Search constraints:
-                  <% if( parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) { %>
-                    <span class="filter">alarm is outstanding <a href="<%=this.makeLink(parms, AcknowledgeType.ACKNOWLEDGED)%>" title="Show acknowledged alarms">[-]</a></span>
-                  <% } else if( parms.ackType == AcknowledgeType.ACKNOWLEDGED ) { %>
-                    <span class="filter">alarm is acknowledged <a href="<%=this.makeLink(parms, AcknowledgeType.UNACKNOWLEDGED)%>" title="Show outstanding alarms">[-]</a></span>
-                  <% } %>            
-                
-                  <% for( int i=0; i < length; i++ ) { %>
-                    <% Filter filter = parms.filters.get(i); %>
-                    &nbsp; <span class="filter"><%=WebSecurityUtils.sanitizeString(filter.getTextDescription())%> <a href="<%=this.makeLink( parms, filter, false)%>" title="Remove filter">[-]</a></span>
-                  <% } %>
-              </p>           
             <% } %>
 
       <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
@@ -285,11 +298,11 @@
 				<thead>
 					<tr>
                                              <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
-						<% if ( parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) { %>
+						<% if ( parms.getAckType().equals(AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType()) ) { %>
 						<th width="1%">Ack</th>
-						<% } else if ( parms.ackType == AcknowledgeType.ACKNOWLEDGED ) { %>
+						<% } else if ( parms.getAckType().equals(AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType()) ) { %>
 						<th width="1%">UnAck</th>
-						<% } else if ( parms.ackType == AcknowledgeType.BOTH ) { %>
+						<% } else if ( parms.getAckType().equals(AcknowledgeType.BOTH.toNormalizedAcknowledgeType()) ) { %>
 						<th width="1%">Ack?</th>
 						<% } %>
                     <% } else { %>
@@ -299,30 +312,30 @@
 
 
 			<th width="7%">
-              <%=this.makeSortLink( parms, SortStyle.ID,        SortStyle.REVERSE_ID,        "id",        "ID" )%>
+              <%=this.makeSortLink(callback, parms, SortStyle.ID,        SortStyle.REVERSE_ID,        "id",        "ID" , favorite )%>
               <br />
-              <%=this.makeSortLink( parms, SortStyle.SEVERITY,  SortStyle.REVERSE_SEVERITY,  "severity",  "Severity"  )%>
+              <%=this.makeSortLink(callback, parms, SortStyle.SEVERITY,  SortStyle.REVERSE_SEVERITY,  "severity",  "Severity", favorite  )%>
             </th>
 			<th width="19%">
-              <%=this.makeSortLink( parms, SortStyle.NODE,      SortStyle.REVERSE_NODE,      "node",      "Node"      )%>
+              <%=this.makeSortLink(callback, parms, SortStyle.NODE,      SortStyle.REVERSE_NODE,      "node",      "Node", favorite      )%>
               <c:if test="${param.display == 'long'}">
               <br />
-              <%=this.makeSortLink( parms, SortStyle.INTERFACE, SortStyle.REVERSE_INTERFACE, "interface", "Interface" )%>
+              <%=this.makeSortLink(callback, parms, SortStyle.INTERFACE, SortStyle.REVERSE_INTERFACE, "interface", "Interface", favorite )%>
               <br />
-              <%=this.makeSortLink( parms, SortStyle.SERVICE,   SortStyle.REVERSE_SERVICE,   "service",   "Service"   )%>
+              <%=this.makeSortLink(callback, parms, SortStyle.SERVICE,   SortStyle.REVERSE_SERVICE,   "service",   "Service", favorite   )%>
               </c:if>
             </th>
 			<th width="3%">
-              <%=this.makeSortLink( parms, SortStyle.COUNT,  SortStyle.REVERSE_COUNT,  "count",  "Count"  )%>
+              <%=this.makeSortLink(callback, parms, SortStyle.COUNT,  SortStyle.REVERSE_COUNT,  "count",  "Count", favorite  )%>
             </th>
 			<th width="13%">
-              <%=this.makeSortLink( parms, SortStyle.LASTEVENTTIME,  SortStyle.REVERSE_LASTEVENTTIME,  "lasteventtime",  "Last Event Time"  )%>
+              <%=this.makeSortLink(callback, parms, SortStyle.LASTEVENTTIME,  SortStyle.REVERSE_LASTEVENTTIME,  "lasteventtime",  "Last Event Time", favorite  )%>
               <c:if test="${param.display == 'long'}">
               <br />
-              <%=this.makeSortLink( parms, SortStyle.FIRSTEVENTTIME,  SortStyle.REVERSE_FIRSTEVENTTIME,  "firsteventtime",  "First Event Time"  )%>
+              <%=this.makeSortLink(callback, parms, SortStyle.FIRSTEVENTTIME,  SortStyle.REVERSE_FIRSTEVENTTIME,  "firsteventtime",  "First Event Time", favorite  )%>
               <br />
-              <% if ( parms.ackType == AcknowledgeType.ACKNOWLEDGED ) { %>
-              <%=this.makeSortLink( parms, SortStyle.ACKUSER,  SortStyle.REVERSE_ACKUSER,  "ackuser",  "Acknowledged By"  )%>
+              <% if ( parms.getAckType().equals(AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType()) ) { %>
+              <%=this.makeSortLink(callback, parms, SortStyle.ACKUSER,  SortStyle.REVERSE_ACKUSER,  "ackuser",  "Acknowledged By", favorite  )%>
               <% } %>
               </c:if>
             </th>
@@ -335,10 +348,10 @@
       %> 
 
         <tr class="<%=alarms[i].getSeverity().getLabel()%>">
-          <% if( parms.ackType == AcknowledgeType.BOTH ) { %>
+          <% if( parms.getAckType().equals(AcknowledgeType.BOTH.toNormalizedAcknowledgeType()) ) { %>
               <td class="divider" valign="middle" rowspan="1">
                 <nobr>
-                  <input type="checkbox" name="alarm" disabled="true" <%=alarms[i].isAcknowledged() ? "checked='true'" : ""%> /> 
+                  <input type="checkbox" name="alarm" disabled="disabled" <%=alarms[i].isAcknowledged() ? "checked='true'" : ""%> /> 
                 </nobr>
           <% } else if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
               <td class="divider" valign="middle" rowspan="1">
@@ -367,21 +380,21 @@
             <% if(alarms[i].getUei() != null) { %>
               <% Filter exactUEIFilter = new ExactUEIFilter(alarms[i].getUei()); %>
                 <br />UEI
-              <% if( !parms.filters.contains( exactUEIFilter )) { %>
+              <% if( !parms.getFilters().contains( exactUEIFilter )) { %>
                 <nobr>
-                  <a href="<%=this.makeLink( parms, exactUEIFilter, true)%>" class="filterLink" title="Show only events with this UEI">${addPositiveFilter}</a>
-                  <a href="<%=this.makeLink( parms, new NegativeExactUEIFilter(alarms[i].getUei()), true)%>" class="filterLink" title="Do not show events for this UEI">${addNegativeFilter}</a>
+                  <a href="<%=this.makeLink(callback, parms, exactUEIFilter, true, favorite)%>" class="filterLink" title="Show only events with this UEI">${addPositiveFilter}</a>
+                  <a href="<%=this.makeLink(callback, parms, new NegativeExactUEIFilter(alarms[i].getUei()), true, favorite)%>" class="filterLink" title="Do not show events for this UEI">${addNegativeFilter}</a>
                 </nobr>
               <% } %>
             <% } else { %>
               &nbsp;
             <% } %>
             <% Filter severityFilter = new SeverityFilter(alarms[i].getSeverity()); %>      
-            <% if( !parms.filters.contains( severityFilter )) { %>
+            <% if( !parms.getFilters().contains( severityFilter )) { %>
 		<br />Sev.
               <nobr>
-                <a href="<%=this.makeLink( parms, severityFilter, true)%>" class="filterLink" title="Show only alarms with this severity">${addPositiveFilter}</a>
-                <a href="<%=this.makeLink( parms, new NegativeSeverityFilter(alarms[i].getSeverity()), true)%>" class="filterLink" title="Do not show alarms with this severity">${addNegativeFilter}</a>
+                <a href="<%=this.makeLink(callback, parms, severityFilter, true, favorite)%>" class="filterLink" title="Show only alarms with this severity">${addPositiveFilter}</a>
+                <a href="<%=this.makeLink(callback, parms, new NegativeSeverityFilter(alarms[i].getSeverity()), true, favorite)%>" class="filterLink" title="Do not show alarms with this severity">${addNegativeFilter}</a>
 
               </nobr>
             <% } %>
@@ -393,10 +406,10 @@
               <% String[] labels = this.getNodeLabels( alarms[i].getNodeLabel() ); %>
               <a href="element/node.jsp?node=<%=alarms[i].getNodeId()%>" title="<%=labels[1]%>"><%=labels[0]%></a>
                     
-              <% if( !parms.filters.contains(nodeFilter) ) { %>
+              <% if( !parms.getFilters().contains(nodeFilter) ) { %>
                 <nobr>
-                  <a href="<%=this.makeLink( parms, nodeFilter, true)%>" class="filterLink" title="Show only alarms on this node">${addPositiveFilter}</a>
-                  <a href="<%=this.makeLink( parms, new NegativeNodeFilter(alarms[i].getNodeId(), getServletContext()), true)%>" class="filterLink" title="Do not show alarms for this node">${addNegativeFilter}</a>
+                  <a href="<%=this.makeLink(callback, parms, nodeFilter, true, favorite)%>" class="filterLink" title="Show only alarms on this node">${addPositiveFilter}</a>
+                  <a href="<%=this.makeLink(callback, parms, new NegativeNodeFilter(alarms[i].getNodeId(), getServletContext()), true, favorite)%>" class="filterLink" title="Do not show alarms for this node">${addNegativeFilter}</a>
                 </nobr>
               <% } %>
             <% } else { %>
@@ -415,10 +428,10 @@
               <% } else { %>
                 <%=InetAddressUtils.str(alarms[i].getIpAddr())%>
               <% } %>
-              <% if( !parms.filters.contains(intfFilter) ) { %>
+              <% if( !parms.getFilters().contains(intfFilter) ) { %>
                 <nobr>
-                  <a href="<%=this.makeLink( parms, intfFilter, true)%>" class="filterLink" title="Show only alarms on this IP address">${addPositiveFilter}</a>
-                  <a href="<%=this.makeLink( parms, new NegativeInterfaceFilter(alarms[i].getIpAddr()), true)%>" class="filterLink" title="Do not show alarms for this interface">${addNegativeFilter}</a>
+                  <a href="<%=this.makeLink(callback, parms, intfFilter, true, favorite)%>" class="filterLink" title="Show only alarms on this IP address">${addPositiveFilter}</a>
+                  <a href="<%=this.makeLink(callback, parms, new NegativeInterfaceFilter(alarms[i].getIpAddr()), true, favorite)%>" class="filterLink" title="Do not show alarms for this interface">${addNegativeFilter}</a>
                 </nobr>
               <% } %>
             <% } else { %>
@@ -426,7 +439,7 @@
             <% } %>
           <br />
             <% if(alarms[i].getServiceType() != null && !"".equals(alarms[i].getServiceType().getName())) { %>
-              <% Filter serviceFilter = new ServiceFilter(alarms[i].getServiceType().getId()); %>
+              <% Filter serviceFilter = new ServiceFilter(alarms[i].getServiceType().getId(), getServletContext()); %>
               <% if( alarms[i].getNodeId() != null && alarms[i].getIpAddr() != null ) { %>
                 <c:url var="serviceLink" value="element/service.jsp">
                   <c:param name="node" value="<%=String.valueOf(alarms[i].getNodeId())%>"/>
@@ -437,10 +450,10 @@
               <% } else { %>
                 <c:out value="<%=alarms[i].getServiceType().getName()%>"/>
               <% } %>
-              <% if( !parms.filters.contains( serviceFilter )) { %>
+              <% if( !parms.getFilters().contains( serviceFilter )) { %>
                 <nobr>
-                  <a href="<%=this.makeLink( parms, serviceFilter, true)%>" class="filterLink" title="Show only alarms with this service type">${addPositiveFilter}</a>
-                  <a href="<%=this.makeLink( parms, new NegativeServiceFilter(alarms[i].getServiceType().getId()), true)%>" class="filterLink" title="Do not show alarms for this service">${addNegativeFilter}</a>
+                  <a href="<%=this.makeLink(callback, parms, serviceFilter, true, favorite)%>" class="filterLink" title="Show only alarms with this service type">${addPositiveFilter}</a>
+                  <a href="<%=this.makeLink(callback, parms, new NegativeServiceFilter(alarms[i].getServiceType().getId(), getServletContext()), true, favorite)%>" class="filterLink" title="Do not show alarms for this service">${addNegativeFilter}</a>
                 </nobr>
               <% } %>                            
             <% } %>
@@ -456,24 +469,28 @@
             <% } %>
           </td>
           <td class="divider">
-            <nobr><span title="Event <%= alarms[i].getLastEvent().getId()%>"><a href="event/detail.htm?id=<%= alarms[i].getLastEvent().getId()%>"><fmt:formatDate value="${alarm.lastEventTime}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${alarm.lastEventTime}" type="time" pattern="HH:mm:ss"/></a></span></nobr>
             <nobr>
-              <a href="<%=this.makeLink( parms, new AfterLastEventTimeFilter(alarms[i].getLastEventTime()), true)%>"  class="filterLink" title="Only show alarms occurring after this one">${addAfterFilter}</a>            
-              <a href="<%=this.makeLink( parms, new BeforeLastEventTimeFilter(alarms[i].getLastEventTime()), true)%>" class="filterLink" title="Only show alarms occurring before this one">${addBeforeFilter}</a>
+              <% if(alarms[i].getLastEvent() != null) { %><span title="Event <%= alarms[i].getLastEvent().getId()%>"><a href="event/detail.htm?id=<%= alarms[i].getLastEvent().getId()%>"><% } %>
+                <fmt:formatDate value="${alarm.lastEventTime}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${alarm.lastEventTime}" type="time" pattern="HH:mm:ss"/>
+              <% if(alarms[i].getLastEvent() != null) { %></a></span><% } %>
+            </nobr>
+            <nobr>
+              <a href="<%=this.makeLink(callback, parms, new AfterLastEventTimeFilter(alarms[i].getLastEventTime()), true, favorite)%>"  class="filterLink" title="Only show alarms occurring after this one">${addAfterFilter}</a>
+              <a href="<%=this.makeLink(callback, parms, new BeforeLastEventTimeFilter(alarms[i].getLastEventTime()), true, favorite)%>" class="filterLink" title="Only show alarms occurring before this one">${addBeforeFilter}</a>
             </nobr>
           <c:if test="${param.display == 'long'}">
           <br />
             <nobr><fmt:formatDate value="${alarm.firstEventTime}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${alarm.firstEventTime}" type="time" pattern="HH:mm:ss"/></nobr>
             <nobr>
-              <a href="<%=this.makeLink( parms, new AfterFirstEventTimeFilter(alarms[i].getFirstEventTime()), true)%>"  class="filterLink" title="Only show alarms occurring after this one">${addAfterFilter}</a>            
-              <a href="<%=this.makeLink( parms, new BeforeFirstEventTimeFilter(alarms[i].getFirstEventTime()), true)%>" class="filterLink" title="Only show alarms occurring before this one">${addBeforeFilter}</a>
+              <a href="<%=this.makeLink(callback, parms, new AfterFirstEventTimeFilter(alarms[i].getFirstEventTime()), true, favorite)%>"  class="filterLink" title="Only show alarms occurring after this one">${addAfterFilter}</a>
+              <a href="<%=this.makeLink(callback, parms, new BeforeFirstEventTimeFilter(alarms[i].getFirstEventTime()), true, favorite)%>" class="filterLink" title="Only show alarms occurring before this one">${addBeforeFilter}</a>
             </nobr>
           <br />
-              <% if ( parms.ackType == AcknowledgeType.ACKNOWLEDGED ) { %>
+              <% if ( parms.getAckType().equals(AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType()) ) { %>
 			<nobr><%=alarms[i].getAckUser()%></nobr>          
             <nobr>
-              <a href="<%=this.makeLink( parms, new AcknowledgedByFilter(alarms[i].getAckUser()), true)%>"  class="filterLink" title="Only show alarms ack by this user">${addPositiveFilter}</a>            
-              <a href="<%=this.makeLink( parms, new NegativeAcknowledgedByFilter(alarms[i].getAckUser()), true)%>" class="filterLink" title="Only show alarms ack by other users">${addNegativeFilter}</a>
+              <a href="<%=this.makeLink(callback, parms, new AcknowledgedByFilter(alarms[i].getAckUser()), true, favorite)%>"  class="filterLink" title="Only show alarms ack by this user">${addPositiveFilter}</a>
+              <a href="<%=this.makeLink(callback, parms, new NegativeAcknowledgedByFilter(alarms[i].getAckUser()), true, favorite)%>" class="filterLink" title="Only show alarms ack by other users">${addNegativeFilter}</a>
             </nobr>
 			<% }%>
           </c:if>
@@ -489,9 +506,9 @@
           <input TYPE="reset" />
           <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
           <select name="alarmAction">
-        <% if( parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) { %>
+        <% if( parms.getAckType().equals(AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType()) ) { %>
           <option value="acknowledge">Acknowledge Alarms</option>
-        <% } else if( parms.ackType == AcknowledgeType.ACKNOWLEDGED ) { %>
+        <% } else if( parms.getAckType().equals(AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType()) ) { %>
           <option value="unacknowledge">Unacknowledge Alarms</option>
         <% } %>
           <option value="clear">Clear Alarms</option>
@@ -502,22 +519,16 @@
         </p>
       </form>
 
-      <%--<br/>
-      <% if(req.isUserInRole(Authentication.ROLE_ADMIN)) { %>
-        <a HREF="admin/alarms.jsp" title="Acknowledge or Unacknowledge All Alarms">[Acknowledge or Unacknowledge All Alarms]</a>
-      <% } %>--%>
 
- <!-- id="eventlist" -->
-
-            <% if( alarmCount > 0 ) { %>
-              <% String baseUrl = this.makeLink(parms); %>
-              <jsp:include page="/includes/resultsIndex.jsp" flush="false" >
-                <jsp:param name="count"    value="<%=alarmCount%>" />
-                <jsp:param name="baseurl"  value="<%=baseUrl%>"    />
-                <jsp:param name="limit"    value="<%=parms.limit%>"      />
-                <jsp:param name="multiple" value="<%=parms.multiple%>"   />
-              </jsp:include>
-            <% } %>
+        <% if( alarmCount > 0 ) { %>
+          <% String baseUrl = this.makeLink(callback, parms, favorite); %>
+          <jsp:include page="/includes/resultsIndex.jsp" flush="false" >
+            <jsp:param name="count"    value="<%=alarmCount%>" />
+            <jsp:param name="baseurl"  value="<%=baseUrl%>"    />
+            <jsp:param name="limit"    value="<%=parms.getLimit()%>"      />
+            <jsp:param name="multiple" value="<%=parms.getMultiple()%>"   />
+          </jsp:include>
+        <% } %>
 
 
 <jsp:include page="/includes/bookmark.jsp" flush="false" />
@@ -527,28 +538,30 @@
 <%!
     String urlBase;
 
-    protected String makeSortLink( AlarmQueryParms parms, SortStyle style, SortStyle revStyle, String sortString, String title ) {
+    protected String makeSortLink(FilterCallback callback, NormalizedQueryParameters parms, SortStyle style, SortStyle revStyle, String sortString, String title, OnmsFilterFavorite favorite ) {
       StringBuffer buffer = new StringBuffer();
+      final String styleShortName = style != null ? style.getShortName() : null;
+      final String revStyleShortName = revStyle != null ? revStyle.getShortName() : null;
 
       buffer.append( "<nobr>" );
       
-      if( parms.sortStyle == style ) {
+      if( parms.getSortStyleShortName().equals(styleShortName) ) {
           buffer.append( "<img src=\"images/arrowdown.gif\" hspace=\"0\" vspace=\"0\" border=\"0\" alt=\"" );
           buffer.append( title );
           buffer.append( " Ascending Sort\"/>" );
           buffer.append( "&nbsp;<a href=\"" );
-          buffer.append( this.makeLink( parms, revStyle ));
+          buffer.append( this.makeLink( callback, parms, revStyle, favorite ));
           buffer.append( "\" title=\"Reverse the sort\">" );
-      } else if( parms.sortStyle == revStyle ) {
+      } else if( parms.getSortStyleShortName().equals(revStyleShortName)) {
           buffer.append( "<img src=\"images/arrowup.gif\" hspace=\"0\" vspace=\"0\" border=\"0\" alt=\"" );
           buffer.append( title );
           buffer.append( " Descending Sort\"/>" );
           buffer.append( "&nbsp;<a href=\"" );
-          buffer.append( this.makeLink( parms, style )); 
+          buffer.append( this.makeLink( callback, parms, style, favorite ));
           buffer.append( "\" title=\"Reverse the sort\">" );
       } else {
           buffer.append( "<a href=\"" );
-          buffer.append( this.makeLink( parms, style ));
+          buffer.append( this.makeLink( callback, parms, style, favorite ));
           buffer.append( "\" title=\"Sort by " );
           buffer.append( sortString );
           buffer.append( "\">" );   
@@ -562,89 +575,46 @@
       return( buffer.toString() );
     }
 
-    
-    public String getFiltersAsString(List<Filter> filters ) {
-        StringBuffer buffer = new StringBuffer();
-    
-        if( filters != null ) {
-            for( int i=0; i < filters.size(); i++ ) {
-                buffer.append( "&amp;filter=" );
-                String filterString = AlarmUtil.getFilterString(filters.get(i));
-                buffer.append(Util.encode(filterString));
-            }
-        }      
-    
-        return( buffer.toString() );
-    }
-    
-    public String makeLink( SortStyle sortStyle, AcknowledgeType ackType, List<Filter> filters, int limit, String display ) {
-      StringBuffer buffer = new StringBuffer( this.urlBase );
-      buffer.append( "?sortby=" );
-      buffer.append( sortStyle.getShortName() );
-      buffer.append( "&amp;acktype=" );
-      buffer.append( ackType.getShortName() );
-      if (limit > 0) {
-          buffer.append( "&amp;limit=" ).append(limit);
-      }
-      if (display != null) {
-          buffer.append( "&amp;display=" ).append(display);
-      }
-      buffer.append( this.getFiltersAsString(filters) );
-
-      return( buffer.toString() );
+    public String makeLink( FilterCallback callback, NormalizedQueryParameters params, OnmsFilterFavorite favorite) {
+        return callback.createLink(urlBase, params, favorite);
     }
 
-    public String eventMakeLink( AlarmQueryParms parms, Filter filter, boolean add ) {
-      List<Filter> filters = new ArrayList<Filter>( parms.filters );
-      if( add ) {
-        filters.add( filter );
-      }
-      else {
-        filters.remove( filter );
-      }
-      StringBuffer buffer = new StringBuffer( "event/list.htm" );
-      buffer.append( "?sortby=" );
-      buffer.append( parms.sortStyle.getShortName() );
-      buffer.append( "&amp;acktype=" );
-      buffer.append( parms.ackType.getShortName() );
-      buffer.append( this.getFiltersAsString(filters) );
+    public String makeLink(FilterCallback callback, NormalizedQueryParameters parms, String display, OnmsFilterFavorite favorite) {
+        NormalizedQueryParameters newParms = new NormalizedQueryParameters(parms);
+        newParms.setDisplay(display);
+        return makeLink(callback, newParms, favorite);
+    }
 
-      return( buffer.toString() );
+    public String makeLink(FilterCallback callback, NormalizedQueryParameters parms, SortStyle sortStyle, OnmsFilterFavorite favorite ) {
+        NormalizedQueryParameters newParms = new NormalizedQueryParameters(parms);
+        newParms.setSortStyleShortName(sortStyle.getShortName());
+        return makeLink(callback, newParms, favorite);
     }
 
 
-    public String makeLink( AlarmQueryParms parms ) {
-      return( this.makeLink( parms.sortStyle, parms.ackType, parms.filters, parms.limit, parms.display) );
-    }
-
-    public String makeLink(AlarmQueryParms parms, String display) {
-      return makeLink(parms.sortStyle, parms.ackType, parms.filters, parms.limit, display);
-    }
-
-    public String makeLink( AlarmQueryParms parms, SortStyle sortStyle ) {
-      return( this.makeLink( sortStyle, parms.ackType, parms.filters, parms.limit, parms.display) );
+    public String makeLink(FilterCallback callback, NormalizedQueryParameters parms, AcknowledgeType ackType, OnmsFilterFavorite favorite ) {
+        NormalizedQueryParameters newParms = new NormalizedQueryParameters(parms);
+        newParms.setAckType(ackType.toNormalizedAcknowledgeType());
+        return makeLink(callback, newParms, favorite);
     }
 
 
-    public String makeLink( AlarmQueryParms parms, AcknowledgeType ackType ) {
-      return( this.makeLink( parms.sortStyle, ackType, parms.filters, parms.limit, parms.display) );
+    public String makeLink(FilterCallback callback, NormalizedQueryParameters parms, List<Filter> filters, OnmsFilterFavorite favorite ) {
+        NormalizedQueryParameters newParms = new NormalizedQueryParameters(parms); // clone;
+        newParms.setFilters(filters);
+        return this.makeLink(callback, newParms, favorite);
     }
 
-
-    public String makeLink( AlarmQueryParms parms, List<Filter> filters ) {
-      return( this.makeLink( parms.sortStyle, parms.ackType, filters, parms.limit, parms.display) );
-    }
-
-    public String makeLink( AlarmQueryParms parms, Filter filter, boolean add ) {
-      List<Filter> newList = new ArrayList<Filter>( parms.filters );
-      if( add ) {
-        newList.add( filter );
-      }
-      else {
-        newList.remove( filter );
-      }
-
-      return( this.makeLink( parms.sortStyle, parms.ackType, newList, parms.limit, parms.display ));
+    public String makeLink(FilterCallback callback, NormalizedQueryParameters parms, Filter filter, boolean add, OnmsFilterFavorite favorite) {
+        NormalizedQueryParameters newParms = new NormalizedQueryParameters(parms);
+        List<Filter> newList = new ArrayList<Filter>( parms.getFilters());
+        if( add ) {
+            newList.add( filter );
+        } else {
+            newList.remove( filter );
+        }
+        newParms.setFilters(newList);
+        return this.makeLink(callback, newParms, favorite);
     }
 
     public String[] getNodeLabels( String nodeLabel ) {

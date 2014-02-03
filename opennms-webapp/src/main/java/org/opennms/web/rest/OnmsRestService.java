@@ -47,7 +47,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
-
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsSeverityEditor;
@@ -58,6 +57,7 @@ import org.opennms.netmgt.provision.persist.StringXmlCalendarPropertyEditor;
 import org.opennms.web.rest.support.InetAddressTypeEditor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.MessageFormatter;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
@@ -253,7 +253,8 @@ public class OnmsRestService {
      * @param <T> a T object.
      * @return a T object.
      */
-    protected <T> WebApplicationException getException(final Status status, final String msg) throws WebApplicationException {
+    protected <T> WebApplicationException getException(final Status status, String msg, String... params) throws WebApplicationException {
+        if (params != null) msg = MessageFormatter.arrayFormat(msg, params).getMessage();
         LOG.error(msg);
         return new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(msg).build());
     }
@@ -263,8 +264,6 @@ public class OnmsRestService {
         return new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
     }
 
-    
-    
 
     /**
      * Convert a column name with underscores to the corresponding property name using "camel case".  A name

@@ -10,6 +10,7 @@ import org.apache.camel.component.http.HttpOperationFailedException;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.SelectionManager;
+import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -23,17 +24,18 @@ import org.opennms.netmgt.model.ncs.NCSComponentRepository;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Item;
+import com.vaadin.data.Validator;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Form;
 import com.vaadin.ui.FormFieldFactory;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Select;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
@@ -50,12 +52,16 @@ public class ShowNCSPathOperation implements Operation {
     @Override
     public Undoer execute(List<VertexRef> targets, final OperationContext operationContext) {
         //Get the current NCS criteria from here you can get the foreignIds foreignSource and deviceA and Z
-        final NCSServiceCriteria criteria = (NCSServiceCriteria) operationContext.getGraphContainer().getCriteria(m_ncsEdgeProvider.getEdgeNamespace());
-        if(criteria.size() > 0) {
-            m_storedCriteria = criteria;
+        for (Criteria criterium : operationContext.getGraphContainer().getCriteria()) {
+            try {
+                NCSServiceCriteria ncsCriterium = (NCSServiceCriteria)criterium;
+                if(ncsCriterium.getServiceCount() > 0) {
+                    m_storedCriteria = ncsCriterium;
+                    break;
+                }
+            } catch (ClassCastException e) {}
         }
-        
-        
+
         final VertexRef defaultVertRef = targets.get(0);
         final SelectionManager selectionManager = operationContext.getGraphContainer().getSelectionManager();
         final Collection<VertexRef> vertexRefs = getVertexRefsForNCSService(m_storedCriteria); //selectionManager.getSelectedVertexRefs();
@@ -81,7 +87,7 @@ public class ShowNCSPathOperation implements Operation {
             public Field createField(Item item, Object propertyId, Component uiContext) {
                 String pid = (String) propertyId;
 
-                Select select = new Select();
+                ComboBox select = new ComboBox();
                 for(VertexRef vertRef : vertexRefs) {
                     select.addItem(vertRef.getId());
                     select.setItemCaption(vertRef.getId(), vertRef.getLabel());
@@ -100,7 +106,7 @@ public class ShowNCSPathOperation implements Operation {
                 
                 return select;
             }
-            
+
         };
         
         final Form promptForm = new Form() {
@@ -110,17 +116,22 @@ public class ShowNCSPathOperation implements Operation {
             public void commit() {
                 String deviceA = (String)getField("Device A").getValue();
                 String deviceZ = (String)getField("Device Z").getValue();
-                
+
+                if(deviceA.equals(deviceZ)) {
+                    Notification.show("Device A and Device Z cannot be the same", Notification.Type.WARNING_MESSAGE);
+                    throw new Validator.InvalidValueException("Device A and Device Z cannot be the same");
+                }
+
                 OnmsNode nodeA = m_nodeDao.get(Integer.valueOf(deviceA));
                 String deviceANodeForeignId = nodeA.getForeignId();
                 //Use nodeA's foreignSource, deviceZ should have the same foreignSource. It's an assumption
                 // which might need to changed in the future. Didn't want to hard code it it "space" if they
                 // change it in the future
                 String nodeForeignSource = nodeA.getForeignSource();
-                
+
                 String deviceZNodeForeignId = m_nodeDao.get(Integer.valueOf(deviceZ)).getForeignId();
-                
-                NCSComponent ncsComponent = m_dao.get(m_storedCriteria.get(0));
+
+                NCSComponent ncsComponent = m_dao.get(m_storedCriteria.getServiceIds().get(0));
                 String foreignSource = ncsComponent.getForeignSource();
                 String foreignId = ncsComponent.getForeignId();
                 String serviceName = ncsComponent.getName();
@@ -140,28 +151,30 @@ public class ShowNCSPathOperation implements Operation {
                     
                     
                 } catch (Exception e) {
-                    LoggerFactory.getLogger(this.getClass()).warn("Exception Occurred while retreiving path {}", e);
-                    Notification.show("An error occurred while calculating the path please check the karaf.log file for the exception: \n" + e.getMessage(), Notification.Type.ERROR_MESSAGE);
+
                     if(e.getCause() instanceof ConnectException ) {
                         LoggerFactory.getLogger(this.getClass()).warn("Connection Exception Occurred while retreiving path {}", e);
-                        mainWindow.showNotification("Connection Refused when attempting to reach the NetworkAppsApi", Notification.TYPE_ERROR_MESSAGE);
+                        Notification.show("Connection Refused when attempting to reach the NetworkAppsApi", Notification.Type.TRAY_NOTIFICATION);
                     } else if(e.getCause() instanceof HttpOperationFailedException) {
                         HttpOperationFailedException httpException = (HttpOperationFailedException) e.getCause();
                         if(httpException.getStatusCode() == 401) {
                             LoggerFactory.getLogger(this.getClass()).warn("Authentication error when connecting to NetworkAppsApi {}", httpException);
-                            mainWindow.showNotification("Authentication error when connecting to NetworkAppsApi, please check the username and password", Notification.TYPE_ERROR_MESSAGE);
+                            Notification.show("Authentication error when connecting to NetworkAppsApi, please check the username and password", Notification.Type.TRAY_NOTIFICATION);
                         } else {
                             LoggerFactory.getLogger(this.getClass()).warn("An error occured while retrieving the NCS Path {}", httpException);
-                            mainWindow.showNotification("An error occurred while retrieving the NCS Path\n" + httpException.getMessage(), Notification.TYPE_ERROR_MESSAGE);
+                            Notification.show("An error occurred while retrieving the NCS Path\n" + httpException.getMessage(), Notification.Type.TRAY_NOTIFICATION);
                         }
+                    } else if(e.getCause() instanceof Validator.InvalidValueException){
+                        Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
+
                     } else {
                     
                         LoggerFactory.getLogger(this.getClass()).warn("Exception Occurred while retreiving path {}", e);
-                        mainWindow.showNotification("An error occurred while calculating the path please check the karaf.log file for the exception: \n" + e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
+                        Notification.show("An error occurred while calculating the path please check the karaf.log file for the exception: \n" + e.getMessage(), Notification.Type.TRAY_NOTIFICATION);
                     }
                 }
             }
-            
+
         };
         
         promptForm.setBuffered(true);
@@ -223,32 +236,31 @@ public class ShowNCSPathOperation implements Operation {
             if(!namespace.equals("nodes")) {
                 return false;
             }else {
-                NCSServiceCriteria criteria = (NCSServiceCriteria) operationContext.getGraphContainer().getCriteria("ncs");
-                return criteria != null && criteria.size() == 1;
+                for (Criteria criteria : operationContext.getGraphContainer().getCriteria()) {
+                    try {
+                        if (criteria != null && ((NCSServiceCriteria)criteria).getServiceCount() == 1) {
+                            return true;
+                        }
+                    } catch (ClassCastException e) {}
+                }
+                return false;
             }
         }
         
         return false;
     }
 
+    /**
+     * TODO: Should we just return true? This is basically a no-op.
+     */
     @Override
     public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
-        for(VertexRef targetRef : targets) {
-            String namespace = targetRef.getNamespace();
-            if(!namespace.equals("nodes")) {
-                return false;
-            }else {
-                NCSServiceCriteria criteria = (NCSServiceCriteria) operationContext.getGraphContainer().getCriteria("ncs");
-                return criteria != null && criteria.size() == 1;
-            }
-        }
-        
-        return false;
+        return display(targets, operationContext);
     }
 
     @Override
     public String getId() {
-        return null;
+        return getClass().getSimpleName();
     }
 
     public NCSEdgeProvider getNcsEdgeProvider() {

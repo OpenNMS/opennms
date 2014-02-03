@@ -28,12 +28,12 @@
 
 package org.opennms.core.utils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 /**
@@ -241,11 +241,6 @@ public final class ConfigFileConstants {
      * The users config file
      */
     public static final int USERS_CONF_FILE_NAME;
-
-    /**
-     * The user views config file
-     */
-    public static final int VIEWS_CONF_FILE_NAME;
 
     /**
      * The categories config file
@@ -512,7 +507,6 @@ public final class ConfigFileConstants {
         EXCLUDE_UEI_FILE_NAME = 18;
         USERS_CONF_FILE_NAME = 19;
 
-        VIEWS_CONF_FILE_NAME = 20;
         CATEGORIES_CONF_FILE_NAME = 21;
         GROUPS_CONF_FILE_NAME = 22;
         NOTIFICATIONS_CONF_FILE_NAME = 23;
@@ -639,7 +633,6 @@ public final class ConfigFileConstants {
         FILE_ID_TO_NAME[EXCLUDE_UEI_FILE_NAME] = "exclude-ueis.properties";
         FILE_ID_TO_NAME[USERS_CONF_FILE_NAME] = "users.xml";
 
-        FILE_ID_TO_NAME[VIEWS_CONF_FILE_NAME] = "views.xml";
         FILE_ID_TO_NAME[CATEGORIES_CONF_FILE_NAME] = "categories.xml";
         FILE_ID_TO_NAME[GROUPS_CONF_FILE_NAME] = "groups.xml";
         FILE_ID_TO_NAME[NOTIFICATIONS_CONF_FILE_NAME] = "notifications.xml";
@@ -725,7 +718,7 @@ public final class ConfigFileConstants {
      *            The identifier of the desired file.
      * @return The base name of the file that matches the identifier.
      */
-    public static final String getFileName(int id) {
+    public static String getFileName(int id) {
         return FILE_ID_TO_NAME[id];
     }
 
@@ -753,7 +746,7 @@ public final class ConfigFileConstants {
      * @throws java.io.IOException
      *             Thrown if an error occurs accessing the file system.
      */
-    public static final File getFile(int id) throws IOException {
+    public static File getFile(int id) throws IOException {
         // Recover the home directory from the system properties.
         String home = getHome();
 
@@ -805,7 +798,7 @@ public final class ConfigFileConstants {
      * @throws java.io.IOException
      *             Thrown if an error occurs accessing the file system.
      */
-    public static final File getConfigFileByName(String fname) throws IOException {
+    public static File getConfigFileByName(String fname) throws IOException {
         // Recover the home directory from the system properties.
         //
         String home = getHome();
@@ -834,7 +827,7 @@ public final class ConfigFileConstants {
      *
      * @return a {@link java.lang.String} object.
      */
-    public static final String getHome() {
+    public static String getHome() {
         String home = System.getProperty("opennms.home");
         if (home == null) {
         	LOG.debug("The 'opennms.home' property was not set, falling back to /opt/opennms.  This should really only happen in unit tests.");
@@ -854,7 +847,7 @@ public final class ConfigFileConstants {
      *
      * @return String, the file url for the include file
      */
-    public static final String getIncludeFileString() {
+    public static String getIncludeFileString() {
         return "file:" + getHome() + File.separator + "etc" + File.separator + "include";
     }
 
@@ -863,7 +856,7 @@ public final class ConfigFileConstants {
      *
      * @return String, the file url for the include file
      */
-    public static final String getFilePathString() {
+    public static String getFilePathString() {
         return getHome() + File.separator + "etc" + File.separator;
     }
 
@@ -872,7 +865,7 @@ public final class ConfigFileConstants {
      *
      * @return a {@link java.lang.String} object.
      */
-    public static final String getTimezoneFileDir() {
+    public static String getTimezoneFileDir() {
         return File.separator + "usr" + File.separator + "share" + File.separator + "zoneinfo" + File.separator + "US";
     }
 

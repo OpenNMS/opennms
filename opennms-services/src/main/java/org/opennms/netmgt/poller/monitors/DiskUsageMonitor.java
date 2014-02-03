@@ -201,11 +201,14 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
                 return PollStatus.unavailable();
             }
 
+            boolean foundDisk = false;
+            
             for (Map.Entry<SnmpInstId, SnmpValue> e : flagResults.entrySet()) { 
+                foundDisk = true;
                 LOG.debug("poll: SNMPwalk poll succeeded, addr={} oid={} instance={} value={}", hostAddress, hrStorageDescrSnmpObject, e.getKey(), e.getValue());
                 
                 if (isMatch(e.getValue().toString(), diskName, matchType)) {
-			LOG.debug("DiskUsageMonitor.poll: found disk=", diskName);
+                  LOG.debug("DiskUsageMonitor.poll: found disk=", diskName);
                 	
                 	SnmpObjId hrStorageSizeSnmpObject = SnmpObjId.get(hrStorageSize + "." + e.getKey().toString());
                 	SnmpObjId hrStorageUsedSnmpObject = SnmpObjId.get(hrStorageUsed + "." + e.getKey().toString());
@@ -215,7 +218,7 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
                 	SnmpValue snmpUsed = SnmpUtils.get(agentConfig, hrStorageUsedSnmpObject);
                 	float calculatedPercentage = ( (( (float)snmpSize.toLong() - (float)snmpUsed.toLong() ) / (float)snmpSize.toLong() ) ) * 100;
                 
-			LOG.debug("DiskUsageMonitor: calculatedPercentage={} percentFree={}", calculatedPercentage, percentFree);
+                  LOG.debug("DiskUsageMonitor: calculatedPercentage={} percentFree={}", calculatedPercentage, percentFree);
                 	
                 	if (calculatedPercentage < percentFree) {
                 	
@@ -226,10 +229,11 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
                 		return status;
                 	}
                 }
-            
-                 
             }
 
+            if (foundDisk) {
+                return status;
+            }
             // if we get here.. it means we did not find the disk...  which means we should not be monitoring it.
             LOG.debug("DiskUsageMonitor: no disks found");
             return PollStatus.unavailable("could not find " + diskName + "in table");

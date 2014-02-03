@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <datacollection-group name="HWg">
 
-    <!-- PRINTER-MIB Resource Types -->
-    <resourceType name="sensIndex" label="HWg Sensor" resourceLabel="${sensName}">
+    <!-- HWg Resource Types -->
+    <resourceType name="sensIndex" label="HWg Sensor" resourceLabel="${sensName} (${index})">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
-      <group name="hwg-sensor" ifType="all">
+      <group name="HWg-sensor" ifType="all">
         <mibObj oid=".1.3.6.1.4.1.21796.4.1.3.1.2" instance="sensIndex" alias="sensName" type="string" />
         <mibObj oid=".1.3.6.1.4.1.21796.4.1.3.1.3" instance="sensIndex" alias="sensState" type="INTEGER" />
         <mibObj oid=".1.3.6.1.4.1.21796.4.1.3.1.4" instance="sensIndex" alias="sensString" type="octetstring" />
@@ -17,11 +17,31 @@
         <mibObj oid=".1.3.6.1.4.1.21796.4.1.3.1.8" instance="sensIndex" alias="sensID" type="INTEGER" />
       </group>
 
-      <systemDef name = "HWg-sensor">
+      <group name="poseidon-sensTable" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.21796.3.3.3.1.2" instance="sensIndex" alias="sensName" type="string"/>
+        <mibObj oid=".1.3.6.1.4.1.21796.3.3.3.1.6" instance="sensIndex" alias="sensValue" type="integer"/>
+        <mibObj oid=".1.3.6.1.4.1.21796.3.3.3.1.10" instance="sensIndex" alias="sensUnitString" type="string"/>
+      </group>
+
+      <group name="poseidon-sensSetupTable" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.21796.3.3.99.1.2.1.6" instance="sensIndex" alias="sensLimitMin" type="integer"/>
+        <mibObj oid=".1.3.6.1.4.1.21796.3.3.99.1.2.1.7" instance="sensIndex" alias="sensLimitMax" type="integer"/>
+      </group>
+
+      <systemDef name="HWg-sensor">
         <sysoidMask>.1.3.6.1.4.1.21796.</sysoidMask>
         <collect>
-          <includeGroup>hwg-sensor</includeGroup>
+          <includeGroup>HWg-sensor</includeGroup>
         </collect>
       </systemDef>
+
+      <systemDef name="HW Group Poseidon">
+        <sysoidMask>.1.3.6.1.4.1.21796.</sysoidMask>
+        <collect>
+            <includeGroup>poseidon-sensTable</includeGroup>
+            <includeGroup>poseidon-sensSetupTable</includeGroup>
+        </collect>
+      </systemDef>
+
 
 </datacollection-group>

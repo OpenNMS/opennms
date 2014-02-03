@@ -28,14 +28,13 @@
 package org.opennms.features.vaadin.dashboard.dashlets;
 
 import com.vaadin.server.Page;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Fetch;
 import org.opennms.features.vaadin.dashboard.config.ui.editors.CriteriaBuilderHelper;
-import org.opennms.features.vaadin.dashboard.model.Dashlet;
+import org.opennms.features.vaadin.dashboard.model.AbstractDashlet;
+import org.opennms.features.vaadin.dashboard.model.AbstractDashletComponent;
+import org.opennms.features.vaadin.dashboard.model.DashletComponent;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -49,12 +48,7 @@ import java.util.List;
  *
  * @author Christian Pape
  */
-public class AlarmsDashlet extends VerticalLayout implements Dashlet {
-    /**
-     * the dashlet's name
-     */
-    private String m_name;
-
+public class AlarmsDashlet extends AbstractDashlet {
     /**
      * The {@link AlarmDao} used
      */
@@ -64,10 +58,6 @@ public class AlarmsDashlet extends VerticalLayout implements Dashlet {
      */
     private NodeDao m_nodeDao;
     /**
-     * The {@link DashletSpec} for this instance
-     */
-    private DashletSpec m_dashletSpec;
-    /**
      * boosted value
      */
     private boolean boosted = false;
@@ -75,6 +65,16 @@ public class AlarmsDashlet extends VerticalLayout implements Dashlet {
      * Helper for handling criterias
      */
     private CriteriaBuilderHelper m_criteriaBuilderHelper = new CriteriaBuilderHelper(OnmsAlarm.class, OnmsNode.class, OnmsCategory.class, OnmsEvent.class);
+
+    /**
+     * wallboard layout
+     */
+    private DashletComponent m_wallboardComponent = null;
+
+    /**
+     * dashboard layout
+     */
+    private DashletComponent m_dashboardComponent = null;
 
 
     /**
@@ -85,36 +85,130 @@ public class AlarmsDashlet extends VerticalLayout implements Dashlet {
      * @param nodeDao     the {@link NodeDao} to be used
      */
     public AlarmsDashlet(String name, DashletSpec dashletSpec, AlarmDao alarmDao, NodeDao nodeDao) {
+        super(name, dashletSpec);
         /**
          * Setting the member fields
          */
-        m_name = name;
-        m_dashletSpec = dashletSpec;
         m_alarmDao = alarmDao;
         m_nodeDao = nodeDao;
+    }
 
-        /**
-         * Setting up the layout
-         */
-        setCaption(getName());
-        setWidth("100%");
+    @Override
+    public DashletComponent getWallboardComponent() {
+        if (m_wallboardComponent == null) {
+            m_wallboardComponent = new AbstractDashletComponent() {
+                private VerticalLayout m_verticalLayout = new VerticalLayout();
+
+                {
+                    m_verticalLayout.setCaption(getName());
+                    m_verticalLayout.setWidth("100%");
+                    refresh();
+                }
+
+                /**
+                 * Injects CSS styles on current page for this dashlet
+                 */
+                private void injectWallboardStyles() {
+                    Page.getCurrent().getStyles().add(".alerts.cleared { background: #000000; border-left: 15px solid #858585; }");
+                    Page.getCurrent().getStyles().add(".alerts.normal { background: #000000; border-left: 15px solid #336600; }");
+                    Page.getCurrent().getStyles().add(".alerts.indeterminate {  background: #000000; border-left: 15px solid #999; }");
+                    Page.getCurrent().getStyles().add(".alerts.warning { background: #000000; border-left: 15px solid #FFCC00; }");
+                    Page.getCurrent().getStyles().add(".alerts.minor { background: #000000;  border-left: 15px solid #FF9900; }");
+                    Page.getCurrent().getStyles().add(".alerts.major { background: #000000; border-left: 15px solid #FF3300; }");
+                    Page.getCurrent().getStyles().add(".alerts.critical { background: #000000; border-left: 15px solid #CC0000; }");
+                    Page.getCurrent().getStyles().add(".alerts-font {color: #3ba300; font-size: 18px; line-height: normal; }");
+                    Page.getCurrent().getStyles().add(".alerts-noalarms-font { font-size: 18px; line-height: normal; }");
+                    Page.getCurrent().getStyles().add(".alerts { padding: 5px 5px; margin: 1px; }");
+                }
+
+                @Override
+                public void refresh() {
+                    List<OnmsAlarm> alarms = getAlarms();
+
+                    OnmsSeverity boostSeverity = OnmsSeverity.valueOf(getDashletSpec().getParameters().get("boostSeverity"));
+
+                    m_verticalLayout.removeAllComponents();
+
+                    injectWallboardStyles();
+
+                    boosted = false;
+
+                    addComponents(m_verticalLayout, alarms);
+
+                }
+
+                @Override
+                public Component getComponent() {
+                    return m_verticalLayout;
+                }
+            };
+        }
+        return m_wallboardComponent;
+    }
+
+    @Override
+    public DashletComponent getDashboardComponent() {
+        if (m_dashboardComponent == null) {
+            m_dashboardComponent = new AbstractDashletComponent() {
+                private VerticalLayout m_verticalLayout = new VerticalLayout();
+
+                {
+                    m_verticalLayout.setCaption(getName());
+                    m_verticalLayout.setWidth("100%");
+                    refresh();
+                }
+
+                /**
+                 * Injects CSS styles on current page for this dashlet
+                 */
+                private void injectDashboardStyles() {
+                    Page.getCurrent().getStyles().add(".alerts.cleared { background: #000000; border-left: 8px solid #858585; }");
+                    Page.getCurrent().getStyles().add(".alerts.normal { background: #000000; border-left: 8px solid #336600; }");
+                    Page.getCurrent().getStyles().add(".alerts.indeterminate {  background: #000000; border-left: 8px solid #999; }");
+                    Page.getCurrent().getStyles().add(".alerts.warning { background: #000000; border-left: 8px solid #FFCC00; }");
+                    Page.getCurrent().getStyles().add(".alerts.minor { background: #000000;  border-left: 8px solid #FF9900; }");
+                    Page.getCurrent().getStyles().add(".alerts.major { background: #000000; border-left: 8px solid #FF3300; }");
+                    Page.getCurrent().getStyles().add(".alerts.critical { background: #000000; border-left: 8px solid #CC0000; }");
+                    Page.getCurrent().getStyles().add(".alerts-font {color: #3ba300; font-size: 11px; line-height: normal; }");
+                    Page.getCurrent().getStyles().add(".alerts-noalarms-font { font-size: 11px; line-height: normal; }");
+                    Page.getCurrent().getStyles().add(".alerts { padding: 5px 5px; margin: 1px; }");
+                }
+
+                @Override
+                public void refresh() {
+                    List<OnmsAlarm> alarms = getAlarms();
+
+                    m_verticalLayout.removeAllComponents();
+
+                    injectDashboardStyles();
+
+                    boosted = false;
+
+                    addComponents(m_verticalLayout, alarms);
+                }
+
+                @Override
+                public Component getComponent() {
+                    return m_verticalLayout;
+                }
+            };
+        }
+        return m_dashboardComponent;
     }
 
     /**
-     * Updates the alarm data using the associated {@link AlarmDao} and {@link NodeDao} instances.
+     * Returns the alarms defined by this dashlet.
      *
-     * @return true, if boosted, false otherwise
+     * @return the list of alarms
      */
-    @Override
-    public void update() {
+    private List<OnmsAlarm> getAlarms() {
         final CriteriaBuilder alarmCb = new CriteriaBuilder(OnmsAlarm.class);
 
         alarmCb.alias("node", "node");
         alarmCb.alias("node.categories", "category");
         alarmCb.alias("lastEvent", "event");
 
-        String criteria = m_dashletSpec.getParameters().get("criteria");
-        OnmsSeverity boostSeverity = OnmsSeverity.valueOf(m_dashletSpec.getParameters().get("boostSeverity"));
+        String criteria = getDashletSpec().getParameters().get("criteria");
 
         m_criteriaBuilderHelper.parseConfiguration(alarmCb, criteria);
 
@@ -123,18 +217,20 @@ public class AlarmsDashlet extends VerticalLayout implements Dashlet {
 
         alarmCb.distinct();
 
-        List<OnmsAlarm> alarms = m_alarmDao.findMatching(alarmCb.toCriteria());
+        return m_alarmDao.findMatching(alarmCb.toCriteria());
+    }
 
-        removeAllComponents();
-
-        injectStyles();
-
-        boosted = false;
-
+    /**
+     * Adds the alarms components to a {@link com.vaadin.ui.AbstractOrderedLayout}
+     *
+     * @param component the component to add alarms to
+     * @param alarms    the alarms list
+     */
+    private void addComponents(AbstractOrderedLayout component, List<OnmsAlarm> alarms) {
         if (alarms.size() == 0) {
             Label label = new Label("No alarms found!");
             label.addStyleName("alerts-noalarms-font");
-            addComponent(label);
+            component.addComponent(label);
         } else {
             for (OnmsAlarm onmsAlarm : alarms) {
                 OnmsNode onmsNode = null;
@@ -149,7 +245,9 @@ public class AlarmsDashlet extends VerticalLayout implements Dashlet {
                         onmsNode = nodes.get(0);
                     }
                 }
-                addComponent(createAlarmComponent(onmsAlarm, onmsNode));
+                component.addComponent(createAlarmComponent(onmsAlarm, onmsNode));
+
+                OnmsSeverity boostSeverity = OnmsSeverity.valueOf(getDashletSpec().getParameters().get("boostSeverity"));
 
                 if (onmsAlarm.getSeverity().isGreaterThanOrEqual(boostSeverity)) {
                     boosted = true;
@@ -196,21 +294,6 @@ public class AlarmsDashlet extends VerticalLayout implements Dashlet {
         return output + " ago";
     }
 
-    /**
-     * Injects CSS styles on current page for this dashlet
-     */
-    private void injectStyles() {
-        Page.getCurrent().getStyles().add(".alerts.cleared { background: #000000; border-left: 15px solid #858585; }");
-        Page.getCurrent().getStyles().add(".alerts.normal { background: #000000; border-left: 15px solid #336600; }");
-        Page.getCurrent().getStyles().add(".alerts.indeterminate {  background: #000000; border-left: 15px solid #999; }");
-        Page.getCurrent().getStyles().add(".alerts.warning { background: #000000; border-left: 15px solid #FFCC00; }");
-        Page.getCurrent().getStyles().add(".alerts.minor { background: #000000;  border-left: 15px solid #FF9900; }");
-        Page.getCurrent().getStyles().add(".alerts.major { background: #000000; border-left: 15px solid #FF3300; }");
-        Page.getCurrent().getStyles().add(".alerts.critical { background: #000000; border-left: 15px solid #CC0000; }");
-        Page.getCurrent().getStyles().add(".alerts-font {color: #3ba300; font-size: 18px; line-height: normal; }");
-        Page.getCurrent().getStyles().add(".alerts-noalarms-font { font-size: 18px; line-height: normal; }");
-        Page.getCurrent().getStyles().add(".alerts { padding: 5px 5px; margin: 1px; }");
-    }
 
     /**
      * Returns the component for visualising the alarms data.
@@ -254,15 +337,10 @@ public class AlarmsDashlet extends VerticalLayout implements Dashlet {
         horizontalLayout.addComponent(labelUei);
 
         horizontalLayout.setExpandRatio(labelAgo, 1.0f);
-        horizontalLayout.setExpandRatio(labelId, 2.0f);
-        horizontalLayout.setExpandRatio(labelUei, 4.0f);
+        horizontalLayout.setExpandRatio(labelId, 3.0f);
+        horizontalLayout.setExpandRatio(labelUei, 3.0f);
 
         return horizontalLayout;
-    }
-
-    @Override
-    public String getName() {
-        return m_name;
     }
 
     @Override

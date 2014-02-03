@@ -35,7 +35,6 @@ import org.opennms.sms.reflector.smsservice.GatewayGroup;
 import org.opennms.sms.reflector.smsservice.OnmsInboundMessageNotification;
 import org.opennms.sms.reflector.smsservice.SmsService;
 import org.smslib.AGateway;
-import org.smslib.GatewayException;
 import org.smslib.IGatewayStatusNotification;
 import org.smslib.IOutboundMessageNotification;
 import org.smslib.Service.ServiceStatus;

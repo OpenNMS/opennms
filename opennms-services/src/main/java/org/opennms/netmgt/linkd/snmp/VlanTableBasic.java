@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.netmgt.model.OnmsVlan;
+import org.opennms.netmgt.snmp.NamedSnmpVar;
+import org.opennms.netmgt.snmp.SnmpStore;
 
 public abstract class VlanTableBasic extends SnmpTable<SnmpStore> implements VlanTable {
 

@@ -335,12 +335,19 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
     /**
      * <p>getSnmpPrimary</p>
      *
+     * @deprecated It's not a good idea to have side-effects on a getter, like returning
+     * a value that does not exactly reflect the internal state of the object.
+     *
      * @return a {@link java.lang.String} object.
      */
     @XmlAttribute(name="snmp-primary")
     @XmlJavaTypeAdapter(PrimaryTypeAdapter.class)
     public PrimaryType getSnmpPrimary() {
-        return m_snmpPrimary;
+        if (m_snmpPrimary == null) {
+            return PrimaryType.NOT_ELIGIBLE;
+        } else {
+            return m_snmpPrimary;
+        }
     }
 
     /**
@@ -357,7 +364,7 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
      *
      * @return a int.
      */
-    public int getStatus() {
+    public Integer getStatus() {
         if (m_status == null) {
             return  1;
         } else {
@@ -421,7 +428,7 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
         }
         if (m_snmpPrimary == null) {
             if (other.m_snmpPrimary != null) return false;
-        } else if (!m_snmpPrimary.equals(other.m_snmpPrimary)) {
+        } else if (!getSnmpPrimary().equals(other.getSnmpPrimary())) {
             return false;
         }
         if (m_status == null) {
@@ -448,7 +455,7 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
             .append(m_ipAddress, other.m_ipAddress)
             .append(m_status, other.m_status)
             .append(m_isManaged, other.m_isManaged)
-            .append(m_snmpPrimary, other.m_snmpPrimary)
+            .append(getSnmpPrimary(), other.getSnmpPrimary())
             .append(m_monitoredServices, other.m_monitoredServices)
             .append(m_categories, other.m_categories)
             .append(m_description, other.m_description)

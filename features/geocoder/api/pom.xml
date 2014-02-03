@@ -3,13 +3,13 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.geocoder</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>1.13.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.geocoder</groupId>
   <artifactId>org.opennms.features.geocoder.api</artifactId>
   <packaging>bundle</packaging>
-  <name>OpenNMS Geocoder API</name>
+  <name>OpenNMS Features Geocoder API</name>
 
   <description>API for doing a geocoder lookup (turning an address into coordinates)</description>
   <properties>
@@ -18,7 +18,31 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
+  <dependencies>
+    <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>gwt-dependencies</artifactId>
+        <type>pom</type>
+    </dependency>
+    <dependency>
+        <groupId>com.google.gwt</groupId>
+        <artifactId>gwt-user</artifactId>
+        <scope>provided</scope>
+    </dependency>
+  </dependencies>    
+
   <build>
+
+    <resources>
+      <resource>
+        <directory>src/main/java</directory>
+        <includes>
+          <include>**/*.gwt.xml</include>
+          <include>**/*.java</include>
+        </includes>
+      </resource>
+    </resources>
+
     <plugins>
       <plugin>
         <groupId>org.apache.felix</groupId>

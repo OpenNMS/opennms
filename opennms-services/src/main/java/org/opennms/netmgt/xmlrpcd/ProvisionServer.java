@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.xmlrpcd;
 
-import java.util.Properties;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 

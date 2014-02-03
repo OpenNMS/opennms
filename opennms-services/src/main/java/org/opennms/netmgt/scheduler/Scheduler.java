@@ -98,4 +98,11 @@ public interface Scheduler extends ScheduleTimer {
 	 */
 	public abstract int getStatus();
 
+        /**
+         * Returns the total number of scheduled tasks (ReadyRunnables) that have
+         * been executed since the scheduler was initialized.
+         *
+         * @return the number of task executed
+         */
+        public abstract long getNumTasksExecuted();
 }

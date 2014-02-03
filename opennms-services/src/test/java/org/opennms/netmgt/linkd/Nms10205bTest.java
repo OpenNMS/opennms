@@ -31,100 +31,283 @@ package org.opennms.netmgt.linkd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.net.InetAddress;
+import java.util.Collection;
 import java.util.List;
-import java.util.Properties;
-
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.opennms.core.test.MockLogAppender;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
-import org.opennms.core.utils.BeanUtils;
-import org.opennms.netmgt.config.LinkdConfig;
-import org.opennms.netmgt.config.LinkdConfigFactory;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.linkd.Package;
-import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.linkd.nb.Nms10205bNetworkBuilder;
+import org.opennms.netmgt.linkd.snmp.LldpLocTable;
+import org.opennms.netmgt.linkd.snmp.LldpLocTableEntry;
+import org.opennms.netmgt.linkd.snmp.LldpLocalGroup;
+import org.opennms.netmgt.linkd.snmp.LldpRemTable;
+import org.opennms.netmgt.linkd.snmp.LldpRemTableEntry;
+import org.opennms.netmgt.linkd.snmp.OspfGeneralGroup;
+import org.opennms.netmgt.linkd.snmp.OspfIfTable;
+import org.opennms.netmgt.linkd.snmp.OspfIfTableEntry;
+import org.opennms.netmgt.linkd.snmp.OspfNbrTable;
+import org.opennms.netmgt.linkd.snmp.OspfNbrTableEntry;
 import org.opennms.netmgt.model.DataLinkInterface;
+import org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.test.JUnitConfigurationEnvironment;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.test.context.ContextConfiguration;
+import org.opennms.netmgt.snmp.CollectionTracker;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.netmgt.snmp.SnmpWalker;
 
-@RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations= {
-        "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
-        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
-        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-linkd.xml",
-        "classpath:/META-INF/opennms/applicationContext-linkdTest.xml",
-        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
-})
-@JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase
-public class Nms10205bTest extends Nms10205bNetworkBuilder implements InitializingBean {
+public class Nms10205bTest extends Nms10205bNetworkBuilder {
 
-    @Autowired
-    private Linkd m_linkd;
+    @Test
+    @JUnitSnmpAgents(value = {
+            @JUnitSnmpAgent(host = MUMBAI_IP, port = 161, resource = "classpath:linkd/nms10205b/" + MUMBAI_NAME + "_" + MUMBAI_IP + ".txt")
+    })
+    public void testMumbayOspfGeneralGroupCollection() throws Exception {
 
-    private LinkdConfig m_linkdConfig;
+        String name = "ospfGeneralGroup";
+        OspfGeneralGroup m_ospfGeneralGroup = new OspfGeneralGroup(InetAddressUtils.addr(MUMBAI_IP));
+        CollectionTracker[] tracker = new CollectionTracker[0];
+        tracker = new CollectionTracker[]{m_ospfGeneralGroup};
+        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(MUMBAI_IP));
+        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
+        walker.start();
 
-    @Autowired
-    private NodeDao m_nodeDao;
-    
-    @Autowired
-    private SnmpInterfaceDao m_snmpInterfaceDao;
-    
-    @Autowired
-    private DataLinkInterfaceDao m_dataLinkInterfaceDao;
-        
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
-    }
+        try {
+            walker.waitFor();
+        } catch (final InterruptedException e) {
 
-    @Before
-    public void setUp() throws Exception {
-        Properties p = new Properties();
-        p.setProperty("log4j.logger.org.hibernate.SQL", "WARN");
-        p.setProperty("log4j.logger.org.hibernate.cfg", "WARN");
-        p.setProperty("log4j.logger.org.springframework","WARN");
-        p.setProperty("log4j.logger.com.mchange.v2.resourcepool", "WARN");
-
-        MockLogAppender.setupLogging(p);
-
-        super.setNodeDao(m_nodeDao);
-        super.setSnmpInterfaceDao(m_snmpInterfaceDao);
-    }
-
-    @Before
-    public void setUpLinkdConfiguration() throws Exception {
-        LinkdConfigFactory.init();
-        final Resource config = new ClassPathResource("etc/linkd-configuration.xml");
-        final LinkdConfigFactory factory = new LinkdConfigFactory(-1L, config.getInputStream());
-        LinkdConfigFactory.setInstance(factory);
-        m_linkdConfig = LinkdConfigFactory.getInstance();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        for (final OnmsNode node : m_nodeDao.findAll()) {
-            m_nodeDao.delete(node);
         }
-        m_nodeDao.flush();
+
+        assertEquals(MUMBAI_OSPF_ID, m_ospfGeneralGroup.getOspfRouterId());
     }
 
+    @Test
+    @JUnitSnmpAgents(value = {
+            @JUnitSnmpAgent(host = SRX_100_IP, port = 161, resource = "classpath:linkd/nms10205b/" + "SRX-100_" + SRX_100_IP + ".txt")
+    })
+    public void testSrx100OspfGeneralGroupCollection() throws Exception {
+
+        String name = "ospfGeneralGroup";
+        OspfGeneralGroup m_ospfGeneralGroup = new OspfGeneralGroup(InetAddressUtils.addr(SRX_100_IP));
+        CollectionTracker[] tracker = new CollectionTracker[0];
+        tracker = new CollectionTracker[]{m_ospfGeneralGroup};
+        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(SRX_100_IP));
+        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
+        walker.start();
+
+        try {
+            walker.waitFor();
+        } catch (final InterruptedException e) {
+
+        }
+
+        assertEquals(SRX_100_OSPF_ID, m_ospfGeneralGroup.getOspfRouterId());
+    }
+
+    @Test
+    @JUnitSnmpAgents(value = {
+            @JUnitSnmpAgent(host = MUMBAI_IP, port = 161, resource = "classpath:linkd/nms10205b/" + MUMBAI_NAME + "_" + MUMBAI_IP + ".txt")
+    })
+    public void testMumbayOspfIfTableCollection() throws Exception {
+
+        String name = "ospfIfTable";
+        OspfIfTable m_ospfIfTable = new OspfIfTable(InetAddressUtils.addr(MUMBAI_IP));
+        CollectionTracker[] tracker = new CollectionTracker[0];
+        tracker = new CollectionTracker[]{m_ospfIfTable};
+        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(MUMBAI_IP));
+        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
+        walker.start();
+
+        try {
+            walker.waitFor();
+        } catch (final InterruptedException e) {
+
+        }
+
+        final Collection<OspfIfTableEntry> ospfifTableCollection = m_ospfIfTable.getEntries();
+        assertEquals(6, ospfifTableCollection.size());
+        for (final OspfIfTableEntry entry : ospfifTableCollection) {
+            assertEquals(0, entry.getOspfAddressLessIf().intValue());
+            InetAddress ospfIpAddress = entry.getOspfIpAddress();
+            assertEquals(true, MUMBAI_IP_IF_MAP.containsKey(ospfIpAddress));
+        }
+    }
+
+    @Test
+    @JUnitSnmpAgents(value = {
+            @JUnitSnmpAgent(host = SRX_100_IP, port = 161, resource = "classpath:linkd/nms10205b/" + "SRX-100_" + SRX_100_IP + ".txt")
+    })
+    public void testSrx100OspfIfTableCollection() throws Exception {
+
+        String name = "ospfIfTable";
+        OspfIfTable m_ospfIfTable = new OspfIfTable(InetAddressUtils.addr(SRX_100_IP));
+        CollectionTracker[] tracker = new CollectionTracker[0];
+        tracker = new CollectionTracker[]{m_ospfIfTable};
+        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(SRX_100_IP));
+        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
+        walker.start();
+
+        try {
+            walker.waitFor();
+        } catch (final InterruptedException e) {
+
+        }
+
+        final Collection<OspfIfTableEntry> ospfifTableCollection = m_ospfIfTable.getEntries();
+        assertEquals(0, ospfifTableCollection.size());
+    }
+
+    @Test
+    @JUnitSnmpAgents(value = {
+            @JUnitSnmpAgent(host = MUMBAI_IP, port = 161, resource = "classpath:linkd/nms10205b/" + MUMBAI_NAME + "_" + MUMBAI_IP + ".txt")
+    })
+    public void testMumbayOspfNbrTableCollection() throws Exception {
+
+        String name = "ospfNbrTable";
+        OspfNbrTable m_ospfNbrTable = new OspfNbrTable(InetAddressUtils.addr(MUMBAI_IP));
+        CollectionTracker[] tracker = new CollectionTracker[0];
+        tracker = new CollectionTracker[]{m_ospfNbrTable};
+        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(MUMBAI_IP));
+        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
+        walker.start();
+
+        try {
+            walker.waitFor();
+        } catch (final InterruptedException e) {
+
+        }
+
+        final Collection<OspfNbrTableEntry> ospfNbrTableCollection = m_ospfNbrTable.getEntries();
+        assertEquals(4, ospfNbrTableCollection.size());
+        for (final OspfNbrTableEntry entry : ospfNbrTableCollection) {
+            assertEquals(0, entry.getOspfNbrAddressLessIndex().intValue());
+            assertEquals(OspfNbrTableEntry.OSPF_NBR_STATE_FULL, entry.getOspfNbrState());
+            checkrow(entry);
+        }
+    }
+
+    @Test
+    @JUnitSnmpAgents(value = {
+            @JUnitSnmpAgent(host = SRX_100_IP, port = 161, resource = "classpath:linkd/nms10205b/" + "SRX-100_" + SRX_100_IP + ".txt")
+    })
+    public void testSrx100OspfNbrTableCollection() throws Exception {
+
+        String name = "ospfNbrTable";
+        OspfNbrTable m_ospfNbrTable = new OspfNbrTable(InetAddressUtils.addr(SRX_100_IP));
+        CollectionTracker[] tracker = new CollectionTracker[0];
+        tracker = new CollectionTracker[]{m_ospfNbrTable};
+        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(SRX_100_IP));
+        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
+        walker.start();
+
+        try {
+            walker.waitFor();
+        } catch (final InterruptedException e) {
+
+        }
+
+        final Collection<OspfNbrTableEntry> ospfNbrTableCollection = m_ospfNbrTable.getEntries();
+        assertEquals(0, ospfNbrTableCollection.size());
+    }
+
+    private void checkrow(OspfNbrTableEntry entry) {
+        InetAddress ip = entry.getOspfNbrIpAddress();
+        if (ip.getHostAddress().equals("192.168.5.10")) {
+            assertEquals(DELHI_OSPF_ID, entry.getOspfNbrRouterId());
+            assertEquals(true, DELHI_IP_IF_MAP.containsKey(ip));
+        } else if (ip.getHostAddress().equals("192.168.5.14")) {
+            assertEquals(BANGALORE_OSPF_ID, entry.getOspfNbrRouterId());
+            assertEquals(true, BANGALORE_IP_IF_MAP.containsKey(ip));
+        } else if (ip.getHostAddress().equals("192.168.5.18")) {
+            assertEquals(BAGMANE_OSPF_ID, entry.getOspfNbrRouterId());
+            assertEquals(true, BAGMANE_IP_IF_MAP.containsKey(ip));
+        } else if (ip.getHostAddress().equals("192.168.5.22")) {
+            assertEquals(MYSORE_OSPF_ID, entry.getOspfNbrRouterId());
+            assertEquals(true, MYSORE_IP_IF_MAP.containsKey(ip));
+        } else {
+            assertEquals(true, false);
+        }
+    }
+    
+    @Test
+    @JUnitSnmpAgents(value = {
+            @JUnitSnmpAgent(host = J6350_42_IP, port = 161, resource = "classpath:linkd/nms10205b/" + "J6350-42_" + J6350_42_IP + ".txt")
+    })
+    public void testLldpLocalBaseCollection() throws Exception {
+
+        String name = "lldpLocGroup";
+        LldpLocalGroup m_lLldpLocalGroup = new LldpLocalGroup(InetAddressUtils.addr(J6350_42_IP));
+        CollectionTracker[] tracker = new CollectionTracker[0];
+        tracker = new CollectionTracker[]{m_lLldpLocalGroup};
+        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(J6350_42_IP));
+        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
+        walker.start();
+
+        try {
+            walker.waitFor();
+        } catch (final InterruptedException e) {
+
+        }
+
+        assertEquals(4, m_lLldpLocalGroup.getLldpLocChassisidSubType().intValue());
+        assertEquals(J6350_42_LLDP_CHASSISID, m_lLldpLocalGroup.getLldpLocChassisid());
+        assertEquals(J6350_42_NAME, m_lLldpLocalGroup.getLldpLocSysname());
+    }
+
+
+    @Test
+    @JUnitSnmpAgents(value = {
+            @JUnitSnmpAgent(host = J6350_42_IP, port = 161, resource = "classpath:linkd/nms10205b/" + "J6350-42_" + J6350_42_IP + ".txt")
+    })
+    public void testLldpRemTableCollection() throws Exception {
+
+        String name = "lldpRemTable";
+        LldpRemTable m_lldpRemTable = new LldpRemTable(InetAddressUtils.addr(J6350_42_IP));
+        CollectionTracker[] tracker = new CollectionTracker[0];
+        tracker = new CollectionTracker[]{m_lldpRemTable};
+        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(J6350_42_IP));
+        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
+        walker.start();
+
+        try {
+            walker.waitFor();
+        } catch (final InterruptedException e) {
+            assertEquals(false, true);
+        }
+
+        final Collection<LldpRemTableEntry> lldpTableEntryCollection = m_lldpRemTable.getEntries();
+        assertEquals(0, lldpTableEntryCollection.size());
+    }
+
+    @Test
+    @JUnitSnmpAgents(value = {
+            @JUnitSnmpAgent(host = J6350_42_IP, port = 161, resource = "classpath:linkd/nms10205b/" + "J6350-42_" + J6350_42_IP + ".txt")
+    })
+    public void testLldpLocTableCollection() throws Exception {
+
+        String name = "lldpLocTable";
+        LldpLocTable m_lldpLocTable = new LldpLocTable(InetAddressUtils.addr(J6350_42_IP));
+        CollectionTracker[] tracker = new CollectionTracker[0];
+        tracker = new CollectionTracker[]{m_lldpLocTable};
+        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(J6350_42_IP));
+        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
+        walker.start();
+
+        try {
+            walker.waitFor();
+        } catch (final InterruptedException e) {
+            assertEquals(false, true);
+        }
+
+        final Collection<LldpLocTableEntry> lldpTableEntryCollection = m_lldpLocTable.getEntries();
+        assertEquals(4, lldpTableEntryCollection.size());
+        for (final LldpLocTableEntry entry : lldpTableEntryCollection) {
+            assertEquals(7, entry.getLldpLocPortIdSubtype().intValue());
+        }
+
+    }
     /*
      * 
 MUMBAI_10.205.56.5: (LLDP is not supported on this device_family=m320)
@@ -268,21 +451,22 @@ Address          Interface              State     ID               Pri  Dead
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
 
         final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
-        assertEquals(12, links.size());
+        assertEquals(27, links.size());
         
         /*
 
                 The topology layout:
 
-Parentnode     ParentInterface                  Node            Interface               LinkdStrategy           id
+Parentnode     ParentInterface (Ifindex)     Node            Interface         (IfIndex) LinkdStrategy           id
 
 Mumbai          ge-0/1/2.0      (519)  ----> Delhi             ge-1/0/2.0      (28503)  next hop router         800
 Mumbai          ge-0/0/1.0      (507)  ----> Bangalore         ge-0/0/0.0      (2401)   next hop router         801
 Mumbai          ge-0/0/2.0      (977)  ----> Bagmane           ge-1/0/0.0      (534)    next hop router         802
 Mumbai          ge-0/1/1.0      (978)  ----> Mysore            ge-0/0/1.0      (508)    next hop router         803
+Mumbai          ge-0/0/3.0      (508)  ----> Space_ex_sw2      me0.0           (34)    next hop router         803
 
 Delhi           ge-1/0/1.0     (3674)  ----> Bangalore         ge-0/0/1.0      (2397)   next hop router         804
-Delhi           ge-1/1/6.0     (17619) ----> Space_ex_sw1      ge-0/0/6.0      (528)    next hop router ****1   not saved
+Delhi           ge-1/1/6.0     (17619) ----> Space_ex_sw1      ge-0/0/6.0      (528)    next hop router ****1   OK
 Delhi           ge-1/1/6       (28520) ----> Space-EX-SW1      ge-0/0/6.0      (528)    lldp            ****1   805
 Delhi           ge-1/1/5       (28519) ----> Bagmane           ge-1/0/1        (513)    lldp                    811
 
@@ -290,16 +474,11 @@ Bangalore       ge-0/0/3.0     (2398)  ----> Space_ex_sw2      ge-0/0/3.0      (
 Bangalore       ge-0/1/0.0     (2396)  ----> Bagmane           ge-1/0/4.0      (1732)   next hop router         807
 
 Bagmane         ge-1/0/5.0      (654)  ----> Mysore            ge-0/1/1.0      (520)    next hop router         808
-Bagmane         ge-1/0/2        (514)  ----> J6350-2           ge-0/0/2.0      (549)    lldp            ****2   809
-Bagmane         ge-1/0/2.0      (540)  ----> J6350_42          ge-0/0/2.0      (549)    next hop router ****2   not saved
+Bagmane         ge-1/0/2        (514)  ----> J6350-42          ge-0/0/2.0      (549)    lldp            ****2   809
+Bagmane         ge-1/0/2.0      (540)  ----> J6350_42          ge-0/0/2.0      (549)    next hop router ****2   OK
 
 Space-EX-SW1    ge-0/0/0.0      (1361)  ----> Space-EX-SW2     ge-0/0/0.0      (531)    lldp            ****3   810
 Space_ex_sw1    ge-0/0/0.0      (1361)  ----> Space_ex_sw2     ge-0/0/0.0      (531)    next hop router ****3   810
-
-        Here you clearly see 15 links but globally linkd saves only 12 nodes.
-        The problem is that somewhere is stated that nodeid,ifindex must be unique.
-        This means that the links with * are overwritten. because the iproute strategy follows the 
-        lldp strategy then the route link is saved.
         
         Linkd is able to find the topology using the next hop router
         and lldp among the core nodes:
@@ -319,30 +498,88 @@ Space_ex_sw1    ge-0/0/0.0      (1361)  ----> Space_ex_sw2     ge-0/0/0.0      (
         int start = getStartPoint(links);
         for (final DataLinkInterface datalinkinterface: links) {
             int id = datalinkinterface.getId().intValue();
+
             if (start == id) {
+                checkLink(mumbai, delhi, 519, 28503, datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+            } else if (start+12 == id ) {
                 checkLink(delhi, mumbai, 28503, 519, datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
             } else if (start+1 == id ) {
+                checkLink(mumbai,bangalore,507,2401,datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+            } else if (start+13 == id ) {
                 checkLink(bangalore, mumbai, 2401, 507, datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
             } else if (start+2 == id ) {
-            	checkLink(bagmane, mumbai, 534, 977, datalinkinterface);
+                checkLink(mumbai, bagmane, 977, 534, datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+            } else if (start+14 == id ) {
+                checkLink(bagmane, mumbai, 534, 977, datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
             } else if (start+3 == id ) {
-            	checkLink(mysore, mumbai, 508, 978, datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+                checkLink(mumbai, mysore, 978, 508, datalinkinterface);
+            } else if (start+15 == id ) {
+                checkLink(mysore, mumbai, 508, 978, datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
             } else if (start+4 == id ) {
-            	checkLink(bangalore, delhi, 2397, 3674, datalinkinterface);
+                checkLink( delhi,bangalore, 3674, 2397, datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+            } else if (start+16 == id ) {
+                checkLink(bangalore, delhi, 2397, 3674, datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
             } else if (start+5 == id ) {
-            	checkLink(spaceexsw1, delhi, 528, 28520, datalinkinterface);
+                checkLink(delhi, spaceexsw1,  17619,528, datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+            } else if (start+17 == id ) {
+                checkLink(spaceexsw1, delhi, 528, 17619, datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
+            } else if (start+24 == id ) {
+                checkLink(spaceexsw1, delhi, 528, 28520, datalinkinterface);
+                assertEquals(DiscoveryProtocol.lldp, datalinkinterface.getProtocol());
             } else if (start+6 == id ) {
-            	checkLink(spaceexsw2, bangalore, 551, 2398, datalinkinterface);
+                checkLink(bangalore, spaceexsw2, 2398, 551, datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+            } else if (start+19 == id ) {
+                checkLink(spaceexsw2, bangalore, 551, 2398, datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
             } else if (start+7 == id ) {
-            	checkLink(bagmane, bangalore, 1732, 2396, datalinkinterface);
+                checkLink(bangalore, bagmane, 2396, 1732, datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+            } else if (start+18 == id ) {
+                checkLink(bagmane, bangalore, 1732, 2396, datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
             } else if (start+8 == id ) {
-            	checkLink(mysore, bagmane, 520, 654, datalinkinterface);
+                checkLink(bagmane , mysore, 654, 520, datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+            } else if (start+20 == id ) {
+                checkLink(mysore, bagmane, 520, 654, datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
             } else if (start+9 == id ) {
-            	checkLink(j635042, bagmane, 549, 514, datalinkinterface);
+                checkLink(bagmane, j635042, 540, 549, datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+            } else if (start+21 == id ) {
+                checkLink(j635042, bagmane, 549, 540 , datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
+            } else if (start+25 == id ) {
+                checkLink(j635042, bagmane, 549, 514, datalinkinterface);
+                assertEquals(DiscoveryProtocol.lldp, datalinkinterface.getProtocol());
             } else if (start+10 == id ) {
-            	checkLink(spaceexsw2, spaceexsw1, 531, 1361, datalinkinterface);
+                checkLink(spaceexsw1, spaceexsw2, 1361, 531, datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+            } else if (start+22 == id ) {
+                checkLink(spaceexsw2, spaceexsw1, 531, 1361, datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
+            } else if (start+26 == id ) {
+                checkLink(spaceexsw2, spaceexsw1, 531, 1361, datalinkinterface);
+                assertEquals(DiscoveryProtocol.lldp, datalinkinterface.getProtocol());
             } else if (start+11 == id ) {
-            	checkLink(bagmane, delhi, 513, 28519, datalinkinterface);
+                checkLink(spaceexsw2, mumbai,  34,508, datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+            } else if (start+23 == id ) {
+                checkLink(bagmane, delhi, 513, 28519, datalinkinterface);
+                assertEquals(DiscoveryProtocol.lldp, datalinkinterface.getProtocol());
             } else  {
             	checkLink(mumbai,mumbai,-1,-1,datalinkinterface);
             }
@@ -431,6 +668,7 @@ it has a link to Mysore that does not support LLDP
         example1.setUseCdpDiscovery(false);
         example1.setUseIpRouteDiscovery(false);
         example1.setUseOspfDiscovery(false);
+        example1.setUseIsisDiscovery(false);
 
         example1.setSaveRouteTable(false);
         example1.setSaveStpInterfaceTable(false);
@@ -485,6 +723,7 @@ it has a link to Mysore that does not support LLDP
         int start = getStartPoint(links);
         for (final DataLinkInterface datalinkinterface: links) {
             int id = datalinkinterface.getId().intValue();
+            assertEquals(DiscoveryProtocol.lldp, datalinkinterface.getProtocol());
             if (start == id) {
             	checkLink(bagmane, delhi, 513, 28519, datalinkinterface);
             } else if (start+1 == id ) {
@@ -589,6 +828,7 @@ Address          Interface              State     ID               Pri  Dead
         example1.setUseBridgeDiscovery(false);
         example1.setUseIpRouteDiscovery(false);
         example1.setUseOspfDiscovery(true);
+        example1.setUseIsisDiscovery(false);
 
         example1.setSaveStpInterfaceTable(false);
         example1.setSaveStpNodeTable(false);
@@ -659,6 +899,7 @@ Space_ex_sw1    ge-0/0/0.0      (1361)  ----> Space_ex_sw2     ge-0/0/0.0      (
         int start = getStartPoint(links);
         for (final DataLinkInterface datalinkinterface: links) {
             int id = datalinkinterface.getId().intValue();
+            assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
             if (start == id ) {
                 checkLink(delhi, mumbai, 28503, 519, datalinkinterface);
             } else if (start+1 == id) {

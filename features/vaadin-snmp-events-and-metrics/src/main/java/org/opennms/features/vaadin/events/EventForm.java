@@ -27,135 +27,200 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.events;
 
-import java.util.Arrays;
-
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.xml.eventconf.AlarmData;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
 import org.opennms.netmgt.xml.eventconf.Mask;
 
+import com.vaadin.data.fieldgroup.FieldGroup;
+import com.vaadin.data.fieldgroup.PropertyId;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.NestedMethodProperty;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Form;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.themes.Runo;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.TextArea;
+import com.vaadin.ui.TextField;
 
-import de.steinwedel.vaadin.MessageBox;
-import de.steinwedel.vaadin.MessageBox.ButtonType;
-import de.steinwedel.vaadin.MessageBox.EventListener;
-
+/*
+ * According with the following JUnit test, the nested properties binding is supported:
+ * https://github.com/vaadin/vaadin/blob/master/uitest/src/com/vaadin/tests/fieldgroup/FormWithNestedProperties.java
+ */
 /**
  * The Class Event Form.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public abstract class EventForm extends Form implements ClickListener {
+public class EventForm extends CustomComponent {
 
-    /** The Constant FORM_ITEMS. */
-    public static final String[] FORM_ITEMS = new String[] {
-        "uei",
-        "eventLabel",
-        "descr",
-        "logMsgContent",         // Embedded from LogMsg object
-        "logMsgDest",            // Embedded from LogMsg object
-        "severity",
-        "alarmDataReductionKey", // Embedded from AlarmData object
-        "alarmDataClearKey",     // Embedded from AlarmData object
-        "alarmDataAlarmType",    // Embedded from AlarmData object
-        "alarmDataAutoClean",    // Embedded from AlarmData object
-        "operinstruct",
-        "maskElements",
-        "maskVarbinds",
-        "varbindsdecodeCollection"
-        /*
-         * Not Implemented:
-         * 
-         * autoactionCollection (CustomField)
-         * operactionCollection (CustomField)
-         * correlation (CustomField)
-         * autoacknowledge (CustomField)
-         */
-    };
+    /** The event uei. */
+    @PropertyId("uei")
+    final TextField eventUei = new TextField("Event UEI");
 
-    /** The Edit button. */
-    private final Button edit = new Button("Edit");
+    /** The event label. */
+    @PropertyId("eventLabel")
+    final TextField eventLabel = new TextField("Event Label");
 
-    /** The Delete button. */
-    private final Button delete = new Button("Delete");
+    /** The descr. */
+    @PropertyId("descr")
+    final TextArea eventDescr = new TextArea("Description");
 
-    /** The Save button. */
-    private final Button save = new Button("Save");
+    /** The logmsg dest. */
+    @PropertyId("logMsgDest")
+    final ComboBox logMsgDest = new ComboBox("Destination");
 
-    /** The Cancel button. */
-    private final Button cancel = new Button("Cancel");
+    /** The logmsg content. */
+    @PropertyId("logMsgContent")
+    final TextArea logMsgContent = new TextArea("Log Message");
+
+    /** The severity. */
+    @PropertyId("severity")
+    final ComboBox eventSeverity = new ComboBox("Severity");
+
+    /** The alarm data alarm type. */
+    @PropertyId("alarmDataAlarmType")
+    final ComboBox alarmDataAlarmType = new ComboBox("Alarm Type");
+
+    /** The alarm data auto clean. */
+    @PropertyId("alarmDataAutoClean")
+    final CheckBox alarmDataAutoClean = new CheckBox("Auto Clean");
+
+    /** The alarm data reduction key. */
+    @PropertyId("alarmDataReductionKey")
+    final TextField alarmDataReductionKey = new TextField("Reduction Key");
+
+    /** The alarm data clear key. */
+    @PropertyId("alarmDataClearKey")
+    final TextField alarmDataClearKey = new TextField("Clear Key");
+
+    /** The oper. */
+    @PropertyId("operinstruct")
+    final TextArea eventOperInstruct = new TextArea("Operator Instructions");
+
+    /** The mask elements. */
+    @PropertyId("maskElements")
+    final MaskElementField maskElements = new MaskElementField("Mask Elements");
+
+    /** The mask varbinds. */
+    @PropertyId("maskVarbinds")
+    final MaskVarbindField maskVarbinds = new MaskVarbindField("Mask Varbinds");
+
+    /** The varbinds decodes. */
+    @PropertyId("varbindsdecodeCollection")
+    final VarbindsDecodeField varbindsDecodes = new VarbindsDecodeField("Varbind Decodes");
+
+    /** The Event editor. */
+    private final FieldGroup eventEditor = new FieldGroup();
+
+    /** The event layout. */
+    private final FormLayout eventLayout = new FormLayout();
 
     /**
      * Instantiates a new event form.
      */
     public EventForm() {
         setCaption("Event Detail");
-        setBuffered(true);
-        setVisible(false);
-        setFormFieldFactory(new EventFormFieldFactory());
-        initToolbar();
-    }
+        eventLayout.setSpacing(true);
 
-    /**
-     * Initialize the Toolbar.
-     */
-    private void initToolbar() {
-        save.addClickListener(this);
-        cancel.addClickListener(this);
-        edit.addClickListener(this);
-        delete.addClickListener(this);
+        eventUei.setRequired(true);
+        eventUei.setWidth("100%");
+        eventLayout.addComponent(eventUei);
 
-        HorizontalLayout toolbar = new HorizontalLayout();
-        toolbar.setSpacing(true);
-        toolbar.addComponent(edit);
-        toolbar.addComponent(delete);
-        toolbar.addComponent(save);
-        toolbar.addComponent(cancel);
+        eventLabel.setRequired(true);
+        eventLabel.setWidth("100%");
+        eventLayout.addComponent(eventLabel);
 
-        setFooter(toolbar);
+        eventDescr.setWidth("100%");
+        eventDescr.setRows(10);
+        eventDescr.setRequired(true);
+        eventDescr.setNullRepresentation("");
+        eventLayout.addComponent(eventDescr);
+
+        logMsgDest.addItem("logndisplay");
+        logMsgDest.addItem("logonly");
+        logMsgDest.addItem("suppress");
+        logMsgDest.addItem("donotpersist");
+        logMsgDest.addItem("discardtraps");
+        logMsgDest.setNullSelectionAllowed(false);
+        logMsgDest.setRequired(true);
+        eventLayout.addComponent(logMsgDest);
+
+        logMsgContent.setWidth("100%");
+        logMsgContent.setRows(10);
+        logMsgContent.setRequired(true);
+        logMsgContent.setNullRepresentation("");
+        eventLayout.addComponent(logMsgContent);
+
+        alarmDataAlarmType.addItem(new Integer(1));
+        alarmDataAlarmType.addItem(new Integer(2));
+        alarmDataAlarmType.addItem(new Integer(3));
+        alarmDataAlarmType.setDescription("<b>1</b> to be a problem that has a possible resolution, alarm-type set to <b>2</b> to be a resolution event, and alarm-type set to <b>3</b> for events that have no possible resolution");
+        alarmDataAlarmType.setNullSelectionAllowed(false);
+        eventLayout.addComponent(alarmDataAlarmType);
+
+        alarmDataAutoClean.setWidth("100%");
+        eventLayout.addComponent(alarmDataAutoClean);
+
+        alarmDataReductionKey.setWidth("100%");
+        alarmDataReductionKey.setNullRepresentation("");
+        eventLayout.addComponent(alarmDataReductionKey);
+
+        alarmDataClearKey.setWidth("100%");
+        alarmDataClearKey.setNullRepresentation("");
+        eventLayout.addComponent(alarmDataClearKey);
+
+        for (String sev : OnmsSeverity.names()) {
+            eventSeverity.addItem(sev.substring(0, 1).toUpperCase() + sev.substring(1).toLowerCase());
+        }
+        eventSeverity.setNullSelectionAllowed(false);
+        eventSeverity.setRequired(true);
+        eventLayout.addComponent(eventSeverity);
+
+        eventDescr.setWidth("100%");
+        eventDescr.setRows(10);
+        eventDescr.setRequired(true);
+        eventDescr.setNullRepresentation("");
+        eventLayout.addComponent(eventDescr);
+
+        eventOperInstruct.setWidth("100%");
+        eventOperInstruct.setRows(10);
+        eventOperInstruct.setNullRepresentation("");
+        eventLayout.addComponent(eventOperInstruct);
+
+        eventLayout.addComponent(maskElements);
+        eventLayout.addComponent(maskVarbinds);
+        eventLayout.addComponent(varbindsDecodes);
+
+        setEvent(createBasicEvent());
+        eventEditor.bindMemberFields(this);
+
+        setCompositionRoot(eventLayout);
     }
 
     /**
      * Gets the event.
      *
-     * @return the event
+     * @return the OpenNMS event
      */
     @SuppressWarnings("unchecked")
-    private org.opennms.netmgt.xml.eventconf.Event getEvent() {
-        if (getItemDataSource() instanceof BeanItem) {
-            BeanItem<org.opennms.netmgt.xml.eventconf.Event> item = (BeanItem<org.opennms.netmgt.xml.eventconf.Event>) getItemDataSource();
-            return item.getBean();
-        }
-        return null;
+    public org.opennms.netmgt.xml.eventconf.Event getEvent() {
+        return ((BeanItem<org.opennms.netmgt.xml.eventconf.Event>) eventEditor.getItemDataSource()).getBean();
     }
 
     /**
-     * Creates the event item.
+     * Sets the event.
      *
-     * @param event the event
-     * @return the bean item
+     * @param event the new OpenNMS event
      */
-    private BeanItem<org.opennms.netmgt.xml.eventconf.Event> createEventItem(org.opennms.netmgt.xml.eventconf.Event event) {
-        // Be sure that the nested elements exists to avoid problems with vaadin fields.
-        if (event.getMask() == null) {
+    public void setEvent(org.opennms.netmgt.xml.eventconf.Event event) {
+        // Normalize the Event Content (required to avoid UI problems)
+        if (event.getMask() == null)
             event.setMask(new Mask());
-        }
-        if (event.getLogmsg() == null) {
-            event.setLogmsg(new Logmsg());
-        }
-        if (event.getAlarmData() == null) {
-            AlarmData a = new AlarmData();
-            a.setAutoClean(Boolean.FALSE);
-            event.setAlarmData(a);
-        }
-        // Creating BeanItem
+        if (event.getAlarmData() == null)
+            event.setAlarmData(new AlarmData());
+        // Create the BeanItem
         BeanItem<org.opennms.netmgt.xml.eventconf.Event> item = new BeanItem<org.opennms.netmgt.xml.eventconf.Event>(event);
         item.addItemProperty("logMsgContent", new NestedMethodProperty<String>(item.getBean(), "logmsg.content"));
         item.addItemProperty("logMsgDest", new NestedMethodProperty<String>(item.getBean(), "logmsg.dest"));
@@ -165,81 +230,52 @@ public abstract class EventForm extends Form implements ClickListener {
         item.addItemProperty("alarmDataAutoClean", new NestedMethodProperty<String>(item.getBean(), "alarmData.AutoClean"));
         item.addItemProperty("maskElements", new NestedMethodProperty<String>(item.getBean(), "mask.maskelementCollection"));
         item.addItemProperty("maskVarbinds", new NestedMethodProperty<String>(item.getBean(), "mask.varbindCollection"));
-        return item;
+        eventEditor.setItemDataSource(item);
     }
 
     /**
-     * Sets the Event Data Source
-     * 
-     * @param event the OpenNMS event
+     * Creates the OpenNMS event.
+     *
+     * @return the basic example OpenNMS event
      */
-    public void setEventDataSource(org.opennms.netmgt.xml.eventconf.Event event) {
-        BeanItem<org.opennms.netmgt.xml.eventconf.Event> item = createEventItem(event);
-        setItemDataSource(item, Arrays.asList(FORM_ITEMS));
+    public org.opennms.netmgt.xml.eventconf.Event createBasicEvent() {
+        org.opennms.netmgt.xml.eventconf.Event e = new org.opennms.netmgt.xml.eventconf.Event();
+        e.setUei("uei.opennms.org/newEvent");
+        e.setEventLabel("New Event");
+        e.setDescr("New Event Description");
+        e.setLogmsg(new Logmsg());
+        e.getLogmsg().setContent("New Event Log Message");
+        e.getLogmsg().setDest("logndisplay");
+        e.setSeverity("Indeterminate");
+        e.setMask(new Mask());
+        e.setAlarmData(new AlarmData());
+        return e;
+    }
+
+    /**
+     * Gets the field group.
+     *
+     * @return the field group
+     */
+    public FieldGroup getFieldGroup() {
+        return eventEditor;
     }
 
     /* (non-Javadoc)
-     * @see com.vaadin.ui.Form#setReadOnly(boolean)
+     * @see com.vaadin.ui.AbstractComponent#setReadOnly(boolean)
      */
     @Override
     public void setReadOnly(boolean readOnly) {
         super.setReadOnly(readOnly);
-        save.setVisible(!readOnly);
-        cancel.setVisible(!readOnly);
-        edit.setVisible(readOnly);
-        delete.setVisible(readOnly);
+        eventEditor.setReadOnly(readOnly);
     }
 
     /* (non-Javadoc)
-     * @see com.vaadin.ui.Button.ClickListener#buttonClick(com.vaadin.ui.Button.ClickEvent)
+     * @see com.vaadin.ui.AbstractComponent#isReadOnly()
      */
     @Override
-    public void buttonClick(ClickEvent event) {
-        Button source = event.getButton();
-        if (source == save) {
-            commit();
-            setReadOnly(true);
-            saveEvent(getEvent());
-        }
-        if (source == cancel) {
-            discard();
-            setReadOnly(true);
-        }
-        if (source == edit) {
-            setReadOnly(false);
-        }
-        if (source == delete) {
-            MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
-                                           "Are you sure?",
-                                           MessageBox.Icon.QUESTION,
-                                           "Do you really want to remove the event definition " + getEvent().getUei() + "?<br/>This action cannot be undone.",
-                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
-                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
-            mb.addStyleName(Runo.WINDOW_DIALOG);
-            mb.show(new EventListener() {
-                @Override
-                public void buttonClicked(ButtonType buttonType) {
-                    if (buttonType == MessageBox.ButtonType.YES) {
-                        setVisible(false);
-                        deleteEvent(getEvent());
-                    }
-                }
-            });
-        }
+    public boolean isReadOnly() {
+        return super.isReadOnly() && eventEditor.isReadOnly();
     }
-
-    /**
-     * Save event.
-     *
-     * @param event the event
-     */
-    public abstract void saveEvent(org.opennms.netmgt.xml.eventconf.Event event);
-
-    /**
-     * Delete event.
-     *
-     * @param event the event
-     */
-    public abstract void deleteEvent(org.opennms.netmgt.xml.eventconf.Event event);
-
+    
 }

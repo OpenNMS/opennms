@@ -35,6 +35,7 @@ import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.fiber.PausableFiber;
@@ -83,6 +84,11 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
      * The worker thread that executes this instance.
      */
     private Thread m_worker;
+
+    /**
+     * Used to keep track of the number of tasks that have been executed.
+     */
+    private long m_numTasksExecuted = 0;
 
     /**
      * This queue extends the standard FIFO queue instance so that it is
@@ -440,6 +446,17 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
                                 // Add runnable to the execution queue
                                 m_runner.execute(readyRun);
                                 ++runned;
+
+                                // Increment the execution counter
+                                ++m_numTasksExecuted;
+
+                                // Thread Pool Statistics
+                                if (m_runner instanceof ThreadPoolExecutor) {
+                                    ThreadPoolExecutor e = (ThreadPoolExecutor) m_runner;
+                                    String ratio = String.format("%.3f", e.getTaskCount() > 0 ? new Double(e.getCompletedTaskCount())/new Double(e.getTaskCount()) : 0);
+                                    LOG.debug("thread pool statistics: activeCount={}, taskCount={}, completedTaskCount={}, completedRatio={}, poolSize={}",
+                                        e.getActiveCount(), e.getTaskCount(), e.getCompletedTaskCount(), ratio, e.getPoolSize());
+                                }
                             }
                         } catch (InterruptedException e) {
                             return; // jump all the way out
@@ -474,5 +491,11 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
             m_status = STOPPED;
         }
 
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getNumTasksExecuted() {
+        return m_numTasksExecuted;
     }
 }

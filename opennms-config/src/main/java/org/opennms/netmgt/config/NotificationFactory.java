@@ -58,11 +58,6 @@ public class NotificationFactory extends NotificationManager {
     private static NotificationFactory instance;
 
     /**
-     * Configuration file handle
-     */
-    protected File m_notifConfFile;
-
-    /**
      * Boolean indicating if the init() method has been called
      */
     private static boolean initialized = false;
@@ -109,7 +104,6 @@ public class NotificationFactory extends NotificationManager {
      */
     public static synchronized void init() throws IOException, FileNotFoundException, MarshalException, ValidationException, ClassNotFoundException, SQLException, PropertyVetoException  {
         if (!initialized) {
-            DataSourceFactory.init();
             instance = new NotificationFactory();
             instance.reload();
             initialized = true;

@@ -296,8 +296,7 @@ public class Correlation implements Serializable {
      */
     public boolean removeCuei(
             final java.lang.String vCuei) {
-        boolean removed = _cueiList.remove(vCuei);
-        return removed;
+        return _cueiList.remove(vCuei);
     }
 
     /**
@@ -308,8 +307,7 @@ public class Correlation implements Serializable {
      */
     public java.lang.String removeCueiAt(
             final int index) {
-        java.lang.Object obj = this._cueiList.remove(index);
-        return (java.lang.String) obj;
+        return this._cueiList.remove(index);
     }
 
     /**

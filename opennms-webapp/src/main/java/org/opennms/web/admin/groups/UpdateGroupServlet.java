@@ -70,7 +70,7 @@ public class UpdateGroupServlet extends HttpServlet {
             // get the rest of the group information from the form
             newGroup.removeAllUser();
 
-            String users[] = request.getParameterValues("selectedUsers");
+            String[] users = request.getParameterValues("selectedUsers");
 
             if (users != null) {
                 for (int i = 0; i < users.length; i++) {

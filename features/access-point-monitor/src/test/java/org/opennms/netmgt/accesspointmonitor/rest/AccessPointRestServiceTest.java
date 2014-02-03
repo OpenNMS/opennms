@@ -28,20 +28,42 @@
 
 package org.opennms.netmgt.accesspointmonitor.rest;
 
-import org.junit.Test;
 import static org.junit.Assert.assertTrue;
-import org.opennms.core.test.MockLogAppender;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
+import org.opennms.test.JUnitConfigurationEnvironment;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.web.WebAppConfiguration;
+
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@WebAppConfiguration
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-service.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
+
+         // Unit test database populator
+        "classpath:/META-INF/opennms/applicationContext-accessPointDatabasePopulator.xml"
+})
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase
 public class AccessPointRestServiceTest extends AbstractSpringJerseyRestTestCase {
+
+    @Autowired
     private AccessPointDatabasePopulator m_databasePopulator;
 
     @Override
     protected void afterServletStart() {
         MockLogAppender.setupLogging(true, "DEBUG");
-        final WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
-        m_databasePopulator = context.getBean("accessPointDatabasePopulator", AccessPointDatabasePopulator.class);
         m_databasePopulator.populateDatabase();
     }
 

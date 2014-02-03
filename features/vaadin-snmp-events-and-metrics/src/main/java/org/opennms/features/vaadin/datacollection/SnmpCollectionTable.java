@@ -27,15 +27,13 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
-import org.opennms.netmgt.config.DataCollectionConfigDao;
-import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.opennms.features.vaadin.api.OnmsBeanContainer;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
 
-import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanContainer;
-import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.themes.Runo;
 
 /**
  * The Class SNMP Collection Table.
@@ -43,74 +41,76 @@ import com.vaadin.ui.themes.Runo;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public abstract class SnmpCollectionTable extends Table {
-
-    /** The Constant COLUMN_NAMES. */
-    public static final String[] COLUMN_NAMES = new String[] { "name", "snmpStorageFlag" };
-
-    /** The Constant COLUMN_LABELS. */
-    public static final String[] COLUMN_LABELS = new String[] { "SNMP Collection Name", "SNMP Storage Flag" };
-
-    /** The OpenNMS Data Collection Config DAO. */
-    private final DataCollectionConfigDao dataCollectionConfigDao;
+public class SnmpCollectionTable extends Table {
 
     /** The SNMP Collection Container. */
-    private BeanContainer<String,SnmpCollection> container = new BeanContainer<String,SnmpCollection>(SnmpCollection.class);
+    private OnmsBeanContainer<SnmpCollection> container = new OnmsBeanContainer<SnmpCollection>(SnmpCollection.class);
 
     /**
      * Instantiates a new SNMP collection table.
      *
-     * @param dataCollectionConfigDao the OpenNMS data collection configuration DAO
+     * @param snmpCollections the snmp collections
      */
-    public SnmpCollectionTable(final DataCollectionConfigDao dataCollectionConfigDao) {
-        this.dataCollectionConfigDao = dataCollectionConfigDao;
-        container.setBeanIdProperty("name");
-        refreshSnmpCollections();
+    public SnmpCollectionTable(final List<SnmpCollection> snmpCollections) {
+        setSnmpCollections(snmpCollections);
         setContainerDataSource(container);
-        setStyleName(Runo.TABLE_SMALL);
+        addStyleName("light");
         setImmediate(true);
         setSelectable(true);
-        setVisibleColumns(COLUMN_NAMES);
-        setColumnHeaders(COLUMN_LABELS);
+        setVisibleColumns(new Object[] { "name", "snmpStorageFlag" });
+        setColumnHeaders(new String[] { "SNMP Collection Name", "SNMP Storage Flag" });
         setWidth("100%");
         setHeight("250px");
-        addValueChangeListener(new Property.ValueChangeListener() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public void valueChange(Property.ValueChangeEvent event) {
-                if (getValue() != null) {
-                    BeanItem<SnmpCollection> item = (BeanItem<SnmpCollection>) getContainerDataSource().getItem(getValue());
-                    updateExternalSource(item);
-                }
-            }
-        });
     }
 
     /**
-     * Update external source.
+     * Gets the SNMP collection.
      *
-     * @param item the item
+     * @param snmpCollectionId the SNMP collection ID (the Item ID associated with the container)
+     * @return the SNMP collection
      */
-    public abstract void updateExternalSource(BeanItem<SnmpCollection> item);
-
-    /**
-     * Adds the SNMP collection.
-     *
-     * @param snmpCollection the SNMP collection
-     */
-    @SuppressWarnings("unchecked")
-    public void addSnmpCollection(SnmpCollection snmpCollection) {
-        ((BeanContainer<String,SnmpCollection>) getContainerDataSource()).addBean(snmpCollection);
+    public SnmpCollection getSnmpCollection(Object snmpCollectionId) {
+        return container.getItem(snmpCollectionId).getBean();
     }
 
     /**
-     * Refresh SNMP collections.
+     * Adds the SNMP Collection.
+     *
+     * @param snmpCollection the new SNMP Collection
+     * @return the snmpCollectionId
      */
-    public void refreshSnmpCollections() {
-        final DatacollectionConfig dataCollectionConfig = dataCollectionConfigDao.getRootDataCollection();
+    public Object addSnmpCollection(SnmpCollection snmpCollection) {
+        Object snmpCollectionId = container.addOnmsBean(snmpCollection);
+        select(snmpCollectionId);
+        return snmpCollectionId;
+    }
+
+    /**
+     * Sets the SNMP collections.
+     *
+     * @param snmpCollections the new SNMP collections
+     */
+    public void setSnmpCollections(List<SnmpCollection> snmpCollections) {
         container.removeAllItems();
-        container.addAll(dataCollectionConfig.getSnmpCollectionCollection());
-        container.removeItem("__resource_type_collection"); // This is a protected collection and should not be edited.
+        for (SnmpCollection sc : snmpCollections) {
+            // Ignoring an internal collection created to handle resource types only if exist
+            if (!sc.getName().equals("__resource_type_collection")) {
+                container.addOnmsBean(sc);
+            }
+        }
+    }
+
+    /**
+     * Gets the SNMP collections.
+     *
+     * @return the SNMP collections
+     */
+    public List<SnmpCollection> getSnmpCollections() {
+        List<SnmpCollection> snmpCollections = new ArrayList<SnmpCollection>();
+        for (Object itemId : container.getItemIds()) {
+            snmpCollections.add(container.getItem(itemId).getBean());
+        }
+        return snmpCollections;
     }
 
 }

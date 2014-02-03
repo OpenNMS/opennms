@@ -39,7 +39,8 @@ import java.util.List;
 
 import javax.servlet.ServletContext;
 
-import org.opennms.core.resource.Vault;
+import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.outage.filter.InterfaceFilter;
 import org.opennms.web.outage.filter.NodeFilter;
@@ -76,20 +77,21 @@ public class OutageFactory extends Object {
      */
     public static int getOutageCount() throws SQLException {
         int outageCount = 0;
-        Connection conn = Vault.getDbConnection();
+        final Connection conn = DataSourceFactory.getInstance().getConnection();
+        final DBUtils d = new DBUtils(OutageFactory.class, conn);
 
         try {
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT COUNT(OUTAGEID) AS OUTAGECOUNT FROM OUTAGES " + "JOIN NODE USING(NODEID) " + "JOIN IPINTERFACE ON OUTAGES.NODEID=IPINTERFACE.NODEID AND OUTAGES.IPADDR=IPINTERFACE.IPADDR " + "JOIN IFSERVICES ON OUTAGES.NODEID=IFSERVICES.NODEID AND OUTAGES.IPADDR=IFSERVICES.IPADDR AND OUTAGES.SERVICEID=IFSERVICES.SERVICEID " + "WHERE IFREGAINEDSERVICE IS NULL " + "AND (NODE.NODETYPE != 'D' AND IPINTERFACE.ISMANAGED != 'D' AND IFSERVICES.STATUS != 'D') ");
+            final Statement stmt = conn.createStatement();
+            d.watch(stmt);
+
+            final ResultSet rs = stmt.executeQuery("SELECT COUNT(OUTAGEID) AS OUTAGECOUNT FROM OUTAGES " + "JOIN NODE USING(NODEID) " + "JOIN IPINTERFACE ON OUTAGES.NODEID=IPINTERFACE.NODEID AND OUTAGES.IPADDR=IPINTERFACE.IPADDR " + "JOIN IFSERVICES ON OUTAGES.NODEID=IFSERVICES.NODEID AND OUTAGES.IPADDR=IFSERVICES.IPADDR AND OUTAGES.SERVICEID=IFSERVICES.SERVICEID " + "WHERE IFREGAINEDSERVICE IS NULL " + "AND (NODE.NODETYPE != 'D' AND IPINTERFACE.ISMANAGED != 'D' AND IFSERVICES.STATUS != 'D') ");
+            d.watch(rs);
 
             if (rs.next()) {
                 outageCount = rs.getInt("OUTAGECOUNT");
             }
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return outageCount;
@@ -109,7 +111,8 @@ public class OutageFactory extends Object {
         }
 
         int outageCount = 0;
-        Connection conn = Vault.getDbConnection();
+        final Connection conn = DataSourceFactory.getInstance().getConnection();
+        final DBUtils d = new DBUtils(OutageFactory.class, conn);
 
         try {
             StringBuffer select = new StringBuffer("SELECT COUNT(OUTAGEID) AS OUTAGECOUNT FROM OUTAGES " + "JOIN NODE USING(NODEID) " + "JOIN IPINTERFACE ON OUTAGES.NODEID=IPINTERFACE.NODEID AND OUTAGES.IPADDR=IPINTERFACE.IPADDR " + "JOIN IFSERVICES ON OUTAGES.NODEID=IFSERVICES.NODEID AND OUTAGES.IPADDR=IFSERVICES.IPADDR AND OUTAGES.SERVICEID=IFSERVICES.SERVICEID " + "LEFT OUTER JOIN SERVICE ON OUTAGES.SERVICEID=SERVICE.SERVICEID " + "LEFT OUTER JOIN NOTIFICATIONS ON SVCLOSTEVENTID=NOTIFICATIONS.NOTIFYID " + "WHERE (NODE.NODETYPE != 'D' AND IPINTERFACE.ISMANAGED != 'D' AND IFSERVICES.STATUS != 'D') " + "AND ");
@@ -120,23 +123,22 @@ public class OutageFactory extends Object {
                 select.append(filter.getParamSql());
             }
 
-            PreparedStatement stmt = conn.prepareStatement(select.toString());
-            
+            final PreparedStatement stmt = conn.prepareStatement(select.toString());
+            d.watch(stmt);
+
             int parameterIndex = 1;
             for (Filter filter : filters) {
-            	parameterIndex += filter.bindParam(stmt, parameterIndex);
+                parameterIndex += filter.bindParam(stmt, parameterIndex);
             }
-            
-            ResultSet rs = stmt.executeQuery();
+
+            final ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
 
             if (rs.next()) {
                 outageCount = rs.getInt("OUTAGECOUNT");
             }
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return outageCount;
@@ -151,23 +153,24 @@ public class OutageFactory extends Object {
      */
     public static Outage getOutage(int outageId) throws SQLException {
         Outage outage = null;
-        Connection conn = Vault.getDbConnection();
+        final Connection conn = DataSourceFactory.getInstance().getConnection();
+        final DBUtils d = new DBUtils(OutageFactory.class, conn);
 
         try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT OUTAGES.*, NODE.NODELABEL, IPINTERFACE.IPHOSTNAME, SERVICE.SERVICENAME, NOTIFICATIONS.NOTIFYID, NOTIFICATIONS.ANSWEREDBY FROM OUTAGES " + "JOIN NODE USING(NODEID) " + "JOIN IPINTERFACE ON OUTAGES.NODEID=IPINTERFACE.NODEID AND OUTAGES.IPADDR=IPINTERFACE.IPADDR " + "LEFT OUTER JOIN SERVICE USING(SERVICEID) " + "LEFT OUTER JOIN NOTIFICATIONS ON SVCLOSTEVENTID=NOTIFICATIONS.EVENTID " + "WHERE OUTAGEID=?");
+            final PreparedStatement stmt = conn.prepareStatement("SELECT OUTAGES.*, NODE.NODELABEL, IPINTERFACE.IPHOSTNAME, SERVICE.SERVICENAME, NOTIFICATIONS.NOTIFYID, NOTIFICATIONS.ANSWEREDBY FROM OUTAGES " + "JOIN NODE USING(NODEID) " + "JOIN IPINTERFACE ON OUTAGES.NODEID=IPINTERFACE.NODEID AND OUTAGES.IPADDR=IPINTERFACE.IPADDR " + "LEFT OUTER JOIN SERVICE USING(SERVICEID) " + "LEFT OUTER JOIN NOTIFICATIONS ON SVCLOSTEVENTID=NOTIFICATIONS.EVENTID " + "WHERE OUTAGEID=?");
+            d.watch(stmt);
             stmt.setInt(1, outageId);
-            ResultSet rs = stmt.executeQuery();
+
+            final ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
 
             Outage[] outages = rs2Outages(rs);
 
             if (outages != null && outages.length > 0) {
                 outage = outages[0];
             }
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return outage;
@@ -254,7 +257,8 @@ public class OutageFactory extends Object {
         }
 
         Outage[] outages = null;
-        Connection conn = Vault.getDbConnection();
+        final Connection conn = DataSourceFactory.getInstance().getConnection();
+        final DBUtils d = new DBUtils(OutageFactory.class, conn);
 
         try {
             StringBuffer select = new StringBuffer("SELECT OUTAGES.*, NODE.NODELABEL, IPINTERFACE.IPHOSTNAME, SERVICE.SERVICENAME, NOTIFICATIONS.NOTIFYID, NOTIFICATIONS.ANSWEREDBY FROM OUTAGES " + "JOIN NODE USING(NODEID) " + "JOIN IPINTERFACE ON OUTAGES.NODEID=IPINTERFACE.NODEID AND OUTAGES.IPADDR=IPINTERFACE.IPADDR " + "JOIN IFSERVICES ON OUTAGES.NODEID=IFSERVICES.NODEID AND OUTAGES.IPADDR=IFSERVICES.IPADDR AND OUTAGES.SERVICEID=IFSERVICES.SERVICEID " + "LEFT OUTER JOIN SERVICE ON OUTAGES.SERVICEID=SERVICE.SERVICEID " + "LEFT OUTER JOIN NOTIFICATIONS ON SVCLOSTEVENTID=NOTIFICATIONS.EVENTID " + "WHERE (NODE.NODETYPE != 'D' AND IPINTERFACE.ISMANAGED != 'D' AND IFSERVICES.STATUS != 'D') " + "AND ");
@@ -276,21 +280,20 @@ public class OutageFactory extends Object {
 
             LOG.debug(select.toString());
 
-            PreparedStatement stmt = conn.prepareStatement(select.toString());
-            
+            final PreparedStatement stmt = conn.prepareStatement(select.toString());
+            d.watch(stmt);
+
             int parameterIndex = 1;
             for (Filter filter : filters) {
-            	parameterIndex += filter.bindParam(stmt, parameterIndex);
+                parameterIndex += filter.bindParam(stmt, parameterIndex);
             }
-            
-            ResultSet rs = stmt.executeQuery();
+
+            final ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
 
             outages = rs2Outages(rs);
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return outages;
@@ -464,7 +467,7 @@ public class OutageFactory extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        Filter[] filters = new Filter[] { new NodeFilter(nodeId, servletContext), new InterfaceFilter(ipAddress), new ServiceFilter(serviceId) };
+        Filter[] filters = new Filter[] { new NodeFilter(nodeId, servletContext), new InterfaceFilter(ipAddress), new ServiceFilter(serviceId, servletContext) };
         return (OutageFactory.getOutages(sortStyle, outType, filters));
     }
 
@@ -500,8 +503,8 @@ public class OutageFactory extends Object {
      * @return an array of {@link org.opennms.web.outage.Outage} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Outage[] getOutagesForService(int serviceId) throws SQLException {
-        return (getOutagesForService(serviceId, SortStyle.DEFAULT_SORT_STYLE, OutageType.CURRENT));
+    public static Outage[] getOutagesForService(int serviceId, ServletContext servletContext) throws SQLException {
+        return (getOutagesForService(serviceId, SortStyle.DEFAULT_SORT_STYLE, OutageType.CURRENT, servletContext));
     }
 
     /**
@@ -514,12 +517,12 @@ public class OutageFactory extends Object {
      * @return an array of {@link org.opennms.web.outage.Outage} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Outage[] getOutagesForService(int serviceId, SortStyle sortStyle, OutageType outType) throws SQLException {
+    public static Outage[] getOutagesForService(int serviceId, SortStyle sortStyle, OutageType outType, ServletContext servletContext) throws SQLException {
         if (sortStyle == null || outType == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        Filter[] filters = new Filter[] { new ServiceFilter(serviceId) };
+        Filter[] filters = new Filter[] { new ServiceFilter(serviceId, servletContext) };
         return (OutageFactory.getOutages(sortStyle, outType, filters));
     }
 
@@ -535,9 +538,9 @@ public class OutageFactory extends Object {
      * @return an array of {@link org.opennms.web.outage.Outage} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Outage[] getOutagesForService(int serviceId, boolean includeResolved) throws SQLException {
+    public static Outage[] getOutagesForService(int serviceId, boolean includeResolved, ServletContext servletContext) throws SQLException {
         OutageType outageType = includeResolved ? OutageType.BOTH : OutageType.CURRENT;
-        Outage[] outages = getOutagesForService(serviceId, SortStyle.DEFAULT_SORT_STYLE, outageType);
+        Outage[] outages = getOutagesForService(serviceId, SortStyle.DEFAULT_SORT_STYLE, outageType, servletContext);
 
         return outages;
     }
@@ -574,14 +577,14 @@ public class OutageFactory extends Object {
 
             // can be null
             outage.hostname = rs.getString("iphostname"); // from ipinterface
-                                                            // table
+            // table
 
             // can be null
             outage.nodeLabel = rs.getString("nodelabel"); // from node table
 
             // can be null
             outage.serviceName = rs.getString("servicename"); // from service
-                                                                // table
+            // table
 
             // can be null
             element = rs.getTimestamp("ifregainedservice");

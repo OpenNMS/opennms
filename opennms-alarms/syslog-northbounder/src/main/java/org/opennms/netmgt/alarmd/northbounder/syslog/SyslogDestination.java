@@ -186,7 +186,7 @@ public class SyslogDestination implements Serializable {
 		return m_maxMessageLength;
 	}
 	
-	public void setCharSet(int maxMessageLength) {
+	public void setMaxMessageLength(int maxMessageLength) {
 		m_maxMessageLength = maxMessageLength;
 	}
 

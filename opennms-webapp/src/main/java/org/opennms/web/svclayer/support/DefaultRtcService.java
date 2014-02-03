@@ -202,7 +202,7 @@ public class DefaultRtcService implements RtcService, InitializingBean {
     }
 
     private Double calculateAvailability(int serviceCount, long downMillisCount) {
-        long upMillis = (serviceCount * (24 * 60 * 60 * 1000)) - downMillisCount;
+        long upMillis = ((long)serviceCount * (24L * 60L * 60L * 1000L)) - downMillisCount;
 
         return ((double) upMillis / (double) (serviceCount * (24 * 60 * 60 * 1000)));
     }

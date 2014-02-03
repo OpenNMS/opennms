@@ -28,6 +28,8 @@
 
 package org.opennms.core.utils;
 
+import org.apache.commons.io.IOUtils;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -40,8 +42,6 @@ import java.util.Properties;
 import java.util.TreeMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
-import org.apache.commons.io.IOUtils;
 
 /**
  * Caches properties files in order to improve performance.
@@ -195,7 +195,7 @@ public class PropertiesCache {
     }
     
     
-    Map<String, PropertiesHolder> m_cache = new TreeMap<String, PropertiesHolder>();
+    private Map<String, PropertiesHolder> m_cache = new TreeMap<String, PropertiesHolder>();
     
     private PropertiesHolder getHolder(File propFile) throws IOException {
         String key = propFile.getCanonicalPath();

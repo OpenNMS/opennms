@@ -108,8 +108,6 @@ abstract public class AbstractSimpleServer {
     }
     
     private ServerSocket m_serverSocket = null;
-    private Thread m_serverThread = null;
-    private Socket m_socket;
     private int m_timeout;
     private List<Exchange> m_conversation = new ArrayList<Exchange>();
     
@@ -174,8 +172,8 @@ abstract public class AbstractSimpleServer {
      * @throws java.lang.Exception if any.
      */
     public void startServer() throws Exception{
-        m_serverThread = new Thread(getRunnable(), this.getClass().getSimpleName());
-        m_serverThread.start();
+        Thread serverThread = new Thread(getRunnable(), this.getClass().getSimpleName());
+        serverThread.start();
     }
     
     /**
@@ -191,14 +189,14 @@ abstract public class AbstractSimpleServer {
             public void run(){
                 try{
                     m_serverSocket.setSoTimeout(getTimeout());
-                    m_socket = m_serverSocket.accept();
+                    Socket socket = m_serverSocket.accept();
                     
-                    OutputStream out = m_socket.getOutputStream();
-                    BufferedReader in = new BufferedReader(new InputStreamReader(m_socket.getInputStream()));
+                    OutputStream out = socket.getOutputStream();
+                    BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     
                     attemptConversation(in, out);
                     
-                    m_socket.close();
+                    socket.close();
                 }catch(Throwable e){
                     throw new UndeclaredThrowableException(e);
                 }

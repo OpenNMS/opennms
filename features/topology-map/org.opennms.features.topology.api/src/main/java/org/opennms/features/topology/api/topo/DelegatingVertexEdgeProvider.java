@@ -62,7 +62,12 @@ public class DelegatingVertexEdgeProvider implements VertexProvider, EdgeProvide
 		m_vertexProvider.clearVertices();
 	}
 
-	@Override
+    @Override
+    public int getVertexTotalCount() {
+        return m_vertexProvider.getVertexTotalCount();
+    }
+
+    @Override
 	public final boolean contributesTo(String namespace) {
 		return m_vertexProvider.contributesTo(namespace);
 	}
@@ -73,13 +78,13 @@ public class DelegatingVertexEdgeProvider implements VertexProvider, EdgeProvide
 	}
 
 	@Override
-	public boolean containsVertexId(VertexRef id) {
-		return m_vertexProvider.containsVertexId(id);
+	public boolean containsVertexId(VertexRef id, Criteria... criteria) {
+		return m_vertexProvider.containsVertexId(id, criteria);
 	}
 
 	@Override
-	public final List<Vertex> getChildren(VertexRef group) {
-		return m_vertexProvider.getChildren(group);
+	public final List<Vertex> getChildren(VertexRef group, Criteria... criteria) {
+		return m_vertexProvider.getChildren(group, criteria);
 	}
 
 	@Override
@@ -108,23 +113,18 @@ public class DelegatingVertexEdgeProvider implements VertexProvider, EdgeProvide
 	}
 
 	@Override
-	public final Vertex getVertex(VertexRef reference) {
-		return m_vertexProvider.getVertex(reference);
+	public final Vertex getVertex(VertexRef reference, Criteria... criteria) {
+		return m_vertexProvider.getVertex(reference, criteria);
 	}
 
 	@Override
-	public final List<Vertex> getVertices(Criteria criteria) {
+	public final List<Vertex> getVertices(Criteria... criteria) {
 		return m_vertexProvider.getVertices(criteria);
 	}
 
 	@Override
-	public final List<Vertex> getVertices() {
-		return m_vertexProvider.getVertices();
-	}
-
-	@Override
-	public final List<Vertex> getVertices(Collection<? extends VertexRef> references) {
-		return m_vertexProvider.getVertices(references);
+	public final List<Vertex> getVertices(Collection<? extends VertexRef> references, Criteria... criteria) {
+		return m_vertexProvider.getVertices(references, criteria);
 	}
 
 	@Override
@@ -168,23 +168,13 @@ public class DelegatingVertexEdgeProvider implements VertexProvider, EdgeProvide
 	}
 
 	@Override
-	public final List<Edge> getEdges(Criteria criteria) {
+	public final List<Edge> getEdges(Criteria... criteria) {
 		return m_edgeProvider.getEdges(criteria);
-	}
-
-	@Override
-	public final List<Edge> getEdges() {
-		return m_edgeProvider.getEdges();
 	}
 
 	@Override
 	public final List<Edge> getEdges(Collection<? extends EdgeRef> references) {
 		return m_edgeProvider.getEdges(references);
-	}
-
-	@Override
-	public final boolean matches(EdgeRef edgeRef, Criteria criteria) {
-		return m_edgeProvider.matches(edgeRef, criteria);
 	}
 
 	@Override

@@ -30,6 +30,7 @@
  *******************************************************************************/
 package org.opennms.core.utils;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -39,7 +40,8 @@ import java.io.StringWriter;
 import java.util.Date;
 import java.util.StringTokenizer;
 
-import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <P>
@@ -57,6 +59,7 @@ import org.apache.commons.io.IOUtils;
  * @author <a href="mailto:smccrory@users.sourceforge.net">Scott McCrory </a>.
  */
 public class ExecRunner {
+    private static final Logger LOG = LoggerFactory.getLogger(ExecRunner.class);
 
     /** Win NT/2K/MEPro require cmd.exe to run programs * */
     private static final String WINDOWS_NT_2000_COMMAND_1 = "cmd.exe";
@@ -184,10 +187,10 @@ public class ExecRunner {
 
             return rc;
         } finally {
-            IOUtils.closeQuietly(pwErr);
-            IOUtils.closeQuietly(swErr);
-            IOUtils.closeQuietly(pwOut);
-            IOUtils.closeQuietly(swOut);
+            closeQuietly(pwErr);
+            closeQuietly(swErr);
+            closeQuietly(pwOut);
+            closeQuietly(swOut);
         }
     }
 
@@ -217,8 +220,8 @@ public class ExecRunner {
 
             return exec(command, pwOut, pwErr);
         } finally {
-            IOUtils.closeQuietly(pwErr);
-            IOUtils.closeQuietly(pwOut);
+            closeQuietly(pwErr);
+            closeQuietly(pwOut);
         }
     }
 
@@ -457,6 +460,16 @@ public class ExecRunner {
 
         throw new IOException("Object cannot be serialized");
 
+    }
+
+    private void closeQuietly(final Closeable c) {
+        if (c != null) {
+            try {
+                c.close();
+            } catch (final IOException closeE) {
+                LOG.debug("failed to close", closeE);
+            }
+        }
     }
 
 }

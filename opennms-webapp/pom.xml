@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>1.13.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-webapp</artifactId>
@@ -158,7 +158,6 @@
         <configuration>
           <descriptors>
             <descriptor>src/assembly/meta-inf.xml</descriptor>
-            <descriptor>src/assembly/web-inf.xml</descriptor>
             <descriptor>src/assembly/xsds.xml</descriptor>
           </descriptors>
         </configuration>
@@ -193,7 +192,6 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
-        <version>1.7</version>
         <executions>
             <execution>
                 <id>attach-artifacts</id>
@@ -308,6 +306,7 @@
                   <goal>jspc</goal>
                 </goals>
                 <configuration>
+                  <keepSources>true</keepSources>
                   <webXmlFragment>${basedir}/target/web.xml.jspc-insert</webXmlFragment>
                   <generatedClasses>${basedir}/target/jsp-classes</generatedClasses>
                   <useProvidedScope>true</useProvidedScope>
@@ -398,6 +397,16 @@
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.soa</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.db</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.config</artifactId>
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
@@ -603,28 +612,6 @@
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
-      <groupId>org.extremecomponents</groupId>
-      <artifactId>extremecomponents</artifactId>
-      <scope>${onmsLibScope}</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <!--
-
-      JMesa is the latest version of the extremecomponents library. We
-      should eventually migrate our code to use it.
-
-    <dependency>
-      <groupId>org.jmesa</groupId>
-      <artifactId>jmesa</artifactId>
-      <scope>${onmsLibScope}</scope>
-    </dependency>
-    -->
-    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
       <scope>${onmsLibScope}</scope>
@@ -660,16 +647,63 @@
       <scope>${onmsLibScope}</scope>
     </dependency>
 
+    <!-- indirect 3rd-party dependencies that belong in WEB-INF/lib -->
+    <!-- these should all be <scope>compile</scope> -->
+
+    <dependency>
+      <groupId>org.extremecomponents</groupId>
+      <artifactId>extremecomponents</artifactId>
+      <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <!--
+
+      JMesa is the latest version of the extremecomponents library. We
+      should eventually migrate our code to use it.
+
+    <dependency>
+      <groupId>org.jmesa</groupId>
+      <artifactId>jmesa</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    -->
+    <dependency>
+        <groupId>net.sf.jung</groupId>
+        <artifactId>jung-api</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>net.sf.jung</groupId>
+        <artifactId>jung-graph-impl</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>net.sf.jung</groupId>
+        <artifactId>jung-algorithms</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>net.sf.jung</groupId>
+        <artifactId>jung-visualization</artifactId>
+    </dependency>
+
     <!-- test dependencies -->
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
-      <version>${gwtVersion}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-services</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
@@ -698,6 +732,14 @@
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.http</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.rest</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.snmp</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>

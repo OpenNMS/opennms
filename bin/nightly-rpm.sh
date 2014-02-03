@@ -12,7 +12,7 @@ if [ -z "$YUMDIR" ]; then
 	YUMDIR="/var/www/sites/opennms.org/site/yum"
 fi
 
-if [ ! -d "$YUMDIR" ]; then
+if [ ! -d "$YUMDIR" ] && [ -z "$ONLY_PACKAGE" ]; then
 	echo "YUM repository at $YUMDIR does not exist!"
 	exit 1
 fi
@@ -24,19 +24,19 @@ if [ $? != 0 ]; then
 fi
 
 UPDATE_SF_REPO=`which update-sourceforge-repo.pl 2>/dev/null`
-if [ $? != 0 ]; then
+if [ $? != 0 ] && [ -z "$ONLY_PACKAGE" ]; then
 	echo 'Unable to locate update-sourceforge-repo.pl!'
 	exit 1
 fi
 
 UPDATE_REPO=`which update-yum-repo.pl 2>/dev/null`
-if [ $? != 0 ]; then
+if [ $? != 0 ] && [ -z "$ONLY_PACKAGE" ]; then
 	echo 'Unable to locate update-yum-repo.pl!'
 	exit 1
 fi
 
 GENERATE=`which generate-yum-repo-html.pl 2>/dev/null`
-if [ $? != 0 ]; then
+if [ $? != 0 ] && [ -z "$ONLY_PACKAGE" ]; then
 	echo 'Unable to locate generate-yum-repo-html.pl!'
 	exit 1
 fi
@@ -63,16 +63,22 @@ rm -rf "${HOME}"/.m2/repository/org/opennms
 RELEASE=`cat "$TOPDIR"/.nightly | grep -E '^repo:' | awk '{ print $2 }'`
 
 # create the RPM
-./makerpm.sh -a -s "$PASSWORD" -m "$TIMESTAMP" -u "$REVISION" || exit 1
+if [ -n "$ONLY_PACKAGE" ]; then
+	./makerpm.sh -a -d -s "$PASSWORD" -m "$TIMESTAMP" -u "$REVISION" || exit 1
+else
+	./makerpm.sh -a -s "$PASSWORD" -m "$TIMESTAMP" -u "$REVISION" || exit 1
+fi
 
-# copy the source to SourceForge
-echo $UPDATE_SF_REPO "$RELEASE" target/rpm/SOURCES/opennms-source*.tar.gz
-$UPDATE_SF_REPO "$RELEASE" target/rpm/SOURCES/opennms-source*.tar.gz || exit 1
+if [ -z "$ONLY_PACKAGE" ]; then
+	# copy the source to SourceForge
+	echo $UPDATE_SF_REPO "$RELEASE" target/rpm/SOURCES/opennms-source*.tar.gz
+	$UPDATE_SF_REPO "$RELEASE" target/rpm/SOURCES/opennms-source*.tar.gz || exit 1
 
-# update the $RELEASE repo, and sync it to anything later in the hierarchy
-# ./bin/update-yum-repo.pl [-g gpg_id] -s "$PASSWORD" "$RELEASE" "common" "opennms" target/rpms/RPMS/noarch/*.rpm
-$UPDATE_REPO -s "$PASSWORD" "$YUMDIR" "$RELEASE" "common" "opennms" target/rpm/RPMS/noarch/*.rpm || exit 1
+	# update the $RELEASE repo, and sync it to anything later in the hierarchy
+	# ./bin/update-yum-repo.pl [-g gpg_id] -s "$PASSWORD" "$RELEASE" "common" "opennms" target/rpms/RPMS/noarch/*.rpm
+	$UPDATE_REPO -s "$PASSWORD" "$YUMDIR" "$RELEASE" "common" "opennms" target/rpm/RPMS/noarch/*.rpm || exit 1
 
-$GENERATE "$YUMDIR" || exit 1
+	$GENERATE "$YUMDIR" || exit 1
+fi
 
 $BUILDTOOL nightly-rpm save

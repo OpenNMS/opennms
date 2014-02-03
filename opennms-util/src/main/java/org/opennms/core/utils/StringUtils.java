@@ -28,6 +28,10 @@
 
 package org.opennms.core.utils;
 
+import javax.swing.filechooser.FileSystemView;
+import javax.xml.transform.*;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.StringWriter;
@@ -36,18 +40,9 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
-import javax.swing.filechooser.FileSystemView;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-
 public abstract class StringUtils {
-    final static boolean s_headless = Boolean.getBoolean("java.awt.headless");
-    final static Pattern s_windowsDrive = Pattern.compile("^[A-Za-z]\\:\\\\");
+    private static final boolean HEADLESS = Boolean.getBoolean("java.awt.headless");
+    private static final Pattern WINDOWS_DRIVE = Pattern.compile("^[A-Za-z]\\:\\\\");
 
     /**
      * Convenience method for creating arrays of strings suitable for use as
@@ -88,18 +83,18 @@ public abstract class StringUtils {
     
         char[] chars = s.toCharArray();
         boolean inquote = false;
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
     
         // append each char to a StringBuffer, but
         // leave out quote chars and replace spaces
         // inside quotes with the delim char
-        for (int i = 0; i < chars.length; i++) {
-            if (chars[i] == '"') {
-                inquote = (inquote) ? false : true;
-            } else if (inquote && chars[i] == ' ') {
+        for (char eachChar : chars) {
+            if (eachChar == '"') {
+                inquote = !inquote; // toggle
+            } else if (inquote && eachChar == ' ') {
                 buffer.append(delim);
             } else {
-                buffer.append(chars[i]);
+                buffer.append(eachChar);
             }
         }
     
@@ -147,8 +142,8 @@ public abstract class StringUtils {
     	if (slash != '\\' && slash != '/') return false;
 
     	final String drive = path.substring(0, 3);
-    	if (s_headless) {
-    		return s_windowsDrive.matcher(drive).matches();
+    	if (HEADLESS) {
+    		return WINDOWS_DRIVE.matcher(drive).matches();
     	} else {
     		final File file = new File(drive);
         	return FileSystemView.getFileSystemView().isFileSystemRoot(file);

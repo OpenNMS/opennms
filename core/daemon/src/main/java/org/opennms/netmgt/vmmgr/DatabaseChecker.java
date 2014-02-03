@@ -31,6 +31,7 @@ package org.opennms.netmgt.vmmgr;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -145,19 +146,32 @@ public class DatabaseChecker {
         
         // Finally, try connecting to all data sources, and warn or error as appropriate.
         for (final JdbcDataSource dataSource : m_dataSources.values()) {
-            final String name = dataSource.getName();
-            if (!m_required.contains(name) && !m_optional.contains(name)) {
-            	LOG.warn("Unknown datasource '{}' was found.", name);
-            }
+            Connection connection = null;
+
             try {
-                Class.forName(dataSource.getClassName());
-                final Connection connection = DriverManager.getConnection(dataSource.getUrl(), dataSource.getUserName(), dataSource.getPassword());
-                connection.close();
-            } catch (final Throwable t) {
-                final String errorMessage = "Unable to connect to data source '{}' at URL '{}' with username '{}', check opennms-datasources.xml and your database permissions.";
-            	LOG.error(errorMessage, name, dataSource.getUrl(), dataSource.getUserName());
-                if (m_required.contains(name)) {
-                    throw new InvalidDataSourceException("Data source '" + name + "' failed.", t);
+                final String name = dataSource.getName();
+                if (!m_required.contains(name) && !m_optional.contains(name)) {
+                    LOG.warn("Unknown datasource '{}' was found.", name);
+                }
+                try {
+                    Class.forName(dataSource.getClassName());
+                    connection = DriverManager.getConnection(dataSource.getUrl(), dataSource.getUserName(), dataSource.getPassword());
+                } catch (final Throwable t) {
+                    final String errorMessage = "Unable to connect to data source '{}' at URL '{}' with username '{}', check opennms-datasources.xml and your database permissions.";
+                    if (m_required.contains(name)) {
+                        LOG.error(errorMessage, name, dataSource.getUrl(), dataSource.getUserName());
+                        throw new InvalidDataSourceException("Data source '" + name + "' failed.", t);
+                    } else {
+                        LOG.warn(errorMessage, name, dataSource.getUrl(), dataSource.getUserName());
+                    }
+                }
+            } finally {
+                if (connection != null) {
+                    try {
+                        connection.close();
+                    } catch (final SQLException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }

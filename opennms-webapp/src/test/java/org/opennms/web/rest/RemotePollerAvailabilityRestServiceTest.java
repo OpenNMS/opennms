@@ -38,43 +38,73 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletException;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.db.XADataSourceFactory;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabase;
 import org.opennms.core.test.db.TemporaryDatabasePostgreSQL;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
+import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.PollStatus;
-import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.test.DaoTestConfigBean;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.rest.AvailCalculator.UptimeCalculator;
 import org.opennms.web.rest.support.TimeChunker;
 import org.opennms.web.rest.support.TimeChunker.TimeChunk;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.mock.web.MockServletConfig;
-import org.springframework.mock.web.MockServletContext;
 import org.springframework.orm.hibernate3.support.OpenSessionInViewFilter;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
 
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@WebAppConfiguration
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-service.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-reportingCore.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockEventProxy.xml",
+        "classpath:/applicationContext-jersey-test.xml",
+        "classpath:/META-INF/opennms/applicationContext-reporting.xml",
+        "classpath:/META-INF/opennms/applicationContext-mock-usergroup.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
+        "file:src/main/webapp/WEB-INF/applicationContext-spring-security.xml",
+        "file:src/main/webapp/WEB-INF/applicationContext-jersey.xml",
+
+        "classpath:/org/opennms/web/rest/applicationContext-test.xml"
+})
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase
+@Transactional
 public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
     @Autowired
@@ -100,45 +130,23 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
 
         DaoTestConfigBean bean = new DaoTestConfigBean();
         bean.afterPropertiesSet();
-        
-        
+
         if(USE_EXISTING) {
             TemporaryDatabase db = new TemporaryDatabasePostgreSQL("opennms", true);
             db.setPopulateSchema(false);
             db.create();
             DataSourceFactory.setInstance(db);
+            XADataSourceFactory.setInstance(db);
         }else {
             MockDatabase db = new MockDatabase(true);
             DataSourceFactory.setInstance(db);
+            XADataSourceFactory.setInstance(db);
         }
-        
-                
-        setServletContext(new MockServletContext("file:src/main/webapp"));
 
-        getServletContext().addInitParameter("contextConfigLocation", 
-                "classpath:/org/opennms/web/rest/applicationContext-test.xml " +
-                "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml " +
-                "classpath*:/META-INF/opennms/component-service.xml " +
-                "classpath*:/META-INF/opennms/component-dao.xml " +
-                "classpath:/META-INF/opennms/applicationContext-reportingCore.xml " +
-                "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml " +
-                "classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml " +
-                "classpath:/META-INF/opennms/applicationContext-mockEventProxy.xml " +
-                "classpath:/META-INF/opennms/applicationContext-reporting.xml " +
-                "/WEB-INF/applicationContext-spring-security.xml " +
-                "/WEB-INF/applicationContext-jersey.xml");
-        
-        getServletContext().addInitParameter("parentContextKey", "daoContext");
-                
-        ServletContextEvent e = new ServletContextEvent(getServletContext());
-        setContextListener(new ContextLoaderListener());
-        getContextListener().contextInitialized(e);
-
-        getServletContext().setContextPath(contextPath);
         setServletConfig(new MockServletConfig(getServletContext(), "dispatcher"));    
         getServletConfig().addInitParameter("com.sun.jersey.config.property.resourceConfigClass", "com.sun.jersey.api.core.PackagesResourceConfig");
         getServletConfig().addInitParameter("com.sun.jersey.config.property.packages", "org.opennms.web.rest");
-        
+
         try {
 
             MockFilterConfig filterConfig = new MockFilterConfig(getServletContext(), "openSessionInViewFilter");
@@ -153,13 +161,10 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
         }
         
         setWebAppContext(WebApplicationContextUtils.getWebApplicationContext(getServletContext()));
-        
-        
         afterServletStart();
-        
         System.err.println("------------------------------------------------------------------------------");
     }
-    
+
     @Override
     protected void afterServletStart() {
         MockLogAppender.setupLogging();
@@ -252,7 +257,7 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
         }
         System.err.println("total time taken: " + (System.currentTimeMillis() - startTime) + "UptimeCalculator.count = " + UptimeCalculator.count);
         
-        Thread.sleep(360000);
+        Thread.sleep(2000);
         
         startTime = System.currentTimeMillis();
         responseString = sendRequest(GET, url, parameters, 200);
@@ -373,7 +378,7 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
             }
         });
         
-        Thread.sleep(10000L);
+        Thread.sleep(2000L);
         
         txTemplate.execute(new TransactionCallbackWithoutResult() {
             

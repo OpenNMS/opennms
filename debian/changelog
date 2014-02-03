@@ -1,3 +1,36 @@
+opennms (1.13.0-1) stable; urgency=low
+
+  * New upstream release.  This is the first unstable release for the eventual
+    1.14.x stable series.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 12 Dec 2013 15:28:00 -0400
+
+opennms (1.12.3-1) stable; urgency=high
+
+  * New upstream release.  This release contains a critical upgrade bug fix.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Fri, 13 Dec 2013 11:35:00 -0400
+
+opennms (1.12.2-1) stable; urgency=high
+
+  * New upstream release.  This release contains a number of important bug fixes
+    and enhancements.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 10 Dec 2013 15:29:00 -0400
+
+opennms (1.12.1-1) stable; urgency=medium
+
+  * New upstream release.  This release contains a number of important bug fixes
+    and minor enhancements.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 17 Sep 2013 13:20:00 -0400
+
+opennms (1.12.0-1) stable; urgency=high
+
+  * First OpenNMS 1.12 release.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Wed, 14 Aug 2013 16:16:00 -0400
+
 opennms (1.11.94-1) unstable; urgency=medium
 
   * New upstream release.  This release has a few bug fixes and enhancements,
@@ -53,6 +86,12 @@ opennms (1.11.0-1) unstable; urgency=low
   * New upstream release.
 
  -- OpenNMS Release Manager <opennms@opennms.org>  Mon, 07 May 2012 11:21:00 -0400
+
+opennms (1.10.13-1) stable; urgency=low
+
+  * New upstream release.  This release has a number of bugfixes.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 17 Sep 2013 10:19:00 -0500
 
 opennms (1.10.12-1) stable; urgency=medium
 

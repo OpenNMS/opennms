@@ -40,8 +40,8 @@
         java.sql.SQLException,
         org.opennms.core.soa.ServiceRegistry,
         org.opennms.core.utils.InetAddressUtils,
-        org.opennms.web.pathOutage.*,
-        org.opennms.web.springframework.security.Authentication,
+	org.opennms.netmgt.poller.PathOutageFactory,
+        org.opennms.web.api.Authentication,
         org.opennms.web.svclayer.ResourceService,
         org.opennms.web.asset.Asset,
         org.opennms.web.asset.AssetModel,
@@ -140,7 +140,7 @@
 %>
 
 <%
-    OnmsNode node_db = ElementUtil.getNodeByParams(request, getServletContext());
+	OnmsNode node_db = ElementUtil.getNodeByParams(request, getServletContext());
     int nodeId = node_db.getId();
     
     Map<String, Object> nodeModel = new TreeMap<String, Object>();
@@ -162,9 +162,9 @@
         nodeModel.put("statusSite", asset.getBuilding());
     }
     
-    nodeModel.put("resources", m_resourceService.findNodeChildResources(nodeId));
+    nodeModel.put("resources", m_resourceService.findNodeChildResources(node_db));
     nodeModel.put("vlans", NetworkElementFactory.getInstance(getServletContext()).getVlansOnNode(nodeId));
-    nodeModel.put("criticalPath", PathOutageFactory.getCriticalPath(nodeId));
+    nodeModel.put("criticalPath", PathOutageFactory.getPrettyCriticalPath(nodeId));
     nodeModel.put("noCriticalPath", PathOutageFactory.NO_CRITICAL_PATH);
     nodeModel.put("admin", request.isUserInRole(Authentication.ROLE_ADMIN));
     
@@ -210,15 +210,11 @@
 	final Collection<ConditionalPageNavEntry> navLinks = registry.findProviders(ConditionalPageNavEntry.class, "(Page=node)");
 	for (final ConditionalPageNavEntry link : navLinks) {
 	    final DisplayStatus displayStatus = link.evaluate(request, node_db);
-	    switch(displayStatus) {
-		    case DISPLAY_NO_LINK:
-		        renderedLinks.add(link.getName());
-		        break;
-		    case DISPLAY_LINK:
-		        renderedLinks.add("<a href=\"" + link.getUrl().replace("%nodeid%", ""+nodeId) + "\">" + link.getName() + "</a>");
-		        break;
-		    case NO_DISPLAY:
-		        break;
+	    if (displayStatus == null) continue;
+	    if (displayStatus == DisplayStatus.DISPLAY_NO_LINK) {
+	        renderedLinks.add(link.getName());
+	    } else if (displayStatus == DisplayStatus.DISPLAY_LINK) {
+	        renderedLinks.add("<a href=\"" + link.getUrl().replace("%nodeid%", ""+nodeId) + "\">" + link.getName() + "</a>");
 	    }
 	}
 	
@@ -408,11 +404,14 @@
 	
 	<!-- Availability box -->
 	<c:if test="${fn:length( model.intfs ) < 10}">
-    <jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" />
+    <jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" >
+      <jsp:param name="node" value="${model.id}" />
+    </jsp:include>
     </c:if> 
-    <script type="text/javascript">
-        var nodeId = ${model.id}
-    </script>
+
+  <script type="text/javascript">
+    var nodeId = ${model.id}
+  </script>
   <div id="interface-panel-gwt">
     <h3 class="o-box">Node Interfaces</h3>
     <opennms:interfacelist id="gwtnodeList"></opennms:interfacelist>
@@ -493,7 +492,9 @@
   </div>
   
   <!-- Category box -->
-  <jsp:include page="/includes/nodeCategory-box.htm" flush="false" />
+  <jsp:include page="/includes/nodeCategory-box.htm" flush="false" >
+    <jsp:param name="node" value="${model.id}" />
+  </jsp:include>
   
   <!-- notification box -->
   <jsp:include page="/includes/notification-box.jsp" flush="false" >

@@ -72,6 +72,12 @@ public class DBUtils {
         m_loggingClass = loggingClass;
     }
 
+    public DBUtils(Class<?> loggingClass, Object... targets) {
+        this(loggingClass);
+        for (final Object o : targets) {
+            watch(o);
+        }
+    }
     /**
      * <p>setLoggingClass</p>
      *

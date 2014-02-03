@@ -79,8 +79,9 @@ public class TcpRrdStrategyTest {
             @Override
             public void run() {
                 this.setName("fail");
+                ServerSocket ssocket = null;
                 try {
-                    ServerSocket ssocket = new ServerSocket(8999);
+                    ssocket = new ServerSocket(8999);
                     ssocket.setSoTimeout(500);
                     while (true) {
                         try {
@@ -138,6 +139,12 @@ public class TcpRrdStrategyTest {
                     LOG.error(e.getMessage(), e);
                 } catch (Throwable e) {
                     LOG.error(e.getMessage(), e);
+                } finally {
+                    try {
+                        if (ssocket != null) ssocket.close();
+                    } catch (IOException e) {
+                        LOG.warn(e.getMessage(), e);
+                    }
                 }
             }
         };

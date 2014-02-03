@@ -152,7 +152,9 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
     @Override
     protected void onStop() {
         m_stopped = true;
-        m_scheduler.stop();
+        if (m_scheduler != null) {
+            m_scheduler.stop();
+        }
     }
 
     /** {@inheritDoc} */
@@ -381,7 +383,7 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
             ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Vacuumd");
             ebldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(0, 128));
-        }
+		}
         
         LOG.info("onEvent: completed configuration reload.");
         
@@ -410,7 +412,20 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
         
         return isTarget;
     }
-    
+
+    /**
+     * Returns the number of automations that have been executed so far.
+     *
+     * @return the number of automations that have been executed
+     */
+    public long getNumAutomations() {
+        if (m_scheduler != null) {
+            return m_scheduler.getNumTasksExecuted();
+        } else {
+            return 0L;
+        }
+    }
+
     private VacuumdConfigFactory getVacuumdConfig() {
         return VacuumdConfigFactory.getInstance();
     }

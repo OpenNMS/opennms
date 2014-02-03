@@ -29,13 +29,25 @@
 package org.opennms.features.topology.app.internal;
 
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.LayoutAlgorithm;
+import org.opennms.features.topology.api.Point;
+import org.opennms.features.topology.api.topo.Vertex;
+
+import java.util.Collection;
 
 public class ManualLayoutAlgorithm implements LayoutAlgorithm {
 
         @Override
-	public void updateLayout(GraphContainer graph) {
-		// don't layout anything
+	public void updateLayout(GraphContainer graphContainer) {
+        Collection<Vertex> vertices = graphContainer.getGraph().getDisplayVertices();
+        Layout layout = graphContainer.getGraph().getLayout();
+
+        for (Vertex vertex : vertices) {
+            Point p = layout.getLocation(vertex);
+            layout.setLocation(vertex, p.getX(), p.getY());
+        }
+
 	}
 
 }

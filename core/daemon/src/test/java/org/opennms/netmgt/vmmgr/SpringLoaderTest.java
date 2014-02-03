@@ -34,58 +34,62 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 import org.opennms.core.fiber.Fiber;
 import org.opennms.netmgt.model.ServiceDaemon;
 
 public class SpringLoaderTest {
 
-    @Before
-    public void setUp() {
-        System.setProperty("opennms.startup.context", "classpath:/startup.xml");
-    }
+	@Before
+	public void setUp() {
+		System.setProperty("opennms.startup.context", "classpath:/startup.xml");
+	}
 
-    @Test
-    @Ignore("broken")
+	@Rule
+	public ExpectedSystemExit exit = ExpectedSystemExit.none();
+
+	@Test
 	public void testStart() {
 		System.setProperty("opennms.startup.context", "classpath:/startup.xml");
 		SpringLoader.main(new String[] { "start" });
 
-		assertNoSuchBean("nothere");
+		assertNoSuchBean("not_here");
 
 		assertBeanExists("testDaemon");
-		
+
 		ServiceDaemon daemon = (ServiceDaemon)Registry.getBean("testDaemon");
-		
+
 		assertEquals(Fiber.RUNNING, daemon.getStatus());
 	}
-	
-    @Test
-    @Ignore("broken")
+
+	@Test
+	@Ignore("I'm not sure where this test is supposed to locate a 'collectd' bean")
 	public void testContexts() {
 		SpringLoader.main(new String[] { "start" });
-		
+
 		ServiceDaemon daemon = (ServiceDaemon)Registry.getBean("collectd");
 		assertEquals(Fiber.RUNNING, daemon.getStatus());
 	}
 
-    @Test
-    @Ignore("broken")
-    public void testStatus() {
+	@Test
+	public void testStatus() {
 		SpringLoader.main(new String[] { "status" });
-    }
-	
-    @Test
-    @Ignore("broken")
+	}
+
+	@Test
 	public void testStop() {
+		exit.expectSystemExitWithStatus(0);
+
 		SpringLoader.main(new String[] { "stop" });
 	}
-	
+
 	private void assertNoSuchBean(String beanName) {
 		assertFalse(Registry.containsBean(beanName));
 	}
 
-    private void assertBeanExists(String beanName) {
+	private void assertBeanExists(String beanName) {
 		assertTrue(Registry.containsBean(beanName));
 	}
 

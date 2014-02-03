@@ -35,11 +35,11 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.opennms.core.xml.AbstractJaxbConfigDao;
-import org.opennms.netmgt.config.poller.Interface;
-import org.opennms.netmgt.config.poller.Node;
-import org.opennms.netmgt.config.poller.Outage;
-import org.opennms.netmgt.config.poller.Outages;
-import org.opennms.netmgt.config.poller.Time;
+import org.opennms.netmgt.config.poller.outages.Interface;
+import org.opennms.netmgt.config.poller.outages.Node;
+import org.opennms.netmgt.config.poller.outages.Outage;
+import org.opennms.netmgt.config.poller.outages.Outages;
+import org.opennms.netmgt.config.poller.outages.Time;
 import org.springframework.dao.DataAccessException;
 import org.springframework.util.Assert;
 
@@ -270,10 +270,15 @@ abstract public class PollOutagesConfigManager extends AbstractJaxbConfigDao<Out
     /**
      * <p>addOutage</p>
      *
-     * @param getOutageSchedule(newOutage) a {@link org.opennms.netmgt.config.poller.Outage} object.
+     * @param getOutageSchedule(newOutage) a {@link org.opennms.netmgt.config.poller.outages.Outage} object.
      */
     public void addOutage(final Outage newOutage) {
-        getConfig().addOutage(newOutage);
+        getWriteLock().lock();
+        try {
+            getConfig().addOutage(newOutage);
+        } finally {
+            getWriteLock().unlock();
+        }
     }
 
     /**
@@ -282,31 +287,46 @@ abstract public class PollOutagesConfigManager extends AbstractJaxbConfigDao<Out
      * @param outageName a {@link java.lang.String} object.
      */
     public void removeOutage(final String outageName) {
-        getConfig().removeOutage(getOutage(outageName));
+        getWriteLock().lock();
+        try {
+            getConfig().removeOutage(getOutage(outageName));
+        } finally {
+            getWriteLock().unlock();
+        }
     }
 
     /**
      * <p>removeOutage</p>
      *
-     * @param getOutageSchedule(outageToRemove) a {@link org.opennms.netmgt.config.poller.Outage} object.
+     * @param getOutageSchedule(outageToRemove) a {@link org.opennms.netmgt.config.poller.outages.Outage} object.
      */
     public void removeOutage(final Outage outageToRemove) {
-        getConfig().removeOutage(outageToRemove);
+        getWriteLock().lock();
+        try {
+            getConfig().removeOutage(outageToRemove);
+        } finally {
+            getWriteLock().unlock();
+        }
     }
 
     /**
      * <p>replaceOutage</p>
      *
-     * @param getOutageSchedule(oldOutage) a {@link org.opennms.netmgt.config.poller.Outage} object.
-     * @param getOutageSchedule(newOutage) a {@link org.opennms.netmgt.config.poller.Outage} object.
+     * @param getOutageSchedule(oldOutage) a {@link org.opennms.netmgt.config.poller.outages.Outage} object.
+     * @param getOutageSchedule(newOutage) a {@link org.opennms.netmgt.config.poller.outages.Outage} object.
      */
     public void replaceOutage(final Outage oldOutage, final Outage newOutage) {
-        int count = getConfig().getOutageCount();
-        for (int i = 0; i < count; i++) {
-            if (getConfig().getOutage(i).equals(oldOutage)) {
-                getConfig().setOutage(i, newOutage);
-                return;
+        getWriteLock().lock();
+        try {
+            int count = getConfig().getOutageCount();
+            for (int i = 0; i < count; i++) {
+                if (getConfig().getOutage(i).equals(oldOutage)) {
+                    getConfig().setOutage(i, newOutage);
+                    return;
+                }
             }
+        } finally {
+            getWriteLock().unlock();
         }
     }
 
@@ -321,7 +341,7 @@ abstract public class PollOutagesConfigManager extends AbstractJaxbConfigDao<Out
      * <p>getNodeIds</p>
      *
      * @param name a {@link java.lang.String} object.
-     * @return an array of {@link org.opennms.netmgt.config.poller.Node} objects.
+     * @return an array of {@link org.opennms.netmgt.config.poller.outages.Node} objects.
      */
     public Node[] getNodeIds(final String name) {
         final Outage out = getOutage(name);
@@ -362,7 +382,7 @@ abstract public class PollOutagesConfigManager extends AbstractJaxbConfigDao<Out
      * FIXME: This code is almost identical to isTimeInOutage... We need to fix
      * it
      *
-     * @param getOutageSchedule(out) a {@link org.opennms.netmgt.config.poller.Outage} object.
+     * @param getOutageSchedule(out) a {@link org.opennms.netmgt.config.poller.outages.Outage} object.
      * @return a {@link java.util.Calendar} object.
      */
     public static Calendar getEndOfOutage(final Outage out) {
@@ -378,7 +398,7 @@ abstract public class PollOutagesConfigManager extends AbstractJaxbConfigDao<Out
      * @param lnodeid
      *            the nodeid to be looked up
      * @return the node iis part of the specified outage
-     * @param getOutageSchedule(out) a {@link org.opennms.netmgt.config.poller.Outage} object.
+     * @param getOutageSchedule(out) a {@link org.opennms.netmgt.config.poller.outages.Outage} object.
      */
     public boolean isNodeIdInOutage(final long lnodeid, final Outage out) {
         if (out == null) return false;

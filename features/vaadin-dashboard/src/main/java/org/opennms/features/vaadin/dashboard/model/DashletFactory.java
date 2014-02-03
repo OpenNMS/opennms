@@ -38,6 +38,12 @@ import java.util.Map;
  */
 public interface DashletFactory {
     /**
+     * Returns whether this dashlet is suitable for displaying in the dashboard view.
+     *
+     * @return true if suitable, false otherwise
+     */
+    public boolean isSuitableForDashboard();
+    /**
      * Returns a new {@link Dashlet} instance for a given {@link DashletSpec}.
      *
      * @param dashletSpec the {@link DashletSpec} to use
@@ -81,4 +87,8 @@ public interface DashletFactory {
      */
     public DashletConfigurationWindow configurationWindow(DashletSpec dashletSpec);
 
+    /**
+     * This method returns whether this dashlet is boostable.
+     */
+    public boolean isBoostable();
 }

@@ -35,14 +35,13 @@
         import="java.util.List,
         org.opennms.core.resource.Vault,
         org.opennms.core.utils.InetAddressUtils,
-        org.opennms.core.utils.WebSecurityUtils,
         org.opennms.web.controller.alarm.*,
         org.opennms.web.alarm.*,
         org.opennms.web.servlet.XssRequestWrapper,
         org.opennms.netmgt.model.OnmsAcknowledgment,
         org.opennms.netmgt.model.OnmsAlarm,
         org.opennms.netmgt.model.OnmsSeverity,
-        org.opennms.web.springframework.security.Authentication"
+        org.opennms.web.api.Authentication"
 %>
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -101,7 +100,7 @@
     <jsp:param name="title" value="Alarm Detail" />
     <jsp:param name="headTitle" value="Detail" />
     <jsp:param name="headTitle" value="Alarms" />
-    <jsp:param name="breadcrumb" value="<a href='alarm/index.jsp'>Alarms</a>" />
+    <jsp:param name="breadcrumb" value="<a href='alarm/index.htm'>Alarms</a>" />
     <jsp:param name="breadcrumb" value="Detail" />
 </jsp:include>
 
@@ -113,7 +112,7 @@
         <td class="divider" width="28%"><%=alarm.getSeverity().getLabel()%></td>
         <th width="100em">Node</th>
         <td class="divider" width="28%">
-            <% if (alarm.getNodeId() > 0) {%>
+            <% if (alarm.getNodeId() != null && alarm.getNodeId() > 0) {%>
             <c:url var="nodeLink" value="element/node.jsp">
                 <c:param name="node" value="<%=String.valueOf(alarm.getNodeId())%>"/>
             </c:url>
@@ -129,7 +128,7 @@
         <th>Interface</th>
         <td>
             <% if (alarm.getIpAddr() != null) {%>
-            <% if (alarm.getNodeId() > 0) {%>
+            <% if (alarm.getNodeId() != null && alarm.getNodeId() > 0) {%>
             <c:url var="interfaceLink" value="element/interface.jsp">
                 <c:param name="node" value="<%=String.valueOf(alarm.getNodeId())%>"/>
                 <c:param name="intf" value="<%=InetAddressUtils.str(alarm.getIpAddr())%>"/>

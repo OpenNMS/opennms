@@ -81,6 +81,8 @@ import org.opennms.netmgt.xml.eventconf.Varbindsdecode;
  */
 @SuppressWarnings("serial")
 public class JsmiMibParser implements MibParser, Serializable {
+
+    /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(JsmiMibParser.class);
 
     /** The Constant MIB_SUFFIXES. */
@@ -366,7 +368,7 @@ public class JsmiMibParser implements MibParser, Serializable {
      * Adds the dependency to the queue.
      *
      * @param queue the queue
-     * @param mibDirectoryFiles
+     * @param mibDirectoryFiles the mib directory files
      * @return true, if successful
      */
     private boolean addDependencyToQueue(final List<URL> queue, final Map<String, File> mibDirectoryFiles) {
@@ -662,7 +664,7 @@ public class JsmiMibParser implements MibParser, Serializable {
      */
     private String getTrapEnterprise(Notification trap) {
         String trapOid = getMatcherForOid(getTrapOid(trap)).group(1);
-        
+
         /* RFC3584 sec 3.2 (1) bullet 2 sub-bullet 1 states:
          * 
          * "If the next-to-last sub-identifier of the snmpTrapOID value
@@ -672,7 +674,7 @@ public class JsmiMibParser implements MibParser, Serializable {
          * Issue SPC-592 boils down to the fact that we were not doing the above.
          * 
          */
-        
+
         if (trapOid.endsWith(".0")) {
             trapOid = trapOid.substring(0, trapOid.length() - 2);
         }

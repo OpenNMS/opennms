@@ -135,7 +135,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
             entries.remove(DEFAULT_BASENAME);
         }
 
-        if (thresholds.toLowerCase().equals("true")) {
+        if (thresholds.equalsIgnoreCase("true")) {
             applyThresholds(rrdPath, svc, dsName, entries);
         } else {
             LOG.debug("storeResponseTime: Thresholds processing is not enabled. Check thresholding-enabled parameter on service definition");

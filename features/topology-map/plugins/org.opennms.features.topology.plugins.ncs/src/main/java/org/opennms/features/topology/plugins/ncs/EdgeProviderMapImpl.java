@@ -43,11 +43,6 @@ public class EdgeProviderMapImpl implements EdgeProvider {
 	}
 
 	@Override
-	public List<Edge> getEdges() {
-		return Collections.unmodifiableList(Collections.list(Collections.enumeration(m_edges.values())));
-	}
-
-	@Override
 	public List<Edge> getEdges(Collection<? extends EdgeRef> references) {
 		List<Edge> retval = new ArrayList<Edge>();
 		for (EdgeRef reference : references) {
@@ -75,15 +70,13 @@ public class EdgeProviderMapImpl implements EdgeProvider {
 	}
 
 	@Override
-	public List<Edge> getEdges(Criteria criteria) {
-		throw new UnsupportedOperationException("EdgeProvider.getEdges is not yet implemented.");
+	public List<Edge> getEdges(Criteria... criteria) {
+		List<Edge> edges = new ArrayList<Edge>();
+		for (Edge edge : m_edges.values()) {
+			edges.add(edge.clone());
+		}
+		return Collections.unmodifiableList(edges);
 	}
-
-	@Override
-	public boolean matches(EdgeRef edgeRef, Criteria criteria) {
-		throw new UnsupportedOperationException("EdgeProvider.matches is not yet implemented.");
-	}
-
 
 	@Override
 	public void clearEdges() {

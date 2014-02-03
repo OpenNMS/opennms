@@ -115,8 +115,7 @@ public class IpInterfaceTable extends CellTable<IpInterface> {
             @Override
             public void onSelectionChange(SelectionChangeEvent event) {
                 IpInterface selected = selectionModel.getSelectedObject();
-                if(selected != null) {
-                }
+                // TODO: Do something here?
             }
         });
         

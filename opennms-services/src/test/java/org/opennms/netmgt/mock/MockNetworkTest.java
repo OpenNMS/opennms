@@ -47,9 +47,7 @@ import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.model.events.EventUtils;
-import org.opennms.netmgt.poller.IfKey;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.QueryManager;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.mock.MockMonitoredService;
 import org.opennms.netmgt.xml.event.Event;
@@ -437,16 +435,13 @@ public class MockNetworkTest extends TestCase {
         // ensure a sample interface is in the package
         assertTrue(pollerConfig.isInterfaceInPackage("192.168.1.1", pkg));
 
-        Enumeration<Service> svcs = pkg.enumerateService();
-        assertNotNull(svcs);
-        while (svcs.hasMoreElements()) {
-            Service svc = (Service) svcs.nextElement();
+        for (final Service svc : pkg.getServices()) {
             if ("ICMP".equals(svc.getName()))
-                assertEquals(500L, svc.getInterval());
+                assertEquals(Long.valueOf(500L), svc.getInterval());
             else if ("HTTP".equals(svc.getName()))
-                assertEquals(750L, svc.getInterval());
+                assertEquals(Long.valueOf(750L), svc.getInterval());
             else
-                assertEquals(1000L, svc.getInterval());
+                assertEquals(Long.valueOf(1000L), svc.getInterval());
         }
 
         // ensure that setting the thread worked
@@ -482,7 +477,7 @@ public class MockNetworkTest extends TestCase {
     }
 
     public void testQueryManager() throws Exception {
-        QueryManager queryManager = new MockQueryManager(m_network);
+        MockQueryManager queryManager = new MockQueryManager(m_network);
         assertNotNull(queryManager);
 
         assertTrue(queryManager.activeServiceExists("Test", 1, "192.168.1.1", "ICMP"));
@@ -552,7 +547,7 @@ public class MockNetworkTest extends TestCase {
         Package pkg = m_pollerConfig.getPackage("TestPackage");
         assertNotNull(pkg);
 
-        Collection<String> outages = pkg.getOutageCalendarCollection();
+        Collection<String> outages = pkg.getOutageCalendars();
         assertTrue(outages.contains("outage1"));
         assertTrue(outages.contains("outage2"));
 

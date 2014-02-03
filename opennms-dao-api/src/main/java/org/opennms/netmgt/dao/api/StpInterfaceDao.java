@@ -34,7 +34,7 @@ import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsStpInterface;
 
 
-public interface StpInterfaceDao extends OnmsDao<OnmsStpInterface, Integer> {
+public interface StpInterfaceDao extends LegacyOnmsDao<OnmsStpInterface, Integer> {
 
 	void markDeletedIfNodeDeleted();
 

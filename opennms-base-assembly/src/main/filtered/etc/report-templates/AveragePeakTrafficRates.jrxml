@@ -70,14 +70,17 @@
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/opennms-logo.png"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SURVEILLANCE_CATEGORY" class="java.lang.String">
-		<defaultValueExpression><![CDATA["ReportCategory"]]></defaultValueExpression>
+		<parameterDescription><![CDATA[Surveillance Category]]></parameterDescription>
+		<defaultValueExpression><![CDATA["Routers"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="startDate" class="java.util.Date">
+		<parameterDescription><![CDATA[Report Start Date]]></parameterDescription>
 		<defaultValueExpression><![CDATA[new java.util.Date(
 new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), new GregorianCalendar().get(Calendar.DATE) - 7).getTimeInMillis()
 )]]></defaultValueExpression>
 	</parameter>
 	<parameter name="endDate" class="java.util.Date">
+		<parameterDescription><![CDATA[Report End Date]]></parameterDescription>
 		<defaultValueExpression><![CDATA[new java.util.Date(
 new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), new GregorianCalendar().get(Calendar.DATE)).getTimeInMillis()
 )]]></defaultValueExpression>
@@ -93,6 +96,8 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
 	categories.categoryname,
 	node.nodelabel,
 	node.nodeid,
+	node.foreignsource,
+	node.foreignid,
 	snmpinterface.snmpifname,
 	snmpinterface.snmpifalias,
 	snmpinterface.snmpphysaddr,
@@ -122,6 +127,8 @@ ORDER BY
 	<field name="categoryname" class="java.lang.String"/>
 	<field name="nodelabel" class="java.lang.String"/>
 	<field name="nodeid" class="java.lang.Integer"/>
+	<field name="foreignsource" class="java.lang.String"/>
+	<field name="foreignid" class="java.lang.String"/>
 	<field name="snmpifname" class="java.lang.String"/>
 	<field name="snmpifalias" class="java.lang.String"/>
 	<field name="snmpphysaddr" class="java.lang.String"/>
@@ -255,6 +262,12 @@ ORDER BY
 				</subreportParameter>
 				<subreportParameter name="nodeid">
 					<subreportParameterExpression><![CDATA[$F{nodeid}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="foreignsource">
+					<subreportParameterExpression><![CDATA[$F{foreignsource}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="foreignid">
+					<subreportParameterExpression><![CDATA[$F{foreignid}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="endDate">
 					<subreportParameterExpression><![CDATA[$P{endDate}]]></subreportParameterExpression>

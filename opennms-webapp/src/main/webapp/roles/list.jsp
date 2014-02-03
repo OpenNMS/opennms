@@ -39,9 +39,8 @@
 
 <%
 	UserManager userFactory;
-  	Map users = null;
-	HashMap usersHash = new HashMap();
-	String curUserName = null;
+  	Map<String,User> users = null;
+	HashMap<String,String> usersHash = new HashMap<String,String>();
 	
 	try
     	{
@@ -54,9 +53,7 @@
 		throw new ServletException("User:list " + e.getMessage());
 	}
 
-	Iterator i = users.keySet().iterator();
-	while (i.hasNext()) {
-		User curUser = (User)users.get(i.next());
+	for (User curUser : users.values()) {
 		usersHash.put(curUser.getUserId(), curUser.getFullName());
 	}
 
@@ -93,7 +90,7 @@
 
 <h3>Role Configuration</h3>
 
-<table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black">
+<table width="100%" border="1" bordercolor="black">
 
          <tr bgcolor="#999999">
           <td><b>Name</b></td>

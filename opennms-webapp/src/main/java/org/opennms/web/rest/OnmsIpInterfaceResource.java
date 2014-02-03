@@ -70,13 +70,6 @@ import com.sun.jersey.api.core.ResourceContext;
 import com.sun.jersey.spi.resource.PerRequest;
 
 @Component
-/**
- * <p>OnmsIpInterfaceResource class.</p>
- *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
- */
 @PerRequest
 @Scope("prototype")
 @Transactional

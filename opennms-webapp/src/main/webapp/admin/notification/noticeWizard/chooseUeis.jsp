@@ -74,6 +74,8 @@
   <jsp:param name="breadcrumb" value="Choose Event" />
 </jsp:include>
 
+<script type="text/javascript" src="js/jquery/jquery.js"></script>
+
 <script type="text/javascript" >
 
     function next()
@@ -88,6 +90,32 @@
         }
     }
 
+$(document).ready(function() {
+
+  $("select#uei").change(function(e) {
+    var label = $(e.target.options[e.target.selectedIndex]).text();
+    $('#regexp').prop('disabled', label !== 'REGEX_FIELD');
+  });
+
+  $('#regexp').change(function(e) {
+    var value = e.target.value;
+    if (!value.match("^~")) {
+      alert("Invalid regex field: [" + value + "], value does not start with ~\n" +
+        "Resetting value back to default.\n"
+      );
+      e.target.value = e.target.defaultValue;
+      return false;
+    }
+    var uei = $('#uei')[0];
+    $(uei.options[uei.selectedIndex]).val(value);
+    uei.selectmenu('refresh');
+  });
+  if ($('#regexp').val() === '~^$') {
+    $('#regexp').prop('disabled', true);
+  }
+
+});
+
 </script>
 
 <h2><%=(newNotice.getName()!=null ? "Editing notice: " + newNotice.getName() + "<br/>" : "")%></h2>
@@ -97,13 +125,15 @@
 <form method="post" name="events"
       action="admin/notification/noticeWizard/notificationWizard" >
       <input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_UEIS%>"/>
-      <table width="50%" cellspacing="2" cellpadding="2" border="0">
+      <table width="50%">
         <tr>
           <td valign="top" align="left">
             <h4>Events</h4>
-            <select NAME="uei" SIZE="20" >
+            <select id="uei" NAME="uei" SIZE="20" >
              <%=buildEventSelect(newNotice)%>
-            </select>
+            </select><br />
+            REGEX FIELD:
+            <input id="regexp" name="regexp" type="text" size="96" value="<%=(newNotice.getUei()!=null ? newNotice.getUei() : "")%>" />
           </td>
         </tr>
         <tr>
@@ -125,17 +155,19 @@
     public String buildEventSelect(Notification notice)
       throws IOException, FileNotFoundException
     {
-        List events = m_eventConfDao.getEventsByLabel();
+        List<Event> events = m_eventConfDao.getEventsByLabel();
         StringBuffer buffer = new StringBuffer();
         
-        List excludeList = getExcludeList();
-	TreeMap<String, String> sortedMap = new TreeMap<String, String>();
+        List<String> excludeList = getExcludeList();
+        TreeMap<String, String> sortedMap = new TreeMap<String, String>();
 
-        Iterator i = events.iterator();
+        if (notice.getUei() != null && notice.getUei().startsWith("~")) {
+            buffer.append("<option selected value=\""+notice.getUei()+"\">REGEX_FIELD</option>\n");
+        } else {
+            buffer.append("<option value=\"~^$\">REGEX_FIELD</option>\n");
+        }
 
-        while(i.hasNext()) //for (int i = 0; i < events.size(); i++)
-        {
-            Event e = (Event)i.next();
+        for (Event e : events) {
             String uei = e.getUei();
             //System.out.println(uei);
 
@@ -146,12 +178,11 @@
             //System.out.println(trimmedUei);
             
             if (!excludeList.contains(trimmedUei)) {
-		sortedMap.put(label,uei);
+                sortedMap.put(label,uei);
             }
-	}
-	i=sortedMap.keySet().iterator();
-	while(i.hasNext()) {
-		String label=(String)i.next();
+        }
+
+    for (String label : sortedMap.keySet()) {
 		String uei=(String)sortedMap.get(label);
 		if (uei.equals(notice.getUei())) {
 			buffer.append("<option selected VALUE=" + uei + ">" + label + "</option>");
@@ -175,7 +206,7 @@
         return leftover;
      }
      
-     public List getExcludeList()
+     public List<String> getExcludeList()
       throws IOException, FileNotFoundException
      {
         List<String> excludes = new ArrayList<String>();

@@ -67,14 +67,14 @@ public class VmwareConfigBuilder {
         public String getGraphDefinition(String apiVersion) {
             String resourceType = (multiInstance ? "vmware" + apiVersion + groupName : "nodeSnmp");
 
-            String def = "report.vmware" + apiVersion + "." + aliasName + ".name=" + aliasName + "\n" + "report.vmware" + apiVersion + "." + aliasName + ".columns=" + aliasName + "\n";
+            String def = "report.vmware" + apiVersion + "." + aliasName + ".name=vmware" + apiVersion + "." + humanReadableName + "\n" + "report.vmware" + apiVersion + "." + aliasName + ".columns=" + aliasName + "\n";
 
             if (multiInstance) {
                 def += "report.vmware" + apiVersion + "." + aliasName + ".propertiesValues=vmware" + apiVersion + groupName + "Name\n";
             }
 
-            def += "report.vmware" + apiVersion + "." + aliasName + ".type=" + resourceType + "\n" + "report.vmware" + apiVersion + "." + aliasName + ".command=--title=\"" + aliasName + (multiInstance ? " {" + resourceType + "Name}" : "") + "\" \\\n" + "--vertical-label=\"" + aliasName + "\" \\\n" + "DEF:xxx={rrd1}:"
-                    + aliasName + ":AVERAGE \\\n" + "LINE2:xxx#0000ff:\"" + aliasName + "\" \\\n" + "GPRINT:xxx:AVERAGE:\"Avg  \\\\: %8.2lf %s\" \\\n" + "GPRINT:xxx:MIN:\"Min  \\\\: %8.2lf %s\" \\\n" + "GPRINT:xxx:MAX:\"Max  \\\\: %8.2lf %s\\\\n\" \\\n\n";
+            def += "report.vmware" + apiVersion + "." + aliasName + ".type=" + resourceType + "\n" + "report.vmware" + apiVersion + "." + aliasName + ".command=--title=\"VMWare" + apiVersion + " " + humanReadableName + (multiInstance ? " {" + resourceType + "Name}" : "") + "\" \\\n" + "--vertical-label=\"" + aliasName + "\" \\\n" + "DEF:xxx={rrd1}:"
+                    + aliasName + ":AVERAGE \\\n" + "LINE2:xxx#0000ff:\"" + aliasName + "\" \\\n" + "GPRINT:xxx:AVERAGE:\"Avg  \\\\: %8.2lf %s\" \\\n" + "GPRINT:xxx:MIN:\"Min  \\\\: %8.2lf %s\" \\\n" + "GPRINT:xxx:MAX:\"Max  \\\\: %8.2lf %s\\\\n\" \n\n";
 
             return def;
         }
@@ -184,7 +184,7 @@ public class VmwareConfigBuilder {
         }
 
         String[] nameChunks = {"unkown", "protos", "threshold", "datastore", "alloc", "utilization", "normalized", "normal", "shares", "depth", "resource", "overhead", "swap", "rate", "metric", "number", "averaged", "load", "decompression", "compression", "device", "latency",
-                "capacity", "commands", "target", "aborted", "kernel", "unreserved", "reserved", "total", "read", "write", "queue", "limited", "sample", "count", "touched"};
+                "capacity", "commands", "target", "aborted", "kernel", "unreserved", "reserved", "total", "read", "write", "queue", "limited", "sample", "count", "touched", "percentage", "seeks", "consumed", "medium", "small", "large", "active", "observed", "time"};
 
         for (String chunk : nameChunks) {
             name = condenseName(name, chunk);
@@ -299,7 +299,7 @@ public class VmwareConfigBuilder {
 
         versionInformation = buffer.toString();
 
-        String arr[] = serviceInstance.getAboutInfo().getApiVersion().split("\\.");
+        String[] arr = serviceInstance.getAboutInfo().getApiVersion().split("\\.");
 
         if (arr.length > 1) {
             apiVersion = arr[0];
@@ -358,14 +358,16 @@ public class VmwareConfigBuilder {
                     Boolean generated = (generatedGraphs.get(vmwarePerformanceMetric.getAliasName()) == null ? false : generatedGraphs.get(vmwarePerformanceMetric.getAliasName()));
 
                     if (!generated) {
+                        generatedGraphs.put(vmwarePerformanceMetric.getAliasName(), Boolean.TRUE);
                         buffer.append(vmwarePerformanceMetric.getGraphDefinition(apiVersion));
                         include.append(vmwarePerformanceMetric.getInclude(apiVersion));
                     }
                 }
             }
         }
+        final String content = include.toString();
 
-        saveFile("vmware" + apiVersion + "-graph-simple.properties", "reports=" + include.toString() + "\n\n" + buffer.toString());
+        saveFile("vmware" + apiVersion + "-graph-simple.properties", "reports=" + content.subSequence(0, content.length() - 4) + "\n\n" + buffer.toString());
     }
 
     private void saveFile(String filename, String contents) {
@@ -475,7 +477,7 @@ public class VmwareConfigBuilder {
     }
 
 
-    public static void main(String args[]) throws ParseException {
+    public static void main(String[] args) throws ParseException {
         String hostname = null;
         String username = null;
         String password = null;

@@ -34,16 +34,17 @@
         session="true"
         import="java.util.*,
         org.opennms.netmgt.config.*,
+        org.opennms.netmgt.config.collectd.Package,
         org.opennms.netmgt.config.poller.*,
+        org.opennms.netmgt.config.poller.outages.*,
+        org.opennms.core.db.DataSourceFactory,
+        org.opennms.core.utils.DBUtils,
         org.opennms.core.utils.WebSecurityUtils,
-        org.opennms.core.resource.Vault,
         org.opennms.web.element.*,
-        org.opennms.web.pathOutage.*,
+        org.opennms.netmgt.poller.PathOutageFactory,
         org.opennms.netmgt.model.OnmsNode,
         org.opennms.netmgt.EventConstants,
         org.opennms.netmgt.xml.event.Event,
-        org.opennms.core.utils.*,
-        org.opennms.netmgt.utils.*,
         org.opennms.web.api.Util,
         org.exolab.castor.xml.ValidationException,
         java.net.*,
@@ -57,15 +58,15 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 <%!//A singleton instance of a "Match-any" interface, which can be used for generic tests/removals etc.
-	private static org.opennms.netmgt.config.poller.Interface matchAnyInterface;
+	private static org.opennms.netmgt.config.poller.outages.Interface matchAnyInterface;
 	{
-		matchAnyInterface = new org.opennms.netmgt.config.poller.Interface();
+		matchAnyInterface = new org.opennms.netmgt.config.poller.outages.Interface();
 		matchAnyInterface.setAddress("match-any");
 	}
 
 	private static void addNode(Outage theOutage, int newNodeId) throws ValidationException {
 		try {
-			org.opennms.netmgt.config.poller.Node newNode = new org.opennms.netmgt.config.poller.Node();
+			org.opennms.netmgt.config.poller.outages.Node newNode = new org.opennms.netmgt.config.poller.outages.Node();
 			newNode.setId(newNodeId);
 			if (!theOutage.getNodeCollection().contains(newNode)) {
 				newNode.validate();
@@ -79,7 +80,7 @@
 		}
 	}
 	
-	private static void addInterface(Outage theOutage, org.opennms.netmgt.config.poller.Interface newInterface) throws ValidationException {
+	private static void addInterface(Outage theOutage, org.opennms.netmgt.config.poller.outages.Interface newInterface) throws ValidationException {
 		if (!theOutage.getInterfaceCollection().contains(newInterface)) {
 			newInterface.validate();
 			theOutage.addInterface(newInterface);
@@ -145,20 +146,21 @@
     
 
     private static Set<Integer> getDependencyNodesByCriticalPath(String criticalpathip) throws SQLException {
-	    Connection conn = Vault.getDbConnection();
+	    final Connection conn = DataSourceFactory.getInstance().getConnection();
+	    final DBUtils d = new DBUtils(PathOutageFactory.class, conn);
 	    Set<Integer> pathNodes = new TreeSet<Integer>();
         try {
             PreparedStatement stmt = conn.prepareStatement(GET_NODES_IN_PATH);
+            d.watch(stmt);
             stmt.setString(1, criticalpathip);
 
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
             while (rs.next()) {
                 pathNodes.add(rs.getInt(1));
             }
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 	    return pathNodes;
         
@@ -179,20 +181,22 @@
 	}
 	
 	private static Set<Integer> getDependencyNodesByNodeid(int nodeid) throws SQLException {
-	    Connection conn = Vault.getDbConnection();
+	    final Connection conn = DataSourceFactory.getInstance().getConnection();
+	    final DBUtils d = new DBUtils(PathOutageFactory.class, conn);
+
 	    Set<Integer> pathNodes = new TreeSet<Integer>();
         try {
             PreparedStatement stmt = conn.prepareStatement(GET_DEPENDENCY_NODES_BY_NODEID);
+            d.watch(stmt);
             stmt.setInt(1, nodeid);
 
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
             while (rs.next()) {
                 pathNodes.add(rs.getInt(1));
             }
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 	    
 	    return pathNodes;
@@ -214,11 +218,9 @@
 		} catch (Throwable e) {
 			throw new ServletException("Could not send event " + event.getUei(), e);
 		}
-	}
-	
-%>
+	}%>
 <%
-	NotifdConfigFactory.init(); //Must do this early on - if it fails, then just throw the exception to the web gui
+    NotifdConfigFactory.init(); //Must do this early on - if it fails, then just throw the exception to the web gui
 
 	// @i18n
 	final HashMap<String, String> shortDayNames = new HashMap<String, String>();
@@ -304,7 +306,7 @@
 		}
 		if (interfaces != null) {
 			for(int i = 0 ; i < interfaces.length; i++ ) {
-				org.opennms.netmgt.config.poller.Interface newInterface = new org.opennms.netmgt.config.poller.Interface();
+				org.opennms.netmgt.config.poller.outages.Interface newInterface = new org.opennms.netmgt.config.poller.outages.Interface();
 				// hope this has builtin safeParseStuff
 				newInterface.setAddress(interfaces[i]);
 				addInterface(theOutage, newInterface);
@@ -324,7 +326,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 </body>
 </html>
 <%
-	return;
+    return;
 
 		}
 	}
@@ -342,7 +344,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 	// ******* Threshd outages config *********
 	ThreshdConfigFactory.init();
 	Map<org.opennms.netmgt.config.threshd.Package, List<String>> thresholdOutages = new HashMap<org.opennms.netmgt.config.threshd.Package, List<String>>();
-	for (org.opennms.netmgt.config.threshd.Package thisPackage : ThreshdConfigFactory.getInstance().getConfiguration().getPackage()) {
+	for (org.opennms.netmgt.config.threshd.Package thisPackage : ThreshdConfigFactory.getInstance().getConfiguration().getPackageCollection()) {
 		thresholdOutages.put(thisPackage, thisPackage.getOutageCalendarCollection());
 		if (thisPackage.getOutageCalendarCollection().contains(theOutage.getName())) {
 			enabledOutages.add("threshold-" + thisPackage.getName());
@@ -352,20 +354,19 @@ Could not find an outage to edit because no outage name parameter was specified 
 	// ******* Polling outages config *********
 	PollerConfigFactory.init();
 	Map<org.opennms.netmgt.config.poller.Package, List<String>> pollingOutages = new HashMap<org.opennms.netmgt.config.poller.Package, List<String>>();
-	for (org.opennms.netmgt.config.poller.Package thisPackage : PollerConfigFactory.getInstance().getConfiguration().getPackage()) {
-		pollingOutages.put(thisPackage, thisPackage.getOutageCalendarCollection());
-		if (thisPackage.getOutageCalendarCollection().contains(theOutage.getName())) {
+	for (org.opennms.netmgt.config.poller.Package thisPackage : PollerConfigFactory.getInstance().getConfiguration().getPackages()) {
+		pollingOutages.put(thisPackage, thisPackage.getOutageCalendars());
+		if (thisPackage.getOutageCalendars().contains(theOutage.getName())) {
 			enabledOutages.add("polling-" + thisPackage.getName());
 		}
 	}
 
 	// ******* Collectd outages config *********
-	CollectdConfigFactory.init();
+	CollectdConfigFactory collectdConfig = new CollectdConfigFactory();
 	Map<org.opennms.netmgt.config.collectd.Package, List<String>> collectionOutages = new HashMap<org.opennms.netmgt.config.collectd.Package, List<String>>();
-	for (CollectdPackage pkg : CollectdConfigFactory.getInstance().getCollectdConfig().getPackages()) {
-		org.opennms.netmgt.config.collectd.Package thisPackage = pkg.getPackage();
-		collectionOutages.put(thisPackage, thisPackage.getOutageCalendarCollection());
-		if (thisPackage.getOutageCalendarCollection().contains(theOutage.getName())) {
+	for (Package thisPackage : collectdConfig.getCollectdConfig().getPackages()) {
+		collectionOutages.put(thisPackage, thisPackage.getOutageCalendars());
+		if (thisPackage.getOutageCalendars().contains(theOutage.getName())) {
 			enabledOutages.add("collect-" + thisPackage.getName());
 		}
 	}
@@ -502,7 +503,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 				pollFactory.saveCurrent();
 				NotifdConfigFactory.getInstance().saveCurrent();
 				ThreshdConfigFactory.getInstance().saveCurrent();
-				CollectdConfigFactory.getInstance().saveCurrent();
+				collectdConfig.saveCurrent();
 				PollerConfigFactory.getInstance().save();
 				sendOutagesChangedEvent();
 	
@@ -530,7 +531,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 				if (newIface == null || "".equals(newIface.trim())) {
 					// No interface was specified
 				} else {
-					org.opennms.netmgt.config.poller.Interface newInterface = new org.opennms.netmgt.config.poller.Interface();
+					org.opennms.netmgt.config.poller.outages.Interface newInterface = new org.opennms.netmgt.config.poller.outages.Interface();
 					newInterface.setAddress(newIface);
 					addInterface(theOutage, newInterface);
 					if (request.getParameter("addPathOutageInterfaceRadio") != null) {
@@ -546,7 +547,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 				theOutage.addInterface(matchAnyInterface);
 			} else if (request.getParameter("addOutage") != null && theOutage.getType() != null) {
 				if (theOutage.getType().equalsIgnoreCase("specific")) {
-					org.opennms.netmgt.config.poller.Time newTime = new org.opennms.netmgt.config.poller.Time();
+					org.opennms.netmgt.config.poller.outages.Time newTime = new org.opennms.netmgt.config.poller.outages.Time();
 	
 					StringBuffer timeBuffer = new StringBuffer(17);
 					timeBuffer.append(request.getParameter("chooseStartDay"));
@@ -578,7 +579,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 	
 					theOutage.addTime(newTime);
 				} else {
-					org.opennms.netmgt.config.poller.Time newTime = new org.opennms.netmgt.config.poller.Time();
+					org.opennms.netmgt.config.poller.outages.Time newTime = new org.opennms.netmgt.config.poller.outages.Time();
 	
 					if (theOutage.getType().equalsIgnoreCase("monthly")) {
 						newTime.setDay(request.getParameter("chooseDayOfMonth"));
@@ -816,19 +817,19 @@ function updateOutageTypeDisplay(selectElement) {
 </script>
 
 <%
-	Enumeration<String> enumList = request.getParameterNames();
+    Enumeration<String> enumList = request.getParameterNames();
 	while (enumList.hasMoreElements()) {
 		String paramName = enumList.nextElement();
 %>
 <!--	<%=paramName%>=<%=request.getParameter(paramName)%><br/>  -->
 <%
-	}
+    }
 %>
 
-<h2>Editing Outage: <%= theOutage.getName() %></h2>
+<h2>Editing Outage: <%=theOutage.getName()%></h2>
 
 		<label>Nodes and Interfaces:</label>
-			<table class="normal" border="0">
+			<table class="normal">
 				<tr>
 					<th valign="top">Node Labels</th>
 					<th valign="top">Interfaces</th>
@@ -845,31 +846,32 @@ function updateOutageTypeDisplay(selectElement) {
 							</div>
 						</form>
 						<p style="font-weight: bold; margin: 10px 0px 2px 0px;">Current selection:</p>
-						<% {
-						if (hasMatchAny) {
-							%>
+						<%
+						    {
+												if (hasMatchAny) {
+						%>
 							<p><i>All nodes</i></p>
 							<%
-						} else { 
-							org.opennms.netmgt.config.poller.Node[] outageNodes = theOutage.getNode();
+							    } else { 
+														org.opennms.netmgt.config.poller.outages.Node[] outageNodes = theOutage.getNode();
 
-							if (outageNodes.length > 0) {
-								%>
+														if (outageNodes.length > 0) {
+							%>
 								<form id="deleteNodes" action="admin/sched-outages/editoutage.jsp" method="post">
 								<input type="hidden" name="formSubmission" value="true" />
 								<%
-								for (int i = 0; i < outageNodes.length; i++) {
-									org.opennms.netmgt.config.poller.Node node = outageNodes[i];
-									int nodeId = node.getId();
-									out.println("<input type=\"image\" src=\"images/redcross.gif\" name=\"deleteNode" + i + "\" />");
-									OnmsNode thisNode = NetworkElementFactory.getInstance(getServletContext()).getNode(nodeId);
-									if (thisNode != null) {
-										out.println(thisNode.getLabel());
-									} else {
-										out.println("Node " + nodeId + " is null");
-									}
-									out.println("<br/>");
-								}
+								    for (int i = 0; i < outageNodes.length; i++) {
+																	org.opennms.netmgt.config.poller.outages.Node node = outageNodes[i];
+																	int nodeId = node.getId();
+																	out.println("<input type=\"image\" src=\"images/redcross.gif\" name=\"deleteNode" + i + "\" />");
+																	OnmsNode thisNode = NetworkElementFactory.getInstance(getServletContext()).getNode(nodeId);
+																	if (thisNode != null) {
+																		out.println(thisNode.getLabel());
+																	} else {
+																		out.println("Node " + nodeId + " is null");
+																	}
+																	out.println("<br/>");
+																}
 								%>
 								</form>
 								<%
@@ -895,12 +897,12 @@ function updateOutageTypeDisplay(selectElement) {
 						if (hasMatchAny) { %>
 							<p><i>All interfaces</i></p>
 						<% } else {
-							org.opennms.netmgt.config.poller.Interface[] outageInterfaces = theOutage.getInterface();
+							org.opennms.netmgt.config.poller.outages.Interface[] outageInterfaces = theOutage.getInterface();
 							if (outageInterfaces.length > 0) { %>
 								<form id="deleteInterfaces" action="admin/sched-outages/editoutage.jsp" method="post">
 									<input type="hidden" name="formSubmission" value="true" />
 									<% for (int i = 0; i < outageInterfaces.length; i++) {
-										org.opennms.netmgt.config.poller.Interface iface = outageInterfaces[i];
+										org.opennms.netmgt.config.poller.outages.Interface iface = outageInterfaces[i];
 										String addr = iface.getAddress();
 										org.opennms.web.element.Interface[] interfaces = NetworkElementFactory.getInstance(getServletContext()).getInterfacesWithIpAddress(addr);
 										if (interfaces.length > 0) {
@@ -978,9 +980,9 @@ function updateOutageTypeDisplay(selectElement) {
 		<label>Time:</label>
 			<table class="normal">
 				<%
-				org.opennms.netmgt.config.poller.Time[] outageTimes = theOutage.getTime();
+				org.opennms.netmgt.config.poller.outages.Time[] outageTimes = theOutage.getTime();
 					for (int i = 0; i < outageTimes.length; i++) {
-						org.opennms.netmgt.config.poller.Time thisTime = outageTimes[i];
+						org.opennms.netmgt.config.poller.outages.Time thisTime = outageTimes[i];
 				%>
 				<tr>
 					<td> <input type="image" src="images/redcross.gif" name="deleteTime<%=i%>" /> </td>
@@ -1015,7 +1017,7 @@ function updateOutageTypeDisplay(selectElement) {
 					}
 				%>
 			</table>
-			<table class="normal" border="0">
+			<table class="normal">
 				<tr id="chooseDay" style="display: none">
 					<td>
 						<span id="chooseDayOfMonth" style="display: none">

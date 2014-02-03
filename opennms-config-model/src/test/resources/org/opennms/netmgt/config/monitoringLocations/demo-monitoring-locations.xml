@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<monitoring-locations-configuration xmlns="http://xmlns.opennms.org/xsd/config/monitoring-locations">
+    <locations>
+        <location-def location-name="MA" monitoring-area="USA"
+            polling-package-name="usa" geolocation="BOS"
+            coordinates="42.363143,-71.0072436" priority="100">
+            <tags>
+                <tag name="foo" />
+            </tags>
+        </location-def>
+        <location-def location-name="NC" monitoring-area="USA"
+            polling-package-name="usa"
+            geolocation="220 Chatham Business Drive, Pittsboro, NC 27312"
+            coordinates="35.71736,-79.161814" priority="100">
+            <tags>
+                <tag name="bar" />
+                <tag name="baz" />
+            </tags>
+        </location-def>
+        <location-def location-name="GA" monitoring-area="USA"
+            polling-package-name="usa" geolocation="ATL"
+            coordinates="33.639975,-84.444032" priority="100">
+            <tags>
+                <tag name="baz" />
+            </tags>
+        </location-def>
+        <location-def location-name="OH" monitoring-area="USA"
+            polling-package-name="usa" geolocation="Columbus, OH"
+            coordinates="39.9611755,-82.9987942" priority="100">
+            <ns1:tags xmlns:ns1="http://xmlns.opennms.org/xsd/config/tags"/>
+        </location-def>
+        <location-def location-name="MN" monitoring-area="USA"
+            polling-package-name="usa" geolocation="MSP"
+            coordinates="44.881234,-93.203111" priority="100">
+        </location-def>
+        <location-def location-name="CO" monitoring-area="USA"
+            polling-package-name="usa" geolocation="Vail, CO"
+            coordinates="39.6402638,-106.3741955" priority="100">
+        </location-def>
+        <location-def location-name="CA" monitoring-area="USA"
+            polling-package-name="usa" geolocation="LAX"
+            coordinates="33.9434916,-118.4089705" priority="100">
+        </location-def>
+        <location-def location-name="TX" monitoring-area="USA"
+            polling-package-name="usa" geolocation="DFW"
+            coordinates="32.8961644,-97.0427084" priority="100">
+        </location-def>
+        <location-def location-name="FL" monitoring-area="USA"
+            polling-package-name="usa" geolocation="MIA"
+            coordinates="25.7889689,-80.2264393" priority="100">
+        </location-def>
+        <location-def location-name="MT" monitoring-area="USA"
+            polling-package-name="usa" geolocation="FCA"
+            coordinates="48.311389,-114.255" priority="100">
+        </location-def>
+        <location-def location-name="AZ" monitoring-area="USA"
+            polling-package-name="usa" geolocation="PHX"
+            coordinates="33.4483771,-112.0740373" priority="100">
+        </location-def>
+    </locations>
+</monitoring-locations-configuration>

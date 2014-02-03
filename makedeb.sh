@@ -5,8 +5,7 @@ TOPDIR=`cd $MYDIR; pwd`
 
 cd "$TOPDIR"
 
-#opennms-core_1.9.9-0.<datestamp>_all.deb
-#opennms-core_<pom-version>-<release-major>.<release-minor>.<release-micro>_all.deb
+BINARIES="dch dpkg-sig dpkg-buildpackage expect"
 
 function exists() {
     which "$1" >/dev/null 2>&1
@@ -196,13 +195,7 @@ function main()
 
         # prime the local ~/.m2/repository
         if [ -d core/build ]; then
-            nice ./compile.pl -N install || die "unable to build top-level POM"
-            pushd core
-                nice ../compile.pl -N install || die "unable to build core POM"
-            popd
-            pushd core/build
-                nice ../../compile.pl install || die "unable to build build tools"
-            popd
+            nice ./compile.pl --projects :org.opennms.core.build --also-make install || die "unable to prime build tools"
         fi
 
         if [ -f "${HOME}/.m2/settings.xml" ]; then
@@ -231,5 +224,13 @@ function main()
     echo ""
     echo "Your completed Debian packages are in the $TOPDIR/.. directory."
 }
+
+for BIN in $BINARIES; do
+	EXECUTABLE=`which $BIN 2>/dev/null || :`
+	if [ -z "$EXECUTABLE" ] || [ ! -x "$EXECUTABLE" ]; then
+		echo "ERROR: $BIN not found"
+		exit 1
+	fi
+done
 
 main "$@"

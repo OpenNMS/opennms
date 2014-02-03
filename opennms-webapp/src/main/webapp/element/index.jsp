@@ -44,15 +44,14 @@
 
     public void init() throws ServletException {
         this.model = new AssetModel();
-        this.columns = this.model.getColumns();
+        this.columns = AssetModel.getColumns();
     }
 %>
 
 <%
-    Map serviceNameMap = new TreeMap(NetworkElementFactory.getInstance(getServletContext()).getServiceNameToIdMap());
-    List serviceNameList = new ArrayList(serviceNameMap.keySet());
+    Map<String,Integer> serviceNameMap = new TreeMap<String,Integer>(NetworkElementFactory.getInstance(getServletContext()).getServiceNameToIdMap());
+    List<String> serviceNameList = new ArrayList<String>(serviceNameMap.keySet());
     Collections.sort(serviceNameList);
-    Iterator serviceNameIterator = serviceNameList.iterator();
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -99,8 +98,7 @@
 					<p align="right">Providing service:          
 						<input type="hidden" name="listInterfaces" value="false"/>
 						<select name="service" size="1">
-						  <% while( serviceNameIterator.hasNext() ) { %>
-						    <% String name = (String)serviceNameIterator.next(); %> 
+						  <% for (String name : serviceNameList) { %>
 						    <option value="<%=serviceNameMap.get(name)%>"><%=name%></option>
 						  <% } %>          
 						</select>

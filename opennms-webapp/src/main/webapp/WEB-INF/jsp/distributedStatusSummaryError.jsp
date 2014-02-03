@@ -45,7 +45,7 @@
 ${error.longDescr}
 </p>
 <p>
-Click <a href="admin/applications.htm">here</a> to see defined applications
+Click <a href="admin/applications.htm">here</a> to see defined applications.
 </p>
 
 <jsp:include page="/includes/footer.jsp" flush="false"/>

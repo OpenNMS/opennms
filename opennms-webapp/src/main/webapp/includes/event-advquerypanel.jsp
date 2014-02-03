@@ -35,9 +35,8 @@
 	buffer="1024kb"
 	import="java.util.*,
 		org.opennms.web.element.NetworkElementFactory,
-		org.opennms.netmgt.model.OnmsSeverity,
-		org.opennms.web.event.*
-		"
+		org.opennms.netmgt.model.OnmsSeverity
+	"
 %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %> 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %> 
@@ -46,7 +45,6 @@
     //get the service names, in alpha order
     Map<String, Integer> serviceNameMap = new TreeMap<String, Integer>(NetworkElementFactory.getInstance(getServletContext()).getServiceNameToIdMap());
     Set<String> serviceNameSet = serviceNameMap.keySet();
-    Iterator<String> serviceNameIterator = serviceNameSet.iterator();
 
 %>
 
@@ -71,10 +69,10 @@
 
 
 <form action="event/query" method="get">
-  <table width="100%" border="0" cellpadding="2" cellspacing="0">
+  <table width="100%">
     <tr>
       <td valign="top">
-        <table width="100%" border="0" cellpadding="2" cellspacing="0" >
+        <table width="100%">
           <tr>
             <td>Event Text Contains:</td>
             <td>TCP/IP Address Like:</td>
@@ -105,6 +103,9 @@
             </td>
           </tr>
 
+          <tr><td colspan="2">Exact Event UEI:</td></tr>
+          <tr><td colspan="2"><input type="text" name="exactuei" size="64" maxsize="128" /></td></tr>
+
           <tr>
             <td colspan="2">Service:</td>
           </tr>
@@ -113,8 +114,7 @@
               <select name="service" size="1">
                 <option selected>Any</option>
 
-                <% while( serviceNameIterator.hasNext() ) { %>
-                  <% String name = (String)serviceNameIterator.next(); %>
+                <% for (String name : serviceNameSet) { %>
                   <option value="<%=serviceNameMap.get(name)%>"><%=name%></option>
                 <% } %>
               </select>

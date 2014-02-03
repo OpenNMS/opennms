@@ -36,20 +36,20 @@ package org.opennms.netmgt.model;
  * @version $Id: $
  */
 public class AttributeStatistic implements Comparable<AttributeStatistic> {
-    private OnmsAttribute m_attribute;
-    private Double m_statistic;
-    
+    private final OnmsAttribute m_attribute;
+    private final Double m_statistic;
+
     /**
      * <p>Constructor for AttributeStatistic.</p>
      *
      * @param attribute a {@link org.opennms.netmgt.model.OnmsAttribute} object.
      * @param statistic a {@link java.lang.Double} object.
      */
-    public AttributeStatistic(OnmsAttribute attribute, Double statistic) {
+    public AttributeStatistic(final OnmsAttribute attribute, final Double statistic) {
         m_attribute = attribute;
         m_statistic = statistic;
     }
-    
+
     /**
      * <p>getAttribute</p>
      *
@@ -58,7 +58,7 @@ public class AttributeStatistic implements Comparable<AttributeStatistic> {
     public OnmsAttribute getAttribute() {
         return m_attribute;
     }
-    
+
     /**
      * <p>getStatistic</p>
      *
@@ -76,19 +76,19 @@ public class AttributeStatistic implements Comparable<AttributeStatistic> {
      * @return a int.
      */
     @Override
-    public int compareTo(AttributeStatistic o) {
+    public int compareTo(final AttributeStatistic o) {
         int diff;
-        
+
         diff = getStatistic().compareTo(o.getStatistic()); 
         if (diff != 0) {
             return diff;
         }
-        
+
         diff = getAttribute().getResource().getId().compareToIgnoreCase(o.getAttribute().getResource().getId());
         if (diff != 0) {
             return diff;
         }
-        
-        return new Integer(getAttribute().hashCode()).compareTo(o.getAttribute().hashCode());
+
+        return Integer.valueOf(getAttribute().hashCode()).compareTo(o.getAttribute().hashCode());
     }
 }

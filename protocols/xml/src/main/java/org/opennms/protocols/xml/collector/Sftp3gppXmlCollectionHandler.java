@@ -258,7 +258,7 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
             for (String group : groups) {
                 String[] subgroups = group.split("/");
                 for (String subgroup : subgroups) {
-                    String pair[] = subgroup.split("=");
+                    String[] pair = subgroup.split("=");
                     if (pair.length > 1) {
                         if (pair[1].matches("^[<].+[>]$")) {
                             // I'm not sure how to deal with separating by | or / and avoiding separating by \/

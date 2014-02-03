@@ -28,6 +28,9 @@
 
 package org.opennms.core.utils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -36,15 +39,12 @@ import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * Provides convenience methods for use the HTTP POST method.
  *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  */
-public abstract class HttpUtils extends Object {
+public abstract class HttpUtils {
 	private static final Logger LOG = LoggerFactory.getLogger(HttpUtils.class);
 
     /** Default buffer size for reading data. (Default is one kilobyte.) */

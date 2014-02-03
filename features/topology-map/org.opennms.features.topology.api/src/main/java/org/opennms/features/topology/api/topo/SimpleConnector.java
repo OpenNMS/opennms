@@ -78,6 +78,18 @@ public class SimpleConnector implements Connector {
 		this(namespace, id, namespace + ":" + id, vertex);
 	}
 
+	@Override
+	public SimpleConnector clone() {
+		SimpleConnector retval = new SimpleConnector(getNamespace(), getId(), getLabel(), getVertex());
+		// This will infinite loop... so it's not a completely accurate clone()
+		/*
+		if (m_edge != null) {
+			retval.setEdge(m_edge.clone());
+		}
+		 */
+		return retval;
+	}
+
 	/**
 	 * @param namespace
 	 * @param id
@@ -128,6 +140,11 @@ public class SimpleConnector implements Connector {
 	@Override
 	public VertexRef getVertex() {
 		return m_vertex;
+	}
+
+	@Override
+	public void setVertex(VertexRef vertex) {
+		m_vertex = vertex;
 	}
 
 	@Override

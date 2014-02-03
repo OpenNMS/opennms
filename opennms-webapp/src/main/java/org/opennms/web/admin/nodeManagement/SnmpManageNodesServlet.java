@@ -44,7 +44,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.opennms.core.db.DataSourceFactory;
-import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.EventConstants;
@@ -79,12 +78,6 @@ public class SnmpManageNodesServlet extends HttpServlet {
     @Override
     public void init() throws ServletException {
         try {
-            DataSourceFactory.init();
-        } catch (Throwable e) {
-            throw new ServletException("Could not initialize database factory: " + e.getMessage(), e);
-        }
-
-        try {
             NotificationFactory.init();
         } catch (Throwable e) {
             throw new ServletException("Could not initialize notification factory: " + e.getMessage(), e);
@@ -112,7 +105,7 @@ public class SnmpManageNodesServlet extends HttpServlet {
 
         final DBUtils d = new DBUtils(getClass());
         try {
-            Connection connection = Vault.getDbConnection();
+            Connection connection = DataSourceFactory.getInstance().getConnection();
             d.watch(connection);
             try {
                 connection.setAutoCommit(false);

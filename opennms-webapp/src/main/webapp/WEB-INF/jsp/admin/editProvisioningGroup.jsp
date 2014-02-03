@@ -76,6 +76,13 @@
       <tree:action label="[Add Interface]" action="addInterface" />
       <tree:action label="[Add Node Category]" action="addCategory" />
       <tree:action label="[Add Node Asset]" action="addAssetField" />
+      <br/>
+      <label>Parent Relationship (Path Outage):</label>
+      <br/>
+      <tree:field label="ForeignSource" property="parentForeignSource" />
+      <tree:field label="ForeignId" property="parentForeignId" />
+      <tree:field label="NodeLabel" property="parentNodeLabel" />
+
     </tree:nodeForm> 
     
     <!--  Tree of interface under the node -->
@@ -86,7 +93,8 @@
         <tree:field label="IP Interface" property="ipAddr" size="36"/>
         <tree:field label="Description" property="descr" />
         
-        <tree:select label="SNMP Primary" property="snmpPrimary" items="${snmpPrimaryChoices}" fieldSize="10" />
+        <tree:select label="Status" property="status" items="${statusChoices}" fieldSize="1"/>
+        <tree:select label="SNMP Primary" property="snmpPrimary" items="${snmpPrimaryChoices}" fieldSize="1" />
         <tree:action label="Add Service" action="addService" />
       </tree:nodeForm>
 

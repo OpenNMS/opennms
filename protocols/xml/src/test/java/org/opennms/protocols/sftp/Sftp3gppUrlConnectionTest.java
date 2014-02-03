@@ -32,7 +32,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Date;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.junit.Test;
 import org.slf4j.Logger;

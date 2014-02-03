@@ -27,6 +27,7 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.dashboard.config.ui.editors;
 
+import com.vaadin.server.Page;
 import com.vaadin.ui.*;
 
 import java.util.ArrayList;
@@ -81,6 +82,11 @@ public class CriteriaRestrictionComponent extends HorizontalLayout {
         m_leftLayout = new HorizontalLayout();
 
         setSpacing(true);
+        setMargin(true);
+
+        Page.getCurrent().getStyles().add(".criteriaBackground { background:#dddddd; }");
+
+        addStyleName("criteriaBackground");
 
         /**
          * Adding the restriction's select box
@@ -91,6 +97,7 @@ public class CriteriaRestrictionComponent extends HorizontalLayout {
         m_restrictionSelect.setMultiSelect(false);
         m_restrictionSelect.setNewItemsAllowed(false);
         m_restrictionSelect.setImmediate(true);
+        m_restrictionSelect.setDescription("Restriction selection");
 
         for (CriteriaRestriction criteriaRestriction : CriteriaRestriction.values()) {
             m_restrictionSelect.addItem(criteriaRestriction.name());
@@ -99,7 +106,7 @@ public class CriteriaRestrictionComponent extends HorizontalLayout {
         /**
          * Parsing the criteria
          */
-        final String arr[] = restriction.split("[(),]+");
+        final String[] arr = restriction.split("[(),]+");
 
         CriteriaRestriction criteriaRestriction = CriteriaRestriction.valueOf(arr[0]);
 
@@ -156,7 +163,7 @@ public class CriteriaRestrictionComponent extends HorizontalLayout {
      * @param criteriaRestriction the new {@link CriteriaRestriction}
      * @param arr                 the values to be set
      */
-    private void refreshComponents(CriteriaRestriction criteriaRestriction, String arr[]) {
+    private void refreshComponents(CriteriaRestriction criteriaRestriction, String[] arr) {
         for (AbstractComponent abstractComponent : m_componentList) {
             m_leftLayout.removeComponent(abstractComponent);
         }

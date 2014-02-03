@@ -2,7 +2,7 @@
 
     <bean id="dashletSelector" class="org.opennms.features.vaadin.dashboard.config.DashletSelector" scope="singleton"/>
 
-    <bean id="dashboardUI" class="org.opennms.features.vaadin.dashboard.ui.WallboardUI" scope="prototype">
+    <bean id="wallboardUI" class="org.opennms.features.vaadin.dashboard.ui.WallboardUI" scope="prototype">
         <property name="dashletSelector" ref="dashletSelector"/>
     </bean>
 
@@ -10,43 +10,43 @@
         <reference-listener bind-method="bind" unbind-method="unbind" ref="dashletSelector"/>
     </reference-list>
 
-    <bean id="dashboardUIFactory" class="org.opennms.features.vaadin.dashboard.ui.WallboardUIFactory">
+    <bean id="wallboardUIFactory" class="org.opennms.features.vaadin.dashboard.ui.WallboardUIFactory">
         <!-- Blueprint container bean -->
         <argument ref="blueprintContainer"/>
         <!-- Bean id of the Vaadin application prototype -->
-        <argument value="dashboardUI"/>
+        <argument value="wallboardUI"/>
     </bean>
 
-    <service id="dashboardService" interface="org.ops4j.pax.vaadin.ApplicationFactory" ref="dashboardUIFactory">
+    <service id="wallboardService" interface="org.ops4j.pax.vaadin.ApplicationFactory" ref="wallboardUIFactory">
         <service-properties>
-            <entry key="alias" value="/vaadin-dashboard"/>
+            <entry key="alias" value="/vaadin-wallboard"/>
             <entry key="widgetset" value="org.opennms.features.vaadin.dashboard.DashboardWidgetSet"/>
         </service-properties>
     </service>
 
-    <bean id="dashboardConfigUI" class="org.opennms.features.vaadin.dashboard.config.ui.WallboardConfigUI" scope="prototype">
+    <bean id="wallboardConfigUI" class="org.opennms.features.vaadin.dashboard.config.ui.WallboardConfigUI" scope="prototype">
         <property name="dashletSelector" ref="dashletSelector"/>
     </bean>
 
-    <bean id="dashboardConfigUILink" class="org.opennms.features.vaadin.dashboard.config.ui.AdminPageNavEntry">
-        <property name="url" value="admin/dashboardConfig.jsp"/>
+    <bean id="wallboardConfigUILink" class="org.opennms.features.vaadin.dashboard.config.ui.AdminPageNavEntry">
+        <property name="url" value="admin/wallboardConfig.jsp"/>
         <property name="name" value="Wallboard Config Web UI"/>
     </bean>
 
-    <bean id="dashboardConfigUIFactory" class="org.opennms.features.vaadin.dashboard.config.ui.WallboardConfigUIFactory">
+    <bean id="wallboardConfigUIFactory" class="org.opennms.features.vaadin.dashboard.config.ui.WallboardConfigUIFactory">
         <!-- Blueprint container bean -->
         <argument ref="blueprintContainer"/>
         <!-- Bean id of the Vaadin application prototype -->
-        <argument value="dashboardConfigUI"/>
+        <argument value="wallboardConfigUI"/>
     </bean>
 
-    <service interface="org.ops4j.pax.vaadin.ApplicationFactory" ref="dashboardConfigUIFactory">
+    <service interface="org.ops4j.pax.vaadin.ApplicationFactory" ref="wallboardConfigUIFactory">
         <service-properties>
-            <entry key="alias" value="/dashboard-config"/>
+            <entry key="alias" value="/wallboard-config"/>
         </service-properties>
     </service>
 
-    <service id="dashboardConfigService" interface="org.opennms.web.navigate.PageNavEntry" ref="dashboardConfigUILink">
+    <service id="wallboardConfigService" interface="org.opennms.web.navigate.PageNavEntry" ref="wallboardConfigUILink">
         <service-properties>
             <entry key="Page" value="admin"/>
             <entry key="Category" value="operations"/>
@@ -56,6 +56,7 @@
 
     <bean id="undefinedDashletFactory" class="org.opennms.features.vaadin.dashboard.dashlets.UndefinedDashletFactory" scope="singleton">
         <property name="name" value="Undefined"/>
+        <property name="boostable" value="false"/>
     </bean>
 
     <service ref="undefinedDashletFactory" interface="org.opennms.features.vaadin.dashboard.model.DashletFactory"/>

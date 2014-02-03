@@ -51,7 +51,6 @@ import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 
 /**
  * Singleton class used to send messages to an XMPP Server. Used by
@@ -79,12 +78,8 @@ public class XMPPNotificationManager {
 
 	private final XMPPConnection xmpp;
 
-	private final ConnectionConfiguration xmppConfig; 
-
 	private final String xmppServer;
 
-	private final String xmppServiceName;
-	
 	private final String xmppUser;
 
 	private final String xmppPassword;
@@ -159,12 +154,12 @@ public class XMPPNotificationManager {
 			}
 
 			xmppServer = this.props.getProperty("xmpp.server");
-			xmppServiceName = this.props.getProperty("xmpp.servicename", xmppServer);
+			String xmppServiceName = this.props.getProperty("xmpp.servicename", xmppServer);
 			xmppUser = this.props.getProperty("xmpp.user");
 			xmppPassword = this.props.getProperty("xmpp.pass");
 			xmppPort = Integer.valueOf(this.props.getProperty("xmpp.port", XMPP_PORT));
 
-			xmppConfig = new ConnectionConfiguration(xmppServer, xmppPort, xmppServiceName);
+			ConnectionConfiguration xmppConfig = new ConnectionConfiguration(xmppServer, xmppPort, xmppServiceName);
 
 			boolean debuggerEnabled = Boolean.parseBoolean(props.getProperty("xmpp.debuggerEnabled"));
 			xmppConfig.setDebuggerEnabled(debuggerEnabled);

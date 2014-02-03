@@ -1,16 +1,5 @@
 package org.opennms.features.topology.app.internal.gwt.client;
 
-import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent.GraphUpdateListener;
-import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent.TopologyViewRenderer;
-import org.opennms.features.topology.app.internal.gwt.client.d3.D3;
-import org.opennms.features.topology.app.internal.gwt.client.d3.D3Transform;
-import org.opennms.features.topology.app.internal.gwt.client.d3.Tween;
-import org.opennms.features.topology.app.internal.gwt.client.svg.SVGElement;
-import org.opennms.features.topology.app.internal.gwt.client.svg.SVGGElement;
-import org.opennms.features.topology.app.internal.gwt.client.svg.SVGMatrix;
-import org.opennms.features.topology.app.internal.gwt.client.svg.SVGPoint;
-import org.opennms.features.topology.app.internal.gwt.client.view.TopologyView;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
@@ -22,6 +11,13 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.VTooltip;
+import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent.GraphUpdateListener;
+import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent.TopologyViewRenderer;
+import org.opennms.features.topology.app.internal.gwt.client.svg.SVGElement;
+import org.opennms.features.topology.app.internal.gwt.client.svg.SVGGElement;
+import org.opennms.features.topology.app.internal.gwt.client.svg.SVGMatrix;
+import org.opennms.features.topology.app.internal.gwt.client.svg.SVGPoint;
+import org.opennms.features.topology.app.internal.gwt.client.view.TopologyView;
 
 public class TopologyViewImpl extends Composite implements TopologyView<TopologyViewRenderer>, GraphUpdateListener {
 
@@ -59,15 +55,10 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
     
     @UiField
     Element m_marginContainer;
-    
+
     @UiField
     HTMLPanel m_widgetContainer;
     
-    TopologyViewRenderer m_topologyViewRenderer;
-
-    private boolean m_isRefresh;
-
-
     public int getLeftMargin() {
         return LEFT_MARGIN;
     }
@@ -81,10 +72,8 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
         super.onLoad();
         m_widgetContainer.setSize("100%", "100%");
         sinkEvents(Event.ONCONTEXTMENU | VTooltip.TOOLTIP_EVENTS | Event.ONMOUSEWHEEL);
-        m_topologyViewRenderer = m_presenter.getViewRenderer();
-        
+        m_svg.setId("TopologyComponent");
     }
-
 
     @Override
     public void setPresenter(Presenter<TopologyViewRenderer> presenter) {
@@ -160,15 +149,6 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
 
     }
 
-    private double getViewPortScale() {
-        D3Transform transform = D3.getTransform(D3.d3().select(getSVGViewPort()).attr("transform"));
-        return transform.getScale().get(0);
-    }
-
-    private native void consoleLog(Object obj) /*-{
-        $wnd.console.log(obj);
-    }-*/;
-
     @Override
     public void onGraphUpdated(GWTGraph graph, GWTBoundingBox oldBBox) {
         if(m_presenter.getViewRenderer() != null){
@@ -201,31 +181,6 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
         return transform;
     }
     
-    private Tween<String, GWTEdge> edgeStrokeWidthTween(final double scale) {
-        return new Tween<String, GWTEdge>() {
-
-            @Override
-            public String call(GWTEdge edge, int index, String a) {
-                
-                final double strokeWidth = 5/scale;
-                consoleLog("scale: " + scale + " strokeWidth: " + strokeWidth);
-                consoleLog("a: " + a);
-                return scale + "px";
-            }
-            
-        };
-    }       
-    
-    String matrixTransform(SVGMatrix matrix) {
-        String m = "matrix(" + matrix.getA() +
-                ", " + matrix.getB() +
-                ", " + matrix.getC() + 
-                ", " + matrix.getD() +
-                ", " + matrix.getE() + 
-                ", " + matrix.getF() + ")";
-        return D3.getTransform( m ).toString();
-    }
-
     @Override
     public SVGPoint getCenterPos(GWTBoundingBox box) {
         SVGGElement g = getSVGViewPort().cast();

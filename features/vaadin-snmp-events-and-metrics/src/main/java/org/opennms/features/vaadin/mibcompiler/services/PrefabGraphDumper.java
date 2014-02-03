@@ -55,14 +55,14 @@ public class PrefabGraphDumper {
         StringBuffer sb = new StringBuffer();
         for (PrefabGraph graph : graphs) {
             String name = "report." + graph.getName();
-            templates.add(name);
+            templates.add(graph.getName());
             sb.append(name).append(".name=").append(graph.getTitle()).append("\n");
             sb.append(name).append(".columns=").append(StringUtils.join(graph.getColumns(), ",")).append("\n");
             sb.append(name).append(".type=").append(StringUtils.join(graph.getTypes(), ",")).append("\n");
             sb.append(name).append(".description=").append(graph.getDescription()).append("\n");
             sb.append(name).append(".command=").append(graph.getCommand());
         }
-        writer.write("report=" + StringUtils.join(templates, ",\\\n") + "\n\n");
+        writer.write("reports=" + StringUtils.join(templates, ", \\\n") + "\n\n");
         writer.write(sb.toString());
     }
 

@@ -30,17 +30,22 @@ package org.opennms.netmgt.dao.api;
 
 import org.opennms.netmgt.model.OnmsEvent;
 
-/**
- * <p>EventDao interface.</p>
- */
-public interface EventDao extends OnmsDao<OnmsEvent, Integer> {
+import java.util.Date;
+import java.util.List;
+
+public interface EventDao extends LegacyOnmsDao<OnmsEvent, Integer> {
+
+    int deletePreviousEventsForAlarm(final Integer id, final OnmsEvent e);
 
     /**
-     * <p>deletePreviousEventsForAlarm</p>
+     * Returns a list of events which have been created
+     * AFTER date and the uei of each event matches one uei entry of the ueiList.
      *
-     * @param id a {@link java.lang.Integer} object.
-     * @param e a {@link org.opennms.netmgt.model.OnmsEvent} object.
-     * @return a int.
+     * @param ueiList list with uei's
+     * @param date    the date after which all events are loaded.
+     * @return a list of events which have been created
+     *         AFTER date and the uei of each event matches one uei entry of the ueiList.
      */
-    int deletePreviousEventsForAlarm(final Integer id, final OnmsEvent e);
+    List<OnmsEvent> getEventsAfterDate(List<String> ueiList, Date date);
+
 }

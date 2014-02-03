@@ -90,11 +90,6 @@ public final class JMXDataCollectionConfigFactory {
     private static boolean m_loaded = false;
 
     /**
-     * Map of group maps indexed by SNMP collection name.
-     */
-    private Map<String, Map<String, Mbean>> m_collectionGroupMap;
-
-    /**
      * Map of JmxCollection objects indexed by data collection name
      */
     private Map<String, JmxCollection> m_collectionMap;
@@ -148,7 +143,10 @@ public final class JMXDataCollectionConfigFactory {
         // faster processing at run-time.
         // 
         m_collectionMap = new HashMap<String, JmxCollection>();
-        m_collectionGroupMap = new HashMap<String, Map<String, Mbean>>();
+
+        // Map of group maps indexed by SNMP collection name.
+        // TODO: This appears to be unused
+        Map<String, Map<String, Mbean>> collectionGroupMap = new HashMap<String, Map<String, Mbean>>();
         
         // BOZO isn't the collection name defined in the jmx-datacollection.xml file and
         // global to all the mbeans?
@@ -168,7 +166,7 @@ public final class JMXDataCollectionConfigFactory {
                 groupMap.put(mbean.getName(), mbean);
             }
 
-            m_collectionGroupMap.put(collection.getName(), groupMap);
+            collectionGroupMap.put(collection.getName(), groupMap);
             m_collectionMap.put(collection.getName(), collection);
         }
     }

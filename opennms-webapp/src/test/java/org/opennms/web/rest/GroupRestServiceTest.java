@@ -30,13 +30,52 @@ package org.opennms.web.rest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Test;
-import org.opennms.core.test.MockLogAppender;
-import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.model.OnmsGroupList;
+import java.io.StringReader;
 
+import javax.xml.bind.JAXB;
+
+import org.apache.commons.lang.StringUtils;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.OnmsCategoryCollection;
+import org.opennms.netmgt.model.OnmsGroupList;
+import org.opennms.netmgt.model.OnmsUser;
+import org.opennms.netmgt.model.OnmsUserList;
+import org.opennms.test.JUnitConfigurationEnvironment;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.web.WebAppConfiguration;
+
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@WebAppConfiguration
+@ContextConfiguration(locations={
+        "classpath:/org/opennms/web/rest/applicationContext-test.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-service.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-reportingCore.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockEventProxy.xml",
+        "classpath:/applicationContext-jersey-test.xml",
+        "classpath:/META-INF/opennms/applicationContext-reporting.xml",
+        "classpath:/META-INF/opennms/applicationContext-mock-usergroup.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
+        "file:src/main/webapp/WEB-INF/applicationContext-spring-security.xml",
+        "file:src/main/webapp/WEB-INF/applicationContext-jersey.xml"
+})
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase
 public class GroupRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
     @Override
@@ -55,7 +94,6 @@ public class GroupRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
         xml = sendRequest(GET, "/groups/Admin", 200);
         assertTrue(xml.contains(">Admin<"));
-
         sendRequest(GET, "/groups/idontexist", 404);
     }
     
@@ -90,18 +128,109 @@ public class GroupRestServiceTest extends AbstractSpringJerseyRestTestCase {
     public void testUsers() throws Exception {
         createGroup("deleteMe");
 
+        // test add user which does not exist to group
+        sendRequest(PUT, "/groups/deleteMe/users/totallyUniqueUser", 400);
+        
+        // create user first
+        createUser("totallyUniqueUser");
+        
+        // add user to group
         sendRequest(PUT, "/groups/deleteMe/users/totallyUniqueUser", 303);
-
         String xml = sendRequest(GET, "/groups/deleteMe", 200);
         assertTrue(xml.contains("totallyUniqueUser"));
 
+        // add user to group twice
+        sendRequest(PUT, "/groups/deleteMe/users/totallyUniqueUser", 400); // already added
+        xml = sendRequest(GET, "/groups/deleteMe/users", 200);
+        assertEquals(1, StringUtils.countMatches(xml,  "totallyUniqueUser"));
+        
+        // list all users of group
+        xml = sendRequest(GET, "/groups/deleteMe/users", 200);
+        assertNotNull(xml);
+        assertEquals(1, JaxbUtils.unmarshal(OnmsUserList.class, xml).size());
+        
+        //get specific user
+        xml = sendRequest(GET, "/groups/deleteMe/users/totallyUniqueUser", 200);
+        assertNotNull(xml);
+        OnmsUser user = JaxbUtils.unmarshal(OnmsUser.class,  xml);
+        assertNotNull(user);
+        assertEquals("totallyUniqueUser", user.getUsername());
+        
+        // clean up
         sendRequest(DELETE, "/groups/deleteMe/users/totallyBogusUser", 400);
         sendRequest(DELETE, "/groups/deleteMe/users/totallyUniqueUser", 200);
-
         xml = sendRequest(GET, "/groups/deleteMe", 200);
         assertFalse(xml.contains("totallyUniqueUser"));
+        
+        // list all users of group
+        xml = sendRequest(GET, "/groups/deleteMe/users", 200);
+        assertNotNull(xml);
+        assertEquals(0, JaxbUtils.unmarshal(OnmsUserList.class, xml).size());
+        
+        // get specific user
+        sendRequest(GET, "/groups/deleteMe/users/totallyUniqueUser", 404);
     }
 
+    @Test
+    public void testAddGroup() throws Exception {
+        OnmsGroupList groups = JaxbUtils.unmarshal(OnmsGroupList.class, sendRequest(GET, "/groups", 200));
+        assertNotNull(groups);
+        assertTrue(groups.size() > 0);
+        int initialGroupSize = groups.size();
+
+        createGroup("My little Test group");         // add group
+        String xml = sendRequest(GET, "/groups", 200);
+        groups = JaxbUtils.unmarshal(OnmsGroupList.class, xml);
+        assertEquals(initialGroupSize+1, groups.size());
+        assertTrue(xml.contains(">My little Test group<"));
+    }
+
+    @Test
+    public void testCategories() throws Exception {
+        
+        createGroup("testGroup");
+        String xml = sendRequest(GET, "/groups/testGroup/categories", 200);
+        assertNotNull(xml);
+        OnmsCategoryCollection categories = JAXB.unmarshal(new StringReader(xml), OnmsCategoryCollection.class);
+        assertNotNull(categories);
+        assertTrue(categories.isEmpty());
+
+        // add category to group
+        sendRequest(PUT, "/groups/testGroup/categories/testCategory", 400); // fails, because Category is not there
+        createCategory("testCategory"); // create category
+        sendRequest(PUT, "/groups/testGroup/categories/testCategory", 200); // should not fail, because Category is now there
+        xml = sendRequest(GET, "/groups/testGroup/categories/testCategory", 200); // get data
+        assertNotNull(xml);
+        OnmsCategory category = JAXB.unmarshal(new StringReader(xml), OnmsCategory.class);
+        assertNotNull(category);
+        assertEquals("testCategory", category.getName());
+
+        // add again (fails)
+        sendRequest(PUT, "/groups/testGroup/categories/testCategory", 400); // should fail, because Category is already there
+
+        // remove category from group
+        sendRequest(DELETE, "/groups/testGroup/categories/testCategory", 200); // should not fail
+        sendRequest(DELETE, "/groups/testGroup/categories/testCategory", 400); // should fail, because category is already removed
+
+        // test that all categories for group "testGroup" have been removed
+        xml = sendRequest(GET, "/groups/testGroup/categories", 200);
+        assertNotNull(xml);
+        categories = JaxbUtils.unmarshal(OnmsCategoryCollection.class, xml);
+        assertNotNull(categories);
+        assertTrue(categories.isEmpty());
+    }
+
+    protected void createCategory(final String categoryName) throws Exception {
+        OnmsCategory cat = new OnmsCategory(categoryName);
+        sendPost("/categories", JaxbUtils.marshal(cat), 303, "/categories/" + categoryName);
+    }
+    
+    private void createUser(final String userName) throws Exception {
+        OnmsUser user = new OnmsUser();
+        user.setUsername(userName);
+        sendPost("/users", JaxbUtils.marshal(user), 303, "/users/" + userName);
+    }
+    
     protected void createGroup(final String groupname) throws Exception {
         String group = "<group>" +
                 "<name>" + groupname + "</name>" +
@@ -109,6 +238,4 @@ public class GroupRestServiceTest extends AbstractSpringJerseyRestTestCase {
                 "</group>";
         sendPost("/groups", group, 303, "/groups/" + groupname);
     }
-    
-
 }

@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.provision.support.jmx.connectors;
 
+import java.io.Closeable;
+
 import javax.management.MBeanServerConnection;
 
 /**
@@ -36,7 +38,7 @@ import javax.management.MBeanServerConnection;
  * 
  * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
  */
-public interface ConnectionWrapper {
+public interface ConnectionWrapper extends Closeable {
     /**
      * <p>getMBeanServer</p>
      *

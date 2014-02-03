@@ -29,14 +29,11 @@
 package org.opennms.core.db;
 
 import java.beans.PropertyVetoException;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
@@ -57,35 +54,8 @@ public abstract class BaseConnectionFactory implements ClosableDataSource {
      * @throws java.beans.PropertyVetoException if any.
      * @throws java.sql.SQLException if any.
      */
-    protected BaseConnectionFactory(final InputStream stream, final String dsName) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
-    	LOG.info("Setting up data source {} from input stream.", dsName);
-        final JdbcDataSource ds = ConnectionFactoryUtil.marshalDataSourceFromConfig(stream, dsName);
+    protected BaseConnectionFactory(final JdbcDataSource ds) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
         initializePool(ds);
-    }
-
-    /**
-     * @param configFile A configuration file name.
-     * @param dsName The data source's name.
-     * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     * @throws java.beans.PropertyVetoException if any.
-     * @throws java.sql.SQLException if any.
-     */
-    protected BaseConnectionFactory(final String configFile, final String dsName) throws IOException, MarshalException, ValidationException, PropertyVetoException, SQLException {
-        /*
-         * Set the system identifier for the source of the input stream.
-         * This is necessary so that any location information can
-         * positively identify the source of the error.
-         */
-    	final FileInputStream fileInputStream = new FileInputStream(configFile);
-    	LOG.info("Setting up data sources from {}.", configFile);
-        try {
-        	final JdbcDataSource ds = ConnectionFactoryUtil.marshalDataSourceFromConfig(fileInputStream, dsName);
-        	initializePool(ds);
-        } finally {
-            IOUtils.closeQuietly(fileInputStream);
-        }
     }
 
     protected abstract void initializePool(final JdbcDataSource ds) throws SQLException;
@@ -140,7 +110,7 @@ public abstract class BaseConnectionFactory implements ClosableDataSource {
      * @throws java.sql.SQLException if any.
      */
     @Override
-    public void close() throws SQLException {
+    public void close() {
     }
 
     /**

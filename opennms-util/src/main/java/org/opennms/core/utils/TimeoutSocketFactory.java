@@ -30,7 +30,6 @@ package org.opennms.core.utils;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 
 public class TimeoutSocketFactory {
@@ -50,7 +49,7 @@ public class TimeoutSocketFactory {
         m_socketWrapper = wocketSrapper;
     }
 
-    public Socket createSocket(final String host, final int port) throws IOException, UnknownHostException {
+    public Socket createSocket(final String host, final int port) throws IOException {
         Socket socket = new Socket(host, port);
         socket.setSoTimeout(m_timeout);
         if (m_socketWrapper != null) {

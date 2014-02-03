@@ -3,20 +3,19 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>1.13.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.remote-poller</artifactId>
   <packaging>jar</packaging>
-  <name>OpenNMS Remote Poller</name>
+  <name>OpenNMS Features Remote Poller</name>
   <url>http://maven.apache.org</url>
   <build>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>2.4</version>
         <dependencies>
           <dependency>
             <groupId>org.apache.maven.reporting</groupId>
@@ -110,7 +109,7 @@ groovy.compiler.output.path=target/classes
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.codehaus.groovy.maven</groupId>
+        <groupId>org.codehaus.gmaven</groupId>
         <artifactId>gmaven-plugin</artifactId>
         <executions>
           <execution>
@@ -122,36 +121,6 @@ groovy.compiler.output.path=target/classes
         </executions>
       </plugin>
     </plugins>
-    <pluginManagement>
-      <plugins>
-        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-        <plugin>
-          <groupId>org.eclipse.m2e</groupId>
-          <artifactId>lifecycle-mapping</artifactId>
-          <version>1.0.0</version>
-          <configuration>
-            <lifecycleMappingMetadata>
-              <pluginExecutions>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-dependency-plugin</artifactId>
-                    <versionRange>[1.0.0,)</versionRange>
-                    <goals>
-                      <goal>copy-dependencies</goal>
-                      <goal>unpack</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <ignore />
-                  </action>
-                </pluginExecution>
-              </pluginExecutions>
-            </lifecycleMappingMetadata>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
   </build>
   <dependencies>
     <dependency>
@@ -181,12 +150,40 @@ groovy.compiler.output.path=target/classes
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
-      <artifactId>spring-security-dependencies</artifactId>
+      <artifactId>spring-web-dependencies</artifactId>
       <type>pom</type>
+      <!-- 
+        This dependency is needed for HTTP remoting classes in the Spring contexts 
+        that support the remote poller.
+      -->
+      <scope>runtime</scope>
+      <!-- There's a bunch of stuff in this POM that we don't need in the remote poller. -->
+      <exclusions>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-struts</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-webmvc</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework.webflow</groupId>
+          <artifactId>spring-binding</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework.webflow</groupId>
+          <artifactId>spring-js</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework.webflow</groupId>
+          <artifactId>spring-webflow</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
-      <artifactId>spring-web-dependencies</artifactId>
+      <artifactId>spring-security-core-dependencies</artifactId>
       <type>pom</type>
     </dependency>
     <dependency>
@@ -222,6 +219,28 @@ groovy.compiler.output.path=target/classes
       <groupId>org.opennms</groupId>
       <artifactId>opennms-icmp-jni6</artifactId>
     </dependency>
+    <!-- Logging implementation dependencies -->
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>log4j-over-slf4j</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+
     <!-- test dependencies -->
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>

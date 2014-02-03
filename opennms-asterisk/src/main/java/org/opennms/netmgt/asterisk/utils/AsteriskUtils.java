@@ -46,11 +46,10 @@ public class AsteriskUtils {
      * @param pattern a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    public static String expandPattern(String pattern) {
-        Properties props = new Properties();
+    public static String expandPattern(final String pattern) {
+        final Properties props = new Properties();
         props.put("org.opennms.netmgt.asterisk.agi.listenAddress", System.getProperty("org.opennms.netmgt.asterisk.agi.listenAddress", "127.0.0.1"));
         props.put("org.opennms.netmgt.asterisk.agi.listenPort", System.getProperty("org.opennms.netmgt.asterisk.agi.listenPort", "4573"));
-        String expanded = PropertiesUtils.substitute(pattern, props);
-        return expanded;
+        return PropertiesUtils.substitute(pattern, props);
     }
 }

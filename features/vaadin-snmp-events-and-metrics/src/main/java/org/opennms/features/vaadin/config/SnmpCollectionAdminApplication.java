@@ -27,7 +27,6 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.config;
 
-import org.opennms.features.vaadin.api.Logger;
 import org.opennms.features.vaadin.datacollection.SnmpCollectionPanel;
 import org.opennms.netmgt.config.DataCollectionConfigDao;
 
@@ -36,14 +35,13 @@ import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.themes.Reindeer;
 
 /**
  * The Class SNMP Collection Administration Application.
  */
-@SuppressWarnings("serial")
+@Theme("opennms")
 @Title("SNMP Collection Administration")
-@Theme(Reindeer.THEME_NAME)
+@SuppressWarnings("serial")
 public class SnmpCollectionAdminApplication extends UI {
 
     /** The OpenNMS Data Collection Configuration DAO. */
@@ -52,26 +50,25 @@ public class SnmpCollectionAdminApplication extends UI {
     /**
      * Sets the OpenNMS Data Collection Configuration DAO.
      *
-     * @param dataCollectionDao the new data collection DAO
+     * @param dataCollectionDao the new OpenNMS data collection DAO
      */
     public void setDataCollectionDao(DataCollectionConfigDao dataCollectionDao) {
         this.dataCollectionDao = dataCollectionDao;
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.UI#init(com.vaadin.server.VaadinRequest)
+     */
     @Override
     public void init(VaadinRequest request) {
         if (dataCollectionDao == null)
             throw new RuntimeException("dataCollectionDao cannot be null.");
 
-        Logger logger = new SimpleLogger();
-        SnmpCollectionPanel scAdmin = new SnmpCollectionPanel(dataCollectionDao, logger);
-        DataCollectionGroupAdminPanel dcgAdmin = new DataCollectionGroupAdminPanel(dataCollectionDao);
-
         TabSheet tabs = new TabSheet();
-        tabs.setStyleName(Reindeer.TABSHEET_SMALL);
+        tabs.addStyleName("light");
         tabs.setSizeFull();
-        tabs.addTab(scAdmin);
-        tabs.addTab(dcgAdmin);
+        tabs.addTab(new SnmpCollectionPanel(dataCollectionDao, new SimpleLogger()));
+        tabs.addTab(new DataCollectionGroupAdminPanel(dataCollectionDao));
 
         setContent(tabs);
     }

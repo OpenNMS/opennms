@@ -31,9 +31,10 @@ package org.opennms.netmgt.linkd.snmp;
 import java.net.InetAddress;
 
 import org.opennms.core.utils.InetAddressUtils;
-
+import org.opennms.netmgt.snmp.NamedSnmpVar;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpResult;
+import org.opennms.netmgt.snmp.SnmpStore;
 import org.opennms.netmgt.snmp.SnmpUtils;
 
 /**
@@ -171,7 +172,7 @@ public final class CdpCacheTableEntry extends SnmpStore {
 		 *  indicates no Port-ID field (TLV) was reported in the
 		 *  most recent CDP message.</P>
 		 */
-		new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, CDP_DEVICEPORT, ".1.3.6.1.4.1.9.9.23.1.2.1.1.7", 6)
+		new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, CDP_DEVICEPORT, ".1.3.6.1.4.1.9.9.23.1.2.1.1.7", 7)
 
 		/**
 		 * <P>The Device's Hardware Platform as reported in the most
@@ -445,6 +446,7 @@ public final class CdpCacheTableEntry extends SnmpStore {
 	 */
 	private static InetAddress getIpAddressByHexString(String ipaddrhexstrng) {
 
+	    try {
 		long ipAddr = Long.parseLong(ipaddrhexstrng, 16);
 		byte[] bytes = new byte[4];
 		bytes[3] = (byte) (ipAddr & 0xff);
@@ -453,6 +455,10 @@ public final class CdpCacheTableEntry extends SnmpStore {
 		bytes[0] = (byte) ((ipAddr >> 24) & 0xff);
 
 		return InetAddressUtils.getInetAddress(bytes);
+	    } catch (NumberFormatException nfe) {
+	       
+	    }
+		return null;
 	}
 
 

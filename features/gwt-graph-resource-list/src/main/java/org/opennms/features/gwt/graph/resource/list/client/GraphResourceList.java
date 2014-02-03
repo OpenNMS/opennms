@@ -119,7 +119,7 @@ public class GraphResourceList implements EntryPoint {
     
     
     private void createKscCustomReportView(Element element) {
-        KscCustomReportAppController kscCustomReportList = new KscCustomReportAppController(getResourceListData(getDataObjectAttribute(element)), getBaseUrl());
+        KscCustomReportAppController kscCustomReportList = new KscCustomReportAppController(getResourceListData(getDataObjectAttribute(element)), getBaseUrl(), getReadOnlyAttribue(element));
         kscCustomReportList.go(RootPanel.get(element.getId()));
     }
     
@@ -145,7 +145,11 @@ public class GraphResourceList implements EntryPoint {
     private String getDataObjectAttribute(Element elem) {
         return elem.getAttribute("dataObject") != null ? elem.getAttribute("dataObject") : "data";
     }
-    
+
+    private boolean getReadOnlyAttribue(Element elem){
+        return elem.getAttribute("isreadonly") != null ? (elem.getAttribute("isreadonly").equals("true")) : false;
+    }
+
     public final native String getBaseUrl() /*-{
         try{
             return $wnd.getBaseHref();
@@ -158,5 +162,5 @@ public class GraphResourceList implements EntryPoint {
     public final native JsArray<ResourceListItem> getResourceListData(String dataObject) /*-{
         return $wnd[dataObject].records;
     }-*/;
-    
+
 }

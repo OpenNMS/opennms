@@ -51,8 +51,8 @@ public class DaoTestConfigBean implements InitializingBean {
     private String m_relativeHomeDirectory = null;
     private String m_rrdBinary = "/bin/true";
     private String m_relativeRrdBaseDirectory = "target/test/opennms-home/share/rrd";
-    private final String m_relativeImporterDirectory = "target/test/opennms-home/etc/imports";
-    private final String m_relativeForeignSourceDirectory = "target/test/opennms-home/etc/foreign-sources";
+    private static final String m_relativeImporterDirectory = "target/test/opennms-home/etc/imports";
+    private static final String m_relativeForeignSourceDirectory = "target/test/opennms-home/etc/foreign-sources";
 
     /**
      * <p>Constructor for DaoTestConfigBean.</p>
@@ -82,6 +82,7 @@ public class DaoTestConfigBean implements InitializingBean {
         }
         // Do any necessary substitutions that are normally handled by maven
         Properties substitutions = new Properties();
+        substitutions.setProperty("install.database.name", "opennms");
         substitutions.setProperty("install.database.driver", "org.postgres.Driver");
         substitutions.setProperty("install.share.dir", "target/test/share");
         substitutions.setProperty("install.logs.dir", "target/test/logs");

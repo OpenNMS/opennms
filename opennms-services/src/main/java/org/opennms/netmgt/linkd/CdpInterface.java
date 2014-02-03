@@ -55,13 +55,12 @@ public class CdpInterface {
 	 */
 	
 	private final int m_cdpIfIndex; 
-	
-	int m_cdpTargetNodeId;
-	
-	int m_cdpTargetIfIndex;
-	
-	String m_cdpTargetDeviceId;
-	
+	private String m_cdpIfName;
+
+	private Integer m_cdpTargetNodeId;
+	private String m_cdpTargetDeviceId;
+	private String m_cdpTargetIfName;
+
 	CdpInterface(int ifindex) {
 		m_cdpIfIndex = ifindex;
 	}
@@ -75,27 +74,27 @@ public class CdpInterface {
 		return m_cdpIfIndex;
 	}
 	/**
-	 * <p>Getter for the field <code>cdpTargetIfIndex</code>.</p>
+	 * <p>Getter for the field <code>cdpTargetIfName</code>.</p>
 	 *
-	 * @return Returns the cdpTargetDevicePort.
+	 * @return Returns the cdpTargetIfName.
 	 */
-	public int getCdpTargetIfIndex() {
-		return m_cdpTargetIfIndex;
+	public String getCdpTargetIfName() {
+		return m_cdpTargetIfName;
 	}
 	/**
 	 * <p>Setter for the field <code>cdpTargetIfIndex</code>.</p>
 	 *
 	 * @param ifindex a int.
 	 */
-	public void setCdpTargetIfIndex(int ifindex) {
-		m_cdpTargetIfIndex = ifindex;
+	public void setCdpTargetIfName(String ifname) {
+		m_cdpTargetIfName = ifname;
 	}
 	/**
 	 * <p>Getter for the field <code>cdpTargetNodeId</code>.</p>
 	 *
 	 * @return Returns the cdpTargetNodeId.
 	 */
-	public int getCdpTargetNodeId() {
+	public Integer getCdpTargetNodeId() {
 		return m_cdpTargetNodeId;
 	}
 	/**
@@ -103,7 +102,7 @@ public class CdpInterface {
 	 *
 	 * @param cdpTargetNodeId The cdpTargetNodeId to set.
 	 */
-	public void setCdpTargetNodeId(int cdpTargetNodeId) {
+	public void setCdpTargetNodeId(Integer cdpTargetNodeId) {
 		m_cdpTargetNodeId = cdpTargetNodeId;
 	}
 	
@@ -115,7 +114,15 @@ public class CdpInterface {
 		m_cdpTargetDeviceId = cdpTargetDeviceId;
 	}
 
-	/**
+	public String getCdpIfName() {
+        return m_cdpIfName;
+    }
+
+    public void setCdpIfName(String cdpIfName) {
+        m_cdpIfName = cdpIfName;
+    }
+
+    /**
 	 * <p>toString</p>
 	 *
 	 * @return a {@link java.lang.String} object.
@@ -123,10 +130,11 @@ public class CdpInterface {
         @Override
 	public String toString() {
 	    return new ToStringBuilder(this)
-	                .append("ifindex",m_cdpIfIndex)
-	                .append("targetNodeid",m_cdpTargetNodeId)
-	                .append("cdptargetIfIndex:",m_cdpTargetIfIndex)
+	                .append("ifindex:",m_cdpIfIndex)
+                        .append("ifname:",m_cdpIfName)
+	                .append("targetNodeid:",m_cdpTargetNodeId)
 	                .append("cdptargetDeviceId:",m_cdpTargetDeviceId)
+                        .append("cdptargetIfName:",m_cdpTargetIfName)
 	                .toString();
 	} 
 }

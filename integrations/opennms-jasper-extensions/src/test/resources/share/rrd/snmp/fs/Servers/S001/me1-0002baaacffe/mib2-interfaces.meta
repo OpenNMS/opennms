@@ -1,0 +1,11 @@
+#Wed Aug 28 15:34:34 EDT 2013
+SNMP_.1.3.6.1.2.1.2.2.1.11.2=ifInUcastpkts
+SNMP_.1.3.6.1.2.1.2.2.1.16.2=ifOutOctets
+SNMP_.1.3.6.1.2.1.2.2.1.12.2=ifInNUcastpkts
+SNMP_.1.3.6.1.2.1.2.2.1.17.2=ifOutUcastPkts
+SNMP_.1.3.6.1.2.1.2.2.1.13.2=ifInDiscards
+SNMP_.1.3.6.1.2.1.2.2.1.20.2=ifOutErrors
+SNMP_.1.3.6.1.2.1.2.2.1.18.2=ifOutNUcastPkts
+SNMP_.1.3.6.1.2.1.2.2.1.14.2=ifInErrors
+SNMP_.1.3.6.1.2.1.2.2.1.19.2=ifOutDiscards
+SNMP_.1.3.6.1.2.1.2.2.1.10.2=ifInOctets

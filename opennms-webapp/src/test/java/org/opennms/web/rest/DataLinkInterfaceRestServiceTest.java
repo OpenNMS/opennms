@@ -32,12 +32,43 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@WebAppConfiguration
+@ContextConfiguration(locations={
+        "classpath:/org/opennms/web/rest/applicationContext-test.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-service.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-reportingCore.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockEventProxy.xml",
+        "classpath:/applicationContext-jersey-test.xml",
+        "classpath:/META-INF/opennms/applicationContext-reporting.xml",
+        "classpath:/META-INF/opennms/applicationContext-mock-usergroup.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
+        "file:src/main/webapp/WEB-INF/applicationContext-spring-security.xml",
+        "file:src/main/webapp/WEB-INF/applicationContext-jersey.xml"
+})
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase
+@Transactional
 public class DataLinkInterfaceRestServiceTest extends AbstractSpringJerseyRestTestCase {
     private DatabasePopulator m_databasePopulator;
 
@@ -50,12 +81,14 @@ public class DataLinkInterfaceRestServiceTest extends AbstractSpringJerseyRestTe
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testLinks() throws Exception {
         String xml = sendRequest(GET, "/links", 200);
         assertTrue(xml.contains("<links count=\"3\""));
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testLink() throws Exception {
         String xml = sendRequest(GET, "/links/64", 200);
         assertTrue(xml.contains("<link "));
@@ -75,36 +108,42 @@ public class DataLinkInterfaceRestServiceTest extends AbstractSpringJerseyRestTe
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testQueryWithNodeid() throws Exception {
         String xml = sendRequest(GET, "/links", parseParamData("node.id=2"), 200);
         assertTrue(xml.contains("<links count=\"1\""));
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testQueryWithIfIndex() throws Exception {
         String xml = sendRequest(GET, "/links", parseParamData("ifIndex=1"), 200);
         assertTrue(xml.contains("<links count=\"2\""));
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testQueryWithParentNodeid() throws Exception {
         String xml = sendRequest(GET, "/links", parseParamData("nodeParentId=2"), 200);
         assertTrue(xml.contains("<links count=\"0\""));
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testQueryWithParentIfindex() throws Exception {
         String xml = sendRequest(GET, "/links", parseParamData("parentIfIndex=1"), 200);
         assertTrue(xml.contains("<links count=\"3\""));
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testQueryWithStatus() throws Exception {
         String xml = sendRequest(GET, "/links", parseParamData("status=A"), 200);
         assertTrue(xml.contains("<links count=\"3\""));
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testPost() throws Exception {
         final String xml = "  <link status=\"A\" source=\"monkey\">" +
                 "    <ifIndex>1</ifIndex>" +
@@ -116,13 +155,14 @@ public class DataLinkInterfaceRestServiceTest extends AbstractSpringJerseyRestTe
                 "  </link>";
 
         MockHttpServletResponse response = sendPost("/links", xml, 303, null);
-        assertTrue(response.getHeader("Location").toString().contains("opennms/rest/links/"));
+        assertTrue(response.getHeader("Location").toString().contains(contextPath + "links/"));
         
         final String newXml = sendRequest(GET, "/links", 200);
         assertTrue(newXml.contains("<links count=\"4\""));
     }
     
     @Test
+    @JUnitTemporaryDatabase
     public void testPut() throws Exception {
         String xml = sendRequest(GET, "/links/64", 200);
         assertNotNull(xml);
@@ -138,6 +178,7 @@ public class DataLinkInterfaceRestServiceTest extends AbstractSpringJerseyRestTe
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testDelete() throws Exception {
         String xml = sendRequest(GET, "/links/64", 200);
         assertNotNull(xml);

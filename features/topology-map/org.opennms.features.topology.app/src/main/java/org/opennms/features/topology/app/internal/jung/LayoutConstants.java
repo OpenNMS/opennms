@@ -30,9 +30,10 @@ package org.opennms.features.topology.app.internal.jung;
 
 public interface LayoutConstants {
 	
-	public static final int ELBOW_ROOM = 200;
+	public static final int ELBOW_ROOM = 50;
 	public static final int LAYOUT_HEIGHT = 2000;
-	public static final int LAYOUT_WIDTH = LAYOUT_HEIGHT*16/9;
-	public static final int LAYOUT_REPULSION = 200;
+	public static final int LAYOUT_WIDTH = (int)(LAYOUT_HEIGHT*16.0/9.0);
+	public static final double SPRING_FORCE_MULTIPLIER = 2.0/3.0;
+	public static final int SPRING_LAYOUT_REPULSION = 200;
 
 }

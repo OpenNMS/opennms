@@ -40,26 +40,44 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.dao.mock.MockEventProxy;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
-
+import org.springframework.test.context.web.WebAppConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
+@WebAppConfiguration
 @ContextConfiguration(locations={
-        "classpath:/META-INF/opennms/component-dao.xml",
+        "classpath:/org/opennms/web/rest/applicationContext-test.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
-        "classpath:/restServiceTest.xml"
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-service.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-reportingCore.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockEventProxy.xml",
+        "classpath:/applicationContext-jersey-test.xml",
+        "classpath:/META-INF/opennms/applicationContext-reporting.xml",
+        "classpath:/META-INF/opennms/applicationContext-mock-usergroup.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
+        "file:src/main/webapp/WEB-INF/applicationContext-spring-security.xml",
+        "file:src/main/webapp/WEB-INF/applicationContext-jersey.xml"
 })
 @JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase
 public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase {
     
     @Test
     public void testRequisition() throws Exception {
+        cleanUpImports();
+
         createRequisition();
         String url = "/requisitions";
         String xml = sendRequest(GET, url, 200);
@@ -160,10 +178,11 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
         assertFalse(xml, xml.contains("172.20.1.201"));
 
         // set attributes
-        sendPut(url, "descr=Total+Crap&snmp-primary=P", 303, "/nodes/4243/interfaces/172.20.1.204");
+        sendPut(url, "status=3&descr=Total+Crap&snmp-primary=P", 303, "/nodes/4243/interfaces/172.20.1.204");
         xml = sendRequest(GET, url, 200);
         assertTrue(xml, xml.contains("descr=\"Total Crap\""));
         assertTrue(xml, xml.contains("snmp-primary=\"P\""));
+        assertTrue(xml, xml.contains("status=\"3\""));
  
         // delete interface
         xml = sendRequest(DELETE, url, 200);

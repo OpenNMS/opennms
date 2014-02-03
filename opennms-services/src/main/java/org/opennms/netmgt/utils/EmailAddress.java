@@ -39,7 +39,6 @@ import java.util.StringTokenizer;
  * @author <a href="http://www.opennms.org">OpenNMS</A>
  */
 public class EmailAddress {
-    private String address;
 
     private String username;
 
@@ -61,10 +60,10 @@ public class EmailAddress {
      * @param newAddress a {@link java.lang.String} object.
      */
     public EmailAddress(String newAddress) {
-        address = newAddress;
-        username = address.substring(0, address.indexOf("@"));
+        String address = newAddress;
+        username = address.substring(0, address.indexOf('@'));
 
-        String addressTail = address.substring(address.indexOf("@") + 1, address.length());
+        String addressTail = address.substring(address.indexOf('@') + 1, address.length());
         StringTokenizer tokens = new StringTokenizer(addressTail, ".");
 
         List<String> tokenList = new ArrayList<String>();

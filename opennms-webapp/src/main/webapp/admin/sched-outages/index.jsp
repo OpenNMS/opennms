@@ -33,15 +33,16 @@
 	import="
 	java.util.*,
 	org.opennms.netmgt.config.*,
+	org.opennms.netmgt.config.collectd.Package,
 	org.opennms.netmgt.config.poller.*,
+	org.opennms.netmgt.config.poller.outages.*,
 	org.opennms.web.element.*,
 	org.opennms.netmgt.model.OnmsNode,
+	org.opennms.netmgt.model.OnmsNode.NodeType,
 	org.opennms.netmgt.EventConstants,
 	org.opennms.netmgt.xml.event.Event,
 	org.opennms.web.api.Util,
-	java.net.*,
-	java.io.*,
-	org.opennms.netmgt.utils.*
+	java.net.*
 "%>
 
 <%!public void sendOutagesChangedEvent() throws ServletException {
@@ -77,14 +78,12 @@
 				thisPackage.removeOutageCalendar(deleteName); //Will quietly do nothing if outage doesn't exist
 			}
 	
-			org.opennms.netmgt.config.poller.Package[] pollingPackages = PollerConfigFactory.getInstance().getConfiguration().getPackage();
-			for (int i = 0; i < pollingPackages.length; i++) {
-				org.opennms.netmgt.config.poller.Package thisPackage = pollingPackages[i];
+			for (final org.opennms.netmgt.config.poller.Package thisPackage : PollerConfigFactory.getInstance().getConfiguration().getPackages()) {
 				thisPackage.removeOutageCalendar(deleteName); //Will quietly do nothing if outage doesn't exist
 			}
-	
-			for (Iterator iter = CollectdConfigFactory.getInstance().getCollectdConfig().getPackages().iterator(); iter.hasNext();) {
-				org.opennms.netmgt.config.collectd.Package thisPackage = ((CollectdPackage) iter.next()).getPackage();
+
+			CollectdConfigFactory collectdConfig = new CollectdConfigFactory();
+			for (Package thisPackage : collectdConfig.getCollectdConfig().getPackages()) {
 				thisPackage.removeOutageCalendar(deleteName); //Will quietly do nothing if outage doesn't exist
 			}
 	
@@ -93,7 +92,7 @@
 			pollFactory.saveCurrent();
 			NotifdConfigFactory.getInstance().saveCurrent();
 			ThreshdConfigFactory.getInstance().saveCurrent();
-			CollectdConfigFactory.getInstance().saveCurrent();
+			collectdConfig.saveCurrent();
 			PollerConfigFactory.getInstance().save();
 			sendOutagesChangedEvent();
 		} finally {
@@ -140,94 +139,91 @@ div.nodeintbox {
 	</tr>
 
 	<%
-		HashMap<String,String> shortDayNames = new HashMap<String,String>();
-		shortDayNames.put("sunday", "Sun");
-		shortDayNames.put("monday", "Mon");
-		shortDayNames.put("tuesday", "Tue");
-		shortDayNames.put("wednesday", "Wed");
-		shortDayNames.put("thursday", "Thu");
-		shortDayNames.put("friday", "Fri");
-		shortDayNames.put("saturday", "Sat");
+	    HashMap<String,String> shortDayNames = new HashMap<String,String>();
+				shortDayNames.put("sunday", "Sun");
+				shortDayNames.put("monday", "Mon");
+				shortDayNames.put("tuesday", "Tue");
+				shortDayNames.put("wednesday", "Wed");
+				shortDayNames.put("thursday", "Thu");
+				shortDayNames.put("friday", "Fri");
+				shortDayNames.put("saturday", "Sat");
 
-		String outageOnImageUrl = "images/greentick.gif";
-		String outageOffImageUrl = "images/redcross.gif";
+				String outageOnImageUrl = "images/greentick.gif";
+				String outageOffImageUrl = "images/redcross.gif";
 
-		pollFactory.getReadLock().lock();
+				pollFactory.getReadLock().lock();
 
-		try {
-			Outage[] outages = pollFactory.getOutages();
-	
-			Collection<String> notificationOutages = NotifdConfigFactory.getInstance().getConfiguration().getOutageCalendarCollection();
-	
-			PollerConfigFactory.init(); //Force init
-	
-			List<String> pollingOutages = new ArrayList<String>();
-			org.opennms.netmgt.config.poller.Package[] pollingPackages = PollerConfigFactory.getInstance().getConfiguration().getPackage();
-			for (int i = 0; i < pollingPackages.length; i++) {
-				pollingOutages.addAll(pollingPackages[i].getOutageCalendarCollection());
-			}
-	
-			ThreshdConfigFactory.init();
-			List<String> thresholdingOutages = new ArrayList<String>();
-			org.opennms.netmgt.config.threshd.Package[] thresholdingPackages = ThreshdConfigFactory.getInstance().getConfiguration().getPackage();
-			for (int i = 0; i < thresholdingPackages.length; i++) {
-				thresholdingOutages.addAll(thresholdingPackages[i].getOutageCalendarCollection());
-			}
-	
-			CollectdConfigFactory.init();
-			List<String> collectionOutages = new ArrayList<String>();
-	
-			for (Iterator iter = CollectdConfigFactory.getInstance().getCollectdConfig().getPackages().iterator(); iter.hasNext();) {
-				org.opennms.netmgt.config.collectd.Package thisPackage = ((CollectdPackage) iter.next()).getPackage();
-				collectionOutages.addAll(thisPackage.getOutageCalendarCollection());
-			}
-	
-			for (int i = 0; i < outages.length; i++) {
-				Outage thisOutage = outages[i];
-				String outageName = thisOutage.getName();
+				try {
+					Outage[] outages = pollFactory.getOutages();
+			
+					Collection<String> notificationOutages = NotifdConfigFactory.getInstance().getConfiguration().getOutageCalendarCollection();
+			
+					PollerConfigFactory.init(); //Force init
+			
+					List<String> pollingOutages = new ArrayList<String>();
+					for (final org.opennms.netmgt.config.poller.Package pkg : PollerConfigFactory.getInstance().getConfiguration().getPackages()) {
+						pollingOutages.addAll(pkg.getOutageCalendars());
+					}
+			
+					ThreshdConfigFactory.init();
+					List<String> thresholdingOutages = new ArrayList<String>();
+					org.opennms.netmgt.config.threshd.Package[] thresholdingPackages = ThreshdConfigFactory.getInstance().getConfiguration().getPackage();
+					for (int i = 0; i < thresholdingPackages.length; i++) {
+						thresholdingOutages.addAll(thresholdingPackages[i].getOutageCalendarCollection());
+					}
+			
+					List<String> collectionOutages = new ArrayList<String>();
+					CollectdConfigFactory collectdConfig = new CollectdConfigFactory();
+					for (Package thisPackage : collectdConfig.getCollectdConfig().getPackages()) {
+						collectionOutages.addAll(thisPackage.getOutageCalendars());
+					}
+			
+					for (int i = 0; i < outages.length; i++) {
+						Outage thisOutage = outages[i];
+						String outageName = thisOutage.getName();
 	%>
 	<tr valign="top">
 		<td><%=outageName%></td>
 		<td><%=pollFactory.getOutageType(outageName)%></td>
 		<td><div class="nodeintbox">
 		<%
-			org.opennms.netmgt.config.poller.Node[] nodeList = pollFactory.getNodeIds(outageName);
-				for (int j = 0; j < nodeList.length; j++) {
-					OnmsNode elementNode = NetworkElementFactory.getInstance(getServletContext()).getNode(nodeList[j].getId());
-		%> <%=elementNode == null || elementNode.getType().charAt(0) == 'D' ? "Node: Node ID " + nodeList[j].getId() + " Not Found" : "Node: " + elementNode.getLabel()%><br/>
+		    org.opennms.netmgt.config.poller.outages.Node[] nodeList = pollFactory.getNodeIds(outageName);
+						for (int j = 0; j < nodeList.length; j++) {
+							OnmsNode elementNode = NetworkElementFactory.getInstance(getServletContext()).getNode(nodeList[j].getId());
+		%> <%=elementNode == null || elementNode.getType() == NodeType.DELETED ? "Node: Node ID " + nodeList[j].getId() + " Not Found" : "Node: " + elementNode.getLabel()%><br/>
 		<%
-			}
-				org.opennms.netmgt.config.poller.Interface[] interfaceList = pollFactory.getInterfaces(outageName);
-				for (int j = 0; j < interfaceList.length; j++) {
-					StringBuffer display;
-					String rawAddress = interfaceList[j].getAddress();
-					if ("match-any".equals(rawAddress)) {
-						display = new StringBuffer("All nodes/interfaces");
-					} else {
-						display = new StringBuffer();
-						List<Integer> nodeids = NetworkElementFactory.getInstance(getServletContext()).getNodeIdsWithIpLike(rawAddress);
-						//org.opennms.web.element.Interface[] interfaces = NetworkElementFactory.getInstance(getServletContext()).getInterfacesWithIpAddress(rawAddress);
-						if (nodeids.size() == 0) {
-							display.append("Intfc: " + rawAddress + " Not Found<br/>");
-						}
-						for (Integer nodeid: nodeids) {
-							org.opennms.web.element.Interface thisInterface = NetworkElementFactory.getInstance(getServletContext()).getInterface(nodeid,rawAddress);
-							if (thisInterface.isManagedChar()=='D') {
-								display.append("Intfc: " + thisInterface.getIpAddress() + " Not Found<br/>");
+		    }
+						org.opennms.netmgt.config.poller.outages.Interface[] interfaceList = pollFactory.getInterfaces(outageName);
+						for (int j = 0; j < interfaceList.length; j++) {
+							StringBuffer display;
+							String rawAddress = interfaceList[j].getAddress();
+							if ("match-any".equals(rawAddress)) {
+								display = new StringBuffer("All nodes/interfaces");
 							} else {
-								if (thisInterface.getHostname() != null && !thisInterface.getHostname().equals(thisInterface.getIpAddress())) {
-									display.append("Intfc: " + thisInterface.getIpAddress() + " " + thisInterface.getHostname());
-								} else {
-									display.append("Intfc: " + thisInterface.getIpAddress());
+								display = new StringBuffer();
+								List<Integer> nodeids = NetworkElementFactory.getInstance(getServletContext()).getNodeIdsWithIpLike(rawAddress);
+								//org.opennms.web.element.Interface[] interfaces = NetworkElementFactory.getInstance(getServletContext()).getInterfacesWithIpAddress(rawAddress);
+								if (nodeids.size() == 0) {
+									display.append("Intfc: " + rawAddress + " Not Found<br/>");
 								}
-								if (thisInterface.isManaged()) {
-									display.append("<br/>");
-								} else {
-									display.append(" (unmanaged)<br/>");
+								for (Integer nodeid: nodeids) {
+									org.opennms.web.element.Interface thisInterface = NetworkElementFactory.getInstance(getServletContext()).getInterface(nodeid,rawAddress);
+									if (thisInterface.isManagedChar()=='D') {
+										display.append("Intfc: " + thisInterface.getIpAddress() + " Not Found<br/>");
+									} else {
+										if (thisInterface.getHostname() != null && !thisInterface.getHostname().equals(thisInterface.getIpAddress())) {
+											display.append("Intfc: " + thisInterface.getIpAddress() + " " + thisInterface.getHostname());
+										} else {
+											display.append("Intfc: " + thisInterface.getIpAddress());
+										}
+										if (thisInterface.isManaged()) {
+											display.append("<br/>");
+										} else {
+											display.append(" (unmanaged)<br/>");
+										}
+									}
 								}
 							}
-						}
-					}
 		%><%=display%>
 		<%
 			}
@@ -235,17 +231,17 @@ div.nodeintbox {
 		</td>
 		<td><div class="nodeintbox">
 		<%
-			org.opennms.netmgt.config.poller.Time[] outageTimes = pollFactory.getOutageTimes(outageName);
-				for (int j = 0; j < outageTimes.length; j++) {
-					org.opennms.netmgt.config.poller.Time thisOutageTime = outageTimes[j];
-					String rawDay = thisOutageTime.getDay();
-					String day = rawDay;
-					if ("daily".equals(pollFactory.getOutageType(outageName)))
-						day = "";
-					if ("weekly".equals(pollFactory.getOutageType(outageName)))
-						day = (rawDay == null) ? "" : (String) shortDayNames.get(rawDay);
-					if ("specific".equals(pollFactory.getOutageType(outageName)))
-						day = "";
+		    org.opennms.netmgt.config.poller.outages.Time[] outageTimes = pollFactory.getOutageTimes(outageName);
+						for (int j = 0; j < outageTimes.length; j++) {
+							org.opennms.netmgt.config.poller.outages.Time thisOutageTime = outageTimes[j];
+							String rawDay = thisOutageTime.getDay();
+							String day = rawDay;
+							if ("daily".equals(pollFactory.getOutageType(outageName)))
+								day = "";
+							if ("weekly".equals(pollFactory.getOutageType(outageName)))
+								day = (rawDay == null) ? "" : (String) shortDayNames.get(rawDay);
+							if ("specific".equals(pollFactory.getOutageType(outageName)))
+								day = "";
 		%><%=day%> <%=thisOutageTime.getBegins()%> -<%="specific".equals(pollFactory.getOutageType(outageName)) ? "<br/>" : ""%>
 		<%=thisOutageTime.getEnds()%><br/>
 		<%

@@ -31,15 +31,17 @@ package org.opennms.netmgt.provision.service.operations;
 import java.net.InetAddress;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.provision.service.ProvisionService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -83,8 +85,8 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
         m_node = new OnmsNode();
         m_node.setId(nodeId);
 		m_node.setLabel(nodeLabel);
-		m_node.setLabelSource("U");
-		m_node.setType("A");
+		m_node.setLabelSource(NodeLabelSource.USER);
+		m_node.setType(NodeType.ACTIVE);
         m_node.setForeignSource(foreignSource);
         m_node.setForeignId(foreignId);
         m_node.getAssetRecord().setBuilding(building);
@@ -112,7 +114,7 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
 	public void foundInterface(String ipAddr, Object descr, final PrimaryType primaryType, boolean managed, int status) {
 		
 		if (ipAddr == null || "".equals(ipAddr.trim())) {
-		    LOG.error(String.format("Found interface on node {} with an empty ipaddr! Ignoring!", m_node.getLabel()));
+		    LOG.error("Found interface on node {} with an empty ipaddr! Ignoring!", m_node.getLabel());
 			return;
 		}
 

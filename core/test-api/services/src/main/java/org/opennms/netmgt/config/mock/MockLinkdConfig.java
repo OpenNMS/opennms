@@ -101,11 +101,6 @@ public class MockLinkdConfig implements LinkdConfig {
     }
 
     @Override
-    public boolean enableDiscoveryDownload() {
-        return false;
-    }
-
-    @Override
     public boolean useIpRouteDiscovery() {
         return false;
     }
@@ -132,6 +127,11 @@ public class MockLinkdConfig implements LinkdConfig {
 
     @Override
     public boolean useBridgeDiscovery() {
+        return false;
+    }
+
+    @Override
+    public boolean useWifiDiscovery() {
         return false;
     }
 
@@ -215,6 +215,11 @@ public class MockLinkdConfig implements LinkdConfig {
 
     @Override
     public boolean useOspfDiscovery() {
+        return false;
+    }
+
+    @Override
+    public boolean useIsIsDiscovery() {
         return false;
     }
 

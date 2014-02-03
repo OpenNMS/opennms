@@ -36,8 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
@@ -51,10 +49,6 @@ import org.opennms.netmgt.poller.ServiceMonitorLocator;
  * <p>PollerConfig interface.</p>
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- *
- * TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Style - Code Templates
- * @version $Id: $
  */
 public interface PollerConfig {
 
@@ -316,6 +310,8 @@ public interface PollerConfig {
      * <p>getNextOutageIdSql</p>
      *
      * @return a {@link java.lang.String} object.
+     * 
+     * @deprecated We should be using DAOs that autoincrement.
      */
     String getNextOutageIdSql();
     
@@ -373,19 +369,15 @@ public interface PollerConfig {
      * <p>update</p>
      *
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public void update() throws IOException, MarshalException, ValidationException;
+    public void update() throws IOException;
     
     /**
      * <p>save</p>
      *
-     * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public void save() throws MarshalException, IOException, ValidationException;
+    public void save() throws IOException;
 
     
     /**

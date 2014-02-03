@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.dao.api;
 
+import java.io.IOException;
+
 import org.opennms.netmgt.config.microblog.MicroblogConfiguration;
 import org.opennms.netmgt.config.microblog.MicroblogProfile;
 import org.springframework.dao.DataAccessResourceFailureException;
@@ -74,5 +76,11 @@ public interface MicroblogConfigurationDao {
      * @throws org.springframework.dao.DataAccessResourceFailureException if any.
      */
     void reloadConfiguration() throws DataAccessResourceFailureException;
+
+    /**
+     * Add or update a profile in the configuration.
+     * @param profile the profile
+     */
+    void saveProfile(final MicroblogProfile profile) throws IOException;
 
     }

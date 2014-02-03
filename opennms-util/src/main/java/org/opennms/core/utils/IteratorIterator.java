@@ -42,7 +42,6 @@ public class IteratorIterator<T> implements Iterator<T>, Iterable<T> {
      * <p>Constructor for IteratorIterator.</p>
      *
      * @param iterators a {@link java.util.Iterator} object.
-     * @param <T> a T object.
      */
     public IteratorIterator(Iterator<T>... iterators) {
         /*
@@ -78,7 +77,7 @@ public class IteratorIterator<T> implements Iterator<T>, Iterable<T> {
             m_iterIter.remove();
         }
         
-        return (m_currentIter == null ? false : m_currentIter.hasNext());
+        return (m_currentIter != null && m_currentIter.hasNext());
     }
     
     /**

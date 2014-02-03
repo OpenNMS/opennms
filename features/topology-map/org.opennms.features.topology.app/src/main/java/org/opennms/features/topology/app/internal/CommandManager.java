@@ -30,6 +30,7 @@ package org.opennms.features.topology.app.internal;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.HashMap;
@@ -43,25 +44,21 @@ import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.OperationContext.DisplayLocation;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
 import org.slf4j.LoggerFactory;
-import org.vaadin.peter.contextmenu.ContextMenu;
-import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
-import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItemClickEvent;
 
 import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.UI;
 
 public class CommandManager {
 
-    private class DefaultOperationContext implements OperationContext {
+	public static class DefaultOperationContext implements OperationContext {
 
 		private final UI m_mainWindow;
+		private final GraphContainer m_graphContainer;
+		private final DisplayLocation m_displayLocation;
+		private boolean m_checked = false;
 
-        private final GraphContainer m_graphContainer;
-        private final DisplayLocation m_displayLocation;
-        private boolean m_checked = false;
 		public DefaultOperationContext(UI mainWindow, GraphContainer graphContainer, DisplayLocation displayLocation) {
 			m_mainWindow = mainWindow;
 			m_graphContainer = graphContainer;
@@ -94,27 +91,6 @@ public class CommandManager {
 
 	}
 
-	private class ContextMenuListener implements ContextMenu.ContextMenuItemClickListener {
-
-		private final OperationContext m_opContext;
-        private final TopoContextMenu m_topoContextMenu;
-
-        public ContextMenuListener(OperationContext opContext, TopoContextMenu topoContextMenu) {
-			m_opContext = opContext;
-            m_topoContextMenu = topoContextMenu;
-		}
-
-		@Override
-		public void contextMenuItemClicked(ContextMenuItemClickEvent event) {
-			Operation operation = m_contextMenuItemsToOperationMap.get(event.getSource());
-			//TODO: Do some implementation here for execute
-			if (operation != null) {
-
-				operation.execute(asVertexList(m_topoContextMenu.getTarget()), m_opContext);
-			}
-		}
-
-    }
 	private final List<Command> m_commandList = new CopyOnWriteArrayList<Command>();
 
     private final List<Command> m_commandHistoryList = new ArrayList<Command>();
@@ -123,19 +99,19 @@ public class CommandManager {
     private final List<String> m_topLevelMenuOrder = new ArrayList<String>();
     private final Map<String, List<String>> m_subMenuGroupOrder = new HashMap<String, List<String>>();
     private final Map<MenuBar.Command, Operation> m_commandToOperationMap = new HashMap<MenuBar.Command, Operation>();
-    private final Map<ContextMenuItem, Operation> m_contextMenuItemsToOperationMap = new HashMap<ContextMenuItem, Operation>();
+
     public CommandManager() {
 	}
-	public void addCommand(Command command) {
+
+    public void addCommand(Command command) {
 		m_commandList.add(command);
 		updateCommandListeners();
 	}
 
-	private void updateCommandListeners() {
+	protected void updateCommandListeners() {
 		for (CommandUpdateListener listener : m_updateListeners) {
 			listener.menuBarUpdated(this);
 		}
-
 	}
 
 	public void addCommandUpdateListener(CommandUpdateListener listener) {
@@ -158,7 +134,7 @@ public class CommandManager {
 		OperationContext opContext = new DefaultOperationContext(mainWindow, graphContainer, DisplayLocation.MENUBAR);
 		MenuBarBuilder menuBarBuilder = new MenuBarBuilder();
 		menuBarBuilder.setTopLevelMenuOrder(m_topLevelMenuOrder);
-		menuBarBuilder.setSubMenuGroupOder(m_subMenuGroupOrder);
+		menuBarBuilder.setSubMenuGroupOrder(m_subMenuGroupOrder);
 
 		for (Command command : m_commandList) {
 			String menuPosition = command.getMenuPosition();
@@ -171,40 +147,23 @@ public class CommandManager {
 	}
 
 	/**
-	 * Gets the ContextMenu addon for the app based on OSGi Operations
-	 * @param graphContainer
-	 * @param mainWindow
+	 * Gets the ContextMenu add-on for the app based on OSGi Operations
+	 * @param opContext
 	 * @return
 	 */
-	public TopoContextMenu getContextMenu(GraphContainer graphContainer, UI mainWindow) {
-		OperationContext opContext = new DefaultOperationContext(mainWindow, graphContainer, DisplayLocation.CONTEXTMENU);
+	public TopoContextMenu getContextMenu(OperationContext opContext) {
 		ContextMenuBuilder contextMenuBuilder = new ContextMenuBuilder();
-		Map<String, Operation> operationMap = new HashMap<String, Operation>();
 		for (Command command : m_commandList) {
 			if (command.isAction()) {
 				String contextPosition = command.getContextMenuPosition();
 				contextMenuBuilder.addMenuCommand(command, contextPosition);
-				operationMap.put(command.toString(), command.getOperation());
 			}
 		}
 		TopoContextMenu contextMenu = contextMenuBuilder.get();
-		contextMenu.addItemClickListener(new ContextMenuListener(opContext, contextMenu));
-
-		updateContextCommandToOperationMap(contextMenu.getItems());
 		return contextMenu;
 	}
 
-	private void updateContextCommandToOperationMap(List<TopoContextMenuItem> items) {
-	    for(TopoContextMenuItem item : items) {
-	        if(item.hasChildren() && !item.hasOperation()) {
-	            updateContextCommandToOperationMap(item.getChildren());
-	        }else {
-	            m_contextMenuItemsToOperationMap.put(item.getItem(), item.getOperation());
-	        }
-	    }
-	}
-
-	private void updateCommandToOperationMap(Command command, MenuBar.Command menuCommand) {
+	protected void updateCommandToOperationMap(Command command, MenuBar.Command menuCommand) {
 		m_commandToOperationMap.put(menuCommand, command.getOperation());
 	}
 
@@ -214,7 +173,9 @@ public class CommandManager {
 
 		return new MenuBar.Command() {
 
-                        @Override
+			private static final long serialVersionUID = 1542437659855341046L;
+
+			@Override
 			public void menuSelected(MenuItem selectedItem) {
 				List<VertexRef> targets = new ArrayList<VertexRef>(graphContainer.getSelectionManager().getSelectedVertexRefs());
 
@@ -238,7 +199,7 @@ public class CommandManager {
 		return m_commandHistoryList;
 	}
 
-	public Operation getOperationByMenuItemCommand(MenuBar.Command command) {
+	protected Operation getOperationByMenuItemCommand(MenuBar.Command command) {
 		return m_commandToOperationMap.get(command);
 	}
 
@@ -267,7 +228,7 @@ public class CommandManager {
 		removeCommand(operation);
 	}
 
-	private void removeCommand(Operation operation) {
+	protected void removeCommand(Operation operation) {
 		for (Command command : m_commandList) {
 			if (command.getOperation() == operation) {
 				removeCommand(command); 
@@ -275,7 +236,7 @@ public class CommandManager {
 		}
 	}
 
-	private void removeCommand(Command command) {
+	protected void removeCommand(Command command) {
 		m_commandList.remove(command);
 		updateCommandListeners();
 	}
@@ -327,6 +288,8 @@ public class CommandManager {
 		Operation operation = getOperationByMenuItemCommand(menuItem.getCommand());
 		
 		//Check for null because separators have no Operation
+		
+		try {
 		if(operation != null) {
     		List<VertexRef> selectedVertices = new ArrayList<VertexRef>(graphContainer.getSelectionManager().getSelectedVertexRefs());
 			boolean visibility = operation.display(selectedVertices, operationContext);
@@ -342,24 +305,18 @@ public class CommandManager {
     			menuItem.setChecked(((CheckedOperation) operation).isChecked(selectedVertices, operationContext));
     		}
 		}
+		} catch (final RuntimeException e) {
+		    LoggerFactory.getLogger(this.getClass()).warn("updateMenuItem: operation failed", e);
+		}
 	}
 
-    public void updateContextMenuItem(Object target, TopoContextMenuItem contextItem, GraphContainer graphContainer, UI mainWindow) {
-        DefaultOperationContext operationContext = new DefaultOperationContext(mainWindow, graphContainer, DisplayLocation.CONTEXTMENU);
-        
-        ContextMenuItem ctxMenuItem = contextItem.getItem();
-        Operation operation = m_contextMenuItemsToOperationMap.get(ctxMenuItem);
-     
-        List<VertexRef> targets = asVertexList(target);
-        // TODO: Figure out how to do this in the new contextmenu
-
-        //ctxMenuItem.setVisible(operation.display(targets, operationContext));
-        ctxMenuItem.setEnabled(operation.enabled(targets, operationContext));
-
-    }
-
-	private List<VertexRef> asVertexList(Object target) {
-		return (target != null && target instanceof VertexRef) ? Arrays.asList((VertexRef)target) : Collections.<VertexRef>emptyList();
+	private static List<VertexRef> asVertexList(Object target) {
+		if (target != null && target instanceof Collection) {
+			return new ArrayList((Collection<VertexRef>)target);
+		} else if (target != null && target instanceof VertexRef) {
+			return Collections.singletonList((VertexRef)target);
+		} else {
+			return Collections.<VertexRef>emptyList();
+		}
 	}
-
 }

@@ -138,7 +138,7 @@ public abstract class MenuBuilder<T, K>{
 	    return sortedList.entrySet();
 	}
 
-	protected String removeLabelProperties(String commandKey) {
+	protected static String removeLabelProperties(String commandKey) {
 	    if(commandKey.contains("?")) {
 	        return commandKey.substring(0, commandKey.indexOf('?'));
 	    }else {
@@ -148,7 +148,7 @@ public abstract class MenuBuilder<T, K>{
 	    
 	}
 
-	private Map<String, String> getLabelProperties(String commandLabel) {
+	protected static Map<String, String> getLabelProperties(String commandLabel) {
 	    Map<String, String> propMap = new HashMap<String, String>();
 	    
 	    if(commandLabel.contains("?")) {
@@ -239,11 +239,11 @@ public abstract class MenuBuilder<T, K>{
 	    m_menuOrder = menuOrder;
 	}
 
-	public void setSubMenuGroupOder(Map<String, List<String>> submenOrderMap) {
+	public void setSubMenuGroupOrder(Map<String, List<String>> submenOrderMap) {
 	    m_submenuOrderMap = submenOrderMap;
 	}
 
-	private String getGroupForLabel(String label, List<String> submenuOrder) {
+	protected static String getGroupForLabel(String label, List<String> submenuOrder) {
 	    String group = null;
 	    String[] groupParams = label.split("\\?");
 	    

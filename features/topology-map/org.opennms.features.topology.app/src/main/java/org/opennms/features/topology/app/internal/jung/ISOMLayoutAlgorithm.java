@@ -28,58 +28,79 @@
 
 package org.opennms.features.topology.app.internal.jung;
 
+import java.awt.geom.Point2D;
 import java.util.Collection;
 
+import org.apache.commons.collections15.Transformer;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
+import edu.uci.ics.jung.algorithms.layout.util.RandomLocationTransformer;
 import edu.uci.ics.jung.graph.SparseGraph;
 
 public class ISOMLayoutAlgorithm extends AbstractLayoutAlgorithm {
 
+	public static class NonStupidISOMLayout extends ISOMLayout<VertexRef,EdgeRef> {
+		
+		protected final Layout m_layout;
+
+        public NonStupidISOMLayout(edu.uci.ics.jung.graph.Graph<VertexRef,EdgeRef> g, Layout graphLayout) {
+			super(g);
+			m_layout = graphLayout;
+		}
+
+		/**
+		 * Override this method so that the initialize() method cannot set the initializer to
+		 * {@link RandomLocationTransformer}.
+		 */
+		@Override
+		public void setInitializer(Transformer<VertexRef,Point2D> ignoreMe) {
+			super.setInitializer(initializer(m_layout));
+		}
+
         @Override
+        public boolean done() {
+            return getGraph().getVertexCount() > 0 ? super.done() : true;
+        }
+    }
+
+	@Override
 	public void updateLayout(final GraphContainer graphContainer) {
-		
+
 		Graph g = graphContainer.getGraph();
-		
+
 		final Layout graphLayout = g.getLayout();
 
-		SparseGraph<VertexRef, Edge> jungGraph = new SparseGraph<VertexRef, Edge>();
+		SparseGraph<VertexRef, EdgeRef> jungGraph = new SparseGraph<VertexRef, EdgeRef>();
 
 		Collection<? extends Vertex> vertices = g.getDisplayVertices();
-		
+
 		for(Vertex v : vertices) {
 			jungGraph.addVertex(v);
 		}
-		
+
 		Collection<? extends Edge> edges = g.getDisplayEdges();
-		
+
 		for(Edge e : edges) {
 			jungGraph.addEdge(e, e.getSource().getVertex(), e.getTarget().getVertex());
 		}
-		
 
-		ISOMLayout<VertexRef, Edge> layout = new ISOMLayout<VertexRef, Edge>(jungGraph);
+		NonStupidISOMLayout layout = new NonStupidISOMLayout(jungGraph, graphLayout);
 		layout.setInitializer(initializer(graphLayout));
 		layout.setSize(selectLayoutSize(graphContainer));
-		
+
 		while(!layout.done()) {
 			layout.step();
 		}
-		
-		
+
 		for(Vertex v : vertices) {
 			graphLayout.setLocation(v, (int)layout.getX(v), (int)layout.getY(v));
 		}
-		
-		
-		
-		
 	}
-
 }

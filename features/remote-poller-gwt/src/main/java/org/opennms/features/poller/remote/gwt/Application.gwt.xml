@@ -1,4 +1,5 @@
-<!DOCTYPE module PUBLIC "//gwt-module/" "http://google-web-toolkit.googlecode.com/svn/tags/2.0.1/distro-source/core/src/gwt-module.dtd">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 2.5.0//EN" "http://google-web-toolkit.googlecode.com/svn/tags/2.5.0/distro-source/core/src/gwt-module.dtd">
 <module rename-to="RemotePollerMap">
 
   <!-- Various core dependencies -->
@@ -24,4 +25,5 @@
   <!-- Specify the app entry point class. -->
   <entry-point class='org.opennms.features.poller.remote.gwt.client.Main'/>
 
+  <collapse-all-properties/>
 </module>

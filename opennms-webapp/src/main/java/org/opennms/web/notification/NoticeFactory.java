@@ -38,7 +38,8 @@ import java.util.Vector;
 
 import javax.servlet.ServletContext;
 
-import org.opennms.core.resource.Vault;
+import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.web.element.NetworkElementFactory;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.notification.filter.NodeFilter;
@@ -73,9 +74,12 @@ public class NoticeFactory {
         }
 
         int noticeCount = 0;
-        Connection conn = Vault.getDbConnection();
+        final DBUtils d = new DBUtils(NoticeFactory.class);
 
         try {
+            Connection conn = DataSourceFactory.getInstance().getConnection();
+            d.watch(conn);
+
             StringBuffer select = new StringBuffer("SELECT COUNT(NOTIFYID) AS NOTICECOUNT FROM NOTIFICATIONS WHERE");
             select.append(ackType.getAcknowledgeTypeClause());
 
@@ -85,22 +89,21 @@ public class NoticeFactory {
             }
 
             PreparedStatement stmt = conn.prepareStatement(select.toString());
-            
+            d.watch(stmt);
+
             int parameterIndex = 1;
             for (Filter filter : filters) {
-            	parameterIndex += filter.bindParam(stmt, parameterIndex);
+                parameterIndex += filter.bindParam(stmt, parameterIndex);
             }
-            
+
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
 
             if (rs.next()) {
                 noticeCount = rs.getInt("NOTICECOUNT");
             }
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return noticeCount;
@@ -115,12 +118,18 @@ public class NoticeFactory {
      */
     public static Notification getNotice(int noticeId, ServletContext servletContext) throws SQLException {
         Notification notice = null;
-        Connection conn = Vault.getDbConnection();
+
+        DBUtils d = new DBUtils(NoticeFactory.class);
 
         try {
+            Connection conn = DataSourceFactory.getInstance().getConnection();
+            d.watch(conn);
+
             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM NOTIFICATION WHERE NOTIFYID=?");
+            d.watch(stmt);
             stmt.setInt(1, noticeId);
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
 
             Notification[] notices = rs2Notices(rs, servletContext);
 
@@ -128,11 +137,8 @@ public class NoticeFactory {
             if (notices.length > 0) {
                 notice = notices[0];
             }
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return notice;
@@ -149,14 +155,18 @@ public class NoticeFactory {
     public static boolean canDisplayEvent(int eventId) {
         boolean display = false;
 
-        Connection connection = null;
-        try {
-            connection = Vault.getDbConnection();
-            PreparedStatement statement = connection.prepareStatement("SELECT eventDisplay FROM events WHERE eventid=?");
+        final DBUtils d = new DBUtils(NoticeFactory.class);
 
+        try {
+            Connection connection = DataSourceFactory.getInstance().getConnection();
+            d.watch(connection);
+
+            PreparedStatement statement = connection.prepareStatement("SELECT eventDisplay FROM events WHERE eventid=?");
+            d.watch(statement);
             statement.setInt(1, eventId);
 
             ResultSet results = statement.executeQuery();
+            d.watch(results);
 
             results.next();
             String status = results.getString(1);
@@ -164,18 +174,10 @@ public class NoticeFactory {
             if (status.equals("Y")) {
                 display = true;
             }
-
-            statement.close();
-            results.close();
         } catch (SQLException e) {
             LOG.error("Error getting event display status: {}", e.getMessage(), e);
         } finally {
-            if (connection != null) {
-                try {
-                    Vault.releaseDbConnection(connection);
-                } catch (SQLException e) {
-                }
-            }
+            d.cleanUp();
         }
 
         return display;
@@ -288,9 +290,13 @@ public class NoticeFactory {
         }
 
         Notification[] notices = null;
-        Connection conn = Vault.getDbConnection();
+
+        final DBUtils d = new DBUtils(NoticeFactory.class);
 
         try {
+            Connection conn = DataSourceFactory.getInstance().getConnection();
+            d.watch(conn);
+
             StringBuffer select = new StringBuffer("SELECT * FROM NOTIFICATIONS WHERE");
             select.append(ackType.getAcknowledgeTypeClause());
 
@@ -309,25 +315,24 @@ public class NoticeFactory {
             }
 
             PreparedStatement stmt = conn.prepareStatement(select.toString());
-            
+            d.watch(stmt);
+
             int parameterIndex = 1;
             for (Filter filter : filters) {
-            	parameterIndex += filter.bindParam(stmt, parameterIndex);
+                parameterIndex += filter.bindParam(stmt, parameterIndex);
             }
-            
+
             if (useLimits) {
-            	stmt.setInt(parameterIndex++, limit);
-            	stmt.setInt(parameterIndex, offset);
+                stmt.setInt(parameterIndex++, limit);
+                stmt.setInt(parameterIndex, offset);
             }
             ResultSet rs = stmt.executeQuery();
-            
-//            PreparedStatement ps = conn.prepareStatement(select.toString());
-            notices = rs2Notices(rs, servletContext);
+            d.watch(rs);
 
-            rs.close();
-            stmt.close();
+            //            PreparedStatement ps = conn.prepareStatement(select.toString());
+            notices = rs2Notices(rs, servletContext);
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return notices;
@@ -407,9 +412,13 @@ public class NoticeFactory {
         }
 
         Notification[] notices = null;
-        Connection conn = Vault.getDbConnection();
+
+        final DBUtils d = new DBUtils(NoticeFactory.class);
 
         try {
+            Connection conn = DataSourceFactory.getInstance().getConnection();
+            d.watch(conn);
+
             StringBuffer select = new StringBuffer("SELECT * FROM NOTIFICATIONS WHERE NODEID=? AND INTERFACEID=?");
 
             if (!includeAcknowledged) {
@@ -419,16 +428,15 @@ public class NoticeFactory {
             select.append(" ORDER BY NOTIFYID DESC");
 
             PreparedStatement stmt = conn.prepareStatement(select.toString());
+            d.watch(stmt);
             stmt.setInt(1, nodeId);
             stmt.setString(2, ipAddress);
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
 
             notices = rs2Notices(rs, servletContext);
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return notices;
@@ -461,9 +469,13 @@ public class NoticeFactory {
         }
 
         Notification[] notices = null;
-        Connection conn = Vault.getDbConnection();
+
+        DBUtils d = new DBUtils(NoticeFactory.class);
 
         try {
+            Connection conn = DataSourceFactory.getInstance().getConnection();
+            d.watch(conn);
+
             StringBuffer select = new StringBuffer("SELECT * FROM NOTIFICATIONS WHERE INTERFACEID=?");
 
             if (!includeAcknowledged) {
@@ -473,15 +485,13 @@ public class NoticeFactory {
             select.append(" ORDER BY NOTIFYID DESC");
 
             PreparedStatement stmt = conn.prepareStatement(select.toString());
+            d.watch(stmt);
             stmt.setString(1, ipAddress);
             ResultSet rs = stmt.executeQuery();
-
+            d.watch(rs);
             notices = rs2Notices(rs, servletContext);
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return notices;
@@ -517,9 +527,12 @@ public class NoticeFactory {
         }
 
         Notification[] notices = null;
-        Connection conn = Vault.getDbConnection();
+        final DBUtils d = new DBUtils(NoticeFactory.class);
 
         try {
+            Connection conn = DataSourceFactory.getInstance().getConnection();
+            d.watch(conn);
+
             StringBuffer select = new StringBuffer("SELECT * FROM NOTIFICATIONS WHERE NODEID=? AND INTERFACEID=? AND SERVICEID=?");
 
             if (!includeAcknowledged) {
@@ -529,17 +542,15 @@ public class NoticeFactory {
             select.append(" ORDER BY NOTIFYID DESC");
 
             PreparedStatement stmt = conn.prepareStatement(select.toString());
+            d.watch(stmt);
             stmt.setInt(1, nodeId);
             stmt.setString(2, ipAddress);
             stmt.setInt(3, serviceId);
             ResultSet rs = stmt.executeQuery();
-
+            d.watch(rs);
             notices = rs2Notices(rs, servletContext);
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return notices;
@@ -569,9 +580,13 @@ public class NoticeFactory {
      */
     public static Notification[] getNoticesForService(int serviceId, boolean includeAcknowledged, ServletContext servletContext) throws SQLException {
         Notification[] notices = null;
-        Connection conn = Vault.getDbConnection();
+
+        DBUtils d = new DBUtils(NoticeFactory.class);
 
         try {
+            Connection conn = DataSourceFactory.getInstance().getConnection();
+            d.watch(conn);
+
             StringBuffer select = new StringBuffer("SELECT * FROM NOTIFICATION WHERE SERVICEID=?");
 
             if (!includeAcknowledged) {
@@ -581,15 +596,14 @@ public class NoticeFactory {
             select.append(" ORDER BY NOTIFIYID DESC");
 
             PreparedStatement stmt = conn.prepareStatement(select.toString());
+            d.watch(stmt);
             stmt.setInt(1, serviceId);
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
 
             notices = rs2Notices(rs, servletContext);
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return notices;
@@ -666,17 +680,19 @@ public class NoticeFactory {
             update.append(")");
             update.append(" AND RESPONDTIME IS NULL");
 
-            Connection conn = Vault.getDbConnection();
-
+            DBUtils d = new DBUtils(NoticeFactory.class);
             try {
+                Connection conn = DataSourceFactory.getInstance().getConnection();
+                d.watch(conn);
+
                 PreparedStatement stmt = conn.prepareStatement(update.toString());
+                d.watch(stmt);
                 stmt.setTimestamp(1, new Timestamp(time.getTime()));
                 stmt.setString(2, user);
 
                 stmt.executeUpdate();
-                stmt.close();
             } finally {
-                Vault.releaseDbConnection(conn);
+                d.cleanUp();
             }
         }
     }

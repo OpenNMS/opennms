@@ -56,17 +56,19 @@ import org.springframework.util.StringUtils;
 public class ConfigTesterTest {
     private static Set<String> m_filesTested = new HashSet<String>();
     private static Set<String> m_filesIgnored = new HashSet<String>();
-    //private ConfigTesterDataSource m_dataSource;
+    private ConfigTesterDataSource m_dataSource;
 
     @Before
     public void init() {
         DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
         daoTestConfig.afterPropertiesSet();
+        m_dataSource = new ConfigTesterDataSource();
+        DataSourceFactory.setInstance(m_dataSource);
     }
 
     @After
     public void done() {
-        ConfigTesterDataSource dataSource = (ConfigTesterDataSource) DataSourceFactory.getDataSource();
+        ConfigTesterDataSource dataSource = (ConfigTesterDataSource) DataSourceFactory.getInstance();
 
         if (dataSource != null && dataSource.getConnectionGetAttempts().size() > 0) {
             StringWriter writer = new StringWriter();
@@ -348,8 +350,11 @@ public class ConfigTesterTest {
     }
 
     @Test
+    /**
+     * FIXME: Not part of the standard build?
+     */
     public void testOtrs() {
-        testConfigFile("otrs.properties");
+        ignoreConfigFile("otrs.properties");
     }
 
     @Test
@@ -405,7 +410,7 @@ public class ConfigTesterTest {
 
     @Test
     public void testRt() {
-        testConfigFile("rt.properties");
+        ignoreConfigFile("rt.properties");
     }
 
     @Test

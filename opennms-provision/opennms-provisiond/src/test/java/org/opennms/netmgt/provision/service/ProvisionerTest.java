@@ -53,6 +53,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.tasks.Task;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.dns.annotations.DNSEntry;
 import org.opennms.core.test.dns.annotations.DNSZone;
 import org.opennms.core.test.dns.annotations.JUnitDNSServer;
@@ -81,8 +82,10 @@ import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.model.OnmsAssetRecord;
+import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.provision.detector.snmp.SnmpDetector;
@@ -100,6 +103,13 @@ import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.policies.NodeCategorySettingPolicy;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.netmgt.provision.service.ImportScheduler;
+import org.opennms.netmgt.provision.service.ModelImportException;
+import org.opennms.netmgt.provision.service.NodeScan;
+import org.opennms.netmgt.provision.service.NodeScanSchedule;
+import org.opennms.netmgt.provision.service.ProvisionService;
+import org.opennms.netmgt.provision.service.Provisioner;
+import org.opennms.netmgt.provision.service.ProvisioningTestCase;
 import org.opennms.netmgt.snmp.SnmpAgentAddress;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -384,9 +394,10 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         m_populator.resetDatabase();
 
         final int nextNodeId = m_nodeDao.getNextNodeId();
+        final String nodeLabel = "node1";
 
         final MockNetwork network = new MockNetwork();
-        final MockNode node = network.addNode(nextNodeId, "node1");
+        final MockNode node = network.addNode(nextNodeId, nodeLabel);
         network.addInterface("172.20.1.204");
         network.addService("ICMP");
         network.addService("HTTP");
@@ -395,6 +406,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         network.addService("SNMP");
 
         anticpateCreationEvents(node);
+        m_eventAnticipator.anticipateEvent(getNodeCategoryEvent(nextNodeId, nodeLabel));
 
         importFromResource("classpath:/tec_dump.xml", true);
 
@@ -419,7 +431,6 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         });
     }
 
-
     @Test(timeout=300000)
     public void testNonSnmpImportAndScan() throws Exception {
         importFromResource("classpath:/import_localhost.xml", true);
@@ -435,7 +446,6 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         assertEquals("TestCategory", scannedNode.getCategories().iterator().next().getName());
 
     }
-
 
     @Test(timeout=300000)
     public void testFindQuery() throws Exception {
@@ -1262,8 +1272,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         OnmsNode nodeCopy = new OnmsNode();
         nodeCopy.setId(node.getId());
         nodeCopy.setLabel(OLD_LABEL);
-        // TODO: Replace with constant
-        nodeCopy.setLabelSource("U");
+        nodeCopy.setLabelSource(NodeLabelSource.USER);
 
         assertNotSame(node, nodeCopy);
         assertEquals(OLD_LABEL, node.getLabel());
@@ -1288,8 +1297,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
 
         // Change the label of the node so that we can trigger a NODE_LABEL_CHANGED_EVENT_UEI event
         nodeCopy.setLabel(NEW_LABEL);
-        // TODO: Replace with constant
-        nodeCopy.setLabelSource("U");
+        nodeCopy.setLabelSource(NodeLabelSource.USER);
 
         assertFalse(node.getLabel().equals(nodeCopy.getLabel()));
 
@@ -1323,6 +1331,65 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         assertEquals("admin", node.getParent().getLabel());
         assertEquals("192.168.1.12", node.getPathElement().getIpAddress());
         assertEquals("ICMP", node.getPathElement().getServiceName());
+    }
+
+    @Test(timeout=300000)
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
+    public void testImportWithNodeCategoryEvents() throws Exception {
+        final int nextNodeId = m_nodeDao.getNextNodeId();
+
+        final MockNetwork network = new MockNetwork();
+        final MockNode node = network.addNode(nextNodeId, "test");
+        network.addInterface("172.16.1.1");
+        network.addService("ICMP");
+        anticpateCreationEvents(node);
+        m_eventAnticipator.anticipateEvent(getNodeCategoryEvent(nextNodeId, "test"));
+        m_eventAnticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_UPDATED_EVENT_UEI, "Test").setNodeid(nextNodeId).getEvent());
+        m_eventAnticipator.anticipateEvent(getNodeCategoryEvent(nextNodeId, "test"));
+        importFromResource("classpath:/requisition_with_node_categories.xml", true);
+        importFromResource("classpath:/requisition_with_node_categories_changed.xml", true);
+
+        m_eventAnticipator.verifyAnticipated();
+    }
+
+    @Test(timeout=300000)
+    @JUnitTemporaryDatabase
+    public void testImportWithGeoData() throws Exception {
+        importFromResource("classpath:/tec_dump.xml", true);
+        final NodeDao nodeDao = getNodeDao();
+
+        OnmsNode node = nodeDao.findByForeignId("empty", "4243");
+        nodeDao.initialize(node.getAssetRecord());
+        nodeDao.initialize(node.getAssetRecord().getGeolocation());
+
+        OnmsGeolocation geolocation = new OnmsGeolocation();
+        geolocation.setAddress1("220 Chatham Business Dr.");
+        geolocation.setCity("Pittsboro");
+        geolocation.setState("NC");
+        geolocation.setZip("27312");
+        geolocation.setLatitude(35.715723f);
+        geolocation.setLongitude(-79.162261f);
+        node.getAssetRecord().setGeolocation(geolocation);
+        nodeDao.saveOrUpdate(node);
+        nodeDao.flush();
+
+        node = nodeDao.findByForeignId("empty", "4243");
+        geolocation = node.getAssetRecord().getGeolocation();
+
+        assertNotNull(geolocation.getLatitude());
+        assertNotNull(geolocation.getLongitude());
+        assertEquals(Float.valueOf(35.715723f).doubleValue(),  geolocation.getLatitude().doubleValue(),  0.1d);
+        assertEquals(Float.valueOf(-79.162261f).doubleValue(), geolocation.getLongitude().doubleValue(), 0.1d);
+
+        System.err.println("=================================================================BLEARGH");
+        importFromResource("classpath:/tec_dump.xml", true);
+        node = nodeDao.findByForeignId("empty", "4243");
+        geolocation = node.getAssetRecord().getGeolocation();
+
+        assertNotNull(geolocation.getLatitude());
+        assertNotNull(geolocation.getLongitude());
+        assertEquals(Float.valueOf(35.715723f).doubleValue(),  geolocation.getLatitude().doubleValue(),  0.1d);
+        assertEquals(Float.valueOf(-79.162261f).doubleValue(), geolocation.getLongitude().doubleValue(), 0.1d);
     }
 
     private static Event nodeDeleted(int nodeid) {
@@ -1367,8 +1434,9 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         return bldr.getEvent();
     }
 
-
-
+    private Event getNodeCategoryEvent(final int nodeId, final String nodeLabel) {
+        return new EventBuilder(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI, "Test").setNodeid(nodeId).setParam(EventConstants.PARM_NODE_LABEL, nodeLabel).getEvent();
+    }
 
     private OnmsNode createNode(final String foreignSource) {
         OnmsNode node = new OnmsNode();

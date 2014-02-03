@@ -115,7 +115,7 @@ public class FilterPanel extends Composite {
 
     public static class FiltersChangedEvent extends GwtEvent<FiltersChangedEventHandler>
     {
-        public static Type<FiltersChangedEventHandler> TYPE = new Type<FiltersChangedEventHandler>();
+        public static final Type<FiltersChangedEventHandler> TYPE = new Type<FiltersChangedEventHandler>();
 
         private final Filters m_filters;
 
@@ -140,7 +140,7 @@ public class FilterPanel extends Composite {
 
     public static class StatusSelectionChangedEvent extends GwtEvent<StatusSelectionChangedEventHandler>
     {
-        public static Type<StatusSelectionChangedEventHandler> TYPE = new Type<StatusSelectionChangedEventHandler>();
+        public static final Type<StatusSelectionChangedEventHandler> TYPE = new Type<StatusSelectionChangedEventHandler>();
 
         private final Status m_status;
         private final boolean m_selected;
@@ -188,7 +188,6 @@ public class FilterPanel extends Composite {
      */
     public void updateApplicationNames(Collection<String> names) {
         // Update the SuggestBox's Oracle
-        if (names == applicationNames) return;
         applicationNames.clear();
         applicationNames.addAll(names);
     }

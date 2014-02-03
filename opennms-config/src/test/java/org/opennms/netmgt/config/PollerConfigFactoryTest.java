@@ -34,12 +34,10 @@ import java.io.InputStream;
 
 import junit.framework.TestCase;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.poller.Downtime;
 import org.opennms.netmgt.config.poller.Filter;
 import org.opennms.netmgt.config.poller.IncludeRange;
@@ -73,11 +71,7 @@ public class PollerConfigFactoryTest extends TestCase {
             "       </rrd>\n" +
             "       <service name=\"ICMP\" interval=\"300000\">\n" +
             "         <parameter key=\"test-key\" value=\"test-value\"/>\n" +
-            "         <parameter key=\"any-parm\">" +
-            "            <config>" +
-            "              <data/>" +
-            "            </config>" +
-            "         </parameter>" +
+            "         <parameter key=\"any-parm\" />" +
             "       </service>\n" +
             "       <downtime begin=\"0\" end=\"30000\"/>\n" + 
             "   </package>\n" +
@@ -140,14 +134,14 @@ public class PollerConfigFactoryTest extends TestCase {
     static class TestPollerConfigManager extends PollerConfigManager {
         private String m_xml;
 
-        public TestPollerConfigManager(String xml, String localServer, boolean verifyServer) throws MarshalException, ValidationException, IOException {
+        public TestPollerConfigManager(String xml, String localServer, boolean verifyServer) throws IOException {
             super(new ByteArrayInputStream(xml.getBytes("UTF-8")), localServer, verifyServer);
             save();
         }
 
         @Override
-        public void update() throws IOException, MarshalException, ValidationException {
-            m_config = CastorUtils.unmarshal(PollerConfiguration.class, new ByteArrayInputStream(m_xml.getBytes("UTF-8")));
+        public void update() throws IOException {
+            m_config = JaxbUtils.unmarshal(PollerConfiguration.class, m_xml);
             setUpInternalData();
         }
 
@@ -178,11 +172,11 @@ public class PollerConfigFactoryTest extends TestCase {
         
         Service svc = new Service();
         svc.setName("TestService");
-        svc.setInterval(300000);
+        svc.setInterval(300000l);
         pkg.addService(svc);
         
         Downtime dt = new Downtime();
-        dt.setBegin(0);
+        dt.setBegin(0l);
         pkg.addDowntime(dt);
         
         IncludeRange inclde = new IncludeRange();
@@ -231,11 +225,11 @@ public class PollerConfigFactoryTest extends TestCase {
         
         Service svc = new Service();
         svc.setName("TestService");
-        svc.setInterval(300000);
+        svc.setInterval(300000l);
         pkg.addService(svc);
         
         Downtime dt = new Downtime();
-        dt.setBegin(0);
+        dt.setBegin(0l);
         pkg.addDowntime(dt);
         
         pkg.addSpecific("123.12.123.121");

@@ -64,7 +64,10 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath*:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/org/opennms/netmgt/poller/remote/applicationContext-configOverride.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties={
+    "opennms.pollerBackend.monitorCheckInterval=500",
+    "opennms.pollerBackend.disconnectedTimeout=3000"
+})
 @JUnitTemporaryDatabase
 public class PollerFrontEndIntegrationTest implements InitializingBean, TemporaryDatabaseAware<TemporaryDatabase> {
     private static final Logger LOG = LoggerFactory.getLogger(PollerFrontEndIntegrationTest.class);

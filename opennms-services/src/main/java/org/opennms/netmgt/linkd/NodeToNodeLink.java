@@ -29,6 +29,7 @@
 package org.opennms.netmgt.linkd;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol;
 
 /**
  * <p>NodeToNodeLink class.</p>
@@ -40,6 +41,7 @@ public class NodeToNodeLink {
 
     final int m_nodeId;
     final int m_ifIndex;
+    final DiscoveryProtocol m_protocol;
 	int m_nodeParentId;
 	int m_parentIfIndex;
 
@@ -50,12 +52,18 @@ public class NodeToNodeLink {
 	 * @param nodeId a int.
 	 * @param ifindex a int.
 	 */
-	public NodeToNodeLink(final int nodeId, final int ifindex) {
+	public NodeToNodeLink(final int nodeId, final int ifindex, final DiscoveryProtocol protocol) {
 		this.m_nodeId = nodeId;
 		this.m_ifIndex = ifindex;
+		this.m_protocol = protocol;
 	}
 
-	/** {@inheritDoc} */
+    
+    public DiscoveryProtocol getProtocol() {
+        return m_protocol;
+    }
+
+    /** {@inheritDoc} */
 	@Override
 	public String toString() {
 		StringBuffer str = new StringBuffer("Node Id = " + m_nodeId);
@@ -122,6 +130,7 @@ public class NodeToNodeLink {
 	        .append(m_ifIndex)
 	        .append(m_nodeParentId)
 	        .append(m_parentIfIndex)
+                .append(m_protocol)
 	        .toHashCode();
 	}
 
@@ -135,12 +144,12 @@ public class NodeToNodeLink {
 		if (this.m_nodeId == nodelink.getNodeId() && 
 			this.m_ifIndex == nodelink.getIfindex()	&&
 			this.m_nodeParentId == nodelink.getNodeparentid() &&
-			this.m_parentIfIndex == nodelink.getParentifindex()) return true;
+			this.m_parentIfIndex == nodelink.getParentifindex() && this.m_protocol == nodelink.getProtocol()) return true;
 
 		if (this.m_nodeId == nodelink.getNodeparentid() && 
 			this.m_ifIndex == nodelink.getParentifindex()	&&
 			this.m_nodeParentId == nodelink.getNodeId() &&
-			this.m_parentIfIndex == nodelink.getIfindex()) return true;
+			this.m_parentIfIndex == nodelink.getIfindex() && this.m_protocol == nodelink.getProtocol()) return true;
 		
 		return false;
 

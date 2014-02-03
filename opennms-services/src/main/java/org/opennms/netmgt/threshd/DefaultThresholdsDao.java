@@ -73,16 +73,16 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
         File rrdRepository = new File(getThresholdingConfigFactory().getRrdRepository(name));
         newGroup.setRrdRepository(rrdRepository);
 
-        ThresholdResourceType nodeType = merge ? mergeType(name, "node", group.getNodeResourceType()) : createType(name, "node");
+        ThresholdResourceType nodeType = getThresholdResourceType(name, "node", merge ? group.getNodeResourceType() : null);
         newGroup.setNodeResourceType(nodeType);
 
-        ThresholdResourceType ifType = merge ? mergeType(name, "if", group.getIfResourceType()): createType(name, "if");
+        ThresholdResourceType ifType = getThresholdResourceType(name, "if", merge ? group.getIfResourceType() : null);
         newGroup.setIfResourceType(ifType);
 
         for (Basethresholddef thresh : getThresholdingConfigFactory().getThresholds(name)) {
             String id = thresh.getDsType();
             if (!(id.equals("if") || id.equals("node") || newGroup.getGenericResourceTypeMap().containsKey(id))) {
-                ThresholdResourceType genericType = merge ? mergeType(name, id, group.getGenericResourceTypeMap().get(id)) : createType(name, id);
+                ThresholdResourceType genericType = getThresholdResourceType(name, id, merge ? group.getGenericResourceTypeMap().get(id) : null);
                 if (genericType.getThresholdMap().size() > 0) {
                     LOG.info("Adding {}::{} with {} elements", name, id, genericType.getThresholdMap().size());
                     newGroup.getGenericResourceTypeMap().put(id, genericType);
@@ -92,17 +92,20 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
 
         return newGroup;
     }
-    
-    private Map<String, Set<ThresholdEntity>> createThresholdStateMap(String groupName, String typeName) {
-        Map<String, Set<ThresholdEntity>> thresholdMap = new HashMap<String, Set<ThresholdEntity>>();
-        fillThresholdStateMap(groupName, typeName, thresholdMap);
-        return thresholdMap;
-    }
 
-    private Map<String, Set<ThresholdEntity>> mergeThresholdStateMap(String groupName, ThresholdResourceType type) {
-        Map<String, Set<ThresholdEntity>> thresholdMap = type.getThresholdMap();
-        fillThresholdStateMap(groupName, type.getDsType(), thresholdMap);
-        return thresholdMap;
+    private ThresholdResourceType getThresholdResourceType(String groupName, String typeName, ThresholdResourceType type) {
+        ThresholdResourceType resourceType = new ThresholdResourceType(typeName);
+        Map<String, Set<ThresholdEntity>> thresholdMap = null;
+        if (type == null) {
+            thresholdMap = new HashMap<String, Set<ThresholdEntity>>();
+            fillThresholdStateMap(groupName, typeName, thresholdMap);
+        } else {
+            thresholdMap = type.getThresholdMap();
+            fillThresholdStateMap(groupName, type.getDsType(), thresholdMap);
+
+        }
+        resourceType.setThresholdMap(thresholdMap);
+        return resourceType;
     }
 
     private void fillThresholdStateMap(String groupName, String  typeName, Map<String, Set<ThresholdEntity>> thresholdMap) {
@@ -125,7 +128,6 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
                         if (merge) {
                             boolean updated = false;
                             for (ThresholdEntity e : thresholdEntitySet) {
-                                // See implementation on BaseThresholdDefConfigWrapper equals are different from identical for this case.
                                 if (thresholdEntity.getThresholdConfig().equals(e.getThresholdConfig())) {
                                     e.merge(thresholdEntity);
                                     updated = true;
@@ -172,20 +174,6 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
                 }
             }
         }
-    }
-
-    private ThresholdResourceType createType(String groupName, String typeName) {
-        ThresholdResourceType resourceType = new ThresholdResourceType(typeName);
-        resourceType.setThresholdMap(createThresholdStateMap(groupName, typeName));
-        return resourceType;
-    }
-    
-
-    private ThresholdResourceType mergeType(String groupName, String typeName, ThresholdResourceType type) {
-        ThresholdResourceType resourceType = new ThresholdResourceType(typeName);
-        Map<String, Set<ThresholdEntity>> mergedStateMap = type == null ? createThresholdStateMap(groupName, typeName) : mergeThresholdStateMap(groupName, type);
-		resourceType.setThresholdMap(mergedStateMap);
-        return resourceType;
     }
 
     /**

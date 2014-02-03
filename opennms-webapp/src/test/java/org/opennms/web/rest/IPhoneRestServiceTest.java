@@ -40,14 +40,45 @@ import java.util.regex.Pattern;
 import javax.ws.rs.core.MediaType;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.test.JUnitConfigurationEnvironment;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@WebAppConfiguration
+@ContextConfiguration(locations={
+        "classpath:/org/opennms/web/rest/applicationContext-test.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-service.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-reportingCore.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockEventProxy.xml",
+        "classpath:/applicationContext-jersey-test.xml",
+        "classpath:/META-INF/opennms/applicationContext-reporting.xml",
+        "classpath:/META-INF/opennms/applicationContext-mock-usergroup.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
+        "file:src/main/webapp/WEB-INF/applicationContext-spring-security.xml",
+        "file:src/main/webapp/WEB-INF/applicationContext-jersey.xml"
+})
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase
+@Transactional
 public class IPhoneRestServiceTest extends AbstractSpringJerseyRestTestCase {
     private EventDao m_eventDao;
 
@@ -63,6 +94,7 @@ public class IPhoneRestServiceTest extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testAcknowlegement() throws Exception {
         final Pattern p = Pattern.compile("^.*<ackTime>(.*?)</ackTime>.*$", Pattern.DOTALL & Pattern.MULTILINE);
         sendData(POST, MediaType.APPLICATION_FORM_URLENCODED, "/acks", "alarmId=1&action=ack");
@@ -77,6 +109,7 @@ public class IPhoneRestServiceTest extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testAlarms() throws Exception {
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("orderBy", "lastEventTime");
@@ -92,6 +125,7 @@ public class IPhoneRestServiceTest extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testEvents() throws Exception {
         Map<String, String> parameters = new HashMap<String, String>();
         String xml = sendRequest(GET, "/events", parameters, 200);
@@ -105,6 +139,7 @@ public class IPhoneRestServiceTest extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testNodes() throws Exception {
         final Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("comparator", "ilike");
@@ -150,6 +185,7 @@ public class IPhoneRestServiceTest extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testSnmpInterfacesForNodeId() throws Exception {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("orderBy", new String[] { "ifName", "ipAddress", "ifDesc" });
@@ -158,6 +194,7 @@ public class IPhoneRestServiceTest extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testEventsForNodeId() throws Exception {
         OnmsNode node = new OnmsNode();
         node.setId(1);
@@ -173,6 +210,7 @@ public class IPhoneRestServiceTest extends AbstractSpringJerseyRestTestCase {
         event.setEventDisplay("Y");
         event.setNode(node);
         m_eventDao.save(event);
+        m_eventDao.flush();
 
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("limit", "50");
@@ -183,6 +221,7 @@ public class IPhoneRestServiceTest extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testOutages() throws Exception {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("orderBy", "ifLostService");

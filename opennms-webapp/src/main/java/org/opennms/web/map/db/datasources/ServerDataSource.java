@@ -33,16 +33,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.Set;
 
-import org.slf4j.MDC;
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.logging.Logging;
-import org.opennms.core.resource.Vault;
 import org.opennms.core.resource.db.SimpleDbConnectionFactory;
 import org.opennms.web.map.MapsConstants;
 import org.slf4j.Logger;
@@ -54,36 +52,24 @@ import org.slf4j.LoggerFactory;
  *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @version $Id: $
- * @since 1.8.1
  */
 public class ServerDataSource implements DataSourceInterface {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(ServerDataSource.class);
 
-
 	private Map<?,?> params;
-	boolean initialized = false;
-	private Map<String, String> severityMapping = new HashMap<String, String>();
+	private final Map<String, String> severityMapping = new HashMap<String, String>();
 
+	private static final String STATUS_FIELD="ev_status";
+	private static final String SEVERITY_FIELD="ev_severity";
+	private static final String TABLE_NAME="v_eventi_snm";
 	
-	static final String STATUS_FIELD="ev_status";
-	static final String SEVERITY_FIELD="ev_severity";
-	static final String TABLE_NAME="v_eventi_snm";
-	
-	final String CLOSED_STATUS = "CLOSED";
-	final String ACK_STATUS = "ACK";
-	final String ASSIGNED_STATUS = "ASSIGNED";
-	final String OPEN_STATUS = "OPEN";
-	
-	//private static MapPropertiesFactory mpf=null;
-	
-	static Connection opennmsConn = null;
-	static Connection externalConn = null;
+	private static final String CLOSED_STATUS = "CLOSED";
 
-	
+	private static Connection opennmsConn = null;
+	private static Connection externalConn = null;
+
+
 	/**
 	 * <p>Constructor for ServerDataSource.</p>
 	 *
@@ -110,7 +96,7 @@ public class ServerDataSource implements DataSourceInterface {
 	
 			try{
 				if(opennmsConn==null || opennmsConn.isClosed()){
-					opennmsConn = Vault.getDbConnection();
+					opennmsConn = DataSourceFactory.getInstance().getConnection();
 				}
 				String url=(String)params.get("url");
 				String driver=(String)params.get("driver");
@@ -154,7 +140,7 @@ public class ServerDataSource implements DataSourceInterface {
 		LOG.debug("Finalizing...closing db connections");
 		super.finalize();
 		if(opennmsConn!=null){
-			Vault.releaseDbConnection(opennmsConn);
+			opennmsConn.close();
 		}
 		if(externalConn!=null && !externalConn.isClosed()){
 			externalConn.close();

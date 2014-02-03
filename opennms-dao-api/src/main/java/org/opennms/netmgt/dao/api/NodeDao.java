@@ -44,7 +44,7 @@ import org.springframework.stereotype.Repository;
 /**
  * <p>NodeDao interface.</p>
  */
-public interface NodeDao extends OnmsDao<OnmsNode, Integer> {
+public interface NodeDao extends LegacyOnmsDao<OnmsNode, Integer> {
 	
     /**
      * Get a node based on it's node ID or foreignSource:foreignId

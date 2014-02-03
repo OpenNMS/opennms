@@ -32,6 +32,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.utils.WebSecurityUtils;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.support.ResourceTypeUtils;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.web.servlet.MissingParameterException;
 import org.opennms.web.svclayer.ChooseResourceService;
@@ -51,6 +54,7 @@ import org.springframework.web.servlet.mvc.AbstractController;
 public class ChooseResourceController extends AbstractController implements InitializingBean {
     private ChooseResourceService m_chooseResourceService;
     private String m_defaultEndUrl;
+    private NodeDao m_nodeDao;
 
     /** {@inheritDoc} */
     @Override
@@ -63,13 +67,27 @@ public class ChooseResourceController extends AbstractController implements Init
         if (resourceId == null) {
             String resourceType = WebSecurityUtils.sanitizeString(request.getParameter("parentResourceType"));
             String resource = WebSecurityUtils.sanitizeString(request.getParameter("parentResource"));
+            boolean isStoreByForeignSource = ResourceTypeUtils.isStoreByForeignSource();
             if (request.getParameter("parentResourceType") == null) {
                 throw new MissingParameterException("parentResourceType", requiredParameters);
             }
             if (request.getParameter("parentResource") == null) {
                 throw new MissingParameterException("parentResource", requiredParameters);
             }
-            
+            if (resourceType.equals("node") && isStoreByForeignSource) {
+                OnmsNode node = m_nodeDao.get(resource);
+                if (node != null && node.getForeignSource() != null && node.getForeignId() != null) {
+                    resourceType = "nodeSource";
+                    resource = node.getForeignSource() + ':' + node.getForeignId();
+                }
+            }
+            if (resourceType.equals("nodeSource") && !isStoreByForeignSource) {
+                OnmsNode node = m_nodeDao.get(resource);
+                if (node != null && node.getForeignSource() != null && node.getForeignId() != null) {
+                    resourceType = "node";
+                    resource = node.getId().toString();
+                }
+            }
             resourceId = OnmsResource.createResourceId(resourceType, resource);
         }
         
@@ -97,6 +115,10 @@ public class ChooseResourceController extends AbstractController implements Init
         
         if (m_defaultEndUrl == null) {
             throw new IllegalStateException("defaultEndUrl property not set");
+        }
+
+        if (m_nodeDao == null) {
+            throw new IllegalStateException("nodeDao property not set");
         }
     }
 
@@ -136,4 +158,23 @@ public class ChooseResourceController extends AbstractController implements Init
     public void setDefaultEndUrl(String defaultEndUrl) {
         m_defaultEndUrl = defaultEndUrl;
     }
+
+    /**
+     * <p>getNodeDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.NodeDao} object.
+     */
+    public NodeDao getNodeDao() {
+        return m_nodeDao;
+    }
+
+    /**
+     * <p>setNodeDao</p>
+     *
+     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     */
+    public void setNodeDao(NodeDao nodeDao) {
+        this.m_nodeDao = nodeDao;
+    }
+
 }

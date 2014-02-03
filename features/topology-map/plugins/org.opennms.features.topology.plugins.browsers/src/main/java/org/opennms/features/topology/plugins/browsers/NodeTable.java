@@ -28,23 +28,9 @@
 
 package org.opennms.features.topology.plugins.browsers;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-
-import org.apache.commons.lang.ArrayUtils;
-import org.opennms.core.criteria.Order;
-import org.opennms.core.utils.InetAddressComparator;
-import org.opennms.netmgt.model.OnmsNode;
-import org.slf4j.LoggerFactory;
-
-import com.vaadin.ui.Table;
-
 @SuppressWarnings("serial")
 public class NodeTable extends SelectionAwareTable {
 
-	@SuppressWarnings("unchecked") // Because Aries Blueprint cannot handle generics
 	public NodeTable(String caption, NodeDaoContainer container) {
 		super(caption, container);
 	}

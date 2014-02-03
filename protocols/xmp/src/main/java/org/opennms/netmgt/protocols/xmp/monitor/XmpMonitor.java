@@ -54,8 +54,6 @@ import org.opennms.netmgt.poller.monitors.AbstractServiceMonitor;
 import org.opennms.netmgt.protocols.xmp.XmpUtil;
 import org.opennms.netmgt.protocols.xmp.XmpUtilException;
 import org.opennms.netmgt.protocols.xmp.config.XmpConfigFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * <p>XmpMonitor class.</p>

@@ -54,7 +54,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -72,7 +72,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-@Ignore("This is a bad feature.. it doesn't account for provision ordering correctly")
+@Ignore("This test flaps because it doesn't account for provision ordering correctly")
 public class PolicyTest {
 
     public static interface BackgroundTask {
@@ -80,7 +80,7 @@ public class PolicyTest {
     }
 
     @Autowired
-    private SimpleJdbcOperations m_jdbcOperations;
+    private JdbcTemplate m_jdbcTemplate;
 
     @Autowired
     private Provisioner m_provisioner;
@@ -132,8 +132,10 @@ public class PolicyTest {
     // values created in other transactions (unless you are lucky - which sometimes we are not)
     public void testSnmpPollPolicy() throws Exception {
         try {
+            // Create a BackgroundTask to wait for the provisioning group import to complete
             final BackgroundTask eventRecieved = anticipateEvents(EventConstants.PROVISION_SCAN_COMPLETE_UEI, EventConstants.PROVISION_SCAN_ABORTED_UEI );
 
+            // Import the provisioning group
             m_provisioner.importModelFromResource(m_resourceLoader.getResource("classpath:/NMS-5414.xml"), true);
             int nodeId = getNodeId();
             eventRecieved.await();
@@ -172,40 +174,40 @@ public class PolicyTest {
     }
 
     private int countSnmpIfsWithPollSetting(String pollSetting) {
-        return m_jdbcOperations.queryForInt("select count(*) from snmpinterface where snmppoll = ?", pollSetting);
+        return m_jdbcTemplate.queryForObject("select count(*) from snmpinterface where snmppoll = ?", Integer.class, pollSetting).intValue();
     }
 
     private Integer findMatchingSnmpIf(String property, String value) {
         String columnName = "snmp"+property.toLowerCase();
-        return m_jdbcOperations.queryForInt("select id from snmpinterface where "+columnName+" ilike ?", "%"+value+"%");
+        return m_jdbcTemplate.queryForObject("select id from snmpinterface where "+columnName+" ilike ?", Integer.class, "%"+value+"%");
     }
 
     private String getPollSetting(Integer snmpIfId) {
-        return m_jdbcOperations.queryForObject("select snmppoll from snmpinterface where id = ?", String.class, snmpIfId);
+        return m_jdbcTemplate.queryForObject("select snmppoll from snmpinterface where id = ?", String.class, snmpIfId);
     }
 
     private int getIpInterfaceCount(Integer snmpIfId) {
-        return m_jdbcOperations.queryForInt("select count(*) from ipinterface where snmpinterfaceid = ?", snmpIfId);
+        return m_jdbcTemplate.queryForObject("select count(*) from ipinterface where snmpinterfaceid = ?", Integer.class, snmpIfId);
     }
 
     private int getIfIndex(Integer snmpIfId) {
-        return m_jdbcOperations.queryForInt("select snmpifindex from snmpinterface where id = ?", snmpIfId);
+        return m_jdbcTemplate.queryForObject("select snmpifindex from snmpinterface where id = ?", Integer.class, snmpIfId);
     }
 
     private int getNodeId(Integer snmpIfId) {
-        return m_jdbcOperations.queryForInt("select nodeId from snmpinterface where id = ?", snmpIfId);
+        return m_jdbcTemplate.queryForObject("select nodeId from snmpinterface where id = ?", Integer.class, snmpIfId);
     }
 
     private int getNodeId() {
-        return m_jdbcOperations.queryForInt("select nodeId from node order by nodelabel limit 1");
+        return m_jdbcTemplate.queryForObject("select nodeId from node order by nodelabel limit 1", Integer.class);
     }
 
     private String getForeignId(Integer nodeId) {
-        return m_jdbcOperations.queryForObject("select foreignId from node where nodeid = ?", String.class, nodeId);
+        return m_jdbcTemplate.queryForObject("select foreignId from node where nodeid = ?", String.class, nodeId);
     }
 
     private String getForeignSource(Integer nodeId) {
-        return m_jdbcOperations.queryForObject("select foreignSource from node where nodeid = ?", String.class, nodeId);
+        return m_jdbcTemplate.queryForObject("select foreignSource from node where nodeid = ?", String.class, nodeId);
     }
 
     public void runScan(final NodeScan scan) throws InterruptedException, ExecutionException {

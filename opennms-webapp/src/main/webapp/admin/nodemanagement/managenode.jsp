@@ -45,7 +45,7 @@
 
 <%
     HttpSession userSession = request.getSession(false);
-    List interfaces = null;
+    List<ManagedInterface> interfaces = null;
     Integer lineItems= new Integer(0);
     
     //EventConfFactory eventFactory = EventConfFactory.getInstance();
@@ -57,13 +57,12 @@
 	throw new ServletException("User session is null");
     }
 
-    interfaces = (List) userSession.getAttribute("interfaces.nodemanagement");
-    if (interfaces.size() < 1) {
-    	throw new NoManagedInterfacesException("element/nodeList.htm");
-    }
+    interfaces = (List<ManagedInterface>) userSession.getAttribute("interfaces.nodemanagement");
     if (interfaces == null) {
 	throw new ServletException("Session attribute "
 				   + "interfaces.nodemanagement is null");
+    } else if (interfaces.size() < 1) {
+    	throw new NoManagedInterfacesException("element/nodeList.htm");
     }
     lineItems = (Integer) userSession.getAttribute("lineItems.nodemanagement");
     if (lineItems == null) {
@@ -152,7 +151,7 @@
   
         if (lineItems.intValue() > 0)
         {
-                ManagedInterface firstInterface = (ManagedInterface)interfaces.get(0);
+                ManagedInterface firstInterface = interfaces.get(0);
                 nodeLabel = NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(firstInterface.getNodeid());
     
                 if ( interfaces.size() == 1)
@@ -257,7 +256,7 @@
 <jsp:include page="/includes/footer.jsp" flush="true"/>
 
 <%!
-      public String buildManageTableRows(List interfaces, int start, int stop)
+      public String buildManageTableRows(List<ManagedInterface> interfaces, int start, int stop)
       	throws java.sql.SQLException
       {
           StringBuffer rows = new StringBuffer();
@@ -265,7 +264,7 @@
           for (int i = start; i < stop; i++)
           {
                 
-                ManagedInterface curInterface = (ManagedInterface)interfaces.get(i);
+                ManagedInterface curInterface = interfaces.get(i);
 		String intKey = curInterface.getNodeid() + "-" + curInterface.getAddress();
                 StringBuffer serviceArray = new StringBuffer("[");
                 String prepend = "";
@@ -283,10 +282,10 @@
                                               curInterface.getAddress()));
                     
                   
-                List interfaceServices = curInterface.getServices();
+                List<ManagedService> interfaceServices = curInterface.getServices();
                 for (int k = 0; k < interfaceServices.size(); k++) 
                 {
-                     ManagedService curService = (ManagedService)interfaceServices.get(k);
+                     ManagedService curService = interfaceServices.get(k);
                      String serviceKey = curInterface.getNodeid() + "-" + curInterface.getAddress() + "-" + curService.getId();
                      rows.append(buildServiceRow(serviceKey,
                                                  interfaceIndex,

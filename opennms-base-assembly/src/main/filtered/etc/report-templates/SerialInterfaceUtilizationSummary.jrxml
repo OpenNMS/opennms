@@ -58,20 +58,18 @@
 	<parameter name="COMPANY_LOGO" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/assets/images/company-logo.png"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="startDate" class="java.util.Date">
-		<parameterDescription><![CDATA[Report Start Date]]></parameterDescription>
-		<defaultValueExpression><![CDATA[new java.util.Date(
-new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), new GregorianCalendar().get(Calendar.DATE) - 7).getTimeInMillis()
-)]]></defaultValueExpression>
-	</parameter>
-	<parameter name="endDate" class="java.util.Date" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new java.util.Date(
-new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), new GregorianCalendar().get(Calendar.DATE)).getTimeInMillis()
-)]]></defaultValueExpression>
-	</parameter>
 	<parameter name="TIME_RANGE_NUM" class="java.lang.Integer">
 		<parameterDescription><![CDATA[Report Time Range]]></parameterDescription>
 		<defaultValueExpression><![CDATA[7]]></defaultValueExpression>
+	</parameter>
+	<parameter name="startDate" class="java.util.Date">
+		<parameterDescription><![CDATA[Report Start Date]]></parameterDescription>
+		<defaultValueExpression><![CDATA[new java.util.Date(
+new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), new GregorianCalendar().get(Calendar.DATE) - $P{TIME_RANGE_NUM}).getTimeInMillis()
+)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="endDate" class="java.util.Date" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new java.util.Date($P{startDate}.getTime() + $P{TIME_RANGE_NUM}*86400000L)]]></defaultValueExpression>
 	</parameter>
 	<parameter name="TIME_RANGE" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[$P{TIME_RANGE_NUM} + " Days"]]></defaultValueExpression>
@@ -87,6 +85,8 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
 		<![CDATA[SELECT
 	node.nodelabel,
 	node.nodeid,
+	node.foreignsource,
+	node.foreignid,
 	snmpinterface.snmpifname,
 	snmpinterface.snmpifalias,
 	snmpinterface.snmpphysaddr,
@@ -106,6 +106,8 @@ ORDER BY
 	</queryString>
 	<field name="nodelabel" class="java.lang.String"/>
 	<field name="nodeid" class="java.lang.Integer"/>
+	<field name="foreignsource" class="java.lang.String"/>
+	<field name="foreignid" class="java.lang.String"/>
 	<field name="snmpifname" class="java.lang.String"/>
 	<field name="snmpifalias" class="java.lang.String"/>
 	<field name="snmpphysaddr" class="java.lang.String"/>
@@ -186,6 +188,12 @@ ORDER BY
 					</subreportParameter>
 					<subreportParameter name="nodeid">
 						<subreportParameterExpression><![CDATA[$F{nodeid}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="foreignsource">
+						<subreportParameterExpression><![CDATA[$F{foreignsource}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="foreignid">
+						<subreportParameterExpression><![CDATA[$F{foreignid}]]></subreportParameterExpression>
 					</subreportParameter>
 					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 					<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "95thPercentileTrafficRate_subreport.jasper"]]></subreportExpression>

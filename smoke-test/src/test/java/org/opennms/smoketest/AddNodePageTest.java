@@ -35,38 +35,29 @@ public class AddNodePageTest extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
     	super.setUp();
-        selenium.click("link=Add Node");
-        waitForPageToLoad();
+        clickAndWait("link=Add Node");
     }
     @Test
     public void setupProvisioningGroup() throws Exception {
         selenium.open("/opennms/admin/node/add.htm");
-        selenium.click("link=Admin");
-        waitForPageToLoad();
-        selenium.click("link=Manage Provisioning Requisitions");
-        waitForPageToLoad();
+        clickAndWait("link=Admin");
+        clickAndWait("link=Manage Provisioning Requisitions");
         selenium.type("css=form[name=takeAction] > input[name=groupName]", "test");
-        selenium.click("css=input[type=submit]");
-        waitForPageToLoad();
-        selenium.click("//input[@value='Synchronize']");
-        waitForPageToLoad();
-        selenium.click("link=Log out");
-        waitForPageToLoad();
+        clickAndWait("css=input[type=submit]");
+        clickAndWait("//input[@value='Synchronize']");
     }
     @Test
     public void testAddNodePage() throws Exception {
 
-        assertTrue(selenium.isTextPresent("Category:"));
+        waitForText("Category:");
         assertEquals("Provision", selenium.getValue("css=input[type=submit]"));
-        assertTrue(selenium.isElementPresent("css=input[type=reset]"));
-        assertTrue(selenium.isTextPresent("Enable Password:"));
-        assertTrue(selenium.isTextPresent("Node Quick-Add"));
-        assertTrue(selenium.isTextPresent("CLI Authentication Parameters (optional)"));
-        assertTrue(selenium.isTextPresent("SNMP Parameters (optional)"));
-        assertTrue(selenium.isTextPresent("Surveillance Category Memberships (optional)"));
-        assertTrue(selenium.isTextPresent("Basic Attributes (required)"));
-        selenium.click("link=Log out");
-        waitForPageToLoad();
+        waitForElement("css=input[type=reset]");
+        waitForText("Enable Password:");
+        waitForText("Node Quick-Add");
+        waitForText("CLI Authentication Parameters (optional)");
+        waitForText("SNMP Parameters (optional)");
+        waitForText("Surveillance Category Memberships (optional)");
+        waitForText("Basic Attributes (required)");
     }
 
 }

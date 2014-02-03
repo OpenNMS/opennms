@@ -671,7 +671,7 @@ public class Event implements Serializable {
     }
 
     public void setOperinstruct(final String operinstruct) {
-        m_operinstruct = operinstruct.intern();
+        m_operinstruct = operinstruct == null ? null : operinstruct.intern();
     }
 
     public void setScript(final int index, final Script script) throws IndexOutOfBoundsException {

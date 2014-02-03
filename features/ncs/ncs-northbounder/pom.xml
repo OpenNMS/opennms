@@ -2,13 +2,13 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.ncs</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>1.13.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.ncs</groupId>
   <artifactId>ncs-northbounder</artifactId>
   <packaging>bundle</packaging>
-  <name>OpenNMS NCS Northbounder</name>
+  <name>OpenNMS Features NCS Northbounder</name>
 
   <build>
     <plugins>

@@ -28,7 +28,8 @@
 
 package org.opennms.netmgt.snmpinterfacepoller;
 
-import static org.opennms.core.utils.InetAddressUtils.*;
+import static org.opennms.core.utils.InetAddressUtils.addr;
+import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.util.Date;
 import java.util.List;
@@ -48,6 +49,7 @@ import org.opennms.netmgt.snmpinterfacepoller.pollable.PollContext;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Represents a DefaultPollContext
@@ -63,7 +65,11 @@ public class DefaultPollContext implements PollContext {
     private volatile EventIpcManager m_eventManager;
     private volatile String m_name;
     private volatile String m_localHostName;
+
+    @Autowired
     private SnmpInterfaceDao m_snmpInterfaceDao;
+
+    @Autowired
     private IpInterfaceDao m_ipInterfaceDao;
 
     private String m_serviceName="SNMP";
@@ -78,30 +84,12 @@ public class DefaultPollContext implements PollContext {
     }
 
     /**
-     * <p>setIpInterfaceDao</p>
-     *
-     * @param ipInterfaceDao a {@link org.opennms.netmgt.dao.api.IpInterfaceDao} object.
-     */
-    public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
-        m_ipInterfaceDao = ipInterfaceDao;
-    }
-
-    /**
      * <p>getSnmpInterfaceDao</p>
      *
      * @return a {@link org.opennms.netmgt.dao.api.SnmpInterfaceDao} object.
      */
     public SnmpInterfaceDao getSnmpInterfaceDao() {
         return m_snmpInterfaceDao;
-    }
-
-    /**
-     * <p>setSnmpInterfaceDao</p>
-     *
-     * @param snmpInterfaceDao a {@link org.opennms.netmgt.dao.api.SnmpInterfaceDao} object.
-     */
-    public void setSnmpInterfaceDao(SnmpInterfaceDao snmpInterfaceDao) {
-        m_snmpInterfaceDao = snmpInterfaceDao;
     }
 
     /**

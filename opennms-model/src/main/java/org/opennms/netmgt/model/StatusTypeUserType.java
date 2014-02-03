@@ -33,8 +33,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
+import org.hibernate.type.CharacterType;
 import org.hibernate.usertype.UserType;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 
@@ -84,7 +84,7 @@ public class StatusTypeUserType implements UserType {
 
     @Override
     public int hashCode(final Object x) throws HibernateException {
-        return x.hashCode();
+        return x == null ? 0 : x.hashCode();
     }
 
     @Override
@@ -94,20 +94,20 @@ public class StatusTypeUserType implements UserType {
 
     @Override
     public Object nullSafeGet(final ResultSet rs, final String[] names, final Object owner) throws HibernateException, SQLException {
-        return StatusType.get(Hibernate.CHARACTER.nullSafeGet(rs, names[0]).toString());
+        return StatusType.get(CharacterType.INSTANCE.nullSafeGet(rs, names[0]).toString());
     }
 
     @Override
     public void nullSafeSet(final PreparedStatement st, final Object value, final int index) throws HibernateException, SQLException {
         if (value == null) {
-            Hibernate.CHARACTER.nullSafeSet(st, null, index);
+            CharacterType.INSTANCE.nullSafeSet(st, null, index);
         } else if (value instanceof StatusType){
-            Hibernate.CHARACTER.nullSafeSet(st, new Character(((StatusType) value).getCharCode()), index);
+            CharacterType.INSTANCE.nullSafeSet(st, new Character(((StatusType) value).getCharCode()), index);
         } else if (value instanceof String){
             try {
-                Hibernate.CHARACTER.nullSafeSet(st, new Character(StatusType.get((String)value).getCharCode()), index);
+                CharacterType.INSTANCE.nullSafeSet(st, new Character(StatusType.get((String)value).getCharCode()), index);
             } catch (final IllegalArgumentException e) {
-                Hibernate.CHARACTER.nullSafeSet(st, new Character(((String)value).charAt(0)), index);
+                CharacterType.INSTANCE.nullSafeSet(st, new Character(((String)value).charAt(0)), index);
             }
         }
     }

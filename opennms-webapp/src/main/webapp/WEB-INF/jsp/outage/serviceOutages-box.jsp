@@ -40,11 +40,8 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.web.outage.*,
-	    org.opennms.web.element.ElementUtil,
-	    org.opennms.web.element.Service,
-	    org.opennms.netmgt.EventConstants,
-		java.util.*
+	import="
+		org.opennms.web.outage.*
 	"
 %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>

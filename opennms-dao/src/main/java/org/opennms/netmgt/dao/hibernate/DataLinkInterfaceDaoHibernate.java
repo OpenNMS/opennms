@@ -30,7 +30,6 @@ package org.opennms.netmgt.dao.hibernate;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -87,17 +86,14 @@ public class DataLinkInterfaceDaoHibernate extends AbstractDaoHibernate<DataLink
 
     /** {@inheritDoc} */
     @Override
-    public DataLinkInterface findByNodeIdAndIfIndex(final Integer nodeId, final Integer ifIndex) {
-        final CriteriaBuilder builder = new CriteriaBuilder(DataLinkInterface.class);
-        builder.alias("node", "node", JoinType.LEFT_JOIN);
-        builder.eq("node.id", nodeId);
-        builder.eq("ifIndex", ifIndex);
+    public Collection<DataLinkInterface> findByNodeIdAndIfIndex(final Integer nodeId, final Integer ifIndex) {
+        return find("from DataLinkInterface as dli where dli.node.id = ? and dli.ifIndex = ?", nodeId,ifIndex);
+    }
 
-        final List<DataLinkInterface> interfaces = findMatching(builder.toCriteria());
-        if (interfaces.size() > 0) {
-            return interfaces.get(0);
-        }
-        return null;
+    /** {@inheritDoc} */
+    @Override
+    public Collection<DataLinkInterface> findByParentNodeIdAndIfIndex(final Integer nodeParentId, final Integer parentIfIndex) {
+        return find("from DataLinkInterface as dli where dli.nodeParentId = ? and dli.parentIfIndex = ?", nodeParentId,parentIfIndex);
     }
 
     @Override

@@ -1534,6 +1534,19 @@
   </event> 
 
   <event>
+    <uei>uei.opennms.org/remote/locationMonitorConnectionAddressChanged</uei>
+    <event-label>OpenNMS defined remote poller event: A remote poller's connection IP address has changed</event-label>
+    <descr>
+      This event is sent when a remote poller's connection IP address has changed.
+    </descr>
+    <logmsg dest='logndisplay'>
+      The connection IP address for remote poller %parm[locationMonitorId]% in location %parm[location]% has changed
+      from %parm[oldConnectionHostAddress]% to %parm[newConnectionHostAddress]%.
+    </logmsg>
+    <severity>Warning</severity>
+  </event> 
+
+  <event>
     <uei>uei.opennms.org/correlation/remote/wideSpreadOutage</uei>
     <event-label>OpenNMS defined correlator event: A widespread outage has been detected</event-label>
     <descr>
@@ -1928,6 +1941,28 @@
      <logmsg dest="logndisplay">&lt;p&gt;Linkd %parm[runnable]% suspended.&lt;/p&gt;</logmsg>
      <severity>Warning</severity>
   </event>
+  <event>
+     <uei>uei.opennms.org/internal/linkd/linkDiscoveryStarted</uei>
+     <event-label>OpenNMS-defined Linkd Event: linkDiscoveryStarted</event-label>
+     <descr>&lt;p&gt;The Linkd process has started its attempt to discover links.&lt;/p&gt;</descr>
+     <logmsg dest="logndisplay">&lt;p&gt;Linkd %parm[runnable]% started.&lt;/p&gt;</logmsg>
+     <severity>Normal</severity>
+  </event>
+  <event>
+     <uei>uei.opennms.org/internal/linkd/linkDiscoveryCompleted</uei>
+     <event-label>OpenNMS-defined Linkd Event: linkDiscoveryCompleted</event-label>
+     <descr>&lt;p&gt;The Linkd process has finished its attempt to discover links.&lt;/p&gt;</descr>
+     <logmsg dest="logndisplay">&lt;p&gt;Linkd %parm[runnable]% completed.&lt;/p&gt;</logmsg>
+     <severity>Normal</severity>
+  </event>
+  <event>
+     <uei>uei.opennms.org/internal/linkd/linkDiscoverySuspended</uei>
+     <event-label>OpenNMS-defined Linkd Event: linkDiscoverySuspended</event-label>
+     <descr>&lt;p&gt;The Linkd process suspended its attempt to discover links.&lt;/p&gt;</descr>
+     <logmsg dest="logndisplay">&lt;p&gt;Linkd %parm[runnable]% suspended.&lt;/p&gt;</logmsg>
+     <severity>Warning</severity>
+  </event>
+
 
 
   <event-file>events/Translator.default.events.xml</event-file>
@@ -1994,6 +2029,7 @@
   <event-file>events/CPQHPIM.events.xml</event-file>
   <event-file>events/Clarent.events.xml</event-file>
   <event-file>events/Clarinet.events.xml</event-file>
+  <event-file>events/Clavister.events.xml</event-file>
   <event-file>events/Compuware.events.xml</event-file>
   <event-file>events/Cricket.events.xml</event-file>
   <event-file>events/CRITAPP.events.xml</event-file>
@@ -2019,10 +2055,12 @@
   <event-file>events/Fore.events.xml</event-file>
   <event-file>events/Fortinet.events.xml</event-file>
   <event-file>events/FoundryNetworks.events.xml</event-file>
+  <event-file>events/FoundryNetworks2.events.xml</event-file>
   <event-file>events/FujitsuSiemens.events.xml</event-file>
   <event-file>events/GGSN.events.xml</event-file>
   <event-file>events/Groupwise.events.xml</event-file>
   <event-file>events/HP.events.xml</event-file>
+  <event-file>events/HWg.Poseidon.events.xml</event-file>
   <event-file>events/Hyperic.events.xml</event-file>
   <event-file>events/IBM.events.xml</event-file>
   <event-file>events/IBM-UMS.events.xml</event-file>
@@ -2039,6 +2077,7 @@
   <event-file>events/Junos.events.xml</event-file>
   <event-file>events/JunosV1.events.xml</event-file>
   <event-file>events/K5Systems.events.xml</event-file>
+  <event-file>events/Konica.events.xml</event-file>
   <event-file>events/LLDP.events.xml</event-file>
   <event-file>events/Liebert.events.xml</event-file>
   <event-file>events/Liebert.600SM.events.xml</event-file>
@@ -2101,6 +2140,7 @@
   <event-file>events/SystemEdge.events.xml</event-file>
   <event-file>events/SwissQual.events.xml</event-file>
   <event-file>events/TransPath.events.xml</event-file>
+  <event-file>events/Trendmicro.events.xml</event-file>
   <event-file>events/TrippLite.events.xml</event-file>
   <event-file>events/TUT.events.xml</event-file>
   <event-file>events/UPS-MIB.events.xml</event-file>

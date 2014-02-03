@@ -30,10 +30,12 @@
 --%>
 
 <%@page language="java" contentType="text/html" session="true"
-	import="java.util.Iterator,
+	import="
 		java.util.List,
-                org.opennms.netmgt.config.OpennmsServerConfigFactory,
-                org.opennms.web.pathOutage.*" %>
+		org.opennms.netmgt.config.OpennmsServerConfigFactory,
+		org.opennms.netmgt.poller.PathOutageFactory
+	"
+%>
 
 
 
@@ -63,9 +65,7 @@
 			<th><%= "Critical Path Service" %></th>
 			<th># of Nodes</th>
 		</tr>
-		<%          Iterator<String[]> iter2 = testPaths.iterator();
-		while( iter2.hasNext() ) {
-			String[] pth = iter2.next();
+		<% for (String[] pth : testPaths) {
 			pthData = PathOutageFactory.getCriticalPathData(pth[0], pth[1]); %>
 			<tr class="CellStatus">
 				<% if((pthData[0] == null) || (pthData[0].equals(""))) { %>

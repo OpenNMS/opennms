@@ -32,21 +32,18 @@
 	contentType="text/html"
 	session="true"
 	import="
-		java.io.*,
 		java.util.*,
-		java.net.InetAddress,
-                java.net.UnknownHostException,
                 org.opennms.web.api.Util,
                 org.opennms.netmgt.EventConstants,
                 org.opennms.netmgt.xml.event.Event,
                 org.opennms.netmgt.xml.event.Parm,
                 org.opennms.netmgt.xml.event.Value,
+                org.opennms.core.xml.JaxbUtils,
                 org.apache.commons.lang.StringUtils
 	"
 %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%
-    HttpSession user = request.getSession(true);
-
     String uei = StringUtils.trimToEmpty(request.getParameter("uei"));
     if (StringUtils.isBlank(uei)) {
         response.sendRedirect("sendevent.jsp");
@@ -98,6 +95,11 @@
         event.setOperinstruct(operinstruct);
     }
 
+    String uuid = StringUtils.trimToEmpty(request.getParameter("uuid"));
+    if (StringUtils.isNotBlank(uuid)) {
+        event.setUuid(uuid);
+    }
+
     StringBuffer sb = new StringBuffer();
 
     Enumeration<String> pNames = request.getParameterNames();
@@ -138,17 +140,12 @@
 <h3>Event Sent...</h3>
 
 <pre>
-&lt;event&gt;
-  &lt;uei&gt;<%=uei%>&lt;/uei&gt;
-  &lt;nodeid&gt;<%=nodeID%>&lt;/nodeid&gt;
-  &lt;host&gt;<%=host%>&lt;/host&gt;
-  &lt;interface&gt;<%=intface%>&lt;/interface&gt;
-  &lt;service&gt;<%=service%>&lt;/service&gt;
-  &lt;severity&gt;<%=severity%>&lt;/severity&gt;
-  &lt;descr&gt;<%=description%>&lt;/descr&gt;
-  &lt;operinstr&gt;<%=operinstruct%>&lt;/operinstr&gt;
-<%=sb%>
-&lt;/event&gt;
+<%
+  String eventXml = JaxbUtils.marshal(event);
+  // Strip off xml version string
+  eventXml = eventXml.replaceFirst("^<\\?xml[^\\>]+\\?\\>\\s*", "");
+%>
+<c:out value="<%=eventXml%>" />
 </pre>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />

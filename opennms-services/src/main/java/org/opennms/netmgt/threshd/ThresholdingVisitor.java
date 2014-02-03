@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.threshd;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -62,7 +63,13 @@ import org.slf4j.LoggerFactory;
  * @version $Id: $
  */
 public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
-    
+
+    public enum ThresholdingResult {
+        THRESHOLDING_UNKNOWN,
+        THRESHOLDING_SUCCEEDED,
+        THRESHOLDING_FAILED
+    }
+
     private static final Logger LOG = LoggerFactory.getLogger(ThresholdingVisitor.class);
 
 	/**
@@ -119,18 +126,26 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
     }
     
     /**
-     * Get a list of thresholds groups (for junit only at this time)
+     * Get a list of thresholds groups (for JUnit only at this time).
      *
      * @return a {@link java.util.List} object.
      */
-    public List<ThresholdGroup> getThresholdGroups() {
-        return m_thresholdingSet.m_thresholdGroups;
+    List<ThresholdGroup> getThresholdGroups() {
+        return Collections.unmodifiableList(m_thresholdingSet.m_thresholdGroups);
     }
     
+    /**
+     * Get a list of scheduled outages (for JUnit only at this time).
+     */
+    List<String> getScheduledOutages() {
+        return Collections.unmodifiableList(m_thresholdingSet.m_scheduledOutages);
+    }
+
     @Override
-	public void visitCollectionSet(CollectionSet set) {
-    	m_collectionTimestamp = set.getCollectionTimestamp();
-	}
+    public void visitCollectionSet(CollectionSet set) {
+        m_collectionTimestamp = set.getCollectionTimestamp();
+    }
+    
     /**
      * Force reload thresholds configuration, and merge threshold states
      */
@@ -175,11 +190,10 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
         }
     }
 
-    /*
+    /**
      * Apply threshold for specific resource (and required attributes).
-     * Send thresholds events (if exists)
+     * Send thresholds events (if exists).
      */
-    /** {@inheritDoc} */
     @Override
     public void completeResource(CollectionResource resource) {
         List<Event> eventList = m_thresholdingSet.applyThresholds(resource, m_attributesMap, m_collectionTimestamp);
@@ -188,7 +202,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
         proxy.sendAllEvents();
     }
     
-    /*
+    /**
      * Return the collection timestamp passed in at construct time.  Typically used by tests, but might be  useful elsewhere
      */
     public Date getCollectionTimestamp() {

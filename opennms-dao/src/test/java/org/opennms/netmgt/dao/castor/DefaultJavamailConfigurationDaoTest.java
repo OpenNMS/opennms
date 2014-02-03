@@ -30,7 +30,7 @@ package org.opennms.netmgt.dao.castor;
 
 import java.util.Properties;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.junit.Before;
 import org.junit.Test;

@@ -145,7 +145,7 @@ public class BSFMonitor extends AbstractServiceMonitor {
         String fileName = ParameterMap.getKeyedString(map,"file-name", null);
         String lang = ParameterMap.getKeyedString(map, "lang-class", null);
         String langEngine = ParameterMap.getKeyedString(map, "bsf-engine", null);
-        String langExtensions[] = ParameterMap.getKeyedString(map, "file-extensions", "").split(",");
+        String[] langExtensions = ParameterMap.getKeyedString(map, "file-extensions", "").split(",");
         String runType = ParameterMap.getKeyedString(map, "run-type", "eval");
         File file = new File(fileName);
 

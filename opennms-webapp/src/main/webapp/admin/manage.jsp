@@ -32,8 +32,7 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="java.io.File,
-		java.util.*,
+	import="java.util.*,
 		org.opennms.web.element.NetworkElementFactory,
 		org.opennms.web.admin.nodeManagement.*
 	"
@@ -46,7 +45,7 @@
 
 <%
     HttpSession userSession = request.getSession(false);
-    List nodes = null;
+    List<ManagedInterface> nodes = null;
     Integer lineItems= new Integer(0);
     
     //EventConfFactory eventFactory = EventConfFactory.getInstance();
@@ -56,7 +55,7 @@
     
     if (userSession != null)
     {
-		  	nodes = (List)userSession.getAttribute("listAll.manage.jsp");
+		  	nodes = (List<ManagedInterface>)userSession.getAttribute("listAll.manage.jsp");
         lineItems = (Integer)userSession.getAttribute("lineItems.manage.jsp");
     }
 %>
@@ -227,7 +226,7 @@
 <jsp:include page="/includes/footer.jsp" flush="true"/>
 
 <%!
-      public String buildManageTableRows(List nodes, int start, int stop)
+      public String buildManageTableRows(List<ManagedInterface> nodes, int start, int stop)
       	throws java.sql.SQLException
       {
           StringBuffer rows = new StringBuffer();
@@ -255,10 +254,10 @@
                                               curInterface.getAddress()));
                     
                   
-                List interfaceServices = curInterface.getServices();
+                List<ManagedService> interfaceServices = curInterface.getServices();
                 for (int k = 0; k < interfaceServices.size(); k++) 
                 {
-                     ManagedService curService = (ManagedService)interfaceServices.get(k);
+                     ManagedService curService = interfaceServices.get(k);
                      String serviceKey = curInterface.getNodeid() + "-" + curInterface.getAddress() + "-" + curService.getId();
                      rows.append(buildServiceRow(serviceKey,
                                                  interfaceIndex,

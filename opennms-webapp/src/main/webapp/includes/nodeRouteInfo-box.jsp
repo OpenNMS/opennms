@@ -66,10 +66,8 @@
 --%>
 
 <%@page language="java" contentType="text/html" session="true" import="
-  java.util.List,
   org.opennms.core.utils.WebSecurityUtils,
-  org.opennms.web.element.*,
-  org.opennms.netmgt.model.OnmsNode
+  org.opennms.web.element.*
 "%>
 
 
@@ -80,12 +78,8 @@
     if( nodeIdString == null ) {
         throw new org.opennms.web.servlet.MissingParameterException("node");
     }
-        
-    final int nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
     
     //gets active route entry on node
-    
-    final NetworkElementFactoryInterface factory = NetworkElementFactory.getInstance(getServletContext());
    	final IpRouteInterface[] iproutes = ElementUtil.getIpRouteByParams(request,getServletContext());
 
 %>

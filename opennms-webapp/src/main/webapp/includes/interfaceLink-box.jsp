@@ -37,7 +37,7 @@
   that directs all URLs to be relative to the servlet context.
 --%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.element.*,java.util.*,org.opennms.core.utils.WebSecurityUtils" %>
+<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.element.*,org.opennms.core.utils.WebSecurityUtils" %>
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -66,6 +66,7 @@
 			<tr>
 			<th>Linked to <%=nodeId%> and <%=ifIndex%></th>
 			<th width="10%">Status</th>
+			<th>Discovery Protocol</th>
 			<th>Last Scan</th>
 			 
 <%--
@@ -121,6 +122,10 @@
             <% } else { %>
      			&nbsp;
 		    <% } %>
+		    </td>
+
+		    <td class="standard">
+             	<%=linkInterface.getProtocol()%>
 		    </td>
 
 		    <td class="standard">

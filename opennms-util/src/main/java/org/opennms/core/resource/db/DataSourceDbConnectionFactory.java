@@ -57,7 +57,7 @@ public class DataSourceDbConnectionFactory implements DbConnectionFactory {
      * @throws java.sql.SQLException if any.
      */
     @Override
-    public void destroy() throws SQLException {
+    public void destroy() {
     }
 
     /**
@@ -73,7 +73,7 @@ public class DataSourceDbConnectionFactory implements DbConnectionFactory {
 
     /** {@inheritDoc} */
     @Override
-    public void init(String dbUrl, String dbDriver, String username, String password) throws ClassNotFoundException, SQLException {
+    public void init(String dbUrl, String dbDriver, String username, String password) throws ClassNotFoundException {
         throw new UnsupportedOperationException("not implemented");
     }
 

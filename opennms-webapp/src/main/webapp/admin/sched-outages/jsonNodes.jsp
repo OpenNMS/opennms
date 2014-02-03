@@ -32,20 +32,9 @@
 <%@page language="java"
         contentType="text/html"
         session="true"
-        import="java.util.*,
-        org.opennms.netmgt.config.*,
-        org.opennms.netmgt.config.poller.*,
-        org.opennms.core.utils.WebSecurityUtils,
+        import="java.util.*, java.util.regex.*,
         org.opennms.web.element.*,
         org.opennms.netmgt.model.OnmsNode,
-        org.opennms.netmgt.EventConstants,
-        org.opennms.netmgt.xml.event.Event,
-        org.opennms.netmgt.utils.*,
-        org.opennms.web.api.Util,
-        java.net.*,
-        java.io.*,
-        java.text.NumberFormat,
-        java.text.SimpleDateFormat,
         net.sf.json.JSONSerializer
         "
 %>
@@ -81,23 +70,34 @@ List<OnmsNode> items = NetworkElementFactory.getInstance(getServletContext()).ge
 boolean printedFirst = false;
 int recordCounter = 1;
 final int recordLimit = 200;
+String autocomplete = request.getParameter("term");
+Pattern pattern = null;
+if (autocomplete != null && !"".equals(autocomplete)) {
+	pattern = Pattern.compile(autocomplete, Pattern.LITERAL + Pattern.CASE_INSENSITIVE);
+}
 for (OnmsNode item : items) {
-	String autocomplete = request.getParameter("term");
 	// Check to see if the item matches the search term
-	if (
-		autocomplete == null || 
-		"".equals(autocomplete) || 
-		item.getLabel().contains(autocomplete)
-	) {
-		String label = item.getLabel() + " (Node ID " + item.getId() + ")";
-		if (autocomplete != null && !"".equals(autocomplete)) {
-			label = label.replace(autocomplete, "<strong>" + autocomplete + "</strong>");
+	Matcher matcher = null;
+	if (pattern != null) {
+		matcher = pattern.matcher(item.getLabel());
+	}
+	if (pattern == null || (matcher != null && matcher.find())) {
+		StringBuffer result = new StringBuffer();
+		if (pattern != null) {
+			matcher.reset();
+			while (matcher.find()) {
+				matcher.appendReplacement(result, "<strong>" + matcher.group(0) + "</strong>");
+			}
+			matcher.appendTail(result);
+		} else {
+			result.append(item.getLabel());
 		}
+		result.append(" (Node ID ").append(item.getId()).append(")");
 		// If we've already printed the first item, separate the items with a comma
 		if (printedFirst) {
 			out.println(",");
 		}
-		out.println(JSONSerializer.toJSON(new AutocompleteRecord(label, item.getId())));
+		out.println(JSONSerializer.toJSON(new AutocompleteRecord(result.toString(), item.getId())));
 		printedFirst = true;
 		// Don't print more than a certain number of records to limit the
 		// performance impact in the web browser

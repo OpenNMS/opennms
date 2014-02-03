@@ -74,8 +74,8 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
     
     public static class CreateCommand {
     	
+    	private static final String OPERATION = "create";
     	String filename;
-    	final String operation = "create";
     	String parameter;
     	
 		public CreateCommand(String filename, String parameter) {
@@ -86,7 +86,7 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
 		
             @Override
 		public String toString() {
-			return operation + " " + filename + " " + parameter;
+			return OPERATION + " " + filename + " " + parameter;
 		}
 		
     }
@@ -521,13 +521,16 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
             
             try {
-                String s[] = reader.readLine().split("x");
+                String line = null;
+                if ((line = reader.readLine()) == null) {
+                    throw new IOException("No output from the createGraph() command");
+                }
+                String[] s = line.split("x");
                 width = Integer.parseInt(s[0]);
                 height = Integer.parseInt(s[1]);
                 
                 List<String> printLinesList = new ArrayList<String>();
                 
-                String line = null;
                 while ((line = reader.readLine()) != null) {
                     printLinesList.add(line);
                 }
@@ -548,8 +551,7 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
         }
 
         // Creating Graph Details
-        RrdGraphDetails details = new JniGraphDetails(width, height, printLines, pngStream);
-        return details;
+        return new JniGraphDetails(width, height, printLines, pngStream);
     }
 
     /** {@inheritDoc} */

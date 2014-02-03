@@ -56,7 +56,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.db.DataSourceFactory;
-import org.opennms.core.resource.Vault;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.InetAddressUtils;
@@ -84,16 +83,21 @@ import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.core.io.FileSystemResource;
 
 public class LatencyStoringServiceMonitorAdaptorTest {
-    private EasyMockUtils m_mocks = new EasyMockUtils();
-    private PollerConfig m_pollerConfig = m_mocks.createMock(PollerConfig.class);
+    private EasyMockUtils m_mocks;
 
+    private PollerConfig m_pollerConfig;
+
+    private RrdStrategy<Object,Object> m_rrdStrategy;
+
+    @Before
     // Cannot avoid this warning since there is no way to fetch the class object for an interface
     // that uses generics
     @SuppressWarnings("unchecked")
-    private RrdStrategy<Object,Object> m_rrdStrategy = m_mocks.createMock(RrdStrategy.class);
-
-    @Before
     public void setUp() throws Exception {
+        m_mocks = new EasyMockUtils();
+        m_pollerConfig = m_mocks.createMock(PollerConfig.class);
+        m_rrdStrategy = m_mocks.createMock(RrdStrategy.class);
+
         MockLogAppender.setupLogging();
 
         RrdUtils.setStrategy(new NullRrdStrategy());
@@ -166,16 +170,23 @@ public class LatencyStoringServiceMonitorAdaptorTest {
         sb.append("<interface address=\"match-any\"/>");
         sb.append("</outage>");
         sb.append("</outages>");
+        
         File file = new File("target/poll-outages.xml");
         FileWriter writer = new FileWriter(file);
         writer.write(sb.toString());
         writer.close();
+        
+        PollOutagesConfigFactory oldFactory = PollOutagesConfigFactory.getInstance();
         PollOutagesConfigFactory.setInstance(new PollOutagesConfigFactory(new FileSystemResource(file)));
         PollOutagesConfigFactory.getInstance().afterPropertiesSet();
         
         EventAnticipator anticipator = new EventAnticipator();
         executeThresholdTest(anticipator);
         anticipator.verifyAnticipated();
+        
+        // Reset the state of the PollOutagesConfigFactory for any subsequent tests
+        PollOutagesConfigFactory.setInstance(oldFactory);
+        file.delete();
     }
 
     @SuppressWarnings("unchecked")
@@ -190,6 +201,8 @@ public class LatencyStoringServiceMonitorAdaptorTest {
 
         FilterDao filterDao = m_mocks.createMock(FilterDao.class);
         expect(filterDao.getActiveIPAddressList((String)EasyMock.anyObject())).andReturn(Collections.singletonList(addr("127.0.0.1"))).anyTimes();
+        filterDao.flushActiveIpAddressListCache();
+        EasyMock.expectLastCall().anyTimes();
         FilterDaoFactory.setInstance(filterDao);
         
         MonitoredService svc = m_mocks.createMock(MonitoredService.class);
@@ -207,7 +220,7 @@ public class LatencyStoringServiceMonitorAdaptorTest {
         Package pkg = new Package();
         Rrd rrd = new Rrd();
         rrd.setStep(step);
-        rrd.setRra(rras);
+        rrd.setRras(rras);
         pkg.setRrd(rrd);
         
         expect(m_pollerConfig.getRRAList(pkg)).andReturn(rras);
@@ -237,7 +250,6 @@ public class LatencyStoringServiceMonitorAdaptorTest {
         db.populate(network);
         db.update("update snmpinterface set snmpifname=?, snmpifdescr=? where id=?", "eth0", "eth0", 1);
         DataSourceFactory.setInstance(db);
-        Vault.setDataSource(db);
         
         m_mocks.replayAll();
         LatencyStoringServiceMonitorAdaptor adaptor = new LatencyStoringServiceMonitorAdaptor(service, m_pollerConfig, pkg);

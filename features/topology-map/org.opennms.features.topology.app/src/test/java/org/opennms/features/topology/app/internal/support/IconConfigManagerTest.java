@@ -39,13 +39,12 @@ public class IconConfigManagerTest {
     @Test
     public void testParseConfig() {
         Dictionary<String,Object> props = new Hashtable<String,Object>();
-        props.put("type1", "file1.png");
+        props.put("type1", "#mx9600_external");
         
         IconRepositoryManager iconManager = new IconRepositoryManager();
         iconManager.updateIconConfig(props);
         
-        assertEquals("file1.png", iconManager.findIconUrlByKey("type1"));
+        assertEquals("#mx9600_external", iconManager.findSVGIconIdByKey("type1"));
     }
-    
 
 }

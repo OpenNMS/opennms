@@ -76,8 +76,12 @@ import org.springframework.core.io.UrlResource;
  */
 @EventListener(name="Provisiond:EventListener", logPrefix="provisiond")
 public class Provisioner implements SpringServiceDaemon {
+    private static final String SCHEDULE_RESCAN_FOR_UPDATED_NODES = "org.opennms.provisiond.scheduleRescanForUpdatedNodes";
+    private static final String SCHEDULE_RESCAN_FOR_EXISTING_NODES = "org.opennms.provisiond.scheduleRescanForExistingNodes";
+
     private static final Logger LOG = LoggerFactory.getLogger(Provisioner.class);
     
+
     /** Constant <code>NAME="Provisiond"</code> */
     public static final String NAME = "Provisiond";
 
@@ -190,7 +194,7 @@ public class Provisioner implements SpringServiceDaemon {
     @Override
     public void start() throws Exception {
         m_manager.initializeAdapters();
-        String enabled = System.getProperty("org.opennms.provisiond.scheduleRescanForExistingNodes", "true");
+        String enabled = System.getProperty(SCHEDULE_RESCAN_FOR_EXISTING_NODES, "true");
         if (Boolean.valueOf(enabled)) {
             scheduleRescanForExistingNodes();
         } else {
@@ -268,9 +272,9 @@ public class Provisioner implements SpringServiceDaemon {
      * @param ipAddress a {@link java.net.InetAddress} object.
      * @return a {@link org.opennms.netmgt.provision.service.NewSuspectScan} object.
      */
-    public NewSuspectScan createNewSuspectScan(InetAddress ipAddress) {
-        LOG.info("createNewSuspectScan called");
-        return new NewSuspectScan(ipAddress, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator);
+    public NewSuspectScan createNewSuspectScan(InetAddress ipAddress, String foreignSource) {
+        LOG.info("createNewSuspectScan called with IP: "+ipAddress+ "and foreignSource"+foreignSource == null ? "null" : foreignSource);
+        return new NewSuspectScan(ipAddress, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator, foreignSource);
     }
 
     //Helper functions for the schedule
@@ -541,6 +545,14 @@ public class Provisioner implements SpringServiceDaemon {
         
         final String uei = e.getUei();
         final String ip = e.getInterface();
+        
+        String foreignSource = null;
+        List<Parm> parmCollection = e.getParmCollection();
+        for (Parm parm : parmCollection) {
+			if (parm.getParmName().equals("foreignSource")) {
+				foreignSource = parm.getValue().getContent();
+			}
+		}
 
         if (ip == null) {
             LOG.error("Received a {} event with a null ipAddress", uei);
@@ -551,7 +563,8 @@ public class Provisioner implements SpringServiceDaemon {
             LOG.info("Ignoring {} event for ip {} since discovery handling is disabled in provisiond", uei, ip);
             return;
         }
-        
+
+        final String fs = foreignSource;
         Runnable r = new Runnable() {
             @Override
             public void run() {
@@ -561,7 +574,7 @@ public class Provisioner implements SpringServiceDaemon {
                     	LOG.error("Unable to convert {} to an InetAddress.", ip);
                     	return;
                     }
-                    NewSuspectScan scan = createNewSuspectScan(addr);
+                    NewSuspectScan scan = createNewSuspectScan(addr, fs);
                     Task t = scan.createTask();
                     t.schedule();
                     t.waitFor();
@@ -580,12 +593,18 @@ public class Provisioner implements SpringServiceDaemon {
     
     /**
      * <p>handleNodeUpdated</p>
+     * A re-import has occurred, attempt a rescan now.
      *
      * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     @EventHandler(uei = EventConstants.NODE_UPDATED_EVENT_UEI)
     public void handleNodeUpdated(Event e) {
-        // scan now since a reimport has occurred
+    	LOG.debug("Node updated event received: {}", e);
+        if (!Boolean.valueOf(System.getProperty(SCHEDULE_RESCAN_FOR_UPDATED_NODES, "true"))) {
+        	LOG.debug("Rescanning updated nodes is disabled via property: {}", SCHEDULE_RESCAN_FOR_UPDATED_NODES);
+        	return;
+        }
+        
         removeNodeFromScheduleQueue(new Long(e.getNodeid()).intValue());
         NodeScanSchedule scheduleForNode = getProvisionService().getScheduleForNode(e.getNodeid().intValue(), true);
         if (scheduleForNode != null) {

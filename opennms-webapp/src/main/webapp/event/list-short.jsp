@@ -36,7 +36,7 @@
 
 <%@page import="org.opennms.core.utils.WebSecurityUtils" %>
 <%@page import="org.opennms.web.servlet.XssRequestWrapper" %>
-<%@page import="org.opennms.web.springframework.security.Authentication" %>
+<%@page import="org.opennms.web.api.Authentication" %>
 <%@page import="org.opennms.web.api.Util" %>
 
 <%@page import="org.opennms.web.filter.Filter"%>
@@ -96,23 +96,21 @@
     }
 
     //useful constant strings
-    String addPositiveFilterString = "[+]";
-    String addNegativeFilterString = "[-]";
-    String addBeforeDateFilterString = "[&gt;]";
-    String addAfterDateFilterString  = "[&lt;]";    
+    String addPositiveFilterString = "<i class=\"fa fa-plus-square-o\"></i>";
+    String addNegativeFilterString = "<i class=\"fa fa-minus-square-o\"></i>";
+    String addBeforeDateFilterString = "<i class=\"fa fa-toggle-right\"></i>";
+    String addAfterDateFilterString  = "<i class=\"fa fa-toggle-left\"></i>";
 %>
 
-
-
-
-<%@page import="org.opennms.web.event.AcknowledgeType"%>
 <%@page import="org.opennms.web.event.SortStyle"%><jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Event List" />
   <jsp:param name="headTitle" value="List" />
   <jsp:param name="headTitle" value="Events" />
-  <jsp:param name="breadcrumb" value="<a href= 'event/index.jsp' title='Events System Page'>Events</a>" />
+  <jsp:param name="breadcrumb" value="<a href= 'event/index' title='Events System Page'>Events</a>" />
   <jsp:param name="breadcrumb" value="List" />
 </jsp:include>
+
+<link rel="stylesheet" href="css/font-awesome-4.0.3/css/font-awesome.min.css">
 
   <script type="text/javascript">
     function checkAllCheckboxes() {
@@ -192,7 +190,7 @@
       <ul>
         <li><a href="<c:out value="<%=this.makeLink( parms, new ArrayList<Filter>())%>"/>" title="Remove all search constraints" >View all events</a></li>
         <li><a href="event/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a></li>
-        <li><a href="<%= Util.calculateUrlBase(req, "event/severity.jsp") %>">Severity Legend</a></li>
+        <li><a onclick="javascript:window.open('<%=Util.calculateUrlBase(req, "event/severity.jsp")%>','event_severity_legend', 'fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=no,resizable=yes,directories=no,location=no,width=525,height=350');" title="Open a window explaining the event severities">Severity Legend</a></li>
       
       <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
         <% if( parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) { %> 

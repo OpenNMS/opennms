@@ -39,12 +39,12 @@ public class TestVertex extends AbstractVertex {
 
 	List<TestEdge> m_edges = new ArrayList<TestEdge>();
 
-	public TestVertex(String id) {
-		super("test", id);
+	public TestVertex(String id, String label) {
+		super("test", id, label);
 	}
 
 	public TestVertex(String id, int x, int y) {
-		this(id);
+		this(id, "no-label");
 		setX(x);
 		setY(y);
 	}

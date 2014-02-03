@@ -42,7 +42,7 @@ public class ReadOnlyRtConfigDao implements RtConfigDao {
     private static final Logger LOG = LoggerFactory.getLogger(ReadOnlyRtConfigDao.class);
     private Configuration m_config = null;
     private long m_lastUpdated = 0L;
-    private static final long TIMEOUT = 1000 * 60 * 5; // 5 minutes
+    private static final long TIMEOUT = 1000L * 60L * 5L; // 5 minutes
 
     /**
 	 * Retrieves the properties defined in the rt.properties file.
@@ -102,7 +102,7 @@ public class ReadOnlyRtConfigDao implements RtConfigDao {
 	
 	@SuppressWarnings("unchecked")
     @Override
-	public List<Integer> getValidOpenStatus() {
+	public List<String> getValidOpenStatus() {
 		return getProperties().getList(getPrefix() + ".validopenstatus");
 	}
 	

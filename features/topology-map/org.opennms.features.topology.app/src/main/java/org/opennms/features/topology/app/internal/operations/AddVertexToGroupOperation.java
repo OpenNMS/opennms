@@ -49,20 +49,20 @@ import com.vaadin.data.Validator;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
-import com.vaadin.server.UserError;
 import com.vaadin.server.AbstractErrorMessage.ContentMode;
 import com.vaadin.server.ErrorMessage.ErrorLevel;
+import com.vaadin.server.UserError;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Form;
 import com.vaadin.ui.FormFieldFactory;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Select;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 
 public class AddVertexToGroupOperation implements Constants, Operation {
 	
@@ -99,14 +99,14 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 	 * This method removes all children of the given selection. This is necessary, because if a group is selected, we only want
 	 * this group to be added to the group. We do not want the children of the group to be added to the target as well.
 	 * @param selectedVertices
-	 * @param provider
+	 * @param container
 	 * @return
 	 */
-	private static Collection<VertexRef> removeChildren(GraphProvider provider, Collection<VertexRef> selectedVertices) {
+	private static Collection<VertexRef> removeChildren(GraphContainer container, Collection<VertexRef> selectedVertices) {
 		List<VertexRef> returnList = new ArrayList<VertexRef>();
 		List<VertexRef> removeFromList = new ArrayList<VertexRef>();
 		for (VertexRef eachVertexRef : selectedVertices) {
-			if (selectedVertices.contains(provider.getVertex(eachVertexRef).getParent())) {
+			if (selectedVertices.contains(container.getBaseTopology().getVertex(eachVertexRef, container.getCriteria()).getParent())) {
 				removeFromList.add(eachVertexRef);
 			}
 		}
@@ -123,7 +123,7 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 		final Logger log = LoggerFactory.getLogger(this.getClass());
 		final GraphContainer graphContainer = operationContext.getGraphContainer();
 
-		final Collection<VertexRef> vertices = removeChildren(operationContext.getGraphContainer().getBaseTopology(),
+		final Collection<VertexRef> vertices = removeChildren(operationContext.getGraphContainer(),
 				determineTargets(targets.get(0), operationContext.getGraphContainer().getSelectionManager()));
 		final Collection<Vertex> vertexIds = graphContainer.getBaseTopology().getRootGroup();
 		final Collection<Vertex> groupIds = findGroups(graphContainer.getBaseTopology(), vertexIds);
@@ -144,7 +144,7 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 				// Identify the fields by their Property ID.
 				String pid = (String) propertyId;
 				if ("Group".equals(pid)) {
-					final Select select = new Select("Group");
+					final ComboBox select = new ComboBox("Group");
 					for (Vertex childId : groupIds) {
 						log.debug("Adding child: {}, {}", childId.getId(), childId.getLabel());
 						select.addItem(childId.getId());
@@ -255,7 +255,11 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 
 	@Override
 	public boolean display(List<VertexRef> targets, OperationContext operationContext) {
-		return true;
+		if (operationContext.getGraphContainer().getBaseTopology().groupingSupported()) {
+			return enabled(targets, operationContext);
+		} else {
+			return false;
+		}
 	}
 
 	@Override
@@ -265,7 +269,7 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 
 	@Override
 	public String getId() {
-		return null;
+		return getClass().getSimpleName();
 	}
 
 }

@@ -50,6 +50,7 @@ import javax.management.ObjectName;
 import javax.management.openmbean.CompositeData;
 
 import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.core.utils.InetAddressUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,6 +66,7 @@ import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.config.collector.CollectionSetVisitor;
 import org.opennms.netmgt.config.collector.Persister;
 import org.opennms.netmgt.config.collector.ServiceParameters;
+import org.opennms.netmgt.config.collector.ServiceParameters.ParameterName;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
@@ -200,7 +202,6 @@ public abstract class JMXCollector implements ServiceCollector {
         // Make sure we can connect to the database
         java.sql.Connection ctest = null;
         try {
-            DataSourceFactory.init();
             ctest = DataSourceFactory.getInstance().getConnection();
         } catch (final Exception e) {
             LOG.error("initialize: failed to get a database connection", e);
@@ -240,7 +241,7 @@ public abstract class JMXCollector implements ServiceCollector {
         int nodeID = agent.getNodeId();
 
         // Retrieve the name of the JMX data collector
-        String collectionName = ParameterMap.getKeyedString(parameters, "collection", serviceName);
+        String collectionName = ParameterMap.getKeyedString(parameters, ParameterName.COLLECTION.toString(), serviceName);
 
         final String hostAddress = InetAddressUtils.str(ipAddr);
         LOG.debug("initialize: InetAddress={}, collectionName={}", hostAddress, collectionName);
@@ -298,10 +299,10 @@ public abstract class JMXCollector implements ServiceCollector {
         JMXNodeInfo nodeInfo = agent.getAttribute(NODE_INFO_KEY);
         Map<String, BeanInfo> mbeans = nodeInfo.getMBeans();
         String collDir = serviceName;
-        
 
-        String port = ParameterMap.getKeyedString(map, "port", null);
-        String friendlyName = ParameterMap.getKeyedString(map,"friendly-name", port);
+        boolean useMbeanForRrds = ParameterMap.getKeyedBoolean(map, ParameterName.USE_MBEAN_NAME_FOR_RRDS.toString(), false);
+        String port = ParameterMap.getKeyedString(map, ParameterName.PORT.toString(), null);
+        String friendlyName = ParameterMap.getKeyedString(map, ParameterName.FRIENDLY_NAME.toString(), port);
         if (useFriendlyName) {
             collDir = friendlyName;
         }
@@ -323,7 +324,7 @@ public abstract class JMXCollector implements ServiceCollector {
 
             MBeanServerConnection mbeanServer = connection.getMBeanServer();
 
-            int retry = ParameterMap.getKeyedInteger(map, "retry", 3);
+            int retry = ParameterMap.getKeyedInteger(map, ParameterName.RETRY.toString(), 3);
             for (int attempts = 0; attempts <= retry; attempts++) {
                 try {
                     /*
@@ -333,10 +334,12 @@ public abstract class JMXCollector implements ServiceCollector {
 
                     for (Iterator<BeanInfo> iter = mbeans.values().iterator(); iter.hasNext();) {
                         BeanInfo beanInfo = iter.next();
+                        String mbeanName = beanInfo.getMbeanName();
                         String objectName = beanInfo.getObjectName();
                         String excludeList = beanInfo.getExcludes();
                         //All JMX collected values are per node
-                        AttributeGroupType attribGroupType=new AttributeGroupType(fixGroupName(objectName),"all");
+                        String obj = useMbeanForRrds ? mbeanName : objectName;
+                        AttributeGroupType attribGroupType=new AttributeGroupType(fixGroupName(obj),"all");
                         
                         List<String> attribNames = beanInfo.getAttributeNames();
                         List<String> compAttribNames = beanInfo.getCompositeAttributeNames();
@@ -356,7 +359,7 @@ public abstract class JMXCollector implements ServiceCollector {
                         
                         String[] attrNames = attribNames.toArray(new String[attribNames.size()]);
 
-                        if (objectName.indexOf("*") == -1) {      
+                        if (objectName.indexOf('*') == -1) {      
                             LOG.debug("{} Collector - getAttributes: {}, # attributes: {}, # composite attribute members: {}", serviceName, objectName, attrNames.length, compAttribNames.size());
                             try {
                                 ObjectName oName = new ObjectName(objectName);
@@ -511,7 +514,7 @@ public abstract class JMXCollector implements ServiceCollector {
         if (objectName == null) {
             return "NULL";
         }
-        return objectName.replaceAll("[.:=,]", "_");
+        return AlphaNumeric.parseAndReplace(objectName, '_');
     }
     
     /*
@@ -529,7 +532,7 @@ public abstract class JMXCollector implements ServiceCollector {
             StringTokenizer st = new StringTokenizer(substitutions, ",");
             while (st.hasMoreTokens()) {
                 String token = st.nextToken();
-                int index = token.indexOf("|");
+                int index = token.indexOf('|');
                 if (newKey.equals(token.substring(0, index))) {
                     newKey = token.substring(index + 1);
                 }

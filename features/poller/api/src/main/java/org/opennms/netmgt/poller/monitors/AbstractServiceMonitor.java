@@ -35,7 +35,6 @@ import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.ClassUtils;
 
 /**
  * <p>
@@ -50,9 +49,8 @@ import org.springframework.util.ClassUtils;
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  */
 abstract public class AbstractServiceMonitor implements ServiceMonitor {
-	
     private static final Logger LOG = LoggerFactory.getLogger(AbstractServiceMonitor.class);
-	
+
     /**
      * {@inheritDoc}
      *
@@ -143,8 +141,79 @@ abstract public class AbstractServiceMonitor implements ServiceMonitor {
     @Override
     public void release(MonitoredService svc) {
     }
-    
+
     /** {@inheritDoc} */
     @Override
     abstract public PollStatus poll(MonitoredService svc, Map<String, Object> parameters);
+
+    public static Object getKeyedObject(final Map<String, Object> parameterMap, final String key, final Object defaultValue) {
+        if (key == null) return defaultValue;
+
+        final Object value = parameterMap.get(key);
+        if (value == null) return defaultValue;
+
+        return value;
+    }
+
+    public static Boolean getKeyedBoolean(final Map<String, Object> parameterMap, final String key, final Boolean defaultValue) {
+        final Object value = getKeyedObject(parameterMap, key, defaultValue);
+        if (value == null) return defaultValue;
+
+        if (value instanceof String) {
+            return Boolean.valueOf("true".equalsIgnoreCase((String)value));
+        } else if (value instanceof Boolean) {
+            return (Boolean)value;
+        }
+
+        return defaultValue;
+    }
+
+    public static String getKeyedString(final Map<String, Object> parameterMap, final String key, final String defaultValue) {
+        final Object value = getKeyedObject(parameterMap, key, defaultValue);
+        if (value == null) return defaultValue;
+
+        if (value instanceof String) {
+            return (String)value;
+        }
+
+        return value.toString();
+    }
+
+    public static Integer getKeyedInteger(final Map<String, Object> parameterMap, final String key, final Integer defaultValue) {
+        final Object value = getKeyedObject(parameterMap, key, defaultValue);
+        if (value == null) return defaultValue;
+
+        if (value instanceof String) {
+            try {
+                return Integer.valueOf((String)value);
+            } catch (final NumberFormatException e) {
+                return defaultValue;
+            }
+        } else if (value instanceof Integer) {
+            return (Integer)value;
+        } else if (value instanceof Number) {
+            return Integer.valueOf(((Number)value).intValue());
+        }
+
+        return defaultValue;
+    }
+
+    public static Long getKeyedLong(final Map<String, Object> parameterMap, final String key, final Long defaultValue) {
+        final Object value = getKeyedObject(parameterMap, key, defaultValue);
+        if (value == null) return defaultValue;
+
+        if (value instanceof String) {
+            try {
+                return Long.valueOf((String)value);
+            } catch (final NumberFormatException e) {
+                return defaultValue;
+            }
+        } else if (value instanceof Long) {
+            return (Long)value;
+        } else if (value instanceof Number) {
+            return Long.valueOf(((Number)value).longValue());
+        }
+
+        return defaultValue;
+    }
 }

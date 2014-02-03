@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.core</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>1.13.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core</groupId>
@@ -15,6 +15,7 @@
     <module>dns</module>
     <module>lib</module>
     <module>http</module>
+    <module>rest</module>
     <module>services</module>
     <module>schema</module>
     <module>snmp</module>

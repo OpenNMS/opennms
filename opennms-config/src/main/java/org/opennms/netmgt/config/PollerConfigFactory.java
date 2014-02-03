@@ -33,17 +33,16 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 
 import org.apache.commons.io.IOUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.core.xml.CastorUtils;
-import org.opennms.netmgt.config.poller.PollerConfiguration;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -85,10 +84,8 @@ public final class PollerConfigFactory extends PollerConfigManager {
      * @param stream a {@link java.io.InputStream} object.
      * @param localServer a {@link java.lang.String} object.
      * @param verifyServer a boolean.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public PollerConfigFactory(final long currentVersion, final InputStream stream, final String localServer, final boolean verifyServer) throws MarshalException, ValidationException {
+    public PollerConfigFactory(final long currentVersion, final InputStream stream, final String localServer, final boolean verifyServer) {
         super(stream, localServer, verifyServer);
         m_currentVersion = currentVersion;
     }
@@ -99,22 +96,20 @@ public final class PollerConfigFactory extends PollerConfigManager {
      *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public static synchronized void init() throws IOException, MarshalException, ValidationException {
+    public static synchronized void init() throws IOException {
         if (m_loaded) {
             // init already called - return
             // to reload, reload() will need to be called
             return;
         }
 
-        OpennmsServerConfigFactory.init();
+        try {
+            OpennmsServerConfigFactory.init();
+        } catch (final Exception e) {
+            LOG.warn("Error while initializing OpennmsServerConfigFactory.", e);
+        }
         OpennmsServerConfigFactory onmsSvrConfig = OpennmsServerConfigFactory.getInstance();
 
         final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME);
@@ -130,13 +125,12 @@ public final class PollerConfigFactory extends PollerConfigManager {
             IOUtils.closeQuietly(stream);
         }
 
-        for (final org.opennms.netmgt.config.poller.Package pollerPackage : config.getConfiguration().getPackageCollection()) {
-            for (final org.opennms.netmgt.config.poller.Service service : pollerPackage.getServiceCollection()) {
-                for (final org.opennms.netmgt.config.poller.Parameter parm : service.getParameterCollection()) {
+        for (final org.opennms.netmgt.config.poller.Package pollerPackage : config.getConfiguration().getPackages()) {
+            for (final org.opennms.netmgt.config.poller.Service service : pollerPackage.getServices()) {
+                for (final org.opennms.netmgt.config.poller.Parameter parm : service.getParameters()) {
                     if (parm.getKey().equals("ds-name")) {
                         if (parm.getValue().length() > ConfigFileConstants.RRD_DS_MAX_SIZE) {
-                            throw new ValidationException(
-                                String.format("ds-name '%s' in service '%s' (poller package '%s') is greater than %d characters",
+                            throw new IllegalStateException(String.format("ds-name '%s' in service '%s' (poller package '%s') is greater than %d characters",
                                 parm.getValue(), service.getName(), pollerPackage.getName(), ConfigFileConstants.RRD_DS_MAX_SIZE)
                             );
                         }
@@ -153,15 +147,9 @@ public final class PollerConfigFactory extends PollerConfigManager {
      *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read/loaded
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public static synchronized void reload() throws IOException, MarshalException, ValidationException {
+    public static synchronized void reload() throws IOException {
         init();
         getInstance().update();
     }
@@ -215,11 +203,9 @@ public final class PollerConfigFactory extends PollerConfigManager {
      * <p>update</p>
      *
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     @Override
-    public void update() throws IOException, MarshalException, ValidationException {
+    public void update() throws IOException {
         getWriteLock().lock();
         try {
             final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME);
@@ -227,10 +213,13 @@ public final class PollerConfigFactory extends PollerConfigManager {
                 m_currentVersion = cfgFile.lastModified();
                 LOG.debug("init: config file path: {}", cfgFile.getPath());
                 InputStream stream = null;
+                InputStreamReader sr = null;
                 try {
                     stream = new FileInputStream(cfgFile);
-                    m_config = CastorUtils.unmarshal(PollerConfiguration.class, stream);
+                    sr = new InputStreamReader(stream);
+                    m_config = JaxbUtils.unmarshal(PollerConfiguration.class, sr);
                 } finally {
+                    IOUtils.closeQuietly(sr);
                     IOUtils.closeQuietly(stream);
                 }
                 init();

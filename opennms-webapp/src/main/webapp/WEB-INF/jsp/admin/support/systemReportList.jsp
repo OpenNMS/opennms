@@ -40,7 +40,7 @@
     <jsp:param name="breadcrumb" value="System Reports" />
 </jsp:include>
 
-<script language="javascript" type="text/javascript">
+<script type="text/javascript">
 <!-- Begin
 function checkAll(field)
 {

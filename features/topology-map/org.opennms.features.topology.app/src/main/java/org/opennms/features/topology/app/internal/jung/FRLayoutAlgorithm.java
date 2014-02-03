@@ -45,11 +45,11 @@ public class FRLayoutAlgorithm extends AbstractLayoutAlgorithm {
 
 	@Override
 	public void updateLayout(final GraphContainer graphContainer) {
-		
+
 		Graph g = graphContainer.getGraph();
-		
+
 		final Layout graphLayout = g.getLayout();
-		
+
 		SparseGraph<VertexRef, EdgeRef> jungGraph = new SparseGraph<VertexRef, EdgeRef>();
 
 		Collection<Vertex> vertices = g.getDisplayVertices();
@@ -57,28 +57,26 @@ public class FRLayoutAlgorithm extends AbstractLayoutAlgorithm {
 		for(Vertex v : vertices) {
 			jungGraph.addVertex(v);
 		}
-		
+
 		Collection<Edge> edges = g.getDisplayEdges();
-		
+
 		for(Edge e : edges) {
 			jungGraph.addEdge(e, e.getSource().getVertex(), e.getTarget().getVertex());
 		}
-		
 
 		FRLayout<VertexRef, EdgeRef> layout = new FRLayout<VertexRef, EdgeRef>(jungGraph);
+		// Initialize the vertex positions to the last known positions from the layout
 		layout.setInitializer(initializer(graphLayout));
+		// Resize the graph to accommodate the number of vertices
 		layout.setSize(selectLayoutSize(graphContainer));
-		
+
 		while(!layout.done()) {
 			layout.step();
 		}
-		
-		
+
+		// Store the new positions in the layout
 		for(Vertex v : vertices) {
 			graphLayout.setLocation(v, (int)layout.getX(v), (int)layout.getY(v));
 		}
-		
-		
 	}
-
 }

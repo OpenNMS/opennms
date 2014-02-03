@@ -51,8 +51,7 @@ public class SeleniumComputer extends Computer{
     
     @Override
     protected Runner getRunner(RunnerBuilder builder, Class<?> testClass) throws Throwable {
-        TestClassRunnerForSelenium runner = new TestClassRunnerForSelenium(testClass, getBaseUrl(), getTimeout());
-        return runner;
+        return new TestClassRunnerForSelenium(testClass, getBaseUrl(), getTimeout());
     }
 
     public String getBaseUrl() {

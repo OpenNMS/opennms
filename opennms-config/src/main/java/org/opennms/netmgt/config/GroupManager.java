@@ -74,6 +74,45 @@ import org.opennms.netmgt.model.OnmsGroupList;
  * @author <a href="mailto:dj@gregor.com">DJ Gregor</a>
  */
 public abstract class GroupManager {
+
+    public static class OnmsGroupMapper {
+
+        public Group map(OnmsGroup inputGroup) {
+            if (inputGroup == null) return null;
+            Group castorGroup = new Group();
+            castorGroup.setName(inputGroup.getName());
+            castorGroup.setComments(inputGroup.getComments());
+            castorGroup.setUser(inputGroup.getUsers().toArray(EMPTY_STRING_ARRAY));
+            return castorGroup;
+        }
+
+        public OnmsGroup map(Group inputGroup) {
+            if (inputGroup == null) return null;
+            final OnmsGroup xmlGroup = new OnmsGroup(inputGroup.getName());
+            xmlGroup.setComments(inputGroup.getComments());
+            xmlGroup.setUsers(inputGroup.getUserCollection());
+            return xmlGroup;
+        }
+
+        public Collection<OnmsGroup> map(Collection<Group> inputGroups) {
+            Collection<OnmsGroup> xmlGroups = new ArrayList<OnmsGroup>();
+            for (Group eachGroup : inputGroups) {
+                if (eachGroup == null) continue;
+                xmlGroups.add(map(eachGroup));
+            }
+            return xmlGroups;
+        }
+    }
+
+    public static class OnmsGroupListMapper {
+        public OnmsGroupList map(Collection<OnmsGroup> groups) {
+            final OnmsGroupList list = new OnmsGroupList();
+            list.addAll(groups);
+            list.setTotalCount(list.getCount());
+            return list;
+        }
+    }
+
     private static final Logger LOG = LoggerFactory.getLogger(GroupManager.class);
 
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
@@ -146,25 +185,14 @@ public abstract class GroupManager {
     }
 
     public OnmsGroupList getOnmsGroupList() throws MarshalException, ValidationException, IOException {
-        final OnmsGroupList list = new OnmsGroupList();
-        
-        for (final String name : getGroupNames()) {
-            list.add(getOnmsGroup(name));
-        }
-        list.setTotalCount(list.getCount());
-
-        return list;
+        return new OnmsGroupListMapper().map(
+                new OnmsGroupMapper().map(getGroups().values()));
     }
 
     public OnmsGroup getOnmsGroup(final String groupName) throws MarshalException, ValidationException, IOException {
         final Group castorGroup = getGroup(groupName);
         if (castorGroup == null) return null;
-        
-        final OnmsGroup group = new OnmsGroup(groupName);
-        group.setComments(castorGroup.getComments());
-        group.setUsers(castorGroup.getUserCollection());
-        
-        return group;
+        return new OnmsGroupMapper().map(castorGroup);
     }
 
     public synchronized void save(final OnmsGroup group) throws Exception {

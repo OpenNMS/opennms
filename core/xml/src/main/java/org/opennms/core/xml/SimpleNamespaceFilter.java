@@ -36,9 +36,9 @@ import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.XMLFilterImpl;
 
 public class SimpleNamespaceFilter extends XMLFilterImpl {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(SimpleNamespaceFilter.class);
-	
+
+    private static final Logger LOG = LoggerFactory.getLogger(SimpleNamespaceFilter.class);
+
     private String m_namespaceUri;
     private boolean m_addNamespace = false;
     private boolean m_addedNamespace = false;
@@ -46,7 +46,7 @@ public class SimpleNamespaceFilter extends XMLFilterImpl {
     public SimpleNamespaceFilter(final String namespaceUri, final boolean addNamespace) {
         super();
 
-        LOG.debug("SimpleNamespaceFilter initalized with namespace {} ({})", namespaceUri, Boolean.valueOf(addNamespace));
+        LOG.trace("SimpleNamespaceFilter initalized with namespace {} ({})", namespaceUri, Boolean.valueOf(addNamespace));
         if (addNamespace) {
             this.m_namespaceUri = namespaceUri.intern();
         } else { 
@@ -54,7 +54,7 @@ public class SimpleNamespaceFilter extends XMLFilterImpl {
         }
         this.m_addNamespace = addNamespace;
     }
-	
+
     @Override
     public void startDocument() throws SAXException {
         super.startDocument();
@@ -64,54 +64,54 @@ public class SimpleNamespaceFilter extends XMLFilterImpl {
     }
     @Override
     public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) throws SAXException {
-    	if (m_addNamespace) {
-    		LOG.trace("start: uri = {}, new uri = {}, localName = {}, qName = {}, attributes = {}", uri, m_namespaceUri, localName, qName, attributes);
+        if (m_addNamespace) {
+            LOG.trace("start: uri = {}, new uri = {}, localName = {}, qName = {}, attributes = {}", uri, m_namespaceUri, localName, qName, attributes);
 
-        	final String type = attributes.getValue("http://www.w3.org/2001/XMLSchema-instance", "type");
+            final String type = attributes.getValue("http://www.w3.org/2001/XMLSchema-instance", "type");
 
-        	// we found an xsi:type annotation, ignore to avoid, eg:
-			// org.xml.sax.SAXParseException: cvc-elt.4.2: Cannot resolve 'events' to a type definition for element 'events'.
-        	if (type != null) {
-    			final AttributesImpl att = new AttributesImpl();
-            	for (int i = 0; i < attributes.getLength(); i++) {
-            		if (!attributes.getLocalName(i).equals("type") || !attributes.getURI(i).equals("http://www.w3.org/2001/XMLSchema-instance")) {
-            			att.addAttribute(attributes.getURI(i), attributes.getLocalName(i), attributes.getQName(i), attributes.getType(i), attributes.getValue(i));
-            		}
-            	}
-        		super.startElement(m_namespaceUri, localName, qName, att);
-        	} else {
-            	super.startElement(m_namespaceUri, localName, qName, attributes);
-        	}
-    	}  else {
-    		LOG.trace("start: uri = {}, new uri = {}, localName = {}, qName = {}, attributes = {}", uri, uri, localName, qName, attributes);
-    		super.startElement(uri, localName, qName, attributes);
-    	}
+            // we found an xsi:type annotation, ignore to avoid, eg:
+            // org.xml.sax.SAXParseException: cvc-elt.4.2: Cannot resolve 'events' to a type definition for element 'events'.
+            if (type != null) {
+                final AttributesImpl att = new AttributesImpl();
+                for (int i = 0; i < attributes.getLength(); i++) {
+                    if (!attributes.getLocalName(i).equals("type") || !attributes.getURI(i).equals("http://www.w3.org/2001/XMLSchema-instance")) {
+                        att.addAttribute(attributes.getURI(i), attributes.getLocalName(i), attributes.getQName(i), attributes.getType(i), attributes.getValue(i));
+                    }
+                }
+                super.startElement(m_namespaceUri, localName, qName, att);
+            } else {
+                super.startElement(m_namespaceUri, localName, qName, attributes);
+            }
+        }  else {
+            LOG.trace("start: uri = {}, new uri = {}, localName = {}, qName = {}, attributes = {}", uri, uri, localName, qName, attributes);
+            super.startElement(uri, localName, qName, attributes);
+        }
     }
 
     @Override
     public void endElement(final String uri, final String localName, final String qName) throws SAXException {
-    	if(m_addNamespace) {
-    		LOG.trace("end:   uri = {}, new uri = {}, localName = {}, qName = {}", uri, m_namespaceUri, localName, qName);
-    		super.endElement(m_namespaceUri, localName, qName);
-    	} else {
-    		LOG.trace("end:   uri = {}, new uri = {}, localName = {}, qName = {}", uri, uri, localName, qName);
-    		super.endElement(uri, localName, qName);
-    	}
+        if(m_addNamespace) {
+            LOG.trace("end:   uri = {}, new uri = {}, localName = {}, qName = {}", uri, m_namespaceUri, localName, qName);
+            super.endElement(m_namespaceUri, localName, qName);
+        } else {
+            LOG.trace("end:   uri = {}, new uri = {}, localName = {}, qName = {}", uri, uri, localName, qName);
+            super.endElement(uri, localName, qName);
+        }
     }
 
     @Override
     public void startPrefixMapping(final String prefix, final String url) throws SAXException {
-    	LOG.trace("startPrefixMapping: prefix = {}, url = {}", prefix, url);
+        LOG.trace("startPrefixMapping: prefix = {}, url = {}", prefix, url);
         if (m_addNamespace) {
             this.startControlledPrefixMapping();
         } else {
-        	super.startPrefixMapping(prefix, url);
+            super.startPrefixMapping(prefix, url);
         }
 
     }
 
     private void startControlledPrefixMapping() throws SAXException {
-    	LOG.trace("startControlledPrefixMapping");
+        LOG.trace("startControlledPrefixMapping");
         if (m_addNamespace && !m_addedNamespace) {
             //We should add namespace since it is set and has not yet been done.
             super.startPrefixMapping("".intern(), m_namespaceUri);
@@ -119,5 +119,10 @@ public class SimpleNamespaceFilter extends XMLFilterImpl {
             //Make sure we don't do it twice
             m_addedNamespace = true;
         }
+    }
+    
+    @Override
+    public String toString() {
+        return "SimpleNamespaceFilter[namespaceUri=" + m_namespaceUri + ",addNamespace=" + m_addNamespace + "]";
     }
 }

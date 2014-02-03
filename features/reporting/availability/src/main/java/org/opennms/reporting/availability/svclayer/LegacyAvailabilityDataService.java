@@ -30,9 +30,6 @@ package org.opennms.reporting.availability.svclayer;
 
 import static org.opennms.core.utils.InetAddressUtils.str;
 
-import java.beans.PropertyVetoException;
-import java.io.IOException;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -45,13 +42,9 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.Callable;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.DBUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.categories.CatFactory;
 import org.opennms.netmgt.filter.FilterDaoFactory;
@@ -59,6 +52,8 @@ import org.opennms.reporting.availability.AvailabilityConstants;
 import org.opennms.reporting.datablock.Node;
 import org.opennms.reporting.datablock.Outage;
 import org.opennms.reporting.datablock.OutageSvcTimesList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>LegacyAvailabilityDataService class.</p>
@@ -67,12 +62,6 @@ public class LegacyAvailabilityDataService implements AvailabilityDataService {
     private static final Logger LOG = LoggerFactory.getLogger(LegacyAvailabilityDataService.class);
 
     CatFactory m_catFactory;
-
-    /**
-     * Common Rule for the category group.
-     */
-
-    private String m_commonRule;
 
     private Connection m_availConn;
 
@@ -111,9 +100,10 @@ public class LegacyAvailabilityDataService implements AvailabilityDataService {
                     m_catFactory.getReadLock().lock();
 
                     try {
-                        m_commonRule = m_catFactory.getEffectiveRule(categoryName);
+                        String commonRule = m_catFactory.getEffectiveRule(categoryName);
 
-                        final List<InetAddress> nodeIPs = FilterDaoFactory.getInstance().getActiveIPAddressList(m_commonRule);
+                        FilterDaoFactory.getInstance().flushActiveIpAddressListCache();
+                        final List<InetAddress> nodeIPs = FilterDaoFactory.getInstance().getActiveIPAddressList(commonRule);
                         LOG.debug("Number of IPs satisfying rule: {}", nodeIPs.size());
 
                         final List<String> monitoredServices = new ArrayList<String>(category.getServiceCollection());
@@ -358,26 +348,10 @@ public class LegacyAvailabilityDataService implements AvailabilityDataService {
         // Initialize the DataCollectionConfigFactory
         //
         try {
-            DataSourceFactory.init();
             m_availConn = DataSourceFactory.getInstance().getConnection();
-        } catch (MarshalException e) {
-            LOG.error("initialize: Failed to load data collection configuration", e);
-            throw new AvailabilityDataServiceException("failed to load data collection configuration");
-        } catch (ValidationException e) {
-            LOG.error("initialize: Failed to load data collection configuration", e);
-            throw new AvailabilityDataServiceException("failed to load data collection configuration");
-        } catch (IOException e) {
-            LOG.error("initialize: Failed to load data collection configuration", e);
-            throw new UndeclaredThrowableException(e);
-        } catch (ClassNotFoundException e) {
-            LOG.error("initialize: Failed loading database driver.", e);
-            throw new AvailabilityDataServiceException("failed to load data collection configuration");
         } catch (SQLException e) {
             LOG.error("initialize: Failed getting connection to the database.", e);
             throw new AvailabilityDataServiceException("failed to load data collection configuration");
-        } catch (PropertyVetoException e) {
-            LOG.error("initialize: Failed getting connection to the database.", e);
-            throw new AvailabilityDataServiceException("initialize: Failed getting connection to the database");
         }
     }
 

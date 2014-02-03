@@ -98,7 +98,7 @@
                 <li> (256) Address2
                 <li> (64) City
                 <li> (64) State
-                <li> (64) Zip
+                <li> (64) ZIP Code
                 <li> (64) Building
                 <li> (64) Floor
                 <li> (64) Room
@@ -131,8 +131,8 @@
 	
 		<div style="width: 25%; position: relative; float: left">
               <ol start="45">
-                <li> (64) Cpu
-                <li> (10) Ram
+                <li> (64) CPU
+                <li> (10) RAM
                 <li> (64) Storage Controller
                 <li> (64) HDD 1
                 <li> (64) HDD 2
@@ -141,7 +141,7 @@
 				<li> (64) HDD 5
 				<li> (64) HDD 6
 				<li> (1) Number of power supplies
-                <li> (11) Inputpower
+                <li> (11) Input power
                 <li> (64) Additional hardware
                 <li> (32) Admin
                 <li> (32) SNMP Community

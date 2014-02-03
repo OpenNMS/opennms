@@ -102,7 +102,7 @@
 		<table>
 			<tr>
 			<input id="newScheduleOp" name="op" type="hidden" value="newSchedule"/>
-			<td><input id="newScheduleName" name="name" type="text" readonly="true" value="Schedule Name"/></td>
+			<td><input id="newScheduleName" name="name" type="text" readonly="readonly" value="Schedule Name"/></td>
 			<td>
 				<SELECT id="newScheduleType" name="type" value="Monthly Schedule">
 				   <OPTION value="specific">Specific Time Period</OPTION>

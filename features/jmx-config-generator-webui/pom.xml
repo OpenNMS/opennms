@@ -5,17 +5,16 @@
     <parent>
         <artifactId>org.opennms.features</artifactId>
         <groupId>org.opennms</groupId>
-        <version>1.13.0-SNAPSHOT</version>
+        <version>1.13.1-SNAPSHOT</version>
     </parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>jmxconfiggenerator.webui</artifactId>
     <packaging>bundle</packaging>
-    <name>Jmx Config Generator Web Interface</name>
+    <name>OpenNMS Features Jmx Config Generator Web UI</name>
     <url>http://www.opennms.org</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <gwt.version>2.3.0</gwt.version>
         <gwt.plugin.version>2.2.0</gwt.plugin.version>
         <guava.version>10.0.1</guava.version>
         <quartz.version>2.1.5</quartz.version>
@@ -67,7 +66,6 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>gwt-maven-plugin</artifactId>
-                <version>${gwt.plugin.version}</version>
                 <configuration>
                     <!-- if you don't specify any modules, the plugin will find them -->
                     <webappDirectory>${project.build.directory}/${project.build.finalName}/VAADIN/widgetsets</webappDirectory>
@@ -77,6 +75,7 @@
                     <hostedWebapp>${project.build.directory}/${project.build.finalName}</hostedWebapp>
                     <noServer>true</noServer>
                     <port>8080</port>
+                    <draftCompile>false</draftCompile>
                     <compileReport>false</compileReport>
                 </configuration>
                 <executions>
@@ -91,19 +90,23 @@
                     <dependency>
                         <groupId>com.google.gwt</groupId>
                         <artifactId>gwt-dev</artifactId>
-                        <version>${gwt.version}</version>
+                        <version>${gwtVersion}</version>
                     </dependency>
                     <dependency>
                         <groupId>com.google.gwt</groupId>
                         <artifactId>gwt-user</artifactId>
-                        <version>${gwt.version}</version>
+                        <version>${gwtVersion}</version>
                     </dependency>
                 </dependencies>
             </plugin>
             <plugin>
                 <groupId>com.vaadin</groupId>
                 <artifactId>vaadin-maven-plugin</artifactId>
-                <version>1.0.2</version>
+                <version>${vaadin.plugin.version}</version>
+                <configuration>
+                    <draftCompile>false</draftCompile>
+                    <compileReport>false</compileReport>
+                </configuration>
                 <executions>
                     <execution>
                         <configuration>
@@ -115,6 +118,18 @@
                         </goals>
                     </execution>
                 </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.google.gwt</groupId>
+                        <artifactId>gwt-dev</artifactId>
+                        <version>${gwtVersion}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.google.gwt</groupId>
+                        <artifactId>gwt-user</artifactId>
+                        <version>${gwtVersion}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
         <pluginManagement>
@@ -130,16 +145,10 @@
         						<pluginExecution>
         							<pluginExecutionFilter>
         								<groupId>com.vaadin</groupId>
-        								<artifactId>
-        									vaadin-maven-plugin
-        								</artifactId>
-        								<versionRange>
-        									[1.0.2,)
-        								</versionRange>
+        								<artifactId>vaadin-maven-plugin</artifactId>
+        								<versionRange>[1.0.2,)</versionRange>
         								<goals>
-        									<goal>
-        										update-widgetset
-        									</goal>
+        									<goal>update-widgetset</goal>
         								</goals>
         							</pluginExecutionFilter>
         							<action>
@@ -148,15 +157,9 @@
         						</pluginExecution>
         						<pluginExecution>
         							<pluginExecutionFilter>
-        								<groupId>
-        									org.codehaus.mojo
-        								</groupId>
-        								<artifactId>
-        									gwt-maven-plugin
-        								</artifactId>
-        								<versionRange>
-        									[2.2.0,)
-        								</versionRange>
+        								<groupId>org.codehaus.mojo</groupId>
+        								<artifactId>gwt-maven-plugin</artifactId>
+        								<versionRange>[2.2.0,)</versionRange>
         								<goals>
         									<goal>resources</goal>
         								</goals>
@@ -167,19 +170,11 @@
         						</pluginExecution>
         						<pluginExecution>
         							<pluginExecutionFilter>
-        								<groupId>
-        									org.opennms.maven.plugins
-        								</groupId>
-        								<artifactId>
-        									features-maven-plugin
-        								</artifactId>
-        								<versionRange>
-        									[1.0.1,)
-        								</versionRange>
+        								<groupId>org.opennms.maven.plugins</groupId>
+        								<artifactId>features-maven-plugin</artifactId>
+        								<versionRange>[1.0.1,)</versionRange>
         								<goals>
-        									<goal>
-        										generate-features-xml
-        									</goal>
+        									<goal>generate-features-xml</goal>
         								</goals>
         							</pluginExecutionFilter>
         							<action>
@@ -197,7 +192,7 @@
     <repositories>
         <repository>
             <id>vaadin-snapshots</id>
-            <url>http://oss.sonatype.org/content/repositories/vaadin-snapshots/</url>
+            <url>http://maven.opennms.org/content/groups/vaadin-snapshot/</url>
             <releases>
                 <enabled>false</enabled>
             </releases>
@@ -207,20 +202,19 @@
         </repository>
         <repository>
             <id>vaadin-addons</id>
-            <url>http://maven.vaadin.com/vaadin-addons</url>
+            <url>http://maven.opennms.org/content/groups/vaadin.com-addons/</url>
         </repository>
         <repository>
-            <url>http://maven.opennms.org/content/groups/maven.org-release2</url>
-            <id>junit_4</id>
-            <layout>default</layout>
-            <name>Repository for library Library[junit_4]</name>
-        </repository>
+          <id>maven-repo</id>
+          <name>Maven Central</name>
+          <url>http://maven.opennms.org/content/groups/maven.org-release2</url>
+       </repository>
     </repositories>
 
     <pluginRepositories>
         <pluginRepository>
             <id>codehaus-snapshots</id>
-            <url>http://nexus.codehaus.org/snapshots</url>
+            <url>http://maven.opennms.org/content/groups/codehaus.org-snapshot/</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
@@ -230,7 +224,7 @@
         </pluginRepository>
         <pluginRepository>
             <id>vaadin-snapshots</id>
-            <url>http://oss.sonatype.org/content/repositories/vaadin-snapshots/</url>
+            <url>http://maven.opennms.org/content/groups/vaadin-snapshot/</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
@@ -244,26 +238,22 @@
        <dependency>
 			<groupId>org.opennms.osgi.features.topology</groupId>
 	      	<artifactId>vaadin</artifactId>
-	      	<version>${project.version}</version>
 	      	<type>pom</type>
 	    </dependency>
         <!-- This is also used by gwt-maven-plugin to deduce GWT version number. -->
         <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-user</artifactId>
-            <version>${gwt.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
-            <version>1.0.0.GA</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
-            <version>1.0.0.GA</version>
             <classifier>sources</classifier>
             <scope>provided</scope>
         </dependency>
@@ -296,7 +286,6 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>${guava.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -308,8 +297,6 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.10</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>args4j</groupId>

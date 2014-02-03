@@ -22,6 +22,7 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.HistoryOperation;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.Point;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider.FocusNodeHopCriteria;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.LoggerFactory;
@@ -34,26 +35,30 @@ import org.slf4j.LoggerFactory;
 public class SavedHistory {
 
     @XmlAttribute(name="semantic-zoom-level")
-    public int m_szl;
+    private int m_szl;
 
     @XmlElement(name="bounding-box")
     @XmlJavaTypeAdapter(BoundingBoxAdapter.class)
-    public BoundingBox m_boundBox;
+    private BoundingBox m_boundBox;
 
     @XmlElement(name="locations")
     @XmlJavaTypeAdapter(VertexRefPointMapAdapter.class)
-    public Map<VertexRef, Point> m_locations = new HashMap<VertexRef, Point>();
+    private Map<VertexRef, Point> m_locations = new HashMap<VertexRef, Point>();
 
     @XmlElement(name="selection")
     @XmlJavaTypeAdapter(VertexRefSetAdapter.class)
     private Set<VertexRef> m_selectedVertices;
+
+    @XmlElement(name="focus")
+    @XmlJavaTypeAdapter(VertexRefSetAdapter.class)
+    private Set<VertexRef> m_focusVertices;
 
     /**
      * A map of key-value settings for the HistoryOperation components that are registered.
      */
     @XmlElement(name="settings")
     @XmlJavaTypeAdapter(StringMapAdapter.class)
-    public final Map<String,String> m_settings = new HashMap<String,String>();
+    private final Map<String,String> m_settings = new HashMap<String,String>();
 
     protected SavedHistory() {
         // Here for JAXB support
@@ -79,16 +84,26 @@ public class SavedHistory {
             graphContainer.getMapViewManager().getCurrentBoundingBox(),
             saveLocations(graphContainer.getGraph()),
             getUnmodifiableSet(graphContainer.getSelectionManager().getSelectedVertexRefs()),
+            getFocusVertices(graphContainer),
             getOperationSettings(graphContainer, operations)
         );
-        saveLocations(graphContainer.getGraph());
     }
 
-    SavedHistory(int szl, BoundingBox box, Map<VertexRef,Point> locations, Set<VertexRef> selectedVertices, Map<String,String> operationSettings) {
+    protected static Set<VertexRef> getFocusVertices(GraphContainer graphContainer) {
+        FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(graphContainer, false);
+        if (criteria == null) {
+            return Collections.emptySet();
+        } else {
+            return criteria.getVertices();
+        }
+    }
+
+    SavedHistory(int szl, BoundingBox box, Map<VertexRef,Point> locations, Set<VertexRef> selectedVertices, Set<VertexRef> focusVertices, Map<String,String> operationSettings) {
         m_szl = szl;
         m_boundBox = box;
         m_locations = locations;
         m_selectedVertices = selectedVertices;
+        m_focusVertices = focusVertices;
         m_settings.putAll(operationSettings);
         LoggerFactory.getLogger(this.getClass()).debug("Created " + toString());
     }
@@ -101,7 +116,6 @@ public class SavedHistory {
         }
         return locations;
     }
-
 
     public int getSemanticZoomLevel() {
         return m_szl;
@@ -148,15 +162,44 @@ public class SavedHistory {
         }
         retval.append(String.format(",(%X)", selectionsCrc.getValue()));
 
+        CRC32 focusCrc = new CRC32();
+        for(VertexRef entry : m_focusVertices) {
+            try {
+                focusCrc.update(entry.getNamespace().getBytes("UTF-8"));
+                focusCrc.update(entry.getId().getBytes("UTF-8"));
+            } catch(UnsupportedEncodingException e) {
+                // Impossible on modern JVMs
+            }
+        }
+        retval.append(String.format(",(%X)", focusCrc.getValue()));
+
         return retval.toString();
     }
 
     public void apply(GraphContainer graphContainer, Collection<HistoryOperation> operations) {
-        // LoggerFactory.getLogger(this.getClass()).debug("Applying " + toString());
+        LoggerFactory.getLogger(this.getClass()).debug("Applying " + toString());
+
+        if (m_focusVertices.size() > 0) {
+            FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(graphContainer);
+            // Clear existing focus nodes
+            criteria.clear();
+            // Add focus nodes from history
+            criteria.addAll(m_focusVertices);
+        } else {
+            // Remove any existing VertexHopCriteria
+            FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(graphContainer, false);
+            if (criteria != null) {
+                graphContainer.removeCriteria(criteria);
+            }
+        }
 
         // Apply the history for each registered HistoryOperation
         for (HistoryOperation operation : operations) {
-            operation.applyHistory(graphContainer, m_settings);
+            try {
+                operation.applyHistory(graphContainer, m_settings);
+            } catch (Throwable e) {
+                LoggerFactory.getLogger(this.getClass()).warn("Failed to perform applyHistory() operation", e);
+            }
         }
         applySavedLocations(m_locations, graphContainer.getGraph().getLayout());
         graphContainer.setSemanticZoomLevel(getSemanticZoomLevel());
@@ -175,12 +218,29 @@ public class SavedHistory {
     
     @Override
     public String toString() {
-        StringBuffer retval = new StringBuffer().append(this.getClass().getSimpleName()).append(": ").append(getFragment());
+        StringBuffer retval = new StringBuffer().append(this.getClass().getSimpleName()).append(": ").append(getFragment()).append(": ");
+        boolean first = true;
         for (Map.Entry<String,String> entry : m_settings.entrySet()) {
-            retval.append(",[").append(entry.getKey()).append("->").append(entry.getValue()).append("]");
+            if (first) { first = false; } else { retval.append(","); }
+            retval.append(entry.getKey()).append("->").append(entry.getValue());
         }
-        for (VertexRef entry : m_selectedVertices) {
-            retval.append(",[").append(entry.getNamespace()).append(":").append(entry.getId()).append("]");
+        if (m_selectedVertices.size() > 0) {
+            first = true;
+            retval.append(",selectedVertices->{");
+            for (VertexRef entry : m_selectedVertices) {
+                if (first) { first = false; } else { retval.append(","); }
+                retval.append("[").append(entry.getNamespace()).append(":").append(entry.getId()).append("]");
+            }
+            retval.append("}");
+        }
+        if (m_focusVertices.size() > 0) {
+            first = true;
+            retval.append(",focusVertices->{");
+            for (VertexRef entry : m_focusVertices) {
+                if (first) { first = false; } else { retval.append(","); }
+                retval.append("[").append(entry.getNamespace()).append(":").append(entry.getId()).append("]");
+            }
+            retval.append("}");
         }
         return retval.toString();
     }

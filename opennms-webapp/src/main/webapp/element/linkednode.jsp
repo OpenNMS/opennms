@@ -42,8 +42,7 @@
 		org.opennms.netmgt.model.OnmsNode,
 		org.opennms.core.utils.WebSecurityUtils,
 		org.opennms.web.element.*,
-		org.opennms.web.event.*,
-		org.opennms.web.springframework.security.Authentication,
+		org.opennms.web.api.Authentication,
 		org.opennms.web.svclayer.ResourceService
 	"
 %>
@@ -111,6 +110,12 @@
     if( node_db == null ) {
 		throw new ElementNotFoundException("No such node in database", "node", "element/linkednode.jsp", "node", "element/nodeList.htm");
     }
+    String parentRes = Integer.toString(nodeId);
+    String parentResType = "node";
+    if (!(node_db.getForeignSource() == null) && !(node_db.getForeignId() == null)) {
+        parentRes = node_db.getForeignSource() + ":" + node_db.getForeignId();
+        parentResType = "nodeSource";
+    }
 
     //find the telnet interfaces, if any
     String telnetIp = null;
@@ -164,12 +169,8 @@
     }
 
     //find if SNMP is on this node 
-    boolean isSnmp = false;
     Service[] snmpServices = factory.getServicesOnNode(nodeId, this.snmpServiceId);
 
-    if( snmpServices != null && snmpServices.length > 0 ) 
-	isSnmp = true;
-    
     boolean isBridge = factory.isBridgeNode(nodeId);
     boolean isRouteIP = factory.isRouteInfoNode(nodeId);
 
@@ -231,11 +232,11 @@
           </li>
         <% } %>
 
-        <% if (m_resourceService.findNodeChildResources(nodeId).size() > 0) { %>
+        <% if (m_resourceService.findNodeChildResources(node_db).size() > 0) { %>
 	  <li>
         <c:url var="resourceGraphsUrl" value="graph/chooseresource.htm">
-          <c:param name="parentResourceType" value="node"/>
-          <c:param name="parentResource" value="<%= Integer.toString(nodeId) %>"/>
+          <c:param name="parentResourceType" value="<%=parentResType%>"/>
+          <c:param name="parentResource" value="<%=parentRes%>"/>
           <c:param name="reports" value="all"/>
         </c:url>
           <a href="${fn:escapeXml(resourceGraphsUrl)}">Resource Graphs</a>
@@ -287,6 +288,7 @@
             <th>L3 Interfaces</th>
 			<th width="10%">Link Type</th>
 			<th width="10%">Status</th>
+			<th>Discovery Protocol</th>
 			<th>Last Scan</th>
 			 
 <%--
@@ -358,6 +360,10 @@
             <% } else { %>
      			&nbsp;
 		    <% } %>
+		    </td>
+
+		    <td class="standard">
+             	<%=linkInterface.getProtocol()%>
 		    </td>
 
 		    <td class="standard">

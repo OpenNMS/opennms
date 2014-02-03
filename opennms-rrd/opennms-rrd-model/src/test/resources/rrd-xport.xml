@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<xport>
+  <meta>
+    <start>1206312900</start>
+    <step>300</step>
+    <end>1206316500</end>
+    <rows>13</rows>
+    <columns>1</columns>
+    <legend>
+      <entry>load average 5min</entry>
+    </legend>
+  </meta>
+  <data>
+    <row><t>1206312900</t><v>1.9860000000e+01</v></row>
+    <row><t>1206313200</t><v>NaN</v></row>
+    <row><t>1206313500</t><v>NaN</v></row>
+    <row><t>1206313800</t><v>2.6000000000e+01</v></row>
+    <row><t>1206314100</t><v>2.1983333333e+01</v></row>
+    <row><t>1206314400</t><v>3.9480000000e+01</v></row>
+    <row><t>1206314700</t><v>4.5730000000e+01</v></row>
+    <row><t>1206315000</t><v>4.1146666667e+01</v></row>
+    <row><t>1206315300</t><v>3.8346666667e+01</v></row>
+    <row><t>1206315600</t><v>3.4950000000e+01</v></row>
+    <row><t>1206315900</t><v>3.7560000000e+01</v></row>
+    <row><t>1206316200</t><v>4.7846666667e+01</v></row>
+    <row><t>1206316500</t><v>NaN</v></row>
+  </data>
+</xport>

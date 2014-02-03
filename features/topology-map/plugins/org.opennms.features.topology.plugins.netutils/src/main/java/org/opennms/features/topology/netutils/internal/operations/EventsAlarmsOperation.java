@@ -39,20 +39,16 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.netutils.internal.EventsAlarmsWindow;
 import org.opennms.features.topology.netutils.internal.Node;
 
-import com.vaadin.server.Page;
-
 public class EventsAlarmsOperation extends AbstractOperation implements Operation {
-
     private String m_eventsURL;
-
     private String m_alarmsURL;
 
     @Override
     public Undoer execute(final List<VertexRef> targets, final OperationContext operationContext) {
-        String label = "";
-        int nodeID = -1;
-
         try {
+            String label = "";
+            int nodeID = -1;
+
             if (targets != null) {
                 for (final VertexRef target : targets) {
                     final String labelValue = getLabelValue(operationContext, target);
@@ -61,39 +57,45 @@ public class EventsAlarmsOperation extends AbstractOperation implements Operatio
                     if (nodeValue != null && nodeValue > 0) {
                         label = labelValue == null ? "" : labelValue;
                         nodeID = nodeValue;
+                        break;
                     }
                 }
             }
 
             final Node node = new Node(nodeID, null, label);
 
-            final URL baseURL = Page.getCurrent().getLocation().toURL();
+            final String eventUrl;
+            final String alarmUrl;
 
-            final URL eventsURL;
-            final URL alarmsURL;
             if (node.getNodeID() >= 0) {
-                eventsURL = new URL(baseURL, getEventsURL() + "?filter=node%3D" + node.getNodeID());
-                alarmsURL = new URL(baseURL, getAlarmsURL() + "?sortby=id&acktype=unacklimit=20&filter=node%3D" + node.getNodeID());
+                eventUrl = getEventsURL()  + "?filter=node%3D" + node.getNodeID();
+                alarmUrl = getAlarmsURL() + "?sortby=id&acktype=unacklimit=20&filter=node%3D" + node.getNodeID();
             } else {
-                eventsURL = new URL(baseURL, getEventsURL());
-                alarmsURL = new URL(baseURL, getAlarmsURL());
+                eventUrl = getEventsURL();
+                alarmUrl = getAlarmsURL();
             }
 
-            operationContext.getMainWindow().addWindow(new EventsAlarmsWindow(node, eventsURL, alarmsURL));
-        } catch (Exception e) {
-            e.printStackTrace();
+            final URL fullEventUrl = new URL(getFullUrl(eventUrl));
+            final URL fullAlarmUrl = new URL(getFullUrl(alarmUrl));
+            operationContext.getMainWindow().addWindow(new EventsAlarmsWindow(node, fullEventUrl, fullAlarmUrl));
+        } catch (final Exception e) {
+            if (e instanceof RuntimeException) {
+                throw (RuntimeException)e;
+            } else {
+                throw new RuntimeException("Failed to create event/alarm window.", e);
+            }
         }
         return null;
     }
-    
+
     @Override
     public boolean display(final List<VertexRef> targets, final OperationContext operationContext) {
-    	if (operationContext.getDisplayLocation() == DisplayLocation.MENUBAR) {
-    		return true;
-    	} else {
-			return targets != null && targets.size() > 0 && targets.get(0) != null;
-    	}
-        
+        if (operationContext.getDisplayLocation() == DisplayLocation.MENUBAR) {
+            return true;
+        } else {
+            return targets != null && targets.size() > 0 && targets.get(0) != null;
+        }
+
     }
 
     @Override
@@ -106,7 +108,7 @@ public class EventsAlarmsOperation extends AbstractOperation implements Operatio
     }
 
     public void setEventsURL(final String eventsURL) {
-        this.m_eventsURL = eventsURL;
+        m_eventsURL = eventsURL;
     }
 
     public String getAlarmsURL() {
@@ -114,7 +116,7 @@ public class EventsAlarmsOperation extends AbstractOperation implements Operatio
     }
 
     public void setAlarmsURL(final String alarmsURL) {
-        this.m_alarmsURL = alarmsURL;
+        m_alarmsURL = alarmsURL;
     }
 
 }

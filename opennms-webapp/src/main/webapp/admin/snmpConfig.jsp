@@ -29,14 +29,9 @@
 
 --%>
 
-<%@page import="org.opennms.netmgt.snmp.SnmpConfiguration"%>
-<%@page import="org.opennms.netmgt.config.snmp.SnmpConfig"%>
 <%@page import="com.google.common.base.Strings"%>
 <%@page import="org.opennms.web.snmpinfo.SnmpInfo"%>
-<%@page import="com.google.common.base.Charsets"%>
-<%@page import="java.nio.charset.Charset"%>
-<%@page import="com.google.common.io.Files"%>
-<%@page import="org.opennms.netmgt.config.SnmpPeerFactory"%>
+<%@page import="org.opennms.netmgt.snmp.SnmpConfiguration"%>
 <%@page language="java" contentType="text/html" session="true"%>
 
 <jsp:include page="/includes/header.jsp" flush="false">
@@ -46,6 +41,7 @@
 	<jsp:param name="location" value="admin" />
 	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
 	<jsp:param name="breadcrumb" value="Configure SNMP by IP" />
+    <jsp:param name="script" value="<script type='text/javascript' src='js/tooltip.js'></script>" />
 	<jsp:param name="script" value="<script type='text/javascript' src='js/ipv6/ipv6.js'></script>" />
 	<jsp:param name="script" value="<script type='text/javascript' src='js/ipv6/lib/jsbn.js'></script>" />
 	<jsp:param name="script" value="<script type='text/javascript' src='js/ipv6/lib/jsbn2.js'></script>" />
@@ -53,32 +49,6 @@
 </jsp:include>
 
 <script type="text/javascript">
-	<!-- Tooltip  Stuff -->
-	ttContent = null;
-	document.onmousemove = updateTT;
-	
-	<!-- shows the tool tip -->
-	function showTT(id) {
-		ttContent = document.getElementById(id);
-		if (ttContent != null) ttContent.style.display = "block"
-	}
-	 
-	<!-- hides the tool tip -->
-	function hideTT() {
-		if (ttContent != null) ttContent.style.display = "none";
-	}
-	
-	<!-- ensures that the tool tip moves with the mouse, but only if the tool tip is visible -->
-	function updateTT(event) {
-		if (ttContent != null && ttContent.style.display == 'block') {
-			x = (event.pageX ? event.pageX : window.event.x) + ttContent.offsetParent.scrollLeft - ttContent.offsetParent.offsetLeft;
-			y = (event.pageY ? event.pageY : window.event.y) + ttContent.offsetParent.scrollTop - ttContent.offsetParent.offsetTop;
-			ttContent.style.left = (x + 20) + "px";
-			ttContent.style.top  = (y + 20) + "px";
-		}
-	}
-	
-	<!-- Other Stuff -->
 	function verifySnmpConfig() {
 		var ipValue = new String("");
 
@@ -202,27 +172,9 @@
 </script>
 
 <style type="text/css">
-	<!--
-	img.info {
-		background:url(css/images/ui-icons_454545_256x240.png);
-		width: 16px;
-		height: 16px;
-		background-position: -16px -144px;
-	}
-	
-	.tooltip {
-		position: absolute;
-		display: none;
-		padding: 10px;
-		background-color: #EEE;
-		z-index: 1000;
-		max-width: 250px;
-	}
-	
 	.ipAddress {
 		width: 200px;
 	}
-	
 	.required {
 		vertical-align:top; 
 		font-size:0.8em; 

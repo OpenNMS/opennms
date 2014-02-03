@@ -44,14 +44,16 @@ import org.opennms.web.filter.SQLType;
 public class NegativeServiceFilter extends NotEqualOrNullFilter<Integer> {
     /** Constant <code>TYPE="servicenot"</code> */
     public static final String TYPE = "servicenot";
+    private ServletContext m_servletContext;
 
     /**
      * <p>Constructor for NegativeServiceFilter.</p>
      *
      * @param serviceId a int.
      */
-    public NegativeServiceFilter(int serviceId) {
+    public NegativeServiceFilter(int serviceId, ServletContext servletContext) {
         super(TYPE, SQLType.INT, "SERVICEID", "serviceType.id", serviceId);
+        m_servletContext = servletContext;
     }
 
     /**
@@ -59,9 +61,9 @@ public class NegativeServiceFilter extends NotEqualOrNullFilter<Integer> {
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getTextDescription(ServletContext servletContext) {
+    public String getTextDescription() {
         String serviceName = Integer.toString(getValue());
-        serviceName = NetworkElementFactory.getInstance(servletContext).getServiceNameFromId(getValue());
+        serviceName = NetworkElementFactory.getInstance(m_servletContext).getServiceNameFromId(getValue());
 
         return ("service is not " + serviceName);
     }
@@ -89,11 +91,5 @@ public class NegativeServiceFilter extends NotEqualOrNullFilter<Integer> {
     @Override
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
-    }
-
-    @Override
-    public String getTextDescription() {
-        // TODO Auto-generated method stub
-        return null;
     }
 }

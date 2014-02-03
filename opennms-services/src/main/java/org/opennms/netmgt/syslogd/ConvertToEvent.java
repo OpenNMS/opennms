@@ -378,7 +378,7 @@ final class ConvertToEvent {
     private static boolean matchSeverity(List<String> severities, String priorityTxt) {
         if (severities.size() == 0) return true;
         for (String severity : severities) {
-            if (severity.toLowerCase().equals(priorityTxt.toLowerCase())) return true;
+            if (severity.equalsIgnoreCase(priorityTxt)) return true;
         }
         return false;
     }
@@ -386,7 +386,7 @@ final class ConvertToEvent {
     private static boolean matchFacility(List<String> facilities, String facilityTxt) {
         if (facilities.size() == 0) return true;
         for (String facility : facilities) {
-            if (facility.toLowerCase().equals(facilityTxt.toLowerCase())) return true;
+            if (facility.equalsIgnoreCase(facilityTxt)) return true;
         }
         return false;
     }

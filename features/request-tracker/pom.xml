@@ -3,13 +3,13 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>1.13.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.request-tracker</artifactId>
   <packaging>jar</packaging>
-  <name>OpenNMS Request Tracker Interface</name>
+  <name>OpenNMS Features Request Tracker Interface</name>
   <dependencies>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>

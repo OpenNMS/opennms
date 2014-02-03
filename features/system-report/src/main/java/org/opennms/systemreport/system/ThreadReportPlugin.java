@@ -28,20 +28,16 @@
 
 package org.opennms.systemreport.system;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadInfo;
 import java.util.TreeMap;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteWatchdog;
-import org.apache.commons.io.IOUtils;
+import org.opennms.systemreport.AbstractSystemReportPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.systemreport.AbstractSystemReportPlugin;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
 public class ThreadReportPlugin extends AbstractSystemReportPlugin {
@@ -65,61 +61,16 @@ public class ThreadReportPlugin extends AbstractSystemReportPlugin {
     public TreeMap<String, Resource> getEntries() {
         final TreeMap<String,Resource> map = new TreeMap<String,Resource>();
 
-        LOG.trace("starting thread dump");
-        triggerThreadDump();
-        LOG.trace("thread dump finished");
-
-        final String outputLog = System.getProperty("opennms.home") + File.separator + "logs" + File.separator + "daemon" + File.separator + "output.log";
-        LOG.debug("reading file {}", outputLog);
-        final File outputLogFile = new File(outputLog);
-        FileReader fr = null;
-        BufferedReader bfr = null;
-        FileWriter fw = null;
-        File threadDumpFile = null;
-        String threadDump = null;
-        if (outputLogFile.exists()) {
-            try {
-                threadDumpFile = File.createTempFile("ThreadReportPlugin", null);
-                threadDumpFile.deleteOnExit();
-                fr = new FileReader(outputLogFile);
-                bfr = new BufferedReader(fr);
-                fw = new FileWriter(threadDumpFile);
-                String line;
-                StringBuffer sb = null;
-                boolean endOnCarriageReturn = false;
-                while ((line = bfr.readLine()) != null) {
-                    if (line.startsWith("Full thread dump")) {
-                        LOG.debug("found full thread dump");
-                        sb = new StringBuffer();
-                        sb.append(line).append("\n");
-                    } else if (sb != null) {
-                        if (endOnCarriageReturn && line.length() == 0) {
-                            endOnCarriageReturn = false;
-                            threadDump = sb.toString();
-                            sb = null;
-                        } else if (line.startsWith("Heap")) {
-                            endOnCarriageReturn = true;
-                            sb.append(line).append("\n");
-                        } else {
-                            sb.append(line).append("\n");
-                        }
-                    }
-                }
-                if (threadDump == null) {
-                    LOG.debug("No thread dump was found.");
-                } else {
-                    fw.append(threadDump);
-                    map.put("ThreadDump.txt", new FileSystemResource(threadDumpFile));
-                }
-            } catch (final Exception e) {
-                LOG.debug("Unable to read from '{}'", outputLog, e);
-            } finally {
-                IOUtils.closeQuietly(fw);
-                IOUtils.closeQuietly(bfr);
-                IOUtils.closeQuietly(fr);
+        final StringBuilder sb = new StringBuilder();
+        try {
+            final ThreadInfo[] threads = ManagementFactory.getThreadMXBean().dumpAllThreads(true, true);
+            for (final ThreadInfo info : threads) {
+                sb.append(info.toString());
             }
-        } else {
-            LOG.warn("could not find output.log in '{}'", outputLog);
+
+            map.put("ThreadDump.txt", getResource(sb.toString()));
+        } catch (final Exception e) {
+            LOG.debug("Unable to get thread dump.", e);
         }
 
         return map;

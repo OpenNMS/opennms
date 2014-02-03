@@ -64,13 +64,19 @@ public class EventAdminApplicationFactory extends AbstractApplicationFactory {
         this.eventProxy = eventProxy;
     }
 
+    /* (non-Javadoc)
+     * @see org.ops4j.pax.vaadin.AbstractApplicationFactory#getUIClass()
+     */
     @Override
     public Class<? extends UI> getUIClass() {
         return EventAdminApplication.class;
     }
 
+    /* (non-Javadoc)
+     * @see org.ops4j.pax.vaadin.AbstractApplicationFactory#getUI()
+     */
     @Override
-    public UI getUI() {
+    public UI createUI() {
         EventAdminApplication app = new EventAdminApplication();
         app.setEventProxy(eventProxy);
         app.setEventConfDao(eventConfDao);

@@ -3,18 +3,43 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:cache="http://www.springframework.org/schema/cache"
        xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
-       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+       http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache-3.2.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.2.xsd
        http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
        ">
 
   <context:annotation-config />
-  
+  <cache:annotation-driven />
+
+  <!-- Spring Cache Manager -->
+  <bean id="cacheManager" class="org.springframework.cache.support.SimpleCacheManager">
+    <property name="caches">
+      <set>
+        <!-- For JdbcFilterDao -->
+        <bean class="org.springframework.cache.concurrent.ConcurrentMapCacheFactoryBean">
+          <property name="name" value="activeIpAddressList"/>
+        </bean>
+      </set>
+    </property>
+  </bean>
+
   <bean id="propertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
     <property name="location" value="file:${opennms.home}/etc/model-importer.properties" />
+    <!-- 
+      We need to ignore unresolvable placeholders since if multiple PropertyPlaceholderConfigurer
+      preprocessors are in use in a single context (such as inside unit tests), Spring will encounter
+      the issue documented here:
+
+      https://jira.springsource.org/browse/SPR-6428
+
+      TODO: Fix this behavior after upgrading to Spring 3.1.
+    -->
+    <property name="ignoreUnresolvablePlaceholders" value="true"/>
   </bean>
   
   <!-- 
@@ -312,12 +337,18 @@
   </bean>
   
   <bean id="filterDao" class="org.opennms.netmgt.filter.FilterDaoFactory" depends-on="filterDaoFactory-init" factory-method="getInstance" />
-  
-  <bean id="collectdConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.CollectdConfigFactory.init</value></property>
+
+  <bean id="filterFavoriteDao" class="org.opennms.netmgt.dao.hibernate.FilterFavoriteDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
   </bean>
 
-  <bean id="collectdConfig" class="org.opennms.netmgt.config.CollectdConfigFactory" depends-on="collectdConfig-init" factory-method="getInstance"/>
+  <bean id="topologyDao" class="org.opennms.netmgt.dao.hibernate.TopologyDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.TopologyDao" ref="topologyDao" />
+
+  <bean id="collectdConfig" class="org.opennms.netmgt.config.CollectdConfigFactory"/>
 
   <bean id="dataCollectionConfigResourceLocation" class="java.lang.String">
     <constructor-arg value="file:${opennms.home}/etc/datacollection-config.xml" />
@@ -327,15 +358,14 @@
     <constructor-arg value="${opennms.home}/etc/datacollection" />
   </bean>
 
-  <!-- Default: reload datacollection config every 10 minutes -->
-  <bean id="dataCollectionConfigReloadInterval" class="java.lang.Long">
-    <constructor-arg value="0" />
+  <bean id="dataCollectionConfigReloadCheckInterval" class="java.lang.Long">
+    <constructor-arg value="${org.opennms.snmp.dataCollectionConfig.reloadCheckInterval:30000}" />
   </bean>
 
   <bean id="dataCollectionConfigDao" class="org.opennms.netmgt.config.DefaultDataCollectionConfigDao">
     <property name="configResource" ref="dataCollectionConfigResourceLocation" />
     <property name="configDirectory" ref="dataCollectionConfigDirectoryLocation" />
-    <property name="reloadCheckInterval" ref="dataCollectionConfigReloadInterval" />
+    <property name="reloadCheckInterval" ref="dataCollectionConfigReloadCheckInterval" />
   </bean>
 
   <bean id="dataCollectionConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">

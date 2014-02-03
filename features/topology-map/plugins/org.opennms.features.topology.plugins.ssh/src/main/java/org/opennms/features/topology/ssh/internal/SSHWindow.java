@@ -43,9 +43,9 @@ import com.vaadin.ui.Window;
 @SuppressWarnings("serial")
 public class SSHWindow extends Window {
 	private SSHTerminal terminal; // The terminal emulator
-	private Label errorLabel = new Label("Could not create session");
-	private final int TERM_WIDTH = 80;
-	private final int TERM_HEIGHT = 24;
+	private static final Label errorLabel = new Label("Could not create session");
+	private static final int TERM_WIDTH = 80;
+	private static final int TERM_HEIGHT = 24;
 	
 	/**
 	 * The constructor for the SSH window

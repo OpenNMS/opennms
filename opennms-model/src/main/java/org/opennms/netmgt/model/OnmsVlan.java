@@ -192,17 +192,17 @@ public class OnmsVlan {
             return null;
         }
         
-        public static VlanStatus UNKNOWN = new VlanStatus(VLAN_STATUS_UNKNOWN);
-        public static VlanStatus CISCOVTP_OPERATIONAL = new VlanStatus(CISCOVTP_VLAN_STATUS_OPERATIONAL);
-        public static VlanStatus CISCOVTP_SUSPENDED = new VlanStatus(CISCOVTP_VLAN_STATUS_SUSPENDED);
-        public static VlanStatus CISCOVTP_mtuTooBigForDevice = new VlanStatus(CISCOVTP_VLAN_STATUS_mtuTooBigForDevice);
-        public static VlanStatus CISCOVTP_mtuTooBigForTrunk = new VlanStatus(CISCOVTP_VLAN_STATUS_mtuTooBigForTrunk);
-        public static VlanStatus ROWSTATUS_ACTIVE = new VlanStatus(SNMPV2C_ROWSTATUS_ACTIVE);
-        public static VlanStatus ROWSTATUS_NOTINSERVICE = new VlanStatus(SNMPV2C_ROWSTATUS_NOTINSERVICE);
-        public static VlanStatus ROWSTATUS_NOTREADY = new VlanStatus(SNMPV2C_ROWSTATUS_NOTREADY);
-        public static VlanStatus ROWSTATUS_CREATEANDGO = new VlanStatus(SNMPV2C_ROWSTATUS_CREATEANDGO);
-        public static VlanStatus ROWSTATUS_CREATEANDWAIT = new VlanStatus(SNMPV2C_ROWSTATUS_CREATEANDWAIT);
-        public static VlanStatus ROWSTATUS_DESTROY = new VlanStatus(SNMPV2C_ROWSTATUS_DESTROY);
+        public static final VlanStatus UNKNOWN = new VlanStatus(VLAN_STATUS_UNKNOWN);
+        public static final VlanStatus CISCOVTP_OPERATIONAL = new VlanStatus(CISCOVTP_VLAN_STATUS_OPERATIONAL);
+        public static final VlanStatus CISCOVTP_SUSPENDED = new VlanStatus(CISCOVTP_VLAN_STATUS_SUSPENDED);
+        public static final VlanStatus CISCOVTP_mtuTooBigForDevice = new VlanStatus(CISCOVTP_VLAN_STATUS_mtuTooBigForDevice);
+        public static final VlanStatus CISCOVTP_mtuTooBigForTrunk = new VlanStatus(CISCOVTP_VLAN_STATUS_mtuTooBigForTrunk);
+        public static final VlanStatus ROWSTATUS_ACTIVE = new VlanStatus(SNMPV2C_ROWSTATUS_ACTIVE);
+        public static final VlanStatus ROWSTATUS_NOTINSERVICE = new VlanStatus(SNMPV2C_ROWSTATUS_NOTINSERVICE);
+        public static final VlanStatus ROWSTATUS_NOTREADY = new VlanStatus(SNMPV2C_ROWSTATUS_NOTREADY);
+        public static final VlanStatus ROWSTATUS_CREATEANDGO = new VlanStatus(SNMPV2C_ROWSTATUS_CREATEANDGO);
+        public static final VlanStatus ROWSTATUS_CREATEANDWAIT = new VlanStatus(SNMPV2C_ROWSTATUS_CREATEANDWAIT);
+        public static final VlanStatus ROWSTATUS_DESTROY = new VlanStatus(SNMPV2C_ROWSTATUS_DESTROY);
 
 
     }
@@ -357,7 +357,7 @@ public class OnmsVlan {
             return String.valueOf(m_vlanType);
         }
 
-        public static VlanType get(Integer code) {
+        public static final VlanType get(Integer code) {
             if (code == null)
                 return VlanType.UNKNOWN;
             switch (code) {
@@ -407,34 +407,34 @@ public class OnmsVlan {
             return null;
         }
         
-        public static VlanType UNKNOWN = new VlanType(VLAN_TYPE_UNKNOWN);
-        public static VlanType CISCO_VTP_ETHERNET = new VlanType(VLAN_TYPE_VTP_ETHERNET);
-        public static VlanType CISCO_VTP_FDDI = new VlanType(VLAN_TYPE_VTP_FDDI);
-        public static VlanType CISCO_VTP_TOKENRING = new VlanType(VLAN_TYPE_VTP_TOKENRING);
-        public static VlanType CISCO_VTP_FDDINET = new VlanType(VLAN_TYPE_VTP_FDDINET);
-        public static VlanType CISCO_VTP_TRNET = new VlanType(VLAN_TYPE_VTP_TRNET);
-        public static VlanType CISCO_VTP_DEPRECATED = new VlanType(VLAN_TYPE_VTP_DEPRECATED);
-        public static VlanType EXTREME_LAYER2 = new VlanType(VLAN_TYPE_EXTREME_LAYERTWO);
-        public static VlanType THREECOM_vlanLayer2 = new VlanType(VLAN_TYPE_THREECOM_vlanLayer2);	 
-        public static VlanType THREECOM_vlanUnspecifiedProtocols= new VlanType(VLAN_TYPE_THREECOM_vlanUnspecifiedProtocols);	 
-        public static VlanType THREECOM_vlanIPProtocol = new VlanType(VLAN_TYPE_THREECOM_vlanIPProtocol); 
-        public static VlanType THREECOM_vlanIPXProtocol = new VlanType(VLAN_TYPE_THREECOM_vlanIPXProtocol);	 
-        public static VlanType THREECOM_vlanAppleTalkProtocol = new VlanType(VLAN_TYPE_THREECOM_vlanAppleTalkProtocol);
-        public static VlanType THREECOM_vlanXNSProtocol = new VlanType(VLAN_TYPE_THREECOM_vlanXNSProtocol);	 
-        public static VlanType THREECOM_vlanISOProtocol = new VlanType(VLAN_TYPE_THREECOM_vlanISOProtocol);	 
-        public static VlanType THREECOM_vlanDECNetProtocol = new VlanType(VLAN_TYPE_THREECOM_vlanDECNetProtocol);	 
-        public static VlanType THREECOM_vlanNetBIOSProtocol = new VlanType(VLAN_TYPE_THREECOM_vlanNetBIOSProtocol);	 
-        public static VlanType THREECOM_vlanSNAProtocol = new VlanType(VLAN_TYPE_THREECOM_vlanSNAProtocol);	 
-        public static VlanType THREECOM_vlanVINESProtocol = new VlanType(VLAN_TYPE_THREECOM_vlanVINESProtocol);	 
-        public static VlanType THREECOM_vlanX25Protocol = new VlanType(VLAN_TYPE_THREECOM_vlanX25Protocol);	 
-        public static VlanType THREECOM_vlanIGMPProtocol = new VlanType(VLAN_TYPE_THREECOM_vlanIGMPProtocol);	 
-        public static VlanType THREECOM_vlanSessionLayer = new VlanType(VLAN_TYPE_THREECOM_vlanSessionLayer);	 
-        public static VlanType THREECOM_vlanNetBeui = new VlanType(VLAN_TYPE_THREECOM_vlanNetBeui);	 
-        public static VlanType THREECOM_vlanLayeredProtocols = new VlanType(VLAN_TYPE_THREECOM_vlanLayeredProtocols);	 
-        public static VlanType THREECOM_vlanIPXIIProtocol = new VlanType(VLAN_TYPE_THREECOM_vlanIPXIIProtocol);	 
-        public static VlanType THREECOM_vlanIPX8022Protocol = new VlanType(VLAN_TYPE_THREECOM_vlanIPX8022Protocol);	 
-        public static VlanType THREECOM_vlanIPX8023Protocol = new VlanType(VLAN_TYPE_THREECOM_vlanIPX8023Protocol);	 
-        public static VlanType THREECOM_vlanIPX8022SNAPProtocol = new VlanType(VLAN_TYPE_THREECOM_vlanIPX8022SNAPProtocol);
+        public static final VlanType UNKNOWN = new VlanType(VLAN_TYPE_UNKNOWN);
+        public static final VlanType CISCO_VTP_ETHERNET = new VlanType(VLAN_TYPE_VTP_ETHERNET);
+        public static final VlanType CISCO_VTP_FDDI = new VlanType(VLAN_TYPE_VTP_FDDI);
+        public static final VlanType CISCO_VTP_TOKENRING = new VlanType(VLAN_TYPE_VTP_TOKENRING);
+        public static final VlanType CISCO_VTP_FDDINET = new VlanType(VLAN_TYPE_VTP_FDDINET);
+        public static final VlanType CISCO_VTP_TRNET = new VlanType(VLAN_TYPE_VTP_TRNET);
+        public static final VlanType CISCO_VTP_DEPRECATED = new VlanType(VLAN_TYPE_VTP_DEPRECATED);
+        public static final VlanType EXTREME_LAYER2 = new VlanType(VLAN_TYPE_EXTREME_LAYERTWO);
+        public static final VlanType THREECOM_vlanLayer2 = new VlanType(VLAN_TYPE_THREECOM_vlanLayer2);	 
+        public static final VlanType THREECOM_vlanUnspecifiedProtocols= new VlanType(VLAN_TYPE_THREECOM_vlanUnspecifiedProtocols);	 
+        public static final VlanType THREECOM_vlanIPProtocol = new VlanType(VLAN_TYPE_THREECOM_vlanIPProtocol); 
+        public static final VlanType THREECOM_vlanIPXProtocol = new VlanType(VLAN_TYPE_THREECOM_vlanIPXProtocol);	 
+        public static final VlanType THREECOM_vlanAppleTalkProtocol = new VlanType(VLAN_TYPE_THREECOM_vlanAppleTalkProtocol);
+        public static final VlanType THREECOM_vlanXNSProtocol = new VlanType(VLAN_TYPE_THREECOM_vlanXNSProtocol);	 
+        public static final VlanType THREECOM_vlanISOProtocol = new VlanType(VLAN_TYPE_THREECOM_vlanISOProtocol);	 
+        public static final VlanType THREECOM_vlanDECNetProtocol = new VlanType(VLAN_TYPE_THREECOM_vlanDECNetProtocol);	 
+        public static final VlanType THREECOM_vlanNetBIOSProtocol = new VlanType(VLAN_TYPE_THREECOM_vlanNetBIOSProtocol);	 
+        public static final VlanType THREECOM_vlanSNAProtocol = new VlanType(VLAN_TYPE_THREECOM_vlanSNAProtocol);	 
+        public static final VlanType THREECOM_vlanVINESProtocol = new VlanType(VLAN_TYPE_THREECOM_vlanVINESProtocol);	 
+        public static final VlanType THREECOM_vlanX25Protocol = new VlanType(VLAN_TYPE_THREECOM_vlanX25Protocol);	 
+        public static final VlanType THREECOM_vlanIGMPProtocol = new VlanType(VLAN_TYPE_THREECOM_vlanIGMPProtocol);	 
+        public static final VlanType THREECOM_vlanSessionLayer = new VlanType(VLAN_TYPE_THREECOM_vlanSessionLayer);	 
+        public static final VlanType THREECOM_vlanNetBeui = new VlanType(VLAN_TYPE_THREECOM_vlanNetBeui);	 
+        public static final VlanType THREECOM_vlanLayeredProtocols = new VlanType(VLAN_TYPE_THREECOM_vlanLayeredProtocols);	 
+        public static final VlanType THREECOM_vlanIPXIIProtocol = new VlanType(VLAN_TYPE_THREECOM_vlanIPXIIProtocol);	 
+        public static final VlanType THREECOM_vlanIPX8022Protocol = new VlanType(VLAN_TYPE_THREECOM_vlanIPX8022Protocol);	 
+        public static final VlanType THREECOM_vlanIPX8023Protocol = new VlanType(VLAN_TYPE_THREECOM_vlanIPX8023Protocol);	 
+        public static final VlanType THREECOM_vlanIPX8022SNAPProtocol = new VlanType(VLAN_TYPE_THREECOM_vlanIPX8022SNAPProtocol);
     }
 
     private Integer m_id;

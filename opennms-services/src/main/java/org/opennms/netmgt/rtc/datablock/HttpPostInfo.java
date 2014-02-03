@@ -37,12 +37,8 @@ import java.net.URL;
  * immutable(except for error count)
  *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @version $Id: $
  */
-public class HttpPostInfo extends Object {
+public class HttpPostInfo {
     /**
      * The URL to post to
      */
@@ -76,7 +72,7 @@ public class HttpPostInfo extends Object {
      * @param user a {@link java.lang.String} object.
      * @param passwd a {@link java.lang.String} object.
      */
-    public HttpPostInfo(URL hurl, String clabel, String user, String passwd) {
+    public HttpPostInfo(final URL hurl, final String clabel, final String user, final String passwd) {
         m_url = hurl;
         m_catlabel = clabel;
         m_user = user;
@@ -95,7 +91,7 @@ public class HttpPostInfo extends Object {
      * @param passwd a {@link java.lang.String} object.
      * @throws java.net.MalformedURLException if any.
      */
-    public HttpPostInfo(String hurl, String clabel, String user, String passwd) throws MalformedURLException {
+    public HttpPostInfo(final String hurl, final String clabel, final String user, final String passwd) throws MalformedURLException {
         m_url = new URL(hurl);
         m_catlabel = clabel;
         m_user = user;
@@ -114,8 +110,9 @@ public class HttpPostInfo extends Object {
      * Clear error count if there were errors earlier
      */
     public void clearErrors() {
-        if (m_errors != 0)
+        if (m_errors != 0) {
             m_errors = 0;
+        }
     }
 
     /**
@@ -178,47 +175,43 @@ public class HttpPostInfo extends Object {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((m_catlabel == null) ? 0 : m_catlabel.hashCode());
-        result = prime * result + m_errors;
         result = prime * result + ((m_passwd == null) ? 0 : m_passwd.hashCode());
-        result = prime * result + ((m_url == null) ? 0 : m_url.hashCode());
+        result = prime * result + ((m_url == null) ? 0 : m_url.toExternalForm().hashCode());
         result = prime * result + ((m_user == null) ? 0 : m_user.hashCode());
         return result;
     }
 
     /** {@inheritDoc} */
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }
         if (obj == null) {
             return false;
         }
-        if (getClass() != obj.getClass())
-            return false;
-        HttpPostInfo other = (HttpPostInfo) obj;
+        if (getClass() != obj.getClass()) return false;
+        final HttpPostInfo other = (HttpPostInfo) obj;
         if (m_catlabel == null) {
-            if (other.m_catlabel != null)
-                return false;
-        } else if (!m_catlabel.equals(other.m_catlabel))
+            if (other.m_catlabel != null) return false;
+        } else if (!m_catlabel.equals(other.m_catlabel)) {
             return false;
-        if (m_errors != other.m_errors)
-            return false;
+        }
         if (m_passwd == null) {
-            if (other.m_passwd != null)
-                return false;
-        } else if (!m_passwd.equals(other.m_passwd))
+            if (other.m_passwd != null) return false;
+        } else if (!m_passwd.equals(other.m_passwd)) {
             return false;
+        }
         if (m_url == null) {
-            if (other.m_url != null)
-                return false;
-        } else if (!m_url.equals(other.m_url))
+            if (other.m_url != null) return false;
+        } else if (!m_url.toExternalForm().equals(other.m_url.toExternalForm())) {
             return false;
+        }
         if (m_user == null) {
-            if (other.m_user != null)
-                return false;
-        } else if (!m_user.equals(other.m_user))
+            if (other.m_user != null) return false;
+        } else if (!m_user.equals(other.m_user)) {
             return false;
+        }
         return true;
     }
 }

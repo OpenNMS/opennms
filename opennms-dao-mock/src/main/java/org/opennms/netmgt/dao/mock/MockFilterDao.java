@@ -40,6 +40,9 @@ public class MockFilterDao implements FilterDao, InitializingBean {
     }
 
     @Override
+    public void flushActiveIpAddressListCache() {}
+
+    @Override
     public List<InetAddress> getActiveIPAddressList(final String rule) throws FilterParseException {
         LOG.debug("rule = {}", rule);
         final List<InetAddress> addrs = new ArrayList<InetAddress>();

@@ -41,6 +41,16 @@ import org.opennms.core.utils.ParameterMap;
  */
 public class LatencyParameters {
 
+    /**
+     * Default thresholding interval (in milliseconds).
+     */
+    static final int DEFAULT_INTERVAL = 300000; // 300s or 5m
+
+    /**
+     * Default age before which a data point is considered "out of date"
+     */
+    static final int DEFAULT_RANGE = 0;
+
 	private Map<?,?> m_parameters;
 	private String m_svcName;
 
@@ -64,7 +74,7 @@ public class LatencyParameters {
 	public Map<?,?> getParameters() {
 		return Collections.unmodifiableMap(m_parameters);
 	}
-	
+
 
 	/**
 	 * <p>getServiceName</p>
@@ -77,21 +87,16 @@ public class LatencyParameters {
 
 	int getInterval() {
 		Map<?,?> parameters = getParameters();
-	    int interval = ParameterMap.getKeyedInteger(parameters, "interval", LatencyThresholder.DEFAULT_INTERVAL);
-	    return interval;
+		return ParameterMap.getKeyedInteger(parameters, "interval", DEFAULT_INTERVAL);
 	}
 
 	String getGroupName() {
 		Map<?,?> parameters = getParameters();
-	    String groupName = ParameterMap.getKeyedString(parameters, "thresholding-group", "default");
-	    return groupName;
+		return ParameterMap.getKeyedString(parameters, "thresholding-group", "default");
 	}
-	
+
 	int getRange() {
 		Map<?,?> parameters = getParameters();
-	    int range = ParameterMap.getKeyedInteger(parameters, "range", LatencyThresholder.DEFAULT_RANGE);
-	    return range;
+		return ParameterMap.getKeyedInteger(parameters, "range", DEFAULT_RANGE);
 	}
-	
-
 }

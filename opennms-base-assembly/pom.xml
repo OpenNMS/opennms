@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>1.13.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-base-assembly</artifactId>
@@ -129,9 +129,9 @@
             <version>${project.version}</version>
           </dependency>
           <dependency>
-            <groupId>postgresql</groupId>
+            <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>9.0-801.jdbc3</version>
+            <version>9.3-1100-jdbc4</version>
           </dependency>
         </dependencies>
       </plugin>
@@ -211,11 +211,11 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-import</artifactId>
+      <artifactId>opennms-reportd</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-reportd</artifactId>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.upgrade</artifactId>
     </dependency>
     <!-- begin provisiond dependencies -->
     <dependency>
@@ -237,6 +237,10 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-detector-datagram</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-detector-generic</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -283,6 +287,11 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-reporting</artifactId>
       <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-rrd-model</artifactId>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -429,26 +438,6 @@
       <groupId>ognl</groupId>
       <artifactId>ognl</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.extremecomponents</groupId>
-      <artifactId>extremecomponents</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <!--
-
-      JMesa is the latest version of the extremecomponents library. We
-      should eventually migrate our code to use it.
-
-    <dependency>
-      <groupId>org.jmesa</groupId>
-      <artifactId>jmesa</artifactId>
-    </dependency>
-    -->
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-config</artifactId>
@@ -644,12 +633,8 @@
          configured in opennms-database.xml, which is in this project.
          We only work on PostgreSQL now, though. -->
     <dependency>
-      <groupId>postgresql</groupId>
+      <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-qosdaemon</artifactId>
     </dependency>
     <dependency>
       <groupId>axis</groupId>
@@ -682,4 +667,15 @@
       <type>pom</type>
     </dependency>
   </dependencies>
+
+  <repositories>
+    <repository>
+      <snapshots><enabled>true</enabled></snapshots>
+      <releases><enabled>false</enabled></releases>
+      <id>opennms-snapshots</id>
+      <name>OpenNMS Snapshot Maven Repository</name>
+      <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
+    </repository>
+  </repositories>
+
 </project>

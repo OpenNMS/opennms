@@ -39,15 +39,45 @@ import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
+import org.opennms.test.JUnitConfigurationEnvironment;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.web.WebAppConfiguration;
 
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@WebAppConfiguration
+@ContextConfiguration(locations={
+        "classpath:/org/opennms/web/rest/applicationContext-test.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-service.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-reportingCore.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockEventProxy.xml",
+        "classpath:/applicationContext-jersey-test.xml",
+        "classpath:/META-INF/opennms/applicationContext-reporting.xml",
+        "classpath:/META-INF/opennms/applicationContext-mock-usergroup.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
+        "file:src/main/webapp/WEB-INF/applicationContext-spring-security.xml",
+        "file:src/main/webapp/WEB-INF/applicationContext-jersey.xml"
+})
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase
 public class KscRestServiceTest extends AbstractSpringJerseyRestTestCase {
     private File m_configFile = new File("target/test-classes/ksc-performance-reports.xml");
 
     @Override
     protected void beforeServletStart() throws Exception {
         KSC_PerformanceReportFactory.setConfigFile(m_configFile);
+        KSC_PerformanceReportFactory.getInstance().reload();
     }
     
     @Override
@@ -59,10 +89,10 @@ public class KscRestServiceTest extends AbstractSpringJerseyRestTestCase {
     public void testReadOnly() throws Exception {
         // Testing GET Collection
         String xml = sendRequest(GET, "/ksc", 200);
-        assertTrue(xml.contains("Test 2"));
+        assertTrue(xml, xml.contains("Test 2"));
 
         xml = sendRequest(GET, "/ksc/0", 200);
-        assertTrue(xml.contains("label=\"Test\""));
+        assertTrue(xml, xml.contains("label=\"Test\""));
 
         sendRequest(GET, "/ksc/3", 404);
     }
@@ -76,10 +106,10 @@ public class KscRestServiceTest extends AbstractSpringJerseyRestTestCase {
         sendRequest(PUT, "/ksc/0", params, 303, "/ksc/0");
 
         final String xml = slurp(m_configFile);
-        assertTrue(xml.contains("title=\"foo\""));
+        assertTrue(xml, xml.contains("title=\"foo\""));
     }
 
-    private String slurp(final File file) throws Exception {
+    private static String slurp(final File file) throws Exception {
         Reader fileReader = null;
         BufferedReader reader = null;
 

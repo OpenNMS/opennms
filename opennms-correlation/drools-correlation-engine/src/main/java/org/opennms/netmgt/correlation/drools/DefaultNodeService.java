@@ -36,7 +36,6 @@ import org.springframework.util.Assert;
  * <p>DefaultNodeService class.</p>
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @version $Id: $
  */
 public class DefaultNodeService implements NodeService {
     
@@ -49,7 +48,7 @@ public class DefaultNodeService implements NodeService {
         Assert.notNull(node, "Unable to find node with id "+nodeid);
         
         final OnmsNode parent = node.getParent();
-        return (parent == null ? null : new Long(parent.getId().longValue()));
+        return (parent == null ? null : parent.getId().longValue());
     }
 
     /**

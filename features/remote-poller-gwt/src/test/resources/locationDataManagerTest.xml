@@ -44,14 +44,6 @@
     <property name="targetMethod" value="getPollerConfig"/>
   </bean>
 
-  <bean name="monitorDisconnectedTimeout" class="java.lang.Integer">
-    <constructor-arg><value>3000</value></constructor-arg>
-  </bean>
-  
-  <bean name="monitorCheckInterval" class="java.lang.Long">
-    <constructor-arg><value>500</value></constructor-arg>
-  </bean>
-
   <bean name="pollerBackEnd" class="org.opennms.netmgt.poller.remote.support.DefaultPollerBackEnd">
     <property name="locationMonitorDao" ref="locationMonitorDao" />
     <property name="monitoredServiceDao" ref="monitoredServiceDao" />

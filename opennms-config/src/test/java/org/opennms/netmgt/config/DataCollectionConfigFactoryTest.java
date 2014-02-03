@@ -44,61 +44,116 @@ import org.springframework.core.io.ByteArrayResource;
 public class DataCollectionConfigFactoryTest {
 	private static final File m_rrdRepository = new File(System.getProperty("java.io.tmpdir") + File.separator + "wonka" + File.separator + "rrd" + File.separator + "snmp");
 
-    private static final String m_xml = "<?xml version=\"1.0\"?>\n" + 
-            "<datacollection-config\n" + 
-            "   rrdRepository = \"" + m_rrdRepository.getAbsolutePath() + File.separator + "\">\n" + 
-            "   <snmp-collection name=\"default\"\n" + 
-            "       snmpStorageFlag = \"select\">\n" + 
-            "       <rrd step = \"300\">\n" + 
-            "           <rra>RRA:AVERAGE:0.5:1:8928</rra>\n" + 
-            "           <rra>RRA:AVERAGE:0.5:12:8784</rra>\n" + 
-            "           <rra>RRA:MIN:0.5:12:8784</rra>\n" + 
-            "           <rra>RRA:MAX:0.5:12:8784</rra>\n" + 
-            "       </rrd>\n" + 
-            "       <groups>\n" + 
-            "           <!-- data from standard (mib-2) sources -->\n" + 
-            "           <group  name = \"mib2-interfaces\" ifType = \"all\">\n" + 
-            "             <mibObj oid=\".1.3.6.1.2.1.2.2.1.10\" instance=\"ifIndex\" alias=\"ifInOctets\"    type=\"counter\"/>\n" + 
-            "             <mibObj oid=\".1.3.6.1.2.1.2.2.1.11\" instance=\"ifIndex\" alias=\"ifInUcastpkts\"   type=\"counter\"/>\n" + 
-            "             <mibObj oid=\".1.3.6.1.2.1.2.2.1.12\" instance=\"ifIndex\" alias=\"ifInNUcastpkts\"  type=\"counter\"/>\n" + 
-            "             <mibObj oid=\".1.3.6.1.2.1.2.2.1.13\" instance=\"ifIndex\" alias=\"ifInDiscards\"  type=\"counter\"/>\n" + 
-            "             <mibObj oid=\".1.3.6.1.2.1.2.2.1.14\" instance=\"ifIndex\" alias=\"ifInErrors\"    type=\"counter\"/>\n" + 
-            "             <mibObj oid=\".1.3.6.1.2.1.2.2.1.16\" instance=\"ifIndex\" alias=\"ifOutOctets\"   type=\"counter\"/>\n" + 
-            "             <mibObj oid=\".1.3.6.1.2.1.2.2.1.17\" instance=\"ifIndex\" alias=\"ifOutUcastPkts\"   type=\"counter\"/>\n" + 
-            "             <mibObj oid=\".1.3.6.1.2.1.2.2.1.18\" instance=\"ifIndex\" alias=\"ifOutNUcastPkts\" type=\"counter\"/>\n" + 
-            "             <mibObj oid=\".1.3.6.1.2.1.2.2.1.19\" instance=\"ifIndex\" alias=\"ifOutDiscards\"   type=\"counter\"/>\n" + 
-            "             <mibObj oid=\".1.3.6.1.2.1.2.2.1.20\" instance=\"ifIndex\" alias=\"ifOutErrors\"   type=\"counter\"/>\n" + 
-            "             <mibObj oid=\".1.3.6.1.2.1.31.1.1.1.6\" instance=\"ifIndex\" alias=\"ifHCInOctets\"  type=\"counter\"/>\n" + 
-            "             <mibObj oid=\".1.3.6.1.2.1.31.1.1.1.10\" instance=\"ifIndex\" alias=\"ifHCOutOctets\" type=\"counter\"/>\n" + 
+    private static final String m_xml = "<?xml version=\"1.0\"?>\n" +
+            "<datacollection-config\n" +
+            "   rrdRepository = \"" + m_rrdRepository.getAbsolutePath() + File.separator + "\">\n" +
+            "   <snmp-collection name=\"default\"\n" +
+            "       snmpStorageFlag = \"select\">\n" +
+            "       <rrd step = \"300\">\n" +
+            "           <rra>RRA:AVERAGE:0.5:1:8928</rra>\n" +
+            "           <rra>RRA:AVERAGE:0.5:12:8784</rra>\n" +
+            "           <rra>RRA:MIN:0.5:12:8784</rra>\n" +
+            "           <rra>RRA:MAX:0.5:12:8784</rra>\n" +
+            "       </rrd>\n" +
+            "       <groups>\n" +
+            "           <!-- data from standard (mib-2) sources -->\n" +
+            "           <group  name = \"mib2-interfaces\" ifType = \"all\">\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.2.2.1.10\" instance=\"ifIndex\" alias=\"ifInOctets\"    type=\"counter\"/>\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.2.2.1.11\" instance=\"ifIndex\" alias=\"ifInUcastpkts\"   type=\"counter\"/>\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.2.2.1.12\" instance=\"ifIndex\" alias=\"ifInNUcastpkts\"  type=\"counter\"/>\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.2.2.1.13\" instance=\"ifIndex\" alias=\"ifInDiscards\"  type=\"counter\"/>\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.2.2.1.14\" instance=\"ifIndex\" alias=\"ifInErrors\"    type=\"counter\"/>\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.2.2.1.16\" instance=\"ifIndex\" alias=\"ifOutOctets\"   type=\"counter\"/>\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.2.2.1.17\" instance=\"ifIndex\" alias=\"ifOutUcastPkts\"   type=\"counter\"/>\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.2.2.1.18\" instance=\"ifIndex\" alias=\"ifOutNUcastPkts\" type=\"counter\"/>\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.2.2.1.19\" instance=\"ifIndex\" alias=\"ifOutDiscards\"   type=\"counter\"/>\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.2.2.1.20\" instance=\"ifIndex\" alias=\"ifOutErrors\"   type=\"counter\"/>\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.31.1.1.1.6\" instance=\"ifIndex\" alias=\"ifHCInOctets\"  type=\"counter\"/>\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.31.1.1.1.10\" instance=\"ifIndex\" alias=\"ifHCOutOctets\" type=\"counter\"/>\n" +
             "           </group>\n" +
-            "           <group name=\"mib2-tcp\" ifType=\"ignore\">\n" + 
-            "             <mibObj oid=\".1.3.6.1.2.1.6.5\" instance=\"0\" alias=\"tcpActiveOpens\" type=\"Counter32\"/>\n" + 
-            "             <mibObj oid=\".1.3.6.1.2.1.6.6\" instance=\"0\" alias=\"tcpPassiveOpens\" type=\"Counter32\"/>\n" + 
-            "             <mibObj oid=\".1.3.6.1.2.1.6.7\" instance=\"0\" alias=\"tcpAttemptFails\" type=\"Counter32\"/>\n" + 
-            "             <mibObj oid=\".1.3.6.1.2.1.6.8\" instance=\"0\" alias=\"tcpEstabResets\" type=\"Counter32\"/>\n" + 
-            "             <mibObj oid=\".1.3.6.1.2.1.6.9\" instance=\"0\" alias=\"tcpCurrEstab\" type=\"Gauge32\"/>\n" + 
-            "             <mibObj oid=\".1.3.6.1.2.1.6.10\" instance=\"0\" alias=\"tcpInSegs\" type=\"Counter32\"/>\n" + 
-            "             <mibObj oid=\".1.3.6.1.2.1.6.11\" instance=\"0\" alias=\"tcpOutSegs\" type=\"Counter32\"/>\n" + 
-            "             <mibObj oid=\".1.3.6.1.2.1.6.12\" instance=\"0\" alias=\"tcpRetransSegs\" type=\"Counter32\"/>\n" + 
-            "             <mibObj oid=\".1.3.6.1.2.1.6.14\" instance=\"0\" alias=\"tcpInErrors\" type=\"Counter32\"/>\n" + 
-            "             <mibObj oid=\".1.3.6.1.2.1.6.15\" instance=\"0\" alias=\"tcpOutRsts\" type=\"Counter32\"/>\n" + 
-            "           </group>\n" + 
-            "       </groups>\n" + 
-            "       <systems>\n" + 
-            "           <systemDef name = \"Enterprise\">\n" + 
-            "               <sysoidMask>.1.3.6.1.4.1.</sysoidMask>\n" + 
-            "               <collect>\n" + 
-            "                   <includeGroup>mib2-interfaces</includeGroup>\n" + 
-            "                   <includeGroup>mib2-tcp</includeGroup>\n" + 
-            "               </collect>\n" + 
-            "           </systemDef>        \n" + 
-            "\n" + 
-            "       </systems>\n" + 
-            "   </snmp-collection>\n" + 
-            "</datacollection-config>\n" + 
+            "           <group name=\"mib2-tcp\" ifType=\"ignore\">\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.6.5\" instance=\"0\" alias=\"tcpActiveOpens\" type=\"Counter32\"/>\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.6.6\" instance=\"0\" alias=\"tcpPassiveOpens\" type=\"Counter32\"/>\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.6.7\" instance=\"0\" alias=\"tcpAttemptFails\" type=\"Counter32\"/>\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.6.8\" instance=\"0\" alias=\"tcpEstabResets\" type=\"Counter32\"/>\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.6.9\" instance=\"0\" alias=\"tcpCurrEstab\" type=\"Gauge32\"/>\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.6.10\" instance=\"0\" alias=\"tcpInSegs\" type=\"Counter32\"/>\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.6.11\" instance=\"0\" alias=\"tcpOutSegs\" type=\"Counter32\"/>\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.6.12\" instance=\"0\" alias=\"tcpRetransSegs\" type=\"Counter32\"/>\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.6.14\" instance=\"0\" alias=\"tcpInErrors\" type=\"Counter32\"/>\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.6.15\" instance=\"0\" alias=\"tcpOutRsts\" type=\"Counter32\"/>\n" +
+            "           </group>\n" +
+            "       </groups>\n" +
+            "       <systems>\n" +
+            "           <systemDef name = \"Enterprise\">\n" +
+            "               <sysoidMask>.1.3.6.1.4.1.</sysoidMask>\n" +
+            "               <collect>\n" +
+            "                   <includeGroup>mib2-interfaces</includeGroup>\n" +
+            "                   <includeGroup>mib2-tcp</includeGroup>\n" +
+            "               </collect>\n" +
+            "           </systemDef>\n" +
+            "\n" +
+            "       </systems>\n" +
+            "   </snmp-collection>\n" +
+            "</datacollection-config>\n" +
             "";
 
-    private static final String m_brocadeXmlFragment = 
+    private static final String m_xml_nms6186 = "<?xml version=\"1.0\"?>\n" +
+            "<datacollection-config\n" +
+            "   rrdRepository = \"" + m_rrdRepository.getAbsolutePath() + File.separator + "\">\n" +
+            "   <snmp-collection name=\"default\"\n" +
+            "       snmpStorageFlag = \"select\">\n" +
+            "       <rrd step = \"300\">\n" +
+            "           <rra>RRA:AVERAGE:0.5:1:8928</rra>\n" +
+            "           <rra>RRA:AVERAGE:0.5:12:8784</rra>\n" +
+            "           <rra>RRA:MIN:0.5:12:8784</rra>\n" +
+            "           <rra>RRA:MAX:0.5:12:8784</rra>\n" +
+            "       </rrd>\n" +
+            "       <groups>\n" +
+            "           <!-- data from standard (mib-2) sources -->\n" +
+            "           <group  name = \"mib2-interfaces\" ifType = \"all\">\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.2.2.1.10\" instance=\"ifIndex\" alias=\"ifInOctets\"    type=\"counter\"/>\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.2.2.1.11\" instance=\"ifIndex\" alias=\"ifInUcastpkts\"   type=\"counter\"/>\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.2.2.1.12\" instance=\"ifIndex\" alias=\"ifInNUcastpkts\"  type=\"counter\"/>\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.2.2.1.13\" instance=\"ifIndex\" alias=\"ifInDiscards\"  type=\"counter\"/>\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.2.2.1.14\" instance=\"ifIndex\" alias=\"ifInErrors\"    type=\"counter\"/>\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.2.2.1.16\" instance=\"ifIndex\" alias=\"ifOutOctets\"   type=\"counter\"/>\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.2.2.1.17\" instance=\"ifIndex\" alias=\"ifOutUcastPkts\"   type=\"counter\"/>\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.2.2.1.18\" instance=\"ifIndex\" alias=\"ifOutNUcastPkts\" type=\"counter\"/>\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.2.2.1.19\" instance=\"ifIndex\" alias=\"ifOutDiscards\"   type=\"counter\"/>\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.2.2.1.20\" instance=\"ifIndex\" alias=\"ifOutErrors\"   type=\"counter\"/>\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.31.1.1.1.6\" instance=\"ifIndex\" alias=\"ifHCInOctets\"  type=\"counter\"/>\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.31.1.1.1.10\" instance=\"ifIndex\" alias=\"ifHCOutOctets\" type=\"counter\"/>\n" +
+            "           </group>\n" +
+            "           <group name=\"mib2-tcp\" ifType=\"ignore\">\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.6.5\" instance=\"0\" alias=\"tcpActiveOpens\" type=\"Counter32\"/>\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.6.6\" instance=\"0\" alias=\"tcpPassiveOpens\" type=\"Counter32\"/>\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.6.7\" instance=\"0\" alias=\"tcpAttemptFails\" type=\"Counter32\"/>\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.6.8\" instance=\"0\" alias=\"tcpEstabResets\" type=\"Counter32\"/>\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.6.9\" instance=\"0\" alias=\"tcpCurrEstab\" type=\"Gauge32\"/>\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.6.10\" instance=\"0\" alias=\"tcpInSegs\" type=\"Counter32\"/>\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.6.11\" instance=\"0\" alias=\"tcpOutSegs\" type=\"Counter32\"/>\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.6.12\" instance=\"0\" alias=\"tcpRetransSegs\" type=\"Counter32\"/>\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.6.14\" instance=\"0\" alias=\"tcpInErrors\" type=\"Counter32\"/>\n" +
+            "             <mibObj oid=\".1.3.6.1.2.1.6.15\" instance=\"0\" alias=\"tcpOutRsts\" type=\"Counter32\"/>\n" +
+            "           </group>\n" +
+            "       </groups>\n" +
+            "   </snmp-collection>\n" +
+            "</datacollection-config>\n" +
+            "";
+
+    private static final String m_systemsXmlFragment =
+            "       <systems>\n" +
+            "           <systemDef name = \"Enterprise\">\n" +
+            "               <sysoidMask>.1.3.6.1.4.1.</sysoidMask>\n" +
+            "               <collect>\n" +
+            "                   <includeGroup>mib2-interfaces</includeGroup>\n" +
+            "                   <includeGroup>mib2-tcp</includeGroup>\n" +
+            "               </collect>\n" +
+            "           </systemDef>\n" +
+            "       </systems>\n";
+
+    private static final String m_brocadeXmlFragment =
     "       <resourceType name=\"brocadeIndex\" label=\"Brocade Switches\">\n" +
     "         <persistenceSelectorStrategy class=\"foo\"/>\n" +
     "         <storageStrategy class=\"foo\"/>\n" +
@@ -114,7 +169,20 @@ public class DataCollectionConfigFactoryTest {
         }
         assertArrayEquals(new String[0], DataCollectionConfigFactory.getInstance().getConfiguredResourceTypes().keySet().toArray(new String[0]));
     }
-    
+
+    @Test
+    public void testNms6186() throws MarshalException, ValidationException, IOException {
+        initDataCollectionFactory(m_xml_nms6186);
+        assertEquals(0, DataCollectionConfigFactory.getInstance().getMibObjectList("default", ".1.9.9.9.9", "127.0.0.1", 0).size());
+    }
+
+    @Test
+    public void testNms6186_2() throws MarshalException, ValidationException, IOException {
+        String modifiedXml = m_xml_nms6186.replaceFirst("</snmp-collection>", m_systemsXmlFragment+"</snmp-collection>");
+        initDataCollectionFactory(modifiedXml);
+        assertEquals(12, DataCollectionConfigFactory.getInstance().getMibObjectList("default", ".1.3.6.1.4.1.200", "127.0.0.1", 0).size());
+    }
+
     @Test
     public void testValidResourceType() throws MarshalException, ValidationException, IOException {
     	String modifiedXml = m_xml.replaceFirst("ifIndex", "brocadeIndex").replaceFirst("<groups", m_brocadeXmlFragment + "<groups");
@@ -130,7 +198,7 @@ public class DataCollectionConfigFactoryTest {
         }
         assertArrayEquals(new String[] {"brocadeIndex"}, DataCollectionConfigFactory.getInstance().getConfiguredResourceTypes().keySet().toArray(new String[0]));
     }
-    
+
     @Test
     public void testInvalidResourceType() throws MarshalException, ValidationException, IOException {
         String modifiedXml = m_xml.replaceFirst("ifIndex", "brocadeIndex");
@@ -147,7 +215,7 @@ public class DataCollectionConfigFactoryTest {
         }
         ta.verifyAnticipated();
     }
-    
+
     private static void initDataCollectionFactory(String xmlConfig) {
         DefaultDataCollectionConfigDao dataCollectionDao = new DefaultDataCollectionConfigDao();
         dataCollectionDao.setConfigResource(new ByteArrayResource(xmlConfig.getBytes()));

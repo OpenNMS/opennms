@@ -34,6 +34,7 @@ import java.util.Iterator;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.vaadin.dialogs.ConfirmDialog;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.vaadin.events.EventPanel;
 import org.opennms.netmgt.EventConstants;
@@ -56,22 +57,18 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.themes.Reindeer;
-import com.vaadin.ui.themes.Runo;
-
-import de.steinwedel.vaadin.MessageBox;
-import de.steinwedel.vaadin.MessageBox.ButtonType;
-import de.steinwedel.vaadin.MessageBox.EventListener;
 
 /**
  * The Class Event Administration Application.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
-@SuppressWarnings("serial")
+@Theme("opennms")
 @Title("Events Administration")
-@Theme(Reindeer.THEME_NAME)
+@SuppressWarnings("serial")
 public class EventAdminApplication extends UI {
+
+    /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(EventAdminApplication.class);
 
 
@@ -152,7 +149,7 @@ public class EventAdminApplication extends UI {
                 PromptWindow w = new PromptWindow("New Events Configuration", "Events File Name") {
                     @Override
                     public void textFieldChanged(String fieldValue) {
-                        final File file = new File(eventsDir, fieldValue);
+                        final File file = new File(eventsDir, normalizeFilename(fieldValue));
                         LOG.info("Adding new events file {}", file);
                         final Events events = new Events();
                         addEventPanel(layout, file, events);
@@ -172,17 +169,14 @@ public class EventAdminApplication extends UI {
                     return;
                 }
                 final File file = (File) eventSource.getValue();
-                MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
-                                               "Are you sure?",
-                                               MessageBox.Icon.QUESTION,
-                                               "Do you really want to remove the file " + file.getName() + "?<br/>This cannot be undone and OpenNMS won't be able to handle the events configured on this file.",
-                                               new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
-                                               new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
-                mb.addStyleName(Runo.WINDOW_DIALOG);
-                mb.show(new EventListener() {
-                    @Override
-                    public void buttonClicked(ButtonType buttonType) {
-                        if (buttonType == MessageBox.ButtonType.YES) {
+                ConfirmDialog.show(getUI(),
+                                   "Are you sure?",
+                                   "Do you really want to remove the file " + file.getName() + "?\nThis cannot be undone and OpenNMS won't be able to handle the events configured on this file.",
+                                   "Yes",
+                                   "No",
+                                   new ConfirmDialog.Listener() {
+                    public void onClose(ConfirmDialog dialog) {
+                        if (dialog.isConfirmed()) {
                             LOG.info("deleting file {}", file);
                             if (file.delete()) {
                                 try {
@@ -227,6 +221,30 @@ public class EventAdminApplication extends UI {
     }
 
     /**
+     * Normalize filename.
+     *
+     * @param currentFileName the current file name
+     * @return the string
+     */
+    protected String normalizeFilename(String currentFileName) {
+        String fileName = currentFileName.replaceFirst("\\.$", "");
+        if (fileName.toLowerCase().endsWith(".xml")) {
+            if (fileName.toLowerCase().endsWith(".events.xml")) {
+                fileName = fileName.replaceFirst("\\.[Xx][Mm][Ll]", ".xml");
+            } else {
+                fileName = fileName.replaceFirst("\\.[Xx][Mm][Ll]", ".events.xml");
+            }
+        } else {
+            if (fileName.toLowerCase().endsWith(".events")) {
+                fileName += ".xml";
+            } else {
+                fileName += ".events.xml";
+            }
+        }
+        return fileName;
+    }
+
+    /**
      * Adds a new Events Panel.
      *
      * @param layout the layout
@@ -235,22 +253,22 @@ public class EventAdminApplication extends UI {
      * @return a new Events Panel Object
      */
     private void addEventPanel(final VerticalLayout layout, final File file, final Events events) {
-        EventPanel eventPanel = new EventPanel(eventConfDao, eventProxy, file.getName(), events, new SimpleLogger()) {
+        EventPanel eventPanel = new EventPanel(eventConfDao, eventProxy, file, events, new SimpleLogger()) {
             @Override
             public void cancel() {
                 this.setVisible(false);
             }
             @Override
             public void success() {
-                Notification.show("Event file " + file.getName() + " has been successfuly saved.");
+                Notification.show("Event file " + file + " has been successfuly saved.");
                 this.setVisible(false);
             }
             @Override
-            public void failure() {
-                Notification.show("Event file " + file.getName() + " cannot be saved.", Notification.Type.ERROR_MESSAGE);
+            public void failure(String reason) {
+                Notification.show("Event file " + file + " cannot be saved" + (reason == null ? "." : ", because: " + reason), Notification.Type.ERROR_MESSAGE);
             }
         };
-        eventPanel.setCaption("Events from " + file.getName());
+        eventPanel.setCaption("Events from " + file);
         removeEventPanel(layout);
         layout.addComponent(eventPanel);
     }

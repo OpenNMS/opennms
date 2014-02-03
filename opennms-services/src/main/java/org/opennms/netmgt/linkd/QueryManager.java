@@ -94,7 +94,7 @@ public interface QueryManager {
      * @return a {@link java.util.List} object.
      * @throws java.sql.SQLException if any.
      */
-    List<LinkableNode> getSnmpNodeList();
+    List<LinkableSnmpNode> getSnmpNodeList();
 
     /**
      * <p>getSnmpNode</p>
@@ -103,7 +103,7 @@ public interface QueryManager {
      * @return a {@link org.opennms.netmgt.linkd.LinkableNode} object.
      * @throws java.sql.SQLException if any.
      */
-    LinkableNode getSnmpNode(int nodeid);
+    LinkableSnmpNode getSnmpNode(int nodeid);
 
     /**
      * <p>updateDeletedNodes</p>
@@ -150,7 +150,7 @@ public interface QueryManager {
      */
     void updateForInterface(int nodeid, String ipAddr, int ifIndex, StatusType action);
     
-    Linkd getLinkd();
-	void setLinkd(final Linkd linkd);
+    public Linkd getLinkd();
+    public void setLinkd(final Linkd linkd);
 
 }

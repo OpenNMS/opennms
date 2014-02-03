@@ -196,9 +196,9 @@ class SnmpTimer extends Object {
                             iter.remove();
                             runner.run();
                         }
-                    } catch (NoSuchElementException err) {
+                    } catch (final NoSuchElementException err) {
                         // do nothing
-                    } catch (Throwable err) {
+                    } catch (final RuntimeException e) {
                         //
                         // Bad, Bad Runnable!
                         //
