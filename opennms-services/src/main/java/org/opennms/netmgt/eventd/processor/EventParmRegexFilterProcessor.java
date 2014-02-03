@@ -34,7 +34,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.opennms.netmgt.config.EventConfDao;
-import org.opennms.netmgt.config.EventExpander;
+import org.opennms.netmgt.eventd.EventExpander;
 import org.opennms.netmgt.model.events.EventProcessor;
 import org.opennms.netmgt.model.events.EventProcessorException;
 import org.opennms.netmgt.xml.event.Event;

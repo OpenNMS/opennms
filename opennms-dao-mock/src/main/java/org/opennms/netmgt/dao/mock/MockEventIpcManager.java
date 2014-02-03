@@ -44,7 +44,6 @@ import javax.sql.DataSource;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.netmgt.config.EventConfDao;
-import org.opennms.netmgt.config.EventExpander;
 import org.opennms.netmgt.config.EventdConfigManager;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.EventIpcBroadcaster;
@@ -273,9 +272,11 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
     @Override
     public synchronized void sendNow(final Event event) {
         // Expand the event parms
+        /*
         final EventExpander expander = new EventExpander();
         expander.setEventConfDao(new EmptyEventConfDao());
         expander.expandEvent(event);
+        */
         m_pendingEvents++;
         LOG.debug("StartEvent processing ({} remaining)", m_pendingEvents);
         LOG.debug("Received: {}", new EventWrapper(event));

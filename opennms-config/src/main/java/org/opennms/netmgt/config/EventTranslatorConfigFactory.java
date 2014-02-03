@@ -30,10 +30,14 @@ package org.opennms.netmgt.config;
 
 import java.beans.PropertyEditorSupport;
 import java.beans.PropertyVetoException;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -53,8 +57,6 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.MatchTable;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.SingleResultQuerier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.translator.Assignment;
 import org.opennms.netmgt.config.translator.EventTranslationSpec;
@@ -62,9 +64,10 @@ import org.opennms.netmgt.config.translator.EventTranslatorConfiguration;
 import org.opennms.netmgt.config.translator.Mapping;
 import org.opennms.netmgt.config.translator.Translation;
 import org.opennms.netmgt.config.translator.Value;
-import org.opennms.netmgt.eventd.datablock.EventUtil;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.FatalBeanException;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -424,7 +427,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 		}
 
         private Event cloneEvent(Event srcEvent) {
-            Event clonedEvent = EventUtil.cloneEvent(srcEvent);
+            Event clonedEvent = cloneEvent(srcEvent);
             /* since alarmData and severity are computed based on translated information in 
              * eventd using the data from eventconf, we unset it here to eventd
              * can reset to the proper new settings.
@@ -857,5 +860,34 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 	}
 	
 
+	/**
+	 * <p>cloneEvent</p>
+	 *
+	 * @param orig a {@link org.opennms.netmgt.xml.event.Event} object.
+	 * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+	 */
+	public static Event cloneEvent(Event orig) {
+	       Event copy = null;
+	        try {
+	            // Write the object out to a byte array
+	            ByteArrayOutputStream bos = new ByteArrayOutputStream(1024);
+	            ObjectOutputStream out = new ObjectOutputStream(bos);
+	            out.writeObject(orig);
+	            out.flush();
+	            out.close();
+	
+	            // Make an input stream from the byte array and read
+	            // a copy of the object back in.
+	            ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bos.toByteArray()));
+	            copy = (Event)in.readObject();
+	        }
+	        catch(IOException e) {
+	            LOG.error("Exception cloning event", e);
+	        }
+	        catch(ClassNotFoundException cnfe) {
+	            LOG.error("Exception cloning event", cnfe);
+	        }
+	        return copy;
+	}	
 
 }

@@ -67,7 +67,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:mike@opennms.org">Mike Davidson</a>
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
  */
-public class CollectdConfigFactory {
+public class CollectdConfigFactory implements org.opennms.netmgt.config.api.CollectdConfigFactory {
     private static final Logger LOG = LoggerFactory.getLogger(CollectdConfigFactory.class);
     public static final String SELECT_METHOD_MIN = "min";
 

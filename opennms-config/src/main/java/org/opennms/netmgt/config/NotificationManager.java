@@ -56,23 +56,21 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.DBUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.core.utils.Querier;
 import org.opennms.core.utils.RowProcessor;
 import org.opennms.core.utils.SingleResultQuerier;
-
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.notifications.Header;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.config.notifications.Notifications;
 import org.opennms.netmgt.config.notifications.Parameter;
-import org.opennms.netmgt.eventd.datablock.EventUtil;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.FilterParseException;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Tticket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 /**
@@ -1203,27 +1201,6 @@ public abstract class NotificationManager {
         return (String)querier.getResult();
     }
     
-    /**
-     * <p>expandMapValues</p>
-     *
-     * @param map a {@link java.util.Map} object.
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
-    public static void expandMapValues(Map<String, String> map, final Event event) {
-        for (String key : map.keySet()) {
-            String mapValue = map.get(key);
-            if (mapValue == null) {
-                continue;
-            }
-            String expandedValue = EventUtil.expandParms(map.get(key), event);
-            if (expandedValue == null) {
-                // Don't use this value to replace the existing value if it's null
-            } else {
-                map.put(key, expandedValue);
-            }
-        }
-    }
-
     /**
      * In the absence of DAOs and ORMs this creates an Event object from the persisted
      * record.
