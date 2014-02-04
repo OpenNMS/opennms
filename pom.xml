@@ -938,7 +938,7 @@
 
     <!-- dependency versions -->
     <activemqVersion>5.6.0</activemqVersion>
-    <camelVersion>2.10.4</camelVersion>
+    <camelVersion>2.12.2</camelVersion>
     <commonsBeanutilsVersion>1.8.3</commonsBeanutilsVersion>
     <commonsCodecVersion>1.7</commonsCodecVersion>
     <commonsCollectionsVersion>3.2.1</commonsCollectionsVersion>
