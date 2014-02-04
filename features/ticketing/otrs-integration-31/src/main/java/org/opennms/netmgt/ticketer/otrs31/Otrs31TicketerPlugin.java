@@ -1,6 +1,6 @@
 /*******************************************************************************
- * This file is part of OpenNMS(R). Copyright (C) 2008-2013 The OpenNMS Group,
- * Inc. OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * This file is part of OpenNMS(R). Copyright (C) 2008-2014 The OpenNMS Group,
+ * Inc. OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc. OpenNMS(R)
  * is free software: you can redistribute it and/or modify it under the terms
  * of the GNU General Public License as published by the Free Software
@@ -27,14 +27,14 @@ import org.opennms.netmgt.ticketer.otrs.common.DefaultOtrsConfigDao;
 import org.otrs.ticketconnector.GenericTicketConnector;
 import org.otrs.ticketconnector.GenericTicketConnectorInterface;
 import org.otrs.ticketconnector.OTRSArticle;
+import org.otrs.ticketconnector.OTRSTicketCreate;
+import org.otrs.ticketconnector.OTRSTicketCreateResponse;
 import org.otrs.ticketconnector.OTRSTicketCreateTicket;
+import org.otrs.ticketconnector.OTRSTicketGet;
+import org.otrs.ticketconnector.OTRSTicketGetResponse;
 import org.otrs.ticketconnector.OTRSTicketGetResponseArticle;
+import org.otrs.ticketconnector.OTRSTicketUpdate;
 import org.otrs.ticketconnector.OTRSTicketUpdateTicket;
-import org.otrs.ticketconnector.TicketCreate;
-import org.otrs.ticketconnector.TicketCreateResponse;
-import org.otrs.ticketconnector.TicketGet;
-import org.otrs.ticketconnector.TicketGetResponse;
-import org.otrs.ticketconnector.TicketUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,7 +73,7 @@ public class Otrs31TicketerPlugin implements Plugin {
     public Ticket get(String ticketId) throws PluginException {
 
         Ticket opennmsTicket = new Ticket();
-        TicketGetResponse response;
+        OTRSTicketGetResponse response;
 
         if (ticketId == null) {
 
@@ -85,14 +85,14 @@ public class Otrs31TicketerPlugin implements Plugin {
 
             if (m_ticketConnector != null) {
 
-                TicketGet request = new TicketGet();
-                request.setUserLogin(m_configDao.getUserName());
-                request.setPassword(m_configDao.getPassword());
+                OTRSTicketGet ticketGet = new OTRSTicketGet();
+                ticketGet.setUserLogin(m_configDao.getUserName());
+                ticketGet.setPassword(m_configDao.getPassword());
 
-                request.setTicketID(new BigInteger[] { new BigInteger(
+                ticketGet.setTicketID(new BigInteger[] { new BigInteger(
                                                                       ticketId) });
 
-                response = m_ticketConnector.ticketGet(request);
+                response = m_ticketConnector.ticketGet(ticketGet);
 
                 LOG.debug("reponded with " + response.getTicket().length
                         + "tickets");
@@ -178,13 +178,14 @@ public class Otrs31TicketerPlugin implements Plugin {
             otrsArticle.setHistoryType(m_configDao.getArticleHistoryType());
             otrsArticle.setHistoryComment(m_configDao.getArticleHistoryComment());
 
-            TicketCreate createRequest = new TicketCreate();
+            OTRSTicketCreate createRequest = new OTRSTicketCreate();
             createRequest.setUserLogin(m_configDao.getUserName());
             createRequest.setPassword(m_configDao.getPassword());
+            
             createRequest.setTicket(otrsTicket);
             createRequest.setArticle(otrsArticle);
 
-            TicketCreateResponse response = m_ticketConnector.ticketCreate(createRequest);
+            OTRSTicketCreateResponse response = m_ticketConnector.ticketCreate(createRequest);
 
             if (response.getTicketID() == null) {
                 throw new PluginException("null ticketID returned by OTRS");
@@ -240,7 +241,7 @@ public class Otrs31TicketerPlugin implements Plugin {
                     articleUpdate.setBody(m_configDao.getTicketUpdatedMessage());
                 }
 
-                TicketUpdate update = new TicketUpdate();
+                OTRSTicketUpdate update = new OTRSTicketUpdate();
                 update.setUserLogin(m_configDao.getUserName());
                 update.setPassword(m_configDao.getPassword());
                 update.setTicketID(new BigInteger(currentTicket.getId()));
