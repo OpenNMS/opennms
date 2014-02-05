@@ -28,9 +28,6 @@
 
 package org.opennms.web.rest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -39,11 +36,12 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
-import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.config.collectd.CollectdConfiguration;
+import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 
@@ -66,42 +64,41 @@ import org.springframework.test.context.web.WebAppConfiguration;
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-spring-security.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-jersey.xml",
-        "classpath:/applicationContext-collectd-rest-test.xml"
+        "classpath:/applicationContext-agents-rest-test.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class CollectdConfigurationResourceTest extends AbstractSpringJerseyRestTestCase {
+public class AgentConfigurationResourceITTest extends AbstractSpringJerseyRestTestCase {
     @SuppressWarnings("unused")
-    private static final Logger LOG = LoggerFactory.getLogger(CollectdConfigurationResourceTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AgentConfigurationResourceITTest.class);
+
+    @Autowired
+    DatabasePopulator m_databasePopulator;
 
     @Override
-    protected void afterServletStart() throws Exception {
+    protected void beforeServletStart() throws Exception {
         MockLogAppender.setupLogging(true, "DEBUG");
+        m_databasePopulator.populateDatabase();
+    }
+    
+    @Override
+    protected void afterServletDestroy() throws Exception {
+        m_databasePopulator.resetDatabase();
     }
     
     @Test
-    public void testCollectdConfig() throws Exception {
-        sendRequest(GET, "/config/foo/collection", 404);
+    public void testAgentConfig() throws Exception {
+        sendRequest(GET, "/config/agents/foo/SNMP", 404);
+        String xml = sendRequest(GET, "/config/agents/example1/SNMP", 200);
+        assertTrue(xml.contains("192.168.1.1"));
+    }
 
-        String xml = sendRequest(GET, "/config/RDU/collection", 200);
-        assertFalse(xml.contains("vmware3"));
-        assertFalse(xml.contains("example2"));
-        assertTrue(xml.contains("JBoss4"));
-
-        CollectdConfiguration config = JaxbUtils.unmarshal(CollectdConfiguration.class, xml);
-        assertNotNull(config);
-        assertEquals(1, config.getPackages().size());
-        assertEquals("example1", config.getPackages().get(0).getName());
-        assertEquals(4, config.getCollectors().size());
-
-        xml = sendRequest(GET, "/config/00002/collection", 404);
-
-        xml = sendRequest(GET, "/config/00003/collection", 200);
-        config = JaxbUtils.unmarshal(CollectdConfiguration.class, xml);
-        assertNotNull(config);
-        assertEquals(1, config.getPackages().size());
-        assertEquals("example2", config.getPackages().get(0).getName());
-        assertEquals(1, config.getCollectors().size());
+    @Test
+    public void testJsonResponse() throws Exception {
+        final MockHttpServletRequest req = createRequest(getServletContext(), GET, "/config/agents/example1/SNMP");
+        req.addHeader("Accept", "application/json");
+        String json = sendRequest(req, 200);
+        assertTrue(json.contains("\"address\":\"192.168.1.1\""));
     }
 
 }

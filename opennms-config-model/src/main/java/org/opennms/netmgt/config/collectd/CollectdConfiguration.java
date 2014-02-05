@@ -24,7 +24,7 @@ import org.opennms.core.xml.ValidateUsing;
 @ValidateUsing("collectd-configuration.xsd")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CollectdConfiguration implements Serializable {
-    private static final long serialVersionUID = 7603370550780666722L;
+    private static final long serialVersionUID = -5187264250022550096L;
 
     /**
      * The maximum number of threads used for data
@@ -88,7 +88,11 @@ public class CollectdConfiguration implements Serializable {
     }
 
     public List<Package> getPackages() {
-        return Collections.unmodifiableList(m_packages);
+        if (m_packages == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_packages);
+        }
     }
 
     public void setPackages(final List<Package> packages) {
@@ -110,6 +114,27 @@ public class CollectdConfiguration implements Serializable {
             }
         }
         return null;
+    }
+
+    public Filter getFilter(final String filterName) {
+        final List<Filter> filters = new ArrayList<Filter>();
+        for (final Package p : getPackages()) {
+            final Filter filter = p.getFilter();
+            if (filterName.equals(filter.getName())) {
+                filters.add(filter);
+            } else if (filterName.equals(p.getName())) {
+                filter.setName(p.getName());
+                filters.add(filter);
+            }
+        }
+
+        if (filters.size() > 1) {
+            throw new IllegalArgumentException("Filter name " + filterName + " matched more than one filter in collectd-configuration.xml!");
+        } else if (filters.size() == 1) {
+            return filters.get(0);
+        } else {
+            return null;
+        }
     }
 
     public CollectdConfiguration getCollectdConfigurationForPackage(String collectionPackageName) {
