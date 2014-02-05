@@ -49,7 +49,7 @@
 		<property name="eventIpcBroadcaster" ref="eventIpcManagerImpl" />
 	</bean>
 
-	<bean id="eventExpander" class="org.opennms.netmgt.config.EventExpander">
+	<bean id="eventExpander" class="org.opennms.netmgt.eventd.EventExpander">
 		<property name="eventConfDao" ref="eventConfDao" />
 	</bean>
 

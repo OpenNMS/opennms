@@ -443,7 +443,7 @@
 
   <bean id="snmpPeerFactory" class="org.opennms.netmgt.config.SnmpPeerFactory" depends-on="init-snmpPeerFactory" factory-method="getInstance"/>
 
-  <onmsgi:service interface="org.opennms.netmgt.config.SnmpAgentConfigFactory" ref="snmpPeerFactory"/>
+  <onmsgi:service interface="org.opennms.netmgt.config.api.SnmpAgentConfigFactory" ref="snmpPeerFactory"/>
   
   <bean id="simpleJdbcTemplate" class="org.springframework.jdbc.core.simple.SimpleJdbcTemplate">
     <constructor-arg ref="jdbcTemplate" />

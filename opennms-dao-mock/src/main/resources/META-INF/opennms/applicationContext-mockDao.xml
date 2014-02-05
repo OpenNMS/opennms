@@ -139,7 +139,7 @@
         <property name="staticMethod"><value>org.opennms.netmgt.config.SnmpPeerFactory.init</value></property>
     </bean>
     <bean id="snmpPeerFactory" class="org.opennms.netmgt.config.SnmpPeerFactory" depends-on="init-snmpPeerFactory" factory-method="getInstance"/>
-    <onmsgi:service interface="org.opennms.netmgt.config.SnmpAgentConfigFactory" ref="snmpPeerFactory"/>
+    <onmsgi:service interface="org.opennms.netmgt.config.api.SnmpAgentConfigFactory" ref="snmpPeerFactory"/>
 
     <bean id="statisticsReportDao" class="org.opennms.netmgt.dao.mock.MockStatisticsReportDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.StatisticsReportDao" ref="statisticsReportDao"/>

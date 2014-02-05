@@ -427,7 +427,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 		}
 
         private Event cloneEvent(Event srcEvent) {
-            Event clonedEvent = cloneEvent(srcEvent);
+            Event clonedEvent = EventTranslatorConfigFactory.cloneEvent(srcEvent);
             /* since alarmData and severity are computed based on translated information in 
              * eventd using the data from eventconf, we unset it here to eventd
              * can reset to the proper new settings.
