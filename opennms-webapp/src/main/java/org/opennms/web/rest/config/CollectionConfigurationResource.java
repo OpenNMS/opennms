@@ -25,8 +25,8 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Component
 @PerRequest
 @Scope("prototype")
-public class CollectdConfigurationResource {
-    private static final Logger LOG = LoggerFactory.getLogger(CollectdConfigurationResource.class);
+public class CollectionConfigurationResource {
+    private static final Logger LOG = LoggerFactory.getLogger(CollectionConfigurationResource.class);
 
     @Resource(name="collectd-configuration.xml")
     private ConfigurationResource<CollectdConfiguration> m_collectdConfigResource;
