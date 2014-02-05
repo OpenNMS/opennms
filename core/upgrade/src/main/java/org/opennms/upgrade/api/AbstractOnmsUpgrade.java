@@ -254,7 +254,7 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
                 }
             }
         } catch (Exception e) {
-            throw new OnmsUpgradeException("Can't connect to OpenNMS Database");
+            throw new OnmsUpgradeException("Can't connect to OpenNMS Database because " + e.getMessage(), e);
         }
         throw new OnmsUpgradeException("Databaseconnection cannot be null");
     }
