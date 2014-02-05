@@ -5,6 +5,6 @@
   xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/monitoring-locations 
                       http://www.opennms.org/xsd/config/monitoring-locations.xsd ">
   <locations>
-    <location-def location-name="RDU" monitoring-area="raleigh" polling-package-name="raleigh" geolocation="35.7174,-79.1619" />
+    <location-def location-name="RDU" monitoring-area="raleigh" polling-package-name="raleigh" collection-package-name="example1" geolocation="35.7174,-79.1619" />
   </locations>
 </monitoring-locations-configuration>
