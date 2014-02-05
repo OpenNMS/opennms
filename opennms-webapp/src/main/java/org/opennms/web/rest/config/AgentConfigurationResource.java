@@ -24,11 +24,11 @@ import org.opennms.core.config.api.ConfigurationResource;
 import org.opennms.core.config.api.ConfigurationResourceException;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.xml.bind.InetAddressXmlAdapter;
+import org.opennms.netmgt.config.SnmpAgentConfigFactory;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.collectd.Filter;
 import org.opennms.netmgt.config.collectd.Service;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
-import org.opennms.netmgt.dao.api.SnmpConfigDao;
 import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -112,7 +112,7 @@ public class AgentConfigurationResource implements InitializingBean {
     private MonitoredServiceDao m_monitoredServiceDao;
 
     @Autowired
-    private SnmpConfigDao m_snmpConfigDao;
+    private SnmpAgentConfigFactory m_agentConfigFactory;
 
     @Context
     private ResourceContext m_context;
@@ -132,8 +132,8 @@ public class AgentConfigurationResource implements InitializingBean {
         m_monitoredServiceDao = dao;
     }
 
-    public void setSnmpConfigDao(final SnmpConfigDao dao) {
-        m_snmpConfigDao = dao;
+    public void setAgentConfigFactory(final SnmpAgentConfigFactory factory) {
+        m_agentConfigFactory = factory;
     }
 
     @Override
@@ -141,7 +141,7 @@ public class AgentConfigurationResource implements InitializingBean {
         Assert.notNull(m_collectdConfigurationResource, "CollectdConfigurationResource must not be null.");
         Assert.notNull(m_filterDao, "FilterDao must not be null.");
         Assert.notNull(m_monitoredServiceDao, "MonitoredServiceDao must not be null.");
-        Assert.notNull(m_snmpConfigDao, "SnmpConfigDao must not be null.");
+        Assert.notNull(m_agentConfigFactory, "SnmpConfigDao must not be null.");
     }
 
     @GET
@@ -196,31 +196,27 @@ public class AgentConfigurationResource implements InitializingBean {
         builder.in("iface.ipAddress", addresses);
         builder.eq("type.name", serviceName);
         final List<OnmsMonitoredService> services = m_monitoredServiceDao.findMatching(builder.toCriteria());
-        int defaultPort = 161;
+        int defaultPort = -1;
 
         // TODO: We shouldn't have to hardcode like this; what's the right way to know the port to return?
-        if (serviceName.equals("SNMP")) {
-            defaultPort = m_snmpConfigDao.getDefaults().getPort();
-        } else {
-            final CollectdConfiguration collectdConfiguration = m_collectdConfigurationResource.get();
-            org.opennms.netmgt.config.collectd.Package pack = collectdConfiguration.getPackage(filterName);
-            if (pack == null) {
-                for (final org.opennms.netmgt.config.collectd.Package p : collectdConfiguration.getPackages()) {
-                    if (filterName.equals(p.getFilter().getName())) {
-                        pack = p;
-                        break;
-                    }
+        final CollectdConfiguration collectdConfiguration = m_collectdConfigurationResource.get();
+        org.opennms.netmgt.config.collectd.Package pack = collectdConfiguration.getPackage(filterName);
+        if (pack == null) {
+            for (final org.opennms.netmgt.config.collectd.Package p : collectdConfiguration.getPackages()) {
+                if (filterName.equals(p.getFilter().getName())) {
+                    pack = p;
+                    break;
                 }
             }
-            if (pack != null) {
-                final Service svc = pack.getService(serviceName);
-                final String port = svc.getParameter("port");
-                if (port != null) {
-                    try {
-                        defaultPort = Integer.valueOf(port);
-                    } catch (final NumberFormatException e) {
-                        LOG.debug("Unable to turn port {} from service {} into a number.", port, serviceName);
-                    }
+        }
+        if (pack != null) {
+            final Service svc = pack.getService(serviceName);
+            final String port = svc.getParameter("port");
+            if (port != null) {
+                try {
+                    defaultPort = Integer.valueOf(port);
+                } catch (final NumberFormatException e) {
+                    LOG.debug("Unable to turn port {} from service {} into a number.", port, serviceName);
                 }
             }
         }
@@ -232,7 +228,7 @@ public class AgentConfigurationResource implements InitializingBean {
 
             int port = defaultPort;
             if ("SNMP".equals(serviceName)) {
-                final SnmpAgentConfig config = m_snmpConfigDao.getAgentConfig(ipAddress);
+                final SnmpAgentConfig config = m_agentConfigFactory.getAgentConfig(ipAddress);
                 if (config != null) {
                     port = config.getPort();
                 }

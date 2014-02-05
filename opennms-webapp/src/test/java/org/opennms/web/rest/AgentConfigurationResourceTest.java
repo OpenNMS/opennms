@@ -37,6 +37,7 @@ import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.Response;
 
@@ -76,7 +77,7 @@ public class AgentConfigurationResourceTest {
         m_configResource.setCollectdConfigurationResource(new JaxbResourceConfiguration<CollectdConfiguration>(CollectdConfiguration.class, new ClassPathResource("/config-rest/collectd-configuration.xml")));
         m_configResource.setFilterDao(m_filterDao);
         m_configResource.setMonitoredServiceDao(m_monitoredServiceDao);
-        m_configResource.setSnmpConfigDao(m_snmpConfigDao);
+        m_configResource.setAgentConfigFactory(m_snmpConfigDao);
         m_configResource.afterPropertiesSet();
     }
 
@@ -85,10 +86,9 @@ public class AgentConfigurationResourceTest {
         m_configResource.getAgentsJson(null, null);
     }
 
-    @Test
+    @Test(expected=WebApplicationException.class)
     public void testMissingFilter() throws Exception {
-        final Response response = m_configResource.getAgentsJson("foo", "SNMP");
-        assertEquals(404, response.getStatus());
+        m_configResource.getAgentsJson("foo", "SNMP");
     }
 
     @Test

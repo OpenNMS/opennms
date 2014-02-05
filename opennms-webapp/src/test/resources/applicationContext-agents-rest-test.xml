@@ -28,6 +28,4 @@
 		<constructor-arg value="org.opennms.netmgt.config.poller.PollerConfiguration" />
 		<constructor-arg value="file:target/test-classes/config-rest/poller-configuration.xml" />
 	</bean>
-	
-	<bean id="snmpConfigDao" class="org.opennms.netmgt.dao.api.FactoryBasedSnmpConfigDao"/>
 </beans>
