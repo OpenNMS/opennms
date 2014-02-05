@@ -230,10 +230,10 @@ public class VmwareCollector implements ServiceCollector {
         try {
             vmwareViJavaAccess.connect();
         } catch (MalformedURLException e) {
-            logger.warn("Error connecting VMware management server '{}': '{}'", vmwareManagementServer, e.getMessage());
+            logger.warn("Error connecting VMware management server '{}': '{}' exception: {} cause: '{}'", vmwareManagementServer, e.getMessage(), e.getClass().getName(), e.getCause());
             return collectionSet;
         } catch (RemoteException e) {
-            logger.warn("Error connecting VMware management server '{}': '{}'", vmwareManagementServer, e.getMessage());
+            logger.warn("Error connecting VMware management server '{}': '{}' exception: {} cause: '{}'", vmwareManagementServer, e.getMessage(), e.getClass().getName(), e.getCause());
             return collectionSet;
         }
 
