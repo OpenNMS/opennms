@@ -24,7 +24,7 @@ import org.opennms.core.config.api.ConfigurationResource;
 import org.opennms.core.config.api.ConfigurationResourceException;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.xml.bind.InetAddressXmlAdapter;
-import org.opennms.netmgt.config.SnmpAgentConfigFactory;
+import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.collectd.Filter;
 import org.opennms.netmgt.config.collectd.Service;
