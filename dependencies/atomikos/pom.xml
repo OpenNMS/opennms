@@ -9,21 +9,21 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>atomikos-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Dependencies JOTM</name>
+  <name>OpenNMS Dependencies Atomikos</name>
   <description>
     This module is used to provide a single artifact that the opennms project
-    can depend on to use JOTM.
+    can depend on to use Atomikos.
   </description>
   <dependencies>
     <dependency>
       <groupId>com.atomikos</groupId>
       <artifactId>transactions-jta</artifactId>
-      <version>3.8.0</version>
+      <version>3.9.2</version>
     </dependency>
     <dependency>
       <groupId>com.atomikos</groupId>
       <artifactId>transactions-jdbc</artifactId>
-      <version>3.8.0</version>
+      <version>3.9.2</version>
     </dependency>
     <dependency>
       <groupId>javax.transaction</groupId>
