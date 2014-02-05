@@ -117,7 +117,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
 
         setServletConfig(new MockServletConfig(getServletContext(), "dispatcher"));    
         getServletConfig().addInitParameter("com.sun.jersey.config.property.resourceConfigClass", "com.sun.jersey.api.core.PackagesResourceConfig");
-        getServletConfig().addInitParameter("com.sun.jersey.config.property.packages", "org.opennms.web.rest;org.opennms.web.rest.config");
+        getServletConfig().addInitParameter("com.sun.jersey.config.property.packages", "org.codehaus.jackson.jaxrs;org.opennms.web.rest;org.opennms.web.rest.config");
 
         try {
 

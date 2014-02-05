@@ -28,7 +28,7 @@
 
 package org.opennms.web.rest;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,7 +44,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration

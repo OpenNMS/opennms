@@ -30,12 +30,14 @@ package org.opennms.web.rest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.Response;
 
 import org.junit.Before;
@@ -56,15 +58,10 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpConfiguration;
 import org.opennms.web.rest.config.AgentConfigurationResource;
 import org.opennms.web.rest.config.AgentConfigurationResource.AgentResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 
 @RunWith(BlockJUnit4ClassRunner.class)
-public class AgentConfigurationResourceUnitTest {
-    @SuppressWarnings("unused")
-    private static final Logger LOG = LoggerFactory.getLogger(AgentConfigurationResourceUnitTest.class);
-
+public class AgentConfigurationResourceTest {
     private TestFilterDao m_filterDao;
     private TestMonitoredServiceDao m_monitoredServiceDao;
     private TestSnmpConfigDao m_snmpConfigDao;
@@ -85,12 +82,12 @@ public class AgentConfigurationResourceUnitTest {
 
     @Test(expected=IllegalArgumentException.class)
     public void testInvalidInputs() throws Exception {
-        m_configResource.getAgentsForService(null, null);
+        m_configResource.getAgentsJson(null, null);
     }
 
     @Test
     public void testMissingFilter() throws Exception {
-        final Response response = m_configResource.getAgentsForService("foo", "SNMP");
+        final Response response = m_configResource.getAgentsJson("foo", "SNMP");
         assertEquals(404, response.getStatus());
     }
 
@@ -106,11 +103,13 @@ public class AgentConfigurationResourceUnitTest {
         final OnmsMonitoredService service = new OnmsMonitoredService(iface, serviceType);
         m_monitoredServiceDao.setMatching(Arrays.asList(service));
 
-        final Response response = m_configResource.getAgentsForService("example1", "SNMP");
+        final Response response = m_configResource.getAgentsJson("example1", "SNMP");
         assertEquals(200, response.getStatus());
+        final Object entity = response.getEntity();
+        assertNotNull(entity);
+        assertTrue(entity instanceof GenericEntity<?>);
         @SuppressWarnings("unchecked")
-        final List<AgentResponse> agentResponses = (List<AgentResponse>)response.getEntity();
-        assertNotNull(agentResponses);
+        final List<AgentResponse> agentResponses = (List<AgentResponse>) ((GenericEntity<?>)entity).getEntity();
         assertEquals(1, agentResponses.size());
         assertEquals(oneNinetyTwo, agentResponses.get(0).getAddress());
         assertEquals(1161, agentResponses.get(0).getPort().intValue());

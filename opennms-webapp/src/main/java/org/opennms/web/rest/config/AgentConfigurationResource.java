@@ -2,6 +2,7 @@ package org.opennms.web.rest.config;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -9,11 +10,12 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -46,28 +48,25 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Scope("prototype")
 public class AgentConfigurationResource implements InitializingBean {
     @XmlRootElement(name="agents")
-    public static class AgentResponseList extends ArrayList<AgentResponse> {
-        private static final long serialVersionUID = -6003061762086860946L;
-
-        @XmlElement(name = "agent")
+    public static class AgentResponseCollection extends ArrayList<AgentResponse> {
+        private static final long serialVersionUID = 6911620042375097464L;
+        public AgentResponseCollection() {
+            super();
+        }
+        public AgentResponseCollection(final List<AgentResponse> responses) {
+            super();
+            addAll(responses);
+        }
+        @XmlElement(name="agent")
         public List<AgentResponse> getAgents() {
             return this;
         }
-
-        public void setAgents(List<AgentResponse> agents) {
-            if (agents == this) return;
+        public void setAgents(final List<AgentResponse> agents) {
+            if (agents == this) {
+                return;
+            }
             clear();
             addAll(agents);
-        }
-
-        @XmlAttribute(name="count")
-        public Integer getCount() {
-            return this.size();
-        }
-
-        // make JaxbUtils happy (for a getter there must be a setter)
-        public void setCount(Integer count) {
-            ; // no implementation, because it is calculated
         }
     }
 
@@ -147,8 +146,31 @@ public class AgentConfigurationResource implements InitializingBean {
 
     @GET
     @Path("{filterName}/{serviceName}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public Response getAgentsForService(@PathParam("filterName") final String filterName, @PathParam("serviceName") final String serviceName) throws ConfigurationResourceException {
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
+    public Response getAgentsXml(@PathParam("filterName") final String filterName, @PathParam("serviceName") final String serviceName) throws ConfigurationResourceException {
+        final List<AgentResponse> responses = getResponses(filterName, serviceName);
+
+        if (responses.size() == 0) {
+            return Response.noContent().build();
+        }
+
+        return Response.ok(new AgentResponseCollection(responses)).build();
+    }
+
+    @GET
+    @Path("{filterName}/{serviceName}")
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response getAgentsJson(@PathParam("filterName") final String filterName, @PathParam("serviceName") final String serviceName) throws ConfigurationResourceException {
+        final List<AgentResponse> responses = getResponses(filterName, serviceName);
+
+        if (responses.size() == 0) {
+            return Response.noContent().build();
+        }
+
+        return Response.ok(new GenericEntity<List<AgentResponse>>(responses){}).build();
+    }
+
+    protected List<AgentResponse> getResponses(final String filterName, final String serviceName) throws ConfigurationResourceException {
         LOG.debug("getAgentsForService(): filterName={}, serviceName={}", filterName, serviceName);
 
         if (filterName == null || serviceName == null) {
@@ -158,14 +180,14 @@ public class AgentConfigurationResource implements InitializingBean {
         final Filter filter = m_collectdConfigurationResource.get().getFilter(filterName);
         if (filter == null) {
             LOG.warn("No filter matching {} could be found.", filterName);
-            return Response.status(404).build();
+            throw new WebApplicationException(404);
         }
 
         final List<InetAddress> addresses = m_filterDao.getActiveIPAddressList(filter.getContent());
         LOG.debug("Matched {} IP addresses for filter {}", addresses == null? 0 : addresses.size(), filterName);
 
         if (addresses == null || addresses.size() == 0) {
-            return Response.noContent().build();
+            return Collections.emptyList();
         }
 
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsMonitoredService.class);
@@ -203,7 +225,7 @@ public class AgentConfigurationResource implements InitializingBean {
             }
         }
 
-        final AgentResponseList responses = new AgentResponseList();
+        final List<AgentResponse> responses = new ArrayList<AgentResponse>();
 
         for (final OnmsMonitoredService service : services) {
             final InetAddress ipAddress = service.getIpAddress();
@@ -218,7 +240,18 @@ public class AgentConfigurationResource implements InitializingBean {
 
             responses.add(new AgentResponse(ipAddress, port, service.getServiceName()));
         }
+        return responses;
+    }
 
-        return Response.ok(responses).build();
+    @XmlRootElement(name="agents")
+    private static final class AgentEntity extends GenericEntity<List<AgentResponse>> {
+        public AgentEntity() {
+            super(null);
+        }
+
+        protected AgentEntity(List<AgentResponse> entity) {
+            super(entity);
+        }
+        
     }
 }
