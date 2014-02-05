@@ -145,6 +145,7 @@
               org.opennms.netmgt.config.webuiColors.*;version="${project.version}",
               org.opennms.netmgt.config.wmi.*;version="${project.version}",
               org.opennms.netmgt.config.xmlrpcd.*;version="${project.version}",
+              org.opennms.netmgt.eventd.datablock.*;version="${project.version}",
               org.opennms.netmgt.xml.eventconf.*;version="${project.version}",
               org.opennms.netmgt.xml.rtc.*;version="${project.version}"
             </Export-Package>

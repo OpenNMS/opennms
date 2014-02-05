@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config;
+package org.opennms.core.test.snmp;
 
 import java.net.InetAddress;
 import java.util.HashMap;

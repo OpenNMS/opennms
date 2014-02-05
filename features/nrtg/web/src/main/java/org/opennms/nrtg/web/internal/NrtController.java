@@ -33,7 +33,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpSession;
 
-import org.opennms.netmgt.config.SnmpAgentConfigFactory;
+import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.dao.api.GraphDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
