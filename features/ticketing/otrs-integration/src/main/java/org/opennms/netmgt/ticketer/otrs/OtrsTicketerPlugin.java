@@ -211,11 +211,8 @@ public class OtrsTicketerPlugin implements Plugin {
 		
 		stateUpdate.setStateID(otrsStateId);
 		stateUpdate.setTicketNumber(Long.parseLong(ticket.getId()));
-		if (ticket.getUser() != null) {
-			stateUpdate.setUser(ticket.getUser());
-		} else {
-			stateUpdate.setUser(m_configDao.getDefaultUser());
-		}
+		stateUpdate.setUser(m_configDao.getDefaultUser());
+
 		LOG.debug("Updating ticket with new state");
 		LOG.debug("Ticket ID:     {}", ticket.getId());
 		LOG.debug("OpenNMS State: {}", ticket.getState().toString());
@@ -233,13 +230,7 @@ public class OtrsTicketerPlugin implements Plugin {
 		
 		newOtrsTicket.setTitle(newTicket.getSummary());
 		
-		// TODO: Could remove this once we have the userid reliably in the the ticket
-		
-		if (newTicket.getUser() != null) {
-			newOtrsTicket.setUser(newTicket.getUser());
-		} else {
-			newOtrsTicket.setUser(m_configDao.getDefaultUser());
-		}
+		newOtrsTicket.setUser(m_configDao.getDefaultUser());
 		
 		newOtrsTicket.setStateID(openNMSToOTRSState(newTicket.getState()));
 		
@@ -274,11 +265,7 @@ public class OtrsTicketerPlugin implements Plugin {
 		
 		newOtrsArticle.setFrom(m_configDao.getArticleFrom());
 		
-		if (newTicket.getUser() != null) {
-			newOtrsArticle.setUser(newTicket.getUser());
-		} else {
-			newOtrsArticle.setUser(m_configDao.getDefaultUser());
-		}
+		newOtrsArticle.setUser(m_configDao.getDefaultUser());
 		
 		newOtrsArticle.setSubject(newTicket.getSummary());
 		
@@ -324,15 +311,9 @@ public class OtrsTicketerPlugin implements Plugin {
 
 		newOtrsArticle.setTicketNumber(otrsTicketNumber);
 		
-		// TODO: Could remove this once we have the userid reliably in the the ticket
-		
 		newOtrsArticle.setFrom(m_configDao.getArticleFrom());
 		
-		if (newTicket.getUser() != null) {
-			newOtrsArticle.setUser(newTicket.getUser());
-		} else {
-			newOtrsArticle.setUser(m_configDao.getDefaultUser());
-		}
+		newOtrsArticle.setUser(m_configDao.getDefaultUser());
 		
 		newOtrsArticle.setSubject(m_configDao.getArticleUpdateSubject());
 		
