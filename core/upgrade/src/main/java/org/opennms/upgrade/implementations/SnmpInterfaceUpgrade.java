@@ -232,6 +232,11 @@ public class SnmpInterfaceUpgrade {
      * @return true, if the interface directory should be merged
      */
     public boolean shouldMerge() {
+        // If the ifName and the ifDescr are null at the same time, OpenNMS is going to create a directory like this:
+        // /var/opennms/rrd/snmp/10/null or /var/opennms/rrd/snmp/10/null-00029906ced7
+        if (ifDescr == null && ifName == null) {
+            ifName = "null";
+        }
         // An SnmpInterfaceUpgrade entry only exist for SNMP interfaces with MAC Address.
         // For this reason, if the old directory exist and the label of the old interface is different than the new one,
         // that means, the interface statistics must be merged.

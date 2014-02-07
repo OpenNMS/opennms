@@ -254,6 +254,7 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
                 reason = "Unknown";
             }
             log("Reason(%s): %s\n", t.getClass().getName(), reason);
+            t.printStackTrace(); // TODO This is not elegant, but it helps.
         } finally {
             db.cleanUp();
         }
