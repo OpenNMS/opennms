@@ -33,6 +33,10 @@ public class Otrs31TicketerPluginTest {
     // defaults for ticket
 
     private static String DEFAULT_USER = "customer@localhost";
+    
+    private static String SUMMARY_MARKUP = "<p>Test Remove Markup</p>";
+    private static String SUMMARY_NO_MARKUP = "Test Remove Markup";
+
 
     DefaultOtrsConfigDao m_configDao;
 
@@ -95,6 +99,28 @@ public class Otrs31TicketerPluginTest {
             s_ticketer.saveOrUpdate(ticket);
             Ticket closedOtrsTicket = s_ticketer.get(ticket.getId());
             assertTicketEquals(ticket, closedOtrsTicket);
+        } catch (PluginException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
+    
+    @Test
+    public void testRemoveMarkup() throws InterruptedException {
+
+    	Ticket ticket = new Ticket();
+        ticket.setState(Ticket.State.OPEN);
+        ticket.setSummary(SUMMARY_MARKUP);
+        ticket.setDetails("Testing Markup Removal from title: " + new Date());
+        //ticket.setUser(DEFAULT_USER);
+
+        try {
+            s_ticketer.saveOrUpdate(ticket);
+            Ticket initialOtrsTicket = s_ticketer.get(ticket.getId());
+            assertEquals(initialOtrsTicket.getSummary(),SUMMARY_NO_MARKUP);
+            ticket.setState(Ticket.State.CLOSED);
+            s_ticketer.saveOrUpdate(ticket);
         } catch (PluginException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

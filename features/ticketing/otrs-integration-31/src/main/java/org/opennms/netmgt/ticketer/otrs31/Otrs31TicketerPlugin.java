@@ -152,6 +152,8 @@ public class Otrs31TicketerPlugin implements Plugin {
         if (newTicket.getId() == null) {
 
             OTRSTicketCreateTicket otrsTicket = new OTRSTicketCreateTicket();
+            
+            String summary = newTicket.getSummary().replaceAll("\\<.*?\\>", "");
           
             // TODO Check whether we should use the OpenNMS ticket for this
             // The original OTRS plugin checks this and sets if there is a user
@@ -159,7 +161,7 @@ public class Otrs31TicketerPlugin implements Plugin {
             // OpenNMS user is unlikely to be a valid OTRS customer user.
             
             otrsTicket.setCustomerUser(m_configDao.getDefaultUser());
-            otrsTicket.setTitle(newTicket.getSummary());
+            otrsTicket.setTitle(summary);
             otrsTicket.setQueue(m_configDao.getQueue());
             otrsTicket.setStateID(openNMSToOTRSState(newTicket.getState()));
             otrsTicket.setPriority(m_configDao.getPriority());
@@ -169,7 +171,7 @@ public class Otrs31TicketerPlugin implements Plugin {
             // TODO Figure out why we can't set ArticleFrom without an error from OTRS
             // otrsArticle.setFrom(m_configDao.getArticleFrom());
             
-            otrsArticle.setSubject(newTicket.getSummary());
+            otrsArticle.setSubject(summary);
             otrsArticle.setBody(newTicket.getDetails());
             
             otrsArticle.setArticleType(m_configDao.getArticleType());
