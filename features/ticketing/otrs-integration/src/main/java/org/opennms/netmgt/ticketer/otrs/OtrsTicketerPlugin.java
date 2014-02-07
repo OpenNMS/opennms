@@ -228,7 +228,7 @@ public class OtrsTicketerPlugin implements Plugin {
 		
 		TicketCore newOtrsTicket = new TicketCore();
 		
-		newOtrsTicket.setTitle(newTicket.getSummary());
+		newOtrsTicket.setTitle(newTicket.getSummary().replaceAll("\\<.*?\\>", ""));
 		
 		newOtrsTicket.setUser(m_configDao.getDefaultUser());
 		
@@ -267,7 +267,7 @@ public class OtrsTicketerPlugin implements Plugin {
 		
 		newOtrsArticle.setUser(m_configDao.getDefaultUser());
 		
-		newOtrsArticle.setSubject(newTicket.getSummary());
+		newOtrsArticle.setSubject(newTicket.getSummary().replaceAll("\\<.*?\\>", ""));
 		
 		// All OTRS article fields from defaults
 			
