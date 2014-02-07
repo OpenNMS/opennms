@@ -80,13 +80,13 @@ public class SystemDefPanel extends Panel {
 
         // Adding all systemDefs already defined on this source
         final List<String> groupNames = new ArrayList<String>();
-        for (Group group : source.getGroupCollection()) {
+        for (Group group : source.getGroups()) {
             groupNames.add(group.getName());
         }
         // Adding all defined systemDefs
         groupNames.addAll(dataCollectionConfigDao.getAvailableMibGroups());
 
-        systemDefTable = new SystemDefTable(source.getSystemDefCollection());
+        systemDefTable = new SystemDefTable(source.getSystemDefs());
 
         final SystemDefForm systemDefForm = new SystemDefForm(groupNames);
         systemDefForm.setVisible(false);
