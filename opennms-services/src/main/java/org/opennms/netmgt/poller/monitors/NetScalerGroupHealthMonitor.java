@@ -72,7 +72,7 @@ public class NetScalerGroupHealthMonitor extends SnmpMonitorStrategy {
         String groupName = ParameterMap.getKeyedString(parameters, "group-name", null);
         if (groupName == null) {
             status.setReason("NetScalerGroupHealthMonitor no group-name defined, addr=" + hostAddress);
-            log().warn("HostResourceSwRunMonitor.poll: No Service Name Defined! ");
+            log().warn("NetScalerGroupHealthMonitor.poll: No Service Name Defined! ");
             return status;
         }
 
