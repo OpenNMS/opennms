@@ -95,6 +95,12 @@ import org.exolab.castor.xml.Unmarshaller;
     private java.lang.String _keyAlias;
 
     /**
+     * Field _resourceType.
+     */
+    @XmlAttribute(name="resource-type")
+    private java.lang.String _resourceType;
+
+    /**
      * Field _attribList.
      */
     @XmlElement(name="attrib")
@@ -117,7 +123,10 @@ import org.exolab.castor.xml.Unmarshaller;
      //- Constructors -/
     //----------------/
 
-    public Mbean() {
+    /**
+       * Instantiates a new mbean.
+       */
+      public Mbean() {
         super();
         this._attribList = new java.util.ArrayList<Attrib>();
         this._includeMbeanList = new java.util.ArrayList<java.lang.String>();
@@ -130,12 +139,11 @@ import org.exolab.castor.xml.Unmarshaller;
     //-----------/
 
     /**
-     * 
-     * 
-     * @param vAttrib
-     * @throws java.lang.IndexOutOfBoundsException if the index
-     * given is outside the bounds of the collection
-     */
+       * Adds the attrib.
+       *
+       * @param vAttrib the v attrib
+       * @throws IndexOutOfBoundsException the index out of bounds exception
+       */
     public void addAttrib(
             final Attrib vAttrib)
     throws java.lang.IndexOutOfBoundsException {
@@ -143,12 +151,11 @@ import org.exolab.castor.xml.Unmarshaller;
     }
 
     /**
-     * 
-     * 
-     * @param index
-     * @param vAttrib
-     * @throws java.lang.IndexOutOfBoundsException if the index
-     * given is outside the bounds of the collection
+     * Adds the attrib.
+     *
+     * @param index the index
+     * @param vAttrib the v attrib
+     * @throws IndexOutOfBoundsException the index out of bounds exception
      */
     public void addAttrib(
             final int index,
@@ -158,11 +165,10 @@ import org.exolab.castor.xml.Unmarshaller;
     }
 
     /**
-     * 
-     * 
-     * @param vCompAttrib
-     * @throws java.lang.IndexOutOfBoundsException if the index
-     * given is outside the bounds of the collection
+     * Adds the comp attrib.
+     *
+     * @param vCompAttrib the v comp attrib
+     * @throws IndexOutOfBoundsException the index out of bounds exception
      */
     public void addCompAttrib(
             final CompAttrib vCompAttrib)
@@ -171,12 +177,11 @@ import org.exolab.castor.xml.Unmarshaller;
     }
 
     /**
-     * 
-     * 
-     * @param index
-     * @param vCompAttrib
-     * @throws java.lang.IndexOutOfBoundsException if the index
-     * given is outside the bounds of the collection
+     * Adds the comp attrib.
+     *
+     * @param index the index
+     * @param vCompAttrib the v comp attrib
+     * @throws IndexOutOfBoundsException the index out of bounds exception
      */
     public void addCompAttrib(
             final int index,
@@ -186,11 +191,10 @@ import org.exolab.castor.xml.Unmarshaller;
     }
 
     /**
-     * 
-     * 
-     * @param vIncludeMbean
-     * @throws java.lang.IndexOutOfBoundsException if the index
-     * given is outside the bounds of the collection
+     * Adds the include mbean.
+     *
+     * @param vIncludeMbean the v include mbean
+     * @throws IndexOutOfBoundsException the index out of bounds exception
      */
     public void addIncludeMbean(
             final java.lang.String vIncludeMbean)
@@ -199,12 +203,11 @@ import org.exolab.castor.xml.Unmarshaller;
     }
 
     /**
-     * 
-     * 
-     * @param index
-     * @param vIncludeMbean
-     * @throws java.lang.IndexOutOfBoundsException if the index
-     * given is outside the bounds of the collection
+     * Adds the include mbean.
+     *
+     * @param index the index
+     * @param vIncludeMbean the v include mbean
+     * @throws IndexOutOfBoundsException the index out of bounds exception
      */
     public void addIncludeMbean(
             final int index,
@@ -248,8 +251,8 @@ import org.exolab.castor.xml.Unmarshaller;
 
     /**
      * Overrides the java.lang.Object.equals method.
-     * 
-     * @param obj
+     *
+     * @param obj the obj
      * @return true if the objects are equal.
      */
     @Override()
@@ -296,6 +299,13 @@ import org.exolab.castor.xml.Unmarshaller;
             }
             else if (temp._keyAlias != null)
                 return false;
+            if (this._resourceType != null) {
+                if (temp._resourceType == null) return false;
+                else if (!(this._resourceType.equals(temp._resourceType)))
+                    return false;
+            }
+            else if (temp._resourceType != null)
+                return false;
             if (this._attribList != null) {
                 if (temp._attribList == null) return false;
                 else if (!(this._attribList.equals(temp._attribList))) 
@@ -324,12 +334,11 @@ import org.exolab.castor.xml.Unmarshaller;
 
     /**
      * Method getAttrib.
-     * 
-     * @param index
-     * @throws java.lang.IndexOutOfBoundsException if the index
-     * given is outside the bounds of the collection
+     *
+     * @param index the index
      * @return the value of the
      * org.opennms.netmgt.config.collectd.jmx.Attrib at the given index
+     * @throws IndexOutOfBoundsException the index out of bounds exception
      */
     public Attrib getAttrib(
             final int index)
@@ -381,13 +390,12 @@ import org.exolab.castor.xml.Unmarshaller;
 
     /**
      * Method getCompAttrib.
-     * 
-     * @param index
-     * @throws java.lang.IndexOutOfBoundsException if the index
-     * given is outside the bounds of the collection
+     *
+     * @param index the index
      * @return the value of the
      * org.opennms.netmgt.config.collectd.jmx.CompAttrib at the given
      * index
+     * @throws IndexOutOfBoundsException the index out of bounds exception
      */
     public CompAttrib getCompAttrib(
             final int index)
@@ -449,11 +457,10 @@ import org.exolab.castor.xml.Unmarshaller;
 
     /**
      * Method getIncludeMbean.
-     * 
-     * @param index
-     * @throws java.lang.IndexOutOfBoundsException if the index
-     * given is outside the bounds of the collection
+     *
+     * @param index the index
      * @return the value of the java.lang.String at the given index
+     * @throws IndexOutOfBoundsException the index out of bounds exception
      */
     public java.lang.String getIncludeMbean(
             final int index)
@@ -545,6 +552,15 @@ import org.exolab.castor.xml.Unmarshaller;
     }
 
     /**
+     * Gets the _resource type.
+     *
+     * @return the _resource type
+     */
+    public java.lang.String getResourceType() {
+        return this._resourceType;
+    }
+
+    /**
      * Overrides the java.lang.Object.hashCode method.
      * <p>
      * The following steps came from <b>Effective Java Programming
@@ -573,6 +589,9 @@ import org.exolab.castor.xml.Unmarshaller;
         if (_keyAlias != null) {
            result = 37 * result + _keyAlias.hashCode();
         }
+        if (_resourceType != null) {
+            result = 37 * result + _resourceType.hashCode();
+         }
         if (_attribList != null) {
            result = 37 * result + _attribList.hashCode();
         }
@@ -636,13 +655,11 @@ import org.exolab.castor.xml.Unmarshaller;
     }
 
     /**
-     * 
-     * 
-     * @param out
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
+     * Marshal.
+     *
+     * @param out the out
+     * @throws MarshalException the marshal exception
+     * @throws ValidationException the validation exception
      */
     @Deprecated
     public void marshal(
@@ -652,15 +669,12 @@ import org.exolab.castor.xml.Unmarshaller;
     }
 
     /**
-     * 
-     * 
-     * @param handler
-     * @throws java.io.IOException if an IOException occurs during
-     * marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
+     * Marshal.
+     *
+     * @param handler the handler
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws MarshalException the marshal exception
+     * @throws ValidationException the validation exception
      */
     @Deprecated
     public void marshal(
@@ -670,6 +684,7 @@ import org.exolab.castor.xml.Unmarshaller;
     }
 
     /**
+     * Removes the all attrib.
      */
     public void removeAllAttrib(
     ) {
@@ -677,6 +692,7 @@ import org.exolab.castor.xml.Unmarshaller;
     }
 
     /**
+     * Removes the all comp attrib.
      */
     public void removeAllCompAttrib(
     ) {
@@ -684,6 +700,7 @@ import org.exolab.castor.xml.Unmarshaller;
     }
 
     /**
+     * Removes the all include mbean.
      */
     public void removeAllIncludeMbean(
     ) {
@@ -692,8 +709,8 @@ import org.exolab.castor.xml.Unmarshaller;
 
     /**
      * Method removeAttrib.
-     * 
-     * @param vAttrib
+     *
+     * @param vAttrib the v attrib
      * @return true if the object was removed from the collection.
      */
     public boolean removeAttrib(
@@ -704,8 +721,8 @@ import org.exolab.castor.xml.Unmarshaller;
 
     /**
      * Method removeAttribAt.
-     * 
-     * @param index
+     *
+     * @param index the index
      * @return the element removed from the collection
      */
     public Attrib removeAttribAt(
@@ -716,8 +733,8 @@ import org.exolab.castor.xml.Unmarshaller;
 
     /**
      * Method removeCompAttrib.
-     * 
-     * @param vCompAttrib
+     *
+     * @param vCompAttrib the v comp attrib
      * @return true if the object was removed from the collection.
      */
     public boolean removeCompAttrib(
@@ -728,8 +745,8 @@ import org.exolab.castor.xml.Unmarshaller;
 
     /**
      * Method removeCompAttribAt.
-     * 
-     * @param index
+     *
+     * @param index the index
      * @return the element removed from the collection
      */
     public CompAttrib removeCompAttribAt(
@@ -740,8 +757,8 @@ import org.exolab.castor.xml.Unmarshaller;
 
     /**
      * Method removeIncludeMbean.
-     * 
-     * @param vIncludeMbean
+     *
+     * @param vIncludeMbean the v include mbean
      * @return true if the object was removed from the collection.
      */
     public boolean removeIncludeMbean(
@@ -752,8 +769,8 @@ import org.exolab.castor.xml.Unmarshaller;
 
     /**
      * Method removeIncludeMbeanAt.
-     * 
-     * @param index
+     *
+     * @param index the index
      * @return the element removed from the collection
      */
     public java.lang.String removeIncludeMbeanAt(
@@ -763,12 +780,11 @@ import org.exolab.castor.xml.Unmarshaller;
     }
 
     /**
-     * 
-     * 
-     * @param index
-     * @param vAttrib
-     * @throws java.lang.IndexOutOfBoundsException if the index
-     * given is outside the bounds of the collection
+     * Sets the attrib.
+     *
+     * @param index the index
+     * @param vAttrib the v attrib
+     * @throws IndexOutOfBoundsException the index out of bounds exception
      */
     public void setAttrib(
             final int index,
@@ -783,9 +799,9 @@ import org.exolab.castor.xml.Unmarshaller;
     }
 
     /**
-     * 
-     * 
-     * @param vAttribArray
+     * Sets the attrib.
+     *
+     * @param vAttribArray the new attrib
      */
     public void setAttrib(
             final Attrib[] vAttribArray) {
@@ -814,9 +830,9 @@ import org.exolab.castor.xml.Unmarshaller;
     /**
      * Sets the value of '_attribList' by setting it to the given
      * Vector. No type checking is performed.
-     * @deprecated
-     * 
+     *
      * @param attribList the Vector to set.
+     * @deprecated
      */
     public void setAttribCollection(
             final java.util.List<Attrib> attribList) {
@@ -824,12 +840,11 @@ import org.exolab.castor.xml.Unmarshaller;
     }
 
     /**
-     * 
-     * 
-     * @param index
-     * @param vCompAttrib
-     * @throws java.lang.IndexOutOfBoundsException if the index
-     * given is outside the bounds of the collection
+     * Sets the comp attrib.
+     *
+     * @param index the index
+     * @param vCompAttrib the v comp attrib
+     * @throws IndexOutOfBoundsException the index out of bounds exception
      */
     public void setCompAttrib(
             final int index,
@@ -844,9 +859,9 @@ import org.exolab.castor.xml.Unmarshaller;
     }
 
     /**
-     * 
-     * 
-     * @param vCompAttribArray
+     * Sets the comp attrib.
+     *
+     * @param vCompAttribArray the new comp attrib
      */
     public void setCompAttrib(
             final CompAttrib[] vCompAttribArray) {
@@ -875,9 +890,9 @@ import org.exolab.castor.xml.Unmarshaller;
     /**
      * Sets the value of '_compAttribList' by setting it to the
      * given Vector. No type checking is performed.
-     * @deprecated
-     * 
+     *
      * @param compAttribList the Vector to set.
+     * @deprecated
      */
     public void setCompAttribCollection(
             final java.util.List<CompAttrib> compAttribList) {
@@ -895,12 +910,11 @@ import org.exolab.castor.xml.Unmarshaller;
     }
 
     /**
-     * 
-     * 
-     * @param index
-     * @param vIncludeMbean
-     * @throws java.lang.IndexOutOfBoundsException if the index
-     * given is outside the bounds of the collection
+     * Sets the include mbean.
+     *
+     * @param index the index
+     * @param vIncludeMbean the v include mbean
+     * @throws IndexOutOfBoundsException the index out of bounds exception
      */
     public void setIncludeMbean(
             final int index,
@@ -915,9 +929,9 @@ import org.exolab.castor.xml.Unmarshaller;
     }
 
     /**
-     * 
-     * 
-     * @param vIncludeMbeanArray
+     * Sets the include mbean.
+     *
+     * @param vIncludeMbeanArray the new include mbean
      */
     public void setIncludeMbean(
             final java.lang.String[] vIncludeMbeanArray) {
@@ -946,9 +960,9 @@ import org.exolab.castor.xml.Unmarshaller;
     /**
      * Sets the value of '_includeMbeanList' by setting it to the
      * given Vector. No type checking is performed.
-     * @deprecated
-     * 
+     *
      * @param includeMbeanList the Vector to set.
+     * @deprecated
      */
     public void setIncludeMbeanCollection(
             final java.util.List<java.lang.String> includeMbeanList) {
@@ -996,15 +1010,22 @@ import org.exolab.castor.xml.Unmarshaller;
     }
 
     /**
+     * Sets the value of field 'resource-type'.
+     *
+     * @param resourceType the value of field 'resource-type'.
+     */
+    public void setResourceType(final java.lang.String resourceType) {
+        this._resourceType = resourceType;
+    }
+
+    /**
      * Method unmarshal.
-     * 
-     * @param reader
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
+     *
+     * @param reader the reader
      * @return the unmarshaled
      * org.opennms.netmgt.config.collectd.jmx.Mbean
+     * @throws MarshalException the marshal exception
+     * @throws ValidationException the validation exception
      */
     @Deprecated
     public static Mbean unmarshal(
@@ -1014,10 +1035,9 @@ import org.exolab.castor.xml.Unmarshaller;
     }
 
     /**
-     * 
-     * 
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
+     * Validate.
+     *
+     * @throws ValidationException the validation exception
      */
     @Deprecated
     public void validate(

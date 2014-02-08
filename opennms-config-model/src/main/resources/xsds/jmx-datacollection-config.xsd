@@ -80,11 +80,12 @@
 			</sequence>
 
 			<!-- mbean name -->
-			<attribute name="name"       type="string" use="required"/>
-			<attribute name="objectname" type="string" use="required"/>
-			<attribute name="keyfield"   type="string" use="optional"/>
-			<attribute name="exclude"    type="string" use="optional"/>
-			<attribute name="key-alias"  type="string" use="optional"/>
+			<attribute name="name"          type="string" use="required"/>
+			<attribute name="objectname"    type="string" use="required"/>
+			<attribute name="keyfield"      type="string" use="optional"/>
+			<attribute name="exclude"       type="string" use="optional"/>
+			<attribute name="key-alias"     type="string" use="optional"/>
+			<attribute name="resource-type" type="string" use="optional"/>
 		</complexType>
 	</element>
 
@@ -149,49 +150,5 @@
 			<attribute name="minval" type="string" use="optional"/>
 		</complexType>
 	</element>	
-
-	<!--jmx-systems>
-
-	<element name="jmx-systems">
-		<complexType>
-			<sequence>
-				<element ref="jmx-systemDef" minOccurs="1" maxOccurs="unbounded"/>
-			</sequence>
-		</complexType>
-	</element>
-
-	<element name="jmx-systemDef">
-		<complexType>
-			<sequence>	
-				<choice>
-					<element name="sysoid" type="string" minOccurs="1" maxOccurs="1"/>
-					<element name="sysoidMask" type="string" minOccurs="1" maxOccurs="1"/>
-				</choice>
-				<element ref="ipList" minOccurs="0" maxOccurs="1"/>
-				<element ref="jmx-collect" minOccurs="1" maxOccurs="1"/>
-			</sequence>
-			<attribute name="name" type="string" use="required"/>	
-		</complexType>
-	</element>
-
-	<element name="ipList">
-		<complexType>
-			<sequence>
-				<element name="ipAddr" type="string" minOccurs="0" maxOccurs="unbounded"/>
-				<element name="ipAddrMask" type="string" minOccurs="0" maxOccurs="unbounded"/>
-			</sequence>
-		</complexType>
-	</element>
-
-	<element name="jmx-collect">
-		<complexType>
-			<sequence>
-				<element name="includeMbean" type="string" minOccurs="0" maxOccurs="unbounded"/>
-			</sequence>
-		</complexType>
-	</element-->
-
-
-
 
 </schema>

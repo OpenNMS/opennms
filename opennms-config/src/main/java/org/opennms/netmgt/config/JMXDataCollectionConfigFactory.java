@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -298,7 +298,7 @@ public final class JMXDataCollectionConfigFactory {
      * @param cName a {@link java.lang.String} object.
      * @return a {@link java.util.Map} object.
      */
-    public Map<String, BeanInfo> getMBeanInfo(String cName) {
+    public Map<String, BeanInfo> getMBeanInfo(final String cName) {
         Map<String, BeanInfo> map = new HashMap<String, BeanInfo>();
         
         // Retrieve the appropriate Collection object
@@ -319,6 +319,7 @@ public final class JMXDataCollectionConfigFactory {
                 beanInfo.setKeyField(mbean.getKeyfield());
                 beanInfo.setExcludes(mbean.getExclude());
                 beanInfo.setKeyAlias(mbean.getKeyAlias());
+                beanInfo.setResourceType(mbean.getResourceType());
                 
                 Attrib[] attributes = mbean.getAttrib();
                 CompAttrib[] compositeAttributes = mbean.getCompAttrib();

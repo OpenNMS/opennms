@@ -228,6 +228,48 @@ import org.opennms.netmgt.config.collectd.jmx.Mbean;
             typeValidator.setWhiteSpace("preserve");
         }
         desc.setValidator(fieldValidator);
+        //-- _resourceType
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.String.class, "_resourceType", "resource-type", org.exolab.castor.xml.NodeType.Attribute);
+        desc.setImmutable(true);
+        handler = new org.exolab.castor.xml.XMLFieldHandler() {
+            @Override
+            public java.lang.Object getValue( java.lang.Object object )
+                throws IllegalStateException
+            {
+                Mbean target = (Mbean) object;
+                return target.getResourceType();
+            }
+            @Override
+            public void setValue( java.lang.Object object, java.lang.Object value)
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    Mbean target = (Mbean) object;
+                    target.setResourceType( (java.lang.String) value);
+                } catch (java.lang.Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            @Override
+            @SuppressWarnings("unused")
+            public java.lang.Object newInstance(java.lang.Object parent) {
+                return null;
+            }
+        };
+        desc.setSchemaType("string");
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+
+        //-- validation code for: _resourceType
+        fieldValidator = new org.exolab.castor.xml.FieldValidator();
+        { //-- local scope
+            org.exolab.castor.xml.validators.StringValidator typeValidator;
+            typeValidator = new org.exolab.castor.xml.validators.StringValidator();
+            fieldValidator.setValidator(typeValidator);
+            typeValidator.setWhiteSpace("preserve");
+        }
+        desc.setValidator(fieldValidator);
         //-- _exclude
         desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.String.class, "_exclude", "exclude", org.exolab.castor.xml.NodeType.Attribute);
         desc.setImmutable(true);

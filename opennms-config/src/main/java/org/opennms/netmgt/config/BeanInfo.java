@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,8 +28,10 @@
 
 package org.opennms.netmgt.config;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
+// TODO: Auto-generated Javadoc
 /*
  * 
  * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
@@ -42,29 +44,41 @@ import java.util.*;
  * @version $Id: $
  */
 public class BeanInfo {
-    private String mbeanName;
 
-    private String objectName;
+    /** The m_mbean name. */
+    private String m_mbeanName;
 
-    private String keyField;
+    /** The m_object name. */
+    private String m_objectName;
 
-    private String excludes;
+    /** The m_key field. */
+    private String m_keyField;
+
+    /** The m_excludes. */
+    private String m_excludes;
+
+    /** The m_key alias. */
+    private String m_keyAlias;
     
-    private String keyAlias;
+    /** The m_resource type. */
+    private String m_resourceType;
     
-    private ArrayList<Object> operations;
+    /** The m_operations. */
+    private ArrayList<Object> m_operations;
     
-    private List<String> attributes;
+    /** The m_attributes. */
+    private List<String> m_attributes;
     
-    private List<String> compositeAttributes;
+    /** The m_composite attributes. */
+    private List<String> m_compositeAttributes;
 
     /**
-     * <p>getCompositeAttributeNames</p>
+     * <p>getCompositeAttributeNames</p>.
      *
      * @return a {@link java.util.List} object.
      */
     public List<String> getCompositeAttributeNames() {
-        return compositeAttributes;
+        return m_compositeAttributes;
     }
 
     /**
@@ -73,16 +87,16 @@ public class BeanInfo {
      * @param compAttr a {@link java.util.List} object.
      */
     public void setCompositeAttributes(List<String> compAttr) {
-        compositeAttributes = compAttr;
+        m_compositeAttributes = compAttr;
     }
 
     /**
      * <p>Constructor for BeanInfo.</p>
      */
     public BeanInfo() {
-        operations = new ArrayList<Object>();
-        attributes = new ArrayList<String>();
-        compositeAttributes = new ArrayList<String>();
+        m_operations = new ArrayList<Object>();
+        m_attributes = new ArrayList<String>();
+        m_compositeAttributes = new ArrayList<String>();
     }
 
     /**
@@ -91,25 +105,25 @@ public class BeanInfo {
      * @param attr a {@link java.util.List} object.
      */
     public void setAttributes(List<String> attr) {
-        attributes = attr;
+        m_attributes = attr;
     }
 
     /**
-     * <p>getAttributeNames</p>
+     * <p>getAttributeNames</p>.
      *
      * @return a {@link java.util.List} object.
      */
     public List<String> getAttributeNames() {
-        return attributes;
+        return m_attributes;
     }
 
     /**
-     * <p>addOperations</p>
+     * <p>addOperations</p>.
      *
      * @param attr a {@link java.lang.Object} object.
      */
     public void addOperations(Object attr) {
-        operations.add(attr);
+        m_operations.add(attr);
     }
 
     /**
@@ -118,7 +132,7 @@ public class BeanInfo {
      * @return a {@link java.util.ArrayList} object.
      */
     public ArrayList<Object> getOperations() {
-        return operations;
+        return m_operations;
     }
 
     /**
@@ -127,7 +141,7 @@ public class BeanInfo {
      * @return Returns the mbeanName.
      */
     public String getMbeanName() {
-        return mbeanName;
+        return m_mbeanName;
     }
 
     /**
@@ -137,7 +151,7 @@ public class BeanInfo {
      *            The mbeanName to set.
      */
     public void setMbeanName(String mbeanName) {
-        this.mbeanName = mbeanName;
+        m_mbeanName = mbeanName;
     }
 
     /**
@@ -146,7 +160,7 @@ public class BeanInfo {
      * @return Returns the objectName.
      */
     public String getObjectName() {
-        return objectName;
+        return m_objectName;
     }
 
     /**
@@ -156,7 +170,7 @@ public class BeanInfo {
      *            The objectName to set.
      */
     public void setObjectName(String objectName) {
-        this.objectName = objectName;
+        m_objectName = objectName;
     }
 
     /**
@@ -165,7 +179,7 @@ public class BeanInfo {
      * @return Returns the excludes.
      */
     public String getExcludes() {
-        return excludes;
+        return m_excludes;
     }
 
     /**
@@ -175,7 +189,7 @@ public class BeanInfo {
      *            The excludes to set.
      */
     public void setExcludes(String excludes) {
-        this.excludes = excludes;
+        m_excludes = excludes;
     }
 
     /**
@@ -184,7 +198,7 @@ public class BeanInfo {
      * @return Returns the keyField.
      */
     public String getKeyField() {
-        return keyField;
+        return m_keyField;
     }
 
     /**
@@ -194,7 +208,7 @@ public class BeanInfo {
      *            The keyField to set.
      */
     public void setKeyField(String keyField) {
-        this.keyField = keyField;
+        m_keyField = keyField;
     }
 
     /**
@@ -203,7 +217,7 @@ public class BeanInfo {
      * @return Returns the substitutions.
      */
     public String getKeyAlias() {
-        return keyAlias;
+        return m_keyAlias;
     }
     
     /**
@@ -212,6 +226,24 @@ public class BeanInfo {
      * @param substitutions The substitutions to set.
      */
     public void setKeyAlias(String substitutions) {
-        this.keyAlias = substitutions;
+        m_keyAlias = substitutions;
+    }
+
+    /**
+     * Gets the resource type.
+     *
+     * @return the resource type
+     */
+    public String getResourceType() {
+        return m_resourceType;
+    }
+
+    /**
+     * Sets the resource type.
+     *
+     * @param resourceType the new resource type
+     */
+    public void setResourceType(String resourceType) {
+        m_resourceType = resourceType;
     }
 }
