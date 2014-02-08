@@ -28,47 +28,45 @@
 
 package org.opennms.netmgt.collectd;
 
-import org.opennms.netmgt.config.collector.ServiceParameters;
-
 /**
- * The Class JMXCollectionResource.
+ * The Class JMXSingleInstanceCollectionResource.
  */
-public abstract class JMXCollectionResource extends AbstractCollectionResource {
+public class JMXSingleInstanceCollectionResource extends JMXCollectionResource {
+
+    /** The m_node id. */
+    private int m_nodeId;
 
     /**
-     * Instantiates a new JMX collection resource.
+     * Instantiates a new JMX single instance collection resource.
      *
      * @param agent the agent
      */
-    public JMXCollectionResource(CollectionAgent agent) {
+    JMXSingleInstanceCollectionResource(CollectionAgent agent) {
         super(agent);
-    }
-
-    /**
-     * Sets the attribute value.
-     *
-     * @param type the type
-     * @param value the value
-     */
-    public void setAttributeValue(JMXCollectionAttributeType type, String value) {
-        JMXCollectionAttribute attr = new JMXCollectionAttribute(this, type, type.getName(), value);
-        addAttribute(attr);
+        m_nodeId = agent.getNodeId();
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.netmgt.config.collector.CollectionResource#getResourceTypeName()
+     * @see org.opennms.netmgt.collectd.JMXCollectionResource#getResourceTypeName()
      */
-    public abstract String getResourceTypeName();
+    @Override
+    public String getResourceTypeName() {
+        return "node"; //All node resources for JMX; nothing of interface or "indexed resource" type
+    }
 
     /* (non-Javadoc)
-     * @see org.opennms.netmgt.config.collector.CollectionResource#getInstance()
+     * @see org.opennms.netmgt.collectd.JMXCollectionResource#getInstance()
      */
-    public abstract String getInstance();
+    @Override
+    public String getInstance() {
+        return null; //For node type resources, use the default instance
+    }
 
     /* (non-Javadoc)
-     * @see org.opennms.netmgt.config.collector.CollectionResource#getParent()
+     * @see java.lang.Object#toString()
      */
-    public String getParent() {
-        return m_agent.getStorageDir().toString();
+    @Override
+    public String toString() {
+        return "node["+m_nodeId+"].nodeSnmp[]";
     }
 }
