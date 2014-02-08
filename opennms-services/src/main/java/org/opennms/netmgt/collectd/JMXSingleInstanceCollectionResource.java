@@ -33,7 +33,7 @@ package org.opennms.netmgt.collectd;
  */
 public class JMXSingleInstanceCollectionResource extends JMXCollectionResource {
 
-    /** The m_node id. */
+    /** The node id. */
     private int m_nodeId;
 
     /**
@@ -47,19 +47,19 @@ public class JMXSingleInstanceCollectionResource extends JMXCollectionResource {
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.netmgt.collectd.JMXCollectionResource#getResourceTypeName()
-     */
-    @Override
-    public String getResourceTypeName() {
-        return "node"; //All node resources for JMX; nothing of interface or "indexed resource" type
-    }
-
-    /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.JMXCollectionResource#getInstance()
      */
     @Override
     public String getInstance() {
         return null; //For node type resources, use the default instance
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.collectd.JMXCollectionResource#getResourceTypeName()
+     */
+    @Override
+    public String getResourceTypeName() {
+        return "node"; //All node resources for JMX; nothing of interface or "indexed resource" type
     }
 
     /* (non-Javadoc)

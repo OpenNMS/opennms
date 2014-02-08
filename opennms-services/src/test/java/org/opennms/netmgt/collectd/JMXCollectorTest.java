@@ -149,8 +149,10 @@ public class JMXCollectorTest {
         
         //start collection
         CollectionSet collectionSet = jmxCollector.collect(collectionAgent, null, null);
-        SingleResourceCollectionSet jmxCollectionSet = (SingleResourceCollectionSet) collectionSet;
-        JMXCollectionResource jmxCollectionResource = (JMXCollectionResource)jmxCollectionSet.getCollectionResource();
+        JMXCollectionSet jmxCollectionSet = (JMXCollectionSet) collectionSet;
+        List<JMXCollectionResource> jmxCollectionResources = jmxCollectionSet.getCollectionResources();
+        assertEquals(1, jmxCollectionResources.size());
+        JMXCollectionResource jmxCollectionResource = jmxCollectionResources.get(0);
         AttributeGroup group = jmxCollectionResource.getGroup(new AttributeGroupType("java_lang_type_Compilation", AttributeGroupType.IF_TYPE_ALL));
         assertEquals(1, group.getAttributes().size());
         printDebugAttributeGroup(group);
@@ -170,8 +172,10 @@ public class JMXCollectorTest {
         
         //start collection
         CollectionSet collectionSet = jmxCollector.collect(collectionAgent, null, null);
-        SingleResourceCollectionSet jmxCollectionSet = (SingleResourceCollectionSet) collectionSet;
-        JMXCollectionResource jmxCollectionResource = (JMXCollectionResource)jmxCollectionSet.getCollectionResource();
+        JMXCollectionSet jmxCollectionSet = (JMXCollectionSet) collectionSet;
+        List<JMXCollectionResource> jmxCollectionResources = jmxCollectionSet.getCollectionResources();
+        assertEquals(1, jmxCollectionResources.size());
+        JMXCollectionResource jmxCollectionResource = jmxCollectionResources.get(0);
         AttributeGroup group = jmxCollectionResource.getGroup(new AttributeGroupType("java_lang_type_Compilation", AttributeGroupType.IF_TYPE_ALL));
         assertEquals(0, group.getAttributes().size());
         printDebugAttributeGroup(group);
@@ -187,8 +191,10 @@ public class JMXCollectorTest {
         
         //start collection
         CollectionSet collectionSet = jmxCollector.collect(collectionAgent, null, null);
-        SingleResourceCollectionSet jmxCollectionSet = (SingleResourceCollectionSet) collectionSet;
-        JMXCollectionResource jmxCollectionResource = (JMXCollectionResource)jmxCollectionSet.getCollectionResource();
+        JMXCollectionSet jmxCollectionSet = (JMXCollectionSet) collectionSet;
+        List<JMXCollectionResource> jmxCollectionResources = jmxCollectionSet.getCollectionResources();
+        assertEquals(1, jmxCollectionResources.size());
+        JMXCollectionResource jmxCollectionResource = jmxCollectionResources.get(0);
         AttributeGroup group = jmxCollectionResource.getGroup(new AttributeGroupType("java_lang_type_Compilation", AttributeGroupType.IF_TYPE_ALL));
         assertEquals(1, group.getAttributes().size());
         printDebugAttributeGroup(group);
@@ -204,8 +210,10 @@ public class JMXCollectorTest {
         
         //start collection
         CollectionSet collectionSet = jmxCollector.collect(collectionAgent, null, null);
-        SingleResourceCollectionSet jmxCollectionSet = (SingleResourceCollectionSet) collectionSet;
-        JMXCollectionResource jmxCollectionResource = (JMXCollectionResource)jmxCollectionSet.getCollectionResource();
+        JMXCollectionSet jmxCollectionSet = (JMXCollectionSet) collectionSet;
+        List<JMXCollectionResource> jmxCollectionResources = jmxCollectionSet.getCollectionResources();
+        assertEquals(1, jmxCollectionResources.size());
+        JMXCollectionResource jmxCollectionResource = jmxCollectionResources.get(0);
         AttributeGroup group = jmxCollectionResource.getGroup(new AttributeGroupType("java_lang_type_OperatingSystem", AttributeGroupType.IF_TYPE_ALL));
         assertEquals(8, group.getAttributes().size());
         printDebugAttributeGroup(group);
@@ -221,8 +229,10 @@ public class JMXCollectorTest {
         
         //start collection
         CollectionSet collectionSet = jmxCollector.collect(collectionAgent, null, null);
-        SingleResourceCollectionSet jmxCollectionSet = (SingleResourceCollectionSet) collectionSet;
-        JMXCollectionResource jmxCollectionResource = (JMXCollectionResource)jmxCollectionSet.getCollectionResource();
+        JMXCollectionSet jmxCollectionSet = (JMXCollectionSet) collectionSet;
+        List<JMXCollectionResource> jmxCollectionResources = jmxCollectionSet.getCollectionResources();
+        assertEquals(1, jmxCollectionResources.size());
+        JMXCollectionResource jmxCollectionResource = jmxCollectionResources.get(0);
         AttributeGroup group = jmxCollectionResource.getGroup(new AttributeGroupType("java_lang_type_Memory", AttributeGroupType.IF_TYPE_ALL));
         assertEquals(4, group.getAttributes().size());
         printDebugAttributeGroup(group);
@@ -238,8 +248,10 @@ public class JMXCollectorTest {
         
         //start collection
         CollectionSet collectionSet = jmxCollector.collect(collectionAgent, null, null);
-        SingleResourceCollectionSet jmxCollectionSet = (SingleResourceCollectionSet) collectionSet;
-        JMXCollectionResource jmxCollectionResource = (JMXCollectionResource)(JMXCollectionResource)jmxCollectionSet.getCollectionResource();
+        JMXCollectionSet jmxCollectionSet = (JMXCollectionSet) collectionSet;
+        List<JMXCollectionResource> jmxCollectionResources = jmxCollectionSet.getCollectionResources();
+        assertEquals(1, jmxCollectionResources.size());
+        JMXCollectionResource jmxCollectionResource = jmxCollectionResources.get(0);
         AttributeGroup group = jmxCollectionResource.getGroup(new AttributeGroupType("java_lang_type_Memory", AttributeGroupType.IF_TYPE_ALL));
         assertEquals(3, group.getAttributes().size());
         printDebugAttributeGroup(group);
@@ -291,6 +303,11 @@ public class JMXCollectorTest {
     }
     
     public class JMXCollectorImpl extends JMXCollector {
+        public JMXCollectorImpl() {
+            super();
+            setServiceName("JMXCollectorTest");
+            setUseFriendlyName(true);
+        }
 
         @Override
         public ConnectionWrapper getMBeanServerConnection(Map<String, Object> map, InetAddress address) {

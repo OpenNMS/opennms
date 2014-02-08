@@ -64,11 +64,4 @@ public abstract class JMXCollectionResource extends AbstractCollectionResource {
      * @see org.opennms.netmgt.config.collector.CollectionResource#getInstance()
      */
     public abstract String getInstance();
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.config.collector.CollectionResource#getParent()
-     */
-    public String getParent() {
-        return m_agent.getStorageDir().toString();
-    }
 }

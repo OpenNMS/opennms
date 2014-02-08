@@ -86,45 +86,6 @@ public class JMXCollectionAttributeType implements CollectionAttributeType {
     }
 
     /*
-     * (non-Javadoc)
-     * @see org.opennms.netmgt.config.collector.CollectionAttributeType#getGroupType()
-     */
-    @Override
-    public AttributeGroupType getGroupType() {
-        return m_groupType;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.opennms.netmgt.config.collector.CollectionAttributeType#storeAttribute(org.opennms.netmgt.config.collector
-     * .CollectionAttribute, org.opennms.netmgt.config.collector.Persister)
-     */
-    @Override
-    public void storeAttribute(CollectionAttribute attribute, Persister persister) {
-        // Only numeric data comes back from JMX in data collection
-        persister.persistNumericAttribute(attribute);
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.opennms.netmgt.config.collector.AttributeDefinition#getName()
-     */
-    @Override
-    public String getName() {
-        return m_name;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.opennms.netmgt.config.collector.AttributeDefinition#getType()
-     */
-    @Override
-    public String getType() {
-        return m_dataSource.getType();
-    }
-
-    /*
      * This method strips out the illegal character '/' and attempts to keep
      * the length of the key plus ds name to 19 or less characters. The slash
      * character cannot be in the name since it is an illegal character in
@@ -157,5 +118,44 @@ public class JMXCollectionAttributeType implements CollectionAttributeType {
             }
         }
         return newKey;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.opennms.netmgt.config.collector.CollectionAttributeType#getGroupType()
+     */
+    @Override
+    public AttributeGroupType getGroupType() {
+        return m_groupType;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.opennms.netmgt.config.collector.AttributeDefinition#getName()
+     */
+    @Override
+    public String getName() {
+        return m_name;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.opennms.netmgt.config.collector.AttributeDefinition#getType()
+     */
+    @Override
+    public String getType() {
+        return m_dataSource.getType();
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.opennms.netmgt.config.collector.CollectionAttributeType#storeAttribute(org.opennms.netmgt.config.collector
+     * .CollectionAttribute, org.opennms.netmgt.config.collector.Persister)
+     */
+    @Override
+    public void storeAttribute(CollectionAttribute attribute, Persister persister) {
+        // Only numeric data comes back from JMX in data collection
+        persister.persistNumericAttribute(attribute);
     }
 }

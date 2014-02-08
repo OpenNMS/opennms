@@ -33,9 +33,9 @@ import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
 /**
- * The Class XmlResourceType.
+ * The Class JMXResourceType.
  *
- * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ * @author <a href="mailto:ronald.roskens@gmail.com">Ronald Roskens</a>
  */
 public class JMXResourceType  {
 

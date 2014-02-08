@@ -81,6 +81,21 @@ public class JMXCollectionAttribute extends AbstractCollectionAttribute implemen
 
     /*
      * (non-Javadoc)
+     * @see org.opennms.netmgt.config.collector.CollectionAttribute#getMetricIdentifier()
+     */
+    @Override
+    public String getMetricIdentifier() {
+        String metricId = m_attribType.getGroupType().getName();
+        metricId = metricId.replace("_type_", ":type=");
+        metricId = metricId.replace("_", ".");
+        metricId = metricId.concat(".");
+        metricId = metricId.concat(getName());
+        return "JMX_".concat(metricId);
+
+    }
+
+    /*
+     * (non-Javadoc)
      * @see org.opennms.netmgt.collectd.AbstractCollectionAttribute#getName()
      */
     @Override
@@ -117,6 +132,15 @@ public class JMXCollectionAttribute extends AbstractCollectionAttribute implemen
 
     /*
      * (non-Javadoc)
+     * @see org.opennms.netmgt.config.collector.CollectionAttribute#getType()
+     */
+    @Override
+    public String getType() {
+        return m_attribType.getType();
+    }
+
+    /*
+     * (non-Javadoc)
      * @see org.opennms.netmgt.collectd.AbstractCollectionAttribute#shouldPersist(org.opennms.netmgt.config.collector.
      * ServiceParameters)
      */
@@ -127,35 +151,11 @@ public class JMXCollectionAttribute extends AbstractCollectionAttribute implemen
 
     /*
      * (non-Javadoc)
-     * @see org.opennms.netmgt.config.collector.CollectionAttribute#getType()
-     */
-    @Override
-    public String getType() {
-        return m_attribType.getType();
-    }
-
-    /*
-     * (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString() {
         return "alias " + m_alias + ", value " + m_value + ", resource " + m_resource + ", attributeType " + m_attribType;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.opennms.netmgt.config.collector.CollectionAttribute#getMetricIdentifier()
-     */
-    @Override
-    public String getMetricIdentifier() {
-        String metricId = m_attribType.getGroupType().getName();
-        metricId = metricId.replace("_type_", ":type=");
-        metricId = metricId.replace("_", ".");
-        metricId = metricId.concat(".");
-        metricId = metricId.concat(getName());
-        return "JMX_".concat(metricId);
-
     }
 
 }

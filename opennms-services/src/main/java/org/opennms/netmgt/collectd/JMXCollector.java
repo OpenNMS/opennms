@@ -66,8 +66,12 @@ import org.opennms.netmgt.collection.support.AbstractCollectionAttributeType;
 import org.opennms.netmgt.collection.support.AbstractCollectionResource;
 import org.opennms.netmgt.collection.support.SingleResourceCollectionSet;
 import org.opennms.netmgt.config.BeanInfo;
+import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
 import org.opennms.netmgt.config.collectd.jmx.Attrib;
+import org.opennms.netmgt.config.datacollection.ResourceType;
+import org.opennms.netmgt.config.datacollection.StorageStrategy;
+import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
@@ -153,6 +157,9 @@ public abstract class JMXCollector implements ServiceCollector {
      * The service name is provided by the derived class
      */
     private String serviceName = null;
+
+    /** The JMX resource type Map. */
+    private HashMap<String, JMXResourceType> m_resourceTypeList = new HashMap<String, JMXResourceType>();
 
     /**
      * <p>
@@ -309,9 +316,10 @@ public abstract class JMXCollector implements ServiceCollector {
         if (useFriendlyName) {
             collDir = friendlyName;
         }
-
-        JMXCollectionResource collectionResource = new JMXCollectionResource(agent, collDir);
-        SingleResourceCollectionSet collectionSet = new SingleResourceCollectionSet(collectionResource, new Date());
+        
+        JMXCollectionSet collectionSet=new JMXCollectionSet(agent);
+        collectionSet.setCollectionTimestamp(new Date());
+        collectionSet.setStatus(ServiceCollector.COLLECTION_UNKNOWN);
         
         ConnectionWrapper connection = null;
 
@@ -339,8 +347,12 @@ public abstract class JMXCollector implements ServiceCollector {
                         String mbeanName = beanInfo.getMbeanName();
                         String objectName = beanInfo.getObjectName();
                         String excludeList = beanInfo.getExcludes();
-                        //All JMX collected values are per node
+                        if (excludeList != null) {
+                            excludeList = excludeList.trim();
+                        }
+
                         String obj = useMbeanForRrds ? mbeanName : objectName;
+                        JMXCollectionResource collectionResource = getCollectionResource(agent, mbeanName, beanInfo.getResourceType());
                         AttributeGroupType attribGroupType=new AttributeGroupType(fixGroupName(obj), AttributeGroupType.IF_TYPE_ALL);
                         
                         List<String> attribNames = beanInfo.getAttributeNames();
@@ -383,12 +395,6 @@ public abstract class JMXCollector implements ServiceCollector {
                                             try {
                                                 CompositeData cd = (CompositeData)attrib.getValue();
                                                  for (String key : compositeMemberKeys) {
-                                                     /*
-                                                     value = cd.get(key);
-                                                     
-                                                     log.debug(" JMXCollector - got CompositeData: " + 
-                                                               objectName + "|" + attrib.getName() + "|" + key + " |-> " + cd.get(key).toString());
-                                                     */
                                                      JMXDataSource ds = dsMap.get(objectName + "|" + attrib.getName() + "|" + key);
                                                      JMXCollectionAttributeType attribType=new JMXCollectionAttributeType(ds, null, null, attribGroupType);
                                                      collectionResource.setAttributeValue(attribType, cd.get(key).toString());
@@ -501,6 +507,38 @@ public abstract class JMXCollector implements ServiceCollector {
     private static Set<ObjectName> getObjectNames(MBeanServerConnection mbeanServer, String objectName) throws IOException,
             MalformedObjectNameException {
         return mbeanServer.queryNames(new ObjectName(objectName), null);
+    }
+
+    protected JMXResourceType getJMXResourceType(CollectionAgent agent, String resourceType) {
+        if (!m_resourceTypeList.containsKey(resourceType)) {
+            ResourceType rt = DataCollectionConfigFactory.getInstance().getConfiguredResourceTypes().get(resourceType);
+            if (rt == null) {
+                LOG.debug("getJMXResourceType: using default JMX resource type strategy.");
+                rt = new ResourceType();
+                rt.setName(resourceType);
+                rt.setStorageStrategy(new StorageStrategy());
+                rt.getStorageStrategy().setClazz(JMXStorageStrategy.class.getName());
+                rt.setPersistenceSelectorStrategy(new PersistenceSelectorStrategy());
+                rt.getPersistenceSelectorStrategy().setClazz(PersistAllSelectorStrategy.class.getName());
+            }
+            JMXResourceType type = new JMXResourceType(agent, rt);
+            m_resourceTypeList.put(resourceType, type);
+        }
+        return m_resourceTypeList.get(resourceType);
+    }
+
+    protected JMXCollectionResource getCollectionResource(CollectionAgent agent, String instance, String resourceType) {
+        LOG.debug("getCollectionResource: agent='{}', instance: '{}', resourceType: '{}'", agent, instance, resourceType);
+        JMXCollectionResource resource = null;
+        if (resourceType == null || resourceType.toLowerCase().equals("node")) {
+            LOG.debug("getCollectionResource: resourceType==node");
+            resource = new JMXSingleInstanceCollectionResource(agent);
+        } else {
+            LOG.debug("getCollectionResource: resourceType!=node");
+            JMXResourceType type = getJMXResourceType(agent, resourceType);
+            resource = new JMXMultiInstanceCollectionResource(agent, instance, type);
+        }
+        return resource;
     }
 
     /**

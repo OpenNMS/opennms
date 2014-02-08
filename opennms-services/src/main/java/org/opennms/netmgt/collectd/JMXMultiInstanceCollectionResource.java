@@ -58,11 +58,21 @@ public class JMXMultiInstanceCollectionResource extends JMXCollectionResource {
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.netmgt.collectd.JMXCollectionResource#shouldPersist(org.opennms.netmgt.config.collector.ServiceParameters)
+     * @see org.opennms.netmgt.collectd.JMXCollectionResource#getInstance()
      */
     @Override
-    public boolean shouldPersist(ServiceParameters params) {
-        return m_resourceType.getPersistenceSelectorStrategy().shouldPersist(this);
+    public String getInstance() {
+        return m_instance;
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.collectd.AbstractCollectionResource#getLabel()
+     */
+    public String getLabel() {
+        if (m_resourceLabel == null) {
+            m_resourceLabel = m_resourceType.getStorageStrategy().getResourceNameFromIndex(this);
+        }
+        return m_resourceLabel;
     }
 
     /* (non-Javadoc)
@@ -72,7 +82,6 @@ public class JMXMultiInstanceCollectionResource extends JMXCollectionResource {
     public File getResourceDir(RrdRepository repository) {
         String resourcePath = m_resourceType.getStorageStrategy().getRelativePathForAttribute(getParent(), getLabel(), null);
         File resourceDir = new File(repository.getRrdBaseDir(), resourcePath);
-        LogUtils.debugf(this, "getResourceDir: %s", resourceDir);
         return resourceDir;
     }
 
@@ -85,11 +94,11 @@ public class JMXMultiInstanceCollectionResource extends JMXCollectionResource {
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.netmgt.collectd.JMXCollectionResource#getInstance()
+     * @see org.opennms.netmgt.collectd.JMXCollectionResource#shouldPersist(org.opennms.netmgt.config.collector.ServiceParameters)
      */
     @Override
-    public String getInstance() {
-        return m_instance;
+    public boolean shouldPersist(ServiceParameters params) {
+        return m_resourceType.getPersistenceSelectorStrategy().shouldPersist(this);
     }
 
     /* (non-Javadoc)
@@ -98,15 +107,5 @@ public class JMXMultiInstanceCollectionResource extends JMXCollectionResource {
     @Override
     public String toString() {
         return "node[" + m_agent.getNodeId() + "]." + getResourceTypeName() + "[" + getLabel() +"]";
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.collectd.AbstractCollectionResource#getLabel()
-     */
-    public String getLabel() {
-        if (m_resourceLabel == null) {
-            m_resourceLabel = m_resourceType.getStorageStrategy().getResourceNameFromIndex(this);
-        }
-        return m_resourceLabel;
     }
 }
