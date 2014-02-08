@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
@@ -69,8 +68,8 @@ import org.opennms.netmgt.collection.support.SingleResourceCollectionSet;
 import org.opennms.netmgt.config.BeanInfo;
 import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
 import org.opennms.netmgt.config.collectd.jmx.Attrib;
+import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -520,30 +519,6 @@ public abstract class JMXCollector implements ServiceCollector {
         return AlphaNumeric.parseAndReplace(objectName, '_');
     }
     
-    /*
-     * This method strips out the illegal character '/' and attempts to keep
-     * the length of the key plus ds name to 19 or less characters. The slash
-     * character cannot be in the name since it is an illegal character in
-     * file names.
-     */
-    private static String fixKey(String key, String attrName, String substitutions) {
-        String newKey = key;
-        if (key.startsWith(File.separator)) {
-            newKey = key.substring(1);
-        }
-        if (substitutions != null && substitutions.length() > 0) {
-            StringTokenizer st = new StringTokenizer(substitutions, ",");
-            while (st.hasMoreTokens()) {
-                String token = st.nextToken();
-                int index = token.indexOf('|');
-                if (newKey.equals(token.substring(0, index))) {
-                    newKey = token.substring(index + 1);
-                }
-            }
-        }
-        return newKey;
-    }
-
     /**
      * This method is responsible for building a list of RRDDataSource objects
      * from the provided list of MBeanObject objects.
@@ -663,118 +638,7 @@ public abstract class JMXCollector implements ServiceCollector {
     public void setUseFriendlyName(boolean useFriendlyName) {
         this.useFriendlyName = useFriendlyName;
     }
-    
-    private static class JMXCollectionAttributeType extends AbstractCollectionAttributeType {
-    	private final JMXDataSource m_dataSource;
-    	private final String m_name;
 
-        public JMXCollectionAttributeType(JMXDataSource dataSource, String key, String substitutions,  AttributeGroupType groupType) {
-            super(groupType);
-            m_dataSource=dataSource;
-            m_name=createName(key,substitutions);
-        }
-
-        private String createName(String key, String substitutions) {
-            String name=m_dataSource.getName();
-            if(key!=null && !key.equals("")) {
-                name=fixKey(key, m_dataSource.getName(),substitutions)+"_"+name;
-            }
-            return name;
-        }
-
-        @Override
-        public void storeAttribute(CollectionAttribute attribute, Persister persister) {
-            //Only numeric data comes back from JMX in data collection
-            persister.persistNumericAttribute(attribute);
-        }
-
-        @Override
-        public String getName() {
-            return m_name;
-        }
-
-        @Override
-        public String getType() {
-            return m_dataSource.getType();
-        }
-
-    }
-    
-    private static class JMXCollectionAttribute extends AbstractCollectionAttribute {
-
-        private final String m_value;
-        
-        JMXCollectionAttribute(JMXCollectionResource resource, CollectionAttributeType attribType, String value) {
-            super(attribType, resource);
-            m_value = value;
-        }
-
-        @Override
-        public String getNumericValue() {
-            return m_value;
-        }
-
-        @Override
-        public String getStringValue() {
-            return m_value;
-        }
-
-        @Override
-        public String toString() {
-             return "alias " + getName() + ", value " + m_value + ", resource "
-                 + m_resource + ", attributeType " + m_attribType;
-        }
-
-        @Override
-        public String getMetricIdentifier() {
-            String metricId = m_attribType.getGroupType().getName();
-            metricId = metricId.replace("_type_", ":type=");
-            metricId = metricId.replace("_", ".");
-            metricId = metricId.concat(".");
-            metricId = metricId.concat(getName());
-            return "JMX_".concat(metricId);
-
-        }
-        
-    }
- 
-    
-    public static class JMXCollectionResource extends AbstractCollectionResource {
-        private final String m_resourceName;
-        private final int m_nodeId;
-        
-        public JMXCollectionResource(CollectionAgent agent, String resourceName) { 
-            super(agent);
-            m_resourceName=resourceName;
-            m_nodeId = agent.getNodeId();
-        }
-        
-        @Override
-        public String toString() {
-            return "node["+m_nodeId+']';
-        }
-        
-        public void setAttributeValue(CollectionAttributeType type, String value) {
-            JMXCollectionAttribute attr = new JMXCollectionAttribute(this, type, value);
-            addAttribute(attr);
-        }
-
-        @Override
-        public File getResourceDir(RrdRepository repository) {
-            return new File(repository.getRrdBaseDir(), getParent() + File.separator + m_resourceName);
-        }
-        
-        @Override
-        public String getResourceTypeName() {
-            return CollectionResource.RESOURCE_TYPE_NODE; //All node resources for JMX; nothing of interface or "indexed resource" type
-        }
-        
-        @Override
-        public String getInstance() {
-            return null; //For node type resources, use the default instance
-        }
-    }
-    
     /** {@inheritDoc} */
     @Override
     public RrdRepository getRrdRepository(String collectionName) {
