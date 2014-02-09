@@ -203,7 +203,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
 	                LOG.debug("Monitor {} ({}) last responded at {}", monitor.getName(), monitor.getStatus(), monitor.getLastCheckInTime());
 	            }
 	        }
-        } catch (final Exception e) {
+        } catch (final Throwable e) {
 		LOG.warn("An error occurred checking for disconnected monitors.", e);
         }
     }
