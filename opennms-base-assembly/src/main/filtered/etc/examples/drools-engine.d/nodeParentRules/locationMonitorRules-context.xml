@@ -8,8 +8,8 @@
         
     <!--  tx:annotation-driven / -->
     
-    <bean name="nodeService" class="org.opennms.netmgt.correlation.drools.DefaultNodeService">
-
+    <bean name="slf4jLogger" class="org.slf4j.LoggerFactory" factory-method="getLogger">
+        <constructor-arg value="Drools.Engine" />
     </bean>
         
 </beans>
