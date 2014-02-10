@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -25,33 +25,36 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+package org.opennms.netmgt.rrd.model;
 
-package org.opennms.netmgt.reporting.service;
+import java.io.File;
 
-import org.opennms.netmgt.config.reportd.Report;
+import org.junit.Assert;
+import org.junit.Test;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.rrd.model.v1.RRDv1;
+import org.opennms.netmgt.rrd.model.v3.RRDv3;
 
 /**
- * <p>ReportDeliveryService interface.</p>
- *
- * @author ranger
- * @version $Id: $
+ * The Test Class for NMS6369.
+ * 
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
-public interface ReportDeliveryService {
-    
+public class NMS6369 {
+
     /**
-     * <p>deliverReport</p>
+     * Test JRobin parse.
      *
-     * @param report a {@link org.opennms.netmgt.config.reportd.Report} object.
-     * @param fileName a {@link java.lang.String} object.
-     * @throws ReportDeliveryException 
+     * @throws Exception the exception
      */
-    public void deliverReport(Report report,String fileName) throws ReportDeliveryException;
-    
-    /**
-     * <p>reloadConfiguration</p>
-     * 
-     * Triggers a reload of the delivery service's configuration
-     */
-    public void reloadConfiguration() throws Exception;
+    @Test
+    public void testJrobinParse() throws Exception {
+        RRDv1 rrd = RrdConvertUtils.dumpJrb(new File("src/test/resources/mib2-interfaces.jrb"));
+        Assert.assertNotNull(rrd);
+        File target = new File("target/mib2-interfaces.jrb");
+        RrdConvertUtils.restoreJrb(rrd, target);
+        Assert.assertTrue(target.exists());
+    }
 
 }
+

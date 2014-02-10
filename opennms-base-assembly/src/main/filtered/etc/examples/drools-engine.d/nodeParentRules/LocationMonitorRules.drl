@@ -14,6 +14,7 @@ import org.drools.spi.KnowledgeHelper;
 
 
 global org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine engine;
+global org.slf4j.Logger LOG;
 global java.lang.Integer WIDE_SPREAD_THRESHOLD;
 global java.lang.Long FLAP_INTERVAL;
 global java.lang.Integer FLAP_COUNT;
@@ -25,7 +26,7 @@ rule "first service lost event received"
 		not( Affliction( nodeid == $nodeid, ipAddr == $ipAddr, svcName == $svcName ) )
 	then
 		Affliction $aff = new Affliction( $nodeid, $ipAddr, $svcName, locationMonitor( $e ) );
-		println( "Affliction detected by monitor " + locationMonitor( $e ) + " for nodeId = " + $nodeid + ": " + $aff );
+		LOG.warn( "Affliction detected by monitor {} for nodeId = {}: {}", locationMonitor( $e ), $nodeid, $aff );
 		retract( $e );
 		insert( $aff );
 		insert( createFlap( engine, $nodeid, $ipAddr, $svcName, locationMonitor( $e ), FLAP_INTERVAL ) );
@@ -41,7 +42,7 @@ rule "service lost detected by additional monitor"
 		retract( $e );
 		update( $aff );
 		insert( createFlap( engine, $nodeid, $ipAddr, $svcName, locationMonitor( $e ), FLAP_INTERVAL ) );
-		println(" Added reporter " + locationMonitor( $e ) + " to affliction " + $aff);
+		LOG.info( " Added reporter {} to affliction {}", locationMonitor( $e ), $aff );
 end
 
 rule "wide spread affliction"
@@ -65,7 +66,7 @@ rule "affliction resolved for one monitor"
 		update( $aff );
 		update( $flap );
 		retract( $e );
-		println(" Monitor " + locationMonitor( $e ) + " has reported up for afflication " + $aff );
+		LOG.info( " Monitor {} has reported up for afflication {}", locationMonitor( $e ) , $aff );
 end
 
 rule "create flap count for flap if it doesn't exist"
@@ -103,7 +104,7 @@ rule "retract expired flaps"
 		}
 		retract( $flap );
 		retract( $expiration );
-		println( "Flap " + $flap + " has expired. ");
+		LOG.warn( "Flap {} has expired.", $flap );
 end
 
 rule "flap count exceeded"
@@ -114,7 +115,7 @@ rule "flap count exceeded"
 		sendServiceFlappingEvent( engine, $nodeid, $ipAddr, $svcName, $locMon );
 		$flapCount.setAlerted( true );
 		update( $flapCount );
-		println("Service flapping!");
+		LOG.warn( "Service flapping!" );
 end
 
 
@@ -126,7 +127,7 @@ rule "resolve affliction that caused wide spread event"
 			sendWideSpreadOutageResolvedEvent( engine, $nodeid, $ipAddr, $svcName );
 		}
 		retract( $aff );
-		println("Afflication completely resolved " + $aff );
+		LOG.warn( "Afflication completely resolved: {}", $aff );
 end
 
 
@@ -164,8 +165,3 @@ function Flap createFlap(DroolsCorrelationEngine engine, Long nodeid, String ipA
 function Integer locationMonitor( Event e ) {
 	return new Integer( EventUtils.getIntParm( e, EventConstants.PARM_LOCATION_MONITOR_ID, -1 ) );
 }
-
-function void println(Object msg) {
-	System.out.println(new Date()+" : "+msg);
-}
-

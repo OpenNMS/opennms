@@ -153,7 +153,7 @@ public class WillItUnmarshalTest {
     private static void addFile(final Source source, final String file, final Class<?> clazz, final Impl impl) {
         addFile(source, file, clazz, impl, false, null);
     }
-
+    
     static {
         addFile(Source.SPRING, "eventconf-good-ordering.xml", Events.class, Impl.JAXB);
         addFile(Source.SPRING, "eventconf-bad-ordering.xml", Events.class, Impl.JAXB, true);

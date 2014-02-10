@@ -12,6 +12,7 @@ import org.drools.spi.KnowledgeHelper;
 
 global org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine engine;
 global org.opennms.netmgt.correlation.drools.NodeService nodeService;
+global org.slf4j.Logger LOG;
 global java.lang.Long POLL_INTERVAL;
 
 
@@ -22,7 +23,7 @@ rule "newIssue"
 		not( Cause( cause == $nodeid ) )
 	then
 		Cause $c = new Cause( Type.POSSIBLE, $nodeid, $e );
-		println( "Found nodeDown event " + $uei + " for node " + $nodeid +". Asserting: " + $c );
+		LOG.info( "Found nodeDown event {} for node {}. Asserting: {}", $uei, $nodeid, $c );
 		insert( $c );
 end
 
@@ -36,10 +37,10 @@ rule "possibleCauses"
 		if ( $parentNode != null ) {
 			Cause $parent = possibleCause( engine, $parentNode, $e, POLL_INTERVAL );
 			$parent.addImpacted( $c );
-			println( "No Cause for parent. Asserting: " + $parent );
+			LOG.info( "No Cause for parent. Asserting: {}", $parent );
 			insert( $parent );
 		} else {
-			println( "No parent for node " + $cause );
+			LOG.info( "No parent for node {}", $cause );
 		}
 end
 
@@ -50,7 +51,7 @@ rule "existingCause"
 		$parent : Cause( cause == ( nodeService.getParentNode( $cause ) ), impacted excludes $c )
 	then
 		$parent.addImpacted( $c );
-		println(" Adding cause " + $c +" to existing parent " + $parent );
+		LOG.info( " Adding cause {} to existing parent {}", $c, $parent );
 		update( $parent );
 end
  
@@ -60,7 +61,7 @@ rule "resolveIssue"
 		$up : Event( $upUei : uei matches ".*nodeUp", $node : nodeid )
 		$down : Event( uei matches ".*nodeDown", nodeid == $node )
 	then
-		println( "Found nodeUp event " + $upUei + " for node " + $node );
+		LOG.info( "Found nodeUp event {} for node {}",$upUei, $node );
 		retract( $down );
 		retract( $up );
 end
@@ -76,9 +77,3 @@ function Cause possibleCause( DroolsCorrelationEngine engine, Long nodeId, Event
 //	
 //	engine.sendEvent(bldr.getEvent());
 //}
-
-function void println(Object msg) {
-	System.out.println(new Date() + " : " + msg);
-}
-
-
