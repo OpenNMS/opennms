@@ -24,7 +24,7 @@
     <dependency>
       <groupId>org.snmp4j</groupId>
       <artifactId>snmp4j-agent</artifactId>
-      <version>1.4.1</version>
+      <version>1.4.3</version>
     </dependency>
   </dependencies>
   <repositories>
