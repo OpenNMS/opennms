@@ -30,8 +30,9 @@ package org.opennms.core.db;
 
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
-import java.util.logging.Logger;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -53,6 +54,8 @@ import com.atomikos.jdbc.AtomikosDataSourceBean;
 public class AtomikosDataSourceFactory extends AtomikosDataSourceBean implements InitializingBean, ClosableDataSource {
 
 	private static final long serialVersionUID = -6411281260947841402L;
+
+	public static final Logger LOG = LoggerFactory.getLogger(AtomikosDataSourceFactory.class);
 
 	public AtomikosDataSourceFactory(JdbcDataSource ds) {
 		this();
@@ -83,7 +86,7 @@ public class AtomikosDataSourceFactory extends AtomikosDataSourceBean implements
 
 	// Uncomment when we require Java 7
 	//@Override
-	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+	public java.util.logging.Logger getParentLogger() throws SQLFeatureNotSupportedException {
 		throw new SQLFeatureNotSupportedException();
 	}
 
@@ -114,6 +117,6 @@ public class AtomikosDataSourceFactory extends AtomikosDataSourceBean implements
 
 	@Override
 	public void setMaxSize(int maxSize) {
-		super.setMaxPoolSize(maxSize);
+		LOG.debug("Atomikos has no equivalent to setMaxSize(). Ignoring.");
 	}
 }
