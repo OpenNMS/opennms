@@ -33,8 +33,10 @@ import java.util.Properties;
 
 import org.eclipse.jetty.ajp.Ajp13SocketConnector;
 import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.NCSARequestLog;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerCollection;
+import org.eclipse.jetty.server.handler.RequestLogHandler;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.server.ssl.SslSocketConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
@@ -128,6 +130,20 @@ public class JettyServer extends AbstractServiceDaemon {
         }
 
         final HandlerCollection handlers = new HandlerCollection();
+        
+        boolean enableRequestLogging = Boolean.getBoolean("org.opennms.netmgt.jetty.enableRequestLogging");
+        if (enableRequestLogging) {
+            
+            File logsDir = new File(homeDir, "logs");
+            String logFileTemplate = new File(logsDir, "jetty-yyyy_mm_dd.request.log").getAbsolutePath();
+            
+            RequestLogHandler requestLogHandler = new RequestLogHandler();
+            
+            NCSARequestLog requestLog = new NCSARequestLog(logFileTemplate);
+            requestLogHandler.setRequestLog(requestLog);
+            
+            handlers.addHandler(requestLogHandler);
+        }
 
         if (webappsDir.exists()) {
             File rootDir = null;
