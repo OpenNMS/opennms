@@ -67,7 +67,7 @@ public class PersistSelectorStrategyField extends AbstractStrategyField<Persiste
         super.setInternalValue(strategy); // TODO Is this required ?
         setComboValue(strategy.getClazz());
         container.removeAllItems();
-        container.addAll(strategy.getParameterCollection());
+        container.addAll(strategy.getParameters());
     }
 
     /* (non-Javadoc)

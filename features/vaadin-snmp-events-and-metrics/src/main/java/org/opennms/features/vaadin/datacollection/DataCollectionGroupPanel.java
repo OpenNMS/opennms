@@ -43,15 +43,15 @@ import org.vaadin.dialogs.ConfirmDialog;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.Tab;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
 
 /**
  * The Class DataCollectionGroupPanel.
@@ -153,9 +153,9 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
     public DatacollectionGroup getOnmsDataCollection() {
         final DatacollectionGroup dto = new DatacollectionGroup();
         dto.setName((String) groupName.getValue());
-        dto.getGroupCollection().addAll(groups.getGroups());
-        dto.getResourceTypeCollection().addAll(resourceTypes.getResourceTypes());
-        dto.getSystemDefCollection().addAll(systemDefs.getSystemDefs());
+        dto.getGroups().addAll(groups.getGroups());
+        dto.getResourceTypes().addAll(resourceTypes.getResourceTypes());
+        dto.getSystemDefs().addAll(systemDefs.getSystemDefs());
         return dto;
     }
 

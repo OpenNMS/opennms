@@ -28,460 +28,238 @@
 
 package org.opennms.netmgt.config.datacollection;
 
-import java.io.Reader;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.exolab.castor.xml.Validator;
 import org.opennms.core.xml.ValidateUsing;
 
 /**
  * a MIB object
- * 
- * @version $Revision$ $Date$
  */
 
 @XmlRootElement(name="mibObj", namespace="http://xmlns.opennms.org/xsd/config/datacollection")
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(propOrder={"oid", "instance", "alias", "type", "maxval", "minval"})
+@XmlType(propOrder={"m_oid", "m_instance", "m_alias", "m_type", "m_maxval", "m_minval"})
 @ValidateUsing("datacollection-config.xsd")
 public class MibObj implements java.io.Serializable {
-    private static final long serialVersionUID = -7831201614734695268L;
+    private static final long serialVersionUID = 5718043414812119044L;
 
     /**
      * object identifier
      */
+    @XmlAttribute(name="oid", required=true)
     private String m_oid;
 
     /**
-     * instance identifier. Only valid instance identifier
-     *  values are a positive integer value or the keyword
-     * "ifIndex" which
-     *  indicates that the ifIndex of the interface is to be
-     * substituted for
-     *  the instance value for each interface the oid is retrieved
-     *  for.
+     * instance identifier. Only valid instance identifier values are a
+     * positive integer value or the keyword "ifIndex" which indicates that
+     * the ifIndex of the interface is to be substituted for the instance
+     * value for each interface the oid is retrieved for.
      */
+    @XmlAttribute(name="instance", required=true)
     private String m_instance;
 
     /**
-     * a human readable name for the object (such as
-     *  "ifOctetsIn"). NOTE: This value is used as the RRD file
-     * name and
-     *  data source name. RRD only supports data source names up to
-     * 19 chars
-     *  in length. If the SNMP data collector encounters an alias
-     * which
-     *  exceeds 19 characters it will be truncated.
+     * a human readable name for the object (such as "ifOctetsIn"). NOTE: This
+     * value is used as the RRD file name and data source name. RRD only
+     * supports data source names up to 19 chars in length. If the SNMP data
+     * collector encounters an alias which exceeds 19 characters it will be
+     * truncated.
      */
+    @XmlAttribute(name="alias", required=true)
     private String m_alias;
 
     /**
-     * SNMP data type SNMP supported types: counter, gauge,
-     *  timeticks, integer, octetstring, string. The SNMP type is
-     * mapped to
-     *  one of two RRD supported data types COUNTER or GAUGE, or
-     * the
-     *  string.properties file. The mapping is as follows: SNMP
-     * counter
-     *  -> RRD COUNTER; SNMP gauge, timeticks, integer, octetstring
-     * ->
-     *  RRD GAUGE; SNMP string -> String properties file
+     * SNMP data type SNMP supported types: counter, gauge, timeticks,
+     * integer, octetstring, string. The SNMP type is mapped to one of two RRD
+     * supported data types COUNTER or GAUGE, or the string.properties file.
+     * The mapping is as follows: SNMP counter -> RRD COUNTER; SNMP gauge,
+     * timeticks, integer, octetstring -> RRD GAUGE; SNMP string -> String
+     * properties file
      */
+    @XmlAttribute(name="type", required=true)
     private String m_type;
 
     /**
-     * Maximum Value. In order to correctly manage counter
-     *  wraps, it is possible to add a maximum value for a
-     * collection. For
-     *  example, a 32-bit counter would have a max value of
-     *  4294967295.
+     * Maximum Value. In order to correctly manage counter wraps, it is
+     * possible to add a maximum value for a collection. For example, a 32-bit
+     * counter would have a max value of 4294967295.
      */
+    @XmlAttribute(name="maxval", required=false)
     private String m_maxval;
 
     /**
-     * Minimum Value. For completeness, adding the ability
-     *  to use a minimum value.
+     * Minimum Value. For completeness, adding the ability to use a minimum
+     * value.
      */
+    @XmlAttribute(name="minval", required=false)
     private String m_minval;
 
 
     public MibObj() {
         super();
     }
-    
+
     public MibObj(final String oid, final String instance, final String alias, final String type) {
         super();
-        m_oid = oid;
-        m_instance = instance;
-        m_alias = alias;
-        m_type = type;
+        m_oid = oid == null? null : oid.intern();
+        m_instance = instance == null? null : instance.intern();
+        m_alias = alias == null? null : alias.intern();
+        m_type = type == null? null : type.intern();
     }
 
     /**
-     * Overrides the java.lang.Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
+     * object identifier
      */
-    @Override()
-    public boolean equals(final java.lang.Object obj) {
-        if ( this == obj )
-            return true;
-        
-        if (obj instanceof MibObj) {
-            final MibObj temp = (MibObj)obj;
-            if (m_oid != null) {
-                if (temp.m_oid == null) return false;
-                else if (!(m_oid.equals(temp.m_oid))) 
-                    return false;
-            }
-            else if (temp.m_oid != null)
-                return false;
-            if (m_instance != null) {
-                if (temp.m_instance == null) return false;
-                else if (!(m_instance.equals(temp.m_instance))) 
-                    return false;
-            }
-            else if (temp.m_instance != null)
-                return false;
-            if (m_alias != null) {
-                if (temp.m_alias == null) return false;
-                else if (!(m_alias.equals(temp.m_alias))) 
-                    return false;
-            }
-            else if (temp.m_alias != null)
-                return false;
-            if (m_type != null) {
-                if (temp.m_type == null) return false;
-                else if (!(m_type.equals(temp.m_type))) 
-                    return false;
-            }
-            else if (temp.m_type != null)
-                return false;
-            if (m_maxval != null) {
-                if (temp.m_maxval == null) return false;
-                else if (!(m_maxval.equals(temp.m_maxval))) 
-                    return false;
-            }
-            else if (temp.m_maxval != null)
-                return false;
-            if (m_minval != null) {
-                if (temp.m_minval == null) return false;
-                else if (!(m_minval.equals(temp.m_minval))) 
-                    return false;
-            }
-            else if (temp.m_minval != null)
-                return false;
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Returns the value of field 'alias'. The field 'alias' has
-     * the following description: a human readable name for the
-     * object (such as
-     *  "ifOctetsIn"). NOTE: This value is used as the RRD file
-     * name and
-     *  data source name. RRD only supports data source names up to
-     * 19 chars
-     *  in length. If the SNMP data collector encounters an alias
-     * which
-     *  exceeds 19 characters it will be truncated.
-     * 
-     * @return the value of field 'Alias'.
-     */
-    @XmlAttribute(name="alias", required=true)
-    public String getAlias() {
-        return m_alias;
-    }
-
-    /**
-     * Returns the value of field 'instance'. The field 'instance'
-     * has the following description: instance identifier. Only
-     * valid instance identifier
-     *  values are a positive integer value or the keyword
-     * "ifIndex" which
-     *  indicates that the ifIndex of the interface is to be
-     * substituted for
-     *  the instance value for each interface the oid is retrieved
-     *  for.
-     * 
-     * @return the value of field 'Instance'.
-     */
-    @XmlAttribute(name="instance", required=true)
-    public String getInstance() {
-        return m_instance;
-    }
-
-    /**
-     * Returns the value of field 'maxval'. The field 'maxval' has
-     * the following description: Maximum Value. In order to
-     * correctly manage counter
-     *  wraps, it is possible to add a maximum value for a
-     * collection. For
-     *  example, a 32-bit counter would have a max value of
-     *  4294967295.
-     * 
-     * @return the value of field 'Maxval'.
-     */
-    @XmlAttribute(name="maxval", required=false)
-    public String getMaxval() {
-        return m_maxval;
-    }
-
-    /**
-     * Returns the value of field 'minval'. The field 'minval' has
-     * the following description: Minimum Value. For completeness,
-     * adding the ability
-     *  to use a minimum value.
-     * 
-     * @return the value of field 'Minval'.
-     */
-    @XmlAttribute(name="minval", required=false)
-    public String getMinval() {
-        return m_minval;
-    }
-
-    /**
-     * Returns the value of field 'oid'. The field 'oid' has the
-     * following description: object identifier
-     * 
-     * @return the value of field 'Oid'.
-     */
-    @XmlAttribute(name="oid", required=true)
     public String getOid() {
         return m_oid;
     }
 
+    public void setOid(final String oid) {
+        m_oid = oid == null? null : oid.intern();
+    }
+
     /**
-     * Returns the value of field 'type'. The field 'type' has the
-     * following description: SNMP data type SNMP supported types:
-     * counter, gauge,
-     *  timeticks, integer, octetstring, string. The SNMP type is
-     * mapped to
-     *  one of two RRD supported data types COUNTER or GAUGE, or
-     * the
-     *  string.properties file. The mapping is as follows: SNMP
-     * counter
-     *  -> RRD COUNTER; SNMP gauge, timeticks, integer, octetstring
-     * ->
-     *  RRD GAUGE; SNMP string -> String properties file
-     * 
-     * @return the value of field 'Type'.
+     * instance identifier. Only valid instance identifier values are a
+     * positive integer value or the keyword "ifIndex" which indicates that
+     * the ifIndex of the interface is to be substituted for the instance
+     * value for each interface the oid is retrieved for.
      */
-    @XmlAttribute(name="type", required=true)
+    public String getInstance() {
+        return m_instance;
+    }
+
+    public void setInstance(final String instance) {
+        m_instance = instance == null? null : instance.intern();
+    }
+
+    /**
+     * a human readable name for the object (such as "ifOctetsIn"). NOTE: This
+     * value is used as the RRD file name and data source name. RRD only
+     * supports data source names up to 19 chars in length. If the SNMP data
+     * collector encounters an alias which exceeds 19 characters it will be
+     * truncated.
+     */
+    public String getAlias() {
+        return m_alias;
+    }
+
+    public void setAlias(final String alias) {
+        m_alias = alias == null? null : alias.intern();
+    }
+
+    /**
+     * SNMP data type SNMP supported types: counter, gauge, timeticks,
+     * integer, octetstring, string. The SNMP type is mapped to one of two RRD
+     * supported data types COUNTER or GAUGE, or the string.properties file.
+     * The mapping is as follows: SNMP counter -> RRD COUNTER; SNMP gauge,
+     * timeticks, integer, octetstring -> RRD GAUGE; SNMP string -> String
+     * properties file
+     */
     public String getType() {
         return m_type;
     }
 
+    public void setType(final String type) {
+        m_type = type == null? type : type.intern();
+    }
+
     /**
-     * Overrides the java.lang.Object.hashCode method.
-     * <p>
-     * The following steps came from <b>Effective Java Programming
-     * Language Guide</b> by Joshua Bloch, Chapter 3
-     * 
-     * @return a hash code value for the object.
+     * Maximum Value. In order to correctly manage counter wraps, it is
+     * possible to add a maximum value for a collection. For example, a 32-bit
+     * counter would have a max value of 4294967295.
      */
+    public String getMaxval() {
+        return m_maxval;
+    }
+
+    public void setMaxval(final String maxval) {
+        m_maxval = maxval == null? null : maxval.intern();
+    }
+
+    /**
+     * Minimum Value. For completeness, adding the ability to use a minimum
+     * value.
+     */
+    public String getMinval() {
+        return m_minval;
+    }
+
+    public void setMinval(final String minval) {
+        m_minval = minval == null? null : minval.intern();
+    }
+
     @Override
     public int hashCode() {
-        int result = 17;
-        
-        if (m_oid != null) {
-           result = 37 * result + m_oid.hashCode();
-        }
-        if (m_instance != null) {
-           result = 37 * result + m_instance.hashCode();
-        }
-        if (m_alias != null) {
-           result = 37 * result + m_alias.hashCode();
-        }
-        if (m_type != null) {
-           result = 37 * result + m_type.hashCode();
-        }
-        if (m_maxval != null) {
-           result = 37 * result + m_maxval.hashCode();
-        }
-        if (m_minval != null) {
-           result = 37 * result + m_minval.hashCode();
-        }
-        
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((m_alias == null) ? 0 : m_alias.hashCode());
+        result = prime * result + ((m_instance == null) ? 0 : m_instance.hashCode());
+        result = prime * result + ((m_maxval == null) ? 0 : m_maxval.hashCode());
+        result = prime * result + ((m_minval == null) ? 0 : m_minval.hashCode());
+        result = prime * result + ((m_oid == null) ? 0 : m_oid.hashCode());
+        result = prime * result + ((m_type == null) ? 0 : m_type.hashCode());
         return result;
     }
 
-    /**
-     * Method isValid.
-     * 
-     * @return true if this object is valid according to the schema
-     */
-    @Deprecated
-    public boolean isValid() {
-        try {
-            validate();
-        } catch (ValidationException vex) {
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof MibObj)) {
+            return false;
+        }
+        final MibObj other = (MibObj) obj;
+        if (m_alias == null) {
+            if (other.m_alias != null) {
+                return false;
+            }
+        } else if (!m_alias.equals(other.m_alias)) {
+            return false;
+        }
+        if (m_instance == null) {
+            if (other.m_instance != null) {
+                return false;
+            }
+        } else if (!m_instance.equals(other.m_instance)) {
+            return false;
+        }
+        if (m_maxval == null) {
+            if (other.m_maxval != null) {
+                return false;
+            }
+        } else if (!m_maxval.equals(other.m_maxval)) {
+            return false;
+        }
+        if (m_minval == null) {
+            if (other.m_minval != null) {
+                return false;
+            }
+        } else if (!m_minval.equals(other.m_minval)) {
+            return false;
+        }
+        if (m_oid == null) {
+            if (other.m_oid != null) {
+                return false;
+            }
+        } else if (!m_oid.equals(other.m_oid)) {
+            return false;
+        }
+        if (m_type == null) {
+            if (other.m_type != null) {
+                return false;
+            }
+        } else if (!m_type.equals(other.m_type)) {
             return false;
         }
         return true;
-    }
-
-    /**
-     * 
-     * 
-     * @param out
-     * @throws MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     * @throws ValidationException if this
-     * object is an invalid instance according to the schema
-     */
-    @Deprecated
-    public void marshal(final java.io.Writer out)
-    throws MarshalException, ValidationException {
-        Marshaller.marshal(this, out);
-    }
-
-    /**
-     * 
-     * 
-     * @param handler
-     * @throws java.io.IOException if an IOException occurs during
-     * marshaling
-     * @throws ValidationException if this
-     * object is an invalid instance according to the schema
-     * @throws MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     */
-    @Deprecated
-    public void marshal(final org.xml.sax.ContentHandler handler)
-    throws java.io.IOException, MarshalException, ValidationException {
-        Marshaller.marshal(this, handler);
-    }
-
-    /**
-     * Sets the value of field 'alias'. The field 'alias' has the
-     * following description: a human readable name for the object
-     * (such as
-     *  "ifOctetsIn"). NOTE: This value is used as the RRD file
-     * name and
-     *  data source name. RRD only supports data source names up to
-     * 19 chars
-     *  in length. If the SNMP data collector encounters an alias
-     * which
-     *  exceeds 19 characters it will be truncated.
-     * 
-     * @param alias the value of field 'alias'.
-     */
-    public void setAlias(final String alias) {
-        m_alias = alias.intern();
-    }
-
-    /**
-     * Sets the value of field 'instance'. The field 'instance' has
-     * the following description: instance identifier. Only valid
-     * instance identifier
-     *  values are a positive integer value or the keyword
-     * "ifIndex" which
-     *  indicates that the ifIndex of the interface is to be
-     * substituted for
-     *  the instance value for each interface the oid is retrieved
-     *  for.
-     * 
-     * @param instance the value of field 'instance'.
-     */
-    public void setInstance(final String instance) {
-        m_instance = instance.intern();
-    }
-
-    /**
-     * Sets the value of field 'maxval'. The field 'maxval' has the
-     * following description: Maximum Value. In order to correctly
-     * manage counter
-     *  wraps, it is possible to add a maximum value for a
-     * collection. For
-     *  example, a 32-bit counter would have a max value of
-     *  4294967295.
-     * 
-     * @param maxval the value of field 'maxval'.
-     */
-    public void setMaxval(final String maxval) {
-        m_maxval = maxval.intern();
-    }
-
-    /**
-     * Sets the value of field 'minval'. The field 'minval' has the
-     * following description: Minimum Value. For completeness,
-     * adding the ability
-     *  to use a minimum value.
-     * 
-     * @param minval the value of field 'minval'.
-     */
-    public void setMinval(final String minval) {
-        m_minval = minval.intern();
-    }
-
-    /**
-     * Sets the value of field 'oid'. The field 'oid' has the
-     * following description: object identifier
-     * 
-     * @param oid the value of field 'oid'.
-     */
-    public void setOid(final String oid) {
-        m_oid = oid.intern();
-    }
-
-    /**
-     * Sets the value of field 'type'. The field 'type' has the
-     * following description: SNMP data type SNMP supported types:
-     * counter, gauge,
-     *  timeticks, integer, octetstring, string. The SNMP type is
-     * mapped to
-     *  one of two RRD supported data types COUNTER or GAUGE, or
-     * the
-     *  string.properties file. The mapping is as follows: SNMP
-     * counter
-     *  -> RRD COUNTER; SNMP gauge, timeticks, integer, octetstring
-     * ->
-     *  RRD GAUGE; SNMP string -> String properties file
-     * 
-     * @param type the value of field 'type'.
-     */
-    public void setType(final String type) {
-        m_type = type.intern();
-    }
-
-    /**
-     * Method unmarshal.
-     * 
-     * @param reader
-     * @throws MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     * @throws ValidationException if this
-     * object is an invalid instance according to the schema
-     * @return the unmarshaled
-     * MibObj
-     */
-    @Deprecated
-    public static MibObj unmarshal(final Reader reader) throws MarshalException, ValidationException {
-        return (MibObj)Unmarshaller.unmarshal(MibObj.class, reader);
-    }
-
-    /**
-     * 
-     * 
-     * @throws ValidationException if this
-     * object is an invalid instance according to the schema
-     */
-    public void validate() throws ValidationException {
-        Validator validator = new Validator();
-        validator.validate(this);
     }
 
 }

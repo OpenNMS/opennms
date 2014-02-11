@@ -67,7 +67,7 @@ public class DataCollectionConfigFile {
         DatacollectionConfig dataCollectionConfig = getDataCollectionConfig();
         visitor.visitDataCollectionConfig(dataCollectionConfig);
         
-        for (Iterator<SnmpCollection> it = dataCollectionConfig.getSnmpCollectionCollection().iterator(); it.hasNext();) {
+        for (Iterator<SnmpCollection> it = dataCollectionConfig.getSnmpCollections().iterator(); it.hasNext();) {
             SnmpCollection snmpCollection = it.next();
             doVisit(snmpCollection, visitor);
         }
@@ -91,7 +91,7 @@ public class DataCollectionConfigFile {
 
     private void doVisit(Groups groups, DataCollectionVisitor visitor) {
         
-        for (Iterator<Group> it = groups.getGroupCollection().iterator(); it.hasNext();) {
+        for (Iterator<Group> it = groups.getGroups().iterator(); it.hasNext();) {
             Group group = it.next();
             doVisit(group, visitor);
         }
@@ -102,13 +102,13 @@ public class DataCollectionConfigFile {
         visitor.visitGroup(group);
         
         // mibObj
-        for (Iterator<MibObj> it = group.getMibObjCollection().iterator(); it.hasNext();) {
+        for (Iterator<MibObj> it = group.getMibObjs().iterator(); it.hasNext();) {
             MibObj mibObj = it.next();
             doVisit(mibObj, visitor);
         }
         
         // subGroups
-        for (Iterator<String> it = group.getIncludeGroupCollection().iterator(); it.hasNext();) {
+        for (Iterator<String> it = group.getIncludeGroups().iterator(); it.hasNext();) {
             String subGroup = it.next();
             doVisitSubGroup(subGroup, visitor);
         }
@@ -127,7 +127,7 @@ public class DataCollectionConfigFile {
     }
 
     private void doVisit(Systems systems, DataCollectionVisitor visitor) {
-        for (Iterator<SystemDef> it = systems.getSystemDefCollection().iterator(); it.hasNext();) {
+        for (Iterator<SystemDef> it = systems.getSystemDefs().iterator(); it.hasNext();) {
             SystemDef systemDef = it.next();
             doVisit(systemDef, visitor);
         }
@@ -152,7 +152,7 @@ public class DataCollectionConfigFile {
         visitor.visitCollect(collect);
         
         // visit all the includeGroup specs
-        for (Iterator<String> it = collect.getIncludeGroupCollection().iterator(); it.hasNext();) {
+        for (Iterator<String> it = collect.getIncludeGroups().iterator(); it.hasNext();) {
             String includeGroup = it.next();
             doVisitIncludeGroup(includeGroup, visitor);
             
@@ -194,7 +194,7 @@ public class DataCollectionConfigFile {
 
     private void doVisit(Rrd rrd, DataCollectionVisitor visitor) {
         visitor.visitRrd(rrd);
-        for (Iterator<String> it = rrd.getRraCollection().iterator(); it.hasNext();) {
+        for (Iterator<String> it = rrd.getRras().iterator(); it.hasNext();) {
             String rra = it.next();
             doVisitRra(rra, visitor);
         }
