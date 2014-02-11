@@ -37,6 +37,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.netmgt.xml.eventconf.Events.EventCallback;

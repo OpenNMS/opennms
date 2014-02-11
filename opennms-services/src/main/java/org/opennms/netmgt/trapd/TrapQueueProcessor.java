@@ -35,7 +35,7 @@ import java.util.concurrent.Callable;
 
 import org.opennms.core.concurrent.WaterfallCallable;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.EventConfDao;
+import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.snmp.TrapNotification;
@@ -229,7 +229,7 @@ class TrapQueueProcessor implements WaterfallCallable, InitializingBean {
     /**
      * <p>getEventConfDao</p>
      *
-     * @return a {@link org.opennms.netmgt.config.EventConfDao} object.
+     * @return a {@link org.opennms.netmgt.config.api.EventConfDao} object.
      */
     public EventConfDao getEventConfDao() {
         return m_eventConfDao;
@@ -238,7 +238,7 @@ class TrapQueueProcessor implements WaterfallCallable, InitializingBean {
     /**
      * <p>setEventConfDao</p>
      *
-     * @param eventConfDao a {@link org.opennms.netmgt.config.EventConfDao} object.
+     * @param eventConfDao a {@link org.opennms.netmgt.config.api.EventConfDao} object.
      */
     public void setEventConfDao(EventConfDao eventConfDao) {
         m_eventConfDao = eventConfDao;

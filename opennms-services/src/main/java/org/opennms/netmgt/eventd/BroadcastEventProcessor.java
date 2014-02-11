@@ -31,7 +31,7 @@ package org.opennms.netmgt.eventd;
 import java.util.List;
 
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.EventConfDao;
+import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.model.events.EventListener;
@@ -59,7 +59,7 @@ public class BroadcastEventProcessor implements EventListener {
      * <p>Constructor for BroadcastEventProcessor.</p>
      *
      * @param eventIpcManager a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
-     * @param eventConfDao a {@link org.opennms.netmgt.config.EventConfDao} object.
+     * @param eventConfDao a {@link org.opennms.netmgt.config.api.EventConfDao} object.
      */
     public BroadcastEventProcessor(EventIpcManager eventIpcManager, EventConfDao eventConfDao) {
         Assert.notNull(eventIpcManager, "argument eventIpcManager must not be null");

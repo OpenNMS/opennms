@@ -36,7 +36,7 @@ import org.opennms.features.vaadin.datacollection.DataCollectionWindow;
 import org.opennms.features.vaadin.events.EventWindow;
 import org.opennms.features.vaadin.mibcompiler.api.MibParser;
 import org.opennms.netmgt.config.DataCollectionConfigDao;
-import org.opennms.netmgt.config.EventConfDao;
+import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.xml.eventconf.Events;

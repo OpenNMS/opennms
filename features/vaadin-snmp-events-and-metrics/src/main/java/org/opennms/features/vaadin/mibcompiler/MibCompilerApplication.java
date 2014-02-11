@@ -29,7 +29,7 @@ package org.opennms.features.vaadin.mibcompiler;
 
 import org.opennms.features.vaadin.mibcompiler.api.MibParser;
 import org.opennms.netmgt.config.DataCollectionConfigDao;
-import org.opennms.netmgt.config.EventConfDao;
+import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.model.events.EventProxy;
 
 import com.vaadin.annotations.Theme;
