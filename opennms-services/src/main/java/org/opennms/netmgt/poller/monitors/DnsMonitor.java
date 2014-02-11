@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -52,6 +52,7 @@ import org.xbill.DNS.DClass;
 import org.xbill.DNS.Message;
 import org.xbill.DNS.Name;
 import org.xbill.DNS.Record;
+import org.xbill.DNS.Section;
 import org.xbill.DNS.SimpleResolver;
 import org.xbill.DNS.Type;
 
@@ -90,6 +91,16 @@ final public class DnsMonitor extends AbstractServiceMonitor {
      * default even though it makes little sense.
      */
     private static final int[] DEFAULT_FATAL_RESP_CODES = { 2 };
+    
+    /**
+     * Default value for minimum number of answers in response
+     */
+    private static final int DEFAULT_MIN_ANSWERS = 0;
+    
+    /**
+     * Default value for maximum number of answers in response
+     */
+    private static final int DEFAULT_MAX_ANSWERS = Integer.MAX_VALUE;
 
     /**
      * {@inheritDoc}
@@ -138,12 +149,16 @@ final public class DnsMonitor extends AbstractServiceMonitor {
             fatalCodes.add(code);
         }
         
+
+	int minAnswers = ParameterMap.getKeyedInteger(parameters, "min-answers", DEFAULT_MIN_ANSWERS);
+	int maxAnswers = ParameterMap.getKeyedInteger(parameters, "max-answers", DEFAULT_MAX_ANSWERS);
+
         // get the address and DNS address request
         //
         final InetAddress addr = iface.getAddress();
 
         PollStatus serviceStatus = null;
-        serviceStatus = pollDNS(timeoutTracker, port, addr, lookup, fatalCodes);
+        serviceStatus = pollDNS(timeoutTracker, port, addr, lookup, fatalCodes, minAnswers, maxAnswers);
 
         if (serviceStatus == null) {
             serviceStatus = logDown(Level.DEBUG, "Never received valid DNS response for address: " + addr);
@@ -156,7 +171,7 @@ final public class DnsMonitor extends AbstractServiceMonitor {
         return serviceStatus;
     }
 
-    private PollStatus pollDNS(final TimeoutTracker timeoutTracker, final int port, final InetAddress address, final String lookup, final List<Integer> fatalCodes) {
+    private PollStatus pollDNS(final TimeoutTracker timeoutTracker, final int port, final InetAddress address, final String lookup, final List<Integer> fatalCodes, int minAnswers, int maxAnswers) {
     	final String addr = InetAddressUtils.str(address);
         for (timeoutTracker.reset(); timeoutTracker.shouldRetry(); timeoutTracker.nextAttempt()) {
             try {
@@ -178,9 +193,21 @@ final public class DnsMonitor extends AbstractServiceMonitor {
 
                 if (fatalCodes.contains(rcode)) {
                     return logDown(Level.DEBUG, "Received an invalid DNS response for address: " + addr);
+                } else if (minAnswers != DEFAULT_MIN_ANSWERS || maxAnswers != DEFAULT_MAX_ANSWERS) {
+                    int numAnswers = response.getSectionArray(Section.ANSWER).length;
+                    boolean tooFewAnswers = numAnswers < minAnswers;
+                    boolean tooManyAnswers = numAnswers > maxAnswers;
+                    if (tooFewAnswers) {
+                        return logDown(Level.WARN, "Response contained only " + numAnswers + " answer(s), but at least " + minAnswers + " answers(s) are needed.");
+                    }
+                    if (tooManyAnswers) {
+                        return logDown(Level.WARN, "Response contained " + numAnswers + " answer(s), but " + minAnswers + " or fewer answers(s) are needed.");
+                    }
+                    return logUp(Level.DEBUG, responseTime, "valid DNS response received with " +numAnswers + " answer(s), responseTime = " + responseTime + "ms");
                 } else {
-                    return logUp(Level.DEBUG, responseTime, "valid DNS request received, responseTime= " + responseTime + "ms");
+                    return logUp(Level.DEBUG, responseTime, "valid DNS response received, responseTime = " + responseTime + "ms");
                 }
+
             } catch (final InterruptedIOException e) {
                 // No response received, retry without marking the poll failed. If we get this condition over and over until 
                 // the retries are exhausted, it will leave serviceStatus null and we'll get the log message at the bottom 
@@ -192,9 +219,9 @@ final public class DnsMonitor extends AbstractServiceMonitor {
                 return logDown(Level.WARN, "IOException while polling address: " + addr + " " + e.getMessage(), e);
             }
         }
-       
+
         return logDown(Level.DEBUG, "Never received valid DNS response for address: " + addr);
     }
 
-    
+
 }
