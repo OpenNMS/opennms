@@ -52,9 +52,6 @@ import org.jsmiparser.smi.SmiPrimitiveType;
 import org.jsmiparser.smi.SmiRow;
 import org.jsmiparser.smi.SmiTrapType;
 import org.jsmiparser.smi.SmiVariable;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.features.namecutter.NameCutter;
 import org.opennms.features.vaadin.mibcompiler.api.MibParser;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
@@ -73,6 +70,8 @@ import org.opennms.netmgt.xml.eventconf.Logmsg;
 import org.opennms.netmgt.xml.eventconf.Mask;
 import org.opennms.netmgt.xml.eventconf.Maskelement;
 import org.opennms.netmgt.xml.eventconf.Varbindsdecode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * JSMIParser implementation of the interface MibParser.
@@ -251,7 +250,7 @@ public class JsmiMibParser implements MibParser, Serializable {
                     mibObj.setType(typeName);
                     group.addMibObj(mibObj);
                     if (typeName.equals("string") && resourceType != null) {
-                        for (ResourceType rs : dcGroup.getResourceTypeCollection()) {
+                        for (ResourceType rs : dcGroup.getResourceTypes()) {
                             if (rs.getName().equals(resourceType) && rs.getResourceLabel().equals("${index}")) {
                                 rs.setResourceLabel("${" + v.getId() + "} (${index})");
                             }
@@ -448,7 +447,7 @@ public class JsmiMibParser implements MibParser, Serializable {
      * @return the group
      */
     protected Group getGroup(DatacollectionGroup data, String groupName, String resourceType) {
-        for (Group group : data.getGroupCollection()) {
+        for (Group group : data.getGroups()) {
             if (group.getName().equals(groupName))
                 return group;
         }

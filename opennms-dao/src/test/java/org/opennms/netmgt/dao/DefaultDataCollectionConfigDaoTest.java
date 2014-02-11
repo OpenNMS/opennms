@@ -149,8 +149,8 @@ public class DefaultDataCollectionConfigDaoTest {
     private void executeSystemDefCount(DefaultDataCollectionConfigDao dao, int expectedCount) {
         DatacollectionConfig config = dao.getContainer().getObject();
         int systemDefCount = 0;
-        for (SnmpCollection collection : config.getSnmpCollectionCollection()) {
-            systemDefCount += collection.getSystems().getSystemDefCount();
+        for (SnmpCollection collection : config.getSnmpCollections()) {
+            systemDefCount += collection.getSystems().getSystemDefs().size();
         }
         Assert.assertEquals(expectedCount, systemDefCount);
     }
@@ -175,16 +175,16 @@ public class DefaultDataCollectionConfigDaoTest {
         Set<String> systemDefs = new HashSet<String>();
         Set<String> groups = new HashSet<String>();
 
-        for (SnmpCollection collection : refObj.getSnmpCollectionCollection()) {
-            for (SystemDef sd : collection.getSystems().getSystemDefCollection()) {
+        for (SnmpCollection collection : refObj.getSnmpCollections()) {
+            for (SystemDef sd : collection.getSystems().getSystemDefs()) {
                 systemDefs.add(sd.getName());
-                for (String group : sd.getCollect().getIncludeGroupCollection()) {
+                for (String group : sd.getCollect().getIncludeGroups()) {
                     groups.add(group);
                 }
             }
-            for (Group g : collection.getGroups().getGroupCollection()) {
+            for (Group g : collection.getGroups().getGroups()) {
                 if (groups.contains(g.getName())) {
-                    for (MibObj mo : g.getMibObjCollection()) {
+                    for (MibObj mo : g.getMibObjs()) {
                         String i = mo.getInstance();
                         if (!i.matches("\\d+") && !i.equals("ifIndex"))
                             resourceTypes.add(mo.getInstance());
@@ -193,17 +193,17 @@ public class DefaultDataCollectionConfigDaoTest {
             }
         }
 
-        for (SnmpCollection collection : newObj.getSnmpCollectionCollection()) {
-            for (Group g : collection.getGroups().getGroupCollection()) {
-                for (MibObj mo : g.getMibObjCollection()) {
+        for (SnmpCollection collection : newObj.getSnmpCollections()) {
+            for (Group g : collection.getGroups().getGroups()) {
+                for (MibObj mo : g.getMibObjs()) {
                     String i = mo.getInstance();
                     if (!i.matches("\\d+") && !i.equals("ifIndex"))
                         resourceTypes.remove(mo.getInstance());
                 }
             }
-            for (SystemDef sd : collection.getSystems().getSystemDefCollection()) {
+            for (SystemDef sd : collection.getSystems().getSystemDefs()) {
                 systemDefs.remove(sd.getName());
-                for (String group : sd.getCollect().getIncludeGroupCollection()) {
+                for (String group : sd.getCollect().getIncludeGroups()) {
                     groups.remove(group);
                 }
             }

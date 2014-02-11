@@ -42,8 +42,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.Group;
@@ -53,6 +51,8 @@ import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
 import org.opennms.netmgt.config.datacollection.SystemDef;
 import org.opennms.netmgt.config.datacollection.Systems;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.dao.DataAccessResourceFailureException;
 
@@ -86,14 +86,14 @@ public class DataCollectionConfigParser {
      * @param collection
      */
     public void parseCollection(SnmpCollection collection) {
-        if (collection.getIncludeCollectionCount() > 0) {
+        if (collection.getIncludeCollections().size() > 0) {
             parseExternalResources();
             checkCollection(collection);
             // Add systemDefs and dependencies
-            for (IncludeCollection include : collection.getIncludeCollection()) {
+            for (IncludeCollection include : collection.getIncludeCollections()) {
                 if (include.getDataCollectionGroup() != null) {
                     // Include All system definitions from a specific datacollection group
-                    addDatacollectionGroup(collection, include.getDataCollectionGroup(), include.getExcludeFilterCollection());
+                    addDatacollectionGroup(collection, include.getDataCollectionGroup(), include.getExcludeFilters());
                 } else {
                     if (include.getSystemDef() == null) {
                         throwException("You must specify at least the data collection group name or system definition name for the include-collection attribute", null);
@@ -117,7 +117,7 @@ public class DataCollectionConfigParser {
         parseExternalResources();
         Set<ResourceType> resourceTypes = new HashSet<ResourceType>();
         for (DatacollectionGroup group : externalGroupsMap.values()) {
-            for (ResourceType rt : group.getResourceTypeCollection()) {
+            for (ResourceType rt : group.getResourceTypes()) {
                 if (!contains(resourceTypes, rt))
                     resourceTypes.add(rt);
             }
@@ -252,7 +252,7 @@ public class DataCollectionConfigParser {
      */
     private SystemDef getSystemDef(String systemDefName) {
         for (DatacollectionGroup group : externalGroupsMap.values()) {
-            for (SystemDef sd : group.getSystemDefCollection()) {
+            for (SystemDef sd : group.getSystemDefs()) {
                 if (sd.getName().equals(systemDefName)) {
                     return sd;
                 }
@@ -269,7 +269,7 @@ public class DataCollectionConfigParser {
      */
     private Group getMibObjectGroup(String groupName) {
         for (DatacollectionGroup group : externalGroupsMap.values()) {
-            for (Group g : group.getGroupCollection()) {
+            for (Group g : group.getGroups()) {
                 if (g.getName().equals(groupName)) {
                     return g;
                 }
@@ -292,18 +292,18 @@ public class DataCollectionConfigParser {
             throwException("Can't find system definition " + systemDefName, null);
         }
         // Add System Definition to target SNMP collection
-        if (contains(collection.getSystems().getSystemDefCollection(), systemDef)) {
+        if (contains(collection.getSystems().getSystemDefs(), systemDef)) {
             LOG.warn("addSystemDef: system definition {} already exist on SNMP collection {}", collection.getName(), systemDefName);
         } else {
             LOG.debug("addSystemDef: adding system definition {} to snmp-collection {}", collection.getName(), systemDef.getName());
             collection.getSystems().addSystemDef(systemDef);
             // Add Groups
-            for (String groupName : systemDef.getCollect().getIncludeGroupCollection()) {
+            for (String groupName : systemDef.getCollect().getIncludeGroups()) {
                 Group group = getMibObjectGroup(groupName);
                 if (group == null) {
                     LOG.warn("addSystemDef: group {} does not exist on global container", groupName);
                 } else {
-                    if (contains(collection.getGroups().getGroupCollection(), group)) {
+                    if (contains(collection.getGroups().getGroups(), group)) {
                         LOG.debug("addSystemDef: group {} already exist on SNMP collection {}", collection.getName(), groupName);
                     } else {
                         LOG.debug("addSystemDef: adding mib object group {} to snmp-collection {}", collection.getName(), group.getName());
@@ -327,7 +327,7 @@ public class DataCollectionConfigParser {
             throwException("Group " + dataCollectionGroupName + " does not exist.", null);
         }
         LOG.debug("addDatacollectionGroup: adding all definitions from group {} to snmp-collection {}", collection.getName(), group.getName());
-        for (SystemDef systemDef : group.getSystemDefCollection()) {
+        for (SystemDef systemDef : group.getSystemDefs()) {
             String sysDef = systemDef.getName();
             if (shouldAdd(sysDef, excludeList)) {
                 addSystemDef(collection, sysDef);

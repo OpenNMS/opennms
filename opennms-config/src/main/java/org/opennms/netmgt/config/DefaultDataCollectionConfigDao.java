@@ -93,7 +93,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
         final DataCollectionConfigParser parser = new DataCollectionConfigParser(getConfigDirectory());
 
         // Updating Configured Collections
-        for (final SnmpCollection collection : config.getSnmpCollectionCollection()) {
+        for (final SnmpCollection collection : config.getSnmpCollections()) {
             parser.parseCollection(collection);
         }
 
@@ -105,7 +105,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
         }
         resourceTypeCollection.setGroups(new Groups());
         resourceTypeCollection.setSystems(new Systems());
-        config.getSnmpCollectionCollection().add(0, resourceTypeCollection);
+        config.insertSnmpCollection(resourceTypeCollection);
         dataCollectionGroups.clear();
         dataCollectionGroups.addAll(parser.getExternalGroupMap().keySet());
         return config;
@@ -190,7 +190,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
 
         final List<SystemDef> systemList = new ArrayList<SystemDef>();
 
-        for (final SystemDef system : systems.getSystemDefCollection()) {
+        for (final SystemDef system : systems.getSystemDefs()) {
             // Match on sysoid?
             boolean bMatchSysoid = false;
 
@@ -231,8 +231,8 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
                     List<String> addrList = null;
                     List<String> maskList = null;
                     if (system.getIpList() != null) {
-                        addrList = system.getIpList().getIpAddrCollection();
-                        maskList = system.getIpList().getIpAddrMaskCollection();
+                        addrList = system.getIpList().getIpAddresses();
+                        maskList = system.getIpList().getIpAddressMasks();
                     }
 
                     // If either Address list or Mask list exist then 'anAddress'
@@ -276,7 +276,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
 
         for (final SystemDef system : systemList) {
             // Next process each of the SystemDef's groups
-            for (final String grpName : system.getCollect().getIncludeGroupCollection()) {
+            for (final String grpName : system.getCollect().getIncludeGroups()) {
                 processGroupName(cName, grpName, ifType, mibObjectList);
             }
         }
@@ -288,9 +288,9 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
     public Map<String, ResourceType> getConfiguredResourceTypes() {
         final Map<String,ResourceType> map = new HashMap<String,ResourceType>();
 
-        final Collection<SnmpCollection> snmpCollections = getContainer().getObject().getSnmpCollectionCollection();
+        final Collection<SnmpCollection> snmpCollections = getContainer().getObject().getSnmpCollections();
         for (final SnmpCollection collection : snmpCollections) {
-            for (final ResourceType resourceType : collection.getResourceTypeCollection()) {
+            for (final ResourceType resourceType : collection.getResourceTypes()) {
                 map.put(resourceType.getName(), resourceType);
             }
         }
@@ -331,7 +331,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
     @Override
     public List<String> getRRAList(final String collectionName) {
         final SnmpCollection collection = getSnmpCollection(getContainer(), collectionName);
-        return collection == null ? null : collection.getRrd().getRraCollection();
+        return collection == null ? null : collection.getRrd().getRras();
     }
 
     @Override
@@ -354,7 +354,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
     /* Private Methods */
 
     private static SnmpCollection getSnmpCollection(final FileReloadContainer<DatacollectionConfig> container, final String collectionName) {
-        for (final SnmpCollection collection : container.getObject().getSnmpCollection()) {
+        for (final SnmpCollection collection : container.getObject().getSnmpCollections()) {
             if (collection.getName().equals(collectionName)) return collection;
         }
         return null;
@@ -395,7 +395,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
         LOG.debug("processGroupName:  processing group: {} groupIfType: {} ifType: {}", groupName, group.getIfType(), ifType);
 
         // Process any sub-groups contained within this group
-        for (final String includeGroup : group.getIncludeGroupCollection()) {
+        for (final String includeGroup : group.getIncludeGroups()) {
             processGroupName(cName, includeGroup, ifType, mibObjectList);
         }
 
@@ -487,7 +487,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
 
         if (addGroupObjects) {
             LOG.debug("processGroupName: OIDs from group '{}:{}' are included for ifType: {}", group.getName(), group.getIfType(), ifType);
-            processObjectList(groupName, groupIfType, group.getMibObjCollection(), mibObjectList);
+            processObjectList(groupName, groupIfType, group.getMibObjs(), mibObjectList);
         } else {
             LOG.debug("processGroupName: OIDs from group '{}:{}' are excluded for ifType: {}", group.getName(), group.getIfType(), ifType);
         }
@@ -553,13 +553,13 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
         // 
         final Map<String,Map<String,Group>> collectionGroupMap = new HashMap<String,Map<String,Group>>();
 
-        for (final SnmpCollection collection : container.getObject().getSnmpCollectionCollection()) {
+        for (final SnmpCollection collection : container.getObject().getSnmpCollections()) {
             // Build group map for this collection
             final Map<String,Group> groupMap = new HashMap<String,Group>();
 
             final Groups groups = collection.getGroups();
             if (groups != null) {
-                for (final Group group : groups.getGroupCollection()) {
+                for (final Group group : groups.getGroups()) {
                     groupMap.put(group.getName(), group);
                 }
             }
@@ -577,11 +577,11 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
         }
 
         final String allowableValues = "any positive number, 'ifIndex', or any of the configured resourceTypes: " + configuredString;
-        for (final SnmpCollection collection : container.getObject().getSnmpCollectionCollection()) {
+        for (final SnmpCollection collection : container.getObject().getSnmpCollections()) {
             final Groups groups = collection.getGroups();
             if (groups != null) {
-				for (final Group group : groups.getGroupCollection()) {
-	                for (final MibObj mibObj : group.getMibObjCollection()) {
+				for (final Group group : groups.getGroups()) {
+	                for (final MibObj mibObj : group.getMibObjs()) {
 	                    final String instance = mibObj.getInstance();
 	                    if (instance == null)                            continue;
                         if (MibObject.INSTANCE_IFINDEX.equals(instance)) continue;
@@ -614,9 +614,9 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
     @Override
     public List<String> getAvailableSystemDefs() {
         List<String> systemDefs = new ArrayList<String>();
-        for (final SnmpCollection collection : getContainer().getObject().getSnmpCollectionCollection()) {
+        for (final SnmpCollection collection : getContainer().getObject().getSnmpCollections()) {
             if (collection.getSystems() != null) {
-                for (final SystemDef systemDef : collection.getSystems().getSystemDefCollection()) {
+                for (final SystemDef systemDef : collection.getSystems().getSystemDefs()) {
                     systemDefs.add(systemDef.getName());
                 }
             }
@@ -627,9 +627,9 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
     @Override
     public List<String> getAvailableMibGroups() {
         List<String> groups = new ArrayList<String>();
-        for (final SnmpCollection collection : getContainer().getObject().getSnmpCollectionCollection()) {
+        for (final SnmpCollection collection : getContainer().getObject().getSnmpCollections()) {
             if (collection.getGroups() != null) {
-                for (final Group group : collection.getGroups().getGroupCollection()) {
+                for (final Group group : collection.getGroups().getGroups()) {
                     groups.add(group.getName());
                 }
             }

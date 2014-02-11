@@ -80,14 +80,14 @@ public class GroupPanel extends Panel {
 
         // Adding all resource types already defined on this source
         final List<String> resourceTypes = new ArrayList<String>();
-        for (ResourceType type : source.getResourceTypeCollection()) {
+        for (ResourceType type : source.getResourceTypes()) {
             resourceTypes.add(type.getName());
         }
 
         // Adding all defined resource types
         resourceTypes.addAll(dataCollectionConfigDao.getConfiguredResourceTypes().keySet());
 
-        groupTable = new GroupTable(source.getGroupCollection());
+        groupTable = new GroupTable(source.getGroups());
 
         final GroupForm groupForm = new GroupForm(resourceTypes);
         groupForm.setVisible(false);

@@ -30,6 +30,7 @@ package org.opennms.core.db;
 
 import java.io.IOException;
 import java.net.URI;
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -99,6 +100,18 @@ public abstract class XADataSourceFactory {
 			xaDataSource.setDatabaseName(ds.getDatabaseName());
 			xaDataSource.setUser(ds.getUserName());
 			xaDataSource.setPassword(ds.getPassword());
+
+			try {
+				xaDataSource.setLoginTimeout(10);
+			} catch (SQLException e) {
+				// This should never be thrown
+				throw new UnsupportedOperationException("Cannot set login timeout on PGXADataSource", e);
+			}
+
+			// Set the socket timeout so that connections that are stuck reading from
+			// the database will be closed after the timeout
+			xaDataSource.setSocketTimeout(120);
+
 			setInstance(dsName, xaDataSource);
 		} else {
 			throw new UnsupportedOperationException("Data source scheme not supported: " + url.getScheme());

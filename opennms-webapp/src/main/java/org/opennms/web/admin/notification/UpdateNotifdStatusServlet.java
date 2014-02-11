@@ -64,10 +64,10 @@ public class UpdateNotifdStatusServlet extends HttpServlet {
             LOG.info("Setting notifd status to {} for user {}", request.getParameter("status"), request.getRemoteUser());
             if (request.getParameter("status").equals("on")) {
                 NotifdConfigFactory.getInstance().turnNotifdOn();
-                sendEvent("uei.opennms.org/internal/notificationsTurnedOn");
+                sendEvent("uei.opennms.org/internal/notificationsTurnedOn", request);
             } else {
                 NotifdConfigFactory.getInstance().turnNotifdOff();
-                sendEvent("uei.opennms.org/internal/notificationsTurnedOff");
+                sendEvent("uei.opennms.org/internal/notificationsTurnedOff", request);
             }
         } catch (Throwable e) {
             throw new ServletException("Could not update notification status: " + e.getMessage(), e);
@@ -78,8 +78,11 @@ public class UpdateNotifdStatusServlet extends HttpServlet {
         dispatcher.forward(request, response);
     }
 
-    protected void sendEvent(String uei) {
+    protected void sendEvent(String uei, HttpServletRequest request) {
         EventBuilder bldr = new EventBuilder(uei, "NotifdConfigFactory");
+        bldr.addParam("remoteUser", request.getRemoteUser());
+        bldr.addParam("remoteHost", request.getRemoteHost());
+        bldr.addParam("remoteAddr", request.getRemoteAddr());
     
         try {
             EventIpcManagerFactory.getIpcManager().sendNow(bldr.getEvent());

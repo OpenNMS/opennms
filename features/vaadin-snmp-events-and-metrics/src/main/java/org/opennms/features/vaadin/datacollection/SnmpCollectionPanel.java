@@ -83,7 +83,7 @@ public class SnmpCollectionPanel extends Panel {
         setCaption("SNMP Collections");
         addStyleName("light");
 
-        final List<SnmpCollection> snmpCollections = dataCollectionConfigDao.getRootDataCollection().getSnmpCollectionCollection();
+        final List<SnmpCollection> snmpCollections = dataCollectionConfigDao.getRootDataCollection().getSnmpCollections();
         final SnmpCollectionTable snmpCollectionTable = new SnmpCollectionTable(snmpCollections);
 
         final SnmpCollectionForm snmpCollectionForm = new SnmpCollectionForm(dataCollectionConfigDao);
@@ -164,7 +164,7 @@ public class SnmpCollectionPanel extends Panel {
                                    new ConfirmDialog.Listener() {
                     public void onClose(ConfirmDialog dialog) {
                         if (dialog.isConfirmed()) {
-                            final List<SnmpCollection> snmpCollections = dataCollectionConfigDao.getRootDataCollection().getSnmpCollectionCollection();
+                            final List<SnmpCollection> snmpCollections = dataCollectionConfigDao.getRootDataCollection().getSnmpCollections();
                             snmpCollectionTable.setSnmpCollections(snmpCollections);
                             snmpCollectionTable.select(null);
                             snmpCollectionForm.setVisible(false);
@@ -214,7 +214,7 @@ public class SnmpCollectionPanel extends Panel {
                 snmpCollection.setGroups(null);
                 snmpCollection.setSystems(null);
             }
-            dataCollectionConfig.setSnmpCollection(snmpCollections);
+            dataCollectionConfig.setSnmpCollections(snmpCollections);
             JaxbUtils.marshal(dataCollectionConfig, new FileWriter(file));
             logger.info("The data collection configuration has been saved.");
         } catch (Exception e) {

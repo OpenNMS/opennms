@@ -36,6 +36,7 @@ import javax.ws.rs.core.UriInfo;
 import org.opennms.core.config.api.ConfigurationResourceException;
 import org.opennms.web.rest.config.AgentConfigurationResource;
 import org.opennms.web.rest.config.CollectionConfigurationResource;
+import org.opennms.web.rest.config.DatacollectionConfigurationResource;
 import org.opennms.web.rest.config.PollerConfigurationResource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -71,6 +72,11 @@ public class ConfigRestService extends OnmsRestService {
         return m_context.getResource(CollectionConfigurationResource.class);
     }
     
+    @Path("datacollection")
+    public DatacollectionConfigurationResource getDatacollectionConfigurationResource() throws ConfigurationResourceException {
+        return m_context.getResource(DatacollectionConfigurationResource.class);
+    }
+
     @Path("agents")
     public AgentConfigurationResource getAgentConfigurationResource() throws ConfigurationResourceException {
         return m_context.getResource(AgentConfigurationResource.class);

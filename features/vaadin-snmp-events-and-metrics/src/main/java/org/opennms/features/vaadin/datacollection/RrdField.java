@@ -176,7 +176,7 @@ public class RrdField extends CustomField<Rrd> implements Button.ClickListener {
         if (stepState)
             step.setReadOnly(true);
         ArrayList<RRA> rras = new ArrayList<RRA>();
-        for (String rra : rrd.getRraCollection()) {
+        for (String rra : rrd.getRras()) {
             rras.add(new RRA(rra));
         }
         container.removeAllItems();

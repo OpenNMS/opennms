@@ -1,21 +1,28 @@
 package org.opennms.netmgt.config;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.ImmutableList;
+import static org.junit.Assert.assertTrue;
+import static org.opennms.core.test.ConfigurationTestUtils.getDaemonEtcDirectory;
+
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import org.apache.commons.io.FileUtils;
-import org.junit.Test;
-import org.junit.runners.Parameterized;
-import org.junit.runner.RunWith;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
-import static org.junit.Assert.assertTrue;
+import org.apache.commons.io.FileUtils;
 import org.junit.BeforeClass;
-import static org.opennms.core.test.ConfigurationTestUtils.getDaemonEtcDirectory;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.ImmutableList;
 
 /**
  * This is a meta test, testing the coverage of {@link WillItUnmarshalTest}.
@@ -29,13 +36,14 @@ import static org.opennms.core.test.ConfigurationTestUtils.getDaemonEtcDirectory
  */
 @RunWith(value = Parameterized.class)
 public class WillItUnmarshalCoverageMetaTest {
-    
+    private static final Logger LOG = LoggerFactory.getLogger(WillItUnmarshalCoverageMetaTest.class);
+
     /**
      * A set of test parameters to execute.
      * 
      * See {@link #files()} for detailed information.
      */
-    private static Set<File> FILES = new HashSet<File>();
+    private static SortedSet<String> FILES = new TreeSet<String>();
     
     /**
      * Adds all .xml files in the given director to the list of files to test
@@ -44,12 +52,17 @@ public class WillItUnmarshalCoverageMetaTest {
      * @param directory the directory to scan for .xml files
      * 
      * @param recursive iff true, the directory is scanned recursively
+     * @throws IOException 
      */
     private static void addDirectory(final File directory, final boolean recursive) {
-        for (final File file : FileUtils.listFiles(directory,
-                                                   new String[] { "xml" },
-                                                   recursive)) {
-            FILES.add(file);
+        for (final File file : FileUtils.listFiles(directory, new String[] { "xml" }, recursive)) {
+            try {
+                String canonicalPath = file.getCanonicalPath();
+                FILES.add(canonicalPath);
+            } catch (final IOException e) {
+                LOG.error("Failed to get canonical file for {}", file, e);
+                assert false;
+            }
         }
     }
     
@@ -60,21 +73,26 @@ public class WillItUnmarshalCoverageMetaTest {
      * @param file the file to ignore
      */
     private static void ignoreFile(final File file) {
-        assert FILES.remove(file);
+        try {
+            String canonicalPath = file.getCanonicalPath();
+            assert FILES.remove(canonicalPath);
+        } catch (final IOException e) {
+            LOG.error("Failed to get canonical file for {}", file, e);
+            assert false;
+        }
     }
     
     static {
         addDirectory(getDaemonEtcDirectory(), true);
-        
-        addDirectory(new File(getDaemonEtcDirectory(), "examples"), true);
-        addDirectory(new File(getDaemonEtcDirectory(), "events"), true);
-        addDirectory(new File(getDaemonEtcDirectory(), "datacollection"), true);
-        
-        ignoreFile(new File(getDaemonEtcDirectory(), "examples/correlation-engine.xml"));
-        ignoreFile(new File(getDaemonEtcDirectory(), "examples/drools-engine.xml"));
-        ignoreFile(new File(getDaemonEtcDirectory(), "examples/nodeParentRules-context.xml"));
+
+        LOG.debug("FILES.size() = {}", FILES.size());
+        final File droolsDirectory = new File(getDaemonEtcDirectory().getAbsolutePath() + File.separator + "examples" + File.separator + "drools-engine.d" + File.separator + "nodeParentRules");
+        System.err.println("drools directory = " + droolsDirectory);
+        ignoreFile(new File(droolsDirectory, "drools-engine.xml"));
+        ignoreFile(new File(droolsDirectory, "nodeParentRules-context.xml"));
+        ignoreFile(new File(droolsDirectory, "locationMonitorRules-context.xml"));
         ignoreFile(new File(getDaemonEtcDirectory(), "examples/nsclient-config.xml"));
-        
+
         ignoreFile(new File(getDaemonEtcDirectory(), "syslog/ApacheHTTPD.syslog.xml"));
         ignoreFile(new File(getDaemonEtcDirectory(), "syslog/LinuxKernel.syslog.xml"));
         ignoreFile(new File(getDaemonEtcDirectory(), "syslog/OpenSSH.syslog.xml"));
@@ -83,6 +101,7 @@ public class WillItUnmarshalCoverageMetaTest {
         
         ignoreFile(new File(getDaemonEtcDirectory(), "log4j2.xml"));
         ignoreFile(new File(getDaemonEtcDirectory(), "log4j2-archive-events.xml"));
+        LOG.debug("FILES.size() = {}", FILES.size());
     }
     
     /**
@@ -101,12 +120,13 @@ public class WillItUnmarshalCoverageMetaTest {
      */
     @Parameterized.Parameters
     public static Collection<Object[]> files() {
-        return ImmutableList.copyOf(Collections2.transform(FILES, new Function<File, Object[]>() {
+        ImmutableList<Object[]> list = ImmutableList.copyOf(Collections2.transform(FILES, new Function<String, Object[]>() {
             @Override
-            public Object[] apply(final File file) {
+            public Object[] apply(final String file) {
                 return new Object[] {file};
             }
         }));
+        return list;
     }
     
     /**
@@ -118,6 +138,7 @@ public class WillItUnmarshalCoverageMetaTest {
     public static void setUpClass() throws Exception {
         // Get the constructor of test to create the instances - we can assume
         // that there is only one constructor as JUnit requires it.
+        @SuppressWarnings("unchecked")
         final Constructor<WillItUnmarshalTest> constructor = (Constructor<WillItUnmarshalTest>) WillItUnmarshalTest.class.getConstructors()[0];
         
         // Build set of covered files
@@ -136,8 +157,8 @@ public class WillItUnmarshalCoverageMetaTest {
      */
     private final File file;
 
-    public WillItUnmarshalCoverageMetaTest(final File file) {
-        this.file = file;
+    public WillItUnmarshalCoverageMetaTest(final String file) {
+        this.file = new File(file);
     }
 
     /**

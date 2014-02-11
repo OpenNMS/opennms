@@ -32,7 +32,6 @@ import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.StorageStrategy;
 import org.opennms.netmgt.config.datacollection.ResourceType;
-
 import org.springframework.orm.ObjectRetrievalFailureException;
 
 /**
@@ -65,8 +64,8 @@ public class XmlResourceType  {
         m_resourceType = resourceType.getName();
         instantiatePersistenceSelectorStrategy(resourceType.getPersistenceSelectorStrategy().getClazz());
         instantiateStorageStrategy(resourceType.getStorageStrategy().getClazz());
-        m_storageStrategy.setParameters(resourceType.getStorageStrategy().getParameterCollection());
-        m_persistenceSelectorStrategy.setParameters(resourceType.getPersistenceSelectorStrategy().getParameterCollection());
+        m_storageStrategy.setParameters(resourceType.getStorageStrategy().getParameters());
+        m_persistenceSelectorStrategy.setParameters(resourceType.getPersistenceSelectorStrategy().getParameters());
     }
 
     /**

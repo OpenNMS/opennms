@@ -72,7 +72,7 @@ public class DoubleAdapter extends XmlAdapter<String, Double> {
         if (v.equalsIgnoreCase("inf")) {
             return Double.POSITIVE_INFINITY;
         }
-        if (v.equalsIgnoreCase("nan")) {
+        if (v.equalsIgnoreCase("nan") || v.equalsIgnoreCase("unkn")) {
             return Double.NaN;
         }
         return new Double(v);

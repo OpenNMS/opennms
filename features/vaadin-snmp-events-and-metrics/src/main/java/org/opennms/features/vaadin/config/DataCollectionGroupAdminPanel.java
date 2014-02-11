@@ -32,9 +32,6 @@ import java.io.FileWriter;
 import java.util.Iterator;
 
 import org.opennms.core.utils.ConfigFileConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.vaadin.dialogs.ConfirmDialog;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.vaadin.datacollection.DataCollectionGroupPanel;
 import org.opennms.netmgt.config.DataCollectionConfigDao;
@@ -42,17 +39,20 @@ import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.IncludeCollection;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.FilesystemContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Button.ClickEvent;
 
 /**
  * The Class Data Collection Group Administration Panel.
@@ -151,8 +151,8 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
                                     File configFile = ConfigFileConstants.getFile(ConfigFileConstants.DATA_COLLECTION_CONF_FILE_NAME);
                                     DatacollectionConfig config = JaxbUtils.unmarshal(DatacollectionConfig.class, configFile);
                                     boolean modified = false;
-                                    for (SnmpCollection collection : config.getSnmpCollectionCollection()) {
-                                        for (Iterator<IncludeCollection> it = collection.getIncludeCollectionCollection().iterator(); it.hasNext();) {
+                                    for (SnmpCollection collection : config.getSnmpCollections()) {
+                                        for (Iterator<IncludeCollection> it = collection.getIncludeCollections().iterator(); it.hasNext();) {
                                             IncludeCollection ic = it.next();
                                             if (m_selectedGroup != null && m_selectedGroup.equals(ic.getDataCollectionGroup())) {
                                                 it.remove();
