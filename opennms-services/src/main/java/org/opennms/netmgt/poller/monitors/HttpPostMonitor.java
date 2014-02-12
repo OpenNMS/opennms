@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,37 +28,30 @@
 
 package org.opennms.netmgt.poller.monitors;
 
-import java.net.ConnectException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
+import java.net.InetAddress;
 import java.net.URISyntaxException;
+import java.util.Map;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.Credentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
+import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.HttpParams;
-import org.apache.http.auth.Credentials;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.conn.scheme.Scheme;  
-import org.apache.http.conn.ssl.AllowAllHostnameVerifier;  
-import org.apache.http.conn.ssl.SSLSocketFactory;  
-import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
-
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
@@ -68,14 +61,18 @@ import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is designed to be used by the service poller framework to test the
  * availability of a url by posting a generic payload and evaulating the http response code and banner. The class
  * implements the ServiceMonitor interface that allows it to be used along with
  * other plug-ins by the service poller framework.
- *
- * @author cliles
+ * 
+ * @author <A HREF="mailto:jeffg@opennms.org">Jeff Gehlbach</A>
+ * @author <A HREF="mailto:cliles@capario.com">Chris Liles</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</a>
  */
 
 @Distributable(DistributionContext.DAEMON)
@@ -115,7 +112,7 @@ final public class HttpPostMonitor extends AbstractServiceMonitor {
     public static final String PARAMETER_USERNAME = "auth-username";
     public static final String PARAMETER_PASSWORD = "auth-password";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(HttpPostMonitor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(HttpPostMonitor.class);
 
 
     /**
@@ -136,7 +133,7 @@ final public class HttpPostMonitor extends AbstractServiceMonitor {
 
         // Get interface address from NetworkInterface
         if (iface.getType() != NetworkInterface.TYPE_INET)
-          throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_INET currently supported");
+            throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_INET currently supported");
 
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
@@ -174,8 +171,8 @@ final public class HttpPostMonitor extends AbstractServiceMonitor {
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
         final String hostAddress = InetAddressUtils.str(ipv4Addr);
-        
-        LOGGER.debug("poll: address = " + hostAddress + ", port = " + port + ", " + tracker);
+
+        LOG.debug("poll: address = " + hostAddress + ", port = " + port + ", " + tracker);
 
         // Give it a whirl
         PollStatus serviceStatus = PollStatus.unavailable();
@@ -194,15 +191,15 @@ final public class HttpPostMonitor extends AbstractServiceMonitor {
                 HttpEntity postReq;
 
                 if (strUser != null && strPasswd != null) {
-                  Credentials defaultcreds = new UsernamePasswordCredentials(strUser, strPasswd);
-                  client.getCredentialsProvider().setCredentials(AuthScope.ANY, defaultcreds);
+                    Credentials defaultcreds = new UsernamePasswordCredentials(strUser, strPasswd);
+                    client.getCredentialsProvider().setCredentials(AuthScope.ANY, defaultcreds);
                 }
 
                 try {
-                  postReq = new StringEntity(strPayload, strMimetype, strCharset);
+                    postReq = new StringEntity(strPayload, strMimetype, strCharset);
                 } catch (UnsupportedEncodingException e) {
-                  serviceStatus = PollStatus.unavailable("Unsupported encoding encountered while constructing POST body " + e);
-                  break;
+                    serviceStatus = PollStatus.unavailable("Unsupported encoding encountered while constructing POST body " + e);
+                    break;
                 }
 
                 URIBuilder ub = new URIBuilder();
@@ -211,23 +208,23 @@ final public class HttpPostMonitor extends AbstractServiceMonitor {
                 ub.setPort(port);
                 ub.setPath(strURI);
 
-                LOGGER.debug("HttpPostMonitor: Constructed URL is " + ub.toString());
+                LOG.debug("HttpPostMonitor: Constructed URL is " + ub.toString());
 
                 HttpPost post = new HttpPost(ub.build());
                 post.setEntity(postReq);
                 HttpResponse response = client.execute(post);
 
-                LOGGER.debug("HttpPostMonitor: Status Line is " + response.getStatusLine());
+                LOG.debug("HttpPostMonitor: Status Line is " + response.getStatusLine());
 
                 if (response.getStatusLine().getStatusCode() > 399) {
-                    LOGGER.info("HttpPostMonitor: Got response status code " + response.getStatusLine().getStatusCode());
-                    LOGGER.debug("HttpPostMonitor: Received server response: " + response.getStatusLine());
-                    LOGGER.debug("HttpPostMonitor: Failing on bad status code");
+                    LOG.info("HttpPostMonitor: Got response status code " + response.getStatusLine().getStatusCode());
+                    LOG.debug("HttpPostMonitor: Received server response: " + response.getStatusLine());
+                    LOG.debug("HttpPostMonitor: Failing on bad status code");
                     serviceStatus = PollStatus.unavailable("HTTP(S) Status code " + response.getStatusLine().getStatusCode());
                     break;
                 }
 
-                LOGGER.debug("HttpPostMonitor: Response code is valid");
+                LOG.debug("HttpPostMonitor: Response code is valid");
                 double responseTime = tracker.elapsedTimeInMillis();
 
                 HttpEntity entity = response.getEntity();
@@ -237,8 +234,8 @@ final public class HttpPostMonitor extends AbstractServiceMonitor {
                 if (Strresponse == null)
                     continue;
 
-                LOGGER.debug("HttpPostMonitor: banner = " + Strresponse);
-                LOGGER.debug("HttpPostMonitor: responseTime= " + responseTime + "ms");
+                LOG.debug("HttpPostMonitor: banner = " + Strresponse);
+                LOG.debug("HttpPostMonitor: responseTime= " + responseTime + "ms");
 
                 //Could it be a regex?
                 if (strBannerMatch.charAt(0)=='~'){
@@ -262,12 +259,12 @@ final public class HttpPostMonitor extends AbstractServiceMonitor {
 
             } catch (URISyntaxException e) {
                 String reason = "URISyntaxException for URI: " + strURI + " " + e.getMessage();
-                LOGGER.debug(reason, e);
+                LOG.debug(reason, e);
                 serviceStatus = PollStatus.unavailable(reason);
                 break;
             } catch (Exception e) {
                 String reason = "Exception: " + e.getMessage();
-                LOGGER.debug(reason, e);
+                LOG.debug(reason, e);
                 serviceStatus = PollStatus.unavailable(reason);
                 break;
             }
