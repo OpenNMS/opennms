@@ -151,7 +151,7 @@ public class JMXCollectorTest {
         CollectionSet collectionSet = jmxCollector.collect(collectionAgent, null, null);
         JMXCollectionSet jmxCollectionSet = (JMXCollectionSet) collectionSet;
         List<JMXCollectionResource> jmxCollectionResources = jmxCollectionSet.getCollectionResources();
-        assertEquals(1, jmxCollectionResources.size());
+        System.err.println("jmxCollectionResources: " + jmxCollectionResources);
         JMXCollectionResource jmxCollectionResource = jmxCollectionResources.get(0);
         AttributeGroup group = jmxCollectionResource.getGroup(new AttributeGroupType("java_lang_type_Compilation", AttributeGroupType.IF_TYPE_ALL));
         assertEquals(1, group.getAttributes().size());
@@ -258,6 +258,7 @@ public class JMXCollectorTest {
         
         assertEquals("Collection: " + collectionName + " run successfully", 1, collectionSet.getStatus());
     }        
+
     /**
      * Check if CompositeAttributes will be collected
      */
@@ -283,6 +284,40 @@ public class JMXCollectorTest {
         dataSourceMap.put(mBeansObjectName + "|CollectionCount", new JMXDataSource());
         //ToDo Tak set the JmxDataSource type to composite?
         dataSourceMap.put(mBeansObjectName + "|LastGcInfo", new JMXDataSource());
+
+        jmxNodeInfo.setDsMap(dataSourceMap);
+        CollectionSet collectionSet = jmxCollector.collect(collectionAgent, null, null);
+        assertEquals("Collection of one Jvm default value run successfully", 1, collectionSet.getStatus());
+    }
+
+    /**
+     * Check if CompositeAttributes will be collected
+     */
+    @Test
+    public void collectJvmDefaultComposites2() {
+        String mBeansObjectName = "java.lang:type=MemoryPool,name=*";
+        Map<String, BeanInfo> mBeans = new HashMap<String, BeanInfo>();
+        BeanInfo beanInfo = new BeanInfo();
+        beanInfo.setObjectName(mBeansObjectName);
+        beanInfo.setKeyField("name");
+
+        List<String> attributes = new ArrayList<String>();
+        attributes.add("CollectionUsageThresholdCount");
+        attributes.add("UsageThresholdCount");
+        beanInfo.setAttributes(attributes);
+
+        List<String> compositeAttributes = new ArrayList<String>();
+        compositeAttributes.add("CollectionUsage");
+        beanInfo.setCompositeAttributes(compositeAttributes);
+
+        mBeans.put("first", beanInfo);
+        jmxNodeInfo.setMBeans(mBeans);
+        Map<String, JMXDataSource> dataSourceMap = new HashMap<String, JMXDataSource>();
+        dataSourceMap.put(mBeansObjectName + "|CollectionCount", new JMXDataSource());
+        //ToDo Tak set the JmxDataSource type to composite?
+        dataSourceMap.put(mBeansObjectName + "|LastGcInfo", new JMXDataSource());
+        dataSourceMap.put(mBeansObjectName + "|CollectionUsageThresholdCount", new JMXDataSource());
+        dataSourceMap.put(mBeansObjectName + "|UsageThresholdCount", new JMXDataSource());
 
         jmxNodeInfo.setDsMap(dataSourceMap);
         CollectionSet collectionSet = jmxCollector.collect(collectionAgent, null, null);

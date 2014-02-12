@@ -411,6 +411,7 @@ public abstract class JMXCollector implements ServiceCollector {
                                         }
                                     }  
                                 }
+                                collectionSet.getCollectionResources().add(collectionResource);
                             } catch (final InstanceNotFoundException e) {
                                 LOG.error("Unable to retrieve attributes from {}", objectName, e);
                             }
@@ -428,14 +429,14 @@ public abstract class JMXCollector implements ServiceCollector {
                                     if (excludeList == null) {
                                         // the exclude list doesn't apply
                                         if (mbeanServer.isRegistered(oName)) {
-                                            AttributeList attrList = mbeanServer.getAttributes(oName,
-                                                                          attrNames);
+                                            AttributeList attrList = mbeanServer.getAttributes(oName, attrNames);
                                             Map<String, JMXDataSource> dsMap = nodeInfo.getDsMap();
 
                                             for(Object attribute : attrList) {
                                                 Attribute attrib=(Attribute)attribute;
-                                                JMXDataSource ds = dsMap.get(objectName + "|"
-                                                             + attrib.getName());
+                                                LOG.debug("{} Collector - getAttributesWC: {}, # searching for datasource: {}", serviceName, oName, objectName+"|"+attrib.getName());
+                                                JMXDataSource ds = dsMap.get(objectName + "|" + attrib.getName());
+                                                LOG.debug("{} Collector - getAttributesWC: {}, # ds: {}", serviceName, oName, ds);
                                                 JMXCollectionAttributeType attribType=
                                                     new JMXCollectionAttributeType(ds, 
                                                                                    oName.getKeyProperty(beanInfo.getKeyField()),  
@@ -481,6 +482,7 @@ public abstract class JMXCollector implements ServiceCollector {
                                             }
                                         }
                                     }
+                                    collectionSet.getCollectionResources().add(collectionResource);
                                 } catch (final InstanceNotFoundException e) {
                                     LOG.error("Error retrieving attributes for {}", oName, e);
                                 }
@@ -531,13 +533,12 @@ public abstract class JMXCollector implements ServiceCollector {
         LOG.debug("getCollectionResource: agent='{}', instance: '{}', resourceType: '{}'", agent, instance, resourceType);
         JMXCollectionResource resource = null;
         if (resourceType == null || resourceType.toLowerCase().equals("node")) {
-            LOG.debug("getCollectionResource: resourceType==node");
             resource = new JMXSingleInstanceCollectionResource(agent);
         } else {
-            LOG.debug("getCollectionResource: resourceType!=node");
             JMXResourceType type = getJMXResourceType(agent, resourceType);
             resource = new JMXMultiInstanceCollectionResource(agent, instance, type);
         }
+        LOG.debug("getCollectionResource: resource='{}'", resource);
         return resource;
     }
 
@@ -586,16 +587,13 @@ public abstract class JMXCollector implements ServiceCollector {
          */
 
         LOG.debug("attributeMap size: {}", attributeMap.size());
-        Iterator<String> objNameIter = attributeMap.keySet().iterator();
-        while (objNameIter.hasNext()) {
-            String objectName = objNameIter.next().toString();
-            List<Attrib> list = attributeMap.get(objectName);
+        for(Map.Entry<String, List<Attrib>> entry : attributeMap.entrySet()) {
+            String objectName = entry.getKey();
+            List<Attrib> list = entry.getValue();
 
             LOG.debug("ObjectName: {}, Attributes: {}", objectName, list.size());
 
-            Iterator<Attrib> iter = list.iterator();
-            while (iter.hasNext()) {
-                Attrib attr = iter.next();
+            for(Attrib attr : list) {
                 JMXDataSource ds = null;
 
                 /*
