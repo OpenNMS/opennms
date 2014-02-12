@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -43,6 +43,8 @@ import org.springframework.stereotype.Component;
  * <p>WebDetector class.</p>
  *
  * @author Alejandro Galue <agalue@opennms.org>
+ * @author <A HREF="mailto:cliles@capario.com">Chris Liles</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  * @version $Id: $
  */
 @Scope("prototype")
@@ -75,6 +77,10 @@ public class WebDetector extends BasicDetector<WebRequest, WebResponse> {
     private String responseRange = "100-399";
     
     private String schema = "http";
+
+    private String queryString;
+
+    private boolean useSSLFilter = false;
 
     /**
      * Default constructor
@@ -117,12 +123,15 @@ public class WebDetector extends BasicDetector<WebRequest, WebResponse> {
 
     @Override
     protected Client<WebRequest, WebResponse> getClient() {
-        final WebClient client = new WebClient();
+        final WebClient client = new WebClient(isUseSSLFilter());
+
         client.setPath(getPath());
         client.setSchema(getSchema());
         client.setUserAgent(getUserAgent());
         client.setVirtualHost(getVirtualHost(), getPort());
+        client.setQueryString(getQueryString());
         client.setUseHttpV1(isUseHttpV1());
+        client.setUseSSLFilter(isUseSSLFilter());
         if (isAuthEnabled()) {
             client.setAuth(getAuthUser(), getAuthPassword());
             client.setAuthPreemtive(isAuthPreemtive());
@@ -160,6 +169,22 @@ public class WebDetector extends BasicDetector<WebRequest, WebResponse> {
 
     public void setVirtualHost(String virtualHost) {
         this.virtualHost = virtualHost;
+    }
+
+    public String getQueryString() {
+        return queryString;
+    }
+
+    public void setQueryString(String queryString) {
+        this.queryString = queryString;
+    }
+
+    public boolean isUseSSLFilter() {
+        return useSSLFilter;
+    }
+
+    public void setUseSSLFilter(boolean useSSLFilter) {
+        this.useSSLFilter = useSSLFilter;
     }
 
     public boolean isUseHttpV1() {
