@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,7 +35,6 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.ArrayList;
 
-import org.apache.log4j.Level;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.config.SnmpPeerFactory;
@@ -49,6 +48,8 @@ import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>
@@ -59,16 +60,19 @@ import org.opennms.netmgt.snmp.SnmpValue;
  * </p>
  *
  * @author <A HREF="mailto:cliles@capario.com">Chris Liles</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</a>
  * @version $Id: $
  */
 
 @Distributable(DistributionContext.DAEMON)
 final public class DskTableMonitor extends SnmpMonitorStrategy {
+    public static final Logger LOG = LoggerFactory.getLogger(DskTableMonitor.class);
+
     private static final String m_serviceName = "Dsk-Table";
-    
+
     private static final String dskTableErrorFlag = "1.3.6.1.4.1.2021.9.1.100";
     private static final String dskTableErrorMsg = "1.3.6.1.4.1.2021.9.1.101";
-    
+
     /**
      * <P>
      * Returns the name of the service that the plug-in monitors ("Dsk-Table").
@@ -96,7 +100,7 @@ final public class DskTableMonitor extends SnmpMonitorStrategy {
         try {
             SnmpPeerFactory.init();
         } catch (IOException ex) {
-        	log().fatal("initialize: Failed to load SNMP configuration", ex);
+            LOG.error("initialize: Failed to load SNMP configuration: {}", ex);
             throw new UndeclaredThrowableException(ex);
         }
 
@@ -136,64 +140,67 @@ final public class DskTableMonitor extends SnmpMonitorStrategy {
         PollStatus status = PollStatus.available();
         InetAddress ipaddr = (InetAddress) iface.getAddress();
 
-        ArrayList errorStringReturn = new ArrayList();
-        
+        ArrayList<String> errorStringReturn = new ArrayList<String>();
+
         // Retrieve this interface's SNMP peer object
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipaddr);
         if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
         final String hostAddress = InetAddressUtils.str(ipaddr);
-        log().debug("poll: setting SNMP peer attribute for interface " + hostAddress);
-        
+        LOG.debug("poll: setting SNMP peer attribute for interface {}", hostAddress);
+
         agentConfig.setTimeout(ParameterMap.getKeyedInteger(parameters, "timeout", agentConfig.getTimeout()));
         agentConfig.setRetries(ParameterMap.getKeyedInteger(parameters, "retry", ParameterMap.getKeyedInteger(parameters, "retries", agentConfig.getRetries())));
         agentConfig.setPort(ParameterMap.getKeyedInteger(parameters, "port", agentConfig.getPort()));
-        
-        if (log().isDebugEnabled()) log().debug("poll: service= SNMP address= " + agentConfig);
-        
+
+        LOG.debug("poll: service= SNMP address= {}", agentConfig);
+
         try {
-            if (log().isDebugEnabled()) {
-                log().debug("DskTableMonitor.poll: SnmpAgentConfig address: " +agentConfig);
-            }
+            LOG.debug("DskTableMonitor.poll: SnmpAgentConfig address: {}", agentConfig);
             SnmpObjId dskTableErrorSnmpObject = SnmpObjId.get(dskTableErrorFlag);
-            
+
             Map<SnmpInstId, SnmpValue> flagResults = SnmpUtils.getOidValues(agentConfig, "DskTableMonitor", dskTableErrorSnmpObject);
-            
+
             if(flagResults.size() == 0) {
-                log().debug("SNMP poll failed: no results, addr=" + hostAddress + " oid=" + dskTableErrorSnmpObject);
+                LOG.debug("SNMP poll failed: no results, addr={} oid={}", hostAddress, dskTableErrorSnmpObject);
                 return PollStatus.unavailable();
             }
 
             for (Map.Entry<SnmpInstId, SnmpValue> e : flagResults.entrySet()) { 
-                log().debug("poll: SNMPwalk poll succeeded, addr=" + hostAddress + " oid=" + dskTableErrorSnmpObject + " instance=" + e.getKey() + " value=" + e.getValue());
-                
-                if (e.getValue().toString().equals("1")) {
-                	log().debug("DskTableMonitor.poll: found errorFlag=1");
-                	
-                	SnmpObjId dskTableErrorMsgSnmpObject = SnmpObjId.get(dskTableErrorMsg + "." + e.getKey().toString());
-                  String DiskErrorMsg = SnmpUtils.get(agentConfig,dskTableErrorMsgSnmpObject).toDisplayString();
+                LOG.debug("poll: SNMPwalk poll succeeded, addr={} oid={} instance={} value={}", hostAddress, dskTableErrorSnmpObject, e.getKey(), e.getValue());
 
-                  //Stash the error in an ArrayList to then enumerate over later
-                  errorStringReturn.add(DiskErrorMsg);
+                if (e.getValue().toString().equals("1")) {
+                    LOG.debug("DskTableMonitor.poll: found errorFlag=1");
+
+                    SnmpObjId dskTableErrorMsgSnmpObject = SnmpObjId.get(dskTableErrorMsg + "." + e.getKey().toString());
+                    String DiskErrorMsg = SnmpUtils.get(agentConfig,dskTableErrorMsgSnmpObject).toDisplayString();
+
+                    //Stash the error in an ArrayList to then enumerate over later
+                    errorStringReturn.add(DiskErrorMsg);
                 }
             }
 
             //Check the arraylist and construct return value
             if (errorStringReturn.size() > 0) {
-              return PollStatus.unavailable(errorStringReturn.toString());
+                return PollStatus.unavailable(errorStringReturn.toString());
             }
             else {
-              return status;
+                return status;
             }
 
         } catch (NumberFormatException e) {
-            status = logDown(Level.ERROR, "Number operator used on a non-number " + e.getMessage());
+            String reason1 = "Number operator used on a non-number";
+            LOG.error(reason1, e);
+            return PollStatus.unavailable(reason1);
         } catch (IllegalArgumentException e) {
-            status = logDown(Level.ERROR, "Invalid SNMP Criteria: " + e.getMessage());
+            String reason1 = "Invalid SNMP Criteria: " + e.getMessage();
+            LOG.error(reason1, e);
+            return PollStatus.unavailable(reason1);
         } catch (Throwable t) {
-            status = logDown(Level.WARN, "Unexpected exception during SNMP poll of interface " + hostAddress, t);
+            String reason1 = "Unexpected exception during SNMP poll of interface " + hostAddress + ": " + t.getMessage();
+            LOG.warn(reason1, t);
+            return PollStatus.unavailable(reason1);
         }
 
-        return status;
     }
-    
+
 }
