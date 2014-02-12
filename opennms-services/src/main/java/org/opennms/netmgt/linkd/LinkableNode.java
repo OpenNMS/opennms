@@ -53,6 +53,57 @@ public class LinkableNode {
 
     private String m_isisSysId;
 
+    private List<CdpInterface> m_cdpinterfaces = new ArrayList<CdpInterface>();
+
+    private List<LldpRemInterface> m_lldpreminterfaces = new ArrayList<LldpRemInterface>();
+
+    private boolean m_hascdpinterfaces = false;
+
+    private List<RouterInterface> m_routeinterfaces = new ArrayList<RouterInterface>();
+
+    private List<OspfNbrInterface> m_ospfinterfaces = new ArrayList<OspfNbrInterface>();
+
+    private List<IsisISAdjInterface> m_isisinterfaces = new ArrayList<IsisISAdjInterface>();
+
+    private boolean m_hasrouteinterfaces = false;
+
+    private boolean m_isBridgeNode = false;
+
+    /**
+     * the list of bridge port that are backbone bridge ports ou that are link
+     * between switches
+     */
+    private List<Integer> m_backBoneBridgePorts = new ArrayList<Integer>();
+    private List<String> m_bridgeIdentifiers = new ArrayList<String>();
+    private List<String> m_macIdentifiers = new ArrayList<String>();
+    private Map<Integer, List<OnmsStpInterface>> m_bridgeStpInterfaces = new HashMap<Integer, List<OnmsStpInterface>>();
+    private Map<Integer, String> m_vlanBridgeIdentifiers = new HashMap<Integer, String>();
+    private Map<Integer, Set<String>> m_portMacs = new HashMap<Integer, Set<String>>();
+    private Map<String, Integer> m_macsVlan = new HashMap<String, Integer>();
+    private Map<Integer, String> m_vlanStpRoot = new HashMap<Integer, String>();
+    private Map<Integer, Integer> m_bridgePortIfindex = new HashMap<Integer, Integer>();
+
+    /**
+     * The Wifi Mac address to Interface Index map
+     */
+    private Map<Integer, Set<String>> m_wifiIfIndexMac = new HashMap<Integer,Set<String>>();
+    /**
+     * <p>
+     * Constructor for LinkableNode.
+     * </p>
+     * 
+     * @param nodeId
+     *            a int.
+     * @param snmprimaryaddr
+     *            a {@link java.net.InetAddress} object.
+     * @param sysoid
+     *            a {@link java.lang.String} object.
+     */
+    public LinkableNode(final LinkableSnmpNode snmpnode, final String packageName) {
+        m_snmpnode = snmpnode;
+        m_packageName = packageName;
+    }
+
     public String getIsisSysId() {
         return m_isisSysId;
     }
@@ -99,56 +150,6 @@ public class LinkableNode {
 
     public Integer getLldpChassisIdSubtype() {
         return m_lldpChassisIdSubtype;
-    }
-
-    private List<CdpInterface> m_cdpinterfaces = new ArrayList<CdpInterface>();
-
-    private List<LldpRemInterface> m_lldpreminterfaces = new ArrayList<LldpRemInterface>();
-
-    private boolean m_hascdpinterfaces = false;
-
-    private List<RouterInterface> m_routeinterfaces = new ArrayList<RouterInterface>();
-
-    private List<OspfNbrInterface> m_ospfinterfaces = new ArrayList<OspfNbrInterface>();
-
-    private List<IsisISAdjInterface> m_isisinterfaces = new ArrayList<IsisISAdjInterface>();
-
-    private boolean m_hasrouteinterfaces = false;
-
-    private boolean m_isBridgeNode = false;
-
-    /**
-     * the list of bridge port that are backbone bridge ports ou that are link
-     * between switches
-     */
-    private List<Integer> m_backBoneBridgePorts = new java.util.ArrayList<Integer>();
-    private List<String> m_bridgeIdentifiers = new java.util.ArrayList<String>();
-    private Map<Integer, List<OnmsStpInterface>> m_bridgeStpInterfaces = new HashMap<Integer, List<OnmsStpInterface>>();
-    private Map<Integer, String> m_vlanBridgeIdentifiers = new HashMap<Integer, String>();
-    private Map<Integer, Set<String>> m_portMacs = new HashMap<Integer, Set<String>>();
-    private Map<String, Integer> m_macsVlan = new HashMap<String, Integer>();
-    private Map<Integer, String> m_vlanStpRoot = new HashMap<Integer, String>();
-    private Map<Integer, Integer> m_bridgePortIfindex = new HashMap<Integer, Integer>();
-
-    /**
-     * The Wifi Mac address to Interface Index map
-     */
-    private Map<Integer, Set<String>> m_wifiIfIndexMac = new HashMap<Integer,Set<String>>();
-    /**
-     * <p>
-     * Constructor for LinkableNode.
-     * </p>
-     * 
-     * @param nodeId
-     *            a int.
-     * @param snmprimaryaddr
-     *            a {@link java.net.InetAddress} object.
-     * @param sysoid
-     *            a {@link java.lang.String} object.
-     */
-    public LinkableNode(final LinkableSnmpNode snmpnode, final String packageName) {
-        m_snmpnode = snmpnode;
-        m_packageName = packageName;
     }
 
     public String getPackageName() {
@@ -329,6 +330,18 @@ public class LinkableNode {
 
     public boolean isBridgeIdentifier(final String bridge) {
         return m_bridgeIdentifiers.contains(bridge);
+    }
+
+    public void setMacIdentifiers(final List<String> macIdentifiers) {
+        m_macIdentifiers = macIdentifiers;
+    }
+
+    public List<String> getMacIdentifiers() {
+        return m_macIdentifiers;
+    }
+
+    public boolean isMacIdentifier(final String mac) {
+        return m_macIdentifiers.contains(mac);
     }
 
     public void addBridgeIdentifier(final String bridge) {

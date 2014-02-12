@@ -35,7 +35,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Alias.JoinType;
@@ -261,9 +263,12 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
             processVlanTable(onmsNode,node, snmpColl,scanTime);
         }
 
-        for (final OnmsVlan vlan : snmpColl.getSnmpVlanCollections().keySet()) {
-            LOG.debug("storeSnmpCollection: parsing bridge data on VLAN {}/{}", vlan.getVlanId(), vlan.getVlanName());
-            storeSnmpVlanCollection(onmsNode, node, vlan, snmpColl.getSnmpVlanCollections().get(vlan), scanTime);
+        if (!snmpColl.getSnmpVlanCollections().isEmpty()) {
+            node.setMacIdentifiers(getPhysAddrs(node.getNodeId()));
+            for (final OnmsVlan vlan : snmpColl.getSnmpVlanCollections().keySet()) {
+                LOG.debug("storeSnmpCollection: parsing bridge data on VLAN {}/{}", vlan.getVlanId(), vlan.getVlanName());
+                storeSnmpVlanCollection(onmsNode, node, vlan, snmpColl.getSnmpVlanCollections().get(vlan), scanTime);
+            }
         }
 
         markOldDataInactive(scanTime, node.getNodeId());
