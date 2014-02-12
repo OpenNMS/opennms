@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config;
+package org.opennms.netmgt.eventd;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -34,7 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.netmgt.eventd.datablock.EventUtil;
+import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.model.events.EventProcessor;
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Autoaction;
@@ -94,7 +94,7 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-public final class EventExpander implements EventProcessor, InitializingBean {
+public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpander, EventProcessor, InitializingBean {
     private EventConfDao m_eventConfDao;
     
     /**
@@ -424,7 +424,7 @@ public final class EventExpander implements EventProcessor, InitializingBean {
      * Expand parms in the event logmsg
      */
     private void expandParms(Logmsg logmsg, Event event, Map<String, Map<String, String>> decode) {
-        String strRet = org.opennms.netmgt.eventd.datablock.EventUtil.expandParms(logmsg.getContent(), event, decode);
+        String strRet = org.opennms.netmgt.eventd.EventUtil.expandParms(logmsg.getContent(), event, decode);
         if (strRet != null) {
             logmsg.setContent(strRet);
         }
@@ -495,7 +495,7 @@ public final class EventExpander implements EventProcessor, InitializingBean {
 
         // description
         if (event.getDescr() != null) {
-            strRet = org.opennms.netmgt.eventd.datablock.EventUtil.expandParms(event.getDescr(), event,decode);
+            strRet = org.opennms.netmgt.eventd.EventUtil.expandParms(event.getDescr(), event,decode);
             if (strRet != null) {
                 event.setDescr(strRet);
                 strRet = null;
@@ -772,7 +772,7 @@ public final class EventExpander implements EventProcessor, InitializingBean {
     /**
      * <p>getEventConfDao</p>
      *
-     * @return a {@link org.opennms.netmgt.config.EventConfDao} object.
+     * @return a {@link org.opennms.netmgt.config.api.EventConfDao} object.
      */
     public EventConfDao getEventConfDao() {
         return m_eventConfDao;
@@ -781,7 +781,7 @@ public final class EventExpander implements EventProcessor, InitializingBean {
     /**
      * <p>setEventConfDao</p>
      *
-     * @param eventConfDao a {@link org.opennms.netmgt.config.EventConfDao} object.
+     * @param eventConfDao a {@link org.opennms.netmgt.config.api.EventConfDao} object.
      */
     public void setEventConfDao(EventConfDao eventConfDao) {
         m_eventConfDao = eventConfDao;

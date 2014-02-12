@@ -399,14 +399,17 @@ public class DNSAddressRequest {
          */
         DNSInputStream dnsIn = new DNSInputStream(data, 0, length);
         int id = dnsIn.readShort();
-        if (id != m_reqID)
+        if (id != m_reqID) {
+            dnsIn.close();
             throw new IOException("ID in received packet (" + id + ") does not match ID from request (" + m_reqID + ")");
+        }
 
         //
         // read in the flags
         //
         int flags = dnsIn.readShort();
         decodeFlags(flags);
+        dnsIn.close();
     }
 
     /**

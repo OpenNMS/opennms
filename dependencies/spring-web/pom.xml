@@ -19,74 +19,106 @@
     <!-- Spring -->
     <dependency>
       <groupId>org.springframework</groupId>
-      <artifactId>spring-web</artifactId>
+      <artifactId>org.springframework.web</artifactId>
       <version>${springVersion}</version>
       <exclusions>
         <exclusion>
           <groupId>org.springframework</groupId>
-          <artifactId>spring-beans</artifactId>
+          <artifactId>org.springframework.beans</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>
-          <artifactId>spring-context</artifactId>
+          <artifactId>org.springframework.context</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>
-          <artifactId>spring-context-support</artifactId>
+          <artifactId>org.springframework.context.support</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>
-          <artifactId>spring-core</artifactId>
+          <artifactId>org.springframework.core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>com.springsource.org.apache.commons.logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
-      <artifactId>spring-webmvc</artifactId>
+      <artifactId>org.springframework.web.servlet</artifactId>
       <version>${springVersion}</version>
       <exclusions>
         <exclusion>
           <groupId>org.springframework</groupId>
-          <artifactId>spring-beans</artifactId>
+          <artifactId>org.springframework.beans</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>
-          <artifactId>spring-context</artifactId>
+          <artifactId>org.springframework.context</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>
-          <artifactId>spring-context-support</artifactId>
+          <artifactId>org.springframework.context.support</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>
-          <artifactId>spring-core</artifactId>
+          <artifactId>org.springframework.core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>com.springsource.org.apache.commons.logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
-      <artifactId>spring-struts</artifactId>
+      <artifactId>org.springframework.web.struts</artifactId>
       <version>${springVersion}</version>
       <exclusions>
         <exclusion>
           <groupId>org.springframework</groupId>
-          <artifactId>spring-beans</artifactId>
+          <artifactId>org.springframework.beans</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>
-          <artifactId>spring-context</artifactId>
+          <artifactId>org.springframework.context</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>
-          <artifactId>spring-context-support</artifactId>
+          <artifactId>org.springframework.context.support</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>
-          <artifactId>spring-core</artifactId>
+          <artifactId>org.springframework.core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>com.springsource.org.apache.commons.beanutils</artifactId>
         </exclusion>
         <exclusion>
           <groupId>commons-beanutils</groupId>
           <artifactId>commons-beanutils</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>com.springsource.org.apache.commons.logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.struts</groupId>
+          <artifactId>com.springsource.org.apache.struts</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -114,6 +146,10 @@
         <exclusion>
           <groupId>org.springframework</groupId>
           <artifactId>spring-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-expression</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -169,6 +205,18 @@
           <groupId>org.springframework</groupId>
           <artifactId>spring-core</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-expression</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-web</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-webmvc</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <!-- Spring Dependencies -->
@@ -196,6 +244,10 @@
       <artifactId>jcl-over-slf4j</artifactId>
     </dependency>
     <dependency>
+      <groupId>struts</groupId>
+      <artifactId>struts</artifactId>
+    </dependency>
+    <dependency>
       <groupId>xalan</groupId>
       <artifactId>xalan</artifactId>
     </dependency>
@@ -204,4 +256,11 @@
       <artifactId>xml-apis</artifactId>
     </dependency>
   </dependencies>
+  <repositories>
+    <repository>
+      <id>com.springsource.repository.bundles</id>
+      <name>SpringSource Enterprise Bundle Repository</name>
+      <url>http://maven.opennms.org/content/groups/springsource.com-release</url>
+    </repository>
+  </repositories>
 </project>

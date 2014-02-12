@@ -32,7 +32,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.util.regex.Pattern;
 
-import org.opennms.netmgt.config.SnmpAgentConfigFactory;
+import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.provision.support.SyncAbstractDetector;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -237,7 +237,7 @@ public class SnmpDetector extends SyncAbstractDetector implements InitializingBe
     /**
      * <p>setAgentConfigFactory</p>
      *
-     * @param agentConfigFactory a {@link org.opennms.netmgt.config.SnmpAgentConfigFactory} object.
+     * @param agentConfigFactory a {@link org.opennms.netmgt.config.api.SnmpAgentConfigFactory} object.
      */
     @Autowired
     public void setAgentConfigFactory(SnmpAgentConfigFactory agentConfigFactory) {
@@ -247,7 +247,7 @@ public class SnmpDetector extends SyncAbstractDetector implements InitializingBe
     /**
      * <p>getAgentConfigFactory</p>
      *
-     * @return a {@link org.opennms.netmgt.config.SnmpAgentConfigFactory} object.
+     * @return a {@link org.opennms.netmgt.config.api.SnmpAgentConfigFactory} object.
      */
     public SnmpAgentConfigFactory getAgentConfigFactory() {
         return m_agentConfigFactory;

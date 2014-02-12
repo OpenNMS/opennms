@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,18 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config;
+package org.opennms.netmgt.dao.api;
 
-import java.net.InetAddress;
+import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.xml.event.Event;
 
-import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
-public interface SnmpAgentConfigFactory {
-    /**
-     * <p>getAgentConfig</p>
-     *
-     * @param address a {@link java.net.InetAddress} object.
-     * @return a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
-     */
-    public SnmpAgentConfig getAgentConfig(InetAddress address);
+
+/**
+ * <p>EventExpander interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
+public interface EventExpander {
+    void setEventConfDao(EventConfDao dao);
+    void expandEvent(Event event);
 }

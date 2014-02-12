@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.model.capsd;
+package org.opennms.netmgt.capsd;
 
 import java.net.InetAddress;
 import java.sql.Connection;

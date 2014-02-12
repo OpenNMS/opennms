@@ -30,7 +30,7 @@ package org.opennms.netmgt.provision.support;
 
 import java.net.InetAddress;
 
-import org.opennms.netmgt.config.SnmpAgentConfigFactory;
+import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 public class AnAgentConfigFactory implements SnmpAgentConfigFactory {

@@ -39,6 +39,7 @@ import java.util.TimeZone;
 import org.opennms.core.utils.Base64;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.netmgt.xml.event.Value;
 
 /**
  * This class holds all OpenNMS events related constants - the UEIs, parm
@@ -1308,6 +1309,45 @@ public class EventConstants {
     public static final String formatToUIString(final Date date) {
 		return FORMATTER_DEFAULT.get().format(date);
     }
+
+	/**
+	 * Converts the value of a parm ('Value') of the instance to a string
+	 *
+	 * @param pvalue a {@link org.opennms.netmgt.xml.event.Value} object.
+	 * @return a {@link java.lang.String} object.
+	 */
+	public static String getValueAsString(Value pvalue) {
+		if (pvalue == null)
+			return null;
+		
+		if (pvalue.getContent() == null)
+			return null;
+
+		String result = "";
+		String encoding = pvalue.getEncoding();
+		if (encoding.equals(EventConstants.XML_ENCODING_TEXT)) {
+			result = pvalue.getContent();
+		} else if (encoding.equals(EventConstants.XML_ENCODING_BASE64)) {
+			byte[] bytes = Base64.decodeBase64(pvalue.getContent().toCharArray());
+			result = "0x"+toHexString(bytes);
+		} else if (encoding.equals(EventConstants.XML_ENCODING_MAC_ADDRESS)) {
+			result = pvalue.getContent();
+		} else {
+			throw new IllegalStateException("Unknown encoding for parm value: " + encoding);
+		}
+		
+		return result.trim();
+	}
+	
+	public static String toHexString(byte[] data) {
+		final StringBuffer b = new StringBuffer();
+		for (int i = 0; i < data.length; ++i) {
+			final int x = (int) data[i] & 0xff;
+			if (x < 16) b.append("0");
+			b.append(Integer.toString(x, 16).toLowerCase());
+		}
+		return b.toString();
+	}
 
     //
     // For Trapd

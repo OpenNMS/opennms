@@ -50,29 +50,25 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.apache.regexp.RE;
-import org.apache.regexp.RESyntaxException;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.DBUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.core.utils.Querier;
 import org.opennms.core.utils.RowProcessor;
 import org.opennms.core.utils.SingleResultQuerier;
-
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.notifications.Header;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.config.notifications.Notifications;
 import org.opennms.netmgt.config.notifications.Parameter;
-import org.opennms.netmgt.eventd.datablock.EventUtil;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.FilterParseException;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Tticket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 /**
@@ -135,34 +131,6 @@ public abstract class NotificationManager {
     
     NotifdConfigManager m_configManager;
     private DataSource m_dataSource;
-    
-    /**
-     * A regular expression for matching an expansion parameter delimited by
-     * percent signs.
-     */
-    private static final String NOTIFD_EXPANSION_PARM = "%(noticeid)%";
-
-    private static RE m_expandRE;
-
-    /**
-     * Initializes the expansion regular expression. The exception is going to
-     * be thrown away if the RE can't be compiled, thus the compilation should
-     * be tested prior to runtime.
-     */
-    static {
-        try {
-            m_expandRE = new RE(NOTIFD_EXPANSION_PARM);
-        } catch (RESyntaxException e) {
-            // this shouldn't throw an exception, should be tested prior to
-            // runtime
-            LOG.error("failed to compile RE {}", NOTIFD_EXPANSION_PARM, e);
-            // FIXME: wrap this in runtime exception since SOMETIMES we are using
-            // an incorrect version of regexp pulled from xalan that is doesn't
-            // extend RuntimeException only Exception.  We really need to fix that.
-            // See Bug# 1736 in Bugzilla.
-            throw new RuntimeException(e);
-        }
-    }
 
     /**
      * A parameter expansion algorithm, designed to replace strings delimited by
@@ -178,17 +146,13 @@ public abstract class NotificationManager {
      * @return a {@link java.lang.String} object.
      */
     public static String expandNotifParms(final String input, final Map<String, String> paramMap) {
-        String expanded = input;
-
-        if (m_expandRE.match(expanded)) {
-            String key = m_expandRE.getParen(1);
-            Assert.isTrue("noticeid".equals(key));
-            String replace = paramMap.get(key);
-            if (replace != null) {
-                expanded = m_expandRE.subst(expanded, replace);
+        if (input.contains("%noticeid%")) {
+            String noticeId = paramMap.get("noticeid");
+            if (noticeId != null) {
+                return input.replaceAll("%noticeid%", noticeId);
             }
         }
-        return expanded;
+        return input;
     }
 
     /**
@@ -1203,27 +1167,6 @@ public abstract class NotificationManager {
         return (String)querier.getResult();
     }
     
-    /**
-     * <p>expandMapValues</p>
-     *
-     * @param map a {@link java.util.Map} object.
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
-    public static void expandMapValues(Map<String, String> map, final Event event) {
-        for (String key : map.keySet()) {
-            String mapValue = map.get(key);
-            if (mapValue == null) {
-                continue;
-            }
-            String expandedValue = EventUtil.expandParms(map.get(key), event);
-            if (expandedValue == null) {
-                // Don't use this value to replace the existing value if it's null
-            } else {
-                map.put(key, expandedValue);
-            }
-        }
-    }
-
     /**
      * In the absence of DAOs and ORMs this creates an Event object from the persisted
      * record.

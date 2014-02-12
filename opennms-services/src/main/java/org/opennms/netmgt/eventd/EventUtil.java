@@ -26,13 +26,8 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.eventd.datablock;
+package org.opennms.netmgt.eventd;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -45,11 +40,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.opennms.core.db.DataSourceFactory;
-import org.opennms.core.utils.Base64;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.model.capsd.DbIpInterfaceEntry;
-import org.opennms.netmgt.model.capsd.DbSnmpInterfaceEntry;
+import org.opennms.netmgt.capsd.DbIpInterfaceEntry;
+import org.opennms.netmgt.capsd.DbSnmpInterfaceEntry;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Snmp;
@@ -302,45 +296,6 @@ public final class EventUtil {
 	 * Substitute the actual percent sign
 	 */
 	static final String TAG_PERCENT_SIGN = "pctsign";
-
-	/**
-	 * Converts the value of a parm ('Value') of the instance to a string
-	 *
-	 * @param pvalue a {@link org.opennms.netmgt.xml.event.Value} object.
-	 * @return a {@link java.lang.String} object.
-	 */
-	public static String getValueAsString(Value pvalue) {
-		if (pvalue == null)
-			return null;
-		
-		if (pvalue.getContent() == null)
-			return null;
-
-		String result = "";
-		String encoding = pvalue.getEncoding();
-		if (encoding.equals(EventConstants.XML_ENCODING_TEXT)) {
-			result = pvalue.getContent();
-		} else if (encoding.equals(EventConstants.XML_ENCODING_BASE64)) {
-			byte[] bytes = Base64.decodeBase64(pvalue.getContent().toCharArray());
-			result = "0x"+toHexString(bytes);
-		} else if (encoding.equals(EventConstants.XML_ENCODING_MAC_ADDRESS)) {
-			result = pvalue.getContent();
-		} else {
-			throw new IllegalStateException("Unknown encoding for parm value: " + encoding);
-		}
-		
-		return result.trim();
-	}
-	
-	public static String toHexString(byte[] data) {
-		final StringBuffer b = new StringBuffer();
-		for (int i = 0; i < data.length; ++i) {
-			final int x = (int) data[i] & 0xff;
-			if (x < 16) b.append("0");
-			b.append(Integer.toString(x, 16).toLowerCase());
-		}
-		return b.toString();
-	}
 
 	/**
 	 * <P>
@@ -611,7 +566,7 @@ public final class EventUtil {
         		if (parmValue == null)
         			continue;
 
-        		String parmValueStr = getValueAsString(parmValue);
+        		String parmValueStr = EventConstants.getValueAsString(parmValue);
         		if (parmValueStr == null)
         			continue;
 
@@ -672,7 +627,7 @@ public final class EventUtil {
                 final Value parmValue = evParm.getValue();
                 if (parmValue == null) continue;
 
-                final String parmValueStr = getValueAsString(parmValue);
+                final String parmValueStr = EventConstants.getValueAsString(parmValue);
                 if (ret.length() != 0) {
                     ret.append(SPACE_DELIM);
                 }
@@ -815,7 +770,7 @@ public final class EventUtil {
         		// get parm value
         		Value eparmval = evParm.getValue();
         		if (eparmval != null) {
-        			retParmVal = getValueAsString(eparmval);
+        			retParmVal = EventConstants.getValueAsString(eparmval);
         		}
         	} else {
         		retParmVal = null;
@@ -845,13 +800,34 @@ public final class EventUtil {
                     // get parm value
                     Value eparmval = evParm.getValue();
                     if (eparmval != null) {
-                        retParmVal = getValueAsString(eparmval);
+                        retParmVal = EventConstants.getValueAsString(eparmval);
                         break;
                     }
                 }
             }
         }
         return retParmVal;
+    }
+
+    /**
+     * <p>expandMapValues</p>
+     *
+     * @param map a {@link java.util.Map} object.
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
+    public static void expandMapValues(Map<String, String> map, final Event event) {
+        for (String key : map.keySet()) {
+            String mapValue = map.get(key);
+            if (mapValue == null) {
+                continue;
+            }
+            String expandedValue = EventUtil.expandParms(map.get(key), event);
+            if (expandedValue == null) {
+                // Don't use this value to replace the existing value if it's null
+            } else {
+                map.put(key, expandedValue);
+            }
+        }
     }
 
     /**
@@ -1076,36 +1052,6 @@ public final class EventUtil {
 		
 		return ifAlias;
 	}
-
-	/**
-	 * <p>cloneEvent</p>
-	 *
-	 * @param orig a {@link org.opennms.netmgt.xml.event.Event} object.
-	 * @return a {@link org.opennms.netmgt.xml.event.Event} object.
-	 */
-	public static Event cloneEvent(Event orig) {
-	       Event copy = null;
-	        try {
-	            // Write the object out to a byte array
-	            ByteArrayOutputStream bos = new ByteArrayOutputStream(1024);
-	            ObjectOutputStream out = new ObjectOutputStream(bos);
-	            out.writeObject(orig);
-	            out.flush();
-	            out.close();
-	
-	            // Make an input stream from the byte array and read
-	            // a copy of the object back in.
-	            ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bos.toByteArray()));
-	            copy = (Event)in.readObject();
-	        }
-	        catch(IOException e) {
-	            LOG.error("Exception cloning event", e);
-	        }
-	        catch(ClassNotFoundException cnfe) {
-	            LOG.error("Exception cloning event", cnfe);
-	        }
-	        return copy;
-	}	
 
     /**
      * Helper method.

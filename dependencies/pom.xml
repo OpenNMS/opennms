@@ -17,7 +17,6 @@
     <module>camel</module>
     <module>camel-test</module>
     <module>castor</module>
-    <module>dbpool</module>
     <module>dnsjava</module>
     <module>drools</module>
     <module>felix</module>
@@ -28,7 +27,6 @@
     <module>javamail</module>
     <module>jaxb</module>
     <module>jcifs</module>
-    <module>jdbc-pool</module>
     <module>jersey</module>
     <module>jfreechart</module>
     <module>jinterop</module>
