@@ -1230,7 +1230,7 @@ CREATE INDEX assets_an_idx ON assets(assetNumber);
 
 create table categories (
 		categoryId			integer,
-		categoryName			varchar(64) not null,
+		categoryName			text not null,
 		categoryDescription	varchar(256),
 
 	constraint category_pkey primary key (categoryId)
