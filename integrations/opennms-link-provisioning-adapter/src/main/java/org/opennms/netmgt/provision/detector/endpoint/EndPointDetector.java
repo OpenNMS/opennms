@@ -32,7 +32,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 
 import org.opennms.core.utils.BeanUtils;
-import org.opennms.netmgt.config.SnmpAgentConfigFactory;
+import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.provision.adapters.link.EndPointImpl;
 import org.opennms.netmgt.provision.adapters.link.endpoint.EndPointTypeValidator;
 import org.opennms.netmgt.provision.adapters.link.endpoint.dao.EndPointConfigurationDao;
@@ -196,7 +196,7 @@ public class EndPointDetector extends SyncAbstractDetector implements Initializi
     /**
      * <p>setAgentConfigFactory</p>
      *
-     * @param agentConfigFactory a {@link org.opennms.netmgt.config.SnmpAgentConfigFactory} object.
+     * @param agentConfigFactory a {@link org.opennms.netmgt.config.api.SnmpAgentConfigFactory} object.
      */
     public void setAgentConfigFactory(SnmpAgentConfigFactory agentConfigFactory) {
         m_agentConfigFactory = agentConfigFactory;
@@ -205,7 +205,7 @@ public class EndPointDetector extends SyncAbstractDetector implements Initializi
     /**
      * <p>getAgentConfigFactory</p>
      *
-     * @return a {@link org.opennms.netmgt.config.SnmpAgentConfigFactory} object.
+     * @return a {@link org.opennms.netmgt.config.api.SnmpAgentConfigFactory} object.
      */
     public SnmpAgentConfigFactory getAgentConfigFactory() {
         return m_agentConfigFactory;

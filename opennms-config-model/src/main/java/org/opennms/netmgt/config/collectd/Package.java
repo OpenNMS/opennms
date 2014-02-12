@@ -1,5 +1,8 @@
 package org.opennms.netmgt.config.collectd;
 
+import static org.opennms.core.utils.InetAddressUtils.isInetAddressInRange;
+import static org.opennms.core.utils.InetAddressUtils.toIpAddrBytes;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,6 +14,11 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.utils.ByteArrayComparator;
+import org.opennms.core.utils.IncludeURL;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Package encapsulating addresses eligible to have SNMP
  *  data collected from them.
@@ -20,6 +28,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Package implements Serializable {
     private static final long serialVersionUID = 7290975079346639791L;
+    private static final Logger LOG = LoggerFactory.getLogger(Package.class);
 
     /**
      * The name or identifier for this package
@@ -424,6 +433,95 @@ public class Package implements Serializable {
             return false;
         }
         return true;
+    }
+
+    public boolean hasSpecific(byte[] addr) {
+        for (final String espec : getSpecifics()) {
+            if (new ByteArrayComparator().compare(toIpAddrBytes(espec), addr) == 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * <p>hasIncludeRange</p>
+     *
+     * @param addr a long.
+     * @return a boolean.
+     */
+    public boolean hasIncludeRange(String addr) {
+        if (getIncludeRanges().size() == 0 && getSpecifics().size() == 0) {
+            return true;
+        }
+
+        for (final IncludeRange rng : getIncludeRanges()) {
+            if (isInetAddressInRange(addr, rng.getBegin(), rng.getEnd())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * <p>getService</p>
+     *
+     * @param svcName a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.config.collectd.Service} object.
+     */
+    public Service getService(final String svcName) {
+        final List<Service> pkgSvcs = getServices();
+        
+        for (Service svc : pkgSvcs) {
+            if (svc.getName().equalsIgnoreCase(svcName))
+                return svc;
+        }
+        throw new IllegalArgumentException("Service name not part of package!");
+    }
+
+    /**
+     * Returns true if the service is part of the package and the status of the
+     * service is set to "on". Returns false if the service is not in the
+     * package or it is but the status of the service is set to "off".
+     *
+     * @param svcName
+     *            The service name to lookup.
+     * @return a boolean.
+     */
+    public boolean serviceInPackageAndEnabled(String svcName) {
+        for (final Service service : getServices()) {
+            if (service.getName().equalsIgnoreCase(svcName)) {
+                // OK it's in the package. Now check the
+                // status of the service.
+                String status = service.getStatus();
+                if ("on".equals(status))
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean hasExcludeRange(String addr) {
+        for (ExcludeRange rng : getExcludeRanges()) {
+            if (isInetAddressInRange(addr, rng.getBegin(), rng.getEnd())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean hasSpecificUrl(String iface, boolean hasSpecific) {
+        if (hasSpecific) {
+            return true;
+        } else {
+            for (String includeURL : getIncludeUrls()) {
+                IncludeURL url = new IncludeURL(includeURL);
+                if (url.interfaceInUrl(iface)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 }

@@ -328,6 +328,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
         }
         final String rules = filterRules.toString();
         LOG.debug("createPackageIpMap: package is {}. filter rules are {}", pkg.getName(), rules);
+        FilterDaoFactory.getInstance().flushActiveIpAddressListCache();
         return FilterDaoFactory.getInstance().getActiveIPAddressList(rules);
     }
     

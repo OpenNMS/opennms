@@ -63,7 +63,7 @@ public class SystemDefTable extends Table {
             @Override
             public Object generateCell(Table source, Object itemId, Object columnId) {
                 final SystemDef s = container.getItem(itemId).getBean();
-                return s.getCollect() == null ? 0 : s.getCollect().getIncludeGroupCount();
+                return s.getCollect() == null ? 0 : s.getCollect().getIncludeGroups().size();
             }
         });
         addGeneratedColumn("oid", new ColumnGenerator() {

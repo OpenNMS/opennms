@@ -215,7 +215,7 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
             }
         }
         if (changed) {
-            log("Updating KSC reports.");
+            log("Updating KSC reports.\n");
             try {
                 KSC_PerformanceReportFactory.getInstance().saveCurrent();
             } catch (Exception e) {
@@ -247,8 +247,14 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
                     interfacesToMerge.add(intf);
                 }
             }
-        } catch (Exception e) {
-            log("Error: can't retrieve data from the OpenNMS Database because " + e.getMessage());
+        } catch (Throwable t) {
+            log("Error: can't retrieve the required data from the OpenNMS Database or there were problems while processing them.\n");
+            String reason = t.getMessage();
+            if (reason == null) {
+                reason = "Unknown";
+            }
+            log("Reason(%s): %s\n", t.getClass().getName(), reason);
+            t.printStackTrace(); // TODO This is not elegant, but it helps.
         } finally {
             db.cleanUp();
         }

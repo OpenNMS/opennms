@@ -112,5 +112,14 @@ public class JavaMailDeliveryService implements ReportDeliveryService {
     public void setJavamailConfigDao(JavaMailConfigurationDao javamailConfigDao) {
         m_JavamailConfigDao = javamailConfigDao;
     }
+    
+    /**
+     * <p>reloadConfiguration</p>
+     * 
+     * Triggers a reload of the Javamail delivery service's configuration
+     */
+    public void reloadConfiguration() {
+        m_JavamailConfigDao.reloadConfiguration();
+    }
 
 }

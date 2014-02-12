@@ -247,13 +247,14 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
 
             // Iterate over the list of running services
             for(SnmpInstId nameInstance : nameResults.keySet()) {
-
+                final SnmpValue name = nameResults.get(nameInstance);
+                final SnmpValue value = statusResults.get(nameInstance);
                 // See if the service name is in the list of running services
-                if (match(serviceName, stripExtraQuotes(nameResults.get(nameInstance).toString()))) {
+                if (name != null && value != null && match(serviceName, stripExtraQuotes(name.toString()))) {
                     matches++;
                     LOG.debug("poll: HostResourceSwRunMonitor poll succeeded, addr={}, service-name={}, value={}", hostAddress, serviceName, nameResults.get(nameInstance));
                     // Using the instance of the service, get its status and see if it meets the criteria
-                    if (meetsCriteria(statusResults.get(nameInstance), "<=", runLevel)) {
+                    if (meetsCriteria(value, "<=", runLevel)) {
                         status = PollStatus.available();
                         // If we get here, that means the service passed the criteria, if only one match is desired we exit.
                         if ("false".equals(matchAll)) {

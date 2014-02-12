@@ -42,6 +42,8 @@ import org.apache.commons.cli.PosixParser;
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.vmware.VmwareConfig;
+import org.opennms.netmgt.config.vmware.VmwareServer;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 
 /**
@@ -65,8 +67,32 @@ public class VmwareRequisitionTool {
             System.exit(1);
         }
 
-        String urlString = arguments.remove(0);
-        URL url = new URL(urlString.replaceFirst("vmware", "http")); // Internal trick to avoid confusions.
+        String urlString = arguments.remove(0).replaceFirst("vmware", "http"); // Internal trick to avoid confusions.
+        URL url = new URL(urlString);
+
+        // Parse vmware-config.xml and retrieve the credentials to avoid initialize Spring
+        if (url.getUserInfo() == null) {
+            File cfg = new File(ConfigFileConstants.getFilePathString(), "vmware-config.xml");
+            if (cfg.exists()) {
+                String username = null;
+                String password = null;
+                VmwareConfig config = JaxbUtils.unmarshal(VmwareConfig.class, cfg);
+                for (VmwareServer srv : config.getVmwareServerCollection()) {
+                    if (srv.getHostname().equals(url.getHost())) {
+                        username = srv.getUsername();
+                        password = srv.getPassword();
+                    }
+                }
+                if (username == null || password == null) {
+                    throw new IllegalArgumentException("Can't retrieve credentials for " + url.getHost() + " from " + cfg);
+                }
+                int i = urlString.lastIndexOf("//");
+                if (i > 0) {
+                    urlString = urlString.substring(0, i + 2) + username + ':' + password + '@' + urlString.substring(i + 2);
+                }
+                url = new URL(urlString);
+            }
+        }
 
         VmwareRequisitionUrlConnection c = new VmwareRequisitionUrlConnection(url) {
             @Override
@@ -95,8 +121,11 @@ public class VmwareRequisitionTool {
         if (error != null) {
             pw.println("An error occurred: " + error + "\n");
         }
+        StringBuffer sb = new StringBuffer();
+        sb.append("Usage: VmwareRequisitionTool vmware://username:password@host[/foreign-source]?keyA=valueA;keyB=valueB;...\n");
+        sb.append(" Note: in case the credentials are not specified, they should exist on vmware.config.xml\n");
 
-        formatter.printHelp("Usage: VmwareRequisitionTool vmware://username:password@host[/foreign-source]?keyA=valueA;keyB=valueB;...", options);
+        formatter.printHelp(sb.toString(), options);
 
         if (e != null) {
             pw.println(e.getMessage());

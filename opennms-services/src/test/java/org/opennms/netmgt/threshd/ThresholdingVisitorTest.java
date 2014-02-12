@@ -200,6 +200,8 @@ public class ThresholdingVisitorTest {
 
         m_filterDao = EasyMock.createMock(FilterDao.class);
         EasyMock.expect(m_filterDao.getActiveIPAddressList((String)EasyMock.anyObject())).andReturn(Collections.singletonList(addr("127.0.0.1"))).anyTimes();
+        m_filterDao.flushActiveIpAddressListCache();
+        EasyMock.expectLastCall().anyTimes();
         FilterDaoFactory.setInstance(m_filterDao);
         EasyMock.replay(m_filterDao);
 

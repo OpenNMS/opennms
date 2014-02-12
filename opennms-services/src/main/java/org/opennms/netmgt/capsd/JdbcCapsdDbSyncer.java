@@ -39,6 +39,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
@@ -46,8 +47,6 @@ import org.opennms.netmgt.config.CapsdConfig;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.PollerConfig;
-import org.opennms.netmgt.model.capsd.DbIfServiceEntry;
-import org.opennms.netmgt.model.capsd.DbIpInterfaceEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -1003,20 +1002,20 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
             InetAddress primarySnmpIf = null;
             String psiType = null;
             if (lbAddressList != null) {
-                primarySnmpIf = getCapsdConfig().determinePrimarySnmpInterface(lbAddressList, strict);
+                primarySnmpIf = determinePrimarySnmpInterface(lbAddressList, strict);
                 psiType = ConfigFileConstants.getFileName(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME) + " loopback addresses";
             }
             if (primarySnmpIf == null) {
-                primarySnmpIf = getCapsdConfig().determinePrimarySnmpInterface(addressList, strict);
+                primarySnmpIf = determinePrimarySnmpInterface(addressList, strict);
                 psiType = ConfigFileConstants.getFileName(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME) + " addresses";
             }
             strict = false;
             if ((primarySnmpIf == null) && (lbAddressList != null)){
-                primarySnmpIf = getCapsdConfig().determinePrimarySnmpInterface(lbAddressList, strict);
+                primarySnmpIf = determinePrimarySnmpInterface(lbAddressList, strict);
                 psiType = "DB loopback addresses";
             }
             if (primarySnmpIf == null) {
-                primarySnmpIf = getCapsdConfig().determinePrimarySnmpInterface(addressList, strict);
+                primarySnmpIf = determinePrimarySnmpInterface(addressList, strict);
                 psiType = "DB addresses";
             }
     
@@ -1248,6 +1247,122 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
     }
 
     /**
+	 * Utility method which compares two InetAddress objects based on the
+	 * provided method (MIN/MAX) and returns the InetAddress which is to be
+	 * considered the primary interface.
+	 * 
+	 * NOTE: In order for an interface to be considered primary, if strict is
+	 * true, it must be included by a Collectd package which supports the
+	 * specified service. This method will return null if the 'oldPrimary'
+	 * address is null and the 'currentIf' address does not pass the Collectd
+	 * package check, if strict is true..
+     * @param svcName
+	 *            Service name
+     * @param currentIf
+	 *            Interface with which to compare the 'oldPrimary' address.
+     * @param oldPrimary
+	 *            Primary interface to be compared against the 'currentIf'
+	 *            address.
+     * @param method
+	 *            Comparison method to be used (either "min" or "max")
+     * @param strict
+	 *            require interface to be part of a Collectd package
+	 * 
+	 * @return InetAddress object of the primary interface based on the provided
+	 *         method or null if neither address is eligible to be primary.
+	 */
+	private InetAddress compareAndSelectPrimaryCollectionInterface(String svcName, InetAddress currentIf, InetAddress oldPrimary, String method, boolean strict) {
+		InetAddress newPrimary = null;
+
+		if (oldPrimary == null && strict) {
+			if (m_collectdConfig.isServiceCollectionEnabled(InetAddressUtils.str(currentIf), svcName)) {
+				return currentIf;
+            } else {
+				return oldPrimary;
+            }
+		}
+	
+		if (oldPrimary == null) {
+			return currentIf;
+        }
+	
+		int comparison = new ByteArrayComparator().compare(currentIf.getAddress(), oldPrimary.getAddress());
+		
+		if (method.equals(CollectdConfigFactory.SELECT_METHOD_MIN)) {
+			// Smallest address wins
+			if (comparison < 0) {
+                /*
+				 * Replace the primary interface with the current
+				 * interface only if the current interface is managed!
+                 */
+				if (strict) {
+					if (m_collectdConfig.isServiceCollectionEnabled(InetAddressUtils.str(currentIf), svcName)) {
+						newPrimary = currentIf;
+                    }
+				} else {
+					newPrimary = currentIf;
+				}
+			}
+		} else {
+			// Largest address wins
+			if (comparison > 0) {
+                /*
+				 * Replace the primary interface with the current
+				 * interface only if the current interface is managed!
+                 */
+				if (strict) {
+					if (m_collectdConfig.isServiceCollectionEnabled(InetAddressUtils.str(currentIf),
+							svcName)) {
+						newPrimary = currentIf;
+                    }
+				} else {
+					newPrimary = currentIf;
+				}
+			}
+		}
+	
+		if (newPrimary != null) {
+			return newPrimary;
+        } else {
+			return oldPrimary;
+        }
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * This method is responsbile for determining the node's primary SNMP
+	 * interface from the specified list of InetAddress objects.
+	 */
+    @Override
+	public InetAddress determinePrimarySnmpInterface(List<InetAddress> addressList, boolean strict) {
+		InetAddress primaryIf = null;
+	
+		// For now hard-coding primary interface address selection method to MIN
+		String method = CollectdConfigFactory.SELECT_METHOD_MIN;
+	
+        /*
+		 * To be selected as the the primary SNMP interface for a node
+		 * the interface must be included by a Collectd package if strict
+		 * is true, and that package must include the SNMP service and
+		 * the service must be enabled.
+		 *
+		 * Iterate over interface list and test each interface
+		 */
+		for (InetAddress ipAddr : addressList) {
+			LOG.debug("determinePrimarySnmpIf: checking interface {}", InetAddressUtils.str(ipAddr));
+			primaryIf = compareAndSelectPrimaryCollectionInterface("SNMP", ipAddr, primaryIf, method, strict);
+		}
+	
+		if (primaryIf != null) {
+			LOG.debug("determinePrimarySnmpInterface: candidate primary SNMP interface: {}", InetAddressUtils.str(primaryIf));
+		} else {
+			LOG.debug("determinePrimarySnmpInterface: no candidate primary SNMP interface found");
+		}
+		return primaryIf;
+	}
+
+    /**
      * <p>setNextSvcIdSql</p>
      *
      * @param nextSvcIdSql a {@link java.lang.String} object.
@@ -1273,6 +1388,9 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
     public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
         m_jdbcTemplate = jdbcTemplate;
     }
-    
 
+	@Override
+	public boolean isServiceCollectionEnabled(String addrString, String string) {
+		return m_collectdConfig.isServiceCollectionEnabled(addrString, string);
+	}
 }

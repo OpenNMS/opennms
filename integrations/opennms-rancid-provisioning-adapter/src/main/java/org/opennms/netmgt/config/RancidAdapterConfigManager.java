@@ -240,6 +240,7 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
             filterRules.append(")");
         }
         LOG.debug("createPackageIpMap: package is {}. filter rules are {}", pkg.getName(), filterRules);
+        FilterDaoFactory.getInstance().flushActiveIpAddressListCache();
         return FilterDaoFactory.getInstance().getActiveIPAddressList(filterRules.toString());
     }
     

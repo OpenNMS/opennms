@@ -119,6 +119,7 @@
     <module>opennms-icmp</module>
     <module>opennms-javamail</module>
     <module>opennms-rrd</module>
+    <module>opennms-config-api</module>
     <module>opennms-config</module>
     <module>opennms-config-model</module>
     <module>opennms-provision</module>
@@ -938,7 +939,7 @@
 
     <!-- dependency versions -->
     <activemqVersion>5.6.0</activemqVersion>
-    <camelVersion>2.10.4</camelVersion>
+    <camelVersion>2.12.2</camelVersion>
     <commonsBeanutilsVersion>1.8.3</commonsBeanutilsVersion>
     <commonsCodecVersion>1.7</commonsCodecVersion>
     <commonsCollectionsVersion>3.2.1</commonsCollectionsVersion>
@@ -974,8 +975,8 @@
     <!-- ALWAYS change aspectj to match the version referenced in the spring poms -->
     <aspectjVersion>1.7.1</aspectjVersion>
     <springWebFlowVersion>2.3.0.RELEASE</springWebFlowVersion>
-    <springSecurityVersion>3.1.0.RELEASE</springSecurityVersion>
-    <springLdapVersion>3.1.0.RELEASE</springLdapVersion>
+    <springSecurityVersion>3.1.4.RELEASE</springSecurityVersion>
+    <springLdapVersion>3.1.4.RELEASE</springLdapVersion>
 
     <!-- moved here from topology features -->
     <jungVersion>2.0.1</jungVersion>
@@ -1726,6 +1727,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
+        <artifactId>opennms-config-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
         <artifactId>opennms-config</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -1798,18 +1804,6 @@
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>castor-dependencies</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.dependencies</groupId>
-        <artifactId>dbpool-dependencies</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.dependencies</groupId>
-        <artifactId>jdbc-pool-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
       </dependency>
@@ -3035,6 +3029,13 @@
       <id>opennms-repo</id>
       <name>OpenNMS Repository</name>
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+    </repository>
+    <repository>
+      <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
+      <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
+      <id>central</id>
+      <name>Maven Central</name>
+      <url>http://maven.opennms.org/content/groups/maven.org-release2</url>
     </repository>
   </repositories>
   <pluginRepositories>

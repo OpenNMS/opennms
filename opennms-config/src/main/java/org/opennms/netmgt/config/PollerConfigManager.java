@@ -478,6 +478,7 @@ abstract public class PollerConfigManager implements PollerConfig {
                 filterRules.append(")");
             }
             LOG.debug("createPackageIpMap: package is {}. filter rules are {}", pkg.getName(), filterRules);
+            FilterDaoFactory.getInstance().flushActiveIpAddressListCache();
             return FilterDaoFactory.getInstance().getActiveIPAddressList(filterRules.toString());
         } finally {
             getReadLock().unlock();

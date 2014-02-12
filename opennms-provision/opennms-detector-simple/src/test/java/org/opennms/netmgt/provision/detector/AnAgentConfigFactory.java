@@ -30,8 +30,8 @@ package org.opennms.netmgt.provision.detector;
 
 import java.net.InetAddress;
 
-import org.opennms.netmgt.config.SnmpAgentConfigFactory;
 import org.opennms.netmgt.config.SnmpEventInfo;
+import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 /**

@@ -33,10 +33,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTest;
-import org.opennms.netmgt.config.datacollection.IpList;
+import org.opennms.core.test.xml.XmlTestNoCastor;
 
-public class IpListTest extends XmlTest<IpList> {
+public class IpListTest extends XmlTestNoCastor<IpList> {
 
     public IpListTest(final IpList sampleObject, final String sampleXml, final String schemaFile) {
         super(sampleObject, sampleXml, schemaFile);
@@ -45,9 +44,9 @@ public class IpListTest extends XmlTest<IpList> {
     @Parameters
     public static Collection<Object[]> data() throws ParseException {
         final IpList list = new IpList();
-        list.addIpAddr("192.168.0.1");
-        list.addIpAddr("192.168.0.2");
-        list.addIpAddrMask("255.255.255.0");
+        list.addIpAddress("192.168.0.1");
+        list.addIpAddress("192.168.0.2");
+        list.addIpAddressMask("255.255.255.0");
 
         return Arrays.asList(new Object[][] { {
                 list,

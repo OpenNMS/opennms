@@ -50,17 +50,18 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.capsd.InsufficientInformationException;
 import org.opennms.netmgt.config.CollectdConfigFactory;
-import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
+import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.collectd.Collector;
+import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.dao.api.CollectorConfigDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -138,10 +139,13 @@ public class Collectd extends AbstractServiceDaemon implements
      * Indicates if scheduling of existing interfaces has been completed
      */
     @Autowired
-    private volatile CollectorConfigDao m_collectorConfigDao;
+    private volatile CollectdConfigFactory m_collectdConfigFactory;
 
     @Autowired
     private volatile IpInterfaceDao m_ifaceDao;
+
+    @Autowired
+    private volatile FilterDao m_filterDao;
 
     static class SchedulingCompletedFlag {
         volatile boolean m_schedulingCompleted = false;
@@ -181,11 +185,12 @@ public class Collectd extends AbstractServiceDaemon implements
      */
     @Override
     protected void onInit() {
-        Assert.notNull(m_collectorConfigDao, "collectorConfigDao must not be null");
+        Assert.notNull(m_collectdConfigFactory, "collectdConfigFactory must not be null");
         Assert.notNull(m_eventIpcManager, "eventIpcManager must not be null");
         Assert.notNull(m_transTemplate, "transTemplate must not be null");
         Assert.notNull(m_ifaceDao, "ifaceDao must not be null");
         Assert.notNull(m_nodeDao, "nodeDao must not be null");
+        Assert.notNull(m_filterDao, "filterDao must not be null");
         
         
         LOG.debug("init: Initializing collection daemon");
@@ -302,7 +307,7 @@ public class Collectd extends AbstractServiceDaemon implements
                 // Create a scheduler
                 try {
                     LOG.debug("init: Creating collectd scheduler");
-                    setScheduler(new LegacyScheduler("Collectd", m_collectorConfigDao.getSchedulerThreads()));
+                    setScheduler(new LegacyScheduler("Collectd", m_collectdConfigFactory.getCollectdConfig().getThreads()));
                 } catch (final RuntimeException e) {
                     LOG.error("init: Failed to create collectd scheduler", e);
                     throw e;
@@ -437,7 +442,7 @@ public class Collectd extends AbstractServiceDaemon implements
     
 	private void scheduleNode(final int nodeId, final boolean existing) {
 		
-        m_collectorConfigDao.rebuildPackageIpListMap();
+        m_filterDao.flushActiveIpAddressListCache();
 		
 		OnmsNode node = m_nodeDao.getHierarchy(nodeId);
 		node.visit(new AbstractEntityVisitor() {
@@ -549,13 +554,14 @@ public class Collectd extends AbstractServiceDaemon implements
     public Collection<CollectionSpecification> getSpecificationsForInterface(OnmsIpInterface iface, String svcName) {
         Collection<CollectionSpecification> matchingPkgs = new LinkedList<CollectionSpecification>();
 
+        CollectdConfiguration collectdConfig = m_collectdConfigFactory.getCollectdConfig();
 
         /*
          * Compare interface/service pair against each collectd package
          * For each match, create new SnmpCollector object and
          * schedule it for collection
          */
-        for(CollectdPackage wpkg : m_collectorConfigDao.getPackages()) {
+        for(Package wpkg : collectdConfig.getPackages()) {
             /*
              * Make certain the the current service is in the package
              * and enabled!
@@ -566,7 +572,7 @@ public class Collectd extends AbstractServiceDaemon implements
             }
 
             // Is the interface in the package?
-            if (!wpkg.interfaceInPackage(iface)) {
+            if (!m_collectdConfigFactory.interfaceInPackage(iface, wpkg)) {
                 LOG.debug("getSpecificationsForInterface: address/service: {}/{} not scheduled, interface does not belong to package: {}", iface, svcName, wpkg.getName());
                 continue;
             }
@@ -641,7 +647,7 @@ public class Collectd extends AbstractServiceDaemon implements
 
     private void refreshServicePackages() {
     	for (CollectableService thisService : m_collectableServices) {
-            thisService.refreshPackage(m_collectorConfigDao);
+            thisService.refreshPackage(m_collectdConfigFactory);
         }
     }
 
@@ -732,7 +738,7 @@ public class Collectd extends AbstractServiceDaemon implements
     private void handleScheduledOutagesChanged(Event event) {
         try {
             LOG.info("Reloading Collectd config factory");
-            CollectdConfigFactory.reload();
+            m_collectdConfigFactory.reload();
             refreshServicePackages();
         } catch (Throwable e) {
             LOG.error("Failed to reload CollectdConfigFactory", e);
@@ -1131,7 +1137,7 @@ public class Collectd extends AbstractServiceDaemon implements
         // This moved to here from the scheduleInterface() for better behavior
         // during initialization
         
-        m_collectorConfigDao.rebuildPackageIpListMap();
+        m_filterDao.flushActiveIpAddressListCache();
 
         scheduleInterface(event.getNodeid().intValue(), event.getInterface(),
                           event.getService(), false);
@@ -1383,10 +1389,10 @@ public class Collectd extends AbstractServiceDaemon implements
     /**
      * <p>setCollectorConfigDao</p>
      *
-     * @param collectorConfigDao a {@link org.opennms.netmgt.dao.api.CollectorConfigDao} object.
+     * @param collectdConfigFactory a {@link org.opennms.netmgt.dao.api.CollectorConfigDao} object.
      */
-    void setCollectorConfigDao(CollectorConfigDao collectorConfigDao) {
-        m_collectorConfigDao = collectorConfigDao;
+    void setCollectdConfigFactory(CollectdConfigFactory collectdConfigFactory) {
+        m_collectdConfigFactory = collectdConfigFactory;
     }
 
     /**
@@ -1396,6 +1402,15 @@ public class Collectd extends AbstractServiceDaemon implements
      */
     void setIpInterfaceDao(IpInterfaceDao ifSvcDao) {
         m_ifaceDao = ifSvcDao;
+    }
+
+    /**
+     * <p>setFilterDao</p>
+     *
+     * @param dao a {@link org.opennms.netmgt.filter.FilterDao} object.
+     */
+    void setFilterDao(FilterDao dao) {
+        m_filterDao = dao;
     }
 
     /**
@@ -1454,7 +1469,7 @@ public class Collectd extends AbstractServiceDaemon implements
          * so that the event processor will have them for
          * new incoming events to create collectable service objects.
          */
-        Collection<Collector> collectors = m_collectorConfigDao.getCollectors();
+        Collection<Collector> collectors = m_collectdConfigFactory.getCollectdConfig().getCollectors();
         for (Collector collector : collectors) {
             String svcName = collector.getService();
             try {

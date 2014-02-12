@@ -33,11 +33,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTest;
-import org.opennms.netmgt.config.datacollection.Collect;
-import org.opennms.netmgt.config.datacollection.SystemDef;
+import org.opennms.core.test.xml.XmlTestNoCastor;
 
-public class SystemsTest extends XmlTest<Systems> {
+public class SystemsTest extends XmlTestNoCastor<Systems> {
 
     public SystemsTest(final Systems sampleObject, final String sampleXml, final String schemaFile) {
         super(sampleObject, sampleXml, schemaFile);

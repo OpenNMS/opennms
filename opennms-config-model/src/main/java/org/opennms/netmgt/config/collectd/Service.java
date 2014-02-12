@@ -131,6 +131,15 @@ public class Service implements Serializable {
         return m_parameters.remove(parameter);
     }
 
+    public String getParameter(final String key) {
+        for (final Parameter parm : m_parameters) {
+            if (key.equals(parm.getKey())) {
+                return parm.getValue();
+            }
+        }
+        return null;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;

@@ -96,7 +96,11 @@ public class CheckNrpe {
 		OutputStream o = s.getOutputStream();
 		o.write(b);
 		
-		return NrpePacket.receivePacket(s.getInputStream(), padding);
+		try {
+			return NrpePacket.receivePacket(s.getInputStream(), padding);
+		} finally {
+			s.close();
+		}
 	}
 	
 	/**
@@ -117,7 +121,11 @@ public class CheckNrpe {
 		OutputStream o = s.getOutputStream();
 		o.write(b);
 		
-		return NrpePacket.receivePacket(s.getInputStream(), padding);
+		try {
+			return NrpePacket.receivePacket(s.getInputStream(), padding);
+		} finally {
+			s.close();
+		}
 	}
 	
 	/**

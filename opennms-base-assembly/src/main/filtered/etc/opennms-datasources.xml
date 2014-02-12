@@ -27,9 +27,9 @@
   <connection-pool factory="org.opennms.core.db.AtomikosDataSourceFactory"
     idleTimeout="600"
     loginTimeout="3"
-    minPool="10"
+    minPool="50"
     maxPool="50"
-    maxSize="500" />
+    maxSize="50" />
 
   <jdbc-data-source name="opennms" 
                     database-name="${install.database.name}" 

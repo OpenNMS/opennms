@@ -33,6 +33,7 @@
 	import="
 	java.util.*,
 	org.opennms.netmgt.config.*,
+	org.opennms.netmgt.config.collectd.Package,
 	org.opennms.netmgt.config.poller.*,
 	org.opennms.netmgt.config.poller.outages.*,
 	org.opennms.web.element.*,
@@ -80,9 +81,9 @@
 			for (final org.opennms.netmgt.config.poller.Package thisPackage : PollerConfigFactory.getInstance().getConfiguration().getPackages()) {
 				thisPackage.removeOutageCalendar(deleteName); //Will quietly do nothing if outage doesn't exist
 			}
-	
-			for (Iterator<CollectdPackage> iter = CollectdConfigFactory.getInstance().getCollectdConfig().getPackages().iterator(); iter.hasNext();) {
-				org.opennms.netmgt.config.collectd.Package thisPackage = iter.next().getPackage();
+
+			CollectdConfigFactory collectdConfig = new CollectdConfigFactory();
+			for (Package thisPackage : collectdConfig.getCollectdConfig().getPackages()) {
 				thisPackage.removeOutageCalendar(deleteName); //Will quietly do nothing if outage doesn't exist
 			}
 	
@@ -91,7 +92,7 @@
 			pollFactory.saveCurrent();
 			NotifdConfigFactory.getInstance().saveCurrent();
 			ThreshdConfigFactory.getInstance().saveCurrent();
-			CollectdConfigFactory.getInstance().saveCurrent();
+			collectdConfig.saveCurrent();
 			PollerConfigFactory.getInstance().save();
 			sendOutagesChangedEvent();
 		} finally {
@@ -171,11 +172,9 @@ div.nodeintbox {
 						thresholdingOutages.addAll(thresholdingPackages[i].getOutageCalendarCollection());
 					}
 			
-					CollectdConfigFactory.init();
 					List<String> collectionOutages = new ArrayList<String>();
-			
-					for (Iterator<CollectdPackage> iter = CollectdConfigFactory.getInstance().getCollectdConfig().getPackages().iterator(); iter.hasNext();) {
-						org.opennms.netmgt.config.collectd.Package thisPackage = iter.next().getPackage();
+					CollectdConfigFactory collectdConfig = new CollectdConfigFactory();
+					for (Package thisPackage : collectdConfig.getCollectdConfig().getPackages()) {
 						collectionOutages.addAll(thisPackage.getOutageCalendars());
 					}
 			

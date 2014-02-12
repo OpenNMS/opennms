@@ -96,6 +96,7 @@ public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate<OnmsMonit
     /** {@inheritDoc} */
     @Override
     public List<OnmsMonitoredService> findMatchingServices(ServiceSelector selector) {
+        FilterDaoFactory.getInstance().flushActiveIpAddressListCache();
         Set<InetAddress> matchingAddrs = new HashSet<InetAddress>(FilterDaoFactory.getInstance().getActiveIPAddressList(selector.getFilterRule()));
         Set<String> matchingSvcs = new HashSet<String>(selector.getServiceNames());
         

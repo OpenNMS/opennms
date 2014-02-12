@@ -61,7 +61,7 @@ import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.support.NullRrdStrategy;
-import org.opennms.netmgt.eventd.datablock.EventUtil;
+import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.mock.MockElement;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockInterface;

@@ -62,7 +62,7 @@ public class GroupTable extends Table {
         addGeneratedColumn("count", new ColumnGenerator() {
             @Override
             public Object generateCell(Table source, Object itemId, Object columnId) {
-                return container.getItem(itemId).getBean().getMibObjCount();
+                return container.getItem(itemId).getBean().getMibObjs();
             }
         });
         setVisibleColumns(new Object[] { "name", "count" });

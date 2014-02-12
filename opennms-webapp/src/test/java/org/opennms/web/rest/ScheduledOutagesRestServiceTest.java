@@ -115,6 +115,8 @@ public class ScheduledOutagesRestServiceTest extends AbstractSpringJerseyRestTes
         // Setup Filter DAO
         m_filterDao = EasyMock.createMock(FilterDao.class);
         EasyMock.expect(m_filterDao.getActiveIPAddressList("IPADDR != '0.0.0.0'")).andReturn(Collections.singletonList(InetAddressUtils.getLocalHostAddress())).anyTimes();
+        m_filterDao.flushActiveIpAddressListCache();
+        EasyMock.expectLastCall().anyTimes();
         EasyMock.replay(m_filterDao);
         FilterDaoFactory.setInstance(m_filterDao);
 
@@ -131,7 +133,7 @@ public class ScheduledOutagesRestServiceTest extends AbstractSpringJerseyRestTes
                 + "</package>"
                 + "<collector service=\"SNMP\" class-name=\"org.opennms.netmgt.collectd.SnmpCollector\"/>"
                 + "</collectd-configuration>");
-        CollectdConfigFactory.setInstance(new CollectdConfigFactory(new FileInputStream(collectdConfig), "localhost", false));
+        CollectdConfigFactory collectdConfigFactory = new CollectdConfigFactory(new FileInputStream(collectdConfig), "localhost", false);
 
         // Setup Pollerd Configuration
         File pollerdConfig = new File(etc, "poller-configuration.xml");

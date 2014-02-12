@@ -166,15 +166,6 @@ public interface CapsdConfig {
     void addProtocolPlugin(ProtocolPlugin plugin);
     
     /**
-     * <p>determinePrimarySnmpInterface</p>
-     *
-     * @param addressList a {@link java.util.List} object.
-     * @param strict a boolean.
-     * @return a {@link java.net.InetAddress} object.
-     */
-    InetAddress determinePrimarySnmpInterface(List<InetAddress> addressList, boolean strict);
-
-    /**
      * <p>getConfiguredProtocols</p>
      *
      * @return a {@link java.util.List} object.

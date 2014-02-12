@@ -49,7 +49,6 @@ import org.opennms.core.test.http.annotations.JUnitHttpServer;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.CollectdConfigFactory;
-import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.config.collectd.Filter;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Parameter;
@@ -331,8 +330,6 @@ public class HttpCollectorTest implements TestContextAware, InitializingBean {
     public void testPersistApacheStatsViaCapsd() throws Exception {
         // TODO: Do we need this init? applicationContext-collectdTest.xml should take care of this
         CollectdConfigFactory collectdConfig = new CollectdConfigFactory(ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/capsd/collectd-configuration.xml"), "nms1", false);
-        CollectdConfigFactory.setInstance(collectdConfig);
-        CollectdConfigFactory.init();
 
         // Add the HTTP collector to capsd
         m_collectd.setServiceCollector("HTTP", m_collector);
@@ -420,8 +417,7 @@ public class HttpCollectorTest implements TestContextAware, InitializingBean {
         service.addParameter(portParm);
         pkg.addService(service);
 
-        CollectdPackage wpkg = new CollectdPackage(pkg, "default", false);
-        CollectionSpecification collectionSpecification = new CollectionSpecification(wpkg, svcName, collector);
+        CollectionSpecification collectionSpecification = new CollectionSpecification(pkg, svcName, collector);
         collectionSpecification.initialize(m_collectionAgent);
 
         CollectionSet collectionSet = collectionSpecification.collect(m_collectionAgent);

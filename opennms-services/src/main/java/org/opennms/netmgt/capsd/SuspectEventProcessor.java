@@ -59,16 +59,12 @@ import org.opennms.netmgt.capsd.snmp.IpAddrTable;
 import org.opennms.netmgt.capsd.snmp.SystemGroup;
 import org.opennms.netmgt.config.CapsdConfig;
 import org.opennms.netmgt.config.CapsdConfigFactory;
-import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
-import org.opennms.netmgt.model.capsd.DbIfServiceEntry;
-import org.opennms.netmgt.model.capsd.DbIpInterfaceEntry;
-import org.opennms.netmgt.model.capsd.DbNodeEntry;
-import org.opennms.netmgt.model.capsd.DbSnmpInterfaceEntry;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
@@ -1338,7 +1334,7 @@ final class SuspectEventProcessor implements Runnable {
                         // other interfaces
                         //
                         boolean strict = true;
-                        CollectdConfigFactory.getInstance().rebuildPackageIpListMap();
+                        FilterDaoFactory.getInstance().flushActiveIpAddressListCache();
                         List<InetAddress> lbAddressList = buildLBSnmpAddressList(collector);
                         List<InetAddress> addressList = buildSnmpAddressList(collector);
                         // first set the value of issnmpprimary for
@@ -1346,7 +1342,7 @@ final class SuspectEventProcessor implements Runnable {
                         Iterator<InetAddress> iter = addressList.iterator();
                         while (iter.hasNext()) {
                             InetAddress addr = iter.next();
-                            if (CollectdConfigFactory.getInstance().isServiceCollectionEnabled(str(addr), "SNMP")) {
+                            if (m_capsdDbSyncer.isServiceCollectionEnabled(str(addr), "SNMP")) {
                                 final DBUtils d = new DBUtils(getClass());
                                 try {
                                     PreparedStatement stmt = dbc.prepareStatement("UPDATE ipInterface SET isSnmpPrimary='S' WHERE nodeId=? AND ipAddr=? AND isManaged!='D'");
@@ -1363,20 +1359,20 @@ final class SuspectEventProcessor implements Runnable {
                         }
                         String psiType = null;
                         if (lbAddressList != null) {
-                            newSnmpPrimaryIf = CapsdConfigFactory.getInstance().determinePrimarySnmpInterface(lbAddressList, strict);
+                            newSnmpPrimaryIf = m_capsdDbSyncer.determinePrimarySnmpInterface(lbAddressList, strict);
                             psiType = ConfigFileConstants.getFileName(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME) + " loopback addresses";
                         }
                         if (newSnmpPrimaryIf == null) {
-                            newSnmpPrimaryIf = CapsdConfigFactory.getInstance().determinePrimarySnmpInterface(addressList, strict);
+                            newSnmpPrimaryIf = m_capsdDbSyncer.determinePrimarySnmpInterface(addressList, strict);
                             psiType = ConfigFileConstants.getFileName(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME) + " addresses";
                         }
                         strict = false;
                         if ((newSnmpPrimaryIf == null) && (lbAddressList != null)) {
-                            newSnmpPrimaryIf = CapsdConfigFactory.getInstance().determinePrimarySnmpInterface(lbAddressList, strict);
+                            newSnmpPrimaryIf = m_capsdDbSyncer.determinePrimarySnmpInterface(lbAddressList, strict);
                             psiType = "DB loopback addresses";
                         }
                         if (newSnmpPrimaryIf == null) {
-                            newSnmpPrimaryIf = CapsdConfigFactory.getInstance().determinePrimarySnmpInterface(addressList, strict);
+                            newSnmpPrimaryIf = m_capsdDbSyncer.determinePrimarySnmpInterface(addressList, strict);
                             psiType = "DB addresses";
                         }
                         if (collector.hasSnmpCollection() && newSnmpPrimaryIf == null) {

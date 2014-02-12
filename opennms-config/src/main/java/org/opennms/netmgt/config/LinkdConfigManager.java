@@ -309,6 +309,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
             final StringBuffer filterRules = new StringBuffer(filter.getContent());
     
             LOG.debug("getIpList: package is {}. filter rules are: {}", pkg.getName(), filterRules);
+            FilterDaoFactory.getInstance().flushActiveIpAddressListCache();
             return FilterDaoFactory.getInstance().getActiveIPAddressList(filterRules.toString());
         } finally {
             getReadLock().unlock();

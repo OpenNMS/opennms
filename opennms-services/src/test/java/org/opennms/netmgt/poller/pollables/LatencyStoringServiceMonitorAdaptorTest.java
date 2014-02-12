@@ -201,6 +201,8 @@ public class LatencyStoringServiceMonitorAdaptorTest {
 
         FilterDao filterDao = m_mocks.createMock(FilterDao.class);
         expect(filterDao.getActiveIPAddressList((String)EasyMock.anyObject())).andReturn(Collections.singletonList(addr("127.0.0.1"))).anyTimes();
+        filterDao.flushActiveIpAddressListCache();
+        EasyMock.expectLastCall().anyTimes();
         FilterDaoFactory.setInstance(filterDao);
         
         MonitoredService svc = m_mocks.createMock(MonitoredService.class);

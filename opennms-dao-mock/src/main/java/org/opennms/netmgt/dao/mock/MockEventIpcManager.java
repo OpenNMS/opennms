@@ -43,9 +43,9 @@ import javax.sql.DataSource;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
-import org.opennms.netmgt.config.EventConfDao;
-import org.opennms.netmgt.config.EventExpander;
 import org.opennms.netmgt.config.EventdConfigManager;
+import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.dao.api.EventExpander;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.EventIpcBroadcaster;
 import org.opennms.netmgt.model.events.EventIpcManager;
@@ -109,7 +109,7 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
     /**
      * This class implements {@link EventConfDao} but every call returns null.
      */
-    private static class EmptyEventConfDao implements EventConfDao {
+    public static class EmptyEventConfDao implements EventConfDao {
         @Override
         public void addEvent(final org.opennms.netmgt.xml.eventconf.Event event) {}
 
@@ -194,6 +194,8 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
 
     private EventIpcManagerProxy m_proxy;
 
+	private EventExpander m_expander = null;
+
     public MockEventIpcManager() {
         m_anticipator = new EventAnticipator();
     }
@@ -231,6 +233,10 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
         return m_anticipator;
     }
     
+    public void setEventExpander(final EventExpander expander) {
+        m_expander  = expander;
+    }
+
     public void setEventAnticipator(final EventAnticipator anticipator) {
         m_anticipator = anticipator;
     }
@@ -273,9 +279,9 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
     @Override
     public synchronized void sendNow(final Event event) {
         // Expand the event parms
-        final EventExpander expander = new EventExpander();
-        expander.setEventConfDao(new EmptyEventConfDao());
-        expander.expandEvent(event);
+        if (m_expander != null) {
+            m_expander.expandEvent(event);
+        }
         m_pendingEvents++;
         LOG.debug("StartEvent processing ({} remaining)", m_pendingEvents);
         LOG.debug("Received: {}", new EventWrapper(event));

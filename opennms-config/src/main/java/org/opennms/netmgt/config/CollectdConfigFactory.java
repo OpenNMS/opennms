@@ -28,26 +28,35 @@
 
 package org.opennms.netmgt.config;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+import static org.opennms.core.utils.InetAddressUtils.toIpAddrBytes;
+
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
+import org.opennms.netmgt.config.collectd.Package;
+import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.Assert;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
- * Collection Daemon from the collectd-configuration xml file.
+ * Collection Daemon from the collectd-configuration.xml file.
  *
- * A mapping of the configured URLs to the iplist they contain is built at
+ * A mapping of the configured URLs to the IP list they contain is built at
  * init() time so as to avoid numerous file reads.
  *
  * <strong>Note: </strong>Users of this class should make sure the
@@ -58,51 +67,48 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:mike@opennms.org">Mike Davidson</a>
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
  */
-public class CollectdConfigFactory {
+public class CollectdConfigFactory implements org.opennms.netmgt.config.api.CollectdConfigFactory {
     private static final Logger LOG = LoggerFactory.getLogger(CollectdConfigFactory.class);
-    final static String SELECT_METHOD_MIN = "min";
+    public static final String SELECT_METHOD_MIN = "min";
 
-    /**
-     * The singleton instance of this factory.  Null if the factory hasn't been
-     * initialized.
-     */
-    private static CollectdConfigFactory m_singleton = null;
+    private CollectdConfiguration m_collectdConfig;
+    private final Object m_collectdConfigMutex = new Object();
 
-    /**
-     * A boolean flag to indicate If a filter rule against the local NMS server
-     * has to be used.
-     */
-    //private static boolean m_verifyServer;
+    private final String m_fileName;
+    private final String m_serverName;
+    private final boolean m_verifyServer;
 
-    /**
-     * Name of the local NMS server.
-     */
-    //private static String m_localServer;
+    static {
+        // Make sure that the OpennmsServerConfigFactory is initialized
+        try {
+            OpennmsServerConfigFactory.init();
+        } catch (IOException e) {
+            LOG.error(e.getMessage(), e);
+        }
+    }
 
-    private CollectdConfig m_collectdConfig;
+    public CollectdConfigFactory() throws IOException {
+        m_fileName = ConfigFileConstants.getFile(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME).getPath();
+        m_serverName = OpennmsServerConfigFactory.getInstance().getServerName();
+        m_verifyServer = OpennmsServerConfigFactory.getInstance().verifyServer();
 
-    /**
-     * This method is used to rebuild the package agaist iplist mapping when
-     * needed. When a node gained service event occurs, collectd has to
-     * determine which package the ip/service combination is in, but if the
-     * interface is a newly added one, the package iplist should be rebuilt so
-     * that collectd could know which package this ip/service pair is in.
-     */
-    public synchronized void rebuildPackageIpListMap() {
-        m_collectdConfig.rebuildPackageIpListMap();
+        init(new FileInputStream(m_fileName), m_serverName, m_verifyServer);
     }
 
     /**
-     * Private constructor
-     * @param verifyServer 
-     * @param localServer 
+     * For testing purposes only.
      * 
-     * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be read
+     * @param stream
+     * @param serverName
+     * @param verifyServer
+     * @throws IOException
      */
-    private CollectdConfigFactory(String configFile, String localServer, boolean verifyServer) throws IOException {
-        CollectdConfiguration config = JaxbUtils.unmarshal(CollectdConfiguration.class, new File(configFile));
-        m_collectdConfig = new CollectdConfig(config, localServer, verifyServer);
+    public CollectdConfigFactory(InputStream stream, String serverName, boolean verifyServer) throws IOException {
+        m_fileName = null;
+        m_serverName = serverName;
+        m_verifyServer = verifyServer;
+
+        init(stream, m_serverName, m_verifyServer);
     }
 
     /**
@@ -111,39 +117,19 @@ public class CollectdConfigFactory {
      * @param stream a {@link java.io.InputStream} object.
      * @param localServer a {@link java.lang.String} object.
      * @param verifyServer a boolean.
+     * @throws IOException 
      */
-    public CollectdConfigFactory(final InputStream stream, final String localServer, boolean verifyServer) {
+    private void init(final InputStream stream, final String localServer, boolean verifyServer) throws IOException {
         InputStreamReader isr = null;
         try {
             isr = new InputStreamReader(stream);
             CollectdConfiguration config = JaxbUtils.unmarshal(CollectdConfiguration.class, isr);
-            m_collectdConfig = new CollectdConfig(config, localServer, verifyServer);
+            synchronized (m_collectdConfigMutex) {
+                m_collectdConfig = config;
+            }
         } finally {
             IOUtils.closeQuietly(isr);
         }
-    }
-
-    /**
-     * Load the config from the default config file and create the singleton
-     * instance of this factory.
-     *
-     * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be read
-     * @throws java.io.IOException if any.
-     */
-    public static synchronized void init() throws IOException {
-        if (isInitialized()) {
-            // init already called return; to reload, reload() will need to be called
-            return;
-        }
-
-        OpennmsServerConfigFactory.init();
-
-        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME);
-
-        LOG.debug("init: config file path: {}", cfgFile.getPath());
-
-        setInstance(new CollectdConfigFactory(cfgFile.getPath(), OpennmsServerConfigFactory.getInstance().getServerName(), OpennmsServerConfigFactory.getInstance().verifyServer()));
     }
 
     /**
@@ -153,9 +139,8 @@ public class CollectdConfigFactory {
      *                Thrown if the specified config file cannot be read/loaded
      * @throws java.io.IOException if any.
      */
-    public static synchronized void reload() throws IOException {
-        m_singleton = null;
-        init();
+    public void reload() throws IOException {
+        init(new FileInputStream(m_fileName), m_serverName, m_verifyServer);
     }
 
     /**
@@ -163,10 +148,13 @@ public class CollectdConfigFactory {
      *
      * @throws java.io.IOException if any.
      */
-    public synchronized void saveCurrent() throws IOException {
+    public void saveCurrent() throws IOException {
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME);
 
-        CollectdConfiguration config = m_collectdConfig.getConfig();
+        CollectdConfiguration config = null;
+        synchronized (m_collectdConfigMutex) {
+            config = m_collectdConfig;
+        }
 
         FileWriter writer = null;
         try {
@@ -180,44 +168,14 @@ public class CollectdConfigFactory {
     }
 
     /**
-     * Return the singleton instance of this factory.
-     *
-     * @return The current factory instance.
-     * @throws java.lang.IllegalStateException
-     *             Thrown if the factory has not yet been initialized.
-     */
-    public static synchronized CollectdConfigFactory getInstance() {
-        Assert.state(isInitialized(), "The factory has not been initialized");
-
-        return m_singleton;
-    }
-
-    /**
-     * <p>setInstance</p>
-     *
-     * @param instance a {@link org.opennms.netmgt.config.CollectdConfigFactory} object.
-     */
-    public static synchronized void setInstance(CollectdConfigFactory instance) {
-        m_singleton = instance;
-    }
-
-    /**
      * <p>getCollectdConfig</p>
      *
      * @return a {@link org.opennms.netmgt.config.CollectdConfig} object.
      */
-    public CollectdConfig getCollectdConfig() {
-        return m_collectdConfig;
-    }
-
-    /**
-     * <p>getPackage</p>
-     *
-     * @param name a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.config.CollectdPackage} object.
-     */
-    public CollectdPackage getPackage(String name) {
-        return m_collectdConfig.getPackage(name);
+    public CollectdConfiguration getCollectdConfig() {
+        synchronized (m_collectdConfigMutex) {
+            return m_collectdConfig;
+        }
     }
 
     /**
@@ -227,8 +185,27 @@ public class CollectdConfigFactory {
      *            The package name to check
      * @return True if the package exists
      */
-    public synchronized boolean packageExists(String name) {
-        return m_collectdConfig.getPackage(name) != null;
+    public boolean packageExists(String name) {
+        synchronized (m_collectdConfigMutex) {
+            return m_collectdConfig.getPackage(name) != null;
+        }
+    }
+
+    /**
+     * <p>getPackage</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.config.CollectdPackage} object.
+     */
+    public Package getPackage(final String name) {
+        synchronized (m_collectdConfigMutex) {
+            for (Package pkg : m_collectdConfig.getPackages()) {
+                if (pkg.getName().equals(name)) {
+                    return pkg;
+                }
+            }
+            return null;
+        }
     }
 
     /**
@@ -238,8 +215,60 @@ public class CollectdConfigFactory {
      *            The domain name to check
      * @return True if the domain exists
      */
-    public boolean domainExists(String name) {
-        return m_collectdConfig.domainExists(name);
+    public boolean domainExists(final String name) {
+        synchronized (m_collectdConfigMutex) {
+            for (Package pkg : m_collectdConfig.getPackages()) {
+                if ((pkg.getIfAliasDomain() != null)
+                        && pkg.getIfAliasDomain().equals(name)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    /**
+     * Returns true if the specified service's interface is included by at least one
+     * package which has the specified service and that service is enabled (set
+     * to "on").
+     *
+     * @param service
+     *            {@link OnmsMonitoredService} to check
+     * @return true if Collectd config contains a package which includes the
+     *         specified interface and has the specified service enabled.
+     */
+    public boolean isServiceCollectionEnabled(final OnmsMonitoredService service) {
+        return isServiceCollectionEnabled(service.getIpInterface(), service.getServiceName());
+    }
+
+    /**
+     * Returns true if the specified interface is included by at least one
+     * package which has the specified service and that service is enabled (set
+     * to "on").
+     *
+     * @param iface
+     *            {@link OnmsIpInterface} to lookup
+     * @param svcName
+     *            The service name to lookup
+     * @return true if Collectd config contains a package which includes the
+     *         specified interface and has the specified service enabled.
+     */
+    public boolean isServiceCollectionEnabled(final OnmsIpInterface iface, final String svcName) {
+        for (Package wpkg : m_collectdConfig.getPackages()) {
+
+            // Does the package include the interface?
+            if (interfaceInPackage(iface, wpkg)) {
+                // Yes, now see if package includes
+                // the service and service is enabled
+                //
+                if (wpkg.serviceInPackageAndEnabled(svcName)) {
+                    // Thats all we need to know...
+                	return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -259,10 +288,130 @@ public class CollectdConfigFactory {
      *         specified interface and has the specified service enabled.
      */
     public boolean isServiceCollectionEnabled(final String ipAddr, final String svcName) {
-        return m_collectdConfig.isServiceCollectionEnabled(ipAddr, svcName);
+        synchronized (m_collectdConfigMutex) {
+            for (Package wpkg : m_collectdConfig.getPackages()) {
+
+                // Does the package include the interface?
+                //
+                if (interfaceInPackage(ipAddr, wpkg)) {
+                    // Yes, now see if package includes
+                    // the service and service is enabled
+                    //
+                    if (wpkg.serviceInPackageAndEnabled(svcName)) {
+                        // Thats all we need to know...
+                    	return true;
+                    }
+                }
+            }
+
+            return false;
+        }
     }
 
-    private static boolean isInitialized() {
-        return m_singleton != null;
+    private static String getFilterRule(String filter, String localServer, boolean verifyServer) {
+        StringBuffer filterRules = new StringBuffer(filter);
+    
+        if (verifyServer) {
+            filterRules.append(" & (serverName == ");
+            filterRules.append('\"');
+            filterRules.append(localServer);
+            filterRules.append('\"');
+            filterRules.append(")");
+        }
+        return filterRules.toString();
+    }
+
+    public boolean interfaceInFilter(String iface, Package pkg) {
+        String filter = pkg.getFilter().getContent();
+        if (iface == null) return false;
+        final InetAddress ifaceAddress = addr(iface);
+
+        boolean filterPassed = false;
+
+        // get list of IPs in this package
+        List<InetAddress> ipList = Collections.emptyList();
+
+        //
+        // Get a list of IP address per package against the filter rules from
+        // database and populate the package, IP list map.
+        //
+        String filterRules = getFilterRule(filter, m_serverName, m_verifyServer);
+        
+        LOG.debug("interfaceInFilter: package is {}. filter rules are {}", pkg.getName(), filterRules);
+        try {
+            ipList = FilterDaoFactory.getInstance().getActiveIPAddressList(filterRules);
+            filterPassed = ipList.contains(ifaceAddress);
+            if (!filterPassed) {
+                LOG.debug("interfaceInFilter: Interface {} passed filter for package {}?: false", iface, pkg.getName());
+            }
+        } catch (Throwable t) {
+            LOG.error("interfaceInFilter: Failed to map package: {} to an IP List with filter \"{}\"", pkg.getName(), pkg.getFilter().getContent(), t);
+        }
+
+        return filterPassed;
+    }
+
+    /**
+     * This method is used to determine if the named interface is included in
+     * the passed package definition. If the interface belongs to the package
+     * then a value of true is returned. If the interface does not belong to the
+     * package a false value is returned.
+     *
+     * <strong>Note: </strong>Evaluation of the interface against a package
+     * filter will only work if the IP is already in the database.
+     *
+     * @deprecated This function should take normal model objects instead of bare IP 
+     * addresses. Move this implementation into {@link #interfaceInPackage(OnmsIpInterface)}.
+     *
+     * @param iface
+     *            The interface to test against the package.
+     * @return True if the interface is included in the package, false
+     *         otherwise.
+     */
+    public boolean interfaceInPackage(final String iface, Package pkg) {
+        boolean filterPassed = interfaceInFilter(iface, pkg);
+
+        if (!filterPassed) {
+            return false;
+        }
+
+        //
+        // Ensure that the interface is in the specific list or
+        // that it is in the include range and is not excluded
+        //
+
+        byte[] addr = toIpAddrBytes(iface);
+
+        boolean has_range_include = pkg.hasIncludeRange(iface);
+        boolean has_specific = pkg.hasSpecific(addr);
+
+        has_specific = pkg.hasSpecificUrl(iface, has_specific);
+        boolean has_range_exclude = pkg.hasExcludeRange(iface);
+
+        boolean packagePassed = has_specific || (has_range_include && !has_range_exclude);
+        if(packagePassed) {
+            LOG.info("interfaceInPackage: Interface {} passed filter and specific/range for package {}?: {}", iface, pkg.getName(), packagePassed);
+        } else {
+            LOG.debug("interfaceInPackage: Interface {} passed filter and specific/range for package {}?: {}", iface, pkg.getName(), packagePassed);
+        }
+        return packagePassed;
+    }
+
+    /**
+     * This method is used to determine if the named interface is included in
+     * the passed package definition. If the interface belongs to the package
+     * then a value of true is returned. If the interface does not belong to the
+     * package a false value is returned.
+     *
+     * <strong>Note: </strong>Evaluation of the interface against a package
+     * filter will only work if the IP is already in the database.
+     *
+     * @param iface
+     *            The interface to test against the package.
+     * @return True if the interface is included in the package, false
+     *         otherwise.
+     */
+    public boolean interfaceInPackage(final OnmsIpInterface iface, Package pkg) {
+        return interfaceInPackage(iface.getIpAddressAsString(), pkg);
     }
 }
