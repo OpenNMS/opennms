@@ -49,14 +49,14 @@ import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.IPLike;
 import org.opennms.core.utils.InetAddressUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.snmp.Range;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.xml.sax.InputSource;
@@ -108,10 +108,6 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      * 
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      */
     private SnmpPeerFactory(final File configFile) throws IOException {
         this(new FileSystemResource(configFile));
@@ -136,8 +132,6 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      *
      * @param rdr a {@link java.io.Reader} object.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @deprecated Use code for InputStream instead to avoid character set issues
      */
     public SnmpPeerFactory(final Reader rdr) throws IOException {
@@ -186,16 +180,11 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     /**
      * Load the config from the default config file and create the singleton
      * instance of this factory.
-     *
+     * 
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
-     * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.IOException
+     *             if any.
      */
     public static void init() throws IOException {
         try {
@@ -219,8 +208,6 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      * Saves the current settings to disk
      *
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static void saveCurrent() throws IOException {
         saveToFile(getFile());
@@ -353,9 +340,9 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
             setSnmpAgentConfig(agentConfig, new Definition(), requestedSnmpVersion);
 
             // Attempt to locate the node
-            DEFLOOP: for (final Definition def : m_config.getDefinitionCollection()) {
+            DEFLOOP: for (final Definition def : m_config.getDefinitions()) {
                 // check the specifics first
-                for (final String saddr : def.getSpecificCollection()) {
+                for (final String saddr : def.getSpecifics()) {
                     try {
                         final InetAddress addr = InetAddressUtils.addr(saddr);
                         if (addr != null && addr.equals(agentConfig.getAddress())) {
@@ -371,7 +358,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
                 //
                 final ByteArrayComparator comparator = new ByteArrayComparator();
 
-                for (final Range rng : def.getRangeCollection()) {
+                for (final Range rng : def.getRanges()) {
                     final byte[] addr = agentConfig.getAddress().getAddress();
                     final byte[] begin = InetAddressUtils.toIpAddrBytes(rng.getBegin());
                     final byte[] end = InetAddressUtils.toIpAddrBytes(rng.getEnd());
@@ -390,7 +377,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
                 }
 
                 // check the matching ip expressions
-                for (final String ipMatch : def.getIpMatchCollection()) {
+                for (final String ipMatch : def.getIpMatches()) {
                     if (IPLike.matches(agentInetAddress, ipMatch)) {
                         setSnmpAgentConfig(agentConfig, def, requestedSnmpVersion);
                         break DEFLOOP;
@@ -752,15 +739,14 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     }
 
     /**
-     * Enhancement: Allows specific or ranges to be merged into SNMP configuration
-     * with many other attributes.  Uses new classes the wrap Castor-generated code to
-     * help with merging, comparing, and optimizing definitions.  Thanks for your
-     * initial work on this Gerald.
-     *
-     * Puts a specific IP address with associated read-community string into
-     * the currently loaded snmp-config.xml.
-     *
-     * @param info a {@link org.opennms.netmgt.config.SnmpEventInfo} object.
+     * Enhancement: Allows specific or ranges to be merged into SNMP
+     * configuration with many other attributes. Uses new classes to help with
+     * merging, comparing, and optimizing definitions. Puts a specific IP
+     * address with associated read-community string into the currently loaded
+     * snmp-config.xml.
+     * 
+     * @param info
+     *            a {@link org.opennms.netmgt.config.SnmpEventInfo} object.
      */
     public void define(final SnmpEventInfo info) {
         try {
