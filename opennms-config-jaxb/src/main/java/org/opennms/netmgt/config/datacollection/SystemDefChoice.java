@@ -69,4 +69,47 @@ public class SystemDefChoice implements java.io.Serializable {
     public void setSysoidMask(final String sysoidMask) {
         m_sysoidMask = sysoidMask == null? null : sysoidMask.intern();
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((m_sysoid == null) ? 0 : m_sysoid.hashCode());
+        result = prime * result + ((m_sysoidMask == null) ? 0 : m_sysoidMask.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof SystemDefChoice)) {
+            return false;
+        }
+        final SystemDefChoice other = (SystemDefChoice) obj;
+        if (m_sysoid == null) {
+            if (other.m_sysoid != null) {
+                return false;
+            }
+        } else if (!m_sysoid.equals(other.m_sysoid)) {
+            return false;
+        }
+        if (m_sysoidMask == null) {
+            if (other.m_sysoidMask != null) {
+                return false;
+            }
+        } else if (!m_sysoidMask.equals(other.m_sysoidMask)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "SystemDefChoice [sysoid=" + m_sysoid + ", sysoidMask=" + m_sysoidMask + "]";
+    }
 }

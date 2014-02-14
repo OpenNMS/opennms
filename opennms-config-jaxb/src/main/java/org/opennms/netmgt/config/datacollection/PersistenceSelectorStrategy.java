@@ -142,4 +142,9 @@ public class PersistenceSelectorStrategy implements Serializable {
         return true;
     }
 
+    @Override
+    public String toString() {
+        return "PersistenceSelectorStrategy [class=" + m_clazz + ", parameters=" + m_parameters + "]";
+    }
+
 }

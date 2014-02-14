@@ -194,4 +194,9 @@ public class SystemDef implements Serializable {
         }
         return true;
     }
+
+    @Override
+    public String toString() {
+        return "SystemDef [name=" + m_name + ", systemDefChoice=" + m_systemDefChoice + ", ipList=" + m_ipList + ", collect=" + m_collect + "]";
+    }
 }

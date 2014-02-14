@@ -122,4 +122,9 @@ public class Parameter implements Serializable {
         return true;
     }
 
+    @Override
+    public String toString() {
+        return "Parameter [key=" + m_key + ", value=" + m_value + "]";
+    }
+
 }
