@@ -28,24 +28,6 @@
 
 package org.opennms.gwt.web.ui.asset.client.view;
 
-import java.util.ArrayList;
-
-import org.opennms.gwt.web.ui.asset.client.AssetPageConstants;
-import org.opennms.gwt.web.ui.asset.client.presenter.AssetPagePresenter;
-import org.opennms.gwt.web.ui.asset.client.tools.DisclosurePanelCookie;
-import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSet;
-import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetDateBox;
-import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetListBox;
-import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetPasswordBox;
-import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetSuggestBox;
-import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetTextArea;
-import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetTextBox;
-import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetTextDisplay;
-import org.opennms.gwt.web.ui.asset.client.tools.validation.StringAsIntegerValidator;
-import org.opennms.gwt.web.ui.asset.client.tools.validation.StringBasicValidator;
-import org.opennms.gwt.web.ui.asset.shared.AssetCommand;
-import org.opennms.gwt.web.ui.asset.shared.AssetSuggCommand;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -65,6 +47,23 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import java.util.ArrayList;
+import org.opennms.gwt.web.ui.asset.client.AssetPageConstants;
+import org.opennms.gwt.web.ui.asset.client.presenter.AssetPagePresenter;
+import org.opennms.gwt.web.ui.asset.client.tools.DisclosurePanelCookie;
+import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSet;
+import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetDateBox;
+import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetListBox;
+import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetPasswordBox;
+import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetSuggestBox;
+import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetTextArea;
+import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetTextBox;
+import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetTextDisplay;
+import org.opennms.gwt.web.ui.asset.client.tools.validation.StringAsFloatValidator;
+import org.opennms.gwt.web.ui.asset.client.tools.validation.StringAsIntegerValidator;
+import org.opennms.gwt.web.ui.asset.client.tools.validation.StringBasicValidator;
+import org.opennms.gwt.web.ui.asset.shared.AssetCommand;
+import org.opennms.gwt.web.ui.asset.shared.AssetSuggCommand;
 
 /**
  * @author <a href="mailto:MarkusNeumannMarkus@gmail.com">Markus Neumann</a>
@@ -276,10 +275,12 @@ public class AssetNodePageImpl extends Composite implements AssetPagePresenter.D
         sThresholdCat.addWarningValidator(new StringBasicValidator());
         sPollerCat.addWarningValidator(new StringBasicValidator());
         sAssetCategory.addWarningValidator(new StringBasicValidator());
-
         sRackUnitHight.addErrorValidator(new StringAsIntegerValidator());
         sNumpowersupplies.addErrorValidator(new StringAsIntegerValidator());
         sInputpower.addErrorValidator(new StringAsIntegerValidator());
+
+        sLongitude.addErrorValidator(new StringAsFloatValidator());
+        sLatitude.addErrorValidator(new StringAsFloatValidator());
         initUiElementList();
     }
 
@@ -598,6 +599,7 @@ public class AssetNodePageImpl extends Composite implements AssetPagePresenter.D
         sAdmin.setValue(asset.getAdmin());
     }
 
+    //TODO verify that this is not causing any update problems
     private String f2s(final Float value) {
         return value == null? null : value.toString();
     }

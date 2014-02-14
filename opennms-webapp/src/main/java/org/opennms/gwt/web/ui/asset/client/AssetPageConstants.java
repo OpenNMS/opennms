@@ -619,6 +619,14 @@ public interface AssetPageConstants extends com.google.gwt.i18n.client.Constants
     @Key("stringNoValidInteger")
     String stringNoValidInteger();
 
+    @DefaultStringValue("Input is not an parseable as Float: ")
+    @Key("stringNoValidFloat")
+    String stringNoValidFloat();
+
+    @DefaultStringValue("Input is not an parseable as Double: ")
+    @Key("stringNoValidDouble")
+    String stringNoValidDouble();
+
     @DefaultStringValue("The text is too long; maximum length is: ")
     @Key("stringToLongError")
     String stringToLongError();
