@@ -19,6 +19,9 @@
   <tx:annotation-driven />
   <context:annotation-config />
 
+  <onmsgi:reference id="eventIpcManagerRef" interface="org.opennms.netmgt.model.events.EventIpcManager"/>
+  <onmsgi:reference id="eventSubscriptionServiceRef" interface="org.opennms.netmgt.model.events.EventSubscriptionService"/>
+
   <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="properties">
       <props>
@@ -44,7 +47,7 @@
     <property name="monitoredServiceDao" ref="monitoredServiceDao" />
     <property name="pollerConfig" ref="pollerConfig" />
     <property name="timeKeeper" ref="timeKeeper" />
-    <property name="eventIpcManager" ref="eventIpcManager" />
+    <property name="eventIpcManager" ref="eventIpcManagerRef" />
     <property name="disconnectedTimeout" value="${opennms.pollerBackend.disconnectedTimeout}" />
     <property name="minimumConfigurationReloadInterval" value="${opennms.pollerBackend.minimumConfigurationReloadInterval}" />
   </bean>
@@ -59,7 +62,7 @@
 
   <bean name="pollerBackEndEventListenerAdapter" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
     <property name="annotatedListener" ref="pollerBackEndEventProcessor" />
-    <property name="eventSubscriptionService" ref="eventSubscriptionService" />
+    <property name="eventSubscriptionService" ref="eventSubscriptionServiceRef" />
   </bean>
 
   <bean id="methodInvokingJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
