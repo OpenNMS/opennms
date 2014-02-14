@@ -3,6 +3,7 @@ package org.opennms.netmgt.provision.persist;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -99,7 +100,12 @@ public class RequisitionFileUtils {
         }
 
         if (url != null) {
-            final String sourceFileName = url.getFile();
+            String sourceFileName = null;
+            try {
+                sourceFileName = URLDecoder.decode(url.getFile(), "utf-8");
+            } catch (final java.io.UnsupportedEncodingException e) {
+                LogUtils.warnf(RequisitionFileUtils.class, e, "Failed to decode URL %s as a file.", url.getFile());
+            }
             if (sourceFileName != null) {
                 final File sourceFile = new File(sourceFileName);
                 final File sourceDirectory = sourceFile.getParentFile();
