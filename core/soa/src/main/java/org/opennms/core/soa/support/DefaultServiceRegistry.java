@@ -330,7 +330,14 @@ public class DefaultServiceRegistry implements ServiceRegistry {
 	public void removeRegistrationHook(RegistrationHook hook) {
 		m_hooks.remove(hook);
 	}
-	
+
+	@Override
+	public void unregisterAll(Class<?> clazz) {
+		for (ServiceRegistration registration : getRegistrations(clazz)) {
+			unregister(registration);
+		}
+	}
+
 	private Set<ServiceRegistration> getAllRegistrations() {
 		Set<ServiceRegistration> registrations = new LinkedHashSet<ServiceRegistration>();
 		
