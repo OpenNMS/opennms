@@ -10,7 +10,7 @@
     <!--
     categories can have longer names then 64 chars now
     -->
-    <changeSet author="dertak" id="1.12.4-CategoryNames-to-text">
+    <changeSet author="dertak" id="1.12.5-CategoryNames-to-text">
         <modifyDataType tableName="categories" columnName="categoryname" newDataType="text" />
         <rollback>
             <modifyDataType tableName="categories" columnName="categoryname" newDataType="varchar(64)" />
