@@ -21,6 +21,8 @@
 
   <onmsgi:reference id="eventIpcManagerRef" interface="org.opennms.netmgt.model.events.EventIpcManager"/>
   <onmsgi:reference id="eventSubscriptionServiceRef" interface="org.opennms.netmgt.model.events.EventSubscriptionService"/>
+  <onmsgi:reference id="locationMonitorDaoRef" interface="org.opennms.netmgt.dao.api.LocationMonitorDao"/>
+  <onmsgi:reference id="monitoredServiceDaoRef" interface="org.opennms.netmgt.dao.api.MonitoredServiceDao"/>
 
   <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="properties">
@@ -43,8 +45,8 @@
   </bean>
 
   <bean name="daemon" class="org.opennms.netmgt.poller.remote.support.DefaultPollerBackEnd">
-    <property name="locationMonitorDao" ref="locationMonitorDao" />
-    <property name="monitoredServiceDao" ref="monitoredServiceDao" />
+    <property name="locationMonitorDao" ref="locationMonitorDaoRef" />
+    <property name="monitoredServiceDao" ref="monitoredServiceDaoRef" />
     <property name="pollerConfig" ref="pollerConfig" />
     <property name="timeKeeper" ref="timeKeeper" />
     <property name="eventIpcManager" ref="eventIpcManagerRef" />

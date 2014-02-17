@@ -572,6 +572,19 @@
               </pluginExecution>
               <pluginExecution>
                 <pluginExecutionFilter>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-dependency-plugin</artifactId>
+                  <versionRange>[1.0.0,)</versionRange>
+                  <goals>
+                    <goal>properties</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                  <execute/>
+                </action>
+              </pluginExecution>
+              <pluginExecution>
+                <pluginExecutionFilter>
                   <groupId>org.apache.servicemix.tooling </groupId>
                   <artifactId>depends-maven-plugin</artifactId>
                   <versionRange>[1.2,)</versionRange>

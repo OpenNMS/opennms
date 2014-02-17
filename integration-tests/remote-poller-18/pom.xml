@@ -31,57 +31,24 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <systemPropertyVariables>
-            <!-- <httpRemotingWebAppPath>${org.opennms.assemblies:org.opennms.assemblies.http-remoting:war}</httpRemotingWebAppPath> -->
-            <!-- <httpRemotingWebAppPath>${httpRemotingWebAppPath}</httpRemotingWebAppPath> -->
-            <!-- <org.opennms.assemblies:org.opennms.assemblies.http-remoting:war>${org.opennms.assemblies:org.opennms.assemblies.http-remoting:war}</org.opennms.assemblies:org.opennms.assemblies.http-remoting:war> -->
             <httpRemotingWebAppPath>${org.opennms.assemblies:org.opennms.assemblies.http-remoting:war}</httpRemotingWebAppPath>
           </systemPropertyVariables>
         </configuration>
       </plugin>
     </plugins>
-    <pluginManagement>
-      <plugins>
-        <!--This plugin's configuration is used to store Eclipse m2e settings 
-          only. It has no influence on the Maven build itself. -->
-        <plugin>
-          <groupId>org.eclipse.m2e</groupId>
-          <artifactId>lifecycle-mapping</artifactId>
-          <version>1.0.0</version>
-          <configuration>
-            <lifecycleMappingMetadata>
-              <pluginExecutions>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-dependency-plugin</artifactId>
-                    <versionRange>[2.4,)</versionRange>
-                    <goals>
-                      <goal>properties</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <execute/>
-                  </action>
-                </pluginExecution>
-              </pluginExecutions>
-            </lifecycleMappingMetadata>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
   </build>
 
   <dependencies>
 
     <!-- Use the remote poller code from 1.8 -->
+    <!-- 
     <dependency>
       <groupId>org.opennms.assemblies</groupId>
       <artifactId>org.opennms.assemblies.remote-poller-onejar</artifactId>
-      <!-- <version>1.8.17</version> -->
-      <!-- <type>onejar</type> -->
       <scope>system</scope>
       <systemPath>${project.basedir}/src/test/resources/org.opennms.assemblies.remote-poller-onejar-1.8.17.one-jar.jar</systemPath>
     </dependency>
+    -->
 
     <dependency>
       <groupId>org.opennms.assemblies</groupId>
@@ -108,11 +75,13 @@
       <artifactId>opennms-dao-mock</artifactId>
       <scope>test</scope>
     </dependency>
+    <!--
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-services</artifactId>
       <scope>test</scope>
     </dependency>
+    -->
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-test</artifactId>

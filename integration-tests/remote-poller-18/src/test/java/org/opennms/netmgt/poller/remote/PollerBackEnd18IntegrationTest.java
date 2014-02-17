@@ -30,12 +30,9 @@ package org.opennms.netmgt.poller.remote;
 
 import static org.junit.Assert.fail;
 
-import java.lang.annotation.Annotation;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
-import org.apache.commons.io.IOUtils;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -44,34 +41,34 @@ import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.core.test.http.JUnitServer;
 import org.opennms.core.test.http.annotations.JUnitHttpServer;
 import org.opennms.core.test.http.annotations.Webapp;
 import org.opennms.core.utils.BeanUtils;
+import org.opennms.netmgt.dao.api.LocationMonitorDao;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventSubscriptionService;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.util.Assert;
 
 //import com.simontuffs.onejar.Boot;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
-		"classpath:/META-INF/opennms/mockEventIpcManager.xml",
 		"classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
 		"classpath:/META-INF/opennms/applicationContext-soa.xml",
 		"classpath:/META-INF/opennms/applicationContext-dao.xml",
 		"classpath*:/META-INF/opennms/component-dao.xml",
 		"classpath:/META-INF/opennms/applicationContext-daemon.xml",
-		//"classpath:/META-INF/opennms/applicationContext-eventDaemon.xml",
-		//"classpath:/META-INF/opennms/applicationContext-mockEventProxy.xml",
-		//"classpath:/META-INF/opennms/applicationContext-pollerBackEnd.xml",
-		//"classpath:/META-INF/opennms/applicationContext-exportedPollerBackEnd-http.xml",
+
+		"classpath:/META-INF/opennms/mockEventIpcManager.xml",
 		"classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
+		// This overrides poller config and location monitor config with files from 
+		// the org.opennms:opennms-services:test-jar artifact
 		"classpath:/org/opennms/netmgt/poller/remote/applicationContext-configOverride.xml"
 })
 // Override the monitor check intervals to check very frequently for disconnects
@@ -82,30 +79,11 @@ import org.springframework.util.Assert;
 @JUnitTemporaryDatabase
 public class PollerBackEnd18IntegrationTest implements InitializingBean {
 
-	private static final int REMOTING_WEBAPP_PORT = 9162;
-
-	/*
-	@Resource(name="daemon")
-	PollerBackEnd m_backEnd;
-
-	@Autowired
-	SessionFactory m_sessionFactory;
-
-	@Autowired
-	JdbcTemplate m_jdbcTemplate;
-
-	@Autowired
-	DistPollerDao m_distPollerDao;
-
-	@Autowired
-	NodeDao m_nodeDao;
-
-	@Autowired
-	ServiceTypeDao m_serviceTypeDao;
-
 	@Autowired
 	LocationMonitorDao m_locationMonitorDao;
-	 */
+
+	@Autowired
+	MonitoredServiceDao m_monitoredServiceDao;
 
 	@Autowired
 	private MockEventIpcManager m_eventIpcManager;
@@ -121,85 +99,29 @@ public class PollerBackEnd18IntegrationTest implements InitializingBean {
 		LocateRegistry.createRegistry(Registry.REGISTRY_PORT);
 	}
 
-	private JUnitServer server = null;
-
 	@Before
 	public void setUp() throws Exception {
 		MockLogAppender.setupLogging();
 
+		// Deregister any existing Eventd classes and DAOs
+		m_registry.unregisterAll(EventProxy.class);
+		m_registry.unregisterAll(EventSubscriptionService.class);
+		m_registry.unregisterAll(EventIpcManager.class);
+		m_registry.unregisterAll(MonitoredServiceDao.class);
+		m_registry.unregisterAll(LocationMonitorDao.class);
+
 		// Register the MockEventIpcManager as an implementation of the event classes that
 		// the remotePollerBackEnd context requires.
-		m_registry.register(m_eventIpcManager, new Class<?>[] { EventProxy.class, EventSubscriptionService.class });
+		m_registry.register(m_eventIpcManager, new Class<?>[] { EventIpcManager.class, EventProxy.class, EventSubscriptionService.class });
 
-		// Create a new JUnitHttpServer running on port {@link #REMOTING_WEBAPP_PORT}
-		server = new JUnitServer(new JUnitHttpServer() {
-
-			@Override
-			public Class<? extends Annotation> annotationType() { return JUnitHttpServer.class; }
-
-			@Override
-			public Webapp[] webapps() {
-				return new Webapp[] {
-						new Webapp() {
-
-							@Override
-							public Class<? extends Annotation> annotationType() { return Webapp.class; }
-
-							@Override
-							public String context() { return "/"; }
-
-							@Override
-							public String path() {
-								String path = System.getProperty("httpRemotingWebAppPath");
-								//String path = System.getProperty("org.opennms.assemblies:org.opennms.assemblies.http-remoting:war");
-								Assert.notNull(path);
-								return path;
-							}
-						}
-				};
-			}
-
-			@Override
-			public String[] vhosts() { return new String[0]; }
-
-			@Override
-			public String resource() { return ""; }
-
-			@Override
-			public int port() { return REMOTING_WEBAPP_PORT; }
-
-			@Override
-			public String keystorePassword() { return null; }
-
-			@Override
-			public String keystore() { return null; }
-
-			@Override
-			public String keyPassword() { return null; }
-
-			@Override
-			public boolean https() { return false; }
-
-			@Override
-			public String basicAuthFile() { return null; }
-
-			@Override
-			public boolean basicAuth() { return false; }
-		});
-
-		// Start the HTTP server
-		server.start();
+		// Register our versions of the DAOs
+		m_registry.register(m_monitoredServiceDao, new Class<?>[] { MonitoredServiceDao.class });
+		m_registry.register(m_locationMonitorDao, new Class<?>[] { LocationMonitorDao.class });
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		BeanUtils.assertAutowiring(this);
-	}
-
-	@After
-	public void tearDown() throws Exception {
-		// Stop the HTTP server
-		server.stop();
 	}
 
 	/*
@@ -341,7 +263,8 @@ public class PollerBackEnd18IntegrationTest implements InitializingBean {
 	 */
 
 	@Test
-	//@JUnitHttpServer(webapps=@Webapp(context="/opennms", path=System.getProperty("httpRemotingWebAppPath")))
+	// The httpRemotingWebAppPath property is set in the POM to the path to the http-remoting WAR file
+	@JUnitHttpServer(webapps=@Webapp(context="/", pathSystemProperty="httpRemotingWebAppPath"))
 	public void runRemotePoller() throws Exception {
 		//Boot.main(new String[] {
 
@@ -349,24 +272,28 @@ public class PollerBackEnd18IntegrationTest implements InitializingBean {
 		// doesn't unintentionally load any code from the JUnit classloader
 		Process remotePoller = Runtime.getRuntime().exec(new String[] {
 				"java",
-				// Set the user home directory to the target directory
+				// Set the user home directory to the target directory so that the remote poller
+				// will log to that directory
 				"-Duser.home=target",
+				// Execute the 1.8.17 version of the remote poller
 				"-jar",
 				"src/test/resources/org.opennms.assemblies.remote-poller-onejar-1.8.17.one-jar.jar",
+				// Connect to the JUnitHttpServer
 				"-u",
 				"http://127.0.0.1:9162/",
+				// Use RDU as the ID of this remote poller
 				"-l",
-				"my_remote_poller",
+				"RDU",
+				// Login with admin:admin credentials
 				"-n",
 				"admin",
 				"-p",
 				"admin",
+				// Debug logging
 				"-d"
 		});
-		IOUtils.copy(remotePoller.getInputStream(), System.out);
-		IOUtils.copy(remotePoller.getErrorStream(), System.err);
 
-		Thread.sleep(20000);
+		Thread.sleep(10000);
 
 		try {
 			remotePoller.exitValue();

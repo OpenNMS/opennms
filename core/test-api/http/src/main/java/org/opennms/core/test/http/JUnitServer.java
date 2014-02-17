@@ -106,7 +106,16 @@ public class JUnitServer {
         if (webapps != null) {
             for (final Webapp webapp : webapps) {
                 final WebAppContext wac = new WebAppContext();
-                wac.setWar(webapp.path());
+                String path = null;
+                if (!"".equals(webapp.pathSystemProperty()) && System.getProperty(webapp.pathSystemProperty()) != null) {
+                    path = System.getProperty(webapp.pathSystemProperty());
+                } else {
+                    path = webapp.path();
+                }
+                if (path == null || "".equals(path)) {
+                    throw new IllegalArgumentException("path or pathSystemProperty of @Webapp points to a null or blank value");
+                }
+                wac.setWar(path);
                 wac.setContextPath(webapp.context());
                 handlers.addHandler(wac);
             }

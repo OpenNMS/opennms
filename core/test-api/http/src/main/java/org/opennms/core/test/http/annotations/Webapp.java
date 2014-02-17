@@ -45,6 +45,7 @@ public @interface Webapp {
 
 	String context() default "/";
 	
-	String path();
+	String path() default "";
 
+	String pathSystemProperty() default "";
 }
