@@ -51,7 +51,7 @@
 <div class="formOnly">
   <form action="<c:url value='j_spring_security_check'/>" method="post">
     <p>
-      User: <input type="text" id="input_j_username" name="j_username" <c:if test="${not empty param.login_error}">value='<c:out value="${SPRING_SECURITY_LAST_USERNAME}"/>'</c:if> /><br />
+      User: <input type="text" id="input_j_username" name="j_username" <c:if test="${not empty param.login_error}">value='<c:out value="${SPRING_SECURITY_LAST_USERNAME}"/>'</c:if> /><br /><br />
       Password: <input type='password' name='j_password'>
     </p>
       
@@ -59,8 +59,9 @@
     <p><input type="checkbox" name="_spring_security_remember_me"> Don't ask for my password for two weeks</p>
     -->
     
-    <input name="reset" type="reset" value="Reset" />
     <input name="Login" type="submit" value="Login" />
+    <input name="j_usergroups" type="hidden" value=""/>
+    <%-- input name="reset" type="reset" value="Reset" /> --%>
 
     <script type="text/javascript">
       if (document.getElementById) {
