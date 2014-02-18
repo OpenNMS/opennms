@@ -163,7 +163,7 @@ public abstract class ResourceTypeUtils {
      * @return a boolean.
      */
     public static boolean isStoreByForeignSource() {
-        return Boolean.getBoolean("org.opennms.rrd.storeByForeignSourcep");
+        return Boolean.getBoolean("org.opennms.rrd.storeByForeignSource");
     }
 
     /**
