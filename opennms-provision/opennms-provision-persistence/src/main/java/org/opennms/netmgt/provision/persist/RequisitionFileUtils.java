@@ -135,7 +135,7 @@ public class RequisitionFileUtils {
             try {
                 sourceFileName = URLDecoder.decode(url.getFile(), "utf-8");
             } catch (final java.io.UnsupportedEncodingException e) {
-                LogUtils.warnf(RequisitionFileUtils.class, e, "Failed to decode URL %s as a file.", url.getFile());
+                LOG.warn("Failed to decode URL {} as a file.", url.getFile(), e);
             }
             if (sourceFileName != null) {
                 final File sourceFile = new File(sourceFileName);
