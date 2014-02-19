@@ -49,7 +49,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 
 @XmlRootElement(name="package")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 public class Package implements Serializable {
     private static final long serialVersionUID = 3522040891199184363L;
 
@@ -177,7 +177,11 @@ public class Package implements Serializable {
     }
     
     public List<String> getSpecifics() {
-        return Collections.unmodifiableList(m_specifics);
+        if (m_specifics == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_specifics);
+        }
     }
 
     public void setSpecifics(final List<String> specifics) {
@@ -193,7 +197,11 @@ public class Package implements Serializable {
     }
 
     public List<IncludeRange> getIncludeRanges() {
-        return Collections.unmodifiableList(m_includeRanges);
+        if (m_includeRanges == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_includeRanges);
+        }
     }
 
     public void setIncludeRanges(final List<IncludeRange> includeRanges) {
@@ -213,7 +221,11 @@ public class Package implements Serializable {
     }
 
     public List<ExcludeRange> getExcludeRanges() {
-        return Collections.unmodifiableList(m_excludeRanges);
+        if (m_excludeRanges == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_excludeRanges);
+        }
     }
 
     public void setExcludeRanges(final List<ExcludeRange> excludeRanges) {
@@ -229,7 +241,11 @@ public class Package implements Serializable {
     }
 
     public List<String> getIncludeUrls() {
-        return Collections.unmodifiableList(m_includeUrls);
+        if (m_includeUrls == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_includeUrls);
+        }
     }
 
     public void setIncludeUrls(final List<String> includeUrls) {
@@ -256,7 +272,11 @@ public class Package implements Serializable {
     }
 
     public List<Service> getServices() {
-        return Collections.unmodifiableList(m_services);
+        if (m_services == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_services);
+        }
     }
 
     public void setServices(final List<Service> services) {
@@ -272,7 +292,11 @@ public class Package implements Serializable {
     }
 
     public List<String> getOutageCalendars() {
-        return Collections.unmodifiableList(m_outageCalendars);
+        if (m_outageCalendars == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_outageCalendars);
+        }
     }
 
     public void setOutageCalendars(final List<String> outageCalendars) {
@@ -288,7 +312,11 @@ public class Package implements Serializable {
     }
 
     public List<Downtime> getDowntimes() {
-        return Collections.unmodifiableList(m_downtimes);
+        if (m_downtimes == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_downtimes);
+        }
     }
 
     public void setDowntimes(final List<Downtime> downtimes) {

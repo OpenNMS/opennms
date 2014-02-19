@@ -50,7 +50,7 @@ import org.opennms.core.xml.ValidateUsing;
 @XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("datacollection-config.xsd")
 public class PersistenceSelectorStrategy implements Serializable {
-    private static final long serialVersionUID = 1307675118382456818L;
+    private static final long serialVersionUID = 7039338478011131021L;
 
     /**
      * Java class name of the class that implements the
@@ -65,7 +65,6 @@ public class PersistenceSelectorStrategy implements Serializable {
      */
     @XmlElement(name="parameter")
     private List<Parameter> m_parameters = new ArrayList<Parameter>();
-
 
     public PersistenceSelectorStrategy() {
         super();
@@ -89,7 +88,11 @@ public class PersistenceSelectorStrategy implements Serializable {
     }
 
     public List<Parameter> getParameters() {
-        return Collections.unmodifiableList(m_parameters);
+        if (m_parameters == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_parameters);
+        }
     }
 
     public void setParameters(final List<Parameter> parameters) {

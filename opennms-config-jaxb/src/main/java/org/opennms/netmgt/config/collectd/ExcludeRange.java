@@ -24,7 +24,7 @@ import org.opennms.core.network.IPAddress;
 @XmlRootElement(name="exclude-range")
 @XmlAccessorType(XmlAccessType.NONE)
 public class ExcludeRange implements Serializable {
-    private static final long serialVersionUID = 6596505357670928872L;
+    private static final long serialVersionUID = -2415273488836500486L;
 
     /**
      * Starting address of the range
@@ -108,6 +108,11 @@ public class ExcludeRange implements Serializable {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "ExcludeRange [begin=" + m_begin + ", end=" + m_end + "]";
     }
 
 }

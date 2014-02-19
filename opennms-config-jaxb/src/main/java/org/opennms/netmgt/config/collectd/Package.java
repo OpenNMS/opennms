@@ -22,6 +22,7 @@ import org.opennms.core.network.IpListFromUrl;
 @XmlRootElement(name="package")
 @XmlAccessorType(XmlAccessType.NONE)
 public class Package implements Serializable {
+    private static final long serialVersionUID = 1689693370360064016L;
 
     /**
      * The name or identifier for this package
@@ -143,7 +144,11 @@ public class Package implements Serializable {
     }
 
     public List<String> getSpecifics() {
-        return Collections.unmodifiableList(m_specifics);
+        if (m_specifics == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_specifics);
+        }
     }
 
     public void setSpecifics(final List<String> specifics) {
@@ -158,8 +163,22 @@ public class Package implements Serializable {
         return m_specifics.remove(specific);
     }
 
+    public boolean hasSpecific(final byte[] addr) {
+        final IPAddress ipAddr = new IPAddress(addr);
+        for (final String espec : getSpecifics()) {
+            if (ipAddr.equals(new IPAddress(espec))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public List<IncludeRange> getIncludeRanges() {
-        return Collections.unmodifiableList(m_includeRanges);
+        if (m_includeRanges == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_includeRanges);
+        }
     }
 
     public void setIncludeRanges(final List<IncludeRange> ranges) {
@@ -174,8 +193,29 @@ public class Package implements Serializable {
         return m_includeRanges.remove(range);
     }
 
+    public boolean hasIncludeRange(final String addr) {
+        if (getIncludeRanges().size() == 0 && getSpecifics().size() == 0) {
+            return true;
+        }
+
+        final IPAddress ipAddr = new IPAddress(addr);
+
+        for (final IncludeRange rng : getIncludeRanges()) {
+            final IPAddress begin = rng.getBeginAsAddress();
+            final IPAddress end   = rng.getEndAsAddress();
+            if (ipAddr.isGreaterThanOrEqualTo(begin) && ipAddr.isLessThanOrEqualTo(end)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public List<ExcludeRange> getExcludeRanges() {
-        return new ArrayList<ExcludeRange>(m_excludeRanges);
+        if (m_excludeRanges == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_excludeRanges);
+        }
     }
 
     public void setExcludeRanges(final List<ExcludeRange> ranges) {
@@ -190,8 +230,26 @@ public class Package implements Serializable {
         return m_excludeRanges.remove(range);
     }
 
+    public boolean hasExcludeRange(final String addr) {
+        final IPAddress ipAddr = new IPAddress(addr);
+
+        for (final ExcludeRange rng : getExcludeRanges()) {
+            final IPAddress begin = rng.getBeginAsAddress();
+            final IPAddress end   = rng.getEndAsAddress();
+
+            if (ipAddr.isGreaterThanOrEqualTo(begin) && ipAddr.isLessThanOrEqualTo(end)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public List<String> getIncludeUrls() {
-        return Collections.unmodifiableList(m_includeUrls);
+        if (m_includeUrls == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_includeUrls);
+        }
     }
 
     public void setIncludeUrlCollection(final List<String> urls) {
@@ -204,6 +262,23 @@ public class Package implements Serializable {
 
     public boolean removeIncludeUrl(final String url) {
         return m_includeUrls.remove(url);
+    }
+
+    public boolean hasSpecificUrl(final String iface, final boolean hasSpecific) {
+        if (hasSpecific) {
+            return true;
+        } else {
+            final IPAddress addr = new IPAddress(iface);
+            for (final String includeURL : getIncludeUrls()) {
+                final List<String> ips = IpListFromUrl.fetch(includeURL);
+                for (final String includeAddr : ips) {
+                    if (new IPAddress(includeAddr).equals(addr)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -271,7 +346,11 @@ public class Package implements Serializable {
     }
 
     public List<Service> getServices() {
-        return Collections.unmodifiableList(m_services);
+        if (m_services == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_services);
+        }
     }
 
     public void setServices(final List<Service> services) {
@@ -286,8 +365,42 @@ public class Package implements Serializable {
         return m_services.remove(service);
     }
 
+    public Service getService(final String svcName) {
+        final List<Service> pkgSvcs = getServices();
+
+        for (final Service svc : pkgSvcs) {
+            if (svc.getName().equalsIgnoreCase(svcName))
+                return svc;
+        }
+        throw new IllegalArgumentException("Service name not part of package!");
+    }
+
+    /**
+     * Returns true if the service is part of the package and the status of the
+     * service is set to "on". Returns false if the service is not in the
+     * package or it is but the status of the service is set to "off".
+     *
+     * @param svcName
+     *            The service name to lookup.
+     * @return a boolean.
+     */
+    public boolean serviceInPackageAndEnabled(final String svcName) {
+        for (final Service service : getServices()) {
+            if (service.getName().equalsIgnoreCase(svcName)) {
+                // OK it's in the package. Now check the status of the service.
+                if ("on".equals(service.getStatus()))
+                    return true;
+            }
+        }
+        return false;
+    }
+
     public List<String> getOutageCalendars() {
-        return Collections.unmodifiableList(m_outageCalendar);
+        if (m_outageCalendar == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_outageCalendar);
+        }
     }
 
     public void setOutageCalendars(final List<String> calendars) {
@@ -428,106 +541,11 @@ public class Package implements Serializable {
         return true;
     }
 
-    public boolean hasSpecific(byte[] addr) {
-        final IPAddress ipAddr = new IPAddress(addr);
-        for (final String espec : getSpecifics()) {
-            if (ipAddr.equals(new IPAddress(espec))) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * <p>hasIncludeRange</p>
-     *
-     * @param addr a long.
-     * @return a boolean.
-     */
-    public boolean hasIncludeRange(final String addr) {
-        if (getIncludeRanges().size() == 0 && getSpecifics().size() == 0) {
-            return true;
-        }
-
-        final IPAddress ipAddr = new IPAddress(addr);
-
-        for (final IncludeRange rng : getIncludeRanges()) {
-            final IPAddress begin = rng.getBeginAsAddress();
-            final IPAddress end   = rng.getEndAsAddress();
-            if (ipAddr.isGreaterThanOrEqualTo(begin) && ipAddr.isLessThanOrEqualTo(end)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * <p>getService</p>
-     *
-     * @param svcName a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.config.collectd.Service} object.
-     */
-    public Service getService(final String svcName) {
-        final List<Service> pkgSvcs = getServices();
-        
-        for (Service svc : pkgSvcs) {
-            if (svc.getName().equalsIgnoreCase(svcName))
-                return svc;
-        }
-        throw new IllegalArgumentException("Service name not part of package!");
-    }
-
-    /**
-     * Returns true if the service is part of the package and the status of the
-     * service is set to "on". Returns false if the service is not in the
-     * package or it is but the status of the service is set to "off".
-     *
-     * @param svcName
-     *            The service name to lookup.
-     * @return a boolean.
-     */
-    public boolean serviceInPackageAndEnabled(String svcName) {
-        for (final Service service : getServices()) {
-            if (service.getName().equalsIgnoreCase(svcName)) {
-                // OK it's in the package. Now check the
-                // status of the service.
-                String status = service.getStatus();
-                if ("on".equals(status))
-                    return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean hasExcludeRange(final String addr) {
-        final IPAddress ipAddr = new IPAddress(addr);
-
-        for (final ExcludeRange rng : getExcludeRanges()) {
-            final IPAddress begin = rng.getBeginAsAddress();
-            final IPAddress end   = rng.getEndAsAddress();
-
-            if (ipAddr.isGreaterThanOrEqualTo(begin) && ipAddr.isLessThanOrEqualTo(end)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean hasSpecificUrl(final String iface, final boolean hasSpecific) {
-        if (hasSpecific) {
-            return true;
-        } else {
-            final IPAddress addr = new IPAddress(iface);
-            for (final String includeURL : getIncludeUrls()) {
-                final List<String> ips = IpListFromUrl.fetch(includeURL);
-                for (final String includeAddr : ips) {
-                    if (new IPAddress(includeAddr).equals(addr)) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
+    @Override
+    public String toString() {
+        return "Package [name=" + m_name + ", filter=" + m_filter + ", specifics=" + m_specifics + ", includeRanges=" + m_includeRanges + ", excludeRanges=" + m_excludeRanges
+                + ", includeUrls=" + m_includeUrls + ", storeByIfAlias=" + m_storeByIfAlias + ", storeByNodeID=" + m_storeByNodeID + ", ifAliasDomain=" + m_ifAliasDomain
+                + ", storFlagOverride=" + m_storFlagOverride + ", ifAliasComment=" + m_ifAliasComment + ", services=" + m_services + ", outageCalendar=" + m_outageCalendar + "]";
     }
 
 }

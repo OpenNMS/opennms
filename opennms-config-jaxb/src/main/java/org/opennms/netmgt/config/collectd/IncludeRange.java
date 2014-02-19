@@ -24,7 +24,7 @@ import org.opennms.core.network.IPAddress;
 @XmlRootElement(name="include-range")
 @XmlAccessorType(XmlAccessType.NONE)
 public class IncludeRange implements Serializable {
-    private static final long serialVersionUID = -1620986424304804382L;
+    private static final long serialVersionUID = -4906787679582203815L;
 
     /**
      * Starting address of the range
@@ -114,6 +114,11 @@ public class IncludeRange implements Serializable {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "IncludeRange [begin=" + m_begin + ", end=" + m_end + "]";
     }
 
 }

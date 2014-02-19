@@ -43,137 +43,133 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="configuration")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 public class Configuration implements Serializable {
-    private static final long serialVersionUID = -8779120716708528358L;
+    private static final long serialVersionUID = 6018795999027969844L;
 
     /**
      * The proxy host to use when communicating with this agent
      */
     @XmlAttribute(name="proxy-host")
-    private String _proxyHost;
+    private String m_proxyHost;
 
     /**
      * Number of variables to send per SNMP request.
-     * 
      */
     @XmlAttribute(name="max-vars-per-pdu")
-    private Integer _maxVarsPerPdu;
+    private Integer m_maxVarsPerPdu;
 
     /**
      * Number of repetitions to send per get-bulk request.
-     * 
      */
     @XmlAttribute(name="max-repetitions")
-    private Integer _maxRepetitions;
+    private Integer m_maxRepetitions;
 
     /**
      * (SNMP4J specific) Specifies the maximum number of bytes that may be
-     * encoded into an individual SNMP PDU request by Collectd. Provides a means
-     * to limit the size of outgoing PDU requests. Default is 65535, must be at
-     * least 484.
+     * encoded into an individual SNMP PDU request by Collectd. Provides a
+     * means to limit the size of outgoing PDU requests. Default is 65535,
+     * must be at least 484.
      */
     @XmlAttribute(name="max-request-size")
-    private Integer _maxRequestSize;
+    private Integer m_maxRequestSize;
 
     /**
      * SNMPv3
      */
     @XmlAttribute(name="security-name")
-    private String _securityName;
+    private String m_securityName;
 
     /**
      * SNMPv3
      */
     @XmlAttribute(name="security-level")
-    private Integer _securityLevel;
+    private Integer m_securityLevel;
 
     /**
      * SNMPv3
      */
     @XmlAttribute(name="auth-passphrase")
-    private String _authPassphrase;
+    private String m_authPassphrase;
 
     /**
      * SNMPv3
      */
     @XmlAttribute(name="auth-protocol")
-    private String _authProtocol;
+    private String m_authProtocol;
 
     /**
      * SNMPv3
      */
     @XmlAttribute(name="engine-id")
-    private String _engineId;
+    private String m_engineId;
 
     /**
      * SNMPv3
      */
     @XmlAttribute(name="context-engine-id")
-    private String _contextEngineId;
+    private String m_contextEngineId;
 
     /**
      * SNMPv3
      */
     @XmlAttribute(name="context-name")
-    private String _contextName;
+    private String m_contextName;
 
     /**
      * SNMPv3
      */
     @XmlAttribute(name="privacy-passphrase")
-    private String _privacyPassphrase;
+    private String m_privacyPassphrase;
 
     /**
      * SNMPv3
      */
     @XmlAttribute(name="privacy-protocol")
-    private String _privacyProtocol;
+    private String m_privacyProtocol;
 
     /**
      * SNMPv3
      */
     @XmlAttribute(name="enterprise-id")
-    private String _enterpriseId;
+    private String m_enterpriseId;
 
     /**
      * If set, forces SNMP data collection to the specified version.
      */
     @XmlAttribute(name="version")
-    private String _version;
+    private String m_version;
 
     /**
      * Default write community string
      */
     @XmlAttribute(name="write-community")
-    private String _writeCommunity;
+    private String m_writeCommunity;
 
     /**
      * Default read community string
      */
     @XmlAttribute(name="read-community")
-    private String _readCommunity;
+    private String m_readCommunity;
 
     /**
      * Default timeout (in milliseconds)
      */
     @XmlAttribute(name="timeout")
-    private Integer _timeout;
+    private Integer m_timeout;
 
     /**
      * Default number of retries
      */
     @XmlAttribute(name="retry")
-    private Integer _retry;
+    private Integer m_retry;
 
     /**
      * If set, overrides UDP port 161 as the port where SNMP GET/GETNEXT/GETBULK
      * requests are sent.
      */
     @XmlAttribute(name="port")
-    private Integer _port;
-
-
+    private Integer m_port;
 
     public Configuration() {
         super();
@@ -224,31 +220,31 @@ public class Configuration implements Serializable {
     }
 
     public void deleteMaxRepetitions() {
-        _maxRepetitions = null;
+        m_maxRepetitions = null;
     }
 
     public void deleteMaxRequestSize() {
-        _maxRequestSize = null;
+        m_maxRequestSize = null;
     }
 
     public void deleteMaxVarsPerPdu() {
-        _maxVarsPerPdu = null;
+        m_maxVarsPerPdu = null;
     }
 
     public void deletePort() {
-        _port = null;
+        m_port = null;
     }
 
     public void deleteRetry() {
-        _retry = null;
+        m_retry = null;
     }
 
     public void deleteSecurityLevel() {
-        _securityLevel = null;
+        m_securityLevel = null;
     }
 
     public void deleteTimeout() {
-        _timeout = null;
+        m_timeout = null;
     }
 
 
@@ -259,7 +255,7 @@ public class Configuration implements Serializable {
      * @return the value of field 'AuthPassphrase'.
      */
     public final String getAuthPassphrase() {
-        return _authPassphrase;
+        return m_authPassphrase;
     }
 
     /**
@@ -269,7 +265,7 @@ public class Configuration implements Serializable {
      * @return the value of field 'AuthProtocol'.
      */
     public final String getAuthProtocol() {
-        return _authProtocol;
+        return m_authProtocol;
     }
 
     /**
@@ -279,7 +275,7 @@ public class Configuration implements Serializable {
      * @return the value of field 'ContextEngineId'.
      */
     public final String getContextEngineId() {
-        return _contextEngineId;
+        return m_contextEngineId;
     }
 
     /**
@@ -289,7 +285,7 @@ public class Configuration implements Serializable {
      * @return the value of field 'ContextName'.
      */
     public final String getContextName() {
-        return _contextName;
+        return m_contextName;
     }
 
     /**
@@ -299,7 +295,7 @@ public class Configuration implements Serializable {
      * @return the value of field 'EngineId'.
      */
     public final String getEngineId() {
-        return _engineId;
+        return m_engineId;
     }
 
     /**
@@ -309,7 +305,7 @@ public class Configuration implements Serializable {
      * @return the value of field 'EnterpriseId'.
      */
     public final String getEnterpriseId() {
-        return _enterpriseId;
+        return m_enterpriseId;
     }
 
     /**
@@ -321,7 +317,7 @@ public class Configuration implements Serializable {
      * @return the value of field 'MaxRepetitions'.
      */
     public final Integer getMaxRepetitions() {
-        return _maxRepetitions == null? 2 : _maxRepetitions;
+        return m_maxRepetitions == null? 2 : m_maxRepetitions;
     }
 
     /**
@@ -334,7 +330,7 @@ public class Configuration implements Serializable {
      * @return the value of field 'MaxRequestSize'.
      */
     public final Integer getMaxRequestSize() {
-        return _maxRequestSize == null? 65535 : _maxRequestSize;
+        return m_maxRequestSize == null? 65535 : m_maxRequestSize;
     }
 
     /**
@@ -345,7 +341,7 @@ public class Configuration implements Serializable {
      * @return the value of field 'MaxVarsPerPdu'.
      */
     public final Integer getMaxVarsPerPdu() {
-        return _maxVarsPerPdu == null? 10 : _maxVarsPerPdu;
+        return m_maxVarsPerPdu == null? 10 : m_maxVarsPerPdu;
     }
 
     /**
@@ -356,7 +352,7 @@ public class Configuration implements Serializable {
      * @return the value of field 'Port'.
      */
     public final Integer getPort() {
-        return _port == null? 0 : _port;
+        return m_port == null? 0 : m_port;
     }
 
     /**
@@ -366,7 +362,7 @@ public class Configuration implements Serializable {
      * @return the value of field 'PrivacyPassphrase'.
      */
     public final String getPrivacyPassphrase() {
-        return _privacyPassphrase;
+        return m_privacyPassphrase;
     }
 
     /**
@@ -376,7 +372,7 @@ public class Configuration implements Serializable {
      * @return the value of field 'PrivacyProtocol'.
      */
     public final String getPrivacyProtocol() {
-        return _privacyProtocol;
+        return m_privacyProtocol;
     }
 
     /**
@@ -387,7 +383,7 @@ public class Configuration implements Serializable {
      * @return the value of field 'ProxyHost'.
      */
     public final String getProxyHost() {
-        return _proxyHost;
+        return m_proxyHost;
     }
 
     /**
@@ -397,7 +393,7 @@ public class Configuration implements Serializable {
      * @return the value of field 'ReadCommunity'.
      */
     public final String getReadCommunity() {
-        return _readCommunity;
+        return m_readCommunity;
     }
 
     /**
@@ -407,7 +403,7 @@ public class Configuration implements Serializable {
      * @return the value of field 'Retry'.
      */
     public final Integer getRetry() {
-        return _retry == null? 0 : _retry;
+        return m_retry == null? 0 : m_retry;
     }
 
     /**
@@ -417,7 +413,7 @@ public class Configuration implements Serializable {
      * @return the value of field 'SecurityLevel'.
      */
     public final Integer getSecurityLevel() {
-        return _securityLevel == null? 0 : _securityLevel;
+        return m_securityLevel == null? 0 : m_securityLevel;
     }
 
     /**
@@ -427,7 +423,7 @@ public class Configuration implements Serializable {
      * @return the value of field 'SecurityName'.
      */
     public final String getSecurityName() {
-        return _securityName;
+        return m_securityName;
     }
 
     /**
@@ -437,7 +433,7 @@ public class Configuration implements Serializable {
      * @return the value of field 'Timeout'.
      */
     public final Integer getTimeout() {
-        return _timeout == null? 0 : _timeout;
+        return m_timeout == null? 0 : m_timeout;
     }
 
     /**
@@ -448,7 +444,7 @@ public class Configuration implements Serializable {
      * @return the value of field 'Version'.
      */
     public final String getVersion() {
-        return _version;
+        return m_version;
     }
 
     /**
@@ -458,7 +454,7 @@ public class Configuration implements Serializable {
      * @return the value of field 'WriteCommunity'.
      */
     public final String getWriteCommunity() {
-        return _writeCommunity;
+        return m_writeCommunity;
     }
 
     /**
@@ -467,7 +463,7 @@ public class Configuration implements Serializable {
      * @return true if at least one MaxRepetitions has been added
      */
     public boolean hasMaxRepetitions() {
-        return _maxRepetitions != null;
+        return m_maxRepetitions != null;
     }
 
     /**
@@ -476,7 +472,7 @@ public class Configuration implements Serializable {
      * @return true if at least one MaxRequestSize has been added
      */
     public boolean hasMaxRequestSize() {
-        return _maxRequestSize != null;
+        return m_maxRequestSize != null;
     }
 
     /**
@@ -485,7 +481,7 @@ public class Configuration implements Serializable {
      * @return true if at least one MaxVarsPerPdu has been added
      */
     public boolean hasMaxVarsPerPdu() {
-        return _maxVarsPerPdu != null;
+        return m_maxVarsPerPdu != null;
     }
 
     /**
@@ -494,7 +490,7 @@ public class Configuration implements Serializable {
      * @return true if at least one Port has been added
      */
     public boolean hasPort() {
-        return _port != null;
+        return m_port != null;
     }
 
     /**
@@ -503,7 +499,7 @@ public class Configuration implements Serializable {
      * @return true if at least one Retry has been added
      */
     public boolean hasRetry() {
-        return _retry != null;
+        return m_retry != null;
     }
 
     /**
@@ -512,7 +508,7 @@ public class Configuration implements Serializable {
      * @return true if at least one SecurityLevel has been added
      */
     public boolean hasSecurityLevel() {
-        return _securityLevel != null;
+        return m_securityLevel != null;
     }
 
     /**
@@ -521,7 +517,7 @@ public class Configuration implements Serializable {
      * @return true if at least one Timeout has been added
      */
     public boolean hasTimeout() {
-        return _timeout != null;
+        return m_timeout != null;
     }
 
     /**
@@ -532,7 +528,7 @@ public class Configuration implements Serializable {
      *            the value of field 'authPassphrase'.
      */
     public final void setAuthPassphrase(final String authPassphrase) {
-        _authPassphrase = authPassphrase;
+        m_authPassphrase = authPassphrase == null? null : authPassphrase.intern();
     }
 
     /**
@@ -543,7 +539,7 @@ public class Configuration implements Serializable {
      *            the value of field 'authProtocol'.
      */
     public final void setAuthProtocol(final String authProtocol) {
-        _authProtocol = authProtocol;
+        m_authProtocol = authProtocol == null? null : authProtocol.intern();
     }
 
     /**
@@ -554,7 +550,7 @@ public class Configuration implements Serializable {
      *            the value of field 'contextEngineId'.
      */
     public final void setContextEngineId(final String contextEngineId) {
-        _contextEngineId = contextEngineId;
+        m_contextEngineId = contextEngineId == null? null : contextEngineId.intern();
     }
 
     /**
@@ -565,7 +561,7 @@ public class Configuration implements Serializable {
      *            the value of field 'contextName'.
      */
     public final void setContextName(final String contextName) {
-        _contextName = contextName;
+        m_contextName = contextName == null? null : contextName.intern();
     }
 
     /**
@@ -576,7 +572,7 @@ public class Configuration implements Serializable {
      *            the value of field 'engineId'.
      */
     public final void setEngineId(final String engineId) {
-        _engineId = engineId;
+        m_engineId = engineId == null? null : engineId.intern();
     }
 
     /**
@@ -587,7 +583,7 @@ public class Configuration implements Serializable {
      *            the value of field 'enterpriseId'.
      */
     public final void setEnterpriseId(final String enterpriseId) {
-        _enterpriseId = enterpriseId;
+        m_enterpriseId = enterpriseId == null? null : enterpriseId.intern();
     }
 
     /**
@@ -600,7 +596,7 @@ public class Configuration implements Serializable {
      *            the value of field 'maxRepetitions'.
      */
     public final void setMaxRepetitions(final Integer maxRepetitions) {
-        _maxRepetitions = maxRepetitions;
+        m_maxRepetitions = maxRepetitions;
     }
 
     /**
@@ -614,7 +610,7 @@ public class Configuration implements Serializable {
      *            the value of field 'maxRequestSize'.
      */
     public final void setMaxRequestSize(final Integer maxRequestSize) {
-        _maxRequestSize = maxRequestSize;
+        m_maxRequestSize = maxRequestSize;
     }
 
     /**
@@ -626,7 +622,7 @@ public class Configuration implements Serializable {
      *            the value of field 'maxVarsPerPdu'.
      */
     public final void setMaxVarsPerPdu(final Integer maxVarsPerPdu) {
-        _maxVarsPerPdu = maxVarsPerPdu;
+        m_maxVarsPerPdu = maxVarsPerPdu;
     }
 
     /**
@@ -638,7 +634,7 @@ public class Configuration implements Serializable {
      *            the value of field 'port'.
      */
     public final void setPort(final Integer port) {
-        _port = port;
+        m_port = port;
     }
 
     /**
@@ -649,7 +645,7 @@ public class Configuration implements Serializable {
      *            the value of field 'privacyPassphrase'.
      */
     public final void setPrivacyPassphrase(final String privacyPassphrase) {
-        _privacyPassphrase = privacyPassphrase;
+        m_privacyPassphrase = privacyPassphrase == null? null : privacyPassphrase.intern();
     }
 
     /**
@@ -660,7 +656,7 @@ public class Configuration implements Serializable {
      *            the value of field 'privacyProtocol'.
      */
     public final void setPrivacyProtocol(final String privacyProtocol) {
-        _privacyProtocol = privacyProtocol;
+        m_privacyProtocol = privacyProtocol == null? null : privacyProtocol.intern();
     }
 
     /**
@@ -672,7 +668,7 @@ public class Configuration implements Serializable {
      *            the value of field 'proxyHost'.
      */
     public final void setProxyHost(final String proxyHost) {
-        _proxyHost = proxyHost;
+        m_proxyHost = proxyHost == null? null : proxyHost.intern();
     }
 
     /**
@@ -683,7 +679,7 @@ public class Configuration implements Serializable {
      *            the value of field 'readCommunity'.
      */
     public final void setReadCommunity(final String readCommunity) {
-        _readCommunity = readCommunity;
+        m_readCommunity = readCommunity == null? null : readCommunity.intern();
     }
 
     /**
@@ -694,7 +690,7 @@ public class Configuration implements Serializable {
      *            the value of field 'retry'.
      */
     public final void setRetry(final Integer retry) {
-        _retry = retry;
+        m_retry = retry;
     }
 
     /**
@@ -705,7 +701,7 @@ public class Configuration implements Serializable {
      *            the value of field 'securityLevel'.
      */
     public final void setSecurityLevel(final Integer securityLevel) {
-        _securityLevel = securityLevel;
+        m_securityLevel = securityLevel;
     }
 
     /**
@@ -716,7 +712,7 @@ public class Configuration implements Serializable {
      *            the value of field 'securityName'.
      */
     public final void setSecurityName(final String securityName) {
-        _securityName = securityName;
+        m_securityName = securityName == null? null : securityName.intern();
     }
 
     /**
@@ -727,7 +723,7 @@ public class Configuration implements Serializable {
      *            the value of field 'timeout'.
      */
     public final void setTimeout(final Integer timeout) {
-        _timeout = timeout;
+        m_timeout = timeout;
     }
 
     /**
@@ -739,7 +735,7 @@ public class Configuration implements Serializable {
      *            the value of field 'version'.
      */
     public final void setVersion(final String version) {
-        _version = version;
+        m_version = version == null? null : version.intern();
     }
 
     /**
@@ -750,33 +746,33 @@ public class Configuration implements Serializable {
      *            the value of field 'writeCommunity'.
      */
     public final void setWriteCommunity(final String writeCommunity) {
-        _writeCommunity = writeCommunity;
+        m_writeCommunity = writeCommunity == null? null : writeCommunity.intern();
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((_authPassphrase == null) ? 0 : _authPassphrase.hashCode());
-        result = prime * result + ((_authProtocol == null) ? 0 : _authProtocol.hashCode());
-        result = prime * result + ((_contextEngineId == null) ? 0 : _contextEngineId.hashCode());
-        result = prime * result + ((_contextName == null) ? 0 : _contextName.hashCode());
-        result = prime * result + ((_engineId == null) ? 0 : _engineId.hashCode());
-        result = prime * result + ((_enterpriseId == null) ? 0 : _enterpriseId.hashCode());
-        result = prime * result + ((_maxRepetitions == null) ? 0 : _maxRepetitions.hashCode());
-        result = prime * result + ((_maxRequestSize == null) ? 0 : _maxRequestSize.hashCode());
-        result = prime * result + ((_maxVarsPerPdu == null) ? 0 : _maxVarsPerPdu.hashCode());
-        result = prime * result + ((_port == null) ? 0 : _port.hashCode());
-        result = prime * result + ((_privacyPassphrase == null) ? 0 : _privacyPassphrase.hashCode());
-        result = prime * result + ((_privacyProtocol == null) ? 0 : _privacyProtocol.hashCode());
-        result = prime * result + ((_proxyHost == null) ? 0 : _proxyHost.hashCode());
-        result = prime * result + ((_readCommunity == null) ? 0 : _readCommunity.hashCode());
-        result = prime * result + ((_retry == null) ? 0 : _retry.hashCode());
-        result = prime * result + ((_securityLevel == null) ? 0 : _securityLevel.hashCode());
-        result = prime * result + ((_securityName == null) ? 0 : _securityName.hashCode());
-        result = prime * result + ((_timeout == null) ? 0 : _timeout.hashCode());
-        result = prime * result + ((_version == null) ? 0 : _version.hashCode());
-        result = prime * result + ((_writeCommunity == null) ? 0 : _writeCommunity.hashCode());
+        result = prime * result + ((m_authPassphrase == null) ? 0 : m_authPassphrase.hashCode());
+        result = prime * result + ((m_authProtocol == null) ? 0 : m_authProtocol.hashCode());
+        result = prime * result + ((m_contextEngineId == null) ? 0 : m_contextEngineId.hashCode());
+        result = prime * result + ((m_contextName == null) ? 0 : m_contextName.hashCode());
+        result = prime * result + ((m_engineId == null) ? 0 : m_engineId.hashCode());
+        result = prime * result + ((m_enterpriseId == null) ? 0 : m_enterpriseId.hashCode());
+        result = prime * result + ((m_maxRepetitions == null) ? 0 : m_maxRepetitions.hashCode());
+        result = prime * result + ((m_maxRequestSize == null) ? 0 : m_maxRequestSize.hashCode());
+        result = prime * result + ((m_maxVarsPerPdu == null) ? 0 : m_maxVarsPerPdu.hashCode());
+        result = prime * result + ((m_port == null) ? 0 : m_port.hashCode());
+        result = prime * result + ((m_privacyPassphrase == null) ? 0 : m_privacyPassphrase.hashCode());
+        result = prime * result + ((m_privacyProtocol == null) ? 0 : m_privacyProtocol.hashCode());
+        result = prime * result + ((m_proxyHost == null) ? 0 : m_proxyHost.hashCode());
+        result = prime * result + ((m_readCommunity == null) ? 0 : m_readCommunity.hashCode());
+        result = prime * result + ((m_retry == null) ? 0 : m_retry.hashCode());
+        result = prime * result + ((m_securityLevel == null) ? 0 : m_securityLevel.hashCode());
+        result = prime * result + ((m_securityName == null) ? 0 : m_securityName.hashCode());
+        result = prime * result + ((m_timeout == null) ? 0 : m_timeout.hashCode());
+        result = prime * result + ((m_version == null) ? 0 : m_version.hashCode());
+        result = prime * result + ((m_writeCommunity == null) ? 0 : m_writeCommunity.hashCode());
         return result;
     }
 
@@ -792,144 +788,144 @@ public class Configuration implements Serializable {
             return false;
         }
         final Configuration other = (Configuration) obj;
-        if (_authPassphrase == null) {
-            if (other._authPassphrase != null) {
+        if (m_authPassphrase == null) {
+            if (other.m_authPassphrase != null) {
                 return false;
             }
-        } else if (!_authPassphrase.equals(other._authPassphrase)) {
+        } else if (!m_authPassphrase.equals(other.m_authPassphrase)) {
             return false;
         }
-        if (_authProtocol == null) {
-            if (other._authProtocol != null) {
+        if (m_authProtocol == null) {
+            if (other.m_authProtocol != null) {
                 return false;
             }
-        } else if (!_authProtocol.equals(other._authProtocol)) {
+        } else if (!m_authProtocol.equals(other.m_authProtocol)) {
             return false;
         }
-        if (_contextEngineId == null) {
-            if (other._contextEngineId != null) {
+        if (m_contextEngineId == null) {
+            if (other.m_contextEngineId != null) {
                 return false;
             }
-        } else if (!_contextEngineId.equals(other._contextEngineId)) {
+        } else if (!m_contextEngineId.equals(other.m_contextEngineId)) {
             return false;
         }
-        if (_contextName == null) {
-            if (other._contextName != null) {
+        if (m_contextName == null) {
+            if (other.m_contextName != null) {
                 return false;
             }
-        } else if (!_contextName.equals(other._contextName)) {
+        } else if (!m_contextName.equals(other.m_contextName)) {
             return false;
         }
-        if (_engineId == null) {
-            if (other._engineId != null) {
+        if (m_engineId == null) {
+            if (other.m_engineId != null) {
                 return false;
             }
-        } else if (!_engineId.equals(other._engineId)) {
+        } else if (!m_engineId.equals(other.m_engineId)) {
             return false;
         }
-        if (_enterpriseId == null) {
-            if (other._enterpriseId != null) {
+        if (m_enterpriseId == null) {
+            if (other.m_enterpriseId != null) {
                 return false;
             }
-        } else if (!_enterpriseId.equals(other._enterpriseId)) {
+        } else if (!m_enterpriseId.equals(other.m_enterpriseId)) {
             return false;
         }
-        if (_maxRepetitions == null) {
-            if (other._maxRepetitions != null) {
+        if (m_maxRepetitions == null) {
+            if (other.m_maxRepetitions != null) {
                 return false;
             }
-        } else if (!_maxRepetitions.equals(other._maxRepetitions)) {
+        } else if (!m_maxRepetitions.equals(other.m_maxRepetitions)) {
             return false;
         }
-        if (_maxRequestSize == null) {
-            if (other._maxRequestSize != null) {
+        if (m_maxRequestSize == null) {
+            if (other.m_maxRequestSize != null) {
                 return false;
             }
-        } else if (!_maxRequestSize.equals(other._maxRequestSize)) {
+        } else if (!m_maxRequestSize.equals(other.m_maxRequestSize)) {
             return false;
         }
-        if (_maxVarsPerPdu == null) {
-            if (other._maxVarsPerPdu != null) {
+        if (m_maxVarsPerPdu == null) {
+            if (other.m_maxVarsPerPdu != null) {
                 return false;
             }
-        } else if (!_maxVarsPerPdu.equals(other._maxVarsPerPdu)) {
+        } else if (!m_maxVarsPerPdu.equals(other.m_maxVarsPerPdu)) {
             return false;
         }
-        if (_port == null) {
-            if (other._port != null) {
+        if (m_port == null) {
+            if (other.m_port != null) {
                 return false;
             }
-        } else if (!_port.equals(other._port)) {
+        } else if (!m_port.equals(other.m_port)) {
             return false;
         }
-        if (_privacyPassphrase == null) {
-            if (other._privacyPassphrase != null) {
+        if (m_privacyPassphrase == null) {
+            if (other.m_privacyPassphrase != null) {
                 return false;
             }
-        } else if (!_privacyPassphrase.equals(other._privacyPassphrase)) {
+        } else if (!m_privacyPassphrase.equals(other.m_privacyPassphrase)) {
             return false;
         }
-        if (_privacyProtocol == null) {
-            if (other._privacyProtocol != null) {
+        if (m_privacyProtocol == null) {
+            if (other.m_privacyProtocol != null) {
                 return false;
             }
-        } else if (!_privacyProtocol.equals(other._privacyProtocol)) {
+        } else if (!m_privacyProtocol.equals(other.m_privacyProtocol)) {
             return false;
         }
-        if (_proxyHost == null) {
-            if (other._proxyHost != null) {
+        if (m_proxyHost == null) {
+            if (other.m_proxyHost != null) {
                 return false;
             }
-        } else if (!_proxyHost.equals(other._proxyHost)) {
+        } else if (!m_proxyHost.equals(other.m_proxyHost)) {
             return false;
         }
-        if (_readCommunity == null) {
-            if (other._readCommunity != null) {
+        if (m_readCommunity == null) {
+            if (other.m_readCommunity != null) {
                 return false;
             }
-        } else if (!_readCommunity.equals(other._readCommunity)) {
+        } else if (!m_readCommunity.equals(other.m_readCommunity)) {
             return false;
         }
-        if (_retry == null) {
-            if (other._retry != null) {
+        if (m_retry == null) {
+            if (other.m_retry != null) {
                 return false;
             }
-        } else if (!_retry.equals(other._retry)) {
+        } else if (!m_retry.equals(other.m_retry)) {
             return false;
         }
-        if (_securityLevel == null) {
-            if (other._securityLevel != null) {
+        if (m_securityLevel == null) {
+            if (other.m_securityLevel != null) {
                 return false;
             }
-        } else if (!_securityLevel.equals(other._securityLevel)) {
+        } else if (!m_securityLevel.equals(other.m_securityLevel)) {
             return false;
         }
-        if (_securityName == null) {
-            if (other._securityName != null) {
+        if (m_securityName == null) {
+            if (other.m_securityName != null) {
                 return false;
             }
-        } else if (!_securityName.equals(other._securityName)) {
+        } else if (!m_securityName.equals(other.m_securityName)) {
             return false;
         }
-        if (_timeout == null) {
-            if (other._timeout != null) {
+        if (m_timeout == null) {
+            if (other.m_timeout != null) {
                 return false;
             }
-        } else if (!_timeout.equals(other._timeout)) {
+        } else if (!m_timeout.equals(other.m_timeout)) {
             return false;
         }
-        if (_version == null) {
-            if (other._version != null) {
+        if (m_version == null) {
+            if (other.m_version != null) {
                 return false;
             }
-        } else if (!_version.equals(other._version)) {
+        } else if (!m_version.equals(other.m_version)) {
             return false;
         }
-        if (_writeCommunity == null) {
-            if (other._writeCommunity != null) {
+        if (m_writeCommunity == null) {
+            if (other.m_writeCommunity != null) {
                 return false;
             }
-        } else if (!_writeCommunity.equals(other._writeCommunity)) {
+        } else if (!m_writeCommunity.equals(other.m_writeCommunity)) {
             return false;
         }
         return true;
@@ -937,11 +933,11 @@ public class Configuration implements Serializable {
 
     @Override
     public String toString() {
-        return "Configuration [proxyHost=" + _proxyHost + ", maxVarsPerPdu=" + _maxVarsPerPdu + ", maxRepetitions=" + _maxRepetitions + ", maxRequestSize=" + _maxRequestSize + ", securityName="
-                + _securityName + ", securityLevel=" + _securityLevel + ", authPassphrase=" + _authPassphrase + ", authProtocol=" + _authProtocol + ", engineId=" + _engineId
-                + ", contextEngineId=" + _contextEngineId + ", contextName=" + _contextName + ", privacyPassphrase=" + _privacyPassphrase + ", privacyProtocol=" + _privacyProtocol
-                + ", enterpriseId=" + _enterpriseId + ", version=" + _version + ", writeCommunity=" + _writeCommunity + ", readCommunity=" + _readCommunity + ", timeout=" + _timeout
-                + ", retry=" + _retry + ", port=" + _port + "]";
+        return "Configuration [proxyHost=" + m_proxyHost + ", maxVarsPerPdu=" + m_maxVarsPerPdu + ", maxRepetitions=" + m_maxRepetitions + ", maxRequestSize=" + m_maxRequestSize + ", securityName="
+                + m_securityName + ", securityLevel=" + m_securityLevel + ", authPassphrase=" + m_authPassphrase + ", authProtocol=" + m_authProtocol + ", engineId=" + m_engineId
+                + ", contextEngineId=" + m_contextEngineId + ", contextName=" + m_contextName + ", privacyPassphrase=" + m_privacyPassphrase + ", privacyProtocol=" + m_privacyProtocol
+                + ", enterpriseId=" + m_enterpriseId + ", version=" + m_version + ", writeCommunity=" + m_writeCommunity + ", readCommunity=" + m_readCommunity + ", timeout=" + m_timeout
+                + ", retry=" + m_retry + ", port=" + m_port + "]";
     }
 
 }

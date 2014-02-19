@@ -50,7 +50,7 @@ import org.opennms.core.xml.ValidateUsing;
 @XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("datacollection-config.xsd")
 public class SnmpCollection implements Serializable {
-    private static final long serialVersionUID = -2239537365273785234L;
+    private static final long serialVersionUID = -9050559966348346178L;
 
     /**
      * collector name
@@ -147,7 +147,11 @@ public class SnmpCollection implements Serializable {
     }
 
     public List<IncludeCollection> getIncludeCollections() {
-        return Collections.unmodifiableList(m_includeCollections);
+        if (m_includeCollections == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_includeCollections);
+        }
     }
 
     public void setIncludeCollections(final List<IncludeCollection> includeCollections) {
@@ -163,7 +167,11 @@ public class SnmpCollection implements Serializable {
     }
 
     public List<ResourceType> getResourceTypes() {
-        return Collections.unmodifiableList(m_resourceTypes);
+        if (m_resourceTypes == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_resourceTypes);
+        }
     }
 
     public void setResourceTypes(final List<ResourceType> resourceTypes) {
@@ -284,6 +292,12 @@ public class SnmpCollection implements Serializable {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "SnmpCollection [name=" + m_name + ", maxVarsPerPdu=" + m_maxVarsPerPdu + ", snmpStorageFlag=" + m_snmpStorageFlag + ", rrd=" + m_rrd + ", includeCollections="
+                + m_includeCollections + ", resourceTypes=" + m_resourceTypes + ", groups=" + m_groups + ", systems=" + m_systems + "]";
     }
 
 }

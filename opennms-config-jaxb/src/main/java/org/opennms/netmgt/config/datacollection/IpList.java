@@ -49,7 +49,7 @@ import org.opennms.core.xml.ValidateUsing;
 @XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("datacollection-config.xsd")
 public class IpList implements Serializable {
-    private static final long serialVersionUID = -3841983595809184842L;
+    private static final long serialVersionUID = -6384287387760637940L;
 
     /**
      * List of IP addresses
@@ -64,7 +64,11 @@ public class IpList implements Serializable {
     private List<String> m_ipAddressMasks = new ArrayList<String>();
 
     public List<String> getIpAddresses() {
-        return Collections.unmodifiableList(m_ipAddresses);
+        if (m_ipAddresses == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_ipAddresses);
+        }
     }
 
     public void setIpAddresses(final List<String> ipAddrs) {
@@ -80,7 +84,11 @@ public class IpList implements Serializable {
     }
 
     public List<String> getIpAddressMasks() {
-        return Collections.unmodifiableList(m_ipAddressMasks);
+        if (m_ipAddressMasks == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_ipAddressMasks);
+        }
     }
 
     public void setIpAddressMasks(final List<String> masks) {
@@ -131,6 +139,11 @@ public class IpList implements Serializable {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "IpList [ipAddresses=" + m_ipAddresses + ", ipAddressMasks=" + m_ipAddressMasks + "]";
     }
 
 }

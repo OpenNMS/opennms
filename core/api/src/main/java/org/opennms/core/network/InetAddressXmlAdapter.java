@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,32 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.xml.bind;
+package org.opennms.core.network;
 
 import java.net.InetAddress;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-import org.opennms.core.utils.InetAddressUtils;
-
-/**
- * InetAddresssXmlAdapter
- *
- * @author brozow
- * @version $Id: $
- */
 public class InetAddressXmlAdapter extends XmlAdapter<String, InetAddress> {
 
     /** {@inheritDoc} */
     @Override
     public String marshal(final InetAddress inetAddr) throws Exception {
-        return InetAddressUtils.toIpAddrString(inetAddr);
+        return inetAddr == null? null : new IPAddress(inetAddr).toDbString();
     }
 
     /** {@inheritDoc} */
     @Override
     public InetAddress unmarshal(final String ipAddr) throws Exception {
-        return (ipAddr == null || ipAddr.isEmpty())? null : InetAddressUtils.addr(ipAddr);
+        return (ipAddr == null || ipAddr.isEmpty())? null : new IPAddress(ipAddr).toInetAddress();
     }
 
 }

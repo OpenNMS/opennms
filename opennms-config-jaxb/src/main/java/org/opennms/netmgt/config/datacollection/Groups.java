@@ -48,7 +48,7 @@ import org.opennms.core.xml.ValidateUsing;
 @XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("datacollection-config.xsd")
 public class Groups implements Serializable {
-    private static final long serialVersionUID = -5792121785430222674L;
+    private static final long serialVersionUID = 5015134343330744365L;
 
     /**
      * a MIB object group
@@ -61,7 +61,11 @@ public class Groups implements Serializable {
     }
 
     public List<Group> getGroups() {
-        return Collections.unmodifiableList(m_groups);
+        if (m_groups == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_groups);
+        }
     }
 
     public void setGroups(final List<Group> groups) {
@@ -104,6 +108,11 @@ public class Groups implements Serializable {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Groups [groups=" + m_groups + "]";
     }
 
 }

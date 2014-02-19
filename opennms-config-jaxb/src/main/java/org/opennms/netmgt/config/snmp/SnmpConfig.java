@@ -46,7 +46,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 
 @XmlRootElement(name="snmp-config")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 public class SnmpConfig extends Configuration implements Serializable {
     private static final long serialVersionUID = -5963402509661530467L;
 
@@ -89,7 +89,11 @@ public class SnmpConfig extends Configuration implements Serializable {
     }
 
     public List<Definition> getDefinitions() {
-        return Collections.unmodifiableList(m_definitions);
+        if (m_definitions == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_definitions);
+        }
     }
 
     public void setDefinitions(final List<Definition> definitions) {

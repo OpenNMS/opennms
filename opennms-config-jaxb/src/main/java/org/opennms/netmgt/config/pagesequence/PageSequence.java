@@ -25,7 +25,7 @@ import org.opennms.core.xml.ValidateUsing;
  */
 
 @XmlRootElement(name="page-sequence")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("page-sequence.xsd")
 public class PageSequence implements Serializable {
     private static final long serialVersionUID = -6988812331650282380L;
@@ -54,20 +54,24 @@ public class PageSequence implements Serializable {
         super();
     }
 
-    public void addPage(final Page page) throws IndexOutOfBoundsException {
-        m_pages.add(page);
-    }
-
     public List<Page> getPages() {
-        return Collections.unmodifiableList(m_pages);
-    }
-
-    public boolean removePage(final Page page) {
-        return m_pages.remove(page);
+        if (m_pages == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_pages);
+        }
     }
 
     public void setPages(final List<Page> pages) {
         m_pages = new ArrayList<Page>(pages);
+    }
+
+    public void addPage(final Page page) throws IndexOutOfBoundsException {
+        m_pages.add(page);
+    }
+
+    public boolean removePage(final Page page) {
+        return m_pages.remove(page);
     }
 
     @Override

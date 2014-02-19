@@ -125,216 +125,216 @@ public class Page implements Serializable {
         super();
     }
 
-    public void addParameter(final Parameter parameter) throws IndexOutOfBoundsException {
-        m_parameters.add(parameter);
-    }
-
-    public void addSessionVariable(final SessionVariable sessionVariable) throws IndexOutOfBoundsException {
-        m_sessionVariables.add(sessionVariable);
-    }
-
-    
-
-    /**
-     * Returns the value of field 'disableSslVerification'. The
-     * field 'disableSslVerification' has the following
-     * description: This element is used to enable or disable SSL
-     * host and certificate verification. Default: true
-     * (verification is disabled)
-     *  
-     * 
-     * @return the value of field 'DisableSslVerification'.
-     */
-    public String getDisableSslVerification() {
-        return m_disableSslVerification == null? "true" : m_disableSslVerification;
-    }
-
-    public String getDsName() {
-        return m_dsName;
-    }
-
-    public String getFailureMatch() {
-        return m_failureMatch;
-    }
-
-    public String getFailureMessage() {
-        return m_failureMessage;
-    }
-
-    public String getFragment() {
-        return m_fragment;
-    }
-
-    public String getHost() {
-        return m_host == null? "${ipaddr}" : m_host;
-    }
-
-    public String getHttpVersion() {
-        return m_httpVersion == null? "1.1" : m_httpVersion;
-    }
-
-    public String getLocationMatch() {
-        return m_locationMatch;
-    }
-
     public String getMethod() {
         return m_method == null? "GET" : m_method;
-    }
-
-    public List<Parameter> getParameters() {
-        return Collections.unmodifiableList(m_parameters);
-    }
-
-    public String getPath() {
-        return m_path;
-    }
-
-    public Integer getPort() {
-        return m_port == null? 80 : m_port;
-    }
-
-    public String getQuery() {
-        return m_query;
-    }
-
-    public Boolean getRequireIPv4() {
-        return m_requireIPv4 == null? false : m_requireIPv4;
-    }
-
-    public Boolean getRequireIPv6() {
-        return m_requireIPv6 == null? false : m_requireIPv6;
-    }
-
-    public String getResponseRange() {
-        return m_responseRange == null? "100-399" : m_responseRange;
-    }
-
-    public String getScheme() {
-        return m_scheme == null? "http" : m_scheme;
-    }
-
-    public List<SessionVariable> getSessionVariables() {
-        return Collections.unmodifiableList(m_sessionVariables);
-    }
-
-    public String getSuccessMatch() {
-        return m_successMatch;
-    }
-
-    public String getUserAgent() {
-        return m_userAgent;
-    }
-
-    public String getUserInfo() {
-        return m_userInfo;
-    }
-
-    public String getVirtualHost() {
-        return m_virtualHost;
-    }
-
-    public boolean isRequireIPv4() {
-        return m_requireIPv4 == null? false : m_requireIPv4;
-    }
-
-    public boolean isRequireIPv6() {
-        return m_requireIPv6 == null? false : m_requireIPv6;
-    }
-
-    public boolean removeParameter(final Parameter parameter) {
-        return m_parameters.remove(parameter);
-    }
-
-    public boolean removeSessionVariable(final SessionVariable sessionVariable) {
-        return m_sessionVariables.remove(sessionVariable);
-    }
-
-    public void setDisableSslVerification(final String disableSslVerification) {
-        m_disableSslVerification = disableSslVerification;
-    }
-
-    public void setDsName(final String dsName) {
-        m_dsName = dsName == null? null : dsName.intern();
-    }
-
-    public void setFailureMatch(final String failureMatch) {
-        m_failureMatch = failureMatch == null? null : failureMatch.intern();
-    }
-
-    public void setFailureMessage(final String failureMessage) {
-        m_failureMessage = failureMessage == null? null : failureMessage.intern();
-    }
-
-    public void setFragment(final String fragment) {
-        m_fragment = fragment == null? null : fragment.intern();
-    }
-
-    public void setHost(final String host) {
-        m_host = host == null? null : host.intern();
-    }
-
-    public void setHttpVersion(final String httpVersion) {
-        m_httpVersion = httpVersion == null? null : httpVersion.intern();
-    }
-
-    public void setLocationMatch(final String locationMatch) {
-        m_locationMatch = locationMatch == null? null : locationMatch.intern();
     }
 
     public void setMethod(final String method) {
         m_method = method == null? null : method.intern();
     }
 
-    public void setParameters(final List<Parameter> parameters) {
-        m_parameters = new ArrayList<Parameter>(parameters);
+    public String getHttpVersion() {
+        return m_httpVersion == null? "1.1" : m_httpVersion;
     }
 
-    public void setPath(final String path) {
-        m_path = path == null? null : path.intern();
+    public void setHttpVersion(final String httpVersion) {
+        m_httpVersion = httpVersion == null? null : httpVersion.intern();
     }
 
-    public void setPort(final Integer port) {
-        m_port = port;
-    }
-
-    public void setQuery(final String query) {
-        m_query = query == null? null : query.intern();
-    }
-
-    public void setRequireIPv4(final Boolean requireIPv4) {
-        m_requireIPv4 = requireIPv4;
-    }
-
-    public void setRequireIPv6(final Boolean requireIPv6) {
-        m_requireIPv6 = requireIPv6;
-    }
-
-    public void setResponseRange(final String responseRange) {
-        m_responseRange = responseRange == null? null : responseRange.intern();
-    }
-
-    public void setScheme(final String scheme) {
-        m_scheme = scheme == null? null : scheme.intern();
-    }
-
-    public void setSessionVariables(final List<SessionVariable> sessionVariables) {
-        m_sessionVariables = new ArrayList<SessionVariable>(sessionVariables);
-    }
-
-    public void setSuccessMatch(final String successMatch) {
-        m_successMatch = successMatch == null? null : successMatch.intern();
+    public String getUserAgent() {
+        return m_userAgent;
     }
 
     public void setUserAgent(final String userAgent) {
         m_userAgent = userAgent == null? null : userAgent.intern();
     }
 
-    public void setUserInfo(final String userInfo) {
-        m_userInfo = userInfo == null? null : userInfo.intern();
+    public String getVirtualHost() {
+        return m_virtualHost;
     }
 
     public void setVirtualHost(final String virtualHost) {
         m_virtualHost = virtualHost == null? null : virtualHost.intern();
+    }
+
+    public String getScheme() {
+        return m_scheme == null? "http" : m_scheme;
+    }
+
+    public void setScheme(final String scheme) {
+        m_scheme = scheme == null? null : scheme.intern();
+    }
+
+    public String getUserInfo() {
+        return m_userInfo;
+    }
+
+    public void setUserInfo(final String userInfo) {
+        m_userInfo = userInfo == null? null : userInfo.intern();
+    }
+
+    public String getHost() {
+        return m_host == null? "${ipaddr}" : m_host;
+    }
+
+    public void setHost(final String host) {
+        m_host = host == null? null : host.intern();
+    }
+
+    public Boolean getRequireIPv4() {
+        return m_requireIPv4 == null? false : m_requireIPv4;
+    }
+
+    public boolean isRequireIPv4() {
+        return m_requireIPv4 == null? false : m_requireIPv4;
+    }
+
+    public void setRequireIPv4(final Boolean requireIPv4) {
+        m_requireIPv4 = requireIPv4;
+    }
+
+    public Boolean getRequireIPv6() {
+        return m_requireIPv6 == null? false : m_requireIPv6;
+    }
+
+    public boolean isRequireIPv6() {
+        return m_requireIPv6 == null? false : m_requireIPv6;
+    }
+
+    public void setRequireIPv6(final Boolean requireIPv6) {
+        m_requireIPv6 = requireIPv6;
+    }
+
+    /**
+     * This element is used to enable or disable SSL host and certificate
+     * verification. Default: true (verification is disabled)
+     */
+    public String getDisableSslVerification() {
+        return m_disableSslVerification == null? "true" : m_disableSslVerification;
+    }
+
+    public void setDisableSslVerification(final String disableSslVerification) {
+        m_disableSslVerification = disableSslVerification;
+    }
+
+    public Integer getPort() {
+        return m_port == null? 80 : m_port;
+    }
+
+    public void setPort(final Integer port) {
+        m_port = port;
+    }
+
+    public String getPath() {
+        return m_path;
+    }
+
+    public void setPath(final String path) {
+        m_path = path == null? null : path.intern();
+    }
+
+    public String getQuery() {
+        return m_query;
+    }
+
+    public void setQuery(final String query) {
+        m_query = query == null? null : query.intern();
+    }
+
+    public String getFragment() {
+        return m_fragment;
+    }
+
+    public void setFragment(final String fragment) {
+        m_fragment = fragment == null? null : fragment.intern();
+    }
+
+    public String getFailureMatch() {
+        return m_failureMatch;
+    }
+
+    public void setFailureMatch(final String failureMatch) {
+        m_failureMatch = failureMatch == null? null : failureMatch.intern();
+    }
+
+    public String getFailureMessage() {
+        return m_failureMessage;
+    }
+
+    public void setFailureMessage(final String failureMessage) {
+        m_failureMessage = failureMessage == null? null : failureMessage.intern();
+    }
+
+    public String getSuccessMatch() {
+        return m_successMatch;
+    }
+
+    public void setSuccessMatch(final String successMatch) {
+        m_successMatch = successMatch == null? null : successMatch.intern();
+    }
+
+    public String getLocationMatch() {
+        return m_locationMatch;
+    }
+
+    public void setLocationMatch(final String locationMatch) {
+        m_locationMatch = locationMatch == null? null : locationMatch.intern();
+    }
+
+    public String getResponseRange() {
+        return m_responseRange == null? "100-399" : m_responseRange;
+    }
+
+    public void setResponseRange(final String responseRange) {
+        m_responseRange = responseRange == null? null : responseRange.intern();
+    }
+
+    public String getDsName() {
+        return m_dsName;
+    }
+
+    public void setDsName(final String dsName) {
+        m_dsName = dsName == null? null : dsName.intern();
+    }
+
+    public List<Parameter> getParameters() {
+        if (m_parameters == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_parameters);
+        }
+    }
+
+    public void setParameters(final List<Parameter> parameters) {
+        m_parameters = new ArrayList<Parameter>(parameters);
+    }
+
+    public void addParameter(final Parameter parameter) throws IndexOutOfBoundsException {
+        m_parameters.add(parameter);
+    }
+
+    public boolean removeParameter(final Parameter parameter) {
+        return m_parameters.remove(parameter);
+    }
+
+    public List<SessionVariable> getSessionVariables() {
+        if (m_sessionVariables == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_sessionVariables);
+        }
+    }
+
+    public void setSessionVariables(final List<SessionVariable> sessionVariables) {
+        m_sessionVariables = new ArrayList<SessionVariable>(sessionVariables);
+    }
+
+    public void addSessionVariable(final SessionVariable sessionVariable) throws IndexOutOfBoundsException {
+        m_sessionVariables.add(sessionVariable);
+    }
+
+    public boolean removeSessionVariable(final SessionVariable sessionVariable) {
+        return m_sessionVariables.remove(sessionVariable);
     }
 
     @Override

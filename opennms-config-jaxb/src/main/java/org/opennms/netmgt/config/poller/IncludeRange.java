@@ -20,7 +20,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 
 @XmlRootElement(name="include-range")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 public class IncludeRange implements Serializable {
     private static final long serialVersionUID = 4572031662471862536L;
 

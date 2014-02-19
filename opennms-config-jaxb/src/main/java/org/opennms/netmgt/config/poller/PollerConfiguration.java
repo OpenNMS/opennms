@@ -28,7 +28,7 @@ import org.opennms.netmgt.config.pagesequence.PageSequence;
 
 @XmlRootElement(name="poller-configuration")
 @ValidateUsing("poller-configuration.xsd")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 @XmlSeeAlso({PageSequence.class})
 public class PollerConfiguration implements Serializable {
     private static final long serialVersionUID = 3402898044699865749L;
@@ -151,7 +151,11 @@ public class PollerConfiguration implements Serializable {
     }
 
     public List<Package> getPackages() {
-        return Collections.unmodifiableList(m_packages);
+        if (m_packages == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_packages);
+        }
     }
 
     public void setPackages(final List<Package> packages) {
@@ -176,7 +180,11 @@ public class PollerConfiguration implements Serializable {
     }
 
     public List<Monitor> getMonitors() {
-        return Collections.unmodifiableList(m_monitors);
+        if (m_monitors == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_monitors);
+        }
     }
 
     public void setMonitors(final List<Monitor> monitors) {
@@ -221,20 +229,6 @@ public class PollerConfiguration implements Serializable {
             }
         }
         return newConfig;
-    }
-
-    @Override
-    public String toString() {
-        return "PollerConfiguration[" +
-                "threads=" + m_threads +
-                ",nextOutageId=" + m_nextOutageId +
-                ",serviceUnresponsiveEnabled=" + m_serviceUnresponsiveEnabled +
-                ",xmlrpc=" + m_xmlrpc +
-                ",pathOutageEnabled=" + m_pathOutageEnabled +
-                ",nodeOutage=" + m_nodeOutage +
-                ",packages=" + m_packages +
-                ",monitors=" + m_monitors +
-                "]";
     }
 
     @Override
@@ -321,6 +315,20 @@ public class PollerConfiguration implements Serializable {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "PollerConfiguration[" +
+                "threads=" + m_threads +
+                ",nextOutageId=" + m_nextOutageId +
+                ",serviceUnresponsiveEnabled=" + m_serviceUnresponsiveEnabled +
+                ",xmlrpc=" + m_xmlrpc +
+                ",pathOutageEnabled=" + m_pathOutageEnabled +
+                ",nodeOutage=" + m_nodeOutage +
+                ",packages=" + m_packages +
+                ",monitors=" + m_monitors +
+                "]";
     }
 
 }

@@ -48,7 +48,7 @@ import org.opennms.core.xml.ValidateUsing;
 @XmlType(propOrder={"m_name", "m_label", "m_resourceLabel", "m_persistenceSelectorStrategy", "m_storageStrategy"})
 @ValidateUsing("datacollection-config.xsd")
 public class ResourceType implements Serializable {
-    private static final long serialVersionUID = 7562514518691274341L;
+    private static final long serialVersionUID = -3663855168780520748L;
 
     /**
      * resource type name
@@ -199,6 +199,12 @@ public class ResourceType implements Serializable {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "ResourceType [name=" + m_name + ", label=" + m_label + ", resourceLabel=" + m_resourceLabel + ", persistenceSelectorStrategy=" + m_persistenceSelectorStrategy
+                + ", storageStrategy=" + m_storageStrategy + "]";
     }
 
 }

@@ -22,9 +22,9 @@ import javax.xml.bind.annotation.XmlValue;
  */
 
 @XmlRootElement(name="filter")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 public class Filter implements Serializable {
-    private static final long serialVersionUID = 4358344957503495805L;
+    private static final long serialVersionUID = -5866771380302409645L;
 
     @XmlAttribute(name="name")
     private String m_name;
@@ -93,6 +93,11 @@ public class Filter implements Serializable {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Filter [name=" + m_name + ", content=" + m_content + "]";
     }
 
 }

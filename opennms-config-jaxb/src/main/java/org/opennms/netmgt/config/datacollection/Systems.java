@@ -48,10 +48,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.opennms.core.xml.ValidateUsing;
 
 @XmlRootElement(name="systems", namespace="http://xmlns.opennms.org/xsd/config/datacollection")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("datacollection-config.xsd")
 public class Systems implements Serializable {
-    private static final long serialVersionUID = -6522954214781574872L;
+    private static final long serialVersionUID = -7752059451224299921L;
 
     /**
      * list of system definitions
@@ -64,7 +64,11 @@ public class Systems implements Serializable {
     }
 
     public List<SystemDef> getSystemDefs() {
-        return Collections.unmodifiableList(m_systemDefs);
+        if (m_systemDefs == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_systemDefs);
+        }
     }
 
     public void setSystemDefs(final List<SystemDef> systemDefs) {
@@ -107,5 +111,10 @@ public class Systems implements Serializable {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Systems [systemDefs=" + m_systemDefs + "]";
     }
 }

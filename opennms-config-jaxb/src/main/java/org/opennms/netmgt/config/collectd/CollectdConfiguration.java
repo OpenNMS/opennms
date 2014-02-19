@@ -22,9 +22,9 @@ import org.opennms.core.xml.ValidateUsing;
 
 @XmlRootElement(name="collectd-configuration")
 @ValidateUsing("collectd-configuration.xsd")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 public class CollectdConfiguration implements Serializable {
-    private static final long serialVersionUID = -5187264250022550096L;
+    private static final long serialVersionUID = -5767101206283939127L;
 
     /**
      * The maximum number of threads used for data
@@ -61,32 +61,6 @@ public class CollectdConfiguration implements Serializable {
         m_threads = threads;
     }
 
-    public List<Collector> getCollectors() {
-        return Collections.unmodifiableList(m_collectors);
-    }
-
-    public void setCollectors(final List<Collector> collectors) {
-        m_collectors = new ArrayList<Collector>(collectors);
-    }
-
-    public void addCollector(final Collector collector) throws IndexOutOfBoundsException {
-        m_collectors.add(collector);
-    }
-
-    public void addCollector(final String service, final String className) {
-        m_collectors.add(new Collector(service, className));
-    }
-
-    /**
-     * Method removeCollector.
-     * 
-     * @param collector
-     * @return true if the object was removed from the collection.
-     */
-    public boolean removeCollector(final Collector collector) {
-        return m_collectors.remove(collector);
-    }
-
     public List<Package> getPackages() {
         if (m_packages == null) {
             return Collections.emptyList();
@@ -114,6 +88,30 @@ public class CollectdConfiguration implements Serializable {
             }
         }
         return null;
+    }
+
+    public List<Collector> getCollectors() {
+        if (m_collectors == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_collectors);
+        }
+    }
+
+    public void setCollectors(final List<Collector> collectors) {
+        m_collectors = new ArrayList<Collector>(collectors);
+    }
+
+    public void addCollector(final Collector collector) throws IndexOutOfBoundsException {
+        m_collectors.add(collector);
+    }
+
+    public void addCollector(final String service, final String className) {
+        m_collectors.add(new Collector(service, className));
+    }
+
+    public boolean removeCollector(final Collector collector) {
+        return m_collectors.remove(collector);
     }
 
     public Filter getFilter(final String filterName) {
@@ -204,6 +202,11 @@ public class CollectdConfiguration implements Serializable {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "CollectdConfiguration [threads=" + m_threads + ", packages=" + m_packages + ", collectors=" + m_collectors + "]";
     }
 
 }

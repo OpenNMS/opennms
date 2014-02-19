@@ -20,9 +20,9 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 
 @XmlRootElement(name="parameter")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 public class Parameter implements Serializable {
-    private static final long serialVersionUID = -1405161959286612604L;
+    private static final long serialVersionUID = -2693802030499758803L;
 
     @XmlAttribute(name="key")
     private String m_key;
@@ -92,6 +92,11 @@ public class Parameter implements Serializable {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Parameter [key=" + m_key + ", value=" + m_value + "]";
     }
 
 }

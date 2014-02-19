@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 
 @XmlRootElement(name="parameter")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 public class ExcludeRange implements Serializable {
     private static final long serialVersionUID = 3711255115020435826L;
 

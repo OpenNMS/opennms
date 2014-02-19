@@ -53,10 +53,10 @@ import javax.xml.bind.annotation.XmlType;
  */
 
 @XmlRootElement(name="definition")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 @XmlType(propOrder={"m_ranges","m_specifics","m_ipMatches"})
 public class Definition extends Configuration implements Serializable {
-    private static final long serialVersionUID = -4574695650213727237L;
+    private static final long serialVersionUID = 5646937263626185373L;
 
     /**
      * IP address range to which this definition
@@ -82,52 +82,115 @@ public class Definition extends Configuration implements Serializable {
         super();
     }
 
-    public void addIpMatch(final String ipMatch) throws IndexOutOfBoundsException {
-        m_ipMatches.add(ipMatch);
-    }
-
-    public void addRange(final Range range) throws IndexOutOfBoundsException {
-        m_ranges.add(range);
-    }
-
-    public void addSpecific(final String specific) throws IndexOutOfBoundsException {
-        m_specifics.add(specific);
-    }
-
-    public List<String> getIpMatches() {
-        return Collections.unmodifiableList(m_ipMatches);
-    }
-
     public List<Range> getRanges() {
-        return Collections.unmodifiableList(m_ranges);
-    }
-
-    public List<String> getSpecifics() {
-        return Collections.unmodifiableList(m_specifics);
-    }
-
-    public boolean removeIpMatch(final String ipMatch) {
-        return m_ipMatches.remove(ipMatch);
-    }
-
-    public boolean removeRange(final Range range) {
-        return m_ranges.remove(range);
-    }
-
-    public boolean removeSpecific(final String specific) {
-        return m_specifics.remove(specific);
-    }
-
-    public void setIpMatches(final List<String> ipMatches) {
-        m_ipMatches = new ArrayList<String>(ipMatches);
+        if (m_ranges == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_ranges);
+        }
     }
 
     public void setRanges(final List<Range> ranges) {
         m_ranges = new ArrayList<Range>(ranges);
     }
 
+    public void addRange(final Range range) throws IndexOutOfBoundsException {
+        m_ranges.add(range);
+    }
+
+    public boolean removeRange(final Range range) {
+        return m_ranges.remove(range);
+    }
+
+    public List<String> getSpecifics() {
+        if (m_specifics == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_specifics);
+        }
+    }
+
     public void setSpecifics(final List<String> specifics) {
         m_specifics = new ArrayList<String>(specifics);
+    }
+
+    public void addSpecific(final String specific) throws IndexOutOfBoundsException {
+        m_specifics.add(specific);
+    }
+
+    public boolean removeSpecific(final String specific) {
+        return m_specifics.remove(specific);
+    }
+
+    public List<String> getIpMatches() {
+        if (m_ipMatches == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_ipMatches);
+        }
+    }
+
+    public void setIpMatches(final List<String> ipMatches) {
+        m_ipMatches = new ArrayList<String>(ipMatches);
+    }
+
+    public void addIpMatch(final String ipMatch) throws IndexOutOfBoundsException {
+        m_ipMatches.add(ipMatch);
+    }
+
+    public boolean removeIpMatch(final String ipMatch) {
+        return m_ipMatches.remove(ipMatch);
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((m_ipMatches == null) ? 0 : m_ipMatches.hashCode());
+        result = prime * result + ((m_ranges == null) ? 0 : m_ranges.hashCode());
+        result = prime * result + ((m_specifics == null) ? 0 : m_specifics.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (!(obj instanceof Definition)) {
+            return false;
+        }
+        final Definition other = (Definition) obj;
+        if (m_ipMatches == null) {
+            if (other.m_ipMatches != null) {
+                return false;
+            }
+        } else if (!m_ipMatches.equals(other.m_ipMatches)) {
+            return false;
+        }
+        if (m_ranges == null) {
+            if (other.m_ranges != null) {
+                return false;
+            }
+        } else if (!m_ranges.equals(other.m_ranges)) {
+            return false;
+        }
+        if (m_specifics == null) {
+            if (other.m_specifics != null) {
+                return false;
+            }
+        } else if (!m_specifics.equals(other.m_specifics)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Definition [ranges=" + m_ranges + ", specifics=" + m_specifics + ", ipMatches=" + m_ipMatches + "]";
     }
 
 }

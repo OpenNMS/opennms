@@ -41,7 +41,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 
 @XmlRootElement(name="range")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 @XmlType(propOrder={"m_begin", "m_end"})
 public class Range implements Serializable {
     private static final long serialVersionUID = 3817543154652004131L;

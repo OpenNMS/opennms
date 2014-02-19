@@ -51,7 +51,7 @@ import org.opennms.core.xml.ValidateUsing;
 @XmlType(propOrder={"m_name", "m_ifType", "m_mibObjects", "m_includeGroups"})
 @ValidateUsing("datacollection-config.xsd")
 public class Group implements Serializable {
-    private static final long serialVersionUID = -8081895474221877525L;
+    private static final long serialVersionUID = -4798682461748675616L;
 
     /**
      * group name
@@ -60,20 +60,46 @@ public class Group implements Serializable {
     private String m_name;
 
     /**
-     * Interface type. Indicates the interface types from which the groups MIB
-     * objects are to be collected. Supports individual ifType values or
-     * comma-separated list of ifType values in addition to "all" and "ignore"
-     * key words. For example: "6" indicates that OIDs from this MIB group are
-     * to be collected only for ethernet interfaces (ifType = 6) "6,22"
-     * indicates that OIDs from this MIB group are to be collected only for
-     * ethernet and serial interfaces "all" indicates that the OIDs from this
-     * MIB group are to be collected for all interfaces regardless of ifType
-     * "ignore" indicates that OIDs from this MIB group are node-level
-     * objects. Sample ifType descriptions/values: (Refer to
+     * <p>
+     * Interface type.
+     * </p>
+     * Indicates the interface types from which the groups MIB objects are to
+     * be collected.</p>
+     * <p>
+     * Supports individual ifType values or comma-separated list of ifType
+     * values in addition to "all" and "ignore" key words.
+     * </p>
+     * <p>
+     * For example:
+     * </p>
+     * <ul>
+     * <li>"6" indicates that OIDs from this MIB group are to be collected
+     * only for ethernet interfaces (ifType = 6)</li>
+     * <li>"6,22" indicates that OIDs from this MIB group are to be collected
+     * only for ethernet and serial interfaces</li>
+     * <li>"all" indicates that the OIDs from this MIB group are to be
+     * collected for all interfaces regardless of ifType</li>
+     * <li>"ignore" indicates that OIDs from this MIB group are node-level
+     * objects.</li>
+     * </ul>
+     * <p>
+     * Sample ifType descriptions/values: (Refer to
      * http://www.iana.org/assignments/ianaiftype-mib for a comprehensive
-     * list.); ethernetCsmacd 6; iso8825TokenRing 9; fddi 15; sdlc 17;
-     * basicISDN 20; primaryISDN 21; propPointToPointSerial 22; ppp 23; atm
-     * 37; sonet 39; opticalChannel 195
+     * list.)
+     * </p>
+     * <ul>
+     * <li>ethernetCsmacd 6</li>
+     * <li>iso8825TokenRing 9</li>
+     * <li>fddi 15</li>
+     * <li>sdlc 17</li>
+     * <li>basicISDN 20</li>
+     * <li>primaryISDN 21</li>
+     * <li>propPointToPointSerial 22</li>
+     * <li>ppp 23</li>
+     * <li>atm 37</li>
+     * <li>sonet 39</li>
+     * <li>opticalChannel 195</li>
+     * </ul>
      */
     @XmlAttribute(name="ifType", required=true)
     private String m_ifType;
@@ -111,20 +137,46 @@ public class Group implements Serializable {
     }
 
     /**
-     * Interface type. Indicates the interface types from which the groups MIB
-     * objects are to be collected. Supports individual ifType values or
-     * comma-separated list of ifType values in addition to "all" and "ignore"
-     * key words. For example: "6" indicates that OIDs from this MIB group are
-     * to be collected only for ethernet interfaces (ifType = 6) "6,22"
-     * indicates that OIDs from this MIB group are to be collected only for
-     * ethernet and serial interfaces "all" indicates that the OIDs from this
-     * MIB group are to be collected for all interfaces regardless of ifType
-     * "ignore" indicates that OIDs from this MIB group are node-level
-     * objects. Sample ifType descriptions/values: (Refer to
+     * <p>
+     * Interface type.
+     * </p>
+     * Indicates the interface types from which the groups MIB objects are to
+     * be collected.</p>
+     * <p>
+     * Supports individual ifType values or comma-separated list of ifType
+     * values in addition to "all" and "ignore" key words.
+     * </p>
+     * <p>
+     * For example:
+     * </p>
+     * <ul>
+     * <li>"6" indicates that OIDs from this MIB group are to be collected
+     * only for ethernet interfaces (ifType = 6)</li>
+     * <li>"6,22" indicates that OIDs from this MIB group are to be collected
+     * only for ethernet and serial interfaces</li>
+     * <li>"all" indicates that the OIDs from this MIB group are to be
+     * collected for all interfaces regardless of ifType</li>
+     * <li>"ignore" indicates that OIDs from this MIB group are node-level
+     * objects.</li>
+     * </ul>
+     * <p>
+     * Sample ifType descriptions/values: (Refer to
      * http://www.iana.org/assignments/ianaiftype-mib for a comprehensive
-     * list.); ethernetCsmacd 6; iso8825TokenRing 9; fddi 15; sdlc 17;
-     * basicISDN 20; primaryISDN 21; propPointToPointSerial 22; ppp 23; atm
-     * 37; sonet 39; opticalChannel 195
+     * list.)
+     * </p>
+     * <ul>
+     * <li>ethernetCsmacd 6</li>
+     * <li>iso8825TokenRing 9</li>
+     * <li>fddi 15</li>
+     * <li>sdlc 17</li>
+     * <li>basicISDN 20</li>
+     * <li>primaryISDN 21</li>
+     * <li>propPointToPointSerial 22</li>
+     * <li>ppp 23</li>
+     * <li>atm 37</li>
+     * <li>sonet 39</li>
+     * <li>opticalChannel 195</li>
+     * </ul>
      */
     public String getIfType() {
         return m_ifType;
@@ -135,7 +187,11 @@ public class Group implements Serializable {
     }
 
     public List<MibObj> getMibObjs() {
-        return Collections.unmodifiableList(m_mibObjects);
+        if (m_mibObjects == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_mibObjects);
+        }
     }
 
     public void setMibObjs(final List<MibObj> mibObjs) {
@@ -151,7 +207,11 @@ public class Group implements Serializable {
     }
 
     public List<String> getIncludeGroups() {
-        return Collections.unmodifiableList(m_includeGroups);
+        if (m_includeGroups == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_includeGroups);
+        }
     }
 
     public void setIncludeGroups(final List<String> includeGroups) {
@@ -218,6 +278,11 @@ public class Group implements Serializable {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Group [name=" + m_name + ", ifType=" + m_ifType + ", mibObjects=" + m_mibObjects + ", includeGroups=" + m_includeGroups + "]";
     }
 
 }

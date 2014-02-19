@@ -52,7 +52,7 @@ import org.opennms.core.xml.ValidateUsing;
 @XmlType(propOrder={"m_name", "m_resourceTypes", "m_groups", "m_systemDefs"})
 @ValidateUsing("datacollection-groups.xsd")
 public class DatacollectionGroup implements Serializable {
-    private static final long serialVersionUID = 8107226087980264800L;
+    private static final long serialVersionUID = 4158343236805226912L;
 
     /**
      * data collector group name
@@ -95,7 +95,11 @@ public class DatacollectionGroup implements Serializable {
     }
 
     public List<ResourceType> getResourceTypes() {
-        return Collections.unmodifiableList(m_resourceTypes);
+        if (m_resourceTypes == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_resourceTypes);
+        }
     }
 
     public void setResourceTypes(final List<ResourceType> resourceTypes) {
@@ -111,7 +115,11 @@ public class DatacollectionGroup implements Serializable {
     }
 
     public List<Group> getGroups() {
-        return Collections.unmodifiableList(m_groups);
+        if (m_groups == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_groups);
+        }
     }
 
     public void setGroups(final List<Group> groups) {
@@ -127,7 +135,11 @@ public class DatacollectionGroup implements Serializable {
     }
 
     public List<SystemDef> getSystemDefs() {
-        return Collections.unmodifiableList(m_systemDefs);
+        if (m_systemDefs == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_systemDefs);
+        }
     }
 
     public void setSystemDefs(final List<SystemDef> systemDefs) {
@@ -194,6 +206,11 @@ public class DatacollectionGroup implements Serializable {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "DatacollectionGroup [name=" + m_name + ", resourceTypes=" + m_resourceTypes + ", groups=" + m_groups + ", systemDefs=" + m_systemDefs + "]";
     }
 
 }

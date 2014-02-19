@@ -33,9 +33,9 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 
 @XmlRootElement(name="location-def")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 public class LocationDef implements Serializable {
-    private static final long serialVersionUID = -606795457332432078L;
+    private static final long serialVersionUID = -7651610012389148818L;
 
     /**
      * The name of the location.  This must be a unique identifier.
@@ -102,22 +102,6 @@ public class LocationDef implements Serializable {
         }
     }
 
-    public String getCoordinates() {
-        return m_coordinates;
-    }
-
-    public void setCoordinates(final String coordinates) {
-        m_coordinates = coordinates;
-    }
-
-    public String getGeolocation() {
-        return m_geolocation;
-    }
-
-    public void setGeolocation(final String geolocation) {
-        m_geolocation = geolocation;
-    }
-
     public String getLocationName() {
         return m_locationName;
     }
@@ -150,23 +134,28 @@ public class LocationDef implements Serializable {
         m_collectionPackageName = collectionPackageName;
     }
 
+    public String getGeolocation() {
+        return m_geolocation;
+    }
+
+    public void setGeolocation(final String geolocation) {
+        m_geolocation = geolocation;
+    }
+
+    public String getCoordinates() {
+        return m_coordinates;
+    }
+
+    public void setCoordinates(final String coordinates) {
+        m_coordinates = coordinates;
+    }
+
     public Long getPriority() {
         return m_priority == null? 100L : m_priority;
     }
 
     public void setPriority(final Long priority) {
         m_priority = priority;
-    }
-
-    public void deletePriority() {
-        m_priority = null;
-    }
-
-    /**
-     * @return true if the priority has been set
-     */
-    public boolean hasPriority() {
-        return m_priority != null;
     }
 
     public List<Tag> getTags() {

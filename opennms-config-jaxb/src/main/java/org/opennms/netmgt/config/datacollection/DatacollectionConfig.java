@@ -50,11 +50,10 @@ import org.opennms.core.xml.ValidateUsing;
 @XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("datacollection-config.xsd")
 public class DatacollectionConfig implements Serializable {
-    private static final long serialVersionUID = -1854163377683307192L;
+    private static final long serialVersionUID = 8822093542080103175L;
 
     /**
-     * full path to the RRD repository for collected SNMP
-     *  data
+     * full path to the RRD repository for collected SNMP data
      */
     @XmlAttribute(name="rrdRepository")
     private String m_rrdRepository;
@@ -82,7 +81,11 @@ public class DatacollectionConfig implements Serializable {
     }
 
     public List<SnmpCollection> getSnmpCollections() {
-        return Collections.unmodifiableList(m_snmpCollections);
+        if (m_snmpCollections == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_snmpCollections);
+        }
     }
 
     public void setSnmpCollections(final List<SnmpCollection> snmpCollections) {
@@ -137,6 +140,11 @@ public class DatacollectionConfig implements Serializable {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "DatacollectionConfig [rrdRepository=" + m_rrdRepository + ", snmpCollections=" + m_snmpCollections + "]";
     }
 
 }

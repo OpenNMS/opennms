@@ -27,7 +27,7 @@ import javax.xml.bind.annotation.XmlTransient;
  */
 
 @XmlRootElement(name="service")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 public class Service implements Serializable {
     private static final long serialVersionUID = -8728008607550515715L;
 
@@ -145,7 +145,11 @@ public class Service implements Serializable {
     }
 
     public List<Parameter> getParameters() {
-        return Collections.unmodifiableList(m_parameters);
+        if (m_parameters == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_parameters);
+        }
     }
 
     public void setParameters(final List<Parameter> parameters) {

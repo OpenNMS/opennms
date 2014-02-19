@@ -49,7 +49,7 @@ import org.opennms.core.xml.ValidateUsing;
 @XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("datacollection-config.xsd")
 public class IncludeCollection implements Serializable {
-    private static final long serialVersionUID = 400998075666321037L;
+    private static final long serialVersionUID = 1736111882579250557L;
 
     /**
      * System Definition Name
@@ -75,6 +75,17 @@ public class IncludeCollection implements Serializable {
     }
 
     /**
+     * System Definition Name
+     */
+    public String getSystemDef() {
+        return m_systemDef;
+    }
+
+    public void setSystemDef(final String systemDef) {
+        m_systemDef = systemDef.intern();
+    }
+
+    /**
      * Data Collection Group Name
      */
     public String getDataCollectionGroup() {
@@ -86,7 +97,11 @@ public class IncludeCollection implements Serializable {
     }
 
     public List<String> getExcludeFilters() {
-        return Collections.unmodifiableList(m_excludeFilters);
+        if (m_excludeFilters == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_excludeFilters);
+        }
     }
 
     public void setExcludeFilters(final List<String> excludeFilters) {
@@ -99,17 +114,6 @@ public class IncludeCollection implements Serializable {
 
     public boolean removeExcludeFilter(final String excludeFilter) {
         return m_excludeFilters.remove(excludeFilter);
-    }
-
-    /**
-     * System Definition Name
-     */
-    public String getSystemDef() {
-        return m_systemDef;
-    }
-
-    public void setSystemDef(final String systemDef) {
-        m_systemDef = systemDef.intern();
     }
 
     @Override
@@ -156,6 +160,11 @@ public class IncludeCollection implements Serializable {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "IncludeCollection [systemDef=" + m_systemDef + ", dataCollectionGroup=" + m_dataCollectionGroup + ", excludeFilters=" + m_excludeFilters + "]";
     }
 
 }

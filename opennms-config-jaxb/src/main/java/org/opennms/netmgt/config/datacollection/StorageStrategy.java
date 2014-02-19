@@ -47,7 +47,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name="storageStrategy", namespace="http://xmlns.opennms.org/xsd/config/datacollection")
 @XmlAccessorType(XmlAccessType.NONE)
 public class StorageStrategy implements Serializable {
-    private static final long serialVersionUID = 2735398052963218334L;
+    private static final long serialVersionUID = 1260293428590611897L;
 
     /**
      * Java class name of the class that implements the
@@ -84,7 +84,11 @@ public class StorageStrategy implements Serializable {
     }
 
     public List<Parameter> getParameters() {
-        return Collections.unmodifiableList(m_parameters);
+        if (m_parameters == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_parameters);
+        }
     }
 
     public void setParameters(final List<Parameter> parameters) {
@@ -135,6 +139,11 @@ public class StorageStrategy implements Serializable {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "StorageStrategy [class=" + m_clazz + ", parameters=" + m_parameters + "]";
     }
 
 }

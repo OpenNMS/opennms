@@ -24,9 +24,9 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 
 @XmlRootElement(name="service")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 public class Service implements Serializable {
-    private static final long serialVersionUID = 8543372949626364607L;
+    private static final long serialVersionUID = -8462778654204715732L;
 
     /**
      * the service name
@@ -112,7 +112,11 @@ public class Service implements Serializable {
     }
 
     public List<Parameter> getParameters() {
-        return Collections.unmodifiableList(m_parameters);
+        if (m_parameters == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_parameters);
+        }
     }
 
     public void setParameters(final List<Parameter> parameters) {
@@ -200,6 +204,11 @@ public class Service implements Serializable {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Service [name=" + m_name + ", interval=" + m_interval + ", userDefined=" + m_userDefined + ", status=" + m_status + ", parameters=" + m_parameters + "]";
     }
 
 }

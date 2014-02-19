@@ -49,7 +49,7 @@ import org.opennms.core.xml.ValidateUsing;
 @XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("datacollection-config.xsd")
 public class Rrd implements Serializable {
-    private static final long serialVersionUID = 4509171577608927903L;
+    private static final long serialVersionUID = -3485298538075829212L;
 
     /**
      * step size for the RRD
@@ -80,7 +80,11 @@ public class Rrd implements Serializable {
     }
 
     public List<String> getRras() {
-        return Collections.unmodifiableList(m_rras);
+        if (m_rras == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_rras);
+        }
     }
 
     public void setRras(final List<String> rras) {
@@ -131,6 +135,11 @@ public class Rrd implements Serializable {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Rrd [step=" + m_step + ", rras=" + m_rras + "]";
     }
 
 }

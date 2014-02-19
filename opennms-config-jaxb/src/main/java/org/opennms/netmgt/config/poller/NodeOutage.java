@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 
 @XmlRootElement(name="node-outage")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 public class NodeOutage implements Serializable {
     private static final long serialVersionUID = 1005268629840127148L;
 

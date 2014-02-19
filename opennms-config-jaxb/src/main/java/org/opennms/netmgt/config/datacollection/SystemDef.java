@@ -47,6 +47,13 @@ import javax.xml.bind.annotation.XmlType;
 public class SystemDef implements Serializable {
     private static final long serialVersionUID = 656006979873221835L;
 
+    /*
+     * Note that we do not do JAXB field definitions like we usually do, since
+     * we have to do some trickery to remain compatible with the XSD which expects
+     * a <choice> between sysoid and sysoidmask, and there's basically no way to
+     * implement that with JAXB when the types are the same.
+     */
+
     /**
      * Field _name.
      */

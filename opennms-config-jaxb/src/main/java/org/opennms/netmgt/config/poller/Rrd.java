@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 
 @XmlRootElement(name="rrd")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 public class Rrd implements Serializable {
     private static final long serialVersionUID = -2267805562120742467L;
 
@@ -65,7 +65,11 @@ public class Rrd implements Serializable {
     }
 
     public List<String> getRras() {
-        return Collections.unmodifiableList(m_rras);
+        if (m_rras == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_rras);
+        }
     }
 
     public void setRras(final List<String> rras) {

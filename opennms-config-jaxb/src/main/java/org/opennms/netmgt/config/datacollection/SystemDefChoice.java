@@ -28,7 +28,9 @@
 
 package org.opennms.netmgt.config.datacollection;
 
-public class SystemDefChoice implements java.io.Serializable {
+import java.io.Serializable;
+
+public class SystemDefChoice implements Serializable {
     private static final long serialVersionUID = 4037895445383242171L;
 
     /**

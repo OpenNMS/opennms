@@ -48,13 +48,17 @@ import org.opennms.core.xml.ValidateUsing;
 @XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("datacollection-config.xsd")
 public class Collect implements Serializable {
-    private static final long serialVersionUID = 2486542579110405483L;
+    private static final long serialVersionUID = 4612617249821481259L;
 
     @XmlElement(name="includeGroup")
     private List<String> m_includeGroups = new ArrayList<String>();
 
     public List<String> getIncludeGroups() {
-        return Collections.unmodifiableList(m_includeGroups);
+        if (m_includeGroups == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_includeGroups);
+        }
     }
 
     public void setIncludeGroups(final List<String> includeGroups) {
@@ -97,6 +101,11 @@ public class Collect implements Serializable {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Collect [includeGroups=" + m_includeGroups + "]";
     }
 
 }

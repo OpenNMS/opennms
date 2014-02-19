@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 
 @XmlRootElement(name="critical-service")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 public class CriticalService implements Serializable {
     private static final long serialVersionUID = 3608855241271932451L;
 

@@ -45,7 +45,7 @@ import org.opennms.core.xml.ValidateUsing;
 @XmlType(propOrder={"m_oid", "m_instance", "m_alias", "m_type", "m_maxval", "m_minval"})
 @ValidateUsing("datacollection-config.xsd")
 public class MibObj implements java.io.Serializable {
-    private static final long serialVersionUID = 5718043414812119044L;
+    private static final long serialVersionUID = -7133492973783810404L;
 
     /**
      * object identifier
@@ -260,6 +260,11 @@ public class MibObj implements java.io.Serializable {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "MibObj [oid=" + m_oid + ", instance=" + m_instance + ", alias=" + m_alias + ", type=" + m_type + ", maxval=" + m_maxval + ", minval=" + m_minval + "]";
     }
 
 }

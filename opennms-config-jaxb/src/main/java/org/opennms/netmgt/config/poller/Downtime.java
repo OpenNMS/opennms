@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlTransient;
  */
 
 @XmlRootElement(name="downtime")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 public class Downtime implements Serializable {
     private static final long serialVersionUID = -2436661386464207644L;
 

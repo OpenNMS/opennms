@@ -18,7 +18,7 @@ import org.opennms.core.xml.ValidateUsing;
  */
 
 @XmlRootElement(name="monitoring-locations-configuration")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("monitoring-locations.xsd")
 public class MonitoringLocationsConfiguration implements Serializable {
     private static final long serialVersionUID = 4774677097952128710L;
