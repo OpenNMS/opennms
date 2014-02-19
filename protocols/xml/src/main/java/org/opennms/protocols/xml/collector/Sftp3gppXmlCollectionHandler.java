@@ -29,7 +29,7 @@
 package org.opennms.protocols.xml.collector;
 
 import java.io.File;
-import java.io.IOException;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Date;
@@ -45,6 +45,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.io.IOUtils;
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.CollectionException;
 import org.opennms.netmgt.collectd.ServiceCollector;
@@ -73,6 +74,9 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(Sftp3gppXmlCollectionHandler.class);
 
+
+    /** The Constant PM_GROUPS_FILENAME. */
+    public static final String PM_GROUPS_FILENAME = "3gpp-pmgroups.properties";
 
     /** The Constant XML_LAST_FILENAME. */
     public static final String XML_LAST_FILENAME = "_xmlCollectorLastFilename";
@@ -231,14 +235,21 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
      *
      * @param resourceType the resource type
      * @return the 3gpp format
-     */
+     */    
     public String get3gppFormat(String resourceType) {
         if (m_pmGroups == null) {
             m_pmGroups = new Properties();
             try {
-                m_pmGroups.load(getClass().getResourceAsStream("/3gpp-pmgroups.properties"));
-            } catch (IOException e) {
-                LOG.warn("Can't load 3GPP PM Groups formats because {}", e.getMessage());
+                File configFile = new File(ConfigFileConstants.getFilePathString(), PM_GROUPS_FILENAME);
+                if (configFile.exists()) {
+                    LOG.info("Using 3GPP PM Groups format from {}", configFile);
+                    m_pmGroups.load(new FileInputStream(configFile));
+                } else {
+                    LOG.info("Using default 3GPP PM Groups format.");
+                    m_pmGroups.load(getClass().getResourceAsStream("/" + PM_GROUPS_FILENAME));
+                }
+            } catch (Exception e) {
+                LOG.warn("Can't load 3GPP PM Groups format because {}", e.getMessage());
             }
         }
         return m_pmGroups.getProperty(resourceType);
@@ -251,6 +262,7 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
      * @param measInfoId the measInfoId (the resource instance)
      * @return the properties
      */
+    // FIXME  It may be possible to have some kind of default parsing by looking for key=value pairs.
     public Map<String,String> get3gppProperties(String format, String measInfoId) {
         Map<String,String> properties = new LinkedHashMap<String,String>();
         if (format != null) {
@@ -273,7 +285,18 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
                 }
             }
         }
-        properties.put("label", properties.toString().replaceAll("[{}]", ""));
+        if (properties.isEmpty() && Boolean.getBoolean("org.opennms.collectd.xml.3gpp.useSimpleParserForMeasObjLdn")) {
+            String[] groups = measInfoId.split("\\|");
+            for (String group : groups) {
+                String pair[] = group.split("=");
+                if (pair.length == 2) {
+                    properties.put(pair[0], pair[1]);
+                }
+            }
+        }
+        // If the format was not found, and the default parser couldn't extract any data then,
+        // the label must be equal to the instance (NMS-6365, to avoid blank descriptions). 
+        properties.put("label", properties.isEmpty() ? measInfoId : properties.toString().replaceAll("[{}]", ""));
         properties.put("instance", measInfoId);
         return properties;
     }
