@@ -96,6 +96,10 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
 
     private static class SimplePollerConfiguration implements PollerConfiguration, Serializable {
 
+        /**
+         * DO NOT CHANGE!
+         * This class is serialized by remote poller communications.
+         */
         private static final long serialVersionUID = 2L;
 
         private Date m_timestamp;
