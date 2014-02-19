@@ -40,6 +40,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.support.DefaultResourceDao;
+import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
@@ -124,7 +125,7 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
      * @return a {@link java.lang.Boolean} object.
      */
     public Boolean isStoreByForeignSource() {
-        return Boolean.getBoolean("org.opennms.rrd.storeByForeignSource");
+        return ResourceTypeUtils.isStoreByForeignSource();
     }
     
      /* (non-Javadoc)
