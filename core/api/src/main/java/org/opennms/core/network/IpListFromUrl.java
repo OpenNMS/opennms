@@ -26,14 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.utils;
+package org.opennms.core.network;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,15 +40,12 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-
 /**
  * Convenience class for generating a list of IP addresses from a file URL.
  */
 public class IpListFromUrl {
-	
-	private final static Logger LOG = LoggerFactory.getLogger(IpListFromUrl.class);
-	
+    private final static Logger LOG = LoggerFactory.getLogger(IpListFromUrl.class);
+
     /**
      * The string indicating the start of the comments in a line containing the
      * IP address in a file URL
@@ -82,24 +78,29 @@ public class IpListFromUrl {
      *            The url file to read
      * @return list of IPs in the file
      */
-    public static List<String> parse(String url) {
-        List<String> iplist = new ArrayList<String>();
+    public static List<String> fetch(final String url) {
+        final List<String> iplist = new ArrayList<String>();
+
+        URL u = null;
+        InputStream stream = null;
+        InputStreamReader isr = null;
+        BufferedReader br = null;
 
         try {
             // open the file indicated by the url
-            URL fileURL = new URL(url);
-
-            InputStream file = fileURL.openStream();
+            u = new URL(url);
+            stream = u.openStream();
 
             // check to see if the file exists
-            if (file != null) {
-                BufferedReader buffer = new BufferedReader(new InputStreamReader(file, "UTF-8"));
+            if (stream != null) {
+                isr = new InputStreamReader(stream, "UTF-8");
+                br = new BufferedReader(isr);
 
                 String ipLine = null;
                 String specIP = null;
 
                 // get each line of the file and turn it into a specific range
-                while ((ipLine = buffer.readLine()) != null) {
+                while ((ipLine = br.readLine()) != null) {
                     ipLine = ipLine.trim();
                     if (ipLine.length() == 0 || ipLine.charAt(0) == COMMENT_CHAR) {
                         // blank line or skip comment
@@ -107,7 +108,7 @@ public class IpListFromUrl {
                     }
 
                     // check for comments after IP
-                    int comIndex = ipLine.indexOf(COMMENT_STR);
+                    final int comIndex = ipLine.indexOf(COMMENT_STR);
                     if (comIndex == -1) {
                         specIP = ipLine;
                     } else {
@@ -117,21 +118,28 @@ public class IpListFromUrl {
 
                     iplist.add(specIP);
                 }
-
-                buffer.close();
             } else {
                 // log something
                 LOG.warn("URL does not exist: {}", url);
             }
-        } catch (MalformedURLException e) {
-        	LOG.error("Error reading URL: {}: {}", url, e.getLocalizedMessage());
-        } catch (FileNotFoundException e) {
-        	LOG.error("Error reading URL: {}: {}", url, e.getLocalizedMessage());
-        } catch (IOException e) {
-        	LOG.error("Error reading URL: {}: {}", url, e.getLocalizedMessage());
+        } catch (final IOException e) {
+            LOG.error("Error reading URL: {}: {}", url, e.getLocalizedMessage());
+        } finally {
+            closeQuietly(br);
+            closeQuietly(isr);
+            closeQuietly(stream);
         }
 
         return iplist;
     }
 
+    private static void closeQuietly(final Closeable obj) {
+        if (obj == null) return;
+
+        try {
+            obj.close();
+        } catch (final Exception e) {
+            LOG.warn("Failed to close {}", obj, e);
+        }
+    }
 }

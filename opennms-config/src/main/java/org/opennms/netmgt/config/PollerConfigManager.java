@@ -52,8 +52,8 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.io.IOUtils;
+import org.opennms.core.network.IpListFromUrl;
 import org.opennms.core.utils.ByteArrayComparator;
-import org.opennms.core.utils.IpListFromUrl;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.core.xml.MarshallingResourceFailureException;
 import org.opennms.netmgt.config.poller.CriticalService;
@@ -179,7 +179,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     
         for(final Package pkg : packages()) {
             for(final String url : includeURLs(pkg)) {
-                final List<String> iplist = IpListFromUrl.parse(url);
+                final List<String> iplist = IpListFromUrl.fetch(url);
                 if (iplist.size() > 0) {
                     m_urlIPMap.put(url, iplist);
                 }

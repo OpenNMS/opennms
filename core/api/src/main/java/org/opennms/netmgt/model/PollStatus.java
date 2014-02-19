@@ -40,9 +40,6 @@ import javax.persistence.Transient;
 
 /**
  * Represents the status of a node, interface or services
- *
- * @author brozow
- * @version $Id: $
  */
 @Embeddable
 public class PollStatus implements Serializable {

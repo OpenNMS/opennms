@@ -14,15 +14,17 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.network.IPAddress;
+
 /**
- * Range of addresses to be included in this
+ * Range of addresses to be excluded from this
  *  package
  */
 
-@XmlRootElement(name="include-range")
-@XmlAccessorType(XmlAccessType.FIELD)
-public class IncludeRange implements Serializable {
-    private static final long serialVersionUID = 911332702070667151L;
+@XmlRootElement(name="exclude-range")
+@XmlAccessorType(XmlAccessType.NONE)
+public class ExcludeRange implements Serializable {
+    private static final long serialVersionUID = 6596505357670928872L;
 
     /**
      * Starting address of the range
@@ -36,14 +38,8 @@ public class IncludeRange implements Serializable {
     @XmlAttribute(name="end")
     private String m_end;
 
-    public IncludeRange() {
+    public ExcludeRange() {
         super();
-    }
-
-    public IncludeRange(final String begin, final String end) {
-        this();
-        m_begin = begin;
-        m_end = end;
     }
 
     /**
@@ -51,6 +47,10 @@ public class IncludeRange implements Serializable {
      */
     public String getBegin() {
         return m_begin;
+    }
+
+    public IPAddress getBeginAsAddress() {
+        return m_begin == null? null : new IPAddress(m_begin);
     }
 
     public void setBegin(final String begin) {
@@ -64,13 +64,17 @@ public class IncludeRange implements Serializable {
         return m_end;
     }
 
+    public IPAddress getEndAsAddress() {
+        return m_end == null? null : new IPAddress(m_end);
+    }
+
     public void setEnd(final String end) {
         m_end = end;
     }
 
     @Override
     public int hashCode() {
-        final int prime = 109;
+        final int prime = 101;
         int result = 1;
         result = prime * result + ((m_begin == null) ? 0 : m_begin.hashCode());
         result = prime * result + ((m_end == null) ? 0 : m_end.hashCode());
@@ -85,10 +89,10 @@ public class IncludeRange implements Serializable {
         if (obj == null) {
             return false;
         }
-        if (!(obj instanceof IncludeRange)) {
+        if (!(obj instanceof ExcludeRange)) {
             return false;
         }
-        final IncludeRange other = (IncludeRange) obj;
+        final ExcludeRange other = (ExcludeRange) obj;
         if (m_begin == null) {
             if (other.m_begin != null) {
                 return false;

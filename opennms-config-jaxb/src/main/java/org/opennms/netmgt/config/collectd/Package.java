@@ -1,8 +1,5 @@
 package org.opennms.netmgt.config.collectd;
 
-import static org.opennms.core.utils.InetAddressUtils.isInetAddressInRange;
-import static org.opennms.core.utils.InetAddressUtils.toIpAddrBytes;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,10 +11,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.core.utils.ByteArrayComparator;
-import org.opennms.core.utils.IncludeURL;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opennms.core.network.IPAddress;
+import org.opennms.core.network.IpListFromUrl;
 
 /**
  * Package encapsulating addresses eligible to have SNMP
@@ -25,10 +20,8 @@ import org.slf4j.LoggerFactory;
  */
 
 @XmlRootElement(name="package")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 public class Package implements Serializable {
-    private static final long serialVersionUID = 7290975079346639791L;
-    private static final Logger LOG = LoggerFactory.getLogger(Package.class);
 
     /**
      * The name or identifier for this package
@@ -436,8 +429,9 @@ public class Package implements Serializable {
     }
 
     public boolean hasSpecific(byte[] addr) {
+        final IPAddress ipAddr = new IPAddress(addr);
         for (final String espec : getSpecifics()) {
-            if (new ByteArrayComparator().compare(toIpAddrBytes(espec), addr) == 0) {
+            if (ipAddr.equals(new IPAddress(espec))) {
                 return true;
             }
         }
@@ -450,13 +444,17 @@ public class Package implements Serializable {
      * @param addr a long.
      * @return a boolean.
      */
-    public boolean hasIncludeRange(String addr) {
+    public boolean hasIncludeRange(final String addr) {
         if (getIncludeRanges().size() == 0 && getSpecifics().size() == 0) {
             return true;
         }
 
+        final IPAddress ipAddr = new IPAddress(addr);
+
         for (final IncludeRange rng : getIncludeRanges()) {
-            if (isInetAddressInRange(addr, rng.getBegin(), rng.getEnd())) {
+            final IPAddress begin = rng.getBeginAsAddress();
+            final IPAddress end   = rng.getEndAsAddress();
+            if (ipAddr.isGreaterThanOrEqualTo(begin) && ipAddr.isLessThanOrEqualTo(end)) {
                 return true;
             }
         }
@@ -501,23 +499,31 @@ public class Package implements Serializable {
         return false;
     }
 
-    public boolean hasExcludeRange(String addr) {
-        for (ExcludeRange rng : getExcludeRanges()) {
-            if (isInetAddressInRange(addr, rng.getBegin(), rng.getEnd())) {
+    public boolean hasExcludeRange(final String addr) {
+        final IPAddress ipAddr = new IPAddress(addr);
+
+        for (final ExcludeRange rng : getExcludeRanges()) {
+            final IPAddress begin = rng.getBeginAsAddress();
+            final IPAddress end   = rng.getEndAsAddress();
+
+            if (ipAddr.isGreaterThanOrEqualTo(begin) && ipAddr.isLessThanOrEqualTo(end)) {
                 return true;
             }
         }
         return false;
     }
 
-    public boolean hasSpecificUrl(String iface, boolean hasSpecific) {
+    public boolean hasSpecificUrl(final String iface, final boolean hasSpecific) {
         if (hasSpecific) {
             return true;
         } else {
-            for (String includeURL : getIncludeUrls()) {
-                IncludeURL url = new IncludeURL(includeURL);
-                if (url.interfaceInUrl(iface)) {
-                    return true;
+            final IPAddress addr = new IPAddress(iface);
+            for (final String includeURL : getIncludeUrls()) {
+                final List<String> ips = IpListFromUrl.fetch(includeURL);
+                for (final String includeAddr : ips) {
+                    if (new IPAddress(includeAddr).equals(addr)) {
+                        return true;
+                    }
                 }
             }
         }
