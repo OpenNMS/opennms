@@ -19,11 +19,6 @@
   <tx:annotation-driven />
   <context:annotation-config />
 
-  <onmsgi:reference id="eventIpcManagerRef" interface="org.opennms.netmgt.model.events.EventIpcManager"/>
-  <onmsgi:reference id="eventSubscriptionServiceRef" interface="org.opennms.netmgt.model.events.EventSubscriptionService"/>
-  <onmsgi:reference id="locationMonitorDaoRef" interface="org.opennms.netmgt.dao.api.LocationMonitorDao"/>
-  <onmsgi:reference id="monitoredServiceDaoRef" interface="org.opennms.netmgt.dao.api.MonitoredServiceDao"/>
-
   <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="properties">
       <props>
@@ -45,11 +40,17 @@
   </bean>
 
   <bean name="daemon" class="org.opennms.netmgt.poller.remote.support.DefaultPollerBackEnd">
-    <property name="locationMonitorDao" ref="locationMonitorDaoRef" />
-    <property name="monitoredServiceDao" ref="monitoredServiceDaoRef" />
+    <property name="locationMonitorDao">
+      <onmsgi:reference interface="org.opennms.netmgt.dao.api.LocationMonitorDao"/>
+    </property>
+    <property name="monitoredServiceDao">
+      <onmsgi:reference interface="org.opennms.netmgt.dao.api.MonitoredServiceDao"/>
+    </property>
     <property name="pollerConfig" ref="pollerConfig" />
     <property name="timeKeeper" ref="timeKeeper" />
-    <property name="eventIpcManager" ref="eventIpcManagerRef" />
+    <property name="eventIpcManager">
+      <onmsgi:reference interface="org.opennms.netmgt.model.events.EventIpcManager"/>
+    </property>
     <property name="disconnectedTimeout" value="${opennms.pollerBackend.disconnectedTimeout}" />
     <property name="minimumConfigurationReloadInterval" value="${opennms.pollerBackend.minimumConfigurationReloadInterval}" />
   </bean>
@@ -64,7 +65,9 @@
 
   <bean name="pollerBackEndEventListenerAdapter" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
     <property name="annotatedListener" ref="pollerBackEndEventProcessor" />
-    <property name="eventSubscriptionService" ref="eventSubscriptionServiceRef" />
+    <property name="eventSubscriptionService">
+      <onmsgi:reference interface="org.opennms.netmgt.model.events.EventSubscriptionService"/>
+    </property>
   </bean>
 
   <bean id="methodInvokingJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
