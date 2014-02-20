@@ -120,6 +120,7 @@
     <module>opennms-javamail</module>
     <module>opennms-rrd</module>
     <module>opennms-config-api</module>
+    <module>opennms-config-jaxb</module>
     <module>opennms-config</module>
     <module>opennms-config-model</module>
     <module>opennms-provision</module>
@@ -1746,6 +1747,11 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-config-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-config-jaxb</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
