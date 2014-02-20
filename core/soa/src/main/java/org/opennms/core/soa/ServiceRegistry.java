@@ -140,5 +140,9 @@ public interface ServiceRegistry {
      * @param hook a {@link org.opennms.core.soa.RegistrationHook} object.
      */
     public void removeRegistrationHook(RegistrationHook hook);
-    
+
+    /**
+     * @param clazz
+     */
+    void unregisterAll(Class<?> clazz);
 }

@@ -49,6 +49,23 @@ import java.util.regex.Pattern;
 import org.opennms.core.criteria.restrictions.Restriction;
 
 public class Criteria implements Cloneable {
+
+	/**
+	 * This enum provides all of the locking modes that are available in the
+	 * ORM implementation.
+	 */
+	public enum LockType {
+		NONE,
+		READ,
+		UPGRADE_NOWAIT,
+		WRITE,
+		OPTIMISTIC,
+		OPTIMISTIC_FORCE_INCREMENT,
+		PESSIMISTIC_READ,
+		PESSIMISTIC_WRITE,
+		PESSIMISTIC_FORCE_INCREMENT
+	}
+
     public static interface CriteriaVisitor {
         public void visitClass(final Class<?> clazz);
 
@@ -63,6 +80,8 @@ public class Criteria implements Cloneable {
         public void visitFetch(final Fetch fetch);
 
         public void visitFetchesFinished();
+
+        public void visitLockType(final LockType lock);
 
         public void visitRestriction(final Restriction restriction);
 
@@ -120,6 +139,8 @@ public class Criteria implements Cloneable {
     private Integer m_limit = null;
 
     private Integer m_offset = null;
+
+    private LockType m_lockType = null;
 
     public Criteria(final Class<?> clazz) {
         m_class = clazz;
@@ -195,6 +216,15 @@ public class Criteria implements Cloneable {
 
     public Criteria setLimit(final Integer limit) {
         m_limit = limit;
+        return this;
+    }
+
+    public LockType getLockType() {
+        return m_lockType ;
+    }
+
+    public Criteria setLockType(final LockType lock) {
+    	m_lockType = lock;
         return this;
     }
 
