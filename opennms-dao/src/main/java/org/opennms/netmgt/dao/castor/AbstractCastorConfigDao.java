@@ -31,8 +31,8 @@ package org.opennms.netmgt.dao.castor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.core.utils.FileReloadCallback;
-import org.opennms.core.utils.FileReloadContainer;
+import org.opennms.core.spring.FileReloadCallback;
+import org.opennms.core.spring.FileReloadContainer;
 import org.opennms.core.xml.CastorUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
@@ -146,7 +146,7 @@ public abstract class AbstractCastorConfigDao<K, V> implements InitializingBean 
     /**
      * <p>getContainer</p>
      *
-     * @return a {@link org.opennms.core.utils.FileReloadContainer} object.
+     * @return a {@link org.opennms.core.spring.FileReloadContainer} object.
      */
     protected FileReloadContainer<V> getContainer() {
         return m_container;

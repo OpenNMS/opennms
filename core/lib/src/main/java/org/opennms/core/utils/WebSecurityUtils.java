@@ -28,16 +28,8 @@
 
 package org.opennms.core.utils;
 
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
 
 /**
  * <p>WebSecurityUtils class.</p>
@@ -46,8 +38,6 @@ import org.springframework.beans.BeanWrapperImpl;
  * @version $Id: $
  */
 public abstract class WebSecurityUtils {
-	
-	private final static Logger LOG = LoggerFactory.getLogger(WebSecurityUtils.class);
 	
 	private final static Pattern ILLEGAL_IN_INTEGER = Pattern.compile("[^0-9+-]");
 	
@@ -176,41 +166,4 @@ public abstract class WebSecurityUtils {
         return ILLEGAL_IN_COLUMN_NAME_PATTERN.matcher(dirty).replaceAll("");
     }
 
-    /**
-     * <p>sanitizeBeanStringProperties</p>
-     * This is a simple method is used to sanitize all bean string properties. 
-     * 
-     * @param bean a {@link java.lang.Object} object. 
-     * @param Set of fieldnames as Strings that are allowed for html content. All fieldnames in lowercase. null -> no html
-     * @return a {@link java.lang.Object} object.
-     */
-    public static <T> T sanitizeBeanStringProperties(T bean, Set<String> allowHtmlFields) {
-    	BeanWrapper beanWrapper = new BeanWrapperImpl(bean.getClass());
-    	
-    	// get all bean property descriptors
-    	PropertyDescriptor[] descriptions = beanWrapper.getPropertyDescriptors();
-    	
-    	// Iterate over all properties
-    	for (PropertyDescriptor description : descriptions) {
-    		
-    		// If we have a property with type of java.lang.String, then sanitize string and write back
-    		if (description.getReadMethod().getReturnType().equals(java.lang.String.class)) {
-    			try {
-    				boolean allowHTML = false;
-	    	        if (allowHtmlFields != null && allowHtmlFields.contains(description.getName().toLowerCase())) {
-	    	            allowHTML = true;
-	    	        }
-    				LOG.debug("Try to sanitize string {} in {} with html {}", description.getName(), bean.getClass(), allowHTML);
-    				description.getWriteMethod().invoke(bean, WebSecurityUtils.sanitizeString((String)description.getReadMethod().invoke(bean), allowHTML));
-    			}catch (IllegalArgumentException e) {
-    				LOG.error("Illegal argument by sanitize object {} on property {}. Error {}", description.getName(), bean.getClass(), e.getMessage());
-				} catch (IllegalAccessException e) {
-					LOG.error("Illegal access by sanitize object {} on property {}. Error {}", description.getName(), bean.getClass(), e.getMessage());
-				} catch (InvocationTargetException e) {
-					LOG.error("Invocation target exception by sanitize object {} on property {}. Error {}", description.getName(), bean.getClass(), e.getMessage());
-				}
-    		}
-    	}
-    	return bean;
-    }
 }

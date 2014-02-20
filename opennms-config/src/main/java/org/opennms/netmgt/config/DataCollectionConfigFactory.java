@@ -31,7 +31,7 @@ package org.opennms.netmgt.config;
 import java.io.File;
 import java.io.IOException;
 
-import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.springframework.core.io.FileSystemResource;
 

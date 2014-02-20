@@ -34,6 +34,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 
 import org.junit.After;
 import org.junit.Before;
@@ -42,6 +43,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.TemporaryDatabaseExecutionListener;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.gwt.web.ui.asset.server.AssetServiceImpl;
 import org.opennms.gwt.web.ui.asset.shared.AssetCommand;
 import org.opennms.netmgt.dao.DatabasePopulator;
@@ -132,7 +134,7 @@ public class AssetServiceImplTest implements InitializingBean {
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-	    org.opennms.core.utils.BeanUtils.assertAutowiring(this);
+	    org.opennms.core.spring.BeanUtils.assertAutowiring(this);
 	}
 
 	@Before
@@ -327,5 +329,51 @@ public class AssetServiceImplTest implements InitializingBean {
 		assetServiceImpl.setNodeDao(m_nodeDao);
 		assetServiceImpl.setAssetRecordDao(m_assetRecordDao);
 		System.out.println("Asset: " + assetServiceImpl.getAssetByNodeId(onmsNode.getId()));
+	}
+
+	@Test
+	public void testBasicBeanSanitizer() {
+		CommandBeanMockup bean = new CommandBeanMockup();
+		bean = (CommandBeanMockup) AssetServiceImpl
+				.sanitizeBeanStringProperties(bean, null);
+
+		assertTrue("Script property is sanitized",
+				WebSecurityUtils.sanitizeString("<script>foo</script>", false)
+						.equals(bean.getScript()));
+		assertTrue("Script property is not sanitized with Html allowed",
+				!WebSecurityUtils.sanitizeString("<script>foo</script>", true)
+						.equals(bean.getScript()));
+
+		assertTrue("HtmlTable is sanitized and html removed", WebSecurityUtils
+				.sanitizeString("<table>", false).equals(bean.getHtmlTable()));
+		assertTrue(
+				"Not, HtmlTable is sanitized with Html allowed",
+				!WebSecurityUtils.sanitizeString("<table>", true).equals(
+						bean.getHtmlTable()));
+	}
+
+	@Test
+	public void testBeanSanitizerWithHtmlAllowList() {
+		CommandBeanMockup bean = new CommandBeanMockup();
+		HashSet<String> set = new HashSet<String>();
+		set.add("htmltable");
+		bean = (CommandBeanMockup) AssetServiceImpl
+				.sanitizeBeanStringProperties(bean, set);
+
+		assertTrue("Script property is sanitized no Html allowed",
+				WebSecurityUtils.sanitizeString("<script>foo</script>", false)
+						.equals(bean.getScript()));
+		assertTrue("Not, Script property is sanitized with Html allowed",
+				!WebSecurityUtils.sanitizeString("<script>foo</script>", true)
+						.equals(bean.getScript()));
+
+		assertTrue(
+				"HtmlTable is sanitzied with Html allowed so, no changes",
+				WebSecurityUtils.sanitizeString("<table>", true).equals(
+						bean.getHtmlTable()));
+		assertTrue(
+				"Not, HtmlTable is sanitized and html removed",
+				!WebSecurityUtils.sanitizeString("<table>", false).equals(
+						bean.getHtmlTable()));
 	}
 }

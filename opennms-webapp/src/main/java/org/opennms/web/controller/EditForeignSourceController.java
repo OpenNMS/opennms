@@ -41,7 +41,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.joda.time.Duration;
-import org.opennms.core.utils.PropertyPath;
+import org.opennms.core.spring.PropertyPath;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsSeverityEditor;
 import org.opennms.netmgt.model.PrimaryType;

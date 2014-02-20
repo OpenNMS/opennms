@@ -32,7 +32,7 @@ import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Iterator;
 
-import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.spring.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.core.utils.url.GenericURLFactory;

@@ -38,7 +38,7 @@ import java.util.concurrent.ExecutorService;
 import javax.annotation.Resource;
 
 import org.opennms.core.logging.Logging;
-import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.snmp.SnmpUtils;

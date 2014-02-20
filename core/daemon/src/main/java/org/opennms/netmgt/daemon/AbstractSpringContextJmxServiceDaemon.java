@@ -33,7 +33,7 @@ import java.util.concurrent.Callable;
 
 import org.opennms.core.fiber.Fiber;
 import org.opennms.core.logging.Logging;
-import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.spring.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;

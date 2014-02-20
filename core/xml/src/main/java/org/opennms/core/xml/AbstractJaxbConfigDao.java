@@ -29,8 +29,8 @@
 package org.opennms.core.xml;
 
 
-import org.opennms.core.utils.FileReloadCallback;
-import org.opennms.core.utils.FileReloadContainer;
+import org.opennms.core.spring.FileReloadCallback;
+import org.opennms.core.spring.FileReloadContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;

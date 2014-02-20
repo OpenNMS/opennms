@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.utils;
+package org.opennms.core.spring;
 
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.InvalidPropertyException;
@@ -100,7 +100,7 @@ public class PropertyPath {
     /**
      * <p>Getter for the field <code>parent</code>.</p>
      *
-     * @return a {@link org.opennms.core.utils.PropertyPath} object.
+     * @return a {@link org.opennms.core.spring.PropertyPath} object.
      */
     public PropertyPath getParent() {
         return parent;

@@ -45,7 +45,7 @@ import java.util.Set;
 
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
-import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.api.CategoryDao;

@@ -32,7 +32,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.model.ServiceInfo;
 import org.opennms.web.svclayer.daemonstatus.DaemonStatusService;
 import org.springframework.beans.factory.InitializingBean;

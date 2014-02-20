@@ -33,7 +33,7 @@ import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Iterator;
 
-import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.config.reportd.Report;
 import org.opennms.netmgt.dao.api.ReportdConfigurationDao;
 import org.quartz.CronTrigger;
