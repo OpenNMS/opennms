@@ -28,10 +28,6 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.6</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-            <Export-Package>
-              org.opennms.netmgt.config.*;version="${project.version}",
-              org.opennms.netmgt.filter.*;version="${project.version}"
-            </Export-Package>
           </instructions>
         </configuration>
       </plugin>
