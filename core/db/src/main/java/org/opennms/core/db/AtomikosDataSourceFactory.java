@@ -65,7 +65,20 @@ public class AtomikosDataSourceFactory extends AtomikosDataSourceBean implements
 		super.setUniqueResourceName("opennms");
 		super.setXaDataSource(XADataSourceFactory.getInstance());
 		super.setPoolSize(30);
-		super.setTestQuery("SELECT 1");
+
+		// Automatically rollback the connection on borrow to avoid a problem where
+		// Atomikos will reuse database connections that contain aborted transactions, 
+		// mark the connections as "erroneous", and recycle the connections. We want to
+		// avoid database connection recycling to avoid lockups in PostgreSQL that occur
+		// when creating new connections. This occurs on PostgreSQL 8.4 but may be fixed
+		// in later versions.
+		//
+		// These aborted transactions shouldn't happen and are probably caused by errors 
+		// in JDBC code. Atomikos may also only exhibit this behavior when running without 
+		// a transaction manager (as is the case in the current OpenNMS code with 
+		// Hibernate 3.6).
+		//
+		super.setTestQuery("ROLLBACK;SELECT 1;");
 
 		/*
 		// Disable pool maintenance (reaping and shrinking) by setting the interval
