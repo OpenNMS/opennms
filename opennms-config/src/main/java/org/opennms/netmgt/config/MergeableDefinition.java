@@ -30,10 +30,10 @@ package org.opennms.netmgt.config;
 
 import java.util.ArrayList;
 
+import org.opennms.core.network.IPAddressRange;
+import org.opennms.core.network.IPAddressRangeSet;
 import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.snmp.Range;
-import org.opennms.netmgt.model.discovery.IPAddressRange;
-import org.opennms.netmgt.model.discovery.IPAddressRangeSet;
 
 /**
  * This is a wrapper class for the Definition class from the config package.  Has the logic for 

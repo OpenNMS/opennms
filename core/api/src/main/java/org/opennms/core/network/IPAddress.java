@@ -8,27 +8,26 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 
 public class IPAddress implements Comparable<IPAddress> {
-    protected final byte[] m_ipAddr;
-
-
-    public IPAddress() {
-        m_ipAddr = new byte[0];
-    }
+    protected final InetAddress m_inetAddress;
 
     public IPAddress(final IPAddress addr) {
-        m_ipAddr = addr.m_ipAddr.clone();
+        m_inetAddress = addr.m_inetAddress;
     }
 
     public IPAddress(final String dottedNotation) {
-        m_ipAddr = toIpAddrBytes(dottedNotation);
+        m_inetAddress = getInetAddress(dottedNotation);
     }
 
     public IPAddress(final InetAddress inetAddress) {
-        m_ipAddr = inetAddress.getAddress();
+        m_inetAddress = inetAddress;
     }
 
     public IPAddress(final byte[] ipAddrOctets) {
-        m_ipAddr = ipAddrOctets;
+        try {
+            m_inetAddress = InetAddress.getByAddress(ipAddrOctets);
+        } catch (final UnknownHostException e) {
+            throw new IllegalArgumentException("Cannot convert bytes to an InetAddress.", e);
+        }
     }
 
     public static IPAddress min(final IPAddress a, final IPAddress b) {
@@ -36,33 +35,33 @@ public class IPAddress implements Comparable<IPAddress> {
     }
 
     public InetAddress toInetAddress() {
-        return getInetAddress(m_ipAddr);
+        return m_inetAddress;
     }
 
     public byte[] toOctets() {
-        return m_ipAddr;
+        return m_inetAddress.getAddress();
     }
 
     @Override
     public boolean equals(final Object obj) {
         if (obj instanceof IPAddress) {
-            return Arrays.equals(m_ipAddr, ((IPAddress) obj).toOctets());
+            return Arrays.equals(m_inetAddress.getAddress(), ((IPAddress) obj).m_inetAddress.getAddress());
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(m_ipAddr);
+        return m_inetAddress.hashCode();
     }
 
     @Override
     public int compareTo(final IPAddress o) {
-        return compare(m_ipAddr, o.toOctets());
+        return compare(m_inetAddress.getAddress(), o.m_inetAddress.getAddress());
     }
 
     public String toUserString() {
-        return toIpAddrString(m_ipAddr);
+        return toIpAddrString(m_inetAddress);
     }
 
     @Override
@@ -71,12 +70,12 @@ public class IPAddress implements Comparable<IPAddress> {
     }
 
     public String toDbString() {
-        return toIpAddrString(m_ipAddr);
+        return toIpAddrString(m_inetAddress);
     }
 
     /** {@inheritDoc} */
     public BigInteger toBigInteger() {
-        return new BigInteger(1, m_ipAddr);
+        return new BigInteger(1, m_inetAddress.getAddress());
     }
 
     /**
@@ -85,11 +84,12 @@ public class IPAddress implements Comparable<IPAddress> {
      * @return a {@link org.opennms.core.network.IPAddress} object.
      */
     public IPAddress incr() {
-        final byte[] b = new byte[m_ipAddr.length];
+        final byte[] current = m_inetAddress.getAddress();
+        final byte[] b = new byte[current.length];
 
         int carry = 1;
-        for(int i = m_ipAddr.length-1; i >= 0; i--) {
-            b[i] = (byte)(m_ipAddr[i] + carry);
+        for(int i = current.length-1; i >= 0; i--) {
+            b[i] = (byte)(current[i] + carry);
             // if overflow we need to carry to the next byte
             carry = b[i] == 0 ? carry : 0;
         }
@@ -108,11 +108,12 @@ public class IPAddress implements Comparable<IPAddress> {
      * @return a {@link org.opennms.core.network.IPAddress} object.
      */
     public IPAddress decr() {
-        final byte[] b = new byte[m_ipAddr.length];
+        final byte[] current = m_inetAddress.getAddress();
+        final byte[] b = new byte[current.length];
 
         int borrow = 1;
-        for(int i = m_ipAddr.length-1; i >= 0; i--) {
-            b[i] = (byte)(m_ipAddr[i] - borrow);
+        for(int i = current.length-1; i >= 0; i--) {
+            b[i] = (byte)(current[i] - borrow);
             // if underflow then we need to borrow from the next byte
             borrow = b[i] == (byte)0xff ? borrow : 0;
         }

@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.model.discovery;
+package org.opennms.core.network;
 
 import java.util.Collections;
 import java.util.Iterator;

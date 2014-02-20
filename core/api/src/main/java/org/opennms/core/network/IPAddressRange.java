@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.model.discovery;
+package org.opennms.core.network;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -38,7 +38,6 @@ import java.util.NoSuchElementException;
  * IPAddressRange
  *
  * @author brozow
- * @version $Id: $
  */
 public class IPAddressRange implements Comparable<IPAddressRange>, Iterable<IPAddress> {
     
@@ -134,7 +133,7 @@ public class IPAddressRange implements Comparable<IPAddressRange>, Iterable<IPAd
     /**
      * <p>contains</p>
      *
-     * @param range a {@link org.opennms.netmgt.model.discovery.IPAddressRange} object.
+     * @param range a {@link org.opennms.core.network.IPAddressRange} object.
      * @return a boolean.
      */
     public boolean contains(IPAddressRange range) {
@@ -144,7 +143,7 @@ public class IPAddressRange implements Comparable<IPAddressRange>, Iterable<IPAd
     /**
      * <p>overlaps</p>
      *
-     * @param range a {@link org.opennms.netmgt.model.discovery.IPAddressRange} object.
+     * @param range a {@link org.opennms.core.network.IPAddressRange} object.
      * @return a boolean.
      */
     public boolean overlaps(IPAddressRange range) {
@@ -165,7 +164,7 @@ public class IPAddressRange implements Comparable<IPAddressRange>, Iterable<IPAd
     /**
      * <p>comesBefore</p>
      *
-     * @param range a {@link org.opennms.netmgt.model.discovery.IPAddressRange} object.
+     * @param range a {@link org.opennms.core.network.IPAddressRange} object.
      * @return a boolean.
      */
     public boolean comesBefore(IPAddressRange range) {
@@ -185,7 +184,7 @@ public class IPAddressRange implements Comparable<IPAddressRange>, Iterable<IPAd
     /**
      * <p>comesAfter</p>
      *
-     * @param range a {@link org.opennms.netmgt.model.discovery.IPAddressRange} object.
+     * @param range a {@link org.opennms.core.network.IPAddressRange} object.
      * @return a boolean.
      */
     public boolean comesAfter(IPAddressRange range) {
@@ -195,7 +194,7 @@ public class IPAddressRange implements Comparable<IPAddressRange>, Iterable<IPAd
     /**
      * <p>adjoins</p>
      *
-     * @param range a {@link org.opennms.netmgt.model.discovery.IPAddressRange} object.
+     * @param range a {@link org.opennms.core.network.IPAddressRange} object.
      * @return a boolean.
      */
     public boolean adjoins(IPAddressRange range) {
