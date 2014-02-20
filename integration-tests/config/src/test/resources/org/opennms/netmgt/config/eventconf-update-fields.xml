@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+  <global>
+    <security>
+      <doNotOverride>logmsg</doNotOverride>
+      <doNotOverride>operaction</doNotOverride>
+      <doNotOverride>autoaction</doNotOverride>
+      <doNotOverride>tticket</doNotOverride>
+      <doNotOverride>script</doNotOverride>
+    </security>
+  </global>
+
+  <event>
+    <uei>org.opennms.test.updateFields</uei>
+    <event-label>Event with Update Fields in the Alarm Data Element</event-label>
+    <descr>
+      &lt;p&gt;This is a test event for testing marshaling of the update-field element.
+      &lt;/p&gt;
+    </descr>
+    <logmsg dest='logonly'>MATCH-ANY-UEI event.</logmsg>
+    <severity>Indeterminate</severity>
+    <alarm-data reduction-key="" alarm-type="3" auto-clean="false">
+      <update-field field-name="severity" update-on-reduction="true"/>
+    </alarm-data>
+  </event>
+
+  <event-file>${install.etc.dir}/events/Standard.events.xml</event-file>
+</events>

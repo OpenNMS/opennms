@@ -30,8 +30,9 @@ package org.opennms.core.db;
 
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
-import java.util.logging.Logger;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -54,6 +55,8 @@ public class AtomikosDataSourceFactory extends AtomikosDataSourceBean implements
 
 	private static final long serialVersionUID = -6411281260947841402L;
 
+	public static final Logger LOG = LoggerFactory.getLogger(AtomikosDataSourceFactory.class);
+
 	public AtomikosDataSourceFactory(JdbcDataSource ds) {
 		this();
 	}
@@ -62,7 +65,20 @@ public class AtomikosDataSourceFactory extends AtomikosDataSourceBean implements
 		super.setUniqueResourceName("opennms");
 		super.setXaDataSource(XADataSourceFactory.getInstance());
 		super.setPoolSize(30);
-		super.setTestQuery("SELECT 1");
+
+		// Automatically rollback the connection on borrow to avoid a problem where
+		// Atomikos will reuse database connections that contain aborted transactions, 
+		// mark the connections as "erroneous", and recycle the connections. We want to
+		// avoid database connection recycling to avoid lockups in PostgreSQL that occur
+		// when creating new connections. This occurs on PostgreSQL 8.4 but may be fixed
+		// in later versions.
+		//
+		// These aborted transactions shouldn't happen and are probably caused by errors 
+		// in JDBC code. Atomikos may also only exhibit this behavior when running without 
+		// a transaction manager (as is the case in the current OpenNMS code with 
+		// Hibernate 3.6).
+		//
+		super.setTestQuery("ROLLBACK;SELECT 1;");
 
 		/*
 		// Disable pool maintenance (reaping and shrinking) by setting the interval
@@ -83,7 +99,7 @@ public class AtomikosDataSourceFactory extends AtomikosDataSourceBean implements
 
 	// Uncomment when we require Java 7
 	//@Override
-	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+	public java.util.logging.Logger getParentLogger() throws SQLFeatureNotSupportedException {
 		throw new SQLFeatureNotSupportedException();
 	}
 
@@ -114,6 +130,6 @@ public class AtomikosDataSourceFactory extends AtomikosDataSourceBean implements
 
 	@Override
 	public void setMaxSize(int maxSize) {
-		super.setMaxPoolSize(maxSize);
+		LOG.debug("Atomikos has no equivalent to setMaxSize(). Ignoring.");
 	}
 }

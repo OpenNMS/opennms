@@ -5,6 +5,13 @@ opennms (1.13.0-1) stable; urgency=low
 
  -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 12 Dec 2013 15:28:00 -0400
 
+opennms (1.12.5-1) stable; urgency=high
+
+  * New upstream release.  This release contains another upgrade fix as well
+    as a few other bug fixes and enhancements.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Wed, 19 Feb 2014 13:32:00 -0400
+
 opennms (1.12.4-1) stable; urgency=high
 
   * New upstream release.  This release contains upgrade fixes as well as other

@@ -574,6 +574,19 @@
               </pluginExecution>
               <pluginExecution>
                 <pluginExecutionFilter>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-dependency-plugin</artifactId>
+                  <versionRange>[1.0.0,)</versionRange>
+                  <goals>
+                    <goal>properties</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                  <execute/>
+                </action>
+              </pluginExecution>
+              <pluginExecution>
+                <pluginExecutionFilter>
                   <groupId>org.apache.servicemix.tooling </groupId>
                   <artifactId>depends-maven-plugin</artifactId>
                   <versionRange>[1.2,)</versionRange>
@@ -2321,6 +2334,11 @@
         <groupId>cglib</groupId>
         <artifactId>cglib-nodep</artifactId>
         <version>2.2.2</version>
+      </dependency>
+      <dependency>
+        <groupId>c3p0</groupId>
+        <artifactId>c3p0</artifactId>
+        <version>0.9.1.2</version>
       </dependency>
       <dependency>
         <groupId>commons-beanutils</groupId>

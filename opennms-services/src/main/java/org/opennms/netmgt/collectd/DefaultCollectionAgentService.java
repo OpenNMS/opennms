@@ -56,6 +56,9 @@ import org.springframework.transaction.interceptor.TransactionProxyFactoryBean;
  * @author ranger
  * @version $Id: $
  */
+// Eventually, we should be constructing these instances in the context and using
+// annotation-based transaction processing.
+//@Transactional(propagation=Propagation.REQUIRED)
 public class DefaultCollectionAgentService implements CollectionAgentService {
     
     private static final Logger LOG = LoggerFactory.getLogger(DefaultCollectionAgentService.class);
@@ -76,7 +79,7 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
         bean.setTarget(agent);
         
         Properties props = new Properties();
-        props.put("*", "PROPAGATION_REQUIRED,readOnly");
+        props.put("*", "PROPAGATION_REQUIRED");
         
         bean.setTransactionAttributes(props);
         

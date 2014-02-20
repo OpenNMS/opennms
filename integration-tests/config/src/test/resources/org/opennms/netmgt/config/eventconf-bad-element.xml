@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+  <global>
+    <security>
+      <doNotOverride>logmsg</doNotOverride>
+      <doNotOverride>operaction</doNotOverride>
+      <doNotOverride>autoaction</doNotOverride>
+      <doNotOverride>tticket</doNotOverride>
+      <doNotOverride>script</doNotOverride>
+    </security>
+  </global>
+
+  <event>
+    <uei>MATCH-ANY-UEI</uei>
+    <event-label>OpenNMS defined event: MATCH-ANY-UEI</event-label>
+    <descr>
+      &lt;p&gt;This UEI will never be generated, but exists so that
+      notifications can match any UEI for a particular filter rule.
+      Useful to see all events for a particular node via notifications.
+      &lt;/p&gt;
+    </descr>
+    <logmsg dest='logonly'>MATCH-ANY-UEI event.</logmsg>
+    <severity>Indeterminate</severity>
+  </event>
+
+  <event-file>${install.etc.dir}/events/Standard.events.xml</event-file>
+  
+  <bad-element>This element should not be allowed</bad-element>
+</events>

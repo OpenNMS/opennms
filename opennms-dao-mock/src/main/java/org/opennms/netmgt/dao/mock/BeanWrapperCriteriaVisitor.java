@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Criteria.CriteriaVisitor;
+import org.opennms.core.criteria.Criteria.LockType;
 import org.opennms.core.criteria.Fetch;
 import org.opennms.core.criteria.Order;
 import org.opennms.core.criteria.restrictions.Restriction;
@@ -66,6 +67,11 @@ public class BeanWrapperCriteriaVisitor implements CriteriaVisitor {
 
     @Override
     public void visitAliasesFinished() {
+        //throw new UnsupportedOperationException("Not yet implemented!");
+    }
+
+    @Override
+    public void visitLockType(final LockType lock) {
         //throw new UnsupportedOperationException("Not yet implemented!");
     }
 
