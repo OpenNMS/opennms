@@ -7,8 +7,8 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core</groupId>
-  <artifactId>org.opennms.core.xml</artifactId>
-  <name>OpenNMS Core Library (XML)</name>
+  <artifactId>org.opennms.core.spring</artifactId>
+  <name>OpenNMS Core Spring Library</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>
@@ -21,7 +21,7 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.6</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-            <Export-Package>org.opennms.core.xml.*;version="${project.version}"</Export-Package>
+            <Export-Package>org.opennms.core.spring.*;version="${project.version}"</Export-Package>
           </instructions>
         </configuration>
       </plugin>
@@ -29,42 +29,18 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>org.opennms.core</groupId>
-      <artifactId>org.opennms.core.api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.core</groupId>
-      <artifactId>org.opennms.core.lib</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.core</groupId>
-      <artifactId>org.opennms.core.spring</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-dependencies</artifactId>
       <type>pom</type>
     </dependency>
     <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>castor-dependencies</artifactId>
-      <type>pom</type>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jaxb-dependencies</artifactId>
-      <type>pom</type>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-    </dependency>
-    <!-- breaks generation :(
-    <dependency>
-      <groupId>org.wicketstuff</groupId>
-      <artifactId>jsr303</artifactId>
-      <version>1.4.9.2</version>
-    </dependency>
-    -->
   </dependencies>
 </project>

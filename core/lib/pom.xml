@@ -29,15 +29,6 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>spring-dependencies</artifactId>
-      <type>pom</type>
-    </dependency>
-    <dependency>
-	<groupId>org.hibernate.javax.persistence</groupId>
-        <artifactId>hibernate-jpa-2.0-api</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>

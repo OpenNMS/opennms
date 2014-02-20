@@ -28,10 +28,13 @@
 
 package org.opennms.gwt.web.ui.asset.server;
 
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.gwt.web.ui.asset.client.AssetService;
@@ -48,6 +51,8 @@ import org.opennms.web.springframework.security.SpringSecurityContextService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -79,7 +84,7 @@ public class AssetServiceImpl extends RemoteServiceServlet implements AssetServi
         s_connectionOptions.add("");
     }
 
-    private final Logger logger = LoggerFactory.getLogger("OpenNMS.WEB." + AssetServiceImpl.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger("OpenNMS.WEB." + AssetServiceImpl.class.getName());
 
     /**
      * asset data access object for asset records
@@ -107,6 +112,44 @@ public class AssetServiceImpl extends RemoteServiceServlet implements AssetServi
     private SecurityContextService m_securityContext;
 
     private HashSet<String> m_allowHtmlFields;
+
+    /**
+     * <p>sanitizeBeanStringProperties</p>
+     * This is a simple method is used to sanitize all bean string properties. 
+     * 
+     * @param bean a {@link java.lang.Object} object. 
+     * @param Set of fieldnames as Strings that are allowed for html content. All fieldnames in lowercase. null -> no html
+     * @return a {@link java.lang.Object} object.
+     */
+    public static <T> T sanitizeBeanStringProperties(T bean, Set<String> allowHtmlFields) {
+    	BeanWrapper beanWrapper = new BeanWrapperImpl(bean.getClass());
+    	
+    	// get all bean property descriptors
+    	PropertyDescriptor[] descriptions = beanWrapper.getPropertyDescriptors();
+    	
+    	// Iterate over all properties
+    	for (PropertyDescriptor description : descriptions) {
+    		
+    		// If we have a property with type of java.lang.String, then sanitize string and write back
+    		if (description.getReadMethod().getReturnType().equals(java.lang.String.class)) {
+    			try {
+    				boolean allowHTML = false;
+	    	        if (allowHtmlFields != null && allowHtmlFields.contains(description.getName().toLowerCase())) {
+	    	            allowHTML = true;
+	    	        }
+    				logger.debug("Try to sanitize string {} in {} with html {}", description.getName(), bean.getClass(), allowHTML);
+    				description.getWriteMethod().invoke(bean, WebSecurityUtils.sanitizeString((String)description.getReadMethod().invoke(bean), allowHTML));
+    			}catch (IllegalArgumentException e) {
+    				logger.error("Illegal argument by sanitize object {} on property {}. Error {}", description.getName(), bean.getClass(), e.getMessage());
+				} catch (IllegalAccessException e) {
+					logger.error("Illegal access by sanitize object {} on property {}. Error {}", description.getName(), bean.getClass(), e.getMessage());
+				} catch (InvocationTargetException e) {
+					logger.error("Invocation target exception by sanitize object {} on property {}. Error {}", description.getName(), bean.getClass(), e.getMessage());
+				}
+    		}
+    	}
+    	return bean;
+    }
 
     /**
      *
@@ -267,7 +310,7 @@ public class AssetServiceImpl extends RemoteServiceServlet implements AssetServi
         logger.debug("gelocation before: {}", geolocation);
 
         // copy the transfer object for rpc back to the hibernate model
-        final AssetCommand sanitizeBeanStringProperties = WebSecurityUtils.sanitizeBeanStringProperties(assetCommand, m_allowHtmlFields);
+        final AssetCommand sanitizeBeanStringProperties = sanitizeBeanStringProperties(assetCommand, m_allowHtmlFields);
         
         // logger.debug("nodeId: '{}' sanitized assetCommand: '{}'", nodeId, sanitizeBeanStringProperties);
 

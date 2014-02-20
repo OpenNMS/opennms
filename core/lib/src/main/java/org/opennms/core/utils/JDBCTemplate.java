@@ -34,8 +34,6 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
-import org.springframework.dao.DataRetrievalFailureException;
-
 /**
  * <p>Abstract JDBCTemplate class.</p>
  *
@@ -68,7 +66,7 @@ abstract public class JDBCTemplate {
              doExecute(values);
          } catch (final SQLException e) {
              final String vals = argsToString(values);
-             throw new DataRetrievalFailureException("Problem executing statement: "+m_sql+" with values "+vals, e);
+             throw new IllegalArgumentException("Problem executing statement: "+m_sql+" with values "+vals, e);
          }
      }
 

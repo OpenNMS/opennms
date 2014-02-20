@@ -139,6 +139,10 @@
       <artifactId>org.opennms.core.lib</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.spring</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.sms-reflector</groupId>
       <artifactId>sms-service</artifactId>
       <scope>provided</scope>
