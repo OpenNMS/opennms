@@ -6,8 +6,11 @@ import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class IPAddress implements Comparable<IPAddress> {
+    private static final Pattern LEADING_ZEROS = Pattern.compile("^0:[0:]+");
     protected final InetAddress m_inetAddress;
 
     public IPAddress(final IPAddress addr) {
@@ -61,7 +64,28 @@ public class IPAddress implements Comparable<IPAddress> {
     }
 
     public String toUserString() {
-        return toIpAddrString(m_inetAddress);
+        if (m_inetAddress instanceof Inet4Address) {
+            return toIpAddrString(m_inetAddress);
+        } else if (m_inetAddress instanceof Inet6Address) {
+            /*
+             * <p>From: <a href="https://code.google.com/p/guava-libraries/source/browse/guava/src/com/google/common/primitives/Ints.java">Guava</a>.</p>
+             */
+            final byte[] bytes = m_inetAddress.getAddress();
+            final int[] hextets = new int[8];
+            for (int i = 0; i < hextets.length; i++) {
+                hextets[i] = fromBytes(
+                    (byte) 0,
+                    (byte) 0,
+                    bytes[2 * i],
+                    bytes[2 * i + 1]
+                );
+            }
+            compressLongestRunOfZeroes(hextets);
+            return hextetsToIPv6String(hextets);
+        } else {
+            System.err.println("Not an Inet4Address nor an Inet6Address! " + m_inetAddress.getClass());
+            return m_inetAddress.getHostAddress();
+        }
     }
 
     @Override
@@ -300,6 +324,88 @@ public class IPAddress implements Comparable<IPAddress> {
                 return 0;
             }
         }
+    }
+
+    /**
+     * Returns the {@code int} value whose byte representation is the given 4
+     * bytes, in big-endian order; equivalent to {@code Ints.fromByteArray(new
+     * byte[] {b1, b2, b3, b4})}.
+     *
+     * <p>From: <a href="https://code.google.com/p/guava-libraries/source/browse/guava/src/com/google/common/primitives/Ints.java">Guava</a>.</p>
+     */
+    public static int fromBytes(final byte b1, final byte b2, final byte b3, final byte b4) {
+      return b1 << 24 | (b2 & 0xFF) << 16 | (b3 & 0xFF) << 8 | (b4 & 0xFF);
+    }
+
+    /**
+     * Identify and mark the longest run of zeroes in an IPv6 address.
+     *
+     * <p>Only runs of two or more hextets are considered.  In case of a tie, the
+     * leftmost run wins.  If a qualifying run is found, its hextets are replaced
+     * by the sentinel value -1.
+     *
+     * <p>From: <a href="https://code.google.com/p/guava-libraries/source/browse/guava/src/com/google/common/primitives/Ints.java">Guava</a>.</p>
+     *
+     * @param hextets {@code int[]} mutable array of eight 16-bit hextets
+     */
+    private static void compressLongestRunOfZeroes(final int[] hextets) {
+        int bestRunStart = -1;
+        int bestRunLength = -1;
+        int runStart = -1;
+        for (int i = 0; i < hextets.length + 1; i++) {
+            if (i < hextets.length && hextets[i] == 0) {
+                if (runStart < 0) {
+                    runStart = i;
+                }
+            } else if (runStart >= 0) {
+                int runLength = i - runStart;
+                if (runLength > bestRunLength) {
+                    bestRunStart = runStart;
+                    bestRunLength = runLength;
+                }
+                runStart = -1;
+            }
+        }
+        if (bestRunLength >= 2) {
+            Arrays.fill(hextets, bestRunStart, bestRunStart + bestRunLength, -1);
+        }
+    }
+
+    /**
+     * Convert a list of hextets into a human-readable IPv6 address.
+     *
+     * <p>In order for "::" compression to work, the input should contain negative
+     * sentinel values in place of the elided zeroes.<p>
+     *
+     * <p>From: <a href="https://code.google.com/p/guava-libraries/source/browse/guava/src/com/google/common/primitives/Ints.java">Guava</a>.</p>
+     *
+     * @param hextets {@code int[]} array of eight 16-bit hextets, or -1s
+     */
+    private static String hextetsToIPv6String(final int[] hextets) {
+        /*
+         * While scanning the array, handle these state transitions:
+         *   start->num => "num"     start->gap => "::"
+         *   num->num   => ":num"    num->gap   => "::"
+         *   gap->num   => "num"     gap->gap   => ""
+         */
+        StringBuilder buf = new StringBuilder(39);
+        boolean lastWasNumber = false;
+        for (int i = 0; i < hextets.length; i++) {
+            final boolean thisIsNumber = hextets[i] >= 0;
+            if (thisIsNumber) {
+                if (lastWasNumber) {
+                    buf.append(':');
+                }
+                buf.append(Integer.toHexString(hextets[i]));
+            } else {
+                if (i == 0 || lastWasNumber) {
+                    buf.append("::");
+                }
+            }
+            lastWasNumber = thisIsNumber;
+        }
+        final Matcher matcher = LEADING_ZEROS.matcher(buf.toString());
+        return matcher.replaceAll(":");
     }
 
     private int unsignedByteToInt(final byte b) {
