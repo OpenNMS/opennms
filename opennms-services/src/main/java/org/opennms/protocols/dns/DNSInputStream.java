@@ -216,7 +216,9 @@ public class DNSInputStream extends ByteArrayInputStream {
         //
         int offset = readShort() & 0x3fff;
         DNSInputStream dnsIn = new DNSInputStream(buf, offset, buf.length - offset);
-        return dnsIn.readDomainName();
+        String retval = dnsIn.readDomainName();
+        dnsIn.close();
+        return retval;
     }
 
     /**

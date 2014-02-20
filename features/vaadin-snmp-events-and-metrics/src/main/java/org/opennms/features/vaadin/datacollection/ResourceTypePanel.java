@@ -76,7 +76,7 @@ public class ResourceTypePanel extends Panel {
 
         addStyleName("light");
 
-        resourceTypeTable = new ResourceTypeTable(source.getResourceTypeCollection());
+        resourceTypeTable = new ResourceTypeTable(source.getResourceTypes());
 
         final ResourceTypeForm resourceTypeForm = new ResourceTypeForm();
         resourceTypeForm.setVisible(false);

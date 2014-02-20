@@ -1,0 +1,79 @@
+package org.opennms.netmgt.correlation.drools
+
+import java.util.Date;
+
+import org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine;
+import org.opennms.netmgt.correlation.drools.Cause.Type;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.capsd.EventUtils;
+import org.drools.spi.KnowledgeHelper;
+
+global org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine engine;
+global org.opennms.netmgt.correlation.drools.NodeService nodeService;
+global org.slf4j.Logger LOG;
+global java.lang.Long POLL_INTERVAL;
+
+
+rule "newIssue"
+	salience 100
+	when
+		$e : Event( $uei : uei matches ".*nodeDown", $nodeid : nodeid )
+		not( Cause( cause == $nodeid ) )
+	then
+		Cause $c = new Cause( Type.POSSIBLE, $nodeid, $e );
+		LOG.info( "Found nodeDown event {} for node {}. Asserting: {}", $uei, $nodeid, $c );
+		insert( $c );
+end
+
+rule "possibleCauses"
+	salience 200
+	when
+		$c : Cause( $cause : cause, $e : symptom )
+		not( Cause( cause == ( nodeService.getParentNode( $cause ) ) ) )
+	then
+		Long $parentNode = nodeService.getParentNode( $cause );
+		if ( $parentNode != null ) {
+			Cause $parent = possibleCause( engine, $parentNode, $e, POLL_INTERVAL );
+			$parent.addImpacted( $c );
+			LOG.info( "No Cause for parent. Asserting: {}", $parent );
+			insert( $parent );
+		} else {
+			LOG.info( "No parent for node {}", $cause );
+		}
+end
+
+rule "existingCause"
+	salience 200
+	when
+		$c : Cause( $cause : cause, $e : symptom )
+		$parent : Cause( cause == ( nodeService.getParentNode( $cause ) ), impacted excludes $c )
+	then
+		$parent.addImpacted( $c );
+		LOG.info( " Adding cause {} to existing parent {}", $c, $parent );
+		update( $parent );
+end
+ 
+rule "resolveIssue"
+	salience 100
+	when
+		$up : Event( $upUei : uei matches ".*nodeUp", $node : nodeid )
+		$down : Event( uei matches ".*nodeDown", nodeid == $node )
+	then
+		LOG.info( "Found nodeUp event {} for node {}",$upUei, $node );
+		retract( $down );
+		retract( $up );
+end
+
+function Cause possibleCause( DroolsCorrelationEngine engine, Long nodeId, Event symptom, Long POLL_INTERVAL ) {
+	return new Cause( Type.POSSIBLE, nodeId, symptom, engine.setTimer( POLL_INTERVAL ) );
+}
+
+//function void foundRootCause( DroolsCorrelationEngine engine, PossibleCause cause ) {
+//	EventBuilder bldr = new EventBuilder( "rootCauseEvent", "Drools" );
+//	bldr.setNodeid((int)cause.getSymptom().getNodeid());
+//	bldr.addParam("rootCause", cause.getCause().intValue());
+//	
+//	engine.sendEvent(bldr.getEvent());
+//}

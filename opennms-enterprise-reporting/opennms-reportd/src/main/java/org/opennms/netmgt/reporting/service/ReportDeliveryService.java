@@ -46,5 +46,12 @@ public interface ReportDeliveryService {
      * @throws ReportDeliveryException 
      */
     public void deliverReport(Report report,String fileName) throws ReportDeliveryException;
+    
+    /**
+     * <p>reloadConfiguration</p>
+     * 
+     * Triggers a reload of the delivery service's configuration
+     */
+    public void reloadConfiguration() throws Exception;
 
 }

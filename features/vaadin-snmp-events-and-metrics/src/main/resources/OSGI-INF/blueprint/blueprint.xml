@@ -9,7 +9,7 @@
 					https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-core/src/main/resources/org/apache/aries/blueprint/ext/blueprint-ext.xsd">
  
     <reference id="eventProxy" interface="org.opennms.netmgt.model.events.EventProxy" availability="mandatory" />
-    <reference id="eventConfDao" interface="org.opennms.netmgt.config.EventConfDao" availability="mandatory" />
+    <reference id="eventConfDao" interface="org.opennms.netmgt.config.api.EventConfDao" availability="mandatory" />
     <reference id="dataCollectionConfigDao" interface="org.opennms.netmgt.config.DataCollectionConfigDao" availability="mandatory" />
 
     <bean id="mibParser" class="org.opennms.features.vaadin.mibcompiler.services.JsmiMibParser" />

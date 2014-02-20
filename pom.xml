@@ -119,6 +119,7 @@
     <module>opennms-icmp</module>
     <module>opennms-javamail</module>
     <module>opennms-rrd</module>
+    <module>opennms-config-api</module>
     <module>opennms-config</module>
     <module>opennms-config-model</module>
     <module>opennms-provision</module>
@@ -572,6 +573,19 @@
               </pluginExecution>
               <pluginExecution>
                 <pluginExecutionFilter>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-dependency-plugin</artifactId>
+                  <versionRange>[1.0.0,)</versionRange>
+                  <goals>
+                    <goal>properties</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                  <execute/>
+                </action>
+              </pluginExecution>
+              <pluginExecution>
+                <pluginExecutionFilter>
                   <groupId>org.apache.servicemix.tooling </groupId>
                   <artifactId>depends-maven-plugin</artifactId>
                   <versionRange>[1.2,)</versionRange>
@@ -974,8 +988,8 @@
     <!-- ALWAYS change aspectj to match the version referenced in the spring poms -->
     <aspectjVersion>1.7.1</aspectjVersion>
     <springWebFlowVersion>2.3.0.RELEASE</springWebFlowVersion>
-    <springSecurityVersion>3.1.0.RELEASE</springSecurityVersion>
-    <springLdapVersion>3.1.0.RELEASE</springLdapVersion>
+    <springSecurityVersion>3.1.4.RELEASE</springSecurityVersion>
+    <springLdapVersion>3.1.4.RELEASE</springLdapVersion>
 
     <!-- moved here from topology features -->
     <jungVersion>2.0.1</jungVersion>
@@ -1726,6 +1740,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
+        <artifactId>opennms-config-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
         <artifactId>opennms-config</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -1798,18 +1817,6 @@
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>castor-dependencies</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.dependencies</groupId>
-        <artifactId>dbpool-dependencies</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.dependencies</groupId>
-        <artifactId>jdbc-pool-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
       </dependency>
@@ -2321,6 +2328,11 @@
         <groupId>cglib</groupId>
         <artifactId>cglib-nodep</artifactId>
         <version>2.2.2</version>
+      </dependency>
+      <dependency>
+        <groupId>c3p0</groupId>
+        <artifactId>c3p0</artifactId>
+        <version>0.9.1.2</version>
       </dependency>
       <dependency>
         <groupId>commons-beanutils</groupId>

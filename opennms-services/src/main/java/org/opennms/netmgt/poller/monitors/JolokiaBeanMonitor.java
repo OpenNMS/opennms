@@ -2,8 +2,8 @@
  * *****************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc. OpenNMS(R) is Copyright (C)
- * 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -49,7 +49,8 @@ import javax.management.MalformedObjectNameException;
  * agent. The class implements the ServiceMonitor interface that allows it to be
  * used along with other plug-ins by the service poller framework.
  *
- * @author cliles
+ * @author <A HREF="mailto:cliles@capario.com">Chris Liles</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</a>
  */
 @Distributable(DistributionContext.DAEMON)
 final public class JolokiaBeanMonitor extends AbstractServiceMonitor {

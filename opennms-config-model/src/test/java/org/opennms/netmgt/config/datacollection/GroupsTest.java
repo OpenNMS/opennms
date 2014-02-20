@@ -33,11 +33,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTest;
-import org.opennms.netmgt.config.datacollection.Group;
-import org.opennms.netmgt.config.datacollection.MibObj;
+import org.opennms.core.test.xml.XmlTestNoCastor;
 
-public class GroupsTest extends XmlTest<Groups> {
+public class GroupsTest extends XmlTestNoCastor<Groups> {
 
     public GroupsTest(final Groups sampleObject, final String sampleXml, final String schemaFile) {
         super(sampleObject, sampleXml, schemaFile);

@@ -31,7 +31,7 @@ package org.opennms.netmgt.eventd;
 import junit.framework.TestCase;
 
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.EventConfDao;
+import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.test.ThrowableAnticipator;

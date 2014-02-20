@@ -222,16 +222,16 @@ public class JsmiMibParserTest {
             DatacollectionGroup dcGroup = parser.getDataCollection();
             Assert.assertNotNull(dcGroup);
             System.out.println(JaxbUtils.marshal(dcGroup));
-            Assert.assertEquals(5, dcGroup.getResourceTypeCount());
-            Assert.assertEquals(7, dcGroup.getGroupCount());
+            Assert.assertEquals(5, dcGroup.getResourceTypes().size());
+            Assert.assertEquals(7, dcGroup.getGroups().size());
             Group mibGroup = null;
-            for (Group g : dcGroup.getGroupCollection()) {
+            for (Group g : dcGroup.getGroups()) {
                 if (g.getName().equals("ifTable"))
                     mibGroup = g;
             }
             Assert.assertNotNull(mibGroup);
-            Assert.assertEquals(22, mibGroup.getMibObjCount());
-            for (MibObj mo : mibGroup.getMibObjCollection()) {
+            Assert.assertEquals(22, mibGroup.getMibObjs().size());
+            for (MibObj mo : mibGroup.getMibObjs()) {
                 Assert.assertEquals("ifEntry", mo.getInstance());
                 Assert.assertTrue(mo.getOid().startsWith(".1.3.6.1.2.1.2.2.1"));
                 Assert.assertTrue(mo.getType().matches("^(?i)(counter|gauge|timeticks|integer|octetstring|string)?\\d*$"));
@@ -253,8 +253,8 @@ public class JsmiMibParserTest {
             Assert.assertNotNull(dcGroup);
             System.out.println(JaxbUtils.marshal(dcGroup));
             int count = 0;
-            for (Group group : dcGroup.getGroupCollection()) {
-                for (MibObj mo : group.getMibObjCollection()) {
+            for (final Group group : dcGroup.getGroups()) {
+                for (final MibObj mo : group.getMibObjs()) {
                     if (mo.getAlias().length() > 19) { // Character restriction.
                         count++;
                     }

@@ -33,8 +33,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.opennms.netmgt.config.EventConfDao;
-import org.opennms.netmgt.config.EventExpander;
+import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.eventd.EventExpander;
 import org.opennms.netmgt.model.events.EventProcessor;
 import org.opennms.netmgt.model.events.EventProcessorException;
 import org.opennms.netmgt.xml.event.Event;
@@ -91,7 +91,7 @@ public final class EventParmRegexFilterProcessor implements EventProcessor, Init
     /**
      * <p>getEventConfDao</p>
      *
-     * @return a {@link org.opennms.netmgt.config.EventConfDao} object.
+     * @return a {@link org.opennms.netmgt.config.api.EventConfDao} object.
      */
     public EventConfDao getEventConfDao() {
         return m_eventConfDao;
@@ -100,7 +100,7 @@ public final class EventParmRegexFilterProcessor implements EventProcessor, Init
     /**
      * <p>setEventConfDao</p>
      *
-     * @param eventConfDao a {@link org.opennms.netmgt.config.EventConfDao} object.
+     * @param eventConfDao a {@link org.opennms.netmgt.config.api.EventConfDao} object.
      */
     public void setEventConfDao(EventConfDao eventConfDao) {
         m_eventConfDao = eventConfDao;

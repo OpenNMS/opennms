@@ -40,11 +40,17 @@
   </bean>
 
   <bean name="daemon" class="org.opennms.netmgt.poller.remote.support.DefaultPollerBackEnd">
-    <property name="locationMonitorDao" ref="locationMonitorDao" />
-    <property name="monitoredServiceDao" ref="monitoredServiceDao" />
+    <property name="locationMonitorDao">
+      <onmsgi:reference interface="org.opennms.netmgt.dao.api.LocationMonitorDao"/>
+    </property>
+    <property name="monitoredServiceDao">
+      <onmsgi:reference interface="org.opennms.netmgt.dao.api.MonitoredServiceDao"/>
+    </property>
     <property name="pollerConfig" ref="pollerConfig" />
     <property name="timeKeeper" ref="timeKeeper" />
-    <property name="eventIpcManager" ref="eventIpcManager" />
+    <property name="eventIpcManager">
+      <onmsgi:reference interface="org.opennms.netmgt.model.events.EventIpcManager"/>
+    </property>
     <property name="disconnectedTimeout" value="${opennms.pollerBackend.disconnectedTimeout}" />
     <property name="minimumConfigurationReloadInterval" value="${opennms.pollerBackend.minimumConfigurationReloadInterval}" />
   </bean>
@@ -59,7 +65,9 @@
 
   <bean name="pollerBackEndEventListenerAdapter" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
     <property name="annotatedListener" ref="pollerBackEndEventProcessor" />
-    <property name="eventSubscriptionService" ref="eventSubscriptionService" />
+    <property name="eventSubscriptionService">
+      <onmsgi:reference interface="org.opennms.netmgt.model.events.EventSubscriptionService"/>
+    </property>
   </bean>
 
   <bean id="methodInvokingJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">

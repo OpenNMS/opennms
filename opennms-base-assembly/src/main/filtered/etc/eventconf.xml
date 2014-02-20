@@ -392,6 +392,10 @@
       &lt;p&gt;The administrator has disabled notifications on
       OpenNMS. No pages or emails will be sent until notifications
       are reenabled.&lt;/p&gt;
+      &lt;p&gt;
+      Responsible user: &lt;em&gt;%parm[remoteUser]%&lt;/em&gt;
+      at &lt;em&gt;%parm[remoteHost]% (%parm[remoteAddr]%)&lt;/em&gt;
+      &lt;/p&gt;
     </descr>
     <logmsg dest='logndisplay'>
       &lt;p&gt;Notifications have been disabled.&lt;/p&gt;
@@ -406,6 +410,10 @@
       &lt;p&gt;The administrator has enabled notifications on
       OpenNMS. Pages and/or emails will be sent based upon receipt
       of important events.&lt;/p&gt;
+      &lt;p&gt;
+      Responsible user: &lt;em&gt;%parm[remoteUser]%&lt;/em&gt;
+      at &lt;em&gt;%parm[remoteHost]% (%parm[remoteAddr]%)&lt;/em&gt;
+      &lt;/p&gt;
     </descr>
     <logmsg dest='logndisplay'>
       &lt;p&gt;Notifications have been enabled.&lt;/p&gt;

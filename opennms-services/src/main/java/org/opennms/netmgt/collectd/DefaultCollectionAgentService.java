@@ -38,6 +38,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.support.DefaultResourceDao;
+import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
@@ -52,6 +53,9 @@ import org.slf4j.LoggerFactory;
  * @author ranger
  * @version $Id: $
  */
+// Eventually, we should be constructing these instances in the context and using
+// annotation-based transaction processing.
+//@Transactional(propagation=Propagation.REQUIRED)
 public class DefaultCollectionAgentService implements CollectionAgentService {
     
     private static final Logger LOG = LoggerFactory.getLogger(DefaultCollectionAgentService.class);
@@ -113,7 +117,7 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
      */
     @Override
     public Boolean isStoreByForeignSource() {
-        return Boolean.getBoolean("org.opennms.rrd.storeByForeignSource");
+        return ResourceTypeUtils.isStoreByForeignSource();
     }
     
      /* (non-Javadoc)

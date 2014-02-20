@@ -166,6 +166,42 @@ public class DnsMonitorTest {
     }
     
     @Test
+    public void testTooFewAnswers() throws UnknownHostException {
+        final Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
+
+        final ServiceMonitor monitor = new DnsMonitor();
+        final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, addr("127.0.0.1"), "DNS");
+
+        m.put("port", "9153");
+        m.put("retry", "1");
+        m.put("timeout", "3000");
+        m.put("lookup", "example.empty");
+        m.put("min-answers", "1");
+        
+        final PollStatus status = monitor.poll(svc, m);
+        MockUtil.println("Reason: "+status.getReason());
+        assertEquals(PollStatus.SERVICE_UNAVAILABLE, status.getStatusCode());
+    }
+    
+    @Test
+    public void testTooManyAnswers() throws UnknownHostException {
+        final Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
+
+        final ServiceMonitor monitor = new DnsMonitor();
+        final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, addr("127.0.0.1"), "DNS");
+
+        m.put("port", "9153");
+        m.put("retry", "1");
+        m.put("timeout", "3000");
+        m.put("lookup", "example.com");
+        m.put("max-answers", "0");
+        
+        final PollStatus status = monitor.poll(svc, m);
+        MockUtil.println("Reason: "+status.getReason());
+        assertEquals(PollStatus.SERVICE_UNAVAILABLE, status.getStatusCode());
+    }
+    
+    @Test
     public void testDnsJavaResponse() throws IOException {
         final Lookup l = new Lookup("example.com");
         final SimpleResolver resolver = new SimpleResolver("127.0.0.1");

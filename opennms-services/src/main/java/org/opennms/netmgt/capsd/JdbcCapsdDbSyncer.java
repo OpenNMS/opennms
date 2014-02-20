@@ -47,8 +47,6 @@ import org.opennms.netmgt.config.CapsdConfig;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.PollerConfig;
-import org.opennms.netmgt.model.capsd.DbIfServiceEntry;
-import org.opennms.netmgt.model.capsd.DbIpInterfaceEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;

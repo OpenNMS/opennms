@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.notifd;
 
+import java.io.IOException;
 import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -60,15 +61,24 @@ public class IrcCatNotificationStrategy implements NotificationStrategy {
     /** {@inheritDoc} */
     @Override
     public int send(List<Argument> arguments) {
+        Socket s = null;
         try {
             String message = buildMessage(arguments);
-            Socket s = new Socket(getRemoteAddr(), getRemotePort());
+            s = new Socket(getRemoteAddr(), getRemotePort());
             PrintStream stream = new PrintStream(s.getOutputStream());
             stream.println(message);
             stream.close();
         } catch (Throwable e) {
             LOG.error("send: Error sending IRCcat notification", e);
             return 1;
+        } finally {
+            if (s != null) {
+                try {
+                    s.close();
+                } catch (IOException e) {
+                    LOG.error("send: Error closing IRCcat socket", e);
+                }
+            }
         }
         return 0;
     }

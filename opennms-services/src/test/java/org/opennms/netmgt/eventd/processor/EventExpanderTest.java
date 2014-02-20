@@ -31,8 +31,8 @@ package org.opennms.netmgt.eventd.processor;
 import junit.framework.TestCase;
 
 import org.easymock.EasyMock;
-import org.opennms.netmgt.config.EventConfDao;
-import org.opennms.netmgt.config.EventExpander;
+import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.eventd.EventExpander;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.ThrowableAnticipator;

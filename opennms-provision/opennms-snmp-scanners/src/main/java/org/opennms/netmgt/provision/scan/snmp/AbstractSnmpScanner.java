@@ -32,7 +32,7 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.netmgt.config.SnmpAgentConfigFactory;
+import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.provision.ScanContext;
 import org.opennms.netmgt.provision.Scanner;
 import org.opennms.netmgt.snmp.AggregateTracker;
@@ -79,7 +79,7 @@ public class AbstractSnmpScanner implements Scanner {
     /**
      * <p>setSnmpAgentConfigFactory</p>
      *
-     * @param snmpPeerFactory a {@link org.opennms.netmgt.config.SnmpAgentConfigFactory} object.
+     * @param snmpPeerFactory a {@link org.opennms.netmgt.config.api.SnmpAgentConfigFactory} object.
      */
     public void setSnmpAgentConfigFactory(SnmpAgentConfigFactory snmpPeerFactory) {
         m_snmpAgentConfigFactory = snmpPeerFactory;
