@@ -28,10 +28,12 @@
 
 package org.opennms.netmgt.config;
 
+import java.util.ArrayList;
+
+import org.opennms.core.network.IPAddressRange;
+import org.opennms.core.network.IPAddressRangeSet;
 import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.snmp.Range;
-import org.opennms.netmgt.model.discovery.IPAddressRange;
-import org.opennms.netmgt.model.discovery.IPAddressRangeSet;
 
 /**
  * This is a wrapper class for the Definition class from the config package.  Has the logic for 
@@ -58,11 +60,11 @@ final class MergeableDefinition {
     public MergeableDefinition(Definition def) {
         m_snmpConfigDef = def;
         
-        for (Range r : def.getRangeCollection()) {
+        for (Range r : def.getRanges()) {
             m_configRanges.add(new IPAddressRange(r.getBegin(), r.getEnd()));
         }
         
-        for(String s : def.getSpecificCollection()) {
+        for(String s : def.getSpecifics()) {
             m_configRanges.add(new IPAddressRange(s));
         }
     }
@@ -82,8 +84,8 @@ final class MergeableDefinition {
         
         m_configRanges.addAll(eventDefinition.getAddressRanges());
         
-        getConfigDef().removeAllRange();
-        getConfigDef().removeAllSpecific();
+        getConfigDef().setRanges(new ArrayList<Range>());
+        getConfigDef().setSpecifics(new ArrayList<String>());
         
         for(IPAddressRange range : m_configRanges) {
             if (range.isSingleton()) {
@@ -172,8 +174,8 @@ final class MergeableDefinition {
         
         m_configRanges.removeAll(eventDefinition.getAddressRanges());
 
-        getConfigDef().removeAllRange();
-        getConfigDef().removeAllSpecific();
+        getConfigDef().setRanges(new ArrayList<Range>());
+        getConfigDef().setSpecifics(new ArrayList<String>());
         
         for(IPAddressRange r : m_configRanges) {
             if (r.isSingleton()) {
@@ -193,7 +195,7 @@ final class MergeableDefinition {
      * @return true if the range count and specific count is 0.
      */
     boolean isEmpty() {
-        return getConfigDef().getRangeCount() < 1 && getConfigDef().getSpecificCount() < 1;
+        return getConfigDef().getRanges().size() < 1 && getConfigDef().getSpecifics().size() < 1;
     }
 
 }

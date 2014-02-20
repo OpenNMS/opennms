@@ -42,11 +42,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
+import org.opennms.core.network.IPAddress;
+import org.opennms.core.network.IPAddressRange;
+import org.opennms.core.network.IPAddressRangeSet;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.snmp.Definition;
-import org.opennms.netmgt.model.discovery.IPAddress;
-import org.opennms.netmgt.model.discovery.IPAddressRange;
-import org.opennms.netmgt.model.discovery.IPAddressRangeSet;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 

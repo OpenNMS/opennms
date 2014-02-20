@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.poller.monitors;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.Inet4Address;
@@ -74,8 +73,6 @@ import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.EmptyKeyRelaxedTrustProvider;
 import org.opennms.core.utils.EmptyKeyRelaxedTrustSSLContext;
 import org.opennms.core.utils.HttpResponseRange;
@@ -83,7 +80,6 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.MatchTable;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.TimeoutTracker;
-import org.opennms.core.xml.CastorUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.pagesequence.Page;
 import org.opennms.netmgt.config.pagesequence.PageSequence;
@@ -174,8 +170,8 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
         HttpPageSequence(final PageSequence sequence) {
             m_sequence = sequence;
 
-            m_pages = new ArrayList<HttpPage>(m_sequence.getPageCount());
-            for (Page page : m_sequence.getPage()) {
+            m_pages = new ArrayList<HttpPage>(m_sequence.getPages().size());
+            for (Page page : m_sequence.getPages().toArray(new Page[0])) {
                 m_pages.add(new HttpPage(this, page));
             }
 
@@ -291,7 +287,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
             m_locationPattern = (page.getLocationMatch() == null ? null : Pattern.compile(page.getLocationMatch()));
             m_parentSequence = parent;
 
-            for (Parameter parm : m_page.getParameter()) {
+            for (Parameter parm : m_page.getParameters().toArray(new Parameter[0])) {
                 m_parms.add(new BasicNameValuePair(parm.getKey(), parm.getValue()));
             }
         }
@@ -439,7 +435,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
         }
 
         private void updateSequenceProperties(Properties props, Matcher matcher) {
-            for (SessionVariable varBinding : m_page.getSessionVariableCollection()) {
+            for (SessionVariable varBinding : m_page.getSessionVariables()) {
                 String vbName = varBinding.getName();
                 String vbValue = matcher.group(varBinding.getMatchGroup());
                 if (vbValue == null)
@@ -630,15 +626,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
         }
 
         PageSequence parsePageSequence(String sequenceString) {
-            try {
-                return CastorUtils.unmarshal(PageSequence.class, new ByteArrayInputStream(sequenceString.getBytes("UTF-8")));
-            } catch (MarshalException e) {
-                throw new IllegalArgumentException("Unable to parse page-sequence for HttpMonitor: " + e + "\nConfig: " + sequenceString, e);
-            } catch (ValidationException e) {
-                throw new IllegalArgumentException("Unable to validate page-sequence for HttpMonitor: " + e + "\nConfig: " + sequenceString, e);
-            } catch (UnsupportedEncodingException e) {
-                throw new IllegalArgumentException("UTF-8 encoding not supported", e);
-            }
+            return JaxbUtils.unmarshal(PageSequence.class, sequenceString);
 
         }
 

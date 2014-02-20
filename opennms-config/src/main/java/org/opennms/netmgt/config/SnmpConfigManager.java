@@ -56,7 +56,7 @@ public class SnmpConfigManager {
 	 */
 	public SnmpConfigManager(SnmpConfig config) {
 		m_config = config;
-		for (Definition def : m_config.getDefinitionCollection()) {
+		for (Definition def : m_config.getDefinitions()) {
 			m_definitions.add(new MergeableDefinition(def));
 		}
 	}
