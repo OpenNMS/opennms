@@ -82,11 +82,11 @@
         for (Service s : lastPkg.getServiceCollection()) {
             if (s.getName().equalsIgnoreCase(serviceName)) {
                 for (Parameter p : s.getParameterCollection()) {
-                    if (p.getKey().toLowerCase().equals("password")) {
+                    if (p.getKey().toLowerCase().contains("password")) {
                         continue; // Hide passwords for security reasons
                     }
                     if (p.getValue() == null) {
-                        xmlParams.put(p.getKey(), p.getAnyObject().toString().replaceAll("<","&lt;").replaceAll(">", "&gt;").replaceAll("[\\r\\n]+", "<br/>"));
+                        xmlParams.put(p.getKey(), p.getAnyObject().toString().replaceAll("<","&lt;").replaceAll(">", "&gt;").replaceAll("[\\r\\n]+", "<br/>").replaceAll(" ","&nbsp;").replaceAll("(password|user-info)=\"[^\"]+\"", "$1=\"XXXX\"").replaceAll("key=\"([^\"]*pass(word|wd)[^\"]*)\"(\\s|&nbsp;)+value=\"[^\"]+\"", "key=\"$1\" value=\"XXXX\""));
                     } else {
                         parameters.put(p.getKey(), p.getValue());
                     }
