@@ -36,7 +36,7 @@ import com.vmware.vim25.mo.HostSystem;
 import com.vmware.vim25.mo.VirtualMachine;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;

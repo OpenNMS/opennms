@@ -64,7 +64,7 @@ import javax.net.ssl.X509TrustManager;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 
-import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.collectd.vmware.vijava.VmwarePerformanceValues;
 import org.opennms.netmgt.config.vmware.VmwareServer;
 import org.opennms.netmgt.dao.VmwareConfigDao;

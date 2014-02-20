@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.web.group.WebGroup;
 import org.opennms.web.group.WebGroupRepository;
 import org.springframework.beans.factory.InitializingBean;

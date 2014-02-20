@@ -30,7 +30,7 @@ package org.opennms.sms.monitor;
 
 import java.util.Map;
 
-import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.spring.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.core.utils.ParameterMap;

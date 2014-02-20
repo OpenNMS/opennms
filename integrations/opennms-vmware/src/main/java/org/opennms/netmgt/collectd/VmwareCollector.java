@@ -40,7 +40,7 @@ import java.util.TreeSet;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.collectd.vmware.vijava.VmwareCollectionAttributeType;
 import org.opennms.netmgt.collectd.vmware.vijava.VmwareCollectionResource;

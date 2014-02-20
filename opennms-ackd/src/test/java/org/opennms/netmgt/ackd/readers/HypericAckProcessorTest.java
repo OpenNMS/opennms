@@ -45,10 +45,10 @@ import javax.xml.bind.JAXBException;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.http.annotations.JUnitHttpServer;
-import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.ackd.Ackd;
 import org.opennms.netmgt.config.ackd.AckdConfiguration;
 import org.opennms.netmgt.config.ackd.Parameter;

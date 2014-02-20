@@ -134,7 +134,7 @@ public class AssetServiceImplTest implements InitializingBean {
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-	    org.opennms.core.utils.BeanUtils.assertAutowiring(this);
+	    org.opennms.core.spring.BeanUtils.assertAutowiring(this);
 	}
 
 	@Before

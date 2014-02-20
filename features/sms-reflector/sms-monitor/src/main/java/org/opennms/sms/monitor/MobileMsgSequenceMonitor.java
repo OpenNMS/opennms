@@ -31,8 +31,8 @@ package org.opennms.sms.monitor;
 
 import java.util.Map;
 
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
-import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;

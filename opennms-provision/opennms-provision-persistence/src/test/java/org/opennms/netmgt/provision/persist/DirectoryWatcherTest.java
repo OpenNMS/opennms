@@ -14,7 +14,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.core.utils.FileReloadCallback;
+import org.opennms.core.spring.FileReloadCallback;
 import org.springframework.core.io.Resource;
 
 public class DirectoryWatcherTest {
