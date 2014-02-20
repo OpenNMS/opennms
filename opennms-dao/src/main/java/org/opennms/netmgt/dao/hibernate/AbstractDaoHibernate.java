@@ -373,7 +373,6 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> implements
 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
-    @Override
     public List<T> findMatching(final OnmsCriteria onmsCrit) throws DataAccessException {
         onmsCrit.resultsOfType(m_entityClass); //FIXME: why is this here?
         final Criteria attachedCrit = onmsCrit.getDetachedCriteria().getExecutableCriteria(sessionFactory.getCurrentSession());
@@ -383,7 +382,6 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> implements
     }
 
     /** {@inheritDoc} */
-    @Override
     public long countMatching(final OnmsCriteria onmsCrit) throws DataAccessException {
         final Criteria attachedCrit = onmsCrit.getDetachedCriteria().getExecutableCriteria(sessionFactory.getCurrentSession()).setProjection(Projections.rowCount());
         Long retval = (Long)attachedCrit.uniqueResult();

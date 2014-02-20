@@ -29,6 +29,7 @@
 package org.opennms.web.element;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -46,8 +47,11 @@ import org.hibernate.FetchMode;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.opennms.core.criteria.Alias;
+import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.EqRestriction;
+import org.opennms.core.criteria.restrictions.NeRestriction;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.core.utils.InetAddressUtils;
@@ -1143,10 +1147,12 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         //String sqlQuery = "SELECT * from vlan WHERE status != 'D' AND nodeid = ? order by vlanid;";
         //m_jdbcTemplate.query(sqlQuery, new VlanRowMapper(), nodeID);
         
-        final OnmsCriteria criteria = new OnmsCriteria(OnmsVlan.class);
-        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
-        criteria.add(Restrictions.eq("node.id", nodeID));
-        criteria.add(Restrictions.ne("status", StatusType.DELETED));
+        final org.opennms.core.criteria.Criteria criteria = new org.opennms.core.criteria.Criteria(OnmsVlan.class)
+            .setAliases(Arrays.asList(new Alias[] {
+                new Alias("node", "node", JoinType.LEFT_JOIN)
+            }))
+            .addRestriction(new EqRestriction("node.id", nodeID))
+            .addRestriction(new NeRestriction("status", StatusType.DELETED));
 
         List<Vlan> vlans = getVlans(m_vlanDao.findMatching(criteria));
         return vlans.toArray(new Vlan[vlans.size()]);

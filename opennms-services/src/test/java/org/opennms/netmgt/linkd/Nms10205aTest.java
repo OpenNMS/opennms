@@ -57,15 +57,14 @@ import org.opennms.netmgt.dao.hibernate.Hibernate4SessionDataSource;
 import org.opennms.netmgt.dao.support.NewTransactionTemplate;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.JdbcFilterDao;
-import org.opennms.netmgt.linkd.nb.Nms10205aNetworkBuilder;
 import org.opennms.netmgt.model.DataLinkInterface;
+import org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -79,7 +78,6 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-linkd.xml",
-        "classpath:/META-INF/opennms/applicationContext-linkdTest.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
@@ -133,9 +131,6 @@ public class Nms10205aTest extends Nms10205aNetworkBuilder implements Initializi
         jdbcFilterDao.setDatabaseSchemaConfigFactory(DatabaseSchemaConfigFactory.getInstance());
         jdbcFilterDao.afterPropertiesSet();
         FilterDaoFactory.setInstance(jdbcFilterDao);
-
-        super.setNodeDao(m_nodeDao);
-        super.setSnmpInterfaceDao(m_snmpInterfaceDao);
     }
 
     @Before
@@ -245,7 +240,7 @@ public class Nms10205aTest extends Nms10205aNetworkBuilder implements Initializi
 
         final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
         
-        assertEquals(10, links.size());
+        assertEquals(19, links.size());
         
         
         // Linkd is able to find partially the topology using the next hop router
@@ -268,32 +263,71 @@ public class Nms10205aTest extends Nms10205aNetworkBuilder implements Initializi
         
         int start = getStartPoint(links);
         for (final DataLinkInterface datalinkinterface: links) {
-            //printLink(datalinkinterface);
+            
             
             int id = datalinkinterface.getId().intValue();
+            // mumbai delhi
             if (start == id ) {
                 checkLink(mumbai, delhi, 519, 28503, datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+            } else if (start+11 == id ) {
+                checkLink(delhi, mumbai, 28503, 519, datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
             } else if (start+1 == id ) {
                 checkLink(mumbai, bangalore, 507, 2401, datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+            } else if (start+12 == id ) {
+                checkLink(bangalore, mumbai, 2401, 507, datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
             } else if (start+2 == id ) {
                 checkLink(mumbai, bagmane, 977, 534, datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+            } else if (start+13 == id ) {
+                checkLink(bagmane, mumbai, 534, 977, datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
             } else if (start+3 == id ) {
                 checkLink(mumbai, mysore, 978, 508, datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+            } else if (start+14 == id ) {
+                checkLink(mysore, mumbai, 508, 978, datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
             } else if (start+4 == id ) {
                 checkLink(mumbai, chennai, 520, 528, datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+            } else if (start+10 == id ) {
+                checkLink(chennai, mumbai, 528, 520, datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
             } else if (start+5 == id ) {
                 checkLink(chennai, mysore, 517, 505, datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+            } else if (start+15 == id ) {
+                checkLink(mysore, chennai, 505, 517, datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
             } else if (start+6 == id ) {
                checkLink(delhi, bangalore, 3674, 2397, datalinkinterface);
+               assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+            } else if (start+16 == id ) {
+                checkLink(bangalore, delhi, 2397, 3674, datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
             } else if (start+7 == id ) {
                 checkLink(bangalore, bagmane, 2396, 1732, datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+            } else if (start+17 == id ) {
+                checkLink(bagmane, bangalore, 1732, 2396, datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
             } else if (start+8 == id ) {
                 checkLink(bagmane, mysore, 654, 520, datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+            } else if (start+18 == id ) {
+                checkLink(mysore, bagmane, 520, 654, datalinkinterface);
+                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
             } else if (start+9 == id ) {
                 checkLink(spaceexsw2, mumbai, 34, 508, datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
             } else {
                 checkLink(mumbai,mumbai,-1,-1,datalinkinterface);
             }
+
         }
     }
     
@@ -394,6 +428,7 @@ public class Nms10205aTest extends Nms10205aNetworkBuilder implements Initializi
         int start = getStartPoint(links);
         for (final DataLinkInterface datalinkinterface: links) {
             int id = datalinkinterface.getId().intValue();
+            assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
             if (start == id ) {
                 checkLink(chennai, mumbai, 528, 520, datalinkinterface);
             } else if (start+1 == id ) {

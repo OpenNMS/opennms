@@ -33,8 +33,6 @@
 		<constructor-arg value="false"/>
 	</bean>
 
-	<bean name="collectorConfigDao" class="org.opennms.netmgt.collectd.CollectorConfigDaoImpl" depends-on="collectdConfig"/>
-
 	<!-- Initialize the PollOutagesConfigFactory -->
 	<bean id="init-pollOutagesConfig-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
 		<property name="staticMethod"><value>org.opennms.netmgt.config.PollOutagesConfigFactory.init</value></property>

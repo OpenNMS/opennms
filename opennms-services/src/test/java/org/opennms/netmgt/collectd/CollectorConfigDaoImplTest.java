@@ -46,7 +46,6 @@ import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.DefaultDataCollectionConfigDao;
 import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.dao.api.CollectorConfigDao;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.test.mock.MockUtil;
@@ -86,7 +85,7 @@ public class CollectorConfigDaoImplTest extends TestCase {
         initialize();
     }
 
-    private CollectorConfigDao initialize() throws IOException, MarshalException, ValidationException, Exception {
+    private void initialize() throws IOException, MarshalException, ValidationException, Exception {
         System.setProperty("opennms.home", ConfigurationTestUtils.getDaemonEtcDirectory().getParentFile().getAbsolutePath());
         RrdUtils.setStrategy(new JRobinRrdStrategy());
 
@@ -112,9 +111,10 @@ public class CollectorConfigDaoImplTest extends TestCase {
         stream.close();
 
         stream = getInputStreamForFile("/org/opennms/netmgt/config/collectd-testdata.xml");
-        CollectdConfigFactory.setInstance(new CollectdConfigFactory(stream, "localhost", false));
-        stream.close();
-
-        return new CollectorConfigDaoImpl();
+        try {
+            new CollectdConfigFactory(stream, "localhost", false);
+        } finally {
+            stream.close();
+        }
     }
 }

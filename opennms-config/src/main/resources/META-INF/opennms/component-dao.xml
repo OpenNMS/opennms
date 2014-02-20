@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd		
+	">
+
+	<bean name="ackd-configuration.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">
+		<constructor-arg value="org.opennms.netmgt.config.ackd.AckdConfiguration" />
+		<constructor-arg value="file:${opennms.home}/etc/ackd-configuration.xml" />
+	</bean>
+
+	<bean name="actiond-configuration.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">
+		<constructor-arg value="org.opennms.netmgt.config.actiond.ActiondConfiguration" />
+		<constructor-arg value="file:${opennms.home}/etc/actiond-configuration.xml" />
+	</bean>
+
+	<bean name="ami-config.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">
+		<constructor-arg value="org.opennms.netmgt.config.ami.AmiConfig" />
+		<constructor-arg value="file:${opennms.home}/etc/ami-config.xml" />
+	</bean>
+
+	<bean name="collectd-configuration.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">
+		<constructor-arg value="org.opennms.netmgt.config.collectd.CollectdConfiguration" />
+		<constructor-arg value="file:${opennms.home}/etc/collectd-configuration.xml" />
+	</bean>
+
+	<bean name="datacollection-config.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">
+		<constructor-arg value="org.opennms.netmgt.config.datacollection.DatacollectionConfig" />
+		<constructor-arg value="file:${opennms.home}/etc/datacollection-config.xml" />
+	</bean>
+
+	<bean name="eventconf.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">
+		<constructor-arg value="org.opennms.netmgt.xml.eventconf.Events" />
+		<constructor-arg value="file:${opennms.home}/etc/eventconf.xml" />
+	</bean>
+
+	<bean name="monitoring-locations.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">
+		<constructor-arg value="org.opennms.netmgt.config.monitoringLocations.MonitoringLocationsConfiguration" />
+		<constructor-arg value="file:${opennms.home}/etc/monitoring-locations.xml" />
+	</bean>
+
+	<bean name="poller-configuration.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">
+		<constructor-arg value="org.opennms.netmgt.config.poller.PollerConfiguration" />
+		<constructor-arg value="file:${opennms.home}/etc/poller-configuration.xml" />
+	</bean>
+
+	<bean name="poll-outages.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">
+		<constructor-arg value="org.opennms.netmgt.config.poller.outages.Outages" />
+		<constructor-arg value="file:${opennms.home}/etc/poll-outages.xml" />
+	</bean>
+
+	<bean name="opennms-server.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">
+		<constructor-arg value="org.opennms.netmgt.config.server.LocalServer" />
+		<constructor-arg value="file:${opennms.home}/etc/opennms-server.xml" />
+	</bean>
+
+	<bean name="service-configuration.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">
+		<constructor-arg value="org.opennms.netmgt.config.service.ServiceConfiguration" />
+		<constructor-arg value="file:${opennms.home}/etc/service-configuration.xml" />
+	</bean>
+
+	<bean name="snmp-config.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">
+		<constructor-arg value="org.opennms.netmgt.config.snmp.SnmpConfig" />
+		<constructor-arg value="file:${opennms.home}/etc/snmp-config.xml" />
+	</bean>
+
+	<bean name="vacuumd-configuration.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">
+		<constructor-arg value="org.opennms.netmgt.config.vacuumd.VacuumdConfiguration" />
+		<constructor-arg value="file:${opennms.home}/etc/vacuumd-configuration.xml" />
+	</bean>
+
+</beans>
+

@@ -39,7 +39,6 @@ import java.util.Vector;
 import javax.servlet.ServletContext;
 
 import org.opennms.core.db.DataSourceFactory;
-import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.event.filter.IfIndexFilter;

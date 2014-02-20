@@ -478,6 +478,7 @@ abstract public class PollerConfigManager implements PollerConfig {
                 filterRules.append(")");
             }
             LOG.debug("createPackageIpMap: package is {}. filter rules are {}", pkg.getName(), filterRules);
+            FilterDaoFactory.getInstance().flushActiveIpAddressListCache();
             return FilterDaoFactory.getInstance().getActiveIPAddressList(filterRules.toString());
         } finally {
             getReadLock().unlock();
@@ -532,11 +533,11 @@ abstract public class PollerConfigManager implements PollerConfig {
  
         // if there are NO include ranges then treat act as if the user include
         // the range of all valid addresses (0.0.0.0 - 255.255.255.255, ::1 - ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff)
-        has_range_include = pkg.getIncludeRangeCount() == 0 && pkg.getSpecificCount() == 0;
+        has_range_include = pkg.getIncludeRanges().size() == 0 && pkg.getSpecifics().size() == 0;
         
         final byte[] addr = toIpAddrBytes(iface);
 
-        for (final IncludeRange rng : pkg.getIncludeRangeCollection()) {
+        for (final IncludeRange rng : pkg.getIncludeRanges()) {
             int comparison = new ByteArrayComparator().compare(addr, toIpAddrBytes(rng.getBegin()));
             if (comparison > 0) {
                 int endComparison = new ByteArrayComparator().compare(addr, toIpAddrBytes(rng.getEnd()));
@@ -550,14 +551,14 @@ abstract public class PollerConfigManager implements PollerConfig {
             }
         }
 
-        for (final String spec : pkg.getSpecificCollection()) {
+        for (final String spec : pkg.getSpecifics()) {
             if (new ByteArrayComparator().compare(addr, toIpAddrBytes(spec)) == 0) {
                 has_specific = true;
                 break;
             }
         }
     
-        for (final String includeUrl : pkg.getIncludeUrlCollection()) {
+        for (final String includeUrl : pkg.getIncludeUrls()) {
             if (interfaceInUrl(iface, includeUrl)) {
                 has_specific = true;
                 break;
@@ -565,7 +566,7 @@ abstract public class PollerConfigManager implements PollerConfig {
         }
 
         if (!has_specific) {
-            for (final ExcludeRange rng : pkg.getExcludeRangeCollection()) {
+            for (final ExcludeRange rng : pkg.getExcludeRanges()) {
                 int comparison = new ByteArrayComparator().compare(addr, toIpAddrBytes(rng.getBegin()));
                 if (comparison > 0) {
                     int endComparison = new ByteArrayComparator().compare(addr, toIpAddrBytes(rng.getEnd()));
@@ -850,7 +851,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     public List<String> getRRAList(final Package pkg) {
         try {
             getReadLock().lock();
-            return pkg.getRrd().getRraCollection();
+            return pkg.getRrd().getRras();
         } finally {
             getReadLock().unlock();
         }
@@ -865,7 +866,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     public Enumeration<Package> enumeratePackage() {
         try {
             getReadLock().lock();
-            return getConfiguration().enumeratePackage();
+            return Collections.enumeration(getConfiguration().getPackages());
         } finally {
             getReadLock().unlock();
         }
@@ -880,7 +881,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     private Iterable<Service> services(final Package pkg) {
         try {
             getReadLock().lock();
-            return pkg.getServiceCollection();
+            return pkg.getServices();
         } finally {
             getReadLock().unlock();
         }
@@ -895,7 +896,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     private Iterable<String> includeURLs(final Package pkg) {
         try {
             getReadLock().lock();
-            return pkg.getIncludeUrlCollection();
+            return pkg.getIncludeUrls();
         } finally {
             getReadLock().unlock();
         }
@@ -911,7 +912,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     public Iterable<Parameter> parameters(final Service svc) {
         try {
             getReadLock().lock();
-            return svc.getParameterCollection();
+            return svc.getParameters();
         } finally {
             getReadLock().unlock();
         }
@@ -925,7 +926,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     private Iterable<Package> packages() {
         try {
             getReadLock().lock();
-            return getConfiguration().getPackageCollection();
+            return getConfiguration().getPackages();
         } finally {
             getReadLock().unlock();
         }
@@ -939,7 +940,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     private Iterable<Monitor> monitors() {
         try {
             getReadLock().lock();
-            return getConfiguration().getMonitorCollection();
+            return getConfiguration().getMonitors();
         } finally {
             getReadLock().unlock();
         }

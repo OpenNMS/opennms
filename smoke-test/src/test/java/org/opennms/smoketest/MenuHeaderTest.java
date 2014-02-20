@@ -30,13 +30,16 @@ package org.opennms.smoketest;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MenuHeaderTest extends OpenNMSSeleniumTestCase {
+    private static final Logger LOG = LoggerFactory.getLogger(MenuHeaderTest.class);
+
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        selenium.open("/opennms/");
-        waitForPageToLoad();
+        frontPage();
     }
 
     @Test
@@ -69,7 +72,10 @@ public class MenuHeaderTest extends OpenNMSSeleniumTestCase {
 
             clickAndWait("//div[@id='content']//a[@href='dashboard.jsp']");
             waitForText("Surveillance View:", LOAD_TIMEOUT);
-            goBack();
+
+            frontPage();
+            clickAndWait("//a[@href='dashboards.htm']");
+            waitForText("OpenNMS Dashboards");
 
             clickAndWait("//div[@id='content']//a[@href='vaadin-wallboard']");
             waitForElement("//span[@class='v-button-caption' and text() = 'Wallboard']");
@@ -124,32 +130,45 @@ public class MenuHeaderTest extends OpenNMSSeleniumTestCase {
         assertTrue(selenium.isTextPresent("Distributed Status Summary") || selenium.isTextPresent("No applications have been defined for this system"));
     }
 
-    @Test
-    public void testMapLinks() throws InterruptedException {
+    private void goToMapsPage() throws Exception {
+        LOG.debug("goToMapsPage()");
+        frontPage();
         clickAndVerifyText("//a[@href='maps.htm']", "OpenNMS Maps");
-        clickAndVerifyText("//div[@id='content']//a[contains(text(), 'Distributed')]", "clear selected tags");
-        goBack();
+    }
 
+    @Test
+    public void testDistributedMapLink() throws Exception {
+        goToMapsPage();
+        clickAndWait("//div[@id='content']//a[contains(text(), 'Distributed')]");
+        Thread.sleep(1000);
+        waitForHtmlSource("RemotePollerMap");
+        waitForText("Last update:");
+    }
+    
+    @Test
+    public void testTopologyMapLink() throws Exception {
         // the vaadin apps are finicky
+        goToMapsPage();
         clickAndWait("//div[@id='content']//a[contains(text(), 'Topology')]");
         waitForHtmlSource("vaadin", 20000, true);
         waitForHtmlSource("opennmstopology", 20000, true);
         // Make sure that the alarm browser has loaded
         waitForText("Select All", 20000, true);
         handleVaadinErrorButtons();
-        goBack();
-        goBack();
-
-        clickAndVerifyText("//a[@href='maps.htm']", "OpenNMS Maps");
+    }
+    
+    @Test
+    public void testGeographicalMapLink() throws Exception {
+        goToMapsPage();
         clickAndWait("//div[@id='content']//a[contains(text(), 'Geographical')]");
         waitForHtmlSource("vaadin", 20000, true);
         waitForHtmlSource("opennmsnodemaps", 20000, true);
         handleVaadinErrorButtons();
-
-        // It looks like it takes a second or two to load the header so wait
-        // for the link to appear
-        waitForElement("//a[@href='maps.htm']", 20000);
-        clickAndVerifyText("//a[@href='maps.htm']", "OpenNMS Maps");
+    }
+    
+    @Test
+    public void testSvgMapLink() throws Exception {
+        goToMapsPage();
         clickAndWait("//div[@id='content']//a[contains(text(), 'SVG')]");
         waitForText("/ Network Topology Maps", LOAD_TIMEOUT);
     }

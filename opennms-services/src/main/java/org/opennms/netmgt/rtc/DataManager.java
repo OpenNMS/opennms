@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.rtc;
 
-import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;

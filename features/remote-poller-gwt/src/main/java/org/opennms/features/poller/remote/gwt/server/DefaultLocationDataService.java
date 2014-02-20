@@ -44,7 +44,8 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.CountDownLatch;
 
-import org.hibernate.criterion.Restrictions;
+import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.features.poller.remote.gwt.client.AppStatusDetailsComputer;
 import org.opennms.features.poller.remote.gwt.client.ApplicationDetails;
@@ -67,7 +68,6 @@ import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.model.OnmsApplication;
-import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
@@ -329,7 +329,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
     public LocationInfo getLocationInfoForMonitor(Integer monitorId) {
         waitForGeocoding("getLocationInfoForMonitor");
 
-        final OnmsCriteria criteria = new OnmsCriteria(OnmsLocationMonitor.class).add(Restrictions.eq("id", monitorId));
+        final Criteria criteria = new Criteria(OnmsLocationMonitor.class).addRestriction(new EqRestriction("id", monitorId));
         final List<OnmsLocationMonitor> monitors = m_locationDao.findMatching(criteria);
         if (monitors == null) {
             LOG.warn("unable to get location monitor list for monitor ID '{}'", monitorId);

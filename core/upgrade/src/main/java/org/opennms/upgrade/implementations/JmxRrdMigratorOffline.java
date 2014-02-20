@@ -123,11 +123,6 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
         printMainSettings();
         if (isInstalledVersionGreaterOrEqual(1, 12, 2)) {
             try {
-                CollectdConfigFactory.init();
-            } catch (Exception e) {
-                throw new OnmsUpgradeException("Can't initialize collectd-configuration.xml because " + e.getMessage());
-            }
-            try {
                 JMXDataCollectionConfigFactory.init();
             } catch (Exception e) {
                 throw new OnmsUpgradeException("Can't initialize jmx-datacollection-config.xml because " + e.getMessage());
@@ -361,7 +356,7 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
             jmxResourceDirectories = new ArrayList<File>();
             CollectdConfiguration config;
             try {
-                config = CollectdConfigFactory.getInstance().getCollectdConfig().getConfig();
+                config = new CollectdConfigFactory().getCollectdConfig();
             } catch (Exception e) {
                 throw new OnmsUpgradeException("Can't upgrade the JRBs because " + e.getMessage(), e);
             }
@@ -573,7 +568,7 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
      */
     private List<String> getJmxServices(CollectdConfiguration config) {
         List<String> services = new ArrayList<String>();
-        for (Collector c : config.getCollectorCollection()) {
+        for (Collector c : config.getCollectors()) {
             // The following code has been made that way to avoid a dependency with opennms-services
             // TODO Depends on opennms-services is not that bad, considering that some customers could have different implementations.
             if (c.getClassName().matches(".*(JBoss|JMXSecure|Jsr160|MX4J)Collector$")) {
@@ -591,8 +586,8 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
      * @return the service object
      */
     private Service getServiceObject(CollectdConfiguration config, String service) {
-        for (Package pkg : config.getPackageCollection()) {
-            for (Service svc : pkg.getServiceCollection()) {
+        for (Package pkg : config.getPackages()) {
+            for (Service svc : pkg.getServices()) {
                 if (svc.getName().equals(service)) {
                     return svc;
                 }
@@ -609,7 +604,7 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
      * @return the service property value
      */
     private String getSvcPropertyValue(Service svc, String propertyName) {
-        for (org.opennms.netmgt.config.collectd.Parameter p : svc.getParameterCollection()) {
+        for (org.opennms.netmgt.config.collectd.Parameter p : svc.getParameters()) {
             if (p.getKey().equals(propertyName)) {
                 return p.getValue();
             }

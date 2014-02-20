@@ -47,6 +47,7 @@ import org.opennms.web.alarm.filter.AcknowledgedByFilter;
 import org.opennms.web.alarm.filter.AfterFirstEventTimeFilter;
 import org.opennms.web.alarm.filter.AfterLastEventTimeFilter;
 import org.opennms.web.alarm.filter.AlarmCriteria;
+import org.opennms.web.alarm.filter.AlarmCriteria.AlarmCriteriaVisitor;
 import org.opennms.web.alarm.filter.BeforeFirstEventTimeFilter;
 import org.opennms.web.alarm.filter.BeforeLastEventTimeFilter;
 import org.opennms.web.alarm.filter.EventParmLikeFilter;
@@ -68,7 +69,6 @@ import org.opennms.web.alarm.filter.NodeNameLikeFilter;
 import org.opennms.web.alarm.filter.PartialUEIFilter;
 import org.opennms.web.alarm.filter.ServiceFilter;
 import org.opennms.web.alarm.filter.SeverityFilter;
-import org.opennms.web.alarm.filter.AlarmCriteria.AlarmCriteriaVisitor;
 import org.opennms.web.filter.Filter;
 
 /**

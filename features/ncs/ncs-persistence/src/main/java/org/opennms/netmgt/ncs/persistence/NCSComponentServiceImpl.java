@@ -38,6 +38,8 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
 import org.hibernate.criterion.Restrictions;
+import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.restrictions.LikeRestriction;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.support.UpsertTemplate;
@@ -309,9 +311,9 @@ public class NCSComponentServiceImpl implements NCSComponentService {
 	}
 
 	private void deleteAlarms(final String foreignSource, final String foreignId) {
-		final OnmsCriteria alarmCriteria = new OnmsCriteria(OnmsAlarm.class)
-        .add(Restrictions.like("eventParms", "%componentForeignSource=" + foreignSource +"%"))
-        .add(Restrictions.like("eventParms", "%componentForeignId=" + foreignId +"%"));
+		final Criteria alarmCriteria = new Criteria(OnmsAlarm.class)
+            .addRestriction(new LikeRestriction("eventParms", "%componentForeignSource=" + foreignSource +"%"))
+            .addRestriction(new LikeRestriction("eventParms", "%componentForeignId=" + foreignId +"%"));
 
         for(final OnmsAlarm alarm : m_alarmDao.findMatching(alarmCriteria)) {
             m_alarmDao.delete(alarm);
@@ -319,9 +321,9 @@ public class NCSComponentServiceImpl implements NCSComponentService {
 	}
 
 	private void deleteEvents(final String foreignSource, final String foreignId) {
-		final OnmsCriteria eventCriteria = new OnmsCriteria(OnmsEvent.class)
-        .add(Restrictions.like("eventParms", "%componentForeignSource=" + foreignSource +"%"))
-        .add(Restrictions.like("eventParms", "%componentForeignId=" + foreignId +"%"));
+		final Criteria eventCriteria = new Criteria(OnmsEvent.class)
+            .addRestriction(new LikeRestriction("eventParms", "%componentForeignSource=" + foreignSource +"%"))
+            .addRestriction(new LikeRestriction("eventParms", "%componentForeignId=" + foreignId +"%"));
 
         for(final OnmsEvent event : m_eventDao.findMatching(eventCriteria)) {
             m_eventDao.delete(event);

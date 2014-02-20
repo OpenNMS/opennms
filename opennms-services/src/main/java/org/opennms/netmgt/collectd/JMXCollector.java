@@ -66,6 +66,7 @@ import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.config.collector.CollectionSetVisitor;
 import org.opennms.netmgt.config.collector.Persister;
 import org.opennms.netmgt.config.collector.ServiceParameters;
+import org.opennms.netmgt.config.collector.ServiceParameters.ParameterName;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
@@ -240,7 +241,7 @@ public abstract class JMXCollector implements ServiceCollector {
         int nodeID = agent.getNodeId();
 
         // Retrieve the name of the JMX data collector
-        String collectionName = ParameterMap.getKeyedString(parameters, "collection", serviceName);
+        String collectionName = ParameterMap.getKeyedString(parameters, ParameterName.COLLECTION.toString(), serviceName);
 
         final String hostAddress = InetAddressUtils.str(ipAddr);
         LOG.debug("initialize: InetAddress={}, collectionName={}", hostAddress, collectionName);
@@ -299,9 +300,9 @@ public abstract class JMXCollector implements ServiceCollector {
         Map<String, BeanInfo> mbeans = nodeInfo.getMBeans();
         String collDir = serviceName;
 
-        boolean useMbeanForRrds = ParameterMap.getKeyedBoolean(map, "use-mbean-name-for-rrds", false);
-        String port = ParameterMap.getKeyedString(map, "port", null);
-        String friendlyName = ParameterMap.getKeyedString(map,"friendly-name", port);
+        boolean useMbeanForRrds = ParameterMap.getKeyedBoolean(map, ParameterName.USE_MBEAN_NAME_FOR_RRDS.toString(), false);
+        String port = ParameterMap.getKeyedString(map, ParameterName.PORT.toString(), null);
+        String friendlyName = ParameterMap.getKeyedString(map, ParameterName.FRIENDLY_NAME.toString(), port);
         if (useFriendlyName) {
             collDir = friendlyName;
         }
@@ -323,7 +324,7 @@ public abstract class JMXCollector implements ServiceCollector {
 
             MBeanServerConnection mbeanServer = connection.getMBeanServer();
 
-            int retry = ParameterMap.getKeyedInteger(map, "retry", 3);
+            int retry = ParameterMap.getKeyedInteger(map, ParameterName.RETRY.toString(), 3);
             for (int attempts = 0; attempts <= retry; attempts++) {
                 try {
                     /*

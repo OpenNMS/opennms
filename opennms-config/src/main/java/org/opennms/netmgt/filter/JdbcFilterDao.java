@@ -51,11 +51,13 @@ import javax.sql.DataSource;
 
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressComparator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.filter.Table;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.util.Assert;
 
 /**
@@ -236,9 +238,14 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
         return ipServices;
     }
 
+    @Override
+    @CacheEvict(value="activeIpAddressList", allEntries=true)
+    public void flushActiveIpAddressListCache() {}
+
     /**
      * {@inheritDoc}
      */
+    @Cacheable("activeIpAddressList")
     @Override
     public List<InetAddress> getActiveIPAddressList(final String rule) throws FilterParseException {
     	return getIPAddressList(rule, true);

@@ -38,6 +38,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.support.DefaultResourceDao;
+import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.poller.InetNetworkInterface;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -119,7 +120,7 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Coll
      */
     @Override
     public Boolean isStoreByForeignSource() {
-        return Boolean.getBoolean("org.opennms.rrd.storeByForeignSource");
+        return ResourceTypeUtils.isStoreByForeignSource();
     }
     
     /* (non-Javadoc)

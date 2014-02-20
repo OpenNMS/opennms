@@ -148,6 +148,8 @@ public class NewSuspectScanTest extends ProvisioningTestCase implements Initiali
 
     @Before
     public void setUp() throws Exception {
+        m_eventSubscriber.getEventAnticipator().reset();
+
         if (m_distPollerDao.findAll().size() == 0) {
             m_distPollerDao.save(new OnmsDistPoller("localhost", "127.0.0.1"));
         }
@@ -196,13 +198,14 @@ public class NewSuspectScanTest extends ProvisioningTestCase implements Initiali
         anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).setInterface(InetAddressUtils.addr("172.20.2.204")).getEvent());
         anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).setInterface(InetAddressUtils.addr("172.20.2.201")).setService("SNMP").getEvent());
         anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).setInterface(InetAddressUtils.addr("172.20.2.204")).setService("SNMP").getEvent());
+        anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_LABEL_CHANGED_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
         anticipator.anticipateEvent(new EventBuilder(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).setInterface(InetAddressUtils.addr("172.20.2.201")).getEvent());
         anticipator.anticipateEvent(new EventBuilder(EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
 
         final NewSuspectScan scan = m_provisioner.createNewSuspectScan(InetAddressUtils.addr("172.20.2.201"), null);
         runScan(scan);
 
-        anticipator.verifyAnticipated(200000, 0, 0, 0, 0);
+        anticipator.verifyAnticipated(20000, 0, 0, 0, 0);
 
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
@@ -254,13 +257,14 @@ public class NewSuspectScanTest extends ProvisioningTestCase implements Initiali
         anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).setInterface(InetAddressUtils.addr("172.20.2.201")).setService("SNMP").getEvent());
         anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).setInterface(InetAddressUtils.addr("172.20.2.204")).setService("SNMP").getEvent());
         anticipator.anticipateEvent(new EventBuilder(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).setInterface(InetAddressUtils.addr("172.20.2.201")).getEvent());
+        anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_LABEL_CHANGED_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
         anticipator.anticipateEvent(new EventBuilder(EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
 
         String foreignSource = "Testie";
-		final NewSuspectScan scan = m_provisioner.createNewSuspectScan(InetAddressUtils.addr("172.20.2.201"), foreignSource);
+        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(InetAddressUtils.addr("172.20.2.201"), foreignSource);
         runScan(scan);
 
-        anticipator.verifyAnticipated(200000, 0, 0, 0, 0);
+        anticipator.verifyAnticipated(20000, 0, 0, 0, 0);
 
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
@@ -268,7 +272,7 @@ public class NewSuspectScanTest extends ProvisioningTestCase implements Initiali
         //Verify node count
         assertEquals(1, getNodeDao().countAll());
         
-        List<OnmsNode> onmsNodes = getNodeDao().findByLabel("172.20.2.201");
+        List<OnmsNode> onmsNodes = getNodeDao().findByLabel("brozow.local");
         OnmsNode onmsNode = onmsNodes.get(0);
         assertEquals("Testie", onmsNode.getForeignSource());
 
@@ -310,7 +314,7 @@ public class NewSuspectScanTest extends ProvisioningTestCase implements Initiali
         final NewSuspectScan scan = m_provisioner.createNewSuspectScan(InetAddressUtils.addr("172.20.2.201"), null);
         runScan(scan);
 
-        anticipator.verifyAnticipated(200000, 0, 0, 0, 0);
+        anticipator.verifyAnticipated(20000, 0, 0, 0, 0);
 
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
@@ -353,12 +357,13 @@ public class NewSuspectScanTest extends ProvisioningTestCase implements Initiali
         anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).setInterface(ip).getEvent());
         anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).setInterface(ip).setService("SNMP").getEvent());
         anticipator.anticipateEvent(new EventBuilder(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).setInterface(ip).getEvent());
+        anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_LABEL_CHANGED_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
         anticipator.anticipateEvent(new EventBuilder(EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
 
         final NewSuspectScan scan = m_provisioner.createNewSuspectScan(ip, null);
         runScan(scan);
 
-        anticipator.verifyAnticipated(200000, 0, 2000, 0, 0);
+        anticipator.verifyAnticipated(20000, 0, 2000, 0, 0);
 
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());

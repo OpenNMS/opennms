@@ -57,9 +57,15 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 
 public class SecurityAuthenticationEventOnmsEventBuilderTest extends TestCase {
-    private EasyMockUtils m_mocks = new EasyMockUtils();
-    private EventProxy m_eventProxy = m_mocks.createMock(EventProxy.class);
-    
+    private EasyMockUtils m_mocks;
+    private EventProxy m_eventProxy;
+
+    @Override
+    public void setUp() {
+        m_mocks = new EasyMockUtils();
+        m_eventProxy = m_mocks.createMock(EventProxy.class);
+    }
+
     public void testAuthenticationSuccessEventWithEverything() throws Exception {
         String userName = "bar";
         String ip = "1.2.3.4";

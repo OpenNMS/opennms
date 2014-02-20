@@ -28,15 +28,15 @@
 
 package org.opennms.netmgt.provision.adapters.link;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-
-
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 
-import org.hibernate.criterion.Restrictions;
+import org.opennms.core.criteria.Alias;
+import org.opennms.core.criteria.Alias.JoinType;
+import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.restrictions.AnyRestriction;
+import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
@@ -44,15 +44,16 @@ import org.opennms.netmgt.dao.api.LinkStateDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.DataLinkInterface;
-import org.opennms.netmgt.model.OnmsCriteria;
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsLinkState;
-import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsLinkState.LinkState;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.provision.adapters.link.endpoint.dao.EndPointConfigurationDao;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -113,10 +114,12 @@ public class DefaultNodeLinkService implements NodeLinkService, InitializingBean
         final OnmsNode node = m_nodeDao.get(nodeId);
         Assert.notNull(node, "node with id: " + nodeId + " does not exist");
         
-        final OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
-        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
-        criteria.add(Restrictions.eq("node.id", nodeId));
-        criteria.add(Restrictions.eq("nodeParentId", nodeParentId));
+        final Criteria criteria = new Criteria(DataLinkInterface.class);
+        criteria.setAliases(Arrays.asList(new Alias[] {
+            new Alias("node", "node", JoinType.LEFT_JOIN)
+        }));
+        criteria.addRestriction(new EqRestriction("node.id", nodeId));
+        criteria.addRestriction(new EqRestriction("nodeParentId", nodeParentId));
         
         final Collection<DataLinkInterface> dataLinkInterface = m_dataLinkDao.findMatching(criteria);
         DataLinkInterface dli = null;
@@ -210,11 +213,13 @@ public class DefaultNodeLinkService implements NodeLinkService, InitializingBean
     @Transactional(readOnly=true)
     @Override
     public Collection<DataLinkInterface> getLinkContainingNodeId(int nodeId) {
-        OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
-        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
-        criteria.add(Restrictions.or(
-            Restrictions.eq("node.id", nodeId),
-            Restrictions.eq("nodeParentId", nodeId)
+        Criteria criteria = new Criteria(DataLinkInterface.class);
+        criteria.setAliases(Arrays.asList(new Alias[] {
+            new Alias("node", "node", JoinType.LEFT_JOIN)
+        }));
+        criteria.addRestriction(new AnyRestriction(
+            new EqRestriction("node.id", nodeId),
+            new EqRestriction("nodeParentId", nodeId)
         ));
         
         return m_dataLinkDao.findMatching(criteria);
@@ -231,10 +236,12 @@ public class DefaultNodeLinkService implements NodeLinkService, InitializingBean
     @Transactional
     @Override
     public void updateLinkStatus(int nodeParentId, int nodeId, String status) {
-        OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
-        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
-        criteria.add(Restrictions.eq("node.id", nodeId));
-        criteria.add(Restrictions.eq("nodeParentId", nodeParentId));
+        Criteria criteria = new Criteria(DataLinkInterface.class);
+        criteria.setAliases(Arrays.asList(new Alias[] {
+            new Alias("node", "node", JoinType.LEFT_JOIN)
+        }));
+        criteria.addRestriction(new EqRestriction("node.id", nodeId));
+        criteria.addRestriction(new EqRestriction("nodeParentId", nodeParentId));
         
         Collection<DataLinkInterface> dataLinkInterface = m_dataLinkDao.findMatching(criteria);
         

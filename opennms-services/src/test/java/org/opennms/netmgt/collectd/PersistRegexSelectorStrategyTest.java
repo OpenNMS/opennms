@@ -38,7 +38,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.config.collectd.Filter;
 import org.opennms.netmgt.config.collectd.Package;
@@ -95,9 +94,8 @@ public class PersistRegexSelectorStrategyTest {
         Service service = new Service();
         service.setName("SNMP");
         pkg.addService(service);
-        CollectdPackage collectdPkg = new CollectdPackage(pkg, "localhost", false);
         Map<String, Object> map = new TreeMap<String, Object>();
-        List<org.opennms.netmgt.config.collectd.Parameter> params = collectdPkg.getService("SNMP").getParameterCollection();
+        List<org.opennms.netmgt.config.collectd.Parameter> params = pkg.getService("SNMP").getParameters();
         for (org.opennms.netmgt.config.collectd.Parameter p : params) {
             map.put(p.getKey(), p.getValue());
         }

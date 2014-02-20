@@ -35,7 +35,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import org.opennms.netmgt.dao.castor.collector.DataCollectionConfigFileTest;
+import org.opennms.netmgt.dao.jaxb.collector.DataCollectionConfigFileTest;
 
 public class InvocationAnticipator implements InvocationHandler {
     public class NullInvocationHandler implements InvocationHandler {

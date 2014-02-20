@@ -35,7 +35,12 @@ public class SupportPageTest extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
     	super.setUp();
-    	clickAndWait("link=Support");
+    	supportPage();
+    }
+
+    private void supportPage() throws Exception {
+        frontPage();
+        clickAndWait("link=Support");
     }
 
     @Test
@@ -63,13 +68,14 @@ public class SupportPageTest extends OpenNMSSeleniumTestCase {
         assertEquals("Log In", selenium.getValue("css=input[type=submit]"));
     }
     @Test
-    public void testAllLinks() throws InterruptedException {
+    public void testAllLinks() throws Exception {
         clickAndWait("link=About the OpenNMS Web Console");
         waitForText("OpenNMS Web Console");
         waitForText("License and Copyright");
         waitForText("OSI Certified Open Source Software");
         waitForText("Version:");
-        goBack();
+
+        supportPage();
         waitForElement("//a[@href='http://www.opennms.org/documentation/ReleaseNotesStable.html#whats-new']");
         waitForElement("//a[@href='http://www.opennms.org/wiki/']");
 
@@ -80,7 +86,8 @@ public class SupportPageTest extends OpenNMSSeleniumTestCase {
         assertEquals("", selenium.getValue("css=input[type=submit]"));
         waitForText("Output");
         waitForText("Choose which plugins to enable:");
-        goBack();
+
+        supportPage();
         waitForElement("//a[@href='http://issues.opennms.org/']");
         waitForElement("//a[@href='irc://irc.freenode.net/%23opennms']");
     }

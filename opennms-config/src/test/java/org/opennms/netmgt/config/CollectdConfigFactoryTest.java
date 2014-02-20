@@ -40,8 +40,10 @@ import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.db.XADataSourceFactory;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.db.MockDatabase;
+import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.mock.MockNetwork;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.OpenNMSConfigurationExecutionListener;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -50,6 +52,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @TestExecutionListeners({
     OpenNMSConfigurationExecutionListener.class
 })
+@JUnitConfigurationEnvironment
 public class CollectdConfigFactoryTest {
 
     private CollectdConfigFactory m_factory;
@@ -79,7 +82,7 @@ public class CollectdConfigFactoryTest {
     @Test
     public void testGetName() {
         String pkgName = "example1";
-        CollectdPackage wpkg = m_factory.getPackage(pkgName);
+        Package wpkg = m_factory.getPackage(pkgName);
         assertNotNull(wpkg);
         assertEquals(pkgName, wpkg.getName());
     }

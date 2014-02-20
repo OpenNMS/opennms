@@ -169,7 +169,7 @@ public class OpenNMSProvisionerTest {
         configStream.close();
 
         configStream = ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/capsd/collectd-configuration.xml");
-        CollectdConfigFactory.setInstance(new CollectdConfigFactory(configStream, onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer()));
+        CollectdConfigFactory collectdConfigFactory = new CollectdConfigFactory(configStream, onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer());
         configStream.close();
 
         JdbcTemplate jdbcTemplate = new JdbcTemplate(db);
@@ -179,7 +179,7 @@ public class OpenNMSProvisionerTest {
         m_syncer.setOpennmsServerConfig(OpennmsServerConfigFactory.getInstance());
         m_syncer.setCapsdConfig(m_capsdConfig);
         m_syncer.setPollerConfig(m_pollerConfig);
-        m_syncer.setCollectdConfig(CollectdConfigFactory.getInstance());
+        m_syncer.setCollectdConfig(collectdConfigFactory);
         m_syncer.setNextSvcIdSql(db.getNextServiceIdStatement());
         m_syncer.afterPropertiesSet();
 

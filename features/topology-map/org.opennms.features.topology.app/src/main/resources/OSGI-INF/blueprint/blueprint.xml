@@ -365,4 +365,16 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     <reference id="historyManager" interface="org.opennms.features.topology.api.HistoryManager" availability="mandatory">
     </reference>
 
+	<bean id="topoMapsLink" class="org.opennms.features.topology.app.internal.TopoMapNavEntry">
+		<property name="url" value="topology?focusNodes=%nodeid%&amp;szl=1" />
+		<property name="name" value="View in Topology" />
+	</bean>
+
+	<service id="nodeMapsLinkService" interface="org.opennms.web.navigate.ConditionalPageNavEntry" ref="topoMapsLink">
+		<service-properties>
+			<entry key="Page" value="node" />
+			<entry key="registration.export" value="true" />
+		</service-properties>
+	</service>
+
 </blueprint>

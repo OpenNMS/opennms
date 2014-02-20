@@ -33,6 +33,7 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
 
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
+import org.springframework.beans.factory.InitializingBean;
 
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 
@@ -49,7 +50,7 @@ import com.atomikos.jdbc.AtomikosDataSourceBean;
 </bean>
 */
 
-public class AtomikosDataSourceFactory extends AtomikosDataSourceBean implements ClosableDataSource {
+public class AtomikosDataSourceFactory extends AtomikosDataSourceBean implements InitializingBean, ClosableDataSource {
 
 	private static final long serialVersionUID = -6411281260947841402L;
 
@@ -62,6 +63,22 @@ public class AtomikosDataSourceFactory extends AtomikosDataSourceBean implements
 		super.setXaDataSource(XADataSourceFactory.getInstance());
 		super.setPoolSize(30);
 		super.setTestQuery("SELECT 1");
+
+		/*
+		// Disable pool maintenance (reaping and shrinking) by setting the interval
+		// to the highest value possible. We want the connections to PostgreSQL to 
+		// remain open forever without being recycled.
+		super.setMaintenanceInterval(Integer.MAX_VALUE / 1000);
+		*/
+	}
+
+	/**
+	 * This call will initialize the {@link AtomikosDataSourceBean} after the properties
+	 * have been set when this factory is used in a Spring context.
+	 */
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		super.init();
 	}
 
 	// Uncomment when we require Java 7
@@ -76,7 +93,7 @@ public class AtomikosDataSourceFactory extends AtomikosDataSourceBean implements
 	}
 
 	@Override
-	public boolean isWrapperFor(Class<?> iface) throws SQLException {
+	public boolean isWrapperFor(Class<?> iface) {
 		return false;
 	}
 

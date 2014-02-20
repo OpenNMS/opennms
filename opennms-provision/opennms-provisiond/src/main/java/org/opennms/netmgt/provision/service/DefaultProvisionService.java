@@ -1158,8 +1158,13 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 
                 // @ipv6
                 final OnmsNode node = new OnmsNode(createDistPollerIfNecessary("localhost", "127.0.0.1"));
-                node.setLabel(hostname == null ? ipAddress : hostname);
-                node.setLabelSource(hostname == null ? NodeLabelSource.ADDRESS : NodeLabelSource.HOSTNAME);
+                if (hostname == null || ipAddress.equals(hostname)) {
+                    node.setLabel(ipAddress);
+                    node.setLabelSource(NodeLabelSource.ADDRESS);
+                } else {
+                    node.setLabel(hostname);
+                    node.setLabelSource(NodeLabelSource.HOSTNAME);
+                }
                 node.setForeignSource(foreignSource == null ? FOREIGN_SOURCE_FOR_DISCOVERED_NODES : foreignSource);
                 node.setType(NodeType.ACTIVE);
                 node.setLastCapsdPoll(now);

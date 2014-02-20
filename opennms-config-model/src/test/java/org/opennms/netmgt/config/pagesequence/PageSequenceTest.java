@@ -12,8 +12,8 @@ import org.opennms.core.test.MockLogger;
 import org.opennms.core.test.xml.XmlTest;
 
 public class PageSequenceTest extends XmlTest<PageSequence> {
-    public PageSequenceTest(final PageSequence sampleObject, final Object sampleXml, final String schemaFile, final String[] ignoredNamespaces, final String[] ignoredPrefixes) {
-        super(sampleObject, sampleXml, schemaFile, ignoredNamespaces, ignoredPrefixes);
+    public PageSequenceTest(final PageSequence sampleObject, final Object sampleXml) {
+        super(sampleObject, sampleXml, null);
     }
 
     @Before
@@ -25,15 +25,21 @@ public class PageSequenceTest extends XmlTest<PageSequence> {
         MockLogAppender.setupLogging(true, props);
     }
 
+    @Override
+    protected boolean ignoreNamespace(final String namespace) {
+        return "http://xmlns.opennms.org/xsd/page-sequence".equals(namespace);
+    }
+    
+    protected String getSchemaFile() {
+        return "target/classes/xsds/page-sequence.xsd";
+    }
+
     @Parameters
     public static Collection<Object[]> data() throws Exception {
         return Arrays.asList(new Object[][] {
                 {
                     getPageSequence(),
-                    new File("target/test-classes/org/opennms/netmgt/config/pagesequence/page-sequence.xml"),
-                    "target/classes/xsds/page-sequence.xsd",
-                    new String[] { "http://xmlns.opennms.org/xsd/page-sequence" },
-                    new String[] { }
+                    new File("target/test-classes/org/opennms/netmgt/config/pagesequence/page-sequence.xml")
                 }
         });
     }

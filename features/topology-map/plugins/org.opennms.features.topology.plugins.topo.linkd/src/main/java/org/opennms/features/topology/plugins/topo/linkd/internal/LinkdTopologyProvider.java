@@ -481,11 +481,12 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                 nodeList = m_nodeDao.findAll();
 
             } finally {
+                // Make sure that we re-enable the authorization filter
                 if(userGroups != null){
                     getFilterManager().enableAuthorizationFilter(userGroups);
                 }
-                return nodeList != null ? nodeList : Collections.EMPTY_LIST;
             }
+            return nodeList != null ? nodeList : Collections.<OnmsNode>emptyList();
         } else {
             return m_nodeDao.findAll();
         }

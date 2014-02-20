@@ -164,6 +164,7 @@ public abstract class ThreshdConfigManager {
 
                 LOG.debug("createPackageIpMap: package is {}. filer rules are {}", filterRules, pkg.getName());
     
+                FilterDaoFactory.getInstance().flushActiveIpAddressListCache();
                 List<InetAddress> ipList = FilterDaoFactory.getInstance().getActiveIPAddressList(filterRules.toString());
                 if (ipList.size() > 0) {
                     m_pkgIpMap.put(pkg, ipList);

@@ -28,20 +28,17 @@
 
 package org.opennms.protocols.nsclient.collector;
 
-import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
-import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collectd.AbstractCollectionAttribute;
 import org.opennms.netmgt.collectd.AbstractCollectionResource;

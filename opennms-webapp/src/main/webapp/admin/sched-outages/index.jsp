@@ -33,6 +33,7 @@
 	import="
 	java.util.*,
 	org.opennms.netmgt.config.*,
+	org.opennms.netmgt.config.collectd.Package,
 	org.opennms.netmgt.config.poller.*,
 	org.opennms.netmgt.config.poller.outages.*,
 	org.opennms.web.element.*,
@@ -77,14 +78,12 @@
 				thisPackage.removeOutageCalendar(deleteName); //Will quietly do nothing if outage doesn't exist
 			}
 	
-			org.opennms.netmgt.config.poller.Package[] pollingPackages = PollerConfigFactory.getInstance().getConfiguration().getPackage();
-			for (int i = 0; i < pollingPackages.length; i++) {
-				org.opennms.netmgt.config.poller.Package thisPackage = pollingPackages[i];
+			for (final org.opennms.netmgt.config.poller.Package thisPackage : PollerConfigFactory.getInstance().getConfiguration().getPackages()) {
 				thisPackage.removeOutageCalendar(deleteName); //Will quietly do nothing if outage doesn't exist
 			}
-	
-			for (Iterator<CollectdPackage> iter = CollectdConfigFactory.getInstance().getCollectdConfig().getPackages().iterator(); iter.hasNext();) {
-				org.opennms.netmgt.config.collectd.Package thisPackage = iter.next().getPackage();
+
+			CollectdConfigFactory collectdConfig = new CollectdConfigFactory();
+			for (Package thisPackage : collectdConfig.getCollectdConfig().getPackages()) {
 				thisPackage.removeOutageCalendar(deleteName); //Will quietly do nothing if outage doesn't exist
 			}
 	
@@ -93,7 +92,7 @@
 			pollFactory.saveCurrent();
 			NotifdConfigFactory.getInstance().saveCurrent();
 			ThreshdConfigFactory.getInstance().saveCurrent();
-			CollectdConfigFactory.getInstance().saveCurrent();
+			collectdConfig.saveCurrent();
 			PollerConfigFactory.getInstance().save();
 			sendOutagesChangedEvent();
 		} finally {
@@ -140,51 +139,48 @@ div.nodeintbox {
 	</tr>
 
 	<%
-		HashMap<String,String> shortDayNames = new HashMap<String,String>();
-		shortDayNames.put("sunday", "Sun");
-		shortDayNames.put("monday", "Mon");
-		shortDayNames.put("tuesday", "Tue");
-		shortDayNames.put("wednesday", "Wed");
-		shortDayNames.put("thursday", "Thu");
-		shortDayNames.put("friday", "Fri");
-		shortDayNames.put("saturday", "Sat");
+	    HashMap<String,String> shortDayNames = new HashMap<String,String>();
+				shortDayNames.put("sunday", "Sun");
+				shortDayNames.put("monday", "Mon");
+				shortDayNames.put("tuesday", "Tue");
+				shortDayNames.put("wednesday", "Wed");
+				shortDayNames.put("thursday", "Thu");
+				shortDayNames.put("friday", "Fri");
+				shortDayNames.put("saturday", "Sat");
 
-		String outageOnImageUrl = "images/greentick.gif";
-		String outageOffImageUrl = "images/redcross.gif";
+				String outageOnImageUrl = "images/greentick.gif";
+				String outageOffImageUrl = "images/redcross.gif";
 
-		pollFactory.getReadLock().lock();
+				pollFactory.getReadLock().lock();
 
-		try {
-			Outage[] outages = pollFactory.getOutages();
-	
-			Collection<String> notificationOutages = NotifdConfigFactory.getInstance().getConfiguration().getOutageCalendarCollection();
-	
-			PollerConfigFactory.init(); //Force init
-	
-			List<String> pollingOutages = new ArrayList<String>();
-			org.opennms.netmgt.config.poller.Package[] pollingPackages = PollerConfigFactory.getInstance().getConfiguration().getPackage();
-			for (int i = 0; i < pollingPackages.length; i++) {
-				pollingOutages.addAll(pollingPackages[i].getOutageCalendarCollection());
-			}
-	
-			ThreshdConfigFactory.init();
-			List<String> thresholdingOutages = new ArrayList<String>();
-			org.opennms.netmgt.config.threshd.Package[] thresholdingPackages = ThreshdConfigFactory.getInstance().getConfiguration().getPackage();
-			for (int i = 0; i < thresholdingPackages.length; i++) {
-				thresholdingOutages.addAll(thresholdingPackages[i].getOutageCalendarCollection());
-			}
-	
-			CollectdConfigFactory.init();
-			List<String> collectionOutages = new ArrayList<String>();
-	
-			for (Iterator<CollectdPackage> iter = CollectdConfigFactory.getInstance().getCollectdConfig().getPackages().iterator(); iter.hasNext();) {
-				org.opennms.netmgt.config.collectd.Package thisPackage = iter.next().getPackage();
-				collectionOutages.addAll(thisPackage.getOutageCalendarCollection());
-			}
-	
-			for (int i = 0; i < outages.length; i++) {
-				Outage thisOutage = outages[i];
-				String outageName = thisOutage.getName();
+				try {
+					Outage[] outages = pollFactory.getOutages();
+			
+					Collection<String> notificationOutages = NotifdConfigFactory.getInstance().getConfiguration().getOutageCalendarCollection();
+			
+					PollerConfigFactory.init(); //Force init
+			
+					List<String> pollingOutages = new ArrayList<String>();
+					for (final org.opennms.netmgt.config.poller.Package pkg : PollerConfigFactory.getInstance().getConfiguration().getPackages()) {
+						pollingOutages.addAll(pkg.getOutageCalendars());
+					}
+			
+					ThreshdConfigFactory.init();
+					List<String> thresholdingOutages = new ArrayList<String>();
+					org.opennms.netmgt.config.threshd.Package[] thresholdingPackages = ThreshdConfigFactory.getInstance().getConfiguration().getPackage();
+					for (int i = 0; i < thresholdingPackages.length; i++) {
+						thresholdingOutages.addAll(thresholdingPackages[i].getOutageCalendarCollection());
+					}
+			
+					List<String> collectionOutages = new ArrayList<String>();
+					CollectdConfigFactory collectdConfig = new CollectdConfigFactory();
+					for (Package thisPackage : collectdConfig.getCollectdConfig().getPackages()) {
+						collectionOutages.addAll(thisPackage.getOutageCalendars());
+					}
+			
+					for (int i = 0; i < outages.length; i++) {
+						Outage thisOutage = outages[i];
+						String outageName = thisOutage.getName();
 	%>
 	<tr valign="top">
 		<td><%=outageName%></td>

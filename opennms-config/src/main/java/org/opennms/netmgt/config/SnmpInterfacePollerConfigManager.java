@@ -331,6 +331,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
             filterRules.append(")");
         }
         LOG.debug("createPackageIpMap: package is {}. filer rules are {}", filterRules, pkg.getName());
+        FilterDaoFactory.getInstance().flushActiveIpAddressListCache();
         List<InetAddress> ipList = FilterDaoFactory.getInstance().getActiveIPAddressList(filterRules.toString());
         return ipList;
     }

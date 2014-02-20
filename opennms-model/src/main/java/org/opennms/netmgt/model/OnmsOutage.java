@@ -125,6 +125,13 @@ public class OnmsOutage implements Serializable {
     }
 
     /**
+     */
+    public OnmsOutage(Date ifLostService, OnmsMonitoredService monitoredService) {
+        m_ifLostService = ifLostService;
+        m_monitoredService = monitoredService;
+    }
+
+    /**
      * minimal constructor
      *
      * @param ifLostService a {@link java.util.Date} object.

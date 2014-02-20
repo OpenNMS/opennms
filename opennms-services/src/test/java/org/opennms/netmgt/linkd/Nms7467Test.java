@@ -36,6 +36,7 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
@@ -47,10 +48,13 @@ import javax.sql.DataSource;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Restrictions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.criteria.Alias;
+import org.opennms.core.criteria.Alias.JoinType;
+import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
@@ -74,10 +78,8 @@ import org.opennms.netmgt.dao.hibernate.Hibernate4SessionDataSource;
 import org.opennms.netmgt.dao.support.NewTransactionTemplate;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.JdbcFilterDao;
-import org.opennms.netmgt.linkd.nb.Nms7467NetworkBuilder;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsAtInterface;
-import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpRouteInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsStpInterface;
@@ -102,7 +104,6 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-linkd.xml",
-        "classpath:/META-INF/opennms/applicationContext-linkdTest.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
@@ -173,8 +174,6 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         jdbcFilterDao.afterPropertiesSet();
         FilterDaoFactory.setInstance(jdbcFilterDao);
 
-        super.setNodeDao(m_nodeDao);
-        super.setSnmpInterfaceDao(m_snmpInterfaceDao);
         MockLogAppender.setupLogging(p);
 
     }
@@ -199,7 +198,6 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
 
         
         assertEquals(false, m_linkdConfig.isAutoDiscoveryEnabled());
-        assertEquals(false, m_linkdConfig.enableDiscoveryDownload());
         assertEquals(true,m_linkdConfig.isVlanDiscoveryEnabled());
         assertEquals(true,m_linkdConfig.useCdpDiscovery());
         assertEquals(true,m_linkdConfig.useIpRouteDiscovery());
@@ -220,7 +218,6 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertEquals("example1",example1.getName());
         assertEquals(false, example1.hasAutoDiscovery());
         assertEquals(false, example1.hasDiscovery_link_interval());
-        assertEquals(false,example1.hasEnableDiscoveryDownload());
         assertEquals(false,example1.hasEnableVlanDiscovery());
         assertEquals(false,example1.hasForceIpRouteDiscoveryOnEthernet());
         assertEquals(false,example1.hasSaveRouteTable());
@@ -235,11 +232,24 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertEquals(false, m_linkdConfig.isInterfaceInPackage(InetAddressUtils.addr(CISCO_C870_IP), example1));
         
         m_nodeDao.save(getCiscoC870());
+        m_nodeDao.save(getCiscoWsC2948());
         m_nodeDao.flush();
         
         m_linkdConfig.update();
-        assertEquals(true, m_linkdConfig.isInterfaceInPackage(InetAddressUtils.addr(CISCO_C870_IP), example1));
         
+        assertEquals(true, m_linkdConfig.isInterfaceInPackage(InetAddressUtils.addr(CISCO_C870_IP), example1));
+        assertEquals(true, m_linkdConfig.isInterfaceInPackage(InetAddressUtils.addr(CISCO_WS_C2948_IP), example1));
+        
+        final OnmsNode ciscorouter = m_nodeDao.findByForeignId("linkd", CISCO_C870_NAME);
+        final OnmsNode ciscows = m_nodeDao.findByForeignId("linkd", CISCO_WS_C2948_NAME);
+        assertTrue(m_linkd.scheduleNodeCollection(ciscorouter.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(ciscows.getId()));
+
+        LinkableNode lciscorouter = m_linkd.removeNode("example1", InetAddressUtils.addr(CISCO_C870_IP));
+        assertNotNull(lciscorouter);
+        assertEquals(ciscorouter.getId().intValue(),lciscorouter.getNodeId() );
+
+        assertEquals(1, m_linkd.getActivePackages().size());
     }
     
     @Test
@@ -280,6 +290,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
                 m_nodeDao.save(getLinuxUbuntu());
                 m_nodeDao.save(getNodeWithoutSnmp(ACCESSPOINT_NAME, ACCESSPOINT_IP));
                 m_nodeDao.save(getNodeWithoutSnmp(WORKSTATION_NAME, WORKSTATION_IP));
+                m_nodeDao.flush();
             }
         });
 
@@ -392,6 +403,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 m_nodeDao.save(getCiscoWsC2948());
+                m_nodeDao.flush();
             }
         });
 
@@ -457,9 +469,11 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertEquals(CISCO_WS_C2948_IP,at.getIpAddress().getHostAddress());
         assertEquals(3, at.getIfIndex().intValue());
         // Now Let's test the database
-        final OnmsCriteria criteria = new OnmsCriteria(OnmsIpRouteInterface.class);
-        criteria.createAlias("node", "node");
-        criteria.add(Restrictions.eq("node.id", ciscosw.getId()));
+        final Criteria criteria = new Criteria(OnmsIpRouteInterface.class);
+        criteria.setAliases(Arrays.asList(new Alias[] {
+            new Alias("node", "node", JoinType.LEFT_JOIN)
+        }));
+        criteria.addRestriction(new EqRestriction("node.id", ciscosw.getId()));
 
         // 2 route entry in database
         assertEquals(2, m_ipRouteInterfaceDao.findMatching(criteria).size());
@@ -494,6 +508,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 m_nodeDao.save(getCiscoC870());
+                m_nodeDao.flush();
             }
         });
 
@@ -582,9 +597,11 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         //0 atinterface in database
         assertEquals(4, m_atInterfaceDao.countAll());
 
-        final OnmsCriteria criteria = new OnmsCriteria(OnmsIpRouteInterface.class);
-        criteria.createAlias("node", "node");
-        criteria.add(Restrictions.eq("node.id", ciscorouter.getId()));
+        final Criteria criteria = new Criteria(OnmsIpRouteInterface.class);
+        criteria.setAliases(Arrays.asList(new Alias[] {
+            new Alias("node", "node", JoinType.LEFT_JOIN)
+        }));
+        criteria.addRestriction(new EqRestriction("node.id", ciscorouter.getId()));
         final List<OnmsIpRouteInterface> iproutes = m_ipRouteInterfaceDao.findMatching(criteria);
         // 7 route entry in database
         for (OnmsIpRouteInterface iproute: iproutes) {
@@ -622,6 +639,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 m_nodeDao.save(getNetGearSw108());
+                m_nodeDao.flush();
             }
         });
 
@@ -691,9 +709,11 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         //1 atinterface in database: has itself in ipadress to media
         assertEquals(1, m_atInterfaceDao.findAll().size());
 
-        final OnmsCriteria criteria = new OnmsCriteria(OnmsIpRouteInterface.class);
-        criteria.createAlias("node", "node");
-        criteria.add(Restrictions.eq("node.id", ngsw108.getId()));
+        final Criteria criteria = new Criteria(OnmsIpRouteInterface.class);
+        criteria.setAliases(Arrays.asList(new Alias[] {
+            new Alias("node", "node", JoinType.LEFT_JOIN)
+        }));
+        criteria.addRestriction(new EqRestriction("node.id", ngsw108.getId()));
         final List<OnmsIpRouteInterface> iproutes = m_ipRouteInterfaceDao.findMatching(criteria);
         // 7 route entry in database
         for (OnmsIpRouteInterface iproute: iproutes) {
@@ -730,6 +750,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 m_nodeDao.save(getLinuxUbuntu());
+                m_nodeDao.flush();
             }
         });
 
@@ -788,9 +809,11 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         //0 atinterface in database
         assertEquals(0, m_atInterfaceDao.findAll().size());
 
-        final OnmsCriteria criteria = new OnmsCriteria(OnmsIpRouteInterface.class);
-        criteria.createAlias("node", "node");
-        criteria.add(Restrictions.eq("node.id", linux.getId()));
+        final Criteria criteria = new Criteria(OnmsIpRouteInterface.class);
+        criteria.setAliases(Arrays.asList(new Alias[] {
+            new Alias("node", "node", JoinType.LEFT_JOIN)
+        }));
+        criteria.addRestriction(new EqRestriction("node.id", linux.getId()));
         final List<OnmsIpRouteInterface> iproutes = m_ipRouteInterfaceDao.findMatching(criteria);
         // 4 route entry in database
         for (OnmsIpRouteInterface iproute: iproutes) {
@@ -819,6 +842,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 m_nodeDao.save(getDarwin108());
+                m_nodeDao.flush();
             }
         });
 
@@ -885,9 +909,11 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         //0 atinterface in database
         assertEquals(0, m_atInterfaceDao.findAll().size());
 
-        final OnmsCriteria criteria = new OnmsCriteria(OnmsIpRouteInterface.class);
-        criteria.createAlias("node", "node");
-        criteria.add(Restrictions.eq("node.id", mac.getId()));
+        final Criteria criteria = new Criteria(OnmsIpRouteInterface.class);
+        criteria.setAliases(Arrays.asList(new Alias[] {
+            new Alias("node", "node", JoinType.LEFT_JOIN)
+        }));
+        criteria.addRestriction(new EqRestriction("node.id", mac.getId()));
         final List<OnmsIpRouteInterface> iproutes = m_ipRouteInterfaceDao.findMatching(criteria);
         // 4 route entry in database
         for (OnmsIpRouteInterface iproute: iproutes) {
@@ -930,6 +956,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 m_nodeDao.save(getNetGearSw108());
                 m_nodeDao.save(getDarwin108());
+                m_nodeDao.flush();
             }
         });
 
@@ -983,6 +1010,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 m_nodeDao.save(getNetGearSw108());
                 m_nodeDao.save(getCiscoWsC2948());
+                m_nodeDao.flush();
             }
         });
 
@@ -1036,6 +1064,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 m_nodeDao.save(getLinuxUbuntu());
                 m_nodeDao.save(getCiscoWsC2948());
+                m_nodeDao.flush();
             }
         });
 
@@ -1086,6 +1115,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 m_nodeDao.save(getNodeWithoutSnmp(WORKSTATION_NAME, WORKSTATION_IP));
                 m_nodeDao.save(getCiscoWsC2948());
+                m_nodeDao.flush();
             }
         });
 

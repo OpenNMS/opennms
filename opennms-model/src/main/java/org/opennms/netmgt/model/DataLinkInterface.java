@@ -72,6 +72,7 @@ public class DataLinkInterface implements Serializable, Comparable<DataLinkInter
         lldp,
         ospf,
         isis,
+        wifi,
         NA
     }
 

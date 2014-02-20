@@ -38,6 +38,7 @@ import org.opennms.netmgt.collectd.AliasedResource;
 import org.opennms.netmgt.collectd.IfInfo;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionResource;
+import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
@@ -67,13 +68,9 @@ public class CollectorThresholdingSet extends ThresholdingSet {
     public CollectorThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository, Map<String, Object> roProps) {
         super(nodeId, hostAddress, serviceName, repository);
         String storeByIfAliasString = ParameterMap.getKeyedString(roProps, "storeByIfAlias", null);
-        storeByIfAlias = storeByIfAliasString != null && storeByIfAliasString.equalsIgnoreCase("true");
-        storeByForeignSource = isStoreByForeignSource();
+        storeByIfAlias = storeByIfAliasString != null && storeByIfAliasString.toLowerCase().equals("true");
+        storeByForeignSource = ResourceTypeUtils.isStoreByForeignSource();
         LOG.debug("storeByForeignSource = {}", storeByForeignSource);
-    }
-    
-    public static boolean isStoreByForeignSource() {
-       return Boolean.getBoolean("org.opennms.rrd.storeByForeignSource");
     }
     
     /*

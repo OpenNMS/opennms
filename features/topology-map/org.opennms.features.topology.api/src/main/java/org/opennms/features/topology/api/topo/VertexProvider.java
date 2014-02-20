@@ -88,4 +88,6 @@ public interface VertexProvider {
 
 	void clearVertices();
 
+    public int getVertexTotalCount();
+
 }

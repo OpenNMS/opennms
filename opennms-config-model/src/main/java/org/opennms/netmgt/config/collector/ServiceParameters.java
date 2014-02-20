@@ -33,9 +33,9 @@ import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 /**
  * <p>ServiceParameters class.</p>
@@ -46,7 +46,57 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 public class ServiceParameters {
     private static final Logger LOG = LoggerFactory.getLogger(ServiceParameters.class);
     
-    Map<String, Object> m_parameters;
+    public static enum ParameterName {
+        DOMAIN("domain"),
+        STOREBYNODEID("storeByNodeID"),
+        STOREBYIFALIAS("storeByIfAlias"),
+        STORFLAGOVERRIDE("storFlagOverride"),
+        IFALIASCOMMENT("ifAliasComment"),
+        COLLECTION("collection"),
+        @Deprecated
+        HTTP_COLLECTION("http-collection"),
+        @Deprecated
+        NSCLIENT_COLLECTION("nsclient-collection"),
+        @Deprecated
+        WMI_COLLECTION("wmi-collection"),
+        PORT("port"),
+        RETRY("retry"),
+        RETRIES("retries"),
+        TIMEOUT("timeout"),
+        READ_COMMUNITY("read-community"),
+        @Deprecated
+        READCOMMUNITY("readCommunity"),
+        WRITE_COMMUNITY("write-community"),
+        PROXY_HOST("proxy-host"),
+        VERSION("version"),
+        MAX_VARS_PER_PDU("max-vars-per-pdu"),
+        MAX_REPETITIONS("max-repetitions"),
+        @Deprecated
+        MAXREPETITIONS("maxRepetitions"),
+        MAX_REQUEST_SIZE("max-request-size"),
+        SECURITY_NAME("security-name"),
+        AUTH_PASSPHRASE("auth-passphrase"),
+        AUTH_PROTOCOL("auth-protocol"),
+        PRIVACY_PASSPHRASE("privacy-passphrase"),
+        PRIVACY_PROTOCOL("privacy-protocol"),
+        
+        // JMX-specific parameters
+        USE_MBEAN_NAME_FOR_RRDS("use-mbean-name-for-rrds"),
+        FRIENDLY_NAME("friendly-name");
+
+        private final String m_value;
+
+        private ParameterName(String value) {
+            m_value = value;
+        }
+
+        @Override
+        public String toString() {
+            return m_value;
+        }
+    }
+
+    private final Map<String, Object> m_parameters;
 
     /**
      * <p>Constructor for ServiceParameters.</p>
@@ -81,28 +131,28 @@ public class ServiceParameters {
     }
 
     public String getDomain() {
-        return ParameterMap.getKeyedString(getParameters(), "domain",
+        return ParameterMap.getKeyedString(getParameters(), ParameterName.DOMAIN.toString(),
         		"default");
     }
 
     public String getStoreByNodeID() {
         return ParameterMap.getKeyedString(getParameters(),
-        		"storeByNodeID", "normal");
+        		ParameterName.STOREBYNODEID.toString(), "normal");
     }
 
     public String getStoreByIfAlias() {
         return ParameterMap.getKeyedString(getParameters(),
-        		"storeByIfAlias", "false");
+        		ParameterName.STOREBYIFALIAS.toString(), "false");
     }
 
     public String getStorFlagOverride() {
         return ParameterMap.getKeyedString(getParameters(),
-        		"storFlagOverride", "false");
+        		ParameterName.STORFLAGOVERRIDE.toString(), "false");
     }
 
     public String getIfAliasComment() {
         return ParameterMap.getKeyedString(getParameters(),
-        		"ifAliasComment", null);
+        		ParameterName.IFALIASCOMMENT.toString(), null);
     }
 
     public boolean aliasesEnabled() {
@@ -137,13 +187,13 @@ public class ServiceParameters {
         //icky hard coded old names; we need to handle some old cases where configs might be not yet updated, but they should
         // still work
         if(getParameters().containsKey("collection")) {
-            return ParameterMap.getKeyedString(getParameters(), "collection", "default");
+            return ParameterMap.getKeyedString(getParameters(), ParameterName.COLLECTION.toString(), "default");
         } else if(getParameters().containsKey("http-collection")) {
-            return ParameterMap.getKeyedString(getParameters(), "http-collection", "default");
+            return ParameterMap.getKeyedString(getParameters(), ParameterName.HTTP_COLLECTION.toString(), "default");
         } else if(getParameters().containsKey("nsclient-collection")) {
-            return ParameterMap.getKeyedString(getParameters(), "nsclient-collection", "default");
+            return ParameterMap.getKeyedString(getParameters(), ParameterName.NSCLIENT_COLLECTION.toString(), "default");
         } else if(m_parameters.containsKey("wmi-collection")) {
-            return ParameterMap.getKeyedString(getParameters(), "wmi-collection", "default");
+            return ParameterMap.getKeyedString(getParameters(), ParameterName.WMI_COLLECTION.toString(), "default");
         } else {
             return "default";
         }
@@ -157,32 +207,32 @@ public class ServiceParameters {
      */
 
     public int getSnmpPort(int current) {
-        return ParameterMap.getKeyedInteger(getParameters(), "port", current);
+        return ParameterMap.getKeyedInteger(getParameters(), ParameterName.PORT.toString(), current);
     }
 
     public int getSnmpRetries(int current) {
-        return ParameterMap.getKeyedInteger(getParameters(), "retry", current);
+        return ParameterMap.getKeyedInteger(getParameters(), ParameterName.RETRY.toString(), current);
     }
 
     public int getSnmpTimeout(int current) {
-        return ParameterMap.getKeyedInteger(getParameters(), "timeout", current);
+        return ParameterMap.getKeyedInteger(getParameters(), ParameterName.TIMEOUT.toString(), current);
     }
 
     public String getSnmpReadCommunity(String current) {
-        String readCommunity = ParameterMap.getKeyedString(getParameters(), "read-community", null);
+        String readCommunity = ParameterMap.getKeyedString(getParameters(), ParameterName.READ_COMMUNITY.toString(), null);
         if (readCommunity == null) {
             // incase someone is using an ancient config file
-            readCommunity = ParameterMap.getKeyedString(m_parameters, "readCommunity", current);
+            readCommunity = ParameterMap.getKeyedString(m_parameters, ParameterName.READCOMMUNITY.toString(), current);
         }
         return readCommunity;
     }
 
     public String getSnmpWriteCommunity(String current) {
-        return ParameterMap.getKeyedString(getParameters(), "write-community", current);
+        return ParameterMap.getKeyedString(getParameters(), ParameterName.WRITE_COMMUNITY.toString(), current);
     }
 
     public InetAddress getSnmpProxyFor(InetAddress current) {
-        String address = ParameterMap.getKeyedString(getParameters(), "proxy-host", null);
+        String address = ParameterMap.getKeyedString(getParameters(), ParameterName.PROXY_HOST.toString(), null);
         InetAddress addr = null;
         if (address != null) {
         	addr = InetAddressUtils.addr(address);
@@ -194,7 +244,7 @@ public class ServiceParameters {
     }
 
     public int getSnmpVersion(int current) {
-        String version = ParameterMap.getKeyedString(getParameters(), "version", null);
+        String version = ParameterMap.getKeyedString(getParameters(), ParameterName.VERSION.toString(), null);
         if (version != null) {
             if (version.equals("v1")) {
                 return SnmpAgentConfig.VERSION1;
@@ -208,40 +258,40 @@ public class ServiceParameters {
     }
 
     public int getSnmpMaxVarsPerPdu(int current) {
-        return ParameterMap.getKeyedInteger(getParameters(), "max-vars-per-pdu", current);
+        return ParameterMap.getKeyedInteger(getParameters(), ParameterName.MAX_VARS_PER_PDU.toString(), current);
     }
 
     public int getSnmpMaxRepetitions(int current) {
-        int maxRepetitions = ParameterMap.getKeyedInteger(m_parameters, "max-repetitions", -1);
+        int maxRepetitions = ParameterMap.getKeyedInteger(m_parameters, ParameterName.MAX_REPETITIONS.toString(), -1);
         if (maxRepetitions == -1) {
             // in case someone is using an ancient config file
-            maxRepetitions = ParameterMap.getKeyedInteger(m_parameters, "maxRepetitions", current);
+            maxRepetitions = ParameterMap.getKeyedInteger(m_parameters, ParameterName.MAXREPETITIONS.toString(), current);
         }
         return maxRepetitions;
     }
 
     public int getSnmpMaxRequestSize(int current) {
-        return ParameterMap.getKeyedInteger(getParameters(), "max-request-size", current);
+        return ParameterMap.getKeyedInteger(getParameters(), ParameterName.MAX_REQUEST_SIZE.toString(), current);
     }
 
     public String getSnmpSecurityName(String current) {
-        return ParameterMap.getKeyedString(getParameters(), "security-name", current);
+        return ParameterMap.getKeyedString(getParameters(), ParameterName.SECURITY_NAME.toString(), current);
     }
 
     public String getSnmpAuthPassPhrase(String current) {
-        return ParameterMap.getKeyedString(getParameters(), "auth-passphrase", current);
+        return ParameterMap.getKeyedString(getParameters(), ParameterName.AUTH_PASSPHRASE.toString(), current);
     }
 
     public String getSnmpAuthProtocol(String current) {
-        return ParameterMap.getKeyedString(getParameters(), "auth-protocol", current);
+        return ParameterMap.getKeyedString(getParameters(), ParameterName.AUTH_PROTOCOL.toString(), current);
     }
 
     public String getSnmpPrivPassPhrase(String current) {
-        return ParameterMap.getKeyedString(getParameters(), "privacy-passphrase", current);
+        return ParameterMap.getKeyedString(getParameters(), ParameterName.PRIVACY_PASSPHRASE.toString(), current);
     }
 
     public String getSnmpPrivProtocol(String current) {
-        return ParameterMap.getKeyedString(getParameters(), "privacy-protocol", current);
+        return ParameterMap.getKeyedString(getParameters(), ParameterName.PRIVACY_PROTOCOL.toString(), current);
     }
 
 }

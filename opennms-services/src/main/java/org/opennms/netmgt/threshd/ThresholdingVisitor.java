@@ -63,7 +63,13 @@ import org.slf4j.LoggerFactory;
  * @version $Id: $
  */
 public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
-    
+
+    public enum ThresholdingResult {
+        THRESHOLDING_UNKNOWN,
+        THRESHOLDING_SUCCEEDED,
+        THRESHOLDING_FAILED
+    }
+
     private static final Logger LOG = LoggerFactory.getLogger(ThresholdingVisitor.class);
 
 	/**

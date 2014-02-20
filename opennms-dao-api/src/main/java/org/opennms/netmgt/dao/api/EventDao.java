@@ -33,7 +33,7 @@ import org.opennms.netmgt.model.OnmsEvent;
 import java.util.Date;
 import java.util.List;
 
-public interface EventDao extends OnmsDao<OnmsEvent, Integer> {
+public interface EventDao extends LegacyOnmsDao<OnmsEvent, Integer> {
 
     int deletePreviousEventsForAlarm(final Integer id, final OnmsEvent e);
 

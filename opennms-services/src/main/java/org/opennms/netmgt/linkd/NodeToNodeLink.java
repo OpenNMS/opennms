@@ -144,12 +144,12 @@ public class NodeToNodeLink {
 		if (this.m_nodeId == nodelink.getNodeId() && 
 			this.m_ifIndex == nodelink.getIfindex()	&&
 			this.m_nodeParentId == nodelink.getNodeparentid() &&
-			this.m_parentIfIndex == nodelink.getParentifindex()) return true;
+			this.m_parentIfIndex == nodelink.getParentifindex() && this.m_protocol == nodelink.getProtocol()) return true;
 
 		if (this.m_nodeId == nodelink.getNodeparentid() && 
 			this.m_ifIndex == nodelink.getParentifindex()	&&
 			this.m_nodeParentId == nodelink.getNodeId() &&
-			this.m_parentIfIndex == nodelink.getIfindex()) return true;
+			this.m_parentIfIndex == nodelink.getIfindex() && this.m_protocol == nodelink.getProtocol()) return true;
 		
 		return false;
 

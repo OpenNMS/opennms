@@ -47,6 +47,9 @@ import org.hibernate.transform.ResultTransformer;
 
 /**
  * <p>OnmsCriteria class.</p>
+ * 
+ * @deprecated Use the new {@link org.opennms.core.criteria.Criteria} instead since it is
+ * not tightly coupled to Hibernate ORM.
  *
  * @author ranger
  * @version $Id: $

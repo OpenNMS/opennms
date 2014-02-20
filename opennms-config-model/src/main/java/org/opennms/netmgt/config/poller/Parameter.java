@@ -61,6 +61,12 @@ public class Parameter implements Serializable {
         super();
     }
 
+    public Parameter(final String key, final String value) {
+        this();
+        m_key = key;
+        m_value = value;
+    }
+
     /**
      * Overrides the Object.equals method.
      * 

@@ -29,6 +29,7 @@
 package org.opennms.web.controller.element;
 
 import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.springframework.beans.factory.InitializingBean;
@@ -66,7 +67,7 @@ public class ServiceController implements InitializingBean {
 
 	@RequestMapping(method = RequestMethod.GET, params = { "node", "intf", "service" })
 	public ModelAndView handleService(@RequestParam("node") int node, @RequestParam("intf") String intf, @RequestParam("service") int serviceId) {
-		OnmsMonitoredService service = m_monitoredServiceDao.get(node, intf, serviceId);
+		OnmsMonitoredService service = m_monitoredServiceDao.get(node, InetAddressUtils.addr(intf), serviceId);
 		if (service == null) {
 			return createErrorModelAndView(node, intf, serviceId);
 		} else {

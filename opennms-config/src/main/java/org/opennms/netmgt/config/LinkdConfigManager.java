@@ -309,6 +309,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
             final StringBuffer filterRules = new StringBuffer(filter.getContent());
     
             LOG.debug("getIpList: package is {}. filter rules are: {}", pkg.getName(), filterRules);
+            FilterDaoFactory.getInstance().flushActiveIpAddressListCache();
             return FilterDaoFactory.getInstance().getActiveIPAddressList(filterRules.toString());
         } finally {
             getReadLock().unlock();
@@ -496,6 +497,17 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     }
 
     /**
+     * <p>useWifiDiscovery</p>
+     *
+     * @return a boolean.
+     */
+    @Override
+    public boolean useWifiDiscovery() {
+        if (m_config.hasUseWifiDiscovery()) return m_config.getUseWifiDiscovery();
+        return true;
+    }
+
+    /**
      * <p>saveStpNodeTable</p>
      *
      * @return a boolean.
@@ -505,18 +517,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
         if (m_config.hasSaveStpNodeTable()) return m_config.getSaveStpNodeTable();
         return true;
     }
-    
-    /**
-     * <p>enableDiscoveryDownload</p>
-     *
-     * @return a boolean.
-     */
-    @Override
-    public boolean enableDiscoveryDownload() {
-        if (m_config.hasEnableDiscoveryDownload()) return m_config.getEnableDiscoveryDownload();
-        return false;
-    }   
-    
+        
     /**
      * <p>saveStpInterfaceTable</p>
      *

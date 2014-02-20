@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.threshd;
 
+import org.opennms.netmgt.threshd.ThresholdingVisitor.ThresholdingResult;
+
 /**
  * <p>ThresholdingException class.</p>
  *
@@ -38,7 +40,7 @@ public class ThresholdingException extends Exception {
 
     private static final long serialVersionUID = 6271939129938598275L;
 
-    private int m_failureCode;
+    private ThresholdingResult m_failureCode;
 
     /**
      * <p>Constructor for ThresholdingException.</p>
@@ -46,7 +48,7 @@ public class ThresholdingException extends Exception {
      * @param message a {@link java.lang.String} object.
      * @param failureCode a int.
      */
-    public ThresholdingException(String message, int failureCode) {
+    public ThresholdingException(String message, ThresholdingResult failureCode) {
         super(message);
         m_failureCode = failureCode;
     }
@@ -57,7 +59,7 @@ public class ThresholdingException extends Exception {
      * @return a int.
      */
     public int getFailureCode() {
-        return m_failureCode;
+        return m_failureCode.ordinal();
     }
 
 }

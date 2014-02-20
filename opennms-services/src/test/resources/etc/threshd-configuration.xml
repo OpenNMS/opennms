@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <?castor class-name="org.opennms.netmgt.threshd.ThreshdConfiguration"?>
-<threshd-configuration 
-   threads="5">
+<threshd-configuration threads="5">
    
    <package name="example1">
        <filter>IPADDR IPLIKE *.*.*.*</filter>   
@@ -39,12 +38,5 @@
        <outage-calendar>zzz from poll-outages.xml zzz</outage-calendar>
        <outage-calendar>junit outage</outage-calendar>
    </package>
-   
-   <thresholder service="SNMP"   class-name="org.opennms.netmgt.threshd.SnmpThresholder"/>
-   <thresholder service="ICMP"     class-name="org.opennms.netmgt.threshd.LatencyThresholder"/>
-        <thresholder service="HTTP"     class-name="org.opennms.netmgt.threshd.LatencyThresholder"/>
-        <thresholder service="HTTP-8000"        class-name="org.opennms.netmgt.threshd.LatencyThresholder"/>
-        <thresholder service="HTTP-8080"        class-name="org.opennms.netmgt.threshd.LatencyThresholder"/>
-        <thresholder service="DNS"      class-name="org.opennms.netmgt.threshd.LatencyThresholder"/>
-        <thresholder service="DHCP"     class-name="org.opennms.netmgt.threshd.LatencyThresholder"/>
+
 </threshd-configuration>

@@ -38,6 +38,11 @@ public class ReportsPageTest extends OpenNMSSeleniumTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        reportsPage();
+    }
+
+    private void reportsPage() throws Exception {
+        frontPage();
         clickAndWait("link=Reports");
     }
 
@@ -66,18 +71,17 @@ public class ReportsPageTest extends OpenNMSSeleniumTestCase {
      @Ignore
      @Test
      public void testDownloadSampleReport() throws InterruptedException {
-    	 clickAndWait("link=Database Reports");
+         clickAndWait("link=Database Reports");
          waitForElement("link=Online reports");
     	 clickAndWait("link=Online reports");
     	 waitForText("Kochwurst sample JasperReport");
     	 clickAndWait("link=execute");
     	 selenium.click("id=run");
     	 selenium.waitForPageToLoad("300000");
-    	 goBack();
      }
      
       @Test
-      public void testAllLinks() throws InterruptedException {
+      public void testAllLinks() throws Exception {
         clickAndWait("link=Resource Graphs");
         waitForText("Standard Resource");
         waitForText("Performance Reports");
@@ -98,8 +102,8 @@ public class ReportsPageTest extends OpenNMSSeleniumTestCase {
         waitForElement("link=List reports");
         waitForElement("link=View and manage pre-run reports");
         waitForElement("link=Manage the batch report schedule");
-        goBack();
-        
+
+        reportsPage();
         clickAndWait("link=Statistics Reports");
         assertEquals("Statistics Reports List | OpenNMS Web Console", selenium.getTitle());
         clickAndWait("link=Log out");

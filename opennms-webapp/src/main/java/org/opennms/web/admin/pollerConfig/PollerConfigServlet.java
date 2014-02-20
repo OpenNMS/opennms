@@ -204,12 +204,12 @@ public class PollerConfigServlet extends HttpServlet {
      * <p>initPollerServices</p>
      */
     public void initPollerServices() {
-        Collection<org.opennms.netmgt.config.poller.Package> packageColl = m_pollerConfig.getPackageCollection();
+        Collection<org.opennms.netmgt.config.poller.Package> packageColl = m_pollerConfig.getPackages();
         if (packageColl != null) {
             Iterator<Package> pkgiter = packageColl.iterator();
             if (pkgiter.hasNext()) {
                 m_pkg = pkgiter.next();
-                Collection<Service> svcColl = m_pkg.getServiceCollection();
+                Collection<Service> svcColl = m_pkg.getServices();
                 for (Service svcProp : svcColl) {
                     m_pollerServices.put(svcProp.getName(), svcProp);
                 }
@@ -287,7 +287,7 @@ public class PollerConfigServlet extends HttpServlet {
      */
     public void adjustNonChecked(List<String> checkedList) {
         if (m_pkg != null) {
-            Collection<Service> svcColl = m_pkg.getServiceCollection();
+            Collection<Service> svcColl = m_pkg.getServices();
             if (svcColl != null) {
                 for (Service svc : svcColl) {
                     if (svc != null) {
@@ -311,7 +311,7 @@ public class PollerConfigServlet extends HttpServlet {
     public void deleteThese(List<String> deleteServices) throws IOException {
         for (String svcname : deleteServices) {
             if (m_pkg != null) {
-                Collection<Service> svcColl = m_pkg.getServiceCollection();
+                Collection<Service> svcColl = m_pkg.getServices();
                 if (svcColl != null) {
                     for (Service svc : svcColl) {
                         if (svc != null) {
@@ -339,7 +339,7 @@ public class PollerConfigServlet extends HttpServlet {
      */
     public void removeMonitor(String service) {
         // Add the new monitor with the protocol.
-        Collection<Monitor> monitorColl = m_pollerConfig.getMonitorCollection();
+        Collection<Monitor> monitorColl = m_pollerConfig.getMonitors();
         Monitor newMonitor = new Monitor();
         if (monitorColl != null) {
             for (Monitor mon : monitorColl) {
@@ -347,7 +347,7 @@ public class PollerConfigServlet extends HttpServlet {
                     if (mon.getService().equals(service)) {
                         newMonitor.setService(service);
                         newMonitor.setClassName(mon.getClassName());
-                        newMonitor.setParameter(mon.getParameterCollection());
+                        newMonitor.setParameters(mon.getParameters());
                         break;
                     }
                 }
@@ -364,7 +364,7 @@ public class PollerConfigServlet extends HttpServlet {
      */
     public void modifyPollerInfo(String bPolled, String protocol) {
         if (m_pkg != null) {
-            Collection<Service> svcColl = m_pkg.getServiceCollection();
+            Collection<Service> svcColl = m_pkg.getServices();
             if (svcColl != null) {
                 for (Service svc : svcColl) {
                     if (svc != null) {

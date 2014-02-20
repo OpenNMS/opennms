@@ -59,7 +59,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.db.XADataSourceFactory;
-import org.opennms.core.resource.Vault;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.InetAddressUtils;
@@ -202,6 +201,8 @@ public class ThresholdingVisitorTest {
 
         m_filterDao = EasyMock.createMock(FilterDao.class);
         EasyMock.expect(m_filterDao.getActiveIPAddressList((String)EasyMock.anyObject())).andReturn(Collections.singletonList(addr("127.0.0.1"))).anyTimes();
+        m_filterDao.flushActiveIpAddressListCache();
+        EasyMock.expectLastCall().anyTimes();
         FilterDaoFactory.setInstance(m_filterDao);
         EasyMock.replay(m_filterDao);
 

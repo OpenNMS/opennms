@@ -52,7 +52,6 @@ import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.support.NewTransactionTemplate;
-import org.opennms.netmgt.linkd.nb.Nms4005NetworkBuilder;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -73,7 +72,6 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-linkd.xml",
-        "classpath:/META-INF/opennms/applicationContext-linkdTest.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
@@ -112,9 +110,6 @@ public class Nms4005Test extends Nms4005NetworkBuilder implements InitializingBe
         p.setProperty("log4j.logger.com.mchange.v2.resourcepool", "WARN");
         MockLogAppender.setupLogging(p);
 
-        super.setNodeDao(m_nodeDao);
-        super.setSnmpInterfaceDao(m_snmpInterfaceDao);
-
         for (Package pkg : Collections.list(m_linkdConfig.enumeratePackage())) {
             pkg.setForceIpRouteDiscoveryOnEthernet(true);
         }
@@ -126,6 +121,7 @@ public class Nms4005Test extends Nms4005NetworkBuilder implements InitializingBe
                 m_nodeDao.save(getR2());
                 m_nodeDao.save(getR3());
                 m_nodeDao.save(getR4());
+                m_nodeDao.flush();
             }
         });
     }

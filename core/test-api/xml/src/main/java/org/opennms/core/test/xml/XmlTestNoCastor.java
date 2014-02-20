@@ -36,10 +36,6 @@ public abstract class XmlTestNoCastor<T> extends XmlTest<T> {
         super(sampleObject, sampleXml, schemaFile);
     }
 
-    public XmlTestNoCastor(final T sampleObject, final Object sampleXml, final String schemaFile, final String[] ignoredNamespaces, final String[] ignoredPrefixes) {
-        super(sampleObject, sampleXml, schemaFile, ignoredNamespaces, ignoredPrefixes);
-    }
-
     @Test
     @Override
     @Ignore
