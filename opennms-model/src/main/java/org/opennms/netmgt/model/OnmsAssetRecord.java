@@ -50,6 +50,7 @@ import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.core.style.ToStringCreator;
@@ -433,6 +434,7 @@ public class OnmsAssetRecord implements Serializable {
     @XmlIDREF
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "nodeId")
+    @JsonIgnore
     public OnmsNode getNode() {
         return m_node;
     }
@@ -863,7 +865,7 @@ public class OnmsAssetRecord implements Serializable {
      */
     @Column(name = "userLastModified", length = 20)
     public String getLastModifiedBy() {
-        return m_lastModifiedBy;
+        return m_lastModifiedBy == null? null : m_lastModifiedBy.trim();
     }
 
     /**

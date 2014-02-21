@@ -49,7 +49,6 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -506,10 +505,11 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
      *
      * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
      */
-    @XmlIDREF
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "nodeId")
     @XmlElement(name="nodeId")
+    //@XmlIDREF
+    @XmlJavaTypeAdapter(NodeIdAdapter.class)
     public OnmsNode getNode() {
         return m_node;
     }
@@ -561,8 +561,9 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
      *
      * @return a {@link java.util.Set} object.
      */
-    @XmlIDREF
     @OneToMany(mappedBy = "snmpInterface", fetch = FetchType.LAZY)
+    //@XmlIDREF
+    @XmlJavaTypeAdapter(SnmpInterfaceIdAdapter.class)
     public Set<OnmsIpInterface> getIpInterfaces() {
         return m_ipInterfaces;
     }
