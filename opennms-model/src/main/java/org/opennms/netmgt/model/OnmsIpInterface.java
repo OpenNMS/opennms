@@ -56,12 +56,12 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.hibernate.annotations.Type;
 import org.opennms.core.network.InetAddressXmlAdapter;
 import org.opennms.core.utils.InetAddressUtils;
@@ -77,6 +77,7 @@ import org.springframework.core.style.ToStringCreator;
 @Entity
 @Table(name="ipInterface")
 @XmlAccessorType(XmlAccessType.NONE)
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OnmsIpInterface extends OnmsEntity implements Serializable {
     
     private static final long serialVersionUID = 7750043250236397014L;

@@ -37,11 +37,11 @@ public class SnmpCellListItem extends JavaScriptObject {
     }
     
     public final native String getIfIndex()/*-{
-        return this["@ifIndex"];
+        return this.ifIndex === null? null : ('' + this.ifIndex);
     }-*/;
 
     public final native String getSnmpType() /*-{
-        return this.ifType;
+        return this.ifType === null? null : ('' + this.ifType);
     }-*/;
 
     public final native String getIfDescr() /*-{
@@ -57,11 +57,11 @@ public class SnmpCellListItem extends JavaScriptObject {
     }-*/;
 
     public final native String getCollectFlag() /*-{
-        return this["@collectFlag"];
+        return this.collectFlag;
     }-*/;
     
-    public final native void setCollectFlag(String flag) /*-{
-        this["@collectFlag"] = flag;
+    public final native void setCollectFlag(final String flag) /*-{
+        this.collectFlag = flag;
     }-*/;
 
     public final native int getIfAdminStatus() /*-{
@@ -73,7 +73,7 @@ public class SnmpCellListItem extends JavaScriptObject {
     }-*/;
 
     public final native int getId() /*-{
-        return parseInt(this["@id"]);
+        return parseInt(this.id);
     }-*/;
          
 }
