@@ -32,6 +32,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -39,11 +41,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * <p>OnmsIpInterfaceList class.</p>
- *
- * @author ranger
- * @version $Id: $
  */
 @XmlRootElement(name = "ipInterfaces")
+@XmlAccessorType(XmlAccessType.NONE)
 public class OnmsIpInterfaceList extends LinkedList<OnmsIpInterface> {
 
     private static final long serialVersionUID = 1123252152117491694L;
@@ -96,6 +96,10 @@ public class OnmsIpInterfaceList extends LinkedList<OnmsIpInterface> {
         return this.size();
     }
     
+    public void setCount(final Integer count) {
+        // dummy to make serialization happy
+    }
+
     /**
      * <p>getTotalCount</p>
      *

@@ -30,6 +30,8 @@ package org.opennms.core.utils;
 
 import java.util.List;
 
+import org.opennms.core.network.IpListFromUrl;
+
 /**
  * <p>IncludeURL class.</p>
  */
@@ -114,7 +116,7 @@ public class IncludeURL {
 	}
 
 	public void createIpList() {
-		List<String> iplist = IpListFromUrl.parse(getName());
+		List<String> iplist = IpListFromUrl.fetch(getName());
 		if (iplist.size() > 0) {
 			setIpList(iplist);
 		}

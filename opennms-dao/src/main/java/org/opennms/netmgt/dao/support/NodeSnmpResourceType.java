@@ -142,8 +142,8 @@ public class NodeSnmpResourceType implements OnmsResourceType {
     public boolean isResourceTypeOnNodeSource(String nodeSource, int nodeId) {
         File nodeSnmpDir = new File(m_resourceDao.getRrdDirectory(), DefaultResourceDao.SNMP_DIRECTORY + File.separator
                        + ResourceTypeUtils.getRelativeNodeSourceDirectory(nodeSource).toString());
-        if (!nodeSnmpDir.isDirectory()) {
-            throw new ObjectRetrievalFailureException(File.class, "No directory exists for nodeSource " + nodeSource);
+        if (!nodeSnmpDir.isDirectory()) { // A node without performance metrics should not have a directory 
+            return false;
         }
         return nodeSnmpDir.listFiles(RrdFileConstants.RRD_FILENAME_FILTER).length > 0; 
     }

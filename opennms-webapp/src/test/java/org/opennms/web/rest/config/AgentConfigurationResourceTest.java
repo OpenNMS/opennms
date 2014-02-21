@@ -47,6 +47,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.opennms.core.config.impl.JaxbResourceConfiguration;
 import org.opennms.core.criteria.Criteria;
+import org.opennms.netmgt.config.agents.AgentResponse;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.dao.mock.UnimplementedFilterDao;
 import org.opennms.netmgt.dao.mock.UnimplementedMonitoredServiceDao;
@@ -58,7 +59,6 @@ import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpConfiguration;
 import org.opennms.web.rest.config.AgentConfigurationResource;
-import org.opennms.web.rest.config.AgentConfigurationResource.AgentResponse;
 import org.springframework.core.io.ClassPathResource;
 
 @RunWith(BlockJUnit4ClassRunner.class)

@@ -43,12 +43,11 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.opennms.core.network.IpListFromUrl;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.IpListFromUrl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.opennms.netmgt.config.linkd.ExcludeRange;
 import org.opennms.netmgt.config.linkd.Filter;
 import org.opennms.netmgt.config.linkd.IncludeRange;
@@ -612,7 +611,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
         for (final org.opennms.netmgt.config.linkd.Package pkg : m_config.getPackageCollection()) {
             if (pkg == null) continue;
             for (final String urlname : pkg.getIncludeUrlCollection()) {
-                final java.util.List<String> iplist = IpListFromUrl.parse(urlname);
+                final java.util.List<String> iplist = IpListFromUrl.fetch(urlname);
                 if (iplist.size() > 0) {
                     m_urlIPMap.put(urlname, iplist);
                 }

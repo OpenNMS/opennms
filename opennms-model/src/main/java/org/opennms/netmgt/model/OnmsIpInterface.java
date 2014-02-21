@@ -51,6 +51,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlID;
@@ -59,9 +61,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.annotations.Type;
+import org.opennms.core.network.InetAddressXmlAdapter;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.xml.bind.InetAddressXmlAdapter;
 import org.opennms.netmgt.model.events.AddEventVisitor;
 import org.opennms.netmgt.model.events.DeleteEventVisitor;
 import org.opennms.netmgt.model.events.EventForwarder;
@@ -73,6 +76,7 @@ import org.springframework.core.style.ToStringCreator;
 @XmlRootElement(name = "ipInterface")
 @Entity
 @Table(name="ipInterface")
+@XmlAccessorType(XmlAccessType.NONE)
 public class OnmsIpInterface extends OnmsEntity implements Serializable {
     
     private static final long serialVersionUID = 7750043250236397014L;
@@ -140,6 +144,15 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     }
     
     /**
+     * <p>setId</p>
+     *
+     * @param id a {@link java.lang.Integer} object.
+     */
+    public void setId(Integer id) {
+        m_id = id;
+    }
+
+    /**
      * <p>getInterfaceId</p>
      *
      * @return a {@link java.lang.String} object.
@@ -151,13 +164,8 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         return getId().toString();
     }
 
-    /**
-     * <p>setId</p>
-     *
-     * @param id a {@link java.lang.Integer} object.
-     */
-    public void setId(Integer id) {
-        m_id = id;
+    public void setInterfaceId(final String id) {
+        setId(Integer.valueOf(id));
     }
 
     /**
@@ -167,6 +175,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      * @deprecated
      */
     @Transient
+    @XmlTransient
     public String getIpAddressAsString() {
         return InetAddressUtils.toIpAddrString(m_ipAddress);
     }
@@ -246,6 +255,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      * @return a boolean.
      */
     @Transient
+    @XmlTransient
     public boolean isManaged() {
         return "M".equals(getIsManaged());
     }
@@ -316,6 +326,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      * @return a boolean.
      */
     @Transient
+    @XmlTransient
     public boolean isPrimary(){
         return m_isSnmpPrimary.equals(PrimaryType.PRIMARY);
     }
@@ -328,7 +339,8 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     @ManyToOne(optional=false, fetch=FetchType.LAZY)
     @JoinColumn(name="nodeId")
     @XmlElement(name="nodeId")
-    @XmlIDREF
+    //@XmlIDREF
+    @XmlJavaTypeAdapter(NodeIdAdapter.class)
     public OnmsNode getNode() {
         return m_node;
     }
@@ -457,6 +469,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     
     @Transient 
     @XmlAttribute
+    @JsonIgnore
     public int getMonitoredServiceCount () {
     	return m_monitoredServices.size();
     }
@@ -467,6 +480,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      * @param svcName a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
      */
+    @JsonIgnore
     public OnmsMonitoredService getMonitoredServiceByServiceType(String svcName) {
         for (OnmsMonitoredService monSvc : getMonitoredServices()) {
             if (monSvc.getServiceType().getName().equals(svcName)) {

@@ -60,7 +60,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.hibernate.ObjectNotFoundException;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.Type;
-import org.opennms.core.xml.bind.InetAddressXmlAdapter;
+import org.opennms.core.network.InetAddressXmlAdapter;
 import org.springframework.core.style.ToStringCreator;
 
 /**

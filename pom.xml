@@ -120,6 +120,7 @@
     <module>opennms-javamail</module>
     <module>opennms-rrd</module>
     <module>opennms-config-api</module>
+    <module>opennms-config-jaxb</module>
     <module>opennms-config</module>
     <module>opennms-config-model</module>
     <module>opennms-provision</module>
@@ -966,6 +967,7 @@
     <gwtPluginVersion>2.5.1</gwtPluginVersion>
     <httpcoreVersion>4.2.4</httpcoreVersion>
     <httpclientVersion>4.2.5</httpclientVersion>
+    <jacksonVersion>1.9.13</jacksonVersion>
     <jasperreportsVersion>3.7.6</jasperreportsVersion>
     <jettyVersion>7.6.12.v20130726</jettyVersion>
     <karafVersion>2.3.2</karafVersion>
@@ -1746,6 +1748,11 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-config-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-config-jaxb</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -2657,6 +2664,26 @@
         <groupId>com.caucho</groupId>
         <artifactId>hessian</artifactId>
         <version>3.1.5</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.jackson</groupId>
+        <artifactId>jackson-core-asl</artifactId>
+        <version>${jacksonVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.jackson</groupId>
+        <artifactId>jackson-jaxrs</artifactId>
+        <version>${jacksonVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.jackson</groupId>
+        <artifactId>jackson-mapper-asl</artifactId>
+        <version>${jacksonVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.jackson</groupId>
+        <artifactId>jackson-xc</artifactId>
+        <version>${jacksonVersion}</version>
       </dependency>
       <dependency>
         <groupId>jakarta-regexp</groupId>
