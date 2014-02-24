@@ -173,8 +173,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                 return false;
             }
 
-            long updateDiff = System.currentTimeMillis() - m_lastUpdateTime;
-            return updateDiff >= m_graphContainer.getAutoRefreshSupport().getInterval() * 1000; // update or not
+            return true;
         }
 
     }
@@ -417,7 +416,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     private void setupAutoRefresher() {
         if (m_graphContainer.hasAutoRefreshSupport()) {
             Refresher refresher = new Refresher();
-            refresher.setRefreshInterval(((int)m_graphContainer.getAutoRefreshSupport().getInterval() * 1000)/2); // ask every 1 seconds for changes
+            refresher.setRefreshInterval((int)m_graphContainer.getAutoRefreshSupport().getInterval() * 1000); // ask every 1 seconds for changes
             refresher.addListener(new DynamicUpdateRefresher());
             addExtension(refresher);
         }
