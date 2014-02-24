@@ -36,11 +36,11 @@ public class PhysicalInterface extends JavaScriptObject {
     protected PhysicalInterface() {};
     
     public final native String getId() /*-{
-        return this["@id"];
+        return this.id === null? null : ('' + this.id);
     }-*/;
     
     public final native String getIfIndex() /*-{
-        return this["@ifIndex"];
+        return this.ifIndex === null? null : ('' + this.ifIndex);
     }-*/;
 
     public final native String getSnmpIfDescr() /*-{
@@ -56,7 +56,7 @@ public class PhysicalInterface extends JavaScriptObject {
     }-*/;
 
     public final native String getSnmpIfSpeed() /*-{
-        return this.ifSpeed;
+        return this.ifSpeed === null? null : ('' + this.ifSpeed);
     }-*/;
 
     public final native String getIpAddress() /*-{
@@ -64,11 +64,11 @@ public class PhysicalInterface extends JavaScriptObject {
     }-*/;
     
     public final native int getIfAdminStatus()/*-{
-        return parseInt(this.ifAdminStatus);
+        return this.ifAdminStatus;
     }-*/;
     
     public final native int getIfOperStatus() /*-{
-        return parseInt(this.ifOperStatus);
+        return this.ifOperStatus;
     }-*/;
 
 }

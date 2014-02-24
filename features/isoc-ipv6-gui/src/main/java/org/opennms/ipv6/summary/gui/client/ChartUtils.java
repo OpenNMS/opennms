@@ -35,8 +35,8 @@ import java.util.List;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
-import com.google.gwt.visualization.client.DataTable;
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
+import com.google.gwt.visualization.client.DataTable;
 
 public abstract class ChartUtils {
     
@@ -59,47 +59,25 @@ public abstract class ChartUtils {
         dataTable.addColumn(ColumnType.STRING, "title2");
         dataTable.addColumn(ColumnType.STRING, "text2");
         
-        
-        JSONObject jsonData = (JSONObject) JSONParser.parseStrict(text);
-        JSONObject data;
-        
-        if(jsonData.get("data").isObject() != null) {
-            data = jsonData.get("data").isObject();
-            JSONArray values = data.get("values").isArray();
+        final JSONObject jsonData = (JSONObject) JSONParser.parseStrict(text);
+        final JSONArray d = jsonData.isArray();
+
+        for (int j = 0; j < d.size(); j++) {
+            final JSONObject dataPoint = d.get(j).isObject();
+            final JSONArray values = dataPoint.get("values").isArray();
             dataTable.addRow();
-            Date date = new Date(Long.valueOf(data.get("time").isString().stringValue()));
-            dataTable.setValue(0, 0, date);
-            
-            for(int i = 0; i < values.size(); i++) {
-                JSONObject value = values.get(i).isObject();
-                if(value != null) {
-                    String application = value.get("application").isString().stringValue();
-                    insertApplicationData(dataTable, 0, value, application);
+
+            final Date date = new Date(Double.valueOf(dataPoint.get("time").isNumber().doubleValue()).longValue());
+            dataTable.setValue(j, 0, date);
+
+            for (int i = 0; i < values.size(); i++) {
+                final JSONObject value = values.get(i).isObject();
+                if (value != null) {
+                    final String application = value.get("application").isString().stringValue();
+                    insertApplicationData(dataTable, j, value, application);
                 }
             }
-            
-        }else if(jsonData.get("data").isArray() != null) {
-            JSONArray d = jsonData.get("data").isArray();
-            
-            for(int j = 0; j < d.size(); j++) {
-                JSONObject dataPoint = d.get(j).isObject();
-                JSONArray values = dataPoint.get("values").isArray(); 
-                dataTable.addRow();
-                Date date = new Date(Long.valueOf(dataPoint.get("time").isString().stringValue()));
-                dataTable.setValue(j, 0, date);
-                
-                for(int i = 0; i < values.size(); i++) {
-                    JSONObject value = values.get(i).isObject();
-                    if(value != null) {
-                        String application = value.get("application").isString().stringValue();
-                        insertApplicationData(dataTable, j, value, application);
-                    }
-                }
-                
-            }
-            
-        }
-        
+        }        
         
         return dataTable;
     }

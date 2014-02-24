@@ -36,7 +36,7 @@ public class IpInterface extends JavaScriptObject {
     protected IpInterface() {}
     
     public final native String getId()/*-{
-        return this["@id"];
+        return '' + this.id;
     }-*/;
     
     public final native String getIpAddress() /*-{
@@ -48,18 +48,18 @@ public class IpInterface extends JavaScriptObject {
     }-*/;
     
     public final native String getManaged() /*-{
-        return this["@isManaged"];
+        return this.isManaged;
     }-*/;
     
     public final native String isDown() /*-{
-        return this["@isDown"];
+        return this.isDown === null? null : ('' + this.isDown);
     }-*/;
     
     public final native String getMonitoredServiceCount()/*-{
-        return this["@monitoredServiceCount"];
+        return '0';
     }-*/;
 
     public final native String getIfIndex() /*-{
-        return this["@ifIndex"];
+        return this.ifIndex === null? null : ('' + this.ifIndex);
     }-*/;
 }
