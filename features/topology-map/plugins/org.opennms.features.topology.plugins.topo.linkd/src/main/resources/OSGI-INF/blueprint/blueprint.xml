@@ -131,7 +131,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
                     defaults 'link:system'
                     <entry key="linkd:system:snmp" value="theme://images/generic-device.png"/>
                      -->
-                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.5813.1.13" value="ulf"/>
+                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.5813.1.13" value="ulf_file_server"/>
                     <entry key="linkd:system:snmp:.1.3.6.1.4.1.9.1.283" value="workgroup_switch"/>
                     <entry key="linkd:system:snmp:.1.3.6.1.4.1.9.1.485" value="workgroup_switch"/>
                     <entry key="linkd:system:snmp:.1.3.6.1.4.1.9.1.516" value="workgroup_switch"/>
@@ -156,11 +156,9 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
                     <entry key="linkd:system:snmp:.1.3.6.1.4.1.890.1.15" value="workgroup_switch"/>
                     <entry key="linkd:system:snmp:.1.3.6.1.4.1.3375.2.1.3.4.20" value="access_gateway"/>
                     <entry key="linkd:system:snmp:.1.3.6.1.4.1.3375.2.1.3.4.43" value="access_gateway"/>
-<!--
-                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.8072.3.2.10" value="tux"/>
-                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.8072.3.2.3" value="tux"/>
-                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.8072.3.2.255" value="tux"/>
--->
+                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.8072.3.2.10" value="linux_file_server"/>
+                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.8072.3.2.3" value="linux_file_server"/>
+                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.8072.3.2.255" value="linux_file_server"/>
                     <entry key="linkd:system:snmp:.1.3.6.1.4.1.30065.1.3011.7048.427.3648" value="workgroup_switch"/>
                 </map>
             </property>
