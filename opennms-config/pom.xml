@@ -28,6 +28,9 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.6</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
+
+            <!-- Launch the Spring context when this bundle is loaded in OSGi -->
+            <Spring-Context>beanRefContext.xml</Spring-Context>
           </instructions>
         </configuration>
       </plugin>

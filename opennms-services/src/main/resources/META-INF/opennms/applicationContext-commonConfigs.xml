@@ -58,14 +58,6 @@
     <bean id="linkdConfig" class="org.opennms.netmgt.config.LinkdConfigFactory" depends-on="linkdConfig-init" factory-method="getInstance"/>
      
 
-	<bean name="syncer" class="org.opennms.netmgt.capsd.JdbcCapsdDbSyncer">
-		<property name="jdbcTemplate" ref="jdbcTemplate" />
-		<property name="opennmsServerConfig" ref="onmsServerConfig" />
-		<property name="capsdConfig" ref="capsdConfig" />
-		<property name="pollerConfig" ref="pollerConfig" />
-		<property name="collectdConfig" ref="collectdConfig" />
-	</bean>
-
 	<!-- This is shared by eventd and trapd. -->
 	<bean id="eventConfResourceLocation" class="java.lang.String">
 	  <constructor-arg value="file:${opennms.home}/etc/eventconf.xml" />
