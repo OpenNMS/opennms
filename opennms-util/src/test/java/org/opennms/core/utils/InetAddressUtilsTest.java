@@ -27,62 +27,17 @@
  *******************************************************************************/
 
 package org.opennms.core.utils;
+
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.math.BigInteger;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.xbill.DNS.Lookup;
-import org.xbill.DNS.Record;
-import org.xbill.DNS.Type;
 
 public class InetAddressUtilsTest {
-
-    @Test
-    @Ignore
-    public void testPreferIPv6() throws Exception {
-        InetAddressUtils.resolveHostname("ipv4.www.yahoo.com", false);
-        try {
-            InetAddressUtils.resolveHostname("ipv4.www.yahoo.com", true);
-            fail();
-        } catch (UnknownHostException e) {
-            // Expected exception
-        }
-        try {
-            InetAddressUtils.resolveHostname("ipv6.www.yahoo.com", false);
-            fail();
-        } catch (UnknownHostException e) {
-            // Expected exception
-        }
-        InetAddressUtils.resolveHostname("ipv6.www.yahoo.com", true);
-    }
-
-    @Test
-    @Ignore
-    public void testLookup() throws Exception {
-        InetAddress fb = InetAddressUtils.resolveHostname("www.opennms.org", false);
-        assertNotNull(fb);
-    }
-
-    /**
-     * Make sure this test is FIRST.
-     */
-    @Test
-    @Ignore
-    public void testOrderingOfLookups() throws Exception {
-        //String lookup = "www.opennms.org";
-        String lookup = "www.facebook.com";
-        Record[] fb = new Lookup(lookup, Type.AAAA).run();
-        fb = new Lookup(lookup, Type.A).run();
-        assertNotNull(fb);
-    }
 
     @Test
     public void testMacAddressFunctions() throws Exception {

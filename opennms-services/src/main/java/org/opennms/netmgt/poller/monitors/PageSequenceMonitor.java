@@ -88,6 +88,7 @@ import org.opennms.netmgt.config.pagesequence.SessionVariable;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
+import org.opennms.netmgt.utils.DnsUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -461,7 +462,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
             String host = getHost(seqProps, svcProps);
             if (m_page.getRequireIPv4()) {
                 try {
-                    InetAddress address = InetAddressUtils.resolveHostname(host, false);
+                    InetAddress address = DnsUtils.resolveHostname(host, false);
                     if (!(address instanceof Inet4Address)) throw new UnknownHostException();
                     host = InetAddressUtils.str(address);
                 } catch (UnknownHostException e) {
@@ -469,7 +470,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                 }
             } else if (m_page.getRequireIPv6()) {
                 try {
-                    InetAddress address = InetAddressUtils.resolveHostname(host, true);
+                    InetAddress address = DnsUtils.resolveHostname(host, true);
                     host = "[" + InetAddressUtils.str(address) + "]";
                 } catch (UnknownHostException e) {
                     throw new PageSequenceMonitorException("failed to find IPv6 address for hostname: " + host);

@@ -52,6 +52,7 @@ import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.mock.MockMonitoredService;
 import org.opennms.netmgt.poller.mock.MonitorTestUtils;
+import org.opennms.netmgt.utils.DnsUtils;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.test.context.ContextConfiguration;
@@ -81,7 +82,7 @@ public class HttpMonitorTest {
         Parameter p = new Parameter();
 
         ServiceMonitor monitor = new HttpMonitor();
-        MonitoredService svc = MonitorTestUtils.getMonitoredService(99, "www.opennms.org", "HTTP");
+        MonitoredService svc = MonitorTestUtils.getMonitoredService(99, "www.opennms.org", DnsUtils.resolveHostname("www.opennms.org"), "HTTP");
 
 
         p.setKey("port");
@@ -130,7 +131,7 @@ public class HttpMonitorTest {
         Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
 
         ServiceMonitor monitor = new HttpMonitor();
-        MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", "HTTP", preferIPv6);
+        MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", preferIPv6), "HTTP");
 
         m.put("port", "10342");
         m.put("retry", "1");
@@ -230,7 +231,7 @@ public class HttpMonitorTest {
         ServiceMonitor monitor = new HttpMonitor();
 
         final Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
-        final MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", "HTTP", preferIPv6);
+        final MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", preferIPv6), "HTTP");
 
         m.put("port", "10342");
         m.put("retry", "0");
@@ -296,7 +297,7 @@ public class HttpMonitorTest {
         PollStatus status = null;
 
         ServiceMonitor monitor = new HttpMonitor();
-        MonitoredService svc = MonitorTestUtils.getMonitoredService(1, "localhost", "HTTP", preferIPv6);
+        MonitoredService svc = MonitorTestUtils.getMonitoredService(1, "localhost", DnsUtils.resolveHostname("localhost", preferIPv6), "HTTP");
 
         m.put("port", "10342");
         m.put("retry", "0");
@@ -342,7 +343,7 @@ public class HttpMonitorTest {
         PollStatus status = null;
 
         ServiceMonitor monitor = new HttpsMonitor();
-        MonitoredService svc = MonitorTestUtils.getMonitoredService(1, "localhost", "HTTPS", preferIPv6);
+        MonitoredService svc = MonitorTestUtils.getMonitoredService(1, "localhost", DnsUtils.resolveHostname("localhost", preferIPv6), "HTTPS");
 
         m.put("port", "10342");
         m.put("retry", "1");
@@ -384,7 +385,7 @@ public class HttpMonitorTest {
         PollStatus status = null;
 
         ServiceMonitor monitor = new HttpMonitor();
-        MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", "HTTP", preferIPv6);
+        MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", preferIPv6), "HTTP");
 
         m.put("port", "10342");
         m.put("retry", "0");
@@ -421,7 +422,7 @@ public class HttpMonitorTest {
         PollStatus status = null;
 
         ServiceMonitor monitor = new HttpMonitor();
-        MockMonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", "HTTP", preferIPv6);
+        MockMonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", preferIPv6), "HTTP");
         svc.setNodeLabel("bad.virtual.host.example.com");
 
         m.put("port", "10342");
@@ -458,7 +459,7 @@ public class HttpMonitorTest {
         Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
 
         ServiceMonitor monitor = new HttpMonitor();
-        MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", "HTTP", preferIPv6);
+        MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", preferIPv6), "HTTP");
 
         m.put("port", "10342");
         m.put("retry", "0");
@@ -490,7 +491,7 @@ public class HttpMonitorTest {
         Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
 
         ServiceMonitor monitor = new HttpMonitor();
-        MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", "HTTP", preferIPv6);
+        MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", preferIPv6), "HTTP");
 
         m.put("port", "10342");
         m.put("retry", "1");
@@ -516,13 +517,13 @@ public class HttpMonitorTest {
 
         // Match a string included on Initial Server Response
         parameters.put("response-text", "~.*OK.*");
-        MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", "HTTP", false);
+        MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", false), "HTTP");
         PollStatus status = monitor.poll(svc, parameters);
         assertTrue(status.isAvailable());
 
         // Match a string included on Header
         parameters.put("response-text", "~.*Jetty.*");
-        svc = MonitorTestUtils.getMonitoredService(3, "localhost", "HTTP", false);
+        svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", false), "HTTP");
         status = monitor.poll(svc, parameters);
         assertTrue(status.isAvailable());
     }
