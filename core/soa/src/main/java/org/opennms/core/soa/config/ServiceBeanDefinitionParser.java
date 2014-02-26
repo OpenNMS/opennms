@@ -104,7 +104,7 @@ public class ServiceBeanDefinitionParser extends AbstractSingleBeanDefinitionPar
                 if (INTERFACES_ELEM.equals(child.getLocalName())) {
                     
                     if (element.hasAttribute(INTERFACE_ATTR)) {
-                        context.getReaderContext().error("either 'interface' attribute or <intefaces> sub-element has be specified", element);
+                        context.getReaderContext().error("either 'interface' attribute or <interfaces> sub-element has to be specified", element);
                     }                
                 
                     Set<?> interfaces = context.getDelegate().parseSetElement(child, bean.getBeanDefinition());

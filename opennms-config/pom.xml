@@ -29,8 +29,11 @@
             <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
 
-            <!-- Launch the Spring context when this bundle is loaded in OSGi -->
-            <Spring-Context>META-INF/opennms/applicationContext-commonConfigs.xml</Spring-Context>
+            <!-- Launch the Spring contexts when this bundle is loaded in OSGi -->
+            <Spring-Context>
+              META-INF/opennms/applicationContext-commonConfigs-osgi.xml,
+              META-INF/opennms/applicationContext-commonConfigs.xml
+            </Spring-Context>
           </instructions>
         </configuration>
       </plugin>
