@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opennms.container.web;
+package org.opennms.core.soa.support;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -28,7 +28,6 @@ import java.util.Map.Entry;
 import org.opennms.core.soa.Registration;
 import org.opennms.core.soa.RegistrationHook;
 import org.opennms.core.soa.ServiceRegistry;
-import org.opennms.core.soa.support.DefaultServiceRegistry;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -66,6 +65,7 @@ public class OnmsOSGiBridgeActivator implements RegistrationHook, ServiceListene
 
     @Override
     public void start(BundleContext bundleContext) throws InvalidSyntaxException {
+        LOG.debug("Starting BundleActivator {}", this.toString());
         m_bundleContext = bundleContext;
 
         // register for ONMS registrations to forward registrations to OSGi service registry
@@ -84,6 +84,7 @@ public class OnmsOSGiBridgeActivator implements RegistrationHook, ServiceListene
                 registerWithOnmsRegistry(reference);
             }
         }
+        LOG.debug("BundleActivator {} started", this.toString());
     }
 
     @Override
@@ -180,14 +181,13 @@ public class OnmsOSGiBridgeActivator implements RegistrationHook, ServiceListene
 
             properties.put(REGISTRATION_SOURCE, OSGI_SOURCE);
 
-            LOG.debug("registering...");
-
+            LOG.debug("OnmsOSGiBridgeActivator: registering...");
             final Registration onmsRegistration = getRegistry().register(provider, properties, providerInterfaces);
             LOG.debug("OnmsOSGiBridgeActivator: registry = {}", getRegistry());
             m_osgiReference2onmsRegistrationMap.put(reference, onmsRegistration);
-            LOG.info("registered provider {} for interfaces: {} with properties: {}", provider, Arrays.toString(providerInterfaces), properties);
+            LOG.info("OnmsOSGiBridgeActivator: registered provider {} for interfaces: {} with properties: {}", provider, Arrays.toString(providerInterfaces), properties);
         } catch (final ClassNotFoundException e) {
-            LOG.warn("Unable to find class used by exported OSGi service", e);
+            LOG.warn("OnmsOSGiBridgeActivator: Unable to find class used by exported OSGi service", e);
         }
     }
 

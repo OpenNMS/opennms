@@ -23,6 +23,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import org.apache.karaf.main.Main;
+import org.opennms.core.soa.support.OnmsOSGiBridgeActivator;
 import org.osgi.framework.BundleContext;
 
 public class WebAppListener implements ServletContextListener {

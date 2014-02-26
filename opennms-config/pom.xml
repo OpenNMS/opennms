@@ -30,7 +30,7 @@
             <Bundle-Version>${project.version}</Bundle-Version>
 
             <!-- Launch the Spring context when this bundle is loaded in OSGi -->
-            <Spring-Context>beanRefContext.xml</Spring-Context>
+            <Spring-Context>META-INF/opennms/applicationContext-commonConfigs.xml</Spring-Context>
           </instructions>
         </configuration>
       </plugin>
