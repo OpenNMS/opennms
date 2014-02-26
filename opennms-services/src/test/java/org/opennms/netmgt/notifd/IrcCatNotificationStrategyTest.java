@@ -34,8 +34,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
-import org.opennms.core.utils.Argument;
 import org.opennms.netmgt.config.NotificationManager;
+import org.opennms.netmgt.model.notifd.Argument;
 
 /**
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>

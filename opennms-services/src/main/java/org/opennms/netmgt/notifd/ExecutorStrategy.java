@@ -30,7 +30,7 @@ package org.opennms.netmgt.notifd;
 
 import java.util.List;
 
-import org.opennms.core.utils.Argument;
+import org.opennms.netmgt.model.notifd.Argument;
 
 /**
  * <p>ExecutorStrategy interface.</p>

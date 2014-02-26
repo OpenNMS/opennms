@@ -30,7 +30,6 @@ package org.opennms.netmgt.model.notifd;
 
 import java.util.List;
 
-import org.opennms.core.utils.Argument;
 
 /**
  * Implement this interface as a Java notification "plug-in" for use with the

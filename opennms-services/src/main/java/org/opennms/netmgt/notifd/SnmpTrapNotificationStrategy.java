@@ -33,8 +33,8 @@ import java.net.UnknownHostException;
 import java.util.Iterator;
 import java.util.List;
 
-import org.opennms.core.utils.Argument;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.model.notifd.Argument;
 import org.opennms.netmgt.model.notifd.NotificationStrategy;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;

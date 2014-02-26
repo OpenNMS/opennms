@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.utils;
+package org.opennms.netmgt.model.notifd;
 
 /**
  * This is a data class to store the argument information for a Command
