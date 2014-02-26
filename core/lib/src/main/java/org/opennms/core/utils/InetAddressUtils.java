@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @version $Id: $
  */
-abstract public class InetAddressUtils {
+public abstract class InetAddressUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(InetAddressUtils.class);
 
