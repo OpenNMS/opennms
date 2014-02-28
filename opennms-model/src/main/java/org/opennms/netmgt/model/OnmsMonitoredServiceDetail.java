@@ -33,8 +33,6 @@ import static org.opennms.core.utils.InetAddressUtils.toInteger;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.net.InetAddress;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -46,6 +44,8 @@ import org.opennms.core.xml.bind.InetAddressXmlAdapter;
 @SuppressWarnings("serial")
 @XmlRootElement(name = "monitored-service")
 public class OnmsMonitoredServiceDetail implements Serializable, Comparable<OnmsMonitoredServiceDetail> {
+
+    private String m_statusCode;
 
     private String m_status;
 
@@ -59,20 +59,6 @@ public class OnmsMonitoredServiceDetail implements Serializable, Comparable<Onms
 
     private boolean m_isDown;
 
-    private static final Map<String, String> STATUS_MAP;
-
-    static {
-        STATUS_MAP = new HashMap<String, String>();
-        STATUS_MAP.put("A", "Managed");
-        STATUS_MAP.put("U", "Unmanaged");
-        STATUS_MAP.put("D", "Deleted");
-        STATUS_MAP.put("F", "Forced Unmanaged");
-        STATUS_MAP.put("N", "Not Monitored");
-        STATUS_MAP.put("R", "Rescan to Resume");
-        STATUS_MAP.put("S", "Rescan to Suspend");
-        STATUS_MAP.put("X", "Remotely Monitored");
-    }
-
     public OnmsMonitoredServiceDetail() {
     }
 
@@ -82,7 +68,8 @@ public class OnmsMonitoredServiceDetail implements Serializable, Comparable<Onms
         m_serviceName = service.getServiceName();
         m_isMonitored = service.getStatus().equals("A");
         m_isDown = service.isDown();
-        m_status = STATUS_MAP.get(service.getStatus());
+        m_statusCode = service.getStatus();
+        m_status = service.getStatusLong();
     }
 
     @XmlElement(name="status")
@@ -92,6 +79,15 @@ public class OnmsMonitoredServiceDetail implements Serializable, Comparable<Onms
 
     public void setStatus(String status) {
         this.m_status = status;
+    }
+
+    @XmlAttribute(name="statusCode")
+    public String getStatusCode() {
+        return m_statusCode;
+    }
+
+    public void setStatusCode(String statusCode) {
+        this.m_statusCode = statusCode;
     }
 
     @XmlElement(name="node")
