@@ -340,29 +340,32 @@ public class DefaultPollContext implements PollContext, EventListener {
      * @see org.opennms.netmgt.eventd.EventListener#onEvent(org.opennms.netmgt.xml.event.Event)
      */
     /** {@inheritDoc} */
-    public void onEvent(Event e) {
+    public void onEvent(final Event e) {
+        ThreadCategory log = log();
+        log.debug("onEvent: Waiting to process event: "+e+" uei: "+e.getUei()+", dbid: "+e.getDbid());
         synchronized (m_pendingPollEvents) {
-            log().debug("onEvent: Received event: "+e+" uei: "+e.getUei()+", dbid: "+e.getDbid());
-            for (Iterator<PendingPollEvent> it = m_pendingPollEvents .iterator(); it.hasNext();) {
-                PendingPollEvent pollEvent = it.next();
-                log().debug("onEvent: comparing events to poll event: "+pollEvent);
+            log.debug("onEvent: Received event: "+e+" uei: "+e.getUei()+", dbid: "+e.getDbid());
+            for (final Iterator<PendingPollEvent> it = m_pendingPollEvents.iterator(); it.hasNext();) {
+                final PendingPollEvent pollEvent = it.next();
+                log.debug("onEvent: comparing events to poll event: "+pollEvent);
                 if (e.equals(pollEvent.getEvent())) {
-                    log().debug("onEvent: completing pollevent: "+pollEvent);
+                    log.debug("onEvent: completing pollevent: "+pollEvent);
                     pollEvent.complete(e);
                 }
             }
             
             for (Iterator<PendingPollEvent> it = m_pendingPollEvents.iterator(); it.hasNext(); ) {
                 PendingPollEvent pollEvent = it.next();
-                log().debug("onEvent: determining if pollEvent is pending: "+pollEvent);
+                log.debug("onEvent: determining if pollEvent is pending: "+pollEvent);
                 if (pollEvent.isPending()) continue;
                 
-                log().debug("onEvent: processing pending pollEvent...: "+pollEvent);
+                log.debug("onEvent: processing pending pollEvent...: "+pollEvent);
                 pollEvent.processPending();
                 it.remove();
-                log().debug("onEvent: processing of pollEvent completed.: "+pollEvent);
+                log.debug("onEvent: processing of pollEvent completed.: "+pollEvent);
             }
         }
+        log.debug("onEvent: Finished processing event: "+e+" uei: "+e.getUei()+", dbid: "+e.getDbid());
         
     }
 
