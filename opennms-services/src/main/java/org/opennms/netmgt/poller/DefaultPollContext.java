@@ -361,9 +361,10 @@ public class DefaultPollContext implements PollContext, EventListener {
     /** {@inheritDoc} */
     @Override
     public void onEvent(final Event e) {
+        LOG.debug("onEvent: Waiting to process event: {} uei: {}, dbid: {}", e, e.getUei(), e.getDbid());
         synchronized (m_pendingPollEvents) {
             LOG.debug("onEvent: Received event: {} uei: {}, dbid: {}", e, e.getUei(), e.getDbid());
-            for (final Iterator<PendingPollEvent> it = m_pendingPollEvents .iterator(); it.hasNext();) {
+            for (final Iterator<PendingPollEvent> it = m_pendingPollEvents.iterator(); it.hasNext();) {
                 final PendingPollEvent pollEvent = it.next();
                 LOG.debug("onEvent: comparing events to poll event: {}", pollEvent);
                 if (e.equals(pollEvent.getEvent())) {
@@ -383,6 +384,7 @@ public class DefaultPollContext implements PollContext, EventListener {
                 LOG.debug("onEvent: processing of pollEvent completed.: {}", pollEvent);
             }
         }
+        LOG.debug("onEvent: Finished processing event: {} uei: {}, dbid: {}", e, e.getUei(), e.getDbid());
         
     }
 
