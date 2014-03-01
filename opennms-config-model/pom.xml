@@ -97,11 +97,12 @@
               org.opennms.netmgt.config.categories.*;version="${project.version}",
               org.opennms.netmgt.config.charts.*;version="${project.version}",
               org.opennms.netmgt.config.collectd.*;version="${project.version}",
+              org.opennms.netmgt.config.collector.*;version="${project.version}",
               org.opennms.netmgt.config.databaseReports.*;version="${project.version}",
-              org.opennms.netmgt.config.datacollection.*;version="${project.version}",
               org.opennms.netmgt.config.destinationPaths.*;version="${project.version}",
               org.opennms.netmgt.config.discovery.*;version="${project.version}",
               org.opennms.netmgt.config.eventd.*;version="${project.version}",
+              org.opennms.netmgt.config.filter.*;version="${project.version}",
               org.opennms.netmgt.config.groups.*;version="${project.version}",
               org.opennms.netmgt.config.httpdatacollection.*;version="${project.version}",
               org.opennms.netmgt.config.javamail.*;version="${project.version}",
@@ -127,7 +128,6 @@
               org.opennms.netmgt.config.server.*;version="${project.version}",
               org.opennms.netmgt.config.service.*;version="${project.version}",
               org.opennms.netmgt.config.siteStatusViews.*;version="${project.version}",
-              org.opennms.netmgt.config.snmp.*;version="${project.version}",
               org.opennms.netmgt.config.snmpAsset.adapter.*;version="${project.version}",
               org.opennms.netmgt.config.snmpinterfacepoller.*;version="${project.version}",
               org.opennms.netmgt.config.statsd.*;version="${project.version}",
@@ -159,6 +159,10 @@
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>castor-dependencies</artifactId>
       <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-config-jaxb</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>

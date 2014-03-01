@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.provision.adapters.link;
 
-import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.provision.adapters.link.config.dao.DefaultLinkAdapterConfigurationDao;
 import org.opennms.netmgt.provision.adapters.link.config.linkadapter.LinkPattern;
 import org.springframework.beans.factory.InitializingBean;

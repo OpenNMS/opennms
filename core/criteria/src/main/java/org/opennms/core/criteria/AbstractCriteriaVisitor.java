@@ -29,6 +29,7 @@
 package org.opennms.core.criteria;
 
 import org.opennms.core.criteria.Criteria.CriteriaVisitor;
+import org.opennms.core.criteria.Criteria.LockType;
 import org.opennms.core.criteria.restrictions.Restriction;
 
 public class AbstractCriteriaVisitor implements CriteriaVisitor {
@@ -59,6 +60,10 @@ public class AbstractCriteriaVisitor implements CriteriaVisitor {
 
     @Override
     public void visitFetchesFinished() {
+    }
+
+    @Override
+    public void visitLockType(final LockType lock) {
     }
 
     @Override

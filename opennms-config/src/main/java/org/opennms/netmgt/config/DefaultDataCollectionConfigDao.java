@@ -39,8 +39,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.opennms.core.spring.FileReloadContainer;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.FileReloadContainer;
 import org.opennms.core.xml.AbstractJaxbConfigDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.Group;

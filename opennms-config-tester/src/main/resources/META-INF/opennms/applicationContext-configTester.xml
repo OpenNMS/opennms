@@ -158,11 +158,7 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
   Interestingly, that exception does not bubble up and the initialization eventually completes once C3P0 gives up.
   -->
   <!--
-  <bean id="collectdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.CollectdConfigFactory.init</value></property>
-  </bean>
-
-  <bean id="collectdConfigFactory" class="org.opennms.netmgt.config.CollectdConfigFactory" depends-on="collectdConfigFactory-init" factory-method="getInstance"/>
+  <bean id="collectdConfigFactory" class="org.opennms.netmgt.config.CollectdConfigFactory"/>
   -->
 
   <bean id="databaseReportConfigDao" class="org.opennms.netmgt.dao.castor.DefaultDatabaseReportConfigDao">

@@ -42,7 +42,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.beanutils.MethodUtils;
-import org.opennms.core.utils.PropertyPath;
+import org.opennms.core.spring.PropertyPath;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.CapsdConfig;
 import org.opennms.netmgt.dao.api.CategoryDao;

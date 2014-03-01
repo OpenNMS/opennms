@@ -49,15 +49,15 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.hibernate.annotations.Type;
+import org.opennms.core.network.InetAddressXmlAdapter;
 import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.core.utils.RrdLabelUtils;
-import org.opennms.core.xml.bind.InetAddressXmlAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.style.ToStringCreator;
@@ -68,6 +68,7 @@ import org.springframework.core.style.ToStringCreator;
 @XmlRootElement(name = "snmpInterface")
 @Entity
 @Table(name = "snmpInterface")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(OnmsSnmpInterface.class);
@@ -506,10 +507,11 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
      *
      * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
      */
-    @XmlIDREF
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "nodeId")
     @XmlElement(name="nodeId")
+    //@XmlIDREF
+    @XmlJavaTypeAdapter(NodeIdAdapter.class)
     public OnmsNode getNode() {
         return m_node;
     }
@@ -561,8 +563,9 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
      *
      * @return a {@link java.util.Set} object.
      */
-    @XmlIDREF
     @OneToMany(mappedBy = "snmpInterface", fetch = FetchType.LAZY)
+    //@XmlIDREF
+    @XmlJavaTypeAdapter(SnmpInterfaceIdAdapter.class)
     public Set<OnmsIpInterface> getIpInterfaces() {
         return m_ipInterfaces;
     }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,6 +31,11 @@ package org.opennms.netmgt.provision.detector.web.client;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Map.Entry;
+
+import org.apache.http.conn.scheme.Scheme;  
+import org.apache.http.conn.ssl.AllowAllHostnameVerifier;  
+import org.apache.http.conn.ssl.SSLSocketFactory;  
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
@@ -63,6 +68,8 @@ import org.slf4j.LoggerFactory;
  * <p>WebClient class.</p>
  *
  * @author Alejandro Galue <agalue@opennms.org>
+ * @author <A HREF="mailto:cliles@capario.com">Chris Liles</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  * @version $Id: $
  */
 public class WebClient implements Client<WebRequest, WebResponse> {
@@ -76,8 +83,21 @@ public class WebClient implements Client<WebRequest, WebResponse> {
 
     private String path;
 
-    public WebClient() {
-        m_httpClient = new DefaultHttpClient();
+    private String queryString;
+
+    private boolean useSSLFilter;
+
+    public WebClient(boolean override) {
+        if (override) {
+            m_httpClient = new DefaultHttpClient();
+            try {
+              m_httpClient.getConnectionManager().getSchemeRegistry().register(new Scheme("https", 443, new SSLSocketFactory(new TrustSelfSignedStrategy(), new AllowAllHostnameVerifier())));
+            }
+            catch (Exception e){
+            }
+        } else {
+            m_httpClient = new DefaultHttpClient();
+        }
     }
 
     @Override
@@ -87,6 +107,9 @@ public class WebClient implements Client<WebRequest, WebResponse> {
         ub.setHost(InetAddressUtils.str(address));
         ub.setPort(port);
         ub.setPath(path);
+        if (queryString != null)
+            ub.setQuery(queryString);
+
         m_httpMethod = new HttpGet(ub.build());
         setTimeout(timeout);
     }
@@ -117,6 +140,14 @@ public class WebClient implements Client<WebRequest, WebResponse> {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public void setQueryString(String queryString) {
+        this.queryString = queryString;
+    }
+
+    public void setUseSSLFilter(boolean sslFilter) {
+        this.useSSLFilter = sslFilter;
     }
 
     public void setSchema(String schema) {

@@ -36,10 +36,10 @@ import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.notifd.Argument;
 import org.opennms.netmgt.notifd.TicketNotificationStrategy.AlarmType;
 import org.opennms.test.mock.EasyMockUtils;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.core.utils.Argument;
 
 import junit.framework.TestCase;
 import javax.sql.DataSource;

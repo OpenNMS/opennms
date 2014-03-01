@@ -37,6 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.sql.XADataSource;
 
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.netmgt.config.opennmsDataSources.ConnectionPool;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.postgresql.xa.PGXADataSource;
 import org.slf4j.Logger;
@@ -87,6 +88,7 @@ public abstract class XADataSourceFactory {
 		}
 
 		final JdbcDataSource ds = m_dataSourceConfigFactory.getJdbcDataSource(dsName);
+		final ConnectionPool pool = m_dataSourceConfigFactory.getConnectionPool();
 		String urlString = ds.getUrl();
 		if (urlString.startsWith("jdbc:")) {
 			urlString = urlString.substring("jdbc:".length());
@@ -101,16 +103,22 @@ public abstract class XADataSourceFactory {
 			xaDataSource.setUser(ds.getUserName());
 			xaDataSource.setPassword(ds.getPassword());
 
-			try {
-				xaDataSource.setLoginTimeout(10);
-			} catch (SQLException e) {
-				// This should never be thrown
-				throw new UnsupportedOperationException("Cannot set login timeout on PGXADataSource", e);
-			}
+			if (pool != null) {
+				if (pool.getLoginTimeout() > 0) {
+					try {
+						xaDataSource.setLoginTimeout(pool.getLoginTimeout());
+					} catch (SQLException e) {
+						// This should never be thrown
+						throw new UnsupportedOperationException("Cannot set login timeout on PGXADataSource", e);
+					}
+				}
 
-			// Set the socket timeout so that connections that are stuck reading from
-			// the database will be closed after the timeout
-			xaDataSource.setSocketTimeout(120);
+				if (pool.getIdleTimeout() > 0) {
+					// Set the socket timeout so that connections that are stuck reading from
+					// the database will be closed after the timeout
+					xaDataSource.setSocketTimeout(pool.getIdleTimeout());
+				}
+			}
 
 			setInstance(dsName, xaDataSource);
 		} else {

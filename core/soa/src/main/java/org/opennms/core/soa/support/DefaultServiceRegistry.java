@@ -42,6 +42,8 @@ import org.opennms.core.soa.RegistrationHook;
 import org.opennms.core.soa.RegistrationListener;
 import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.core.soa.filter.FilterParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * DefaultServiceRegistry
@@ -50,7 +52,9 @@ import org.opennms.core.soa.filter.FilterParser;
  * @version $Id: $
  */
 public class DefaultServiceRegistry implements ServiceRegistry {
-    
+
+    private static Logger LOG = LoggerFactory.getLogger(DefaultServiceRegistry.class);
+
     /**
      * AnyFilter
      *
@@ -207,7 +211,8 @@ public class DefaultServiceRegistry implements ServiceRegistry {
             fireProviderRegistered(serviceInterface, registration);
         }
 
-        
+        LOG.debug("Registered {} as instance of {}", serviceProvider, services);
+
         return registration;
 
     }
@@ -325,7 +330,14 @@ public class DefaultServiceRegistry implements ServiceRegistry {
 	public void removeRegistrationHook(RegistrationHook hook) {
 		m_hooks.remove(hook);
 	}
-	
+
+	@Override
+	public void unregisterAll(Class<?> clazz) {
+		for (ServiceRegistration registration : getRegistrations(clazz)) {
+			unregister(registration);
+		}
+	}
+
 	private Set<ServiceRegistration> getAllRegistrations() {
 		Set<ServiceRegistration> registrations = new LinkedHashSet<ServiceRegistration>();
 		

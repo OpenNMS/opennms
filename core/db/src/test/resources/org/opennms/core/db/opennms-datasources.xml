@@ -6,7 +6,7 @@
                       http://www.opennms.org/xsd/config/opennms-datasources.xsd ">
   <jdbc-data-source name="opennms"
       class-name="org.postgresql.Driver"
-      url="jdbc:postgresql://localhost:5432/template0"
+      url="jdbc:postgresql://localhost:5432/template1"
       user-name="opennms"
       password="opennms" />
   <jdbc-data-source name="opennms2"

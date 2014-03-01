@@ -158,17 +158,22 @@ public class ConnectionFactoryTest extends TestCase {
 						assertTrue(factory2.poolAvailableSize() < 50);
 
 						Statement stmt = conn.createStatement();
+						stmt.execute("BEGIN");
 						stmt.execute("SELECT * FROM doesnt_exist_in_the_database");
 					} catch (SQLException e) {
 						e.printStackTrace();
 					} finally {
+						/*
 						if (conn != null) {
 							try {
+								Statement stmt = conn.createStatement();
+								stmt.execute("ROLLBACK");
 								conn.close();
 							} catch (SQLException e) {
 								fail("Exception thrown when trying to close connection");
 							}
 						}
+						*/
 					}
 				}
 			}.start();

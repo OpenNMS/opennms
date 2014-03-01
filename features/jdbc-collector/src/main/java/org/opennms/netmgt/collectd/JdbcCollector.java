@@ -39,7 +39,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.core.db.DataSourceFactory;
-import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.collectd.jdbc.JdbcAgentState;
 import org.opennms.netmgt.collectd.jdbc.JdbcCollectionAttributeType;

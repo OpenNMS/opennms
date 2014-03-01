@@ -34,7 +34,7 @@ import java.util.HashSet;
 import java.util.concurrent.ExecutorService;
 
 import org.opennms.core.logging.Logging;
-import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.model.events.StoppableEventListener;

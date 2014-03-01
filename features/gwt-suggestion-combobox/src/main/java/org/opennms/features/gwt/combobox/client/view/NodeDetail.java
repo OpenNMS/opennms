@@ -35,14 +35,14 @@ public class NodeDetail extends JavaScriptObject {
     protected NodeDetail() {}
     
     public final native String getLabel() /*-{
-        return this["@label"];
+        return this.label;
     }-*/;
     
     public final native int getId() /*-{
-        return parseInt(this["@id"]);
+        return parseInt(this.id);
     }-*/;
     
     public final native String getNodeType() /*-{
-        return this["@type"];
+        return this.type;
     }-*/;
 }

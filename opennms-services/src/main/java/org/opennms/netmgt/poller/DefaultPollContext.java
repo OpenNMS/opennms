@@ -30,6 +30,7 @@ package org.opennms.netmgt.poller;
 
 import java.net.InetAddress;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -62,6 +63,23 @@ import org.slf4j.LoggerFactory;
 public class DefaultPollContext implements PollContext, EventListener {
     
     private static final Logger LOG = LoggerFactory.getLogger(DefaultPollContext.class);
+    private static final String[] UEIS = {
+        // service events without node processing enable
+        EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI,
+        EventConstants.SERVICE_RESPONSIVE_EVENT_UEI,
+        
+        // service events with node processing enabled
+        EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI,
+        EventConstants.NODE_LOST_SERVICE_EVENT_UEI,
+
+        // interface events
+        EventConstants.INTERFACE_DOWN_EVENT_UEI,
+        EventConstants.INTERFACE_UP_EVENT_UEI,
+        
+        // node events
+        EventConstants.NODE_DOWN_EVENT_UEI,
+        EventConstants.NODE_UP_EVENT_UEI
+    };
     
     private volatile PollerConfig m_pollerConfig;
     private volatile QueryManager m_queryManager;
@@ -208,7 +226,7 @@ public class DefaultPollContext implements PollContext, EventListener {
     @Override
     public PollEvent sendEvent(Event event) {
         if (!m_listenerAdded) {
-            getEventManager().addEventListener(this);
+            getEventManager().addEventListener(this, Arrays.asList(UEIS));
             m_listenerAdded = true;
         }
         PendingPollEvent pollEvent = new PendingPollEvent(event);
@@ -361,28 +379,30 @@ public class DefaultPollContext implements PollContext, EventListener {
     /** {@inheritDoc} */
     @Override
     public void onEvent(final Event e) {
+        LOG.debug("onEvent: Waiting to process event: {} uei: {}, dbid: {}", e, e.getUei(), e.getDbid());
         synchronized (m_pendingPollEvents) {
-            LOG.debug("onEvent: Received event: {} uei: {}, dbid: {}", e, e.getUei(), e.getDbid());
-            for (final Iterator<PendingPollEvent> it = m_pendingPollEvents .iterator(); it.hasNext();) {
+            LOG.debug("onEvent: Received event: {} uei: {}, dbid: {}, pendingEventCount: {}", e, e.getUei(), e.getDbid(), m_pendingPollEvents.size());
+            for (final Iterator<PendingPollEvent> it = m_pendingPollEvents.iterator(); it.hasNext();) {
                 final PendingPollEvent pollEvent = it.next();
-                LOG.debug("onEvent: comparing events to poll event: {}", pollEvent);
+                LOG.trace("onEvent: comparing events to poll event: {}", pollEvent);
                 if (e.equals(pollEvent.getEvent())) {
-                    LOG.debug("onEvent: completing pollevent: {}", pollEvent);
+                    LOG.trace("onEvent: completing pollevent: {}", pollEvent);
                     pollEvent.complete(e);
                 }
             }
             
             for (Iterator<PendingPollEvent> it = m_pendingPollEvents.iterator(); it.hasNext(); ) {
                 PendingPollEvent pollEvent = it.next();
-                LOG.debug("onEvent: determining if pollEvent is pending: {}", pollEvent);
+                LOG.trace("onEvent: determining if pollEvent is pending: {}", pollEvent);
                 if (pollEvent.isPending()) continue;
                 
-                LOG.debug("onEvent: processing pending pollEvent...: {}", pollEvent);
+                LOG.trace("onEvent: processing pending pollEvent...: {}", pollEvent);
                 pollEvent.processPending();
                 it.remove();
-                LOG.debug("onEvent: processing of pollEvent completed.: {}", pollEvent);
+                LOG.trace("onEvent: processing of pollEvent completed.: {}", pollEvent);
             }
         }
+        LOG.debug("onEvent: Finished processing event: {} uei: {}, dbid: {}", e, e.getUei(), e.getDbid());
         
     }
 

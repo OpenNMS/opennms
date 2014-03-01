@@ -102,6 +102,73 @@
 
 	<!-- Start 1.12 -->
 
+	<section id="opennms-1.12.5">
+		<title>Changes in OpenNMS 1.12.5</title>
+
+		<section id="opennms-1.12.5-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>Can&#39;t import a requisition when OpenNMS is installed in &quot;C:\Program Files\OpenNMS&quot; (Issue <ulink url='http://issues.opennms.org/browse/NMS-6361'>NMS-6361</ulink>)</para></listitem>
+				<listitem><para>sftp.3gpp: empty resource label when the PM Group filter doesn&#39;t match a given measObjLdn (Issue <ulink url='http://issues.opennms.org/browse/NMS-6365'>NMS-6365</ulink>)</para></listitem>
+				<listitem><para>The ILR reports wrong data when there are several packages with different collection rates on collectd-configuration.xml for the same service (Issue <ulink url='http://issues.opennms.org/browse/NMS-6386'>NMS-6386</ulink>)</para></listitem>
+				<listitem><para>Security Information disclosed in Service detail screen (Issue <ulink url='http://issues.opennms.org/browse/NMS-6403'>NMS-6403</ulink>)</para></listitem>
+				<listitem><para>NPE on SnmpAssetProvisioningAdapter.fetchSnmpAssetString() (Issue <ulink url='http://issues.opennms.org/browse/NMS-6405'>NMS-6405</ulink>)</para></listitem>
+				<listitem><para>Upgrade 1.12.4 breaks StoreByForeignSource (Issue <ulink url='http://issues.opennms.org/browse/NMS-6409'>NMS-6409</ulink>)</para></listitem>
+				<listitem><para>Exception on node.jsp with storeByForeignSource enabled and no data collection for the node. (Issue <ulink url='http://issues.opennms.org/browse/NMS-6424'>NMS-6424</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.12.5-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>Remove the reset button on the login prompt. (Issue <ulink url='http://issues.opennms.org/browse/NMS-5738'>NMS-5738</ulink>)</para></listitem>
+				<listitem><para>Surveillance-Category-Names can be longer then 64 chars (Issue <ulink url='http://issues.opennms.org/browse/NMS-6406'>NMS-6406</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
+	<section id="opennms-1.12.4">
+		<title>Changes in OpenNMS 1.12.4</title>
+
+		<section id="opennms-1.12.4-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>OpenNMS+jrobin does not obey font selection (Issue <ulink url='http://issues.opennms.org/browse/NMS-2691'>NMS-2691</ulink>)</para></listitem>
+				<listitem><para>JRobin Ignores --font directive (Issue <ulink url='http://issues.opennms.org/browse/NMS-3477'>NMS-3477</ulink>)</para></listitem>
+				<listitem><para>Notices for events with a regex UEI have a bad label (Issue <ulink url='http://issues.opennms.org/browse/NMS-5093'>NMS-5093</ulink>)</para></listitem>
+				<listitem><para>Uncaught exception in HostResourceSwRunMonitor when handling empty strings (Issue <ulink url='http://issues.opennms.org/browse/NMS-5852'>NMS-5852</ulink>)</para></listitem>
+				<listitem><para>DiskUsageMonitor startswith parameter doesn&#39;t evaluate all mount points (Issue <ulink url='http://issues.opennms.org/browse/NMS-6095'>NMS-6095</ulink>)</para></listitem>
+				<listitem><para>UI for editing foreign source policies needs larger window for &quot;value&quot; field (Issue <ulink url='http://issues.opennms.org/browse/NMS-6161'>NMS-6161</ulink>)</para></listitem>
+				<listitem><para>IPv6 IPLIKE expressions incorrectly rejected in notification wizard (Issue <ulink url='http://issues.opennms.org/browse/NMS-6313'>NMS-6313</ulink>)</para></listitem>
+				<listitem><para>Requisition editor should trim whitespace from critical fields (Issue <ulink url='http://issues.opennms.org/browse/NMS-6314'>NMS-6314</ulink>)</para></listitem>
+				<listitem><para>VMWare Importer is adding an asset called &quot;memory&quot; and should be &quot;ram&quot; (Issue <ulink url='http://issues.opennms.org/browse/NMS-6353'>NMS-6353</ulink>)</para></listitem>
+				<listitem><para>Can&#39;t execute standalone vmwarereqtool when RRDtool is enabled (Issue <ulink url='http://issues.opennms.org/browse/NMS-6354'>NMS-6354</ulink>)</para></listitem>
+				<listitem><para>mib2 storage usage graph does not work with RRDtool (Issue <ulink url='http://issues.opennms.org/browse/NMS-6356'>NMS-6356</ulink>)</para></listitem>
+				<listitem><para>In store-by-FS mode, nodes with only generic-resource RRD data treated as if they have no RRD data at all (Issue <ulink url='http://issues.opennms.org/browse/NMS-6359'>NMS-6359</ulink>)</para></listitem>
+				<listitem><para>SnmpInterfaceRrdMigratorOnline fails with: java.lang.NumberFormatException: For input string: &quot;UNKN&quot; (Issue <ulink url='http://issues.opennms.org/browse/NMS-6369'>NMS-6369</ulink>)</para></listitem>
+				<listitem><para>vmwarereqtool is initializing the DB Pool (Issue <ulink url='http://issues.opennms.org/browse/NMS-6389'>NMS-6389</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.12.4-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>New event file for Konica Traps (Issue <ulink url='http://issues.opennms.org/browse/NMS-5699'>NMS-5699</ulink>)</para></listitem>
+				<listitem><para>Remove the reset button on the login prompt. (Issue <ulink url='http://issues.opennms.org/browse/NMS-5738'>NMS-5738</ulink>)</para></listitem>
+				<listitem><para>Datacollection Konica Printers (Issue <ulink url='http://issues.opennms.org/browse/NMS-5781'>NMS-5781</ulink>)</para></listitem>
+				<listitem><para>New BackupExec event file (Issue <ulink url='http://issues.opennms.org/browse/NMS-5789'>NMS-5789</ulink>)</para></listitem>
+				<listitem><para>New mib/event file for TrendMicro AV (Issue <ulink url='http://issues.opennms.org/browse/NMS-5829'>NMS-5829</ulink>)</para></listitem>
+				<listitem><para>Add BGP datacollection support for Foundry BigIron 4000/8000/RX (Issue <ulink url='http://issues.opennms.org/browse/NMS-6308'>NMS-6308</ulink>)</para></listitem>
+				<listitem><para>Add Configuration for Poseidon Sensor data collection. (Issue <ulink url='http://issues.opennms.org/browse/NMS-6315'>NMS-6315</ulink>)</para></listitem>
+				<listitem><para>Monitor the health of a NetScaler&#39;s group of servers. (Issue <ulink url='http://issues.opennms.org/browse/NMS-6377'>NMS-6377</ulink>)</para></listitem>
+				<listitem><para>Include remote user and host in parameters of notificationsTurnedOff and ~On events (Issue <ulink url='http://issues.opennms.org/browse/NMS-6384'>NMS-6384</ulink>)</para></listitem>
+				<listitem><para>Enhance DnsMonitor to evaluate size of answer section (Issue <ulink url='http://issues.opennms.org/browse/NMS-6398'>NMS-6398</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
 	<section id="opennms-1.12.3">
 		<title>Changes in OpenNMS 1.12.3</title>
 

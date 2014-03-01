@@ -171,10 +171,7 @@
     </bean>
     <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceDao" ref="resourceDao" />
 
-    <bean id="collectdConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="staticMethod"><value>org.opennms.netmgt.config.CollectdConfigFactory.init</value></property>
-    </bean>
-    <bean id="collectdConfig" class="org.opennms.netmgt.config.CollectdConfigFactory" depends-on="collectdConfig-init" factory-method="getInstance"/>
+    <bean id="collectdConfig" class="org.opennms.netmgt.config.CollectdConfigFactory"/>
     -->
 
     <bean id="dataCollectionConfigDao" class="org.opennms.netmgt.dao.mock.MockDataCollectionConfigDao" />

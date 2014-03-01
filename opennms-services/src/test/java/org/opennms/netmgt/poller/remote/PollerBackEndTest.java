@@ -55,6 +55,7 @@ import junit.framework.TestCase;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
 import org.easymock.IArgumentMatcher;
+import org.opennms.core.criteria.Criteria;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.TimeKeeper;
@@ -71,13 +72,13 @@ import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
+import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.ServiceSelector;
-import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.model.events.EventUtils;
@@ -759,7 +760,7 @@ public class PollerBackEndTest extends TestCase {
         m_locationMonitor.setStatus(MonitorStatus.STARTED);
         m_locationMonitor.setLastCheckInTime(new Date(now.getTime() - DISCONNECTED_TIMEOUT - 100));
 
-        expect(m_locMonDao.findAll()).andReturn(Collections.singletonList(m_locationMonitor));
+        expect(m_locMonDao.findMatching(EasyMock.anyObject(Criteria.class))).andReturn(Collections.singletonList(m_locationMonitor));
 
         expect(m_timeKeeper.getCurrentDate()).andReturn(now);
 

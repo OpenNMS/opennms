@@ -233,6 +233,12 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
     
             final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(snmpInterface);
             for(final String key : params.keySet()) {
+                // don't try setting the node data
+                if ("nodeId".equals(key)) continue;
+
+                // don't try setting ipinterface data
+                if ("ipInterface".equals(key) || "ipInterfaces".equals(key)) continue;
+
                 if (wrapper.isWritableProperty(key)) {
                     final String stringValue = params.getFirst(key);
                     final Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));

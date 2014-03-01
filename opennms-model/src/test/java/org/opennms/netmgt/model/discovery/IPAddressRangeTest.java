@@ -42,6 +42,8 @@ import junit.framework.TestCase;
 
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.network.IPAddress;
+import org.opennms.core.network.IPAddressRange;
 
 /**
  * IPAddressRangeTest

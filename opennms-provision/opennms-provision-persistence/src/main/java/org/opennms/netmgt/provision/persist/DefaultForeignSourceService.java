@@ -41,8 +41,8 @@ import java.util.Map.Entry;
 
 import org.apache.commons.beanutils.MethodUtils;
 import org.opennms.core.soa.ServiceRegistry;
-import org.opennms.core.utils.BeanUtils;
-import org.opennms.core.utils.PropertyPath;
+import org.opennms.core.spring.BeanUtils;
+import org.opennms.core.spring.PropertyPath;
 import org.opennms.netmgt.provision.OnmsPolicy;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.annotations.Policy;

@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.opennms.core.soa.ServiceRegistry;
-import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.spring.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.provision.AsyncServiceDetector;

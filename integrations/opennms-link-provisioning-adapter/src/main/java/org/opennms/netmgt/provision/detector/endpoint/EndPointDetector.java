@@ -31,7 +31,7 @@ package org.opennms.netmgt.provision.detector.endpoint;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 
-import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.provision.adapters.link.EndPointImpl;
 import org.opennms.netmgt.provision.adapters.link.endpoint.EndPointTypeValidator;

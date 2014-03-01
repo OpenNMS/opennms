@@ -47,6 +47,7 @@ import org.opennms.core.test.http.annotations.JUnitHttpServer;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.mock.MonitorTestUtils;
+import org.opennms.netmgt.utils.DnsUtils;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.test.context.ContextConfiguration;
@@ -74,7 +75,7 @@ public class SSLCertMonitorTest {
         parameters.put("verbose", "true");
         parameters.put("days", "5");
 
-        MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", "SSLCert", false);
+        MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", false), "SSLCert");
         PollStatus status = monitor.poll(svc, parameters);
         MockUtil.println("Reason: "+status.getReason());
         assertFalse(status.isAvailable());
@@ -108,7 +109,7 @@ public class SSLCertMonitorTest {
         parameters.put("verbose", "true");
         parameters.put("days", "5");
 
-        MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", "SSLCert", false);
+        MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", false), "SSLCert");
         PollStatus status = monitor.poll(svc, parameters);
         assertTrue(status.isAvailable());
     }
@@ -124,7 +125,7 @@ public class SSLCertMonitorTest {
         parameters.put("verbose", "true");
         parameters.put("days", "5");
 
-        MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "www.google.com", "SSLCert", false);
+        MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "www.google.com", DnsUtils.resolveHostname("www.google.com", false), "SSLCert");
         PollStatus status = monitor.poll(svc, parameters);
         assertTrue(status.isAvailable());
     }

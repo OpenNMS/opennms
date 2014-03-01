@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -65,7 +65,9 @@ import org.slf4j.LoggerFactory;
 /**
  * <p>WebMonitor class.</p>
  *
- * @author ranger
+ * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
+ * @author <A HREF="mailto:cliles@capario.com">Chris Liles</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  * @version $Id: $
  */
 public class WebMonitor extends AbstractServiceMonitor {
@@ -93,6 +95,11 @@ public class WebMonitor extends AbstractServiceMonitor {
             ub.setHost(hostAddress);
             ub.setPort(ParameterMap.getKeyedInteger(map, "port", DEFAULT_PORT));
             ub.setPath(ParameterMap.getKeyedString(map, "path", DEFAULT_PATH));
+
+            String queryString = ParameterMap.getKeyedString(map,"queryString",null);
+            if (queryString != null)
+                ub.setQuery(queryString);
+
             HttpGet getMethod = new HttpGet(ub.build());
             httpClient.getParams().setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, ParameterMap.getKeyedInteger(map, "timeout", DEFAULT_TIMEOUT));
             httpClient.getParams().setIntParameter(CoreConnectionPNames.SO_TIMEOUT, ParameterMap.getKeyedInteger(map, "timeout", DEFAULT_TIMEOUT));

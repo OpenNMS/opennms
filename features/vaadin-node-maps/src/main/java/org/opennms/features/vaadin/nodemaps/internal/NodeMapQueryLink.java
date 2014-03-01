@@ -88,11 +88,15 @@ public class NodeMapQueryLink implements Operation {
 
     @Override
     public boolean display(final List<VertexRef> targets, final OperationContext operationContext) {
-        return (targets != null && targets.size() > 1);
+        return (targets != null && targets.size() > 0) && hasCoordinates(targets);
     }
 
     @Override
     public boolean enabled(final List<VertexRef> targets, final OperationContext operationContext) {
+        return hasCoordinates(targets);
+    }
+
+    private boolean hasCoordinates(List<VertexRef> targets) {
         final Collection<VertexRef> availableNodes = m_geoAssetProvider.getNodesWithCoordinates();
 
         for (final VertexRef ref : targets) {
@@ -100,7 +104,6 @@ public class NodeMapQueryLink implements Operation {
                 return true;
             }
         }
-
         return false;
     }
 

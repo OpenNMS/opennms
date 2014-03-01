@@ -126,7 +126,7 @@ public class ConfigureSnmpTest extends TestCase {
         agent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(addr1));
         assertEquals(InetAddressUtils.str(agent.getAddress()), addr1);
         assertEquals(SnmpAgentConfig.VERSION2C, agent.getVersion());
-        assertEquals(m_startingDefCount, SnmpPeerFactory.getSnmpConfig().getDefinitionCount());
+        assertEquals(m_startingDefCount, SnmpPeerFactory.getSnmpConfig().getDefinitions().size());
     }
 
     /**
@@ -150,7 +150,7 @@ public class ConfigureSnmpTest extends TestCase {
         agent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(addr1));
         assertEquals(InetAddressUtils.str(agent.getAddress()), addr1);
         assertEquals(SnmpAgentConfig.VERSION1, agent.getVersion());
-        assertEquals(m_startingDefCount, SnmpPeerFactory.getSnmpConfig().getDefinitionCount());
+        assertEquals(m_startingDefCount, SnmpPeerFactory.getSnmpConfig().getDefinitions().size());
     }
 
     /**
@@ -160,8 +160,8 @@ public class ConfigureSnmpTest extends TestCase {
      * @throws UnknownHostException
      */
     public void testSplicingSpecificsIntoRanges() throws UnknownHostException {
-        assertEquals(3, SnmpPeerFactory.getSnmpConfig().getDefinition(2).getRangeCount());
-        assertEquals(6, SnmpPeerFactory.getSnmpConfig().getDefinition(2).getSpecificCount());
+        assertEquals(3, SnmpPeerFactory.getSnmpConfig().getDefinitions().get(2).getRanges().size());
+        assertEquals(6, SnmpPeerFactory.getSnmpConfig().getDefinitions().get(2).getSpecifics().size());
         
         final String specificAddr = "10.1.1.7";
         final EventBuilder bldr = createConfigureSnmpEventBuilder(specificAddr, null);
@@ -171,11 +171,11 @@ public class ConfigureSnmpTest extends TestCase {
         
         SnmpPeerFactory.getInstance().define(info);
         
-        assertEquals(5, SnmpPeerFactory.getSnmpConfig().getDefinition(2).getRangeCount());
+        assertEquals(5, SnmpPeerFactory.getSnmpConfig().getDefinitions().get(2).getRanges().size());
         
-        assertEquals("10.1.1.10", SnmpPeerFactory.getSnmpConfig().getDefinition(2).getSpecific(0));
-        assertEquals(1, SnmpPeerFactory.getSnmpConfig().getDefinition(2).getSpecificCount());
-        assertEquals(m_startingDefCount, SnmpPeerFactory.getSnmpConfig().getDefinitionCount());
+        assertEquals("10.1.1.10", SnmpPeerFactory.getSnmpConfig().getDefinitions().get(2).getSpecifics().get(0));
+        assertEquals(1, SnmpPeerFactory.getSnmpConfig().getDefinitions().get(2).getSpecifics().size());
+        assertEquals(m_startingDefCount, SnmpPeerFactory.getSnmpConfig().getDefinitions().size());
     }
     
     /**
@@ -185,10 +185,10 @@ public class ConfigureSnmpTest extends TestCase {
      * @throws UnknownHostException
      */
     public void testSplice2() throws UnknownHostException {
-        assertEquals(3, SnmpPeerFactory.getSnmpConfig().getDefinition(3).getRangeCount());
-        assertEquals(1, SnmpPeerFactory.getSnmpConfig().getDefinition(3).getSpecificCount());
-        assertEquals("10.1.1.10", SnmpPeerFactory.getSnmpConfig().getDefinition(3).getSpecific(0));
-        assertEquals("10.1.1.11", SnmpPeerFactory.getSnmpConfig().getDefinition(3).getRange(0).getBegin());
+        assertEquals(3, SnmpPeerFactory.getSnmpConfig().getDefinitions().get(3).getRanges().size());
+        assertEquals(1, SnmpPeerFactory.getSnmpConfig().getDefinitions().get(3).getSpecifics().size());
+        assertEquals("10.1.1.10", SnmpPeerFactory.getSnmpConfig().getDefinitions().get(3).getSpecifics().get(0));
+        assertEquals("10.1.1.11", SnmpPeerFactory.getSnmpConfig().getDefinitions().get(3).getRanges().get(0).getBegin());
         
         final String specificAddr = "10.1.1.7";
         final EventBuilder bldr = createConfigureSnmpEventBuilder(specificAddr, null);
@@ -197,10 +197,10 @@ public class ConfigureSnmpTest extends TestCase {
 
         SnmpPeerFactory.getInstance().define(info);
         
-        assertEquals(3, SnmpPeerFactory.getSnmpConfig().getDefinition(3).getRangeCount());
-        assertEquals(1, SnmpPeerFactory.getSnmpConfig().getDefinition(3).getSpecificCount());
-        assertEquals("10.1.1.7", SnmpPeerFactory.getSnmpConfig().getDefinition(3).getSpecific(0));
-        assertEquals("10.1.1.10", SnmpPeerFactory.getSnmpConfig().getDefinition(3).getRange(0).getBegin());
+        assertEquals(3, SnmpPeerFactory.getSnmpConfig().getDefinitions().get(3).getRanges().size());
+        assertEquals(1, SnmpPeerFactory.getSnmpConfig().getDefinitions().get(3).getSpecifics().size());
+        assertEquals("10.1.1.7", SnmpPeerFactory.getSnmpConfig().getDefinitions().get(3).getSpecifics().get(0));
+        assertEquals("10.1.1.10", SnmpPeerFactory.getSnmpConfig().getDefinitions().get(3).getRanges().get(0).getBegin());
 
         String marshalledConfig = SnmpPeerFactory.marshallConfig();
         assertNotNull(marshalledConfig);

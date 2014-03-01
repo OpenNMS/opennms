@@ -31,7 +31,7 @@ package org.opennms.systemreport.opennms;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.dao.api.CountedObject;
 import org.opennms.netmgt.dao.api.EventCountDao;
 import org.opennms.systemreport.AbstractSystemReportPlugin;

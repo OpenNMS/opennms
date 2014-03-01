@@ -47,8 +47,8 @@ import java.util.Set;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.network.IpListFromUrl;
 import org.opennms.core.utils.ByteArrayComparator;
-import org.opennms.core.utils.IpListFromUrl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.CastorUtils;
@@ -148,7 +148,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
     
             for(String url : includeURLs(pkg)) {
     
-                List<String> iplist = IpListFromUrl.parse(url);
+                List<String> iplist = IpListFromUrl.fetch(url);
                 if (iplist.size() > 0) {
                     m_urlIPMap.put(url, iplist);
                 }

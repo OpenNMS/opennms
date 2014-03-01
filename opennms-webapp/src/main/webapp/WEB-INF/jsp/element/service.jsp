@@ -79,18 +79,18 @@
     Map<String,String> xmlParams  = new TreeMap<String,String>();
     if (lastPkg != null) {
         for (Service s : lastPkg.getServices()) {
-    if (s.getName().equalsIgnoreCase(serviceName)) {
-        for (Parameter p : s.getParameters()) {
-    if (p.getKey().toLowerCase().equals("password")) {
-        continue; // Hide passwords for security reasons
-    }
-    if (p.getValue() == null) {
-        xmlParams.put(p.getKey(), p.getAnyObject().toString().replaceAll("<","&lt;").replaceAll(">", "&gt;").replaceAll("[\\r\\n]+", "<br/>"));
-    } else {
-        parameters.put(p.getKey(), p.getValue());
-    }
-        }
-    }
+            if (s.getName().equalsIgnoreCase(serviceName)) {
+                for (Parameter p : s.getParameters()) {
+                    if (p.getKey().toLowerCase().contains("password")) {
+                        continue; // Hide passwords for security reasons
+                    }
+                    if (p.getValue() == null) {
+                        xmlParams.put(p.getKey(), p.getAnyObject().toString().replaceAll("<","&lt;").replaceAll(">", "&gt;").replaceAll("[\\r\\n]+", "<br/>").replaceAll(" ","&nbsp;").replaceAll("(password|user-info)=\"[^\"]+\"", "$1=\"XXXX\"").replaceAll("key=\"([^\"]*pass(word|wd)[^\"]*)\"(\\s|&nbsp;)+value=\"[^\"]+\"", "key=\"$1\" value=\"XXXX\""));
+                    } else {
+                        parameters.put(p.getKey(), p.getValue());
+                    }
+                }
+            }
         }
         pageContext.setAttribute("parameters", parameters);
         pageContext.setAttribute("xmlParams", xmlParams);

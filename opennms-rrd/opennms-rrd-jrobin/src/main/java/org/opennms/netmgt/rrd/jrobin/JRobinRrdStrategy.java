@@ -736,10 +736,13 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
 
 	private void processRrdFontArgument(final RrdGraphDef graphDef, final String argParm) {
 	    final String[] argValue = tokenize(argParm, ":", false);
-	    if (argValue.length != 3) {
-	        LOG.warn("invalid number of arguments ({} != 3) for font argument {}", argValue.length, argParm);
-	        return;
-	    }
+            if (argValue.length < 2) {
+                LOG.warn("Argument '{}' does not specify font size", argParm);
+                return;
+            }
+            if (argValue.length > 3) {
+                LOG.debug("Argument '{}' includes extra data, ignoring the extra data.", argParm);
+            }
 	    int newPointSize = 0;
 	    try {
 	        newPointSize = Integer.parseInt(argValue[1]);
@@ -770,7 +773,7 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
 	        font = graphDef.getFont(fontTag);
 
 	        // If we have a font specified, try to get a font object for it.
-	        if (argValue[2] != null && argValue[2].length() > 0) {
+	        if (argValue.length == 3 && argValue[2] != null && argValue[2].length() > 0) {
 	            final int origPointSize = font.getSize();
 
                     // Get our new font
