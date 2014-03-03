@@ -550,6 +550,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
         // for now, set the foreign source to the specified vcenter host
         m_requisition = new Requisition(m_foreignSource);
 
+        logger.debug("Creating new VIJava access object for host {} ...", m_hostname);
         if ((m_username == null || "".equals(m_username)) || (m_password == null || "".equals(m_password))) {
             try {
                 vmwareViJavaAccess = new VmwareViJavaAccess(m_hostname);
@@ -566,7 +567,9 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
         } else {
             vmwareViJavaAccess = new VmwareViJavaAccess(m_hostname, m_username, m_password);
         }
+        logger.debug("Successfully created new VIJava access object for host {}", m_hostname);
 
+        logger.debug("Connecting VIJava access for host {} ...", m_hostname);
         try {
             vmwareViJavaAccess.connect();
         } catch (MalformedURLException e) {
@@ -576,7 +579,9 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
             logger.warn("Error connecting VMware management server '{}': '{}'", m_hostname, e.getMessage());
             return null;
         }
+        logger.debug("Successfully connected VIJava access for host {}", m_hostname);
 
+        logger.debug("Starting to enumerate VMware managed objects from host {} ...", m_hostname);
         try {
             int apiVersion = vmwareViJavaAccess.getMajorApiVersion();
 
@@ -598,8 +603,12 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
                 m_virtualMachineServices = new String[]{"VMware-ManagedEntity", "VMware-VirtualMachine"};
             }
 
+            logger.debug("Starting to iterate host system managed objects from host {} ...", m_hostname);
             iterateHostSystems(vmwareViJavaAccess, apiVersion);
+            logger.debug("Done iterating host system managed objects from host {}", m_hostname);
+            logger.debug("Starting to iterate VM managed objects from host {} ...", m_hostname);
             iterateVirtualMachines(vmwareViJavaAccess, apiVersion);
+            logger.debug("Done iterating VM managed objects from host {}", m_hostname);
         } catch (RemoteException e) {
             logger.warn("Error retrieving managed objects from VMware management server '{}': '{}'", m_hostname, e.getMessage());
             return null;
@@ -617,6 +626,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
      * @return true for import, false otherwise
      */
     private boolean checkHostPowerState(HostSystem hostSystem) {
+        logger.debug("Checking power state for host system {} (ID {})", hostSystem.getName(), hostSystem.getMOR().getVal());
         String powerState = hostSystem.getRuntime().getPowerState().toString();
 
         if ("poweredOn".equals(powerState) && m_importHostPoweredOn) {
@@ -642,6 +652,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
      * @return true for import, false otherwise
      */
     private boolean checkVMPowerState(VirtualMachine virtualMachine) {
+        logger.debug("Checking power state for VM {} (ID: {})", virtualMachine.getName(), virtualMachine.getMOR().getVal());
         String powerState = virtualMachine.getRuntime().getPowerState().toString();
 
         if ("poweredOn".equals(powerState) && m_importVMPoweredOn) {
@@ -667,18 +678,20 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
         ManagedEntity[] hostSystems;
 
         // search for host systems (esx hosts)
+        logger.debug("Starting to iterate host systems on VMware host {} ...", m_hostname);
         hostSystems = vmwareViJavaAccess.searchManagedEntities("HostSystem");
 
         if (hostSystems != null) {
 
             for (ManagedEntity managedEntity : hostSystems) {
                 HostSystem hostSystem = (HostSystem) managedEntity;
+                logger.debug("Iterating host systems on VMware management server {} : {} (ID: {})", m_hostname, hostSystem.getName(), hostSystem.getMOR().getVal());
 
                 m_hostSystemMap.put(hostSystem.getMOR().getVal(), hostSystem.getName());
 
                 // check for correct key/value-pair
                 if (checkHostPowerState(hostSystem) && checkForAttribute(hostSystem)) {
-                    logger.debug("Adding Host System '{}'", hostSystem.getName());
+                    logger.debug("Adding Host System '{}' (ID: {})", hostSystem.getName(), hostSystem.getMOR().getVal());
 
                     // iterate over all service console networks and add interface Ip addresses
                     TreeSet<String> ipAddresses = vmwareViJavaAccess.getHostSystemIpAddresses(hostSystem);
@@ -690,14 +703,14 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
                     try {
                         node.putAsset(new RequisitionAsset("cpu", hostSystem.getHardware().getCpuInfo().getNumCpuCores() + " cores"));
                     } catch (Exception e) {
-                        logger.debug("Can't find CPU information for {}", hostSystem.getName());
+                        logger.debug("Can't find CPU information for {} (ID: {})", hostSystem.getName(), hostSystem.getMOR().getVal());
                     }
 
                     // add memory
                     try {
-                        node.putAsset(new RequisitionAsset("ram", Math.round(hostSystem.getHardware().getMemorySize()/1000000f) + " MB"));
+                        node.putAsset(new RequisitionAsset("memory", Math.round(hostSystem.getHardware().getMemorySize()/1000000f) + " MB"));
                     } catch (Exception e) {
-                        logger.debug("Can't find Memory information for {}", hostSystem.getName());
+                        logger.debug("Can't find Memory information for {} (ID: {})", hostSystem.getName(), hostSystem.getMOR().getVal());
                     }
 
                     // add vendor
@@ -735,10 +748,11 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
             // check for correct key/value-pair
             for (ManagedEntity managedEntity : virtualMachines) {
                 VirtualMachine virtualMachine = (VirtualMachine) managedEntity;
+                logger.debug("Iterating host systems on VMware management server {} : {} (ID: {})", m_hostname, virtualMachine.getName(), virtualMachine.getMOR().getVal());
 
                 // import only when the specified attributes is set
                 if (checkVMPowerState(virtualMachine) && checkForAttribute(virtualMachine)) {
-                    logger.debug("Adding Virtual Machine '{}'", virtualMachine.getName());
+                    logger.debug("Adding Virtual Machine '{}' (ID: {})", virtualMachine.getName(), virtualMachine.getMOR().getVal());
 
                     // iterate over all interfaces
                     TreeSet<String> ipAddresses = vmwareViJavaAccess.getVirtualMachineIpAddresses(virtualMachine);
@@ -755,14 +769,14 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
                     try {
                         node.putAsset(new RequisitionAsset("cpu", virtualMachine.getConfig().getHardware().getNumCPU() + " vCPU"));
                     } catch (Exception e) {
-                        logger.debug("Can't find CPU information for {}", virtualMachine.getName());
+                        logger.debug("Can't find CPU information for {} (ID: {})", virtualMachine.getName(), virtualMachine.getMOR().getVal());
                     }
 
                     // add memory
                     try {
-                        node.putAsset(new RequisitionAsset("ram", virtualMachine.getConfig().getHardware().getMemoryMB() + " MB"));
+                        node.putAsset(new RequisitionAsset("memory", virtualMachine.getConfig().getHardware().getMemoryMB() + " MB"));
                     } catch (Exception e) {
-                        logger.debug("Can't find Memory information for {}", virtualMachine.getName());
+                        logger.debug("Can't find Memory information for {} (ID: {})", virtualMachine.getName(), virtualMachine.getMOR().getVal());
                     }
 
                     // ...and add it to the requisition
@@ -794,6 +808,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
      * @throws RemoteException
      */
     private boolean checkForAttribute(ManagedEntity managedEntity) throws RemoteException {
+        logger.debug("Getting custom attributes from VMware management server {} : ManagedEntity {} (ID: {})", m_hostname, managedEntity.getName(), managedEntity.getMOR().getVal());
         Map<String,String> attribMap = getCustomAttributes(managedEntity);
 
         Set<String> keySet = new TreeSet<String>();
@@ -856,6 +871,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
      */
     private Map<String,String> getCustomAttributes(ManagedEntity entity) throws RemoteException {
         final Map<String,String> attributes = new TreeMap<String,String>();
+        logger.debug("Getting custom attributes from VMware management server {} : ManagedEntity {} (ID: {})", m_hostname, entity.getName(), entity.getMOR().getVal());
         CustomFieldDef[] defs = entity.getAvailableField();
         CustomFieldValue[] values = entity.getCustomValue();
         for (int i = 0; defs != null && i < defs.length; i++) {
@@ -883,8 +899,11 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
         InputStream stream = null;
 
         try {
+            logger.debug("Getting existing requisition (if any) for VMware management server {}", m_hostname);
             Requisition curReq = getExistingRequisition();
+            logger.debug("Building new requisition for VMware management server {}", m_hostname);
             Requisition newReq = buildVMwareRequisition();
+            logger.debug("Finished building new requisition for VMware management server {}", m_hostname);
             if (curReq == null) {
                 if (newReq == null) {
                     // FIXME Is this correct ? This is the old behavior
