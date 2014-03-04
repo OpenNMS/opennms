@@ -44,11 +44,8 @@ import org.opennms.netmgt.xml.event.Event;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 public class PendingPollEvent extends PollEvent {
-<<<<<<< HEAD
     private static final Logger LOG = LoggerFactory.getLogger(PendingPollEvent.class);
-=======
 
->>>>>>> b00b600... fix a possible synchronization issue in pendingPollEvent and adjust logging levels
     // how long to wait, in milliseconds, before giving up on waiting for a poll event to get an event ID, defaults to 10 minutes
     private static final long PENDING_EVENT_TIMEOUT = Long.getLong("org.opennms.netmgt.poller.pendingEventTimeout", 1000L * 60L * 10L);
 
