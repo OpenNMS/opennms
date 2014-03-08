@@ -22,8 +22,6 @@
 				<!-- JMX object groups -->
 				<element ref="this:mbeans" minOccurs="1" maxOccurs="1"/>
 
-				<!--element ref="jmx-systems" minOccurs="1" maxOccurs="1"/-->
-
 			</sequence>
 			<!-- collector name -->
 			<attribute name="name" type="string" use="required"/>
