@@ -1,4 +1,5 @@
-/*******************************************************************************
+/**
+ * *****************************************************************************
  * This file is part of OpenNMS(R).
  *
  * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
@@ -13,19 +14,19 @@
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
+ * along with OpenNMS(R). If not, see:
+ * http://www.gnu.org/licenses/
  *
  * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * OpenNMS(R) Licensing <license@opennms.org>
+ * http://www.opennms.org/
+ * http://www.opennms.com/
+ ******************************************************************************
+ */
 package org.opennms.netmgt.collectd;
 
 import java.io.IOException;
@@ -34,10 +35,12 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
 import javax.management.Attribute;
 import javax.management.AttributeList;
 import javax.management.InstanceNotFoundException;
@@ -86,31 +89,46 @@ import org.slf4j.LoggerFactory;
  * as the starting point for this class so anyone familiar with it should be
  * able to easily understand it.
  * <p>
- * The jmx-datacollection-config.xml defines a list of MBeans and attributes that may be monitored. This class retrieves
- * the list of MBeans for the specified service name (currently jboss and jsr160) and queries the remote server for the
+ * The jmx-datacollection-config.xml defines a list of MBeans and attributes
+ * that may be monitored. This class retrieves
+ * the list of MBeans for the specified service name (currently jboss and
+ * jsr160) and queries the remote server for the
  * attributes. The values are then stored in RRD files.
  * </p>
  * <p>
- * Two types of MBeans may be specified in the jmx-datacollection-config.xml file. Standard MBeans which consist of and
- * ObjectName and their attributes, and WildCard MBeans which performs a query to retrieve MBeans based on a criteria.
- * The current implementation looks like: jboss:a=b,c=d,* Future versions may permit enhanced queries. In either case
- * multiple MBeans may be returned and these MBeans would then be queried to obtain their attributes. There are some
+ * Two types of MBeans may be specified in the jmx-datacollection-config.xml
+ * file. Standard MBeans which consist of and
+ * ObjectName and their attributes, and WildCard MBeans which performs a query
+ * to retrieve MBeans based on a criteria.
+ * The current implementation looks like: jboss:a=b,c=d,* Future versions may
+ * permit enhanced queries. In either case
+ * multiple MBeans may be returned and these MBeans would then be queried to
+ * obtain their attributes. There are some
  * important issues then using the wild card approach:
  * </p>
  * <p>
  * <ol>
- * <li>Since multiple MBeans will have the same attribute name there needs to be a way to differentiate them. To handle
- * this situation you need to specify which field in the ObjectName should be used. This is defined as the key-field.</li>
- * <li>The version of RRD that is used is limited to 19 characters. If this limit is exceeded then the data will not be
- * saved. The name is defined as: keyField_attributeName.rrd Since the keyfield is defined in the Object Name and may be
- * too long, you may define an alias for it. The key-alias parameter permit you to define a list of names to be
+ * <li>Since multiple MBeans will have the same attribute name there needs to
+ * be a way to differentiate them. To handle
+ * this situation you need to specify which field in the ObjectName should be
+ * used. This is defined as the key-field.</li>
+ * <li>The version of RRD that is used is limited to 19 characters. If this
+ * limit is exceeded then the data will not be
+ * saved. The name is defined as: keyField_attributeName.rrd Since the
+ * keyfield is defined in the Object Name and may be
+ * too long, you may define an alias for it. The key-alias parameter permit
+ * you to define a list of names to be
  * substituted. Only exact matches are handled. An example is:
  * <code>key-alias="this-name-is-long|thisIsNot,name-way-2-long,goodName"</code></li>
- * <li>If there are keyfields that you want to exclude (exact matches) you may use a comma separated list like:
+ * <li>If there are keyfields that you want to exclude (exact matches) you may
+ * use a comma separated list like:
  * <code>exclude="name1,name2,name3"</code></li>
- * <li>Unlike the Standard MBeans there is no way (currently) to pre-define graphs for them in the snmp-graph.properties
- * file. The only way you can create graphs is to create a custom graph in the Report section. The wild card approach
- * needs to be carefully considered before using it but it can cut down on the amount of work necessary to define what
+ * <li>Unlike the Standard MBeans there is no way (currently) to pre-define
+ * graphs for them in the snmp-graph.properties
+ * file. The only way you can create graphs is to create a custom graph in the
+ * Report section. The wild card approach
+ * needs to be carefully considered before using it but it can cut down on the
+ * amount of work necessary to define what
  * to save.</li>
  * </ol>
  * </p>
@@ -119,6 +137,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  */
 public abstract class JMXCollector implements ServiceCollector {
+
     private static final Logger LOG = LoggerFactory.getLogger(JMXCollector.class);
 
     /**
@@ -145,7 +164,9 @@ public abstract class JMXCollector implements ServiceCollector {
      */
     private String m_serviceName = null;
 
-    /** The JMX resource type Map. */
+    /**
+     * The JMX resource type Map.
+     */
     private final HashMap<String, JMXResourceType> m_resourceTypeList = new HashMap<String, JMXResourceType>();
 
     /**
@@ -165,7 +186,7 @@ public abstract class JMXCollector implements ServiceCollector {
      * </p>
      *
      * @param name
-     *            a {@link java.lang.String} object.
+     *             a {@link java.lang.String} object.
      */
     public void setServiceName(final String name) {
         m_serviceName = name;
@@ -177,14 +198,17 @@ public abstract class JMXCollector implements ServiceCollector {
      * Initialize the service collector.
      * </p>
      * <p>
-     * During initialization the JMX collector: - Initializes various configuration factories. - Verifies access to the
-     * database - Verifies access to RRD file repository - Verifies access to JNI RRD shared library - Determines if JMX
-     * to be stored for only the node's primary interface or for all interfaces.
+     * During initialization the JMX collector: - Initializes various
+     * configuration factories. - Verifies access to the
+     * database - Verifies access to RRD file repository - Verifies access to
+     * JNI RRD shared library - Determines if JMX
+     * to be stored for only the node's primary interface or for all
+     * interfaces.
      * </p>
      *
      * @exception RuntimeException
-     *                Thrown if an unrecoverable error occurs that prevents
-     *                the plug-in from functioning.
+     *                             Thrown if an unrecoverable error occurs that prevents
+     *                             the plug-in from functioning.
      */
     @Override
     public void initialize(final Map<String, String> parameters) {
@@ -205,7 +229,8 @@ public abstract class JMXCollector implements ServiceCollector {
     }
 
     /**
-     * {@inheritDoc} Responsible for performing all necessary initialization for the
+     * {@inheritDoc} Responsible for performing all necessary initialization
+     * for the
      * specified interface in preparation for data collection.
      */
     @Override
@@ -241,7 +266,8 @@ public abstract class JMXCollector implements ServiceCollector {
     }
 
     /**
-     * {@inheritDoc} Responsible for releasing any resources associated with the specified
+     * {@inheritDoc} Responsible for releasing any resources associated with
+     * the specified
      * interface.
      */
     @Override
@@ -255,15 +281,18 @@ public abstract class JMXCollector implements ServiceCollector {
      * </p>
      *
      * @param map
-     *            a {@link java.util.Map} object.
+     *                a {@link java.util.Map} object.
      * @param address
-     *            a {@link java.net.InetAddress} object.
-     * @return a {@link org.opennms.protocols.jmx.connectors.ConnectionWrapper} object.
+     *                a {@link java.net.InetAddress} object.
+     * @return a
+     *         {@link org.opennms.protocols.jmx.connectors.ConnectionWrapper}
+     *         object.
      */
     public abstract ConnectionWrapper getMBeanServerConnection(Map<String, Object> map, InetAddress address);
 
     /**
      * {@inheritDoc} Perform data collection.
+     * <p>
      * @param map
      */
     @Override
@@ -337,7 +366,7 @@ public abstract class JMXCollector implements ServiceCollector {
         AttributeGroupType attribGroupType = new AttributeGroupType(fixGroupName(obj), "all");
 
         List<String> attribNames = beanInfo.getAttributeNames();
-        List<String> compAttribNames = beanInfo.getCompositeAttributeNames();
+        Map<String, List<String>> compAttribNames = beanInfo.getCompositeAttributeNames();
 
         LOG.debug("{} Collector - getAttributes: {}, # attributes: {}, # composite attribute members: {}", m_serviceName, objectName, attribNames.size(), compAttribNames.size());
         try {
@@ -349,27 +378,12 @@ public abstract class JMXCollector implements ServiceCollector {
                 for (MBeanAttributeInfo mbai : jmxMBeanInfo.getAttributes()) {
                     LOG.debug("objectName: {}, attribute: {}, type: {}", oName, mbai.getName(), mbai.getType());
                     if (attribNames.contains(mbai.getName())) {
-                        try {
-                            Object attribute = mbeanServer.getAttribute(oName, mbai.getName());
+                        if ("javax.management.openmbean.CompositeData".equals(mbai.getType())) {
+                            LOG.error("MBean {} attribute {} is a CompositeData type", objectName, mbai.getName());
+                        } else {
+                            try {
+                                Object attribute = mbeanServer.getAttribute(oName, mbai.getName());
 
-                            if ("javax.management.openmbean.CompositeData".equals(mbai.getType())) {
-                                //handleCompositeDataAttribute(objectName, mbai, attribute, collectionResource, attribGroupType);
-                                try {
-                                    CompositeData cd = (CompositeData) attribute;
-                                    CompositeType ct = cd.getCompositeType();
-                                    for (String key : ct.keySet()) {
-                                        JMXDataSource ds = dsMap.get(objectName + "|" + mbai.getName() + "|" + key);
-                                        if (ds != null) {
-                                            JMXCollectionAttributeType attribType = new JMXCollectionAttributeType(ds, null, null, attribGroupType);
-                                            collectionResource.setAttributeValue(attribType, cd.get(key).toString());
-                                        } else {
-                                            LOG.debug("Did not find an entry for key '{}|{}|{}' in dsMap", objectName, mbai.getName(), key);
-                                        }
-                                    }
-                                } catch (final ClassCastException cce) {
-                                    LOG.debug("{} Collection - getAttributes (try CompositeData) - ERROR: Failed to cast attribute value to type CompositeData!", m_serviceName, cce);
-                                }
-                            } else {
                                 JMXDataSource ds = dsMap.get(objectName + "|" + mbai.getName());
                                 if (ds != null) {
                                     JMXCollectionAttributeType attribType = new JMXCollectionAttributeType(ds, null, null, attribGroupType);
@@ -377,36 +391,37 @@ public abstract class JMXCollector implements ServiceCollector {
                                 } else {
                                     LOG.debug("Did not find an entry for key '{}|{}' in dsMap", objectName, mbai.getName());
                                 }
+                            } catch (final InstanceNotFoundException e) {
+                                LOG.error("MBean {} attribute {} was not found", objectName, mbai.getName());
+                            } catch (final Exception e) {
+                                LOG.error("Unable to retrieve mbean {} attribute {}", objectName, mbai.getName());
                             }
-                        } catch (final InstanceNotFoundException e) {
-                            LOG.error("MBean {} attribute {} was not found", objectName, mbai.getName());
-                        } catch (final Exception e) {
-                            LOG.error("Unable to retrieve mbean {} attribute {}", objectName, mbai.getName());
                         }
-                    } else if (compAttribNames.contains(mbai.getName())) {
-                        try {
-                            Object attribute = mbeanServer.getAttribute(oName, mbai.getName());
-
-                            if ("javax.management.openmbean.CompositeData".equals(mbai.getType())) {
-                                handleCompositeDataAttribute(objectName, mbai, attribute, collectionResource, attribGroupType);
-                            } else {
-                                JMXDataSource ds = dsMap.get(objectName + "|" + mbai.getName());
-                                if (ds != null) {
-                                    JMXCollectionAttributeType attribType = new JMXCollectionAttributeType(ds, null, null, attribGroupType);
-                                    collectionResource.setAttributeValue(attribType, attribute.toString());
-                                } else {
-                                    LOG.debug("Did not find an entry for key '{}|{}' in dsMap", objectName, mbai.getName());
+                    } else if (compAttribNames.containsKey(mbai.getName())) {
+                        if (!"javax.management.openmbean.CompositeData".equals(mbai.getType())) {
+                            LOG.error("MBean {} attribute {} is not a CompositeData type", objectName, mbai.getName());
+                        } else {
+                            try {
+                                CompositeData cd = (CompositeData) mbeanServer.getAttribute(oName, mbai.getName());
+                                for (String key : compAttribNames.get(mbai.getName())) {
+                                    JMXDataSource ds = dsMap.get(objectName + "|" + mbai.getName() + "|" + key);
+                                    if (ds != null) {
+                                        JMXCollectionAttributeType attribType = new JMXCollectionAttributeType(ds, null, null, attribGroupType);
+                                        collectionResource.setAttributeValue(attribType, cd.get(key).toString());
+                                    } else {
+                                        LOG.debug("Did not find an entry for key '{}|{}|{}' in dsMap", objectName, mbai.getName(), key);
+                                    }
                                 }
+                            } catch (final InstanceNotFoundException e) {
+                                LOG.error("MBean {} attribute {} was not found", objectName, mbai.getName());
+                            } catch (final Exception e) {
+                                LOG.error("Unable to retrieve mbean {} attribute {}", objectName, mbai.getName());
                             }
-                        } catch (final InstanceNotFoundException e) {
-                            LOG.error("MBean {} attribute {} was not found", objectName, mbai.getName());
-                        } catch (final Exception e) {
-                            LOG.error("Unable to retrieve mbean {} attribute {}", objectName, mbai.getName());
                         }
                     }
                 }
+                collectionSet.getCollectionResources().add(collectionResource);
             }
-            collectionSet.getCollectionResources().add(collectionResource);
         } catch (MalformedObjectNameException e) {
             LOG.error("objectname {} is not valid", objectName, e);
         } catch (InstanceNotFoundException e) {
@@ -432,60 +447,31 @@ public abstract class JMXCollector implements ServiceCollector {
         AttributeGroupType attribGroupType = new AttributeGroupType(fixGroupName(obj), "all");
 
         List<String> attribNames = beanInfo.getAttributeNames();
-        List<String> compAttribNames = beanInfo.getCompositeAttributeNames();
-
-        for (String compAttribName : compAttribNames) {
-            if (attribNames.contains(compAttribName)) {
-                attribNames.remove(compAttribName);
-                String[] ac = compAttribName.split("\\|", -1);
-                String attrName = ac[0];
-                if (!attribNames.contains(attrName)) {
-                    attribNames.add(attrName);
-                }
-            }
-        }
-
-        String[] attrNames = attribNames.toArray(new String[attribNames.size()]);
+        Map<String, List<String>> compAttribNames = beanInfo.getCompositeAttributeNames();
 
         try {
             Set<ObjectName> mbeanSet = getObjectNames(mbeanServer, objectName);
             for (ObjectName oName : mbeanSet) {
-                LOG.debug("{} Collector - getAttributesWC: {}, # attributes: {}, alias: {}", m_serviceName, oName, attrNames.length, beanInfo.getKeyAlias());
+                LOG.debug("{} Collector - getAttributesWC: {}, # attributes: {}, alias: {}", m_serviceName, oName, attribNames.size(), beanInfo.getKeyAlias());
 
                 try {
-                    String excludeList = beanInfo.getExcludes();
-                    if (excludeList != null) {
-                        excludeList = excludeList.trim();
-                    }
+                    List<String> excludes = beanInfo.getExcludes();
 
-                    if (excludeList == null) {
-                        // the exclude list doesn't apply
+                    if (excludes.isEmpty()) {
+                        // XXX: is this the same as handleSingleInstanceCollection()?
+
                         if (mbeanServer.isRegistered(oName)) {
                             MBeanInfo jmxMBeanInfo = mbeanServer.getMBeanInfo(oName);
 
                             for (MBeanAttributeInfo mbai : jmxMBeanInfo.getAttributes()) {
                                 LOG.debug("objectName: {}, attribute: {}, type: {}", oName, mbai.getName(), mbai.getType());
                                 if (attribNames.contains(mbai.getName())) {
-                                    try {
-                                        Object attribute = mbeanServer.getAttribute(oName, mbai.getName());
-                                        List<String> compositeMemberKeys = new ArrayList<String>();
+                                    if ("javax.management.openmbean.CompositeData".equals(mbai.getType())) {
+                                        LOG.error("MBean {} attribute {} is a CompositeData type", objectName, mbai.getName());
+                                    } else {
+                                        try {
+                                            Object attribute = mbeanServer.getAttribute(oName, mbai.getName());
 
-                                        if ("javax.management.openmbean.CompositeData".equals(mbai.getType())) {
-                                            try {
-                                                CompositeData cd = (CompositeData) attribute;
-                                                for (String key : compositeMemberKeys) {
-                                                    JMXDataSource ds = dsMap.get(objectName + "|" + mbai.getName() + "|" + key);
-                                                    if (ds != null) {
-                                                        JMXCollectionAttributeType attribType = new JMXCollectionAttributeType(ds, null, null, attribGroupType);
-                                                        collectionResource.setAttributeValue(attribType, cd.get(key).toString());
-                                                    } else {
-                                                        LOG.debug("Did not find an entry for key '{}|{}|{}' in dsMap", objectName, mbai.getName(), key);
-                                                    }
-                                                }
-                                            } catch (final ClassCastException cce) {
-                                                LOG.debug("{} Collection - getAttributes (try CompositeData) - ERROR: Failed to cast attribute value to type CompositeData!", m_serviceName, cce);
-                                            }
-                                        } else {
                                             JMXDataSource ds = dsMap.get(objectName + "|" + mbai.getName());
                                             if (ds != null) {
                                                 JMXCollectionAttributeType attribType = new JMXCollectionAttributeType(ds, null, null, attribGroupType);
@@ -493,57 +479,112 @@ public abstract class JMXCollector implements ServiceCollector {
                                             } else {
                                                 LOG.debug("Did not find an entry for key '{}|{}' in dsMap", objectName, mbai.getName());
                                             }
+                                        } catch (final InstanceNotFoundException e) {
+                                            LOG.error("MBean {} attribute {} was not found", objectName, mbai.getName());
+                                        } catch (final Exception e) {
+                                            LOG.error("Unable to retrieve mbean {} attribute {}", objectName, mbai.getName());
                                         }
-                                    } catch (final InstanceNotFoundException e) {
-                                        LOG.error("MBean {} attribute {} was not found", objectName, mbai.getName());
-                                    } catch (final Exception e) {
-                                        LOG.error("Unable to retrieve mbean {} attribute {}", objectName, mbai.getName());
+                                    }
+                                } else if (compAttribNames.containsKey(mbai.getName())) {
+                                    if (!"javax.management.openmbean.CompositeData".equals(mbai.getType())) {
+                                        LOG.error("MBean {} attribute {} is not a CompositeData type", objectName, mbai.getName());
+                                    } else {
+                                        try {
+                                            CompositeData cd = (CompositeData) mbeanServer.getAttribute(oName, mbai.getName());
+                                            for (String key : compAttribNames.get(mbai.getName())) {
+                                                JMXDataSource ds = dsMap.get(objectName + "|" + mbai.getName() + "|" + key);
+                                                if (ds != null) {
+                                                    JMXCollectionAttributeType attribType = new JMXCollectionAttributeType(ds, null, null, attribGroupType);
+                                                    collectionResource.setAttributeValue(attribType, cd.get(key).toString());
+                                                } else {
+                                                    LOG.debug("Did not find an entry for key '{}|{}|{}' in dsMap", objectName, mbai.getName(), key);
+                                                }
+                                            }
+                                        } catch (final InstanceNotFoundException e) {
+                                            LOG.error("MBean {} attribute {} was not found", objectName, mbai.getName());
+                                        } catch (final Exception e) {
+                                            LOG.error("Unable to retrieve mbean {} attribute {}", objectName, mbai.getName());
+                                        }
                                     }
                                 }
                             }
+                            collectionSet.getCollectionResources().add(collectionResource);
                         }
                     } else {
                         /*
-                         * filter out calls if the key field
+                         * * filter out calls if the key field
                          * matches an entry in the exclude
                          * list
                          */
                         String keyName = oName.getKeyProperty(beanInfo.getKeyField());
-                        boolean found = false;
-                        StringTokenizer st = new StringTokenizer(excludeList, ",");
-                        while (st.hasMoreTokens()) {
-                            if (keyName.equals(st.nextToken())) {
-                                found = true;
-                                break;
-                            }
-                        }
-                        if (!found) {
+
+                        if (!excludes.contains(keyName)) {
                             if (mbeanServer.isRegistered(oName)) {
-                                AttributeList attrList = mbeanServer.getAttributes(oName, attrNames);
+                                MBeanInfo jmxMBeanInfo = mbeanServer.getMBeanInfo(oName);
 
-                                for (Object attribute : attrList) {
-                                    Attribute attrib = (Attribute) attribute;
-                                    JMXDataSource ds = dsMap.get(objectName + "|" + attrib.getName());
-                                    JMXCollectionAttributeType attribType = new JMXCollectionAttributeType(ds, oName.getKeyProperty(beanInfo.getKeyField()), beanInfo.getKeyAlias(), attribGroupType);
+                                for (MBeanAttributeInfo mbai : jmxMBeanInfo.getAttributes()) {
+                                    LOG.debug("objectName: {}, attribute: {}, type: {}", oName, mbai.getName(), mbai.getType());
+                                    if (attribNames.contains(mbai.getName())) {
+                                        if ("javax.management.openmbean.CompositeData".equals(mbai.getType())) {
+                                            LOG.error("MBean {} attribute {} is a CompositeData type", objectName, mbai.getName());
+                                        } else {
+                                            try {
+                                                Object attribute = mbeanServer.getAttribute(oName, mbai.getName());
 
-                                    collectionResource.setAttributeValue(attribType, attrib.getValue().toString());
+                                                JMXDataSource ds = dsMap.get(objectName + "|" + mbai.getName());
+                                                if (ds != null) {
+                                                    JMXCollectionAttributeType attribType = new JMXCollectionAttributeType(ds, oName.getKeyProperty(beanInfo.getKeyField()), beanInfo.getKeyAlias(), attribGroupType);
+                                                    collectionResource.setAttributeValue(attribType, attribute.toString());
+                                                } else {
+                                                    LOG.debug("Did not find an entry for key '{}|{}' in dsMap", objectName, mbai.getName());
+                                                }
+                                            } catch (final InstanceNotFoundException e) {
+                                                LOG.error("MBean {} attribute {} was not found", objectName, mbai.getName());
+                                            } catch (final Exception e) {
+                                                LOG.error("Unable to retrieve mbean {} attribute {}", objectName, mbai.getName());
+                                            }
+                                        }
+                                    } else if (compAttribNames.containsKey(mbai.getName())) {
+                                        if (!"javax.management.openmbean.CompositeData".equals(mbai.getType())) {
+                                            LOG.error("MBean {} attribute {} is not a CompositeData type", objectName, mbai.getName());
+                                        } else {
+                                            try {
+                                                CompositeData cd = (CompositeData) mbeanServer.getAttribute(oName, mbai.getName());
+                                                for (String key : compAttribNames.get(mbai.getName())) {
+                                                    JMXDataSource ds = dsMap.get(objectName + "|" + mbai.getName() + "|" + key);
+                                                    if (ds != null) {
+                                                        JMXCollectionAttributeType attribType = new JMXCollectionAttributeType(ds, oName.getKeyProperty(beanInfo.getKeyField()), beanInfo.getKeyAlias(), attribGroupType);
+                                                        collectionResource.setAttributeValue(attribType, cd.get(key).toString());
+                                                    } else {
+                                                        LOG.debug("Did not find an entry for key '{}|{}|{}' in dsMap", objectName, mbai.getName(), key);
+                                                    }
+                                                }
+                                            } catch (final InstanceNotFoundException e) {
+                                                LOG.error("MBean {} attribute {} was not found", objectName, mbai.getName());
+                                            } catch (final Exception e) {
+                                                LOG.error("Unable to retrieve mbean {} attribute {}", objectName, mbai.getName());
+                                            }
+                                        }
+                                    }
                                 }
+                                collectionSet.getCollectionResources().add(collectionResource);
                             }
                         }
                     }
-                    collectionSet.getCollectionResources().add(collectionResource);
-                } catch (final InstanceNotFoundException e) {
+                } catch (InstanceNotFoundException e) {
                     LOG.error("Error retrieving attributes for {}", oName, e);
                 } catch (IntrospectionException e) {
                     LOG.error("Error retrieving attributes for {}", oName, e);
                 } catch (ReflectionException e) {
                     LOG.error("Error retrieving attributes for {}", oName, e);
+                } catch (IOException e) {
+                    LOG.error("Error retrieving attributes for {}", oName, e);
                 }
             }
         } catch (MalformedObjectNameException e) {
-            LOG.error("objectname {} is not valid", objectName, e);
+            LOG.error("Invalid objectname {}", objectName, e);
         } catch (IOException e) {
-            LOG.error("Error retrieving MBean instance {}.", objectName, e);
+            LOG.error("Error retrieving mbean {}", objectName, e);
         }
     }
 
@@ -559,11 +600,17 @@ public abstract class JMXCollector implements ServiceCollector {
                 rt = new ResourceType();
                 rt.setName(resourceType);
                 rt.setStorageStrategy(new StorageStrategy());
-                rt.getStorageStrategy().setClazz(JMXStorageStrategy.class.getName());
-                rt.setPersistenceSelectorStrategy(new PersistenceSelectorStrategy());
-                rt.getPersistenceSelectorStrategy().setClazz(PersistAllSelectorStrategy.class.getName());
+                rt
+                  .getStorageStrategy().setClazz(JMXStorageStrategy.class
+                    .getName());
+                rt.setPersistenceSelectorStrategy(
+                  new PersistenceSelectorStrategy());
+                rt.getPersistenceSelectorStrategy()
+                  .setClazz(PersistAllSelectorStrategy.class
+                    .getName());
             }
             JMXResourceType type = new JMXResourceType(agent, rt);
+
             m_resourceTypeList.put(resourceType, type);
         }
         return m_resourceTypeList.get(resourceType);
@@ -587,7 +634,7 @@ public abstract class JMXCollector implements ServiceCollector {
      * from the provided list of MBeanObject objects.
      *
      * @param collectionName
-     *            Collection name
+     *                       Collection name
      * @param attributeMap
      * @return list of RRDDataSource objects
      */
@@ -607,7 +654,6 @@ public abstract class JMXCollector implements ServiceCollector {
          * manner each interface will have RRD files create which reflect only
          * the data sources pertinent to it.
          */
-
         LOG.debug("attributeMap size: {}", attributeMap.size());
         for (Map.Entry<String, List<Attrib>> entry : attributeMap.entrySet()) {
             String objectName = entry.getKey();
@@ -618,8 +664,10 @@ public abstract class JMXCollector implements ServiceCollector {
             for (Attrib attr : list) {
                 /*
                  * Verify that this object has an appropriate "integer" data
-                 * type which can be stored in an RRD database file (must map to
-                 * one of the supported RRD data source types: COUNTER or GAUGE).
+                 * type which can be stored in an RRD database file (must map
+                 * to
+                 * one of the supported RRD data source types: COUNTER or
+                 * GAUGE).
                  */
                 String ds_type = JMXDataSource.mapType(attr.getType());
                 if (ds_type != null) {
@@ -670,7 +718,7 @@ public abstract class JMXCollector implements ServiceCollector {
                     dsList.put(objectName + "|" + attr.getName(), ds);
                 } else {
                     LOG.warn("buildDataSourceList: Data type '{}' not supported.  Only integer-type data may be stored in RRD.  MBean object '{}' will not be mapped to RRD data source.",
-                             attr.getType(), attr.getAlias());
+                      attr.getType(), attr.getAlias());
                 }
             }
         }
@@ -684,13 +732,15 @@ public abstract class JMXCollector implements ServiceCollector {
      * </p>
      *
      * @param useFriendlyName
-     *            a boolean.
+     *                        a boolean.
      */
     public void setUseFriendlyName(boolean useFriendlyName) {
         this.m_useFriendlyName = useFriendlyName;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RrdRepository getRrdRepository(String collectionName) {
         return JMXDataCollectionConfigFactory.getInstance().getRrdRepository(collectionName);

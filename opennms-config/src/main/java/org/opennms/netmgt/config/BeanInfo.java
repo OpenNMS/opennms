@@ -29,11 +29,13 @@
 package org.opennms.netmgt.config;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 // TODO: Auto-generated Javadoc
 /*
- * 
+ *
  * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
@@ -55,29 +57,29 @@ public class BeanInfo {
     private String m_keyField;
 
     /** The m_excludes. */
-    private String m_excludes;
+    private List<String> m_excludes;
 
     /** The m_key alias. */
     private String m_keyAlias;
-    
+
     /** The m_resource type. */
     private String m_resourceType;
-    
+
     /** The m_operations. */
     private ArrayList<Object> m_operations;
-    
+
     /** The m_attributes. */
     private List<String> m_attributes;
-    
+
     /** The m_composite attributes. */
-    private List<String> m_compositeAttributes;
+    private Map<String, List<String>> m_compositeAttributes;
 
     /**
      * <p>getCompositeAttributeNames</p>.
      *
      * @return a {@link java.util.List} object.
      */
-    public List<String> getCompositeAttributeNames() {
+    public Map<String, List<String>> getCompositeAttributeNames() {
         return m_compositeAttributes;
     }
 
@@ -86,7 +88,7 @@ public class BeanInfo {
      *
      * @param compAttr a {@link java.util.List} object.
      */
-    public void setCompositeAttributes(List<String> compAttr) {
+    public void setCompositeAttributes(final Map<String, List<String>> compAttr) {
         m_compositeAttributes = compAttr;
     }
 
@@ -96,7 +98,7 @@ public class BeanInfo {
     public BeanInfo() {
         m_operations = new ArrayList<Object>();
         m_attributes = new ArrayList<String>();
-        m_compositeAttributes = new ArrayList<String>();
+        m_compositeAttributes = new HashMap<String, List<String>>();
     }
 
     /**
@@ -178,7 +180,7 @@ public class BeanInfo {
      *
      * @return Returns the excludes.
      */
-    public String getExcludes() {
+    public List<String> getExcludes() {
         return m_excludes;
     }
 
@@ -188,7 +190,7 @@ public class BeanInfo {
      * @param excludes
      *            The excludes to set.
      */
-    public void setExcludes(String excludes) {
+    public void setExcludes(final List<String> excludes) {
         m_excludes = excludes;
     }
 
@@ -219,7 +221,7 @@ public class BeanInfo {
     public String getKeyAlias() {
         return m_keyAlias;
     }
-    
+
     /**
      * <p>Setter for the field <code>keyAlias</code>.</p>
      *

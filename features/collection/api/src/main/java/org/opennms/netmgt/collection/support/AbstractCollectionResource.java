@@ -29,6 +29,7 @@
 package org.opennms.netmgt.collection.support;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,7 +53,7 @@ import org.slf4j.LoggerFactory;
  * be overridden by subclasses.
  */
 public abstract class AbstractCollectionResource implements CollectionResource {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(AbstractCollectionResource.class);
 
     protected final CollectionAgent m_agent;
@@ -66,7 +67,7 @@ public abstract class AbstractCollectionResource implements CollectionResource {
     protected AbstractCollectionResource(CollectionAgent agent) {
         m_agent=agent;
     }
-    
+
     /**
      * <p>getOwnerName</p>
      *
@@ -108,7 +109,11 @@ public abstract class AbstractCollectionResource implements CollectionResource {
         }
         return group;
     }
-    
+
+    protected Map<AttributeGroupType, AttributeGroup> getGroups() {
+        return Collections.unmodifiableMap(m_attributeGroups);
+    }
+
     /** {@inheritDoc} */
     @Override
     public void visit(CollectionSetVisitor visitor) {

@@ -278,8 +278,8 @@ public class JMXCollectorTest {
         attributes.add("LastGcInfo");
         beanInfo.setAttributes(attributes);
 
-        List<String> compositeAttributes = new ArrayList<String>();
-        compositeAttributes.add("LastGcInfo");
+        Map<String, List<String>> compositeAttributes = new HashMap<String, List<String>>();
+        compositeAttributes.put("LastGcInfo", null);
         beanInfo.setCompositeAttributes(compositeAttributes);
 
         mBeans.put("first", beanInfo);
@@ -310,8 +310,8 @@ public class JMXCollectorTest {
         attributes.add("UsageThresholdCount");
         beanInfo.setAttributes(attributes);
 
-        List<String> compositeAttributes = new ArrayList<String>();
-        compositeAttributes.add("CollectionUsage");
+        Map<String, List<String>> compositeAttributes = new HashMap<String, List<String>>();
+        compositeAttributes.put("CollectionUsage", null);
         beanInfo.setCompositeAttributes(compositeAttributes);
 
         mBeans.put("first", beanInfo);
@@ -325,6 +325,7 @@ public class JMXCollectorTest {
 
         jmxNodeInfo.setDsMap(dataSourceMap);
         CollectionSet collectionSet = jmxCollector.collect(collectionAgent, null, null);
+        logger.debug("collectionSet: {}", collectionSet);
         assertEquals("Collection of one Jvm default value run successfully", 1, collectionSet.getStatus());
     }
 
