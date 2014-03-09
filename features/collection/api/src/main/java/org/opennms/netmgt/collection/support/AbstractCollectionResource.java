@@ -110,10 +110,6 @@ public abstract class AbstractCollectionResource implements CollectionResource {
         return group;
     }
 
-    protected Map<AttributeGroupType, AttributeGroup> getGroups() {
-        return Collections.unmodifiableMap(m_attributeGroups);
-    }
-
     /** {@inheritDoc} */
     @Override
     public void visit(CollectionSetVisitor visitor) {
