@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<jmx-datacollection-config rrdRepository = "%rrdRepository%">
+  <jmx-collection name="default">
+    <rrd step="1">
+      <rra>RRA:AVERAGE:0.5:1:8928</rra>
+    </rrd>
+    <mbeans>
+      <!--
+      <mbean name="JVM Memory" objectname="java.lang:type=OperatingSystem">
+        <attrib name="FreePhysicalMemorySize"   alias="FreeMemory"       type="gauge"/>
+        <attrib name="TotalPhysicalMemorySize"  alias="TotalMemory"      type="gauge"/>
+        <attrib name="FreeSwapSpaceSize"        alias="FreeSwapSpace"    type="gauge"/>
+        <attrib name="TotalSwapSpaceSize"       alias="TotalSwapSpace"   type="gauge"/>
+      </mbean>
+      <mbean name="JVM Threading" objectname="java.lang:type=Threading">
+        <attrib name="ThreadCount"           alias="ThreadCount"          type="gauge"/>
+        <attrib name="PeakThreadCount"       alias="PeakThreadCount"      type="gauge"/>
+        <attrib name="DaemonThreadCount"     alias="DaemonThreadCount"    type="gauge"/>
+        <attrib name="CurrentThreadCpuTime"  alias="CurThreadCpuTime"     type="gauge"/>
+      </mbean>
+      <mbean name="JVM MemoryPool" objectname="java.lang:type=MemoryPool">
+        <attrib name="CollectionUsageThresholdCount"  alias="CollectionUsage"       type="counter"/>
+      </mbean>
+      <mbean name="JVM ClassLoading" objectname="java.lang:type=ClassLoading">
+        <attrib name="TotalLoadedClassCount"  alias="TotLoadedClasses"   type="gauge"/>
+        <attrib name="LoadedClassCount"       alias="LoadedClasses"      type="gauge"/>
+        <attrib name="UnloadedClassCount"     alias="UnloadedClass"      type="gauge"/>
+      </mbean>
+      -->
+      <mbean name="JMXTest" objectname="org.opennms.netmgt.collectd.jmxhelper:type=JmxTest">
+        <attrib name="A" alias="A" type="gauge"/>
+        <attrib name="B" alias="B" type="gauge"/>
+        <attrib name="C" alias="C" type="gauge"/>
+        <attrib name="D" alias="D" type="gauge"/>
+        <attrib name="name" alias="name" type="string"/>
+      </mbean>
+    </mbeans>
+  </jmx-collection>
+</jmx-datacollection-config>

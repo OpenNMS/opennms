@@ -155,7 +155,10 @@ public class JMXCollectionAttributeType implements CollectionAttributeType {
      */
     @Override
     public void storeAttribute(CollectionAttribute attribute, Persister persister) {
-        // Only numeric data comes back from JMX in data collection
-        persister.persistNumericAttribute(attribute);
+        if (m_dataSource.getType().equalsIgnoreCase("string")) {
+            persister.persistStringAttribute(attribute);
+        } else {
+            persister.persistNumericAttribute(attribute);
+        }
     }
 }

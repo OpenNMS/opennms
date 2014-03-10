@@ -125,6 +125,7 @@ public final class JMXDataCollectionConfigFactory {
         m_collectionMap = new HashMap<String, JmxCollection>();
 
         for (JmxCollection collection : m_config.getJmxCollection()) {
+            LOG.debug("adding jmx-collection '{}'", collection.getName());
             m_collectionMap.put(collection.getName(), collection);
         }
     }
@@ -226,6 +227,7 @@ public final class JMXDataCollectionConfigFactory {
         //
         JmxCollection collection = m_collectionMap.get(cName);
         if (collection == null) {
+            LOG.debug("jmx-datacollection '{}' not found", cName);
             return attributeMap;
         }
 
@@ -317,10 +319,7 @@ public final class JMXDataCollectionConfigFactory {
     static void processObjectList(List<Attrib> objectList, List<Attr> mibObjectList) {
         //TODO: Make mibObjectList a Set
         //TODO: Delete this method, it is not referenced anywhere
-        Iterator<Attrib> i = objectList.iterator();
-        while (i.hasNext()) {
-            Attrib mibObj = i.next();
-
+        for (Attrib mibObj : objectList) {
             // Create a MibObject from the castor MibObj
             Attr aMibObject = new Attr();
             aMibObject.setName(mibObj.getName());
@@ -348,7 +347,8 @@ public final class JMXDataCollectionConfigFactory {
         if (collection != null) {
             return collection.getRrd().getStep();
         } else {
-            return -1;
+            LOG.error("JmxCollection not found for collection named '{}'", cName);
+            return 1;
         }
     }
 
@@ -364,6 +364,7 @@ public final class JMXDataCollectionConfigFactory {
         if (collection != null) {
             return collection.getRrd().getRraCollection();
         } else {
+            LOG.error("JmxCollection not found for collection named '{}'", cName);
             return null;
         }
 
@@ -383,7 +384,6 @@ public final class JMXDataCollectionConfigFactory {
         repo.setStep(getStep(collectionName));
         repo.setHeartBeat((2 * getStep(collectionName)));
         return repo;
-        //return m_config.getRrdRepository();
     }
 
     /**

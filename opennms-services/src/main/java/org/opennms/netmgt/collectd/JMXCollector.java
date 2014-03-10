@@ -32,17 +32,11 @@ package org.opennms.netmgt.collectd;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.StringTokenizer;
-import java.util.logging.Level;
-import javax.management.Attribute;
-import javax.management.AttributeList;
 import javax.management.InstanceNotFoundException;
 import javax.management.IntrospectionException;
 import javax.management.MBeanAttributeInfo;
@@ -52,7 +46,6 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.management.ReflectionException;
 import javax.management.openmbean.CompositeData;
-import javax.management.openmbean.CompositeType;
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.core.utils.InetAddressUtils;
@@ -157,7 +150,7 @@ public abstract class JMXCollector implements ServiceCollector {
      * Interface attribute key used to store a JMXNodeInfo object which holds
      * data about the node being polled.
      */
-    private static final String NODE_INFO_KEY = "org.opennms.netmgt.collectd.JMXCollector.nodeInfo";
+    protected static final String NODE_INFO_KEY = "org.opennms.netmgt.collectd.JMXCollector.nodeInfo";
 
     /**
      * The service name is provided by the derived class
@@ -600,14 +593,10 @@ public abstract class JMXCollector implements ServiceCollector {
                 rt = new ResourceType();
                 rt.setName(resourceType);
                 rt.setStorageStrategy(new StorageStrategy());
-                rt
-                  .getStorageStrategy().setClazz(JMXStorageStrategy.class
-                    .getName());
-                rt.setPersistenceSelectorStrategy(
-                  new PersistenceSelectorStrategy());
+                rt.getStorageStrategy().setClazz(JMXStorageStrategy.class.getName());
+                rt.setPersistenceSelectorStrategy(new PersistenceSelectorStrategy());
                 rt.getPersistenceSelectorStrategy()
-                  .setClazz(PersistAllSelectorStrategy.class
-                    .getName());
+                  .setClazz(PersistAllSelectorStrategy.class.getName());
             }
             JMXResourceType type = new JMXResourceType(agent, rt);
 

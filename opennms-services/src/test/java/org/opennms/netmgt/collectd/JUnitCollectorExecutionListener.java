@@ -31,7 +31,6 @@ package org.opennms.netmgt.collectd;
 import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.Method;
-
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.netmgt.collection.api.ServiceCollector;
@@ -39,6 +38,7 @@ import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.DefaultDataCollectionConfigDao;
 import org.opennms.netmgt.config.HttpCollectionConfigFactory;
+import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.test.FileAnticipator;
@@ -95,6 +95,11 @@ public class JUnitCollectorExecutionListener extends AbstractTestExecutionListen
             dataCollectionDao.setConfigResource(r);
             dataCollectionDao.afterPropertiesSet();
             DataCollectionConfigFactory.setInstance(dataCollectionDao);
+        } else if ("jsr160".equalsIgnoreCase(config.datacollectionType())) {
+            is = ConfigurationTestUtils.getInputStreamForResourceWithReplacements(testContext.getTestInstance(), config.datacollectionConfig(), new String[]{"%rrdRepository%", m_snmpRrdDirectory.getAbsolutePath()});
+            JMXDataCollectionConfigFactory factory = new JMXDataCollectionConfigFactory(is);
+            JMXDataCollectionConfigFactory.setInstance(factory);
+            JMXDataCollectionConfigFactory.init();
         } else {
             throw new UnsupportedOperationException("data collection type '" + config.datacollectionType() + "' not supported");
         }
@@ -119,7 +124,7 @@ public class JUnitCollectorExecutionListener extends AbstractTestExecutionListen
         if (config.anticipateRrds().length > 0) {
             for (String rrdFile : config.anticipateRrds()) {
                 m_fileAnticipator.expecting(m_snmpRrdDirectory, rrdFile + RrdUtils.getExtension());
-                
+
                 //the nrtg feature requires .meta files in parallel to the rrd/jrb files.
                 //this .meta files are expected
                 m_fileAnticipator.expecting(m_snmpRrdDirectory, rrdFile + ".meta");
@@ -143,21 +148,21 @@ public class JUnitCollectorExecutionListener extends AbstractTestExecutionListen
 
         deleteResursively(m_snmpRrdDirectory);
         m_fileAnticipator.tearDown();
-        
+
         if (e != null) {
         	throw e;
         }
     }
-    
+
     private static void deleteResursively(File directory) {
     	if (!directory.exists()) return;
-    	
+
     	if (directory.isDirectory()) {
     		for (File f : directory.listFiles()) {
                 deleteResursively(f);
             }
         }
-    	
+
     	directory.delete();
     }
 

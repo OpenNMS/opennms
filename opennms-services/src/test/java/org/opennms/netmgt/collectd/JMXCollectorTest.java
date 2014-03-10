@@ -1,4 +1,5 @@
-/*******************************************************************************
+/**
+ * *****************************************************************************
  * This file is part of OpenNMS(R).
  *
  * Copyright (C) 2014 The OpenNMS Group, Inc.
@@ -13,40 +14,43 @@
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
+ * along with OpenNMS(R). If not, see:
+ * http://www.gnu.org/licenses/
  *
  * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * OpenNMS(R) Licensing <license@opennms.org>
+ * http://www.opennms.org/
+ * http://www.opennms.com/
+ ******************************************************************************
+ */
 package org.opennms.netmgt.collectd;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.File;
-import java.io.FileInputStream;
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.management.MBeanServer;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
-
-import org.easymock.EasyMock;
 import org.junit.After;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.core.spring.BeanUtils;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collectd.jmxhelper.JmxTest;
 import org.opennms.netmgt.collectd.jmxhelper.JmxTestMBean;
 import org.opennms.netmgt.collection.api.AttributeGroup;
@@ -58,67 +62,151 @@ import org.opennms.netmgt.collection.support.SingleResourceCollectionSet;
 import org.opennms.netmgt.config.BeanInfo;
 import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
 import org.opennms.netmgt.config.collectd.jmx.Attrib;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ServiceTypeDao;
+import org.opennms.netmgt.model.NetworkBuilder;
+import org.opennms.netmgt.model.OnmsDistPoller;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
+import org.opennms.test.FileAnticipator;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestContext;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.transaction.PlatformTransactionManager;
 
 /**
  *
  * @author Markus Neumann <Markus@OpenNMS.org>
  */
-public class JMXCollectorTest {
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@TestExecutionListeners({
+    JUnitCollectorExecutionListener.class
+})
+@ContextConfiguration(locations = {
+    "classpath:/META-INF/opennms/applicationContext-soa.xml",
+    "classpath:/META-INF/opennms/applicationContext-dao.xml",
+    "classpath*:/META-INF/opennms/component-dao.xml",
+    "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+    "classpath:/META-INF/opennms/applicationContext-collectdTest.xml",
+    "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+    "classpath*:/META-INF/opennms/applicationContext-minimal-conf.xml"
+})
+@JUnitConfigurationEnvironment(systemProperties = "org.opennms.rrd.storeByGroup=false")
+@JUnitTemporaryDatabase
+public class JMXCollectorTest implements TestContextAware, InitializingBean {
 
     private static final Logger logger = LoggerFactory.getLogger(JMXCollectorTest.class);
 
-    private JMXCollector jmxCollector;
+    @Autowired
+    private PlatformTransactionManager m_transactionManager;
+
+    @Autowired
+    private NodeDao m_nodeDao;
+
+    @Autowired
+    private IpInterfaceDao m_ipInterfaceDao;
+
+    @Autowired
+    private ServiceTypeDao m_serviceTypeDao;
+
+    @Autowired
+    private Collectd m_collectd;
+
+    private JMXCollector m_collector;
 
     private MBeanServer platformMBeanServer;
 
-    private CollectionAgent collectionAgent;
-
     private JMXNodeInfo jmxNodeInfo;
 
-    private JMXDataCollectionConfigFactory jmxConfigFactory;
+    private CollectionSpecification m_collectionSpecification;
+
+    private TestContext m_context;
+
+    private final OnmsDistPoller m_distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
+
+    private final String m_testHostName = "127.0.0.1";
+    private CollectionAgent m_collectionAgent;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+
+    @Override
+    public void setTestContext(TestContext t) {
+        m_context = t;
+    }
+
+    private OnmsServiceType getServiceType(String name) {
+        OnmsServiceType serviceType = m_serviceTypeDao.findByName(name);
+        if (serviceType == null) {
+            serviceType = new OnmsServiceType(name);
+            m_serviceTypeDao.save(serviceType);
+            m_serviceTypeDao.flush();
+        }
+        return serviceType;
+    }
 
     @Before
     public void setUp() throws Exception {
-        jmxNodeInfo = new JMXNodeInfo(0);
-        jmxCollector = new JMXCollectorImpl();
+        jmxNodeInfo = new JMXNodeInfo(1);
         platformMBeanServer = ManagementFactory.getPlatformMBeanServer();
         ObjectName objectName = new ObjectName("org.opennms.netmgt.collectd.jmxhelper:type=JmxTest");
         JmxTestMBean testMBean = new JmxTest();
         platformMBeanServer.registerMBean(testMBean, objectName);
 
-        collectionAgent = EasyMock.createMock(CollectionAgent.class);
-        EasyMock.expect(collectionAgent.getAddress()).andReturn(InetAddress.getLocalHost()).anyTimes();
-        EasyMock.expect(collectionAgent.getAttribute("org.opennms.netmgt.collectd.JMXCollector.nodeInfo")).andReturn(jmxNodeInfo).anyTimes();
-        EasyMock.expect(collectionAgent.getNodeId()).andReturn(0).anyTimes();
-        EasyMock.expect(collectionAgent.getStorageDir()).andReturn(new File("")).anyTimes();
+        if (m_nodeDao.findByLabel("testnode").size() == 0) {
+            NetworkBuilder builder = new NetworkBuilder(m_distPoller);
+            builder.addNode("testnode");
+            builder.addInterface(InetAddressUtils.normalize(m_testHostName)).setIsManaged("M").setIsSnmpPrimary("P");
+            builder.addService(getServiceType("ICMP"));
+            builder.addService(getServiceType("JMX"));
+            OnmsNode n = builder.getCurrentNode();
+            assertNotNull(n);
+            m_nodeDao.save(n);
+            m_nodeDao.flush();
+        }
 
-        EasyMock.replay(collectionAgent);
+        m_collector = new JMXCollectorImpl();
+        Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put("collection", "default");
+        m_collector.initialize(parameters);
 
-        FileInputStream configFileStream = new FileInputStream("src/test/resources/etc/JmxCollectorConfigTest.xml");
-        logger.debug("ConfigFileStream check '{}'", configFileStream.available());
-        jmxConfigFactory = new JMXDataCollectionConfigFactory(configFileStream);
-        JMXDataCollectionConfigFactory.setInstance(jmxConfigFactory);
+        Collection<OnmsIpInterface> ifaces = m_ipInterfaceDao.findByIpAddress(m_testHostName);
+        assertEquals(1, ifaces.size());
+        OnmsIpInterface iface = ifaces.iterator().next();
+
+        m_collectionSpecification = CollectorTestUtils.createCollectionSpec("JMX", m_collector, "default");
+        m_collectionAgent = DefaultCollectionAgent.create(iface.getId(), m_ipInterfaceDao, m_transactionManager);
+        m_collectionAgent.setAttribute(JMXCollector.NODE_INFO_KEY, jmxNodeInfo);
     }
 
     @After
     public void tearDown() throws Exception {
         jmxNodeInfo = null;
-        jmxCollector.release();
-        jmxCollector = null;
-        platformMBeanServer.unregisterMBean(new ObjectName("org.opennms.netmgt.collectd.jmxhelper:type=JmxTest"));
-        platformMBeanServer = null;
-        EasyMock.verify(collectionAgent);
-        EasyMock.reset(collectionAgent);
-        jmxCollector = null;
+        if (platformMBeanServer != null) {
+            platformMBeanServer.unregisterMBean(new ObjectName("org.opennms.netmgt.collectd.jmxhelper:type=JmxTest"));
+            platformMBeanServer = null;
+        }
     }
 
     /**
      * This test is just a prove of concept.
      */
     @Test
+    @JUnitCollector(
+      datacollectionConfig = "/etc/JmxCollectorConfigTest.xml",
+      datacollectionType = "jsr160"
+    )
     public void collectTwoBasicValues() {
         String mBeansObjectName = "org.opennms.netmgt.collectd.jmxhelper:type=JmxTest";
         Map<String, BeanInfo> mBeans = new HashMap<String, BeanInfo>();
@@ -137,18 +225,22 @@ public class JMXCollectorTest {
         dataSourceMap.put(mBeansObjectName + "|Name", new JMXDataSource());
 //        dataSourceMap.put("org.opennms.netmgt.collectd.jmxhelper:type=JmxTest|NullString", new JMXDataSource());
         jmxNodeInfo.setDsMap(dataSourceMap);
-        CollectionSet collectionSet = jmxCollector.collect(collectionAgent, null, null);
+        CollectionSet collectionSet = m_collector.collect(m_collectionAgent, null, null);
         assertEquals("Collection of two dummy values run successfully", 1, collectionSet.getStatus());
     }
 
     @Test
+    @JUnitCollector(
+      datacollectionConfig = "/etc/JmxCollectorConfigTest.xml",
+      datacollectionType = "jsr160"
+    )
     public void collectSingleMbeanWithSingleAttribute() {
         String collectionName = "collectSingleMbeanWithSingleAttribute";
-        jmxNodeInfo.setMBeans(jmxConfigFactory.getMBeanInfo(collectionName));
-        jmxNodeInfo.setDsMap(generateDataSourceMap(jmxConfigFactory.getAttributeMap(collectionName, "", "")));
+        jmxNodeInfo.setMBeans(JMXDataCollectionConfigFactory.getInstance().getMBeanInfo(collectionName));
+        jmxNodeInfo.setDsMap(generateDataSourceMap(JMXDataCollectionConfigFactory.getInstance().getAttributeMap(collectionName, "", "")));
 
         //start collection
-        CollectionSet collectionSet = jmxCollector.collect(collectionAgent, null, null);
+        CollectionSet collectionSet = m_collector.collect(m_collectionAgent, null, null);
         JMXCollectionSet jmxCollectionSet = (JMXCollectionSet) collectionSet;
         List<JMXCollectionResource> jmxCollectionResources = jmxCollectionSet.getCollectionResources();
         System.err.println("jmxCollectionResources: " + jmxCollectionResources);
@@ -165,13 +257,17 @@ public class JMXCollectorTest {
      * Single attributes not provided by the agent will be ignored
      */
     @Test
+    @JUnitCollector(
+      datacollectionConfig = "/etc/JmxCollectorConfigTest.xml",
+      datacollectionType = "jsr160"
+    )
     public void collectSingleMbeanWithOneNotAvailableAttribute() {
         String collectionName = "collectSingleMbeanWithOneNotAvailableAttribute";
-        jmxNodeInfo.setMBeans(jmxConfigFactory.getMBeanInfo(collectionName));
-        jmxNodeInfo.setDsMap(generateDataSourceMap(jmxConfigFactory.getAttributeMap(collectionName, "", "")));
+        jmxNodeInfo.setMBeans(JMXDataCollectionConfigFactory.getInstance().getMBeanInfo(collectionName));
+        jmxNodeInfo.setDsMap(generateDataSourceMap(JMXDataCollectionConfigFactory.getInstance().getAttributeMap(collectionName, "", "")));
 
         //start collection
-        CollectionSet collectionSet = jmxCollector.collect(collectionAgent, null, null);
+        CollectionSet collectionSet = m_collector.collect(m_collectionAgent, null, null);
         JMXCollectionSet jmxCollectionSet = (JMXCollectionSet) collectionSet;
         List<JMXCollectionResource> jmxCollectionResources = jmxCollectionSet.getCollectionResources();
         assertEquals(1, jmxCollectionResources.size());
@@ -184,13 +280,17 @@ public class JMXCollectorTest {
     }
 
     @Test
+    @JUnitCollector(
+      datacollectionConfig = "/etc/JmxCollectorConfigTest.xml",
+      datacollectionType = "jsr160"
+    )
     public void collectSingleMbeanWithOneNotAvailableAttributesAndOneAvailableAttributes() {
         String collectionName = "collectSingleMbeanWithOneNotAvailableAttributesAndOneAvailableAttributes";
-        jmxNodeInfo.setMBeans(jmxConfigFactory.getMBeanInfo(collectionName));
-        jmxNodeInfo.setDsMap(generateDataSourceMap(jmxConfigFactory.getAttributeMap(collectionName, "", "")));
+        jmxNodeInfo.setMBeans(JMXDataCollectionConfigFactory.getInstance().getMBeanInfo(collectionName));
+        jmxNodeInfo.setDsMap(generateDataSourceMap(JMXDataCollectionConfigFactory.getInstance().getAttributeMap(collectionName, "", "")));
 
         //start collection
-        CollectionSet collectionSet = jmxCollector.collect(collectionAgent, null, null);
+        CollectionSet collectionSet = m_collector.collect(m_collectionAgent, null, null);
         JMXCollectionSet jmxCollectionSet = (JMXCollectionSet) collectionSet;
         List<JMXCollectionResource> jmxCollectionResources = jmxCollectionSet.getCollectionResources();
         assertEquals(1, jmxCollectionResources.size());
@@ -203,13 +303,17 @@ public class JMXCollectorTest {
     }
 
     @Test
+    @JUnitCollector(
+      datacollectionConfig = "/etc/JmxCollectorConfigTest.xml",
+      datacollectionType = "jsr160"
+    )
     public void collectSingleMbeanWithManyNotAvailableAttributesAndManyAvailableAttributes() {
         String collectionName = "collectSingleMbeanWithManyNotAvailableAttributesAndManyAvailableAttributes";
-        jmxNodeInfo.setMBeans(jmxConfigFactory.getMBeanInfo(collectionName));
-        jmxNodeInfo.setDsMap(generateDataSourceMap(jmxConfigFactory.getAttributeMap(collectionName, "", "")));
+        jmxNodeInfo.setMBeans(JMXDataCollectionConfigFactory.getInstance().getMBeanInfo(collectionName));
+        jmxNodeInfo.setDsMap(generateDataSourceMap(JMXDataCollectionConfigFactory.getInstance().getAttributeMap(collectionName, "", "")));
 
         //start collection
-        CollectionSet collectionSet = jmxCollector.collect(collectionAgent, null, null);
+        CollectionSet collectionSet = m_collector.collect(m_collectionAgent, null, null);
         JMXCollectionSet jmxCollectionSet = (JMXCollectionSet) collectionSet;
         List<JMXCollectionResource> jmxCollectionResources = jmxCollectionSet.getCollectionResources();
         assertEquals(1, jmxCollectionResources.size());
@@ -222,14 +326,18 @@ public class JMXCollectorTest {
     }
 
     @Test
+    @JUnitCollector(
+      datacollectionConfig = "/etc/JmxCollectorConfigTest.xml",
+      datacollectionType = "jsr160"
+    )
     public void collectSingleMbeanWithOneCompAttribWithAllItsCompMembers() {
         String collectionName = "collectSingleMbeanWithOneCompAttribWithAllItsCompMembers";
-        jmxNodeInfo.setMBeans(jmxConfigFactory.getMBeanInfo(collectionName));
-        jmxNodeInfo.setDsMap(generateDataSourceMap(jmxConfigFactory.getAttributeMap(collectionName, "", "")));
+        jmxNodeInfo.setMBeans(JMXDataCollectionConfigFactory.getInstance().getMBeanInfo(collectionName));
+        jmxNodeInfo.setDsMap(generateDataSourceMap(JMXDataCollectionConfigFactory.getInstance().getAttributeMap(collectionName, "", "")));
         //printDataSourceMap(jmxNodeInfo.getDsMap());
 
         //start collection
-        CollectionSet collectionSet = jmxCollector.collect(collectionAgent, null, null);
+        CollectionSet collectionSet = m_collector.collect(m_collectionAgent, null, null);
         JMXCollectionSet jmxCollectionSet = (JMXCollectionSet) collectionSet;
         List<JMXCollectionResource> jmxCollectionResources = jmxCollectionSet.getCollectionResources();
         //logger.debug("jmxCollectionResources: {}", jmxCollectionResources);
@@ -245,13 +353,17 @@ public class JMXCollectorTest {
     }
 
     @Test
+    @JUnitCollector(
+      datacollectionConfig = "/etc/JmxCollectorConfigTest.xml",
+      datacollectionType = "jsr160"
+    )
     public void collectSingleMbeanWithOneCompAttribWithOneIgnoredCompMembers() {
         String collectionName = "collectSingleMbeanWithOneCompAttribWithOneIgnoredCompMembers";
-        jmxNodeInfo.setMBeans(jmxConfigFactory.getMBeanInfo(collectionName));
-        jmxNodeInfo.setDsMap(generateDataSourceMap(jmxConfigFactory.getAttributeMap(collectionName, "", "")));
+        jmxNodeInfo.setMBeans(JMXDataCollectionConfigFactory.getInstance().getMBeanInfo(collectionName));
+        jmxNodeInfo.setDsMap(generateDataSourceMap(JMXDataCollectionConfigFactory.getInstance().getAttributeMap(collectionName, "", "")));
 
         //start collection
-        CollectionSet collectionSet = jmxCollector.collect(collectionAgent, null, null);
+        CollectionSet collectionSet = m_collector.collect(m_collectionAgent, null, null);
         JMXCollectionSet jmxCollectionSet = (JMXCollectionSet) collectionSet;
         List<JMXCollectionResource> jmxCollectionResources = jmxCollectionSet.getCollectionResources();
         assertEquals(1, jmxCollectionResources.size());
@@ -267,6 +379,10 @@ public class JMXCollectorTest {
      * Check if CompositeAttributes will be collected
      */
     @Test
+    @JUnitCollector(
+      datacollectionConfig = "/etc/JmxCollectorConfigTest.xml",
+      datacollectionType = "jsr160"
+    )
     public void collectJvmDefaultComposites() {
         String mBeansObjectName = "java.lang:type=GarbageCollector,name=PS MarkSweep";
         Map<String, BeanInfo> mBeans = new HashMap<String, BeanInfo>();
@@ -290,7 +406,7 @@ public class JMXCollectorTest {
         dataSourceMap.put(mBeansObjectName + "|LastGcInfo", new JMXDataSource());
 
         jmxNodeInfo.setDsMap(dataSourceMap);
-        CollectionSet collectionSet = jmxCollector.collect(collectionAgent, null, null);
+        CollectionSet collectionSet = m_collector.collect(m_collectionAgent, null, null);
         assertEquals("Collection of one Jvm default value run successfully", 1, collectionSet.getStatus());
     }
 
@@ -298,6 +414,10 @@ public class JMXCollectorTest {
      * Check if CompositeAttributes will be collected
      */
     @Test
+    @JUnitCollector(
+      datacollectionConfig = "/etc/JmxCollectorConfigTest.xml",
+      datacollectionType = "jsr160"
+    )
     public void collectJvmDefaultComposites2() {
         String mBeansObjectName = "java.lang:type=MemoryPool,name=*";
         Map<String, BeanInfo> mBeans = new HashMap<String, BeanInfo>();
@@ -311,7 +431,9 @@ public class JMXCollectorTest {
         beanInfo.setAttributes(attributes);
 
         Map<String, List<String>> compositeAttributes = new HashMap<String, List<String>>();
-        compositeAttributes.put("CollectionUsage", null);
+        List<String> cuList = new ArrayList<String>();
+        cuList.add("UsageThresholdCount");
+        compositeAttributes.put("CollectionUsage", cuList);
         beanInfo.setCompositeAttributes(compositeAttributes);
 
         mBeans.put("first", beanInfo);
@@ -324,9 +446,47 @@ public class JMXCollectorTest {
         dataSourceMap.put(mBeansObjectName + "|UsageThresholdCount", new JMXDataSource());
 
         jmxNodeInfo.setDsMap(dataSourceMap);
-        CollectionSet collectionSet = jmxCollector.collect(collectionAgent, null, null);
+        CollectionSet collectionSet = m_collector.collect(m_collectionAgent, null, null);
         logger.debug("collectionSet: {}", collectionSet);
         assertEquals("Collection of one Jvm default value run successfully", 1, collectionSet.getStatus());
+    }
+
+    @Test
+    @JUnitCollector(datacollectionConfig = "/org/opennms/netmgt/config/jmx-datacollection-test-persist.xml", datacollectionType = "jsr160",
+      anticipateRrds = {"1/A", "1/B", "1/C", "1/D"})
+    public final void testPersistJmxStats() throws Exception {
+        File snmpRrdDirectory = (File) m_context.getAttribute("rrdDirectory");
+        FileAnticipator anticipator = (FileAnticipator) m_context.getAttribute("fileAnticipator");
+
+        int numUpdates = 2;
+        int stepSizeInSecs = 1;
+
+        int stepSizeInMillis = stepSizeInSecs * 1000;
+
+        m_collectionSpecification.initialize(m_collectionAgent);
+
+        CollectorTestUtils.collectNTimes(m_collectionSpecification, m_collectionAgent, numUpdates);
+
+        // node level collection
+        File nodeDir = CollectorTestUtils.anticipatePath(anticipator, snmpRrdDirectory, "1");
+        assertTrue(nodeDir.exists());
+        File[] files = nodeDir.listFiles();
+        if (files != null) {
+            for (File f : files) {
+                logger.debug("file: {}", f);
+            }
+        }
+
+        File aRrdFile = new File(nodeDir, CollectorTestUtils.rrd("A"));
+        File bRrdFile = new File(nodeDir, CollectorTestUtils.rrd("B"));
+        File cRrdFile = new File(nodeDir, CollectorTestUtils.rrd("C"));
+
+        assertEquals("A", Double.valueOf(1.0), RrdUtils.fetchLastValueInRange(aRrdFile.getAbsolutePath(), "A", stepSizeInMillis, stepSizeInMillis));
+        assertEquals("B", Double.valueOf(2.0), RrdUtils.fetchLastValueInRange(bRrdFile.getAbsolutePath(), "B", stepSizeInMillis, stepSizeInMillis));
+        assertEquals("C", Double.valueOf(3.0), RrdUtils.fetchLastValueInRange(cRrdFile.getAbsolutePath(), "C", stepSizeInMillis, stepSizeInMillis));
+
+        m_collectionSpecification.release(m_collectionAgent);
+        assertEquals("force-fail", true, false);
     }
 
     private Map<String, JMXDataSource> generateDataSourceMap(Map<String, List<Attrib>> attributeMap) {
@@ -342,14 +502,8 @@ public class JMXCollectorTest {
         }
     }
 
-    private void printDataSourceMap(Map<String, JMXDataSource> dsMap) {
-        for (Map.Entry<String, JMXDataSource> entry : dsMap.entrySet()) {
-            logger.debug("key={}", entry.getKey());
-            logger.debug("{}\n\n", entry.getValue());
-        }
-    }
-
     public class JMXCollectorImpl extends JMXCollector {
+
         public JMXCollectorImpl() {
             super();
             setServiceName("JMXCollectorTest");
