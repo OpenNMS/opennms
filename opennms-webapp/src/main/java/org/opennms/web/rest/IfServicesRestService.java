@@ -74,11 +74,15 @@ import com.sun.jersey.spi.resource.PerRequest;
  * curl -X PUT "status=F" -u admin:admin "http://localhost:8980/opennms/rest/ifservices?node.label=onms-prd-01"
  * curl -X PUT "status=A" -u admin:admin "http://localhost:8980/opennms/rest/ifservices?ipInterface.ipAddress=192.168.32.140"
  * curl -X PUT "status=F" -u admin:admin "http://localhost:8980/opennms/rest/ifservices?category.name=Production"
+ * curl -X PUT "status=F&services=ICMP,HTTP" -u admin:admin "http://localhost:8980/opennms/rest/ifservices?category.name=Production"
  * 
- * Future enhancement:
+ * Possible values for status:
+ * A (Managed)
+ * F (Forced Unmanaged)
+ * R (Rescan to Resume, for compatibility purposes)
+ * S (Rescan to Suspend, for compatibility purposes)
  * 
- * Besides the status field, pass another with services. If exist, it should contain a CSV list of services to be updated,
- * otherwise all services are going to be updated.
+ * The optional parameter services is designed to specify the list of affected services as CSV.
  *
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
@@ -124,8 +128,8 @@ public class IfServicesRestService extends OnmsRestService {
         readLock();
         try {
             final String status = params.getFirst("status");
-            if (status == null) {
-                throw getException(Status.BAD_REQUEST, "updateServices: parameter status must be specified. Possible values: A, R, S, F");
+            if (status == null || !status.matches("(A|R|S|F)")) {
+                throw getException(Status.BAD_REQUEST, "updateServices: parameter status must be specified. Possible values: A (Managed), F (Forced Unmanaged), R (Rescan to Resume), S (Rescan to Suspend)");
             }
             final String services_csv = params.getFirst("services");
             final List<String> serviceList = new ArrayList<String>();
@@ -173,6 +177,7 @@ public class IfServicesRestService extends OnmsRestService {
         builder.alias("ipInterface", "ipInterface", JoinType.LEFT_JOIN);
         builder.alias("ipInterface.node", "node", JoinType.LEFT_JOIN);
         builder.alias("ipInterface.node.categories", "category", JoinType.LEFT_JOIN);
+        builder.alias("serviceType", "serviceType", JoinType.LEFT_JOIN);
         applyQueryFilters(params, builder);
 
         final Criteria criteria = builder.toCriteria();
