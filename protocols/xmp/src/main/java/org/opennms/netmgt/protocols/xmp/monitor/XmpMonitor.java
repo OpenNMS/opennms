@@ -37,16 +37,14 @@ package org.opennms.netmgt.protocols.xmp.monitor;
 
 import java.net.InetAddress;
 import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
-import org.apache.regexp.RE;
-import org.apache.regexp.RESyntaxException;
 import org.krupczak.xmp.SocketOpts;
 import org.krupczak.xmp.Xmp;
 import org.krupczak.xmp.XmpSession;
 import org.opennms.core.utils.ParameterMap;
-
 import org.opennms.netmgt.config.xmpConfig.XmpConfig;
-
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
@@ -62,14 +60,14 @@ import org.opennms.netmgt.protocols.xmp.config.XmpConfigFactory;
  * @version $Id: $
  */
 public class XmpMonitor extends AbstractServiceMonitor {
-	
 
-    
+
+
     /**
      * The default port to use for XMP
      */
     private final static int DEFAULT_PORT = Xmp.XMP_PORT;
-    
+
     /**
      * Default number of retries for TCP requests
      */
@@ -79,7 +77,7 @@ public class XmpMonitor extends AbstractServiceMonitor {
      * Default timeout (in milliseconds) for XMP requests
      */
     private final static int DEFAULT_TIMEOUT = 5000; // in milliseconds
-    
+
     /**
      * Default XMP user for performing requests
      */
@@ -89,49 +87,49 @@ public class XmpMonitor extends AbstractServiceMonitor {
      * Default type of request to perform
      */
     private final static String DEFAULT_REQUEST_TYPE = "GetRequest";
-    
+
     /**
      * Default MIB from which to make request
      */
     private final static String DEFAULT_REQUEST_MIB = "core";
-    
+
     /**
      * Default table from which to make request
      */
     private final static String DEFAULT_REQUEST_TABLE = "";
-    
+
     /**
      * Default object name to request
      */
     private final static String DEFAULT_REQUEST_OBJECT = "sysObjectID";
-    
+
     /**
      * Default instance to request (for SelectTableRequest only)
      */
     private final static String DEFAULT_REQUEST_INSTANCE = "*";
-    
+
     /**
      * Default string against which to match the returned value(s)
      */
     private final static String DEFAULT_VALUE_MATCH = null;
-    
+
     /**
      * Default string against which to match the returned instance(s)
      */
     private final static String DEFAULT_INSTANCE_MATCH = null;
-    
+
     /**
      * Default integer denoting minimum number of
      * matches allowed
      */
     private final static int DEFAULT_MIN_MATCHES = 1;
-    
+
     /**
      * Default integer denoting maximum number of
      * matches allowed.
      */
     private final static int DEFAULT_MAX_MATCHES = 1;
-    
+
     /**
      * Default boolean indicating whether maximum number
      * of matches is actually unbounded
@@ -145,18 +143,18 @@ public class XmpMonitor extends AbstractServiceMonitor {
     @Override
     public PollStatus poll(MonitoredService svc, Map<String,Object> parameters) {
         NetworkInterface<InetAddress> iface = svc.getNetInterface();
-        
+
         PollStatus status = PollStatus.unavailable();
         InetAddress ipaddr = (InetAddress) iface.getAddress();
 
-        
+
         XmpConfig protoConfig = XmpConfigFactory.getInstance().getXmpConfig();
         XmpSession session;
         SocketOpts sockopts = new SocketOpts();
         // TODO how to apply timeout and retry to XMP operations?
         int retry = protoConfig.hasRetry() ? protoConfig.getRetry() : DEFAULT_RETRY;
         int timeout = protoConfig.hasTimeout() ? protoConfig.getTimeout() : DEFAULT_TIMEOUT;
-        int port = DEFAULT_PORT; 
+        int port = DEFAULT_PORT;
         String authenUser = DEFAULT_AUTHEN_USER;
         String requestType = DEFAULT_REQUEST_TYPE;
         String mib = DEFAULT_REQUEST_MIB;
@@ -201,7 +199,7 @@ public class XmpMonitor extends AbstractServiceMonitor {
                 throw new IllegalArgumentException("When performing a SelectTableRequest, object must be specified and must be tabular");
             }
         }
-        
+
         // If this is a GetRequest, then you can't specify a table or
         // an instance
         else if (requestType.equalsIgnoreCase("GetRequest")) {
@@ -214,23 +212,21 @@ public class XmpMonitor extends AbstractServiceMonitor {
         } else {
             throw new IllegalArgumentException("Unknown request type " + requestType + ", only GetRequest and SelectTableRequest are supported");
         }
-        
-        RE instanceRegex = null;
+
+        Pattern instanceRegex = null;
         try {
-            if (instanceMatch == null) {
-                instanceRegex = null;
-            } else if (instanceMatch != null) {
-                instanceRegex = new RE(instanceMatch);                
+            if (instanceMatch != null) {
+                instanceRegex = Pattern.compile(instanceMatch);
             }
-        } catch (RESyntaxException e) {
+        } catch (final PatternSyntaxException e) {
             throw new java.lang.reflect.UndeclaredThrowableException(e);
         }
-        
+
         long startTime = System.currentTimeMillis();
-        
+
         // Set the SO_TIMEOUT.  What a concept!
         sockopts.setConnectTimeout(timeout);
-        
+
         session = new XmpSession(sockopts, ipaddr, port, authenUser);
 
         boolean result = false;
