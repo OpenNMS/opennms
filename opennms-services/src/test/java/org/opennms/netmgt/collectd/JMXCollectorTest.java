@@ -486,7 +486,7 @@ public class JMXCollectorTest implements TestContextAware, InitializingBean {
         assertEquals("C", Double.valueOf(3.0), RrdUtils.fetchLastValueInRange(cRrdFile.getAbsolutePath(), "C", stepSizeInMillis, stepSizeInMillis));
 
         m_collectionSpecification.release(m_collectionAgent);
-        assertEquals("force-fail", true, false);
+        //assertEquals("force-fail", true, false);
     }
 
     private Map<String, JMXDataSource> generateDataSourceMap(Map<String, List<Attrib>> attributeMap) {
