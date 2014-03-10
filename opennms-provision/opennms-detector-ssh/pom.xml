@@ -33,10 +33,6 @@
       <artifactId>opennms-provision-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>jakarta-regexp</groupId>
-      <artifactId>jakarta-regexp</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-model</artifactId>
     </dependency>

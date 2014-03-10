@@ -39,9 +39,9 @@ import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
-import org.apache.regexp.RE;
-import org.apache.regexp.RESyntaxException;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
@@ -67,9 +67,9 @@ import org.slf4j.LoggerFactory;
 
 @Distributable
 public final class SmtpMonitor extends AbstractServiceMonitor {
-    
+
     public static final Logger LOG = LoggerFactory.getLogger(SmtpMonitor.class);
-    
+
 
     /**
      * Default SMTP port.
@@ -97,15 +97,15 @@ public final class SmtpMonitor extends AbstractServiceMonitor {
      * the same 3 digit response code, but has a hyphen after the last number
      * instead of a space.
      */
-    private static final RE MULTILINE;
+    private static final Pattern MULTILINE;
 
     /**
      * Init MULTILINE
      */
     static {
         try {
-            MULTILINE = new RE("^[0-9]{3}-");
-        } catch (RESyntaxException ex) {
+            MULTILINE = Pattern.compile("^[0-9]{3}-");
+        } catch (PatternSyntaxException ex) {
             throw new java.lang.reflect.UndeclaredThrowableException(ex);
         }
     }
@@ -137,7 +137,7 @@ public final class SmtpMonitor extends AbstractServiceMonitor {
         if (iface.getType() != NetworkInterface.TYPE_INET) {
             throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_INET currently supported");
         }
-        
+
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
         int port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
@@ -179,7 +179,7 @@ public final class SmtpMonitor extends AbstractServiceMonitor {
                     continue;
                 }
 
-                if (MULTILINE.match(banner)) {
+                if (MULTILINE.matcher(banner).matches()) {
                     // Ok we have a multi-line response...first three
                     // chars of the response line are the return code.
                     // The last line of the response will start with
@@ -188,10 +188,10 @@ public final class SmtpMonitor extends AbstractServiceMonitor {
 
                     // Create new regExp to look for last line
                     // of this multi line response
-                    RE endMultiline = null;
+                    Pattern endMultiline = null;
                     try {
-                        endMultiline = new RE(multiLineRC);
-                    } catch (RESyntaxException ex) {
+                        endMultiline = Pattern.compile(multiLineRC);
+                    } catch (PatternSyntaxException ex) {
                         throw new java.lang.reflect.UndeclaredThrowableException(ex);
                     }
 
@@ -199,7 +199,7 @@ public final class SmtpMonitor extends AbstractServiceMonitor {
                     // response
                     do {
                         banner = rdr.readLine();
-                    } while (banner != null && !endMultiline.match(banner));
+                    } while (banner != null && !endMultiline.matcher(banner).matches());
                     if (banner == null) {
                         continue;
                     }
@@ -227,7 +227,7 @@ public final class SmtpMonitor extends AbstractServiceMonitor {
                         continue;
                     }
 
-                    if (MULTILINE.match(response)) {
+                    if (MULTILINE.matcher(response).matches()) {
                         // Ok we have a multi-line response...first three
                         // chars of the response line are the return code.
                         // The last line of the response will start with
@@ -236,10 +236,10 @@ public final class SmtpMonitor extends AbstractServiceMonitor {
 
                         // Create new regExp to look for last line
                         // of this multi line response
-                        RE endMultiline = null;
+                        Pattern endMultiline = null;
                         try {
-                            endMultiline = new RE(multiLineRC);
-                        } catch (RESyntaxException ex) {
+                            endMultiline = Pattern.compile(multiLineRC);
+                        } catch (PatternSyntaxException ex) {
                             throw new java.lang.reflect.UndeclaredThrowableException(ex);
                         }
 
@@ -247,7 +247,7 @@ public final class SmtpMonitor extends AbstractServiceMonitor {
                         // response
                         do {
                             response = rdr.readLine();
-                        } while (response != null && !endMultiline.match(response));
+                        } while (response != null && !endMultiline.matcher(response).matches());
                         if (response == null) {
                             continue;
                         }
@@ -267,7 +267,7 @@ public final class SmtpMonitor extends AbstractServiceMonitor {
                         if (response == null) {
                             continue;
                         }
-                        if (MULTILINE.match(response)) {
+                        if (MULTILINE.matcher(response).matches()) {
                             // Ok we have a multi-line response...first three
                             // chars of the response line are the return code.
                             // The last line of the response will start with
@@ -276,10 +276,10 @@ public final class SmtpMonitor extends AbstractServiceMonitor {
 
                             // Create new regExp to look for last line
                             // of this multi line response
-                            RE endMultiline = null;
+                            Pattern endMultiline = null;
                             try {
-                                endMultiline = new RE(multiLineRC);
-                            } catch (RESyntaxException ex) {
+                                endMultiline = Pattern.compile(multiLineRC);
+                            } catch (PatternSyntaxException ex) {
                                 throw new java.lang.reflect.UndeclaredThrowableException(ex);
                             }
 
@@ -287,7 +287,7 @@ public final class SmtpMonitor extends AbstractServiceMonitor {
                             // response
                             do {
                                 response = rdr.readLine();
-                            } while (response != null && !endMultiline.match(response));
+                            } while (response != null && !endMultiline.matcher(response).matches());
                             if (response == null) {
                                 continue;
                             }

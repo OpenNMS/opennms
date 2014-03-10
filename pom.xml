@@ -768,7 +768,6 @@
                 <link>http://jakarta.apache.org/commons/pool/apidocs/</link>
                 <link>http://junit.sourceforge.net/javadoc/</link>
                 <link>http://logging.apache.org/log4j/docs/api/</link>
-                <link>http://jakarta.apache.org/regexp/apidocs/</link>
                 <link>http://jakarta.apache.org/velocity/api/</link>
               </links>
             </configuration>
@@ -2684,11 +2683,6 @@
         <groupId>org.codehaus.jackson</groupId>
         <artifactId>jackson-xc</artifactId>
         <version>${jacksonVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>jakarta-regexp</groupId>
-        <artifactId>jakarta-regexp</artifactId>
-        <version>1.4</version>
       </dependency>
       <dependency>
         <groupId>javax.annotation</groupId>

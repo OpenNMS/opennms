@@ -31,9 +31,9 @@ package org.opennms.netmgt.poller.monitors;
 
 import java.net.InetAddress;
 import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
-import org.apache.regexp.RE;
-import org.apache.regexp.RESyntaxException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.core.utils.ParameterMap;
@@ -60,7 +60,7 @@ import org.opennms.netmgt.protocols.ssh.Ssh;
  */
 
 @Distributable
-final public class SshMonitor extends AbstractServiceMonitor {
+public final class SshMonitor extends AbstractServiceMonitor {
     private static final Logger LOG = LoggerFactory.getLogger(SshMonitor.class);
 
     private static final int DEFAULT_RETRY = 0;
@@ -80,7 +80,7 @@ final public class SshMonitor extends AbstractServiceMonitor {
      * to Provided that the interface's response is valid we mark the poll status
      * as available and return.
      */
-    public PollStatus poll(InetAddress address, Map<String,Object> parameters) {
+    public PollStatus poll(final InetAddress address, final Map<String,Object> parameters) {
 
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
@@ -89,20 +89,20 @@ final public class SshMonitor extends AbstractServiceMonitor {
         String match = ParameterMap.getKeyedString(parameters, "match", null);
         String clientBanner = ParameterMap.getKeyedString(parameters, "client-banner", Ssh.DEFAULT_CLIENT_BANNER);
         PollStatus ps = PollStatus.unavailable();
-        
+
         Ssh ssh = new Ssh(address, port, tracker.getConnectionTimeout());
         ssh.setClientBanner(clientBanner);
 
-        RE regex = null;
+        Pattern regex = null;
         try {
-	        if (match == null && (banner == null || banner.equals("*"))) {
-	            regex = null;
-	        } else if (match != null) {
-	            regex = new RE(match);
-	        } else if (banner != null) {
-	            regex = new RE(banner);
-	        }
-        } catch (final RESyntaxException e) {
+            if (match == null && (banner == null || banner.equals("*"))) {
+                regex = null;
+            } else if (match != null) {
+                regex = Pattern.compile(match);
+            } else if (banner != null) {
+                regex = Pattern.compile(banner);
+            }
+        } catch (final PatternSyntaxException e) {
         	final String matchString = match == null? banner : match;
 		LOG.info("Invalid regular expression for SSH banner match /{}/: {}", matchString, e.getMessage());
 		LOG.debug("Invalid Regular expression for SSH banner match /{}/", matchString, e);
@@ -133,7 +133,7 @@ final public class SshMonitor extends AbstractServiceMonitor {
                     return PollStatus.unavailable("server closed connection before banner was received.");
                 }
 
-                if (regex.match(response)) {
+                if (regex.matcher(response).matches()) {
                     LOG.debug("isServer: matching response={}", response);
                     return ps;
                 } else {
@@ -144,7 +144,7 @@ final public class SshMonitor extends AbstractServiceMonitor {
                 }
             }
         }
-        return ps;        
+        return ps;
     }
 
     /**

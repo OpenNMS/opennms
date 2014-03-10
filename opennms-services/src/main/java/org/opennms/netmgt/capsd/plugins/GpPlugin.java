@@ -32,9 +32,9 @@ import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.InetAddress;
 import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
-import org.apache.regexp.RE;
-import org.apache.regexp.RESyntaxException;
 import org.opennms.core.utils.ExecRunner;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
@@ -82,7 +82,7 @@ public final class GpPlugin extends AbstractPlugin {
      * generate a banner line which contains the text from the banner or match
      * argument.
      * </P>
-     * 
+     *
      * @param host
      *            The host to pass to the script
      * @param retry
@@ -100,12 +100,12 @@ public final class GpPlugin extends AbstractPlugin {
      *            The option string passed to the exec for the IP address (hostname)
      * @param toption
      *            The option string passed to the exec for the timeout
-     * 
+     *
      * @return True if a connection is established with the script and the
      *         banner line returned by the script matches the regular expression
      *         regex.
      */
-    private boolean isServer(InetAddress host, int retry, int timeout, String script, String args, RE regex, StringBuffer bannerResult, String hoption, String toption) {
+    private boolean isServer(InetAddress host, int retry, int timeout, String script, String args, Pattern regex, StringBuffer bannerResult, String hoption, String toption) {
 
         boolean isAServer = false;
 
@@ -116,10 +116,11 @@ public final class GpPlugin extends AbstractPlugin {
                 int exitStatus = 100;
                 ExecRunner er = new ExecRunner();
                 er.setMaxRunTimeSecs(timeout);
-                if (args == null)
+                if (args == null) {
                     exitStatus = er.exec(script + " " + hoption + " " + InetAddressUtils.str(host) + " " + toption + " " + timeout);
-                else
+                } else {
                     exitStatus = er.exec(script + " " + hoption + " " + InetAddressUtils.str(host) + " " + toption + " " + timeout + " " + args);
+                }
                 if (exitStatus != 0) {
                     LOG.debug("{} failed with exit code {}", script, exitStatus);
                     isAServer = false;
@@ -133,16 +134,19 @@ public final class GpPlugin extends AbstractPlugin {
                         String error = "";
                         response = er.getOutString();
                         error = er.getErrString();
-                        if (response.equals(""))
+                        if (response.equals("")) {
                             LOG.debug("{} returned no output", script);
-                        if (!error.equals(""))
+                        }
+                        if (!error.equals("")) {
                             LOG.debug("{} error = {}", script, error);
-                        if (regex == null || regex.match(response)) {
+                        }
+                        if (regex == null || regex.matcher(response).find()) {
 
                             LOG.debug("isServer: matching response = {}", response);
                             isAServer = true;
-                            if (bannerResult != null)
+                            if (bannerResult != null) {
                                 bannerResult.append(response);
+                            }
                         } else {
                             isAServer = false;
 
@@ -241,14 +245,14 @@ public final class GpPlugin extends AbstractPlugin {
 
         try {
             StringBuffer bannerResult = null;
-            RE regex = null;
+            Pattern regex = null;
             if (match == null && (banner == null || banner.equals("*"))) {
                 regex = null;
             } else if (match != null) {
-                regex = new RE(match);
+                regex = Pattern.compile(match);
                 bannerResult = new StringBuffer();
             } else if (banner != null) {
-                regex = new RE(banner);
+                regex = Pattern.compile(banner);
                 bannerResult = new StringBuffer();
             }
 
@@ -259,7 +263,7 @@ public final class GpPlugin extends AbstractPlugin {
             }
 
             return result;
-        } catch (RESyntaxException e) {
+        } catch (PatternSyntaxException e) {
             throw new java.lang.reflect.UndeclaredThrowableException(e);
         }
     }
