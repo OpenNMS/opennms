@@ -453,7 +453,7 @@ public class JMXCollectorTest implements TestContextAware, InitializingBean {
 
     @Test
     @JUnitCollector(datacollectionConfig = "/org/opennms/netmgt/config/jmx-datacollection-test-persist.xml", datacollectionType = "jsr160",
-      anticipateRrds = {"1/A", "1/B", "1/C", "1/D"})
+      anticipateRrds = {"1/A", "1/B", "1/C", "1/D"}, anticipateFiles = {"1/strings.properties"})
     public final void testPersistJmxStats() throws Exception {
         File snmpRrdDirectory = (File) m_context.getAttribute("rrdDirectory");
         FileAnticipator anticipator = (FileAnticipator) m_context.getAttribute("fileAnticipator");
@@ -474,6 +474,11 @@ public class JMXCollectorTest implements TestContextAware, InitializingBean {
         if (files != null) {
             for (File f : files) {
                 logger.debug("file: {}", f);
+                if (f.isDirectory()) {
+                    for (File f2 : f.listFiles()) {
+                        logger.debug("file: {}", f2);
+                    }
+                }
             }
         }
 

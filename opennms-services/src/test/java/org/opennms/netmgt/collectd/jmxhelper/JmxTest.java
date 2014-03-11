@@ -81,4 +81,5 @@ public class JmxTest implements JmxTestMBean {
     public CompositeData getCompositeData() {
         return null;
     }
+
 }
