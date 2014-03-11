@@ -32,7 +32,16 @@
         <attrib name="B" alias="B" type="gauge"/>
         <attrib name="C" alias="C" type="gauge"/>
         <attrib name="D" alias="D" type="gauge"/>
-        <attrib name="name" alias="name" type="string"/>
+        <attrib name="Name" alias="Name" type="string"/>
+      </mbean>
+      <mbean name="JVM MemoryPools" objectname="java.lang:type=MemoryPool,name=*" resource-type="jvm-memory-pool" keyfield="name" key-alias="name">
+        <attrib name="CollectionUsageThresholdCount" alias="CollUseThrshCnt" type="gauge"/>
+        <comp-attrib name="Usage" type="Composite" alias="Usage">
+          <comp-member name="init" type="gauge" alias="init"/>
+          <comp-member name="max" type="gauge" alias="max"/>
+          <comp-member name="used" type="gauge" alias="used"/>
+          <comp-member name="committed" type="gauge" alias="committed"/>
+        </comp-attrib>
       </mbean>
     </mbeans>
   </jmx-collection>

@@ -30,16 +30,19 @@ package org.opennms.netmgt.collectd;
 
 import java.io.File;
 import java.util.StringTokenizer;
-
 import org.opennms.netmgt.config.collector.AttributeGroupType;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionAttributeType;
 import org.opennms.netmgt.config.collector.Persister;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Class JMXCollectionAttributeType.
  */
 public class JMXCollectionAttributeType implements CollectionAttributeType {
+
+    private static final Logger LOG = LoggerFactory.getLogger(JMXCollectionAttributeType.class);
 
     /** The data source. */
     JMXDataSource m_dataSource;
@@ -78,6 +81,7 @@ public class JMXCollectionAttributeType implements CollectionAttributeType {
      * @return the string
      */
     private String createName(String key, String substitutions) {
+        LOG.debug("key: {}, substitutions: {}", key, substitutions);
         String name = m_dataSource.getName();
         if (key != null && !key.equals("")) {
             name = fixKey(key, m_dataSource.getName(), substitutions) + "_" + name;
@@ -103,7 +107,11 @@ public class JMXCollectionAttributeType implements CollectionAttributeType {
      * @return the string
      */
     private String fixKey(String key, String attrName, String substitutions) {
+        LOG.debug("key: {}, attrName: {}, substitutions: {}", key, attrName, substitutions);
         String newKey = key;
+        if (key == null) {
+            LOG.error("key value was null");
+        }
         if (key.startsWith(File.separator)) {
             newKey = key.substring(1);
         }
@@ -112,8 +120,10 @@ public class JMXCollectionAttributeType implements CollectionAttributeType {
             while (st.hasMoreTokens()) {
                 String token = st.nextToken();
                 int index = token.indexOf('|');
-                if (newKey.equals(token.substring(0, index))) {
-                    newKey = token.substring(index + 1);
+                if (index > -1) {
+                    if (newKey.equals(token.substring(0, index))) {
+                        newKey = token.substring(index + 1);
+                    }
                 }
             }
         }
@@ -155,7 +165,8 @@ public class JMXCollectionAttributeType implements CollectionAttributeType {
      */
     @Override
     public void storeAttribute(CollectionAttribute attribute, Persister persister) {
-        if (m_dataSource.getType().equalsIgnoreCase("string")) {
+        LOG.debug("storeAttribute: name: {}, datasource.type: {}", m_name, m_dataSource.getType());
+        if (getType().equalsIgnoreCase("string")) {
             persister.persistStringAttribute(attribute);
         } else {
             persister.persistNumericAttribute(attribute);
