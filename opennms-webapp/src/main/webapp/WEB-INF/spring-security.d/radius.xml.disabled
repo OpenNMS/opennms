@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+  xmlns:beans="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+              http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd"> 
+
+  <!-- ====================== RADIUS AUTHENTICATION ===================== -->
+  <!--
+       To use RADIUS Authentication, uncomment the following section to enable
+       the radiusAuthenticationProvider
+       The first constructor argument to radiusAuthenticationProvider is the
+       RADIUS Server to authenticate against, the second constructor argument
+       is the Shared Secret to use during authentication. The port, timeout,
+       retries, authTypeClass, and defaultRoles properties are optional and
+       default to the values shown.
+
+       If you would like to use a RADIUS Attribute to assign roles to users,
+       set the rolesAttribute property to the name of the attribute. Your
+       RADIUS server should be configured to return a comma-separated string of
+       roles (such as "ROLE_USER, ROLE_ADMIN") in this attribute in the
+       authentication reply. To specify a locally-defined vendor-specific RADIUS
+       Attribute, use "Unknown-VSAttribute(<Vendor ID>:<Attribute Number>)".
+       If the reply from the RADIUS server does not actually contain the
+       specified attribute, the user will be assigned the roles specified by
+       the defaultRoles property.
+
+       The full list of classes available for use with the authTypeClass property
+       follows:
+
+        net.jradius.client.auth.TunnelAuthenticator.class
+        net.jradius.client.auth.PAPAuthenticator.class
+        net.jradius.client.auth.EAPMSCHAPv2Authenticator.class
+        net.jradius.client.auth.MSCHAPv2Authenticator.class
+        net.jradius.client.auth.EAPMD5Authenticator.class
+        net.jradius.client.auth.CHAPAuthenticator.class
+        net.jradius.client.auth.MSCHAPv1Authenticator.class
+        net.jradius.client.auth.RadiusAuthenticator.class
+        net.jradius.client.auth.EAPAuthenticator.class
+
+       IMPORTANT: To use this feature the following package must be installed:
+       opennms-plugin-protocols-radius
+   -->
+  <beans:bean id="externalAuthenticationProvider" class="org.opennms.protocols.radius.springsecurity.RadiusAuthenticationProvider">
+    <beans:constructor-arg value="radius.example.org"/>
+    <beans:constructor-arg value="yourRadiusSharedSecretHere"/>
+    <!--<beans:property name="port" value="1812"/>-->
+    <!--<beans:property name="timeout" value="5"/>-->
+    <!--<beans:property name="retries" value="3"/>-->
+    <!--<beans:property name="authTypeClass"><beans:bean class="net.jradius.client.auth.PAPAuthenticator"/></beans:property>-->
+    <!--<beans:property name="defaultRoles" value="ROLE_USER"/>-->
+    <!--<beans:property name="rolesAttribute" value="Unknown-VSAttribute(%%% Vendor ID %%%:%%% Attribute Number %%%)"/>-->
+  </beans:bean>
+
+</beans:beans>
