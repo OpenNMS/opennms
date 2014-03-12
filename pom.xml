@@ -774,7 +774,18 @@
           </execution>
         </executions>
       </plugin>
-   </plugins>
+      <plugin>
+        <groupId>com.atlassian.maven.plugins</groupId>
+        <artifactId>maven-clover2-plugin</artifactId>
+        <version>${cloverVersion}</version>
+        <configuration>
+          <generatePdf>true</generatePdf>
+          <generateXml>true</generateXml>
+          <generateHtml>true</generateHtml>
+          <singleCloverDatabase>true</singleCloverDatabase>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
 
 
@@ -949,10 +960,12 @@
    <webstart.dnameC/>
 
    <updatePolicy>daily</updatePolicy>
+   <maven.clover.licenseLocation>${user.home}/.m2/clover.license</maven.clover.licenseLocation>
 
     <!-- dependency versions -->
     <activemqVersion>5.6.0</activemqVersion>
     <camelVersion>2.12.3</camelVersion>
+    <cloverVersion>3.2.0</cloverVersion>
     <commonsBeanutilsVersion>1.8.3</commonsBeanutilsVersion>
     <commonsCodecVersion>1.7</commonsCodecVersion>
     <commonsCollectionsVersion>3.2.1</commonsCollectionsVersion>
