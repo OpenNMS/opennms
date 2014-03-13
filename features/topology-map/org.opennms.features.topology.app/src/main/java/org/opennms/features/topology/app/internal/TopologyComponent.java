@@ -300,7 +300,9 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         Graph graph = container.getGraph();
         setGraph(graph);
 
-        computeBoundsForSelected(m_graphContainer.getSelectionManager());
+        if(!m_blockSelectionEvents){
+            computeBoundsForSelected(m_graphContainer.getSelectionManager());
+        }
         updateGraph();
     }
 
@@ -368,6 +370,14 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         for(VertexUpdateListener listener : m_vertexUpdateListeners) {
             listener.onVertexUpdate();
         }
+    }
+
+    public void blockSelectionEvents(){
+        m_blockSelectionEvents = true;
+    }
+
+    public void unblockSelectionEvents(){
+        m_blockSelectionEvents = false;
     }
 
 }

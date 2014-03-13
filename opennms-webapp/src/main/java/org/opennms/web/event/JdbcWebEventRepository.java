@@ -35,7 +35,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
-import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.event.filter.EventCriteria;
 import org.opennms.web.event.filter.EventCriteria.BaseEventCriteriaVisitor;

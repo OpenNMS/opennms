@@ -23,10 +23,6 @@
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
     </dependency>
-    <dependency>
-      <groupId>jakarta-regexp</groupId>
-      <artifactId>jakarta-regexp</artifactId>
-    </dependency>
     <!-- org.opennms packages -->
     <dependency>
       <groupId>org.opennms</groupId>

@@ -50,8 +50,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.network.IpListFromUrl;
 import org.opennms.core.utils.ByteArrayComparator;
-import org.opennms.core.utils.IpListFromUrl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.CastorUtils;
@@ -186,7 +186,7 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
         if (hasPolicies()) {
             for (final Package pkg: packages() ) {        
                 for(final String url : includeURLs(pkg)) {
-                    final List<String> iplist = IpListFromUrl.parse(url);
+                    final List<String> iplist = IpListFromUrl.fetch(url);
                     if (iplist.size() > 0) {
                         m_urlIPMap.put(url, iplist);
                     }

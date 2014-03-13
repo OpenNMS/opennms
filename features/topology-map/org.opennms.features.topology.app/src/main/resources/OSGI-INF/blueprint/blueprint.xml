@@ -146,6 +146,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
                 <list>
                     <value>theme://svg/default_icons.svg</value>
                     <value>theme://svg/vmware_icons.svg</value>
+                    <value>theme://svg/open_icons.svg</value>
                 </list>
             </property>
         </bean>

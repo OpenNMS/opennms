@@ -42,7 +42,7 @@ import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.hibernate.ObjectNotFoundException;
 import org.hibernate.criterion.Restrictions;
-import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.api.EventDao;

@@ -37,7 +37,7 @@ import org.hibernate.criterion.Restrictions;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.restrictions.BetweenRestriction;
 import org.opennms.core.criteria.restrictions.InRestriction;
-import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.features.poller.remote.gwt.client.ApplicationInfo;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.ApplicationUpdatedRemoteEvent;

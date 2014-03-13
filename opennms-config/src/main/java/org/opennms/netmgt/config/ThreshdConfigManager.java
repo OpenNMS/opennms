@@ -47,11 +47,10 @@ import java.util.Map;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.network.IpListFromUrl;
 import org.opennms.core.utils.ByteArrayComparator;
-import org.opennms.core.utils.IpListFromUrl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.threshd.ExcludeRange;
 import org.opennms.netmgt.config.threshd.IncludeRange;
@@ -125,7 +124,7 @@ public abstract class ThreshdConfigManager {
     
         for (Package pkg : m_config.getPackageCollection()) {
             for (String urlname : pkg.getIncludeUrlCollection()) {
-                java.util.List<String> iplist = IpListFromUrl.parse(urlname);
+                java.util.List<String> iplist = IpListFromUrl.fetch(urlname);
                 if (iplist.size() > 0) {
                     m_urlIPMap.put(urlname, iplist);
                 }

@@ -31,7 +31,7 @@ package org.opennms.netmgt.scriptd.ins.events;
 import java.util.List;
 
 import org.hibernate.criterion.Restrictions;
-import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsSnmpInterface;

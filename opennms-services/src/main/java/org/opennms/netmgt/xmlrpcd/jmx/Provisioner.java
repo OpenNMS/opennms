@@ -30,7 +30,7 @@ package org.opennms.netmgt.xmlrpcd.jmx;
 
 import org.apache.xmlrpc.XmlRpc;
 import org.opennms.core.fiber.Fiber;
-import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.spring.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;

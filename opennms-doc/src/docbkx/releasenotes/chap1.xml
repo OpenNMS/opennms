@@ -23,12 +23,27 @@
 
 	<!-- Start 1.12 -->
 
+	<section id="introduction-1.12.5">
+		<title>Release 1.12.5</title>
+
+		<para>
+			Release 1.12.5 is the sixth in the stable 1.12 series of OpenNMS.
+			It contains a fix for upgrades when using storeByForeignSource, plus
+			a few other small changes.
+			see <ulink url="http://www.opennms.org/wiki/What%27s_New_in_OpenNMS_1.12">What's
+			New in OpenNMS 1.12</ulink>.
+		</para>
+		<para>
+			The codename for 1.12.5 is <emphasis>John Lee Hooker</emphasis>
+		</para>
+	</section>
+
 	<section id="introduction-1.12.4">
 		<title>Release 1.12.4</title>
 
 		<para>
-			Release 1.12.4 is the fourth in the stable 1.12 series of OpenNMS.
-			It contains a more upgrade tool bugfixes, as well as a number of small
+			Release 1.12.4 is the fifth in the stable 1.12 series of OpenNMS.
+			It contains more upgrade tool bugfixes, as well as a number of small
 			bug fixes and enhancements.
 			see <ulink url="http://www.opennms.org/wiki/What%27s_New_in_OpenNMS_1.12">What's
 			New in OpenNMS 1.12</ulink>.

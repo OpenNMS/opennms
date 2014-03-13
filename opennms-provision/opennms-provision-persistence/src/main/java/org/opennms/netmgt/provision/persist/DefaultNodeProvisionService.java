@@ -30,7 +30,7 @@ package org.opennms.netmgt.provision.persist;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.SnmpPeerFactory;

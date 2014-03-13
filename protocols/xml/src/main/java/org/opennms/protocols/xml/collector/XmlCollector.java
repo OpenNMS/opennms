@@ -31,7 +31,7 @@ package org.opennms.protocols.xml.collector;
 import java.io.File;
 import java.util.Map;
 
-import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.CollectionException;

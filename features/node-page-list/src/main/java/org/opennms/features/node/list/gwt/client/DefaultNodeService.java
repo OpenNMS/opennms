@@ -38,15 +38,13 @@ public class DefaultNodeService implements NodeService {
     private static String BASE_URL = "rest/nodes/";
     
     public static String SNMP_INTERFACES_TEST_RESPONSE = "{" +
-    "\"@totalCount\" : \"3\"," + 
-    "\"@count\" : \"3\"," +
-    "\"snmpInterface\" : [ {" +
-    " \"@poll\" : \"false\"," +
-    " \"@pollFlag\" : \"N\"," +
-    " \"@ifIndex\" : \"3\"," +
-    " \"@id\" : \"240\"," +
-    " \"@collect\" : \"false\"," +
-    " \"@collectFlag\" : \"N\"," +
+    "[ {" +
+    " \"poll\" : \"false\"," +
+    " \"pollFlag\" : \"N\"," +
+    " \"ifIndex\" : \"3\"," +
+    " \"id\" : \"240\"," +
+    " \"collect\" : \"false\"," +
+    " \"collectFlag\" : \"N\"," +
     " \"ifAdminStatus\" : \"2\"," +
     " \"ifAlias\" : \"\"," +
     " \"ifDescr\" : \"sit0\"," +
@@ -58,12 +56,12 @@ public class DefaultNodeService implements NodeService {
     " \"lastCapsdPoll\" : \"2010-12-14T11:18:23.385-05:00\"," +
     " \"nodeId\" : \"11\"" +
     "}, {" +
-    " \"@poll\" : \"false\"," +
-    " \"@pollFlag\" : \"N\"," +
-    " \"@ifIndex\" : \"1\"," +
-    " \"@id\" : \"242\"," +
-    " \"@collect\" : \"false\"," +
-    " \"@collectFlag\" : \"N\"," +
+    " \"poll\" : \"false\"," +
+    " \"pollFlag\" : \"N\"," +
+    " \"ifIndex\" : \"1\"," +
+    " \"id\" : \"242\"," +
+    " \"collect\" : \"false\"," +
+    " \"collectFlag\" : \"N\"," +
     " \"ifAdminStatus\" : \"1\"," +
     " \"ifAlias\" : \"\"," +
     " \"ifDescr\" : \"lo\"," +
@@ -75,12 +73,12 @@ public class DefaultNodeService implements NodeService {
     " \"lastCapsdPoll\" : \"2010-12-14T11:18:23.385-05:00\"," +
     " \"nodeId\" : \"11\"" +
     "}, {" +
-    " \"@poll\" : \"false\"," +
-    " \"@pollFlag\" : \"N\"," +
-    " \"@ifIndex\" : \"2\"," +
-    " \"@id\" : \"238\"," +
-    " \"@collect\" : \"true\"," +
-    " \"@collectFlag\" : \"C\"," +
+    " \"poll\" : \"false\"," +
+    " \"pollFlag\" : \"N\"," +
+    " \"ifIndex\" : \"2\"," +
+    " \"id\" : \"238\"," +
+    " \"collect\" : \"true\"," +
+    " \"collectFlag\" : \"C\"," +
     " \"ifAdminStatus\" : \"1\"," +
     " \"ifAlias\" : \"\"," +
     " \"ifDescr\" : \"eth0\"," +
@@ -94,30 +92,26 @@ public class DefaultNodeService implements NodeService {
     " \"netMask\" : \"255.255.255.0\"," +
     " \"nodeId\" : \"11\"," +
     " \"physAddr\" : \"00163e13f215\"" +
-    " } ]" +
-    "}";
+    " } ]";
     
     public static String IP_INTERFACES_TEST_RESPONSE = "{" +
-    		"\"@totalCount\" : \"23\"," +
-    		"\"@count\" : \"23\"," +
-    		"\"ipInterface\" : [ {" +
-    		  "\"@snmpPrimary\" : \"S\"," +
-    		  "\"@monitoredServiceCount\" : \"0\"," +
-    		  "\"@isManaged\" : \"M\"," +
-    		  "\"@id\" : \"42\"," +
-    		  "\"@isDown\" : \"true\"," +
+    		"[ {" +
+    		  "\"snmpPrimary\" : \"S\"," +
+    		  "\"monitoredServiceCount\" : \"0\"," +
+    		  "\"isManaged\" : \"M\"," +
+    		  "\"id\" : \"42\"," +
+    		  "\"isDown\" : \"true\"," +
     		  "\"ipAddress\" : \"128.167.119.25\"," +
     		  "\"nodeId\" : \"2\"" +
     		"}, {" +
-    		  "\"@snmpPrimary\" : \"S\"," +
-    		  "\"@monitoredServiceCount\" : \"2\"," +
-    		  "\"@isManaged\" : \"M\"," +
-    		  "\"@id\" : \"30\"," +
-    		  "\"@isDown\" : \"false\"," +
+    		  "\"snmpPrimary\" : \"S\"," +
+    		  "\"monitoredServiceCount\" : \"2\"," +
+    		  "\"isManaged\" : \"M\"," +
+    		  "\"id\" : \"30\"," +
+    		  "\"isDown\" : \"false\"," +
     		  "\"ipAddress\" : \"161.221.89.118\"," +
     		  "\"nodeId\" : \"2\"" +
-    		"}]" +
-    		"}";
+    		"}]";
     
     @Override
     public void getAllIpInterfacesForNode(int nodeId, RequestCallback callback) {

@@ -45,13 +45,14 @@ import org.opennms.netmgt.xml.event.Event;
  */
 public class PendingPollEvent extends PollEvent {
     private static final Logger LOG = LoggerFactory.getLogger(PendingPollEvent.class);
+
     // how long to wait, in milliseconds, before giving up on waiting for a poll event to get an event ID, defaults to 10 minutes
     private static final long PENDING_EVENT_TIMEOUT = Long.getLong("org.opennms.netmgt.poller.pendingEventTimeout", 1000L * 60L * 10L);
 
     private final Event m_event;
     private Date m_date;
     private long m_expirationTimeInMillis;
-    private boolean m_pending = true;
+    private volatile boolean m_pending = true;
     private List<Runnable> m_pendingOutages = new LinkedList<Runnable>();
 
     /**
@@ -96,11 +97,13 @@ public class PendingPollEvent extends PollEvent {
      *
      * @param r a {@link java.lang.Runnable} object.
      */
-    public void addPending(Runnable r) {
-        if (m_pending)
+    public synchronized void addPending(Runnable r) {
+        if (m_pending) {
             m_pendingOutages.add(r);
-        else
+        }
+        else {
             r.run();
+        }
     }
     
     /**
@@ -117,7 +120,8 @@ public class PendingPollEvent extends PollEvent {
      *
      * @return a boolean.
      */
-    public boolean isPending() {
+
+    public synchronized boolean isPending() {
         if (m_pending) {
             // still pending, check if we've timed out
             if (isTimedOut()) {
@@ -136,14 +140,14 @@ public class PendingPollEvent extends PollEvent {
      *
      * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    public void complete(Event e) {
+    public synchronized void complete(Event e) {
         m_pending = false;
     }
     
     /**
      * <p>processPending</p>
      */
-    public void processPending() {
+    public synchronized void processPending() {
         for (Runnable r : m_pendingOutages) {
             r.run();
         }

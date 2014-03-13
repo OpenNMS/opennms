@@ -31,7 +31,7 @@ package org.opennms.netmgt.provision.adapters.link;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.spring.BeanUtils;
 
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.events.EventUtils;

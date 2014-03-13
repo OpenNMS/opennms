@@ -102,6 +102,32 @@
 
 	<!-- Start 1.12 -->
 
+	<section id="opennms-1.12.5">
+		<title>Changes in OpenNMS 1.12.5</title>
+
+		<section id="opennms-1.12.5-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>Can&#39;t import a requisition when OpenNMS is installed in &quot;C:\Program Files\OpenNMS&quot; (Issue <ulink url='http://issues.opennms.org/browse/NMS-6361'>NMS-6361</ulink>)</para></listitem>
+				<listitem><para>sftp.3gpp: empty resource label when the PM Group filter doesn&#39;t match a given measObjLdn (Issue <ulink url='http://issues.opennms.org/browse/NMS-6365'>NMS-6365</ulink>)</para></listitem>
+				<listitem><para>The ILR reports wrong data when there are several packages with different collection rates on collectd-configuration.xml for the same service (Issue <ulink url='http://issues.opennms.org/browse/NMS-6386'>NMS-6386</ulink>)</para></listitem>
+				<listitem><para>Security Information disclosed in Service detail screen (Issue <ulink url='http://issues.opennms.org/browse/NMS-6403'>NMS-6403</ulink>)</para></listitem>
+				<listitem><para>NPE on SnmpAssetProvisioningAdapter.fetchSnmpAssetString() (Issue <ulink url='http://issues.opennms.org/browse/NMS-6405'>NMS-6405</ulink>)</para></listitem>
+				<listitem><para>Upgrade 1.12.4 breaks StoreByForeignSource (Issue <ulink url='http://issues.opennms.org/browse/NMS-6409'>NMS-6409</ulink>)</para></listitem>
+				<listitem><para>Exception on node.jsp with storeByForeignSource enabled and no data collection for the node. (Issue <ulink url='http://issues.opennms.org/browse/NMS-6424'>NMS-6424</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.12.5-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>Remove the reset button on the login prompt. (Issue <ulink url='http://issues.opennms.org/browse/NMS-5738'>NMS-5738</ulink>)</para></listitem>
+				<listitem><para>Surveillance-Category-Names can be longer then 64 chars (Issue <ulink url='http://issues.opennms.org/browse/NMS-6406'>NMS-6406</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
 	<section id="opennms-1.12.4">
 		<title>Changes in OpenNMS 1.12.4</title>
 

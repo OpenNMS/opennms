@@ -292,6 +292,7 @@ public abstract class JaxbUtils {
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             if (context.getClass().getName().startsWith("org.eclipse.persistence.jaxb")) {
                 marshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, new EmptyNamespacePrefixMapper());
+                marshaller.setProperty(MarshallerProperties.JSON_MARSHAL_EMPTY_COLLECTIONS, true);
             }
             final Schema schema = getValidatorFor(clazz);
             marshaller.setSchema(schema);

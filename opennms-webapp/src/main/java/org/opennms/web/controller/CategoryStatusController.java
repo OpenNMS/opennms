@@ -28,7 +28,7 @@
 
 package org.opennms.web.controller;
 
-import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.web.svclayer.catstatus.CategoryStatusService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;

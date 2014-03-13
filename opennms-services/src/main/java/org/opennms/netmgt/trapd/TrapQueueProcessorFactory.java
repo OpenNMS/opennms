@@ -30,7 +30,7 @@ package org.opennms.netmgt.trapd;
 
 import javax.annotation.Resource;
 
-import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.snmp.TrapNotification;

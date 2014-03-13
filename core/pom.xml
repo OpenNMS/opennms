@@ -37,6 +37,7 @@
     <module>schema</module>
     <module>snmp</module>
     <module>soa</module>
+    <module>spring</module>
     <module>tasks</module>
     <module>test-api</module>
     <module>upgrade</module>

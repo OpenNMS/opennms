@@ -120,6 +120,7 @@
     <module>opennms-javamail</module>
     <module>opennms-rrd</module>
     <module>opennms-config-api</module>
+    <module>opennms-config-jaxb</module>
     <module>opennms-config</module>
     <module>opennms-config-model</module>
     <module>opennms-provision</module>
@@ -767,7 +768,6 @@
                 <link>http://jakarta.apache.org/commons/pool/apidocs/</link>
                 <link>http://junit.sourceforge.net/javadoc/</link>
                 <link>http://logging.apache.org/log4j/docs/api/</link>
-                <link>http://jakarta.apache.org/regexp/apidocs/</link>
                 <link>http://jakarta.apache.org/velocity/api/</link>
               </links>
             </configuration>
@@ -966,13 +966,14 @@
     <gwtPluginVersion>2.5.1</gwtPluginVersion>
     <httpcoreVersion>4.2.4</httpcoreVersion>
     <httpclientVersion>4.2.5</httpclientVersion>
+    <jacksonVersion>1.9.13</jacksonVersion>
     <jasperreportsVersion>3.7.6</jasperreportsVersion>
     <jettyVersion>7.6.12.v20130726</jettyVersion>
     <karafVersion>2.3.2</karafVersion>
     <felixVersion>2.2.0</felixVersion>
     <liquibaseVersion>2.0.5</liquibaseVersion>
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
-    <log4j2Version>2.0-beta9</log4j2Version>
+    <log4j2Version>2.0-rc1</log4j2Version>
     <minaVersion>2.0.7</minaVersion>
     <paxExamVersion>2.6.0</paxExamVersion>
     <oroVersion>2.0.8</oroVersion>
@@ -1249,6 +1250,11 @@
       <dependency>
         <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.soa</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.spring</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -1741,6 +1747,11 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-config-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-config-jaxb</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -2654,9 +2665,24 @@
         <version>3.1.5</version>
       </dependency>
       <dependency>
-        <groupId>jakarta-regexp</groupId>
-        <artifactId>jakarta-regexp</artifactId>
-        <version>1.4</version>
+        <groupId>org.codehaus.jackson</groupId>
+        <artifactId>jackson-core-asl</artifactId>
+        <version>${jacksonVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.jackson</groupId>
+        <artifactId>jackson-jaxrs</artifactId>
+        <version>${jacksonVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.jackson</groupId>
+        <artifactId>jackson-mapper-asl</artifactId>
+        <version>${jacksonVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.jackson</groupId>
+        <artifactId>jackson-xc</artifactId>
+        <version>${jacksonVersion}</version>
       </dependency>
       <dependency>
         <groupId>javax.annotation</groupId>

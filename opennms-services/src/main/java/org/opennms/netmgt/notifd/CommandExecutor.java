@@ -34,7 +34,7 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.core.utils.Argument;
+import org.opennms.netmgt.model.notifd.Argument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -32,7 +32,7 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="java.util.*,
+	import="java.util.*, java.util.regex.*,
 		java.sql.*,
 		org.opennms.web.admin.notification.noticeWizard.*,
 		org.opennms.netmgt.config.*,
@@ -64,7 +64,7 @@
         document.rule.nextPage.value="<%=NotificationWizardServlet.SOURCE_PAGE_VALIDATE%>";
         document.rule.submit();
     }
-    
+
     function skipVerification()
     {
         document.rule.nextPage.value="<%=NotificationWizardServlet.SOURCE_PAGE_PATH%>";
@@ -86,7 +86,7 @@
       action="admin/notification/noticeWizard/notificationWizard" >
       <input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_RULE%>"/>
       <input type="hidden" name="nextPage" value=""/>
-      <table width="100%">
+      <table>
         <tr>
           <td valign="top" align="left">
             <p>Filtering on TCP/IP address uses a very flexible format, allowing you
@@ -98,7 +98,7 @@
             <p>The following examples are all valid and yield the set of addresses from
 	       192.168.0.0 through 192.168.3.255.
             </p>
-            
+
                <ul>
                   <li>192.168.0-3.*
                   <li>192.168.0-3.0-255
@@ -159,7 +159,7 @@
     {
         List<String> services = NotificationFactory.getInstance().getServiceNames();
         StringBuffer buffer = new StringBuffer();
-        
+
         for (String service : services)
         {
             int serviceIndex = rule.indexOf(service);
@@ -173,7 +173,7 @@
                 buffer.append("<option VALUE='" + service + "'>" + service + "</option>");
             }
         }
-        
+
         return buffer.toString();
     }
 
@@ -182,7 +182,7 @@
     {
         List<String> services = NotificationFactory.getInstance().getServiceNames();
         StringBuffer buffer = new StringBuffer();
-        
+
         for (int i = 0; i < services.size(); i++)
         {
             //find services in the rule, but start looking after the first "!" (not), to avoid
@@ -198,26 +198,21 @@
                 buffer.append("<option VALUE='" + services.get(i) + "'>" + services.get(i) + "</option>");
             }
         }
-        
+
         return buffer.toString();
     }
 
-    public String getIpaddr(String rule)
-        throws org.apache.regexp.RESyntaxException
-    {
-        org.apache.regexp.RE dirRegEx = null;
-        dirRegEx = new org.apache.regexp.RE( ".+\\..+\\..+\\..+");
-        
+    public String getIpaddr(String rule) {
+        Pattern dirRegEx = Pattern.compile(".+\\..+\\..+\\..+");
+
         StringTokenizer tokens = new StringTokenizer(rule, " ");
-        while(tokens.hasMoreTokens())
-        {
+        while(tokens.hasMoreTokens()) {
             String nextToken = tokens.nextToken();
-            if (dirRegEx.match( nextToken ))
-            {
+            if (dirRegEx.matcher( nextToken ).matches()) {
                 return nextToken;
             }
         }
-        
+
         return "*.*.*.*";
     }
 %>
