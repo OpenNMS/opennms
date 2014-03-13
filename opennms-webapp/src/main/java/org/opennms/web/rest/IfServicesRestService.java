@@ -143,7 +143,7 @@ public class IfServicesRestService extends OnmsRestService {
             c.setOffset(null);
             final OnmsMonitoredServiceList services = new OnmsMonitoredServiceList(m_serviceDao.findMatching(c));
             if (services.isEmpty()) {
-                throw getException(Status.BAD_REQUEST, "updateServices: can't find any service matchinng the provided citeria: " + m_uriInfo.getQueryParameters());
+                throw getException(Status.BAD_REQUEST, "updateServices: can't find any service matchinng the provided criteria: " + m_uriInfo.getQueryParameters());
             }
             boolean modified = false;
             for (OnmsMonitoredService svc : services) {
@@ -172,7 +172,7 @@ public class IfServicesRestService extends OnmsRestService {
                 }
             }
             if (!modified && !serviceList.isEmpty()) {
-                throw getException(Status.BAD_REQUEST, "updateServices: the suplied list of services (" + services_csv + ") doesn't match any service based on the provided citeria: " + m_uriInfo.getQueryParameters());
+                throw getException(Status.BAD_REQUEST, "updateServices: the supplied list of services (" + services_csv + ") doesn't match any service based on the provided criteria: " + m_uriInfo.getQueryParameters());
             }
         } finally {
             readUnlock();
