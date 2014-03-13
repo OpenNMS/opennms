@@ -142,6 +142,10 @@ public class IfServicesRestService extends OnmsRestService {
             c.setLimit(null);
             c.setOffset(null);
             final OnmsMonitoredServiceList services = new OnmsMonitoredServiceList(m_serviceDao.findMatching(c));
+            if (services.isEmpty()) {
+                throw getException(Status.BAD_REQUEST, "updateServices: can't find any service matchinng the provided citeria: " + m_uriInfo.getQueryParameters());
+            }
+            boolean modified = false;
             for (OnmsMonitoredService svc : services) {
                 boolean proceed = false;
                 if (serviceList.isEmpty()) {
@@ -152,6 +156,7 @@ public class IfServicesRestService extends OnmsRestService {
                     }
                 }
                 if (proceed) {
+                    modified = true;
                     final String currentStatus = svc.getStatus();
                     svc.setStatus(status);
                     m_serviceDao.update(svc);
@@ -165,6 +170,9 @@ public class IfServicesRestService extends OnmsRestService {
                         sendEvent(EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI, svc);
                     }
                 }
+            }
+            if (!modified && !serviceList.isEmpty()) {
+                throw getException(Status.BAD_REQUEST, "updateServices: the suplied list of services (" + services_csv + ") doesn't match any service based on the provided citeria: " + m_uriInfo.getQueryParameters());
             }
         } finally {
             readUnlock();
