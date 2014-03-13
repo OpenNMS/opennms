@@ -366,7 +366,14 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
             for (String service : services) {
                 Service svc = getServiceObject(config, service);
                 String friendlyName = getSvcPropertyValue(svc, "friendly-name");
-                jmxFriendlyNames.add(friendlyName);
+                if (friendlyName == null) {
+                    friendlyName = getSvcPropertyValue(svc, "port"); // According with JMXCollector, port will be used if there is no friendly-name.
+                }
+                if (friendlyName == null) {
+                    log("Warning: there is no friendly-name or port parameter for service %s. The JRBs/RRDs for this service are not going to be updated.", service);
+                } else {
+                    jmxFriendlyNames.add(friendlyName);
+                }
             }
             log("JMX friendly names found: %s\n", jmxFriendlyNames);
             File rrdDir = new File(JMXDataCollectionConfigFactory.getInstance().getRrdPath());
@@ -604,6 +611,9 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
      * @return the service property value
      */
     private String getSvcPropertyValue(Service svc, String propertyName) {
+        if (svc.getParameters() == null) {
+            return null;
+        }
         for (org.opennms.netmgt.config.collectd.Parameter p : svc.getParameters()) {
             if (p.getKey().equals(propertyName)) {
                 return p.getValue();
