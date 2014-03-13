@@ -157,6 +157,7 @@ public class IfServicesRestService extends OnmsRestService {
                     m_serviceDao.update(svc);
                     if ("S".equals(status) || (currentStatus.equals("A") && status.equals("F"))) {
                         log().debug("updateServices: suspending polling for service " + svc.getServiceName() + " on node with IP " + svc.getIpAddress().getHostAddress());
+                        sendEvent(EventConstants.SERVICE_UNMANAGED_EVENT_UEI, svc); // TODO ManageNodeServlet is sending this.
                         sendEvent(EventConstants.SUSPEND_POLLING_SERVICE_EVENT_UEI, svc);
                     }
                     if ("R".equals(status) || (currentStatus.equals("F") && status.equals("A"))) {
