@@ -667,7 +667,29 @@
           </execution>
         </executions>
       </plugin>
-   </plugins>
+      <plugin>
+        <groupId>com.atlassian.maven.plugins</groupId>
+        <artifactId>maven-clover2-plugin</artifactId>
+        <version>${cloverVersion}</version>
+        <configuration>
+          <generatePdf>true</generatePdf>
+          <generateXml>true</generateXml>
+          <generateHtml>true</generateHtml>
+          <singleCloverDatabase>true</singleCloverDatabase>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>sonar-maven-plugin</artifactId>
+        <dependencies>
+          <dependency>
+            <groupId>postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>9.1-901-1.jdbc4</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+    </plugins>
   </build>
 
 
@@ -845,9 +867,11 @@
    <webstart.dnameC/>
 
    <updatePolicy>daily</updatePolicy>
+   <maven.clover.licenseLocation>${user.home}/.m2/clover.license</maven.clover.licenseLocation>
 
     <!-- dependency versions -->
     <activemqVersion>5.6.0</activemqVersion>
+    <cloverVersion>3.2.0</cloverVersion>
     <commonsBeanutilsVersion>1.8.3</commonsBeanutilsVersion>
     <commonsCodecVersion>1.7</commonsCodecVersion>
     <commonsCollectionsVersion>3.2.1</commonsCollectionsVersion>
@@ -2813,6 +2837,13 @@
     <pluginRepository>
       <id>onejar-maven-plugin.googlecode.com</id>
       <url>http://maven.opennms.org/content/groups/onejar.googlecode.com-release</url>
+    </pluginRepository>
+    <pluginRepository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>central</id>
+      <name>Maven Central</name>
+      <url>http://repo1.maven.org/maven2</url>
     </pluginRepository>
   </pluginRepositories>
   <distributionManagement>
