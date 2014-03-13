@@ -628,7 +628,6 @@
           <generatePdf>true</generatePdf>
           <generateXml>true</generateXml>
           <generateHtml>true</generateHtml>
-          <singleCloverDatabase>true</singleCloverDatabase>
         </configuration>
       </plugin>
       <plugin>
