@@ -50,7 +50,7 @@ public class SuggestionMenu extends MenuBar {
     }
 
     public SuggestionMenuItem getSelectedItem(){
-        return getSelectedItem();
+        return (SuggestionMenuItem)super.getSelectedItem();
     }
 
     public void selectItem(int index) {
