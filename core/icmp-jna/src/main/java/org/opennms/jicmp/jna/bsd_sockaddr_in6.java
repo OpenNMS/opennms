@@ -31,7 +31,6 @@ package org.opennms.jicmp.jna;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-
 import com.sun.jna.Structure;
 
 public class bsd_sockaddr_in6 extends Structure {
@@ -46,10 +45,10 @@ public class bsd_sockaddr_in6 extends Structure {
     public bsd_sockaddr_in6(int family, byte[] addr, byte[] port) {
         sin6_family = (byte)(0xff & family);
         assertLen("port", port, 2);
-        sin6_port = port;
+        sin6_port = port == null? null : port.clone();
         sin6_flowinfo = new byte[4];
         assertLen("address", addr, 16);
-        sin6_addr = addr;
+        sin6_addr = addr == null? null : addr.clone();
         sin6_scope_id = new byte[4];
         sin6_len = (byte)(0xff & size());
     }
