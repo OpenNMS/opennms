@@ -60,16 +60,14 @@ import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.EntityVisitor;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.ThrowableAnticipator;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * 
@@ -102,9 +100,6 @@ public class JdbcFilterDaoTest implements InitializingBean {
     DatabasePopulator m_populator;
 
     @Autowired
-    TransactionTemplate m_transTemplate;
-
-    @Autowired
     DataSource m_dataSource;
 
     @Override
@@ -113,10 +108,8 @@ public class JdbcFilterDaoTest implements InitializingBean {
     }
 
     @Before
+    @Transactional(propagation=Propagation.MANDATORY)
     public void setUp() throws Exception {
-        OnmsServiceType t = new OnmsServiceType("ICMP");
-        m_serviceTypeDao.save(t);
-
         m_populator.populateDatabase();
 
         // Initialize Filter DAO
@@ -126,7 +119,9 @@ public class JdbcFilterDaoTest implements InitializingBean {
         System.setProperty("opennms.home", "src/test/resources");
         DatabaseSchemaConfigFactory.init();
         m_dao = new JdbcFilterDao();
-        m_dao.setDataSource(m_dataSource);
+        // You must wrap the data source in Spring's TransactionAwareDataSourceProxy so that it
+        // executes its queries inside the current transaction.
+        m_dao.setDataSource(new TransactionAwareDataSourceProxy(m_dataSource));
         m_dao.setDatabaseSchemaConfigFactory(DatabaseSchemaConfigFactory.getInstance());
         m_dao.afterPropertiesSet();
         FilterDaoFactory.setInstance(m_dao);
@@ -182,7 +177,7 @@ public class JdbcFilterDaoTest implements InitializingBean {
     }
 
     @Test
-    @JUnitTemporaryDatabase // Not sure exactly why this test requires a fresh database but it fails without it :/
+    @Transactional
     public void testWithManyCatIncAndServiceIdentifiersInRules() throws Exception {
 
         // node1 has all the categories and an 192.168.1.1
@@ -240,36 +235,20 @@ public class JdbcFilterDaoTest implements InitializingBean {
     }
 
     @Test
-    @JUnitTemporaryDatabase // This test manages its own transactions so use a fresh database
+    @Transactional
     public void testGetActiveIPListWithDeletedNode() throws Exception {
-        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            public void doInTransactionWithoutResult(TransactionStatus status) {
-                final List<OnmsIpInterface> ifaces = m_interfaceDao.findByIpAddress("192.168.1.1");
-                
-                assertEquals("should be 1 interface", 1, ifaces.size());
+        final List<OnmsIpInterface> ifaces = m_interfaceDao.findByIpAddress("192.168.1.1");
 
-                OnmsIpInterface iface = ifaces.get(0);
-                iface.setIsManaged("D");
-                m_interfaceDao.save(iface);
-                m_interfaceDao.flush();
-            }
-        });
+        assertEquals("should be 1 interface", 1, ifaces.size());
 
-        /*
-         * We need to flush and finish the transaction because JdbcFilterDao
-         * gets its own connection from the DataSource and won't see our data
-         * otherwise.
-         */
+        OnmsIpInterface iface = ifaces.get(0);
+        iface.setIsManaged("D");
+        m_interfaceDao.save(iface);
+        m_interfaceDao.flush();
 
-        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            public void doInTransactionWithoutResult(TransactionStatus status) {
-                List<InetAddress> list = m_dao.getActiveIPAddressList("ipaddr == '192.168.1.1'");
-                assertNotNull("returned list should not be null", list);
-                assertEquals("no nodes should be returned, since the only one has been deleted", 0, list.size());
-            }
-        });
+        List<InetAddress> list = m_dao.getActiveIPAddressList("ipaddr == '192.168.1.1'");
+        assertNotNull("returned list should not be null", list);
+        assertEquals("no nodes should be returned, since the only one has been deleted", 0, list.size());
     }
 
     @Test
@@ -297,7 +276,7 @@ public class JdbcFilterDaoTest implements InitializingBean {
     }
 
     @Test
-    @JUnitTemporaryDatabase // Not sure exactly why this test requires a fresh database but it fails without it :/
+    @Transactional
     public void testWalkNodes() throws Exception {
         final List<OnmsNode> nodes = new ArrayList<OnmsNode>();
         EntityVisitor visitor = new AbstractEntityVisitor() {

@@ -21,6 +21,7 @@ import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
+import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
 public class MockLocationMonitorDao extends AbstractMockDao<OnmsLocationMonitor, Integer> implements LocationMonitorDao {
@@ -279,6 +280,11 @@ public class MockLocationMonitorDao extends AbstractMockDao<OnmsLocationMonitor,
         for (final OnmsLocationMonitor monitor : findAll()) {
             if (monitor.getStatus() == MonitorStatus.PAUSED) monitor.setStatus(MonitorStatus.STARTED);
         }
+    }
+
+    @Override
+    public void setMonitoringLocationConfigResource(Resource monitoringLocationResource) {
+        // Do nothing
     }
 
 }

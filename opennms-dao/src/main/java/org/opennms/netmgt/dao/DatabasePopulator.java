@@ -60,6 +60,7 @@ import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsEvent;
@@ -69,18 +70,15 @@ import org.opennms.netmgt.model.OnmsMapElement;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsUserNotification;
-import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
-import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionOperations;
 
 /**
@@ -156,7 +154,6 @@ public class DatabasePopulator {
     private OnmsMapElementDao m_onmsMapElementDao;
     private DataLinkInterfaceDao m_dataLinkInterfaceDao;
     private AcknowledgmentDao m_acknowledgmentDao;
-    private TransactionOperations m_transOperation;
     
     private OnmsNode m_node1;
     private OnmsNode m_node2;
@@ -165,7 +162,9 @@ public class DatabasePopulator {
     private OnmsNode m_node5;
     private OnmsNode m_node6;
     
-    private boolean m_populateInSeparateTransaction = true;
+    private OnmsMap m_map1;
+    private OnmsMapElement m_mapElement1;
+    
     private final List<Extension> extensions = new ArrayList<Extension>();
     
     private Map<Class<? super OnmsDao>, OnmsDao> daoRegistry = new HashMap<Class<? super OnmsDao>, OnmsDao>();
@@ -195,27 +194,11 @@ public class DatabasePopulator {
     	if (extension == null) return;
     	extensions.add(extension);
     }
-    
-    public boolean populateInSeparateTransaction() {
-        return m_populateInSeparateTransaction;
-    }
-    
-    public void setPopulateInSeparateTransaction(final boolean pop) {
-        m_populateInSeparateTransaction = pop;
-    }
 
-    public void populateDatabase() {
-        if (m_populateInSeparateTransaction) {
-            m_transOperation.execute(new TransactionCallbackWithoutResult() {
-                @Override
-                public void doInTransactionWithoutResult(final TransactionStatus status) {
-                    doPopulateDatabase();
-                }
-            });
-        } else {
-            doPopulateDatabase();
-        }
-    }
+    /**
+     * @deprecated Unused.
+     */
+    public void setPopulateInSeparateTransaction(final boolean pop) {}
 
     public void resetDatabase() {
         LOG.debug("==== DatabasePopulator Reset ====");
@@ -276,7 +259,7 @@ public class DatabasePopulator {
         LOG.debug("==== DatabasePopulator Reset Finished ====");
     }
 
-    private void doPopulateDatabase() {
+    public void populateDatabase() {
         LOG.debug("==== DatabasePopulator Starting ====");
 
         final OnmsDistPoller distPoller = getDistPoller("localhost", "127.0.0.1");
@@ -340,21 +323,21 @@ public class DatabasePopulator {
         getAlarmDao().save(alarm);
         getAlarmDao().flush();
         
-        final OnmsMap map = new OnmsMap("DB_Pop_Test_Map", "admin");
-        map.setBackground("fake_background.jpg");
-        map.setAccessMode(OnmsMap.ACCESS_MODE_ADMIN);
-        map.setType(OnmsMap.USER_GENERATED_MAP);
-        map.setMapGroup("admin");
-        getOnmsMapDao().save(map);
+        m_map1 = new OnmsMap("DB_Pop_Test_Map", "admin");
+        m_map1.setBackground("fake_background.jpg");
+        m_map1.setAccessMode(OnmsMap.ACCESS_MODE_ADMIN);
+        m_map1.setType(OnmsMap.USER_GENERATED_MAP);
+        m_map1.setMapGroup("admin");
+        getOnmsMapDao().save(m_map1);
         getOnmsMapDao().flush();
         
-        final OnmsMapElement mapElement = new OnmsMapElement(map, 1,
+        m_mapElement1 = new OnmsMapElement(m_map1, 1,
                 OnmsMapElement.NODE_TYPE,
                 "Test Node",
                 OnmsMapElement.defaultNodeIcon,
                 0,
                 10);
-        getOnmsMapElementDao().save(mapElement);
+        getOnmsMapElementDao().save(m_mapElement1);
         getOnmsMapElementDao().flush();
         
         final DataLinkInterface dli = new DataLinkInterface(node1, 1, node1.getId(), 1, StatusType.ACTIVE, new Date());
@@ -436,6 +419,7 @@ public class DatabasePopulator {
             .setIfOperStatus(1)
             .setIfSpeed(10000000)
             .setIfDescr("ATM0")
+            .setIfName("atm0")
             .setIfAlias("Initial ifAlias value")
             .setIfType(37)
             .addIpInterface("192.168.1.1").setIsManaged("M").setIsSnmpPrimary("P");
@@ -784,6 +768,14 @@ public class DatabasePopulator {
         m_node6 = node6;
     }
 
+    public OnmsMap getMap1() {
+        return m_map1;
+    }
+
+    public OnmsMapElement getMapElement1() {
+        return m_mapElement1;
+    }
+
     public LocationMonitorDao getLocationMonitorDao() {
         return m_locationMonitorDao;
     }
@@ -824,11 +816,10 @@ public class DatabasePopulator {
         m_acknowledgmentDao = acknowledgmentDao;
     }
 
-    public TransactionOperations getTransactionTemplate() {
-        return m_transOperation;
-    }
-
-    public void setTransactionTemplate(final TransactionOperations transactionOperation) {
-        m_transOperation = transactionOperation;
-    }
+    /**
+     * @deprecated Unused.
+     * 
+     * @param transactionOperation
+     */
+    public void setTransactionTemplate(final TransactionOperations transactionOperation) {}
 }

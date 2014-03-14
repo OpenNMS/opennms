@@ -51,7 +51,7 @@ public class ReportCatalogDaoHibernate extends
     /** {@inheritDoc} */
     @Override
     public void delete(Integer id) {
-        ReportCatalogEntry catalogEntry = (ReportCatalogEntry)getHibernateTemplate().get(ReportCatalogEntry.class, id);
+        ReportCatalogEntry catalogEntry = (ReportCatalogEntry)sessionFactory.getCurrentSession().get(ReportCatalogEntry.class, id);
         super.delete(catalogEntry);
 
     }

@@ -63,7 +63,7 @@ public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<OnmsAcknowl
     /** {@inheritDoc} */
     @Override
     public void updateAckable(Acknowledgeable ackable) {
-        getHibernateTemplate().update(ackable);
+        sessionFactory.getCurrentSession().update(ackable);
     }
 
     /** {@inheritDoc} */
@@ -135,7 +135,7 @@ public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<OnmsAcknowl
 //      return findUnique(OnmsAlarm.class, hql, ack.getRefId());
         try {
             if (ack != null) {
-                return (OnmsAlarm) getHibernateTemplate().load(OnmsAlarm.class, ack.getRefId());
+                return (OnmsAlarm) sessionFactory.getCurrentSession().load(OnmsAlarm.class, ack.getRefId());
             }
         } catch (final Exception e) {
             LOG.warn("unable to find alarm with ID {}", ack.getRefId(), e);
@@ -148,7 +148,7 @@ public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<OnmsAcknowl
 //      return findUnique(OnmsAlarm.class, hql, ack.getRefId());
         try {
             if (ack != null) {
-                return (OnmsNotification) getHibernateTemplate().load(OnmsNotification.class, ack.getRefId());
+                return (OnmsNotification) sessionFactory.getCurrentSession().load(OnmsNotification.class, ack.getRefId());
             }
         } catch (final Exception e) {
             LOG.warn("unable to find notification with ID {}", ack.getRefId(), e);

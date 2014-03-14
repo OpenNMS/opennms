@@ -29,11 +29,12 @@
 package org.opennms.netmgt.dao;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
@@ -49,7 +50,6 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -82,19 +82,9 @@ public class AssetRecordDaoTest implements InitializingBean {
         BeanUtils.assertAutowiring(this);
     }
 
-    private static boolean m_populated = false;
-    
-    @BeforeTransaction
+    @Before
     public void setUp() {
-        try {
-            if (!m_populated) {
-                m_databasePopulator.populateDatabase();
-            }
-        } catch (Throwable e) {
-            e.printStackTrace(System.err);
-        } finally {
-            m_populated = true;
-        }
+        m_databasePopulator.populateDatabase();
     }
 
 	@Test

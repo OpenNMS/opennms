@@ -44,6 +44,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -62,13 +63,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.transaction.AfterTransaction;
-import org.springframework.test.context.transaction.BeforeTransaction;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -95,22 +90,14 @@ public class NodeDaoTest implements InitializingBean {
     @Autowired
     DatabasePopulator m_populator;
 
-    @Autowired
-    TransactionTemplate m_transTemplate;
-
     @Override
     public void afterPropertiesSet() throws Exception {
         org.opennms.core.spring.BeanUtils.assertAutowiring(this);
     }
 
-    @BeforeTransaction
+    @Before
     public void setUp() {
         m_populator.populateDatabase();
-    }
-
-    @AfterTransaction
-    public void tearDown() {
-        m_populator.resetDatabase();
     }
 
     public OnmsNode getNode1() {
@@ -257,14 +244,7 @@ public class NodeDaoTest implements InitializingBean {
     }
 
     public OnmsNode getNodeHierarchy(final int nodeId) {
-        return m_transTemplate.execute(new TransactionCallback<OnmsNode>() {
-
-            @Override
-            public OnmsNode doInTransaction(TransactionStatus status) {
-                return getNodeDao().getHierarchy(nodeId);
-            }
-
-        });
+        return getNodeDao().getHierarchy(nodeId);
     }
 
     /** Test for bug 1594 */
@@ -338,39 +318,15 @@ public class NodeDaoTest implements InitializingBean {
 
 
     @Test
-    @JUnitTemporaryDatabase // This test manages its own transactions so use a fresh database
+    @Transactional
     public void testDeleteObsoleteInterfaces() {
-        m_populator.populateDatabase();
-
         final Date timestamp = new Date(1234);
 
-        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
+        simulateScan(timestamp);
 
-            @Override
-            public void doInTransactionWithoutResult(TransactionStatus status) {
-                simulateScan(timestamp);
-            }
+        deleteObsoleteInterfaces(timestamp);
 
-        });
-
-        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
-
-            @Override
-            public void doInTransactionWithoutResult(TransactionStatus status) {
-                deleteObsoleteInterfaces(timestamp);
-            }
-
-        });
-
-        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
-
-            @Override
-            public void doInTransactionWithoutResult(TransactionStatus status) {
-                validateScan();
-            }
-
-        });
-
+        validateScan();
     }
 
     private void validateScan() {
@@ -400,7 +356,25 @@ public class NodeDaoTest implements InitializingBean {
     }
 
     private void deleteObsoleteInterfaces(Date timestamp) {
+        OnmsNode n = getNodeDao().get(getNode1().getId());
+
+        assertEquals(4, n.getIpInterfaces().size());
+        assertEquals(4, n.getSnmpInterfaces().size());
+        
+        boolean foundDate = false;
+        int nulls = 0;
+        for (OnmsIpInterface iface : n.getIpInterfaces()) {
+            if (iface.getIpLastCapsdPoll() == timestamp) {
+                foundDate = true;
+            } else if (iface.getIpLastCapsdPoll() == null) {
+                nulls++;
+            }
+        }
+        assertTrue(foundDate);
+        assertEquals(3, nulls);
+
         getNodeDao().deleteObsoleteInterfaces(getNode1().getId(), timestamp);
+        getNodeDao().flush();
     }
 
     private void validateNode(OnmsNode n) throws Exception {

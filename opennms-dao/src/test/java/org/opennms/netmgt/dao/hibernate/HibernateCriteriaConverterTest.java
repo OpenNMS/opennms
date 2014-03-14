@@ -91,22 +91,22 @@ public class HibernateCriteriaConverterTest implements InitializingBean {
     public void testNodeQuery() throws Exception {
         List<OnmsNode> nodes;
 
-        // first, try with OnmsCriteria
-        final OnmsCriteria crit = new OnmsCriteria(OnmsNode.class);
-        crit.add(org.hibernate.criterion.Restrictions.isNotNull("id"));
-        nodes = m_nodeDao.findMatching(crit);
-        assertEquals(6, nodes.size());
+		// first, try with OnmsCriteria
+		final OnmsCriteria crit = new OnmsCriteria(OnmsNode.class);
+		crit.add(org.hibernate.criterion.Restrictions.isNotNull("id"));
+		nodes = m_nodeDao.findMatching(crit);
+		assertEquals(6, nodes.size());
 
-        // then the same with the builder
-        final CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);
-        cb.isNotNull("id");
-        nodes = m_nodeDao.findMatching(cb.toCriteria());
-        assertEquals(6, nodes.size());
-
-        cb.eq("label", "node1").join("ipInterfaces", "ipInterface").eq("ipInterface.ipAddress", "192.168.1.1");
-        nodes = m_nodeDao.findMatching(cb.toCriteria());
-        assertEquals(1, nodes.size());
-    }
+		// then the same with the builder
+		final CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);
+		cb.isNotNull("id");
+		nodes = m_nodeDao.findMatching(cb.toCriteria());
+		assertEquals(6, nodes.size());
+		
+		cb.eq("label", "node1").join("ipInterfaces", "ipInterface").eq("ipInterface.ipAddress", "192.168.1.1");
+		nodes = m_nodeDao.findMatching(cb.toCriteria());
+		assertEquals(1, nodes.size());
+	}
 
     @Test
     @JUnitTemporaryDatabase
@@ -119,7 +119,7 @@ public class HibernateCriteriaConverterTest implements InitializingBean {
     }
 
     @Test
-    @JUnitTemporaryDatabase
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a new database
     public void testDistinctQuery() {
         List<OnmsNode> nodes = null;
 

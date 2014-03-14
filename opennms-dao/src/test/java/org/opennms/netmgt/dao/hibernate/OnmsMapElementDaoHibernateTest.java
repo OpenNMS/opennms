@@ -37,6 +37,7 @@ import static org.junit.Assert.fail;
 import java.util.Collection;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
@@ -51,7 +52,6 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -75,24 +75,16 @@ public class OnmsMapElementDaoHibernateTest implements InitializingBean {
 	@Autowired
 	private DatabasePopulator m_databasePopulator;
 	
-    private static boolean m_populated = false;
-    
+	private OnmsMapElement m_mapElement2;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
     }
 
-    @BeforeTransaction
+    @Before
     public void setUp() {
-        try {
-            if (!m_populated) {
-                m_databasePopulator.populateDatabase();
-            }
-        } catch (Throwable e) {
-            e.printStackTrace(System.err);
-        } finally {
-            m_populated = true;
-        }
+        m_databasePopulator.populateDatabase();
     }
 
 	@Test
@@ -160,11 +152,8 @@ public class OnmsMapElementDaoHibernateTest implements InitializingBean {
 	@Test
 	@Transactional
     public void testFindById() {
-        // Note: This ID is based upon the creation order in DatabasePopulator - if you change
-        // the DatabasePopulator by adding additional new objects that use the onmsNxtId sequence
-        // before the creation of the map element object then this ID may change and this test
-        // will fail.
-        int id = 63;
+        int mapId = m_databasePopulator.getMap1().getId();
+        int id = m_databasePopulator.getMapElement1().getId();
         OnmsMapElement mapElement = m_onmsMapElementDao.findElementById(id);
         if (mapElement == null) {
             List<OnmsMapElement> maps = m_onmsMapElementDao.findAll();
@@ -177,7 +166,7 @@ public class OnmsMapElementDaoHibernateTest implements InitializingBean {
             }
             fail("No OnmsMapElement record with ID " + id + " was found, the only IDs are: " + ids.toString());
         }
-        assertEquals(62, mapElement.getMap().getId());
+        assertEquals(mapId, mapElement.getMap().getId());
         assertEquals(1, mapElement.getElementId());
         assertEquals(OnmsMapElement.NODE_TYPE, mapElement.getType());
         assertEquals("Test Node", mapElement.getLabel());
@@ -189,8 +178,8 @@ public class OnmsMapElementDaoHibernateTest implements InitializingBean {
 	@Test
 	@Transactional
     public void testFind() {
-        int id = 62;
-        OnmsMap map = m_onmsMapDao.findMapById(id);
+        int mapId = m_databasePopulator.getMap1().getId();
+        OnmsMap map = m_onmsMapDao.findMapById(mapId);
         if (map == null) {
             List<OnmsMap> maps = m_onmsMapDao.findAll();
             StringBuffer ids = new StringBuffer();
@@ -200,11 +189,11 @@ public class OnmsMapElementDaoHibernateTest implements InitializingBean {
                 }
                 ids.append(current.getId());
             }
-            fail("No OnmsMap record with ID " + id + " was found, the only IDs are: " + ids.toString());
+            fail("No OnmsMap record with ID " + mapId + " was found, the only IDs are: " + ids.toString());
         }
         assertNotNull(map);
         OnmsMapElement mapElement = m_onmsMapElementDao.findElement(1, OnmsMapElement.NODE_TYPE, map);
-        assertEquals(62, mapElement.getMap().getId());
+        assertEquals(mapId, mapElement.getMap().getId());
         assertEquals(1, mapElement.getElementId());
         assertEquals(OnmsMapElement.NODE_TYPE, mapElement.getType());
         assertEquals("Test Node", mapElement.getLabel());
@@ -216,7 +205,7 @@ public class OnmsMapElementDaoHibernateTest implements InitializingBean {
 	@Test
 	@Transactional
     public void testFindMapElementsByMapId() {
-        int id = 62;
+        int id = m_databasePopulator.getMap1().getId();
         OnmsMap map = m_onmsMapDao.findMapById(id);
         if (map == null) {
             List<OnmsMap> maps = m_onmsMapDao.findAll();
@@ -233,7 +222,7 @@ public class OnmsMapElementDaoHibernateTest implements InitializingBean {
         Collection<OnmsMapElement> elems = m_onmsMapElementDao.findElementsByMapId(map);
         assertEquals(1,elems.size());
         OnmsMapElement mapElement = elems.iterator().next();
-        assertEquals(62, mapElement.getMap().getId());
+        assertEquals(id, mapElement.getMap().getId());
         assertEquals(1, mapElement.getElementId());
         assertEquals(OnmsMapElement.NODE_TYPE, mapElement.getType());
         assertEquals("Test Node", mapElement.getLabel());
@@ -245,10 +234,11 @@ public class OnmsMapElementDaoHibernateTest implements InitializingBean {
 	@Test
 	@Transactional
     public void testFindElementsByElementIdAndType1() {
+        int mapId = m_databasePopulator.getMap1().getId();
         Collection<OnmsMapElement> elems = m_onmsMapElementDao.findElementsByElementIdAndType(1, OnmsMapElement.NODE_TYPE);
         assertEquals(1,elems.size());
         OnmsMapElement mapElement = elems.iterator().next();
-        assertEquals(62, mapElement.getMap().getId());
+        assertEquals(mapId, mapElement.getMap().getId());
         assertEquals(1, mapElement.getElementId());
         assertEquals(OnmsMapElement.NODE_TYPE, mapElement.getType());
         assertEquals("Test Node", mapElement.getLabel());
@@ -295,10 +285,11 @@ public class OnmsMapElementDaoHibernateTest implements InitializingBean {
 	@Test
 	@Transactional
     public void testFindElementsByType1() {
+        int mapId = m_databasePopulator.getMap1().getId();
         Collection<OnmsMapElement> elems = m_onmsMapElementDao.findElementsByType(OnmsMapElement.NODE_TYPE);
         assertEquals(1,elems.size());
         OnmsMapElement mapElement = elems.iterator().next();
-        assertEquals(62, mapElement.getMap().getId());
+        assertEquals(mapId, mapElement.getMap().getId());
         assertEquals(1, mapElement.getElementId());
         assertEquals(OnmsMapElement.NODE_TYPE, mapElement.getType());
         assertEquals("Test Node", mapElement.getLabel());

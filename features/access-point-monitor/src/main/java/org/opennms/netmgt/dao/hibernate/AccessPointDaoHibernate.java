@@ -28,16 +28,13 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
-import java.sql.SQLException;
 import java.util.List;
 
-import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.dao.AccessPointDao;
 import org.opennms.netmgt.model.OnmsAccessPoint;
 import org.opennms.netmgt.model.OnmsAccessPointCollection;
-import org.springframework.orm.hibernate3.HibernateCallback;
 
 /**
  * <p>
@@ -70,12 +67,6 @@ public class AccessPointDaoHibernate extends AbstractDaoHibernate<OnmsAccessPoin
     @SuppressWarnings("unchecked")
     @Override
     public List<String> findDistinctPackagesLike(final String pkg) {
-        final HibernateCallback<List<String>> callback = new HibernateCallback<List<String>>() {
-            @Override
-            public List<String> doInHibernate(final Session session) throws SQLException {
-                return session.createCriteria(OnmsAccessPoint.class).setProjection(Projections.groupProperty("pollingPackage")).add(Restrictions.like("pollingPackage", pkg)).list();
-            }
-        };
-        return getHibernateTemplate().executeFind(callback);
+        return sessionFactory.getCurrentSession().createCriteria(OnmsAccessPoint.class).setProjection(Projections.groupProperty("pollingPackage")).add(Restrictions.like("pollingPackage", pkg)).list();
     }
 }

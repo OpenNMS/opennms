@@ -41,6 +41,9 @@ import org.opennms.netmgt.model.events.StoppableEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
 /**
@@ -108,6 +111,9 @@ public class Capsd extends AbstractServiceDaemon {
 
     @Autowired
     private CapsdDbSyncer m_capsdDbSyncer;
+
+    @Autowired
+    private TransactionTemplate m_transactionTemplate;
 
     /**
      * <P>
@@ -179,16 +185,20 @@ public class Capsd extends AbstractServiceDaemon {
          * syncSnmpPrimaryState()
          */
 
-        LOG.debug("init: Loading services into database...");
-        m_capsdDbSyncer.syncServices();
-        
-        LOG.debug("init: Syncing management state...");
-        m_capsdDbSyncer.syncManagementState();
-        
-        LOG.debug("init: Syncing primary SNMP interface state...");
-        m_capsdDbSyncer.syncSnmpPrimaryState();
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                LOG.debug("init: Loading services into database...");
+                m_capsdDbSyncer.syncServices();
 
-	}
+                LOG.debug("init: Syncing management state...");
+                m_capsdDbSyncer.syncManagementState();
+
+                LOG.debug("init: Syncing primary SNMP interface state...");
+                m_capsdDbSyncer.syncSnmpPrimaryState();
+            }
+        });
+    }
 
     /**
      * <p>onStart</p>

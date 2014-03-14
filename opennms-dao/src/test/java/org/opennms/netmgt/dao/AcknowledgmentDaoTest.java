@@ -34,6 +34,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.Date;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
@@ -54,7 +55,6 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -73,6 +73,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false)
+@Transactional
 public class AcknowledgmentDaoTest implements InitializingBean {
 	@Autowired
     private AcknowledgmentDao m_acknowledgmentDao;
@@ -92,29 +93,17 @@ public class AcknowledgmentDaoTest implements InitializingBean {
 	@Autowired
 	private DatabasePopulator m_databasePopulator;
 	
-    private static boolean m_populated = false;
-    
-
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
     }
 
-    @BeforeTransaction
+    @Before
     public void setUp() {
-        try {
-            if (!m_populated) {
-                m_databasePopulator.populateDatabase();
-            }
-        } catch (Throwable e) {
-            e.printStackTrace(System.err);
-        } finally {
-            m_populated = true;
-        }
+        m_databasePopulator.populateDatabase();
     }
 
 	@Test
-	@Transactional
     public void testSaveUnspecified() {
         OnmsAcknowledgment ack = new OnmsAcknowledgment();
         ack.setAckTime(new Date());
@@ -139,7 +128,6 @@ public class AcknowledgmentDaoTest implements InitializingBean {
 	}
 
 	@Test
-    @Transactional
     public void testSaveWithAlarm() {
         OnmsEvent event = new OnmsEvent();
         event.setEventLog("Y");

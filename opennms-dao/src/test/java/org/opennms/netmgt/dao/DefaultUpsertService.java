@@ -28,14 +28,14 @@
 
 package org.opennms.netmgt.dao;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -50,13 +50,13 @@ public class DefaultUpsertService implements UpsertService, InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultUpsertService.class);
     
     @Autowired
-    NodeDao m_nodeDao;
+    private NodeDao m_nodeDao;
 
     @Autowired
-    SnmpInterfaceDao m_snmpInterfaceDao;
+    private SnmpInterfaceDao m_snmpInterfaceDao;
     
     @Autowired
-    PlatformTransactionManager m_transactionManager;
+    private PlatformTransactionManager m_transactionManager;
 
     @Override
     public void afterPropertiesSet() throws Exception {

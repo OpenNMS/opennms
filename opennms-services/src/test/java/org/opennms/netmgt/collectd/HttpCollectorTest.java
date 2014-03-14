@@ -71,6 +71,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
@@ -92,6 +93,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.rrd.storeByGroup=false")
 @JUnitTemporaryDatabase
+@Transactional
 public class HttpCollectorTest implements TestContextAware, InitializingBean {
 
     @Autowired

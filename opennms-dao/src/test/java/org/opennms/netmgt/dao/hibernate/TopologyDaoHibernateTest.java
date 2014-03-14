@@ -38,8 +38,6 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.transaction.AfterTransaction;
-import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -61,16 +59,6 @@ public class TopologyDaoHibernateTest {
     @Autowired
     private DatabasePopulator m_populator;
 
-    @BeforeTransaction
-    public void setUp() {
-        
-    }
-
-    @AfterTransaction
-    public void tearDown() {
-        m_populator.resetDatabase();
-    }
-
     @Test
     @Transactional
     public void testGetDefaultFocus() {
@@ -79,8 +67,8 @@ public class TopologyDaoHibernateTest {
         
         m_populator.populateDatabase();
         
-        OnmsNode node2 = m_topologyDao.getDefaultFocusPoint();
-        Assert.assertNotNull(node2);
+        node = m_topologyDao.getDefaultFocusPoint();
+        Assert.assertNotNull(node);
     }
 
 }

@@ -31,12 +31,12 @@ package org.opennms.netmgt.dao;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,16 +45,12 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.CategoryDao;
-import org.opennms.netmgt.dao.hibernate.AlarmDaoHibernate;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.transaction.AfterTransaction;
-import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -68,6 +64,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
+@Transactional
 public class AuthorizationTest implements InitializingBean {
 
     @Autowired
@@ -78,25 +75,26 @@ public class AuthorizationTest implements InitializingBean {
 
     @Autowired
     DatabasePopulator m_populator;
+    
+    @Autowired
+    SessionFactory m_sessionFactory;
 
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
     }
 
-    @BeforeTransaction
+    @Before
     public void setUp() {
         m_populator.populateDatabase();
     }
 
-    @AfterTransaction
+    @After
     public void tearDown() {
-        m_populator.resetDatabase();
+        //m_populator.resetDatabase();
     }
 
     @Test
-    @Transactional
-    @JUnitTemporaryDatabase
     public void testAuthorizedAlarms() {
 
         Collection<OnmsAlarm> matching = m_alarmDao.findAll();
@@ -126,9 +124,7 @@ public class AuthorizationTest implements InitializingBean {
     }
 
     @Test
-    @Transactional
     @Ignore("What does this even do?  Category 'groups' aren't even exposed in DAOs.")
-    @JUnitTemporaryDatabase
     public void testGetCategoriesWithAuthorizedGroups() {
 
         List<OnmsCategory> categories = m_categoryDao.getCategoriesWithAuthorizedGroup("RoutersGroup");
@@ -139,33 +135,11 @@ public class AuthorizationTest implements InitializingBean {
 
     }
 
-    public void enableAuthorizationFilter(final String... groupNames) {
-
-        HibernateCallback<Object> cb = new HibernateCallback<Object>() {
-
-            @Override
-            public Object doInHibernate(Session session) throws HibernateException, SQLException {
-                session.enableFilter("authorizedOnly").setParameterList("userGroups", groupNames);
-                return null;
-            }
-
-        };
-
-        ((AlarmDaoHibernate)m_alarmDao).getHibernateTemplate().execute(cb);
+    private void enableAuthorizationFilter(final String... groupNames) {
+        m_sessionFactory.getCurrentSession().enableFilter("authorizedOnly").setParameterList("userGroups", groupNames);
     }
 
-    public void disableAuthorizationFilter() {
-
-        HibernateCallback<Object> cb = new HibernateCallback<Object>() {
-
-            @Override
-            public Object doInHibernate(Session session) throws HibernateException, SQLException {
-                session.disableFilter("authorizedOnly");
-                return null;
-            }
-
-        };
-
-        ((AlarmDaoHibernate)m_alarmDao).getHibernateTemplate().execute(cb);
+    private void disableAuthorizationFilter() {
+    	m_sessionFactory.getCurrentSession().disableFilter("authorizedOnly");
     }
 }

@@ -37,6 +37,7 @@ import static org.junit.Assert.fail;
 import java.util.Collection;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
@@ -49,7 +50,6 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -70,24 +70,14 @@ public class OnmsMapDaoHibernateTest implements InitializingBean {
 	@Autowired
 	private DatabasePopulator m_databasePopulator;
 	
-    private static boolean m_populated = false;
-    
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
     }
 
-    @BeforeTransaction
+    @Before
     public void setUp() {
-        try {
-            if (!m_populated) {
-                m_databasePopulator.populateDatabase();
-            }
-        } catch (Throwable e) {
-            e.printStackTrace(System.err);
-        } finally {
-            m_populated = true;
-        }
+        m_databasePopulator.populateDatabase();
     }
 
 	@Test
@@ -230,11 +220,7 @@ public class OnmsMapDaoHibernateTest implements InitializingBean {
 	@Test
 	@Transactional
     public void testFindById() {
-        // Note: This ID is based upon the creation order in DatabasePopulator - if you change
-        // the DatabasePopulator by adding additional new objects that use the onmsNxtId sequence
-        // before the creation of this object then this ID may change and this test will fail.
-        //
-        int id = 62;
+        int id = m_databasePopulator.getMap1().getId();
         OnmsMap map = m_onmsMapDao.findMapById(id);
         if (map == null) {
             List<OnmsMap> maps = m_onmsMapDao.findAll();
@@ -333,11 +319,7 @@ public class OnmsMapDaoHibernateTest implements InitializingBean {
 	@Test
 	@Transactional
     public void testDeleteOnmsMap() {
-        // Note: This ID is based upon the creation order in DatabasePopulator - if you change
-        // the DatabasePopulator by adding additional new objects that use the onmsNxtId sequence
-        // before the creation of this object then this ID may change and this test will fail.
-        //
-        int id = 62;
+        int id = m_databasePopulator.getMap1().getId();
         OnmsMap map = m_onmsMapDao.findMapById(id);
         if (map == null) {
             List<OnmsMap> maps = m_onmsMapDao.findAll();

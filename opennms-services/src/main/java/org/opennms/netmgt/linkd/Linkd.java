@@ -58,7 +58,12 @@ import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
 /**
@@ -78,6 +83,9 @@ public class Linkd extends AbstractServiceDaemon {
      */
     protected static final String LOG_PREFIX = "linkd";
 
+    @Autowired
+    private TransactionTemplate m_transTemplate;
+
     /**
      *  scheduler thread
      */
@@ -96,7 +104,7 @@ public class Linkd extends AbstractServiceDaemon {
     /**
      * List Linkable Nodes.
      */
-    private List<LinkableNode> m_nodes;
+    private final List<LinkableNode> m_nodes;
 
     private Map<String, Map<String, List<AtInterface>>> m_macToAtinterface = new HashMap<String, Map<String, List<AtInterface>>>();
 
@@ -165,9 +173,13 @@ public class Linkd extends AbstractServiceDaemon {
         Assert.state(m_scheduler != null,
                 "must set the scheduler property");
 
-        m_queryMgr.updateDeletedNodes();
-
-        schedule(m_queryMgr.getSnmpNodeList());
+        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            public void doInTransactionWithoutResult(TransactionStatus status) {
+                m_queryMgr.updateDeletedNodes();
+                schedule(m_queryMgr.getSnmpNodeList());
+            }
+        });
 
         LOG.info("init: LINKD CONFIGURATION INITIALIZED");
     }
@@ -493,16 +505,22 @@ public class Linkd extends AbstractServiceDaemon {
     }
 
     public boolean runSingleSnmpCollection(final int nodeId) {
-        final LinkableSnmpNode node = m_queryMgr.getSnmpNode(nodeId);
+        return m_transTemplate.execute(new TransactionCallback<Boolean>() {
 
-        for (final SnmpCollection snmpColl : getSnmpCollections(nodeId,
-                                                                node.getSnmpPrimaryIpAddr(),
-                                                                node.getSysoid())) {
-            snmpColl.setScheduler(m_scheduler);
-            snmpColl.run();
-        }
+            @Override
+            public Boolean doInTransaction(TransactionStatus status) {
+                final LinkableSnmpNode node = m_queryMgr.getSnmpNode(nodeId);
 
-        return true;
+                for (final SnmpCollection snmpColl : getSnmpCollections(nodeId,
+                        node.getSnmpPrimaryIpAddr(),
+                        node.getSysoid())) {
+                    snmpColl.setScheduler(m_scheduler);
+                    snmpColl.run();
+                }
+
+                return true;
+            }
+        });
     }
 
     public boolean runSingleLinkDiscovery(final String packageName) {

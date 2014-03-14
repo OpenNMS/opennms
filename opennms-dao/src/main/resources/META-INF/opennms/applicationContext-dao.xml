@@ -49,7 +49,13 @@
   <bean id="dataSource" class="org.opennms.core.db.DataSourceFactoryBean" />
 
   <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
-    <property name="dataSource" ref="dataSource" />
+    <property name="dataSource">
+      <!-- Use a data source bean that will reuse existing thread-local Hibernate database connections -->
+      <bean class="org.opennms.netmgt.dao.hibernate.HibernateSessionDataSource">
+        <property name="targetDataSource" ref="dataSource"/>
+        <property name="sessionFactory" ref="sessionFactory"/>
+      </bean>
+    </property>
   </bean>
 
   <bean id="timeKeeper" class="org.opennms.core.utils.DefaultTimeKeeper" />
@@ -330,7 +336,13 @@
     <property name="staticMethod"><value>org.opennms.netmgt.filter.FilterDaoFactory.setInstance</value></property>
     <property name="arguments">
       <bean id="jdbcFilterDao" class="org.opennms.netmgt.filter.JdbcFilterDao">
-        <property name="dataSource" ref="dataSource" />
+        <property name="dataSource">
+          <!-- Use a data source bean that will reuse existing thread-local Hibernate database connections -->
+          <bean class="org.opennms.netmgt.dao.hibernate.HibernateSessionDataSource">
+            <property name="targetDataSource" ref="dataSource"/>
+            <property name="sessionFactory" ref="sessionFactory"/>
+          </bean>
+        </property>
         <property name="databaseSchemaConfigFactory" ref="databaseSchemaConfigFactory" />
       </bean>
     </property>

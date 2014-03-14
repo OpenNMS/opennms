@@ -31,16 +31,13 @@ package org.opennms.netmgt.dao.hibernate;
 import java.util.Collection;
 import java.util.Date;
 
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
-import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.restrictions.AllRestriction;
 import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
-import org.springframework.orm.hibernate3.HibernateCallback;
 
 public class DataLinkInterfaceDaoHibernate extends AbstractDaoHibernate<DataLinkInterface, Integer> implements DataLinkInterfaceDao {
     /**
@@ -54,16 +51,10 @@ public class DataLinkInterfaceDaoHibernate extends AbstractDaoHibernate<DataLink
     @SuppressWarnings("unchecked")
     @Override
     public Collection<DataLinkInterface> findAll(final Integer offset, final Integer limit) {
-        return getHibernateTemplate().execute(new HibernateCallback<Collection<DataLinkInterface>>() {
-
-            @Override
-            public Collection<DataLinkInterface> doInHibernate(Session session) throws HibernateException {
-                return session.createCriteria(DataLinkInterface.class)
-                .setFirstResult(offset)
-                .setMaxResults(limit)
-                .list();
-            }
-        });
+        return sessionFactory.getCurrentSession().createCriteria(DataLinkInterface.class)
+            .setFirstResult(offset)
+            .setMaxResults(limit)
+            .list();
     }
 
     /** {@inheritDoc} */

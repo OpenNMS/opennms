@@ -31,12 +31,27 @@ import java.sql.SQLException;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.opennms.netmgt.dao.api.TopologyDao;
 import org.opennms.netmgt.model.OnmsNode;
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
-public class TopologyDaoHibernate extends HibernateDaoSupport implements TopologyDao {
+public class TopologyDaoHibernate implements TopologyDao {
+    protected SessionFactory sessionFactory;
+
+    /**
+     * @return the sessionFactory
+     */
+    public SessionFactory getSessionFactory() {
+        return sessionFactory;
+    }
+
+    /**
+     * @param sessionFactory the sessionFactory to set
+     */
+    public void setSessionFactory(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+    }
+
     @Override
     public OnmsNode getDefaultFocusPoint() {
         // first try getting the node with the most links
@@ -45,29 +60,20 @@ public class TopologyDaoHibernate extends HibernateDaoSupport implements Topolog
         // if there is no node with a link, try getting the node which has the most ifspeed
         final String query2 = "select node.id from OnmsSnmpInterface as snmp join snmp.node as node group by node order by sum(snmp.ifSpeed) desc";
 
+        Session session = sessionFactory.getCurrentSession();
         // is there already a node?
-        OnmsNode focusNode = getHibernateTemplate().execute(new HibernateCallback<OnmsNode>() {
-            @Override
-            public OnmsNode doInHibernate(Session session) throws HibernateException, SQLException {
-                Integer nodeParentId = (Integer)session.createQuery(query1).setMaxResults(1).uniqueResult();
-                return getNode(nodeParentId, session);
-            }
-        });
+        Integer nodeParentId = (Integer)session.createQuery(query1).setMaxResults(1).uniqueResult();
+        OnmsNode focusNode = getNode(nodeParentId, session);
 
         // no node found, try next query
         if (focusNode == null) {
-            focusNode = getHibernateTemplate().execute(new HibernateCallback<OnmsNode>() {
-                @Override
-                public OnmsNode doInHibernate(Session session) throws HibernateException, SQLException {
-                    Integer nodeId = (Integer)session.createQuery(query2).setMaxResults(1).uniqueResult();
-                    return getNode(nodeId, session);
-                }
-            });
+            Integer nodeId = (Integer)session.createQuery(query2).setMaxResults(1).uniqueResult();
+            return getNode(nodeId, session);
         }
         return focusNode;
     }
 
-    private OnmsNode getNode(Integer nodeId, Session session) {
+    private static OnmsNode getNode(Integer nodeId, Session session) {
         if (nodeId != null) {
             Query q = session.createQuery("from OnmsNode as n where n.id = :nodeId");
             q.setInteger("nodeId",  nodeId);

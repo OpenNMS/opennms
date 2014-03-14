@@ -45,6 +45,7 @@ import org.springframework.util.Assert;
  * @author david
  */
 public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterface, Integer>  implements IpInterfaceDao {
+
     private static final Logger LOG = LoggerFactory.getLogger(IpInterfaceDaoHibernate.class);
 
     String m_findByServiceTypeQuery = null;
@@ -130,7 +131,7 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
 
         // Add all primary addresses first
         @SuppressWarnings("unchecked")
-        List<Object[]> l = getHibernateTemplate().find("select distinct ipInterface.ipAddress, ipInterface.node.id from OnmsIpInterface as ipInterface where ipInterface.isSnmpPrimary = 'P'");
+        List<Object[]> l = sessionFactory.getCurrentSession().createQuery("select distinct ipInterface.ipAddress, ipInterface.node.id from OnmsIpInterface as ipInterface where ipInterface.isSnmpPrimary = 'P'").list();
         for (Object[] tuple : l) {
             InetAddress ip = (InetAddress) tuple[0];
             Integer nodeId = (Integer) tuple[1];
@@ -139,7 +140,7 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
 
         // Add all non-primary addresses only if those addresses doesn't exist on the map.
         @SuppressWarnings("unchecked")
-        List<Object[]> s = getHibernateTemplate().find("select distinct ipInterface.ipAddress, ipInterface.node.id from OnmsIpInterface as ipInterface where ipInterface.isSnmpPrimary != 'P'");
+        List<Object[]> s = sessionFactory.getCurrentSession().createQuery("select distinct ipInterface.ipAddress, ipInterface.node.id from OnmsIpInterface as ipInterface where ipInterface.isSnmpPrimary != 'P'").list();
         for (Object[] tuple : s) {
             InetAddress ip = (InetAddress) tuple[0];
             Integer nodeId = (Integer) tuple[1];
