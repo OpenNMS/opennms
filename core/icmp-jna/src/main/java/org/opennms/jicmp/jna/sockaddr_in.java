@@ -49,7 +49,7 @@ public class sockaddr_in extends Structure {
         assertLen("port", port, 2);
         sin_port = port == null? null : port.clone();
         assertLen("address", addr, 4);
-        sin_addr = addr == null? null : port.clone();
+        sin_addr = addr == null? null : addr.clone();
     }
     
     public sockaddr_in() {
