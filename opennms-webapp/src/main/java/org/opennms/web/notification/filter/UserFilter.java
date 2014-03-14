@@ -101,6 +101,8 @@ public class UserFilter extends OneArgFilter<String> {
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
+        if (obj == null) return false;
+        if (!(obj instanceof UserFilter)) return false;
         return (this.toString().equals(obj.toString()));
     }
 

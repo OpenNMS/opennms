@@ -59,6 +59,8 @@ public class SeverityFilter extends EqualsFilter<OnmsSeverity> {
 
     @Override
     public boolean equals(final Object obj) {
+        if (obj == null) return false;
+        if (!(obj instanceof SeverityFilter)) return false;
         return (this.toString().equals(obj.toString()));
     }
 }

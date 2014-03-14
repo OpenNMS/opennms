@@ -73,6 +73,8 @@ public class OutageIdFilter extends EqualsFilter<Integer> {
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
+        if (obj == null) return false;
+        if (!(obj instanceof OutageIdFilter)) return false;
         return (this.toString().equals(obj.toString()));
     }
 }

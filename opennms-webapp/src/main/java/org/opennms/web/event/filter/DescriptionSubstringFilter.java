@@ -82,6 +82,8 @@ public class DescriptionSubstringFilter extends SubstringFilter {
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
+        if (obj == null) return false;
+        if (!(obj instanceof DescriptionSubstringFilter)) return false;
         return (this.toString().equals(obj.toString()));
     }
 }
