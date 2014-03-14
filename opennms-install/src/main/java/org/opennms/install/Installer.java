@@ -1036,8 +1036,8 @@ public class Installer {
             for (final Object k : p.keySet()) {
                 String key = (String)k;
                 if (key.startsWith("opennms.library")) {
-                    final String value = p.getProperty(key);
-                    value.replaceAll(File.separator + "[^" + File.separator + "]*$", "");
+                    String value = p.getProperty(key);
+                    value = value.replaceAll(File.separator + "[^" + File.separator + "]*$", "");
                     searchPaths.add(value);
                 }
             }
