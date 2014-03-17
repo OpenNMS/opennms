@@ -45,13 +45,14 @@ import org.opennms.netmgt.config.LinkdConfig;
 import org.opennms.netmgt.config.LinkdConfigFactory;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.SnmpInterfaceBuilder;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
+import org.opennms.netmgt.model.SnmpInterfaceBuilder;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 
@@ -70,6 +71,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
 @JUnitTemporaryDatabase
+@Transactional
 public abstract class LinkdTestBuilder extends LinkdTestHelper {
 
     private boolean firstTest=true;

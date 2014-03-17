@@ -170,6 +170,7 @@ public class SnmpCollectorTest implements InitializingBean, TestContextAware {
     }
 
     @Test
+    @Transactional
     @JUnitCollector(
                     datacollectionConfig = "/org/opennms/netmgt/config/datacollection-config.xml", 
                     datacollectionType = "snmp",
