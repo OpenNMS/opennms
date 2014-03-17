@@ -15,12 +15,12 @@ public class AgentResponse {
     private InetAddress m_address;
     private Integer m_port;
     private String m_serviceName;
-    private Map<String,Object> m_parameters;
+    private Map<String,String> m_parameters;
 
     public AgentResponse() {
     }
 
-    public AgentResponse(final InetAddress address, final Integer port, final String serviceName, final Map<String,Object> parameters) {
+    public AgentResponse(final InetAddress address, final Integer port, final String serviceName, final Map<String,String> parameters) {
         m_address = address;
         m_port = port;
         m_serviceName = serviceName;
@@ -42,7 +42,7 @@ public class AgentResponse {
     }
     @XmlElementWrapper(name="parameters")
     @XmlElement(name="parameter")
-    public Map<String,Object> getParameters() {
+    public Map<String,String> getParameters() {
         return m_parameters;
     }
 

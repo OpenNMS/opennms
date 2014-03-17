@@ -180,7 +180,7 @@ public class AgentConfigurationResource implements InitializingBean {
             if (iface != null) {
                 node = iface.getNode();
             }
-            final Map<String,Object> parameters = new TreeMap<String,Object>();
+            final Map<String,String> parameters = new TreeMap<String,String>();
 
             int port = defaultPort;
             if ("SNMP".equals(serviceName)) {
