@@ -39,6 +39,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -346,9 +347,10 @@ public final class BroadcastEventProcessor implements EventListener {
             };
             getNotificationManager().forEachUserNotification(notifId, ackNotifProcessor);
 
-            for (String userID : userNotifications.keySet()) {
-                List<String> cmdList = userNotifications.get(userID);
-                String[] cmds = cmdList.toArray(new String[cmdList.size()]);
+            for (final Entry<String,List<String>> entry : userNotifications.entrySet()) {
+                final String userID = entry.getKey();
+                final List<String> cmdList = entry.getValue();
+                final String[] cmds = cmdList.toArray(new String[cmdList.size()]);
                 LOG.debug("Sending {} notification to userID = {} for notice ID {}", resolutionPrefix, userID, notifId);
                 sendResolvedNotificationsToUser(queueID, userID, cmds, parmMap);
             }

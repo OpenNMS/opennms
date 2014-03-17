@@ -42,6 +42,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
@@ -49,8 +51,6 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.OwnedInterval;
 import org.opennms.core.utils.OwnedIntervalSequence;
 import org.opennms.core.utils.Owner;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.groups.Group;
@@ -63,6 +63,8 @@ import org.opennms.netmgt.config.groups.Schedule;
 import org.opennms.netmgt.config.users.DutySchedule;
 import org.opennms.netmgt.model.OnmsGroup;
 import org.opennms.netmgt.model.OnmsGroupList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -306,14 +308,13 @@ public abstract class GroupManager {
      */
     private static void buildDutySchedules(Map<String, Group> groups) {
         m_dutySchedules = new HashMap<String, List<DutySchedule>>();
-        Iterator<String> i = groups.keySet().iterator();
-        while(i.hasNext()) {
-            String key = i.next();
-            Group curGroup = groups.get(key);
+        for (final Entry<String, Group> entry : groups.entrySet()) {
+            final String key = entry.getKey();
+            final Group curGroup = entry.getValue();
             if (curGroup.getDutyScheduleCount() > 0) {
-                List<DutySchedule> dutyList = new ArrayList<DutySchedule>();
-                for (String duty : curGroup.getDutyScheduleCollection()) {
-                	dutyList.add(new DutySchedule(duty));
+                final List<DutySchedule> dutyList = new ArrayList<DutySchedule>();
+                for (final String duty : curGroup.getDutyScheduleCollection()) {
+                    dutyList.add(new DutySchedule(duty));
                 }
                 m_dutySchedules.put(key, dutyList);
             }
@@ -558,7 +559,8 @@ public abstract class GroupManager {
      * @return an array of {@link java.lang.String} objects.
      */
     public String[] getRoleNames() {
-        return (String[]) m_roles.keySet().toArray(new String[m_roles.keySet().size()]);
+        final Set<String> keys = m_roles.keySet();
+        return (String[]) keys.toArray(new String[keys.size()]);
     }
     
     /**

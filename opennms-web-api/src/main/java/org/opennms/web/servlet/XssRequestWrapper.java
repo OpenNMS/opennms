@@ -33,7 +33,7 @@ package org.opennms.web.servlet;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -132,15 +132,15 @@ public class XssRequestWrapper extends HttpServletRequestWrapper
     private  Map<String, String[]> sanitizeParamMap(Map<String, String[]> raw) 
     {       
         Map<String, String[]> res = new HashMap<String, String[]>();
-        if (raw==null)
+        if (raw==null) {
             return res;
+        }
     
-        for (String key : (Set<String>) raw.keySet())
-        {           
-            String[] rawVals = raw.get(key);
-            String[] snzVals = new String[rawVals.length];
-            for (int i=0; i < rawVals.length; i++) 
-            {
+        for (final Entry<String, String[]> entry : raw.entrySet()) {
+            final String key = entry.getKey();
+            final String[] rawVals = entry.getValue();
+            final String[] snzVals = new String[rawVals.length];
+            for (int i=0; i < rawVals.length; i++) {
                 snzVals[i] = WebSecurityUtils.sanitizeString(rawVals[i]);
             }
             res.put(key, snzVals);
@@ -149,12 +149,11 @@ public class XssRequestWrapper extends HttpServletRequestWrapper
     }
 
 
-    private void snzLogger()
-    {
-        for (String key : (Set<String>) original_parameters.keySet())
-        {
-            String[] rawVals = original_parameters.get(key);
-            String[] snzVals = sanitized_parameters.get(key);
+    private void snzLogger() {
+        for (final Entry<String,String[]> entry : original_parameters.entrySet()) {
+            final String key = entry.getKey();
+            final String[] rawVals = entry.getValue();
+            final String[] snzVals = sanitized_parameters.get(key);
             if (rawVals !=null && rawVals.length>0)
             {
                 for (int i=0; i < rawVals.length; i++) 

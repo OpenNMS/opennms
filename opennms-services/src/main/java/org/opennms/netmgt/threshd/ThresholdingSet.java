@@ -37,6 +37,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -213,9 +214,10 @@ public class ThresholdingSet {
             for (ThresholdGroup group : m_thresholdGroups) {
                 Map<String,Set<ThresholdEntity>> entityMap = getEntityMap(group, resourceTypeName);
                 if (entityMap != null) {
-                    for(String key : entityMap.keySet()) {
-                        for (ThresholdEntity thresholdEntity : entityMap.get(key)) {
-                            Collection<String> requiredDatasources = thresholdEntity.getRequiredDatasources();
+                    for (final Entry<String, Set<ThresholdEntity>> entry : entityMap.entrySet()) {
+                        final Set<ThresholdEntity> value = entry.getValue();
+                        for (final ThresholdEntity thresholdEntity : value) {
+                            final Collection<String> requiredDatasources = thresholdEntity.getRequiredDatasources();
                             if (requiredDatasources.contains(attributeName)) {
                                 ok = true;
                                 LOG.debug("hasThresholds: {}@{}? {}", resourceTypeName, attributeName, ok);
@@ -268,16 +270,18 @@ public class ThresholdingSet {
             for (ThresholdGroup group : m_thresholdGroups) {
                 Map<String,Set<ThresholdEntity>> entityMap = getEntityMap(group, resourceWrapper.getResourceTypeName());
                 if (entityMap != null) {
-                    for(String key : entityMap.keySet()) {
-                        for (ThresholdEntity thresholdEntity : entityMap.get(key)) {
+                    for (final Entry<String, Set<ThresholdEntity>> entry : entityMap.entrySet()) {
+                        final String key = entry.getKey();
+                        final Set<ThresholdEntity> value = entry.getValue();
+                        for (final ThresholdEntity thresholdEntity : value) {
                             if (passedThresholdFilters(resourceWrapper, thresholdEntity)) {
                                 LOG.info("applyThresholds: Processing threshold {} : {} on resource {}", key, thresholdEntity, resourceWrapper);
                                 Collection<String> requiredDatasources = thresholdEntity.getThresholdConfig().getRequiredDatasources();
-                                Map<String, Double> values = new HashMap<String,Double>();
+                                final Map<String, Double> values = new HashMap<String,Double>();
                                 boolean valueMissing = false;
                                 boolean relaxed = thresholdEntity.getThresholdConfig().getBasethresholddef().isRelaxed();
-                                for(String ds: requiredDatasources) {
-                                    Double dsValue = resourceWrapper.getAttributeValue(ds);
+                                for(final String ds : requiredDatasources) {
+                                    final Double dsValue = resourceWrapper.getAttributeValue(ds);
                                     if(dsValue == null) {
                                         LOG.info("applyThresholds: Could not get data source value for '{}', {}", ds, (relaxed ? "but the expression will be evaluated (relaxed mode enabled)" : "not evaluating threshold"));
                                         valueMissing = true;
