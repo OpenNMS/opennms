@@ -207,6 +207,36 @@ abstract public class XmlTest<T> {
     }
 
     @Test
+    public void unmarshalJaxbMarshalJaxb() throws Exception {
+        final T obj = JaxbUtils.unmarshal(getSampleClass(), new InputSource(getSampleXmlInputStream()), null);
+        final String remarshaled = JaxbUtils.marshal(obj);
+        assertXmlEquals(getSampleXml(), remarshaled);
+    }
+
+    @Test
+    public void marshalJaxbUnmarshalJaxb() throws Exception {
+        final String xml = marshalToXmlWithJaxb();
+        final T obj = JaxbUtils.unmarshal(getSampleClass(), xml);
+        assertTrue("objects should match", getSampleObject().equals(obj));
+    }
+
+    @Test
+    public void unmarshalCastorMarshalCastor() throws Exception {
+        final T obj = CastorUtils.unmarshal(getSampleClass(), getSampleXmlInputStream());
+        final StringWriter writer = new StringWriter();
+        CastorUtils.marshalWithTranslatedExceptions(obj, writer);
+        assertXmlEquals(getSampleXml(), writer.toString());
+    }
+
+    @Test
+    public void marshalCastorUnmarshalCastor() throws Exception {
+        final String xml = marshalToXmlWithCastor();
+        final ByteArrayInputStream is = new ByteArrayInputStream(xml.getBytes());
+        final T obj = CastorUtils.unmarshal(getSampleClass(), is, false);
+        assertTrue("objects should match", getSampleObject().equals(obj));
+    }
+
+    @Test
     public void unmarshalXmlAndCompareToJaxb() throws Exception {
         LOG.debug("xml: {}", getSampleXml());
         final T obj = JaxbUtils.unmarshal(getSampleClass(), new InputSource(getSampleXmlInputStream()), null);
@@ -247,6 +277,10 @@ abstract public class XmlTest<T> {
     @Test
     public void validateJaxbXmlAgainstSchema() throws Exception {
         final String schemaFile = getSchemaFile();
+        if (schemaFile == null) {
+            LOG.warn("Skipping validation.");
+            return;
+        }
         LOG.debug("Validating against XSD: {}", schemaFile);
         javax.xml.bind.Unmarshaller unmarshaller = JaxbUtils.getUnmarshallerFor(getSampleClass(), null, true);
         final SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
