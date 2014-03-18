@@ -476,7 +476,7 @@
                     <property name="locationMatch" value="dashboard"/>
                 </bean>
                 <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
-                    <property name="name" value="Wallboard"/>
+                    <property name="name" value="Ops Board"/>
                     <property name="url" value="vaadin-wallboard"/>
                     <property name="locationMatch" value="vaadin-wallboard"/>
                 </bean>

@@ -36,7 +36,7 @@ import org.opennms.features.vaadin.dashboard.model.DashletSpec;
  *
  * @author Christian Pape
  */
-public class TopologyDashletFactory extends AbstractDashletFactory {
+public class UrlDashletFactory extends AbstractDashletFactory {
     /**
      * Method for creating a new {@link Dashlet} instance.
      *
@@ -44,7 +44,7 @@ public class TopologyDashletFactory extends AbstractDashletFactory {
      * @return a new {@link Dashlet} instance
      */
     public Dashlet newDashletInstance(DashletSpec dashletSpec) {
-        return new TopologyDashlet(getName(), dashletSpec);
+        return new UrlDashlet(getName(), dashletSpec);
     }
 
     /**
@@ -54,8 +54,7 @@ public class TopologyDashletFactory extends AbstractDashletFactory {
      */
     @Override
     public String getHelpContentHTML() {
-        return "This Dashlet provides a view to the topology map page of OpenNMS included in an iFrame. \n" +
-                " There are two configurable parameters focusNodes and szl. Those parameters will be passed to the \n" +
-                " iFrame's URL of the node map.";
+        return "This Dashlet provides a view to an external URL included in an iFrame. \n" +
+                " The two configurable parameters username and password are used for HTTP basic auth.";
     }
 }
