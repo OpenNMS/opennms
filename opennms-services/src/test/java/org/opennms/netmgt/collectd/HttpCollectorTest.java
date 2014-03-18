@@ -70,8 +70,10 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestContext;
-import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
@@ -93,7 +95,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class HttpCollectorTest implements TestContextAware, InitializingBean {
 
     @Autowired
-    private PlatformTransactionManager m_transactionManager;
+    private TransactionTemplate m_transactionTemplate;
 
     @Autowired
     private NodeDao m_nodeDao;
@@ -143,32 +145,42 @@ public class HttpCollectorTest implements TestContextAware, InitializingBean {
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
 
-        if (m_nodeDao.findByLabel("testnode").size() == 0) {
-            NetworkBuilder builder = new NetworkBuilder(m_distPoller);
-            builder.addNode("testnode");
-            builder.addInterface(InetAddressUtils.normalize(m_testHostName)).setIsManaged("M").setIsSnmpPrimary("P");
-            builder.addService(getServiceType("ICMP"));
-            builder.addService(getServiceType("HTTP"));
-            builder.addService(getServiceType("HTTPS"));
-            OnmsNode n = builder.getCurrentNode();
-            assertNotNull(n);
-            m_nodeDao.save(n);
-            m_nodeDao.flush();
-        }
+        m_transactionTemplate.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
-        m_collector = new HttpCollector();
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+                if (m_nodeDao.findByLabel("testnode").size() == 0) {
+                    NetworkBuilder builder = new NetworkBuilder(m_distPoller);
+                    builder.addNode("testnode");
+                    builder.addInterface(InetAddressUtils.normalize(m_testHostName)).setIsManaged("M").setIsSnmpPrimary("P");
+                    builder.addService(getServiceType("ICMP"));
+                    builder.addService(getServiceType("HTTP"));
+                    builder.addService(getServiceType("HTTPS"));
+                    OnmsNode n = builder.getCurrentNode();
+                    assertNotNull(n);
+                    m_nodeDao.save(n);
+                    m_nodeDao.flush();
+                }
+                m_collector = new HttpCollector();
 
-        Collection<OnmsIpInterface> ifaces = m_ipInterfaceDao.findByIpAddress(m_testHostName);
-        assertEquals(1, ifaces.size());
-        OnmsIpInterface iface = ifaces.iterator().next();
-        
-        Map<String, String> parameters = new HashMap<String, String>();
-        parameters.put("collection", "default");
-        m_collector.initialize(parameters);
+                Collection<OnmsIpInterface> ifaces = m_ipInterfaceDao.findByIpAddress(m_testHostName);
+                assertEquals(1, ifaces.size());
+                OnmsIpInterface iface = ifaces.iterator().next();
 
-        m_collectionSpecification = CollectorTestUtils.createCollectionSpec("HTTP", m_collector, "default");
-        m_httpsCollectionSpecification = CollectorTestUtils.createCollectionSpec("HTTPS", m_collector, "default");
-        m_collectionAgent = DefaultCollectionAgent.create(iface.getId(), m_ipInterfaceDao, m_transactionManager);
+                Map<String, String> parameters = new HashMap<String, String>();
+                parameters.put("collection", "default");
+                try {
+                    m_collector.initialize(parameters);
+                } catch (CollectionInitializationException e) {
+                    throw new IllegalStateException("Couldn't initialize collector", e);
+                }
+
+                m_collectionSpecification = CollectorTestUtils.createCollectionSpec("HTTP", m_collector, "default");
+                m_httpsCollectionSpecification = CollectorTestUtils.createCollectionSpec("HTTPS", m_collector, "default");
+                m_collectionAgent = DefaultCollectionAgent.create(iface.getId(), m_ipInterfaceDao, m_transactionTemplate.getTransactionManager());
+            }
+        });
     }
 
     @After
