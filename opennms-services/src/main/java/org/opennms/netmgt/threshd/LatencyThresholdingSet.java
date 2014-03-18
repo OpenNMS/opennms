@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.model.RrdRepository;
@@ -88,8 +89,9 @@ public class LatencyThresholdingSet extends ThresholdingSet {
     public List<Event> applyThresholds(String svcName, Map<String, Double> attributes) {
         LatencyCollectionResource latencyResource = new LatencyCollectionResource(svcName, m_hostAddress);
         Map<String, CollectionAttribute> attributesMap = new HashMap<String, CollectionAttribute>();
-        for (String ds : attributes.keySet()) {
-            attributesMap.put(ds, new LatencyCollectionAttribute(latencyResource, ds, attributes.get(ds)));
+        for (final Entry<String, Double> entry : attributes.entrySet()) {
+            final String ds = entry.getKey();
+            attributesMap.put(ds, new LatencyCollectionAttribute(latencyResource, ds, entry.getValue()));
         }
         //The timestamp is irrelevant; latency is never a COUNTER (which is the only reason the date is used).  
         //Yes, we have to know a little too much about the implementation details of CollectionResourceWrapper to say that, but

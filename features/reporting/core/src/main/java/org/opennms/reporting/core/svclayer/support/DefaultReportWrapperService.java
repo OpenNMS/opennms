@@ -35,6 +35,7 @@ import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.io.IOUtils;
@@ -281,8 +282,9 @@ public class DefaultReportWrapperService implements ReportWrapperService {
                 if (LOG.isDebugEnabled()) {
                     // TODO remove this debug code
                     final Map<String, Object> reportParms = parameters.getReportParms(mode);
-                    for (final String key : reportParms.keySet()) {
-                        final Object value = reportParms.get(key);
+                    for (final Entry<String,Object> entry : reportParms.entrySet()) {
+                        final String key = entry.getKey();
+                        final Object value = entry.getValue();
                         LOG.debug("param {} set {}", key, value == null? "NULL" : value);
                     }
                 }

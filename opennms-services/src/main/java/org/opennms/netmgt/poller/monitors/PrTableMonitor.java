@@ -31,9 +31,8 @@ package org.opennms.netmgt.poller.monitors;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
-import java.util.Map;
-import java.util.regex.Pattern;
 import java.util.ArrayList;
+import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;

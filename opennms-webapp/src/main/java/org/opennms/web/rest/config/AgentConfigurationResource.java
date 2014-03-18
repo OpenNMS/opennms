@@ -4,6 +4,8 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.annotation.Resource;
 import javax.ws.rs.GET;
@@ -28,7 +30,9 @@ import org.opennms.netmgt.config.collectd.Filter;
 import org.opennms.netmgt.config.collectd.Service;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.filter.FilterDao;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -138,6 +142,7 @@ public class AgentConfigurationResource implements InitializingBean {
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsMonitoredService.class);
         builder.createAlias("ipInterface", "iface");
         builder.createAlias("serviceType", "type");
+        builder.createAlias("iface.node", "node");
         builder.in("iface.ipAddress", addresses);
         builder.eq("type.name", serviceName);
         final List<OnmsMonitoredService> services = m_monitoredServiceDao.findMatching(builder.toCriteria());
@@ -170,16 +175,26 @@ public class AgentConfigurationResource implements InitializingBean {
 
         for (final OnmsMonitoredService service : services) {
             final InetAddress ipAddress = service.getIpAddress();
+            final OnmsIpInterface iface = service.getIpInterface();
+            OnmsNode node = null;
+            if (iface != null) {
+                node = iface.getNode();
+            }
+            final Map<String,String> parameters = new TreeMap<String,String>();
 
             int port = defaultPort;
             if ("SNMP".equals(serviceName)) {
+                final String sysObjectId = node == null? null : node.getSysObjectId();
+                if (sysObjectId != null) {
+                    parameters.put("sysObjectId", sysObjectId);
+                }
                 final SnmpAgentConfig config = m_agentConfigFactory.getAgentConfig(ipAddress);
                 if (config != null) {
                     port = config.getPort();
                 }
             }
 
-            responses.add(new AgentResponse(ipAddress, port, service.getServiceName()));
+            responses.add(new AgentResponse(ipAddress, port, service.getServiceName(), parameters));
         }
         return responses;
     }

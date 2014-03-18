@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.opennms.core.utils.BundleLists;
@@ -246,8 +247,8 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
             roleAddDefaultMap.put(securityRole, !notInDefaultGroup);
         }
 
-        for (String user : roleMap.keySet()) {
-            roles.put(user, getAuthorityListFromRoleList(roleMap.get(user), roleAddDefaultMap));
+        for (final Entry<String, LinkedList<String>> entry : roleMap.entrySet()) {
+            roles.put(entry.getKey(), getAuthorityListFromRoleList(entry.getValue(), roleAddDefaultMap));
         }
         
         LOG.debug("Loaded the magic-users.properties file with {} magic users, {} roles, and {} user roles", magicUsers.size(), configuredRoles.length, roles.size());

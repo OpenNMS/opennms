@@ -42,6 +42,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -213,8 +214,9 @@ public abstract class UserManager {
     private void _buildDutySchedules(final Map<String,User> users) {
         m_dutySchedules = new HashMap<String,List<DutySchedule>>();
         
-        for (final String key : users.keySet()) {
-            final User curUser = users.get(key);
+        for (final Entry<String,User> entry : users.entrySet()) {
+            final String key = entry.getKey();
+            final User curUser = entry.getValue();
     
             if (curUser.getDutyScheduleCount() > 0) {
                 final List<DutySchedule> dutyList = new ArrayList<DutySchedule>();
