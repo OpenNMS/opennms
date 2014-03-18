@@ -130,7 +130,7 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
          */
         @SuppressWarnings("deprecation")
         private boolean isValid(String generatedId) {
-            return !provider.containsVertexId(new AbstractVertexRef(provider.getVertexNamespace(), generatedId));
+            return !provider.containsVertexId(new DefaultVertexRef(provider.getVertexNamespace(), generatedId));
         }
 
         public void reset() {

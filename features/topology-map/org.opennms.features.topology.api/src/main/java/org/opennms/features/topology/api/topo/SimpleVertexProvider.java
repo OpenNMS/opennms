@@ -266,7 +266,7 @@ public class SimpleVertexProvider implements VertexProvider {
 	 */
 	@Override
 	public boolean containsVertexId(String id) {
-		return containsVertexId(new AbstractVertexRef(getVertexNamespace(), id));
+		return containsVertexId(new DefaultVertexRef(getVertexNamespace(), id));
 	}
 
 	@Override

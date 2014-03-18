@@ -39,7 +39,7 @@ import java.util.Set;
 import org.opennms.features.topology.api.HasExtraComponents;
 import org.opennms.features.topology.api.VerticesUpdateManager;
 import org.opennms.features.topology.api.VerticesUpdateManager.VerticesUpdateEvent;
-import org.opennms.features.topology.api.topo.AbstractVertexRef;
+import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.browsers.AlarmTable;
 import org.opennms.features.topology.plugins.browsers.NodeTable;
@@ -355,7 +355,7 @@ public class NodeMapsApplication extends UI {
 
                 final Set<VertexRef> nodeSet = new HashSet<VertexRef>();
                 for (final Integer nodeId : nodeIds) {
-                    nodeSet.add(new AbstractVertexRef("nodes", nodeId.toString(), null));
+                    nodeSet.add(new DefaultVertexRef("nodes", nodeId.toString(), null));
                 }
 
                 listener.verticesUpdated(new VerticesUpdateEvent(nodeSet));

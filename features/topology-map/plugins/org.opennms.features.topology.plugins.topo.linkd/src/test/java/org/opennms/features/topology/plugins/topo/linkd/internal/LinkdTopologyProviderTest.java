@@ -52,7 +52,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.topology.api.Constants;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.AbstractVertex;
-import org.opennms.features.topology.api.topo.AbstractVertexRef;
+import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.RefComparator;
@@ -156,14 +156,14 @@ public class LinkdTopologyProviderTest {
 		assertEquals("v0", vertexA.getId());
 		//LoggerFactory.getLogger(this.getClass()).debug(m_topologyProvider.getVertices().get(0).toString());
 		assertTrue(m_topologyProvider.containsVertexId(vertexA));
-		assertTrue(m_topologyProvider.containsVertexId(new AbstractVertexRef("nodes", "v0")));
-		assertFalse(m_topologyProvider.containsVertexId(new AbstractVertexRef("nodes", "v1")));
+		assertTrue(m_topologyProvider.containsVertexId(new DefaultVertexRef("nodes", "v0")));
+		assertFalse(m_topologyProvider.containsVertexId(new DefaultVertexRef("nodes", "v1")));
 		
 		((AbstractVertex)vertexA).setIpAddress("10.0.0.4");
 
 		// Search by VertexRef
-		@SuppressWarnings("deprecation") VertexRef vertexAref = new AbstractVertexRef(m_topologyProvider.getVertexNamespace(), "v0");
-		@SuppressWarnings("deprecation") VertexRef vertexBref = new AbstractVertexRef(m_topologyProvider.getVertexNamespace(), "v1");
+		@SuppressWarnings("deprecation") VertexRef vertexAref = new DefaultVertexRef(m_topologyProvider.getVertexNamespace(), "v0");
+		@SuppressWarnings("deprecation") VertexRef vertexBref = new DefaultVertexRef(m_topologyProvider.getVertexNamespace(), "v1");
 		assertEquals(1, m_topologyProvider.getVertices(Collections.singletonList(vertexAref)).size());
 		assertEquals(0, m_topologyProvider.getVertices(Collections.singletonList(vertexBref)).size());
 

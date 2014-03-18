@@ -26,22 +26,50 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api;
-
-import com.vaadin.ui.UI;
+package org.opennms.features.topology.api.topo;
 
 /**
- * This is an API for  of all <Operation>s
  * 
- * @author Donald Desloge
+ * @author <a href="mailto:mvr@opennms.org>Markus von Ruden</a>
+ * @author <a href="mailto:seth@opennms.org">Seth Leger</a>
+ * @author <a href="mailto:thedesloge@opennms.org">Donald Desloge</a>
  *
  */
-public interface OperationContext {
-	
-	enum DisplayLocation { MENUBAR, CONTEXTMENU, SEARCH };
+public class DefaultVertexRef extends AbstractRef implements VertexRef {
 
-    UI getMainWindow();
-    GraphContainer getGraphContainer();
-    DisplayLocation getDisplayLocation();
-    boolean isChecked();
+	public DefaultVertexRef(VertexRef ref) {
+		super(ref);
+	}
+
+	/**
+	 * Just a note here, it is important that the id parameter is set to the node id if the
+	 * namespace is "nodes". (david@opennms.org)
+	 * 
+	 * @param namespace
+	 * @param id
+	 * @param label
+	 */
+	public DefaultVertexRef(String namespace, String id, String label) {
+		super(namespace, id, label);
+	}
+
+	/**
+	 * @deprecated Specify a useful label for the object
+	 */
+	public DefaultVertexRef(String namespace, String id) {
+		super(namespace, id, namespace + ":" + id);
+	}
+
+	@Override
+	public final boolean equals(Object obj) {
+		if (obj instanceof VertexRef) {
+			return super.equals(obj);
+		}
+		return false;
+	}
+
+	
+	@Override
+	public String toString() { return "VertexRef:"+getNamespace()+":"+getId(); } 
+
 }

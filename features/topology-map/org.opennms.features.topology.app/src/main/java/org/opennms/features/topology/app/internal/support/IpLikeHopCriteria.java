@@ -28,13 +28,21 @@
 
 package org.opennms.features.topology.app.internal.support;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
-import org.opennms.features.topology.api.topo.*;
-import org.opennms.netmgt.dao.api.CategoryDao;
+import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.topo.DefaultVertexRef;
+import org.opennms.features.topology.api.topo.CollapsibleCriteria;
+import org.opennms.features.topology.api.topo.GroupRef;
+import org.opennms.features.topology.api.topo.RefComparator;
+import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
 
 /**
@@ -43,18 +51,20 @@ import org.opennms.netmgt.model.OnmsNode;
  * @author <a href=mailto:seth@opennms.org>Seth Leger</a>
  *
  */
-public class CategoryHopCriteria extends VertexHopCriteria implements CollapsibleCriteria {
+public class IpLikeHopCriteria extends VertexHopCriteria implements CollapsibleCriteria {
 
-	private final String m_categoryName;
-	private CategoryDao m_categoryDao;
-	private NodeDao m_nodeDao;
+	private static final String NAMESPACE = "IP";
+	private final String m_ipaddr;
 	private boolean m_collapsed = false;
-	private CategoryVertex m_collapsedVertex;
+	private IPVertex m_collapsedVertex;
+	
+	private NodeDao m_nodeDao;
+	
 
-	public static class CategoryVertex extends AbstractVertex implements GroupRef {
+	public static class IPVertex extends AbstractVertex implements GroupRef {
 		private Set<VertexRef> m_children = new HashSet<VertexRef>();
 
-        public CategoryVertex(String namespace, String id, String label) {
+        public IPVertex(String namespace, String id, String label) {
 			super(namespace, id, label);
 			setIconKey("group");
 		}
@@ -74,29 +84,13 @@ public class CategoryHopCriteria extends VertexHopCriteria implements Collapsibl
         }
     }
 
-	public CategoryHopCriteria(String categoryName) {
-		super(categoryName);
-		m_categoryName = categoryName;
-		m_collapsedVertex = new CategoryVertex("category", "category:" + m_categoryName, m_categoryName);
-	}
-
-    public CategoryHopCriteria(String categoryName, NodeDao nodeDao, CategoryDao categoryDao){
-        this(categoryName);
-        setNodeDao(nodeDao);
-        setCategoryDao(categoryDao);
+    public IpLikeHopCriteria(String ipaddr, NodeDao nodeDao) {
+    	super(ipaddr);
+        m_ipaddr = ipaddr;
+        m_nodeDao = nodeDao;
+        m_collapsedVertex = new IPVertex(NAMESPACE, "ipaddr:"+ipaddr, ipaddr);
         m_collapsedVertex.setChildren(getVertices());
     }
-
-	public CategoryDao getCategoryDao() {
-		return m_categoryDao;
-	}
-
-	public void setCategoryDao(CategoryDao categoryDao) {
-		this.m_categoryDao = categoryDao;
-        if(getId().endsWith("")){
-            setId(m_categoryDao.findByName(m_categoryName).getId().toString());
-        }
-	}
 
 	public NodeDao getNodeDao() {
 		return m_nodeDao;
@@ -106,46 +100,51 @@ public class CategoryHopCriteria extends VertexHopCriteria implements Collapsibl
 		this.m_nodeDao = nodeDao;
 	}
 
-	/**
-	 * TODO: This return value doesn't matter since we just delegate
-	 * to the m_delegate provider.
-	 */
 	@Override
 	public String getNamespace() {
-		return "category";
+		return NAMESPACE;
 	}
 
     @Override
     public int hashCode() {
-        return m_categoryName.hashCode();
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((m_ipaddr == null) ? 0 : m_ipaddr.hashCode());
+        result = prime * result
+                + ((getNamespace() == null) ? 0 : getNamespace().hashCode());
+        return result;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if(obj instanceof CategoryHopCriteria){
-            CategoryHopCriteria c = (CategoryHopCriteria) obj;
-            return c.m_categoryName.equals(m_categoryName);
+        if (this == obj) return true;
+        if (obj == null) return false;
+
+        if (obj instanceof IpLikeHopCriteria) {
+            IpLikeHopCriteria ref = (IpLikeHopCriteria)obj;
+			return ref.m_ipaddr.equals(m_ipaddr) && ref.getNamespace().equals(getNamespace());
         }
+        
         return false;
     }
 
-    public String getCategoryName() {
-		return m_categoryName;
-	}
-
 	@Override
 	public Set<VertexRef> getVertices() {
-		OnmsCategory category = m_categoryDao.findByName(m_categoryName);
-		if (category == null) {
-			return Collections.emptySet();
-		} else {
-			List<OnmsNode> nodes = m_nodeDao.findByCategory(category);
-			Set<VertexRef> retval = new TreeSet<VertexRef>(new RefComparator());
-			for (OnmsNode node : nodes) {
-				retval.add(new DefaultVertexRef("nodes", String.valueOf(node.getId())));
-			}
-			return retval;
+		
+		CriteriaBuilder bldr = new CriteriaBuilder(OnmsNode.class);		
+		bldr = new CriteriaBuilder(OnmsNode.class);
+		
+		//for some reason, this doesn't work
+		//bldr.createAlias("ipInterfaces", "iface").createAlias("iface.ipAddress", "ipaddr").eq("ipaddr", m_ipaddr).distinct();
+		bldr.createAlias("ipInterfaces", "iface").eq("iface.ipAddress", m_ipaddr).distinct();
+		List<OnmsNode> nodes = m_nodeDao.findMatching(bldr.toCriteria());
+		
+		Set<VertexRef> vertices = new TreeSet<VertexRef>(new RefComparator());
+		for (OnmsNode node : nodes) {
+			vertices.add(new DefaultVertexRef("nodes", String.valueOf(node.getId()), node.getLabel()));
 		}
+		
+		return vertices;
 	}
 
 	@Override

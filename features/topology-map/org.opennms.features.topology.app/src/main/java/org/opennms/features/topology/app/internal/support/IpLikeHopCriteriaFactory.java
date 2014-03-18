@@ -26,36 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.topo;
+package org.opennms.features.topology.app.internal.support;
 
-// TODO rename class because it is not abstract. It can be initialized. Fix this please
-public class AbstractVertexRef extends AbstractRef implements VertexRef {
+import org.opennms.netmgt.dao.api.NodeDao;
 
-	public AbstractVertexRef(VertexRef ref) {
-		super(ref);
+/**
+ * 
+ * @author <a href=mailto:thedesloge@opennms.org>Donald Desloge</a>
+ * @author <a href=mailto:seth@opennms.org>Seth Leger</a>
+ * @author <a href=mailto:david@opennms.org>David Hustace</a>
+ *
+ */
+public class IpLikeHopCriteriaFactory {
+
+	private final NodeDao m_nodeDao;
+
+	public IpLikeHopCriteriaFactory(NodeDao nodeDao) {
+		m_nodeDao = nodeDao;
 	}
-
-	public AbstractVertexRef(String namespace, String id, String label) {
-		super(namespace, id, label);
-	}
-
-	/**
-	 * @deprecated Specify a useful label for the object
-	 */
-	public AbstractVertexRef(String namespace, String id) {
-		super(namespace, id, namespace + ":" + id);
-	}
-
-	@Override
-	public final boolean equals(Object obj) {
-		if (obj instanceof VertexRef) {
-			return super.equals(obj);
-		}
-		return false;
-	}
-
 	
-	@Override
-	public String toString() { return "VertexRef:"+getNamespace()+":"+getId(); } 
-
+	public IpLikeHopCriteria createCriteria(String ipaddr) {
+		IpLikeHopCriteria retval = new IpLikeHopCriteria(ipaddr, m_nodeDao);
+		return retval;
+	}
 }

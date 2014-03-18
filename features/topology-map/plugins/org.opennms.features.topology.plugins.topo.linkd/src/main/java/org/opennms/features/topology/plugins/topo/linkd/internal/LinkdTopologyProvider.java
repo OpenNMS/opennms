@@ -700,8 +700,11 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     }
 
     @Override
-    public Set<VertexRef> getVertexRefsBy(SearchResult searchResult) {
-        return Collections.singleton((VertexRef)getVertex(searchResult.getNamespace(), searchResult.getId()));  //To change body of implemented methods use File | Settings | File Templates.
+    public Set<VertexRef> getVertexRefsBy(SearchResult searchResult, GraphContainer container) {
+        String id = searchResult.getId();
+		String namespace = searchResult.getNamespace();
+		Vertex vertex = getVertex(namespace, id);
+		return Collections.singleton((VertexRef)vertex);
     }
 
     @Override
@@ -811,7 +814,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         if (node != null) {
             final Vertex defaultVertex = getVertex(TOPOLOGY_NAMESPACE_LINKD, node.getNodeId());
             if (defaultVertex != null) {
-                VertexHopGraphProvider.FocusNodeHopCriteria hopCriteria = new VertexHopGraphProvider.FocusNodeHopCriteria();
+                VertexHopGraphProvider.FocusNodeHopCriteria hopCriteria = new VertexHopGraphProvider.FocusNodeHopCriteria(node.getLabel());
                 hopCriteria.add(defaultVertex);
                 return hopCriteria;
             }
