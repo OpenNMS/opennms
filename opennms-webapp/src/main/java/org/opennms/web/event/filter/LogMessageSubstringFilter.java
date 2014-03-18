@@ -82,6 +82,8 @@ public class LogMessageSubstringFilter extends SubstringFilter {
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
+        if (obj == null) return false;
+        if (!(obj instanceof LogMessageSubstringFilter)) return false;
         return (this.toString().equals(obj.toString()));
     }
 }

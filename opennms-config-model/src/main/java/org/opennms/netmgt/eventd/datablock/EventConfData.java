@@ -84,15 +84,14 @@ public class EventConfData extends Object {
         // go through the key elements and see if this event will match
         boolean maskMatch = true;
 
-        Iterator<String> keysetIter = eventKey.keySet().iterator();
-        while (keysetIter.hasNext() && maskMatch) {
-            String key = keysetIter.next();
+        for (final Entry<String, Object> entry : eventKey.entrySet()) {
+            final String key = entry.getKey();
 
             @SuppressWarnings("unchecked")
-            List<String> maskValues = (List<String>) eventKey.get(key);
+            final List<String> maskValues = (List<String>) entry.getValue();
 
             // get the event value for this key
-            String eventvalue = EventKey.getMaskElementValue(event, key);
+            final String eventvalue = EventKey.getMaskElementValue(event, key);
             maskMatch = eventValuePassesMaskValue(eventvalue, maskValues);
             if (!maskMatch) {
                 return maskMatch;

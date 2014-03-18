@@ -45,6 +45,8 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.TestContextAware;
+import org.opennms.core.test.TestContextAwareExecutionListener;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.http.annotations.JUnitHttpServer;
 import org.opennms.core.utils.InetAddressUtils;
@@ -80,6 +82,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @TestExecutionListeners({
+    TestContextAwareExecutionListener.class,
     JUnitCollectorExecutionListener.class
 })
 @ContextConfiguration(locations={

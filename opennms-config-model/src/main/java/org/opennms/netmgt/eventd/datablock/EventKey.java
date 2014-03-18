@@ -312,11 +312,12 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
             return;
         }
 
-        for (String key : keySet()) {
+        for (final Map.Entry<String,Object> entry : entrySet()) {
+            final String key = entry.getKey();
             // m_hashCode = 31 * m_hashCode;
 
             // value
-            Object value = get(key);
+            final Object value = entry.getValue();
 
             // add key
             m_hashCode += (key == null ? 0 : key.hashCode());

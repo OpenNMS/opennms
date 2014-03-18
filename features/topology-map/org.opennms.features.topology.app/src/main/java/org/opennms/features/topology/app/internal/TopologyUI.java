@@ -136,7 +136,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     private static final String PARAMETER_GRAPH_PROVIDER = "provider";
 
     private class DynamicUpdateRefresher implements Refresher.RefreshListener {
-        private final Object lockObject = "lockObject";
+        private final Object lockObject = new Object();
         private boolean m_refreshInProgress = false;
         private long m_lastUpdateTime = 0;
 

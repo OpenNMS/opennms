@@ -42,6 +42,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -320,9 +321,10 @@ public abstract class Util extends Object {
             }
         }
 
-        for (final String name : additions.keySet()) {
+        for (final Entry<String,Object> entry : additions.entrySet()) {
+            final String name = entry.getKey();
             // handle both a String value or a String[] value
-        	final Object tmp = additions.get(name);
+        	final Object tmp = entry.getValue();
         	final String[] values = (tmp instanceof String[]) ? ((String[]) tmp) : (new String[] { (String) tmp });
 
             if ((ignoreType == IgnoreType.REQUEST_ONLY || !ignoreList.contains(name)) && values != null) {
@@ -446,10 +448,11 @@ public abstract class Util extends Object {
             }
         }
 
-        for (final String name : additions.keySet()) {
+        for (final Entry<String,Object> entry : additions.entrySet()) {
+            final String name = entry.getKey();
             // handle both a String value or a String[] value
-        	final Object tmp = additions.get(name);
-        	final String[] values;
+            final Object tmp = entry.getValue();
+            final String[] values;
             if (tmp instanceof String[]) {
                 values = (String[]) tmp;
             } else if (tmp instanceof String) {

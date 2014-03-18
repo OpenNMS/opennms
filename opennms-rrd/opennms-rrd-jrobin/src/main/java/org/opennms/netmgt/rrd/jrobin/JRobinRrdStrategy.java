@@ -40,6 +40,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.jrobin.core.FetchData;
@@ -55,6 +56,7 @@ import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.rrd.jrobin.JRobinRrdGraphDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1048,10 +1050,11 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
             graphDef.datasource(sourceName, rhs[0], rhs[1]);
         } else if (rhs.length == 3 && "PERCENT".equals(rhs[2])) {
             // Is there a better way to do this than with a separate DataProcessor?
-            double pctRank = Double.valueOf(rhs[1]);
-            DataProcessor dataProcessor = new DataProcessor((int)start, (int)end);
-            for (String dsName : defs.keySet()) {
-                List<String> thisDef = defs.get(dsName);
+            final double pctRank = Double.valueOf(rhs[1]);
+            final DataProcessor dataProcessor = new DataProcessor((int)start, (int)end);
+            for (final Entry<String, List<String>> entry : defs.entrySet()) {
+                final String dsName = entry.getKey();
+                final List<String> thisDef = entry.getValue();
                 if (thisDef.size() == 3) {
                     dataProcessor.addDatasource(dsName, thisDef.get(0), thisDef.get(1), thisDef.get(2));
                 } else if (thisDef.size() == 1) {

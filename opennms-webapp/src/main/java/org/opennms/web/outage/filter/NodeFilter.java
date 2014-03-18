@@ -94,6 +94,8 @@ public class NodeFilter extends EqualsFilter<Integer> {
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
+        if (obj == null) return false;
+        if (!(obj instanceof NodeFilter)) return false;
         return (this.toString().equals(obj.toString()));
     }
 }

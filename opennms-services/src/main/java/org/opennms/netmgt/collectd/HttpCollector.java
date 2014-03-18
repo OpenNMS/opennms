@@ -46,6 +46,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -731,8 +732,9 @@ public class HttpCollector implements ServiceCollector {
         String newFragment = urlFragment;
         if (newFragment != null)
         {
-            for (String key : substitutions.keySet()) {
-                newFragment = newFragment.replaceAll("\\$\\{" + key + "\\}", substitutions.get(key));
+            for (final Entry<String,String> entry : substitutions.entrySet()) {
+                final String key = entry.getKey();
+                newFragment = newFragment.replaceAll("\\$\\{" + key + "\\}", entry.getValue());
             }
             if (LOG.isDebugEnabled() && newFragment.compareTo(urlFragment) != 0) {
                 LOG.debug("doSubs: {} substituted as \"{}\"", desc, newFragment);

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,14 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd;
+package org.opennms.core.test;
 
 import org.springframework.test.context.TestContext;
+import org.springframework.test.context.support.AbstractTestExecutionListener;
 
 /**
- * This marker interface is used to denote classes where the {@link TestContext} instance
- * can be injected into the test class.
+ * This listener will inject the {@link TestContext} into a test if it
+ * supports the {@link TestContextAware} interface.
  */
-public interface TestContextAware {
-    public void setTestContext(TestContext database);
+public class TestContextAwareExecutionListener extends AbstractTestExecutionListener {
+
+	@Override
+	public void beforeTestMethod(TestContext testContext) throws Exception {
+		// FIXME: Is there a better way to inject the instance into the test class?
+		if (testContext.getTestInstance() instanceof TestContextAware) {
+			System.err.println("injecting TestContext into TestContextAware test: "
+					+ testContext.getTestInstance().getClass().getSimpleName() + "."
+					+ testContext.getTestMethod().getName());
+			((TestContextAware) testContext.getTestInstance()).setTestContext(testContext);
+		}
+	}
 }

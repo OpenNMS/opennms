@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
@@ -150,18 +151,19 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
         // Search for deleted configuration
         if (merge) {
             LOG.debug("fillThresholdStateMap(merge): checking if definitions that are no longer exist for group {} using type {}", groupName, typeName);
-            for (String expression : thresholdMap.keySet()) {
-                for (Iterator<ThresholdEntity> i = thresholdMap.get(expression).iterator(); i.hasNext();) {
-                    ThresholdEntity entity = i.next();
+            for (final Entry<String, Set<ThresholdEntity>> entry : thresholdMap.entrySet()) {
+                final Set<ThresholdEntity> value = entry.getValue();
+                for (final Iterator<ThresholdEntity> thresholdIterator = value.iterator(); thresholdIterator.hasNext();) {
+                    final ThresholdEntity entity = thresholdIterator.next();
                     boolean found = false;
-                    for (Basethresholddef thresh : getThresholdingConfigFactory().getThresholds(groupName)) {
+                    for (final Basethresholddef thresh : getThresholdingConfigFactory().getThresholds(groupName)) {
                         BaseThresholdDefConfigWrapper newConfig = null;
                         try {
                             newConfig = BaseThresholdDefConfigWrapper.getConfigWrapper(thresh);
                         } catch (ThresholdExpressionException e) {
                             LOG.warn("fillThresholdStateMap: Could not parse threshold expression", e);
                         }
-                        if (newConfig.equals(entity.getThresholdConfig())) {
+                        if (newConfig != null && newConfig.equals(entity.getThresholdConfig())) {
                             found = true;
                             continue;
                         }
@@ -169,7 +171,7 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
                     if (!found) {
                         LOG.info("fillThresholdStateMap(merge): deleting entity {}", entity);
                         entity.delete();
-                        i.remove();
+                        thresholdIterator.remove();
                     }
                 }
             }

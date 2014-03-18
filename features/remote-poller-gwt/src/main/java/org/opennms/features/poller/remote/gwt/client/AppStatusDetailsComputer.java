@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -103,10 +104,12 @@ public class AppStatusDetailsComputer {
         }
     
         Map<Integer, Map<Integer, List<GWTServiceOutage>>> outages = getOutages();
-        for (final Integer serviceId : outages.keySet()) {
+        for (final Entry<Integer, Map<Integer, List<GWTServiceOutage>>> entry : outages.entrySet()) {
+            final Integer serviceId = entry.getKey();
             final List<GWTServiceOutage> locationOutages = new ArrayList<GWTServiceOutage>();
-            for (final Integer monitorId : outages.get(serviceId).keySet()) {
-                for (final GWTServiceOutage outage : outages.get(serviceId).get(monitorId)) {
+            for (final Entry<Integer,List<GWTServiceOutage>> locationOutageEntry : entry.getValue().entrySet()) {
+                final Integer monitorId = locationOutageEntry.getKey();
+                for (final GWTServiceOutage outage : locationOutageEntry.getValue()) {
                     locationOutages.add(outage);
                 }
                 locationOutages.addAll(outages.get(serviceId).get(monitorId));
@@ -169,8 +172,9 @@ public class AppStatusDetailsComputer {
     
         if (unmonitoredServiceCounts.size() > 0) {
             final Set<String> names = new TreeSet<String>();
-            for (final String key : unmonitoredServiceCounts.keySet()) {
-                final Integer count = unmonitoredServiceCounts.get(key);
+            for (final Entry<String,Integer> entry : unmonitoredServiceCounts.entrySet()) {
+                final String key = entry.getKey();
+                final Integer count = entry.getValue();
                 names.add((count > 1)? key + " (" + count + ")" : key);
             }
             return StatusDetails.unknown("The following services were not being reported on by any monitor: " + StringUtils.join(names, ", "));
@@ -262,9 +266,9 @@ public class AppStatusDetailsComputer {
             }
         }
         
-        for (final Integer serviceId : outages.keySet()) {
-            for (final Integer monitorId : outages.get(serviceId).keySet()) {
-                for (GWTServiceOutage outage : outages.get(serviceId).get(monitorId)) {
+        for (final Entry<Integer, Map<Integer, List<GWTServiceOutage>>> entry : outages.entrySet()) {
+            for (final Entry<Integer,List<GWTServiceOutage>> serviceOutageEntry : entry.getValue().entrySet()) {
+                for (final GWTServiceOutage outage : serviceOutageEntry.getValue()) {
                     if (outage.getFrom() == null) {
                         outage.setFrom(getStartTime());
                     }

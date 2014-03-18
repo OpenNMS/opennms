@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,41 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.alarm.filter;
+package org.opennms.core.test;
 
-import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.web.filter.EqualsFilter;
-import org.opennms.web.filter.SQLType;
+import org.springframework.test.context.TestContext;
 
 /**
- * Encapsulates severity filtering functionality.
- *
+ * This marker interface is used to denote classes where the {@link TestContext} instance
+ * can be injected into the test class.
  */
-public class SeverityFilter extends EqualsFilter<OnmsSeverity> {
-    public static final String TYPE = "severity";
-
-    public SeverityFilter(final OnmsSeverity severity) {
-        super(TYPE, SQLType.SEVERITY, "ALARMS.SEVERITY", "severity", severity);
-    }
-
-    @Override
-    public String getTextDescription() {
-        return (TYPE + " is " + getValue().getLabel());
-    }
-
-    @Override
-    public String toString() {
-        return ("<AlarmFactory.SeverityFilter: " + this.getDescription() + ">");
-    }
-
-    public int getSeverity() {
-        return getValue().getId();
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        if (obj == null) return false;
-        if (!(obj instanceof SeverityFilter)) return false;
-        return (this.toString().equals(obj.toString()));
-    }
+public interface TestContextAware {
+    public void setTestContext(TestContext database);
 }

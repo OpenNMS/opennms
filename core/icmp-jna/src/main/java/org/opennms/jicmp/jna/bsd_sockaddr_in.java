@@ -49,9 +49,9 @@ public class bsd_sockaddr_in extends Structure {
     public bsd_sockaddr_in(int family, byte[] addr, byte[] port) {
         sin_family = (byte)(0xff & family);
         assertLen("port", port, 2);
-        sin_port = port;
+        sin_port = port == null? null : port.clone();
         assertLen("address", addr, 4);
-        sin_addr = addr;
+        sin_addr = addr == null? null : addr.clone();
         sin_len = (byte)(0xff & size());
     }
     

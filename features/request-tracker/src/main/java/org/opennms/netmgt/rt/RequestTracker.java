@@ -38,6 +38,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -206,18 +207,19 @@ public class RequestTracker {
         }
 
         // We previously normalized to the new custom-field syntax, so no need to check here for the old
-        for (String bute : attributes.keySet()) {
-            String headerForm = bute + ": " + attributes.get(bute);
-            Matcher cfMatcher = m_customFieldPatternNew.matcher(headerForm);
+        for (final Entry<String,String> entry : attributes.entrySet()) {
+            final String bute = entry.getKey();
+            final String headerForm = bute + ": " + entry.getValue();
+            final Matcher cfMatcher = m_customFieldPatternNew.matcher(headerForm);
             if (cfMatcher.matches()) {
-                CustomField cf = new CustomField(cfMatcher.group(1));
+                final CustomField cf = new CustomField(cfMatcher.group(1));
                 cf.addValue(new CustomFieldValue(cfMatcher.group(2)));
                 attributes.remove(bute);
             }
         }
 
         if (attributes.size() > 0) {
-            LOG.trace("unhandled RT ticket attributes: {}", attributes.keySet());
+            LOG.trace("unhandled RT ticket attributes: {}", attributes.entrySet());
         }
 
         if (ticket.getText() == null || ticket.getText().equals("") && getTextAttachment) {
