@@ -123,6 +123,36 @@ abstract public class XmlTest<T> {
     }
 
     @Test
+    public void unmarshalJaxbMarshalJaxb() throws Exception {
+        final T obj = JaxbUtils.unmarshal(getSampleClass(), new InputSource(getSampleXmlInputStream()), null);
+        final String remarshaled = JaxbUtils.marshal(obj);
+        assertXmlEquals(getSampleXml(), remarshaled);
+    }
+
+    @Test
+    public void marshalJaxbUnmarshalJaxb() throws Exception {
+        final String xml = marshalToXmlWithJaxb();
+        final T obj = JaxbUtils.unmarshal(getSampleClass(), xml);
+        assertTrue("objects should match", getSampleObject().equals(obj));
+    }
+
+    @Test
+    public void unmarshalCastorMarshalCastor() throws Exception {
+        final T obj = CastorUtils.unmarshal(getSampleClass(), getSampleXmlInputStream());
+        final StringWriter writer = new StringWriter();
+        CastorUtils.marshalWithTranslatedExceptions(obj, writer);
+        assertXmlEquals(getSampleXml(), writer.toString());
+    }
+
+    @Test
+    public void marshalCastorUnmarshalCastor() throws Exception {
+        final String xml = marshalToXmlWithCastor();
+        final ByteArrayInputStream is = new ByteArrayInputStream(xml.getBytes());
+        final T obj = CastorUtils.unmarshal(getSampleClass(), is, false);
+        assertTrue("objects should match", getSampleObject().equals(obj));
+    }
+
+    @Test
     public void unmarshalXmlAndCompareToJaxb() throws Exception {
         final T obj = JaxbUtils.unmarshal(getSampleClass(), new InputSource(new ByteArrayInputStream(m_sampleXml.getBytes())), null);
         assertTrue("objects should match", getSampleObject().equals(obj));
@@ -159,7 +189,12 @@ abstract public class XmlTest<T> {
 
     @Test
     public void validateJaxbXmlAgainstSchema() throws Exception {
-        LogUtils.debugf(this, "Validating against XSD: %s", m_schemaFile);
+        final String schemaFile = getSchemaFile();
+        if (schemaFile == null) {
+            LogUtils.warnf(this, "Skipping validation.");
+            return;
+        }
+        LogUtils.debugf(this, "Validating against XSD: %s", schemaFile);
         javax.xml.bind.Unmarshaller unmarshaller = JaxbUtils.getUnmarshallerFor(getSampleClass(), null, true);
         final SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
         final Schema schema = factory.newSchema(new StreamSource(m_schemaFile));
