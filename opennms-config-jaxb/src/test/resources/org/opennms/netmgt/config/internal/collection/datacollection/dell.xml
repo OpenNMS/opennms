@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<datacollection-group name="Dell">
+
+    <!-- DELL Remote Access Controller Resource Types -->
+    <resourceType name="drsChassisIndex" label="Dell DRAC Chassis">
+      <resourceName><template>${index}</template></resourceName>
+      <resourceLabel><template>${index}</template></resourceLabel>
+    </resourceType>
+
+    <resourceType name="drsPSUIndex" label="Dell DRAC PSU">
+      <resourceName><template>${index}</template></resourceName>
+      <resourceLabel><template>Chassis ${drsPSUChassisIndex} - ${drsPSULocation}</template></resourceLabel>
+      <column oid=".1.3.6.1.4.1.674.10892.2.4.2.1.1" alias="drsPSUChassisIndex" type="string" />
+      <column oid=".1.3.6.1.4.1.674.10892.2.4.2.1.3" alias="drsPSULocation"     type="string" />
+    </resourceType>
+
+    <!-- Dell OpenManage Resource Types -->
+    <resourceType name="coolingDeviceIndex" label="Dell Cooling Device">
+      <resourceName><template>${index}</template></resourceName>
+      <resourceLabel><template>${coolingDeviceLocationName}</template></resourceLabel>
+      <column oid=".1.3.6.1.4.1.674.10892.1.700.12.1.8"  alias="coolingDeviceLocationName" type="string" />
+    </resourceType>
+
+    <resourceType name="temperatureProbeIndex" label="Dell Temperature Probe">
+      <resourceName><template>${index}</template></resourceName>
+      <resourceLabel><template>${temperatureProbeLocationName}</template></resourceLabel>
+      <column oid=".1.3.6.1.4.1.674.10892.1.700.20.1.8" alias="temperatureProbeLocationName" type="string" />
+    </resourceType>
+
+    <resourceType name="powerUsageIndex" label="Dell Power Usage">
+      <resourceName><template>${index}</template></resourceName>
+      <resourceLabel><template>${powerUsageEntityName}</template></resourceLabel>
+      <column oid=".1.3.6.1.4.1.674.10892.1.600.60.1.6" alias="powerUsageEntityName" type="string" />
+    </resourceType>
+
+      <!-- Dell OpenManage MIBs -->
+      <table name="openmanage-coolingdevices" instance="coolingDeviceIndex" ifType="all">
+        <column oid=".1.3.6.1.4.1.674.10892.1.700.12.1.6"  alias="coolingDevReading"         type="integer" />
+        <column oid=".1.3.6.1.4.1.674.10892.1.700.12.1.8"  alias="coolingDeviceLocationName" type="string" />
+        <column oid=".1.3.6.1.4.1.674.10892.1.700.12.1.13" alias="coolDevLowCritThres"       type="integer" />
+      </table>
+
+      <table name="openmanage-temperatureprobe" instance="temperatureProbeIndex" ifType="all">
+        <column oid=".1.3.6.1.4.1.674.10892.1.700.20.1.6"  alias="tempProbeReading"             type="integer" />
+        <column oid=".1.3.6.1.4.1.674.10892.1.700.20.1.8"  alias="temperatureProbeLocationName" type="string" />
+        <column oid=".1.3.6.1.4.1.674.10892.1.700.20.1.10" alias="tempProbeUpCrit"              type="integer" />
+        <column oid=".1.3.6.1.4.1.674.10892.1.700.20.1.11" alias="tempProbeUpNonCrit"           type="integer" />
+        <column oid=".1.3.6.1.4.1.674.10892.1.700.20.1.12" alias="tempProbeLowNonCrit"          type="integer" />
+        <column oid=".1.3.6.1.4.1.674.10892.1.700.20.1.13" alias="tempProbeLowCrit"             type="integer" />
+      </table>
+
+      <table name="openmanage-powerusage" instance="powerUsageIndex" ifType="all">
+        <column oid=".1.3.6.1.4.1.674.10892.1.600.60.1.6" alias="powerUsageEntityName" type="string" />
+        <column oid=".1.3.6.1.4.1.674.10892.1.600.60.1.7" alias="powerUsageWattage"    type="Counter32" />
+        <column oid=".1.3.6.1.4.1.674.10892.1.600.60.1.9" alias="powerUsagePeakWatts"  type="integer" />
+      </table>
+
+      <table name="dell-rac-chassis" instance="drsChassisIndex" ifType="all">
+        <column oid=".1.3.6.1.4.1.674.10892.2.4.1.1.8"  alias="drsWattsPeakUsage" type="integer" />
+        <column oid=".1.3.6.1.4.1.674.10892.2.4.1.1.10" alias="drsWattsMinUsage"  type="integer" />
+        <column oid=".1.3.6.1.4.1.674.10892.2.4.1.1.13" alias="drsWattsReading"   type="integer" />
+        <column oid=".1.3.6.1.4.1.674.10892.2.4.1.1.14" alias="drsAmpsReading"    type="integer" />
+      </table>
+
+      <table name="dell-rac-psu" instance="drsPSUIndex" ifType="all">
+        <column oid=".1.3.6.1.4.1.674.10892.2.4.2.1.1" alias="drsPSUChassisIndex" type="string" />
+        <column oid=".1.3.6.1.4.1.674.10892.2.4.2.1.3" alias="drsPSULocation"     type="string" />
+        <column oid=".1.3.6.1.4.1.674.10892.2.4.2.1.5" alias="drsPSUVoltsReading" type="integer" />
+        <column oid=".1.3.6.1.4.1.674.10892.2.4.2.1.6" alias="drsPSUAmpsReading"  type="integer" />
+        <column oid=".1.3.6.1.4.1.674.10892.2.4.2.1.7" alias="drsPSUWattsReading" type="integer" />
+      </table>
+
+      <systemDef name="DELL RAC">
+        <sysoid>.1.3.6.1.4.1.674.10892.2</sysoid>
+        <collect>
+          <include>mib2-interfaces</include>
+          <include>mib2-tcp</include>
+          <include>mib2-icmp</include>
+          <include>dell-rac-chassis</include>
+          <include>dell-rac-psu</include>
+        </collect>
+      </systemDef>
+
+</datacollection-group>

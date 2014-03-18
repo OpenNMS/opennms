@@ -7,5 +7,6 @@ public interface ISnmpCollection {
     String getSnmpStorageFlag();
     IGroupReference[] getIncludedGroups();
     IDataCollectionGroup[] getDataCollectionGroups();
+    IRrd getRrd();
 
 }

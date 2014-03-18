@@ -98,5 +98,72 @@ public class MibObject implements IMibObject {
         return mibObject;
     }
 
+    @Override
+    public String toString() {
+        return "MibObject [oid=" + m_oid + ", alias=" + m_alias + ", type=" + m_type + ", instance=" + m_instance + ", group=" + m_group + "]";
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((m_alias == null) ? 0 : m_alias.hashCode());
+        result = prime * result + ((m_group == null) ? 0 : m_group.hashCode());
+        result = prime * result + ((m_instance == null) ? 0 : m_instance.hashCode());
+        result = prime * result + ((m_oid == null) ? 0 : m_oid.hashCode());
+        result = prime * result + ((m_type == null) ? 0 : m_type.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof MibObject)) {
+            return false;
+        }
+        final MibObject other = (MibObject) obj;
+        if (m_alias == null) {
+            if (other.m_alias != null) {
+                return false;
+            }
+        } else if (!m_alias.equals(other.m_alias)) {
+            return false;
+        }
+        if (m_group == null) {
+            if (other.m_group != null) {
+                return false;
+            }
+        } else if (!m_group.equals(other.m_group)) {
+            return false;
+        }
+        if (m_instance == null) {
+            if (other.m_instance != null) {
+                return false;
+            }
+        } else if (!m_instance.equals(other.m_instance)) {
+            return false;
+        }
+        if (m_oid == null) {
+            if (other.m_oid != null) {
+                return false;
+            }
+        } else if (!m_oid.equals(other.m_oid)) {
+            return false;
+        }
+        if (m_type == null) {
+            if (other.m_type != null) {
+                return false;
+            }
+        } else if (!m_type.equals(other.m_type)) {
+            return false;
+        }
+        return true;
+    }
+
 }
 

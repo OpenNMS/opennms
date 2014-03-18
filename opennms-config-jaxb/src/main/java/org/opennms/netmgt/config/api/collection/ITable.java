@@ -4,6 +4,7 @@ public interface ITable {
 
     String getName();
     String getInstance();
-    public abstract IColumn[] getColumns();
+    String getIfType();
+    IColumn[] getColumns();
 
 }

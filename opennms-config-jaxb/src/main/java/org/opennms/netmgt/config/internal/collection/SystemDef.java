@@ -1,5 +1,7 @@
 package org.opennms.netmgt.config.internal.collection;
 
+import java.util.Arrays;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -47,6 +49,12 @@ public class SystemDef implements ISystemDef {
     @XmlTransient
     private Group[] m_groups;
 
+    public SystemDef() {}
+
+    public SystemDef(final String name) {
+        m_name = name;
+    }
+
     @Override
     public String getName() {
         return m_name;
@@ -89,6 +97,70 @@ public class SystemDef implements ISystemDef {
 
     public void setGroups(final IGroup[] groups) {
         m_groups = Group.asGroups(groups);
+    }
+
+    @Override
+    public String toString() {
+        return "SystemDef [name=" + m_name + ", sysoidMask=" + m_sysoidMask + ", sysoid=" + m_sysoid + ", includes=" + Arrays.toString(m_includes) + ", tables=" + Arrays.toString(m_tables)
+                + ", groups=" + Arrays.toString(m_groups) + "]";
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + Arrays.hashCode(m_groups);
+        result = prime * result + Arrays.hashCode(m_includes);
+        result = prime * result + ((m_name == null) ? 0 : m_name.hashCode());
+        result = prime * result + ((m_sysoid == null) ? 0 : m_sysoid.hashCode());
+        result = prime * result + ((m_sysoidMask == null) ? 0 : m_sysoidMask.hashCode());
+        result = prime * result + Arrays.hashCode(m_tables);
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof SystemDef)) {
+            return false;
+        }
+        final SystemDef other = (SystemDef) obj;
+        if (!Arrays.equals(m_groups, other.m_groups)) {
+            return false;
+        }
+        if (!Arrays.equals(m_includes, other.m_includes)) {
+            return false;
+        }
+        if (m_name == null) {
+            if (other.m_name != null) {
+                return false;
+            }
+        } else if (!m_name.equals(other.m_name)) {
+            return false;
+        }
+        if (m_sysoid == null) {
+            if (other.m_sysoid != null) {
+                return false;
+            }
+        } else if (!m_sysoid.equals(other.m_sysoid)) {
+            return false;
+        }
+        if (m_sysoidMask == null) {
+            if (other.m_sysoidMask != null) {
+                return false;
+            }
+        } else if (!m_sysoidMask.equals(other.m_sysoidMask)) {
+            return false;
+        }
+        if (!Arrays.equals(m_tables, other.m_tables)) {
+            return false;
+        }
+        return true;
     }
 
 }

@@ -1,5 +1,9 @@
 package org.opennms.netmgt.config.internal.collection;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -50,13 +54,9 @@ public class ResourceType implements IResourceType {
     public ResourceType() {
     }
 
-    public ResourceType(final IResourceType type) {
-        setName(type.getTypeName());
-        setLabel(type.getLabel());
-        setResourceNameExpression(type.getResourceNameExpression());
-        setResourceLabelExpression(type.getResourceLabelExpression());
-        setResourceKindExpression(type.getResourceKindExpression());
-        setColumns(type.getColumns());
+    public ResourceType(final String name, final String label) {
+        m_name = name;
+        m_label = label;
     }
 
     public String getTypeName() {
@@ -83,6 +83,10 @@ public class ResourceType implements IResourceType {
         m_resourceNameExpression = Expression.asExpression(expression);
     }
 
+    public void setResourceNameTemplate(final String template) {
+        m_resourceNameExpression = new Expression(template);
+    }
+
     public Expression getResourceLabelExpression() {
         return m_resourceLabelExpression;
     }
@@ -91,12 +95,20 @@ public class ResourceType implements IResourceType {
         m_resourceLabelExpression = Expression.asExpression(expression);
     }
 
+    public void setResourceLabelTemplate(final String template) {
+        m_resourceLabelExpression = new Expression(template);
+    }
+
     public Expression getResourceKindExpression() {
         return m_resourceKindExpression;
     }
 
-    public void setResourceKindExpression(IExpression expression) {
+    public void setResourceKindExpression(final IExpression expression) {
         m_resourceKindExpression = Expression.asExpression(expression);
+    }
+
+    public void setResourceKindTemplate(final String template) {
+        m_resourceKindExpression = new Expression(template);
     }
 
     public IColumn[] getColumns() {
@@ -105,6 +117,88 @@ public class ResourceType implements IResourceType {
 
     public void setColumns(final IColumn[] columns) {
         m_columns = Column.asColumns(columns);
+    }
+
+    public void addColumn(final Column column) {
+        final List<Column> columns = m_columns == null? new ArrayList<Column>() : new ArrayList<Column>(Arrays.asList(m_columns));
+        columns.add(column);
+        m_columns = columns.toArray(new Column[columns.size()]);
+    }
+
+    public void addColumn(final String oid, final String alias, final String type) {
+        addColumn(new Column(oid, alias, type));
+    }
+
+    @Override
+    public String toString() {
+        return "ResourceType [name=" + m_name + ", label=" + m_label + ", resourceNameExpression=" + m_resourceNameExpression + ", resourceLabelExpression=" + m_resourceLabelExpression
+                + ", resourceKindExpression=" + m_resourceKindExpression + ", columns=" + Arrays.toString(m_columns) + "]";
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + Arrays.hashCode(m_columns);
+        result = prime * result + ((m_label == null) ? 0 : m_label.hashCode());
+        result = prime * result + ((m_name == null) ? 0 : m_name.hashCode());
+        result = prime * result + ((m_resourceKindExpression == null) ? 0 : m_resourceKindExpression.hashCode());
+        result = prime * result + ((m_resourceLabelExpression == null) ? 0 : m_resourceLabelExpression.hashCode());
+        result = prime * result + ((m_resourceNameExpression == null) ? 0 : m_resourceNameExpression.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof ResourceType)) {
+            return false;
+        }
+        final ResourceType other = (ResourceType) obj;
+        if (!Arrays.equals(m_columns, other.m_columns)) {
+            return false;
+        }
+        if (m_label == null) {
+            if (other.m_label != null) {
+                return false;
+            }
+        } else if (!m_label.equals(other.m_label)) {
+            return false;
+        }
+        if (m_name == null) {
+            if (other.m_name != null) {
+                return false;
+            }
+        } else if (!m_name.equals(other.m_name)) {
+            return false;
+        }
+        if (m_resourceKindExpression == null) {
+            if (other.m_resourceKindExpression != null) {
+                return false;
+            }
+        } else if (!m_resourceKindExpression.equals(other.m_resourceKindExpression)) {
+            return false;
+        }
+        if (m_resourceLabelExpression == null) {
+            if (other.m_resourceLabelExpression != null) {
+                return false;
+            }
+        } else if (!m_resourceLabelExpression.equals(other.m_resourceLabelExpression)) {
+            return false;
+        }
+        if (m_resourceNameExpression == null) {
+            if (other.m_resourceNameExpression != null) {
+                return false;
+            }
+        } else if (!m_resourceNameExpression.equals(other.m_resourceNameExpression)) {
+            return false;
+        }
+        return true;
     }
 
 }
