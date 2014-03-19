@@ -110,8 +110,7 @@ public abstract class IncludeCollectionWindow extends Window implements Button.C
                 List<String> values = selected.equals(IncludeCollectionWrapper.SYSTEM_DEF) ? dataCollectionConfigDao.getAvailableSystemDefs()
                     : dataCollectionConfigDao.getAvailableDataCollectionGroups();
                 // Remove already selected
-                for (Object itemId : container.getItemIds()) {
-                    IncludeCollectionWrapper obj = container.getItem(itemId).getBean();
+                for (IncludeCollectionWrapper obj : container.getOnmsBeans()) {
                     if (obj.getType().equals(selected)) {
                         values.remove(obj.getValue());
                     }

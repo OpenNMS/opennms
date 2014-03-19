@@ -28,6 +28,7 @@
 package org.opennms.features.vaadin.events;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.opennms.features.vaadin.api.OnmsBeanContainer;
 import org.opennms.netmgt.xml.eventconf.Varbind;
@@ -52,7 +53,7 @@ import com.vaadin.ui.VerticalLayout;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class MaskVarbindField extends CustomField<ArrayList<Varbind>> implements Button.ClickListener {
+public class MaskVarbindField extends CustomField<List<Varbind>> implements Button.ClickListener {
 
     /** The Container. */
     private final OnmsBeanContainer<Varbind> container = new OnmsBeanContainer<Varbind>(Varbind.class);
@@ -126,19 +127,15 @@ public class MaskVarbindField extends CustomField<ArrayList<Varbind>> implements
      * @see com.vaadin.ui.AbstractField#getInternalValue()
      */
     @Override
-    protected ArrayList<Varbind> getInternalValue() {
-        ArrayList<Varbind> beans = new ArrayList<Varbind>();
-        for (Object itemId: container.getItemIds()) {
-            beans.add(container.getItem(itemId).getBean());
-        }
-        return beans;
+    protected List<Varbind> getInternalValue() {
+        return container.getOnmsBeans();
     }
 
     /* (non-Javadoc)
      * @see com.vaadin.ui.AbstractField#setInternalValue(java.lang.Object)
      */
     @Override
-    protected void setInternalValue(ArrayList<Varbind> varbinds) {
+    protected void setInternalValue(List<Varbind> varbinds) {
         super.setInternalValue(varbinds);  // TODO Is this required ?
         container.removeAllItems();
         container.addAll(varbinds);

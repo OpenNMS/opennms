@@ -49,7 +49,7 @@ import com.vaadin.ui.VerticalLayout;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class MibObjField extends CustomField<ArrayList<MibObj>> implements Button.ClickListener {
+public class MibObjField extends CustomField<List<MibObj>> implements Button.ClickListener {
 
     /** The Container. */
     private final OnmsBeanContainer<MibObj> container = new OnmsBeanContainer<MibObj>(MibObj.class);
@@ -113,8 +113,7 @@ public class MibObjField extends CustomField<ArrayList<MibObj>> implements Butto
      * @see com.vaadin.ui.AbstractField#setInternalValue(java.lang.Object)
      */
     @Override
-    protected void setInternalValue(ArrayList<MibObj> mibObjects) {
-        super.setInternalValue(mibObjects); // TODO Is this required ?
+    protected void setInternalValue(List<MibObj> mibObjects) {
         container.removeAllItems();
         container.addAll(mibObjects);
     }
@@ -123,12 +122,8 @@ public class MibObjField extends CustomField<ArrayList<MibObj>> implements Butto
      * @see com.vaadin.ui.AbstractField#getInternalValue()
      */
     @Override
-    protected ArrayList<MibObj> getInternalValue() {
-        ArrayList<MibObj> beans = new ArrayList<MibObj>();
-        for (Object itemId: container.getItemIds()) {
-            beans.add(container.getItem(itemId).getBean());
-        }
-        return beans;
+    protected List<MibObj> getInternalValue() {
+        return container.getOnmsBeans();
     }
 
     /* (non-Javadoc)

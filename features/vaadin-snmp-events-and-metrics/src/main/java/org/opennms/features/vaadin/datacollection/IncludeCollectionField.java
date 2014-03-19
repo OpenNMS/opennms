@@ -75,6 +75,7 @@ public class IncludeCollectionField extends CustomField<ArrayList<IncludeCollect
         table.addStyleName("light");
         table.setVisibleColumns(new Object[]{"type", "value"});
         table.setColumnHeaders(new String[]{"Type", "Value"});
+        table.setEditable(!isReadOnly());
         table.setSelectable(true);
         table.setImmediate(true);
         table.setHeight("125px");
@@ -159,9 +160,9 @@ public class IncludeCollectionField extends CustomField<ArrayList<IncludeCollect
      */
     @Override
     protected ArrayList<IncludeCollection> getInternalValue() {
-        ArrayList<IncludeCollection> beans = new ArrayList<IncludeCollection>();
-        for (Object itemId: container.getItemIds()) {
-            beans.add(container.getItem(itemId).getBean().createIncludeCollection());
+        final ArrayList<IncludeCollection> beans = new ArrayList<IncludeCollection>();
+        for (IncludeCollectionWrapper wrapper : container.getOnmsBeans()) {
+            beans.add(wrapper.createIncludeCollection());
         }
         return beans;
     }

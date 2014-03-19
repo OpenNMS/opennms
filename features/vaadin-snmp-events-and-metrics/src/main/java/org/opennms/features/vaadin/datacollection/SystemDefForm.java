@@ -44,7 +44,7 @@ import com.vaadin.ui.TextField;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
-// TODO when a new group is added, the group list passed to SystemDefFieldFactory must be updated.
+// TODO when a new group is added, the group list passed to this form (i.e. groupNames) must be updated.
 @SuppressWarnings("serial")
 public class SystemDefForm extends CustomComponent {
 

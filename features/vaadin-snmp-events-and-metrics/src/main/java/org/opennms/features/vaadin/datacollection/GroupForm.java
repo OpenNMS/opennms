@@ -52,11 +52,11 @@ public class GroupForm extends CustomComponent {
     @PropertyId("name")
     final TextField name = new TextField("Group Name");
 
-    /** The if type. */
+    /** The ifType. */
     @PropertyId("ifType")
     final ComboBox ifType = new ComboBox("ifType Filter");
 
-    /** The mib objs. */
+    /** The MIB Objects. */
     @PropertyId("mibObjCollection")
     final MibObjField mibObjs; 
 

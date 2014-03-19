@@ -27,7 +27,6 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.netmgt.config.datacollection.Collect;
@@ -116,9 +115,9 @@ public class CollectField extends CustomField<Collect> implements Button.ClickLi
     public void setPropertyDataSource(Property newDataSource) {
         Object value = newDataSource.getValue();
         if (value instanceof Collect) {
-            Collect dto = (Collect) value;
+            Collect collect = (Collect) value;
             listField.removeAllItems();
-            for (String group : dto.getIncludeGroups()) {
+            for (String group : collect.getIncludeGroups()) {
                 listField.addItem(group);
             }
         } else {
@@ -132,13 +131,11 @@ public class CollectField extends CustomField<Collect> implements Button.ClickLi
      */
     @Override
     public Collect getValue() {
-        Collect dto = new Collect();
-        final List<String> includeGroups = new ArrayList<String>(dto.getIncludeGroups());
+        Collect collect = new Collect();
         for (Object itemId: listField.getItemIds()) {
-            includeGroups.add((String) itemId);
+            collect.addIncludeGroup((String) itemId);
         }
-        dto.setIncludeGroups(includeGroups);
-        return dto;
+        return collect;
     }
 
     /* (non-Javadoc)

@@ -122,10 +122,12 @@ public class IncludeCollectionWrapper {
      */
     public IncludeCollection createIncludeCollection() {
         IncludeCollection ic = new IncludeCollection();
-        if (getType().equals(SYSTEM_DEF))
+        if (getType().equals(SYSTEM_DEF)) {
             ic.setSystemDef(getValue());
-        if (getType().equals(IncludeCollectionWrapper.DC_GROUP))
+        }
+        if (getType().equals(IncludeCollectionWrapper.DC_GROUP)) {
             ic.setDataCollectionGroup(getValue());
+        }
         return ic;
     }
 
