@@ -62,10 +62,10 @@ public class ResourceTypeForm extends CustomComponent {
     final PersistSelectorStrategyField persistenceSelectorStrategy = new PersistSelectorStrategyField("Persist Selector Strategy");
 
     /** The Event editor. */
-    private final BeanFieldGroup<ResourceType> resourceTypeEditor = new BeanFieldGroup<ResourceType>(ResourceType.class);
+    final BeanFieldGroup<ResourceType> resourceTypeEditor = new BeanFieldGroup<ResourceType>(ResourceType.class);
 
     /** The event layout. */
-    private final FormLayout resourceTypeLayout = new FormLayout();
+    final FormLayout resourceTypeLayout = new FormLayout();
 
     /**
      * Instantiates a new resource type form.

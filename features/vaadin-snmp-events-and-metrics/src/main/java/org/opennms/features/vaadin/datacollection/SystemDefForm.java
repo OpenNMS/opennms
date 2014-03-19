@@ -54,13 +54,13 @@ public class SystemDefForm extends CustomComponent {
     final SystemDefChoiceField systemDefChoice = new SystemDefChoiceField("System OID/Mask");
 
     /** The collect field. */
-    final CollectField collectField;
+    final CollectField collect;
 
     /** The Event editor. */
-    private final BeanFieldGroup<SystemDef> systemDefEditor = new BeanFieldGroup<SystemDef>(SystemDef.class);
+    final BeanFieldGroup<SystemDef> systemDefEditor = new BeanFieldGroup<SystemDef>(SystemDef.class);
 
     /** The event layout. */
-    private final FormLayout systemDefLayout = new FormLayout();
+    final FormLayout systemDefLayout = new FormLayout();
 
     /**
      * Instantiates a new system definition form.
@@ -78,15 +78,15 @@ public class SystemDefForm extends CustomComponent {
         systemDefChoice.setRequired(true);
         systemDefLayout.addComponent(systemDefChoice);
 
-        collectField = new CollectField("MIB Groups", groupNames);
-        collectField.setRequired(true);
-        systemDefLayout.addComponent(collectField);
+        collect = new CollectField("MIB Groups", groupNames);
+        collect.setRequired(true);
+        systemDefLayout.addComponent(collect);
 
         setSystemDef(createBasicSystemDef());
 
         systemDefEditor.bind(name, "name");
         systemDefEditor.bind(systemDefChoice, "systemDefChoice");
-        systemDefEditor.bind(collectField, "collectField");
+        systemDefEditor.bind(collect, "collect");
 
         setCompositionRoot(systemDefLayout);
     }

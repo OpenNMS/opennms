@@ -59,10 +59,10 @@ public class SnmpCollectionForm extends CustomComponent {
     final IncludeCollectionField includeCollections;
 
     /** The Event editor. */
-    private final BeanFieldGroup<SnmpCollection> snmpCollectionEditor = new BeanFieldGroup<SnmpCollection>(SnmpCollection.class);
+    final BeanFieldGroup<SnmpCollection> snmpCollectionEditor = new BeanFieldGroup<SnmpCollection>(SnmpCollection.class);
 
     /** The event layout. */
-    private final FormLayout snmpCollectionLayout = new FormLayout();
+    final FormLayout snmpCollectionLayout = new FormLayout();
 
     /**
      * Instantiates a new SNMP collection form.
@@ -90,7 +90,7 @@ public class SnmpCollectionForm extends CustomComponent {
         snmpCollectionLayout.addComponent(includeCollections);
 
         setSnmpCollection(createBasicSnmpCollection());
-        
+
         snmpCollectionEditor.bind(name, "name");
         snmpCollectionEditor.bind(snmpStorageFlag, "snmpStorageFlag");
         snmpCollectionEditor.bind(rrd, "rrd");
@@ -105,7 +105,7 @@ public class SnmpCollectionForm extends CustomComponent {
      * @return the SNMP Collection
      */
     public SnmpCollection getSnmpCollection() {
-       return snmpCollectionEditor.getItemDataSource().getBean();
+        return snmpCollectionEditor.getItemDataSource().getBean();
     }
 
     /**
