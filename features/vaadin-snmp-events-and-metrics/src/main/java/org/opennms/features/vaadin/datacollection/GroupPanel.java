@@ -70,11 +70,13 @@ public class GroupPanel extends Panel {
      */
     public GroupPanel(final DataCollectionConfigDao dataCollectionConfigDao, final DatacollectionGroup source, final Logger logger) {
 
-        if (dataCollectionConfigDao == null)
+        if (dataCollectionConfigDao == null) {
             throw new RuntimeException("dataCollectionConfigDao cannot be null.");
+        }
 
-        if (source == null)
+        if (source == null) {
             throw new RuntimeException("source cannot be null.");
+        }
 
         addStyleName("light");
 

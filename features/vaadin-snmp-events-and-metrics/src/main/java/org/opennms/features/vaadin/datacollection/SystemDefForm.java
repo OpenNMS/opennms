@@ -57,7 +57,7 @@ public class SystemDefForm extends CustomComponent {
     final SystemDefChoiceField systemDefChoice = new SystemDefChoiceField("System OID/Mask");
 
     /** The collect field. */
-    @PropertyId("collect")
+    @PropertyId("collectField")
     final CollectField collectField;
 
     /** The Event editor. */

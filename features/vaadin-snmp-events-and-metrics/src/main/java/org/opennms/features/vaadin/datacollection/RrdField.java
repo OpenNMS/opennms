@@ -167,7 +167,6 @@ public class RrdField extends CustomField<Rrd> implements Button.ClickListener {
      */
     @Override
     protected void setInternalValue(Rrd rrd) {
-        super.setInternalValue(rrd); // TODO Is this required ?
         boolean stepState = step.isReadOnly();
         step.setReadOnly(false);
         step.setValue(rrd.getStep().toString());

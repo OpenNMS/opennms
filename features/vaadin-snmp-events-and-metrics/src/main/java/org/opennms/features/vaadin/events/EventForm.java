@@ -55,7 +55,7 @@ import com.vaadin.ui.TextField;
 @SuppressWarnings("serial")
 public class EventForm extends CustomComponent {
 
-    /** The event uei. */
+    /** The event UEI. */
     @PropertyId("uei")
     final TextField eventUei = new TextField("Event UEI");
 
@@ -63,27 +63,27 @@ public class EventForm extends CustomComponent {
     @PropertyId("eventLabel")
     final TextField eventLabel = new TextField("Event Label");
 
-    /** The descr. */
-    @PropertyId("descr")
+    /** The event description. */
+    @PropertyId("eventDescr")
     final TextArea eventDescr = new TextArea("Description");
 
-    /** The logmsg dest. */
+    /** The log message destination. */
     @PropertyId("logMsgDest")
     final ComboBox logMsgDest = new ComboBox("Destination");
 
-    /** The logmsg content. */
+    /** The log message content. */
     @PropertyId("logMsgContent")
     final TextArea logMsgContent = new TextArea("Log Message");
 
-    /** The severity. */
-    @PropertyId("severity")
+    /** The event severity. */
+    @PropertyId("eventSeverity")
     final ComboBox eventSeverity = new ComboBox("Severity");
 
-    /** The alarm data alarm type. */
+    /** The alarm data type. */
     @PropertyId("alarmDataAlarmType")
     final ComboBox alarmDataAlarmType = new ComboBox("Alarm Type");
 
-    /** The alarm data auto clean. */
+    /** The alarm data clean. */
     @PropertyId("alarmDataAutoClean")
     final CheckBox alarmDataAutoClean = new CheckBox("Auto Clean");
 
@@ -95,8 +95,8 @@ public class EventForm extends CustomComponent {
     @PropertyId("alarmDataClearKey")
     final TextField alarmDataClearKey = new TextField("Clear Key");
 
-    /** The oper. */
-    @PropertyId("operinstruct")
+    /** The operator instructions. */
+    @PropertyId("eventOperInstruct")
     final TextArea eventOperInstruct = new TextArea("Operator Instructions");
 
     /** The mask elements. */
@@ -108,7 +108,7 @@ public class EventForm extends CustomComponent {
     final MaskVarbindField maskVarbinds = new MaskVarbindField("Mask Varbinds");
 
     /** The varbinds decodes. */
-    @PropertyId("varbindsdecodeCollection")
+    @PropertyId("varbindsDecodes")
     final VarbindsDecodeField varbindsDecodes = new VarbindsDecodeField("Varbind Decodes");
 
     /** The Event editor. */
@@ -216,10 +216,12 @@ public class EventForm extends CustomComponent {
      */
     public void setEvent(org.opennms.netmgt.xml.eventconf.Event event) {
         // Normalize the Event Content (required to avoid UI problems)
-        if (event.getMask() == null)
+        if (event.getMask() == null) {
             event.setMask(new Mask());
-        if (event.getAlarmData() == null)
+        }
+        if (event.getAlarmData() == null) {
             event.setAlarmData(new AlarmData());
+        }
         // Create the BeanItem
         BeanItem<org.opennms.netmgt.xml.eventconf.Event> item = new BeanItem<org.opennms.netmgt.xml.eventconf.Event>(event);
         item.addItemProperty("logMsgContent", new NestedMethodProperty<String>(item.getBean(), "logmsg.content"));

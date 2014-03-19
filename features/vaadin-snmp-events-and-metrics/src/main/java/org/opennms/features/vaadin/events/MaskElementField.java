@@ -119,8 +119,8 @@ public class MaskElementField extends CustomField<List<Maskelement>> implements 
      */
     @Override
     @SuppressWarnings("unchecked")
-    public Class<? extends ArrayList<Maskelement>> getType() {
-        return (Class<? extends ArrayList<Maskelement>>) new ArrayList<Maskelement>().getClass();
+    public Class<? extends List<Maskelement>> getType() {
+        return (Class<? extends List<Maskelement>>) new ArrayList<Maskelement>().getClass();
     }
 
     /* (non-Javadoc)
@@ -128,7 +128,6 @@ public class MaskElementField extends CustomField<List<Maskelement>> implements 
      */
     @Override
     protected void setInternalValue(List<Maskelement> maskElements) {
-        super.setInternalValue(maskElements); // TODO Is this required ?
         container.removeAllItems();
         container.addAll(maskElements);
     }

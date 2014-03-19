@@ -57,14 +57,14 @@ public class GroupForm extends CustomComponent {
     final ComboBox ifType = new ComboBox("ifType Filter");
 
     /** The MIB Objects. */
-    @PropertyId("mibObjCollection")
+    @PropertyId("mibObjs")
     final MibObjField mibObjs; 
 
     /** The Event editor. */
-    private final FieldGroup groupEditor = new FieldGroup();
+    final FieldGroup groupEditor = new FieldGroup();
 
     /** The event layout. */
-    private final FormLayout groupLayout = new FormLayout();
+    final FormLayout groupLayout = new FormLayout();
 
     /**
      * Instantiates a new group form.

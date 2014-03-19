@@ -28,6 +28,7 @@
 package org.opennms.features.vaadin.datacollection;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.opennms.features.vaadin.api.OnmsBeanContainer;
@@ -105,8 +106,9 @@ public class MibObjField extends CustomField<List<MibObj>> implements Button.Cli
      */
     @Override
     @SuppressWarnings("unchecked")
-    public Class<ArrayList<MibObj>> getType() {
-        return (Class<ArrayList<MibObj>>) new ArrayList<MibObj>().getClass();
+    public Class<? extends List<MibObj>> getType() {
+        // Check org.opennms.netmgt.config.datacollection.Group.getMibObjs()
+        return  (Class<? extends List<MibObj>>) Collections.unmodifiableList(new ArrayList<MibObj>()).getClass();
     }
 
     /* (non-Javadoc)

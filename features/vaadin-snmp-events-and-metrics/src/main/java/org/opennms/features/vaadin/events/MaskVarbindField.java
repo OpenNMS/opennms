@@ -119,7 +119,7 @@ public class MaskVarbindField extends CustomField<List<Varbind>> implements Butt
      */
     @Override
     @SuppressWarnings("unchecked")
-    public Class<ArrayList<Varbind>> getType() {
+    public Class<? extends List<Varbind>> getType() {
         return (Class<ArrayList<Varbind>>) new ArrayList<Varbind>().getClass();
     }
 
@@ -136,7 +136,6 @@ public class MaskVarbindField extends CustomField<List<Varbind>> implements Butt
      */
     @Override
     protected void setInternalValue(List<Varbind> varbinds) {
-        super.setInternalValue(varbinds);  // TODO Is this required ?
         container.removeAllItems();
         container.addAll(varbinds);
     }

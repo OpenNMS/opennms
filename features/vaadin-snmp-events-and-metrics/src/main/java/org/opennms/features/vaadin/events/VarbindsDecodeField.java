@@ -119,8 +119,8 @@ public class VarbindsDecodeField extends CustomField<List<Varbindsdecode>> imple
      */
     @Override
     @SuppressWarnings("unchecked")
-    public Class<ArrayList<Varbindsdecode>> getType() {
-        return (Class<ArrayList<Varbindsdecode>>) new ArrayList<Varbindsdecode>().getClass();
+    public Class<? extends List<Varbindsdecode>> getType() {
+        return (Class<? extends List<Varbindsdecode>>) new ArrayList<Varbindsdecode>().getClass();
     }
 
     /* (non-Javadoc)
@@ -136,7 +136,6 @@ public class VarbindsDecodeField extends CustomField<List<Varbindsdecode>> imple
      */
     @Override
     protected void setInternalValue(List<Varbindsdecode> varbindsDecodes) {
-        super.setInternalValue(varbindsDecodes);  // TODO Is this required ?
         container.removeAllItems();
         container.addAll(varbindsDecodes);
     }

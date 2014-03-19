@@ -87,11 +87,13 @@ public abstract class EventPanel extends Panel {
      */
     public EventPanel(final EventConfDao eventConfDao, final EventProxy eventProxy, final File eventFile, final Events events, final Logger logger) {
 
-        if (eventProxy == null)
+        if (eventProxy == null) {
             throw new RuntimeException("eventProxy cannot be null.");
+        }
 
-        if (eventConfDao == null)
+        if (eventConfDao == null) {
             throw new RuntimeException("eventConfDao cannot be null.");
+        }
 
         this.eventConfDao = eventConfDao;
         this.eventProxy = eventProxy;
@@ -292,8 +294,9 @@ public abstract class EventPanel extends Panel {
             for (org.opennms.netmgt.xml.eventconf.Event event : events.getEventCollection()) {
                 logger.debug("Normalizing event " + event.getUei());
                 AlarmData ad = event.getAlarmData();
-                if (ad != null && (ad.getReductionKey() == null || ad.getReductionKey().trim().isEmpty()))
+                if (ad != null && (ad.getReductionKey() == null || ad.getReductionKey().trim().isEmpty())) {
                     event.setAlarmData(null);
+                }
             }
             // Save the XML of the new events
             saveEvents(events, file, logger);

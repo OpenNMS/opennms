@@ -28,6 +28,8 @@
 package org.opennms.features.vaadin.datacollection;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.opennms.features.vaadin.api.OnmsBeanContainer;
 import org.opennms.netmgt.config.DataCollectionConfigDao;
@@ -50,7 +52,7 @@ import com.vaadin.ui.Button.ClickEvent;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class IncludeCollectionField extends CustomField<ArrayList<IncludeCollection>> {
+public class IncludeCollectionField extends CustomField<List<IncludeCollection>> {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 3677540981240383672L;
@@ -139,16 +141,16 @@ public class IncludeCollectionField extends CustomField<ArrayList<IncludeCollect
      */
     @Override
     @SuppressWarnings("unchecked")
-    public Class<ArrayList<IncludeCollection>> getType() {
-        return (Class<ArrayList<IncludeCollection>>) new ArrayList<IncludeCollection>().getClass();
+    public Class<? extends List<IncludeCollection>> getType() {
+        // Check org.opennms.netmgt.config.datacollection.SnmpCollection.getIncludeCollections() 
+        return (Class<? extends List<IncludeCollection>>) Collections.unmodifiableList(new ArrayList<IncludeCollection>()).getClass();
     }
 
     /* (non-Javadoc)
      * @see com.vaadin.ui.AbstractField#setInternalValue(java.lang.Object)
      */
     @Override
-    protected void setInternalValue(ArrayList<IncludeCollection> includeCollections) {
-        super.setInternalValue(includeCollections); // TODO Is this required ?
+    protected void setInternalValue(List<IncludeCollection> includeCollections) {
         container.removeAllItems();
         for (IncludeCollection ic : includeCollections) {
             container.addBean(new IncludeCollectionWrapper(ic));
@@ -159,8 +161,8 @@ public class IncludeCollectionField extends CustomField<ArrayList<IncludeCollect
      * @see com.vaadin.ui.AbstractField#getInternalValue()
      */
     @Override
-    protected ArrayList<IncludeCollection> getInternalValue() {
-        final ArrayList<IncludeCollection> beans = new ArrayList<IncludeCollection>();
+    protected List<IncludeCollection> getInternalValue() {
+        final List<IncludeCollection> beans = new ArrayList<IncludeCollection>();
         for (IncludeCollectionWrapper wrapper : container.getOnmsBeans()) {
             beans.add(wrapper.createIncludeCollection());
         }
