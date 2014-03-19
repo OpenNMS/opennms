@@ -92,11 +92,11 @@ public class EventForm extends CustomComponent {
     final VarbindsDecodeField varbindsDecodes = new VarbindsDecodeField("Varbind Decodes");
 
     /** The Event editor. */
-    private final BeanFieldGroup<org.opennms.netmgt.xml.eventconf.Event> eventEditor =
+    final BeanFieldGroup<org.opennms.netmgt.xml.eventconf.Event> eventEditor =
             new BeanFieldGroup<org.opennms.netmgt.xml.eventconf.Event>(org.opennms.netmgt.xml.eventconf.Event.class);
 
     /** The event layout. */
-    private final FormLayout eventLayout = new FormLayout();
+    final FormLayout eventLayout = new FormLayout();
 
     /**
      * Instantiates a new event form.
