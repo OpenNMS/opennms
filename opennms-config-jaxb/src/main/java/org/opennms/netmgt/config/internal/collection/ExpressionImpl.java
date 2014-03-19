@@ -9,15 +9,15 @@ import org.opennms.netmgt.config.api.collection.IExpression;
 
 @XmlRootElement(name="expression")
 @XmlAccessorType(XmlAccessType.NONE)
-public class Expression implements IExpression {
+public class ExpressionImpl implements IExpression {
 
     @XmlElement(name="template")
     public String m_template;
 
-    public Expression() {
+    public ExpressionImpl() {
     }
 
-    public Expression(final String template) {
+    public ExpressionImpl(final String template) {
         m_template = template;
     }
 
@@ -29,19 +29,19 @@ public class Expression implements IExpression {
         m_template = template;
     }
 
-    public static Expression asExpression(final IExpression expression) {
+    public static ExpressionImpl asExpression(final IExpression expression) {
         if (expression == null) return null;
-        if (expression instanceof Expression) {
-            return (Expression)expression;
+        if (expression instanceof ExpressionImpl) {
+            return (ExpressionImpl)expression;
         }
-        final Expression newExpression = new Expression();
+        final ExpressionImpl newExpression = new ExpressionImpl();
         newExpression.setTemplate(expression.getTemplate());
         return newExpression;
     }
 
     @Override
     public String toString() {
-        return "Expression [template=" + m_template + "]";
+        return "ExpressionImpl [template=" + m_template + "]";
     }
 
     @Override
@@ -60,10 +60,10 @@ public class Expression implements IExpression {
         if (obj == null) {
             return false;
         }
-        if (!(obj instanceof Expression)) {
+        if (!(obj instanceof ExpressionImpl)) {
             return false;
         }
-        final Expression other = (Expression) obj;
+        final ExpressionImpl other = (ExpressionImpl) obj;
         if (m_template == null) {
             if (other.m_template != null) {
                 return false;

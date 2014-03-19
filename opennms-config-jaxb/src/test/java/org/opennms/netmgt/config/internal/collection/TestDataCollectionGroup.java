@@ -7,9 +7,9 @@ import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.xml.XmlTestNoCastor;
 import org.opennms.netmgt.snmp.SnmpObjId;
 
-public class TestDataCollectionGroup extends XmlTestNoCastor<DataCollectionGroup> {
+public class TestDataCollectionGroup extends XmlTestNoCastor<DataCollectionGroupImpl> {
 
-    public TestDataCollectionGroup(final DataCollectionGroup sampleObject, final Object sampleXml) {
+    public TestDataCollectionGroup(final DataCollectionGroupImpl sampleObject, final Object sampleXml) {
         super(sampleObject, sampleXml, null);
     }
 
@@ -23,54 +23,53 @@ public class TestDataCollectionGroup extends XmlTestNoCastor<DataCollectionGroup
         });
     }
 
-    private static DataCollectionGroup getDell() {
-        final DataCollectionGroup group = new DataCollectionGroup("Dell");
-        final ResourceType drsChassisIndex = new ResourceType();
+    private static DataCollectionGroupImpl getDell() {
+        final DataCollectionGroupImpl group = new DataCollectionGroupImpl("Dell");
+        final ResourceTypeImpl drsChassisIndex = new ResourceTypeImpl();
         drsChassisIndex.setName("drsChassisIndex");
         drsChassisIndex.setLabel("Dell DRAC Chassis");
-        drsChassisIndex.setResourceNameExpression(new Expression("${index}"));
+        drsChassisIndex.setResourceNameExpression(new ExpressionImpl("${index}"));
         drsChassisIndex.setResourceLabelTemplate("${index}");
         group.addResourceType(drsChassisIndex);
 
-        final ResourceType drsPSUIndex = new ResourceType("drsPSUIndex", "Dell DRAC PSU");
+        final ResourceTypeImpl drsPSUIndex = new ResourceTypeImpl("drsPSUIndex", "Dell DRAC PSU");
         drsPSUIndex.setResourceNameTemplate("${index}");
         drsPSUIndex.setResourceLabelTemplate("Chassis ${drsPSUChassisIndex} - ${drsPSULocation}");
-        final Column drsPSUChassisIndex = new Column();
+        final ColumnImpl drsPSUChassisIndex = new ColumnImpl();
         drsPSUChassisIndex.setOid(SnmpObjId.get(".1.3.6.1.4.1.674.10892.2.4.2.1.1"));
         drsPSUChassisIndex.setAlias("drsPSUChassisIndex");
         drsPSUChassisIndex.setType("string");
         drsPSUIndex.addColumn(drsPSUChassisIndex);
-        drsPSUIndex.addColumn(new Column(".1.3.6.1.4.1.674.10892.2.4.2.1.3", "drsPSULocation", "string"));
+        drsPSUIndex.addColumn(new ColumnImpl(".1.3.6.1.4.1.674.10892.2.4.2.1.3", "drsPSULocation", "string"));
         group.addResourceType(drsPSUIndex);
 
-        final ResourceType coolingDeviceIndex = new ResourceType("coolingDeviceIndex", "Dell Cooling Device");
+        final ResourceTypeImpl coolingDeviceIndex = new ResourceTypeImpl("coolingDeviceIndex", "Dell Cooling Device");
         coolingDeviceIndex.setResourceNameTemplate("${index}");
         coolingDeviceIndex.setResourceLabelTemplate("${coolingDeviceLocationName}");
-        coolingDeviceIndex.addColumn(new Column(".1.3.6.1.4.1.674.10892.1.700.12.1.8", "coolingDeviceLocationName", "string"));
+        coolingDeviceIndex.addColumn(new ColumnImpl(".1.3.6.1.4.1.674.10892.1.700.12.1.8", "coolingDeviceLocationName", "string"));
         group.addResourceType(coolingDeviceIndex);
 
-        final ResourceType temperatureProbeIndex = new ResourceType("temperatureProbeIndex", "Dell Temperature Probe");
+        final ResourceTypeImpl temperatureProbeIndex = new ResourceTypeImpl("temperatureProbeIndex", "Dell Temperature Probe");
         temperatureProbeIndex.setResourceNameTemplate("${index}");
         temperatureProbeIndex.setResourceLabelTemplate("${temperatureProbeLocationName}");
-        temperatureProbeIndex.addColumn(new Column(".1.3.6.1.4.1.674.10892.1.700.20.1.8", "temperatureProbeLocationName", "string"));
+        temperatureProbeIndex.addColumn(new ColumnImpl(".1.3.6.1.4.1.674.10892.1.700.20.1.8", "temperatureProbeLocationName", "string"));
         group.addResourceType(temperatureProbeIndex);
 
-        final ResourceType powerUsageIndex = new ResourceType("powerUsageIndex", "Dell Power Usage");
+        final ResourceTypeImpl powerUsageIndex = new ResourceTypeImpl("powerUsageIndex", "Dell Power Usage");
         powerUsageIndex.setResourceNameTemplate("${index}");
         powerUsageIndex.setResourceLabelTemplate("${powerUsageEntityName}");
         powerUsageIndex.addColumn(".1.3.6.1.4.1.674.10892.1.600.60.1.6", "powerUsageEntityName", "string");
         group.addResourceType(powerUsageIndex);
 
-        final Table openmanageCoolingdevices = new Table();
+        final TableImpl openmanageCoolingdevices = new TableImpl();
         openmanageCoolingdevices.setName("openmanage-coolingdevices");
         openmanageCoolingdevices.setInstance("coolingDeviceIndex");
-        openmanageCoolingdevices.setIfType("all");
-        openmanageCoolingdevices.addColumn(new Column(".1.3.6.1.4.1.674.10892.1.700.12.1.6", "coolingDevReading", "integer"));
+        openmanageCoolingdevices.addColumn(new ColumnImpl(".1.3.6.1.4.1.674.10892.1.700.12.1.6", "coolingDevReading", "integer"));
         openmanageCoolingdevices.addColumn(".1.3.6.1.4.1.674.10892.1.700.12.1.8", "coolingDeviceLocationName", "string");
         openmanageCoolingdevices.addColumn(".1.3.6.1.4.1.674.10892.1.700.12.1.13", "coolDevLowCritThres", "integer");
         group.addTable(openmanageCoolingdevices);
 
-        final Table openmanageTemperatureprobe = new Table("openmanage-temperatureprobe", "temperatureProbeIndex", "all");
+        final TableImpl openmanageTemperatureprobe = new TableImpl("openmanage-temperatureprobe", "temperatureProbeIndex");
         openmanageTemperatureprobe.addColumn(".1.3.6.1.4.1.674.10892.1.700.20.1.6", "tempProbeReading", "integer");
         openmanageTemperatureprobe.addColumn(".1.3.6.1.4.1.674.10892.1.700.20.1.8", "temperatureProbeLocationName", "string");
         openmanageTemperatureprobe.addColumn(".1.3.6.1.4.1.674.10892.1.700.20.1.10", "tempProbeUpCrit", "integer");
@@ -79,20 +78,20 @@ public class TestDataCollectionGroup extends XmlTestNoCastor<DataCollectionGroup
         openmanageTemperatureprobe.addColumn(".1.3.6.1.4.1.674.10892.1.700.20.1.13", "tempProbeLowCrit", "integer");
         group.addTable(openmanageTemperatureprobe);
 
-        final Table powerusage = new Table("openmanage-powerusage", "powerUsageIndex", "all");
+        final TableImpl powerusage = new TableImpl("openmanage-powerusage", "powerUsageIndex");
         powerusage.addColumn(".1.3.6.1.4.1.674.10892.1.600.60.1.6", "powerUsageEntityName", "string");
         powerusage.addColumn(".1.3.6.1.4.1.674.10892.1.600.60.1.7", "powerUsageWattage", "Counter32");
         powerusage.addColumn(".1.3.6.1.4.1.674.10892.1.600.60.1.9", "powerUsagePeakWatts", "integer");
         group.addTable(powerusage);
 
-        final Table racChassis = new Table("dell-rac-chassis", "drsChassisIndex", "all");
+        final TableImpl racChassis = new TableImpl("dell-rac-chassis", "drsChassisIndex");
         racChassis.addColumn(".1.3.6.1.4.1.674.10892.2.4.1.1.8", "drsWattsPeakUsage", "integer");
         racChassis.addColumn(".1.3.6.1.4.1.674.10892.2.4.1.1.10", "drsWattsMinUsage", "integer");
         racChassis.addColumn(".1.3.6.1.4.1.674.10892.2.4.1.1.13", "drsWattsReading", "integer");
         racChassis.addColumn(".1.3.6.1.4.1.674.10892.2.4.1.1.14", "drsAmpsReading", "integer");
         group.addTable(racChassis);
 
-        final Table racPsu = new Table("dell-rac-psu", "drsPSUIndex", "all");
+        final TableImpl racPsu = new TableImpl("dell-rac-psu", "drsPSUIndex");
         racPsu.addColumn(".1.3.6.1.4.1.674.10892.2.4.2.1.1", "drsPSUChassisIndex", "string");
         racPsu.addColumn(".1.3.6.1.4.1.674.10892.2.4.2.1.3", "drsPSULocation", "string");
         racPsu.addColumn(".1.3.6.1.4.1.674.10892.2.4.2.1.5", "drsPSUVoltsReading", "integer");
@@ -100,7 +99,7 @@ public class TestDataCollectionGroup extends XmlTestNoCastor<DataCollectionGroup
         racPsu.addColumn(".1.3.6.1.4.1.674.10892.2.4.2.1.7", "drsPSUWattsReading", "integer");
         group.addTable(racPsu);
 
-        final SystemDef def = new SystemDef("DELL RAC");
+        final SystemDefImpl def = new SystemDefImpl("DELL RAC");
         def.setSysoid(".1.3.6.1.4.1.674.10892.2");
         def.setIncludes(new String[] {
                 "mib2-interfaces",
