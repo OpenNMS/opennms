@@ -152,14 +152,6 @@ public class MibObjField extends CustomField<List<MibObj>> implements Button.Cli
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.vaadin.addon.customfield.CustomField#isValid()
-     */
-    @Override
-    public boolean isValid() {
-        return super.isValid() && table.isValid(); // FIXME This is not working
-    }
-
     /**
      * Adds the handler.
      */

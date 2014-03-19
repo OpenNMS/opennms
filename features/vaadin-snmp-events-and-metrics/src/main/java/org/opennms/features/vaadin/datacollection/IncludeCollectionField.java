@@ -174,6 +174,7 @@ public class IncludeCollectionField extends CustomField<List<IncludeCollection>>
      */
     @Override
     public void setReadOnly(boolean readOnly) {
+        table.setEditable(!readOnly);
         toolbar.setVisible(!readOnly);
         super.setReadOnly(readOnly);
     }

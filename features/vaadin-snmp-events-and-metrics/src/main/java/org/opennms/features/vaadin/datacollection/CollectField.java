@@ -31,8 +31,6 @@ import java.util.List;
 
 import org.opennms.netmgt.config.datacollection.Collect;
 
-import com.vaadin.data.Property;
-import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -108,34 +106,26 @@ public class CollectField extends CustomField<Collect> implements Button.ClickLi
     }
 
     /* (non-Javadoc)
-     * @see com.vaadin.ui.AbstractField#setPropertyDataSource(com.vaadin.data.Property)
+     * @see com.vaadin.ui.AbstractField#getInternalValue()
      */
     @Override
-    @SuppressWarnings("rawtypes")
-    public void setPropertyDataSource(Property newDataSource) {
-        Object value = newDataSource.getValue();
-        if (value instanceof Collect) {
-            Collect collect = (Collect) value;
-            listField.removeAllItems();
-            for (String group : collect.getIncludeGroups()) {
-                listField.addItem(group);
-            }
-        } else {
-            throw new ConversionException("Invalid type");
-        }
-        super.setPropertyDataSource(newDataSource);
-    }
-
-    /* (non-Javadoc)
-     * @see com.vaadin.ui.AbstractField#getValue()
-     */
-    @Override
-    public Collect getValue() {
+    protected Collect getInternalValue() {
         Collect collect = new Collect();
         for (Object itemId: listField.getItemIds()) {
             collect.addIncludeGroup((String) itemId);
         }
         return collect;
+    }
+
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.AbstractField#setInternalValue(java.lang.Object)
+     */
+    @Override
+    protected void setInternalValue(Collect value) {
+        listField.removeAllItems();
+        for (String group : value.getIncludeGroups()) {
+            listField.addItem(group);
+        }
     }
 
     /* (non-Javadoc)
