@@ -74,6 +74,7 @@ import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.opennms.core.test.TestContextAware;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
