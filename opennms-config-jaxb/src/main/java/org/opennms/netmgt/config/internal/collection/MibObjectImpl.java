@@ -20,7 +20,7 @@ import org.opennms.netmgt.snmp.SnmpObjIdXmlAdapter;
  */
 @XmlRootElement(name="mibObj")
 @XmlAccessorType(XmlAccessType.NONE)
-public class MibObject implements IMibObject {
+public class MibObjectImpl implements IMibObject {
     @XmlAttribute(name="oid")
     @XmlJavaTypeAdapter(SnmpObjIdXmlAdapter.class)
     private SnmpObjId m_oid;
@@ -35,7 +35,17 @@ public class MibObject implements IMibObject {
     private String m_instance;
 
     @XmlTransient
-    private Group m_group;
+    private GroupImpl m_group;
+
+    public MibObjectImpl() {
+    }
+
+    public MibObjectImpl(final String oid, final String instance, final String alias, final String type) {
+        m_oid = SnmpObjId.get(oid);
+        m_instance = instance;
+        m_alias = alias;
+        m_type = type;
+    }
 
     public SnmpObjId getOid() {
         return m_oid;
@@ -74,22 +84,22 @@ public class MibObject implements IMibObject {
     }
 
     public void setGroup(final IGroup group) {
-        m_group = Group.asGroup(group);
+        m_group = GroupImpl.asGroup(group);
     }
 
-    public static MibObject[] asMibObjects(final IMibObject[] mibObjects) {
+    public static MibObjectImpl[] asMibObjects(final IMibObject[] mibObjects) {
         if (mibObjects == null) return null;
 
-        final MibObject[] newMibObjects = new MibObject[mibObjects.length];
+        final MibObjectImpl[] newMibObjects = new MibObjectImpl[mibObjects.length];
         for (int i=0; i < mibObjects.length; i++) {
-            newMibObjects[i] = MibObject.asMibObject(mibObjects[i]);
+            newMibObjects[i] = MibObjectImpl.asMibObject(mibObjects[i]);
         }
         return newMibObjects;
     }
 
-    private static MibObject asMibObject(final IMibObject obj) {
+    private static MibObjectImpl asMibObject(final IMibObject obj) {
         if (obj == null) return null;
-        final MibObject mibObject = new MibObject();
+        final MibObjectImpl mibObject = new MibObjectImpl();
         mibObject.setOid(obj.getOid());
         mibObject.setAlias(obj.getAlias());
         mibObject.setType(obj.getType());
@@ -100,7 +110,7 @@ public class MibObject implements IMibObject {
 
     @Override
     public String toString() {
-        return "MibObject [oid=" + m_oid + ", alias=" + m_alias + ", type=" + m_type + ", instance=" + m_instance + ", group=" + m_group + "]";
+        return "MibObjectImpl [oid=" + m_oid + ", alias=" + m_alias + ", type=" + m_type + ", instance=" + m_instance + ", group=" + m_group + "]";
     }
 
     @Override
@@ -123,10 +133,10 @@ public class MibObject implements IMibObject {
         if (obj == null) {
             return false;
         }
-        if (!(obj instanceof MibObject)) {
+        if (!(obj instanceof MibObjectImpl)) {
             return false;
         }
-        final MibObject other = (MibObject) obj;
+        final MibObjectImpl other = (MibObjectImpl) obj;
         if (m_alias == null) {
             if (other.m_alias != null) {
                 return false;

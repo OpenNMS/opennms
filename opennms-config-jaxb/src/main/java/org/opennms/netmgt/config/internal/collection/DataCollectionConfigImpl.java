@@ -11,22 +11,35 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.netmgt.config.api.collection.IDataCollectionConfig;
 import org.opennms.netmgt.config.api.collection.ISnmpCollection;
+import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
+import org.opennms.netmgt.config.datacollection.SnmpCollection;
 
 @XmlRootElement(name="datacollection-config")
 @XmlAccessorType(XmlAccessType.NONE)
-public class DataCollectionConfig implements IDataCollectionConfig {
+public class DataCollectionConfigImpl implements IDataCollectionConfig {
 
     @XmlElement(name="snmp-collection")
-    SnmpCollection[] m_snmpCollections;
+    SnmpCollectionImpl[] m_snmpCollections;
+
+    public DataCollectionConfigImpl() {
+    }
+
+    public DataCollectionConfigImpl(final DatacollectionConfig oldConfig) {
+        final List<SnmpCollectionImpl> newCollections = new ArrayList<SnmpCollectionImpl>();
+        for (final SnmpCollection oldCollection : oldConfig.getSnmpCollections()) {
+            newCollections.add(new SnmpCollectionImpl(oldCollection));
+        }
+        m_snmpCollections = newCollections.toArray(new SnmpCollectionImpl[newCollections.size()]);
+    }
 
     public ISnmpCollection[] getSnmpCollections() {
         return m_snmpCollections;
     }
 
-    public void addSnmpCollection(final SnmpCollection collection) {
-        final List<SnmpCollection> collections = m_snmpCollections == null? new ArrayList<SnmpCollection>() : Arrays.asList(m_snmpCollections);
+    public void addSnmpCollection(final SnmpCollectionImpl collection) {
+        final List<SnmpCollectionImpl> collections = m_snmpCollections == null? new ArrayList<SnmpCollectionImpl>() : Arrays.asList(m_snmpCollections);
         collections.add(collection);
-        m_snmpCollections = collections.toArray(new SnmpCollection[collections.size()]);
+        m_snmpCollections = collections.toArray(new SnmpCollectionImpl[collections.size()]);
     }
 
     @Override
@@ -50,10 +63,10 @@ public class DataCollectionConfig implements IDataCollectionConfig {
         if (obj == null) {
             return false;
         }
-        if (!(obj instanceof DataCollectionConfig)) {
+        if (!(obj instanceof DataCollectionConfigImpl)) {
             return false;
         }
-        final DataCollectionConfig other = (DataCollectionConfig) obj;
+        final DataCollectionConfigImpl other = (DataCollectionConfigImpl) obj;
         if (!Arrays.equals(m_snmpCollections, other.m_snmpCollections)) {
             return false;
         }

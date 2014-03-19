@@ -18,7 +18,7 @@ import org.opennms.netmgt.snmp.SnmpObjIdXmlAdapter;
  */
 @XmlRootElement(name="column")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Column implements IColumn {
+public class ColumnImpl implements IColumn {
 
     @XmlAttribute(name="oid")
     @XmlJavaTypeAdapter(SnmpObjIdXmlAdapter.class)
@@ -33,12 +33,19 @@ public class Column implements IColumn {
     @XmlAttribute(name="display-hint")
     private String m_displayHint;
 
-    public Column() {}
+    public ColumnImpl() {}
 
-    public Column(final String oid, final String alias, final String type) {
+    public ColumnImpl(final String oid, final String alias, final String type) {
         m_oid = SnmpObjId.get(oid);
         m_alias = alias;
         m_type = type;
+    }
+
+    public ColumnImpl(String oid, String alias, String type, String displayHint) {
+        m_oid = SnmpObjId.get(oid);
+        m_alias = alias;
+        m_type = type;
+        m_displayHint = displayHint;
     }
 
     public SnmpObjId getOid() {
@@ -73,13 +80,13 @@ public class Column implements IColumn {
         m_displayHint = displayHint;
     }
 
-    public static Column asColumn(final IColumn column) {
+    public static ColumnImpl asColumn(final IColumn column) {
         if (column == null) return null;
 
-        if (column instanceof Column) {
-            return (Column)column;
+        if (column instanceof ColumnImpl) {
+            return (ColumnImpl)column;
         } else {
-            final Column newColumn = new Column();
+            final ColumnImpl newColumn = new ColumnImpl();
             newColumn.setOid(column.getOid());
             newColumn.setAlias(column.getAlias());
             newColumn.setType(column.getType());
@@ -88,19 +95,19 @@ public class Column implements IColumn {
         }
     }
 
-    public static Column[] asColumns(final IColumn[] columns) {
+    public static ColumnImpl[] asColumns(final IColumn[] columns) {
         if (columns == null) return null;
 
-        final Column[] newColumns = new Column[columns.length];
+        final ColumnImpl[] newColumns = new ColumnImpl[columns.length];
         for (int i=0; i < columns.length; i++) {
-            newColumns[i] = Column.asColumn(columns[i]);
+            newColumns[i] = ColumnImpl.asColumn(columns[i]);
         }
         return newColumns;
     }
 
     @Override
     public String toString() {
-        return "Column [oid=" + m_oid + ", alias=" + m_alias + ", type=" + m_type + ", displayHint=" + m_displayHint + "]";
+        return "ColumnImpl [oid=" + m_oid + ", alias=" + m_alias + ", type=" + m_type + ", displayHint=" + m_displayHint + "]";
     }
 
     @Override
@@ -122,10 +129,10 @@ public class Column implements IColumn {
         if (obj == null) {
             return false;
         }
-        if (!(obj instanceof Column)) {
+        if (!(obj instanceof ColumnImpl)) {
             return false;
         }
-        final Column other = (Column) obj;
+        final ColumnImpl other = (ColumnImpl) obj;
         if (m_alias == null) {
             if (other.m_alias != null) {
                 return false;

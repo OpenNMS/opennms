@@ -23,13 +23,20 @@ import org.opennms.netmgt.config.api.collection.IMibObject;
  */
 @XmlRootElement(name="group")
 @XmlAccessorType(XmlAccessType.NONE)
-public class Group implements IGroup {
+public class GroupImpl implements IGroup {
 
     @XmlAttribute(name="name")
     private String m_name;
 
     @XmlElement(name="mibObj")
-    private MibObject[] m_mibObjects = new MibObject[0];
+    private MibObjectImpl[] m_mibObjects = new MibObjectImpl[0];
+
+    public GroupImpl() {
+    }
+
+    public GroupImpl(final String name) {
+        m_name = name;
+    }
 
     public String getName() {
         return m_name;
@@ -44,35 +51,39 @@ public class Group implements IGroup {
     }
 
     public void setMibObjects(final IMibObject[] mibObjects) {
-        m_mibObjects = MibObject.asMibObjects(mibObjects);
+        m_mibObjects = MibObjectImpl.asMibObjects(mibObjects);
     }
 
-    public static Group asGroup(final IGroup group) {
+    public void addMibObject(final MibObjectImpl mibObject) {
+        m_mibObjects = ArrayUtils.append(m_mibObjects, mibObject);
+    }
+
+    public static GroupImpl asGroup(final IGroup group) {
         if (group == null) return null;
 
-        if (group instanceof Group) {
-            return (Group)group;
+        if (group instanceof GroupImpl) {
+            return (GroupImpl)group;
         }
 
-        final Group newGroup = new Group();
+        final GroupImpl newGroup = new GroupImpl();
         newGroup.setName(group.getName());
         newGroup.setMibObjects(group.getMibObjects());
         return newGroup;
     }
 
-    public static Group[] asGroups(final IGroup[] groups) {
+    public static GroupImpl[] asGroups(final IGroup[] groups) {
         if (groups == null) return null;
         
-        final Group[] newGroups = new Group[groups.length];
+        final GroupImpl[] newGroups = new GroupImpl[groups.length];
         for (int i=0; i < groups.length; i++) {
-            newGroups[i] = Group.asGroup(groups[i]);
+            newGroups[i] = GroupImpl.asGroup(groups[i]);
         }
         return newGroups;
     }
 
     @Override
     public String toString() {
-        return "Group [name=" + m_name + ", mibObjects=" + Arrays.toString(m_mibObjects) + "]";
+        return "GroupImpl [name=" + m_name + ", mibObjects=" + Arrays.toString(m_mibObjects) + "]";
     }
 
     @Override
@@ -92,10 +103,10 @@ public class Group implements IGroup {
         if (obj == null) {
             return false;
         }
-        if (!(obj instanceof Group)) {
+        if (!(obj instanceof GroupImpl)) {
             return false;
         }
-        final Group other = (Group) obj;
+        final GroupImpl other = (GroupImpl) obj;
         if (!Arrays.equals(m_mibObjects, other.m_mibObjects)) {
             return false;
         }

@@ -9,15 +9,15 @@ import org.opennms.netmgt.config.api.collection.IGroupReference;
 
 @XmlRootElement(name="includedGroup")
 @XmlAccessorType(XmlAccessType.NONE)
-public class GroupReference implements IGroupReference {
+public class GroupReferenceImpl implements IGroupReference {
 
     @XmlAttribute(name="dataCollectionGroup")
     public String m_dataCollectionGroup;
 
-    public GroupReference() {
+    public GroupReferenceImpl() {
     }
 
-    public GroupReference(final String groupName) {
+    public GroupReferenceImpl(final String groupName) {
         m_dataCollectionGroup = groupName;
     }
 
@@ -32,7 +32,7 @@ public class GroupReference implements IGroupReference {
 
     @Override
     public String toString() {
-        return "GroupReference [dataCollectionGroup=" + m_dataCollectionGroup + "]";
+        return "GroupReferenceImpl [dataCollectionGroup=" + m_dataCollectionGroup + "]";
     }
 
     @Override
@@ -51,10 +51,10 @@ public class GroupReference implements IGroupReference {
         if (obj == null) {
             return false;
         }
-        if (!(obj instanceof GroupReference)) {
+        if (!(obj instanceof GroupReferenceImpl)) {
             return false;
         }
-        final GroupReference other = (GroupReference) obj;
+        final GroupReferenceImpl other = (GroupReferenceImpl) obj;
         if (m_dataCollectionGroup == null) {
             if (other.m_dataCollectionGroup != null) {
                 return false;

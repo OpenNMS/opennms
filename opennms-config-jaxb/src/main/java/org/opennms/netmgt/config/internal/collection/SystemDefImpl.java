@@ -28,7 +28,7 @@ import org.opennms.netmgt.config.api.collection.ISystemDef;
  */
 @XmlRootElement(name="datacollection-group")
 @XmlAccessorType(XmlAccessType.NONE)
-public class SystemDef implements ISystemDef {
+public class SystemDefImpl implements ISystemDef {
 
     @XmlAttribute(name="name")
     private String m_name;
@@ -44,14 +44,14 @@ public class SystemDef implements ISystemDef {
     private String[] m_includes;
 
     @XmlTransient
-    private Table[] m_tables;
+    private TableImpl[] m_tables;
 
     @XmlTransient
-    private Group[] m_groups;
+    private GroupImpl[] m_groups;
 
-    public SystemDef() {}
+    public SystemDefImpl() {}
 
-    public SystemDef(final String name) {
+    public SystemDefImpl(final String name) {
         m_name = name;
     }
 
@@ -96,12 +96,12 @@ public class SystemDef implements ISystemDef {
     }
 
     public void setGroups(final IGroup[] groups) {
-        m_groups = Group.asGroups(groups);
+        m_groups = GroupImpl.asGroups(groups);
     }
 
     @Override
     public String toString() {
-        return "SystemDef [name=" + m_name + ", sysoidMask=" + m_sysoidMask + ", sysoid=" + m_sysoid + ", includes=" + Arrays.toString(m_includes) + ", tables=" + Arrays.toString(m_tables)
+        return "SystemDefImpl [name=" + m_name + ", sysoidMask=" + m_sysoidMask + ", sysoid=" + m_sysoid + ", includes=" + Arrays.toString(m_includes) + ", tables=" + Arrays.toString(m_tables)
                 + ", groups=" + Arrays.toString(m_groups) + "]";
     }
 
@@ -126,10 +126,10 @@ public class SystemDef implements ISystemDef {
         if (obj == null) {
             return false;
         }
-        if (!(obj instanceof SystemDef)) {
+        if (!(obj instanceof SystemDefImpl)) {
             return false;
         }
-        final SystemDef other = (SystemDef) obj;
+        final SystemDefImpl other = (SystemDefImpl) obj;
         if (!Arrays.equals(m_groups, other.m_groups)) {
             return false;
         }

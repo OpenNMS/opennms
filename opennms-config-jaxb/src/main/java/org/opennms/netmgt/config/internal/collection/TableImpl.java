@@ -26,7 +26,7 @@ import org.opennms.netmgt.config.api.collection.ITable;
  */
 @XmlRootElement(name="table")
 @XmlAccessorType(XmlAccessType.NONE)
-public class Table implements ITable {
+public class TableImpl implements ITable {
 
     @XmlAttribute(name="name")
     private String m_name;
@@ -34,22 +34,18 @@ public class Table implements ITable {
     @XmlAttribute(name="instance")
     private String m_instance;
 
-    @XmlAttribute(name="ifType")
-    private String m_ifType;
-
     @XmlElement(name="column")
-    private Column[] m_columns;
+    private ColumnImpl[] m_columns;
 
     @XmlTransient
-    private ResourceType m_resourceType;
+    private ResourceTypeImpl m_resourceType;
 
-    public Table() {
+    public TableImpl() {
     }
 
-    public Table(final String name, final String instance, final String ifType) {
+    public TableImpl(final String name, final String instance) {
         m_name = name;
         m_instance = instance;
-        m_ifType = ifType;
     }
 
     public String getName() {
@@ -69,36 +65,27 @@ public class Table implements ITable {
     }
 
     @Override
-    public String getIfType() {
-        return m_ifType;
-    }
-
-    public void setIfType(final String ifType) {
-        m_ifType = ifType;
-    }
-
-    @Override
     public IColumn[] getColumns() {
         return m_columns;
     }
 
     public void setColumns(final IColumn[] columns) {
-        m_columns = Column.asColumns(columns);
+        m_columns = ColumnImpl.asColumns(columns);
     }
 
-    public void addColumn(final Column column) {
-        final List<Column> columns = m_columns == null? new ArrayList<Column>() : new ArrayList<Column>(Arrays.asList(m_columns));
+    public void addColumn(final ColumnImpl column) {
+        final List<ColumnImpl> columns = m_columns == null? new ArrayList<ColumnImpl>() : new ArrayList<ColumnImpl>(Arrays.asList(m_columns));
         columns.add(column);
-        m_columns = columns.toArray(new Column[columns.size()]);
+        m_columns = columns.toArray(new ColumnImpl[columns.size()]);
     }
 
     public void addColumn(final String oid, final String alias, final String type) {
-        addColumn(new Column(oid, alias, type));
+        addColumn(new ColumnImpl(oid, alias, type));
     }
 
     @Override
     public String toString() {
-        return "Table [name=" + m_name + ", instance=" + m_instance + ", ifType=" + m_ifType + ", columns=" + Arrays.toString(m_columns) + ", resourceType=" + m_resourceType + "]";
+        return "TableImpl [name=" + m_name + ", instance=" + m_instance + ", columns=" + Arrays.toString(m_columns) + ", resourceType=" + m_resourceType + "]";
     }
 
     @Override
@@ -107,7 +94,6 @@ public class Table implements ITable {
         int result = 1;
         result = prime * result + Arrays.hashCode(m_columns);
         result = prime * result + ((m_instance == null) ? 0 : m_instance.hashCode());
-        result = prime * result + ((m_ifType == null) ? 0 : m_ifType.hashCode());
         result = prime * result + ((m_name == null) ? 0 : m_name.hashCode());
         result = prime * result + ((m_resourceType == null) ? 0 : m_resourceType.hashCode());
         return result;
@@ -121,10 +107,10 @@ public class Table implements ITable {
         if (obj == null) {
             return false;
         }
-        if (!(obj instanceof Table)) {
+        if (!(obj instanceof TableImpl)) {
             return false;
         }
-        final Table other = (Table) obj;
+        final TableImpl other = (TableImpl) obj;
         if (!Arrays.equals(m_columns, other.m_columns)) {
             return false;
         }
@@ -133,13 +119,6 @@ public class Table implements ITable {
                 return false;
             }
         } else if (!m_instance.equals(other.m_instance)) {
-            return false;
-        }
-        if (m_ifType == null) {
-            if (other.m_ifType != null) {
-                return false;
-            }
-        } else if (!m_ifType.equals(other.m_ifType)) {
             return false;
         }
         if (m_name == null) {

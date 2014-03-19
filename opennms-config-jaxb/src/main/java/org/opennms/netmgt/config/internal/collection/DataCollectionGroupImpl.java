@@ -1,8 +1,6 @@
 package org.opennms.netmgt.config.internal.collection;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -18,27 +16,27 @@ import org.opennms.netmgt.config.api.collection.ITable;
 
 @XmlRootElement(name="datacollection-group")
 @XmlAccessorType(XmlAccessType.NONE)
-public class DataCollectionGroup implements IDataCollectionGroup {
+public class DataCollectionGroupImpl implements IDataCollectionGroup {
 
     @XmlAttribute(name="name")
     String m_name;
 
     @XmlElement(name="resourceType")
-    ResourceType[] m_resourceTypes = new ResourceType[0];
+    ResourceTypeImpl[] m_resourceTypes = new ResourceTypeImpl[0];
 
     @XmlElement(name="table")
-    Table[] m_tables = new Table[0];
+    TableImpl[] m_tables = new TableImpl[0];
 
     @XmlElement(name="group")
-    Group[] m_groups = new Group[0];
+    GroupImpl[] m_groups = new GroupImpl[0];
 
     @XmlElement(name="systemDef")
-    SystemDef[] m_systemDefs = new SystemDef[0];
+    SystemDefImpl[] m_systemDefs = new SystemDefImpl[0];
 
-    public DataCollectionGroup() {
+    public DataCollectionGroupImpl() {
     }
 
-    public DataCollectionGroup(final String name) {
+    public DataCollectionGroupImpl(final String name) {
         m_name = name;
     }
 
@@ -47,15 +45,17 @@ public class DataCollectionGroup implements IDataCollectionGroup {
         return (IGroup[]) m_groups;
     }
 
+    public void addGroup(final GroupImpl group) {
+        m_groups = ArrayUtils.append(m_groups, group);
+    }
+
     @Override
     public ITable[] getTables() {
         return (ITable[]) m_tables;
     }
 
-    public void addTable(final Table table) {
-        final List<Table> tables = m_tables == null? new ArrayList<Table>() : new ArrayList<Table>(Arrays.asList(m_tables));
-        tables.add(table);
-        m_tables = tables.toArray(new Table[tables.size()]);
+    public void addTable(final TableImpl table) {
+        m_tables = ArrayUtils.append(m_tables, table);
     }
 
     @Override
@@ -63,10 +63,8 @@ public class DataCollectionGroup implements IDataCollectionGroup {
         return (ISystemDef[]) m_systemDefs;
     }
 
-    public void addSystemDef(final SystemDef def) {
-        final List<SystemDef> defs = m_systemDefs == null? new ArrayList<SystemDef>() : new ArrayList<SystemDef>(Arrays.asList(m_systemDefs));
-        defs.add(def);
-        m_systemDefs = defs.toArray(new SystemDef[defs.size()]);
+    public void addSystemDef(final SystemDefImpl def) {
+        m_systemDefs = ArrayUtils.append(m_systemDefs, def);
     }
 
     @Override
@@ -74,10 +72,8 @@ public class DataCollectionGroup implements IDataCollectionGroup {
         return m_resourceTypes;
     }
 
-    public void addResourceType(final ResourceType resourceType) {
-        final List<ResourceType> types = m_resourceTypes == null? new ArrayList<ResourceType>() : new ArrayList<ResourceType>(Arrays.asList(m_resourceTypes));
-        types.add(resourceType);
-        m_resourceTypes = types.toArray(new ResourceType[types.size()]);
+    public void addResourceType(final ResourceTypeImpl resourceType) {
+        m_resourceTypes = ArrayUtils.append(m_resourceTypes, resourceType);
     }
 
     @Override
@@ -87,7 +83,7 @@ public class DataCollectionGroup implements IDataCollectionGroup {
 
     @Override
     public String toString() {
-        return "DataCollectionGroup [name=" + m_name + ", resourceTypes=" + Arrays.toString(m_resourceTypes) + ", tables=" + Arrays.toString(m_tables) + ", groups="
+        return "DataCollectionGroupImpl [name=" + m_name + ", resourceTypes=" + Arrays.toString(m_resourceTypes) + ", tables=" + Arrays.toString(m_tables) + ", groups="
                 + Arrays.toString(m_groups) + ", systemDefs=" + Arrays.toString(m_systemDefs) + "]";
     }
 
@@ -111,10 +107,10 @@ public class DataCollectionGroup implements IDataCollectionGroup {
         if (obj == null) {
             return false;
         }
-        if (!(obj instanceof DataCollectionGroup)) {
+        if (!(obj instanceof DataCollectionGroupImpl)) {
             return false;
         }
-        final DataCollectionGroup other = (DataCollectionGroup) obj;
+        final DataCollectionGroupImpl other = (DataCollectionGroupImpl) obj;
         if (!Arrays.equals(m_groups, other.m_groups)) {
             return false;
         }

@@ -1,8 +1,6 @@
 package org.opennms.netmgt.config.internal.collection;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -13,6 +11,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.opennms.netmgt.config.api.collection.IColumn;
 import org.opennms.netmgt.config.api.collection.IExpression;
 import org.opennms.netmgt.config.api.collection.IResourceType;
+import org.opennms.netmgt.config.datacollection.ResourceType;
 
 /**
  *  <resourceType name="hrStorageIndex" label="Storage (MIB-2 Host Resources)">
@@ -31,7 +30,7 @@ import org.opennms.netmgt.config.api.collection.IResourceType;
 
 @XmlRootElement(name="resourceType")
 @XmlAccessorType(XmlAccessType.NONE)
-public class ResourceType implements IResourceType {
+public class ResourceTypeImpl implements IResourceType {
 
     @XmlAttribute(name="name")
     private String m_name;
@@ -40,23 +39,27 @@ public class ResourceType implements IResourceType {
     private String m_label;
 
     @XmlElement(name="resourceName")
-    private Expression m_resourceNameExpression;
+    private ExpressionImpl m_resourceNameExpression;
 
     @XmlElement(name="resourceLabel")
-    private Expression m_resourceLabelExpression;
+    private ExpressionImpl m_resourceLabelExpression;
 
     @XmlElement(name="resourceKind")
-    private Expression m_resourceKindExpression;
+    private ExpressionImpl m_resourceKindExpression;
 
     @XmlElement(name="column")
-    private Column[] m_columns = new Column[0];
+    private ColumnImpl[] m_columns = new ColumnImpl[0];
 
-    public ResourceType() {
+    public ResourceTypeImpl() {
     }
 
-    public ResourceType(final String name, final String label) {
+    public ResourceTypeImpl(final String name, final String label) {
         m_name = name;
         m_label = label;
+    }
+
+    public ResourceTypeImpl(final ResourceType oldResourceType) {
+        throw new UnsupportedOperationException("Not yet implemented!");
     }
 
     public String getTypeName() {
@@ -80,35 +83,35 @@ public class ResourceType implements IResourceType {
     }
 
     public void setResourceNameExpression(final IExpression expression) {
-        m_resourceNameExpression = Expression.asExpression(expression);
+        m_resourceNameExpression = ExpressionImpl.asExpression(expression);
     }
 
     public void setResourceNameTemplate(final String template) {
-        m_resourceNameExpression = new Expression(template);
+        m_resourceNameExpression = new ExpressionImpl(template);
     }
 
-    public Expression getResourceLabelExpression() {
+    public ExpressionImpl getResourceLabelExpression() {
         return m_resourceLabelExpression;
     }
 
     public void setResourceLabelExpression(final IExpression expression) {
-        m_resourceLabelExpression = Expression.asExpression(expression);
+        m_resourceLabelExpression = ExpressionImpl.asExpression(expression);
     }
 
     public void setResourceLabelTemplate(final String template) {
-        m_resourceLabelExpression = new Expression(template);
+        m_resourceLabelExpression = new ExpressionImpl(template);
     }
 
-    public Expression getResourceKindExpression() {
+    public ExpressionImpl getResourceKindExpression() {
         return m_resourceKindExpression;
     }
 
     public void setResourceKindExpression(final IExpression expression) {
-        m_resourceKindExpression = Expression.asExpression(expression);
+        m_resourceKindExpression = ExpressionImpl.asExpression(expression);
     }
 
     public void setResourceKindTemplate(final String template) {
-        m_resourceKindExpression = new Expression(template);
+        m_resourceKindExpression = new ExpressionImpl(template);
     }
 
     public IColumn[] getColumns() {
@@ -116,22 +119,24 @@ public class ResourceType implements IResourceType {
     }
 
     public void setColumns(final IColumn[] columns) {
-        m_columns = Column.asColumns(columns);
+        m_columns = ColumnImpl.asColumns(columns);
     }
 
-    public void addColumn(final Column column) {
-        final List<Column> columns = m_columns == null? new ArrayList<Column>() : new ArrayList<Column>(Arrays.asList(m_columns));
-        columns.add(column);
-        m_columns = columns.toArray(new Column[columns.size()]);
+    public void addColumn(final ColumnImpl column) {
+        m_columns = ArrayUtils.append(m_columns, column);
     }
 
     public void addColumn(final String oid, final String alias, final String type) {
-        addColumn(new Column(oid, alias, type));
+        addColumn(new ColumnImpl(oid, alias, type));
+    }
+
+    public void addColumn(final String oid, final String alias, final String type, final String displayHint) {
+        addColumn(new ColumnImpl(oid, alias, type, displayHint));
     }
 
     @Override
     public String toString() {
-        return "ResourceType [name=" + m_name + ", label=" + m_label + ", resourceNameExpression=" + m_resourceNameExpression + ", resourceLabelExpression=" + m_resourceLabelExpression
+        return "ResourceTypeImpl [name=" + m_name + ", label=" + m_label + ", resourceNameExpression=" + m_resourceNameExpression + ", resourceLabelExpression=" + m_resourceLabelExpression
                 + ", resourceKindExpression=" + m_resourceKindExpression + ", columns=" + Arrays.toString(m_columns) + "]";
     }
 
@@ -156,10 +161,10 @@ public class ResourceType implements IResourceType {
         if (obj == null) {
             return false;
         }
-        if (!(obj instanceof ResourceType)) {
+        if (!(obj instanceof ResourceTypeImpl)) {
             return false;
         }
-        final ResourceType other = (ResourceType) obj;
+        final ResourceTypeImpl other = (ResourceTypeImpl) obj;
         if (!Arrays.equals(m_columns, other.m_columns)) {
             return false;
         }
