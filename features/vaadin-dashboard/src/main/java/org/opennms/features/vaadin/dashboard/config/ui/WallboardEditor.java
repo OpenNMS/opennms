@@ -93,7 +93,7 @@ public class WallboardEditor extends VerticalLayout {
         setMargin(true);
 
         HorizontalLayout upperHorizontalLayout = new HorizontalLayout();
-        Label label = new Label("Wallboard configuration");
+        Label label = new Label("Ops Board configuration");
         label.addStyleName("configuration-title");
         upperHorizontalLayout.addComponent(label);
 
@@ -125,7 +125,7 @@ public class WallboardEditor extends VerticalLayout {
         });
 
         final TextField titleField = new TextField();
-        titleField.setDescription("Title for this wallboard configuration");
+        titleField.setDescription("Title for this Ops Board configuration");
         titleField.setValue(wallboard.getTitle());
         titleField.setImmediate(true);
         titleField.addValidator(new AbstractStringValidator("Title must be unique") {
@@ -151,7 +151,7 @@ public class WallboardEditor extends VerticalLayout {
         titleField.setCaption("Title");
 
         final Button previewButton = new Button("Preview");
-        previewButton.setDescription("Preview this wallboard configuration");
+        previewButton.setDescription("Preview this Ops Board configuration");
         previewButton.setStyleName("small");
         previewButton.addClickListener(new PreviewClickListener(this, m_wallboard));
 

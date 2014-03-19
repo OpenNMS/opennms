@@ -96,7 +96,7 @@ public class TopologyDashlet extends AbstractDashlet {
                         query += "provider=" + provider + "&";
                     }
                     /**
-                     * creating browser frame to display node-maps
+                     * creating browser frame to display the topology
                      */
                     BrowserFrame browserFrame = new BrowserFrame(null, new ExternalResource("/opennms/topology?" + query));
                     browserFrame.setSizeFull();
