@@ -97,7 +97,7 @@ public class SystemDefPanel extends Panel {
                 SystemDef systemDef = systemDefForm.getSystemDef();
                 logger.info("SNMP SystemDef " + systemDef.getName() + " has been " + (isNew ? "created." : "updated."));
                 try {
-                    systemDefForm.getFieldGroup().commit();
+                    systemDefForm.commit();
                     systemDefForm.setReadOnly(true);
                     systemDefTable.refreshRowCache();
                 } catch (CommitException e) {
@@ -123,7 +123,7 @@ public class SystemDefPanel extends Panel {
             }
             @Override
             public void cancel() {
-                systemDefForm.getFieldGroup().discard();
+                systemDefForm.discard();
                 systemDefForm.setReadOnly(true);
             }
         };

@@ -128,7 +128,7 @@ public abstract class EventPanel extends Panel {
                 org.opennms.netmgt.xml.eventconf.Event event = eventForm.getEvent();
                 logger.info("Event " + event.getUei() + " has been " + (isNew ? "created." : "updated."));
                 try {
-                    eventForm.getFieldGroup().commit();
+                    eventForm.commit();
                     eventForm.setReadOnly(true);
                     eventTable.refreshRowCache();
                 } catch (CommitException e) {
@@ -154,7 +154,7 @@ public abstract class EventPanel extends Panel {
             }
             @Override
             public void cancel() {
-                eventForm.getFieldGroup().discard();
+                eventForm.discard();
                 eventForm.setReadOnly(true);
             }
         };

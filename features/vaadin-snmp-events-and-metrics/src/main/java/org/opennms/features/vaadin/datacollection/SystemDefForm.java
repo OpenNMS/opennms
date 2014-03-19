@@ -32,9 +32,8 @@ import java.util.List;
 import org.opennms.netmgt.config.datacollection.Collect;
 import org.opennms.netmgt.config.datacollection.SystemDef;
 
-import com.vaadin.data.fieldgroup.FieldGroup;
-import com.vaadin.data.fieldgroup.PropertyId;
-import com.vaadin.data.util.BeanItem;
+import com.vaadin.data.fieldgroup.BeanFieldGroup;
+import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.TextField;
@@ -49,19 +48,16 @@ import com.vaadin.ui.TextField;
 public class SystemDefForm extends CustomComponent {
 
     /** The name. */
-    @PropertyId("name")
     final TextField name = new TextField("Group Name");
 
     /** The system definition choice. */
-    @PropertyId("systemDefChoice")
     final SystemDefChoiceField systemDefChoice = new SystemDefChoiceField("System OID/Mask");
 
     /** The collect field. */
-    @PropertyId("collectField")
     final CollectField collectField;
 
     /** The Event editor. */
-    private final FieldGroup systemDefEditor = new FieldGroup();
+    private final BeanFieldGroup<SystemDef> systemDefEditor = new BeanFieldGroup<SystemDef>(SystemDef.class);
 
     /** The event layout. */
     private final FormLayout systemDefLayout = new FormLayout();
@@ -87,7 +83,10 @@ public class SystemDefForm extends CustomComponent {
         systemDefLayout.addComponent(collectField);
 
         setSystemDef(createBasicSystemDef());
-        systemDefEditor.bindMemberFields(this);
+
+        systemDefEditor.bind(name, "name");
+        systemDefEditor.bind(systemDefChoice, "systemDefChoice");
+        systemDefEditor.bind(collectField, "collectField");
 
         setCompositionRoot(systemDefLayout);
     }
@@ -97,9 +96,8 @@ public class SystemDefForm extends CustomComponent {
      *
      * @return the system definition
      */
-    @SuppressWarnings("unchecked")
     public SystemDef getSystemDef() {
-        return ((BeanItem<SystemDef>) systemDefEditor.getItemDataSource()).getBean();
+        return systemDefEditor.getItemDataSource().getBean();
     }
 
     /**
@@ -108,7 +106,7 @@ public class SystemDefForm extends CustomComponent {
      * @param systemDef the new system definition
      */
     public void setSystemDef(SystemDef systemDef) {
-        systemDefEditor.setItemDataSource(new BeanItem<SystemDef>(systemDef));
+        systemDefEditor.setItemDataSource(systemDef);
     }
 
     /**
@@ -125,12 +123,19 @@ public class SystemDefForm extends CustomComponent {
     }
 
     /**
-     * Gets the field group.
-     *
-     * @return the field group
+     * Discard.
      */
-    public FieldGroup getFieldGroup() {
-        return systemDefEditor;
+    public void discard() {
+        systemDefEditor.discard();
+    }
+
+    /**
+     * Commit.
+     *
+     * @throws CommitException the commit exception
+     */
+    public void commit() throws CommitException {
+        systemDefEditor.commit();
     }
 
     /* (non-Javadoc)

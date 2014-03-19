@@ -100,7 +100,7 @@ public class GroupPanel extends Panel {
                 Group group = groupForm.getGroup();
                 logger.info("SNMP Group " + group.getName() + " has been " + (isNew ? "created." : "updated."));
                 try {
-                    groupForm.getFieldGroup().commit();
+                    groupForm.commit();
                     groupForm.setReadOnly(true);
                     groupTable.refreshRowCache();
                 } catch (CommitException e) {
@@ -126,7 +126,7 @@ public class GroupPanel extends Panel {
             }
             @Override
             public void cancel() {
-                groupForm.getFieldGroup().discard();
+                groupForm.discard();
                 groupForm.setReadOnly(true);
             }
         };

@@ -31,9 +31,8 @@ import java.util.List;
 
 import org.opennms.netmgt.config.datacollection.Group;
 
-import com.vaadin.data.fieldgroup.FieldGroup;
-import com.vaadin.data.fieldgroup.PropertyId;
-import com.vaadin.data.util.BeanItem;
+import com.vaadin.data.fieldgroup.BeanFieldGroup;
+import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.FormLayout;
@@ -49,19 +48,16 @@ import com.vaadin.ui.TextField;
 public class GroupForm extends CustomComponent {
 
     /** The name. */
-    @PropertyId("name")
     final TextField name = new TextField("Group Name");
 
     /** The ifType. */
-    @PropertyId("ifType")
     final ComboBox ifType = new ComboBox("ifType Filter");
 
     /** The MIB Objects. */
-    @PropertyId("mibObjs")
     final MibObjField mibObjs; 
 
     /** The Event editor. */
-    final FieldGroup groupEditor = new FieldGroup();
+    final BeanFieldGroup<Group> groupEditor = new BeanFieldGroup<Group>(Group.class);
 
     /** The event layout. */
     final FormLayout groupLayout = new FormLayout();
@@ -95,7 +91,10 @@ public class GroupForm extends CustomComponent {
         groupLayout.addComponent(mibObjs);
 
         setGroup(createBasicGroup());
-        groupEditor.bindMemberFields(this);
+
+        groupEditor.bind(name, "name");
+        groupEditor.bind(ifType, "ifType");
+        groupEditor.bind(mibObjs, "mibObjs");
 
         setCompositionRoot(groupLayout);
     }
@@ -105,9 +104,8 @@ public class GroupForm extends CustomComponent {
      *
      * @return the group
      */
-    @SuppressWarnings("unchecked")
     public Group getGroup() {
-        return ((BeanItem<Group>) groupEditor.getItemDataSource()).getBean();
+        return groupEditor.getItemDataSource().getBean();
     }
 
     /**
@@ -116,7 +114,7 @@ public class GroupForm extends CustomComponent {
      * @param group the new group
      */
     public void setGroup(Group group) {
-        groupEditor.setItemDataSource(new BeanItem<Group>(group));
+        groupEditor.setItemDataSource(group);
     }
 
     /**
@@ -132,12 +130,19 @@ public class GroupForm extends CustomComponent {
     }
 
     /**
-     * Gets the field group.
-     *
-     * @return the field group
+     * Discard.
      */
-    public FieldGroup getFieldGroup() {
-        return groupEditor;
+    public void discard() {
+        groupEditor.discard();
+    }
+
+    /**
+     * Commit.
+     *
+     * @throws CommitException the commit exception
+     */
+    public void commit() throws CommitException {
+        groupEditor.commit();
     }
 
     /* (non-Javadoc)

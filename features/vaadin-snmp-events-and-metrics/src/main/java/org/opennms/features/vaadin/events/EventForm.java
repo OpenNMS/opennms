@@ -32,10 +32,8 @@ import org.opennms.netmgt.xml.eventconf.AlarmData;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
 import org.opennms.netmgt.xml.eventconf.Mask;
 
-import com.vaadin.data.fieldgroup.FieldGroup;
-import com.vaadin.data.fieldgroup.PropertyId;
-import com.vaadin.data.util.BeanItem;
-import com.vaadin.data.util.NestedMethodProperty;
+import com.vaadin.data.fieldgroup.BeanFieldGroup;
+import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CustomComponent;
@@ -43,10 +41,6 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 
-/*
- * According with the following JUnit test, the nested properties binding is supported:
- * https://github.com/vaadin/vaadin/blob/master/uitest/src/com/vaadin/tests/fieldgroup/FormWithNestedProperties.java
- */
 /**
  * The Class Event Form.
  * 
@@ -56,63 +50,50 @@ import com.vaadin.ui.TextField;
 public class EventForm extends CustomComponent {
 
     /** The event UEI. */
-    @PropertyId("uei")
     final TextField eventUei = new TextField("Event UEI");
 
     /** The event label. */
-    @PropertyId("eventLabel")
     final TextField eventLabel = new TextField("Event Label");
 
     /** The event description. */
-    @PropertyId("eventDescr")
     final TextArea eventDescr = new TextArea("Description");
 
     /** The log message destination. */
-    @PropertyId("logMsgDest")
     final ComboBox logMsgDest = new ComboBox("Destination");
 
     /** The log message content. */
-    @PropertyId("logMsgContent")
     final TextArea logMsgContent = new TextArea("Log Message");
 
     /** The event severity. */
-    @PropertyId("eventSeverity")
     final ComboBox eventSeverity = new ComboBox("Severity");
 
     /** The alarm data type. */
-    @PropertyId("alarmDataAlarmType")
     final ComboBox alarmDataAlarmType = new ComboBox("Alarm Type");
 
     /** The alarm data clean. */
-    @PropertyId("alarmDataAutoClean")
     final CheckBox alarmDataAutoClean = new CheckBox("Auto Clean");
 
     /** The alarm data reduction key. */
-    @PropertyId("alarmDataReductionKey")
     final TextField alarmDataReductionKey = new TextField("Reduction Key");
 
     /** The alarm data clear key. */
-    @PropertyId("alarmDataClearKey")
     final TextField alarmDataClearKey = new TextField("Clear Key");
 
     /** The operator instructions. */
-    @PropertyId("eventOperInstruct")
     final TextArea eventOperInstruct = new TextArea("Operator Instructions");
 
-    /** The mask elements. */
-    @PropertyId("maskElements")
+    /** The mask element collection. */
     final MaskElementField maskElements = new MaskElementField("Mask Elements");
 
-    /** The mask varbinds. */
-    @PropertyId("maskVarbinds")
+    /** The mask varbind collection. */
     final MaskVarbindField maskVarbinds = new MaskVarbindField("Mask Varbinds");
 
-    /** The varbinds decodes. */
-    @PropertyId("varbindsDecodes")
+    /** The varbinds decodes collection. */
     final VarbindsDecodeField varbindsDecodes = new VarbindsDecodeField("Varbind Decodes");
 
     /** The Event editor. */
-    private final FieldGroup eventEditor = new FieldGroup();
+    private final BeanFieldGroup<org.opennms.netmgt.xml.eventconf.Event> eventEditor =
+            new BeanFieldGroup<org.opennms.netmgt.xml.eventconf.Event>(org.opennms.netmgt.xml.eventconf.Event.class);
 
     /** The event layout. */
     private final FormLayout eventLayout = new FormLayout();
@@ -194,7 +175,21 @@ public class EventForm extends CustomComponent {
         eventLayout.addComponent(varbindsDecodes);
 
         setEvent(createBasicEvent());
-        eventEditor.bindMemberFields(this);
+
+        eventEditor.bind(eventUei, "uei");
+        eventEditor.bind(eventLabel, "eventLabel");
+        eventEditor.bind(eventDescr, "descr");
+        eventEditor.bind(logMsgDest, "logmsg.dest");
+        eventEditor.bind(logMsgContent, "logmsg.content");
+        eventEditor.bind(eventSeverity, "severity");
+        eventEditor.bind(alarmDataAlarmType, "alarmData.alarmType");
+        eventEditor.bind(alarmDataAutoClean, "alarmData.autoClean");
+        eventEditor.bind(alarmDataReductionKey, "alarmData.reductionKey");
+        eventEditor.bind(alarmDataClearKey, "alarmData.clearKey");
+        eventEditor.bind(eventOperInstruct, "operinstruct");
+        eventEditor.bind(maskElements, "mask.maskelementCollection");
+        eventEditor.bind(maskVarbinds, "mask.varbindCollection");
+        eventEditor.bind(varbindsDecodes, "varbindsdecodeCollection");
 
         setCompositionRoot(eventLayout);
     }
@@ -204,9 +199,8 @@ public class EventForm extends CustomComponent {
      *
      * @return the OpenNMS event
      */
-    @SuppressWarnings("unchecked")
     public org.opennms.netmgt.xml.eventconf.Event getEvent() {
-        return ((BeanItem<org.opennms.netmgt.xml.eventconf.Event>) eventEditor.getItemDataSource()).getBean();
+        return eventEditor.getItemDataSource().getBean();
     }
 
     /**
@@ -222,17 +216,7 @@ public class EventForm extends CustomComponent {
         if (event.getAlarmData() == null) {
             event.setAlarmData(new AlarmData());
         }
-        // Create the BeanItem
-        BeanItem<org.opennms.netmgt.xml.eventconf.Event> item = new BeanItem<org.opennms.netmgt.xml.eventconf.Event>(event);
-        item.addItemProperty("logMsgContent", new NestedMethodProperty<String>(item.getBean(), "logmsg.content"));
-        item.addItemProperty("logMsgDest", new NestedMethodProperty<String>(item.getBean(), "logmsg.dest"));
-        item.addItemProperty("alarmDataReductionKey", new NestedMethodProperty<String>(item.getBean(), "alarmData.ReductionKey"));
-        item.addItemProperty("alarmDataClearKey", new NestedMethodProperty<String>(item.getBean(), "alarmData.ClearKey"));
-        item.addItemProperty("alarmDataAlarmType", new NestedMethodProperty<String>(item.getBean(), "alarmData.AlarmType"));
-        item.addItemProperty("alarmDataAutoClean", new NestedMethodProperty<String>(item.getBean(), "alarmData.AutoClean"));
-        item.addItemProperty("maskElements", new NestedMethodProperty<String>(item.getBean(), "mask.maskelementCollection"));
-        item.addItemProperty("maskVarbinds", new NestedMethodProperty<String>(item.getBean(), "mask.varbindCollection"));
-        eventEditor.setItemDataSource(item);
+        eventEditor.setItemDataSource(event);
     }
 
     /**
@@ -255,12 +239,19 @@ public class EventForm extends CustomComponent {
     }
 
     /**
-     * Gets the field group.
-     *
-     * @return the field group
+     * Discard.
      */
-    public FieldGroup getFieldGroup() {
-        return eventEditor;
+    public void discard() {
+        eventEditor.discard();
+    }
+
+    /**
+     * Commit.
+     *
+     * @throws CommitException the commit exception
+     */
+    public void commit() throws CommitException {
+        eventEditor.commit();
     }
 
     /* (non-Javadoc)
@@ -279,5 +270,5 @@ public class EventForm extends CustomComponent {
     public boolean isReadOnly() {
         return super.isReadOnly() && eventEditor.isReadOnly();
     }
-    
+
 }
