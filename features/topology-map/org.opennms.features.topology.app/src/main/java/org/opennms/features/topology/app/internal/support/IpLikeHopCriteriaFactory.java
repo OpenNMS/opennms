@@ -28,7 +28,7 @@
 
 package org.opennms.features.topology.app.internal.support;
 
-import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
 
 /**
  * 
@@ -39,14 +39,19 @@ import org.opennms.netmgt.dao.api.NodeDao;
  */
 public class IpLikeHopCriteriaFactory {
 
-	private final NodeDao m_nodeDao;
+	private final IpInterfaceDao m_ipInterfaceDao;
 
-	public IpLikeHopCriteriaFactory(NodeDao nodeDao) {
-		m_nodeDao = nodeDao;
+	public IpLikeHopCriteriaFactory(IpInterfaceDao dao) {
+		m_ipInterfaceDao = dao;
 	}
 	
-	public IpLikeHopCriteria createCriteria(String ipaddr) {
-		IpLikeHopCriteria retval = new IpLikeHopCriteria(ipaddr, m_nodeDao);
+	/**
+	 * The ipQuery value is a string representing an IP address or a valid IPLIKE query string
+	 * @param ipQuery
+	 * @return
+	 */
+	public IpLikeHopCriteria createCriteria(String ipQuery) {
+		IpLikeHopCriteria retval = new IpLikeHopCriteria(ipQuery, m_ipInterfaceDao);
 		return retval;
 	}
 }

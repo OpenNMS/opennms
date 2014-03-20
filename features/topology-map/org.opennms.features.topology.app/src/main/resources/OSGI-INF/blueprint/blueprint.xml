@@ -59,7 +59,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     </bean>
 
     <bean id="ipLikeHopCriteriaFactory" class="org.opennms.features.topology.app.internal.support.IpLikeHopCriteriaFactory">
-        <argument ref="nodeDao"/>
+        <argument ref="ipInterfaceDao"/>
     </bean>
     
     <service id="categorySearchProvider" interface="org.opennms.features.topology.api.topo.SearchProvider">
@@ -73,7 +73,6 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     <service id="ipSearchProvider" interface="org.opennms.features.topology.api.topo.SearchProvider" >
         <bean class="org.opennms.features.topology.app.internal.IpSearchProvider" >
             <argument ref="ipInterfaceDao" />
-            <argument ref="nodeDao" />
         </bean>
     </service>
 

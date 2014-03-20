@@ -30,6 +30,7 @@ package org.opennms.features.topology.app.internal;
 
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -46,24 +47,23 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.support.IpLikeHopCriteria;
 import org.opennms.features.topology.app.internal.support.IpLikeHopCriteriaFactory;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class IpSearchProvider extends AbstractSearchProvider implements SearchProvider {
 
     private IpInterfaceDao m_ipInterfaceDao;
-	private NodeDao m_nodeDao;
     private IpLikeHopCriteriaFactory m_ipLikeHopFactory;
 
-	public IpSearchProvider(IpInterfaceDao ipInterfaceDao, NodeDao nodeDao) {
+	public IpSearchProvider(IpInterfaceDao ipInterfaceDao) {
     	m_ipInterfaceDao = ipInterfaceDao;
-    	m_nodeDao = nodeDao;
-    	m_ipLikeHopFactory = new IpLikeHopCriteriaFactory(m_nodeDao);
+    	m_ipLikeHopFactory = new IpLikeHopCriteriaFactory(m_ipInterfaceDao);
     }
 
     @Override
     public String getSearchProviderNamespace() {
-        return "IP";
+        return IpLikeHopCriteria.NAMESPACE;
     }
 
     @Override
@@ -71,42 +71,91 @@ public class IpSearchProvider extends AbstractSearchProvider implements SearchPr
         return "nodes".equals(namespace);
     }
 
+    /**
+     * This method processes the <SearchQuery> that the user has typed and returns a <SearchResult> list
+     * of matching IP addresses as well as the query string itself, which is collapsible, to act
+     * as a subnet container.
+     * 
+     */
     @Override
     public List<SearchResult> query(SearchQuery searchQuery, GraphContainer graphContainer) {
     	
+		String queryString = searchQuery.getQueryString();
+    	Logger logger = LoggerFactory.getLogger(getClass());
+		logger.info("Query: '{}'", queryString);
+    	
     	CriteriaBuilder bldr = new CriteriaBuilder(OnmsIpInterface.class);
-		bldr.iplike("ipAddress", searchQuery.getQueryString()).orderBy("ipAddress", true);
+    	
+		bldr.iplike("ipAddress", queryString).orderBy("ipAddress", true);
 		Criteria dbQueryCriteria = bldr.toCriteria();
 		List<OnmsIpInterface> ips = m_ipInterfaceDao.findMatching(dbQueryCriteria);
+		logger.info("Query found: '{}' IP interfaces.", ips.size());
 		
-		org.opennms.features.topology.api.topo.Criteria[] criteria = graphContainer.getCriteria();
-		
-
         List<SearchResult> results = new ArrayList<SearchResult>();
-        IPLOOP: for (OnmsIpInterface ip : ips) {
-        	
-        	for (org.opennms.features.topology.api.topo.Criteria criterion : criteria) {
-				if (criterion.getNamespace().equals(getSearchProviderNamespace())) {
-					String ipInterfaceId = ((IpLikeHopCriteria) criterion).getId();
-					if (ipInterfaceId.equals(String.valueOf(ip.getId()))) {
-						continue IPLOOP;
-					}
-				}
-			}
-        	
-        	//Important here that the search result use the OnmsIpInterface.id as the ID for the search result object.
-        	String ipInterfaceId = ip.getId().toString();
-			SearchResult result = new SearchResult("IP", ipInterfaceId, ip.getIpAddress().getHostAddress());
 
-        	result.setCollapsible(true);
-        	
-        	results.add(result);
-        }
+		if (ips.size() == 0) {
+			return results;
+		} else {
+			if (isIpLikeQuery(queryString)) {
+				logger.debug("Adding iplike search spec to the search results.");
+				SearchResult searchResult = new SearchResult(getSearchProviderNamespace(), queryString, queryString);
+				searchResult.setCollapsed(false);
+				searchResult.setCollapsible(true);
+				results.add(searchResult);
+			}
+		}
+
+		Set<String> ipAddrs = new HashSet<String>();
+		
+		logger.info("Creating IP address set.");
+		for (OnmsIpInterface ip : ips) {
+			logger.debug("Adding '{}' to set of IPs.");
+			ipAddrs.add(ip.getIpAddress().getHostAddress());
+		}
+		
+		logger.info("Building search result from set of IPs.");
+		IPLOOP: for (String ip : ipAddrs) {
+			
+			if (findCriterion(ip, graphContainer) != null) {
+				continue IPLOOP;
+
+			} else {
+				results.add(createSearchResult(ip));
+
+			}
+		}
+		
         return results;
     }
 
+	private SearchResult createSearchResult(String ip) {
+		SearchResult result = new SearchResult(getSearchProviderNamespace(), ip, ip);
+		result.setCollapsible(true);
+		return result;
+	}
 
-    @Override
+
+    /**
+     * Simple way to know if the query the returned ipinterface results from the DB was
+     * based on an IPLIKE query.
+     * 
+     * @param queryString
+     * @return true if the string contains a '*' or '-' or ',' ".
+     */
+    private boolean isIpLikeQuery(String queryString) {
+    	
+    	if (queryString.contains("*")) {
+    		return true;
+    	} else if (queryString.contains("-")) {
+    		return true;
+    	} else if (queryString.contains(",")) {
+    		return true;
+    	}
+    	
+		return false;
+	}
+
+	@Override
     public boolean supportsPrefix(String searchPrefix) {
         return false;
     }
@@ -115,7 +164,7 @@ public class IpSearchProvider extends AbstractSearchProvider implements SearchPr
     @Override
     public Set<VertexRef> getVertexRefsBy(SearchResult searchResult, GraphContainer container) {
     	
-    	org.opennms.features.topology.api.topo.Criteria criterion = findCriterion(searchResult, container);
+    	org.opennms.features.topology.api.topo.Criteria criterion = findCriterion(searchResult.getId(), container);
     	
     	return ((IpLikeHopCriteria)criterion).getVertices();
     	
@@ -131,8 +180,8 @@ public class IpSearchProvider extends AbstractSearchProvider implements SearchPr
 	public void addVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
 		
 		IpLikeHopCriteria criteria = m_ipLikeHopFactory.createCriteria(searchResult.getLabel());
-		String ipInterfaceId = searchResult.getId();
-		criteria.setId(ipInterfaceId);
+		String id = searchResult.getId();
+		criteria.setId(id);
 		container.addCriteria(criteria);
 	}
 
@@ -140,7 +189,7 @@ public class IpSearchProvider extends AbstractSearchProvider implements SearchPr
 	@Override
 	public void removeVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
 		
-		org.opennms.features.topology.api.topo.Criteria criterian = findCriterion(searchResult, container);
+		org.opennms.features.topology.api.topo.Criteria criterian = findCriterion(searchResult.getId(), container);
 		
 		if (criterian != null) {
 			container.removeCriteria(criterian);
@@ -158,15 +207,15 @@ public class IpSearchProvider extends AbstractSearchProvider implements SearchPr
         
 	}
 
-	private org.opennms.features.topology.api.topo.Criteria findCriterion(SearchResult searchResult, GraphContainer container) {
+	private org.opennms.features.topology.api.topo.Criteria findCriterion(String resultId, GraphContainer container) {
 		
 		org.opennms.features.topology.api.topo.Criteria[] criteria = container.getCriteria();
 		for (org.opennms.features.topology.api.topo.Criteria criterion : criteria) {
 			if (criterion instanceof IpLikeHopCriteria) {
 				
-				String ipInterfaceId = ((IpLikeHopCriteria) criterion).getId();
+				String id = ((IpLikeHopCriteria) criterion).getId();
 				
-				if (ipInterfaceId.equals(searchResult.getId())) {
+				if (id.equals(resultId)) {
 					return criterion;
 				}
 			}

@@ -36,13 +36,14 @@ import java.util.TreeSet;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractVertex;
-import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.CollapsibleCriteria;
+import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.GroupRef;
 import org.opennms.features.topology.api.topo.RefComparator;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 
 /**
@@ -53,12 +54,13 @@ import org.opennms.netmgt.model.OnmsNode;
  */
 public class IpLikeHopCriteria extends VertexHopCriteria implements CollapsibleCriteria {
 
-	private static final String NAMESPACE = "IP";
-	private final String m_ipaddr;
+	public static final String NAMESPACE = "IP";
+	private final String m_ipQuery;
+	
 	private boolean m_collapsed = false;
 	private IPVertex m_collapsedVertex;
 	
-	private NodeDao m_nodeDao;
+	private IpInterfaceDao m_ipIntefaceDao;
 	
 
 	public static class IPVertex extends AbstractVertex implements GroupRef {
@@ -84,20 +86,20 @@ public class IpLikeHopCriteria extends VertexHopCriteria implements CollapsibleC
         }
     }
 
-    public IpLikeHopCriteria(String ipaddr, NodeDao nodeDao) {
-    	super(ipaddr);
-        m_ipaddr = ipaddr;
-        m_nodeDao = nodeDao;
-        m_collapsedVertex = new IPVertex(NAMESPACE, "ipaddr:"+ipaddr, ipaddr);
+    public IpLikeHopCriteria(String ipQuery, IpInterfaceDao dao) {
+    	super(ipQuery);
+        m_ipQuery = ipQuery;
+        m_ipIntefaceDao = dao;
+        m_collapsedVertex = new IPVertex(NAMESPACE, NAMESPACE+":"+ipQuery, ipQuery);
         m_collapsedVertex.setChildren(getVertices());
     }
 
-	public NodeDao getNodeDao() {
-		return m_nodeDao;
+	public IpInterfaceDao getIpInterfaceDao() {
+		return m_ipIntefaceDao;
 	}
 
-	public void setNodeDao(NodeDao nodeDao) {
-		this.m_nodeDao = nodeDao;
+	public void setIpInterfaceDao(IpInterfaceDao dao) {
+		this.m_ipIntefaceDao = dao;
 	}
 
 	@Override
@@ -109,20 +111,20 @@ public class IpLikeHopCriteria extends VertexHopCriteria implements CollapsibleC
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((m_ipaddr == null) ? 0 : m_ipaddr.hashCode());
+        result = prime * result + ((m_ipQuery == null) ? 0 : m_ipQuery.hashCode());
         result = prime * result
                 + ((getNamespace() == null) ? 0 : getNamespace().hashCode());
         return result;
     }
 
-    @Override
+	@Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null) return false;
 
         if (obj instanceof IpLikeHopCriteria) {
             IpLikeHopCriteria ref = (IpLikeHopCriteria)obj;
-			return ref.m_ipaddr.equals(m_ipaddr) && ref.getNamespace().equals(getNamespace());
+			return ref.m_ipQuery.equals(m_ipQuery) && ref.getNamespace().equals(getNamespace());
         }
         
         return false;
@@ -131,16 +133,14 @@ public class IpLikeHopCriteria extends VertexHopCriteria implements CollapsibleC
 	@Override
 	public Set<VertexRef> getVertices() {
 		
-		CriteriaBuilder bldr = new CriteriaBuilder(OnmsNode.class);		
-		bldr = new CriteriaBuilder(OnmsNode.class);
-		
-		//for some reason, this doesn't work
-		//bldr.createAlias("ipInterfaces", "iface").createAlias("iface.ipAddress", "ipaddr").eq("ipaddr", m_ipaddr).distinct();
-		bldr.createAlias("ipInterfaces", "iface").eq("iface.ipAddress", m_ipaddr).distinct();
-		List<OnmsNode> nodes = m_nodeDao.findMatching(bldr.toCriteria());
+		CriteriaBuilder bldr = new CriteriaBuilder(OnmsIpInterface.class);
+
+		bldr.iplike("ipAddress", m_ipQuery);
+		List<OnmsIpInterface> ips = m_ipIntefaceDao.findMatching(bldr.toCriteria());
 		
 		Set<VertexRef> vertices = new TreeSet<VertexRef>(new RefComparator());
-		for (OnmsNode node : nodes) {
+		for (OnmsIpInterface ip : ips) {
+			OnmsNode node = ip.getNode();
 			vertices.add(new DefaultVertexRef("nodes", String.valueOf(node.getId()), node.getLabel()));
 		}
 		
