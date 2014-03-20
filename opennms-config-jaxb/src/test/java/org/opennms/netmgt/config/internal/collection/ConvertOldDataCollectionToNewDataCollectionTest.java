@@ -2,13 +2,18 @@ package org.opennms.netmgt.config.internal.collection;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
+import org.opennms.core.test.xml.XmlTest;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 
-public class TestConvertOldDataCollectionToNewDataCollection {
+public class ConvertOldDataCollectionToNewDataCollectionTest {
 
     @Test
     public void testImportEmpty() {
@@ -42,16 +47,41 @@ public class TestConvertOldDataCollectionToNewDataCollection {
 
         final DatacollectionConfig oldConfig = JaxbUtils.unmarshal(DatacollectionConfig.class, old);
         final DataCollectionConfigImpl expectedNewConfig = JaxbUtils.unmarshal(DataCollectionConfigImpl.class, expected);
-        final DataCollectionConfigImpl actualNewConfig = new DataCollectionConfigImpl(oldConfig);
-        assertEquals(expectedNewConfig, actualNewConfig);
+
+        final DataCollectionConfigConverter generator = new DataCollectionConfigConverter();
+        oldConfig.visit(generator);
+        final DataCollectionConfigImpl actualNewConfig = generator.getDataCollectionConfig();
+
+        XmlTest.assertDepthEquals(expectedNewConfig, actualNewConfig);
     }
 
     @Test
     public void testOldOnefileDatacollectionConfig() throws Exception {
-        final String old = IOUtils.toString(getClass().getResource("old-datacollection-config-mib2.xml"));
-        final DatacollectionConfig oldConfig = JaxbUtils.unmarshal(DatacollectionConfig.class, old);
+        final String oldXml = IOUtils.toString(getClass().getResource("old-datacollection-config-mib2.xml"));
+        final DatacollectionConfig oldConfig = JaxbUtils.unmarshal(DatacollectionConfig.class, oldXml);
         assertNotNull(oldConfig);
+
+        final String expectedXml = IOUtils.toString(getClass().getResource("new-datacollection-config-mib2.xml"));
+        final DataCollectionConfigImpl expectedNewConfig = JaxbUtils.unmarshal(DataCollectionConfigImpl.class, expectedXml);
+
+        final DataCollectionConfigConverter generator = new DataCollectionConfigConverter();
+        oldConfig.visit(generator);
+        final DataCollectionConfigImpl actualNewConfig = generator.getDataCollectionConfig();
+
+        //final String newXml = JaxbUtils.marshal(actualNewConfig);
+        //XmlTest.assertXmlEquals(expectedXml, newXml);
+
+        XmlTest.assertDepthEquals(expectedNewConfig, actualNewConfig);
+    }
+
+    @Test
+    public void testGetParameters() throws Exception {
+        Collection<String> results = DataCollectionConfigConverter.getParameters(new ExpressionImpl("${index}"));
+        assertEquals(1, results.size());
+        assertEquals("index", results.iterator().next());
         
-        
+        results = DataCollectionConfigConverter.getParameters(new ExpressionImpl("${hrStorageDescr} (index ${index})"));
+        String[] expected = new String[] { "hrStorageDescr", "index" };
+        assertTrue(Arrays.equals(expected, results.toArray()));
     }
 }

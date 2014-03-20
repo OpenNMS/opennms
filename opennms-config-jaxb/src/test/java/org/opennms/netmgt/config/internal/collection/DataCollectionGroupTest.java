@@ -7,9 +7,9 @@ import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.xml.XmlTestNoCastor;
 import org.opennms.netmgt.snmp.SnmpObjId;
 
-public class TestDataCollectionGroup extends XmlTestNoCastor<DataCollectionGroupImpl> {
+public class DataCollectionGroupTest extends XmlTestNoCastor<DataCollectionGroupImpl> {
 
-    public TestDataCollectionGroup(final DataCollectionGroupImpl sampleObject, final Object sampleXml) {
+    public DataCollectionGroupTest(final DataCollectionGroupImpl sampleObject, final Object sampleXml) {
         super(sampleObject, sampleXml, null);
     }
 
@@ -18,7 +18,7 @@ public class TestDataCollectionGroup extends XmlTestNoCastor<DataCollectionGroup
         return Arrays.asList(new Object[][] {
                 {
                     getDell(),
-                    TestDataCollectionGroup.class.getResource("datacollection/dell.xml")
+                    DataCollectionGroupTest.class.getResource("datacollection/dell.xml")
                 }
         });
     }

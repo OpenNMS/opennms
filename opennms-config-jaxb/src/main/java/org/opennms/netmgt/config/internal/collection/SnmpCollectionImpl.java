@@ -13,8 +13,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.opennms.netmgt.config.api.collection.IDataCollectionGroup;
 import org.opennms.netmgt.config.api.collection.IGroupReference;
 import org.opennms.netmgt.config.api.collection.ISnmpCollection;
-import org.opennms.netmgt.config.datacollection.ResourceType;
-import org.opennms.netmgt.config.datacollection.SnmpCollection;
 
 @XmlRootElement(name="snmp-collection")
 @XmlAccessorType(XmlAccessType.NONE)
@@ -34,28 +32,6 @@ public class SnmpCollectionImpl implements ISnmpCollection {
 
     public SnmpCollectionImpl(final String name) {
         m_name = name;
-    }
-
-    public SnmpCollectionImpl(final SnmpCollection oldCollection) {
-        m_name = oldCollection.getName();
-        final DataCollectionGroupImpl dcg = new DataCollectionGroupImpl("all");
-
-        final ResourceTypeImpl ifIndexResourceType = new ResourceTypeImpl("ifIndex", "Interfaces (MIB-2 ifTable)");
-        ifIndexResourceType.setResourceNameTemplate("${ifDescr}-${ifPhysAddr}");
-        ifIndexResourceType.setResourceLabelTemplate("${ifDescr}-${ifPhysAddr}");
-        ifIndexResourceType.setResourceKindTemplate("${ifType}");
-        ifIndexResourceType.addColumn(".1.3.6.1.2.1.2.2.1.2", "ifDescr", "string");
-        ifIndexResourceType.addColumn(".1.3.6.1.2.1.2.2.1.6", "ifPhysAddr", "string", "1x:"); 
-        ifIndexResourceType.addColumn(".1.3.6.1.2.1.2.2.1.3", "ifType", "string");
-        ifIndexResourceType.addColumn(".1.3.6.1.2.1.31.1.1.1.1", "ifName", "string");
-        dcg.addResourceType(ifIndexResourceType);
-
-        for (final ResourceType oldResourceType : oldCollection.getResourceTypes()) {
-            final ResourceTypeImpl newResourceType = new ResourceTypeImpl(oldResourceType);
-            dcg.addResourceType(newResourceType);
-        }
-
-        m_dataCollectionGroups = new DataCollectionGroupImpl[] { dcg };
     }
 
     @Override

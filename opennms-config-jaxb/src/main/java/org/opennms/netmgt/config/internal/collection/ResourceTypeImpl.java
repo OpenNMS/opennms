@@ -90,7 +90,7 @@ public class ResourceTypeImpl implements IResourceType {
         m_resourceNameExpression = new ExpressionImpl(template);
     }
 
-    public ExpressionImpl getResourceLabelExpression() {
+    public IExpression getResourceLabelExpression() {
         return m_resourceLabelExpression;
     }
 
@@ -102,7 +102,7 @@ public class ResourceTypeImpl implements IResourceType {
         m_resourceLabelExpression = new ExpressionImpl(template);
     }
 
-    public ExpressionImpl getResourceKindExpression() {
+    public IExpression getResourceKindExpression() {
         return m_resourceKindExpression;
     }
 

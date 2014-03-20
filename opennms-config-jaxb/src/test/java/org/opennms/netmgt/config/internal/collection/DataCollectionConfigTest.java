@@ -6,9 +6,9 @@ import java.util.Collection;
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.xml.XmlTestNoCastor;
 
-public class TestDataCollectionConfig extends XmlTestNoCastor<DataCollectionConfigImpl> {
+public class DataCollectionConfigTest extends XmlTestNoCastor<DataCollectionConfigImpl> {
 
-    public TestDataCollectionConfig(final DataCollectionConfigImpl sampleObject, final Object sampleXml) {
+    public DataCollectionConfigTest(final DataCollectionConfigImpl sampleObject, final Object sampleXml) {
         super(sampleObject, sampleXml, null);
     }
 
@@ -17,11 +17,11 @@ public class TestDataCollectionConfig extends XmlTestNoCastor<DataCollectionConf
         return Arrays.asList(new Object[][] {
                 {
                     getDataCollectionObject(),
-                    TestDataCollectionConfig.class.getResource("datacollection-config.xml")
+                    DataCollectionConfigTest.class.getResource("datacollection-config.xml")
                 },
                 {
                     getOnefileObject(),
-                    TestDataCollectionConfig.class.getResource("datacollection-config-onefile.xml")
+                    DataCollectionConfigTest.class.getResource("datacollection-config-onefile.xml")
                 }
         });
     }
