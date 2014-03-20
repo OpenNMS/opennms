@@ -417,12 +417,10 @@ abstract public class XmlTest<T> {
     }
 
     private void assertDepthEquals(final Object expected, Object actual) {
-        /*
-        System.err.println("----------");
-        System.err.println("expected: " + expected);
-        System.err.println("actual:   " + actual);
-        */
+        assertDepthEquals(0, "", expected, actual);
+    }
 
+    private void assertDepthEquals(final int depth, final String propName, final Object expected, Object actual) {
         if (expected == null && actual == null) {
             return;
         } else if (expected == null) {
@@ -455,7 +453,6 @@ abstract public class XmlTest<T> {
         properties.remove("class");
 
         for (final String property : properties) {
-            //System.err.println("property: " + property);
             final PropertyDescriptor expectedDescriptor = expectedWrapper.getPropertyDescriptor(property);
             final PropertyDescriptor actualDescriptor = actualWrapper.getPropertyDescriptor(property);
             
@@ -472,7 +469,7 @@ abstract public class XmlTest<T> {
                 } catch (final Exception e) {
                 }
 
-                assertDepthEquals(expectedValue, actualValue);
+                assertDepthEquals(depth + 1, property, expectedValue, actualValue);
             } else if (expectedDescriptor != null) {
                 fail("Should have '" + property + "' property on actual object, but there was none!");
             } else if (actualDescriptor != null) {
