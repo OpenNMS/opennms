@@ -31,7 +31,9 @@ package org.opennms.core.test.xml;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import java.beans.PropertyDescriptor;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -41,7 +43,10 @@ import java.io.StringWriter;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventHandler;
@@ -70,6 +75,8 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.core.xml.JaxbUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLFilter;
@@ -187,34 +194,34 @@ abstract public class XmlTest<T> {
     @Test
     public void marshalCastorAndCompareToXml() throws Exception {
         final String xml = marshalToXmlWithCastor();
-        assertXmlEquals(getSampleXml(), xml);
+        _assertXmlEquals(getSampleXml(), xml);
     }
 
     @Test
     public void marshalJaxbAndCompareToXml() throws Exception {
         final String xml = marshalToXmlWithJaxb();
-        assertXmlEquals(getSampleXml(), xml);
+        _assertXmlEquals(getSampleXml(), xml);
     }
 
     @Test
     public void unmarshalXmlAndCompareToCastor() throws Exception {
         final T obj = CastorUtils.unmarshal(getSampleClass(), getSampleXmlInputStream());
         LogUtils.debugf(this, "Sample object: %s\n\nCastor object: %s", getSampleObject(), obj);
-        assertTrue("objects should match", getSampleObject().equals(obj));
+        assertDepthEquals(getSampleObject(), obj);
     }
 
     @Test
     public void unmarshalJaxbMarshalJaxb() throws Exception {
         final T obj = JaxbUtils.unmarshal(getSampleClass(), new InputSource(getSampleXmlInputStream()), null);
         final String remarshaled = JaxbUtils.marshal(obj);
-        assertXmlEquals(getSampleXml(), remarshaled);
+        _assertXmlEquals(getSampleXml(), remarshaled);
     }
 
     @Test
     public void marshalJaxbUnmarshalJaxb() throws Exception {
         final String xml = marshalToXmlWithJaxb();
         final T obj = JaxbUtils.unmarshal(getSampleClass(), xml);
-        assertTrue("objects should match", getSampleObject().equals(obj));
+        assertDepthEquals(getSampleObject(), obj);
     }
 
     @Test
@@ -222,7 +229,7 @@ abstract public class XmlTest<T> {
         final T obj = CastorUtils.unmarshal(getSampleClass(), getSampleXmlInputStream());
         final StringWriter writer = new StringWriter();
         CastorUtils.marshalWithTranslatedExceptions(obj, writer);
-        assertXmlEquals(getSampleXml(), writer.toString());
+        _assertXmlEquals(getSampleXml(), writer.toString());
     }
 
     @Test
@@ -230,7 +237,7 @@ abstract public class XmlTest<T> {
         final String xml = marshalToXmlWithCastor();
         final ByteArrayInputStream is = new ByteArrayInputStream(xml.getBytes());
         final T obj = CastorUtils.unmarshal(getSampleClass(), is, false);
-        assertTrue("objects should match", getSampleObject().equals(obj));
+        assertDepthEquals(getSampleObject(), obj);
     }
 
     @Test
@@ -238,28 +245,23 @@ abstract public class XmlTest<T> {
         LogUtils.debugf(this, "xml: %s", getSampleXml());
         final T obj = JaxbUtils.unmarshal(getSampleClass(), new InputSource(getSampleXmlInputStream()), null);
         LogUtils.debugf(this, "Sample object: %s\n\nJAXB object: %s", getSampleObject(), obj);
-        assertTrue("objects should match", getSampleObject().equals(obj));
+        assertDepthEquals(getSampleObject(), obj);
     }
 
     @Test
     public void marshalCastorUnmarshalJaxb() throws Exception {
         final String xml = marshalToXmlWithCastor();
-
-        final T config = JaxbUtils.unmarshal(getSampleClass(), xml);
-
-        LogUtils.debugf(this, "Generated Object: %s", config);
-
-        assertTrue("objects should match", config.equals(getSampleObject()));
+        final T obj = JaxbUtils.unmarshal(getSampleClass(), xml);
+        LogUtils.debugf(this, "Generated Object: %s", obj);
+        assertDepthEquals(getSampleObject(), obj);
     }
 
     @Test
     public void marshalJaxbUnmarshalCastor() throws Exception {
         final String xml = marshalToXmlWithJaxb();
-
-        final T config = CastorUtils.unmarshal(getSampleClass(), new ByteArrayInputStream(xml.getBytes()));
-        LogUtils.debugf(this, "Generated Object: %s", config);
-
-        assertTrue("objects should match", config.equals(getSampleObject()));
+        final T obj = CastorUtils.unmarshal(getSampleClass(), new ByteArrayInputStream(xml.getBytes()));
+        LogUtils.debugf(this, "Generated Object: %s", obj);
+        assertDepthEquals(getSampleObject(), obj);
     }
 
     @Test
@@ -275,7 +277,7 @@ abstract public class XmlTest<T> {
     public void validateJaxbXmlAgainstSchema() throws Exception {
         final String schemaFile = getSchemaFile();
         if (schemaFile == null) {
-            LogUtils.debugf(this, "Skipping validation.");
+            LogUtils.warnf(this, "Skipping validation.");
             return;
         }
         LogUtils.debugf(this, "Validating against XSD: %s", schemaFile);
@@ -303,7 +305,10 @@ abstract public class XmlTest<T> {
     }
 
     public static void assertXmlEquals(final String expectedXml, final String actualXml) {
-        
+        // ugly hack alert!
+        final XmlTest<Object> test = new XmlTest<Object>(null, null, null) {
+        };
+        test._assertXmlEquals(expectedXml, actualXml);
     }
 
     protected void _assertXmlEquals(final String expectedXml, final String actualXml) {
@@ -381,10 +386,10 @@ abstract public class XmlTest<T> {
                 }
 
                 if (ignoreDifference(d)) {
-                    LogUtils.debugf(this, "ignoreDifference matched.  Ignoring difference: %s: {}", d.getDescription(), d);
+                    LogUtils.debugf(this, "ignoreDifference matched.  Ignoring difference: %s: %s", d.getDescription(), d);
                     continue DIFFERENCES;
                 } else {
-                    LogUtils.debugf(this, "Found difference: %s: %s", d.getDescription(), d);
+                    LogUtils.warnf(this, "Found difference: %s: %s", d.getDescription(), d);
                     retDifferences.add(d);
                 }
             }
@@ -406,6 +411,78 @@ abstract public class XmlTest<T> {
             IOUtils.closeQuietly(sr);
         }
         return nodes;
+    }
+
+    private void assertDepthEquals(final Object expected, Object actual) {
+        /*
+        System.err.println("----------");
+        System.err.println("expected: " + expected);
+        System.err.println("actual:   " + actual);
+        */
+
+        if (expected == null && actual == null) {
+            return;
+        } else if (expected == null) {
+            fail("expected was null but actual was not!");
+        } else if (actual == null) {
+            fail("actual was null but expected was not!");
+        }
+
+        if (expected.getClass().getName().startsWith("java") || actual.getClass().getName().startsWith("java")) {
+            // java primitives, just do assertEquals
+            if (expected instanceof Object[] || actual instanceof Object[]) {
+                assertTrue(Arrays.equals((Object[])expected, (Object[])actual));
+            } else {
+                assertEquals(expected, actual);
+            }
+            return;
+        }
+
+        final BeanWrapper expectedWrapper = new BeanWrapperImpl(expected);
+        final BeanWrapper actualWrapper   = new BeanWrapperImpl(actual);
+
+        final Set<String> properties = new TreeSet<String>();
+        for (final PropertyDescriptor descriptor : expectedWrapper.getPropertyDescriptors()) {
+            properties.add(descriptor.getName());
+        }
+        for (final PropertyDescriptor descriptor : actualWrapper.getPropertyDescriptors()) {
+            properties.add(descriptor.getName());
+        }
+
+        properties.remove("class");
+
+        for (final String property : properties) {
+            //System.err.println("property: " + property);
+            final PropertyDescriptor expectedDescriptor = expectedWrapper.getPropertyDescriptor(property);
+            final PropertyDescriptor actualDescriptor = actualWrapper.getPropertyDescriptor(property);
+            
+            if (expectedDescriptor != null && actualDescriptor != null) {
+                // both have descriptors, so walk the sub-objects
+                Object expectedValue = null;
+                Object actualValue   = null;
+                try {
+                    expectedValue = expectedWrapper.getPropertyValue(property);
+                } catch (final Exception e) {
+                }
+                try {
+                    actualValue = actualWrapper.getPropertyValue(property);
+                } catch (final Exception e) {
+                }
+
+                assertDepthEquals(expectedValue, actualValue);
+            } else if (expectedDescriptor != null) {
+                fail("Should have '" + property + "' property on actual object, but there was none!");
+            } else if (actualDescriptor != null) {
+                fail("Should have '" + property + "' property on expected object, but there was none!");
+            }
+
+        }
+
+        if (expected instanceof Object[] || actual instanceof Object[]) {
+            assertTrue(Arrays.equals((Object[])expected, (Object[])actual));
+        } else {
+            assertEquals(expected, actual);
+        }
     }
 
 }
