@@ -416,25 +416,26 @@ abstract public class XmlTest<T> {
         return nodes;
     }
 
-    private void assertDepthEquals(final Object expected, Object actual) {
+    public static void assertDepthEquals(final Object expected, Object actual) {
         assertDepthEquals(0, "", expected, actual);
     }
 
-    private void assertDepthEquals(final int depth, final String propName, final Object expected, Object actual) {
+    private static void assertDepthEquals(final int depth, final String propertyName, final Object expected, Object actual) {
         if (expected == null && actual == null) {
             return;
         } else if (expected == null) {
-            fail("expected was null but actual was not!");
+            fail("expected " + propertyName + " was null but actual was not!");
         } else if (actual == null) {
-            fail("actual was null but expected was not!");
+            fail("actual " + propertyName + " was null but expected was not!");
         }
 
+        final String assertionMessage = propertyName == null? ("Top-level objects (" + expected.getClass().getName() + ") do not match.") : ("Properties " + propertyName + " do not match.");
         if (expected.getClass().getName().startsWith("java") || actual.getClass().getName().startsWith("java")) {
             // java primitives, just do assertEquals
             if (expected instanceof Object[] || actual instanceof Object[]) {
-                assertTrue(Arrays.equals((Object[])expected, (Object[])actual));
+                assertTrue(assertionMessage, Arrays.equals((Object[])expected, (Object[])actual));
             } else {
-                assertEquals(expected, actual);
+                assertEquals(assertionMessage, expected, actual);
             }
             return;
         }
@@ -479,9 +480,11 @@ abstract public class XmlTest<T> {
         }
 
         if (expected instanceof Object[] || actual instanceof Object[]) {
-            assertTrue(Arrays.equals((Object[])expected, (Object[])actual));
+            final Object[] expectedArray = (Object[])expected;
+            final Object[] actualArray   = (Object[])actual;
+            assertTrue(assertionMessage, Arrays.equals(expectedArray, actualArray));
         } else {
-            assertEquals(expected, actual);
+            assertEquals(assertionMessage, expected, actual);
         }
     }
 
