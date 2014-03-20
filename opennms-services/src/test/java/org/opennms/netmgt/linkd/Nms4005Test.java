@@ -37,6 +37,7 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.config.linkd.Package;
@@ -72,7 +73,6 @@ public class Nms4005Test extends Nms4005NetworkBuilder {
         });
     }
 
-	    
 /*
  *  (3)10.1.1.2<>R1<>10.1.3.1 (2)---(1) 10.1.3.2 <>R3<>
  *        	   10.1.2.1                          <>R3<>
@@ -89,6 +89,7 @@ public class Nms4005Test extends Nms4005NetworkBuilder {
             @JUnitSnmpAgent(host="10.1.3.2", port=161, resource="classpath:linkd/nms4005/10.1.3.2-walk.txt"),
             @JUnitSnmpAgent(host="10.1.4.2", port=161, resource="classpath:linkd/nms4005/10.1.4.2-walk.txt")
     })
+    @JUnitTemporaryDatabase
     public void testNms4005Network() throws Exception {
 
         final OnmsNode cisco1 = m_nodeDao.findByForeignId("linkd", R1_NAME);
@@ -136,6 +137,7 @@ public class Nms4005Test extends Nms4005NetworkBuilder {
             @JUnitSnmpAgent(host="10.1.3.2", port=161, resource="classpath:linkd/nms4005/10.1.3.2-walk.txt"),
             @JUnitSnmpAgent(host="10.1.4.2", port=161, resource="classpath:linkd/nms4005/10.1.4.2-walk.txt")
     })
+    @JUnitTemporaryDatabase
     public void testNms4005NetworkWithThreads() throws Exception {
 
         final OnmsNode cisco1 = m_nodeDao.findByForeignId("linkd", R1_NAME);
