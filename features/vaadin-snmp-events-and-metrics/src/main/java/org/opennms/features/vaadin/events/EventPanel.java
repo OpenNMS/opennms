@@ -267,7 +267,7 @@ public abstract class EventPanel extends Panel {
         } else {
             ConfirmDialog.show(getUI(),
                                "Are you sure?",
-                               eventCount + " of the new events are already on the configuration files.\nDo you really want to override those events ?",
+                               eventCount + " of the new events are already on the configuration files.\nIf you click 'Yes', the existing definitions are going to be ignored.",
                                "Yes",
                                "No",
                                new ConfirmDialog.Listener() {
