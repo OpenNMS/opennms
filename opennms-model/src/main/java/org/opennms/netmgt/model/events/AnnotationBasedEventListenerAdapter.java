@@ -396,10 +396,21 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
         for(Method method : methods) {
             EventHandler handlerInfo = AnnotationUtils.findAnnotation(method, EventHandler.class);
             if (handlerInfo != null) {
-                String uei = handlerInfo.uei();
-                Assert.state(!m_ueiToHandlerMap.containsKey(uei), "Cannot define method "+method+" as a handler for event "+uei+" since "+m_ueiToHandlerMap.get(uei)+" is already defined as a handler");
-                validateMethodAsEventHandler(method);
-                m_ueiToHandlerMap.put(uei, method);
+                String singleUei = handlerInfo.uei();
+                if (singleUei != null && !"".equals(singleUei)) {
+                    validateMethodAsEventHandler(method);
+                    Assert.state(!m_ueiToHandlerMap.containsKey(singleUei), "Cannot define method "+method+" as a handler for event "+singleUei+" since "+m_ueiToHandlerMap.get(singleUei)+" is already defined as a handler");
+                    m_ueiToHandlerMap.put(singleUei, method);
+                }
+
+                String[] ueis = handlerInfo.ueis();
+                if (ueis != null && ueis.length > 0) {
+                    validateMethodAsEventHandler(method);
+                    for (String uei : ueis) {
+                        Assert.state(!m_ueiToHandlerMap.containsKey(uei), "Cannot define method "+method+" as a handler for event "+uei+" since "+m_ueiToHandlerMap.get(uei)+" is already defined as a handler");
+                        m_ueiToHandlerMap.put(uei, method);
+                    }
+                }
             }
         }
 
