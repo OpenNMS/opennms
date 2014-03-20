@@ -662,6 +662,7 @@ public class Linkd extends AbstractServiceDaemon {
         LinkableNode node = removeNode(snmpcoll.getPackageName(),snmpcoll.getTarget());
         if (node == null) {
             LOG.error("No linkable node found for SNMP collection: {}!", snmpcoll.getInfo());
+            return;
         }
 
         LinkableSnmpNode snmpNode = m_queryMgr.getSnmpNode(node.getNodeId());
