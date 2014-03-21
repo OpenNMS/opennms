@@ -39,6 +39,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.internal.collection.DatacollectionConfigVisitor;
 
 /**
  * container for list of MIB groups to be collected for the system
@@ -106,6 +107,11 @@ public class Collect implements Serializable {
     @Override
     public String toString() {
         return "Collect [includeGroups=" + m_includeGroups + "]";
+    }
+
+    public void visit(final DatacollectionConfigVisitor visitor) {
+        visitor.visitCollect(this);
+        visitor.visitCollectComplete();
     }
 
 }

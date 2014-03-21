@@ -45,7 +45,7 @@ import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.FocusNodeHopCriteria;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractSearchQuery;
-import org.opennms.features.topology.api.topo.AbstractVertexRef;
+import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.CollapsibleCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.SearchProvider;
@@ -68,7 +68,12 @@ import com.vaadin.ui.AbstractComponent;
 
 public class SearchBox extends AbstractComponent implements SelectionListener, GraphContainer.ChangeListener {
 
-    Multimap<SearchProvider, SearchResult> m_suggestionMap;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	Multimap<SearchProvider, SearchResult> m_suggestionMap;
     private OperationContext m_operationContext;
     private OnmsServiceManager m_serviceManager;
     SearchBoxServerRpc m_rpc = new SearchBoxServerRpc(){
@@ -161,14 +166,14 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
                 Collection<SearchResult> searchResults = m_suggestionMap.get(key);
                 if(searchResults.contains(searchResult)) {
                     key.onCenterSearchResult(searchResult, m_operationContext.getGraphContainer());
-                    vRefs.addAll(key.getVertexRefsBy(searchResult));
+                    vRefs.addAll(key.getVertexRefsBy(searchResult, m_operationContext.getGraphContainer()));
                     break;
                 }
             }
 
             //Hack for now, change to a better way.
             FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(m_operationContext.getGraphContainer());
-            AbstractVertexRef vertexRef = new AbstractVertexRef(searchResult.getNamespace(), searchResult.getId(), searchResult.getLabel());
+            DefaultVertexRef vertexRef = new DefaultVertexRef(searchResult.getNamespace(), searchResult.getId(), searchResult.getLabel());
             if(criteria.getVertices().contains(vertexRef)){
                 vRefs.add(vertexRef);
             }
@@ -237,7 +242,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
 
     public void removeIfSpecialURLCase(SearchResult searchResult) {
         FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(m_operationContext.getGraphContainer());
-        AbstractVertexRef vertexRef = new AbstractVertexRef(searchResult.getNamespace(), searchResult.getId(), searchResult.getLabel());
+        DefaultVertexRef vertexRef = new DefaultVertexRef(searchResult.getNamespace(), searchResult.getId(), searchResult.getLabel());
         if(criteria.contains(vertexRef)){
             criteria.remove(vertexRef);
         }
@@ -299,7 +304,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
     }
 
     private static VertexRef mapToVertexRef(SearchSuggestion suggestion) {
-        return new AbstractVertexRef(suggestion.getNamespace(), suggestion.getId(), suggestion.getLabel());
+        return new DefaultVertexRef(suggestion.getNamespace(), suggestion.getId(), suggestion.getLabel());
     }
 
     private static SearchSuggestion mapToSearchSuggestion(SearchResult searchResult) {
@@ -331,7 +336,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
 
     @Override
     public void selectionChanged(SelectionContext selectionContext) {
-        List<SearchSuggestion> selected = Lists.newArrayList();
+        //List<SearchSuggestion> selected = Lists.newArrayList();
 
         //List<VertexRef> vertexRefs = Lists.newArrayList(selectionContext.getSelectedVertexRefs());
         //getState().setSelected(mapToSuggestions(vertexRefs));

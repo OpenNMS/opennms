@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.features.topology.app.internal.support;
 
 import java.util.*;
@@ -9,6 +37,12 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
 
+/**
+ * 
+ * @author <a href=mailto:thedesloge@opennms.org>Donald Desloge</a>
+ * @author <a href=mailto:seth@opennms.org>Seth Leger</a>
+ *
+ */
 public class CategoryHopCriteria extends VertexHopCriteria implements CollapsibleCriteria {
 
 	private final String m_categoryName;
@@ -41,10 +75,9 @@ public class CategoryHopCriteria extends VertexHopCriteria implements Collapsibl
     }
 
 	public CategoryHopCriteria(String categoryName) {
+		super(categoryName);
 		m_categoryName = categoryName;
-		setLabel(m_categoryName);
 		m_collapsedVertex = new CategoryVertex("category", "category:" + m_categoryName, m_categoryName);
-
 	}
 
     public CategoryHopCriteria(String categoryName, NodeDao nodeDao, CategoryDao categoryDao){
@@ -84,7 +117,7 @@ public class CategoryHopCriteria extends VertexHopCriteria implements Collapsibl
 
     @Override
     public int hashCode() {
-        return m_categoryName.hashCode();  //To change body of implemented methods use File | Settings | File Templates.
+        return m_categoryName.hashCode();
     }
 
     @Override
@@ -109,7 +142,7 @@ public class CategoryHopCriteria extends VertexHopCriteria implements Collapsibl
 			List<OnmsNode> nodes = m_nodeDao.findByCategory(category);
 			Set<VertexRef> retval = new TreeSet<VertexRef>(new RefComparator());
 			for (OnmsNode node : nodes) {
-				retval.add(new AbstractVertexRef("nodes", String.valueOf(node.getId())));
+				retval.add(new DefaultVertexRef("nodes", String.valueOf(node.getId())));
 			}
 			return retval;
 		}

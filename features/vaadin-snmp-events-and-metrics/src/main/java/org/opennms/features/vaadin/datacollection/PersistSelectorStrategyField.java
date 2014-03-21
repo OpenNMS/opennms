@@ -64,7 +64,6 @@ public class PersistSelectorStrategyField extends AbstractStrategyField<Persiste
      */
     @Override
     protected void setInternalValue(PersistenceSelectorStrategy strategy) {
-        super.setInternalValue(strategy); // TODO Is this required ?
         setComboValue(strategy.getClazz());
         container.removeAllItems();
         container.addAll(strategy.getParameters());

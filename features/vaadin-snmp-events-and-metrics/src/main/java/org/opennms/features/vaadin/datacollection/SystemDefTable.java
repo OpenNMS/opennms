@@ -27,7 +27,6 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.features.vaadin.api.OnmsBeanContainer;
@@ -85,7 +84,7 @@ public class SystemDefTable extends Table {
      * @return the event
      */
     public SystemDef getSystemDef(Object systemDefId) {
-        return container.getItem(systemDefId).getBean();
+        return container.getOnmsBean(systemDefId);
     }
 
     /**
@@ -106,10 +105,6 @@ public class SystemDefTable extends Table {
      * @return the systemDefs
      */
     public List<SystemDef> getSystemDefs() {
-        List<SystemDef> systemDefs = new ArrayList<SystemDef>();
-        for (Object itemId : container.getItemIds()) {
-            systemDefs.add(container.getItem(itemId).getBean());
-        }
-        return systemDefs;
+        return container.getOnmsBeans();
     }
 }

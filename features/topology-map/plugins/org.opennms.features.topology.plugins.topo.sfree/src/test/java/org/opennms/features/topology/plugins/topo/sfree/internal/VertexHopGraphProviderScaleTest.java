@@ -6,7 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.FocusNodeHopCriteria;
-import org.opennms.features.topology.api.topo.AbstractVertexRef;
+import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
@@ -39,9 +39,9 @@ public class VertexHopGraphProviderScaleTest {
 		return (int) Math.round(Math.random()*max);
 	}
 	
-	@SuppressWarnings("deprecation")
 	public VertexRef randomVertex() {
-		return new AbstractVertexRef("sfree", Integer.toString(randomInt(m_vertexCount)));
+		String randomNumber = Integer.toString(randomInt(m_vertexCount));
+		return new DefaultVertexRef("sfree", randomNumber, randomNumber);
 	}
 	
 	@Test

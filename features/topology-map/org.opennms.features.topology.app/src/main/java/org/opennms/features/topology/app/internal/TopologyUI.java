@@ -59,7 +59,7 @@ import org.opennms.features.topology.api.WidgetManager;
 import org.opennms.features.topology.api.WidgetUpdateListener;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.FocusNodeHopCriteria;
-import org.opennms.features.topology.api.topo.AbstractVertexRef;
+import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.CommandManager.DefaultOperationContext;
@@ -318,7 +318,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                 if (criteria.size() == refs.size()) {
                     boolean criteriaChanged = false;
                     for (Integer ref : refs) {
-                        if (!criteria.contains(new AbstractVertexRef("nodes", String.valueOf(ref)))) {
+                        if (!criteria.contains(new DefaultVertexRef("nodes", String.valueOf(ref)))) {
                             criteriaChanged = true;
                         }
                     }
@@ -333,7 +333,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                 criteria.clear();
                 for (Integer ref : refs) {
                     // Add a new focus node reference to the VertexHopCriteria
-                    criteria.add(new AbstractVertexRef("nodes", String.valueOf(ref)));
+                    criteria.add(new DefaultVertexRef("nodes", String.valueOf(ref)));
                 }
                 // Set the semantic zoom level to 1 by default
                 graphContainer.setSemanticZoomLevel(1);

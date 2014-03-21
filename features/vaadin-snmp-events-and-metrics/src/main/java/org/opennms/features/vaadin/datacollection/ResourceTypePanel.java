@@ -87,7 +87,7 @@ public class ResourceTypePanel extends Panel {
                 ResourceType resourceType = resourceTypeForm.getResourceType();
                 logger.info("Resource Type " + resourceType.getName() + " has been " + (isNew ? "created." : "updated."));
                 try {
-                    resourceTypeForm.getFieldGroup().commit();
+                    resourceTypeForm.commit();
                     resourceTypeForm.setReadOnly(true);
                     resourceTypeTable.refreshRowCache();
                 } catch (CommitException e) {
@@ -113,7 +113,7 @@ public class ResourceTypePanel extends Panel {
             }
             @Override
             public void cancel() {
-                resourceTypeForm.getFieldGroup().discard();
+                resourceTypeForm.discard();
                 resourceTypeForm.setReadOnly(true);
             }
         };

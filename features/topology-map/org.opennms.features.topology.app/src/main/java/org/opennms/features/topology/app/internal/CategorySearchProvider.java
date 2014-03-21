@@ -57,6 +57,8 @@ public class CategorySearchProvider extends AbstractSearchProvider implements Se
 
     public CategorySearchProvider(CategoryDao categoryDao, NodeDao nodeDao){
         m_categoryDao = categoryDao;
+        
+        //Not sure why we have to do this...
         m_categoryHopFactory = new CategoryHopCriteriaFactory(categoryDao, nodeDao);
     }
 
@@ -103,8 +105,9 @@ public class CategorySearchProvider extends AbstractSearchProvider implements Se
         return supportsPrefix("category=", searchPrefix);
     }
 
+    //FIXME: Should return the <Set> of <VertexRef> that are associated with <SearchResult>
     @Override
-    public Set<VertexRef> getVertexRefsBy(SearchResult searchResult) {
+    public Set<VertexRef> getVertexRefsBy(SearchResult searchResult, GraphContainer container) {
         return Collections.emptySet();
     }
 
@@ -126,8 +129,8 @@ public class CategorySearchProvider extends AbstractSearchProvider implements Se
         return m_categoryDao;
     }
 
-    public void setCategoryDao(CategoryDao m_categoryDao) {
-        this.m_categoryDao = m_categoryDao;
+    public void setCategoryDao(CategoryDao categoryDao) {
+        m_categoryDao = categoryDao;
     }
 
     public void setHiddenCategoryPrefix(String prefix) {

@@ -74,7 +74,7 @@ public class HeaderLayout extends HorizontalLayout implements ViewChangeListener
          * Adding the selection box
          */
         m_nativeSelect = new NativeSelect();
-        m_nativeSelect.setDescription("Select wallboard configuration");
+        m_nativeSelect.setDescription("Select Ops Board configuration");
         m_nativeSelect.setContainerDataSource(WallboardProvider.getInstance().getBeanContainer());
         m_nativeSelect.setItemCaptionPropertyId("title");
         m_nativeSelect.setNullSelectionAllowed(false);
@@ -88,14 +88,14 @@ public class HeaderLayout extends HorizontalLayout implements ViewChangeListener
             }
         });
 
-        m_dashboardButton = new Button("Dashboard", new Button.ClickListener() {
+        m_dashboardButton = new Button("Ops Panel", new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 UI.getCurrent().getNavigator().addViewChangeListener(HeaderLayout.this);
                 UI.getCurrent().getNavigator().navigateTo("dashboard/" + m_nativeSelect.getContainerProperty(m_nativeSelect.getValue(), "title"));
             }
         });
-        m_dashboardButton.setDescription("Dashboard view");
+        m_dashboardButton.setDescription("Ops Panel view");
 
         /**
          * Adding the wallboard button
@@ -122,14 +122,14 @@ public class HeaderLayout extends HorizontalLayout implements ViewChangeListener
         /**
          * Adding the wallboard button
          */
-        m_wallboardButton = new Button("Wallboard", new Button.ClickListener() {
+        m_wallboardButton = new Button("Ops Board", new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 UI.getCurrent().getNavigator().addViewChangeListener(HeaderLayout.this);
                 UI.getCurrent().getNavigator().navigateTo("wallboard/" + m_nativeSelect.getContainerProperty(m_nativeSelect.getValue(), "title"));
             }
         });
-        m_wallboardButton.setDescription("Wallboard view");
+        m_wallboardButton.setDescription("Ops Board view");
 
         m_pauseButton.setEnabled(false);
         m_wallboardButton.setEnabled(false);
@@ -154,15 +154,15 @@ public class HeaderLayout extends HorizontalLayout implements ViewChangeListener
 
                 if (((WallboardView) m_wallboardView).isPaused()) {
                     m_pauseButton.setCaption("Resume");
-                    m_pauseButton.setDescription("Resume the execution of the wallboard");
+                    m_pauseButton.setDescription("Resume the execution of the Ops Board");
                 } else {
                     m_pauseButton.setCaption("Pause");
-                    m_pauseButton.setDescription("Pause the execution of the wallboard");
+                    m_pauseButton.setDescription("Pause the execution of the Ops Board");
                 }
             } else {
                 m_pauseButton.setEnabled(false);
                 m_pauseButton.setCaption("Pause");
-                m_pauseButton.setDescription("Pause the execution of the wallboard");
+                m_pauseButton.setDescription("Pause the execution of the Ops Board");
             }
         } else {
             if (m_wallboardView instanceof DashboardView) {
@@ -171,7 +171,7 @@ public class HeaderLayout extends HorizontalLayout implements ViewChangeListener
                 m_pauseButton.setEnabled(true);
             } else {
                 m_pauseButton.setCaption("Pause");
-                m_pauseButton.setDescription("Pause the execution of the wallboard");
+                m_pauseButton.setDescription("Pause the execution of the Ops Board");
                 m_pauseButton.setEnabled(false);
             }
         }

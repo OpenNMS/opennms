@@ -30,6 +30,12 @@ package org.opennms.features.topology.api;
 
 import com.vaadin.ui.UI;
 
+/**
+ * This is an API for  of all <Operation>s
+ * 
+ * @author Donald Desloge
+ *
+ */
 public interface OperationContext {
 	
 	enum DisplayLocation { MENUBAR, CONTEXTMENU, SEARCH };

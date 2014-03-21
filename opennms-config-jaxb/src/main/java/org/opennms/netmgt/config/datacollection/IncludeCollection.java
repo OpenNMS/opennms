@@ -40,6 +40,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.internal.collection.DatacollectionConfigVisitor;
 
 /**
  * Class IncludeCollection.
@@ -165,6 +166,11 @@ public class IncludeCollection implements Serializable {
     @Override
     public String toString() {
         return "IncludeCollection [systemDef=" + m_systemDef + ", dataCollectionGroup=" + m_dataCollectionGroup + ", excludeFilters=" + m_excludeFilters + "]";
+    }
+
+    public void visit(final DatacollectionConfigVisitor visitor) {
+        visitor.visitIncludeCollection(this);
+        visitor.visitIncludeCollectionComplete();
     }
 
 }

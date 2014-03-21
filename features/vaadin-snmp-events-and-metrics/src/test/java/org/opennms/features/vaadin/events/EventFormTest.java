@@ -68,7 +68,7 @@ public class EventFormTest {
     @Test
     public void testGroupField() throws Exception {
         EventForm form = new EventForm();
-        FieldGroup group = form.getFieldGroup();
+        FieldGroup group = form.eventEditor;
 
         Field<?> uei = group.getField("uei");
         Assert.assertTrue(uei instanceof TextField);

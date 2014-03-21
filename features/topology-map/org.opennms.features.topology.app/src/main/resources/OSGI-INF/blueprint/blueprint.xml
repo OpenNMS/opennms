@@ -51,12 +51,17 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
 
     <reference id="categoryDao" interface="org.opennms.netmgt.dao.api.CategoryDao" availability="mandatory" />
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
+    <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" availability="mandatory" />
 
     <bean id="categoryHopCriteriaFactory" class="org.opennms.features.topology.app.internal.support.CategoryHopCriteriaFactory">
         <argument ref="categoryDao"/>
         <argument ref="nodeDao"/>
     </bean>
 
+    <bean id="ipLikeHopCriteriaFactory" class="org.opennms.features.topology.app.internal.support.IpLikeHopCriteriaFactory">
+        <argument ref="ipInterfaceDao"/>
+    </bean>
+    
     <service id="categorySearchProvider" interface="org.opennms.features.topology.api.topo.SearchProvider">
         <bean class="org.opennms.features.topology.app.internal.CategorySearchProvider">
             <argument ref="categoryDao"/>
@@ -65,8 +70,14 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         </bean>
     </service>
 
-	<bean id="categoryHistoryOperation" class=" org.opennms.features.topology.app.internal.support.CategoryHopCriteriaHistoryOperation">
-		<property name="categoryHopCriteriaFactory" ref="categoryHopCriteriaFactory"/>
+    <service id="ipSearchProvider" interface="org.opennms.features.topology.api.topo.SearchProvider" >
+        <bean class="org.opennms.features.topology.app.internal.IpSearchProvider" >
+            <argument ref="ipInterfaceDao" />
+        </bean>
+    </service>
+
+	<bean id="categoryHistoryOperation" class=" org.opennms.features.topology.app.internal.support.CategoryHopCriteriaHistoryOperation" >
+		<property name="categoryHopCriteriaFactory" ref="categoryHopCriteriaFactory" />
 	</bean>
 	
 	<service interface="org.opennms.features.topology.api.HistoryOperation" ref="categoryHistoryOperation"/>

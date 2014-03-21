@@ -95,7 +95,7 @@ public class SnmpCollectionPanel extends Panel {
                 SnmpCollection snmpCollection = snmpCollectionForm.getSnmpCollection();
                 logger.info("SNMP Collection " + snmpCollection.getName() + " has been " + (isNew ? "created." : "updated."));
                 try {
-                    snmpCollectionForm.getFieldGroup().commit();
+                    snmpCollectionForm.commit();
                     snmpCollectionForm.setReadOnly(true);
                     snmpCollectionTable.refreshRowCache();
                     saveSnmpCollections(snmpCollectionTable.getSnmpCollections(), logger);
@@ -123,7 +123,7 @@ public class SnmpCollectionPanel extends Panel {
             }
             @Override
             public void cancel() {
-                snmpCollectionForm.getFieldGroup().discard();
+                snmpCollectionForm.discard();
                 snmpCollectionForm.setReadOnly(true);
             }
         };

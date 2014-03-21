@@ -140,7 +140,7 @@ public class AbstractSearchProviderTest {
             }
 
             @Override
-            public Set<VertexRef> getVertexRefsBy(SearchResult searchResult) {
+            public Set<VertexRef> getVertexRefsBy(SearchResult searchResult, GraphContainer container) {
                 return Collections.emptySet();
             }
 
