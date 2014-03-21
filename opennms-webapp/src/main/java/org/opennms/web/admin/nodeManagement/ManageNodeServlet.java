@@ -57,7 +57,6 @@ import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.NotificationFactory;
-import org.opennms.netmgt.model.capsd.DbIfServiceEntry;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.api.Util;
@@ -182,21 +181,20 @@ public class ManageNodeServlet extends HttpServlet {
                             // newEvent.setService(curService.getName());
                             // newEvent.setTime(curDate);
 
-                            stmt.setString(1, String.valueOf(DbIfServiceEntry.STATUS_RESUME));
+                            stmt.setString(1, String.valueOf("A"));
                             stmt.setString(2, curInterface.getAddress());
                             stmt.setInt(3, curInterface.getNodeid());
                             stmt.setInt(4, curService.getId());
                             log().debug("doPost: executing manage service update for " + curInterface.getAddress() + " " + curService.getName());
                             stmt.executeUpdate();
-                        } else if (!serviceList.contains(serviceKey) && curService.getStatus().equals("managed")) {
                             
-                            EventBuilder bldr = new EventBuilder(EventConstants.SERVICE_UNMANAGED_EVENT_UEI, "web ui", curDate);
+                            EventBuilder bldr = new EventBuilder(EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI, "web ui", curDate);
                             bldr.setNodeid(curInterface.getNodeid());
                             bldr.setInterface(addr(curInterface.getAddress()));
                             bldr.setService(curService.getName());
                             sendEvent(bldr.getEvent());
-
-                            stmt.setString(1, String.valueOf(DbIfServiceEntry.STATUS_SUSPEND));
+                        } else if (!serviceList.contains(serviceKey) && curService.getStatus().equals("managed")) {
+                            stmt.setString(1, String.valueOf("F"));
                             stmt.setString(2, curInterface.getAddress());
                             stmt.setInt(3, curInterface.getNodeid());
                             stmt.setInt(4, curService.getId());
@@ -206,6 +204,15 @@ public class ManageNodeServlet extends HttpServlet {
                             log().debug("doPost: executing unmanage service update for " + curInterface.getAddress() + " " + curService.getName());
                             stmt.executeUpdate();
                             outagesstmt.executeUpdate();
+
+                            EventBuilder bldr = new EventBuilder(EventConstants.SERVICE_UNMANAGED_EVENT_UEI, "web ui", curDate);
+                            bldr.setNodeid(curInterface.getNodeid());
+                            bldr.setInterface(addr(curInterface.getAddress()));
+                            bldr.setService(curService.getName());
+                            sendEvent(bldr.getEvent());
+
+                            bldr.setUei(EventConstants.SUSPEND_POLLING_SERVICE_EVENT_UEI);
+                            sendEvent(bldr.getEvent());
                         }
                     } // end k loop
                 } // end j loop

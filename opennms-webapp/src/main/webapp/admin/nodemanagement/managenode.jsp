@@ -191,6 +191,7 @@
 
   <h3>Manage and Unmanage Interfaces and Services</h3>
 
+  <!--
   <p>
     The two tables below represent each managed and unmanged interface,
     and service combination.  The 'Managed' column indicates if the
@@ -204,6 +205,14 @@
     Managing or Unmanaging an interface will automatically mark each
     service on that interface as managed or unmanaged accordingly.  A
     service cannot be managed if its interface is not managed.
+  </p>
+  -->
+
+  <p>
+    The table below represent each managed and unmanged interface,
+    and service combination.  The 'Managed' column indicates if the
+    service is managed or not on the interface, with checked rows meaning
+    the interface/service is managed, and unchecked meaning not managed.
   </p>
 
   <%
@@ -275,13 +284,12 @@
                     prepend = ",";
                 }
                 serviceArray.append("]");
-                
+
                 rows.append(buildInterfaceRow(intKey, 
                                               interfaceIndex, 
                                               serviceArray.toString(), 
                                               (curInterface.getStatus().equals("managed") ? "checked" : ""),
                                               curInterface.getAddress()));
-                    
                   
                 List interfaceServices = curInterface.getServices();
                 for (int k = 0; k < interfaceServices.size(); k++) 
@@ -308,7 +316,7 @@
       public String buildInterfaceRow(String key, int interfaceIndex, String serviceArray, String status, String address)
       {
           StringBuffer row = new StringBuffer( "<tr>");
-          
+          /*
           row.append("<td class=\"standardheaderplain\" width=\"5%\" align=\"center\">");
           row.append("<input type=\"checkbox\" name=\"interfaceCheck\" value=\"").append(key).append("\" onclick=\"javascript:updateServices(" + interfaceIndex + ", " + serviceArray + ")\" ").append(status).append(" >");
           row.append("</td>").append("\n");
@@ -317,7 +325,8 @@
           row.append(address);
           row.append("</td>").append("\n");
           row.append("<td class=\"standardheaderplain\" width=\"10%\" align=\"center\">").append("&nbsp;").append("</td></tr>").append("\n");
-          
+          */ 
+          row.append("<input type=\"hidden\" name=\"interfaceCheck\" value=\"").append(key).append("\" onclick=\"javascript:updateServices(" + interfaceIndex + ", " + serviceArray + ")\" ").append(status).append(" >");
           return row.toString();
       }
       
