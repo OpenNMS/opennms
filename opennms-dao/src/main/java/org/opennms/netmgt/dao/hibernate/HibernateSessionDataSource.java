@@ -38,6 +38,7 @@ import java.sql.Statement;
 
 import javax.sql.DataSource;
 
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.impl.SessionImpl;
@@ -97,7 +98,12 @@ public class HibernateSessionDataSource extends AbstractDataSource {
 
 	@Override
 	public Connection getConnection() throws SQLException {
-		Session session = sessionFactory.getCurrentSession();
+		Session session = null;
+		try {
+			session = sessionFactory.getCurrentSession();
+		} catch (HibernateException e) {
+			LOG.debug(e.getMessage());
+		}
 		if (session == null) {
 			LOG.debug("No session bound to the current thread, returning new database connection");
 			return targetDataSource.getConnection();

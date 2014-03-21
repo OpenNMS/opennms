@@ -44,12 +44,16 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.test.DaoTestConfigBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
 public class ConnectionFactoryTest extends TestCase {
+	private static final Logger LOG = LoggerFactory.getLogger(ConnectionFactoryTest.class);
+
 	public void testMarshalDataSourceFromConfig() throws Exception {
 		DaoTestConfigBean bean = new DaoTestConfigBean();
 		bean.afterPropertiesSet();
@@ -161,19 +165,17 @@ public class ConnectionFactoryTest extends TestCase {
 						stmt.execute("BEGIN");
 						stmt.execute("SELECT * FROM doesnt_exist_in_the_database");
 					} catch (SQLException e) {
-						e.printStackTrace();
+						LOG.info(e.getMessage(), e);
 					} finally {
-						/*
 						if (conn != null) {
 							try {
-								Statement stmt = conn.createStatement();
-								stmt.execute("ROLLBACK");
+								//Statement stmt = conn.createStatement();
+								//stmt.execute("ROLLBACK");
 								conn.close();
 							} catch (SQLException e) {
 								fail("Exception thrown when trying to close connection");
 							}
 						}
-						*/
 					}
 				}
 			}.start();
