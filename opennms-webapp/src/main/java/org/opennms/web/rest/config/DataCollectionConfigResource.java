@@ -27,8 +27,8 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Component
 @PerRequest
 @Scope("prototype")
-public class DataCollectionConfigurationResource implements InitializingBean {
-    private static final Logger LOG = LoggerFactory.getLogger(DataCollectionConfigurationResource.class);
+public class DataCollectionConfigResource implements InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(DataCollectionConfigResource.class);
 
     @Resource(name="dataCollectionConfigDao")
     private DataCollectionConfigDao m_dataCollectionConfigDao;

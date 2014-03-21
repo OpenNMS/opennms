@@ -52,7 +52,7 @@ import org.opennms.netmgt.model.RrdRepository;
 import org.springframework.core.io.FileSystemResource;
 
 @RunWith(BlockJUnit4ClassRunner.class)
-public class DataCollectionConfigurationResourceTest {
+public class DataCollectionConfigResourceTest {
     public static class TestDataCollectionConfigDao extends AbstractJaxbConfigDao<DatacollectionConfig,DatacollectionConfig> implements DataCollectionConfigDao {
 
         public TestDataCollectionConfigDao() {
@@ -131,11 +131,11 @@ public class DataCollectionConfigurationResourceTest {
 
     }
 
-    private DataCollectionConfigurationResource m_configResource;
+    private DataCollectionConfigResource m_configResource;
 
     @Before
     public void setUp() throws Exception {
-        m_configResource = new DataCollectionConfigurationResource();
+        m_configResource = new DataCollectionConfigResource();
 
         final TestDataCollectionConfigDao testDao = new TestDataCollectionConfigDao();
         testDao.setConfigResource(new FileSystemResource("target/test-classes/config-rest/dc.xml"));

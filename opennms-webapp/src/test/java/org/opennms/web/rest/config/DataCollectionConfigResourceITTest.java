@@ -29,9 +29,7 @@
 package org.opennms.web.rest.config;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,7 +38,9 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.config.collectd.CollectdConfiguration;
+import org.opennms.netmgt.config.api.collection.IDataCollectionGroup;
+import org.opennms.netmgt.config.api.collection.IResourceType;
+import org.opennms.netmgt.config.api.collection.ISnmpCollection;
 import org.opennms.netmgt.config.internal.collection.DataCollectionConfigImpl;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
@@ -71,9 +71,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class DataCollectionConfigurationResourceITTest extends AbstractSpringJerseyRestTestCase {
+public class DataCollectionConfigResourceITTest extends AbstractSpringJerseyRestTestCase {
     @SuppressWarnings("unused")
-    private static final Logger LOG = LoggerFactory.getLogger(DataCollectionConfigurationResourceITTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DataCollectionConfigResourceITTest.class);
 
     @Override
     protected void afterServletStart() throws Exception {
@@ -81,11 +81,24 @@ public class DataCollectionConfigurationResourceITTest extends AbstractSpringJer
     }
     
     @Test
-    public void testCollectdConfig() throws Exception {
+    public void testDataCollectionConfig() throws Exception {
         String xml = sendRequest(GET, "/config/datacollection", 200);
 
         final DataCollectionConfigImpl config = JaxbUtils.unmarshal(DataCollectionConfigImpl.class, xml);
         assertNotNull(config);
+        final ISnmpCollection[] snmpCollections = config.getSnmpCollections();
+        assertNotNull(snmpCollections);
+        assertEquals(1, snmpCollections.length);
+        assertNotNull(snmpCollections[0]);
+        final IDataCollectionGroup[] dataCollectionGroups = snmpCollections[0].getDataCollectionGroups();
+        assertNotNull(dataCollectionGroups);
+        assertEquals(1, dataCollectionGroups.length);
+        assertNotNull(dataCollectionGroups[0]);
+        final IResourceType[] resourceTypes = dataCollectionGroups[0].getResourceTypes();
+        assertNotNull(resourceTypes);
+        assertEquals(1, resourceTypes.length);
+        assertNotNull(resourceTypes[0]);
+        assertEquals("ifIndex", resourceTypes[0].getTypeName());
     }
 
 }
