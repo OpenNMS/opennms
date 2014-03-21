@@ -82,7 +82,7 @@ public class Nms4005Test extends Nms4005NetworkBuilder {
  *             10.1.2.2                          <>R3<>
  * 			   <>R2<>10.1.5.1 (2)---(3) 10.1.5.2 <>R3<>
  */
-    @Test
+    @Test(timeout=60000)
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host="10.1.1.2", port=161, resource="classpath:linkd/nms4005/10.1.1.2-walk.txt"),
             @JUnitSnmpAgent(host="10.1.2.2", port=161, resource="classpath:linkd/nms4005/10.1.2.2-walk.txt"),
@@ -130,7 +130,7 @@ public class Nms4005Test extends Nms4005NetworkBuilder {
      * This test is the same as {@link #testNms4005Network()} except that it spawns multiple threads
      * for each scan to ensure that the upsert code is working properly.
      */
-    @Test
+    @Test(timeout=60000)
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host="10.1.1.2", port=161, resource="classpath:linkd/nms4005/10.1.1.2-walk.txt"),
             @JUnitSnmpAgent(host="10.1.2.2", port=161, resource="classpath:linkd/nms4005/10.1.2.2-walk.txt"),
