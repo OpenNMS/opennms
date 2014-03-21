@@ -390,7 +390,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
             for (Map.Entry<String, String> translation : translationMap.entrySet()) {
                 // replace s1 with s2
                 final Matcher matcher = Pattern.compile(translation.getKey(), Pattern.LITERAL).matcher(command);
-                matcher.replaceAll(translation.getValue());
+                command = matcher.replaceAll(translation.getValue());
             }
         } catch (PatternSyntaxException e) {
             throw new IllegalArgumentException("Invalid regular expression syntax, check rrd-properties file", e);
