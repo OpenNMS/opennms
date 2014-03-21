@@ -169,4 +169,13 @@ public class ResourceTypeForm extends CustomComponent {
     public boolean isReadOnly() {
         return super.isReadOnly() && resourceTypeEditor.isReadOnly();
     }
+
+    /**
+     * Gets the resource type name.
+     *
+     * @return the resource type name
+     */
+    public String getResourceTypeName() {
+        return name.getValue();
+    }
 }

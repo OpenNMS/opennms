@@ -154,4 +154,13 @@ public class SystemDefForm extends CustomComponent {
     public boolean isReadOnly() {
         return super.isReadOnly() && systemDefEditor.isReadOnly();
     }
+
+    /**
+     * Gets the system definition name.
+     *
+     * @return the system definition name
+     */
+    public String getSystemDefName() {
+        return name.getValue();
+    }
 }

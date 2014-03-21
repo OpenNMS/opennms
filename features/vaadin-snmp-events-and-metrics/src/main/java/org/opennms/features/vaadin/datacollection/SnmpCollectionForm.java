@@ -170,4 +170,12 @@ public class SnmpCollectionForm extends CustomComponent {
         return super.isReadOnly() && snmpCollectionEditor.isReadOnly();
     }
 
+    /**
+     * Gets the snmp collection name.
+     *
+     * @return the snmp collection name
+     */
+    public String getSnmpCollectionName() {
+        return name.getValue();
+    }
 }
