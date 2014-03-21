@@ -49,6 +49,7 @@ import com.vaadin.ui.Window;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
+// FIXME: What about exclude fields ?
 @SuppressWarnings("serial")
 public abstract class IncludeCollectionWindow extends Window implements Button.ClickListener {
 
@@ -78,7 +79,7 @@ public abstract class IncludeCollectionWindow extends Window implements Button.C
         setCaption("Include SystemDef/DataCollectionGroup");
         setModal(true);
         setWidth("400px");
-        setHeight("180px");
+        setHeight("2000px");
         setResizable(false);
         setClosable(false);
         addStyleName("dialog");
