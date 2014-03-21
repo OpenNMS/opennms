@@ -58,7 +58,6 @@ import com.vaadin.ui.VerticalLayout;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
-// FIXME: When a snmpCollection is deleted or renamed, warn if collectd-configuration is using it
 @SuppressWarnings("serial")
 public class SnmpCollectionPanel extends Panel {
 
@@ -99,13 +98,17 @@ public class SnmpCollectionPanel extends Panel {
                 SnmpCollection snmpCollection = snmpCollectionForm.getSnmpCollection();
                 logger.info("SNMP Collection " + snmpCollection.getName() + " has been " + (isNew ? "created." : "updated."));
                 String oldName = snmpCollection.getName();
+                Integer oldStep = snmpCollection.getRrd().getStep();
                 try {
                     snmpCollectionForm.commit();
                     snmpCollectionForm.setReadOnly(true);
                     snmpCollectionTable.refreshRowCache();
                     saveSnmpCollections(snmpCollectionTable.getSnmpCollections(), logger);
-                    if (!isNew && oldName.equals(snmpCollectionForm.getSnmpCollectionName())) {
+                    if (!isNew && !oldName.equals(snmpCollectionForm.getSnmpCollectionName())) {
                         Notification.show("Be sure to replace " + oldName + " with " + snmpCollectionForm.getSnmpCollectionName() + " in case the collection is being used in collectd-configuration.xml", Notification.Type.WARNING_MESSAGE); // TODO Is this enough
+                    }
+                    if (!isNew && oldStep != snmpCollectionForm.getRrdStep()) {
+                        Notification.show("Be sure to replace the collection interval from " + oldStep + "s with " + snmpCollectionForm.getRrdStep() + "s in case the collection is being used in collectd-configuration.xml", Notification.Type.WARNING_MESSAGE); // TODO Is this enough
                     }
                 } catch (CommitException e) {
                     String msg = "Can't save the changes: " + e.getMessage();

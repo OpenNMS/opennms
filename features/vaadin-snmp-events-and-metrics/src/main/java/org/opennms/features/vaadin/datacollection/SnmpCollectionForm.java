@@ -171,11 +171,20 @@ public class SnmpCollectionForm extends CustomComponent {
     }
 
     /**
-     * Gets the snmp collection name.
+     * Gets the SNMP collection name.
      *
-     * @return the snmp collection name
+     * @return the SNMP collection name
      */
     public String getSnmpCollectionName() {
         return name.getValue();
+    }
+
+    /**
+     * Gets the RRD step.
+     *
+     * @return the RRD step
+     */
+    public Integer getRrdStep() {
+        return rrd.getStepValue();
     }
 }
