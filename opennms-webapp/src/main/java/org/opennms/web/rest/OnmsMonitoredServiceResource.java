@@ -232,12 +232,12 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
                     Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
                     if (key.equals("status")) {
                         if ("S".equals(value) || (service.getStatus().equals("A") && value.equals("F"))) {
-                            log().debug("updateService: suspending polling for service " + service.getServiceName() + " on node with IP " + service.getIpAddress().getHostAddress());
+                            LOG.debug("updateService: suspending polling for service {} on node with IP {}", service.getServiceName(), service.getIpAddress().getHostAddress());
                             value = "F";
                             sendEvent(EventConstants.SUSPEND_POLLING_SERVICE_EVENT_UEI, service);
                         }
                         if ("R".equals(value) || (service.getStatus().equals("F") && value.equals("A"))) {
-                            log().debug("updateService: resumg polling for service " + service.getServiceName() + " on node with IP " + service.getIpAddress().getHostAddress());
+                            LOG.debug("updateService: resuming polling for service {} on node with IP {}", service.getServiceName(), service.getIpAddress().getHostAddress());
                             value = "A";
                             sendEvent(EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI, service);
                         }

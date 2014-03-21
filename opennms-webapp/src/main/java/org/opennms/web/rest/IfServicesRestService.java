@@ -47,7 +47,7 @@ import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Order;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.dao.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoredServiceDetail;
 import org.opennms.netmgt.model.OnmsMonitoredServiceDetailList;
@@ -55,6 +55,8 @@ import org.opennms.netmgt.model.OnmsMonitoredServiceList;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -92,6 +94,8 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Path("ifservices")
 @Transactional
 public class IfServicesRestService extends OnmsRestService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(IfServicesRestService.class);
 
     @Autowired
     private MonitoredServiceDao m_serviceDao;
@@ -161,12 +165,12 @@ public class IfServicesRestService extends OnmsRestService {
                     svc.setStatus(status);
                     m_serviceDao.update(svc);
                     if ("S".equals(status) || (currentStatus.equals("A") && status.equals("F"))) {
-                        log().debug("updateServices: suspending polling for service " + svc.getServiceName() + " on node with IP " + svc.getIpAddress().getHostAddress());
+                        LOG.debug("updateServices: suspending polling for service {} on node with IP {}", svc.getServiceName(), svc.getIpAddress().getHostAddress());
                         sendEvent(EventConstants.SERVICE_UNMANAGED_EVENT_UEI, svc); // TODO ManageNodeServlet is sending this.
                         sendEvent(EventConstants.SUSPEND_POLLING_SERVICE_EVENT_UEI, svc);
                     }
                     if ("R".equals(status) || (currentStatus.equals("F") && status.equals("A"))) {
-                        log().debug("updateServices: resumg polling for service " + svc.getServiceName() + " on node with IP " + svc.getIpAddress().getHostAddress());
+                        LOG.debug("updateServices: resuming polling for service {} on node with IP {}", svc.getServiceName(), svc.getIpAddress().getHostAddress());
                         sendEvent(EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI, svc);
                     }
                 }
