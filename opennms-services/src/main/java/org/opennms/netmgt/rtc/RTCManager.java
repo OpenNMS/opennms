@@ -76,12 +76,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ *
  * @see org.opennms.netmgt.rtc.RTCConstants
  * @see org.opennms.netmgt.rtc.DataSender
  * @see org.opennms.netmgt.rtc.DataManager
- * @version $Id: $
  */
 public final class RTCManager extends AbstractServiceDaemon {
     
@@ -175,7 +173,7 @@ public final class RTCManager extends AbstractServiceDaemon {
     private BroadcastEventProcessor m_eventReceiver;
 
     /**
-     * The RunnableConsumerThreadPool that runs updaters that interpret and
+     * The {@link ExecutorService} that runs updaters that interpret and
      * update the data
      */
     private ExecutorService m_updaterPool;
