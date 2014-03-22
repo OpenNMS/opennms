@@ -150,7 +150,7 @@ public class MarkerFilterImpl implements MarkerFilter, AlarmSeverityUpdatedEvent
             if (value == null) return false;
             for (final String searchEntry : searchFor) {
                 if (matchType == MatchType.EXACT || matchType == MatchType.IN) {
-                    if (value.toLowerCase().equals(searchEntry)) {
+                    if (value.equalsIgnoreCase(searchEntry)) {
                         return true;
                     }
                 } else if (matchType == MatchType.SUBSTRING) {

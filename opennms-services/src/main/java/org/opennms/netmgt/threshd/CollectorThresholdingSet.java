@@ -66,7 +66,7 @@ public class CollectorThresholdingSet extends ThresholdingSet {
     public CollectorThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository, Map<String, Object> roProps) {
         super(nodeId, hostAddress, serviceName, repository);
         String storeByIfAliasString = ParameterMap.getKeyedString(roProps, "storeByIfAlias", null);
-        storeByIfAlias = storeByIfAliasString != null && storeByIfAliasString.toLowerCase().equals("true");
+        storeByIfAlias = "true".equalsIgnoreCase(storeByIfAliasString);
     }
     
     /*

@@ -28,6 +28,8 @@
 
 package org.opennms.dashboard.client;
 
+import java.util.Arrays;
+
 import com.google.gwt.user.client.ui.FlexTable;
 
 /**
@@ -90,7 +92,7 @@ class NodeStatusView extends PageableTableView {
      * @param rtcs an array of {@link org.opennms.dashboard.client.NodeRtc} objects.
      */
     public void setNodeRtc(NodeRtc[] rtcs) {
-        m_rtcs = rtcs;
+        m_rtcs = Arrays.copyOf(rtcs, rtcs.length);
         refresh();
     }
     

@@ -28,6 +28,8 @@
 
 package org.opennms.dashboard.client;
 
+import java.util.Arrays;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
@@ -211,7 +213,7 @@ public class SurveillanceData implements IsSerializable {
      * @param columnGroups an array of {@link org.opennms.dashboard.client.SurveillanceGroup} objects.
      */
     public void setColumnGroups(SurveillanceGroup[] columnGroups) {
-        m_columnGroups = columnGroups;
+        m_columnGroups = Arrays.copyOf(columnGroups, columnGroups.length);
     }
 
     /**
@@ -229,7 +231,7 @@ public class SurveillanceData implements IsSerializable {
      * @param rowGroups an array of {@link org.opennms.dashboard.client.SurveillanceGroup} objects.
      */
     public void setRowGroups(SurveillanceGroup[] rowGroups) {
-        m_rowGroups = rowGroups;
+        m_rowGroups = Arrays.copyOf(rowGroups, rowGroups.length);
     }
     
     

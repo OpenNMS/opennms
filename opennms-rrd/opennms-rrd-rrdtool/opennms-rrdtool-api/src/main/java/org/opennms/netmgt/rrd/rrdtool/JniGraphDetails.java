@@ -29,6 +29,7 @@
 package org.opennms.netmgt.rrd.rrdtool;
 
 import java.io.InputStream;
+import java.util.Arrays;
 
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
@@ -57,7 +58,7 @@ public class JniGraphDetails implements RrdGraphDetails {
 	public JniGraphDetails(int height, int width, String[] lines, InputStream stream) {
 		m_height = height;
 		m_width = width;
-		m_printLines = lines;
+		m_printLines = Arrays.copyOf(lines, lines.length);
 		m_inputStream = stream;
 	}
 

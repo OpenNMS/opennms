@@ -1,6 +1,7 @@
 package org.opennms.features.topology.app.internal.gwt.client.service.support;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -44,7 +45,7 @@ public class DefaultServiceRegistry implements ServiceRegistry {
         public ServiceRegistration(Object provider, Map<String, String> properties, Class<?>[] serviceInterfaces) {
             m_provider = provider;
             m_properties = properties;
-            m_serviceInterfaces = serviceInterfaces;
+            m_serviceInterfaces = Arrays.copyOf(serviceInterfaces, serviceInterfaces.length);
         }
         
 

@@ -28,6 +28,8 @@
 
 package org.opennms.dashboard.client;
 
+import java.util.Arrays;
+
 import com.google.gwt.user.client.ui.FlexTable;
 
 /**
@@ -48,7 +50,7 @@ class NotificationView extends PageableTableView {
      * @param notifications an array of {@link org.opennms.dashboard.client.Notification} objects.
      */
     public void setNotifications(Notification[] notifications) {
-        m_notifications = notifications;
+        m_notifications = Arrays.copyOf(notifications, notifications.length);
         refresh();
         
     }

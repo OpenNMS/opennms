@@ -30,6 +30,7 @@ package org.opennms.core.utils;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Arrays;
 
 public class SslSocketWrapper implements SocketWrapper {
     private final String[] m_cipherSuites;
@@ -39,7 +40,7 @@ public class SslSocketWrapper implements SocketWrapper {
     }
 
     public SslSocketWrapper(String[] cipherSuites) {
-        m_cipherSuites = cipherSuites;
+        m_cipherSuites = Arrays.copyOf(cipherSuites, cipherSuites.length);
     }
     @Override
     public Socket wrapSocket(Socket socket) throws IOException {

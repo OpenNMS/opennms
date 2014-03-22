@@ -31,6 +31,7 @@ package org.opennms.netmgt.model.discovery;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -126,8 +127,8 @@ public final class IPAddrRange implements Iterable<InetAddress> {
             if (new ByteArrayComparator().compare(start, end) > 0)
                 throw new IllegalArgumentException("start must be less than or equal to end");
 
-            m_next = new BigInteger(1, start);
-            m_end = new BigInteger(1, end);
+            m_next = new BigInteger(1, Arrays.copyOf(start, start.length));
+            m_end = new BigInteger(1, Arrays.copyOf(end, end.length));
         }
 
         /**

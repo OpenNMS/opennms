@@ -28,6 +28,8 @@
 
 package org.opennms.dashboard.client;
 
+import java.util.Arrays;
+
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -37,10 +39,6 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @version $Id: $
- * @since 1.8.1
  */
 public abstract class PageableTableView extends DashletView implements Pageable {
 
@@ -55,7 +53,7 @@ public abstract class PageableTableView extends DashletView implements Pageable 
         super(dashlet);
         m_pageSize = pageSize;
         
-        initializeTable(headings);
+        initializeTable(Arrays.copyOf(headings, headings.length));
         
         m_pager = new Pager(this);
         

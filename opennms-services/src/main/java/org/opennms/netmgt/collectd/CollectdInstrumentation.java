@@ -39,36 +39,36 @@ public interface CollectdInstrumentation {
     /**
      * <p>beginScheduleExistingInterfaces</p>
      */
-    public void beginScheduleExistingInterfaces();
+    void beginScheduleExistingInterfaces();
     /**
      * <p>endScheduleExistingInterfaces</p>
      */
-    public void endScheduleExistingInterfaces();
+    void endScheduleExistingInterfaces();
     /**
      * <p>beginScheduleInterfacesWithService</p>
      *
      * @param svcName a {@link java.lang.String} object.
      */
-    public void beginScheduleInterfacesWithService(String svcName);
+    void beginScheduleInterfacesWithService(String svcName);
     /**
      * <p>endScheduleInterfacesWithService</p>
      *
      * @param svcName a {@link java.lang.String} object.
      */
-    public void endScheduleInterfacesWithService(String svcName);
+    void endScheduleInterfacesWithService(String svcName);
     /**
      * <p>beginFindInterfacesWithService</p>
      *
      * @param svcName a {@link java.lang.String} object.
      */
-    public void beginFindInterfacesWithService(String svcName);
+    void beginFindInterfacesWithService(String svcName);
     /**
      * <p>endFindInterfacesWithService</p>
      *
      * @param svcName a {@link java.lang.String} object.
      * @param count a int.
      */
-    public void endFindInterfacesWithService(String svcName, int count);
+    void endFindInterfacesWithService(String svcName, int count);
     /**
      * <p>beginScheduleInterface</p>
      *
@@ -76,7 +76,7 @@ public interface CollectdInstrumentation {
      * @param ipAddress a {@link java.lang.String} object.
      * @param svcName a {@link java.lang.String} object.
      */
-    public void beginScheduleInterface(int nodeId, String ipAddress, String svcName);
+    void beginScheduleInterface(int nodeId, String ipAddress, String svcName);
     /**
      * <p>endScheduleInterface</p>
      *
@@ -84,7 +84,7 @@ public interface CollectdInstrumentation {
      * @param ipAddress a {@link java.lang.String} object.
      * @param svcName a {@link java.lang.String} object.
      */
-    public void endScheduleInterface(int nodeId, String ipAddress, String svcName);
+    void endScheduleInterface(int nodeId, String ipAddress, String svcName);
     /**
      * <p>beginCollectorInitialize</p>
      *
@@ -92,7 +92,7 @@ public interface CollectdInstrumentation {
      * @param ipAddress a {@link java.lang.String} object.
      * @param svcName a {@link java.lang.String} object.
      */
-    public void beginCollectorInitialize(int nodeId, String ipAddress, String svcName);
+    void beginCollectorInitialize(int nodeId, String ipAddress, String svcName);
     /**
      * <p>endCollectorInitialize</p>
      *
@@ -100,7 +100,7 @@ public interface CollectdInstrumentation {
      * @param ipAddress a {@link java.lang.String} object.
      * @param svcName a {@link java.lang.String} object.
      */
-    public void endCollectorInitialize(int nodeId, String ipAddress, String svcName);
+    void endCollectorInitialize(int nodeId, String ipAddress, String svcName);
     /**
      * <p>beginCollectorRelease</p>
      *
@@ -108,7 +108,7 @@ public interface CollectdInstrumentation {
      * @param ipAddress a {@link java.lang.String} object.
      * @param svcName a {@link java.lang.String} object.
      */
-    public void beginCollectorRelease(int nodeId, String ipAddress, String svcName);
+    void beginCollectorRelease(int nodeId, String ipAddress, String svcName);
     /**
      * <p>endCollectorRelease</p>
      *
@@ -116,7 +116,7 @@ public interface CollectdInstrumentation {
      * @param ipAddress a {@link java.lang.String} object.
      * @param svcName a {@link java.lang.String} object.
      */
-    public void endCollectorRelease(int nodeId, String ipAddress, String svcName);
+    void endCollectorRelease(int nodeId, String ipAddress, String svcName);
     /**
      * <p>beginCollectorCollect</p>
      *
@@ -124,7 +124,7 @@ public interface CollectdInstrumentation {
      * @param ipAddress a {@link java.lang.String} object.
      * @param svcName a {@link java.lang.String} object.
      */
-    public void beginCollectorCollect(int nodeId, String ipAddress, String svcName);
+    void beginCollectorCollect(int nodeId, String ipAddress, String svcName);
     /**
      * <p>endCollectorCollect</p>
      *
@@ -132,7 +132,7 @@ public interface CollectdInstrumentation {
      * @param ipAddress a {@link java.lang.String} object.
      * @param svcName a {@link java.lang.String} object.
      */
-    public void endCollectorCollect(int nodeId, String ipAddress, String svcName);
+    void endCollectorCollect(int nodeId, String ipAddress, String svcName);
     /**
      * <p>beginCollectingServiceData</p>
      *
@@ -140,7 +140,7 @@ public interface CollectdInstrumentation {
      * @param ipAddress a {@link java.lang.String} object.
      * @param svcName a {@link java.lang.String} object.
      */
-    public void beginCollectingServiceData(int nodeId, String ipAddress, String svcName);
+    void beginCollectingServiceData(int nodeId, String ipAddress, String svcName);
     /**
      * <p>endCollectingServiceData</p>
      *
@@ -148,7 +148,7 @@ public interface CollectdInstrumentation {
      * @param ipAddress a {@link java.lang.String} object.
      * @param svcName a {@link java.lang.String} object.
      */
-    public void endCollectingServiceData(int nodeId, String ipAddress, String svcName);
+    void endCollectingServiceData(int nodeId, String ipAddress, String svcName);
     /**
      * <p>beginPersistingServiceData</p>
      *
@@ -156,7 +156,7 @@ public interface CollectdInstrumentation {
      * @param ipAddress a {@link java.lang.String} object.
      * @param svcName a {@link java.lang.String} object.
      */
-    public void beginPersistingServiceData(int nodeId, String ipAddress, String svcName);
+    void beginPersistingServiceData(int nodeId, String ipAddress, String svcName);
     /**
      * <p>endPersistingServiceData</p>
      *
@@ -164,7 +164,7 @@ public interface CollectdInstrumentation {
      * @param ipAddress a {@link java.lang.String} object.
      * @param svcName a {@link java.lang.String} object.
      */
-    public void endPersistingServiceData(int nodeId, String ipAddress, String svcName);
+    void endPersistingServiceData(int nodeId, String ipAddress, String svcName);
     /**
      * <p>reportCollectionException</p>
      *
@@ -173,7 +173,7 @@ public interface CollectdInstrumentation {
      * @param svcName a {@link java.lang.String} object.
      * @param e a {@link org.opennms.netmgt.collectd.CollectionException} object.
      */
-    public void reportCollectionException(int nodeid, String ipAddress, String svcName, CollectionException e);
+    void reportCollectionException(int nodeid, String ipAddress, String svcName, CollectionException e);
     
 
 }

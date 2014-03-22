@@ -40,6 +40,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -674,7 +675,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 		    
 		    Query(SingleResultQuerier querier, Object[] args) {
 		        m_querier = querier;
-		        m_args = args;
+		        m_args = Arrays.copyOf(args, args.length);
 		    }
 
 		    public int getRowCount() {

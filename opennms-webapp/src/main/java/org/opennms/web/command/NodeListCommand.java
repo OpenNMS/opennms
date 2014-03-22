@@ -28,6 +28,8 @@
 
 package org.opennms.web.command;
 
+import java.util.Arrays;
+
 /**
  * 
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
@@ -141,7 +143,7 @@ public class NodeListCommand {
     }
         
     public void setCategory1(String[] category1) {
-        m_category1 = category1;
+        m_category1 = Arrays.copyOf(category1, category1.length);
     }
     public String[] getCategory1() {
         return m_category1;
@@ -151,7 +153,7 @@ public class NodeListCommand {
     }
     
     public void setCategory2(String[] category2) {
-        m_category2 = category2;
+        m_category2 = Arrays.copyOf(category2, category2.length);
     }
     public String[] getCategory2() {
         return m_category2;

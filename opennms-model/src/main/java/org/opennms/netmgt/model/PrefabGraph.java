@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.model;
 
+import java.util.Arrays;
+
 import org.springframework.util.Assert;
 
 /**
@@ -89,14 +91,14 @@ public class PrefabGraph extends Object implements Comparable<PrefabGraph> {
 
         m_name = name;
         m_title = title;
-        m_columns = columns;
+        m_columns = Arrays.copyOf(columns, columns.length);
         m_command = command;
-        m_externalValues = externalValues;
-        m_propertiesValues = propertiesValues;
+        m_externalValues = Arrays.copyOf(externalValues, externalValues.length);
+        m_propertiesValues = Arrays.copyOf(propertiesValues, propertiesValues.length);
         m_order = order;
-        m_suppress = suppress;
+        m_suppress = Arrays.copyOf(suppress, suppress.length);
 
-        m_types = types;
+        m_types = types == null ? null : Arrays.copyOf(types, types.length);
         m_description = description;
         m_graphWidth = graphWidth;
         m_graphHeight = graphHeight;

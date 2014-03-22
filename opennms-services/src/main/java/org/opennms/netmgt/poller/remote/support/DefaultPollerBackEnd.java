@@ -108,7 +108,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
 
         SimplePollerConfiguration(final Date timestamp, final PolledService[] polledSvcs) {
             m_timestamp = timestamp;
-            m_polledServices = polledSvcs;
+            m_polledServices = Arrays.copyOf(polledSvcs, polledSvcs.length);
             m_serverTime = System.currentTimeMillis();
         }
 
