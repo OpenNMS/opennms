@@ -28,8 +28,6 @@
 
 package org.opennms.dashboard.client;
 
-import java.util.Arrays;
-
 import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -56,7 +54,7 @@ class AlarmView extends PageableTableView {
      * @param alarms an array of {@link org.opennms.dashboard.client.Alarm} objects.
      */
     public void setAlarms(Alarm[] alarms) {
-        m_alarms = Arrays.copyOf(alarms, alarms.length);
+        m_alarms = alarms;
         refresh();
         
     }
