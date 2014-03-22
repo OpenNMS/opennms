@@ -28,8 +28,6 @@
 
 package org.opennms.features.vaadin.nodemaps.internal.gwt.client.event;
 
-import java.util.Arrays;
-
 import org.discotools.gwt.leaflet.client.jsobject.JSObject;
 import org.discotools.gwt.leaflet.client.jsobject.JSObjectWrapper;
 
@@ -49,7 +47,7 @@ public abstract class AbstractDomEventCallback extends JSObjectWrapper implement
 
     public AbstractDomEventCallback(final String[] eventTypes) {
         this();
-        m_eventTypes = Arrays.copyOf(eventTypes, eventTypes.length);
+        m_eventTypes = eventTypes;
     }
 
     public AbstractDomEventCallback(final String eventType) {
