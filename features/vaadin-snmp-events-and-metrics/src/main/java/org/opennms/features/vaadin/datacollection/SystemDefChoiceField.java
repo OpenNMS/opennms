@@ -32,8 +32,6 @@ import java.util.List;
 
 import org.opennms.netmgt.config.datacollection.SystemDefChoice;
 
-import com.vaadin.data.Property;
-import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
@@ -108,17 +106,18 @@ public class SystemDefChoiceField extends CustomField<SystemDefChoice> {
      */
     @Override
     protected void setInternalValue(SystemDefChoice systemDef) {
-        super.setInternalValue(systemDef); // TODO Is this required ?
         boolean oidTypeState = oidType.isReadOnly();
         oidType.setReadOnly(false);
         oidType.select(systemDef.getSysoid() == null ? MASK : SINGLE);
-        if (oidTypeState)
+        if (oidTypeState) {
             oidType.setReadOnly(true);
+        }
         boolean oidValueState = oidValue.isReadOnly();
         oidValue.setReadOnly(false);
         oidValue.setValue(systemDef.getSysoid() == null ? systemDef.getSysoidMask() : systemDef.getSysoid());
-        if (oidValueState)
+        if (oidValueState) {
             oidValue.setReadOnly(true);
+        }
     }
 
     /* (non-Javadoc)
@@ -134,23 +133,6 @@ public class SystemDefChoiceField extends CustomField<SystemDefChoice> {
             systemDef.setSysoidMask((String) oidValue.getValue());
         }
         return systemDef;
-    }
-
-    /* (non-Javadoc)
-     * @see com.vaadin.ui.AbstractField#setPropertyDataSource(com.vaadin.data.Property)
-     */
-    @Override
-    @SuppressWarnings("rawtypes")
-    public void setPropertyDataSource(Property newDataSource) {
-        Object value = newDataSource.getValue();
-        if (value instanceof SystemDefChoice) {
-            SystemDefChoice dto = (SystemDefChoice) value;
-            oidType.select(dto.getSysoid() == null ? MASK : SINGLE);
-            oidValue.setValue(dto.getSysoid() == null ? dto.getSysoidMask() : dto.getSysoid());
-        } else {
-            throw new ConversionException("Invalid type");
-        }
-        super.setPropertyDataSource(newDataSource);
     }
 
     /* (non-Javadoc)

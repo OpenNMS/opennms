@@ -2,7 +2,7 @@ package org.opennms.features.topology.plugins.topo.simple;
 
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractVertex;
-import org.opennms.features.topology.api.topo.AbstractVertexRef;
+import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SimpleConnector;
 import org.opennms.features.topology.api.topo.Vertex;
@@ -54,12 +54,12 @@ public class SimpleGraphBuilder {
 		
 		VertexRef srcVertex = m_graphProvider.getVertex(ns(), srcId);
 		if (srcVertex == null) {
-			srcVertex = new AbstractVertexRef(ns(), srcId);
+			srcVertex = new DefaultVertexRef(ns(), srcId);
 		}
 		
 		VertexRef tgtVertex = m_graphProvider.getVertex(ns(), tgtId);
 		if (tgtVertex == null) {
-			tgtVertex = new AbstractVertexRef(ns(), tgtId);
+			tgtVertex = new DefaultVertexRef(ns(), tgtId);
 		}
 		
 		

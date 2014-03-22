@@ -157,7 +157,7 @@ public class WallboardConfigView extends HorizontalLayout implements TabSheet.Cl
      * This method is used to add a new {@link TabSheet.Tab} component. It creates a new window querying the user for the name of the new {@link Wallboard}.
      */
     protected void addNewTabComponent() {
-        final Window window = new Window("New Wallboard");
+        final Window window = new Window("New Ops Board");
 
         window.setModal(true);
         window.setClosable(false);
@@ -166,7 +166,7 @@ public class WallboardConfigView extends HorizontalLayout implements TabSheet.Cl
         getUI().addWindow(window);
 
         window.setContent(new VerticalLayout() {
-            TextField name = new TextField("Wallboard Name");
+            TextField name = new TextField("Ops Board Name");
 
             {
                 addComponent(new FormLayout() {

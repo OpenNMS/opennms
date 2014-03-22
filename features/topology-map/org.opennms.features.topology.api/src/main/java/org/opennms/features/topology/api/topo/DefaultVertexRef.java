@@ -28,21 +28,35 @@
 
 package org.opennms.features.topology.api.topo;
 
-// TODO rename class because it is not abstract. It can be initialized. Fix this please
-public class AbstractVertexRef extends AbstractRef implements VertexRef {
+/**
+ * 
+ * @author <a href="mailto:mvr@opennms.org>Markus von Ruden</a>
+ * @author <a href="mailto:seth@opennms.org">Seth Leger</a>
+ * @author <a href="mailto:thedesloge@opennms.org">Donald Desloge</a>
+ *
+ */
+public class DefaultVertexRef extends AbstractRef implements VertexRef {
 
-	public AbstractVertexRef(VertexRef ref) {
+	public DefaultVertexRef(VertexRef ref) {
 		super(ref);
 	}
 
-	public AbstractVertexRef(String namespace, String id, String label) {
+	/**
+	 * Just a note here, it is important that the id parameter is set to the node id if the
+	 * namespace is "nodes". (david@opennms.org)
+	 * 
+	 * @param namespace
+	 * @param id
+	 * @param label
+	 */
+	public DefaultVertexRef(String namespace, String id, String label) {
 		super(namespace, id, label);
 	}
 
 	/**
 	 * @deprecated Specify a useful label for the object
 	 */
-	public AbstractVertexRef(String namespace, String id) {
+	public DefaultVertexRef(String namespace, String id) {
 		super(namespace, id, namespace + ":" + id);
 	}
 

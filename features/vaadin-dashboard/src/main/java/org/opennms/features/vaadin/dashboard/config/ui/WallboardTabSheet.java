@@ -58,7 +58,7 @@ public abstract class WallboardTabSheet extends TabSheet {
     public WallboardTabSheet() {
         m_plusTab = new CssLayout();
         m_plusTab.setCaption("+");
-        m_plusTab.setDescription("Add a new wallboard configuration");
+        m_plusTab.setDescription("Add a new Ops Board configuration");
         addTab(m_plusTab).setClosable(false);
         addSelectedTabChangeListener(new TabSheet.SelectedTabChangeListener() {
 

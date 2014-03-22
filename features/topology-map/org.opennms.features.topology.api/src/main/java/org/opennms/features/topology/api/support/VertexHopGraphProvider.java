@@ -44,7 +44,7 @@ import java.util.TreeSet;
 import javax.xml.bind.JAXBException;
 
 import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.topo.AbstractVertexRef;
+import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.CollapsibleCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
@@ -113,8 +113,15 @@ public class VertexHopGraphProvider implements GraphProvider {
     }
 
     public abstract static class VertexHopCriteria extends Criteria {
-        private String label = "";
+        private String m_label = "";
         private String m_id = "";
+        
+        //Adding explicit constructor because I found that this label must be set
+        //for the focus list to have meaningful information in the focus list.
+        public VertexHopCriteria(String label) {
+        	super();
+        	m_label = label;
+        }
 
         @Override
         public ElementType getType() {
@@ -124,11 +131,11 @@ public class VertexHopGraphProvider implements GraphProvider {
         public abstract Set<VertexRef> getVertices();
 
         public String getLabel() {
-            return label;
+            return m_label;
         }
 
         public void setLabel(String label) {
-            this.label = label;
+            m_label = label;
         }
 
         public void setId(String id){
@@ -143,6 +150,17 @@ public class VertexHopGraphProvider implements GraphProvider {
     public static class FocusNodeHopCriteria extends VertexHopCriteria {
         private final Set<VertexRef> m_vertices = new TreeSet<VertexRef>(new RefComparator());
 
+        //FIXME: Since the criteria must have a label set, this constructor is being deprecated
+        //Be sure that your constructing class calls setLabel()
+        @Deprecated
+        public FocusNodeHopCriteria() {
+        	super(null);
+        }
+        
+        public FocusNodeHopCriteria(String label) {
+        	super(label);
+        }
+        
         /**
          * TODO: This return value doesn't matter since we just delegate
          * to the m_delegate provider.
@@ -260,7 +278,7 @@ public class VertexHopGraphProvider implements GraphProvider {
     @Deprecated
     @Override
     public boolean containsVertexId(String id) {
-        return containsVertexId(new AbstractVertexRef(getVertexNamespace(), id));
+        return containsVertexId(new DefaultVertexRef(getVertexNamespace(), id));
     }
 
     @Override

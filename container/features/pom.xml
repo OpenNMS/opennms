@@ -85,6 +85,7 @@
             <feature>dashlet-summary</feature>
             <feature>dashlet-surveillance</feature>
             <feature>dashlet-topology</feature>
+            <feature>dashlet-url</feature>
             <feature>nrtg</feature>
             <feature>opennms-topology-dev</feature>
             <feature>opennms-topology-runtime-base</feature>

@@ -42,7 +42,7 @@ import org.opennms.features.vaadin.dashboard.model.DashletSelectorAccess;
  */
 @SuppressWarnings("serial")
 @Theme("dashboard")
-@Title("OpenNMS Dashboard")
+@Title("OpenNMS Ops Board")
 public class WallboardConfigUI extends UI implements DashletSelectorAccess {
     /**
      * The {@link DashletSelector} instance used for querying configuration data

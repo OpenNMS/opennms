@@ -49,7 +49,7 @@ import org.opennms.features.vaadin.dashboard.ui.wallboard.WallboardView;
  */
 @SuppressWarnings("serial")
 @Theme("dashboard")
-@Title("OpenNMS Dashboard")
+@Title("OpenNMS Ops Board")
 public class WallboardUI extends UI implements DashletSelectorAccess {
     /**
      * The {@link DashletSelector} for querying configuration data

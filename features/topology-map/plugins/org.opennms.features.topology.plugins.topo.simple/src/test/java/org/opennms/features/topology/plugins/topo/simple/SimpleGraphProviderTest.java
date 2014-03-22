@@ -52,7 +52,7 @@ import org.opennms.features.topology.api.Constants;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.AbstractVertex;
-import org.opennms.features.topology.api.topo.AbstractVertexRef;
+import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
@@ -156,8 +156,8 @@ public class SimpleGraphProviderTest {
         assertFalse(m_topologyProvider.containsVertexId("v1"));
         ((AbstractVertex)vertexA).setIpAddress("10.0.0.4");
         final String namespace = m_topologyProvider.getVertexNamespace();
-        VertexRef ref0 = new AbstractVertexRef(namespace, "v0", namespace + ":v0");
-        VertexRef ref1 = new AbstractVertexRef(namespace, "v1", namespace + ":v0");
+        VertexRef ref0 = new DefaultVertexRef(namespace, "v0", namespace + ":v0");
+        VertexRef ref1 = new DefaultVertexRef(namespace, "v1", namespace + ":v0");
         assertEquals(1, m_topologyProvider.getVertices(Collections.singletonList(ref0)).size());
         assertEquals(0, m_topologyProvider.getVertices(Collections.singletonList(ref1)).size());
 

@@ -28,6 +28,7 @@
 package org.opennms.features.vaadin.events;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.opennms.features.vaadin.api.OnmsBeanContainer;
 import org.opennms.netmgt.xml.eventconf.Maskelement;
@@ -52,7 +53,7 @@ import com.vaadin.ui.VerticalLayout;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class MaskElementField extends CustomField<ArrayList<Maskelement>> implements Button.ClickListener {
+public class MaskElementField extends CustomField<List<Maskelement>> implements Button.ClickListener {
 
     /** The Container. */
     private final OnmsBeanContainer<Maskelement> container = new OnmsBeanContainer<Maskelement>(Maskelement.class);
@@ -118,16 +119,15 @@ public class MaskElementField extends CustomField<ArrayList<Maskelement>> implem
      */
     @Override
     @SuppressWarnings("unchecked")
-    public Class<? extends ArrayList<Maskelement>> getType() {
-        return (Class<? extends ArrayList<Maskelement>>) new ArrayList<Maskelement>().getClass();
+    public Class<? extends List<Maskelement>> getType() {
+        return (Class<? extends List<Maskelement>>) new ArrayList<Maskelement>().getClass();
     }
 
     /* (non-Javadoc)
      * @see com.vaadin.ui.AbstractField#setInternalValue(java.lang.Object)
      */
     @Override
-    protected void setInternalValue(ArrayList<Maskelement> maskElements) {
-        super.setInternalValue(maskElements); // TODO Is this required ?
+    protected void setInternalValue(List<Maskelement> maskElements) {
         container.removeAllItems();
         container.addAll(maskElements);
     }
@@ -136,12 +136,8 @@ public class MaskElementField extends CustomField<ArrayList<Maskelement>> implem
      * @see com.vaadin.ui.AbstractField#getInternalValue()
      */
     @Override
-    protected ArrayList<Maskelement> getInternalValue() {
-        ArrayList<Maskelement> beans = new ArrayList<Maskelement>();
-        for (Object itemId: container.getItemIds()) {
-            beans.add(container.getItem(itemId).getBean());
-        }
-        return beans;
+    protected List<Maskelement> getInternalValue() {
+        return container.getOnmsBeans();
     }
 
     /* (non-Javadoc)

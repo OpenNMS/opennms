@@ -27,7 +27,6 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.features.vaadin.api.OnmsBeanContainer;
@@ -62,7 +61,7 @@ public class GroupTable extends Table {
         addGeneratedColumn("count", new ColumnGenerator() {
             @Override
             public Object generateCell(Table source, Object itemId, Object columnId) {
-                return container.getItem(itemId).getBean().getMibObjs();
+                return container.getItem(itemId).getBean().getMibObjs().size();
             }
         });
         setVisibleColumns(new Object[] { "name", "count" });
@@ -97,10 +96,6 @@ public class GroupTable extends Table {
      * @return the groups
      */
     public List<Group> getGroups() {
-        List<Group> groups = new ArrayList<Group>();
-        for (Object itemId : container.getItemIds()) {
-            groups.add(container.getItem(itemId).getBean());
-        }
-        return groups;
+        return container.getOnmsBeans();
     }
 }

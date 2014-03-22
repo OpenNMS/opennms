@@ -37,6 +37,7 @@ use vars qw(
 	$password
 
 	$url_root
+	$user_config_file
 );
 
 $BUILD = (qw$LastChangedRevision 1 $)[-1];
@@ -46,6 +47,11 @@ $XML = XML::Twig->new();
 $url_root = 'http://localhost:8980/opennms/rest';
 $username = 'admin';
 $password = 'admin';
+
+$user_config_file = ($^O eq "MSWin32") ? $ENV{LOCALAPPDATA} . "\\OpenNMS\\provision.plrc" : $ENV{HOME} . "/.opennms/provision.plrc";
+
+# load user-overridden defaults if present
+load_user_config();
 
 =head1 OPTIONS
 
@@ -66,6 +72,9 @@ user must have administrative privileges in the OpenNMS web UI.
 
 Defaults to 'admin'.
 
+May be overridden by setting $username in $HOME/.opennms/provision.plrc
+(UNIX) or %LOCALAPPDATA%\OpenNMS\provision.plrc (Windows).
+
 =item B<--password>
 
 The password associated with the administrative username specified
@@ -73,10 +82,16 @@ in B<-username>.
 
 Defaults to 'admin'.
 
+May be overridden by setting $password in $HOME/.opennms/provision.plrc
+(UNIX) or %LOCALAPPDATA%\OpenNMS\provision.plrc (Windows).
+
 =item B<--url>
 
 The URL of the OpenNMS REST interface.  Defaults to
 'http://localhost:8980/opennms/rest'.
+
+May be overridden by setting $url_root in $HOME/.opennms/provision.plrc
+(UNIX) or %LOCALAPPDATA%\OpenNMS\provision.plrc (Windows).
 
 =back
 
@@ -773,6 +788,15 @@ sub dump_interface {
 sub print_version {
 	printf("%s build %d\n", (split('/', $0))[-1], $BUILD);
 	exit 0;
+}
+
+sub load_user_config {
+	my $have_config = open USERCONFIG, "<${user_config_file}";
+	return if (! defined $have_config);
+	while (my $configline = <USERCONFIG>) {
+		eval $configline;
+	}
+	close USERCONFIG;
 }
 
 =back

@@ -58,7 +58,8 @@ import com.vaadin.ui.VerticalLayout;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
-// TODO When renaming a group, all the SNMP collections must be updated.
+// FIXME: When renaming a datacollection-group, all the SNMP collections must be updated.
+// FIXME: When a different group is selected and the current one is being edited, warn about discard the changes or save them before continue
 @SuppressWarnings("serial")
 public abstract class DataCollectionGroupPanel extends Panel implements TabSheet.SelectedTabChangeListener {
 
@@ -151,12 +152,12 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
      * @return the OpenNMS data collection group
      */
     public DatacollectionGroup getOnmsDataCollection() {
-        final DatacollectionGroup dto = new DatacollectionGroup();
-        dto.setName((String) groupName.getValue());
-        dto.getGroups().addAll(groups.getGroups());
-        dto.getResourceTypes().addAll(resourceTypes.getResourceTypes());
-        dto.getSystemDefs().addAll(systemDefs.getSystemDefs());
-        return dto;
+        final DatacollectionGroup group = new DatacollectionGroup();
+        group.setName((String) groupName.getValue());
+        group.setGroups(groups.getGroups());
+        group.setResourceTypes(resourceTypes.getResourceTypes());
+        group.setSystemDefs(systemDefs.getSystemDefs());
+        return group;
     }
 
     /**

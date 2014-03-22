@@ -67,6 +67,9 @@ public class SnmpCollectionPanel extends Panel {
     /** The OpenNMS Data Collection Configuration DAO. */
     final private DataCollectionConfigDao dataCollectionConfigDao;
 
+    /** The selected resourceType ID. */
+    private Object selectedSnmpCollectionId;
+
     /**
      * Instantiates a new SNMP collection panel.
      *
@@ -91,22 +94,32 @@ public class SnmpCollectionPanel extends Panel {
 
         final EditorToolbar bottomToolbar = new EditorToolbar() {
             @Override
-            public void save() {
+            public boolean save() {
                 SnmpCollection snmpCollection = snmpCollectionForm.getSnmpCollection();
                 logger.info("SNMP Collection " + snmpCollection.getName() + " has been " + (isNew ? "created." : "updated."));
+                String oldName = snmpCollection.getName();
+                Integer oldStep = snmpCollection.getRrd().getStep();
                 try {
-                    snmpCollectionForm.getFieldGroup().commit();
+                    snmpCollectionForm.commit();
                     snmpCollectionForm.setReadOnly(true);
                     snmpCollectionTable.refreshRowCache();
                     saveSnmpCollections(snmpCollectionTable.getSnmpCollections(), logger);
+                    if (!isNew && !oldName.equals(snmpCollectionForm.getSnmpCollectionName())) {
+                        Notification.show("Be sure to replace " + oldName + " with " + snmpCollectionForm.getSnmpCollectionName() + " in case the collection is being used in collectd-configuration.xml", Notification.Type.WARNING_MESSAGE); // TODO Is this enough
+                    }
+                    if (!isNew && oldStep != snmpCollectionForm.getRrdStep()) {
+                        Notification.show("Be sure to replace the collection interval from " + oldStep + "s with " + snmpCollectionForm.getRrdStep() + "s in case the collection is being used in collectd-configuration.xml", Notification.Type.WARNING_MESSAGE); // TODO Is this enough
+                    }
                 } catch (CommitException e) {
                     String msg = "Can't save the changes: " + e.getMessage();
                     logger.error(msg);
                     Notification.show(msg, Notification.Type.ERROR_MESSAGE);
+                    return false;
                 }
+                return true;
             }
             @Override
-            public void delete() {
+            public boolean delete() {
                 Object snmpCollectionId = snmpCollectionTable.getValue();
                 if (snmpCollectionId != null) {
                     SnmpCollection snmpCollection = snmpCollectionTable.getSnmpCollection(snmpCollectionId);
@@ -115,16 +128,20 @@ public class SnmpCollectionPanel extends Panel {
                     snmpCollectionTable.removeItem(snmpCollectionId);
                     snmpCollectionTable.refreshRowCache();
                     saveSnmpCollections(snmpCollectionTable.getSnmpCollections(), logger);
+                    Notification.show("Be sure that " + snmpCollection.getName() + " is not being used in collectd-configuration.xml", Notification.Type.WARNING_MESSAGE); // TODO Is this enough
                 }
+                return true;
             }
             @Override
-            public void edit() {
+            public boolean edit() {
                 snmpCollectionForm.setReadOnly(false);
+                return true;
             }
             @Override
-            public void cancel() {
-                snmpCollectionForm.getFieldGroup().discard();
+            public boolean cancel() {
+                snmpCollectionForm.discard();
                 snmpCollectionForm.setReadOnly(true);
+                return true;
             }
         };
         bottomToolbar.setVisible(false);
@@ -132,14 +149,20 @@ public class SnmpCollectionPanel extends Panel {
         snmpCollectionTable.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(ValueChangeEvent event) {
-                Object snmpCollectionId = snmpCollectionTable.getValue();
-                if (snmpCollectionId != null) {
-                    snmpCollectionForm.setSnmpCollection(snmpCollectionTable.getSnmpCollection(snmpCollectionId));
+                if (snmpCollectionForm.isVisible() && !snmpCollectionForm.isReadOnly()) {
+                    snmpCollectionTable.select(selectedSnmpCollectionId);
+                    Notification.show("A SNMP collection type seems to be being edited.\nPlease save or cancel your current changes.", Notification.Type.WARNING_MESSAGE);
+                } else {
+                    Object snmpCollectionId = snmpCollectionTable.getValue();
+                    if (snmpCollectionId != null) {
+                        selectedSnmpCollectionId = snmpCollectionId;
+                        snmpCollectionForm.setSnmpCollection(snmpCollectionTable.getSnmpCollection(snmpCollectionId));
+                    }
+                    snmpCollectionForm.setReadOnly(true);
+                    snmpCollectionForm.setVisible(snmpCollectionId != null);
+                    bottomToolbar.setReadOnly(true);
+                    bottomToolbar.setVisible(snmpCollectionId != null);
                 }
-                snmpCollectionForm.setReadOnly(true);
-                snmpCollectionForm.setVisible(snmpCollectionId != null);
-                bottomToolbar.setReadOnly(true);
-                bottomToolbar.setVisible(snmpCollectionId != null);
             }
         });   
 

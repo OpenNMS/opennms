@@ -66,4 +66,15 @@ public abstract class XmlTestNoCastor<T> extends XmlTest<T> {
     public void validateCastorObjectAgainstSchema() throws Exception {
     }
 
+    @Test
+    @Override
+    @Ignore
+    public void unmarshalCastorMarshalCastor() throws Exception {
+    }
+
+    @Test
+    @Override
+    @Ignore
+    public void marshalCastorUnmarshalCastor() throws Exception {
+    }
 }

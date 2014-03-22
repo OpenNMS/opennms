@@ -29,12 +29,15 @@ package org.opennms.features.vaadin.datacollection;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.opennms.features.vaadin.api.Logger;
 import org.opennms.features.vaadin.config.EditorToolbar;
 import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.Group;
+import org.opennms.netmgt.config.datacollection.SnmpCollection;
 import org.opennms.netmgt.config.datacollection.SystemDef;
 
 import com.vaadin.data.Property;
@@ -58,8 +61,11 @@ public class SystemDefPanel extends Panel {
     /** The isNew flag. True, if the system definition is new. */
     private boolean isNew = false;
 
-    /** The system def table. */
+    /** The system definition table. */
     private final SystemDefTable systemDefTable;
+
+    /** The selected systemDef ID. */
+    private Object selectedSystemDefId;
 
     /**
      * Instantiates a new system definition panel.
@@ -70,11 +76,13 @@ public class SystemDefPanel extends Panel {
      */
     public SystemDefPanel(final DataCollectionConfigDao dataCollectionConfigDao, final DatacollectionGroup source, final Logger logger) {
 
-        if (dataCollectionConfigDao == null)
+        if (dataCollectionConfigDao == null) {
             throw new RuntimeException("dataCollectionConfigDao cannot be null.");
+        }
 
-        if (source == null)
+        if (source == null) {
             throw new RuntimeException("source cannot be null.");
+        }
 
         addStyleName("light");
 
@@ -83,7 +91,8 @@ public class SystemDefPanel extends Panel {
         for (Group group : source.getGroups()) {
             groupNames.add(group.getName());
         }
-        // Adding all defined systemDefs
+
+        // Adding all defined groups
         groupNames.addAll(dataCollectionConfigDao.getAvailableMibGroups());
 
         systemDefTable = new SystemDefTable(source.getSystemDefs());
@@ -93,38 +102,57 @@ public class SystemDefPanel extends Panel {
 
         final EditorToolbar bottomToolbar = new EditorToolbar() {
             @Override
-            public void save() {
+            public boolean save() {
                 SystemDef systemDef = systemDefForm.getSystemDef();
+                if (!isNew && !systemDef.getName().equals(systemDefForm.getSystemDefName())) {
+                    Set<String> collections = getParentCollections(dataCollectionConfigDao, systemDef.getName());
+                    if (!collections.isEmpty()) {
+                        final String msg = "The systemDef cannot be renamed because it is being referenced by:\n" + collections.toString();
+                        Notification.show(msg, Notification.Type.WARNING_MESSAGE);
+                        return false;
+                    }
+                }
                 logger.info("SNMP SystemDef " + systemDef.getName() + " has been " + (isNew ? "created." : "updated."));
                 try {
-                    systemDefForm.getFieldGroup().commit();
+                    systemDefForm.commit();
                     systemDefForm.setReadOnly(true);
                     systemDefTable.refreshRowCache();
+                    return true;
                 } catch (CommitException e) {
                     String msg = "Can't save the changes: " + e.getMessage();
                     logger.error(msg);
                     Notification.show(msg, Notification.Type.ERROR_MESSAGE);
+                    return false;
                 }
             }
             @Override
-            public void delete() {
+            public boolean delete() {
                 Object systemDefId = systemDefTable.getValue();
                 if (systemDefId != null) {
                     SystemDef systemDef = systemDefTable.getSystemDef(systemDefId);
+                    Set<String> collections = getParentCollections(dataCollectionConfigDao, systemDef.getName());
+                    if (!collections.isEmpty()) {
+                        final String msg = "The systemDef cannot be deleted because it is being referenced by:\n" + collections.toString();
+                        Notification.show(msg, Notification.Type.WARNING_MESSAGE);
+                        return false;
+                    }
                     logger.info("SNMP SystemDef " + systemDef.getName() + " has been removed.");
                     systemDefTable.select(null);
                     systemDefTable.removeItem(systemDefId);
                     systemDefTable.refreshRowCache();
                 }
+                return true;
             }
             @Override
-            public void edit() {
+            public boolean edit() {
                 systemDefForm.setReadOnly(false);
+                return true;
             }
             @Override
-            public void cancel() {
-                systemDefForm.getFieldGroup().discard();
+            public boolean cancel() {
+                systemDefForm.discard();
                 systemDefForm.setReadOnly(true);
+                return true;
             }
         };
         bottomToolbar.setVisible(false);
@@ -132,16 +160,22 @@ public class SystemDefPanel extends Panel {
         systemDefTable.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(ValueChangeEvent event) {
-                Object systemDefId = systemDefTable.getValue();
-                if (systemDefId != null) {
-                    systemDefForm.setSystemDef(systemDefTable.getSystemDef(systemDefId));
+                if (systemDefForm.isVisible() && !systemDefForm.isReadOnly()) {
+                    systemDefTable.select(selectedSystemDefId);
+                    Notification.show("A system definition seems to be being edited.\nPlease save or cancel your current changes.", Notification.Type.WARNING_MESSAGE);
+                } else {
+                    Object systemDefId = systemDefTable.getValue();
+                    if (systemDefId != null) {
+                        selectedSystemDefId = systemDefId;
+                        systemDefForm.setSystemDef(systemDefTable.getSystemDef(systemDefId));
+                    }
+                    systemDefForm.setReadOnly(true);
+                    systemDefForm.setVisible(systemDefId != null);
+                    bottomToolbar.setReadOnly(true);
+                    bottomToolbar.setVisible(systemDefId != null);
                 }
-                systemDefForm.setReadOnly(true);
-                systemDefForm.setVisible(systemDefId != null);
-                bottomToolbar.setReadOnly(true);
-                bottomToolbar.setVisible(systemDefId != null);
             }
-        });   
+        });
 
         final Button add = new Button("Add SNMP SystemDef", new Button.ClickListener() {
             @Override
@@ -180,6 +214,26 @@ public class SystemDefPanel extends Panel {
      */
     public List<SystemDef> getSystemDefs() {
         return systemDefTable.getSystemDefs();
+    }
+
+    /**
+     * Gets the parent SNMP Collections.
+     * <p>The list of SNMP collection that are referencing a given systemDefName</p>
+     *
+     * @param dataCollectionConfigDao the data collection configuration DAO
+     * @param systemDefName the system definition name
+     * @return the parent collections.
+     */
+    private Set<String> getParentCollections(final DataCollectionConfigDao dataCollectionConfigDao, String systemDefName) {
+        Set<String> collectionMap = new TreeSet<String>();
+        for (final SnmpCollection collection : dataCollectionConfigDao.getRootDataCollection().getSnmpCollections()) {
+            for (final SystemDef systemDef : collection.getSystems().getSystemDefs()) {
+                if (systemDefName.equals(systemDef.getName())) {
+                    collectionMap.add(collection.getName());
+                }
+            }
+        }
+        return collectionMap;
     }
 
 }

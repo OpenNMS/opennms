@@ -39,6 +39,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.internal.collection.DatacollectionConfigVisitor;
 
 /**
  * list of IP address or IP address mask values to which
@@ -144,6 +145,11 @@ public class IpList implements Serializable {
     @Override
     public String toString() {
         return "IpList [ipAddresses=" + m_ipAddresses + ", ipAddressMasks=" + m_ipAddressMasks + "]";
+    }
+
+    public void visit(final DatacollectionConfigVisitor visitor) {
+        visitor.visitIpList(this);
+        visitor.visitIpListComplete();
     }
 
 }

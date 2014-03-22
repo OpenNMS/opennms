@@ -68,13 +68,13 @@ public class EventFormTest {
     @Test
     public void testGroupField() throws Exception {
         EventForm form = new EventForm();
-        FieldGroup group = form.getFieldGroup();
+        FieldGroup group = form.eventEditor;
 
         Field<?> uei = group.getField("uei");
         Assert.assertTrue(uei instanceof TextField);
         Assert.assertEquals("uei.opennms.org/newEvent", uei.getValue());
 
-        Field<?> logMsgDest = group.getField("logMsgDest");
+        Field<?> logMsgDest = group.getField("logmsg.dest");
         Assert.assertNotNull(logMsgDest);
         Assert.assertTrue(logMsgDest instanceof ComboBox);
         Assert.assertEquals("logndisplay", logMsgDest.getValue());
@@ -84,7 +84,7 @@ public class EventFormTest {
         Assert.assertNotNull(event);
 
         form.setEvent(event);
-        logMsgDest = group.getField("logMsgDest");
+        logMsgDest = group.getField("logmsg.dest");
         Assert.assertNotNull(logMsgDest);
         Assert.assertTrue(logMsgDest instanceof ComboBox);
         Assert.assertEquals(event.getLogmsg().getDest(), logMsgDest.getValue());

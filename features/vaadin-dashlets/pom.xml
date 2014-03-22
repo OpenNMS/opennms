@@ -26,5 +26,6 @@
         <module>dashlet-topology</module>
         <module>dashlet-surveillance</module>
         <module>dashlet-features</module>
+        <module>dashlet-url</module>
     </modules>
 </project>

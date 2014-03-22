@@ -45,7 +45,7 @@ import org.opennms.features.topology.api.MapViewManager;
 import org.opennms.features.topology.api.SelectionContext;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.VerticesUpdateManager;
-import org.opennms.features.topology.api.topo.AbstractVertexRef;
+import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
@@ -255,7 +255,7 @@ public class OSGiVerticesUpdateManagerTest {
     private List<VertexRef> createVertexRefsWithIds(int... vertIds) {
         List<VertexRef> vertices = new ArrayList<VertexRef>();
         for (int i = 0; i < vertIds.length; i++) {
-            VertexRef vRef = new AbstractVertexRef("nodes", "" + vertIds[i], "");
+            VertexRef vRef = new DefaultVertexRef("nodes", "" + vertIds[i], "");
             vertices.add(vRef);
         }
         return vertices;

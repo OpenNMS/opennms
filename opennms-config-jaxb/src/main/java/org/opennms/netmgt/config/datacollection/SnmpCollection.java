@@ -40,6 +40,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.internal.collection.DatacollectionConfigVisitor;
 
 /**
  * a grouping of SNMP related RRD parms, MIB object groups
@@ -49,8 +50,8 @@ import org.opennms.core.xml.ValidateUsing;
 @XmlRootElement(name="snmp-collection", namespace="http://xmlns.opennms.org/xsd/config/datacollection")
 @XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("datacollection-config.xsd")
-public class SnmpCollection implements Serializable {
-    private static final long serialVersionUID = -9050559966348346178L;
+public class SnmpCollection implements Serializable, Cloneable {
+    private static final long serialVersionUID = -6632949516175500912L;
 
     /**
      * collector name
@@ -300,4 +301,47 @@ public class SnmpCollection implements Serializable {
                 + m_includeCollections + ", resourceTypes=" + m_resourceTypes + ", groups=" + m_groups + ", systems=" + m_systems + "]";
     }
 
+    public void visit(final DatacollectionConfigVisitor visitor) {
+        visitor.visitSnmpCollection(this);
+
+        if (m_includeCollections != null) {
+            for (final IncludeCollection collection : m_includeCollections) {
+                collection.visit(visitor);
+            }
+        }
+
+        if (m_groups != null && m_groups.getGroups() != null) {
+            for (final Group group : m_groups.getGroups()) {
+                group.visit(visitor);
+            }
+        }
+
+        if (m_systems != null && m_systems.getSystemDefs() != null) {
+            for (final SystemDef def : m_systems.getSystemDefs()) {
+                def.visit(visitor);
+            }
+        }
+
+        if (m_resourceTypes != null) {
+            for (final ResourceType type : m_resourceTypes) {
+                type.visit(visitor);
+            }
+        }
+
+        visitor.visitSnmpCollectionComplete();
+    }
+
+    @Override
+    public SnmpCollection clone() {
+        final SnmpCollection newCollection = new SnmpCollection();
+        newCollection.setGroups(getGroups());
+        newCollection.setIncludeCollections(getIncludeCollections());
+        newCollection.setMaxVarsPerPdu(getMaxVarsPerPdu());
+        newCollection.setName(getName());
+        newCollection.setResourceTypes(getResourceTypes());
+        newCollection.setRrd(getRrd());
+        newCollection.setSnmpStorageFlag(getSnmpStorageFlag());
+        newCollection.setSystems(getSystems());
+        return newCollection;
+    }
 }

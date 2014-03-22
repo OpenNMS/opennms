@@ -36,6 +36,7 @@ public abstract class AbstractSearchQuery implements SearchQuery{
         m_queryString = queryString;
     }
 
+    @Override
     public String getQueryString(){
         return m_queryString;
     }

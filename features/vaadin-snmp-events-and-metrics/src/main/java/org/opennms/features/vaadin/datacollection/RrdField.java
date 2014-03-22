@@ -27,8 +27,6 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
-import java.util.ArrayList;
-
 import org.opennms.features.vaadin.api.OnmsBeanContainer;
 import org.opennms.netmgt.config.datacollection.Rrd;
 import org.vaadin.dialogs.ConfirmDialog;
@@ -169,18 +167,16 @@ public class RrdField extends CustomField<Rrd> implements Button.ClickListener {
      */
     @Override
     protected void setInternalValue(Rrd rrd) {
-        super.setInternalValue(rrd); // TODO Is this required ?
         boolean stepState = step.isReadOnly();
         step.setReadOnly(false);
         step.setValue(rrd.getStep().toString());
-        if (stepState)
+        if (stepState) {
             step.setReadOnly(true);
-        ArrayList<RRA> rras = new ArrayList<RRA>();
-        for (String rra : rrd.getRras()) {
-            rras.add(new RRA(rra));
         }
         container.removeAllItems();
-        container.addAll(rras);
+        for (String rra : rrd.getRras()) {
+            container.addOnmsBean(new RRA(rra));
+        }
     }
 
     /* (non-Javadoc)
@@ -194,8 +190,8 @@ public class RrdField extends CustomField<Rrd> implements Button.ClickListener {
         } catch (NumberFormatException e) {
             rrd.setStep(null);
         }
-        for (Object itemId: container.getItemIds()) {
-            rrd.addRra(container.getItem(itemId).getBean().getRra());
+        for (RRA rra: container.getOnmsBeans()) {
+            rrd.addRra(rra.getRra());
         }
         return rrd;
     }
@@ -260,4 +256,13 @@ public class RrdField extends CustomField<Rrd> implements Button.ClickListener {
         }
     }
 
+    /**
+     * Gets the step value.
+     *
+     * @return the step value
+     */
+    public Integer getStepValue() {
+        final String value = step.getValue();
+        return value == null ? null : new Integer(value);
+    }
 }

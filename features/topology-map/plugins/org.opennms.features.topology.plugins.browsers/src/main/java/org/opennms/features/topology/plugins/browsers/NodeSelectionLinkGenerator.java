@@ -35,9 +35,10 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.themes.BaseTheme;
+
 import org.opennms.features.topology.api.SelectionListener;
 import org.opennms.features.topology.api.VerticesUpdateManager;
-import org.opennms.features.topology.api.topo.AbstractVertexRef;
+import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.osgi.EventProxy;
 import org.opennms.osgi.EventProxyAware;
@@ -96,7 +97,7 @@ public class NodeSelectionLinkGenerator implements ColumnGenerator, EventProxyAw
 
     protected void fireVertexUpdatedEvent(Integer nodeId, String nodeLabel) {
         Set<VertexRef> vertexRefs = new HashSet<VertexRef>();
-        VertexRef vRef = new AbstractVertexRef("nodes", String.valueOf(nodeId), nodeLabel);
+        VertexRef vRef = new DefaultVertexRef("nodes", String.valueOf(nodeId), nodeLabel);
         vertexRefs.add(vRef);
         getEventProxy().fireEvent(new VerticesUpdateManager.VerticesUpdateEvent(vertexRefs));
     }

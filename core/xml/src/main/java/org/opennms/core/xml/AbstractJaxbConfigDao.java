@@ -38,12 +38,12 @@ import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
 /**
- * <p>Abstract AbstractCastorConfigDao class.</p>
+ * <p>Abstract AbstractJaxbConfigDao class.</p>
  *
  * @author <a href="mailto:dj@gregor.com">DJ Gregor</a>
- * @param <K> Castor class
+ * @param <K> JAXB class
  * @param <V> Configuration object that is stored in memory (might be the same
- *            as the Castor class or could be a different class)
+ *            as the JAXB class or could be a different class)
  * @version $Id: $
  */
 public abstract class AbstractJaxbConfigDao<K, V> implements InitializingBean {
@@ -58,7 +58,7 @@ public abstract class AbstractJaxbConfigDao<K, V> implements InitializingBean {
     private Long m_reloadCheckInterval = null;
 
     /**
-     * <p>Constructor for AbstractCastorConfigDao.</p>
+     * <p>Constructor for AbstractJaxbConfigDao.</p>
      *
      * @param entityClass a {@link java.lang.Class} object.
      * @param description a {@link java.lang.String} object.
@@ -75,10 +75,10 @@ public abstract class AbstractJaxbConfigDao<K, V> implements InitializingBean {
     /**
      * <p>translateConfig</p>
      *
-     * @param castorConfig a K object.
+     * @param config a K object.
      * @return a V object.
      */
-    protected abstract V translateConfig(K castorConfig);
+    protected abstract V translateConfig(K config);
 
     /**
      * <p>loadConfig</p>
