@@ -160,7 +160,7 @@ abstract public class AbstractServiceMonitor implements ServiceMonitor {
         if (value == null) return defaultValue;
 
         if (value instanceof String) {
-            return Boolean.valueOf("true".equalsIgnoreCase((String)value));
+            return "true".equalsIgnoreCase((String)value) ? Boolean.TRUE : Boolean.FALSE;
         } else if (value instanceof Boolean) {
             return (Boolean)value;
         }

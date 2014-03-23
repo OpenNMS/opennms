@@ -103,7 +103,7 @@ public class IPAddressRange implements Comparable<IPAddressRange>, Iterable<IPAd
         BigInteger size = m_end.toBigInteger();
         size = size.subtract(m_begin.toBigInteger());
         // Add 1 because the range is inclusive of beginning and end
-        size = size.add(new BigInteger("1"));
+        size = size.add(BigInteger.ONE);
         return size;
     }
 

@@ -203,6 +203,7 @@ final class Poller {
     @Override
     protected void finalize() throws Throwable {
         close();
+        super.finalize();
     }
 
     /**

@@ -254,7 +254,7 @@ public class ReadmailTest implements Serializable {
      * @return the value of field 'AttemptInterval'.
      */
     public Long getAttemptInterval() {
-        return m_attemptInterval == null? 1000l : m_attemptInterval;
+        return m_attemptInterval == null? 1000L : m_attemptInterval;
     }
 
     /**

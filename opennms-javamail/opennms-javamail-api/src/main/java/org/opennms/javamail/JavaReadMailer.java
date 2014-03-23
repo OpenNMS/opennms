@@ -98,9 +98,8 @@ public class JavaReadMailer extends JavaMailer2 {
         if (m_store.isConnected()) {
             m_store.close();
         }
-        
-        super.finalize();
         LOG.debug("finalize: Mail folder and store connections closed.");
+        super.finalize();
     }
     
     //TODO figure out why need this throws here

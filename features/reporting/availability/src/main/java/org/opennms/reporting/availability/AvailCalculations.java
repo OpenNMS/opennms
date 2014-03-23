@@ -94,7 +94,7 @@ public class AvailCalculations extends Object {
     /**
      * The time in milliseconds per day.
      */
-    private static final long ROLLING_WINDOW = 86400000l;
+    private static final long ROLLING_WINDOW = 86400000L;
 
     /**
      * Constant
@@ -982,7 +982,7 @@ public class AvailCalculations extends Object {
             int serviceCount = 0;
             long outage = 0;
             LOG.debug("Number of days {} in month of {}", numDays, new Date(endTime));
-            long rollingWindow = numDays * ROLLING_WINDOW * 1l;
+            long rollingWindow = numDays * ROLLING_WINDOW * 1L;
             //
             // get the outage and service count.
             //

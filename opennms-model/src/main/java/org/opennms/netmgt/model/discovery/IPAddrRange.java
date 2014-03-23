@@ -156,7 +156,7 @@ public final class IPAddrRange implements Iterable<InetAddress> {
                 throw new NoSuchElementException("End of Range");
 
             InetAddress element = make(m_next);
-            m_next = m_next.add(new BigInteger("1"));
+            m_next = m_next.add(BigInteger.ONE);
             return element;
         }
 

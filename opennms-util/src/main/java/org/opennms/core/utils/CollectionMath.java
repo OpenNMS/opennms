@@ -129,7 +129,7 @@ public class CollectionMath {
 	 * @return the average of the not-null values as a {@link BigDecimal} value
 	 */
     private static BigDecimal averageBigDecimal(List<BigDecimal> list) {
-		BigDecimal total = new BigDecimal(0);
+		BigDecimal total = BigDecimal.ZERO;
 		List<BigDecimal> notNullEntries = getNotNullEntries(list);
 		if (notNullEntries.size() == 0) {
 			return null;

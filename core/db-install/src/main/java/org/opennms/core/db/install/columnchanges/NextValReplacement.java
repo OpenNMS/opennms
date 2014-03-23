@@ -100,7 +100,12 @@ public class NextValReplacement implements ColumnChangeReplacement {
          */
         @Override
         public void close() throws SQLException {
-            finalize();
+            if (m_statement != null) {
+                m_statement.close();
+            }
+            if (m_connection != null) {
+                m_connection.close();
+            }
         }
         
         /**
@@ -109,12 +114,8 @@ public class NextValReplacement implements ColumnChangeReplacement {
          * @throws java.sql.SQLException if any.
          */
         @Override
-        protected void finalize() throws SQLException {
-            if (m_statement != null) {
-                m_statement.close();
-            }
-            if (m_connection != null) {
-                m_connection.close();
-            }
+        protected void finalize() throws Throwable {
+            close();
+            super.finalize();
         }
     }
