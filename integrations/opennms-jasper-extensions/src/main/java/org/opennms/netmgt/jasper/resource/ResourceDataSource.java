@@ -51,8 +51,8 @@ public class ResourceDataSource implements JRDataSource {
         private String[] m_strProps;
         
         public ResourceFilterFields(String[] fields, String[] strProps) {
-            m_fields = Arrays.copyOf(fields, fields.length);
-            m_strProps = Arrays.copyOf(strProps, strProps.length);
+            m_fields = m_fields == null ? null : Arrays.copyOf(fields, fields.length);
+            m_strProps = m_strProps == null ? null : Arrays.copyOf(strProps, strProps.length);
         }
         
         public String getValueForField(String fieldName, String curPath) {
