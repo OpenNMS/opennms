@@ -63,6 +63,8 @@
     <beans:property name="convertToUpperCase" value="true" />
     <beans:property name="groupRoleAttribute" value="cn" />
     <beans:property name="groupSearchFilter" value="member={0}" />
+    <!-- If using nested AD groups, try the following groupSearchFilter instead  -->
+    <!-- <beans:property name="groupSearchFilter" value="member:1.2.840.113556.1.4.1941:={0}" /> -->
     <beans:property name="groupToRoleMap">
       <beans:map>
         <beans:entry>
