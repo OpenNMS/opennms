@@ -273,7 +273,8 @@ public final class JMXDataCollectionConfigFactory {
         Enumeration<Mbean> en = beans.enumerateMbean();
         while (en.hasMoreElements()) {
             Mbean mbean = en.nextElement();
-            List<Attrib> list = Arrays.asList(mbean.getAttrib());
+            // Make sure to create a new ArrayList because we add to it below
+            List<Attrib> list = new ArrayList<Attrib>(Arrays.asList(mbean.getAttrib()));
             
             CompAttrib[] compAttributes = mbean.getCompAttrib();
             for (int i = 0; i < compAttributes.length; i++) {
