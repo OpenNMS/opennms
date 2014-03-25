@@ -88,92 +88,103 @@ public interface CollectdInstrumentation {
     /**
      * <p>beginCollectorInitialize</p>
      *
+     * @param packageName a {@link java.lang.String} object.
      * @param nodeId a int.
      * @param ipAddress a {@link java.lang.String} object.
      * @param svcName a {@link java.lang.String} object.
      */
-    void beginCollectorInitialize(int nodeId, String ipAddress, String svcName);
+    void beginCollectorInitialize(String packageName, int nodeId, String ipAddress, String svcName);
     /**
      * <p>endCollectorInitialize</p>
      *
+     * @param packageName a {@link java.lang.String} object.
      * @param nodeId a int.
      * @param ipAddress a {@link java.lang.String} object.
      * @param svcName a {@link java.lang.String} object.
      */
-    void endCollectorInitialize(int nodeId, String ipAddress, String svcName);
+    void endCollectorInitialize(String packageName, int nodeId, String ipAddress, String svcName);
     /**
      * <p>beginCollectorRelease</p>
      *
+     * @param packageName a {@link java.lang.String} object.
      * @param nodeId a int.
      * @param ipAddress a {@link java.lang.String} object.
      * @param svcName a {@link java.lang.String} object.
      */
-    void beginCollectorRelease(int nodeId, String ipAddress, String svcName);
+    void beginCollectorRelease(String packageName, int nodeId, String ipAddress, String svcName);
     /**
      * <p>endCollectorRelease</p>
      *
+     * @param packageName a {@link java.lang.String} object.
      * @param nodeId a int.
      * @param ipAddress a {@link java.lang.String} object.
      * @param svcName a {@link java.lang.String} object.
      */
-    void endCollectorRelease(int nodeId, String ipAddress, String svcName);
+    void endCollectorRelease(String packageName, int nodeId, String ipAddress, String svcName);
     /**
      * <p>beginCollectorCollect</p>
      *
+     * @param packageName a {@link java.lang.String} object.
      * @param nodeId a int.
      * @param ipAddress a {@link java.lang.String} object.
      * @param svcName a {@link java.lang.String} object.
      */
-    void beginCollectorCollect(int nodeId, String ipAddress, String svcName);
+    void beginCollectorCollect(String packageName, int nodeId, String ipAddress, String svcName);
     /**
      * <p>endCollectorCollect</p>
      *
+     * @param packageName a {@link java.lang.String} object.
      * @param nodeId a int.
      * @param ipAddress a {@link java.lang.String} object.
      * @param svcName a {@link java.lang.String} object.
      */
-    void endCollectorCollect(int nodeId, String ipAddress, String svcName);
+    void endCollectorCollect(String packageName, int nodeId, String ipAddress, String svcName);
     /**
      * <p>beginCollectingServiceData</p>
      *
+     * @param packageName a {@link java.lang.String} object.
      * @param nodeId a int.
      * @param ipAddress a {@link java.lang.String} object.
      * @param svcName a {@link java.lang.String} object.
      */
-    void beginCollectingServiceData(int nodeId, String ipAddress, String svcName);
+    void beginCollectingServiceData(String packageName, int nodeId, String ipAddress, String svcName);
     /**
      * <p>endCollectingServiceData</p>
      *
+     * @param packageName a {@link java.lang.String} object.
      * @param nodeId a int.
      * @param ipAddress a {@link java.lang.String} object.
      * @param svcName a {@link java.lang.String} object.
      */
-    void endCollectingServiceData(int nodeId, String ipAddress, String svcName);
+    void endCollectingServiceData(String packageName, int nodeId, String ipAddress, String svcName);
     /**
      * <p>beginPersistingServiceData</p>
      *
+     * @param packageName a {@link java.lang.String} object.
      * @param nodeId a int.
      * @param ipAddress a {@link java.lang.String} object.
      * @param svcName a {@link java.lang.String} object.
      */
-    void beginPersistingServiceData(int nodeId, String ipAddress, String svcName);
+    void beginPersistingServiceData(String packageName, int nodeId, String ipAddress, String svcName);
     /**
      * <p>endPersistingServiceData</p>
      *
+     * @param packageName a {@link java.lang.String} object.
      * @param nodeId a int.
      * @param ipAddress a {@link java.lang.String} object.
      * @param svcName a {@link java.lang.String} object.
      */
-    void endPersistingServiceData(int nodeId, String ipAddress, String svcName);
+    void endPersistingServiceData(String packageName, int nodeId, String ipAddress, String svcName);
     /**
      * <p>reportCollectionException</p>
      *
+     * @param packageName a {@link java.lang.String} object.
      * @param nodeid a int.
      * @param ipAddress a {@link java.lang.String} object.
      * @param svcName a {@link java.lang.String} object.
      * @param e a {@link org.opennms.netmgt.collectd.CollectionException} object.
      */
-    void reportCollectionException(int nodeid, String ipAddress, String svcName, CollectionException e);
+    void reportCollectionException(String packageName, int nodeid, String ipAddress, String svcName, CollectionException e);
     
 
 }
