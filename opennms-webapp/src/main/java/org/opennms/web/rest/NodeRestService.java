@@ -117,15 +117,10 @@ public class NodeRestService extends OnmsRestService {
         readLock();
         
         try {
-            final CriteriaBuilder builder = new CriteriaBuilder(OnmsNode.class);
-            builder.alias("snmpInterfaces", "snmpInterface", JoinType.LEFT_JOIN);
-            builder.alias("ipInterfaces", "ipInterface", JoinType.LEFT_JOIN);
-            builder.alias("categories", "category", JoinType.LEFT_JOIN);
-    
             final MultivaluedMap<String, String> params = m_uriInfo.getQueryParameters();
             final String type = params.getFirst("type");
-    
-            applyQueryFilters(params, builder);
+
+            final CriteriaBuilder builder = getCriteriaBuilder(params);
             builder.orderBy("label").asc();
             
             final Criteria crit = builder.toCriteria();
@@ -421,12 +416,23 @@ public class NodeRestService extends OnmsRestService {
         return null;
     }
 
-    
     private void sendEvent(final String uei, final int nodeId, String nodeLabel) throws EventProxyException {
         final EventBuilder bldr = new EventBuilder(uei, getClass().getName());
         bldr.setNodeid(nodeId);
         bldr.addParam("nodelabel", nodeLabel);
         m_eventProxy.send(bldr.getEvent());
+    }
+
+    private CriteriaBuilder getCriteriaBuilder(final MultivaluedMap<String, String> params) {
+        final CriteriaBuilder builder = new CriteriaBuilder(OnmsNode.class);
+        builder.alias("snmpInterfaces", "snmpInterface", JoinType.LEFT_JOIN);
+        builder.alias("ipInterfaces", "ipInterface", JoinType.LEFT_JOIN);
+        builder.alias("categories", "category", JoinType.LEFT_JOIN);
+        builder.alias("assetRecord", "assetRecord", JoinType.LEFT_JOIN);
+        builder.alias("ipInterfaces.monitoredServices.serviceType", "serviceType", JoinType.LEFT_JOIN);
+
+        applyQueryFilters(params, builder);
+        return builder;
     }
 
 }
