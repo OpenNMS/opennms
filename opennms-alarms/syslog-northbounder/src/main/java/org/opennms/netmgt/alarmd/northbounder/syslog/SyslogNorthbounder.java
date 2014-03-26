@@ -140,7 +140,7 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements Initiali
     	try {
     		instance = Syslog.getInstance(m_destination.getName());
     	} catch (SyslogRuntimeException e) {
-    		LogUtils.errorf(this, e, "Could not find Syslog instance for destination: %s.", m_destination.getName());
+    		LogUtils.errorf(this, e, "Could not find Syslog instance for destination '%s': %s", m_destination.getName(), e);
     		throw e;
     	}
 
@@ -180,7 +180,7 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements Initiali
     			instance.log(level, syslogMessage);
     			
     		} catch (Exception e1) {
-    			LogUtils.errorf(this, e1, "Caught exception sending to destination: %s", m_destination.getName());
+    			LogUtils.errorf(this, e1, "Caught exception sending to destination '%s': %s", m_destination.getName(), e1);
     		}
     	}
     }
@@ -235,7 +235,7 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements Initiali
 		try {
 			mapping.put("x733ProbableCause", nullSafeToString(x733ProbableCause.get(alarm.getX733Cause()), ""));
 		} catch (Exception e) {
-			LogUtils.infof(this, e, "Exception caught setting X733 Cause: %d", alarm.getX733Cause());
+			LogUtils.infof(this, e, "Exception caught setting X733 Cause %d: ", alarm.getX733Cause(), e);
 			mapping.put("x733ProbableCause", "");
 		}
 		
@@ -323,8 +323,8 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements Initiali
     	try {
     		Syslog.createInstance(instName, instanceConfiguration);
     	} catch (SyslogRuntimeException e) {
-    		String msg = "Could not create northbound instance, %s";
-    		LogUtils.errorf(this, e, msg, instName);
+    		String msg = "Could not create northbound instance '%s': %s";
+    		LogUtils.errorf(this, e, msg, instName, e);
     		throw e;
     	}
 
