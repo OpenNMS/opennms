@@ -187,11 +187,6 @@ public class Definition extends Configuration implements Serializable {
         return true;
     }
 
-    @Override
-    public String toString() {
-        return "Definition [ranges=" + m_ranges + ", specifics=" + m_specifics + ", ipMatches=" + m_ipMatches + "]";
-    }
-
     public void visit(final SnmpConfigVisitor visitor) {
         visitor.visitDefinition(this);
 
@@ -203,5 +198,15 @@ public class Definition extends Configuration implements Serializable {
         visitor.visitIpMatchesFinished();
 
         visitor.visitDefinitionFinished();
+    }
+
+    @Override
+    public String toString() {
+        return "Definition [authPassphrase=" + getAuthPassphrase() + ", authProtocol=" + getAuthProtocol() + ", contextEngineId=" + getContextEngineId() + ", contextName="
+                + getContextName() + ", engineId=" + getEngineId() + ", enterpriseId=" + getEnterpriseId() + ", maxRepetitions=" + getMaxRepetitions() + ", maxRequestSize="
+                + getMaxRequestSize() + ", maxVarsPerPdu=" + getMaxVarsPerPdu() + ", port=" + getPort() + ", privacyPassphrase=" + getPrivacyPassphrase() + ", privacyProtocol="
+                + getPrivacyProtocol() + ", proxyHost=" + getProxyHost() + ", readCommunity=" + getReadCommunity() + ", retries=" + getRetry() + ", securityLevel="
+                + getSecurityLevel() + ", securityName=" + getSecurityName() + ", timeout=" + getTimeout() + ", version=" + getVersion() + ", writeCommunity="
+                + getWriteCommunity() + ", ranges=" + m_ranges + ", specifics=" + m_specifics + ", ipMatches=" + m_ipMatches + "]";
     }
 }
