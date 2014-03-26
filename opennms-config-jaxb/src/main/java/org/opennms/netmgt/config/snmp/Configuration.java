@@ -36,16 +36,23 @@
 package org.opennms.netmgt.config.snmp;
 
 import java.io.Serializable;
+import java.net.InetAddress;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @XmlRootElement(name="configuration")
 @XmlAccessorType(XmlAccessType.NONE)
 public class Configuration implements Serializable {
     private static final long serialVersionUID = 6018795999027969844L;
+    private static final Logger LOG = LoggerFactory.getLogger(Configuration.class);
 
     /**
      * The proxy host to use when communicating with this agent
@@ -940,4 +947,320 @@ public class Configuration implements Serializable {
                 + ", retry=" + m_retry + ", port=" + m_port + "]";
     }
 
+    private boolean isBlank(final String s) {
+        return (s == null || s.trim().length() == 0);
+    }
+
+    /**
+     * Helper method to set the security level in v3 operations.  The default is
+     * noAuthNoPriv if there is no authentication passphrase.  From there, if
+     * there is a privacy passphrase supplied, then the security level is set to
+     * authPriv else it falls out to authNoPriv.  There are only these 3 possible
+     * security levels.
+     * default 
+     * @param defaultConfig 
+     * @return
+     */
+    public int getSecurityLevel(final SnmpConfig defaultConfig) {
+        // use the def security level first
+        if (hasSecurityLevel()) return getSecurityLevel();
+    
+        // use a configured default security level next
+        if (defaultConfig.hasSecurityLevel()) {
+            return defaultConfig.getSecurityLevel();
+        }
+    
+        final String authPassPhrase = (isBlank(getAuthPassphrase()) ? defaultConfig.getAuthPassphrase() : getAuthPassphrase());
+        final String privPassPhrase = (isBlank(getPrivacyPassphrase()) ? defaultConfig.getPrivacyPassphrase() : getPrivacyPassphrase());
+    
+        if (authPassPhrase == null) {
+            return SnmpAgentConfig.NOAUTH_NOPRIV;
+        } else {
+            if (privPassPhrase == null) {
+                return SnmpAgentConfig.AUTH_NOPRIV;
+            } else {
+                return SnmpAgentConfig.AUTH_PRIV;
+            }
+        }
+    }
+
+    public int getMaxRepetitions(final SnmpConfig defaultConfig) {
+        if (hasMaxRepetitions()) return getMaxRepetitions();
+        if (defaultConfig.hasMaxRepetitions()) return defaultConfig.getMaxRepetitions();
+        return SnmpAgentConfig.DEFAULT_MAX_REPETITIONS;
+    }
+
+    public InetAddress getProxyHost(final SnmpConfig defaultConfig) {
+        final String address = getProxyHost() == null ? (defaultConfig.getProxyHost() == null ? null : defaultConfig.getProxyHost()) : getProxyHost();
+        if (address != null) {
+            try {
+                return InetAddressUtils.addr(address);
+            } catch (final IllegalArgumentException e) {
+                LOG.debug("Error while reading SNMP config proxy host: {}", address, e);
+            }
+        }
+        return null;
+    }
+
+    public int getMaxVarsPerPdu(final SnmpConfig defaultConfig) {
+        if (hasMaxVarsPerPdu()) return getMaxVarsPerPdu();
+        if (defaultConfig.hasMaxVarsPerPdu()) return defaultConfig.getMaxVarsPerPdu();
+        return SnmpAgentConfig.DEFAULT_MAX_VARS_PER_PDU;
+    }
+
+    /**
+     * Helper method to search the snmp-config for the appropriate read
+     * community string.
+     * @param defaultConfig 
+     * @return
+     */
+    public String getReadCommunity(final SnmpConfig defaultConfig) {
+        if (getReadCommunity() != null) return getReadCommunity();
+        if (defaultConfig.getReadCommunity() != null) return defaultConfig.getReadCommunity();
+        return SnmpAgentConfig.DEFAULT_READ_COMMUNITY;
+    }
+
+    /**
+     * Helper method to search the snmp-config for a port
+     * @return
+     */
+    public int getPort(final SnmpConfig defaultConfig) {
+        if (getPort() != null && getPort() != 0) return getPort();
+        if (defaultConfig.getPort() != null && defaultConfig.getPort() != 0) return defaultConfig.getPort();
+        return SnmpAgentConfig.DEFAULT_PORT;
+    }
+
+    public int getRetries(final SnmpConfig defaultConfig) {
+        if (getRetry() != null && getRetry() != 0) return getRetry();
+        if (defaultConfig.getRetry() != null && defaultConfig.getRetry() != 0) return defaultConfig.getRetry();
+        return SnmpAgentConfig.DEFAULT_RETRIES;
+    }
+
+    /**
+     * Helper method to search the snmp-config 
+     * @return
+     */
+    public long getTimeout(final SnmpConfig defaultConfig) {
+        if (getTimeout() != null && getTimeout() != 0) return getTimeout();
+        if (defaultConfig.getTimeout() != null && defaultConfig.getTimeout() != 0) return defaultConfig.getTimeout();
+        return SnmpAgentConfig.DEFAULT_TIMEOUT;
+    }
+
+    /**
+     * Helper method to search the snmp-config for the appropriate maximum
+     * request size.  The default is the minimum necessary for a request.
+     * @param defaultConfig 
+     * @return
+     */
+    public int getMaxRequestSize(final SnmpConfig defaultConfig) {
+        if (hasMaxRequestSize()) return getMaxRequestSize();
+        if (defaultConfig.hasMaxRequestSize()) return defaultConfig.getMaxRequestSize();
+        return SnmpAgentConfig.DEFAULT_MAX_REQUEST_SIZE;
+    }
+
+    /**
+     * Helper method to find a security name to use in the snmp-config.  If v3 has
+     * been specified and one can't be found, then a default is used for this
+     * is a required option for v3 operations.
+     * @param defaultConfig 
+     * @return
+     */
+    public String getSecurityName(final SnmpConfig defaultConfig) {
+        if (getSecurityName() != null) return getSecurityName();
+        if (defaultConfig.getSecurityName() != null) return defaultConfig.getSecurityName();
+        return SnmpAgentConfig.DEFAULT_SECURITY_NAME;
+    }
+
+    /**
+     * Helper method to find a security name to use in the snmp-config.  If v3 has
+     * been specified and one can't be found, then a default is used for this
+     * is a required option for v3 operations.
+     * @param snmpPeerFactory TODO
+     * @return
+     */
+    public String getAuthProtocol(final SnmpConfig defaultConfig) {
+        if (getAuthProtocol() != null) return getAuthProtocol();
+        if (defaultConfig.getAuthProtocol() != null) return defaultConfig.getAuthProtocol();
+        if (getAuthPassphrase(defaultConfig) != null) {
+            return SnmpAgentConfig.DEFAULT_AUTH_PROTOCOL;
+        }
+        return null;
+    }
+
+    /**
+     * Helper method to search the snmp-config for the appropriate write
+     * community string.
+     * @param defaultConfig 
+     * @return
+     */
+    public String getWriteCommunity(final SnmpConfig defaultConfig) {
+        if (getWriteCommunity() != null) return getWriteCommunity();
+        if (defaultConfig.getWriteCommunity() != null) return defaultConfig.getWriteCommunity();
+        return SnmpAgentConfig.DEFAULT_WRITE_COMMUNITY;
+    }
+
+    /**
+     * Helper method to find a authentication passphrase to use from the snmp-config.
+     * @param defaultConfig 
+     * @return
+     */
+    public String getAuthPassphrase(final SnmpConfig defaultConfig) {
+        if (getAuthPassphrase() != null) return getAuthPassphrase();
+        // we don't force a default, since null is valid
+        return defaultConfig.getAuthPassphrase();
+    }
+
+    /**
+     * Helper method to find a privacy passphrase to use from the snmp-config.  If v3 has
+     * been specified and one can't be found, then a default is used for this
+     * is a required option for v3 operations.
+     * @param defaultConfig 
+     * @return
+     */
+    public String getPrivPassphrase(final SnmpConfig defaultConfig) {
+        if (getPrivacyPassphrase() != null) return getPrivacyPassphrase();
+        // we don't force a default, since null is valid
+        return defaultConfig.getPrivacyPassphrase();
+    }
+
+    /**
+     * Helper method to find a privacy protocol to use from the snmp-config.  If v3 has
+     * been specified and one can't be found, then a default is used for this
+     * is a required option for v3 operations.
+     * @param snmpPeerFactory TODO
+     * @return
+     */
+    public String getPrivacyProtocol(final SnmpConfig defaultConfig) {
+        if (getPrivacyProtocol() != null) return getPrivacyProtocol();
+        if (defaultConfig.getPrivacyProtocol() != null) return defaultConfig.getPrivacyProtocol();
+        if (getPrivPassphrase(defaultConfig) != null) {
+            return SnmpAgentConfig.DEFAULT_PRIV_PROTOCOL;
+        }
+        return null;
+    }
+
+    /**
+     * Helper method to find a context name to use from the snmp-config.
+     * @param defaultConfig 
+     * @return
+     */
+    public String getContextName(final SnmpConfig defaultConfig) {
+        if (getContextName() != null) return getContextName();
+        if (defaultConfig.getContextName() != null) return defaultConfig.getContextName();
+        return SnmpAgentConfig.DEFAULT_CONTEXT_NAME;
+    }
+
+    /**
+     * Helper method to find an engine ID to use from the snmp-config.
+     * @param defaultConfig 
+     * @return
+     */
+    public String getEngineId(final SnmpConfig defaultConfig) {
+        if (getEngineId() != null) return getEngineId();
+        if (defaultConfig.getEngineId() != null) return defaultConfig.getEngineId();
+        return SnmpAgentConfig.DEFAULT_ENGINE_ID;
+    }
+
+    /**
+     * Helper method to find a context engine ID to use from the snmp-config.
+     * @param defaultConfig 
+     * @return
+     */
+    public String getContextEngineId(final SnmpConfig defaultConfig) {
+        if (getContextEngineId() != null) return getContextEngineId();
+        if (defaultConfig.getContextEngineId() != null) return defaultConfig.getContextEngineId();
+        return SnmpAgentConfig.DEFAULT_CONTEXT_ENGINE_ID;
+    }
+
+    /**
+     * Helper method to search the snmp-config for a enterpriseId
+     * @param defaultConfig 
+     * @return 
+     */
+    public String getEnterpriseId(final SnmpConfig defaultConfig) {
+        if (getEnterpriseId() != null) return getEnterpriseId();
+        if (defaultConfig.getEnterpriseId() != null) return defaultConfig.getEnterpriseId();
+        return null;
+    }
+
+    /**
+     * This method determines the configured SNMP version.
+     * the order of operations is:
+     * 1st: return a valid requested version
+     * 2nd: return a valid version defined in a definition within the snmp-config
+     * 3rd: return a valid version in the snmp-config
+     * 4th: return the default version
+     * @param m_config 
+     * 
+     * @param requestedSnmpVersion
+     * @return
+     */
+    public int getVersionCode(final SnmpConfig m_config, final int requestedSnmpVersion) {
+    
+        int version = SnmpAgentConfig.VERSION1;
+    
+        String cfgVersion = "v1";
+        if (requestedSnmpVersion == -1) {
+            if (getVersion() == null) {
+                if (m_config.getVersion() == null) {
+                    return version;
+                } else {
+                    cfgVersion = m_config.getVersion();
+                }
+            } else {
+                cfgVersion = getVersion();
+            }
+        } else {
+            return requestedSnmpVersion;
+        }
+    
+        if (cfgVersion.equals("v1")) {
+            version = SnmpAgentConfig.VERSION1;
+        } else if (cfgVersion.equals("v2c")) {
+            version = SnmpAgentConfig.VERSION2C;
+        } else if (cfgVersion.equals("v3")) {
+            version = SnmpAgentConfig.VERSION3;
+        }
+    
+        return version;
+    }
+
+    public Configuration fill(final SnmpConfig defaultConfig) {
+        Configuration conf = null;
+        try {
+            conf = this.getClass().newInstance();
+        } catch (final Exception e) {
+            LOG.warn("Unable to instantiate new instance of {}", this.getClass().getName());
+        }
+        if (conf == null) {
+            conf = new Configuration();
+        }
+        conf.setAuthPassphrase(getAuthPassphrase(defaultConfig));
+        conf.setAuthProtocol(getAuthProtocol(defaultConfig));
+        conf.setContextEngineId(getContextEngineId(defaultConfig));
+        conf.setContextName(getContextName(defaultConfig));
+        conf.setEngineId(getEngineId(defaultConfig));
+        conf.setEnterpriseId(getEnterpriseId(defaultConfig));
+        conf.setMaxRepetitions(getMaxRepetitions(defaultConfig));
+        conf.setMaxRequestSize(getMaxRequestSize(defaultConfig));
+        conf.setMaxVarsPerPdu(getMaxVarsPerPdu(defaultConfig));
+        conf.setPort(getPort(defaultConfig));
+        conf.setPrivacyPassphrase(getPrivPassphrase(defaultConfig));
+        conf.setPrivacyProtocol(getPrivacyProtocol(defaultConfig));
+        conf.setProxyHost(InetAddressUtils.str(getProxyHost(defaultConfig)));
+        conf.setReadCommunity(getReadCommunity(defaultConfig));
+        conf.setRetry(getRetries(defaultConfig));
+        conf.setSecurityLevel(getSecurityLevel(defaultConfig));
+        conf.setSecurityName(getSecurityName(defaultConfig));
+        conf.setTimeout((int)getTimeout(defaultConfig));
+        conf.setVersion(getVersion(defaultConfig));
+        conf.setWriteCommunity(getWriteCommunity(defaultConfig));
+        return this;
+    }
+
+    public String getVersion(final SnmpConfig defaultConfig) {
+        if (getVersion() != null) return getVersion();
+        if (defaultConfig.getVersion() != null) return defaultConfig.getVersion();
+        return SnmpAgentConfig.versionToString(SnmpAgentConfig.DEFAULT_VERSION);
+    }
 }

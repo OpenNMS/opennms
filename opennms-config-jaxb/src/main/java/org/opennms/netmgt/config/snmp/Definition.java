@@ -57,7 +57,6 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(propOrder={"m_ranges","m_specifics","m_ipMatches"})
 public class Definition extends Configuration implements Serializable {
     private static final long serialVersionUID = 5646937263626185373L;
-
     /**
      * IP address range to which this definition
      *  applies.
@@ -193,4 +192,16 @@ public class Definition extends Configuration implements Serializable {
         return "Definition [ranges=" + m_ranges + ", specifics=" + m_specifics + ", ipMatches=" + m_ipMatches + "]";
     }
 
+    public void visit(final SnmpConfigVisitor visitor) {
+        visitor.visitDefinition(this);
+
+        visitor.visitSpecifics(this.getSpecifics());
+        visitor.visitSpecificsFinished();
+        visitor.visitRanges(this.getRanges());
+        visitor.visitRangesFinished();
+        visitor.visitIpMatches(this.getIpMatches());
+        visitor.visitIpMatchesFinished();
+
+        visitor.visitDefinitionFinished();
+    }
 }
