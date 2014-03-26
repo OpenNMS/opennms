@@ -1200,7 +1200,7 @@ public class Configuration implements Serializable {
         int version = SnmpAgentConfig.VERSION1;
     
         String cfgVersion = "v1";
-        if (requestedSnmpVersion == -1) {
+        if (requestedSnmpVersion == SnmpAgentConfig.VERSION_UNSPECIFIED) {
             if (getVersion() == null) {
                 if (m_config.getVersion() == null) {
                     return version;

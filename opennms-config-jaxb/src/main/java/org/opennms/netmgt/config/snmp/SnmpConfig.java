@@ -32,6 +32,7 @@
 package org.opennms.netmgt.config.snmp;
 
 import java.io.Serializable;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -151,12 +152,10 @@ public class SnmpConfig extends Configuration implements Serializable {
         visitor.visitSnmpConfigFinished();
     }
 
-    /*
     public Definition findDefinition(final InetAddress agentInetAddress) {
         final AddressSnmpConfigVisitor visitor = new AddressSnmpConfigVisitor(agentInetAddress);
         visit(visitor);
         return visitor.getDefinition();
     }
-    */
 
 }
