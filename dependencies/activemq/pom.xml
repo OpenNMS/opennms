@@ -13,7 +13,7 @@
   <dependencies>
     <dependency>
       <groupId>org.apache.activemq</groupId>
-      <artifactId>activemq-core</artifactId>
+      <artifactId>activemq-broker</artifactId>
       <version>${activemqVersion}</version>
       <scope>compile</scope>
       <exclusions>
