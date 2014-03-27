@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.opennms.netmgt.config.api.collection.IColumn;
+import org.opennms.netmgt.config.api.collection.IMibObject;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpObjIdXmlAdapter;
 
@@ -48,12 +49,22 @@ public class ColumnImpl implements IColumn {
         m_displayHint = displayHint;
     }
 
+    public ColumnImpl(final IMibObject mibObject) {
+        m_oid = mibObject.getOid();
+        m_alias = mibObject.getAlias();
+        m_type = mibObject.getType();
+    }
+
     public SnmpObjId getOid() {
         return m_oid;
     }
 
-    public void setOid(SnmpObjId oid) {
+    public void setOid(final SnmpObjId oid) {
         m_oid = oid;
+    }
+
+    public void setOid(final String oid) {
+        m_oid = SnmpObjId.get(oid);
     }
 
     public String getAlias() {

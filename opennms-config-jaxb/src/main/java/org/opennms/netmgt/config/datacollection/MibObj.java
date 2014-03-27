@@ -35,6 +35,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.internal.collection.DatacollectionConfigVisitor;
 
 /**
  * a MIB object
@@ -265,6 +266,11 @@ public class MibObj implements java.io.Serializable {
     @Override
     public String toString() {
         return "MibObj [oid=" + m_oid + ", instance=" + m_instance + ", alias=" + m_alias + ", type=" + m_type + ", maxval=" + m_maxval + ", minval=" + m_minval + "]";
+    }
+
+    public void visit(final DatacollectionConfigVisitor visitor) {
+        visitor.visitMibObj(this);
+        visitor.visitMibObjComplete();
     }
 
 }

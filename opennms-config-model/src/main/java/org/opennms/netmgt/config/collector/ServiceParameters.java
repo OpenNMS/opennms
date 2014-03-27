@@ -82,7 +82,9 @@ public class ServiceParameters {
         
         // JMX-specific parameters
         USE_MBEAN_NAME_FOR_RRDS("use-mbean-name-for-rrds"),
-        FRIENDLY_NAME("friendly-name");
+        FRIENDLY_NAME("friendly-name"),
+
+        PACKAGE_NAME("packageName");
 
         private final String m_value;
 
@@ -294,4 +296,7 @@ public class ServiceParameters {
         return ParameterMap.getKeyedString(getParameters(), ParameterName.PRIVACY_PROTOCOL.toString(), current);
     }
 
+    public String getPackageName() {
+        return ParameterMap.getKeyedString(getParameters(), ParameterName.PACKAGE_NAME.toString(), "unknown");
+    }
 }

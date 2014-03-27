@@ -48,7 +48,6 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class SearchPopup extends PopupPanel implements SearchPopupDisplay {
     
-    private Label m_label;
     private TextBox m_tf;
     private Button m_okBtn;
     private Button m_cancelBtn;
@@ -60,10 +59,10 @@ public class SearchPopup extends PopupPanel implements SearchPopupDisplay {
     public SearchPopup() {
         super(true);
         
-        m_label = new Label("Search for Node:");
-        m_label.getElement().getStyle().setFontSize(70, Unit.PCT);
-        m_label.getElement().getStyle().setPaddingTop(4, Unit.PX);
-        m_label.getElement().getStyle().setPaddingLeft(5, Unit.PX);
+        Label label = new Label("Search for Node:");
+        label.getElement().getStyle().setFontSize(70, Unit.PCT);
+        label.getElement().getStyle().setPaddingTop(4, Unit.PX);
+        label.getElement().getStyle().setPaddingLeft(5, Unit.PX);
         m_tf = new TextBox();
         m_tf.setSize("99%", "15px");
         m_okBtn = new Button("OK");
@@ -89,7 +88,7 @@ public class SearchPopup extends PopupPanel implements SearchPopupDisplay {
         
         m_layoutPanel = new LayoutPanel();
         m_layoutPanel.setSize("100%", "25px");
-        m_layoutPanel.add(m_label);
+        m_layoutPanel.add(label);
         m_layoutPanel.add(m_tf);
         m_layoutPanel.add(m_okBtn);
         m_layoutPanel.add(m_cancelBtn);

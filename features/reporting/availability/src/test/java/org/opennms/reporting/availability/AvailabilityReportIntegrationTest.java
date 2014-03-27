@@ -144,7 +144,6 @@ public class AvailabilityReportIntegrationTest implements InitializingBean {
         try {
             classicAvailabilityCalculator.setPeriodEndDate(m_calendar.getTime());
             classicAvailabilityCalculator.setLogoURL("wahtever");
-            classicAvailabilityCalculator.setCalendar(m_calendar);
             classicAvailabilityCalculator.setReportFormat("PDF");
             classicAvailabilityCalculator.setMonthFormat("classic");
             classicAvailabilityCalculator.setCategoryName("Network Interfaces");
@@ -189,7 +188,6 @@ public class AvailabilityReportIntegrationTest implements InitializingBean {
         try {
             calendarAvailabilityCalculator.setPeriodEndDate(m_calendar.getTime());
             calendarAvailabilityCalculator.setLogoURL("wahtever");
-            calendarAvailabilityCalculator.setCalendar(m_calendar);
             calendarAvailabilityCalculator.setReportFormat("PDF");
             calendarAvailabilityCalculator.setMonthFormat("calendar");
             calendarAvailabilityCalculator.setCategoryName("Network Interfaces");

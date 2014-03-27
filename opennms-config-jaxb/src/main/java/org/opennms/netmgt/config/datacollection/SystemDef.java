@@ -37,6 +37,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.opennms.netmgt.config.internal.collection.DatacollectionConfigVisitor;
+
 /**
  * system definition
  */
@@ -205,5 +207,19 @@ public class SystemDef implements Serializable {
     @Override
     public String toString() {
         return "SystemDef [name=" + m_name + ", systemDefChoice=" + m_systemDefChoice + ", ipList=" + m_ipList + ", collect=" + m_collect + "]";
+    }
+
+    public void visit(final DatacollectionConfigVisitor visitor) {
+        visitor.visitSystemDef(this);
+        
+        if (m_ipList != null) {
+            m_ipList.visit(visitor);
+        }
+
+        if (m_collect != null) {
+            m_collect.visit(visitor);
+        }
+
+        visitor.visitSystemDefComplete();
     }
 }

@@ -57,11 +57,11 @@ public class SuppressOutages {
 		OnmsOutage outage = (OnmsOutage) outageService.load(outageid);
 		GregorianCalendar suppress = new GregorianCalendar();
 
-		if (time.equals("-1")) {
+		if ("-1".equals(time)) {
 			// Suppress forever
 			suppress.add(GregorianCalendar.YEAR, LONG_TIME);
 
-		} else if (time == "") {
+		} else if ("".equals(time)) {
 			// Just ignore this for now.
 
 		} else {
@@ -70,9 +70,9 @@ public class SuppressOutages {
 
 		}
 
-		if (time != "") {
+		if (!"".equals(time)) {
 
-			if (time == "-2") {
+			if ("-2".equals(time)) {
 			    outage.setSuppressTime(null);
 			} else {
 			    outage.setSuppressTime(suppress.getTime());

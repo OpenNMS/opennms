@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
@@ -73,7 +74,7 @@ public class Main implements Runnable {
 		// Give us some time to attach a debugger if necessary
 		//try { Thread.sleep(20000); } catch (InterruptedException e) {}        
 
-		m_args = args;
+		m_args = Arrays.copyOf(args, args.length);
 
 		final String pingerClass = System.getProperty("org.opennms.netmgt.icmp.pingerClass");
 		if (pingerClass == null) {

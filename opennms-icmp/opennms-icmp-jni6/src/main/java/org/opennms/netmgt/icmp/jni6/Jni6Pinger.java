@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -126,7 +127,7 @@ import org.slf4j.LoggerFactory;
 public class Jni6Pinger implements Pinger {
     private static final Logger LOG = LoggerFactory.getLogger(Jni6Pinger.class);
 
-    private final int m_pingerId = (int) (Math.random() * Short.MAX_VALUE);
+    private final int m_pingerId = new SecureRandom().nextInt(Short.MAX_VALUE);
 
     private JniPinger m_jniPinger;
     private RequestTracker<Jni6PingRequest, Jni6PingResponse> s_pingTracker;

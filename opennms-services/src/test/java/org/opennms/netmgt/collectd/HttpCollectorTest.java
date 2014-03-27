@@ -42,7 +42,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
-import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.TestContextAware;
@@ -50,7 +49,6 @@ import org.opennms.core.test.TestContextAwareExecutionListener;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.http.annotations.JUnitHttpServer;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.collectd.Filter;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Parameter;
@@ -331,9 +329,6 @@ public class HttpCollectorTest implements TestContextAware, InitializingBean {
         }
     )
     public void testPersistApacheStatsViaCapsd() throws Exception {
-        // TODO: Do we need this init? applicationContext-collectdTest.xml should take care of this
-        CollectdConfigFactory collectdConfig = new CollectdConfigFactory(ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/capsd/collectd-configuration.xml"), "nms1", false);
-
         // Add the HTTP collector to capsd
         m_collectd.setServiceCollector("HTTP", m_collector);
         m_collectd.init();

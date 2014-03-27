@@ -12,6 +12,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.opennms.netmgt.config.api.collection.IGroup;
 import org.opennms.netmgt.config.api.collection.ISystemDef;
+import org.opennms.netmgt.config.api.collection.ITable;
 
 
 /**
@@ -97,6 +98,14 @@ public class SystemDefImpl implements ISystemDef {
 
     public void setGroups(final IGroup[] groups) {
         m_groups = GroupImpl.asGroups(groups);
+    }
+    
+    public ITable[] getTables() {
+        return (ITable[])m_tables;
+    }
+    
+    public void setTables(final ITable[] tables) {
+        m_tables = TableImpl.asTables(tables);
     }
 
     @Override

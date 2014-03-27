@@ -107,11 +107,8 @@ public abstract class LinkdTestBuilder extends LinkdTestHelper {
     }
 
     public void setUpLinkdConfiguration() throws Exception {
-        LinkdConfigFactory.init();
         final Resource config = new ClassPathResource("etc/linkd-configuration.xml");
-        final LinkdConfigFactory factory = new LinkdConfigFactory(-1L, config.getInputStream());
-        LinkdConfigFactory.setInstance(factory);
-        m_linkdConfig = LinkdConfigFactory.getInstance();
+        m_linkdConfig = new LinkdConfigFactory(config.getInputStream());
         m_linkd.setLinkdConfig(m_linkdConfig);
     }
 

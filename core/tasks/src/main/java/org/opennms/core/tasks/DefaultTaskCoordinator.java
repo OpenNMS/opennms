@@ -97,8 +97,6 @@ public class DefaultTaskCoordinator implements InitializingBean {
 
     private final BlockingQueue<Future<Runnable>> m_queue;
     private final ConcurrentHashMap<String, CompletionService<Runnable>> m_taskCompletionServices = new ConcurrentHashMap<String, CompletionService<Runnable>>();
-    @SuppressWarnings("unused")
-    private final RunnableActor m_actor;
     
     private String m_defaultExecutor ;
     private CompletionService<Runnable> m_defaultCompletionService;
@@ -113,7 +111,8 @@ public class DefaultTaskCoordinator implements InitializingBean {
      */
     public DefaultTaskCoordinator(String name) {
         m_queue = new LinkedBlockingQueue<Future<Runnable>>();
-        m_actor = new RunnableActor(name+"-TaskScheduler", m_queue);
+        // Create a new actor and add it to the queue
+        new RunnableActor(name+"-TaskScheduler", m_queue);
         addExecutor(SyncTask.ADMIN_EXECUTOR, Executors.newSingleThreadExecutor(
             new LogPreservingThreadFactory(SyncTask.ADMIN_EXECUTOR, 1, false)
         ));

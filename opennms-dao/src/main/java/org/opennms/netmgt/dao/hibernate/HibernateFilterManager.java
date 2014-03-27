@@ -29,6 +29,7 @@
 package org.opennms.netmgt.dao.hibernate;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -100,12 +101,12 @@ public class HibernateFilterManager implements FilterManager {
      */
     @Override
     public void enableAuthorizationFilter(final String[] authorizationGroups) {
-        m_authorizationGroups = authorizationGroups;
+        m_authorizationGroups = Arrays.copyOf(authorizationGroups, authorizationGroups.length);
         HibernateCallback<Object> cb = new HibernateCallback<Object>() {
 
             @Override
             public Object doInHibernate(Session session) throws HibernateException, SQLException {
-                session.enableFilter(AUTH_FILTER_NAME).setParameterList("userGroups", authorizationGroups);
+                session.enableFilter(AUTH_FILTER_NAME).setParameterList("userGroups", m_authorizationGroups);
                 return null;
             }
             

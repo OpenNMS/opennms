@@ -28,6 +28,8 @@
 
 package org.opennms.sms.reflector.smsservice.internal;
 
+import java.util.Arrays;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,7 +99,7 @@ public class SmsServiceListFactoryBean implements FactoryBean<SmsService[]>, Ini
 	 * @param groupList an array of {@link org.opennms.sms.reflector.smsservice.GatewayGroup} objects.
 	 */
 	public void setGatewayGroupList(GatewayGroup[] groupList) {
-		m_gatewayGroups = groupList;
+		m_gatewayGroups = Arrays.copyOf(groupList, groupList.length);
 	}
 
 	/**

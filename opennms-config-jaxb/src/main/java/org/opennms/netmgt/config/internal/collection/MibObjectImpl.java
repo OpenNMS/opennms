@@ -25,14 +25,14 @@ public class MibObjectImpl implements IMibObject {
     @XmlJavaTypeAdapter(SnmpObjIdXmlAdapter.class)
     private SnmpObjId m_oid;
 
+    @XmlAttribute(name="instance")
+    private String m_instance;
+
     @XmlAttribute(name="alias")
     private String m_alias;
 
     @XmlAttribute(name="type")
     private String m_type;
-
-    @XmlAttribute(name="instance")
-    private String m_instance;
 
     @XmlTransient
     private GroupImpl m_group;
@@ -53,6 +53,10 @@ public class MibObjectImpl implements IMibObject {
 
     public void setOid(SnmpObjId oid) {
         m_oid = oid;
+    }
+
+    public void setOid(final String oid) {
+        m_oid = SnmpObjId.get(oid);
     }
 
     public String getAlias() {

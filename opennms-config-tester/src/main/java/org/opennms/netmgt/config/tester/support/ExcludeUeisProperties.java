@@ -31,6 +31,7 @@ package org.opennms.netmgt.config.tester.support;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Properties;
 
 import org.opennms.core.utils.BundleLists;
@@ -44,7 +45,7 @@ public class ExcludeUeisProperties {
 	}
 
 	public void setUeis(String[] ueis) {
-		m_ueis = ueis;
+		m_ueis = Arrays.copyOf(ueis, ueis.length);
 	}
 
 	public ExcludeUeisProperties() throws FileNotFoundException, IOException {

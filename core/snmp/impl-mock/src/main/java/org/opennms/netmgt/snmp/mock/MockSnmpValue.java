@@ -31,6 +31,7 @@ package org.opennms.netmgt.snmp.mock;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 
 import org.opennms.netmgt.snmp.AbstractSnmpValue;
 import org.opennms.netmgt.snmp.InetAddrUtils;
@@ -67,7 +68,7 @@ public class MockSnmpValue extends AbstractSnmpValue {
 
     	public OctetStringSnmpValue(final byte[] bytes) {
     		super(SnmpValue.SNMP_OCTET_STRING, new String(bytes));
-    		m_bytes = bytes;
+    		m_bytes = Arrays.copyOf(bytes, bytes.length);
     	}
 
                 @Override
