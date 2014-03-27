@@ -10,15 +10,14 @@ set -e
 case "$1" in
     configure)
         # Invoke runjava to setup java.conf
-        if [ -x /usr/lib/jvm/java-6-sun/bin/java ]; then
-                /usr/share/opennms/bin/runjava -q -S /usr/lib/jvm/java-6-sun/bin/java || :
-                (grep -v ^JAVA_HOME /etc/default/opennms || : ; echo 'JAVA_HOME=/usr/lib/jvm/java-6-sun') > /etc/default/opennms.new
+        for JAVADIR in `find /usr/lib/jvm/* -maxdepth 0 -type d | grep java-8 | sort -u -r`; do
+            if [ -d "$JAVADIR" ] && [ -x "$JAVADIR/bin/java" ]; then
+                /usr/share/opennms/bin/runjava -q -S "$JAVADIR/bin/java" || :
+                (grep -v ^JAVA_HOME /etc/default/opennms || : ; echo "JAVA_HOME=$JAVADIR") > /etc/default/opennms.new
                 mv /etc/default/opennms.new /etc/default/opennms || :
-        else
-                /usr/share/opennms/bin/runjava -q -S /usr/lib/jvm/java-1.5.0-sun/bin/java || :
-                (grep -v ^JAVA_HOME /etc/default/opennms || : ; echo 'JAVA_HOME=/usr/lib/jvm/java-1.5.0-sun') > /etc/default/opennms.new
-                mv /etc/default/opennms.new /etc/default/opennms || :
-        fi
+                break;
+            fi
+        done
 
         # clean up the karaf data cache
         if [ -d "/usr/share/opennms/data" ]; then

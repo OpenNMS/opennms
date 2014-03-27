@@ -9,13 +9,13 @@ set -e
 
 case "$1" in
     configure)
-        if [ -x /usr/lib/jvm/java-6-sun/bin/java ]; then
-                (grep -v ^JAVA_HOME /etc/default/opennms-remote-poller || : ; echo 'JAVA_HOME=/usr/lib/jvm/java-6-sun') > /etc/default/opennms-remote-poller.new
+        for JAVADIR in `find /usr/lib/jvm/* -maxdepth 0 -type d | grep java-8 | sort -u -r`; do
+            if [ -d "$JAVADIR" ] && [ -x "$JAVADIR/bin/java" ]; then
+                (grep -v ^JAVA_HOME /etc/default/opennms-remote-poller || : ; echo "JAVA_HOME=$JAVADIR") > /etc/default/opennms-remote-poller.new
                 mv /etc/default/opennms-remote-poller.new /etc/default/opennms-remote-poller || :
-        else
-                (grep -v ^JAVA_HOME /etc/default/opennms || : ; echo 'JAVA_HOME=/usr/lib/jvm/java-1.5.0-sun') > /etc/default/opennms-remote-poller.new
-                mv /etc/default/opennms-remote-poller.new /etc/default/opennms-remote-poller || :
-        fi
+                break;
+            fi
+        done
     ;;
     abort-upgrade|abort-remove|abort-deconfigure)
 

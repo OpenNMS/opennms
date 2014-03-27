@@ -37,7 +37,7 @@ fi
 
 # Check for JAVA_HOME
 if [ -z "$JAVA_HOME" ]; then
-	for dir in /usr/lib/jvm/java-6-sun; do
+	for dir in `find /usr/lib/jvm/* -maxdepth 0 -type d | grep java-8 | sort -u -r`; do
 		if [ -d "$dir" -a -f "$dir/lib/tools.jar" ]; then
 			JAVA_HOME="$dir"
 			break
