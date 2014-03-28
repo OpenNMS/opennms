@@ -1003,7 +1003,7 @@
     <oroVersion>2.0.8</oroVersion>
     <osgiVersion>4.3.1</osgiVersion>
     <osgiEnterpriseVersion>4.2.0</osgiEnterpriseVersion>
-    <slf4jVersion>1.7.2</slf4jVersion>
+    <slf4jVersion>1.7.5</slf4jVersion>
     <springJaxbVersion>2.1.7</springJaxbVersion>
     <xalanVersion>2.7.1</xalanVersion>
     <xercesVersion>2.9.1</xercesVersion>
@@ -1592,6 +1592,12 @@
         <artifactId>org.opennms.tests.mock-snmp-agent</artifactId>
         <version>${project.version}</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>activemq-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
@@ -2902,6 +2908,11 @@
         <artifactId>jwebunit-htmlunit-plugin</artifactId>
         <version>2.5</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.karaf.shell</groupId>
+        <artifactId>org.apache.karaf.shell.console</artifactId>
+        <version>${karafVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
