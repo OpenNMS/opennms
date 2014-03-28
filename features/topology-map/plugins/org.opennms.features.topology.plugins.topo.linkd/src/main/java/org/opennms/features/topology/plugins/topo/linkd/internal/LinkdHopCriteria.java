@@ -73,7 +73,8 @@ public class LinkdHopCriteria extends VertexHopCriteria {
     }
 
     public LinkdHopCriteria(String nodeId, String nodeLabel, NodeDao dao) {
-        super(nodeId, nodeLabel);
+        super(nodeLabel);
+        setId(nodeId);
         m_nodeId = nodeId;
         m_nodeDao = dao;
     }

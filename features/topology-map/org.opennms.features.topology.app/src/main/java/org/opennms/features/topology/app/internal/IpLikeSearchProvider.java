@@ -51,12 +51,12 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class IpSearchProvider extends AbstractSearchProvider implements SearchProvider {
+public class IpLikeSearchProvider extends AbstractSearchProvider implements SearchProvider {
 
     private IpInterfaceDao m_ipInterfaceDao;
     private IpLikeHopCriteriaFactory m_ipLikeHopFactory;
 
-	public IpSearchProvider(IpInterfaceDao ipInterfaceDao) {
+	public IpLikeSearchProvider(IpInterfaceDao ipInterfaceDao) {
     	m_ipInterfaceDao = ipInterfaceDao;
     	m_ipLikeHopFactory = new IpLikeHopCriteriaFactory(m_ipInterfaceDao);
     }
