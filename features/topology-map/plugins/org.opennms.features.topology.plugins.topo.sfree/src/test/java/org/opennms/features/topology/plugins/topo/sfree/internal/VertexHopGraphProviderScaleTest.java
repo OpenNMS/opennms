@@ -46,10 +46,11 @@ public class VertexHopGraphProviderScaleTest {
 	
 	@Test
 	public void testGraphProvider() {
-		FocusNodeHopCriteria criteria = new FocusNodeHopCriteria();
+        VertexRef randomVertex = randomVertex();
+		FocusNodeHopCriteria criteria = new FocusNodeHopCriteria(randomVertex.getId(), randomVertex.getLabel());
 		int focusNodeCount = 1;
 		for(int i = 0; i < focusNodeCount; i++) {
-			criteria.add(randomVertex());
+            criteria.add(randomVertex);
 		}
 		
 		System.err.printf("Focus Nodes: %s\n", criteria.getVertices());
