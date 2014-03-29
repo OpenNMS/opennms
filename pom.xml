@@ -768,14 +768,34 @@
                 <link>http://jakarta.apache.org/commons/pool/apidocs/</link>
                 <link>http://junit.sourceforge.net/javadoc/</link>
                 <link>http://logging.apache.org/log4j/docs/api/</link>
-                <link>http://jakarta.apache.org/regexp/apidocs/</link>
                 <link>http://jakarta.apache.org/velocity/api/</link>
               </links>
             </configuration>
           </execution>
         </executions>
       </plugin>
-   </plugins>
+      <plugin>
+        <groupId>com.atlassian.maven.plugins</groupId>
+        <artifactId>maven-clover2-plugin</artifactId>
+        <version>${cloverVersion}</version>
+        <configuration>
+          <generatePdf>true</generatePdf>
+          <generateXml>true</generateXml>
+          <generateHtml>true</generateHtml>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>sonar-maven-plugin</artifactId>
+        <dependencies>
+          <dependency>
+            <groupId>postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>9.1-901-1.jdbc4</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+    </plugins>
   </build>
 
 
@@ -950,10 +970,12 @@
    <webstart.dnameC/>
 
    <updatePolicy>daily</updatePolicy>
+   <maven.clover.licenseLocation>${user.home}/.m2/clover.license</maven.clover.licenseLocation>
 
     <!-- dependency versions -->
-    <activemqVersion>5.6.0</activemqVersion>
-    <camelVersion>2.12.2</camelVersion>
+    <activemqVersion>5.9.0</activemqVersion>
+    <camelVersion>2.12.3</camelVersion>
+    <cloverVersion>3.2.0</cloverVersion>
     <commonsBeanutilsVersion>1.8.3</commonsBeanutilsVersion>
     <commonsCodecVersion>1.7</commonsCodecVersion>
     <commonsCollectionsVersion>3.2.1</commonsCollectionsVersion>
@@ -962,6 +984,7 @@
     <commonsLoggingVersion>99.99.99-use-jcl-over-slf4j</commonsLoggingVersion>
     <commonsValidatorVersion>1.3.1</commonsValidatorVersion>
     <ecjVersion>4.2.2</ecjVersion>
+    <eclipselinkVersion>2.5.1</eclipselinkVersion>
     <guavaVersion>13.0</guavaVersion>
     <gwtVersion>2.5.1</gwtVersion>
     <gwtPluginVersion>2.5.1</gwtPluginVersion>
@@ -980,7 +1003,7 @@
     <oroVersion>2.0.8</oroVersion>
     <osgiVersion>4.3.1</osgiVersion>
     <osgiEnterpriseVersion>4.2.0</osgiEnterpriseVersion>
-    <slf4jVersion>1.7.2</slf4jVersion>
+    <slf4jVersion>1.7.5</slf4jVersion>
     <springJaxbVersion>2.1.7</springJaxbVersion>
     <xalanVersion>2.7.1</xalanVersion>
     <xercesVersion>2.9.1</xercesVersion>
@@ -1569,6 +1592,12 @@
         <artifactId>org.opennms.tests.mock-snmp-agent</artifactId>
         <version>${project.version}</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>activemq-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
@@ -2686,11 +2715,6 @@
         <version>${jacksonVersion}</version>
       </dependency>
       <dependency>
-        <groupId>jakarta-regexp</groupId>
-        <artifactId>jakarta-regexp</artifactId>
-        <version>1.4</version>
-      </dependency>
-      <dependency>
         <groupId>javax.annotation</groupId>
         <artifactId>jsr250-api</artifactId>
         <version>1.0</version>
@@ -2884,6 +2908,11 @@
         <artifactId>jwebunit-htmlunit-plugin</artifactId>
         <version>2.5</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.karaf.shell</groupId>
+        <artifactId>org.apache.karaf.shell.console</artifactId>
+        <version>${karafVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
@@ -3120,6 +3149,13 @@
     <pluginRepository>
       <id>onejar-maven-plugin.googlecode.com</id>
       <url>http://maven.opennms.org/content/groups/onejar.googlecode.com-release</url>
+    </pluginRepository>
+    <pluginRepository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>central</id>
+      <name>Maven Central</name>
+      <url>http://repo1.maven.org/maven2</url>
     </pluginRepository>
   </pluginRepositories>
   <distributionManagement>

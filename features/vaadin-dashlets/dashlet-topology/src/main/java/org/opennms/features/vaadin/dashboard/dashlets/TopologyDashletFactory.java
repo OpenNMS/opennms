@@ -55,7 +55,7 @@ public class TopologyDashletFactory extends AbstractDashletFactory {
     @Override
     public String getHelpContentHTML() {
         return "This Dashlet provides a view to the topology map page of OpenNMS included in an iFrame. \n" +
-                " The are two configurable parameters focusNodes and szl. Those parameters will be passed to the \n" +
+                " There are two configurable parameters focusNodes and szl. Those parameters will be passed to the \n" +
                 " iFrame's URL of the node map.";
     }
 }

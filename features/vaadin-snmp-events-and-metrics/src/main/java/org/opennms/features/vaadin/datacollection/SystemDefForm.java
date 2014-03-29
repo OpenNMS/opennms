@@ -32,9 +32,8 @@ import java.util.List;
 import org.opennms.netmgt.config.datacollection.Collect;
 import org.opennms.netmgt.config.datacollection.SystemDef;
 
-import com.vaadin.data.fieldgroup.FieldGroup;
-import com.vaadin.data.fieldgroup.PropertyId;
-import com.vaadin.data.util.BeanItem;
+import com.vaadin.data.fieldgroup.BeanFieldGroup;
+import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.TextField;
@@ -44,27 +43,24 @@ import com.vaadin.ui.TextField;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
-// TODO when a new group is added, the group list passed to SystemDefFieldFactory must be updated.
+// TODO when a new group is added, the group list passed to this form (i.e. groupNames) must be updated.
 @SuppressWarnings("serial")
 public class SystemDefForm extends CustomComponent {
 
     /** The name. */
-    @PropertyId("name")
     final TextField name = new TextField("Group Name");
 
     /** The system definition choice. */
-    @PropertyId("systemDefChoice")
     final SystemDefChoiceField systemDefChoice = new SystemDefChoiceField("System OID/Mask");
 
     /** The collect field. */
-    @PropertyId("collect")
-    final CollectField collectField;
+    final CollectField collect;
 
     /** The Event editor. */
-    private final FieldGroup systemDefEditor = new FieldGroup();
+    final BeanFieldGroup<SystemDef> systemDefEditor = new BeanFieldGroup<SystemDef>(SystemDef.class);
 
     /** The event layout. */
-    private final FormLayout systemDefLayout = new FormLayout();
+    final FormLayout systemDefLayout = new FormLayout();
 
     /**
      * Instantiates a new system definition form.
@@ -82,12 +78,15 @@ public class SystemDefForm extends CustomComponent {
         systemDefChoice.setRequired(true);
         systemDefLayout.addComponent(systemDefChoice);
 
-        collectField = new CollectField("MIB Groups", groupNames);
-        collectField.setRequired(true);
-        systemDefLayout.addComponent(collectField);
+        collect = new CollectField("MIB Groups", groupNames);
+        collect.setRequired(true);
+        systemDefLayout.addComponent(collect);
 
         setSystemDef(createBasicSystemDef());
-        systemDefEditor.bindMemberFields(this);
+
+        systemDefEditor.bind(name, "name");
+        systemDefEditor.bind(systemDefChoice, "systemDefChoice");
+        systemDefEditor.bind(collect, "collect");
 
         setCompositionRoot(systemDefLayout);
     }
@@ -97,9 +96,8 @@ public class SystemDefForm extends CustomComponent {
      *
      * @return the system definition
      */
-    @SuppressWarnings("unchecked")
     public SystemDef getSystemDef() {
-        return ((BeanItem<SystemDef>) systemDefEditor.getItemDataSource()).getBean();
+        return systemDefEditor.getItemDataSource().getBean();
     }
 
     /**
@@ -108,7 +106,7 @@ public class SystemDefForm extends CustomComponent {
      * @param systemDef the new system definition
      */
     public void setSystemDef(SystemDef systemDef) {
-        systemDefEditor.setItemDataSource(new BeanItem<SystemDef>(systemDef));
+        systemDefEditor.setItemDataSource(systemDef);
     }
 
     /**
@@ -125,12 +123,19 @@ public class SystemDefForm extends CustomComponent {
     }
 
     /**
-     * Gets the field group.
-     *
-     * @return the field group
+     * Discard.
      */
-    public FieldGroup getFieldGroup() {
-        return systemDefEditor;
+    public void discard() {
+        systemDefEditor.discard();
+    }
+
+    /**
+     * Commit.
+     *
+     * @throws CommitException the commit exception
+     */
+    public void commit() throws CommitException {
+        systemDefEditor.commit();
     }
 
     /* (non-Javadoc)
@@ -148,5 +153,14 @@ public class SystemDefForm extends CustomComponent {
     @Override
     public boolean isReadOnly() {
         return super.isReadOnly() && systemDefEditor.isReadOnly();
+    }
+
+    /**
+     * Gets the system definition name.
+     *
+     * @return the system definition name
+     */
+    public String getSystemDefName() {
+        return name.getValue();
     }
 }

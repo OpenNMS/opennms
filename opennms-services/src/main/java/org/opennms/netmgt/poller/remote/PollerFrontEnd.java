@@ -48,28 +48,28 @@ public interface PollerFrontEnd {
      *
      * @return a {@link java.util.Collection} object.
      */
-    public Collection<OnmsMonitoringLocationDefinition> getMonitoringLocations();
+    Collection<OnmsMonitoringLocationDefinition> getMonitoringLocations();
     
     /**
      * <p>getPolledServices</p>
      *
      * @return a {@link java.util.Collection} object.
      */
-    public Collection<PolledService> getPolledServices();
+    Collection<PolledService> getPolledServices();
     
     /**
      * Is the poller currently registered with the server.
      *
      * @return true if and only if the server has been registered
      */
-    public boolean isRegistered();
+    boolean isRegistered();
     
     /**
      * Return the monitor name of the poller or null if none exist
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getMonitorName();
+    String getMonitorName();
     
     /**
      * Register the poller if it has not been registered before.
@@ -77,7 +77,7 @@ public interface PollerFrontEnd {
      * @param monitoringLocationName The name of the monitoring Location definition under
      * which to register this monitor
      */
-    public void register(String monitoringLocationName);
+    void register(String monitoringLocationName);
 
 
     /**
@@ -86,33 +86,33 @@ public interface PollerFrontEnd {
      * @param polledServiceId the id of the polledService whose pollTime we are setting
      * @param initialPollTime the time to set its initialPollTime to
      */
-    public void setInitialPollTime(Integer polledServiceId, Date initialPollTime);
+    void setInitialPollTime(Integer polledServiceId, Date initialPollTime);
     
     /**
      * Poll the service with id polledServiceId and report the results to the server
      *
      * @param polledServiceId The serviceid of the polledService that needs to be polled
      */
-    public void pollService(Integer polledServiceId);
+    void pollService(Integer polledServiceId);
     
     /**
      * Returns whether or not the poller has been started
      *
      * @return a boolean.
      */
-    public boolean isStarted();
+    boolean isStarted();
     
     /**
      * Returns whether some error occurred and an exit is necessary
      *
      * @return a boolean.
      */
-    public boolean isExitNecessary();
+    boolean isExitNecessary();
     
     /**
      * Stop polling.  This should be called before the system exits.
      */
-    public void stop();
+    void stop();
     
     /**
      * Returns the state of polling in this monitor.
@@ -120,7 +120,7 @@ public interface PollerFrontEnd {
      * @param polledServiceId a int.
      * @return a {@link org.opennms.netmgt.poller.remote.ServicePollState} object.
      */
-    public ServicePollState getServicePollState(int polledServiceId);
+    ServicePollState getServicePollState(int polledServiceId);
 
 
     /**
@@ -128,47 +128,47 @@ public interface PollerFrontEnd {
      *
      * @return a {@link java.util.List} object.
      */
-    public List<ServicePollState> getPollerPollState();
+    List<ServicePollState> getPollerPollState();
     /**
      * Register a listener to listen for events indication a change
      * in the poller configuration
      *
      * @param l a {@link org.opennms.netmgt.poller.remote.ConfigurationChangedListener} object.
      */
-    public void addConfigurationChangedListener(ConfigurationChangedListener l);
+    void addConfigurationChangedListener(ConfigurationChangedListener l);
     
     /**
      * Remove a config change listener
      *
      * @param l a {@link org.opennms.netmgt.poller.remote.ConfigurationChangedListener} object.
      */
-    public void removeConfigurationChangedListener(ConfigurationChangedListener l);
+    void removeConfigurationChangedListener(ConfigurationChangedListener l);
 
     /**
      * Register a property change listener. (for exampe the 'registered' property)
      *
      * @param l a {@link java.beans.PropertyChangeListener} object.
      */
-    public void addPropertyChangeListener(PropertyChangeListener l);
+    void addPropertyChangeListener(PropertyChangeListener l);
     /**
      * <p>removePropertyChangeListener</p>
      *
      * @param l a {@link java.beans.PropertyChangeListener} object.
      */
-    public void removePropertyChangeListener(PropertyChangeListener l);
+    void removePropertyChangeListener(PropertyChangeListener l);
 
     /**
      * Register a listener for changes in an attribute of a PolledService
      *
      * @param l a {@link org.opennms.netmgt.poller.remote.ServicePollStateChangedListener} object.
      */
-    public void addServicePollStateChangedListener(ServicePollStateChangedListener l);
+    void addServicePollStateChangedListener(ServicePollStateChangedListener l);
     /**
      * <p>removeServicePollStateChangedListener</p>
      *
      * @param l a {@link org.opennms.netmgt.poller.remote.ServicePollStateChangedListener} object.
      */
-    public void removeServicePollStateChangedListener(ServicePollStateChangedListener l);
+    void removeServicePollStateChangedListener(ServicePollStateChangedListener l);
 	
 
 }

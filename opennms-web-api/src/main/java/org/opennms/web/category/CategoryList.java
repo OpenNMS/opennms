@@ -40,6 +40,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import javax.servlet.ServletException;
@@ -199,13 +200,10 @@ public class CategoryList {
     public long getEarliestUpdate(Map<String,List<Category>> categoryData) {
         long earliestUpdate = 0;
 
-        for (Iterator<String> i = categoryData.keySet().iterator(); i.hasNext();) {
-            String sectionName = i.next();
-            List<Category> categories = categoryData.get(sectionName);
+        for (final Entry<String, List<Category>> entry : categoryData.entrySet()) {
+            final List<Category> categories = entry.getValue();
 
-            for (Iterator<Category> j = categories.iterator(); j.hasNext();) {
-                Category category = j.next();
-
+            for (final Category category : categories) {
                 if (category.getLastUpdated() == null) {
                     return -1;
                 } else if (earliestUpdate == 0 || earliestUpdate > category.getLastUpdated().getTime()) {
@@ -258,8 +256,8 @@ public class CategoryList {
         long earliestUpdate = getEarliestUpdate(categoryData);
         boolean opennmsDisconnect = isDisconnected(earliestUpdate);
 
-        for (Iterator<String> i = categoryData.keySet().iterator(); i.hasNext();) {
-            String sectionName = i.next();
+        for (final Entry<String, List<Category>> entry : categoryData.entrySet()) {
+            final String sectionName = entry.getKey();
 
             out.write("<tr bgcolor=\"#999999\">\n");
             out.write("<td width=\"50%\"><b>" + sectionName + "</b></td>\n");
@@ -267,7 +265,7 @@ public class CategoryList {
             out.write("<td width=\"30%\" align=\"right\">" + "<b>24hr Avail</b></td>\n");
             out.write("</tr>\n");
 
-            List<Category> categories = categoryData.get(sectionName);
+            final List<Category> categories = entry.getValue();
 
             String title;
             String lastUpdated;
@@ -277,9 +275,8 @@ public class CategoryList {
             String availText;
             String availColor;
 
-            for (Iterator<Category> j = categories.iterator(); j.hasNext();) {
-                Category category = j.next();
-                String categoryName = category.getName();
+            for (final Category category : categories) {
+                final String categoryName = category.getName();
 
                 title = category.getTitle();
 

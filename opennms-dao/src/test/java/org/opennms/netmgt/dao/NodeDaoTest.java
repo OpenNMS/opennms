@@ -38,6 +38,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -46,6 +47,7 @@ import java.util.TreeSet;
 import org.apache.commons.beanutils.BeanUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
@@ -515,6 +517,22 @@ public class NodeDaoTest implements InitializingBean {
         Object expectedValue = BeanUtils.getProperty(expected, name);
         Object actualValue = BeanUtils.getProperty(actual, name);
         assertEquals("Unexpected value for property "+name+" on object "+expected, expectedValue, actualValue);
+    }
+    
+    @Test
+    @Transactional
+    public void testCB() {
+        CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);
+        cb.alias("assetRecord", "asset").match("any").ilike("label", "%ode%").ilike("sysDescription", "%abc%").ilike("asset.comment", "%xyz%");
+        List<OnmsNode> nodes = m_nodeDao.findMatching(cb.toCriteria());
+        System.err.println("Nodes found: "+nodes.size());
+        assertEquals(6, nodes.size());
+        
+        cb = new CriteriaBuilder(OnmsNode.class);
+        cb.alias("assetRecord", "asset").match("any").ilike("label", "%alt%").ilike("sysDescription", "%abc%").ilike("asset.comment", "%xyz%");
+        nodes = m_nodeDao.findMatching(cb.toCriteria());
+        System.err.println("Nodes found: "+nodes.size());
+        assertEquals(2, nodes.size());
     }
 
     @Test

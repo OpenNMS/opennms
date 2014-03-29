@@ -27,13 +27,10 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.netmgt.config.datacollection.Collect;
 
-import com.vaadin.data.Property;
-import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -109,36 +106,26 @@ public class CollectField extends CustomField<Collect> implements Button.ClickLi
     }
 
     /* (non-Javadoc)
-     * @see com.vaadin.ui.AbstractField#setPropertyDataSource(com.vaadin.data.Property)
+     * @see com.vaadin.ui.AbstractField#getInternalValue()
      */
     @Override
-    @SuppressWarnings("rawtypes")
-    public void setPropertyDataSource(Property newDataSource) {
-        Object value = newDataSource.getValue();
-        if (value instanceof Collect) {
-            Collect dto = (Collect) value;
-            listField.removeAllItems();
-            for (String group : dto.getIncludeGroups()) {
-                listField.addItem(group);
-            }
-        } else {
-            throw new ConversionException("Invalid type");
+    protected Collect getInternalValue() {
+        Collect collect = new Collect();
+        for (Object itemId: listField.getItemIds()) {
+            collect.addIncludeGroup((String) itemId);
         }
-        super.setPropertyDataSource(newDataSource);
+        return collect;
     }
 
     /* (non-Javadoc)
-     * @see com.vaadin.ui.AbstractField#getValue()
+     * @see com.vaadin.ui.AbstractField#setInternalValue(java.lang.Object)
      */
     @Override
-    public Collect getValue() {
-        Collect dto = new Collect();
-        final List<String> includeGroups = new ArrayList<String>(dto.getIncludeGroups());
-        for (Object itemId: listField.getItemIds()) {
-            includeGroups.add((String) itemId);
+    protected void setInternalValue(Collect value) {
+        listField.removeAllItems();
+        for (String group : value.getIncludeGroups()) {
+            listField.addItem(group);
         }
-        dto.setIncludeGroups(includeGroups);
-        return dto;
     }
 
     /* (non-Javadoc)

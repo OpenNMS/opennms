@@ -221,6 +221,7 @@ public class CollectionSpecification {
                 LOG.debug(sb.toString());
             }
         }
+        m.put("packageName", m_package.getName());
         m_parameters = m;
     }
 
@@ -230,11 +231,11 @@ public class CollectionSpecification {
      * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
      */
     public void initialize(CollectionAgent agent) throws CollectionInitializationException {
-        Collectd.instrumentation().beginCollectorInitialize(agent.getNodeId(), agent.getHostAddress(), m_svcName);
+        Collectd.instrumentation().beginCollectorInitialize(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName);
         try {
             m_collector.initialize(agent, getPropertyMap());
         } finally {
-            Collectd.instrumentation().endCollectorInitialize(agent.getNodeId(), agent.getHostAddress(), m_svcName);
+            Collectd.instrumentation().endCollectorInitialize(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName);
         }
     }
 
@@ -244,11 +245,11 @@ public class CollectionSpecification {
      * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
      */
     public void release(CollectionAgent agent) {
-        Collectd.instrumentation().beginCollectorRelease(agent.getNodeId(), agent.getHostAddress(), m_svcName);
+        Collectd.instrumentation().beginCollectorRelease(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName);
         try {
             m_collector.release(agent);
         } finally {
-            Collectd.instrumentation().endCollectorRelease(agent.getNodeId(), agent.getHostAddress(), m_svcName);
+            Collectd.instrumentation().endCollectorRelease(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName);
         }
     }
 
@@ -260,11 +261,19 @@ public class CollectionSpecification {
      * @throws org.opennms.netmgt.collectd.CollectionException if any.
      */
     public CollectionSet collect(CollectionAgent agent) throws CollectionException {
-        Collectd.instrumentation().beginCollectorCollect(agent.getNodeId(), agent.getHostAddress(), m_svcName);
+        Collectd.instrumentation().beginCollectorCollect(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName);
         try {
-            return getCollector().collect(agent, EventIpcManagerFactory.getIpcManager(), getPropertyMap());
+            CollectionSet set = getCollector().collect(agent, EventIpcManagerFactory.getIpcManager(), getPropertyMap());
+            // There are collector implementations that never throw an exception just return a collection failed
+            if (set.getStatus() == ServiceCollector.COLLECTION_FAILED) {
+                Collectd.instrumentation().reportCollectionException(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName, new CollectionFailed(ServiceCollector.COLLECTION_FAILED));
+            }
+            return set;
+        } catch (CollectionException e) {
+            Collectd.instrumentation().reportCollectionException(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName, e);
+            throw e;
         } finally {
-            Collectd.instrumentation().endCollectorCollect(agent.getNodeId(), agent.getHostAddress(), m_svcName);
+            Collectd.instrumentation().endCollectorCollect(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName);
         }
     }
 

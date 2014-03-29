@@ -27,7 +27,6 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.features.vaadin.api.OnmsBeanContainer;
@@ -92,11 +91,7 @@ public class ResourceTypeTable extends Table {
      * @return the resource type
      */
     public List<ResourceType> getResourceTypes() {
-        List<ResourceType> resourceTypes = new ArrayList<ResourceType>();
-        for (Object itemId : container.getItemIds()) {
-            resourceTypes.add(container.getItem(itemId).getBean());
-        }
-        return resourceTypes;
+        return container.getOnmsBeans();
     }
 
 }

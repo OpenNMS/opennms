@@ -41,6 +41,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.internal.collection.DatacollectionConfigVisitor;
 
 /**
  * a MIB object group
@@ -283,6 +284,18 @@ public class Group implements Serializable {
     @Override
     public String toString() {
         return "Group [name=" + m_name + ", ifType=" + m_ifType + ", mibObjects=" + m_mibObjects + ", includeGroups=" + m_includeGroups + "]";
+    }
+
+    public void visit(final DatacollectionConfigVisitor visitor) {
+        visitor.visitGroup(this);
+
+        if (m_mibObjects != null) {
+            for (final MibObj obj : m_mibObjects) {
+                obj.visit(visitor);
+            }
+        }
+
+        visitor.visitGroupComplete();
     }
 
 }

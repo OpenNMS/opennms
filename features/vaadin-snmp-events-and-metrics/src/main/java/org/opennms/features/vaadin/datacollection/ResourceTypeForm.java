@@ -32,9 +32,8 @@ import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.StorageStrategy;
 import org.opennms.netmgt.dao.support.IndexStorageStrategy;
 
-import com.vaadin.data.fieldgroup.FieldGroup;
-import com.vaadin.data.fieldgroup.PropertyId;
-import com.vaadin.data.util.BeanItem;
+import com.vaadin.data.fieldgroup.BeanFieldGroup;
+import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.TextField;
@@ -48,30 +47,25 @@ import com.vaadin.ui.TextField;
 public class ResourceTypeForm extends CustomComponent {
 
     /** The name. */
-    @PropertyId("name")
     final TextField name = new TextField("Resource Type Name");
 
     /** The label. */
-    @PropertyId("label")
     final TextField label = new TextField("Resource Type Label");
 
     /** The resource label. */
-    @PropertyId("resourceLabel")
     final TextField resourceLabel = new TextField("Resource Label");
 
     /** The storage strategy. */
-    @PropertyId("storageStrategy")
-    StorageStrategyField storageStrategy = new StorageStrategyField("Storage Strategy");
+    final StorageStrategyField storageStrategy = new StorageStrategyField("Storage Strategy");
 
     /** The persistence selector strategy. */
-    @PropertyId("persistenceSelectorStrategy")
     final PersistSelectorStrategyField persistenceSelectorStrategy = new PersistSelectorStrategyField("Persist Selector Strategy");
 
     /** The Event editor. */
-    private final FieldGroup resourceTypeEditor = new FieldGroup();
+    final BeanFieldGroup<ResourceType> resourceTypeEditor = new BeanFieldGroup<ResourceType>(ResourceType.class);
 
     /** The event layout. */
-    private final FormLayout resourceTypeLayout = new FormLayout();
+    final FormLayout resourceTypeLayout = new FormLayout();
 
     /**
      * Instantiates a new resource type form.
@@ -96,10 +90,14 @@ public class ResourceTypeForm extends CustomComponent {
         resourceTypeLayout.addComponent(persistenceSelectorStrategy);
 
         setResourceType(createBasicResourceType());
-        resourceTypeEditor.bindMemberFields(this);
+
+        resourceTypeEditor.bind(name, "name");
+        resourceTypeEditor.bind(label, "label");
+        resourceTypeEditor.bind(resourceLabel, "resourceLabel");
+        resourceTypeEditor.bind(storageStrategy, "storageStrategy");
+        resourceTypeEditor.bind(persistenceSelectorStrategy,  "persistenceSelectorStrategy");
 
         setCompositionRoot(resourceTypeLayout);
-
     }
 
     /**
@@ -107,9 +105,8 @@ public class ResourceTypeForm extends CustomComponent {
      *
      * @return the resource type
      */
-    @SuppressWarnings("unchecked")
     public ResourceType getResourceType() {
-        return ((BeanItem<ResourceType>) resourceTypeEditor.getItemDataSource()).getBean();
+        return resourceTypeEditor.getItemDataSource().getBean();
     }
 
     /**
@@ -118,7 +115,7 @@ public class ResourceTypeForm extends CustomComponent {
      * @param resourceType the new resource type
      */
     public void setResourceType(ResourceType resourceType) {
-        resourceTypeEditor.setItemDataSource(new BeanItem<ResourceType>(resourceType));
+        resourceTypeEditor.setItemDataSource(resourceType);
     }
 
     /**
@@ -141,12 +138,19 @@ public class ResourceTypeForm extends CustomComponent {
     }
 
     /**
-     * Gets the field group.
-     *
-     * @return the field group
+     * Discard.
      */
-    public FieldGroup getFieldGroup() {
-        return resourceTypeEditor;
+    public void discard() {
+        resourceTypeEditor.discard();
+    }
+
+    /**
+     * Commit.
+     *
+     * @throws CommitException the commit exception
+     */
+    public void commit() throws CommitException {
+        resourceTypeEditor.commit();
     }
 
     /* (non-Javadoc)
@@ -164,5 +168,14 @@ public class ResourceTypeForm extends CustomComponent {
     @Override
     public boolean isReadOnly() {
         return super.isReadOnly() && resourceTypeEditor.isReadOnly();
+    }
+
+    /**
+     * Gets the resource type name.
+     *
+     * @return the resource type name
+     */
+    public String getResourceTypeName() {
+        return name.getValue();
     }
 }

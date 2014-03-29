@@ -92,10 +92,12 @@ public class FileAnticipator extends Assert {
         }
     }
     
-    /** {@inheritDoc} */
+    /** {@inheritDoc} 
+     * @throws Throwable */
     @Override
-    protected void finalize() {
+    protected void finalize() throws Throwable {
         tearDown();
+        super.finalize();
     }
 
     /**

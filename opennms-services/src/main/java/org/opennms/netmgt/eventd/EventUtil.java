@@ -36,6 +36,7 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -815,13 +816,14 @@ public final class EventUtil {
      * @param map a {@link java.util.Map} object.
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    public static void expandMapValues(Map<String, String> map, final Event event) {
-        for (String key : map.keySet()) {
-            String mapValue = map.get(key);
+    public static void expandMapValues(final Map<String, String> map, final Event event) {
+        for (final Entry<String,String> entry : map.entrySet()) {
+            final String key = entry.getKey();
+            final String mapValue = entry.getValue();
             if (mapValue == null) {
                 continue;
             }
-            String expandedValue = EventUtil.expandParms(map.get(key), event);
+            final String expandedValue = EventUtil.expandParms(map.get(key), event);
             if (expandedValue == null) {
                 // Don't use this value to replace the existing value if it's null
             } else {

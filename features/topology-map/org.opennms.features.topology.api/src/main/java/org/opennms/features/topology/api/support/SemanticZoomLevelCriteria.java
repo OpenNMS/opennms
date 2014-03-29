@@ -44,6 +44,8 @@ public class SemanticZoomLevelCriteria extends Criteria {
 
 	@Override
 	public boolean equals(Object o) {
+	    if (o == null) return false;
+	    if (!(o instanceof SemanticZoomLevelCriteria)) return false;
 		try {
 			SemanticZoomLevelCriteria other = (SemanticZoomLevelCriteria)o;
 			return getNamespace().equals(other.getNamespace()) && (getSemanticZoomLevel() == other.getSemanticZoomLevel());

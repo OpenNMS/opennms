@@ -45,6 +45,11 @@
 
     <!-- feature bundles -->
     <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>activemq-dependencies</artifactId>
+      <type>pom</type>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.nrtg</groupId>
       <artifactId>nrtg-collector</artifactId>
       <version>${project.version}</version>

@@ -51,9 +51,6 @@ public class InboundMessageNotification implements OnmsInboundMessageNotificatio
     private static Logger log = LoggerFactory.getLogger(InboundMessageNotification.class);
     
 	private Collection<OnmsInboundMessageNotification> m_listenerList;
-    // private SmsService m_smsService;
-	@SuppressWarnings("unused")
-	private ApplicationContext m_applicationContext;
 
 	/**
 	 * <p>Constructor for InboundMessageNotification.</p>
@@ -121,12 +118,14 @@ public class InboundMessageNotification implements OnmsInboundMessageNotificatio
 
 	/**
 	 * <p>setApplicationContext</p>
+	 * 
+	 * @deprecated Appears to be unused
 	 *
 	 * @param applicationContext a {@link org.springframework.context.ApplicationContext} object.
 	 * @throws org.springframework.beans.BeansException if any.
 	 */
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		m_applicationContext = applicationContext;
+		// Unused?
 	}
 
 }

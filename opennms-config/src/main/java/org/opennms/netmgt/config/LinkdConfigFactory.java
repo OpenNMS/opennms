@@ -34,7 +34,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
-import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 
@@ -43,10 +42,10 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.linkd.LinkdConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -54,10 +53,6 @@ import org.opennms.netmgt.config.linkd.LinkdConfiguration;
  *
  * A mapping of the configured URLs to the iplist they contain is built at
  * init() time so as to avoid numerous file reads.
- *
- * <strong>Note: </strong>Users of this class should make sure the
- * <em>init()</em> is called before calling any other method to ensure the
- * config is loaded before accessing other convenience methods.
  *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  * @author <a href="mailto:jamesz@opennms.com">James Zuo </a>
@@ -67,23 +62,10 @@ import org.opennms.netmgt.config.linkd.LinkdConfiguration;
  */
 public final class LinkdConfigFactory extends LinkdConfigManager {
     private static final Logger LOG = LoggerFactory.getLogger(LinkdConfigFactory.class);
-    /**
-     * The singleton instance of this factory
-     */
-    private static LinkdConfig m_singleton = null;
 
     /**
-     * This member is set to true if the configuration file has been loaded.
-     */
-    private static boolean m_loaded = false;
-    
-    /**
-     * Loaded version
-     */
-    private long m_currentVersion = -1L;
-
-    /**
-     * <p>Constructor for LinkdConfigFactory.</p>
+     * <p>Constructor for LinkdConfigFactory.
+     * Loads the config from the default config file.</p>
      *
      * @param currentVersion a long.
      * @param stream a {@link java.io.InputStream} object.
@@ -91,42 +73,12 @@ public final class LinkdConfigFactory extends LinkdConfigManager {
      * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    public LinkdConfigFactory(final long currentVersion, final InputStream stream) throws MarshalException, ValidationException, IOException {
-        reloadXML(stream);
-        m_currentVersion = currentVersion;
+    public LinkdConfigFactory() throws MarshalException, ValidationException, IOException {
+        reload();
     }
 
-    /**
-     * Load the config from the default config file and create the singleton
-     * instance of this factory.
-     *
-     * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
-     * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     */
-    public static synchronized void init() throws IOException, MarshalException, ValidationException {
-        if (m_loaded) {
-            // init already called - return
-            // to reload, reload() will need to be called
-            return;
-        }
-
-        final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.LINKD_CONFIG_FILE_NAME);
-        LOG.debug("init: config file path: {}", cfgFile.getPath());
-
-        InputStream stream = null;
-        try {
-            stream = new FileInputStream(cfgFile);
-            setInstance(new LinkdConfigFactory(cfgFile.lastModified(), stream));
-        } finally {
-            IOUtils.closeQuietly(stream);
-        }
+    public LinkdConfigFactory(InputStream stream) throws MarshalException, ValidationException, IOException {
+        reloadXML(stream);
     }
 
     /** {@inheritDoc} */
@@ -145,31 +97,6 @@ public final class LinkdConfigFactory extends LinkdConfigManager {
     }
 
     /**
-     * Return the singleton instance of this factory.
-     *
-     * @return The current factory instance.
-     * @throws java.lang.IllegalStateException
-     *             Thrown if the factory has not yet been initialized.
-     */
-    public static synchronized LinkdConfig getInstance() {
-        if (!m_loaded) {
-            throw new IllegalStateException("The factory has not been initialized");
-        }
-
-        return m_singleton;
-    }
-    
-    /**
-     * <p>setInstance</p>
-     *
-     * @param instance a {@link org.opennms.netmgt.config.LinkdConfig} object.
-     */
-    public static synchronized void setInstance(final LinkdConfig instance) {
-        m_singleton = instance;
-        m_loaded = true;
-    }
-
-    /**
      * <p>reload</p>
      *
      * @throws java.io.IOException if any.
@@ -181,20 +108,17 @@ public final class LinkdConfigFactory extends LinkdConfigManager {
         getWriteLock().lock();
         try {
             final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.LINKD_CONFIG_FILE_NAME);
-            if (cfgFile.lastModified() > m_currentVersion) {
-                m_currentVersion = cfgFile.lastModified();
-                LOG.debug("init: config file path: {}", cfgFile.getPath());
-                InputStream stream = null;
-                try {
-                    stream = new FileInputStream(cfgFile);
-                    reloadXML(stream);
-                } finally {
-                    if (stream != null) {
-                        IOUtils.closeQuietly(stream);
-                    }
+            LOG.debug("init: config file path: {}", cfgFile.getPath());
+            InputStream stream = null;
+            try {
+                stream = new FileInputStream(cfgFile);
+                reloadXML(stream);
+            } finally {
+                if (stream != null) {
+                    IOUtils.closeQuietly(stream);
                 }
-                LOG.debug("init: finished loading config file: {}", cfgFile.getPath());
             }
+            LOG.debug("init: finished loading config file: {}", cfgFile.getPath());
         } finally {
             getWriteLock().unlock();
         }
@@ -235,6 +159,7 @@ public final class LinkdConfigFactory extends LinkdConfigManager {
             getWriteLock().unlock();
         }
     }
+
     /**
      * Saves the current in-memory configuration to disk
      *
@@ -252,28 +177,6 @@ public final class LinkdConfigFactory extends LinkdConfigManager {
             final StringWriter stringWriter = new StringWriter();
             Marshaller.marshal(m_config, stringWriter);
             saveXml(stringWriter.toString());        
-        } finally {
-            getWriteLock().unlock();
-        }
-    }
-    
-    /**
-     * <p>reloadXML</p>
-     *
-     * @param reader a {@link java.io.Reader} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     * @throws java.io.IOException if any.
-     */
-    @Deprecated
-    protected void reloadXML(final Reader reader) throws MarshalException, ValidationException, IOException {
-        getWriteLock().lock();
-        try {
-            m_config = CastorUtils.unmarshal(LinkdConfiguration.class, reader);
-            updateUrlIpMap();
-            updatePackageIpListMap();
-            updateVlanClassNames();
-            updateIpRouteClassNames();
         } finally {
             getWriteLock().unlock();
         }

@@ -69,14 +69,6 @@ public class JUnitCollectorExecutionListener extends AbstractTestExecutionListen
             return;
         }
 
-        // FIXME: Is there a better way to inject the instance into the test class?
-        if (testContext.getTestInstance() instanceof TestContextAware) {
-            System.err.println("injecting TestContext into TestContextAware test: "
-                            + testContext.getTestInstance().getClass().getSimpleName() + "."
-                            + testContext.getTestMethod().getName());
-            ((TestContextAware) testContext.getTestInstance()).setTestContext(testContext);
-        }
-        
         RrdUtils.setStrategy(new JRobinRrdStrategy());
 
         // make a fake database schema with hibernate

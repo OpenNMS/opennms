@@ -40,6 +40,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.internal.collection.DatacollectionConfigVisitor;
 
 /**
  * Top-level element for the datacollection-config.xml
@@ -90,6 +91,15 @@ public class DatacollectionConfig implements Serializable {
 
     public void setSnmpCollections(final List<SnmpCollection> snmpCollections) {
         m_snmpCollections = new ArrayList<SnmpCollection>(snmpCollections);
+    }
+
+    public SnmpCollection getSnmpCollection(final String name) {
+        for (final SnmpCollection collection : m_snmpCollections) {
+            if (name.equals(collection.getName())) {
+                return collection;
+            }
+        }
+        return null;
     }
 
     public void addSnmpCollection(final SnmpCollection snmpCollection) throws IndexOutOfBoundsException {
@@ -145,6 +155,16 @@ public class DatacollectionConfig implements Serializable {
     @Override
     public String toString() {
         return "DatacollectionConfig [rrdRepository=" + m_rrdRepository + ", snmpCollections=" + m_snmpCollections + "]";
+    }
+
+    public void visit(final DatacollectionConfigVisitor visitor) {
+        visitor.visitDatacollectionConfig(this);
+        
+        for (final SnmpCollection collection : m_snmpCollections) {
+            collection.visit(visitor);
+        }
+
+        visitor.visitDatacollectionConfigComplete();
     }
 
 }

@@ -76,9 +76,6 @@ public class AvailabilityCalculatorImpl implements AvailabilityCalculator {
 
     // calendar
 
-    @SuppressWarnings("unused")
-    private Calendar m_calendar;
-
     // start date
 
     private Date m_periodEndDate;
@@ -506,15 +503,6 @@ public class AvailabilityCalculatorImpl implements AvailabilityCalculator {
     @Override
     public Report getReport() {
         return m_report;
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.reporting.availability.AvailabilityCalculator#setCalendar(java.util.Calendar)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public void setCalendar(Calendar calendar) {
-        this.m_calendar = calendar;
     }
 
     /* (non-Javadoc)

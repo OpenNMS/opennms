@@ -469,7 +469,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
      * @param nodelabel a {@link java.lang.String} object.
      */
     public void setLabel(final String nodelabel) {
-        if (m_label != nodelabel && m_label != null && m_oldLabel == null) {
+        if (m_label != null && m_oldLabel == null && !m_label.equals(nodelabel)) {
             // LOG.debug("setLabel(): old label = {}, new label = {}", m_label, nodelabel);
             m_oldLabel = m_label;
         }

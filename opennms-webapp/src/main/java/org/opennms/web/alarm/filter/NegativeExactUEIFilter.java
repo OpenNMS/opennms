@@ -83,6 +83,8 @@ public class NegativeExactUEIFilter extends NotEqualsFilter<String> {
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
+        if (obj == null) return false;
+        if (!(obj instanceof NegativeExactUEIFilter)) return false;
         return (this.toString().equals(obj.toString()));
     }
 }

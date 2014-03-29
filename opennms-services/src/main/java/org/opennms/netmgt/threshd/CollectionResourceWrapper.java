@@ -268,7 +268,8 @@ public class CollectionResourceWrapper {
         String parentResourceName = Integer.toString(getNodeId());
         // I can't find a better way to deal with this when storeByForeignSource is enabled        
         if (m_resource != null && m_resource.getParent() != null && m_resource.getParent().startsWith(DefaultResourceDao.FOREIGN_SOURCE_DIRECTORY)) {
-            String[] parts = m_resource.getParent().split(File.separator);
+            // If separatorChar is backslash (like on Windows) use a double-escaped backslash in the regex
+            String[] parts = m_resource.getParent().split(File.separatorChar == '\\' ? "\\\\" : File.separator);
             if (parts.length == 3) {
                 parentResourceTypeName = "nodeSource";
                 parentResourceName = parts[1] + ":" + parts[2];

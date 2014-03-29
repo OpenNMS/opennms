@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,36 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.topo;
+package org.opennms.core.test;
 
-// TODO rename class because it is not abstract. It can be initialized. Fix this please
-public class AbstractVertexRef extends AbstractRef implements VertexRef {
+import org.springframework.test.context.TestContext;
+import org.springframework.test.context.support.AbstractTestExecutionListener;
 
-	public AbstractVertexRef(VertexRef ref) {
-		super(ref);
-	}
-
-	public AbstractVertexRef(String namespace, String id, String label) {
-		super(namespace, id, label);
-	}
-
-	/**
-	 * @deprecated Specify a useful label for the object
-	 */
-	public AbstractVertexRef(String namespace, String id) {
-		super(namespace, id, namespace + ":" + id);
-	}
+/**
+ * This listener will inject the {@link TestContext} into a test if it
+ * supports the {@link TestContextAware} interface.
+ */
+public class TestContextAwareExecutionListener extends AbstractTestExecutionListener {
 
 	@Override
-	public final boolean equals(Object obj) {
-		if (obj instanceof VertexRef) {
-			return super.equals(obj);
+	public void beforeTestMethod(TestContext testContext) throws Exception {
+		// FIXME: Is there a better way to inject the instance into the test class?
+		if (testContext.getTestInstance() instanceof TestContextAware) {
+			System.err.println("injecting TestContext into TestContextAware test: "
+					+ testContext.getTestInstance().getClass().getSimpleName() + "."
+					+ testContext.getTestMethod().getName());
+			((TestContextAware) testContext.getTestInstance()).setTestContext(testContext);
 		}
-		return false;
 	}
-
-	
-	@Override
-	public String toString() { return "VertexRef:"+getNamespace()+":"+getId(); } 
-
 }

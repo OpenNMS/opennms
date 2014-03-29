@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -67,9 +68,6 @@ import org.springframework.core.io.Resource;
  *
  * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
 public final class JMXDataCollectionConfigFactory {
     private static final Logger LOG = LoggerFactory.getLogger(JMXDataCollectionConfigFactory.class);
@@ -274,12 +272,9 @@ public final class JMXDataCollectionConfigFactory {
         
         Enumeration<Mbean> en = beans.enumerateMbean();
         while (en.hasMoreElements()) {
-            List<Attrib> list = new ArrayList<Attrib>();
             Mbean mbean = en.nextElement();
-            Attrib[] attributes = mbean.getAttrib();
-            for (int i = 0; i < attributes.length; i++) {
-                list.add(attributes[i]);
-            }
+            // Make sure to create a new ArrayList because we add to it below
+            List<Attrib> list = new ArrayList<Attrib>(Arrays.asList(mbean.getAttrib()));
             
             CompAttrib[] compAttributes = mbean.getCompAttrib();
             for (int i = 0; i < compAttributes.length; i++) {

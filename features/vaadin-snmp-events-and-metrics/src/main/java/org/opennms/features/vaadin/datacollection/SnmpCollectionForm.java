@@ -31,9 +31,8 @@ import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.Rrd;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
 
-import com.vaadin.data.fieldgroup.FieldGroup;
-import com.vaadin.data.fieldgroup.PropertyId;
-import com.vaadin.data.util.BeanItem;
+import com.vaadin.data.fieldgroup.BeanFieldGroup;
+import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.FormLayout;
@@ -48,26 +47,22 @@ import com.vaadin.ui.TextField;
 public class SnmpCollectionForm extends CustomComponent {
 
     /** The name. */
-    @PropertyId("name")
     final TextField name = new TextField("SNMP Collection Name");
 
-    /** The snmp storage flag. */
-    @PropertyId("snmpStorageFlag")
+    /** The SNMP storage flag. */
     final ComboBox snmpStorageFlag = new ComboBox("SNMP Storage Flag");
 
-    /** The rrd. */
-    @PropertyId("rrd")
+    /** The RRD. */
     final RrdField rrd = new RrdField("RRD");
 
     /** The include collections. */
-    @PropertyId("includeCollectionCollection") 
     final IncludeCollectionField includeCollections;
 
     /** The Event editor. */
-    private final FieldGroup snmpCollectionEditor = new FieldGroup();
+    final BeanFieldGroup<SnmpCollection> snmpCollectionEditor = new BeanFieldGroup<SnmpCollection>(SnmpCollection.class);
 
     /** The event layout. */
-    private final FormLayout snmpCollectionLayout = new FormLayout();
+    final FormLayout snmpCollectionLayout = new FormLayout();
 
     /**
      * Instantiates a new SNMP collection form.
@@ -95,7 +90,11 @@ public class SnmpCollectionForm extends CustomComponent {
         snmpCollectionLayout.addComponent(includeCollections);
 
         setSnmpCollection(createBasicSnmpCollection());
-        snmpCollectionEditor.bindMemberFields(this);
+
+        snmpCollectionEditor.bind(name, "name");
+        snmpCollectionEditor.bind(snmpStorageFlag, "snmpStorageFlag");
+        snmpCollectionEditor.bind(rrd, "rrd");
+        snmpCollectionEditor.bind(includeCollections, "includeCollections");
 
         setCompositionRoot(snmpCollectionLayout);
     }
@@ -105,9 +104,8 @@ public class SnmpCollectionForm extends CustomComponent {
      *
      * @return the SNMP Collection
      */
-    @SuppressWarnings("unchecked")
     public SnmpCollection getSnmpCollection() {
-        return ((BeanItem<SnmpCollection>) snmpCollectionEditor.getItemDataSource()).getBean();
+        return snmpCollectionEditor.getItemDataSource().getBean();
     }
 
     /**
@@ -116,7 +114,7 @@ public class SnmpCollectionForm extends CustomComponent {
      * @param snmpCollection the new SNMP collection
      */
     public void setSnmpCollection(SnmpCollection snmpCollection) {
-        snmpCollectionEditor.setItemDataSource(new BeanItem<SnmpCollection>(snmpCollection));
+        snmpCollectionEditor.setItemDataSource(snmpCollection);
     }
 
     /**
@@ -140,12 +138,19 @@ public class SnmpCollectionForm extends CustomComponent {
     }
 
     /**
-     * Gets the field group.
-     *
-     * @return the field group
+     * Discard.
      */
-    public FieldGroup getFieldGroup() {
-        return snmpCollectionEditor;
+    public void discard() {
+        snmpCollectionEditor.discard();
+    }
+
+    /**
+     * Commit.
+     *
+     * @throws CommitException the commit exception
+     */
+    public void commit() throws CommitException {
+        snmpCollectionEditor.commit();
     }
 
     /* (non-Javadoc)
@@ -165,4 +170,21 @@ public class SnmpCollectionForm extends CustomComponent {
         return super.isReadOnly() && snmpCollectionEditor.isReadOnly();
     }
 
+    /**
+     * Gets the SNMP collection name.
+     *
+     * @return the SNMP collection name
+     */
+    public String getSnmpCollectionName() {
+        return name.getValue();
+    }
+
+    /**
+     * Gets the RRD step.
+     *
+     * @return the RRD step
+     */
+    public Integer getRrdStep() {
+        return rrd.getStepValue();
+    }
 }

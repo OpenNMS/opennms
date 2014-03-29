@@ -53,6 +53,8 @@ public class EventWrapper {
     /** {@inheritDoc} */
     @Override
     public boolean equals(final Object o) {
+        if (o == null) return false;
+        if (!(o instanceof EventWrapper)) return false;
         final EventWrapper w = (EventWrapper) o;
         return EventUtils.eventsMatch(m_event, w.m_event);
     }

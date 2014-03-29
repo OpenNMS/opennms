@@ -121,6 +121,28 @@ public class Package implements Serializable {
     }
 
     /**
+     * Copy constructor.
+     * 
+     * @param pkg
+     */
+    public Package(Package pkg) {
+        super();
+        setExcludeRanges(pkg.getExcludeRanges());
+        setFilter(pkg.getFilter());
+        setIfAliasComment(pkg.getIfAliasComment());
+        setIfAliasDomain(pkg.getIfAliasDomain());
+        setIncludeRanges(pkg.getIncludeRanges());
+        setIncludeUrlCollection(pkg.getIncludeUrls());
+        setName(pkg.getName());
+        setOutageCalendars(pkg.getOutageCalendars());
+        setServices(pkg.getServices());
+        setSpecifics(pkg.getSpecifics());
+        setStoreByIfAlias(pkg.getStoreByIfAlias());
+        setStoreByNodeID(pkg.getStoreByNodeID());
+        setStorFlagOverride(pkg.getStorFlagOverride());
+    }
+
+    /**
      * The name or identifier for this package
      */
     public String getName() {

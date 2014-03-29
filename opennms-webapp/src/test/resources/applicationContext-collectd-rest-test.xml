@@ -19,6 +19,11 @@
 		<constructor-arg value="file:target/test-classes/config-rest/datacollection-config.xml" />
 	</bean>
 
+	<bean name="dc.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">
+		<constructor-arg value="org.opennms.netmgt.config.internal.collection.DataCollectionConfigImpl" />
+		<constructor-arg value="file:target/test-classes/config-rest/dc.xml" />
+	</bean>
+
 	<bean name="monitoring-locations.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">
 		<constructor-arg value="org.opennms.netmgt.config.monitoringLocations.MonitoringLocationsConfiguration" />
 		<constructor-arg value="file:target/test-classes/config-rest/monitoring-locations.xml" />

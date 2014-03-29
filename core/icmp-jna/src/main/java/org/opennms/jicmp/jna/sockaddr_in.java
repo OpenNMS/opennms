@@ -47,9 +47,9 @@ public class sockaddr_in extends Structure {
     public sockaddr_in(int family, byte[] addr, byte[] port) {
         sin_family = (short)(0xffff & family);
         assertLen("port", port, 2);
-        sin_port = port;
+        sin_port = port == null? null : port.clone();
         assertLen("address", addr, 4);
-        sin_addr = addr;
+        sin_addr = addr == null? null : addr.clone();
     }
     
     public sockaddr_in() {

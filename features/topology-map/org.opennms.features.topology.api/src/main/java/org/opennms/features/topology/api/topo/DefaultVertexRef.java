@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,14 +26,50 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd;
-
-import org.springframework.test.context.TestContext;
+package org.opennms.features.topology.api.topo;
 
 /**
- * This marker interface is used to denote classes where the {@link TestContext} instance
- * can be injected into the test class.
+ * 
+ * @author <a href="mailto:mvr@opennms.org>Markus von Ruden</a>
+ * @author <a href="mailto:seth@opennms.org">Seth Leger</a>
+ * @author <a href="mailto:thedesloge@opennms.org">Donald Desloge</a>
+ *
  */
-public interface TestContextAware {
-    public void setTestContext(TestContext database);
+public class DefaultVertexRef extends AbstractRef implements VertexRef {
+
+	public DefaultVertexRef(VertexRef ref) {
+		super(ref);
+	}
+
+	/**
+	 * Just a note here, it is important that the id parameter is set to the node id if the
+	 * namespace is "nodes". (david@opennms.org)
+	 * 
+	 * @param namespace
+	 * @param id
+	 * @param label
+	 */
+	public DefaultVertexRef(String namespace, String id, String label) {
+		super(namespace, id, label);
+	}
+
+	/**
+	 * @deprecated Specify a useful label for the object
+	 */
+	public DefaultVertexRef(String namespace, String id) {
+		super(namespace, id, namespace + ":" + id);
+	}
+
+	@Override
+	public final boolean equals(Object obj) {
+		if (obj instanceof VertexRef) {
+			return super.equals(obj);
+		}
+		return false;
+	}
+
+	
+	@Override
+	public String toString() { return "VertexRef:"+getNamespace()+":"+getId(); } 
+
 }

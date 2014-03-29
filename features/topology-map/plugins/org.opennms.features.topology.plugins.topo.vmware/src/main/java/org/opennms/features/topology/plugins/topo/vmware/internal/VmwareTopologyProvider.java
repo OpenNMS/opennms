@@ -425,9 +425,10 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
         return searchPrefix.contains("nodes=");
     }
 
+    //FIXME: This should return the list of vertexrefs for the "zoom to focus" operation
     @Override
-    public Set<VertexRef> getVertexRefsBy(SearchResult searchResult) {
-        return Collections.emptySet();  //To change body of implemented methods use File | Settings | File Templates.
+    public Set<VertexRef> getVertexRefsBy(SearchResult searchResult, GraphContainer container) {
+        return Collections.emptySet();
     }
 
     @Override

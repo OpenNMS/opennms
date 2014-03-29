@@ -28,6 +28,7 @@
 package org.opennms.features.vaadin.datacollection;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.opennms.features.vaadin.api.OnmsBeanContainer;
@@ -49,7 +50,7 @@ import com.vaadin.ui.VerticalLayout;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class MibObjField extends CustomField<ArrayList<MibObj>> implements Button.ClickListener {
+public class MibObjField extends CustomField<List<MibObj>> implements Button.ClickListener {
 
     /** The Container. */
     private final OnmsBeanContainer<MibObj> container = new OnmsBeanContainer<MibObj>(MibObj.class);
@@ -105,16 +106,16 @@ public class MibObjField extends CustomField<ArrayList<MibObj>> implements Butto
      */
     @Override
     @SuppressWarnings("unchecked")
-    public Class<ArrayList<MibObj>> getType() {
-        return (Class<ArrayList<MibObj>>) new ArrayList<MibObj>().getClass();
+    public Class<? extends List<MibObj>> getType() {
+        // Check org.opennms.netmgt.config.datacollection.Group.getMibObjs()
+        return  (Class<? extends List<MibObj>>) Collections.unmodifiableList(new ArrayList<MibObj>()).getClass();
     }
 
     /* (non-Javadoc)
      * @see com.vaadin.ui.AbstractField#setInternalValue(java.lang.Object)
      */
     @Override
-    protected void setInternalValue(ArrayList<MibObj> mibObjects) {
-        super.setInternalValue(mibObjects); // TODO Is this required ?
+    protected void setInternalValue(List<MibObj> mibObjects) {
         container.removeAllItems();
         container.addAll(mibObjects);
     }
@@ -123,12 +124,8 @@ public class MibObjField extends CustomField<ArrayList<MibObj>> implements Butto
      * @see com.vaadin.ui.AbstractField#getInternalValue()
      */
     @Override
-    protected ArrayList<MibObj> getInternalValue() {
-        ArrayList<MibObj> beans = new ArrayList<MibObj>();
-        for (Object itemId: container.getItemIds()) {
-            beans.add(container.getItem(itemId).getBean());
-        }
-        return beans;
+    protected List<MibObj> getInternalValue() {
+        return container.getOnmsBeans();
     }
 
     /* (non-Javadoc)
@@ -153,14 +150,6 @@ public class MibObjField extends CustomField<ArrayList<MibObj>> implements Butto
         if (btn == delete) {
             deleteHandler();
         }
-    }
-
-    /* (non-Javadoc)
-     * @see org.vaadin.addon.customfield.CustomField#isValid()
-     */
-    @Override
-    public boolean isValid() {
-        return super.isValid() && table.isValid(); // FIXME This is not working
     }
 
     /**

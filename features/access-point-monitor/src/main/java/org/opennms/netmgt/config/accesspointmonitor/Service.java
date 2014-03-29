@@ -86,16 +86,20 @@ public class Service extends ServiceTemplate implements Cloneable {
         m_template = template;
     }
 
-    public int compareTo(Service obj) {
-        return new CompareToBuilder()
+    public int compareTo(final ServiceTemplate obj) {
+        final CompareToBuilder builder =  new CompareToBuilder()
             .append(getName(), obj.getName())
             .append(getThreads(), obj.getThreads())
             .append(getPassiveServiceName(), obj.getPassiveServiceName())
             .append(getInterval(), obj.getInterval())
-            .append(getStatus(), obj.getStatus())
-            .append(getTemplateName(), obj.getTemplateName())
-            .append(getParameters().toArray(OF_PARAMETERS), obj.getParameters().toArray(OF_PARAMETERS))
-            .toComparison();
+            .append(getStatus(), obj.getStatus());
+        
+        if (obj instanceof Service) {
+            builder.append(getTemplateName(), ((Service)obj).getTemplateName());
+        }
+
+        builder.append(getParameters().toArray(OF_PARAMETERS), obj.getParameters().toArray(OF_PARAMETERS));
+        return builder.toComparison();
     }
 
     @Override

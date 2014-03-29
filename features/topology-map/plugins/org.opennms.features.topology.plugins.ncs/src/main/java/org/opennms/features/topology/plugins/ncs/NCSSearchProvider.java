@@ -25,14 +25,14 @@ import org.opennms.netmgt.model.ncs.NCSComponentRepository;
 
 public class NCSSearchProvider extends AbstractSearchProvider implements SearchProvider {
 
-    public static class NCSHopCriteria extends VertexHopCriteria{
+    public static class NCSHopCriteria extends VertexHopCriteria {
 
         private final Set<VertexRef> m_vertices;
 
         public NCSHopCriteria(String id, Set<VertexRef> vertexRefs, String label) {
+        	super(label);
             setId(id);
             m_vertices = vertexRefs;
-            setLabel(label);
         }
 
         @Override
@@ -149,7 +149,7 @@ public class NCSSearchProvider extends AbstractSearchProvider implements SearchP
     }
 
     @Override
-    public Set<VertexRef> getVertexRefsBy(SearchResult searchResult) {
+    public Set<VertexRef> getVertexRefsBy(SearchResult searchResult, GraphContainer container) {
         Criteria criteria = NCSEdgeProvider.createCriteria(Collections.singletonList(Long.parseLong(searchResult.getId())));
         return getVertexRefsForEdges(m_ncsEdgeProvider, criteria);
     }

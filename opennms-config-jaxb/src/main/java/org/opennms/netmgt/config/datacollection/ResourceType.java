@@ -38,6 +38,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.internal.collection.DatacollectionConfigVisitor;
 
 /**
  * a custom resource type
@@ -205,6 +206,11 @@ public class ResourceType implements Serializable {
     public String toString() {
         return "ResourceType [name=" + m_name + ", label=" + m_label + ", resourceLabel=" + m_resourceLabel + ", persistenceSelectorStrategy=" + m_persistenceSelectorStrategy
                 + ", storageStrategy=" + m_storageStrategy + "]";
+    }
+
+    public void visit(final DatacollectionConfigVisitor visitor) {
+        visitor.visitResourceType(this);
+        visitor.visitResourceTypeComplete();
     }
 
 }

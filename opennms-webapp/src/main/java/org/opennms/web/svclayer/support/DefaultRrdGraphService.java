@@ -28,7 +28,6 @@
 
 package org.opennms.web.svclayer.support;
 
-
 import java.io.File;
 import java.io.InputStream;
 import java.text.MessageFormat;
@@ -40,9 +39,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
-import org.apache.regexp.RE;
-import org.apache.regexp.RESyntaxException;
 import org.opennms.netmgt.dao.api.GraphDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.dao.api.RrdDao;
@@ -69,16 +67,16 @@ import org.springframework.util.StringUtils;
  * @author <a href="mailto:cmiskell@opennms.org">Craig Miskell</a>
  */
 public class DefaultRrdGraphService implements RrdGraphService, InitializingBean {
-	
+
 	private static final Logger LOG = LoggerFactory.getLogger(DefaultRrdGraphService.class);
 
 //    private static final String s_missingParamsPath = "/images/rrd/missingparams.png";
     private static final String s_rrdError = "/images/rrd/error.png";
-    
+
     private GraphDao m_graphDao;
 
     private ResourceDao m_resourceDao;
-    
+
     private RrdDao m_rrdDao;
 
     /** {@inheritDoc} */
@@ -95,12 +93,12 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
         Assert.notNull(dataSourceTitles, "dataSourceTitles argument cannot be null");
         Assert.notNull(styles, "styles argument cannot be null");
         Assert.isTrue(end > start, "end time must be after start time");
-        
+
         AdhocGraphType t = m_graphDao.findAdhocGraphTypeByName("performance");
 
         OnmsResource r = m_resourceDao.getResourceById(resourceId);
         Assert.notNull(r, "resource \"" + resourceId + "\" could not be located");
-        
+
         String command = createAdHocCommand(t,
                                   r,
                                   start, end,
@@ -110,7 +108,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
                                   colors,
                                   dataSourceTitles,
                                   styles);
-        
+
         return getInputStreamForCommand(command);
     }
 
@@ -133,7 +131,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
 
         return tempIn;
     }
-    
+
     /**
      * <p>returnErrorImage</p>
      *
@@ -160,12 +158,12 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
             throw new IllegalArgumentException("graph type \"" + "performance"
                                                + "\" is not valid");
         }
-        
+
         OnmsResource r = m_resourceDao.getResourceById(resourceId);
         Assert.notNull(r, "resource could not be located");
 
         PrefabGraph prefabGraph = m_graphDao.getPrefabGraph(report);
-        
+
         Graph graph = new Graph(prefabGraph, r, new Date(start), new Date(end));
 
         String command = createPrefabCommand(graph,
@@ -174,10 +172,10 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
                                              report,
                                              width,
                                              height);
-        
+
         return getInputStreamForCommand(command);
     }
-    
+
     /**
      * <p>createAdHocCommand</p>
      *
@@ -218,7 +216,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
         buf.append(commandPrefix);
         buf.append(" ");
         buf.append(title);
-        
+
         String[] rrdFiles = getRrdNames(resource, dsNames);
 
         List<String> defs = new ArrayList<String>(dsNames.length);
@@ -238,13 +236,13 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
                                             dsAbbrev, dsName,
                                             dsAggregFxn, dsStyle,
                                             color, dsTitle));
-            
+
             lines.add(MessageFormat.format(graphline, rrd,
                                             starttime, endtime, graphtitle,
                                             dsAbbrev, dsName, dsAggregFxn,
                                             dsStyle, color, dsTitle));
         }
-        
+
         for (String def : defs) {
             buf.append(" ");
             buf.append(def);
@@ -260,7 +258,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
 
     private static String[] getRrdNames(OnmsResource resource, String[] dsNames) {
         String[] rrds = new String[dsNames.length];
-        
+
         Map<String, RrdGraphAttribute> attributes = resource.getRrdGraphAttributes();
 
         for (int i=0; i < dsNames.length; i++) {
@@ -274,15 +272,15 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
 
         return rrds;
     }
-    
+
     private static Map<String, String> getTranslationsForAttributes(Map<String, String> attributes, String[] requiredAttributes, String type) {
         if (requiredAttributes == null) {
             // XXX Nothing to do; not sure if we need this check
             return new HashMap<String, String>(0);
         }
-        
+
         Map<String, String> translations = new HashMap<String, String>(requiredAttributes.length);
-        
+
         for (String requiredAttribute : requiredAttributes) {
             String attributeValue = attributes.get(requiredAttribute);
             if (attributeValue == null) {
@@ -291,7 +289,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
 
             // Replace any single backslashes in the value with escaped backslashes so other parsing won't barf
             String replacedValue = attributeValue.replace("\\", "\\\\");
-            translations.put(RE.simplePatternToFullRegularExpression("{" + requiredAttribute + "}"), replacedValue);
+            translations.put("{" + requiredAttribute + "}", replacedValue);
         }
 
         return translations;
@@ -307,24 +305,21 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
      * @return a {@link java.lang.String} object.
      */
 
-    protected String createPrefabCommand(Graph graph,
-            String commandPrefix,
-            File workDir, String reportName,
-            Integer width, Integer height) {
+    protected String createPrefabCommand(Graph graph, String commandPrefix, File workDir, String reportName, Integer width, Integer height) {
         PrefabGraph prefabGraph = graph.getPrefabGraph();
 
         String[] rrds = getRrdNames(graph.getResource(), graph.getPrefabGraph().getColumns());
-        
+
         StringBuffer buf = new StringBuffer();
         buf.append(commandPrefix);
         buf.append(" ");
         buf.append(prefabGraph.getCommand());
         String command = buf.toString();
-        
+
         long startTime = graph.getStart().getTime();
         long endTime = graph.getEnd().getTime();
         long diffTime = endTime - startTime;
-        
+
         /*
          * remember rrdtool wants the time in seconds, not milliseconds;
          * java.util.Date.getTime() returns milliseconds, so divide by 1000
@@ -332,57 +327,53 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
         String startTimeString = Long.toString(startTime / 1000);
         String endTimeString = Long.toString(endTime / 1000);
         String diffTimeString = Long.toString(diffTime / 1000);
-        
+
         HashMap<String, String> translationMap = new HashMap<String, String>();
-        
+
         for (int i = 0; i < rrds.length; i++) {
             String key = "{rrd" + (i + 1) + "}";
-            translationMap.put(RE.simplePatternToFullRegularExpression(key), rrds[i]);
+            translationMap.put(key, rrds[i]);
         }
-        
-        translationMap.put(RE.simplePatternToFullRegularExpression("{startTime}"), startTimeString);
-        translationMap.put(RE.simplePatternToFullRegularExpression("{endTime}"), endTimeString);
-        translationMap.put(RE.simplePatternToFullRegularExpression("{diffTime}"), diffTimeString);
+
+        translationMap.put("{startTime}", startTimeString);
+        translationMap.put("{endTime}", endTimeString);
+        translationMap.put("{diffTime}", diffTimeString);
 
         SimpleDateFormat fmt = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        translationMap.put(RE.simplePatternToFullRegularExpression("{startTimeDate}"), fmt.format(new Date(startTime)).replace(":", "\\:"));
-        translationMap.put(RE.simplePatternToFullRegularExpression("{endTimeDate}"), fmt.format(new Date(endTime)).replace(":", "\\:"));
+        translationMap.put("{startTimeDate}", fmt.format(new Date(startTime)).replace(":", "\\:"));
+        translationMap.put("{endTimeDate}", fmt.format(new Date(endTime)).replace(":", "\\:"));
 
         // Handle a start time with a format.
-        RE stre = new RE("\\{startTime:(.+?)\\}");
-        int pos = 0;
+        Matcher stm = Pattern.compile("\\{startTime:(.+?)\\}").matcher(command);
         boolean matchFail = false;
-        while (stre.match(command, pos) && !matchFail) {
-            String sdfPattern = stre.getParen(1);
+        while(stm.find() && !matchFail) {
+            String sdfPattern = stm.group(0);
             if (sdfPattern == null) {
-              matchFail = true;
+                matchFail = true;
             } else {
                 try {
                     fmt = new SimpleDateFormat(sdfPattern);
-                    translationMap.put(RE.simplePatternToFullRegularExpression("{startTime:"+sdfPattern+"}"), fmt.format(new Date(startTime)).replace(":", "\\:"));
+                    translationMap.put("{startTime:"+sdfPattern+"}", fmt.format(new Date(startTime)).replace(":", "\\:"));
                 } catch (IllegalArgumentException e) {
                     LOG.error("Cannot parse date format '{}' for graph {}.", sdfPattern, reportName);
                 }
-                pos = pos + sdfPattern.length() + 1;
             }
         }
 
         // Handle an end time with a format
-        RE etre = new RE("\\{endTime:(.+?)\\}");
-        pos = 0;
+        Matcher etm = Pattern.compile("\\{endTime:(.+?)\\}").matcher(command);
         matchFail = false;
-        while (etre.match(command, pos) && !matchFail) {
-            String sdfPattern = etre.getParen(1);
+        while (etm.find() && !matchFail) {
+            String sdfPattern = etm.group(0);
             if (sdfPattern == null) {
               matchFail = true;
             } else {
                 try {
                     fmt = new SimpleDateFormat(sdfPattern);
-                    translationMap.put(RE.simplePatternToFullRegularExpression("{endTime:"+sdfPattern+"}"), fmt.format(new Date(endTime)).replace(":", "\\:"));
+                    translationMap.put("{endTime:"+sdfPattern+"}", fmt.format(new Date(endTime)).replace(":", "\\:"));
                 } catch (IllegalArgumentException e) {
                     LOG.error("Cannot parse date format '{}' for graph {}.", sdfPattern, reportName);
                 }
-                pos = pos + sdfPattern.length() + 1;
             }
         }
 
@@ -393,24 +384,22 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
             LOG.error("Invalid attributes were found on resource '{}'", graph.getResource().getId());
             throw e;
         }
-        
-        
+
+
         try {
             for (Map.Entry<String, String> translation : translationMap.entrySet()) {
                 // replace s1 with s2
-                RE re = new RE(translation.getKey());
-                command = re.subst(command, translation.getValue());
+                final Matcher matcher = Pattern.compile(translation.getKey(), Pattern.LITERAL).matcher(command);
+                command = matcher.replaceAll(translation.getValue());
             }
-        } catch (RESyntaxException e) {
-            throw new IllegalArgumentException("Invalid regular expression "
-                                               + "syntax, check "
-                                               + "rrd-properties file", e);
+        } catch (PatternSyntaxException e) {
+            throw new IllegalArgumentException("Invalid regular expression syntax, check rrd-properties file", e);
         }
-        
-        
+
+
         if (width != null) {
             final Pattern re = Pattern.compile("(--width|-w)(\\w+|=)(\\d+)");
-        
+
             final Matcher matcher = re.matcher(command);
             if (matcher.matches()) {
                 matcher.replaceFirst("--width " + width);
@@ -418,10 +407,10 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
                 command = command + " --width " + width;
             }
         }
-        
+
         if (height != null) {
             final Pattern re = Pattern.compile("(--height|-h)(\\w+|=)(\\d+)");
-            
+
             final Matcher matcher = re.matcher(command);
             if (matcher.matches()) {
                 matcher.replaceFirst("--height " + height);
@@ -429,7 +418,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
                 command = command + " --height " + height;
             }
         }
-        
+
         return command;
     }
 

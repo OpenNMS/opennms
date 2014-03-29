@@ -37,7 +37,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 import org.opennms.features.topology.api.Point;
-import org.opennms.features.topology.api.topo.AbstractVertexRef;
+import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 /**
@@ -100,7 +100,7 @@ public class VertexRefPointMapAdapter extends XmlAdapter<VertexRefPointMapAdapte
 		} else {
 			Map<VertexRef, Point> retval = new HashMap<VertexRef, Point>();
 			for (VertexRefPointEntry entry : v.entry) {
-				VertexRef ref = new AbstractVertexRef(entry.key.namespace, entry.key.id, entry.key.label);
+				VertexRef ref = new DefaultVertexRef(entry.key.namespace, entry.key.id, entry.key.label);
 				Point point = new Point(entry.value.x, entry.value.y);
 				retval.put(ref, point);
 			}

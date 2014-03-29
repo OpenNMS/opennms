@@ -28,8 +28,6 @@
 
 package org.opennms.web.rest;
 
-import static org.opennms.core.utils.InetAddressUtils.addr;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -232,11 +230,24 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
                 if (wrapper.isWritableProperty(key)) {
                     String stringValue = params.getFirst(key);
                     Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
+                    if (key.equals("status")) {
+                        if ("S".equals(value) || (service.getStatus().equals("A") && value.equals("F"))) {
+                            LOG.debug("updateService: suspending polling for service {} on node with IP {}", service.getServiceName(), service.getIpAddress().getHostAddress());
+                            value = "F";
+                            sendEvent(EventConstants.SUSPEND_POLLING_SERVICE_EVENT_UEI, service);
+                        }
+                        if ("R".equals(value) || (service.getStatus().equals("F") && value.equals("A"))) {
+                            LOG.debug("updateService: resuming polling for service {} on node with IP {}", service.getServiceName(), service.getIpAddress().getHostAddress());
+                            value = "A";
+                            sendEvent(EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI, service);
+                        }
+                    }
                     wrapper.setPropertyValue(key, value);
                 }
             }
             LOG.debug("updateSservice: service {} updated", service);
             m_serviceDao.saveOrUpdate(service);
+            // If the status is changed, we should send the proper event to notify Pollerd
             return Response.seeOther(getRedirectUri(m_uriInfo)).build();
         } finally {
             writeUnlock();
@@ -267,20 +278,23 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
             intf.getMonitoredServices().remove(service);
             m_ipInterfaceDao.saveOrUpdate(intf);
             
-            EventBuilder bldr = new EventBuilder(EventConstants.SERVICE_DELETED_EVENT_UEI, getClass().getName());
-            bldr.setNodeid(node.getId());
-            bldr.setInterface(addr(ipAddress));
-            bldr.setService(serviceName);
-    
-            try {
-                m_eventProxy.send(bldr.getEvent());
-            } catch (EventProxyException ex) {
-                throw getException(Status.BAD_REQUEST, ex.getMessage());
-            }
+            sendEvent(EventConstants.SERVICE_DELETED_EVENT_UEI, service);
             return Response.ok().build();
         } finally {
             writeUnlock();
         }
     }
-    
+
+    private void sendEvent(String eventUEI, OnmsMonitoredService dbObj) {
+        final EventBuilder bldr = new EventBuilder(eventUEI, getClass().getName());
+        bldr.setNodeid(dbObj.getNodeId());
+        bldr.setInterface(dbObj.getIpAddress());
+        bldr.setService(dbObj.getServiceName());
+        try {
+            m_eventProxy.send(bldr.getEvent());
+        } catch (EventProxyException ex) {
+            throw getException(Status.BAD_REQUEST, ex.getMessage());
+        }
+    }
+
 }

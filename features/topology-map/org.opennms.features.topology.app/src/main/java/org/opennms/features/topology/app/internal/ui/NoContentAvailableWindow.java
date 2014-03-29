@@ -77,10 +77,17 @@ public class NoContentAvailableWindow extends Window {
                 Criteria defaultCriteria = graphContainer.getBaseTopology().getDefaultCriteria();
                 if (defaultCriteria != null) {
                     // check if there is already a criteria registered for focus nodes. If so, remove that
-                    VertexHopGraphProvider.FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(graphContainer, false);
-                    if (criteria != null) {
-                        graphContainer.removeCriteria(criteria);
-                    }
+                	
+                	Criteria[] allCriteria = graphContainer.getCriteria();
+                	for (Criteria criterion : allCriteria) {
+						graphContainer.removeCriteria(criterion);
+					}
+                	
+//                    VertexHopGraphProvider.FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(graphContainer, false);
+//                    if (criteria != null) {
+//                        graphContainer.removeCriteria(criteria);
+//                    }
+                	
                     graphContainer.addCriteria(defaultCriteria); // add default criteria
                     graphContainer.redoLayout(); // we need to redo the layout
                     noDefaultsAvailable.setVisible(false);

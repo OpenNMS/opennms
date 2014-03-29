@@ -34,6 +34,7 @@ import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -200,7 +201,7 @@ public class HttpPlugin extends AbstractTcpPlugin {
         m_checkReturnCode = checkReturnCode;
         m_queryString = queryString;
         m_responseString = responseString;
-        m_defaultPorts = defaultPorts;
+        m_defaultPorts = Arrays.copyOf(defaultPorts, defaultPorts.length);
     }
 
     /** {@inheritDoc} */

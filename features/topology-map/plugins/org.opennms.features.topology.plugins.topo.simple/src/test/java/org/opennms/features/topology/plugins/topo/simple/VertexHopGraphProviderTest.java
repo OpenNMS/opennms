@@ -17,7 +17,7 @@ import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.FocusNodeHopCriteria;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractVertex;
-import org.opennms.features.topology.api.topo.AbstractVertexRef;
+import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.CollapsibleCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
@@ -32,6 +32,14 @@ public class VertexHopGraphProviderTest {
 	private static final String TEST_ID = "TEST";
 
 	private static class TestCollapsibleCriteria extends VertexHopCriteria implements CollapsibleCriteria {
+		
+		public TestCollapsibleCriteria() {
+			super("TEST VERTEX");
+		}
+		
+		public TestCollapsibleCriteria(String label) {
+			super(label);
+		}
 
 		@Override
 		public boolean isCollapsed() {
@@ -45,9 +53,9 @@ public class VertexHopGraphProviderTest {
 		@Override
 		public Set<VertexRef> getVertices() {
 			Set<VertexRef> retval = new HashSet<VertexRef>();
-			retval.add(new AbstractVertexRef("nodes", "g0", "g0"));
-			retval.add(new AbstractVertexRef("nodes", "g1", "g1"));
-			retval.add(new AbstractVertexRef("nodes", "g2", "g2"));
+			retval.add(new DefaultVertexRef("nodes", "g0", "g0"));
+			retval.add(new DefaultVertexRef("nodes", "g1", "g1"));
+			retval.add(new DefaultVertexRef("nodes", "g2", "g2"));
 			return retval;
 		}
 
@@ -111,7 +119,7 @@ public class VertexHopGraphProviderTest {
 			@Override
 			public Set<VertexRef> getVertices() {
 				Set<VertexRef> retval = new HashSet<VertexRef>();
-				retval.add(new AbstractVertexRef("nodes", "g2"));
+				retval.add(new DefaultVertexRef("nodes", "g2"));
 				return retval;
 			}
 			
@@ -188,49 +196,49 @@ public class VertexHopGraphProviderTest {
 
 	@Test
 	public void testGraphProvider() {
-		FocusNodeHopCriteria criteria = new FocusNodeHopCriteria();
-		criteria.add(new AbstractVertexRef("nodes", "g0"));
+		FocusNodeHopCriteria criteria = new FocusNodeHopCriteria("TEST NODES");
+		criteria.add(new DefaultVertexRef("nodes", "g0"));
 		m_provider.getVertices(criteria);
 
-		assertEquals(0, m_provider.getSemanticZoomLevel(new AbstractVertexRef("nodes", "g0")));
-		assertEquals(1, m_provider.getSemanticZoomLevel(new AbstractVertexRef("nodes", "g1")));
-		assertEquals(1, m_provider.getSemanticZoomLevel(new AbstractVertexRef("nodes", "g2")));
-		assertEquals(2, m_provider.getSemanticZoomLevel(new AbstractVertexRef("nodes", "v1")));
-		assertEquals(2, m_provider.getSemanticZoomLevel(new AbstractVertexRef("nodes", "v2")));
-		assertEquals(2, m_provider.getSemanticZoomLevel(new AbstractVertexRef("nodes", "v3")));
-		assertEquals(2, m_provider.getSemanticZoomLevel(new AbstractVertexRef("nodes", "v4")));
+		assertEquals(0, m_provider.getSemanticZoomLevel(new DefaultVertexRef("nodes", "g0")));
+		assertEquals(1, m_provider.getSemanticZoomLevel(new DefaultVertexRef("nodes", "g1")));
+		assertEquals(1, m_provider.getSemanticZoomLevel(new DefaultVertexRef("nodes", "g2")));
+		assertEquals(2, m_provider.getSemanticZoomLevel(new DefaultVertexRef("nodes", "v1")));
+		assertEquals(2, m_provider.getSemanticZoomLevel(new DefaultVertexRef("nodes", "v2")));
+		assertEquals(2, m_provider.getSemanticZoomLevel(new DefaultVertexRef("nodes", "v3")));
+		assertEquals(2, m_provider.getSemanticZoomLevel(new DefaultVertexRef("nodes", "v4")));
 
 		// Make sure that the hop provider isn't showing nodes with parent/child relationships like the
 		// older grouping providers did
-		assertNull(m_provider.getParent(new AbstractVertexRef("nodes", "g0")));
-		assertNull(m_provider.getParent(new AbstractVertexRef("nodes", "g1")));
-		assertNull(m_provider.getParent(new AbstractVertexRef("nodes", "g2")));
-		assertNull(m_provider.getParent(new AbstractVertexRef("nodes", "v1")));
-		assertNull(m_provider.getParent(new AbstractVertexRef("nodes", "v2")));
-		assertNull(m_provider.getParent(new AbstractVertexRef("nodes", "v3")));
-		assertNull(m_provider.getParent(new AbstractVertexRef("nodes", "v4")));
+		assertNull(m_provider.getParent(new DefaultVertexRef("nodes", "g0")));
+		assertNull(m_provider.getParent(new DefaultVertexRef("nodes", "g1")));
+		assertNull(m_provider.getParent(new DefaultVertexRef("nodes", "g2")));
+		assertNull(m_provider.getParent(new DefaultVertexRef("nodes", "v1")));
+		assertNull(m_provider.getParent(new DefaultVertexRef("nodes", "v2")));
+		assertNull(m_provider.getParent(new DefaultVertexRef("nodes", "v3")));
+		assertNull(m_provider.getParent(new DefaultVertexRef("nodes", "v4")));
 
 		criteria.clear();
-		criteria.add(new AbstractVertexRef("nodes", "v1"));
+		criteria.add(new DefaultVertexRef("nodes", "v1"));
 		m_provider.getVertices(criteria);
 
-		assertEquals(2, m_provider.getSemanticZoomLevel(new AbstractVertexRef("nodes", "g0")));
-		assertEquals(1, m_provider.getSemanticZoomLevel(new AbstractVertexRef("nodes", "g1")));
-		assertEquals(3, m_provider.getSemanticZoomLevel(new AbstractVertexRef("nodes", "g2")));
-		assertEquals(0, m_provider.getSemanticZoomLevel(new AbstractVertexRef("nodes", "v1")));
-		assertEquals(2, m_provider.getSemanticZoomLevel(new AbstractVertexRef("nodes", "v2")));
-		assertEquals(4, m_provider.getSemanticZoomLevel(new AbstractVertexRef("nodes", "v3")));
-		assertEquals(4, m_provider.getSemanticZoomLevel(new AbstractVertexRef("nodes", "v4")));
+		assertEquals(2, m_provider.getSemanticZoomLevel(new DefaultVertexRef("nodes", "g0")));
+		assertEquals(1, m_provider.getSemanticZoomLevel(new DefaultVertexRef("nodes", "g1")));
+		assertEquals(3, m_provider.getSemanticZoomLevel(new DefaultVertexRef("nodes", "g2")));
+		assertEquals(0, m_provider.getSemanticZoomLevel(new DefaultVertexRef("nodes", "v1")));
+		assertEquals(2, m_provider.getSemanticZoomLevel(new DefaultVertexRef("nodes", "v2")));
+		assertEquals(4, m_provider.getSemanticZoomLevel(new DefaultVertexRef("nodes", "v3")));
+		assertEquals(4, m_provider.getSemanticZoomLevel(new DefaultVertexRef("nodes", "v4")));
 
 		// Make sure that the hop provider isn't showing nodes with parent/child relationships like the
 		// older grouping providers did
-		assertNull(m_provider.getParent(new AbstractVertexRef("nodes", "g0")));
-		assertNull(m_provider.getParent(new AbstractVertexRef("nodes", "g1")));
-		assertNull(m_provider.getParent(new AbstractVertexRef("nodes", "g2")));
-		assertNull(m_provider.getParent(new AbstractVertexRef("nodes", "v1")));
-		assertNull(m_provider.getParent(new AbstractVertexRef("nodes", "v2")));
-		assertNull(m_provider.getParent(new AbstractVertexRef("nodes", "v3")));
-		assertNull(m_provider.getParent(new AbstractVertexRef("nodes", "v4")));
+		assertNull(m_provider.getParent(new DefaultVertexRef("nodes", "g0")));
+		assertNull(m_provider.getParent(new DefaultVertexRef("nodes", "g1")));
+		assertNull(m_provider.getParent(new DefaultVertexRef("nodes", "g2")));
+		assertNull(m_provider.getParent(new DefaultVertexRef("nodes", "v1")));
+		assertNull(m_provider.getParent(new DefaultVertexRef("nodes", "v2")));
+		assertNull(m_provider.getParent(new DefaultVertexRef("nodes", "v3")));
+		assertNull(m_provider.getParent(new DefaultVertexRef("nodes", "v4")));
 	}
 
 	@Test
@@ -238,17 +246,17 @@ public class VertexHopGraphProviderTest {
 		List<Vertex> vertices = m_provider.getVertices(new Criteria[] { new TestCollapsibleCriteria() });
 
 		// Test vertex that replaces the collapsed vertices
-		assertTrue(vertices.contains(new AbstractVertexRef("nodes", TEST_ID)));
+		assertTrue(vertices.contains(new DefaultVertexRef("nodes", TEST_ID)));
 
 		// These vertices should be "collapsed"
-		assertFalse(vertices.contains(new AbstractVertexRef("nodes", "g0")));
-		assertFalse(vertices.contains(new AbstractVertexRef("nodes", "g1")));
-		assertFalse(vertices.contains(new AbstractVertexRef("nodes", "g2")));
+		assertFalse(vertices.contains(new DefaultVertexRef("nodes", "g0")));
+		assertFalse(vertices.contains(new DefaultVertexRef("nodes", "g1")));
+		assertFalse(vertices.contains(new DefaultVertexRef("nodes", "g2")));
 		
 		// These vertices remain uncollapsed
-		assertTrue(vertices.contains(new AbstractVertexRef("nodes", "v1")));
-		assertTrue(vertices.contains(new AbstractVertexRef("nodes", "v2")));
-		assertTrue(vertices.contains(new AbstractVertexRef("nodes", "v3")));
-		assertTrue(vertices.contains(new AbstractVertexRef("nodes", "v4")));
+		assertTrue(vertices.contains(new DefaultVertexRef("nodes", "v1")));
+		assertTrue(vertices.contains(new DefaultVertexRef("nodes", "v2")));
+		assertTrue(vertices.contains(new DefaultVertexRef("nodes", "v3")));
+		assertTrue(vertices.contains(new DefaultVertexRef("nodes", "v4")));
 	}
 }

@@ -91,6 +91,9 @@
       </mbean>
       <mbean name="OpenNMS Pollerd" objectname="OpenNMS:Name=Pollerd">
         <attrib name="NumPolls" alias="ONMSPollCount" type="counter"/>
+        <attrib name="ActiveThreads"  alias="ONMSPollerThreadAct" type="gauge"/>
+        <attrib name="TasksTotal"     alias="ONMSPollerTasksTot"  type="counter"/>
+        <attrib name="TasksCompleted" alias="ONMSPollerTasksCpt"  type="counter"/>
       </mbean>
       <mbean name="OpenNMS Vacuumd" objectname="OpenNMS:Name=Vacuumd">
         <attrib name="NumAutomations" alias="ONMSAutomCount" type="counter"/>
