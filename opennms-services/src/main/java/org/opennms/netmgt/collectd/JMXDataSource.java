@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @version 1.1.1.1
  */
-public class JMXDataSource implements Cloneable {
+public final class JMXDataSource implements Cloneable {
 
     private static final Logger LOG = LoggerFactory.getLogger(JMXDataSource.class);
     private static final int MAX_DS_NAME_LENGTH = 19;
@@ -150,7 +150,7 @@ public class JMXDataSource implements Cloneable {
      * @return RRD type string or NULL object type is not supported.
      */
     public static String mapType(String objectType) {
-        String rrdType = null;
+        String rrdType;
 
         // For consistency lower case objecType parameter before comparison
         objectType = objectType.toLowerCase();
@@ -390,6 +390,7 @@ public class JMXDataSource implements Cloneable {
      *
      * Used to get a duplicate of self. The duplicate is identical to self but
      * shares no common data.
+     * @return
      */
     @Override
     public Object clone() {

@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.collectd;
 
+import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.dao.support.IndexStorageStrategy;
 
@@ -35,6 +36,6 @@ public class JMXStorageStrategy extends IndexStorageStrategy {
     @Override
     public String getResourceNameFromIndex(CollectionResource resource) {
         // Normalize the resource's instance and use it as resource's label
-        return resource.getInstance().replaceAll("\\s+", "_").replaceAll(":", "_").replaceAll("\\\\", "_").replaceAll("[\\[\\]]", "_").replaceAll("[|/]", "_").replaceAll("=", "").replaceAll("[_]+$", "").replaceAll("___", "_");
+        return AlphaNumeric.parseAndReplace(resource.getInstance(), '_');
     }
 }

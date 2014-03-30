@@ -111,6 +111,7 @@ public class JMXCollectionAttributeType implements CollectionAttributeType {
         String newKey = key;
         if (key == null) {
             LOG.error("key value was null");
+            return key;
         }
         if (key.startsWith(File.separator)) {
             newKey = key.substring(1);

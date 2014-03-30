@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,14 +40,12 @@ import org.opennms.protocols.jmx.connectors.JMXSecureConnectionFactory;
  * @author ranger
  * @version $Id: $
  */
-public class JMXSecureCollector extends JMXCollector
-{
+public class JMXSecureCollector extends JMXCollector {
 
 	/**
 	 * <p>Constructor for JMXSecureCollector.</p>
 	 */
-	public JMXSecureCollector()
-	{
+    public JMXSecureCollector() {
 		//The value of serviceName will be assumed as a collection name
 		//from jmx-datacollection-config.xml if no "collection"
 		//parameter will be specified in collectd-configuration.xml.
@@ -61,10 +59,13 @@ public class JMXSecureCollector extends JMXCollector
 		setUseFriendlyName(true);
 	}
 
-    /** {@inheritDoc} */
-        @Override
-    public ConnectionWrapper getMBeanServerConnection(Map<String,Object> parameterMap, InetAddress address)
-	{
+    /**
+     * <p>
+     * @param parameterMap
+     * @return
+     */
+    @Override
+    public ConnectionWrapper getMBeanServerConnection(Map<String, Object> parameterMap, InetAddress address) {
 		return JMXSecureConnectionFactory.getMBeanServerConnection(parameterMap, address);
 	}
 }

@@ -38,11 +38,11 @@ import org.opennms.netmgt.model.RrdRepository;
  */
 public class JMXMultiInstanceCollectionResource extends JMXCollectionResource {
     /** The collection resource instance. */
-    private String m_instance;
+    private final String m_instance;
     /** The resource label. */
     private String m_resourceLabel;
     /** The collection resource type name. */
-    private JMXResourceType m_resourceType;
+    private final JMXResourceType m_resourceType;
 
     /**
      * Instantiates a new JMX multi instance collection resource.
@@ -68,6 +68,7 @@ public class JMXMultiInstanceCollectionResource extends JMXCollectionResource {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.AbstractCollectionResource#getLabel()
      */
+    @Override
     public String getLabel() {
         if (m_resourceLabel == null) {
             m_resourceLabel = m_resourceType.getStorageStrategy().getResourceNameFromIndex(this);

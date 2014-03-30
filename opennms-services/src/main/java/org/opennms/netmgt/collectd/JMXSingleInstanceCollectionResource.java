@@ -34,7 +34,7 @@ package org.opennms.netmgt.collectd;
 public class JMXSingleInstanceCollectionResource extends JMXCollectionResource {
 
     /** The node id. */
-    private int m_nodeId;
+    private final int m_nodeId;
 
     /**
      * Instantiates a new JMX single instance collection resource.

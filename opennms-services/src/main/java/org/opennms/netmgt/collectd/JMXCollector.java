@@ -37,9 +37,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.management.AttributeNotFoundException;
 import javax.management.InstanceNotFoundException;
 import javax.management.IntrospectionException;
 import javax.management.MBeanAttributeInfo;
+import javax.management.MBeanException;
 import javax.management.MBeanInfo;
 import javax.management.MBeanServerConnection;
 import javax.management.MalformedObjectNameException;
@@ -273,7 +275,7 @@ public abstract class JMXCollector implements ServiceCollector {
      * getMBeanServerConnection
      * </p>
      *
-     * @param map
+     * @param parameters
      *                a {@link java.util.Map} object.
      * @param address
      *                a {@link java.net.InetAddress} object.
@@ -281,23 +283,23 @@ public abstract class JMXCollector implements ServiceCollector {
      *         {@link org.opennms.protocols.jmx.connectors.ConnectionWrapper}
      *         object.
      */
-    public abstract ConnectionWrapper getMBeanServerConnection(Map<String, Object> map, InetAddress address);
+    public abstract ConnectionWrapper getMBeanServerConnection(Map<String, Object> parameters, InetAddress address);
 
     /**
      * {@inheritDoc} Perform data collection.
      * <p>
-     * @param map
+     * @param parameters
      */
     @Override
-    public CollectionSet collect(final CollectionAgent agent, final EventProxy eproxy, final Map<String, Object> map) {
+    public CollectionSet collect(final CollectionAgent agent, final EventProxy eproxy, final Map<String, Object> parameters) {
         InetAddress ipaddr = agent.getAddress();
         JMXNodeInfo nodeInfo = agent.getAttribute(NODE_INFO_KEY);
         Map<String, BeanInfo> mbeans = nodeInfo.getMBeans();
         String collDir = m_serviceName;
 
-        boolean useMbeanForRrds = ParameterMap.getKeyedBoolean(map, ParameterName.USE_MBEAN_NAME_FOR_RRDS.toString(), false);
-        String port = ParameterMap.getKeyedString(map, ParameterName.PORT.toString(), null);
-        String friendlyName = ParameterMap.getKeyedString(map, ParameterName.FRIENDLY_NAME.toString(), port);
+        boolean useMbeanForRrds = ParameterMap.getKeyedBoolean(parameters, ParameterName.USE_MBEAN_NAME_FOR_RRDS.toString(), false);
+        String port = ParameterMap.getKeyedString(parameters, ParameterName.PORT.toString(), null);
+        String friendlyName = ParameterMap.getKeyedString(parameters, ParameterName.FRIENDLY_NAME.toString(), port);
         if (m_useFriendlyName) {
             collDir = friendlyName;
         }
@@ -311,7 +313,7 @@ public abstract class JMXCollector implements ServiceCollector {
         LOG.debug("collecting {} on node ID {}", InetAddressUtils.str(ipaddr), nodeInfo.getNodeId());
 
         try {
-            connection = getMBeanServerConnection(map, ipaddr);
+            connection = getMBeanServerConnection(parameters, ipaddr);
 
             if (connection == null) {
                 LOG.debug("unable to get a jmx connection to node={}/addr={}", nodeInfo.getNodeId(), InetAddressUtils.str(ipaddr));
@@ -320,7 +322,7 @@ public abstract class JMXCollector implements ServiceCollector {
 
             MBeanServerConnection mbeanServer = connection.getMBeanServer();
 
-            int retry = ParameterMap.getKeyedInteger(map, ParameterName.RETRY.toString(), 3);
+            int retry = ParameterMap.getKeyedInteger(parameters, ParameterName.RETRY.toString(), 3);
             for (int attempts = 0; attempts <= retry; attempts++) {
                 try {
                     for (BeanInfo beanInfo : mbeans.values()) {
@@ -386,7 +388,13 @@ public abstract class JMXCollector implements ServiceCollector {
                                 }
                             } catch (final InstanceNotFoundException e) {
                                 LOG.error("MBean {} attribute {} was not found", objectName, mbai.getName());
-                            } catch (final Exception e) {
+                            } catch (final IOException e) {
+                                LOG.error("Unable to retrieve mbean {} attribute {}", objectName, mbai.getName());
+                            } catch (final AttributeNotFoundException e) {
+                                LOG.error("Unable to retrieve mbean {} attribute {}", objectName, mbai.getName());
+                            } catch (final MBeanException e) {
+                                LOG.error("Unable to retrieve mbean {} attribute {}", objectName, mbai.getName());
+                            } catch (final ReflectionException e) {
                                 LOG.error("Unable to retrieve mbean {} attribute {}", objectName, mbai.getName());
                             }
                         }
@@ -407,7 +415,13 @@ public abstract class JMXCollector implements ServiceCollector {
                                 }
                             } catch (final InstanceNotFoundException e) {
                                 LOG.error("MBean {} attribute {} was not found", objectName, mbai.getName());
-                            } catch (final Exception e) {
+                            } catch (final IOException e) {
+                                LOG.error("Unable to retrieve mbean {} attribute {}", objectName, mbai.getName());
+                            } catch (final AttributeNotFoundException e) {
+                                LOG.error("Unable to retrieve mbean {} attribute {}", objectName, mbai.getName());
+                            } catch (final MBeanException e) {
+                                LOG.error("Unable to retrieve mbean {} attribute {}", objectName, mbai.getName());
+                            } catch (final ReflectionException e) {
                                 LOG.error("Unable to retrieve mbean {} attribute {}", objectName, mbai.getName());
                             }
                         }
@@ -480,7 +494,13 @@ public abstract class JMXCollector implements ServiceCollector {
                                             }
                                         } catch (final InstanceNotFoundException e) {
                                             LOG.error("handleMultiInstanceCollection: MBean {} attribute {} was not found", objectName, mbai.getName());
-                                        } catch (final Exception e) {
+                                        } catch (final IOException e) {
+                                            LOG.error("handleMultiInstanceCollection: Unable to retrieve mbean {} attribute {}", objectName, mbai.getName(), e);
+                                        } catch (final AttributeNotFoundException e) {
+                                            LOG.error("handleMultiInstanceCollection: Unable to retrieve mbean {} attribute {}", objectName, mbai.getName(), e);
+                                        } catch (final MBeanException e) {
+                                            LOG.error("handleMultiInstanceCollection: Unable to retrieve mbean {} attribute {}", objectName, mbai.getName(), e);
+                                        } catch (final ReflectionException e) {
                                             LOG.error("handleMultiInstanceCollection: Unable to retrieve mbean {} attribute {}", objectName, mbai.getName(), e);
                                         }
                                     }
@@ -504,7 +524,13 @@ public abstract class JMXCollector implements ServiceCollector {
                                             }
                                         } catch (final InstanceNotFoundException e) {
                                             LOG.error("handleMultiInstanceCollection: MBean {} attribute {} was not found", objectName, mbai.getName());
-                                        } catch (final Exception e) {
+                                        } catch (final IOException e) {
+                                            LOG.error("handleMultiInstanceCollection: Unable to retrieve CompositeData mbean {} attribute {}", objectName, mbai.getName(), e);
+                                        } catch (final AttributeNotFoundException e) {
+                                            LOG.error("handleMultiInstanceCollection: Unable to retrieve CompositeData mbean {} attribute {}", objectName, mbai.getName(), e);
+                                        } catch (final MBeanException e) {
+                                            LOG.error("handleMultiInstanceCollection: Unable to retrieve CompositeData mbean {} attribute {}", objectName, mbai.getName(), e);
+                                        } catch (final ReflectionException e) {
                                             LOG.error("handleMultiInstanceCollection: Unable to retrieve CompositeData mbean {} attribute {}", objectName, mbai.getName(), e);
                                         }
                                     }
@@ -544,7 +570,13 @@ public abstract class JMXCollector implements ServiceCollector {
                                                 }
                                             } catch (final InstanceNotFoundException e) {
                                                 LOG.error("handleMultiInstanceCollection: MBean {} attribute {} was not found", objectName, mbai.getName(), e);
-                                            } catch (final Exception e) {
+                                            } catch (final IOException e) {
+                                                LOG.error("handleMultiInstanceCollection: Unable to retrieve mbean {} attribute {}", objectName, mbai.getName(), e);
+                                            } catch (final AttributeNotFoundException e) {
+                                                LOG.error("handleMultiInstanceCollection: Unable to retrieve mbean {} attribute {}", objectName, mbai.getName(), e);
+                                            } catch (final MBeanException e) {
+                                                LOG.error("handleMultiInstanceCollection: Unable to retrieve mbean {} attribute {}", objectName, mbai.getName(), e);
+                                            } catch (final ReflectionException e) {
                                                 LOG.error("handleMultiInstanceCollection: Unable to retrieve mbean {} attribute {}", objectName, mbai.getName(), e);
                                             }
                                         }
@@ -567,7 +599,13 @@ public abstract class JMXCollector implements ServiceCollector {
                                                 }
                                             } catch (final InstanceNotFoundException e) {
                                                 LOG.error("handleMultiInstanceCollection: MBean {} attribute {} was not found", objectName, mbai.getName(), e);
-                                            } catch (final Exception e) {
+                                            } catch (final IOException e) {
+                                                LOG.error("handleMultiInstanceCollection: Unable to retrieve mbean {} attribute {}", objectName, mbai.getName(), e);
+                                            } catch (final AttributeNotFoundException e) {
+                                                LOG.error("handleMultiInstanceCollection: Unable to retrieve mbean {} attribute {}", objectName, mbai.getName(), e);
+                                            } catch (final MBeanException e) {
+                                                LOG.error("handleMultiInstanceCollection: Unable to retrieve mbean {} attribute {}", objectName, mbai.getName(), e);
+                                            } catch (final ReflectionException e) {
                                                 LOG.error("handleMultiInstanceCollection: Unable to retrieve mbean {} attribute {}", objectName, mbai.getName(), e);
                                             }
                                         }
