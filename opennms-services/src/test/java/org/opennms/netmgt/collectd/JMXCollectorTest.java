@@ -42,13 +42,7 @@ import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import org.junit.After;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Rule;
@@ -472,12 +466,51 @@ public class JMXCollectorTest implements TestContextAware, InitializingBean {
       datacollectionConfig = "/org/opennms/netmgt/config/jmx-datacollection-test-persist.xml",
       datacollectionType = "jsr160",
       anticipateRrds = {"1/A", "1/B", "1/C", "1/D",
-          "1/jvm-memory-pool/Code_Cache/Usage",
-          "1/jvm-memory-pool/PS_Eden_Space/Usage",
-          "1/jvm-memory-pool/PS_Old_Gen/Usage",
-          "1/jvm-memory-pool/PS_Perm_Gen/Usage",
-          "1/jvm-memory-pool/PS_Survivor_Space/Usage"},
-      anticipateFiles = {"1/strings.properties"}
+          "1/jvm-memory-pool/Code_Cache/committed",
+          "1/jvm-memory-pool/Code_Cache/init",
+          "1/jvm-memory-pool/Code_Cache/max",
+          "1/jvm-memory-pool/Code_Cache/peak-committed",
+          "1/jvm-memory-pool/Code_Cache/peak-init",
+          "1/jvm-memory-pool/Code_Cache/peak-max",
+          "1/jvm-memory-pool/Code_Cache/peak-used",
+          "1/jvm-memory-pool/Code_Cache/used",
+          "1/jvm-memory-pool/PS_Eden_Space/committed",
+          "1/jvm-memory-pool/PS_Eden_Space/init",
+          "1/jvm-memory-pool/PS_Eden_Space/max",
+          "1/jvm-memory-pool/PS_Eden_Space/peak-committed",
+          "1/jvm-memory-pool/PS_Eden_Space/peak-init",
+          "1/jvm-memory-pool/PS_Eden_Space/peak-max",
+          "1/jvm-memory-pool/PS_Eden_Space/peak-used",
+          "1/jvm-memory-pool/PS_Eden_Space/used",
+          "1/jvm-memory-pool/PS_Old_Gen/committed",
+          "1/jvm-memory-pool/PS_Old_Gen/init",
+          "1/jvm-memory-pool/PS_Old_Gen/max",
+          "1/jvm-memory-pool/PS_Old_Gen/peak-committed",
+          "1/jvm-memory-pool/PS_Old_Gen/peak-init",
+          "1/jvm-memory-pool/PS_Old_Gen/peak-max",
+          "1/jvm-memory-pool/PS_Old_Gen/peak-used",
+          "1/jvm-memory-pool/PS_Old_Gen/used",
+          "1/jvm-memory-pool/PS_Perm_Gen/committed",
+          "1/jvm-memory-pool/PS_Perm_Gen/init",
+          "1/jvm-memory-pool/PS_Perm_Gen/max",
+          "1/jvm-memory-pool/PS_Perm_Gen/peak-committed",
+          "1/jvm-memory-pool/PS_Perm_Gen/peak-init",
+          "1/jvm-memory-pool/PS_Perm_Gen/peak-max",
+          "1/jvm-memory-pool/PS_Perm_Gen/peak-used",
+          "1/jvm-memory-pool/PS_Perm_Gen/used",
+          "1/jvm-memory-pool/PS_Survivor_Space/committed",
+          "1/jvm-memory-pool/PS_Survivor_Space/init",
+          "1/jvm-memory-pool/PS_Survivor_Space/max",
+          "1/jvm-memory-pool/PS_Survivor_Space/peak-committed",
+          "1/jvm-memory-pool/PS_Survivor_Space/peak-init",
+          "1/jvm-memory-pool/PS_Survivor_Space/peak-max",
+          "1/jvm-memory-pool/PS_Survivor_Space/peak-used",
+          "1/jvm-memory-pool/PS_Survivor_Space/used",},
+      anticipateFiles = {"1/strings.properties", "1/jvm-memory-pool",
+          "1/jvm-memory-pool/Code_Cache", "1/jvm-memory-pool/Code_Cache",
+          "1/jvm-memory-pool/PS_Eden_Space", "1/jvm-memory-pool/PS_Old_Gen",
+          "1/jvm-memory-pool/PS_Perm_Gen", "1/jvm-memory-pool/PS_Survivor_Space"
+      }
     )
     public final void testPersistJmxStats() throws Exception {
         File snmpRrdDirectory = (File) m_context.getAttribute("rrdDirectory");
@@ -495,17 +528,7 @@ public class JMXCollectorTest implements TestContextAware, InitializingBean {
         // node level collection
         File nodeDir = CollectorTestUtils.anticipatePath(anticipator, snmpRrdDirectory, "1");
         assertTrue(nodeDir.exists());
-        File[] files = nodeDir.listFiles();
-        if (files != null) {
-            for (File f : files) {
-                logger.debug("file: {}", f);
-                if (f.isDirectory()) {
-                    for (File f2 : f.listFiles()) {
-                        logger.debug("file: {}", f2);
-                    }
-                }
-            }
-        }
+        listAllFiles(nodeDir);
 
         File aRrdFile = new File(nodeDir, CollectorTestUtils.rrd("A"));
         File bRrdFile = new File(nodeDir, CollectorTestUtils.rrd("B"));
@@ -517,6 +540,17 @@ public class JMXCollectorTest implements TestContextAware, InitializingBean {
 
         m_collectionSpecification.release(m_collectionAgent);
         //assertEquals("force-fail", true, false);
+    }
+
+    private void listAllFiles(File directory) {
+        File[] files = directory.listFiles();
+        for (File f : files) {
+            if (f.isDirectory()) {
+                listAllFiles(f);
+            } else {
+                logger.debug("file: {}", f);
+            }
+        }
     }
 
     private Map<String, JMXDataSource> generateDataSourceMap(String collectionName, Map<String, List<Attrib>> attributeMap) {

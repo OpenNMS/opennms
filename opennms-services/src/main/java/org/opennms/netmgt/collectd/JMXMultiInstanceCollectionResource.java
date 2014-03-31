@@ -47,6 +47,7 @@ public class JMXMultiInstanceCollectionResource extends JMXCollectionResource {
     /** The collection resource type name. */
     private final JMXResourceType m_resourceType;
     private final ObjectName m_objectName;
+    private final String m_keyField;
 
     /**
      * Instantiates a new JMX multi instance collection resource.
@@ -55,10 +56,11 @@ public class JMXMultiInstanceCollectionResource extends JMXCollectionResource {
      * @param objectName the objectName
      * @param type the type
      */
-    JMXMultiInstanceCollectionResource(CollectionAgent agent, JMXResourceType type, ObjectName objectName) {
+    JMXMultiInstanceCollectionResource(CollectionAgent agent, JMXResourceType type, ObjectName objectName, String keyField) {
         super(agent);
         m_resourceType = type;
         m_objectName = objectName;
+        m_keyField = keyField;
     }
 
     /* (non-Javadoc)
@@ -67,6 +69,9 @@ public class JMXMultiInstanceCollectionResource extends JMXCollectionResource {
     @Override
     public String getInstance() {
         LOG.debug("getInstance: {}", m_objectName.getCanonicalName());
+        if (m_keyField != null) {
+            return m_objectName.getKeyProperty(m_keyField);
+        }
         return m_objectName.getCanonicalName();
     }
 

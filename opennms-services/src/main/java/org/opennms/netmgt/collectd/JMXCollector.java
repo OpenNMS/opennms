@@ -385,13 +385,12 @@ public abstract class JMXCollector implements ServiceCollector {
     private void handleCompositeAttribute(BeanInfo beanInfo, MBeanServerConnection mbeanServer, ObjectName oName, MBeanAttributeInfo mbai, Map<String, JMXDataSource> dsMap, AttributeGroupType attribGroupType, JMXCollectionResource collectionResource, List<String> compAttribNames) {
         String objectName = beanInfo.getObjectName();
         LOG.debug("handleCompositeAttribute: objectName: {}, mbai: {}, compAttribNames: {}", objectName, mbai.getName(), compAttribNames);
-        String keyField = beanInfo.getKeyField();
         String keyFieldValue = null;
         String keyAlias = null;
-        if (keyField != null) {
+        if (beanInfo.getKeyField() != null && beanInfo.getResourceType() == null) {
             keyAlias = beanInfo.getKeyAlias();
-            keyFieldValue = oName.getKeyProperty(keyField);
-            LOG.debug("handleCompositeAttribute: keyAlias: {}, keyField: {}, keyFieldValue: {}", keyAlias, keyField, keyFieldValue);
+            keyFieldValue = oName.getKeyProperty(beanInfo.getKeyField());
+            LOG.debug("handleCompositeAttribute: keyAlias: {}, keyField: {}, keyFieldValue: {}", keyAlias, beanInfo.getKeyField(), keyFieldValue);
         }
 
         if (!"javax.management.openmbean.CompositeData".equals(mbai.getType())) {
@@ -491,7 +490,7 @@ public abstract class JMXCollector implements ServiceCollector {
 
             for (ObjectName oName : mbeanSet) {
                 LOG.debug("{} Collector - handleMultiInstanceCollection: {}, # attributes: {}, alias: {}", m_serviceName, oName, attribNames.size(), beanInfo.getKeyAlias());
-                JMXCollectionResource collectionResource = new JMXMultiInstanceCollectionResource(agent, type, oName);
+                JMXCollectionResource collectionResource = new JMXMultiInstanceCollectionResource(agent, type, oName, beanInfo.getKeyAlias());
 
                 try {
                     /*
