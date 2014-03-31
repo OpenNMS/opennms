@@ -73,7 +73,6 @@ public class LinkableNode {
      * the list of bridge port that are backbone bridge ports ou that are link
      * between switches
      */
-    private List<Integer> m_backBoneBridgePorts = new ArrayList<Integer>();
     private List<String> m_bridgeIdentifiers = new ArrayList<String>();
     private List<String> m_macIdentifiers = new ArrayList<String>();
     private Map<Integer, List<OnmsStpInterface>> m_bridgeStpInterfaces = new HashMap<Integer, List<OnmsStpInterface>>();
@@ -267,42 +266,6 @@ public class LinkableNode {
      */
     public boolean isBridgeNode() {
         return m_isBridgeNode;
-    }
-
-    /**
-     * @return Returns the backBoneBridgePorts.
-     */
-    public List<Integer> getBackBoneBridgePorts() {
-        return m_backBoneBridgePorts;
-    }
-
-    /**
-     * @param backBoneBridgePorts
-     *            The backBoneBridgePorts to set.
-     */
-    public void setBackBoneBridgePorts(final List<Integer> backBoneBridgePorts) {
-        m_backBoneBridgePorts = backBoneBridgePorts;
-    }
-
-    /**
-     * return true if bridgeport is a backbone port
-     * 
-     * @param bridgeport
-     * @return
-     */
-    public boolean isBackBoneBridgePort(final int bridgeport) {
-        return m_backBoneBridgePorts.contains(bridgeport);
-    }
-
-    /**
-     * add bridgeport to backbone ports
-     * 
-     * @param bridgeport
-     */
-    public void addBackBoneBridgePorts(final int bridgeport) {
-        if (m_backBoneBridgePorts.contains(bridgeport))
-            return;
-        m_backBoneBridgePorts.add(bridgeport);
     }
 
     /**
