@@ -64,26 +64,6 @@ public final class DiscoveryLink implements ReadyRunnable {
     
     private List<NodeToNodeLink> m_links = new ArrayList<NodeToNodeLink>();
 
-    private Map<Integer, LinkableNode> m_bridgeNodes = new HashMap<Integer, LinkableNode>();
-
-    private List<LinkableNode> m_routerNodes = new ArrayList<LinkableNode>();
-
-    private List<LinkableNode> m_lldpNodes = new ArrayList<LinkableNode>();
-
-    private List<LinkableNode> m_ospfNodes = new ArrayList<LinkableNode>();
-
-    private List<LinkableNode> m_isisNodes = new ArrayList<LinkableNode>();
-
-    private Map<String,LinkableNode> m_cdpNodes = new HashMap<String,LinkableNode>();
-
-    private List<LinkableNode> m_wifiNodes = new ArrayList<LinkableNode>();
-
-    // this is the list of MAC address just parsed by discovery process
-    private List<String> m_macsParsed = new ArrayList<String>();
-
-    // this is the list of MAC address excluded by discovery process
-    private List<String> macsExcluded = new ArrayList<String>();
-
     private boolean discoveryUsingRoutes = true;
 
     private boolean discoveryUsingCdp = true;
@@ -177,6 +157,13 @@ public final class DiscoveryLink implements ReadyRunnable {
     @Override
     public void run() {
         runned=true;
+        LOG.info("run: discoveryUsingRoutes={} on package \"{}\"",discoveryUsingRoutes,getPackageName());
+        LOG.info("run: discoveryUsingOspf={} on package \"{}\"",discoveryUsingOspf,getPackageName());
+        LOG.info("run: discoveryUsingIsis={} on package \"{}\"",discoveryUsingIsis,getPackageName());
+        LOG.info("run: discoveryUsingWifi={} on package \"{}\"",discoveryUsingWifi,getPackageName());
+        LOG.info("run: discoveryUsingBridge={} on package \"{}\"",discoveryUsingBridge,getPackageName());
+        LOG.info("run: discoveryUsingCdp={} on package \"{}\"",discoveryUsingCdp,getPackageName());
+        LOG.info("run: discoveryUsingLldp={} on package \"{}\"",discoveryUsingLldp,getPackageName());
         if (suspendCollection) {
             sendSuspendedEvent();
             LOG.warn("run: linkd collections are suspended!");
@@ -189,88 +176,37 @@ public final class DiscoveryLink implements ReadyRunnable {
         
     private void discoverLinks() {   
         Collection<LinkableNode> linkableNodes = m_linkd.getLinkableNodesOnPackage(getPackageName());
-
         LOG.info("run: Found {} LinkableNodes  on package \"{}\"", linkableNodes.size(), getPackageName());
-        LOG.info("run: discoveryUsingBridge={} on package \"{}\"",discoveryUsingBridge,getPackageName());
-        LOG.info("run: discoveryUsingCdp={} on package \"{}\"",discoveryUsingCdp,getPackageName());
-        LOG.info("run: discoveryUsingRoutes={} on package \"{}\"",discoveryUsingRoutes,getPackageName());
-        LOG.info("run: discoveryUsingLldp={} on package \"{}\"",discoveryUsingLldp,getPackageName());
-        LOG.info("run: discoveryUsingOspf={} on package \"{}\"",discoveryUsingOspf,getPackageName());
-        LOG.info("run: discoveryUsingIsis={} on package \"{}\"",discoveryUsingIsis,getPackageName());
-        LOG.info("run: discoveryUsingWifi={} on package \"{}\"",discoveryUsingWifi,getPackageName());
         
-        for (final LinkableNode linkableNode : linkableNodes) {
-            LOG.debug("run: Iterating on LinkableNode's found node with nodeid/sysoid/ipaddress {}/{}/{}", linkableNode.getNodeId(),linkableNode.getSysoid(),str(linkableNode.getSnmpPrimaryIpAddr()));
-            if (discoveryUsingOspf && linkableNode.getOspfRouterId() != null
-                    && linkableNode.getOspfinterfaces() != null ) {
-                LOG.debug("run: adding to ospf node list: node with nodeid/ospfrouterid/#ospfinterface {}/{}/#{}", linkableNode.getNodeId(),str(linkableNode.getOspfRouterId()),linkableNode.getOspfinterfaces().size());
-                m_ospfNodes.add(linkableNode);
-            }   
-            if (discoveryUsingIsis && linkableNode.getIsisSysId() != null) {
-                LOG.debug("run: adding to isis node list: node with nodeid/isisSysId/#isisinterface {}/{}/#{}", linkableNode.getNodeId(),linkableNode.getIsisSysId(),linkableNode.getIsisInterfaces().size());
-                m_isisNodes.add(linkableNode);
-            }
-            if (discoveryUsingLldp && linkableNode.getLldpChassisId() != null
-                    && linkableNode.getLldpChassisIdSubtype() != null) {
-                LOG.debug("run: adding to lldp node list: node with nodeid/sysname/chassisid {}/{}/{}", linkableNode.getNodeId(),linkableNode.getLldpSysname(),linkableNode.getLldpChassisId());
-                m_lldpNodes.add(linkableNode);
-            }
-            if (discoveryUsingBridge && linkableNode.isBridgeNode()) {
-                LOG.debug("run: adding to bridge node list: node with nodeid/bridgeidentifier {}/{}", linkableNode.getNodeId(),linkableNode.getBridgeIdentifiers().get(0));
-                m_bridgeNodes.put(Integer.valueOf(linkableNode.getNodeId()),
-                                  linkableNode);
-            }
-            if (discoveryUsingCdp && linkableNode.hasCdpInterfaces()) {
-                LOG.debug("run: adding to CDP node list: node with nodeid/#cdpinterfaces {}/#{}", linkableNode.getNodeId(),linkableNode.getCdpInterfaces().size());
-                m_cdpNodes.put(linkableNode.getCdpDeviceId(),linkableNode);
-            }
-            if (discoveryUsingRoutes && linkableNode.hasRouteInterfaces()) {
-                LOG.debug("run: adding to router node list: node with nodeid/#iprouteinterface {}/#{}", linkableNode.getNodeId(),linkableNode.getRouteInterfaces().size());
-                m_routerNodes.add(linkableNode);
-            }
-            if (discoveryUsingWifi && !linkableNode.getWifiMacIfIndexMap().isEmpty()) {
-                LOG.debug("run: adding to wifi node list: node with nodeid/#wificonnection {}/#{}", linkableNode.getNodeId(),linkableNode.getWifiMacIfIndexMap().size());
-                m_wifiNodes.add(linkableNode);
-            }
-        }
-
-        // This will found all mac address on
-        // current package and their association
-        // with ip addresses.
-        if (discoveryUsingBridge || discoveryUsingWifi)
-            populateMacToAtInterface();
-
         // this part could have several special function to get inter-router
         // links, but at the moment we worked much on switches.
         // In future we can try to extend this part.
-        getLinksFromRouteTable();
+        if (discoveryUsingRoutes)
+            getLinksFromRouteTable(linkableNodes);
 
-        getLinksFromOspf();
-        getLinksFromIsis();
-
-        getLinksFromWifi();
-        // Try Link Layer Discovery Protocol to found link among all nodes
-        getLinksFromLldp();
+        if (discoveryUsingOspf)
+            getLinksFromOspf(linkableNodes);
+        
+        if (discoveryUsingIsis)
+            getLinksFromIsis(linkableNodes);
+        
+        if (discoveryUsingWifi)
+            getLinksFromWifi(linkableNodes);
+        
         // try get backbone links between switches using STP info
         // and store information in Bridge class
         // finding links using MAC address on ports
-        getBackBoneLinksFromBridges();
-
-        // getting links on remaining bridge ports
-        getLinksFromBridges();
-
+        if (discoveryUsingBridge) {
+            getLinksFromBridge(linkableNodes);
+        }
+        
+        // Try Link Layer Discovery Protocol to found link among all nodes
+        if (discoveryUsingLldp)
+            getLinksFromLldp(linkableNodes);
+        
         // Try Cisco Discovery Protocol to found link among all nodes
-        getLinksFromCdp();
-
-        m_bridgeNodes.clear();
-        m_routerNodes.clear();
-        m_cdpNodes.clear();
-        m_macsParsed.clear();
-        macsExcluded.clear();
-        m_lldpNodes.clear();
-        m_ospfNodes.clear();
-        m_isisNodes.clear();
-        m_wifiNodes.clear();
+        if (discoveryUsingCdp)
+            getLinksFromCdp(linkableNodes);
 
         getLinkd().clearPackageSavedData(getPackageName());
 
@@ -280,172 +216,64 @@ public final class DiscoveryLink implements ReadyRunnable {
         runned = true;
     }
 
-    protected void populateMacToAtInterface() {
-        LOG.debug("populateMacToAtInterface: using atNodes to populate macToAtinterface");
-        final Set<String> macAddresses = getLinkd().getMacAddressesOnPackage(getPackageName());
-        if (macAddresses == null || macAddresses.isEmpty()) return;
-        for (final String macAddress : macAddresses) {
-            final List<AtInterface> atInterfaces = getLinkd().getAtInterfaces(getPackageName(), macAddress);
-            LOG.debug("populateMacToAtInterface: MAC {} now has atinterface reference: {}", macAddress, atInterfaces.size());
-            for (final AtInterface at : atInterfaces) {
-                final int nodeid = at.getNodeid();
-                LOG.debug("populateMacToAtInterface: Parsing AtInterface nodeid/ipaddr/macaddr: {}/{}/{}", nodeid, at.getIpAddress(), macAddress);
-                if ((macAddress.indexOf("00000c07ac") == 0) || (macAddress.indexOf("00000c9ff") == 0)) {
-                    LOG.debug("populateMacToAtInterface: AtInterface {} is Cisco HSRP address! Not adding to discoverable atinterface.", macAddress);
-                    macsExcluded.add(macAddress);
-                    continue;
-                }
+    private void getLinksFromWifi(Collection<LinkableNode> linkableNodes) {
+        List<LinkableNode> wifiNodes = new ArrayList<LinkableNode>();
+        List<String> macParsed = new ArrayList<String>();
+        for (LinkableNode linkableNode: linkableNodes) {
+            if (discoveryUsingWifi && !linkableNode.getWifiMacIfIndexMap().isEmpty()) {
+                LOG.debug("getLinksFromWifi: adding to wifi node list: node with nodeid/#wificonnection {}/#{}", linkableNode.getNodeId(),linkableNode.getWifiMacIfIndexMap().size());
+                wifiNodes.add(linkableNode);
             }
         }
-        LOG.debug("populateMacToAtInterface: end populateMacToAtinterface");
-    }
-    private void getLinksFromWifi() {
-        for (final LinkableNode curNode: m_wifiNodes) {
+        for (final LinkableNode curNode: wifiNodes) {
             final int curNodeId = curNode.getNodeId();
             LOG.info("getLinksFromWifi: parsing wifi node with ID {} and {} wifi interfaces ", curNodeId, curNode.getWifiMacIfIndexMap().size());
             for (Entry<Integer, Set<String>> wifi: curNode.getWifiMacIfIndexMap().entrySet()) {
                 LOG.debug("getLinksFromWifi: parsing wifi node with ID {} wifi interface {} macs {} ", curNodeId, wifi.getKey(), wifi.getValue());
-                addLinks(wifi.getValue(), curNodeId, wifi.getKey().intValue(),DiscoveryProtocol.wifi);
+                macParsed = addLinks(macParsed,wifi.getValue(), curNodeId, wifi.getKey().intValue(),DiscoveryProtocol.wifi);
             }
             
         }
     }
-    
-    private void getLinksFromBridges() {
-        if (m_bridgeNodes.size() > 0) {
-            LOG.info("getLinksFromBridges: trying to find links using MAC Address Forwarding Table");
-        }
 
-        for (final LinkableNode curNode : m_bridgeNodes.values()) {
-            final int curNodeId = curNode.getNodeId();
-            LOG.info("getLinksFromBridges: parsing bridge node with ID {}", curNodeId);
-
-            for (final Integer curBridgePort : curNode.getPortMacs().keySet()) {
-                LOG.debug("getLinksFromBridges: parsing bridge port {} with MAC address {}", curBridgePort, curNode.getMacAddressesOnBridgePort(curBridgePort).toString());
-
-                if (curNode.isBackBoneBridgePort(curBridgePort)) {
-                    LOG.debug("getLinksFromBridges: Port {} is a backbone bridge port. Skipping.", curBridgePort);
-                    continue;
-                }
-
-                final int curIfIndex = curNode.getIfindex(curBridgePort);
-                
-                // TT2295 save also ifindex -1 links
-                if (curIfIndex == -1) {
-                    LOG.warn("getLinksFromBridges: got invalid ifIndex on bridge port {}", curBridgePort);
-                //    continue;
-                }
-                // First get the MAC addresses on bridge port
-
-                final Set<String> macs = curNode.getMacAddressesOnBridgePort(curBridgePort);
-
-                // Then find the bridges whose MAC addresses are learned on
-                // bridge port
-                final List<LinkableNode> bridgesOnPort = getBridgesFromMacs(macs);
-
-                if (bridgesOnPort.isEmpty()) {
-                    LOG.debug("getLinksFromBridges: no bridges macs found on port {}. Saving MACs.", curBridgePort);
-                    addLinks(macs, curNodeId, curIfIndex,DiscoveryProtocol.bridge);
-                    continue;
-                } 
-                // a bridge MAC address was found on port so you should
-                // analyze what happens
-                LOG.debug("getLinksFromBridges: bridges macs found on port {}. Searching nearest.", curBridgePort);
-
-                // one among these bridges should be the node more close
-                // to the curnode, curport
-                for (final LinkableNode endNode : bridgesOnPort) {
-                    final int endNodeid = endNode.getNodeId();
-                    if (curNodeId == endNodeid) {
-                        LOG.debug("getLinksFromBridges: curnode and target node are the same. Skipping.");
-                        continue;
-                    }
-                    final int endBridgePort = getBridgePortOnEndBridge(curNode,
-                                                                       endNode);
-                    // The bridge port should be valid! This control is
-                    // not properly done
-                    if (endBridgePort == -1) {
-                        LOG.warn("getLinksFromBridges: no valid port found on bridge nodeid {} for node bridge identifiers nodeid {}. Skipping.", endNodeid, curNodeId);
-                        continue;
-                    }
-
-                    // Try to found a new
-                    final boolean isTargetNode = isNearestBridgeLink(curNode,
-                                                                     curBridgePort,
-                                                                     endNode,
-                                                                     endBridgePort);
-                    if (!isTargetNode)
-                        continue;
-
-                    final int endIfindex = endNode.getIfindex(endBridgePort);
-                    if (endIfindex == -1) {
-                        LOG.warn("getLinksFromBridges: got invalid ifindex on designated bridge port {}", endBridgePort);
-                        continue;
-                    }
-
-                    LOG.debug("getLinksFromBridges: backbone port found for node {}. Adding backbone bridge port {}", curNodeId, curBridgePort);
-
-                    curNode.addBackBoneBridgePorts(curBridgePort);
-                    m_bridgeNodes.put(curNodeId, curNode);
-
-                    LOG.debug("getLinksFromBridges: backbone port found for node {}. Adding to backbone bridge port {}", endNodeid, endBridgePort);
-
-                    endNode.addBackBoneBridgePorts(endBridgePort);
-                    m_bridgeNodes.put(endNodeid, endNode);
-
-                    // finding links between two backbone ports
-                    // FIXME no criteria....check the rules
-                    addLinks(getMacsOnBridgeLink(curNode, curBridgePort,
-                                                 endNode, endBridgePort),
-                                                 curNodeId, curIfIndex,DiscoveryProtocol.bridge);
-
-                    final NodeToNodeLink lk = new NodeToNodeLink(
-                                                                 curNodeId,
-                                                                 curIfIndex, DiscoveryProtocol.bridge);
-                    lk.setNodeparentid(endNodeid);
-                    lk.setParentifindex(endIfindex);
-                    LOG.info("getLinksFromBridges: saving bridge link: {}", lk.toString());
-                    addNodetoNodeLink(lk);
-                }
+    private void getLinksFromBridge(Collection<LinkableNode> linkableNodes) {
+        Map<Integer, LinkableNode> bridgeNodes = new HashMap<Integer, LinkableNode>();
+        List<String> macParsed = new ArrayList<String>();
+        for (final LinkableNode linkableNode : linkableNodes) {
+            LOG.debug("getLinksFromBridge: Iterating on LinkableNode's found node with nodeid/sysoid/ipaddress {}/{}/{}", linkableNode.getNodeId(),linkableNode.getSysoid(),str(linkableNode.getSnmpPrimaryIpAddr()));
+            if (linkableNode.isBridgeNode()) {
+                LOG.debug("getLinksFromBridge: adding to bridge node list: node with nodeid/bridgeidentifier {}/{}", linkableNode.getNodeId(),linkableNode.getBridgeIdentifiers().get(0));
+                bridgeNodes.put(Integer.valueOf(linkableNode.getNodeId()),
+                                  linkableNode);
             }
-            LOG.info("getLinksFromBridges: done parsing bridge node with ID {}", curNodeId);
         }
 
-        if (m_bridgeNodes.size() > 0) {
-            LOG.info("getLinksFromBridges: done finding links using MAC Address Forwarding Table");
-        }
+        LOG.info("getLinksFromBridge: trying to find backbone ethernet links among {} bridges nodes using Spanning Tree Protocol", bridgeNodes.size());
 
-    }
-
-    private void getBackBoneLinksFromBridges() {
-        if (m_bridgeNodes != null && m_bridgeNodes.size() > 0) {
-            LOG.info("getBackBoneLinksFromBridges: trying to find backbone ethernet links among bridge nodes using Spanning Tree Protocol");
-        }
-
-        for (final LinkableNode curNode : m_bridgeNodes.values()) {
+        for (final LinkableNode curNode : bridgeNodes.values()) {
             final int curNodeId = curNode.getNodeId();
             final InetAddress cupIpAddr = curNode.getSnmpPrimaryIpAddr();
 
-            LOG.info("getBackBoneLinksFromBridges: parsing bridge nodeid {} IP address {} with {} VLANs", curNodeId, str(cupIpAddr), curNode.getStpInterfaces().size());
+            LOG.info("getLinksFromBridge: parsing bridge nodeid {} IP address {} with {} VLANs", curNodeId, str(cupIpAddr), curNode.getStpInterfaces().size());
 
             for (final Map.Entry<Integer, List<OnmsStpInterface>> me : curNode.getStpInterfaces().entrySet()) {
                 final Integer vlan = me.getKey();
                 final String curBaseBridgeAddress = curNode.getBridgeIdentifier(vlan);
 
-                LOG.debug("getBackBoneLinksFromBridges: found bridge identifier {}", curBaseBridgeAddress);
+                LOG.debug("getLinksFromBridge: found bridge identifier {}", curBaseBridgeAddress);
 
                 String designatedRoot = null;
 
                 if (curNode.hasStpRoot(vlan)) {
                     designatedRoot = curNode.getStpRoot(vlan);
                 } else {
-                    LOG.debug("getBackBoneLinksFromBridges: stp designated root bridge identifier not found. Skipping {}", curBaseBridgeAddress);
+                    LOG.debug("getLinksFromBridge: stp designated root bridge identifier not found. Skipping {}", curBaseBridgeAddress);
                     continue;
                 }
 
                 if (designatedRoot == null
                         || designatedRoot.equals("0000000000000000")) {
-                    LOG.warn("getBackBoneLinksFromBridges: stp designated root is invalid, skipping: {}", designatedRoot);
+                    LOG.warn("getLinksFromBridge: stp designated root is invalid, skipping: {}", designatedRoot);
                     continue;
                 }
                 // check if designated
@@ -454,42 +282,42 @@ public final class DiscoveryLink implements ReadyRunnable {
                 // searching on linkablesnmpnodes
 
                 if (curNode.isBridgeIdentifier(designatedRoot.substring(4))) {
-                    LOG.debug("getBackBoneLinksFromBridges: stp designated root is the bridge itself. Skipping.");
+                    LOG.debug("getLinksFromBridge: stp designated root is the bridge itself. Skipping.");
                     continue;
                 }
 
                 // Now parse STP bridge port info to get designated bridge
-                LOG.debug("getBackBoneLinksFromBridges: stp designated root is another bridge. {} Parsing stp interfaces", designatedRoot);
+                LOG.debug("getLinksFromBridge: stp designated root is another bridge. {} Parsing stp interfaces", designatedRoot);
 
                 for (final OnmsStpInterface stpIface : me.getValue()) {
                     // the bridge port number
                     final int stpbridgeport = stpIface.getBridgePort();
                     // if port is a backbone port continue
                     if (curNode.isBackBoneBridgePort(stpbridgeport)) {
-                        LOG.debug("getBackBoneLinksFromBridges: bridge port {} already found. Skipping.", stpbridgeport);
+                        LOG.debug("getLinksFromBridge: bridge port {} already found. Skipping.", stpbridgeport);
                         continue;
                     }
 
                     final String stpPortDesignatedPort = stpIface.getStpPortDesignatedPort();
                     final String stpPortDesignatedBridge = stpIface.getStpPortDesignatedBridge();
 
-                    LOG.debug("getBackBoneLinksFromBridges: parsing bridge port {} with stp designated bridge {} and stp designated port {}", stpbridgeport, stpPortDesignatedBridge, stpPortDesignatedPort);
+                    LOG.debug("getLinksFromBridge: parsing bridge port {} with stp designated bridge {} and stp designated port {}", stpbridgeport, stpPortDesignatedBridge, stpPortDesignatedPort);
 
                     if (stpPortDesignatedBridge == null
                             || stpPortDesignatedBridge.equals("0000000000000000")
                             || stpPortDesignatedBridge.equals("")) {
-                        LOG.warn("getBackBoneLinksFromBridges: designated bridge is invalid, skipping: {}", stpPortDesignatedBridge);
+                        LOG.warn("getLinksFromBridge: designated bridge is invalid, skipping: {}", stpPortDesignatedBridge);
                         continue;
                     }
 
                     if (curNode.isBridgeIdentifier(stpPortDesignatedBridge.substring(4))) {
-                        LOG.debug("getBackBoneLinksFromBridges: designated bridge for port {} is bridge itself, skipping", stpbridgeport);
+                        LOG.debug("getLinksFromBridge: designated bridge for port {} is bridge itself, skipping", stpbridgeport);
                         continue;
                     }
 
                     if (stpPortDesignatedPort == null
                             || stpPortDesignatedPort.equals("0000")) {
-                        LOG.warn("getBackBoneLinksFromBridges: designated port is invalid: {}. skipping", stpPortDesignatedPort);
+                        LOG.warn("getLinksFromBridge: designated port is invalid: {}. skipping", stpPortDesignatedPort);
                         continue;
                     }
 
@@ -523,18 +351,18 @@ public final class DiscoveryLink implements ReadyRunnable {
 
                     // try to see if designated bridge is linkable SNMP node
 
-                    final LinkableNode designatedNode = getNodeFromMacIdentifierOfBridgeNode(stpPortDesignatedBridge.substring(4));
+                    final LinkableNode designatedNode = getNodeFromMacIdentifierOfBridgeNode(bridgeNodes.values(),stpPortDesignatedBridge.substring(4));
 
                     if (designatedNode == null) {
-                        LOG.debug("getBackBoneLinksFromBridges: no nodeid found for stp bridge address {}. Nothing to save.", stpPortDesignatedBridge);
+                        LOG.debug("getLinksFromBridge: no nodeid found for stp bridge address {}. Nothing to save.", stpPortDesignatedBridge);
                         continue; // no saving info if no nodeid
                     }
 
                     final int designatednodeid = designatedNode.getNodeId();
 
-                    LOG.debug("getBackBoneLinksFromBridges: found designated nodeid {}", designatednodeid);
+                    LOG.debug("getLinksFromBridge: found designated nodeid {}", designatednodeid);
 
-                    if (!isNearestBridgeLink(curNode, stpbridgeport,
+                    if (!isNearestBridgeLink(bridgeNodes.values(),curNode, stpbridgeport,
                                              designatedNode,
                                              designatedbridgeport)) {
                         continue; // no saving info if no nodeid
@@ -546,31 +374,31 @@ public final class DiscoveryLink implements ReadyRunnable {
                     final int curIfIndex = curNode.getIfindex(stpbridgeport);
 
                     if (curIfIndex == -1) {
-                        LOG.warn("getBackBoneLinksFromBridges: got invalid ifindex on node: {}", curNode.toString());
+                        LOG.warn("getLinksFromBridge: got invalid ifindex on node: {}", curNode.toString());
                         continue;
                     }
 
                     final int designatedifindex = designatedNode.getIfindex(designatedbridgeport);
 
                     if (designatedifindex == -1) {
-                        LOG.warn("getBackBoneLinksFromBridges: got invalid ifindex on designated node: {}", designatedNode.toString());
+                        LOG.warn("getLinksFromBridge: got invalid ifindex on designated node: {}", designatedNode.toString());
                         continue;
                     }
 
-                    LOG.debug("getBackBoneLinksFromBridges: backbone bridge port {} found for node {}", stpbridgeport, curNodeId);
+                    LOG.debug("getLinksFromBridge: backbone bridge port {} found for node {}", stpbridgeport, curNodeId);
 
                     curNode.addBackBoneBridgePorts(stpbridgeport);
-                    m_bridgeNodes.put(Integer.valueOf(curNodeId), curNode);
+                    bridgeNodes.put(Integer.valueOf(curNodeId), curNode);
 
-                    LOG.debug("getBackBoneLinksFromBridges: backbone bridge port {} found for node {}", designatedbridgeport, designatednodeid);
+                    LOG.debug("getLinksFromBridge: backbone bridge port {} found for node {}", designatedbridgeport, designatednodeid);
 
                     designatedNode.addBackBoneBridgePorts(designatedbridgeport);
-                    m_bridgeNodes.put(Integer.valueOf(designatednodeid),
+                    bridgeNodes.put(Integer.valueOf(designatednodeid),
                                       designatedNode);
 
-                    LOG.debug("getBackBoneLinksFromBridges: adding links on backbone found link");
+                    LOG.debug("getLinksFromBridge: adding links on backbone found link");
 
-                    addLinks(getMacsOnBridgeLink(curNode, stpbridgeport,
+                    macParsed = addLinks(macParsed, getMacsOnBridgeLink(curNode, stpbridgeport,
                                                  designatedNode,
                                                  designatedbridgeport),
                                                  curNodeId, curIfIndex,DiscoveryProtocol.bridge);
@@ -579,26 +407,128 @@ public final class DiscoveryLink implements ReadyRunnable {
                                                                  curIfIndex,DiscoveryProtocol.bridge);
                     lk.setNodeparentid(designatednodeid);
                     lk.setParentifindex(designatedifindex);
-                    LOG.info("getBackBoneLinksFromBridges: saving stp bridge link: {}", lk.toString());
+                    LOG.info("getLinksFromBridge: saving stp bridge link: {}", lk.toString());
                     addNodetoNodeLink(lk);
-
                 }
             }
             LOG.info("getBackBoneLinksFromBridges: done parsing bridge with nodeid {} and ip address {} with {} VLANs", curNodeId, str(cupIpAddr), curNode.getStpInterfaces().size());
         }
 
-        if (m_bridgeNodes.size() > 0) {
-            LOG.info("getBackBoneLinksFromBridges: done finding backbone ethernet links among bridge nodes using Spanning Tree Protocol");
+        LOG.info("getLinksFromBridge: done finding backbone ethernet links among bridge nodes using Spanning Tree Protocol");
+
+        LOG.info("getLinksFromBridge: trying to find links using MAC Address Forwarding Table");
+
+        for (final LinkableNode curNode : bridgeNodes.values()) {
+            final int curNodeId = curNode.getNodeId();
+            LOG.info("getLinksFromBridge: parsing bridge node with ID {}", curNodeId);
+
+            for (final Integer curBridgePort : curNode.getPortMacs().keySet()) {
+                LOG.debug("getLinksFromBridge: parsing bridge port {} with MAC address {}", curBridgePort, curNode.getMacAddressesOnBridgePort(curBridgePort).toString());
+
+                if (curNode.isBackBoneBridgePort(curBridgePort)) {
+                    LOG.debug("getLinksFromBridge: Port {} is a backbone bridge port. Skipping.", curBridgePort);
+                    continue;
+                }
+
+                final int curIfIndex = curNode.getIfindex(curBridgePort);
+                
+                // TT2295 save also ifindex -1 links
+                if (curIfIndex == -1) {
+                    LOG.warn("getLinksFromBridge: got invalid ifIndex on bridge port {}", curBridgePort);
+                //    continue;
+                }
+                // First get the MAC addresses on bridge port
+
+                final Set<String> macs = curNode.getMacAddressesOnBridgePort(curBridgePort);
+
+                // Then find the bridges whose MAC addresses are learned on
+                // bridge port
+                final List<LinkableNode> bridgesOnPort = getBridgesFromMacs(bridgeNodes.values(),macs);
+
+                if (bridgesOnPort.isEmpty()) {
+                    LOG.debug("getLinksFromBridge: no bridges macs found on port {}. Saving MACs.", curBridgePort);
+                    macParsed = addLinks(macParsed,macs, curNodeId, curIfIndex,DiscoveryProtocol.bridge);
+                    continue;
+                } 
+                // a bridge MAC address was found on port so you should
+                // analyze what happens
+                LOG.debug("getLinksFromBridge: bridges macs found on port {}. Searching nearest.", curBridgePort);
+
+                // one among these bridges should be the node more close
+                // to the curnode, curport
+                for (final LinkableNode endNode : bridgesOnPort) {
+                    final int endNodeid = endNode.getNodeId();
+                    if (curNodeId == endNodeid) {
+                        LOG.debug("getLinksFromBridge: curnode and target node are the same. Skipping.");
+                        continue;
+                    }
+                    final int endBridgePort = getBridgePortOnEndBridge(curNode,
+                                                                       endNode);
+                    // The bridge port should be valid! This control is
+                    // not properly done
+                    if (endBridgePort == -1) {
+                        LOG.warn("getLinksFromBridge: no valid port found on bridge nodeid {} for node bridge identifiers nodeid {}. Skipping.", endNodeid, curNodeId);
+                        continue;
+                    }
+
+                    // Try to found a new
+                    final boolean isTargetNode = isNearestBridgeLink(bridgeNodes.values(),curNode,
+                                                                     curBridgePort,
+                                                                     endNode,
+                                                                     endBridgePort);
+                    if (!isTargetNode)
+                        continue;
+
+                    final int endIfindex = endNode.getIfindex(endBridgePort);
+                    if (endIfindex == -1) {
+                        LOG.warn("getLinksFromBridge: got invalid ifindex on designated bridge port {}", endBridgePort);
+                        continue;
+                    }
+
+                    LOG.debug("getLinksFromBridge: backbone port found for node {}. Adding backbone bridge port {}", curNodeId, curBridgePort);
+
+                    curNode.addBackBoneBridgePorts(curBridgePort);
+                    bridgeNodes.put(curNodeId, curNode);
+
+                    LOG.debug("getLinksFromBridge: backbone port found for node {}. Adding to backbone bridge port {}", endNodeid, endBridgePort);
+
+                    endNode.addBackBoneBridgePorts(endBridgePort);
+                    bridgeNodes.put(endNodeid, endNode);
+
+                    // finding links between two backbone ports
+                    // FIXME no criteria....check the rules
+                    macParsed = addLinks(macParsed,getMacsOnBridgeLink(curNode, curBridgePort,
+                                                 endNode, endBridgePort),
+                                                 curNodeId, curIfIndex,DiscoveryProtocol.bridge);
+
+                    final NodeToNodeLink lk = new NodeToNodeLink(
+                                                                 curNodeId,
+                                                                 curIfIndex, DiscoveryProtocol.bridge);
+                    lk.setNodeparentid(endNodeid);
+                    lk.setParentifindex(endIfindex);
+                    LOG.info("getLinksFromBridge: saving bridge link: {}", lk.toString());
+                    addNodetoNodeLink(lk);
+                }
+            }
+            LOG.info("getLinksFromBridge: done parsing bridge node with ID {}", curNodeId);
         }
+
+        LOG.info("getLinksFromBridges: done finding links using MAC Address Forwarding Table");
 
     }
 
-    private void getLinksFromRouteTable() {
-        if (m_routerNodes.size() > 0) {
-            LOG.info("getLinksFromRouteTable: finding non-ethernet links on Router nodes");
-        }
 
-        for (final LinkableNode curNode : m_routerNodes) {
+    private void getLinksFromRouteTable(Collection<LinkableNode> linkableNodes) {
+        List<LinkableNode> routerNodes = new ArrayList<LinkableNode>();
+        for (LinkableNode linkableNode : linkableNodes) {
+            if (linkableNode.hasRouteInterfaces()) {
+                LOG.debug("getLinksFromRouteTable: adding to router node list: node with nodeid/#iprouteinterface {}/#{}", linkableNode.getNodeId(),linkableNode.getRouteInterfaces().size());
+                routerNodes.add(linkableNode);
+            }
+        }
+        LOG.info("getLinksFromRouteTable: found {} Router nodes", routerNodes.size());
+
+        for (final LinkableNode curNode : routerNodes) {
             final int curNodeId = curNode.getNodeId();
             InetAddress curIpAddr = curNode.getSnmpPrimaryIpAddr();
             LOG.info("getLinksFromRouteTable: parsing router node with ID {} IP address {} and {} router interfaces", curNodeId, str(curIpAddr), curNode.getRouteInterfaces().size());
@@ -615,19 +545,25 @@ public final class DiscoveryLink implements ReadyRunnable {
             LOG.info("getLinksFromRouteTable: done parsing router node with ID {} IP address {} and {} router interfaces", curNodeId, str(curIpAddr), curNode.getRouteInterfaces().size());
         }
 
-        if (m_routerNodes.size() > 0) {
+        if (routerNodes.size() > 0) {
             LOG.info("getLinksFromRouteTable: done finding non-ethernet links on Router nodes");
         }
 
     }
     
-    private void getLinksFromCdp() {
+    private void getLinksFromCdp(Collection<LinkableNode> linkableNodes) {
         LOG.info("getLinksFromCdp: adding links using Cisco Discovery Protocol");
-
-        LOG.info("getLinksFromCdp: found # {} nodes using Cisco Discovery Protocol", m_cdpNodes.size());
+        Map<String,LinkableNode> cdpNodes = new HashMap<String,LinkableNode>();
+        for (LinkableNode linkableNode: linkableNodes) {
+            if (linkableNode.hasCdpInterfaces()) {
+                LOG.debug("getLinksFromCdp: adding to CDP node list: node with nodeid/#cdpinterfaces {}/#{}", linkableNode.getNodeId(),linkableNode.getCdpInterfaces().size());
+                cdpNodes.put(linkableNode.getCdpDeviceId(),linkableNode);
+            }
+        }
+        LOG.info("getLinksFromCdp: found # {} nodes using Cisco Discovery Protocol", cdpNodes.size());
 
         LOG.info("getLinksFromCdp: founding Cisco Discovery Protocol links between Cdp nodes");
-        for (LinkableNode linknode1: m_cdpNodes.values()) {
+        for (LinkableNode linknode1: cdpNodes.values()) {
             LOG.info("getLinksFromCdp: parsing cdp device {} with cdpDeviceId {} using Cisco Discovery Protocol",linknode1.getNodeId(), linknode1.getCdpDeviceId());
             for (CdpInterface cdpiface1: linknode1.getCdpInterfaces()) {
                 if (cdpiface1 == null) {
@@ -636,7 +572,7 @@ public final class DiscoveryLink implements ReadyRunnable {
                 }
                 LOG.info("getLinksFromCdp: parsing cdpInterface {} ", cdpiface1);
                 if (cdpiface1.getCdpTargetDeviceId() != null) {
-                    LinkableNode linknode2 = m_cdpNodes.get(cdpiface1.getCdpTargetDeviceId());
+                    LinkableNode linknode2 = cdpNodes.get(cdpiface1.getCdpTargetDeviceId());
                     if (linknode2 == null) {
                         LOG.info("getLinksFromCdp: no cdpdevice found for cdpDeviceId {} ", cdpiface1.getCdpTargetDeviceId());
                         continue;
@@ -681,8 +617,15 @@ public final class DiscoveryLink implements ReadyRunnable {
     // If node1 has a isis IS adj entry for node2
     // then node2 mast have an ospf nbr entry for node1
     // the parent node is that with nodeid1 < nodeid2
-    private void getLinksFromIsis() {
+    private void getLinksFromIsis(Collection<LinkableNode> linkableNodes) {
         LOG.info("getLinksFromIsis: adding links using ISO IS-IS Routing Protocol");
+        List<LinkableNode> m_isisNodes = new ArrayList<LinkableNode>();
+        for (LinkableNode linkableNode: linkableNodes) {
+        if (linkableNode.getIsisSysId() != null) {
+                LOG.debug("getLinksFromIsis: adding to isis node list: node with nodeid/isisSysId/#isisinterface {}/{}/#{}", linkableNode.getNodeId(),linkableNode.getIsisSysId(),linkableNode.getIsisInterfaces().size());
+                m_isisNodes.add(linkableNode);
+            }
+        }
         int i = 0;
         for (LinkableNode linknode1 : m_isisNodes) {
             for (LinkableNode linknode2 : m_isisNodes) {
@@ -724,11 +667,18 @@ public final class DiscoveryLink implements ReadyRunnable {
     // If node1 has a ospf nbr entry for node2
     // then node2 mast have an ospf nbr entry for node1
     // the parent node is that with nodeid1 < nodeid2
-    private void getLinksFromOspf() {
+    private void getLinksFromOspf(Collection<LinkableNode> linkableNodes) {
         LOG.info("getLinksFromOspf: adding links using Open Short Path First Protocol");
+        List<LinkableNode> ospfNodes = new ArrayList<LinkableNode>();
+        for (LinkableNode linkableNode: linkableNodes) {
+            if (linkableNode.getOspfRouterId() != null && linkableNode.getOspfinterfaces() != null ) {
+                LOG.debug("getLinksFromOspf: adding to ospf node list: node with nodeid/ospfrouterid/#ospfinterface {}/{}/#{}", linkableNode.getNodeId(),str(linkableNode.getOspfRouterId()),linkableNode.getOspfinterfaces().size());
+                ospfNodes.add(linkableNode);
+            }   
+        }
         int i = 0;
-        for (LinkableNode linknode1 : m_ospfNodes) {
-            for (LinkableNode linknode2 : m_ospfNodes) {
+        for (LinkableNode linknode1 : ospfNodes) {
+            for (LinkableNode linknode2 : ospfNodes) {
                 if (linknode1.getNodeId() >= linknode2.getNodeId())
                     continue;
                 for (NodeToNodeLink ospfLink : getOspfLink(linknode1,
@@ -780,12 +730,20 @@ public final class DiscoveryLink implements ReadyRunnable {
     // If node1 has a lldp rem entry for node2
     // then node2 mast have an lldp rem entry for node1
     // the parent node is that with nodeid1 < nodeid2
-    private void getLinksFromLldp() {
-        LOG.info("getLinkdFromLldp: adding links using Layer Link Discovery Protocol");
+    private void getLinksFromLldp(Collection<LinkableNode> linkableNodes) {
+        LOG.info("getLinksFromLldp: adding links using Layer Link Discovery Protocol");
+        List<LinkableNode> lldpNodes = new ArrayList<LinkableNode>();
+        for (LinkableNode linkableNode: linkableNodes) {
+            if (linkableNode.getLldpChassisId() != null
+                    && linkableNode.getLldpChassisIdSubtype() != null) {
+                LOG.debug("getLinksFromLldp: adding to lldp node list: node with nodeid/sysname/chassisid {}/{}/{}", linkableNode.getNodeId(),linkableNode.getLldpSysname(),linkableNode.getLldpChassisId());
+                lldpNodes.add(linkableNode);
+            }
+        }
         int i = 0;
-        for (LinkableNode linknode1 : m_lldpNodes) {
+        for (LinkableNode linknode1 : lldpNodes) {
             for (LldpRemInterface lldpremiface : linknode1.getLldpRemInterfaces()) {
-                LOG.debug("run: found LLDP interface {}", lldpremiface.toString());
+                LOG.debug("getLinksFromLldp: found LLDP interface {}", lldpremiface.toString());
                 NodeToNodeLink link = new NodeToNodeLink(
                                                          lldpremiface.getLldpRemNodeid(),
                                                          lldpremiface.getLldpRemIfIndex(),DiscoveryProtocol.lldp);
@@ -796,35 +754,11 @@ public final class DiscoveryLink implements ReadyRunnable {
             }
         }
 
-        LOG.info("getLinkdFromLldp: done LLDP. Found links # {}.", i);
+        LOG.info("getLinksFromLldp: done LLDP. Found links # {}.", i);
 
     }
 
-    /**
-     * @param nodeid
-     * @return LinkableSnmpNode or null if not found
-     */
-    boolean isBridgeNode(int nodeid) {
-        for (final LinkableNode curNode : m_bridgeNodes.values()) {
-            if (nodeid == curNode.getNodeId())
-                return true;
-        }
-        return false;
-    }
-
-    /**
-     * @param nodeid
-     * @return true if found
-     */
-    boolean isRouterNode(int nodeid) {
-        for (final LinkableNode curNode : m_routerNodes) {
-            if (nodeid == curNode.getNodeId())
-                return true;
-        }
-        return false;
-    }
-
-    private boolean isNearestBridgeLink(LinkableNode bridge1, int bp1,
+    private boolean isNearestBridgeLink(Collection<LinkableNode> linkableNodes,LinkableNode bridge1, int bp1,
             LinkableNode bridge2, int bp2) {
 
         LOG.debug("isNearestBridgeLink: bridge1/port1 {}/{} bridge2/port2 {}/{}", bridge1.getNodeId(), bp1, bridge2.getNodeId(), bp2);
@@ -855,7 +789,7 @@ public final class DiscoveryLink implements ReadyRunnable {
             // then no identifier of bridge one no identifier of bridge 2
             // bridge 2 contains
             if (macsOnBridge2.contains(curMacOnBridge1)
-                    && isMacIdentifierOfBridgeNode(curMacOnBridge1)) {
+                    && isMacIdentifierOfBridgeNode(linkableNodes,curMacOnBridge1)) {
                 LOG.debug("isNearestBridgeLink: mac address {} is bridge identifier. Other bridge found. Return false", curMacOnBridge1);
                 return false;
             }
@@ -888,27 +822,27 @@ public final class DiscoveryLink implements ReadyRunnable {
         return macsOnLink;
     }
 
-    private boolean isMacIdentifierOfBridgeNode(String macAddress) {
-        for (final LinkableNode curNode : m_bridgeNodes.values()) {
+    private boolean isMacIdentifierOfBridgeNode(Collection<LinkableNode> linkableNodes, String macAddress) {
+        for (final LinkableNode curNode : linkableNodes) {
             if (curNode.isBridgeIdentifier(macAddress))
                 return true;
         }
         return false;
     }
 
-    private LinkableNode getNodeFromMacIdentifierOfBridgeNode(
+    private LinkableNode getNodeFromMacIdentifierOfBridgeNode(Collection<LinkableNode> linkableNodes,
             final String macAddress) {
-        for (final LinkableNode curNode : m_bridgeNodes.values()) {
+        for (final LinkableNode curNode : linkableNodes) {
             if (curNode.isMacIdentifier(macAddress))
                 return curNode;
         }
         return null;
     }
 
-    private List<LinkableNode> getBridgesFromMacs(final Set<String> macs) {
+    private List<LinkableNode> getBridgesFromMacs(Collection<LinkableNode> linkableNodes,final Set<String> macs) {
         List<LinkableNode> bridges = new ArrayList<LinkableNode>();
         for (final String mac: macs) {
-            for (final LinkableNode curNode : m_bridgeNodes.values()) {
+            for (final LinkableNode curNode : linkableNodes) {
                 if (curNode.hasMacAddress(mac)) 
                     bridges.add(curNode);
                 else {
@@ -1152,17 +1086,17 @@ public final class DiscoveryLink implements ReadyRunnable {
         m_links.add(nnlink);
     }
 
-    private void addLinks(Set<String> macs, int nodeid, int ifindex, DiscoveryProtocol proto) {
+    private List<String> addLinks(List<String> macParsed, Set<String> macs, int nodeid, int ifindex, DiscoveryProtocol proto) {
         if (macs == null || macs.isEmpty()) {
             LOG.debug("addLinks: MAC address list on link is empty.");
         } else {
             for (String curMacAddress : macs) {
-                if (m_macsParsed.contains(curMacAddress)) {
+                if (macParsed.contains(curMacAddress)) {
                     LOG.warn("addLinks: MAC address {} just found on other bridge port! Skipping...", curMacAddress);
                     continue;
                 }
 
-                if (macsExcluded.contains(curMacAddress)) {
+                if ((curMacAddress.indexOf("00000c07ac") == 0) || (curMacAddress.indexOf("00000c9ff") == 0)) {
                     LOG.warn("addLinks: MAC address {} is excluded from discovery package! Skipping...", curMacAddress);
                     continue;
                 }
@@ -1175,9 +1109,10 @@ public final class DiscoveryLink implements ReadyRunnable {
                         addNodetoNodeLink(lNode);
                     }
                 }
-                m_macsParsed.add(curMacAddress);
+                macParsed.add(curMacAddress);
             }
         }
+        return macParsed;
     }
 
     /** {@inheritDoc} */

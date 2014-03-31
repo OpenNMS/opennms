@@ -37,7 +37,6 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.model.DataLinkInterface;
-import org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol;
 import org.opennms.netmgt.model.OnmsNode;
 
 public class Nms003Test extends Nms003NetworkBuilder {
@@ -77,6 +76,7 @@ public class Nms003Test extends Nms003NetworkBuilder {
         example1.setSaveStpInterfaceTable(false);
         example1.setSaveStpNodeTable(false);
         example1.setUseIsisDiscovery(false);
+        example1.setUseWifiDiscovery(false);
 
         final OnmsNode switch1 = m_nodeDao.findByForeignId("linkd", SWITCH1_NAME);
         final OnmsNode switch2 = m_nodeDao.findByForeignId("linkd", SWITCH2_NAME);
@@ -98,7 +98,7 @@ public class Nms003Test extends Nms003NetworkBuilder {
         assertEquals(2,m_dataLinkInterfaceDao.countAll());
         final List<DataLinkInterface> datalinkinterfaces = m_dataLinkInterfaceDao.findAll();
 
-        int start=getStartPoint(datalinkinterfaces);
+//        int start=getStartPoint(datalinkinterfaces);
 
         for (final DataLinkInterface datalinkinterface: datalinkinterfaces) {
             printLink(datalinkinterface);
