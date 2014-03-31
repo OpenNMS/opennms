@@ -411,12 +411,12 @@ public final class DiscoveryLink implements ReadyRunnable {
                     addNodetoNodeLink(lk);
                 }
             }
-            LOG.info("getBackBoneLinksFromBridges: done parsing bridge with nodeid {} and ip address {} with {} VLANs", curNodeId, str(cupIpAddr), curNode.getStpInterfaces().size());
+            LOG.info("getLinksFromBridge: done parsing bridge with nodeid {} and ip address {} with {} VLANs", curNodeId, str(cupIpAddr), curNode.getStpInterfaces().size());
         }
 
         LOG.info("getLinksFromBridge: done finding backbone ethernet links among bridge nodes using Spanning Tree Protocol");
 
-        LOG.info("getLinksFromBridge: trying to find links using MAC Address Forwarding Table");
+        LOG.info("getLinksFromBridge: trying to find links using Bridge Forwarding Table");
 
         for (final LinkableNode curNode : bridgeNodes.values()) {
             final int curNodeId = curNode.getNodeId();
@@ -513,7 +513,7 @@ public final class DiscoveryLink implements ReadyRunnable {
             LOG.info("getLinksFromBridge: done parsing bridge node with ID {}", curNodeId);
         }
 
-        LOG.info("getLinksFromBridges: done finding links using MAC Address Forwarding Table");
+        LOG.info("getLinksFromBridge: done finding links using Bridge Forwarding Table");
 
     }
 
