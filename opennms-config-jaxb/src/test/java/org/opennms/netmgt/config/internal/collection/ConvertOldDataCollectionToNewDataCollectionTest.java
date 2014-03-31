@@ -31,7 +31,7 @@ public class ConvertOldDataCollectionToNewDataCollectionTest {
         
         final String expected = "<datacollection-config>\n" + 
                 "    <snmp-collection name=\"default\">\n" + 
-                "        <datacollection-group name=\"all\">\n" +
+                "        <datacollection-group name=\"default-all\">\n" +
                 "            <resourceType name=\"ifIndex\" label=\"Interfaces (MIB-2 ifTable)\">\n" + 
                 "                <resourceName><template>${ifDescr}-${ifPhysAddr}</template></resourceName>\n" + 
                 "                <resourceLabel><template>${ifDescr}-${ifPhysAddr}</template></resourceLabel>\n" + 

@@ -5,7 +5,7 @@
     <include-collection dataCollectionGroup="Asterisk"/>
     <include-collection dataCollectionGroup="Cisco"/>
 
-    <datacollection-group name="all">
+    <datacollection-group name="default-all">
 
       <resourceType name="ifIndex" label="Interfaces (MIB-2 ifTable)">
         <resourceName><template>${ifDescr}-${ifPhysAddr}</template></resourceName>
