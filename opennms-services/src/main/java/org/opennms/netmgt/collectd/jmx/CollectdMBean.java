@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,4 +37,38 @@ import org.opennms.netmgt.daemon.BaseOnmsMBean;
  * @version $Id: $
  */
 public interface CollectdMBean extends BaseOnmsMBean {
+    /**
+     * @return The number of currently active collection threads
+     */
+    public long getActiveThreads();
+
+    /**
+     * @return The active number of collection threads
+     */
+    public long getNumPoolThreads();
+
+    /**
+     * @return The maximum number of collection threads
+     */
+    public long getMaxPoolThreads();
+
+    /**
+     * @return The peak number of collection threads in use.
+     */
+    public long getPeakPoolThreads();
+
+    /**
+     * @return The cumulative number of collection tasks scheduled since collector startup
+     */
+    public long getTasksTotal();
+
+    /**
+     * @return The cumulative number of collection tasks completed since collector startup
+     */
+    public long getTasksCompleted();
+
+    /**
+     * @return The ratio of completed to scheduled collection tasks since collector startup
+     */
+    public double getTaskCompletionRatio();
 }

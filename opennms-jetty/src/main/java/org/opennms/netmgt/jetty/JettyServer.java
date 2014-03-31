@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -52,7 +52,7 @@ public class JettyServer extends AbstractServiceDaemon {
     int m_port = 8080;
 
     private Server m_server;
-    
+        
     /**
      * <p>Constructor for JettyServer.</p>
      */
@@ -70,6 +70,7 @@ public class JettyServer extends AbstractServiceDaemon {
 
         m_server = new Server();
         Connector connector = new SelectChannelConnector();
+        connector.setStatsOn(true);
         Integer port = Integer.getInteger("org.opennms.netmgt.jetty.port", m_port);
         connector.setPort(port);
 
@@ -88,6 +89,7 @@ public class JettyServer extends AbstractServiceDaemon {
         Integer ajp_port = Integer.getInteger("org.opennms.netmgt.jetty.ajp-port");
         if (ajp_port != null) {
             Ajp13SocketConnector ajpConnector = new Ajp13SocketConnector();
+            ajpConnector.setStatsOn(true);
             ajpConnector.setPort(ajp_port);
             // Apache AJP connector freaks out with anything larger
             ajpConnector.setRequestHeaderSize(8096);
@@ -109,9 +111,10 @@ public class JettyServer extends AbstractServiceDaemon {
                 contextFactory.setCertAlias(certificateAlias);
             }
 
-        	excludeCipherSuites(contextFactory, https_port);
+            excludeCipherSuites(contextFactory, https_port);
 
             SslSocketConnector sslConnector = new SslSocketConnector(contextFactory);
+            sslConnector.setStatsOn(true);
             sslConnector.setPort(https_port);
 
         	String httpsHost = System.getProperty("org.opennms.netmgt.jetty.https-host");
@@ -120,7 +123,7 @@ public class JettyServer extends AbstractServiceDaemon {
     		}
     		m_server.addConnector(sslConnector);
         }
-        
+                
         HandlerCollection handlers = new HandlerCollection();
 
         if (webappsDir.exists()) {
@@ -227,4 +230,64 @@ public class JettyServer extends AbstractServiceDaemon {
         }
     }
     
+    public long getHttpsConnectionsTotal() {
+        long retval = 0;
+        for (Connector conn : m_server.getConnectors()) {
+            if (conn instanceof SslSocketConnector) {
+                retval += conn.getConnections();
+            }
+        }
+        return retval;
+    }
+    
+    public long getHttpsConnectionsOpen() {
+        long retval = 0;
+        for (Connector conn : m_server.getConnectors()) {
+            if (conn instanceof SslSocketConnector) {
+                retval += conn.getConnectionsOpen();
+            }
+        }
+        return retval;
+    }
+
+    public long getHttpsConnectionsOpenMax() {
+        long retval = 0;
+        for (Connector conn : m_server.getConnectors()) {
+            if (conn instanceof SslSocketConnector) {
+                retval += conn.getConnectionsOpenMax();
+            }
+        }
+        return retval;
+    }
+    
+    public long getHttpConnectionsTotal() {
+        long retval = 0;
+        for (Connector conn : m_server.getConnectors()) {
+            if (conn instanceof SelectChannelConnector) {
+                retval += conn.getConnections();
+            }
+        }
+        return retval;
+    }
+    
+    public long getHttpConnectionsOpen() {
+        long retval = 0;
+        for (Connector conn : m_server.getConnectors()) {
+            if (conn instanceof SelectChannelConnector) {
+                retval += conn.getConnectionsOpen();
+            }
+        }
+        return retval;
+    }
+    
+    public long getHttpConnectionsOpenMax() {
+        long retval = 0;
+        for (Connector conn : m_server.getConnectors()) {
+            if (conn instanceof SelectChannelConnector) {
+                retval += conn.getConnectionsOpenMax();
+            }
+        }
+        return retval;
+    }
+
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -166,8 +166,8 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
         }
 
         try {
-        	InetAddress address = getInetAddress();
-    		LogUtils.infof(this, "Listening on %s:%d", address == null ? "[all interfaces]" : InetAddressUtils.str(address), m_snmpTrapPort);
+            InetAddress address = getInetAddress();
+            LogUtils.infof(this, "Listening on %s:%d", address == null ? "[all interfaces]" : InetAddressUtils.str(address), m_snmpTrapPort);
             SnmpUtils.registerForTraps(this, this, address, m_snmpTrapPort, m_snmpV3Users);
             m_registeredForTraps = true;
 
@@ -344,5 +344,25 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
      */
     public void setBacklogQ(ExecutorService backlogQ) {
         m_backlogQ = backlogQ;
+    }
+    
+    public long getV1TrapsReceived() {
+        return TrapQueueProcessor.getV1TrapsReceived();
+    }
+    
+    public long getV2cTrapsReceived() {
+        return TrapQueueProcessor.getV2cTrapsReceived();
+    }
+    
+    public long getV3TrapsReceived() {
+        return TrapQueueProcessor.getV3TrapsReceived();
+    }
+    
+    public long getTrapsDiscarded() {
+        return TrapQueueProcessor.getTrapsDiscarded();
+    }
+    
+    public long getTrapsErrored() {
+        return TrapQueueProcessor.getTrapsErrored();
     }
 }
