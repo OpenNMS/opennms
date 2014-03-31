@@ -181,7 +181,9 @@ public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, Filt
     private void addTileLayer() {
         LOG.info("NodeMapWidget.addTileLayer()");
         final String attribution = "Map data &copy; <a tabindex=\"-1\" href=\"http://openstreetmap.org\">OpenStreetMap</a> contributors, <a tabindex=\"-1\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Tiles &copy; <a tabindex=\"-1\" href=\"http://www.mapquest.com/\" target=\"_blank\">MapQuest</a> <img src=\"http://developer.mapquest.com/content/osm/mq_logo.png\" />";
-        final String url = "http://otile{s}.mqcdn.com/tiles/1.0.0/{type}/{z}/{x}/{y}.png";
+
+		String tileServer = System.getProperty("opennms.tile.server", "http://otile{s}.mqcdn.com");
+		final String url = tileServer + "/tiles/1.0.0/{type}/{z}/{x}/{y}.png";
         final Options tileOptions = new Options();
         tileOptions.setProperty("attribution", attribution);
         tileOptions.setProperty("subdomains", "1234");
