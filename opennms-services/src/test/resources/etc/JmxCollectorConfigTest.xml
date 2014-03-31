@@ -175,7 +175,7 @@
                 </comp-attrib>
             </mbean>
             <mbean name="JVM MemoryPools" objectname="java.lang:type=MemoryPool,name=*" resource-type="jvm-memory-pool" keyfield="name" key-alias="name">
-                <attrib name="CollectionUsageThreshold" alias="PermCollUseThresh" type="gauge"/>
+                <!-- <attrib name="CollectionUsageThreshold" alias="PermCollUseThresh" type="gauge"/> -->
                 <attrib name="CollectionUsageThresholdCount" alias="PermCollUseThrshCnt" type="gauge"/>
                 <comp-attrib name="Usage" type="Composite" alias="PermUsage">
                     <comp-member name="init" type="gauge" alias="PermUsage.init"/>

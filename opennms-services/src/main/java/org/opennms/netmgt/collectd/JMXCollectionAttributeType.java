@@ -30,6 +30,7 @@ package org.opennms.netmgt.collectd;
 
 import java.io.File;
 import java.util.StringTokenizer;
+import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionAttributeType;
@@ -84,7 +85,7 @@ public class JMXCollectionAttributeType implements CollectionAttributeType {
         LOG.debug("key: {}, substitutions: {}", key, substitutions);
         String name = m_dataSource.getName();
         if (key != null && !key.equals("")) {
-            name = fixKey(key, m_dataSource.getName(), substitutions) + "_" + name;
+            name = AlphaNumeric.parseAndReplace(fixKey(key, m_dataSource.getName(), substitutions) + "_" + name, '_');
         }
         return name;
     }

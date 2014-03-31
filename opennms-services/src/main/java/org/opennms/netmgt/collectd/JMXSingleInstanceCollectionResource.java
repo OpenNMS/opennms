@@ -28,10 +28,16 @@
 
 package org.opennms.netmgt.collectd;
 
+import javax.management.ObjectName;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * The Class JMXSingleInstanceCollectionResource.
  */
 public class JMXSingleInstanceCollectionResource extends JMXCollectionResource {
+
+    private static final Logger LOG = LoggerFactory.getLogger(JMXSingleInstanceCollectionResource.class);
 
     /** The node id. */
     private final int m_nodeId;
@@ -51,6 +57,7 @@ public class JMXSingleInstanceCollectionResource extends JMXCollectionResource {
      */
     @Override
     public String getInstance() {
+        LOG.debug("getInstance: null");
         return null; //For node type resources, use the default instance
     }
 
@@ -59,6 +66,7 @@ public class JMXSingleInstanceCollectionResource extends JMXCollectionResource {
      */
     @Override
     public String getResourceTypeName() {
+        LOG.debug("getResourceTypeName: node");
         return "node"; //All node resources for JMX; nothing of interface or "indexed resource" type
     }
 
@@ -68,5 +76,10 @@ public class JMXSingleInstanceCollectionResource extends JMXCollectionResource {
     @Override
     public String toString() {
         return "node["+m_nodeId+"].nodeSnmp[]";
+    }
+
+    @Override
+    public ObjectName getObjectName() {
+        return null;
     }
 }

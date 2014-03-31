@@ -42,13 +42,22 @@ import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import org.junit.After;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.TestContextAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collectd.jmxhelper.JmxTest;
@@ -74,7 +83,6 @@ import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.JUnitConfigurationEnvironment;
-import org.opennms.core.test.TestContextAware;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -157,15 +165,19 @@ public class JMXCollectorTest implements TestContextAware, InitializingBean {
         return serviceType;
     }
 
+    @Rule
+    public TestName m_testName = new TestName();
+
     @Before
     public void setUp() throws Exception {
+        logger.debug("\n\n<<<< start of test: {} >>>>\n", m_testName.getMethodName());
         jmxNodeInfo = new JMXNodeInfo(1);
         platformMBeanServer = ManagementFactory.getPlatformMBeanServer();
         ObjectName objectName = new ObjectName("org.opennms.netmgt.collectd.jmxhelper:type=JmxTest");
         JmxTestMBean testMBean = new JmxTest();
         platformMBeanServer.registerMBean(testMBean, objectName);
 
-        if (m_nodeDao.findByLabel("testnode").size() == 0) {
+        if (m_nodeDao.findByLabel("testnode").isEmpty()) {
             NetworkBuilder builder = new NetworkBuilder(m_distPoller);
             builder.addNode("testnode");
             builder.addInterface(InetAddressUtils.normalize(m_testHostName)).setIsManaged("M").setIsSnmpPrimary("P");
@@ -189,6 +201,7 @@ public class JMXCollectorTest implements TestContextAware, InitializingBean {
         m_collectionSpecification = CollectorTestUtils.createCollectionSpec("JMX", m_collector, "default");
         m_collectionAgent = DefaultCollectionAgent.create(iface.getId(), m_ipInterfaceDao, m_transactionManager);
         m_collectionAgent.setAttribute(JMXCollector.NODE_INFO_KEY, jmxNodeInfo);
+
     }
 
     @After
@@ -198,6 +211,7 @@ public class JMXCollectorTest implements TestContextAware, InitializingBean {
             platformMBeanServer.unregisterMBean(new ObjectName("org.opennms.netmgt.collectd.jmxhelper:type=JmxTest"));
             platformMBeanServer = null;
         }
+        logger.debug("\n\n<<<< end of test: {} >>>>\n", m_testName.getMethodName());
     }
 
     /**
@@ -238,7 +252,7 @@ public class JMXCollectorTest implements TestContextAware, InitializingBean {
     public void collectSingleMbeanWithSingleAttribute() {
         String collectionName = "collectSingleMbeanWithSingleAttribute";
         jmxNodeInfo.setMBeans(JMXDataCollectionConfigFactory.getInstance().getMBeanInfo(collectionName));
-        jmxNodeInfo.setDsMap(generateDataSourceMap(JMXDataCollectionConfigFactory.getInstance().getAttributeMap(collectionName, "", "")));
+        jmxNodeInfo.setDsMap(generateDataSourceMap(collectionName, JMXDataCollectionConfigFactory.getInstance().getAttributeMap(collectionName, "", "")));
 
         //start collection
         CollectionSet collectionSet = m_collector.collect(m_collectionAgent, null, null);
@@ -265,7 +279,7 @@ public class JMXCollectorTest implements TestContextAware, InitializingBean {
     public void collectSingleMbeanWithOneNotAvailableAttribute() {
         String collectionName = "collectSingleMbeanWithOneNotAvailableAttribute";
         jmxNodeInfo.setMBeans(JMXDataCollectionConfigFactory.getInstance().getMBeanInfo(collectionName));
-        jmxNodeInfo.setDsMap(generateDataSourceMap(JMXDataCollectionConfigFactory.getInstance().getAttributeMap(collectionName, "", "")));
+        jmxNodeInfo.setDsMap(generateDataSourceMap(collectionName, JMXDataCollectionConfigFactory.getInstance().getAttributeMap(collectionName, "", "")));
 
         //start collection
         CollectionSet collectionSet = m_collector.collect(m_collectionAgent, null, null);
@@ -288,7 +302,7 @@ public class JMXCollectorTest implements TestContextAware, InitializingBean {
     public void collectSingleMbeanWithOneNotAvailableAttributesAndOneAvailableAttributes() {
         String collectionName = "collectSingleMbeanWithOneNotAvailableAttributesAndOneAvailableAttributes";
         jmxNodeInfo.setMBeans(JMXDataCollectionConfigFactory.getInstance().getMBeanInfo(collectionName));
-        jmxNodeInfo.setDsMap(generateDataSourceMap(JMXDataCollectionConfigFactory.getInstance().getAttributeMap(collectionName, "", "")));
+        jmxNodeInfo.setDsMap(generateDataSourceMap(collectionName, JMXDataCollectionConfigFactory.getInstance().getAttributeMap(collectionName, "", "")));
 
         //start collection
         CollectionSet collectionSet = m_collector.collect(m_collectionAgent, null, null);
@@ -311,7 +325,7 @@ public class JMXCollectorTest implements TestContextAware, InitializingBean {
     public void collectSingleMbeanWithManyNotAvailableAttributesAndManyAvailableAttributes() {
         String collectionName = "collectSingleMbeanWithManyNotAvailableAttributesAndManyAvailableAttributes";
         jmxNodeInfo.setMBeans(JMXDataCollectionConfigFactory.getInstance().getMBeanInfo(collectionName));
-        jmxNodeInfo.setDsMap(generateDataSourceMap(JMXDataCollectionConfigFactory.getInstance().getAttributeMap(collectionName, "", "")));
+        jmxNodeInfo.setDsMap(generateDataSourceMap(collectionName, JMXDataCollectionConfigFactory.getInstance().getAttributeMap(collectionName, "", "")));
 
         //start collection
         CollectionSet collectionSet = m_collector.collect(m_collectionAgent, null, null);
@@ -333,8 +347,9 @@ public class JMXCollectorTest implements TestContextAware, InitializingBean {
     )
     public void collectSingleMbeanWithOneCompAttribWithAllItsCompMembers() {
         String collectionName = "collectSingleMbeanWithOneCompAttribWithAllItsCompMembers";
+        logger.debug("{} starting...", collectionName);
         jmxNodeInfo.setMBeans(JMXDataCollectionConfigFactory.getInstance().getMBeanInfo(collectionName));
-        jmxNodeInfo.setDsMap(generateDataSourceMap(JMXDataCollectionConfigFactory.getInstance().getAttributeMap(collectionName, "", "")));
+        jmxNodeInfo.setDsMap(generateDataSourceMap(collectionName, JMXDataCollectionConfigFactory.getInstance().getAttributeMap(collectionName, "", "")));
         //printDataSourceMap(jmxNodeInfo.getDsMap());
 
         //start collection
@@ -361,7 +376,7 @@ public class JMXCollectorTest implements TestContextAware, InitializingBean {
     public void collectSingleMbeanWithOneCompAttribWithOneIgnoredCompMembers() {
         String collectionName = "collectSingleMbeanWithOneCompAttribWithOneIgnoredCompMembers";
         jmxNodeInfo.setMBeans(JMXDataCollectionConfigFactory.getInstance().getMBeanInfo(collectionName));
-        jmxNodeInfo.setDsMap(generateDataSourceMap(JMXDataCollectionConfigFactory.getInstance().getAttributeMap(collectionName, "", "")));
+        jmxNodeInfo.setDsMap(generateDataSourceMap(collectionName, JMXDataCollectionConfigFactory.getInstance().getAttributeMap(collectionName, "", "")));
 
         //start collection
         CollectionSet collectionSet = m_collector.collect(m_collectionAgent, null, null);
@@ -453,8 +468,17 @@ public class JMXCollectorTest implements TestContextAware, InitializingBean {
     }
 
     @Test
-    @JUnitCollector(datacollectionConfig = "/org/opennms/netmgt/config/jmx-datacollection-test-persist.xml", datacollectionType = "jsr160",
-      anticipateRrds = {"1/A", "1/B", "1/C", "1/D"}, anticipateFiles = {"1/strings.properties"})
+    @JUnitCollector(
+      datacollectionConfig = "/org/opennms/netmgt/config/jmx-datacollection-test-persist.xml",
+      datacollectionType = "jsr160",
+      anticipateRrds = {"1/A", "1/B", "1/C", "1/D",
+          "1/jvm-memory-pool/Code_Cache/Usage",
+          "1/jvm-memory-pool/PS_Eden_Space/Usage",
+          "1/jvm-memory-pool/PS_Old_Gen/Usage",
+          "1/jvm-memory-pool/PS_Perm_Gen/Usage",
+          "1/jvm-memory-pool/PS_Survivor_Space/Usage"},
+      anticipateFiles = {"1/strings.properties"}
+    )
     public final void testPersistJmxStats() throws Exception {
         File snmpRrdDirectory = (File) m_context.getAttribute("rrdDirectory");
         FileAnticipator anticipator = (FileAnticipator) m_context.getAttribute("fileAnticipator");
@@ -495,11 +519,12 @@ public class JMXCollectorTest implements TestContextAware, InitializingBean {
         //assertEquals("force-fail", true, false);
     }
 
-    private Map<String, JMXDataSource> generateDataSourceMap(Map<String, List<Attrib>> attributeMap) {
-        return JMXCollector.buildDataSourceList("foo", attributeMap);
+    private Map<String, JMXDataSource> generateDataSourceMap(String collectionName, Map<String, List<Attrib>> attributeMap) {
+        return JMXCollector.buildDataSourceList(collectionName, attributeMap);
     }
 
     private void printDebugAttributeGroup(AttributeGroup group) {
+        logger.debug("<<<<<< printDebugAttributeGroup >>>>>>");
         for (CollectionAttribute collectionAttribute : group.getAttributes()) {
             logger.debug("Attribute Type   '{}'", collectionAttribute.getAttributeType());
             logger.debug("Attribute Name   '{}'", collectionAttribute.getName());

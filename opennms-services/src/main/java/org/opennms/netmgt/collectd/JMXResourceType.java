@@ -40,10 +40,10 @@ import org.springframework.orm.ObjectRetrievalFailureException;
 public class JMXResourceType  {
 
     /** The resource type name. */
-    private String m_resourceType;
+    private final String m_resourceType;
 
     /** The collection agent. */
-    private CollectionAgent m_agent;
+    private final CollectionAgent m_agent;
 
     /** The persistence selector strategy. */
     private PersistenceSelectorStrategy m_persistenceSelectorStrategy;

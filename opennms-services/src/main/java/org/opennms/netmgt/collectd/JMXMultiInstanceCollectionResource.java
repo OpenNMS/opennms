@@ -29,32 +29,36 @@
 package org.opennms.netmgt.collectd;
 
 import java.io.File;
-
+import javax.management.ObjectName;
 import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.model.RrdRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Class JMXMultiInstanceCollectionResource.
  */
 public class JMXMultiInstanceCollectionResource extends JMXCollectionResource {
-    /** The collection resource instance. */
-    private final String m_instance;
+
+    private static final Logger LOG = LoggerFactory.getLogger(JMXMultiInstanceCollectionResource.class);
+
     /** The resource label. */
     private String m_resourceLabel;
     /** The collection resource type name. */
     private final JMXResourceType m_resourceType;
+    private final ObjectName m_objectName;
 
     /**
      * Instantiates a new JMX multi instance collection resource.
      *
      * @param agent the agent
-     * @param instance the instance
+     * @param objectName the objectName
      * @param type the type
      */
-    public JMXMultiInstanceCollectionResource(CollectionAgent agent, String instance, JMXResourceType type) {
+    JMXMultiInstanceCollectionResource(CollectionAgent agent, JMXResourceType type, ObjectName objectName) {
         super(agent);
         m_resourceType = type;
-        m_instance = instance;
+        m_objectName = objectName;
     }
 
     /* (non-Javadoc)
@@ -62,7 +66,8 @@ public class JMXMultiInstanceCollectionResource extends JMXCollectionResource {
      */
     @Override
     public String getInstance() {
-        return m_instance;
+        LOG.debug("getInstance: {}", m_objectName.getCanonicalName());
+        return m_objectName.getCanonicalName();
     }
 
     /* (non-Javadoc)
@@ -73,6 +78,7 @@ public class JMXMultiInstanceCollectionResource extends JMXCollectionResource {
         if (m_resourceLabel == null) {
             m_resourceLabel = m_resourceType.getStorageStrategy().getResourceNameFromIndex(this);
         }
+        LOG.debug("getLabel: {}", m_resourceLabel);
         return m_resourceLabel;
     }
 
@@ -83,6 +89,7 @@ public class JMXMultiInstanceCollectionResource extends JMXCollectionResource {
     public File getResourceDir(RrdRepository repository) {
         String resourcePath = m_resourceType.getStorageStrategy().getRelativePathForAttribute(getParent(), getLabel(), null);
         File resourceDir = new File(repository.getRrdBaseDir(), resourcePath);
+        LOG.debug("getResourceDir: {}", resourceDir);
         return resourceDir;
     }
 
@@ -91,6 +98,7 @@ public class JMXMultiInstanceCollectionResource extends JMXCollectionResource {
      */
     @Override
     public String getResourceTypeName() {
+        LOG.debug("getResourceTypeName: {}", m_resourceType.getName());
         return m_resourceType.getName();
     }
 
@@ -108,5 +116,9 @@ public class JMXMultiInstanceCollectionResource extends JMXCollectionResource {
     @Override
     public String toString() {
         return "node[" + m_agent.getNodeId() + "]." + getResourceTypeName() + "[" + getLabel() +"]";
+    }
+
+    public ObjectName getObjectName() {
+        return m_objectName;
     }
 }

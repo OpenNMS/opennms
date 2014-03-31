@@ -35,12 +35,18 @@
         <attrib name="Name" alias="Name" type="string"/>
       </mbean>
       <mbean name="JVM MemoryPools" objectname="java.lang:type=MemoryPool,name=*" resource-type="jvm-memory-pool" keyfield="name" key-alias="name">
-        <attrib name="CollectionUsageThresholdCount" alias="CollUseThrshCnt" type="gauge"/>
+        <!-- <attrib name="CollectionUsageThreshold" alias="CollUseThrshCnt" type="gauge"/> -->
         <comp-attrib name="Usage" type="Composite" alias="Usage">
           <comp-member name="init" type="gauge" alias="init"/>
           <comp-member name="max" type="gauge" alias="max"/>
           <comp-member name="used" type="gauge" alias="used"/>
           <comp-member name="committed" type="gauge" alias="committed"/>
+        </comp-attrib>
+        <comp-attrib name="PeakUsage" type="Composite" alias="PeakUsage">
+          <comp-member name="init" type="gauge" alias="peak-init"/>
+          <comp-member name="max" type="gauge" alias="peak-max"/>
+          <comp-member name="used" type="gauge" alias="peak-used"/>
+          <comp-member name="committed" type="gauge" alias="peak-committed"/>
         </comp-attrib>
       </mbean>
     </mbeans>

@@ -36,6 +36,8 @@ public class JMXStorageStrategy extends IndexStorageStrategy {
     @Override
     public String getResourceNameFromIndex(CollectionResource resource) {
         // Normalize the resource's instance and use it as resource's label
-        return AlphaNumeric.parseAndReplace(resource.getInstance(), '_');
+        String resourceName = AlphaNumeric.parseAndReplace(resource.getInstance(), '_');
+        resourceName = resourceName.replaceAll("_+$", "");
+        return resourceName;
     }
 }

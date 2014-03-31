@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.collectd;
 
+import javax.management.ObjectName;
 import org.opennms.netmgt.config.collector.ServiceParameters;
 
 /**
@@ -64,4 +65,6 @@ public abstract class JMXCollectionResource extends AbstractCollectionResource {
      * @see org.opennms.netmgt.config.collector.CollectionResource#getInstance()
      */
     public abstract String getInstance();
+
+    public abstract ObjectName getObjectName();
 }
