@@ -90,6 +90,7 @@
       </activation>
       <build>
         <plugins>
+          <!--
           <plugin>
             <groupId>com.sun.tools.jxc.maven2</groupId>
             <artifactId>maven-jaxb-schemagen-plugin</artifactId>
@@ -102,13 +103,6 @@
                 <include>org/opennms/netmgt/model/ncs/NCSComponent.java</include>
                 <include>org/opennms/netmgt/model/ncs/package-info.java</include>
               </includes>
-              <!-- 
-              <excludes>
-                <exclude>org/opennms/netmgt/model/ncs/NCSBuilder.java</exclude>
-                <exclude>org/opennms/netmgt/model/ncs/NCSComponentRe.java</exclude>
-                <exclude>org/opennms/netmgt/model/ncs/JAXBMapAdapter.java</exclude>
-              </excludes>
-           -->
               <schemas>
                 <schema>
                   <namespace>http://xmlns.opennms.org/xsd/model/ncs</namespace>
@@ -125,6 +119,7 @@
               </execution>
             </executions>
           </plugin>
+          -->
         </plugins>
       </build>
       <!-- 
