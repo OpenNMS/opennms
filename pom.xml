@@ -497,7 +497,7 @@
                 <pluginExecutionFilter>
                   <groupId>com.sun.tools.jxc.maven2</groupId>
                   <artifactId>maven-jaxb-schemagen-plugin</artifactId>
-                  <versionRange>[1.2,)</versionRange>
+                  <versionRange>[1.2,2.0)</versionRange>
                   <goals>
                     <goal>generate</goal>
                   </goals>
@@ -1177,7 +1177,7 @@
           <plugin>
             <groupId>com.sun.tools.jxc.maven2</groupId>
             <artifactId>maven-jaxb-schemagen-plugin</artifactId>
-            <version>1.2</version>
+            <version>[1.2,2.0)</version>
             <dependencies>
               <dependency>
               <groupId>com.sun</groupId>
