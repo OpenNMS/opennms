@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -1379,7 +1379,12 @@ public class Collectd extends AbstractServiceDaemon implements
         m_scheduler = scheduler;
     }
 
-    private Scheduler getScheduler() {
+    /**
+     * <p>getScheduler</p>
+     *
+     * @param scheduler a {@link org.opennms.netmgt.scheduler.Scheduler} object.
+     */
+    public Scheduler getScheduler() {
         if (m_scheduler == null) {
             createScheduler();
         }

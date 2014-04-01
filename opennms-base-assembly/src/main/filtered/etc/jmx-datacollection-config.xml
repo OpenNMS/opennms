@@ -98,6 +98,14 @@
       <mbean name="OpenNMS Vacuumd" objectname="OpenNMS:Name=Vacuumd">
         <attrib name="NumAutomations" alias="ONMSAutomCount" type="counter"/>
       </mbean>
+      <mbean name="OpenNMS Collectd" objectname="OpenNMS:Name=Collectd">
+        <attrib name="ActiveThreads"  alias="ONMSCollectThrdAct" type="gauge"/>
+        <attrib name="NumPoolThreads"  alias="ONMSCollectPoolThrd" type="gauge"/>
+        <attrib name="MaxPoolThreads"  alias="ONMSCollectPoolMax" type="gauge"/>
+        <attrib name="PeakPoolThreads"  alias="ONMSCollectPoolPeak" type="gauge"/>
+        <attrib name="TasksTotal"     alias="ONMSCollectTasksTot"  type="counter"/>
+        <attrib name="TasksCompleted" alias="ONMSCollectTasksCpt"  type="counter"/>
+      </mbean>
       <mbean name="JVM Memory" objectname="java.lang:type=OperatingSystem">
         <attrib name="FreePhysicalMemorySize" alias="FreeMemory" type="gauge"/>
         <attrib name="TotalPhysicalMemorySize" alias="TotalMemory" type="gauge"/>
