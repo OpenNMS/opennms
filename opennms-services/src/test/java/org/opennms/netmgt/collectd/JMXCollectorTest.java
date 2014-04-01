@@ -506,10 +506,13 @@ public class JMXCollectorTest implements TestContextAware, InitializingBean {
           "1/jvm-memory-pool/PS_Survivor_Space/peak-max",
           "1/jvm-memory-pool/PS_Survivor_Space/peak-used",
           "1/jvm-memory-pool/PS_Survivor_Space/used",},
-      anticipateFiles = {"1/strings.properties", "1/jvm-memory-pool",
-          "1/jvm-memory-pool/Code_Cache", "1/jvm-memory-pool/Code_Cache",
-          "1/jvm-memory-pool/PS_Eden_Space", "1/jvm-memory-pool/PS_Old_Gen",
-          "1/jvm-memory-pool/PS_Perm_Gen", "1/jvm-memory-pool/PS_Survivor_Space"
+      anticipateFiles = {"1/strings.properties",
+          "1/jvm-memory-pool",
+          "1/jvm-memory-pool/Code_Cache",
+          "1/jvm-memory-pool/PS_Eden_Space",
+          "1/jvm-memory-pool/PS_Old_Gen",
+          "1/jvm-memory-pool/PS_Perm_Gen",
+          "1/jvm-memory-pool/PS_Survivor_Space"
       }
     )
     public final void testPersistJmxStats() throws Exception {
