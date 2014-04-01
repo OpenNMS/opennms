@@ -54,6 +54,8 @@ public interface SearchProvider {
 	 */
     String getSearchProviderNamespace();
     
+    
+    
     /**
      * This is the topology provider namespace to which this search provider contributes.
      * 
@@ -61,6 +63,8 @@ public interface SearchProvider {
      * @return returns true if the provider support the <@param namespace>.
      */
     boolean contributesTo(String namespace);
+    
+    
     
     
     /**
@@ -72,23 +76,29 @@ public interface SearchProvider {
      */
     List<SearchResult> query(SearchQuery searchQuery, GraphContainer graphContainer);
     
+    
+    
+    
     /**
-     * This method is called from the UI when the user clicks the "zoom to focus icon.  A reference to 
-     * the OperationContext is provided for the searchProvider's use to alter the behavior of this zoom.
+     * This method is called from the UI when the user wants to add a vertex that is in the current context
+     * to the focus list.
      * 
      * @param searchResult
      * @param operationContext
      */
     void onFocusSearchResult(SearchResult searchResult, OperationContext operationContext);
     
+    
+    
     /**
-     * This method is called when a differnt item in the search result list is clicked in essence "defocusing"
-     * the previously selected "zoom to focus" <SearchResult>
+     * This method is called from the UI when the user wants to remove a vertex that currently in the focus list.
      * 
      * @param searchResult
      * @param operationContext
      */
     void onDefocusSearchResult(SearchResult searchResult, OperationContext operationContext);
+    
+    
     
     /**
      * This method is called by topology app the user is searching to setup prefixes that will only match from 
@@ -110,16 +120,22 @@ public interface SearchProvider {
      */
     Set<VertexRef> getVertexRefsBy(SearchResult searchResult, GraphContainer graphContainer);
     
+    
+    
     /**
-     * Currently, this method is called when the selection is made from the list of <SearchResult> returned by query() method in this API.
-     * A criteria implementation should be added to the graph container.  The criteria responsibility is to determine the <VertexRefs> associated 
-     * with the passed <SearchResult>.
+     * This method is called when the selection is made from the list of <SearchResult> returned by 
+     * a <SearchProvider>query() method of this API.
+     * 
+     * It is the criteria's responsibility is to determine the <VertexRefs> associated 
+     * with the passed <SearchResult> to the <GraphContainer> reference passed to this method.
      * 
      * @param searchResult
      * @param container
      */
     void addVertexHopCriteria(SearchResult searchResult, GraphContainer container);
     
+    
+
     /**
      * When the user requests that the current SearchResult be removed from focus, the search provider should remove the <Criteria> from the <GraphContainer>
      * @param searchResult
@@ -127,14 +143,17 @@ public interface SearchProvider {
      */
     void removeVertexHopCriteria(SearchResult searchResult, GraphContainer container);
     
+    
+    
     /**
      * This method called when the user clicks the focus icon on the <SearchResult>.  No implementation is required unless you want to enhance 
-     * the zoom behavior.
+     * the zoom behavior.  This call will be followed by a call to getVertexRefsBy.
      * 
      * @param searchResult
      * @param graphContainer
      */
     void onCenterSearchResult(SearchResult searchResult, GraphContainer graphContainer);
+
     
     /**
      * This method is called if the <SearchResult> provided by the implementation of this API is flagged as collapsible and the user has clicked the

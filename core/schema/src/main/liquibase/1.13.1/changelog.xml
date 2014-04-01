@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:opennms="http://www.liquibase.org/xml/ns/dbchangelog-ext" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+  <changeSet author="david@opennms.org" id="1.13.1-newLinkdSearchProviderIndexes">
+    <createIndex indexName="node_sysoid_idx" tableName="node" unique="false">
+      <column name="nodesysoid" />
+    </createIndex>
+
+    <createIndex indexName="node_sysdescr_idx" tableName="node" unique="false">
+      <column name="nodesysdescription" />
+    </createIndex>
+
+    <rollback>
+      <dropIndex tableName="node" indexName="node_sysoid_idx" />
+      <dropIndex tableName="node" indexName="node_sysdescr_idx" />
+    </rollback>
+  </changeSet>
+
+</databaseChangeLog>

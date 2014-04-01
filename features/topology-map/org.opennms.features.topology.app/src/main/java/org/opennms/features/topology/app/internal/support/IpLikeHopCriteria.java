@@ -54,7 +54,7 @@ import org.opennms.netmgt.model.OnmsNode;
  */
 public class IpLikeHopCriteria extends VertexHopCriteria implements CollapsibleCriteria {
 
-	public static final String NAMESPACE = "IP";
+	public static final String NAMESPACE = "iplike";
 	private final String m_ipQuery;
 	
 	private boolean m_collapsed = false;
@@ -164,4 +164,5 @@ public class IpLikeHopCriteria extends VertexHopCriteria implements CollapsibleC
 	public Vertex getCollapsedRepresentation() {
 		return m_collapsedVertex;
 	}
+	
 }
