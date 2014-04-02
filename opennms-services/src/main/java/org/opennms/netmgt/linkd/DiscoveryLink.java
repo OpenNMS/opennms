@@ -57,16 +57,96 @@ import org.slf4j.LoggerFactory;
  */
 public final class DiscoveryLink implements ReadyRunnable {
     private class BridgeTopology {
-        public void parseMac(String mac, Integer nodeid, Integer bridgePort) {
-            
+        
+        private List<NodeToNodeLink> bridgelinks = new ArrayList<NodeToNodeLink>();
+        private Map<String,Integer> macToBridgeMap = new HashMap<String, Integer>();
+        
+        public void addBridgeMac(Integer nodeid, Set<String> macs) {
+            for (String mac: macs)
+                macToBridgeMap.put(mac, nodeid);
         }
         
-        public void parseDesignatedBridge(Integer nodeid, Integer bridgePort, Integer designatedNodeid, Integer designatedPort) {
-            
+        public void parseBFTentry(Integer nodeid, Integer bridgePort, Integer ifindex, Set<String> macs) {
+            // Then find the bridges whose MAC addresses are learned on
+            // bridge port
+//            final List<LinkableNode> bridgesOnPort = getBridgesFromMacs(bridgeNodes.values(),macs);
+
+//            if (bridgesOnPort.isEmpty()) {
+//                LOG.debug("getLinksFromBridge: no bridges macs found on port {}. Saving MACs.", curBridgePort);
+//                macParsed = addLinks(macParsed,macs, curNodeId, curIfIndex,DiscoveryProtocol.bridge);
+//                continue;
+//            } 
+            // a bridge MAC address was found on port so you should
+            // analyze what happens
+//            LOG.debug("getLinksFromBridge: bridges macs found on port {}. Searching nearest.", curBridgePort);
+
+            // one among these bridges should be the node more close
+            // to the curnode, curport
+//            for (final LinkableNode endNode : bridgesOnPort) {
+//                final int endNodeid = endNode.getNodeId();
+//                if (curNodeId == endNodeid) {
+//                    LOG.debug("getLinksFromBridge: curnode and target node are the same. Skipping.");
+//                    continue;
+//                }
+//                final int endBridgePort = getBridgePortOnEndBridge(curNode,
+//                                                                   endNode);
+//                // The bridge port should be valid! This control is
+//                // not properly done
+//                if (endBridgePort == -1) {
+//                    LOG.warn("getLinksFromBridge: no valid port found on bridge nodeid {} for node bridge identifiers nodeid {}. Skipping.", endNodeid, curNodeId);
+//                    continue;
+//                }
+
+                // Try to found a new
+//                final boolean isTargetNode = isNearestBridgeLink(bridgeNodes.values(),curNode,
+//                                                                 curBridgePort,
+//                                                                 endNode,
+//                                                                 endBridgePort);
+//                if (!isTargetNode)
+//                    continue;
+
+//                final int endIfindex = endNode.getIfindex(endBridgePort);
+//                if (endIfindex == -1) {
+//                    LOG.warn("getLinksFromBridge: got invalid ifindex on designated bridge port {}", endBridgePort);
+//                    continue;
+//                }
+
+//                LOG.debug("getLinksFromBridge: backbone port found for node {}. Adding backbone bridge port {}", curNodeId, curBridgePort);
+
+//                curNode.addBackBoneBridgePorts(curBridgePort);
+//                bridgeNodes.put(curNodeId, curNode);
+
+//                LOG.debug("getLinksFromBridge: backbone port found for node {}. Adding to backbone bridge port {}", endNodeid, endBridgePort);
+
+//                endNode.addBackBoneBridgePorts(endBridgePort);
+//                bridgeNodes.put(endNodeid, endNode);
+
+                // finding links between two backbone ports
+                // FIXME no criteria....check the rules
+//                macParsed = addLinks(macParsed,getMacsOnBridgeLink(curNode, curBridgePort,
+//                                             endNode, endBridgePort),
+//                                             curNodeId, curIfIndex,DiscoveryProtocol.bridge);
+
+//                final NodeToNodeLink lk = new NodeToNodeLink(
+//                                                             curNodeId,
+//                                                             curIfIndex, DiscoveryProtocol.bridge);
+//                lk.setNodeparentid(endNodeid);
+//                lk.setParentifindex(endIfindex);
+//                LOG.info("getLinksFromBridge: saving bridge link: {}", lk.toString());
+//                addNodetoNodeLink(lk);
+//            }
+    
+        }
+        
+        public void parseDesignatedBridge(Integer nodeid, Integer bridgePort, Integer ifindex, Integer designatednodeid, Integer designatedport, Integer designatedifindex) {
+          final NodeToNodeLink lk = new NodeToNodeLink(nodeid,ifindex,DiscoveryProtocol.bridge);
+          lk.setNodeparentid(designatednodeid);
+          lk.setParentifindex(designatedifindex);
+          bridgelinks.add(lk);
         }
         
         public List<NodeToNodeLink> getTopology() {
-            return null;
+            return bridgelinks;
         }
     }
     
@@ -249,43 +329,41 @@ public final class DiscoveryLink implements ReadyRunnable {
     }
 
     private void getLinksFromBridge(Collection<LinkableNode> linkableNodes) {
-        List<LinkableNode> bridgeNodes = new ArrayList<LinkableNode>();
-//        List<String> macParsed = new ArrayList<String>();
         BridgeTopology topology = new BridgeTopology();
-        for (final LinkableNode linkableNode : linkableNodes) {
-            LOG.debug("getLinksFromBridge: Iterating on LinkableNode's found node with nodeid/sysoid/ipaddress {}/{}/{}", linkableNode.getNodeId(),linkableNode.getSysoid(),str(linkableNode.getSnmpPrimaryIpAddr()));
-            if (linkableNode.isBridgeNode()) {
-                LOG.debug("getLinksFromBridge: adding to bridge node list: node with nodeid/bridgeidentifier {}/{}", linkableNode.getNodeId(),linkableNode.getBridgeIdentifiers().get(0));
-                bridgeNodes.add(linkableNode);
+        for (final LinkableNode curNode : linkableNodes) {
+            LOG.debug("getLinksFromBridge: Iterating on LinkableNode's found node with nodeid/sysoid/ipaddress {}/{}/{}", curNode.getNodeId(),curNode.getSysoid(),str(curNode.getSnmpPrimaryIpAddr()));
+            if (!curNode.isBridgeNode()) {
+                LOG.debug("getLinksFromBridge:  skipping no bridge node nodeid {}", curNode.getNodeId());
+                continue;
             }
-        }
-
-        LOG.info("getLinksFromBridge: trying to find backbone ethernet links among {} bridges nodes using Spanning Tree Protocol", bridgeNodes.size());
-
-        for (final LinkableNode curNode : bridgeNodes) {
-            final int curNodeId = curNode.getNodeId();
+            
             final InetAddress cupIpAddr = curNode.getSnmpPrimaryIpAddr();
+            final Integer curNodeId = curNode.getNodeId();
+            topology.addBridgeMac(curNodeId, curNode.getMacIdentifiers());
 
             LOG.info("getLinksFromBridge: parsing bridge nodeid {} IP address {} with {} VLANs", curNodeId, str(cupIpAddr), curNode.getStpInterfaces().size());
 
             for (final Map.Entry<Integer, List<OnmsStpInterface>> me : curNode.getStpInterfaces().entrySet()) {
                 final Integer vlan = me.getKey();
                 final String curBaseBridgeAddress = curNode.getBridgeIdentifier(vlan);
-
-                LOG.debug("getLinksFromBridge: found bridge identifier {}", curBaseBridgeAddress);
+                LOG.info("getLinksFromBridge: trying to find Spanning Tree links:  bridge identifier {}, VLAN {} with {} bridge ports",
+                         curBaseBridgeAddress, vlan,
+                         curNode.getStpInterfaces().get(vlan).size());
 
                 String designatedRoot = null;
 
                 if (curNode.hasStpRoot(vlan)) {
                     designatedRoot = curNode.getStpRoot(vlan);
                 } else {
-                    LOG.debug("getLinksFromBridge: stp designated root bridge identifier not found. Skipping {}", curBaseBridgeAddress);
+                    LOG.debug("getLinksFromBridge: bridge identifier {}, VLAN {}: stp designated root bridge identifier not found. Skipping.",
+                              curBaseBridgeAddress, vlan);
                     continue;
                 }
 
                 if (designatedRoot == null
                         || designatedRoot.equals("0000000000000000")) {
-                    LOG.warn("getLinksFromBridge: stp designated root is invalid, skipping: {}", designatedRoot);
+                    LOG.warn("getLinksFromBridge: bridge identifier {}, VLAN {}: stp designated root {} is invalid. Skipping: {}",
+                             curBaseBridgeAddress, vlan, designatedRoot);
                     continue;
                 }
                 // check if designated
@@ -294,42 +372,42 @@ public final class DiscoveryLink implements ReadyRunnable {
                 // searching on linkablesnmpnodes
 
                 if (curNode.isBridgeIdentifier(designatedRoot.substring(4))) {
-                    LOG.debug("getLinksFromBridge: stp designated root is the bridge itself. Skipping.");
+                    LOG.debug("getLinksFromBridge: bridge identifier {}, VLAN {}: stp designated root {} is the bridge itself. Skipping.",
+                              curBaseBridgeAddress, vlan, designatedRoot);
                     continue;
                 }
 
                 // Now parse STP bridge port info to get designated bridge
-                LOG.debug("getLinksFromBridge: stp designated root is another bridge. {} Parsing stp interfaces", designatedRoot);
+                LOG.debug("getLinksFromBridge: bridge identifier {}, VLAN {}: stp designated root {} is another bridge. {} Parsing stp interfaces.",
+                          curBaseBridgeAddress, vlan, designatedRoot);
 
                 for (final OnmsStpInterface stpIface : me.getValue()) {
-                    // the bridge port number
                     final int stpbridgeport = stpIface.getBridgePort();
-                    // if port is a backbone port continue
-                    //if (curNode.isBackBoneBridgePort(stpbridgeport)) {
-                    //    LOG.debug("getLinksFromBridge: bridge port {} already found. Skipping.", stpbridgeport);
-                    //    continue;
-                    //}
-
                     final String stpPortDesignatedPort = stpIface.getStpPortDesignatedPort();
                     final String stpPortDesignatedBridge = stpIface.getStpPortDesignatedBridge();
 
-                    LOG.debug("getLinksFromBridge: parsing bridge port {} with stp designated bridge {} and stp designated port {}", stpbridgeport, stpPortDesignatedBridge, stpPortDesignatedPort);
+                    LOG.debug("getLinksFromBridge: parsing bridge port {} with stp designated bridge {} and stp designated port {}",
+                              stpbridgeport, stpPortDesignatedBridge,
+                              stpPortDesignatedPort);
 
                     if (stpPortDesignatedBridge == null
                             || stpPortDesignatedBridge.equals("0000000000000000")
                             || stpPortDesignatedBridge.equals("")) {
-                        LOG.warn("getLinksFromBridge: designated bridge is invalid, skipping: {}", stpPortDesignatedBridge);
+                        LOG.warn("getLinksFromBridge: designated bridge is invalid, skipping: {}",
+                                 stpPortDesignatedBridge);
                         continue;
                     }
 
                     if (curNode.isBridgeIdentifier(stpPortDesignatedBridge.substring(4))) {
-                        LOG.debug("getLinksFromBridge: designated bridge for port {} is bridge itself, skipping", stpbridgeport);
+                        LOG.debug("getLinksFromBridge: designated bridge for port {} is bridge itself, skipping",
+                                  stpbridgeport);
                         continue;
                     }
 
                     if (stpPortDesignatedPort == null
                             || stpPortDesignatedPort.equals("0000")) {
-                        LOG.warn("getLinksFromBridge: designated port is invalid: {}. skipping", stpPortDesignatedPort);
+                        LOG.warn("getLinksFromBridge: designated port is invalid: {}. skipping",
+                                 stpPortDesignatedPort);
                         continue;
                     }
 
@@ -359,20 +437,23 @@ public final class DiscoveryLink implements ReadyRunnable {
                     // 4 bits are zero (i.e., only the most significant 4
                     // bits are settable).
                     int designatedbridgeport = 8191 & Integer.parseInt(stpPortDesignatedPort,
-                                                                16);
+                                                                       16);
 
                     // try to see if designated bridge is linkable SNMP node
 
-                    final LinkableNode designatedNode = getNodeFromMacIdentifierOfBridgeNode(bridgeNodes,stpPortDesignatedBridge.substring(4));
+                    final LinkableNode designatedNode = getNodeFromMacIdentifierOfBridgeNode(linkableNodes,
+                                                                                             stpPortDesignatedBridge.substring(4));
 
                     if (designatedNode == null) {
-                        LOG.debug("getLinksFromBridge: no nodeid found for stp bridge address {}. Nothing to save.", stpPortDesignatedBridge);
+                        LOG.debug("getLinksFromBridge: no nodeid found for stp bridge address {}. Nothing to save.",
+                                  stpPortDesignatedBridge);
                         continue; // no saving info if no nodeid
                     }
 
                     final int designatednodeid = designatedNode.getNodeId();
 
-                    LOG.debug("getLinksFromBridge: found designated nodeid {}", designatednodeid);
+                    LOG.debug("getLinksFromBridge: found designated nodeid {}",
+                              designatednodeid);
 
                     // this is a backbone port so try adding to Bridge class
                     // get the ifindex on node
@@ -380,33 +461,31 @@ public final class DiscoveryLink implements ReadyRunnable {
                     final int curIfIndex = curNode.getIfindex(stpbridgeport);
 
                     if (curIfIndex == -1) {
-                        LOG.warn("getLinksFromBridge: got invalid ifindex on node: {}", curNode.toString());
-                        continue;
+                        LOG.warn("getLinksFromBridge: got invalid ifindex on node: {}",
+                                 curNode.toString());
                     }
 
                     final int designatedifindex = designatedNode.getIfindex(designatedbridgeport);
 
                     if (designatedifindex == -1) {
-                        LOG.warn("getLinksFromBridge: got invalid ifindex on designated node: {}", designatedNode.toString());
-                        continue;
+                        LOG.warn("getLinksFromBridge: got invalid ifindex on designated node: {}",
+                                 designatedNode.toString());
                     }
 
-                    LOG.debug("getLinksFromBridge: backbone bridge port {} found for node {}", stpbridgeport, curNodeId);
-                    LOG.debug("getLinksFromBridge: backbone bridge port {} found for node {}", designatedbridgeport, designatednodeid);
-//                    LOG.debug("getLinksFromBridge: adding links on backbone found link");
+                    LOG.debug("getLinksFromBridge: adding to topology link: ");
+                    LOG.debug("getLinksFromBridge: down level bridge port {}, ifindex {}, node {}",
+                              stpbridgeport, curIfIndex, curNodeId);
+                    LOG.debug("getLinksFromBridge: designated bridge port {}, ifindex {}, node {}",
+                              designatedbridgeport, designatedifindex,
+                              designatednodeid);
+                    LOG.debug("");
 
 //                    macParsed = addLinks(macParsed, getMacsOnBridgeLink(curNode, stpbridgeport,
 //                                                 designatedNode,
 //                                                 designatedbridgeport),
 //                                                 curNodeId, curIfIndex,DiscoveryProtocol.bridge);
 
-//                    final NodeToNodeLink lk = new NodeToNodeLink(curNodeId,
-//                                                                 curIfIndex,DiscoveryProtocol.bridge);
-//                    lk.setNodeparentid(designatednodeid);
-//                    lk.setParentifindex(designatedifindex);
-//                    LOG.info("getLinksFromBridge: saving stp bridge link: {}", lk.toString());
-//                    addNodetoNodeLink(lk);
-                    topology.parseDesignatedBridge(curNodeId, stpbridgeport, designatednodeid, designatedbridgeport);
+                    topology.parseDesignatedBridge(curNodeId, stpbridgeport, curIfIndex,designatednodeid, designatedbridgeport, designatedifindex);
                 }
             }
             LOG.info("getLinksFromBridge: done parsing spanning tree on bridge with nodeid {} and ip address {} with {} VLANs", curNodeId, str(cupIpAddr), curNode.getStpInterfaces().size());
@@ -416,85 +495,12 @@ public final class DiscoveryLink implements ReadyRunnable {
 
                 final int curIfIndex = curNode.getIfindex(curBridgePort);
                 
-                // TT2295 save also ifindex -1 links
                 if (curIfIndex == -1) {
                     LOG.warn("getLinksFromBridge: got invalid ifIndex on bridge port {}", curBridgePort);
-                //    continue;
                 }
-                // First get the MAC addresses on bridge port
 
-                 for (String mac : curNode.getMacAddressesOnBridgePort(curBridgePort)) {
-                     topology.parseMac(mac, curNodeId, curBridgePort);
-                 }
+                topology.parseBFTentry(curNodeId,curBridgePort, curIfIndex, curNode.getMacAddressesOnBridgePort(curBridgePort));
 
-                // Then find the bridges whose MAC addresses are learned on
-                // bridge port
-//                final List<LinkableNode> bridgesOnPort = getBridgesFromMacs(bridgeNodes.values(),macs);
-
-//                if (bridgesOnPort.isEmpty()) {
-//                    LOG.debug("getLinksFromBridge: no bridges macs found on port {}. Saving MACs.", curBridgePort);
-//                    macParsed = addLinks(macParsed,macs, curNodeId, curIfIndex,DiscoveryProtocol.bridge);
-//                    continue;
-//                } 
-                // a bridge MAC address was found on port so you should
-                // analyze what happens
-                LOG.debug("getLinksFromBridge: bridges macs found on port {}. Searching nearest.", curBridgePort);
-
-                // one among these bridges should be the node more close
-                // to the curnode, curport
-//                for (final LinkableNode endNode : bridgesOnPort) {
-//                    final int endNodeid = endNode.getNodeId();
-//                    if (curNodeId == endNodeid) {
-//                        LOG.debug("getLinksFromBridge: curnode and target node are the same. Skipping.");
-//                        continue;
-//                    }
-//                    final int endBridgePort = getBridgePortOnEndBridge(curNode,
-//                                                                       endNode);
-//                    // The bridge port should be valid! This control is
-//                    // not properly done
-//                    if (endBridgePort == -1) {
-//                        LOG.warn("getLinksFromBridge: no valid port found on bridge nodeid {} for node bridge identifiers nodeid {}. Skipping.", endNodeid, curNodeId);
-//                        continue;
-//                    }
-
-                    // Try to found a new
-//                    final boolean isTargetNode = isNearestBridgeLink(bridgeNodes.values(),curNode,
-//                                                                     curBridgePort,
-//                                                                     endNode,
-//                                                                     endBridgePort);
-//                    if (!isTargetNode)
-//                        continue;
-
-//                    final int endIfindex = endNode.getIfindex(endBridgePort);
-//                    if (endIfindex == -1) {
-//                        LOG.warn("getLinksFromBridge: got invalid ifindex on designated bridge port {}", endBridgePort);
-//                        continue;
-//                    }
-
-//                    LOG.debug("getLinksFromBridge: backbone port found for node {}. Adding backbone bridge port {}", curNodeId, curBridgePort);
-
-//                    curNode.addBackBoneBridgePorts(curBridgePort);
-//                    bridgeNodes.put(curNodeId, curNode);
-
-//                    LOG.debug("getLinksFromBridge: backbone port found for node {}. Adding to backbone bridge port {}", endNodeid, endBridgePort);
-
-//                    endNode.addBackBoneBridgePorts(endBridgePort);
-//                    bridgeNodes.put(endNodeid, endNode);
-
-                    // finding links between two backbone ports
-                    // FIXME no criteria....check the rules
-//                    macParsed = addLinks(macParsed,getMacsOnBridgeLink(curNode, curBridgePort,
-//                                                 endNode, endBridgePort),
-//                                                 curNodeId, curIfIndex,DiscoveryProtocol.bridge);
-
-//                    final NodeToNodeLink lk = new NodeToNodeLink(
-//                                                                 curNodeId,
-//                                                                 curIfIndex, DiscoveryProtocol.bridge);
-//                    lk.setNodeparentid(endNodeid);
-//                    lk.setParentifindex(endIfindex);
-//                    LOG.info("getLinksFromBridge: saving bridge link: {}", lk.toString());
-//                    addNodetoNodeLink(lk);
-//                }
             }
             LOG.info("getLinksFromBridge: done parsing bridge node with ID {}", curNodeId);
         }
@@ -747,7 +753,7 @@ public final class DiscoveryLink implements ReadyRunnable {
     private LinkableNode getNodeFromMacIdentifierOfBridgeNode(Collection<LinkableNode> linkableNodes,
             final String macAddress) {
         for (final LinkableNode curNode : linkableNodes) {
-            if (curNode.isMacIdentifier(macAddress))
+            if (curNode.isBridgeNode() && curNode.isBridgeIdentifier(macAddress))
                 return curNode;
         }
         return null;

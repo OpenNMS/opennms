@@ -18,6 +18,7 @@ package org.opennms.netmgt.linkd;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -42,43 +43,28 @@ public class LinkableNode {
     private final String m_packageName;
     
     private String m_cdpDeviceId;
-
-    private String m_lldpSysname;
-
-    private String m_lldpChassisId;
-
-    private Integer m_lldpChassisIdSubtype;
-
-    private InetAddress m_ospfRouterId;
-
-    private String m_isisSysId;
-
+    private boolean m_hascdpinterfaces = false;
     private List<CdpInterface> m_cdpinterfaces = new ArrayList<CdpInterface>();
 
+    private String m_lldpSysname;
+    private String m_lldpChassisId;
+    private Integer m_lldpChassisIdSubtype;
     private List<LldpRemInterface> m_lldpreminterfaces = new ArrayList<LldpRemInterface>();
 
-    private boolean m_hascdpinterfaces = false;
-
-    private List<RouterInterface> m_routeinterfaces = new ArrayList<RouterInterface>();
-
+    private InetAddress m_ospfRouterId;
     private List<OspfNbrInterface> m_ospfinterfaces = new ArrayList<OspfNbrInterface>();
 
+    private String m_isisSysId;
     private List<IsisISAdjInterface> m_isisinterfaces = new ArrayList<IsisISAdjInterface>();
 
     private boolean m_hasrouteinterfaces = false;
+    private List<RouterInterface> m_routeinterfaces = new ArrayList<RouterInterface>();
 
     private boolean m_isBridgeNode = false;
-
-    /**
-     * the list of bridge port that are backbone bridge ports ou that are link
-     * between switches
-     */
-    private List<String> m_bridgeIdentifiers = new ArrayList<String>();
-    private List<String> m_macIdentifiers = new ArrayList<String>();
-    private Map<Integer, List<OnmsStpInterface>> m_bridgeStpInterfaces = new HashMap<Integer, List<OnmsStpInterface>>();
-    private Map<Integer, String> m_vlanBridgeIdentifiers = new HashMap<Integer, String>();
+    private Set<String> m_macIdentifiers = new HashSet<String>();
+    private Map<Integer, List<OnmsStpInterface>> m_vlanStpInterfaces = new HashMap<Integer, List<OnmsStpInterface>>();
+    private Map<Integer, String> m_vlanBridgeIdentifier = new HashMap<Integer, String>();
     private Map<Integer, Set<String>> m_portMacs = new HashMap<Integer, Set<String>>();
-    private Map<String, Integer> m_macsVlan = new HashMap<String, Integer>();
     private Map<Integer, String> m_vlanStpRoot = new HashMap<Integer, String>();
     private Map<Integer, Integer> m_bridgePortIfindex = new HashMap<Integer, Integer>();
 
@@ -271,51 +257,32 @@ public class LinkableNode {
     /**
      * @return Returns the bridgeIdentifiers.
      */
-    public List<String> getBridgeIdentifiers() {
-        return m_bridgeIdentifiers;
-    }
-
-    /**
-     * @param bridgeIdentifiers
-     *            The bridgeIdentifiers to set.
-     */
-    public void setBridgeIdentifiers(final List<String> bridgeIdentifiers) {
-        if (bridgeIdentifiers == null || bridgeIdentifiers.isEmpty())
-            return;
-        m_bridgeIdentifiers = bridgeIdentifiers;
-        m_isBridgeNode = true;
+    public Collection<String> getBridgeIdentifiers() {
+        return m_vlanBridgeIdentifier.values();
     }
 
     public void addBridgeIdentifier(final String bridge, final Integer vlan) {
-        m_vlanBridgeIdentifiers.put(vlan, bridge);
-        addBridgeIdentifier(bridge);
+        m_vlanBridgeIdentifier.put(vlan, bridge);
     }
 
     public boolean isBridgeIdentifier(final String bridge) {
-        return m_bridgeIdentifiers.contains(bridge);
+        return m_vlanBridgeIdentifier.containsValue(bridge);
     }
 
-    public void setMacIdentifiers(final List<String> macIdentifiers) {
+    public String getBridgeIdentifier(final Integer vlan) {
+        return m_vlanBridgeIdentifier.get(vlan);
+    }
+
+    public void setMacIdentifiers(final Set<String> macIdentifiers) {
         m_macIdentifiers = macIdentifiers;
     }
 
-    public List<String> getMacIdentifiers() {
+    public Set<String> getMacIdentifiers() {
         return m_macIdentifiers;
     }
 
     public boolean isMacIdentifier(final String mac) {
         return m_macIdentifiers.contains(mac);
-    }
-
-    public void addBridgeIdentifier(final String bridge) {
-        if (m_bridgeIdentifiers.contains(bridge))
-            return;
-        m_bridgeIdentifiers.add(bridge);
-        m_isBridgeNode = true;
-    }
-
-    public String getBridgeIdentifier(final Integer vlan) {
-        return m_vlanBridgeIdentifiers.get(vlan);
     }
 
     public void addWifiMacAddress(final Integer ifindex, final String macAddress) {
@@ -339,7 +306,6 @@ public class LinkableNode {
         macs.add(macAddress);
 
         m_portMacs.put(bridgeport, macs);
-        m_macsVlan.put(macAddress, vlan);
     }
 
     public boolean hasMacAddress(final String macAddress) {
@@ -353,10 +319,6 @@ public class LinkableNode {
 
     public boolean hasMacAddresses() {
         return !m_portMacs.isEmpty();
-    }
-
-    public Integer getVlan(final String macAddress) {
-        return m_macsVlan.get(macAddress);
     }
 
     public Set<String> getMacAddressesOnBridgePort(final int bridgeport) {
@@ -438,20 +400,7 @@ public class LinkableNode {
      * @return Returns the stpInterfaces.
      */
     public Map<Integer, List<OnmsStpInterface>> getStpInterfaces() {
-        return m_bridgeStpInterfaces;
-    }
-
-    /**
-     * <p>
-     * setStpInterfaces
-     * </p>
-     * 
-     * @param stpInterfaces
-     *            The stpInterfaces to set.
-     */
-    public void setStpInterfaces(
-            Map<Integer, List<OnmsStpInterface>> stpInterfaces) {
-        m_bridgeStpInterfaces = stpInterfaces;
+        return m_vlanStpInterfaces;
     }
 
     /**
@@ -466,11 +415,11 @@ public class LinkableNode {
         final Integer vlanindex = stpIface.getVlan() == null ? 0
                                                             : stpIface.getVlan();
         List<OnmsStpInterface> stpifs = new ArrayList<OnmsStpInterface>();
-        if (m_bridgeStpInterfaces.containsKey(vlanindex)) {
-            stpifs = m_bridgeStpInterfaces.get(vlanindex);
+        if (m_vlanStpInterfaces.containsKey(vlanindex)) {
+            stpifs = m_vlanStpInterfaces.get(vlanindex);
         }
         stpifs.add(stpIface);
-        m_bridgeStpInterfaces.put(vlanindex, stpifs);
+        m_vlanStpInterfaces.put(vlanindex, stpifs);
     }
 
     /**
