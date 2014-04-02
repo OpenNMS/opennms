@@ -10,9 +10,12 @@ import org.apache.camel.component.http.HttpClientConfigurer;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CustomHttpClientConfigurer implements HttpClientConfigurer {
     private static final KeyManager[] EMPTY_KEYMANAGER_ARRAY = new KeyManager[0];
+    private static final Logger LOG = LoggerFactory.getLogger(CustomHttpClientConfigurer.class);
 
     private String m_username = "admin";
     private String m_password = "admin";
@@ -27,6 +30,7 @@ public class CustomHttpClientConfigurer implements HttpClientConfigurer {
             final UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(getUsername(), getPassword());
             client.getState().setCredentials(AuthScope.ANY, credentials);
             client.getParams().setAuthenticationPreemptive(true);
+            LOG.debug("Configuring HTTP client with modified trust manager, username={}, password=xxxxxxxx", getUsername());
         } catch (final Exception e) {
             throw new CustomConfigurerException(e);
         }
