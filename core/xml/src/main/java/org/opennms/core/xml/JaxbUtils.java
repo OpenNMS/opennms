@@ -41,8 +41,10 @@ import java.io.Writer;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
 
 import javax.xml.bind.JAXBContext;
@@ -95,9 +97,19 @@ public abstract class JaxbUtils {
     }
 
     private static final MarshallingExceptionTranslator EXCEPTION_TRANSLATOR = new MarshallingExceptionTranslator();
+
+    /**
+     * A JAXBContext that knows about all classes we have seen so far.
+     */
+    private static final ThreadLocal<JAXBContext> m_context = new ThreadLocal<JAXBContext>();
+    
+    /**
+     * A complete list of classes that we have seen so far.
+     */
+    private static final ThreadLocal<Set<Class<?>>> m_classes = new ThreadLocal<Set<Class<?>>>();
+
     private static ThreadLocal<Map<Class<?>, Marshaller>> m_marshallers = new ThreadLocal<Map<Class<?>, Marshaller>>();
     private static ThreadLocal<Map<Class<?>, Unmarshaller>> m_unMarshallers = new ThreadLocal<Map<Class<?>, Unmarshaller>>();
-    private static final Map<Class<?>,JAXBContext> m_contexts = Collections.synchronizedMap(new WeakHashMap<Class<?>,JAXBContext>());
     private static final Map<Class<?>,Schema> m_schemas = Collections.synchronizedMap(new WeakHashMap<Class<?>,Schema>());
     private static final Map<String,Class<?>> m_elementClasses = Collections.synchronizedMap(new WeakHashMap<String,Class<?>>());
     private static final boolean VALIDATE_IF_POSSIBLE = true;
@@ -293,6 +305,8 @@ public abstract class JaxbUtils {
             if (context.getClass().getName().startsWith("org.eclipse.persistence.jaxb")) {
                 marshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, new EmptyNamespacePrefixMapper());
                 marshaller.setProperty(MarshallerProperties.JSON_MARSHAL_EMPTY_COLLECTIONS, true);
+            } else {
+                LOG.warn("Marshaller {} is using the old JAXB implementation, rather than EclipseLink!", marshaller);
             }
             final Schema schema = getValidatorFor(clazz);
             marshaller.setSchema(schema);
@@ -374,18 +388,25 @@ public abstract class JaxbUtils {
 
     public static JAXBContext getContextFor(final Class<?> clazz) throws JAXBException {
         LOG.trace("Getting context for class {}", clazz);
+
         final JAXBContext context;
-        if (m_contexts.containsKey(clazz)) {
-            context = m_contexts.get(clazz);
-        } else {
-            final List<Class<?>> allRelatedClasses = getAllRelatedClasses(clazz);
-            LOG.trace("Creating new context for classes: {}", allRelatedClasses);
-            context = org.eclipse.persistence.jaxb.JAXBContext.newInstance(allRelatedClasses.toArray(EMPTY_CLASS_LIST));
-            // context = JAXBContext.newInstance(allRelatedClasses.toArray(EMPTY_CLASS_LIST));
-            LOG.trace("Context for {}: {}", allRelatedClasses, context);
-            m_contexts.put(clazz, context);
+        Set<Class<?>> classes = m_classes.get();
+        if (classes == null) {
+            classes = new HashSet<Class<?>>();
         }
-        return context;
+        if (!classes.contains(clazz) || m_context.get() == null) {
+            final List<Class<?>> allRelatedClasses = getAllRelatedClasses(clazz);
+            LOG.trace("Creating new context for class: {} and related classes: {}", allRelatedClasses);
+
+            classes.add(clazz);
+            classes.addAll(allRelatedClasses);
+            m_classes.set(classes);
+
+            context = org.eclipse.persistence.jaxb.JAXBContext.newInstance(classes.toArray(EMPTY_CLASS_LIST));
+            m_context.set(context);
+        }
+
+        return m_context.get();
     }
 
     private static List<String> getSchemaFilesFor(final Class<?> clazz) {
