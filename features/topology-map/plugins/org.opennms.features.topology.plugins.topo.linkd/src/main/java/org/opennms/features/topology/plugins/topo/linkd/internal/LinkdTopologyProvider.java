@@ -380,16 +380,16 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         try {
             load(null);
         } catch (MalformedURLException e) {
-            LoggerFactory.getLogger(LinkdTopologyProvider.class).error(e.getMessage(), e);
+            LOG.error(e.getMessage(), e);
         } catch (JAXBException e) {
-            LoggerFactory.getLogger(LinkdTopologyProvider.class).error(e.getMessage(), e);
+            LOG.error(e.getMessage(), e);
         }
     }
 
     @Override
     public void load(String filename) throws MalformedURLException, JAXBException {
         if (filename != null) {
-            LoggerFactory.getLogger(LinkdTopologyProvider.class).warn("Filename that was specified for linkd topology will be ignored: " + filename + ", using " + m_configurationFile + " instead");
+            LOG.warn("Filename that was specified for linkd topology will be ignored: " + filename + ", using " + m_configurationFile + " instead");
         }
         LOG.debug("loadtopology: resetContainer ");
         resetContainer();
@@ -671,8 +671,9 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         List<SearchResult> searchResults = Lists.newArrayList();
         
         CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);
-        String ilike = "%"+searchQuery.getQueryString()+"%";
-        cb.alias("assetRecord", "asset").match("any").ilike("label", ilike).ilike("sysDescription", ilike).ilike("asset.comment", ilike);
+        String ilike = "%"+searchQuery.getQueryString()+"%";  //check this for performance reasons
+//        cb.alias("assetRecord", "asset").match("any").ilike("label", ilike).ilike("sysDescription", ilike).ilike("asset.comment", ilike);
+        cb.match("any").ilike("label", ilike).ilike("sysDescription", ilike);
         List<OnmsNode> nodes = m_nodeDao.findMatching(cb.toCriteria());
         
         if (nodes.size() == 0) {

@@ -411,6 +411,8 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
 
     private void updateTokenFieldList(GraphContainer graphContainer) {
         List<SearchSuggestion> suggestions = Lists.newArrayList();
+        
+        //FIXME: Don't use FocusNodeHopCriteria any more... use LinkdHopCriteria
         FocusNodeHopCriteria nodeCriteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(graphContainer);
         for (VertexRef vRef : nodeCriteria.getVertices()) {
             suggestions.add(mapToSearchSuggestion(vRef));
