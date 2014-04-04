@@ -13,7 +13,7 @@ xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
         </cm:default-properties>
     </cm:property-placeholder>
     
-    <bean id="customHttpClientConfigurer" class="org.opennms.features.topology.plugins.ncs.internal.CustomHttpClientConfigurer">
+    <bean id="customHttpClientConfigurer" class="org.opennms.core.camel.CustomHttpClientConfigurer">
         <property name="username" value="${username}" />
         <property name="password" value="${password}" />
     </bean>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema elementFormDefault="qualified" version="1.0" targetNamespace="http://xmlns.opennms.org/xsd/config/foreign-source" xmlns:tns="http://xmlns.opennms.org/xsd/config/foreign-source" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="detector" type="tns:detectorWrapper"/>
+
+  <xs:element name="detectors" type="tns:detectorCollection"/>
+
+  <xs:element name="foreign-source" type="tns:foreignSource"/>
+
+  <xs:element name="foreign-sources" type="tns:foreignSourceCollection"/>
+
+  <xs:element name="parameterList" type="tns:pluginConfigParameter"/>
+
+  <xs:element name="plugin" type="tns:pluginConfig"/>
+
+  <xs:element name="policies" type="tns:policyCollection"/>
+
+  <xs:element name="policy" type="tns:policyWrapper"/>
+
+  <xs:complexType name="detectorCollection">
+    <xs:sequence>
+      <xs:element name="detector" type="tns:pluginConfig" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="pluginConfig">
+    <xs:sequence>
+      <xs:element name="parameter" maxOccurs="unbounded" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence/>
+          <xs:attribute name="key" type="xs:string"/>
+          <xs:attribute name="value" type="xs:string"/>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string"/>
+    <xs:attribute name="class" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="detectorWrapper">
+    <xs:complexContent>
+      <xs:extension base="tns:pluginConfig">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="foreignSource">
+    <xs:sequence>
+      <xs:element name="scan-interval" type="xs:string" minOccurs="0"/>
+      <xs:element name="detectors" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="detector" type="tns:pluginConfig" maxOccurs="unbounded" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="policies" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="policy" type="tns:pluginConfig" maxOccurs="unbounded" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="date-stamp" type="xs:anySimpleType"/>
+  </xs:complexType>
+
+  <xs:complexType name="foreignSourceCollection">
+    <xs:sequence>
+      <xs:element ref="tns:foreign-source" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="count" type="xs:int"/>
+  </xs:complexType>
+
+  <xs:complexType name="pluginConfigParameter">
+    <xs:sequence>
+      <xs:element name="parameter" nillable="true" maxOccurs="unbounded" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence/>
+          <xs:attribute name="key" type="xs:string"/>
+          <xs:attribute name="value" type="xs:string"/>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="policyCollection">
+    <xs:sequence>
+      <xs:element name="policy" type="tns:pluginConfig" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="policyWrapper">
+    <xs:complexContent>
+      <xs:extension base="tns:pluginConfig">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+</xs:schema>
+
