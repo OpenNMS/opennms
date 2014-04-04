@@ -405,7 +405,7 @@ public abstract class JaxbUtils {
             m_classes.set(classes);
             LOG.trace("All known classes: {}", classes);
 
-            context = org.eclipse.persistence.jaxb.JAXBContext.newInstance(classes.toArray(EMPTY_CLASS_LIST));
+            context = org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(classes.toArray(EMPTY_CLASS_LIST), null);
             LOG.trace("Creating new context {} for class: {} (all related classes: {})", context.getClass(), clazz, allRelatedClasses);
             m_context.set(context);
         } else {
