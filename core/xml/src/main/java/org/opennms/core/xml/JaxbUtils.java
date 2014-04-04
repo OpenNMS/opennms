@@ -405,6 +405,8 @@ public abstract class JaxbUtils {
 
             context = org.eclipse.persistence.jaxb.JAXBContext.newInstance(classes.toArray(EMPTY_CLASS_LIST));
             m_context.set(context);
+        } else {
+            LOG.trace("Reusing existing context {} for class: {}", m_context.get(), clazz);
         }
 
         return m_context.get();
