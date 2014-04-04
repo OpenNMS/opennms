@@ -41,7 +41,7 @@ import java.io.Writer;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -66,6 +66,7 @@ import javax.xml.validation.SchemaFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.opennms.core.xml.eclipselink.EclipselinkDummy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -393,7 +394,8 @@ public abstract class JaxbUtils {
         final JAXBContext context;
         Set<Class<?>> classes = m_classes.get();
         if (classes == null) {
-            classes = new HashSet<Class<?>>();
+            classes = new LinkedHashSet<Class<?>>();
+            classes.add(EclipselinkDummy.class);
         }
         if (!classes.contains(clazz) || m_context.get() == null) {
             final List<Class<?>> allRelatedClasses = getAllRelatedClasses(clazz);
