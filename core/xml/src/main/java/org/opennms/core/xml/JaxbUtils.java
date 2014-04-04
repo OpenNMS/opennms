@@ -338,7 +338,7 @@ public abstract class JaxbUtils {
                 m_unMarshallers.set(unmarshallers);
             }
             if (unmarshallers.containsKey(clazz)) {
-                LOG.trace("Found unmarshaller for {}", clazz);
+                LOG.trace("Found unmarshaller {} for class {}", unmarshaller, clazz);
                 unmarshaller = unmarshallers.get(clazz);
             }
         } else {
@@ -354,12 +354,10 @@ public abstract class JaxbUtils {
                     context = jaxbContext;
                 }
                 unmarshaller = context.createUnmarshaller();
-                LOG.trace("Created unmarshaller for {}", clazz);
+                LOG.trace("Created unmarshaller {} for class {}", unmarshaller, clazz);
             } catch (final JAXBException e) {
                 throw EXCEPTION_TRANSLATOR.translate("creating XML marshaller", e);
             }
-        } else {
-            LOG.trace("Created unmarshaller for {}", clazz);
         }
 
         if (validate) {
