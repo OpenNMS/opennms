@@ -64,7 +64,9 @@ public class FRLayoutAlgorithm extends AbstractLayoutAlgorithm {
 			jungGraph.addEdge(e, e.getSource().getVertex(), e.getTarget().getVertex());
 		}
 
-		FRLayout<VertexRef, EdgeRef> layout = new FRLayout<VertexRef, EdgeRef>(jungGraph);
+		TopoFRLayout<VertexRef, EdgeRef> layout = new TopoFRLayout<VertexRef, EdgeRef>(jungGraph);
+        layout.setRepulsionMultiplier(3/8.0);
+        layout.setAttractionMultiplier(3/8.0);
 		// Initialize the vertex positions to the last known positions from the layout
 		layout.setInitializer(initializer(graphLayout));
 		// Resize the graph to accommodate the number of vertices

@@ -29,23 +29,23 @@
 package org.opennms.features.topology.api;
 
 public class Point {
-	private int m_x;
-	private int m_y;
+	private double m_x;
+	private double m_y;
 	
-	public Point(int x, int y) {
+	public Point(double x, double y) {
 		m_x = x;
 		m_y = y;
 	}
 	
-	public int getX() { return m_x; }
-	public int getY() { return m_y; }
+	public double getX() { return m_x; }
+	public double getY() { return m_y; }
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + m_x;
-		result = prime * result + m_y;
+		result = (int) (prime * result + m_x);
+		result = (int) (prime * result + m_y);
 		return result;
 	}
 

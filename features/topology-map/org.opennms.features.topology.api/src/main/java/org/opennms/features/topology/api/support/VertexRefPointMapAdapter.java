@@ -83,8 +83,8 @@ public class VertexRefPointMapAdapter extends XmlAdapter<VertexRefPointMapAdapte
 				newKey.label = key.getLabel();
 				Point value = v.get(key);
 				PointValue newValue = new PointValue();
-				newValue.x = value.getX();
-				newValue.y = value.getY();
+				newValue.x = (int)value.getX(); // TODO cast to int for now
+				newValue.y = (int)value.getY(); //TODO cast to int for now
 				entry.key = newKey;
 				entry.value = newValue;
 				retval.entry.add(entry);
