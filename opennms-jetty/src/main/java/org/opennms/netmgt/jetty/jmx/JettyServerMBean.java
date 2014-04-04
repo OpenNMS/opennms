@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,4 +38,45 @@ import org.opennms.netmgt.daemon.BaseOnmsMBean;
  */
 public interface JettyServerMBean extends BaseOnmsMBean {
 
+    /**
+     * 
+     * @return The total number of HTTPS connections since the JettyServer
+     *         was started
+     */
+    public long getHttpsConnectionsTotal();
+    
+    /**
+     * 
+     * @return The current number of HTTPS connections to the JettyServer
+     */
+    public long getHttpsConnectionsOpen();
+    
+    /**
+     * 
+     * @return The maximum number of concurrent HTTPS connections to
+     *         the JettyServer since it was started
+     */
+    public long getHttpsConnectionsOpenMax();
+
+    /**
+     * 
+     * @return The total number of plain-HTTP connections since the
+     *         JettyServer was started
+     */
+    public long getHttpConnectionsTotal();
+    
+    /**
+     * 
+     * @return The current number of plain-HTTP connections to the
+     *         JettyServer
+     */
+    public long getHttpConnectionsOpen();
+
+    /**
+     *  
+     * @return The maximum number of concurrent plain-HTTP connections
+     *         to the JettyServer since it was started
+     */
+    public long getHttpConnectionsOpenMax();
+    
 }

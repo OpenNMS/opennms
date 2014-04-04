@@ -21,33 +21,35 @@
           </execution>
         </executions>
       </plugin>
+<!-- // skip schemagen, just include a pre-generated version of the schema
       <plugin>
-        <groupId>com.sun.tools.jxc.maven2</groupId>
-        <artifactId>maven-jaxb-schemagen-plugin</artifactId>
-        <version>1.2</version>
-        <configuration>
-          <destdir>${project.build.directory}/xsds</destdir>
-          <srcdir>${basedir}/src/main/java</srcdir>
-          <verbose>false</verbose>
-          <includes>
-            <include>org/opennms/netmgt/provision/persist/foreignsource/*.java</include>
-          </includes>
-          <schemas>
-            <schema>
-              <namespace>http://xmlns.opennms.org/xsd/config/foreign-source</namespace>
-              <file>foreign-sources.xsd</file>
-            </schema>
-          </schemas>
-        </configuration>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jaxb2-maven-plugin</artifactId>
+        <version>1.6</version>
         <executions>
           <execution>
-            <phase>process-sources</phase>
+            <id>schemagen</id>
             <goals>
-              <goal>generate</goal>
+              <goal>schemagen</goal>
             </goals>
           </execution>
         </executions>
+        <configuration>
+          <transformSchemas>
+            <transformSchema>
+              <uri>http://xmlns.opennms.org/xsd/config/foreign-source</uri>
+              <toFile>foreign-sources.xsd</toFile>
+            </transformSchema>
+          </transformSchemas>
+          <outputDirectory>${project.build.directory}/xsds</outputDirectory>
+          <workDirectory>${project.build.directory}/jaxb2-work</workDirectory>
+          <includes>
+            <include>**/*.java</include>
+          </includes>
+          <verbose>true</verbose>
+        </configuration>
       </plugin>
+-->
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <extensions>true</extensions>
@@ -65,19 +67,6 @@
           </execution>
         </executions>
       </plugin>
-      <!--
-      <plugin>
-        <groupId>org.jvnet.jaxb2.maven2</groupId>
-        <artifactId>maven-jaxb2-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>xjc</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      -->
     </plugins>
   </build>
   <dependencies>

@@ -63,4 +63,15 @@ public interface PollerdMBean extends BaseOnmsMBean {
      * @return The ratio of completed to scheduled polling tasks since poller startup
      */
     public double getTaskCompletionRatio();
+    
+    /**
+     * 
+     * @return The largest size of the poller thread pool since poller startup
+     */
+    public long getPeakPoolThreads();
+    
+    /**
+     * @return The maximum number of threads allowed in the poller's thread pool
+     */
+    public long getMaxPoolThreads();
 }

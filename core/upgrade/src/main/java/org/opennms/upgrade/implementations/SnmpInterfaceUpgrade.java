@@ -306,7 +306,7 @@ public class SnmpInterfaceUpgrade {
      */
     @Override
     public String toString() {
-        return "Interface[ifName=" + getIfName() + ", nodeId=" + getNodeId() + ", foreignSource=" + getForeignSource() + ", foreignId=" + getForeignId() + "]";
+        return "Interface[ifName=" + getIfName() + ", nodeId=" + getNodeId() + ", foreignSource=" + getForeignSource() + ", foreignId=" + getForeignId() + ", directory=" + getNewInterfaceDir().toString() + "]";
     }
 
 }
