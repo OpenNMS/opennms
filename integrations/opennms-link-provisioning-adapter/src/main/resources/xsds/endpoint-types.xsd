@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema elementFormDefault="qualified" version="1.0" targetNamespace="http://xmlns.opennms.org/xsd/config/endpoint-types" xmlns:tns="http://xmlns.opennms.org/xsd/config/endpoint-types" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="and" type="tns:andEndPointValidationExpression"/>
+
+  <xs:element name="endpoint-type" type="tns:endPointType"/>
+
+  <xs:element name="endpoint-types" type="tns:endPointTypeValidator"/>
+
+  <xs:element name="match-oid" type="tns:matchingSnmpEndPointValidationExpression"/>
+
+  <xs:element name="or" type="tns:orEndPointValidationExpression"/>
+
+  <xs:element name="pingable" type="tns:pingEndPointValidationExpression"/>
+
+  <xs:element name="validator" type="tns:endPointValidationExpressionImpl"/>
+
+  <xs:complexType name="andEndPointValidationExpression">
+    <xs:complexContent>
+      <xs:extension base="tns:endPointValidationExpressionImpl">
+        <xs:sequence>
+          <xs:choice maxOccurs="unbounded">
+            <xs:element ref="tns:validator"/>
+            <xs:element ref="tns:and"/>
+            <xs:element ref="tns:match-oid"/>
+            <xs:element ref="tns:or"/>
+            <xs:element ref="tns:pingable"/>
+          </xs:choice>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:simpleType name="endPointValidationExpressionImpl">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+
+  <xs:complexType name="endPointType">
+    <xs:sequence>
+      <xs:element name="sysoid-mask" type="xs:string" minOccurs="0"/>
+      <xs:element ref="tns:validator"/>
+      <xs:element ref="tns:and"/>
+      <xs:element ref="tns:match-oid"/>
+      <xs:element ref="tns:or"/>
+      <xs:element ref="tns:pingable"/>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="endPointTypeValidator">
+    <xs:sequence>
+      <xs:element ref="tns:endpoint-type" maxOccurs="unbounded" minOccurs="0"/>
+      <xs:element name="configs" type="tns:endPointType" nillable="true" maxOccurs="unbounded" minOccurs="0"/>
+      <xs:element name="serviceName" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="endpoint-service-name" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="matchingSnmpEndPointValidationExpression">
+    <xs:complexContent>
+      <xs:extension base="tns:endPointValidationExpressionImpl">
+        <xs:sequence/>
+        <xs:attribute name="oid" type="xs:string"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="orEndPointValidationExpression">
+    <xs:complexContent>
+      <xs:extension base="tns:endPointValidationExpressionImpl">
+        <xs:sequence>
+          <xs:choice maxOccurs="unbounded">
+            <xs:element ref="tns:validator"/>
+            <xs:element ref="tns:and"/>
+            <xs:element ref="tns:match-oid"/>
+            <xs:element ref="tns:or"/>
+            <xs:element ref="tns:pingable"/>
+          </xs:choice>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="pingEndPointValidationExpression">
+    <xs:complexContent>
+      <xs:extension base="tns:endPointValidationExpressionImpl">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+</xs:schema>
+

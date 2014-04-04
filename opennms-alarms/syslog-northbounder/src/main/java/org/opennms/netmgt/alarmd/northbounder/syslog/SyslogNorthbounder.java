@@ -142,7 +142,7 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements Initiali
     	try {
     		instance = Syslog.getInstance(m_destination.getName());
     	} catch (SyslogRuntimeException e) {
-    		LOG.error("Could not find Syslog instance for destination: {}.", m_destination.getName(), e);
+    		LOG.error("Could not find Syslog instance for destination: '{}': {}", m_destination.getName(), e);
     		throw e;
     	}
 
@@ -182,7 +182,7 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements Initiali
     			instance.log(level, syslogMessage);
     			
     		} catch (Exception e1) {
-    			LOG.error("Caught exception sending to destination: {}", m_destination.getName(), e1);
+    			LOG.error("Caught exception sending to destination: '{}': {}", m_destination.getName(), e1);
     		}
     	}
     }
@@ -325,7 +325,7 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements Initiali
     	try {
     		Syslog.createInstance(instName, instanceConfiguration);
     	} catch (SyslogRuntimeException e) {
-    		LOG.error("Could not create northbound instance, {}", instName, e);
+    		LOG.error("Could not create northbound instance, '{}': {}", instName, e);
     		throw e;
     	}
 
