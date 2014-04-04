@@ -61,8 +61,8 @@ Requires(pre):		opennms-webui      >= %{version}-%{release}
 Requires:		opennms-webui      >= %{version}-%{release}
 Requires(pre):		opennms-core        = %{version}-%{release}
 Requires:		opennms-core        = %{version}-%{release}
-Requires(pre):		postgresql-server  >= 8.1
-Requires:		postgresql-server  >= 8.1
+Requires(pre):		postgresql-server  >= 8.4
+Requires:		postgresql-server  >= 8.4
 
 # don't worry about buildrequires, the shell script will bomb quick  =)
 BuildRequires:		%{jdk}
