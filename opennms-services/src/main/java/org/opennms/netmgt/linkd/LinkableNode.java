@@ -297,7 +297,7 @@ public class LinkableNode {
         return m_wifiIfIndexMac;
     }
 
-    public void addMacAddress(final int bridgeport, final String macAddress,
+    public void addBridgeForwardingTableEntry(final int bridgeport, final String macAddress,
             final Integer vlan) {
         Set<String> macs = new HashSet<String>();
         if (m_portMacs.containsKey(bridgeport)) {
@@ -308,7 +308,7 @@ public class LinkableNode {
         m_portMacs.put(bridgeport, macs);
     }
 
-    public boolean hasMacAddress(final String macAddress) {
+    public boolean hasBridgeForwardingTableEntryFor(final String macAddress) {
         for (final Set<String> macs : m_portMacs.values()) {
             if (macs.contains(macAddress)) {
                 return true;
@@ -317,19 +317,19 @@ public class LinkableNode {
         return false;
     }
 
-    public boolean hasMacAddresses() {
+    public boolean hasBridgeForwardingTable() {
         return !m_portMacs.isEmpty();
     }
 
-    public Set<String> getMacAddressesOnBridgePort(final int bridgeport) {
+    public Set<String> getBridgeForwadingTableOnBridgePort(final int bridgeport) {
         return m_portMacs.get(bridgeport);
     }
 
-    public boolean hasMacAddressesOnBridgePort(final int bridgeport) {
+    public boolean hasBridgeForwardingTableOnBridgePort(final int bridgeport) {
         return (m_portMacs.containsKey(bridgeport) && m_portMacs.get(bridgeport) != null);
     }
 
-    public List<Integer> getBridgePortsFromMac(final String macAddress) {
+    public List<Integer> getBridgeForwardingTablePortsFromMac(final String macAddress) {
         List<Integer> ports = new ArrayList<Integer>();
         for (final Integer intePort : m_portMacs.keySet()) {
             if (m_portMacs.get(intePort).contains(macAddress)) {
@@ -339,14 +339,14 @@ public class LinkableNode {
         return ports;
     }
 
-    public int getIfindex(final int bridgeport) {
+    public int getIfindexFromBridgePort(final int bridgeport) {
         if (m_bridgePortIfindex.containsKey(bridgeport)) {
             return m_bridgePortIfindex.get(bridgeport).intValue();
         }
         return -1;
     }
 
-    public int getBridgePort(final int ifindex) {
+    public int getBridgePortFromIfindex(final int ifindex) {
         for (final Integer curBridgePort : m_bridgePortIfindex.keySet()) {
             final Integer curIfIndex = m_bridgePortIfindex.get(curBridgePort);
             if (curIfIndex.intValue() == ifindex)
@@ -364,7 +364,7 @@ public class LinkableNode {
     /**
      * @return Returns the portMacs.
      */
-    public Map<Integer, Set<String>> getPortMacs() {
+    public Map<Integer, Set<String>> getBridgeForwardingTable() {
         return m_portMacs;
     }
 
@@ -372,7 +372,7 @@ public class LinkableNode {
      * @param portMacs
      *            The portMacs to set.
      */
-    public void setPortMacs(final Map<Integer, Set<String>> portMacs) {
+    public void setBridgeForwardingTable(final Map<Integer, Set<String>> portMacs) {
         m_portMacs = portMacs;
     }
 
