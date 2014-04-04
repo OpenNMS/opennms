@@ -37,6 +37,7 @@ import org.vaadin.dialogs.ConfirmDialog;
 import com.vaadin.data.Container;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.DefaultFieldFactory;
@@ -89,6 +90,26 @@ public class MaskElementField extends CustomField<List<Maskelement>> implements 
         table.setTableFieldFactory(new DefaultFieldFactory() {
             @Override
             public Field<?> createField(Container container, Object itemId, Object propertyId, Component uiContext) {
+                if (propertyId.equals("mename")) {
+                    final ComboBox field = new ComboBox();
+                    field.setSizeFull();
+                    field.setRequired(true);
+                    field.setImmediate(true);
+                    field.setNullSelectionAllowed(false);
+                    field.setNewItemsAllowed(false);
+                    field.addItem(Maskelement.TAG_UEI);
+                    field.addItem(Maskelement.TAG_SOURCE);
+                    field.addItem(Maskelement.TAG_NODEID);
+                    field.addItem(Maskelement.TAG_HOST);
+                    field.addItem(Maskelement.TAG_INTERFACE);
+                    field.addItem(Maskelement.TAG_SNMPHOST);
+                    field.addItem(Maskelement.TAG_SERVICE);
+                    field.addItem(Maskelement.TAG_SNMP_EID);
+                    field.addItem(Maskelement.TAG_SNMP_SPECIFIC);
+                    field.addItem(Maskelement.TAG_SNMP_GENERIC);
+                    field.addItem(Maskelement.TAG_SNMP_COMMUNITY);
+                    return field;
+                }
                 if (propertyId.equals("mevalueCollection")) {
                     final TextField field = new TextField();
                     field.setConverter(new CsvListConverter());
