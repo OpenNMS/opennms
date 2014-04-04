@@ -338,9 +338,11 @@ public abstract class JaxbUtils {
                 m_unMarshallers.set(unmarshallers);
             }
             if (unmarshallers.containsKey(clazz)) {
-                LOG.trace("found unmarshaller for {}", clazz);
+                LOG.trace("Found unmarshaller for {}", clazz);
                 unmarshaller = unmarshallers.get(clazz);
             }
+        } else {
+            LOG.trace("JAXBContext was provided: {}", jaxbContext);
         }
 
         if (unmarshaller == null) {
@@ -352,12 +354,13 @@ public abstract class JaxbUtils {
                     context = jaxbContext;
                 }
                 unmarshaller = context.createUnmarshaller();
+                LOG.trace("Created unmarshaller for {}", clazz);
             } catch (final JAXBException e) {
                 throw EXCEPTION_TRANSLATOR.translate("creating XML marshaller", e);
             }
+        } else {
+            LOG.trace("Created unmarshaller for {}", clazz);
         }
-
-        LOG.trace("created unmarshaller for {}", clazz);
 
         if (validate) {
             final Schema schema = getValidatorFor(clazz);
@@ -396,7 +399,7 @@ public abstract class JaxbUtils {
         }
         if (!classes.contains(clazz) || m_context.get() == null) {
             final List<Class<?>> allRelatedClasses = getAllRelatedClasses(clazz);
-            LOG.trace("Creating new context for class: {} and related classes: {}", allRelatedClasses);
+            LOG.trace("Creating new context for class: {} (all related classes: {})", clazz, allRelatedClasses);
 
             classes.add(clazz);
             classes.addAll(allRelatedClasses);
@@ -424,7 +427,7 @@ public abstract class JaxbUtils {
     }
 
     private static Schema getValidatorFor(final Class<?> clazz) {
-        LOG.trace("finding XSD for class {}", clazz);
+        LOG.trace("Finding XSD for class {}", clazz);
 
         if (m_schemas.containsKey(clazz)) {
             return m_schemas.get(clazz);
@@ -466,7 +469,7 @@ public abstract class JaxbUtils {
                     sources.add(new StreamSource(schemaInputStream));
                 }
             } catch (final Throwable t) {
-                LOG.warn("an error occurred while attempting to load {} for validation", schemaFileName);
+                LOG.warn("An error occurred while attempting to load {} for validation", schemaFileName);
                 continue;
             }
         }
@@ -483,7 +486,7 @@ public abstract class JaxbUtils {
             m_schemas.put(clazz, schema);
             return schema;
         } catch (final SAXException e) {
-            LOG.warn("an error occurred while attempting to load schema validation files for class {}", clazz, e);
+            LOG.warn("An error occurred while attempting to load schema validation files for class {}", clazz, e);
             return null;
         }
     }
