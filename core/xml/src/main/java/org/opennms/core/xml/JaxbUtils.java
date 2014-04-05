@@ -380,7 +380,7 @@ public abstract class JaxbUtils {
         } else {
             final List<Class<?>> allRelatedClasses = getAllRelatedClasses(clazz);
             LOG.trace("Creating new context for classes: {}", allRelatedClasses);
-            context = org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(classes.toArray(EMPTY_CLASS_LIST), null);
+            context = org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(allRelatedClasses.toArray(EMPTY_CLASS_LIST), null);
             LOG.trace("Context for {}: {}", allRelatedClasses, context);
             m_contexts.put(clazz, context);
         }
