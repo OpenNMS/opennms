@@ -68,21 +68,21 @@ public class OnmsOutageCollection extends LinkedList<OnmsOutage> {
     }
 
     /**
-     * <p>getNotifications</p>
+     * <p>getOutages</p>
      *
      * @return a {@link java.util.List} object.
      */
     @XmlElement(name="outage")
-    public List<OnmsOutage> getNotifications() {
+    public List<OnmsOutage> getOutages() {
         return this;
     }
 
     /**
-     * <p>setEvents</p>
+     * <p>setOutages</p>
      *
      * @param events a {@link java.util.List} object.
      */
-    public void setEvents(List<OnmsOutage> events) {
+    public void setOutages(List<OnmsOutage> events) {
         if (events == this) return;
         clear();
         addAll(events);
