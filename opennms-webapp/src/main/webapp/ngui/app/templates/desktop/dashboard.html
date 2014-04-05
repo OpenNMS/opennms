@@ -1,0 +1,32 @@
+<div class="dashboard row">
+	<div class="col-md-3">
+
+		<div class="box">
+			<h4>Nodes with Pending Problems</h4>
+			<div ng-repeat="alarm in alarms" class="alarm severity-{{alarm.severity}}">
+				<a href="">{{alarm.getNodeName()}}</a> has <a href="">{{alarm.count}} {{alarm.count === 1? 'alarm' : 'alarms'}} ({{alarm.date | fuzzy}})</a>
+			</div>
+		</div> <!-- /box -->
+
+		<div class="box">
+			<h4>Nodes with Outages</h4>
+			<div ng-repeat="outage in outages" class="outage severity-{{outage.severity}}">
+				<a href="">{{outage.getNodeName()}}</a> ({{outage.down | fuzzy}})
+			</div>
+		</div> <!-- /box -->
+
+	</div>
+
+	<div class="col-md-6">
+
+		Middle thing.
+
+	</div>
+
+	<div class="col-md-3">
+
+		Right thing.
+
+	</div>
+
+</div>

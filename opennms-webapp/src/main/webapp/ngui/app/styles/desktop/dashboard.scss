@@ -1,0 +1,24 @@
+.dashboard {
+	padding-left: 10px;
+	padding-right: 10px;
+
+	.box {
+		border-bottom: 1px solid #999;
+		h4 {
+			padding-left: 5px;
+		}
+
+		.alarm {
+			padding: 3px;
+			border: 1px solid #999;
+			border-bottom-style: none;
+		}
+
+		.outage {
+			padding: 3px;
+		}
+
+	}
+
+}
+
