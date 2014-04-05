@@ -28,7 +28,13 @@
 
 package org.opennms.netmgt.model.alarm;
 
+import java.io.Serializable;
 import java.util.Date;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.opennms.core.utils.FuzzyDateFormatter;
@@ -39,13 +45,28 @@ import org.opennms.netmgt.model.OnmsSeverity;
  *
  * @author <A HREF="mailto:agalue@opennms.org">Alejandro Galue</A>
  */
-public class AlarmSummary implements Comparable<AlarmSummary> {
+@XmlRootElement(name="alarm-summary")
+@XmlAccessorType(XmlAccessType.NONE)
+public class AlarmSummary implements Comparable<AlarmSummary>, Serializable {
+    private static final long serialVersionUID = 1L;
 
-    private final int nodeId;
-    private final String nodeLabel;
-    private final Date minLastEventDate;
-    private final OnmsSeverity maxSeverity;
-    private final long alarmCount;
+    @XmlAttribute(name="node-id")
+    private int nodeId;
+
+    @XmlAttribute(name="node-label")
+    private String nodeLabel;
+
+    @XmlAttribute(name="date")
+    private Date minLastEventDate;
+
+    @XmlAttribute(name="severity")
+    private OnmsSeverity maxSeverity;
+
+    @XmlAttribute(name="count")
+    private long alarmCount;
+
+    public AlarmSummary() {
+    }
 
     public AlarmSummary(final Integer nodeId, final String nodeLabel, final Date minLastEventDate, final OnmsSeverity maxSeverity, final Long alarmCount) {
         super();

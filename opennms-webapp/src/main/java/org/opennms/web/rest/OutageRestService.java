@@ -37,6 +37,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
@@ -45,6 +46,7 @@ import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.netmgt.dao.OutageDao;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsOutageCollection;
+import org.opennms.netmgt.model.outage.OutageSummaryCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -96,10 +98,14 @@ public class OutageRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{outageId}")
     @Transactional
-    public OnmsOutage getOutage(@PathParam("outageId") final String outageId) {
+    public Response getOutage(@PathParam("outageId") final String outageId) {
         readLock();
         try {
-            return m_outageDao.get(Integer.valueOf(outageId));
+            if ("summaries".equals(outageId)) {
+                return Response.ok(new OutageSummaryCollection(m_outageDao.getNodeOutageSummaries(10))).build();
+            } else {
+                return Response.ok(m_outageDao.get(Integer.valueOf(outageId))).build();
+            }
         } finally {
             readUnlock();
         }
