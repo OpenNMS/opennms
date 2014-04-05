@@ -48,7 +48,10 @@ public class MonitoringLocationsConfigurationTest extends XmlTestNoCastor<Monito
         // we don't care if an empty <tags /> is added or not
         final String xpathLocation = d.getControlNodeDetail().getXpathLocation();
         LOG.debug("xpath location = {}", xpathLocation);
-        return xpathLocation.contains("/monitoring-locations-configuration[1]/locations[1]/location-def[4]");
+        if (xpathLocation != null && xpathLocation.contains("/monitoring-locations-configuration[1]/locations[1]/location-def[4]")) {
+            return true;
+        }
+        return super.ignoreDifference(d);
     }
 
     protected String getSchemaFile() {
