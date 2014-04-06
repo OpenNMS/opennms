@@ -19,6 +19,7 @@ package org.opennms.netmgt.linkd;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -38,12 +39,10 @@ import org.springframework.util.Assert;
  */
 public class LinkableNode {
 
+    private final String m_packageName;
     private final LinkableSnmpNode m_snmpnode;
 
-    private final String m_packageName;
-    
     private String m_cdpDeviceId;
-    private boolean m_hascdpinterfaces = false;
     private List<CdpInterface> m_cdpinterfaces = new ArrayList<CdpInterface>();
 
     private String m_lldpSysname;
@@ -57,10 +56,8 @@ public class LinkableNode {
     private String m_isisSysId;
     private List<IsisISAdjInterface> m_isisinterfaces = new ArrayList<IsisISAdjInterface>();
 
-    private boolean m_hasrouteinterfaces = false;
     private List<RouterInterface> m_routeinterfaces = new ArrayList<RouterInterface>();
 
-    private boolean m_isBridgeNode = false;
     private Set<String> m_macIdentifiers = new HashSet<String>();
     private Map<Integer, List<OnmsStpInterface>> m_vlanStpInterfaces = new HashMap<Integer, List<OnmsStpInterface>>();
     private Map<Integer, String> m_vlanBridgeIdentifier = new HashMap<Integer, String>();
@@ -72,6 +69,7 @@ public class LinkableNode {
      * The Wifi Mac address to Interface Index map
      */
     private Map<Integer, Set<String>> m_wifiIfIndexMac = new HashMap<Integer,Set<String>>();
+
     /**
      * <p>
      * Constructor for LinkableNode.
@@ -191,7 +189,6 @@ public class LinkableNode {
     public void setCdpInterfaces(List<CdpInterface> cdpinterfaces) {
         if (cdpinterfaces == null || cdpinterfaces.isEmpty())
             return;
-        m_hascdpinterfaces = true;
         m_cdpinterfaces = cdpinterfaces;
     }
 
@@ -203,7 +200,7 @@ public class LinkableNode {
      * @return Returns the m_hascdpinterfaces.
      */
     public boolean hasCdpInterfaces() {
-        return m_hascdpinterfaces;
+        return !m_cdpinterfaces.isEmpty();
     }
 
     /**
@@ -228,7 +225,6 @@ public class LinkableNode {
     public void setRouteInterfaces(List<RouterInterface> routeinterfaces) {
         if (routeinterfaces == null || routeinterfaces.isEmpty())
             return;
-        m_hasrouteinterfaces = true;
         m_routeinterfaces = routeinterfaces;
     }
 
@@ -240,7 +236,7 @@ public class LinkableNode {
      * @return Returns the m_hascdpinterfaces.
      */
     public boolean hasRouteInterfaces() {
-        return m_hasrouteinterfaces;
+        return !m_routeinterfaces.isEmpty();
     }
 
     /**
@@ -251,7 +247,7 @@ public class LinkableNode {
      * @return Returns the isBridgeNode.
      */
     public boolean isBridgeNode() {
-        return m_isBridgeNode;
+        return !m_vlanBridgeIdentifier.isEmpty();
     }
 
     /**
@@ -322,7 +318,9 @@ public class LinkableNode {
     }
 
     public Set<String> getBridgeForwadingTableOnBridgePort(final int bridgeport) {
-        return m_portMacs.get(bridgeport);
+        if (hasBridgeForwardingTableOnBridgePort(bridgeport))
+            return m_portMacs.get(bridgeport);
+        return Collections.emptySet();
     }
 
     public boolean hasBridgeForwardingTableOnBridgePort(final int bridgeport) {
