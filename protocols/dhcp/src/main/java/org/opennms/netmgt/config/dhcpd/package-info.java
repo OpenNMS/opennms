@@ -37,4 +37,5 @@
     }
 )
 package org.opennms.netmgt.config.dhcpd;
+import javax.xml.bind.annotation.XmlNs;
 import javax.xml.bind.annotation.XmlSchema;

@@ -34,5 +34,6 @@
     }
 )
 package org.opennms.netmgt.provision.adapters.link.endpoint;
+import javax.xml.bind.annotation.XmlNs;
 import javax.xml.bind.annotation.XmlSchema;
 

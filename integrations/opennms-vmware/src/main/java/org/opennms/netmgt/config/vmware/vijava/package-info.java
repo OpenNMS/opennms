@@ -4,6 +4,8 @@
     xmlns={
         @XmlNs(prefix="", namespaceURI="http://xmlns.opennms.org/xsd/config/vmware-datacollection")
     }
-) package org.opennms.netmgt.config.vmware.vijava;
+)
+package org.opennms.netmgt.config.vmware.vijava;
 
+import javax.xml.bind.annotation.XmlNs;
 import javax.xml.bind.annotation.XmlSchema;

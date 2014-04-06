@@ -35,5 +35,6 @@
 )
 package org.opennms.netmgt.config.ackd;
 
+import javax.xml.bind.annotation.XmlNs;
 import javax.xml.bind.annotation.XmlSchema;
 

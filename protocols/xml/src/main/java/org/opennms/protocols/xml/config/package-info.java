@@ -34,4 +34,5 @@
     }
 )
 package org.opennms.protocols.xml.config;
+import javax.xml.bind.annotation.XmlNs;
 import javax.xml.bind.annotation.XmlSchema;

@@ -34,5 +34,6 @@
     }
 )
 package org.opennms.netmgt.config.poller.outages;
-import javax.xml.bind.annotation.XmlSchema;
 
+import javax.xml.bind.annotation.XmlNs;
+import javax.xml.bind.annotation.XmlSchema;

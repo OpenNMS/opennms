@@ -34,5 +34,6 @@
     }
 )
 package org.opennms.sms.monitor.internal.config;
+import javax.xml.bind.annotation.XmlNs;
 import javax.xml.bind.annotation.XmlSchema;
 

@@ -4,6 +4,8 @@
     xmlns={
         @XmlNs(prefix="", namespaceURI="http://xmlns.opennms.org/xsd/config/vmware-config")
     }
-) package org.opennms.netmgt.config.vmware;
+)
+package org.opennms.netmgt.config.vmware;
 
+import javax.xml.bind.annotation.XmlNs;
 import javax.xml.bind.annotation.XmlSchema;

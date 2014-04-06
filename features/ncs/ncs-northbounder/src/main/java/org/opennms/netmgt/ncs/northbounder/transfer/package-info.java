@@ -34,6 +34,7 @@
     }
 )
 package org.opennms.netmgt.ncs.northbounder.transfer;
+import javax.xml.bind.annotation.XmlNs;
 import javax.xml.bind.annotation.XmlSchema;
 import javax.xml.bind.annotation.XmlNsForm;
 

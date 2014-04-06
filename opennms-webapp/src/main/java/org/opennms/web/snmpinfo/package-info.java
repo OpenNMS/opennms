@@ -34,4 +34,5 @@
     }
 )
 package org.opennms.web.snmpinfo;
+import javax.xml.bind.annotation.XmlNs;
 import javax.xml.bind.annotation.XmlSchema;

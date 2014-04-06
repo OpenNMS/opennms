@@ -35,4 +35,5 @@
 )
 package org.opennms.netmgt.config.vacuumd;
 
+import javax.xml.bind.annotation.XmlNs;
 import javax.xml.bind.annotation.XmlSchema;

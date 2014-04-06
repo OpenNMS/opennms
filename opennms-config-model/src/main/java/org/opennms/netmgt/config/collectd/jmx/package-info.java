@@ -34,4 +34,6 @@
     }
 )
 package org.opennms.netmgt.config.collectd.jmx;
+
+import javax.xml.bind.annotation.XmlNs;
 import javax.xml.bind.annotation.XmlSchema;

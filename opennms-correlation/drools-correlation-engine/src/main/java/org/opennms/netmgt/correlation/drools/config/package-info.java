@@ -33,5 +33,7 @@
         @XmlNs(prefix="", namespaceURI="http://xmlns.opennms.org/xsd/drools-engine")
     }
 )
- package org.opennms.netmgt.correlation.drools.config;
- import javax.xml.bind.annotation.XmlSchema;
+package org.opennms.netmgt.correlation.drools.config;
+
+import javax.xml.bind.annotation.XmlNs;
+import javax.xml.bind.annotation.XmlSchema;

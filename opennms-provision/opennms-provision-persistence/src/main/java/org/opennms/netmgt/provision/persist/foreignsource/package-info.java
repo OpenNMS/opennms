@@ -34,5 +34,6 @@
     }
 )
 package org.opennms.netmgt.provision.persist.foreignsource;
-import javax.xml.bind.annotation.XmlSchema;
 
+import javax.xml.bind.annotation.XmlNs;
+import javax.xml.bind.annotation.XmlSchema;

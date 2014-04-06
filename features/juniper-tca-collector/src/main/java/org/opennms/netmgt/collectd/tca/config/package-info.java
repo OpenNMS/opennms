@@ -34,4 +34,5 @@
     }
 )
 package org.opennms.netmgt.collectd.tca.config;
+import javax.xml.bind.annotation.XmlNs;
 import javax.xml.bind.annotation.XmlSchema;
