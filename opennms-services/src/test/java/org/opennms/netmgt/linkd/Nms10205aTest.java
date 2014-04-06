@@ -135,7 +135,7 @@ public class Nms10205aTest extends Nms10205aNetworkBuilder {
 
         final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
         
-        assertEquals(19, links.size());
+        assertEquals(20, links.size());
         
         
         // Linkd is able to find partially the topology using the next hop router
@@ -219,8 +219,11 @@ public class Nms10205aTest extends Nms10205aNetworkBuilder {
             } else if (start+9 == id ) {
                 checkLink(spaceexsw2, mumbai, 34, 508, datalinkinterface);
                 assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+            } else if (start+19 == id ) {
+                checkLink(spaceexsw2, spaceexsw1, 523, 1361, datalinkinterface);
+                assertEquals(DiscoveryProtocol.bridge, datalinkinterface.getProtocol());
             } else {
-                checkLink(mumbai,mumbai,-1,-1,datalinkinterface);
+                assertEquals(-1, 0);
             }
 
         }
