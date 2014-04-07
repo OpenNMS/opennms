@@ -51,6 +51,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.core.style.ToStringCreator;
@@ -63,6 +64,7 @@ import org.springframework.core.style.ToStringCreator;
 @XmlRootElement(name = "assetRecord")
 @Entity
 @Table(name = "assets")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OnmsAssetRecord implements Serializable {
     private static final long serialVersionUID = -8259333820682056097L;
 

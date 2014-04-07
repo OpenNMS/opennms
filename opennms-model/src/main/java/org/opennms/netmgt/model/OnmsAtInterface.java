@@ -53,6 +53,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.hibernate.annotations.Type;
 import org.opennms.core.network.InetAddressXmlAdapter;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
@@ -66,6 +67,7 @@ import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 @XmlRootElement(name = "atInterface")
 @Entity
 @Table(name="atInterface", uniqueConstraints = {@UniqueConstraint(columnNames={"nodeId", "ipAddr", "atPhysAddr"})})
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OnmsAtInterface {
 	private Integer m_id;
 	private OnmsNode m_node;

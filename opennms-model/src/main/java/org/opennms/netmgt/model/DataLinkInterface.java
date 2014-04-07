@@ -30,6 +30,7 @@ package org.opennms.netmgt.model;
 
 import java.io.Serializable;
 import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -54,6 +55,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.hibernate.annotations.Type;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.xml.bind.StatusTypeXmlAdapter;
@@ -62,6 +64,7 @@ import org.opennms.netmgt.xml.bind.StatusTypeXmlAdapter;
 @Entity
 @Table(name = "datalinkinterface")
 @XmlAccessorType(XmlAccessType.NONE)
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class DataLinkInterface implements Serializable, Comparable<DataLinkInterface> {
     private static final long serialVersionUID = -3336726327359373609L;
 

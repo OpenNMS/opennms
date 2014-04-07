@@ -29,6 +29,7 @@
 package org.opennms.netmgt.model;
 
 import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -44,12 +45,15 @@ import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 /**
  * <p>OnmsMapElement class.</p>
  */
 @XmlRootElement(name = "mapElement")
 @Entity
 @Table(name = "element")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OnmsMapElement implements Serializable {
     /**
      * Constant <code>MAP_TYPE="M"</code>

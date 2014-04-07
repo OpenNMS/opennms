@@ -61,12 +61,14 @@ import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.hibernate.annotations.Where;
 import org.springframework.core.style.ToStringCreator;
 
 @XmlRootElement(name = "service")
 @Entity
 @Table(name="ifServices")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OnmsMonitoredService extends OnmsEntity implements Serializable,
 Comparable<OnmsMonitoredService> {
 
