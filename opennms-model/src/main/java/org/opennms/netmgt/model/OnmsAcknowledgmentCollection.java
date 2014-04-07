@@ -28,92 +28,100 @@
 
 package org.opennms.netmgt.model;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * <p>OnmsAcknowledgmentCollection class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
 @XmlRootElement(name="acknowledgments")
-public class OnmsAcknowledgmentCollection extends LinkedList<OnmsAcknowledgment> {
+public class OnmsAcknowledgmentCollection implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-	/**
-     * 
-     */
-    private static final long serialVersionUID = -8540172282769996576L;
-    private int m_totalCount;
-
-    /**
-	 * <p>Constructor for OnmsAcknowledgmentCollection.</p>
-	 */
-	public OnmsAcknowledgmentCollection() {
-        super();
-    }
-
-    /**
-     * <p>Constructor for OnmsAcknowledgmentCollection.</p>
-     *
-     * @param c a {@link java.util.Collection} object.
-     */
-    public OnmsAcknowledgmentCollection(Collection<? extends OnmsAcknowledgment> c) {
-        super(c);
-    }
-
-    /**
-     * <p>getNotifications</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
     @XmlElement(name="onmsAcknowledgment")
-    public List<OnmsAcknowledgment> getNotifications() {
-        return this;
+    private List<OnmsAcknowledgment> m_acknowledgments = new ArrayList<OnmsAcknowledgment>();
+    private Integer m_totalCount;
+
+    public OnmsAcknowledgmentCollection() {}
+    public OnmsAcknowledgmentCollection(final Collection<? extends OnmsAcknowledgment> acknowledgments) {
+        m_acknowledgments.addAll(acknowledgments);
     }
 
-    /**
-     * <p>setEvents</p>
-     *
-     * @param events a {@link java.util.List} object.
-     */
-    public void setEvents(List<OnmsAcknowledgment> events) {
-        if (events == this) return;
-        clear();
-        addAll(events);
+    public List<OnmsAcknowledgment> getAcknowledgments() {
+        return m_acknowledgments;
+    }
+    public void setAcknowledgments(final List<OnmsAcknowledgment> acknowledgments) {
+        if (acknowledgments == m_acknowledgments) return;
+        m_acknowledgments.clear();
+        m_acknowledgments.addAll(acknowledgments);
+    }
+
+    public void add(final OnmsAcknowledgment acknowledgment) {
+        m_acknowledgments.add(acknowledgment);
+    }
+    public void addAll(final Collection<OnmsAcknowledgment> acknowledgments) {
+        m_acknowledgments.addAll(acknowledgments);
     }
     
-    /**
-     * <p>getCount</p>
-     *
-     * @return a {@link java.lang.Integer} object.
-     */
     @XmlAttribute(name="count")
     public Integer getCount() {
-    	return this.size();
+        if (m_acknowledgments.size() == 0) {
+            return null;
+        } else {
+            return m_acknowledgments.size();
+        }
     }
-
-    /**
-     * <p>getTotalCount</p>
-     *
-     * @return a int.
-     */
+    public void setCount(final Integer count) {
+        // dummy to make JAXB happy
+    }
+    public int size() {
+        return m_acknowledgments.size();
+    }
+    
     @XmlAttribute(name="totalCount")
-    public int getTotalCount() {
-        return m_totalCount;
+    public Integer getTotalCount() {
+        return m_totalCount == null? getCount() : m_totalCount;
     }
-
-    /**
-     * <p>setTotalCount</p>
-     *
-     * @param count a int.
-     */
-    public void setTotalCount(int count) {
-        m_totalCount = count;
+    public void setTotalCount(final Integer totalCount) {
+        m_totalCount = totalCount;
+    }
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((m_acknowledgments == null) ? 0 : m_acknowledgments.hashCode());
+        result = prime * result + ((m_totalCount == null) ? 0 : m_totalCount.hashCode());
+        return result;
+    }
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof OnmsAcknowledgmentCollection)) {
+            return false;
+        }
+        final OnmsAcknowledgmentCollection other = (OnmsAcknowledgmentCollection) obj;
+        if (m_acknowledgments == null) {
+            if (other.m_acknowledgments != null) {
+                return false;
+            }
+        } else if (!m_acknowledgments.equals(other.m_acknowledgments)) {
+            return false;
+        }
+        if (getTotalCount() == null) {
+            if (other.getTotalCount() != null) {
+                return false;
+            }
+        } else if (!getTotalCount().equals(other.getTotalCount())) {
+            return false;
+        }
+        return true;
     }
 }

@@ -28,59 +28,106 @@
 
 package org.opennms.netmgt.model;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "users")
-public class OnmsUserList extends LinkedList<OnmsUser> {
-    private static final long serialVersionUID = 870025150817734414L;
-    private int m_totalCount;
+@XmlAccessorType(XmlAccessType.NONE)
+public class OnmsUserList implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    @XmlElement(name="user")
+    private List<OnmsUser> m_users = new ArrayList<OnmsUser>();
+
+    private Integer m_totalCount;
     
     public OnmsUserList() {
-        super();
     }
 
     public OnmsUserList(final Collection<? extends OnmsUser> c) {
-        super(c);
+        m_users.addAll(c);
     }
 
-    @XmlElement(name = "user")
     public List<OnmsUser> getUsers() {
-        return this;
+        return m_users;
     }
     
     public void setUsers(final List<OnmsUser> users) {
-        if (users == this) return;
-        clear();
-        addAll(users);
+        if (users == m_users) return;
+        m_users.clear();
+        m_users.addAll(users);
     }
     
-    @XmlAttribute(name="count")
-    public int getCount() {
-        return this.size();
+    public void add(final OnmsUser user) {
+        m_users.add(user);
     }
 
-    // The property has a getter "" but no setter. For unmarshalling, please define setters.
-    public void setCount(final int count) {
+    @XmlAttribute(name="count")
+    public Integer getCount() {
+        if (m_users.size() == 0) {
+            return null;
+        } else {
+            return m_users.size();
+        }
+    }
+    public void setCount(final Integer count) {
+    }
+    public int size() {
+        return m_users.size();
     }
 
     @XmlAttribute(name="totalCount")
-    public int getTotalCount() {
-        return m_totalCount;
+    public Integer getTotalCount() {
+        return m_totalCount == null? getCount() : m_totalCount;
     }
-    
-    /**
-     * <p>setTotalCount</p>
-     *
-     * @param count a int.
-     */
-    public void setTotalCount(final int count) {
-        m_totalCount = count;
+    public void setTotalCount(final Integer totalCount) {
+        m_totalCount = totalCount;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((m_totalCount == null) ? 0 : m_totalCount.hashCode());
+        result = prime * result + ((m_users == null) ? 0 : m_users.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof OnmsUserList)) {
+            return false;
+        }
+        final OnmsUserList other = (OnmsUserList) obj;
+        if (getTotalCount() == null) {
+            if (other.getTotalCount() != null) {
+                return false;
+            }
+        } else if (!getTotalCount().equals(other.getTotalCount())) {
+            return false;
+        }
+        if (m_users == null) {
+            if (other.m_users != null) {
+                return false;
+            }
+        } else if (!m_users.equals(other.m_users)) {
+            return false;
+        }
+        return true;
     }
 
 }

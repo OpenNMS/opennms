@@ -28,8 +28,9 @@
 
 package org.opennms.netmgt.model;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -43,76 +44,91 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @version $Id: $
  */
 @XmlRootElement(name="events")
-public class OnmsEventCollection extends LinkedList<OnmsEvent> {
+public class OnmsEventCollection implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-    private static final long serialVersionUID = 7330609869969767290L;
-
-    private int m_totalCount;
-
-	/**
-	 * <p>Constructor for OnmsEventCollection.</p>
-	 */
-	public OnmsEventCollection() {
-        super();
-    }
-
-    /**
-     * <p>Constructor for OnmsEventCollection.</p>
-     *
-     * @param c a {@link java.util.Collection} object.
-     */
-    public OnmsEventCollection(Collection<? extends OnmsEvent> c) {
-        super(c);
-    }
-
-    /**
-     * <p>getEvents</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
     @XmlElement(name="event")
-    public List<OnmsEvent> getEvents() {
-        return this;
+    private List<OnmsEvent> m_events = new ArrayList<OnmsEvent>();
+    private Integer m_totalCount;
+
+    public OnmsEventCollection() {}
+    public OnmsEventCollection(final Collection<? extends OnmsEvent> events) {
+        m_events.addAll(events);
     }
 
-    /**
-     * <p>setEvents</p>
-     *
-     * @param events a {@link java.util.List} object.
-     */
-    public void setEvents(List<OnmsEvent> events) {
-        if (events == this) return;
-        clear();
-        addAll(events);
+    public List<OnmsEvent> getEvents() {
+        return m_events;
+    }
+    public void setEvents(final List<OnmsEvent> events) {
+        if (events == m_events) return;
+        m_events.clear();
+        m_events.addAll(events);
+    }
+
+    public void add(final OnmsEvent event) {
+        m_events.add(event);
+    }
+    public void addAll(final Collection<OnmsEvent> events) {
+        m_events.addAll(events);
     }
     
-    /**
-     * <p>getCount</p>
-     *
-     * @return a {@link java.lang.Integer} object.
-     */
     @XmlAttribute(name="count")
     public Integer getCount() {
-    	return this.size();
+        if (m_events.size() == 0) {
+            return null;
+        } else {
+            return m_events.size();
+        }
+    }
+    public void setCount(final Integer count) {
+        // dummy to make JAXB happy
+    }
+    public int size() {
+        return m_events.size();
     }
     
-    /**
-     * <p>getTotalCount</p>
-     *
-     * @return a int.
-     */
     @XmlAttribute(name="totalCount")
-    public int getTotalCount() {
-        return m_totalCount;
+    public Integer getTotalCount() {
+        return m_totalCount == null? getCount() : m_totalCount;
     }
-    
-    /**
-     * <p>setTotalCount</p>
-     *
-     * @param count a int.
-     */
-    public void setTotalCount(int count) {
-        m_totalCount = count;
+    public void setTotalCount(final Integer totalCount) {
+        m_totalCount = totalCount;
+    }
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((m_events == null) ? 0 : m_events.hashCode());
+        result = prime * result + ((m_totalCount == null) ? 0 : m_totalCount.hashCode());
+        return result;
+    }
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof OnmsEventCollection)) {
+            return false;
+        }
+        final OnmsEventCollection other = (OnmsEventCollection) obj;
+        if (m_events == null) {
+            if (other.m_events != null) {
+                return false;
+            }
+        } else if (!m_events.equals(other.m_events)) {
+            return false;
+        }
+        if (getTotalCount() == null) {
+            if (other.getTotalCount() != null) {
+                return false;
+            }
+        } else if (!getTotalCount().equals(other.getTotalCount())) {
+            return false;
+        }
+        return true;
     }
 }
 

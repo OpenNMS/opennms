@@ -28,8 +28,9 @@
 
 package org.opennms.netmgt.model;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -44,79 +45,90 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "ipInterfaces")
 @XmlAccessorType(XmlAccessType.NONE)
-public class OnmsIpInterfaceList extends LinkedList<OnmsIpInterface> {
+public class OnmsIpInterfaceList implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-    private static final long serialVersionUID = 1123252152117491694L;
-    private int m_totalCount;
+    @XmlElement(name="ipInterface")
+    private List<OnmsIpInterface> m_ipInterfaces = new ArrayList<OnmsIpInterface>();
+    private Integer m_totalCount;
 
-    /**
-     * <p>Constructor for OnmsIpInterfaceList.</p>
-     */
-    public OnmsIpInterfaceList() {
-        super();
+    public OnmsIpInterfaceList() {}
+    public OnmsIpInterfaceList(final Collection<? extends OnmsIpInterface> ipInterfaces) {
+        m_ipInterfaces.addAll(ipInterfaces);
     }
 
-    /**
-     * <p>Constructor for OnmsIpInterfaceList.</p>
-     *
-     * @param c a {@link java.util.Collection} object.
-     */
-    public OnmsIpInterfaceList(Collection<? extends OnmsIpInterface> c) {
-        super(c);
+    public List<OnmsIpInterface> getIpInterfaces() {
+        return m_ipInterfaces;
+    }
+    public void setIpInterfaces(final List<OnmsIpInterface> ipInterfaces) {
+        if (ipInterfaces == m_ipInterfaces) return;
+        m_ipInterfaces.clear();
+        m_ipInterfaces.addAll(ipInterfaces);
     }
 
-    /**
-     * <p>getInterfaces</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    @XmlElement(name = "ipInterface")
-    public List<OnmsIpInterface> getInterfaces() {
-        return this;
+    public void add(final OnmsIpInterface ipInterface) {
+        m_ipInterfaces.add(ipInterface);
+    }
+    public void addAll(final Collection<OnmsIpInterface> ipInterfaces) {
+        m_ipInterfaces.addAll(ipInterfaces);
     }
     
-    /**
-     * <p>setInterfaces</p>
-     *
-     * @param interfaces a {@link java.util.List} object.
-     */
-    public void setInterfaces(List<OnmsIpInterface> interfaces) {
-        if (interfaces == this) return;
-        clear();
-        addAll(interfaces);
-    }
-    
-    /**
-     * <p>getCount</p>
-     *
-     * @return a {@link java.lang.Integer} object.
-     */
     @XmlAttribute(name="count")
     public Integer getCount() {
-        return this.size();
+        if (m_ipInterfaces.size() == 0) {
+            return null;
+        } else {
+            return m_ipInterfaces.size();
+        }
     }
-    
     public void setCount(final Integer count) {
-        // dummy to make serialization happy
+        // dummy to make JAXB happy
     }
-
-    /**
-     * <p>getTotalCount</p>
-     *
-     * @return a int.
-     */
-    @XmlAttribute(name="totalCount")
-    public int getTotalCount() {
-        return m_totalCount;
+    public int size() {
+        return m_ipInterfaces.size();
     }
     
-    /**
-     * <p>setTotalCount</p>
-     *
-     * @param count a int.
-     */
-    public void setTotalCount(int count) {
-        m_totalCount = count;
+    @XmlAttribute(name="totalCount")
+    public Integer getTotalCount() {
+        return m_totalCount == null? getCount() : m_totalCount;
     }
-
+    public void setTotalCount(final Integer totalCount) {
+        m_totalCount = totalCount;
+    }
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((m_ipInterfaces == null) ? 0 : m_ipInterfaces.hashCode());
+        result = prime * result + ((m_totalCount == null) ? 0 : m_totalCount.hashCode());
+        return result;
+    }
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof OnmsIpInterfaceList)) {
+            return false;
+        }
+        final OnmsIpInterfaceList other = (OnmsIpInterfaceList) obj;
+        if (m_ipInterfaces == null) {
+            if (other.m_ipInterfaces != null) {
+                return false;
+            }
+        } else if (!m_ipInterfaces.equals(other.m_ipInterfaces)) {
+            return false;
+        }
+        if (getTotalCount() == null) {
+            if (other.getTotalCount() != null) {
+                return false;
+            }
+        } else if (!getTotalCount().equals(other.getTotalCount())) {
+            return false;
+        }
+        return true;
+    }
 }

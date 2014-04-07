@@ -1,10 +1,10 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Alarm, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Alarm, Inc.
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ * OpenNMS(R) is a registered trademark of The OpenNMS Alarm, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -28,8 +28,9 @@
 
 package org.opennms.netmgt.model;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -43,74 +44,90 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @version $Id: $
  */
 @XmlRootElement(name="alarms")
-public class OnmsAlarmCollection extends LinkedList<OnmsAlarm> {
+public class OnmsAlarmCollection implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-    private static final long serialVersionUID = 7054167470617453783L;
-    private int m_totalCount;
-
-	/**
-	 * <p>Constructor for OnmsAlarmCollection.</p>
-	 */
-	public OnmsAlarmCollection() {
-        super();
-    }
-
-    /**
-     * <p>Constructor for OnmsAlarmCollection.</p>
-     *
-     * @param c a {@link java.util.Collection} object.
-     */
-    public OnmsAlarmCollection(Collection<? extends OnmsAlarm> c) {
-        super(c);
-    }
-
-    /**
-     * <p>getNotifications</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
     @XmlElement(name="alarm")
-    public List<OnmsAlarm> getNotifications() {
-        return this;
+    private List<OnmsAlarm> m_alarms = new ArrayList<OnmsAlarm>();
+    private Integer m_totalCount;
+
+    public OnmsAlarmCollection() {}
+    public OnmsAlarmCollection(final Collection<? extends OnmsAlarm> alarms) {
+        m_alarms.addAll(alarms);
     }
 
-    /**
-     * <p>setEvents</p>
-     *
-     * @param events a {@link java.util.List} object.
-     */
-    public void setEvents(List<OnmsAlarm> events) {
-        if (events == this) return;
-        clear();
-        addAll(events);
+    public List<OnmsAlarm> getAlarms() {
+        return m_alarms;
+    }
+    public void setAlarms(final List<OnmsAlarm> alarms) {
+        if (alarms == m_alarms) return;
+        m_alarms.clear();
+        m_alarms.addAll(alarms);
+    }
+
+    public void add(final OnmsAlarm alarm) {
+        m_alarms.add(alarm);
+    }
+    public void addAll(final Collection<OnmsAlarm> alarms) {
+        m_alarms.addAll(alarms);
     }
     
-    /**
-     * <p>getCount</p>
-     *
-     * @return a {@link java.lang.Integer} object.
-     */
     @XmlAttribute(name="count")
     public Integer getCount() {
-    	return this.size();
+        if (m_alarms.size() == 0) {
+            return null;
+        } else {
+            return m_alarms.size();
+        }
     }
-
-    /**
-     * <p>getTotalCount</p>
-     *
-     * @return a int.
-     */
+    public void setCount(final Integer count) {
+        // dummy to make JAXB happy
+    }
+    public int size() {
+        return m_alarms.size();
+    }
+    
     @XmlAttribute(name="totalCount")
-    public int getTotalCount() {
-        return m_totalCount;
+    public Integer getTotalCount() {
+        return m_totalCount == null? getCount() : m_totalCount;
     }
-
-    /**
-     * <p>setTotalCount</p>
-     *
-     * @param count a int.
-     */
-    public void setTotalCount(int count) {
-        m_totalCount = count;
+    public void setTotalCount(final Integer totalCount) {
+        m_totalCount = totalCount;
+    }
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((m_alarms == null) ? 0 : m_alarms.hashCode());
+        result = prime * result + ((m_totalCount == null) ? 0 : m_totalCount.hashCode());
+        return result;
+    }
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof OnmsAlarmCollection)) {
+            return false;
+        }
+        final OnmsAlarmCollection other = (OnmsAlarmCollection) obj;
+        if (m_alarms == null) {
+            if (other.m_alarms != null) {
+                return false;
+            }
+        } else if (!m_alarms.equals(other.m_alarms)) {
+            return false;
+        }
+        if (getTotalCount() == null) {
+            if (other.getTotalCount() != null) {
+                return false;
+            }
+        } else if (!getTotalCount().equals(other.getTotalCount())) {
+            return false;
+        }
+        return true;
     }
 }

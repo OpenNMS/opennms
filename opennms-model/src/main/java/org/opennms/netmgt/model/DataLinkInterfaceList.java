@@ -28,8 +28,9 @@
 
 package org.opennms.netmgt.model;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -40,60 +41,90 @@ import javax.xml.bind.annotation.XmlRootElement;
  * <p>OnmsMapList class.</p>
  */
 @XmlRootElement(name = "links")
-public class DataLinkInterfaceList extends LinkedList<DataLinkInterface> {
+public class DataLinkInterfaceList implements Serializable {
+    private static final long serialVersionUID = 1L;
 
+    @XmlElement(name="link")
+    private List<DataLinkInterface> m_dataLinkInterfaces = new ArrayList<DataLinkInterface>();
+    private Integer m_totalCount;
 
-
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1980683067851461914L;
-
-    /**
-     * <p>Constructor for OnmsMapList.</p>
-     */
-    public DataLinkInterfaceList() {
-        super();
+    public DataLinkInterfaceList() {}
+    public DataLinkInterfaceList(final Collection<? extends DataLinkInterface> dataLinkInterfaces) {
+        m_dataLinkInterfaces.addAll(dataLinkInterfaces);
     }
 
-    /**
-     * <p>Constructor for OnmsMapList.</p>
-     *
-     * @param c a {@link java.util.Collection} object.
-     */
-    public DataLinkInterfaceList(Collection<? extends DataLinkInterface> c) {
-        super(c);
+    public List<DataLinkInterface> getDataLinkInterfaces() {
+        return m_dataLinkInterfaces;
+    }
+    public void setDataLinkInterfaces(final List<DataLinkInterface> dataLinkInterfaces) {
+        if (dataLinkInterfaces == m_dataLinkInterfaces) return;
+        m_dataLinkInterfaces.clear();
+        m_dataLinkInterfaces.addAll(dataLinkInterfaces);
     }
 
-    /**
-     * <p>getMaps</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    @XmlElement(name = "link")
-    public List<DataLinkInterface> getLinks() {
-        return this;
+    public void add(final DataLinkInterface dataLinkInterface) {
+        m_dataLinkInterfaces.add(dataLinkInterface);
     }
-
-    /**
-     * <p>setMaps</p>
-     *
-     * @param maps a {@link java.util.List} object.
-     */
-    public void setLinks(List<DataLinkInterface> links) {
-        if (links == this) return;
-        clear();
-        addAll(links);
+    public void addAll(final Collection<DataLinkInterface> dataLinkInterfaces) {
+        m_dataLinkInterfaces.addAll(dataLinkInterfaces);
     }
-
-    /**
-     * <p>getCount</p>
-     *
-     * @return a {@link java.lang.Integer} object.
-     */
+    
     @XmlAttribute(name="count")
     public Integer getCount() {
-        return this.size();
+        if (m_dataLinkInterfaces.size() == 0) {
+            return null;
+        } else {
+            return m_dataLinkInterfaces.size();
+        }
     }
-
+    public void setCount(final Integer count) {
+        // dummy to make JAXB happy
+    }
+    public int size() {
+        return m_dataLinkInterfaces.size();
+    }
+    
+    @XmlAttribute(name="totalCount")
+    public Integer getTotalCount() {
+        return m_totalCount == null? getCount() : m_totalCount;
+    }
+    public void setTotalCount(final Integer totalCount) {
+        m_totalCount = totalCount;
+    }
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((m_dataLinkInterfaces == null) ? 0 : m_dataLinkInterfaces.hashCode());
+        result = prime * result + ((m_totalCount == null) ? 0 : m_totalCount.hashCode());
+        return result;
+    }
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof DataLinkInterfaceList)) {
+            return false;
+        }
+        final DataLinkInterfaceList other = (DataLinkInterfaceList) obj;
+        if (m_dataLinkInterfaces == null) {
+            if (other.m_dataLinkInterfaces != null) {
+                return false;
+            }
+        } else if (!m_dataLinkInterfaces.equals(other.m_dataLinkInterfaces)) {
+            return false;
+        }
+        if (getTotalCount() == null) {
+            if (other.getTotalCount() != null) {
+                return false;
+            }
+        } else if (!getTotalCount().equals(other.getTotalCount())) {
+            return false;
+        }
+        return true;
+    }
 }

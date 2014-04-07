@@ -28,58 +28,103 @@
 
 package org.opennms.netmgt.model;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "groups")
-public class OnmsGroupList extends LinkedList<OnmsGroup> {
-    private static final long serialVersionUID = -3120131643998397193L;
-    private int m_totalCount;
+@XmlRootElement(name="groups")
+@XmlAccessorType(XmlAccessType.NONE)
+public class OnmsGroupList implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-    public OnmsGroupList() {
-        super();
-    }
-    
-    public OnmsGroupList(final Collection<? extends OnmsGroup> c) {
-        super(c);
+    @XmlElement(name="group")
+    private List<OnmsGroup> m_groups = new ArrayList<OnmsGroup>();
+    private Integer m_totalCount;
+
+    public OnmsGroupList() {}
+    public OnmsGroupList(final Collection<? extends OnmsGroup> groups) {
+        m_groups.addAll(groups);
     }
 
-    @XmlElement(name = "group")
     public List<OnmsGroup> getGroups() {
-        return this;
+        return m_groups;
     }
-    
     public void setGroups(final List<OnmsGroup> groups) {
-        if (groups == this) return;
-        clear();
-        addAll(groups);
+        if (groups == m_groups) return;
+        m_groups.clear();
+        m_groups.addAll(groups);
+    }
+
+    public void add(final OnmsGroup group) {
+        m_groups.add(group);
+    }
+    public void addAll(final Collection<OnmsGroup> groups) {
+        m_groups.addAll(groups);
     }
     
     @XmlAttribute(name="count")
-    public int getCount() {
-        return this.size();
+    public Integer getCount() {
+        if (m_groups.size() == 0) {
+            return null;
+        } else {
+            return m_groups.size();
+        }
     }
-
-    // The property has a getter "" but no setter. For unmarshalling, please define setters.
-    public void setCount(final int count) {
+    public void setCount(final Integer count) {
+        // dummy to make JAXB happy
     }
-
-    @XmlAttribute(name="totalCount")
-    public int getTotalCount() {
-        return m_totalCount;
+    public int size() {
+        return m_groups.size();
     }
     
-    /**
-     * <p>setTotalCount</p>
-     *
-     * @param count a int.
-     */
-    public void setTotalCount(final int count) {
-        m_totalCount = count;
+    @XmlAttribute(name="totalCount")
+    public Integer getTotalCount() {
+        return m_totalCount == null? getCount() : m_totalCount;
+    }
+    public void setTotalCount(final Integer totalCount) {
+        m_totalCount = totalCount;
+    }
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((m_groups == null) ? 0 : m_groups.hashCode());
+        result = prime * result + ((m_totalCount == null) ? 0 : m_totalCount.hashCode());
+        return result;
+    }
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof OnmsGroupList)) {
+            return false;
+        }
+        final OnmsGroupList other = (OnmsGroupList) obj;
+        if (m_groups == null) {
+            if (other.m_groups != null) {
+                return false;
+            }
+        } else if (!m_groups.equals(other.m_groups)) {
+            return false;
+        }
+        if (getTotalCount() == null) {
+            if (other.getTotalCount() != null) {
+                return false;
+            }
+        } else if (!getTotalCount().equals(other.getTotalCount())) {
+            return false;
+        }
+        return true;
     }
 }

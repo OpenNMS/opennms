@@ -1,10 +1,10 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Category, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Category, Inc.
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ * OpenNMS(R) is a registered trademark of The OpenNMS Category, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -28,8 +28,9 @@
 
 package org.opennms.netmgt.model;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -43,59 +44,90 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @version $Id: $
  */
 @XmlRootElement(name = "categories")
-public class OnmsCategoryCollection extends LinkedList<OnmsCategory> {
+public class OnmsCategoryCollection implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-    private static final long serialVersionUID = 4731486422555152257L;
+    @XmlElement(name="category")
+    private List<OnmsCategory> m_categories = new ArrayList<OnmsCategory>();
+    private Integer m_totalCount;
 
-    /**
-     * <p>Constructor for OnmsCategoryCollection.</p>
-     */
-    public OnmsCategoryCollection() {
-        super();
+    public OnmsCategoryCollection() {}
+    public OnmsCategoryCollection(final Collection<? extends OnmsCategory> categories) {
+        m_categories.addAll(categories);
     }
 
-    /**
-     * <p>Constructor for OnmsCategoryCollection.</p>
-     *
-     * @param c a {@link java.util.Collection} object.
-     */
-    public OnmsCategoryCollection(Collection<? extends OnmsCategory> c) {
-        super(c);
-    }
-
-    /**
-     * <p>getCategories</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    @XmlElement(name = "category")
     public List<OnmsCategory> getCategories() {
-        return this;
+        return m_categories;
+    }
+    public void setCategories(final List<OnmsCategory> categories) {
+        if (categories == m_categories) return;
+        m_categories.clear();
+        m_categories.addAll(categories);
     }
 
-    /**
-     * <p>setCategories</p>
-     *
-     * @param categories a {@link java.util.List} object.
-     */
-    public void setCategories(List<OnmsCategory> categories) {
-        if (categories == this) return;
-        clear();
-        addAll(categories);
+    public void add(final OnmsCategory category) {
+        m_categories.add(category);
     }
-
-    /**
-     * <p>getCount</p>
-     *
-     * @return a {@link java.lang.Integer} object.
-     */
-    @XmlAttribute(name="count")
-    public Integer getCount() {
-        return this.size();
+    public void addAll(final Collection<OnmsCategory> categories) {
+        m_categories.addAll(categories);
     }
     
-    // make JaxbUtils happy (for a getter there must be a setter)
-    public void setCount(Integer count) {
-        ; // no implementation, because it is calculated
+    @XmlAttribute(name="count")
+    public Integer getCount() {
+        if (m_categories.size() == 0) {
+            return null;
+        } else {
+            return m_categories.size();
+        }
+    }
+    public void setCount(final Integer count) {
+        // dummy to make JAXB happy
+    }
+    public int size() {
+        return m_categories.size();
+    }
+    
+    @XmlAttribute(name="totalCount")
+    public Integer getTotalCount() {
+        return m_totalCount == null? getCount() : m_totalCount;
+    }
+    public void setTotalCount(final Integer totalCount) {
+        m_totalCount = totalCount;
+    }
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((m_categories == null) ? 0 : m_categories.hashCode());
+        result = prime * result + ((m_totalCount == null) ? 0 : m_totalCount.hashCode());
+        return result;
+    }
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof OnmsCategoryCollection)) {
+            return false;
+        }
+        final OnmsCategoryCollection other = (OnmsCategoryCollection) obj;
+        if (m_categories == null) {
+            if (other.m_categories != null) {
+                return false;
+            }
+        } else if (!m_categories.equals(other.m_categories)) {
+            return false;
+        }
+        if (getTotalCount() == null) {
+            if (other.getTotalCount() != null) {
+                return false;
+            }
+        } else if (!getTotalCount().equals(other.getTotalCount())) {
+            return false;
+        }
+        return true;
     }
 }

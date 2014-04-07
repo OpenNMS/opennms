@@ -28,42 +28,99 @@
 
 package org.opennms.netmgt.model;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class OnmsLocationAvailDefinitionList extends LinkedList<OnmsLocationAvailDataPoint> {
-
-    /**
-     * 
-     */
+public class OnmsLocationAvailDefinitionList implements Serializable {
     private static final long serialVersionUID = 1L;
-    
-    public OnmsLocationAvailDefinitionList() {
-        super();
-    }
-    
-    public OnmsLocationAvailDefinitionList(Collection<? extends OnmsLocationAvailDataPoint> c) {
-        super(c);
-    }
-    
+
     @XmlElement(name="data")
-    public List<OnmsLocationAvailDataPoint> getDefinitions(){
-        return this;
-    }
-    
-    public void setDefinitions(List<OnmsLocationAvailDataPoint> defs) {
-        if (defs == this) return;
-        clear();
-        addAll(defs);
-    }
-    
-    public void addDefinition(OnmsLocationAvailDataPoint def) {
-        add(def);
+    private List<OnmsLocationAvailDataPoint> m_locationAvailDefinitions = new ArrayList<OnmsLocationAvailDataPoint>();
+    private Integer m_totalCount;
+
+    public OnmsLocationAvailDefinitionList() {}
+    public OnmsLocationAvailDefinitionList(final Collection<? extends OnmsLocationAvailDataPoint> locationAvailDefinitions) {
+        m_locationAvailDefinitions.addAll(locationAvailDefinitions);
     }
 
-}
+    public List<OnmsLocationAvailDataPoint> getDefinitions() {
+        return m_locationAvailDefinitions;
+    }
+    public void setDefinitions(final List<OnmsLocationAvailDataPoint> locationAvailDefinitions) {
+        if (locationAvailDefinitions == m_locationAvailDefinitions) return;
+        m_locationAvailDefinitions.clear();
+        m_locationAvailDefinitions.addAll(locationAvailDefinitions);
+    }
+
+    public void add(final OnmsLocationAvailDataPoint locationAvailDefinition) {
+        m_locationAvailDefinitions.add(locationAvailDefinition);
+    }
+    public void addAll(final Collection<OnmsLocationAvailDataPoint> locationAvailDefinitions) {
+        m_locationAvailDefinitions.addAll(locationAvailDefinitions);
+    }
+    
+    @XmlAttribute(name="count")
+    public Integer getCount() {
+        if (m_locationAvailDefinitions.size() == 0) {
+            return null;
+        } else {
+            return m_locationAvailDefinitions.size();
+        }
+    }
+    public void setCount(final Integer count) {
+        // dummy to make JAXB happy
+    }
+    public int size() {
+        return m_locationAvailDefinitions.size();
+    }
+    
+    @XmlAttribute(name="totalCount")
+    public Integer getTotalCount() {
+        return m_totalCount == null? getCount() : m_totalCount;
+    }
+    public void setTotalCount(final Integer totalCount) {
+        m_totalCount = totalCount;
+    }
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((m_locationAvailDefinitions == null) ? 0 : m_locationAvailDefinitions.hashCode());
+        result = prime * result + ((m_totalCount == null) ? 0 : m_totalCount.hashCode());
+        return result;
+    }
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof OnmsLocationAvailDefinitionList)) {
+            return false;
+        }
+        final OnmsLocationAvailDefinitionList other = (OnmsLocationAvailDefinitionList) obj;
+        if (m_locationAvailDefinitions == null) {
+            if (other.m_locationAvailDefinitions != null) {
+                return false;
+            }
+        } else if (!m_locationAvailDefinitions.equals(other.m_locationAvailDefinitions)) {
+            return false;
+        }
+        if (getTotalCount() == null) {
+            if (other.getTotalCount() != null) {
+                return false;
+            }
+        } else if (!getTotalCount().equals(other.getTotalCount())) {
+            return false;
+        }
+        return true;
+    }}
