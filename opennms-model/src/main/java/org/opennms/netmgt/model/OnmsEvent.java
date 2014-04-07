@@ -54,6 +54,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.Type;
@@ -1027,6 +1028,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 */
 	@XmlIDREF
 	@XmlElement(name="nodeId")
+	@JsonIgnore
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="nodeId")
 	public OnmsNode getNode() {
