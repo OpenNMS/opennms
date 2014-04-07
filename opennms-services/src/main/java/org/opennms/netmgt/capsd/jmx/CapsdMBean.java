@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,4 +37,59 @@ import org.opennms.netmgt.daemon.BaseOnmsMBean;
  * @version $Id: $
  */
 public interface CapsdMBean extends BaseOnmsMBean {
+    
+    /**
+     * @return The approximate current number of active threads in the
+     *         new-suspect scan thread pool
+     */
+    long getActiveSuspectThreads();
+    
+    /**
+     * @return The approximate current number of active threads in the
+     *         rescan thread pool
+     */
+    long getActiveRescanThreads();
+    
+    /**
+     * @return The approximate total number of tasks completed by the
+     *         new-suspect scan thread pool since Capsd was last started
+     */
+    long getSuspectCompletedTasks();
+    
+    /**
+     * @return The approximate total number of tasks completed by the
+     *         rescan thread pool since Capsd was last started
+     */
+    long getRescanCompletedTasks();
+    
+    /**
+     * @return The approximate total number of tasks delegated to the
+     *         new-suspect scan thread pool since Capsd was last started
+     */
+    long getSuspectTotalTasks();
+    
+    /**
+     * @return The approximate total number of tasks delegated to the
+     *         rescan thread pool since Capsd was last started
+     */
+    long getRescanTotalTasks();
+    
+    /**
+     * @return The approximate ratio of tasks completed to tasks delegated
+     *         for the new-suspect scan thread pool since Capsd was last
+     *         started
+     */
+    double getSuspectTaskCompletionRatio();
+    
+    /**
+     * @return The approximate ratio of tasks completed to tasks delegated
+     *         for the rescan thread pool since Capsd was last started
+     */
+    double getRescanTaskCompletionRatio();
+    
+    long getSuspectQueueSize();
+    
+    long getRescanQueueSize();
+    
+    
 }
