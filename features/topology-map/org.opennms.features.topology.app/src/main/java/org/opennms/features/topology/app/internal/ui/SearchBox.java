@@ -96,7 +96,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
         public void selectSuggestion(SearchSuggestion searchSuggestion) {
             LOG.debug("SearchBox->selectSuggestion: called with searchSuggestion: {}", searchSuggestion);
 
-            SearchResult searchResult = new SearchResult(searchSuggestion.getNamespace(), searchSuggestion.getId(), searchSuggestion.getLabel());
+            SearchResult searchResult = new SearchResult(searchSuggestion.getNamespace(), searchSuggestion.getId(), searchSuggestion.getLabel(), searchSuggestion.getQuery());
 
             Multiset<SearchProvider> keys = m_suggestionMap.keys();
             for (SearchProvider key : keys ) {
@@ -112,7 +112,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
         public void removeSelected(SearchSuggestion searchSuggestion) {
             LOG.debug("SearchBox->removeSelected: called with searchSuggestion: {}", searchSuggestion);
 
-            SearchResult searchResult = new SearchResult(searchSuggestion.getNamespace(), searchSuggestion.getId(), searchSuggestion.getLabel());
+            SearchResult searchResult = new SearchResult(searchSuggestion.getNamespace(), searchSuggestion.getId(), searchSuggestion.getLabel(), searchSuggestion.getQuery());
 
             Multiset<SearchProvider> keys = m_suggestionMap.keys();
             for(SearchProvider key : keys){
@@ -128,7 +128,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
         @Override
         public void addToFocus(SearchSuggestion searchSuggestion) {
             LOG.debug("SearchBox->addToFocus: called with searchSuggestion: {}", searchSuggestion);
-            SearchResult searchResult = new SearchResult(searchSuggestion.getNamespace(), searchSuggestion.getId(), searchSuggestion.getLabel());
+            SearchResult searchResult = new SearchResult(searchSuggestion.getNamespace(), searchSuggestion.getId(), searchSuggestion.getLabel(), searchSuggestion.getQuery());
 
             Multiset<SearchProvider> keys = m_suggestionMap.keys();
             for(SearchProvider key : keys){
@@ -147,13 +147,13 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
         public void removeFocused(SearchSuggestion searchSuggestion) {
             LOG.debug("SearchBox->removeFocused: called with searchSuggestion: {}", searchSuggestion);
             
-            SearchResult searchResult = new SearchResult(searchSuggestion.getNamespace(), searchSuggestion.getId(), searchSuggestion.getLabel());
+            SearchResult searchResult = new SearchResult(searchSuggestion.getNamespace(), searchSuggestion.getId(), searchSuggestion.getLabel(), searchSuggestion.getQuery());
 
-            Multiset<SearchProvider> keys = m_suggestionMap.keys();
+            Multiset<SearchProvider> providers = m_suggestionMap.keys();
             
             LOG.debug("SearchBox->removeFocused: suggestionMap size is: {}", m_suggestionMap.size());
             
-            for (SearchProvider key : keys) {
+            for (SearchProvider key : providers) {
                 //LOG.debug("SearchBox->removeFocused: iterating keys with key: {}", key);
                 Collection<SearchResult> searchResults = m_suggestionMap.get(key);
                 if (searchResults.contains(searchResult)) {
@@ -177,7 +177,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
         public void centerSearchSuggestion(SearchSuggestion searchSuggestion) {
             LOG.debug("SearchBox->centerSearchSuggestion: called with searchSuggestion: {}", searchSuggestion);
 
-            SearchResult searchResult = new SearchResult(searchSuggestion.getNamespace(), searchSuggestion.getId(), searchSuggestion.getLabel());
+            SearchResult searchResult = new SearchResult(searchSuggestion.getNamespace(), searchSuggestion.getId(), searchSuggestion.getLabel(), searchSuggestion.getQuery());
 
             Set<VertexRef> vRefs = new TreeSet<VertexRef>();
             Multiset<SearchProvider> keys = m_suggestionMap.keys();
@@ -206,7 +206,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
         public void toggleSuggestionCollapse(SearchSuggestion searchSuggestion) {
             LOG.debug("SearchBox->toggleSuggestionCollapse: called with searchSuggestion: {}", searchSuggestion);
             
-            SearchResult searchResult = new SearchResult(searchSuggestion.getNamespace(), searchSuggestion.getId(), searchSuggestion.getLabel());
+            SearchResult searchResult = new SearchResult(searchSuggestion.getNamespace(), searchSuggestion.getId(), searchSuggestion.getLabel(), searchSuggestion.getQuery());
             Multiset<SearchProvider> keys = m_suggestionMap.keys();
             for(SearchProvider key : keys){
                 Collection<SearchResult> searchResults = m_suggestionMap.get(key);
@@ -372,6 +372,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
         SearchSuggestion suggestion = new SearchSuggestion(searchResult.getNamespace(), searchResult.getId(), searchResult.getLabel());
         suggestion.setCollapsible(searchResult.isCollapsible());
         suggestion.setCollapsed(searchResult.isCollapsed());
+        suggestion.setQuery(searchResult.getQuery());
         return suggestion;
     }
 

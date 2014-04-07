@@ -34,7 +34,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
@@ -49,6 +48,7 @@ import org.opennms.features.topology.app.internal.support.AlarmHopCriteria;
 import org.opennms.features.topology.app.internal.support.AlarmHopCriteriaFactory;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,12 +72,12 @@ public class AlarmSearchProvider extends AbstractSearchProvider implements Searc
 
 	private static Logger LOG = LoggerFactory.getLogger(AlarmSearchProvider.class);
 	
-    private AlarmDao m_AlarmDao;
+    private AlarmDao m_alarmDao;
     private AlarmHopCriteriaFactory m_alarmHopFactory;
 
 	public AlarmSearchProvider(AlarmDao dao) {
-    	m_AlarmDao = dao;
-    	m_alarmHopFactory = new AlarmHopCriteriaFactory(m_AlarmDao);
+    	m_alarmDao = dao;
+    	m_alarmHopFactory = new AlarmHopCriteriaFactory(m_alarmDao);
     }
 
     @Override
@@ -94,8 +94,8 @@ public class AlarmSearchProvider extends AbstractSearchProvider implements Searc
         
         private Integer m_alarmId;
         private Integer m_nodeId;
-        private String m_alarmQuery;
         private String m_nodeLabel;
+        private boolean m_severityQuery = false;
         
         
         public Integer getAlarmId() {
@@ -114,14 +114,6 @@ public class AlarmSearchProvider extends AbstractSearchProvider implements Searc
             m_nodeId = nodeId;
         }
         
-        public String getAlarmQuery() {
-            return m_alarmQuery;
-        }
-        
-        public void setAlarmQuery(String query) {
-            m_alarmQuery = query;
-        }
-        
         public String getNodeLabel() {
             return m_nodeLabel;
         }
@@ -130,22 +122,38 @@ public class AlarmSearchProvider extends AbstractSearchProvider implements Searc
             m_nodeLabel = nodeLabel;
         }
         
-        public AlarmSearchResult(SearchResult result) {
-            this(Integer.valueOf(result.getId()), null, result.getLabel(), result.getLabel());
+        public AlarmSearchResult (Integer alarmId, Integer nodeId, String nodeLabel) {
+            this(alarmId, nodeId, nodeLabel, null);
         }
         
-        public AlarmSearchResult (Integer alarmId, Integer nodeId, String alarmQuery, String nodeLabel) {
-            
-            //TODO: Verify that every search result should have the nodeId and the nodeLabel used
-            //to set the id and label on the base <SearchResult> class.
-            super(getSearchProviderNamespace(), String.valueOf(alarmId), nodeLabel);
+        public AlarmSearchResult (Integer alarmId, Integer nodeId, String nodeLabel, String query) {
+            super(getSearchProviderNamespace(), String.valueOf(nodeId)+":"+String.valueOf(alarmId), nodeLabel, query);
             
             this.setAlarmId(alarmId);
             this.setNodeId(nodeId);
-            this.setAlarmQuery(alarmQuery);
             this.setNodeLabel(nodeLabel);
         }
         
+        public AlarmSearchResult(String id) {
+            super(getSearchProviderNamespace(), id, id, id);
+        }
+
+        public AlarmSearchResult(SearchResult searchResult) {
+            super(getSearchProviderNamespace(), searchResult.getId(), searchResult.getLabel(), searchResult.getQuery());
+            this.setAlarmId(null);
+            this.setNodeId(null);
+            this.setNodeLabel(searchResult.getLabel());
+            this.setSeverityQuery(false);
+        }
+
+        public boolean isSeverityQuery() {
+            return m_severityQuery ;
+        }
+        
+        public void setSeverityQuery(boolean isSeverityQuery) {
+            m_severityQuery = isSeverityQuery;
+        }
+
     }
 
     /**
@@ -158,77 +166,89 @@ public class AlarmSearchProvider extends AbstractSearchProvider implements Searc
     public List<SearchResult> query(SearchQuery searchQuery, GraphContainer graphContainer) {
     	LOG.info("SearchProvider->query: called with search query: '{}'", searchQuery);
 
-        List<SearchResult> results = new ArrayList<SearchResult>();
+        final List<SearchResult> results = new ArrayList<SearchResult>();
         
-		String queryString = searchQuery.getQueryString();
+		final String queryString = searchQuery.getQueryString();
 		
 		if (!isAlarmQuery(queryString)) {
 			LOG.debug("SearchProvider->query: query not Alarm compatible.");
 			return results;
 		}
-    	
-    	CriteriaBuilder bldr = new CriteriaBuilder(OnmsAlarm.class);
-    	
-    	bldr.ilike("uei", "%"+queryString+"%").orderBy("node");
-    	
-		Criteria dbQueryCriteria = bldr.toCriteria();
-		List<OnmsAlarm> alarms;
 		
-		//Here to catch query exceptions and avoid unnecessary exception messages in the Vaadin UI
-		//Mainly do to not having yet found the perfect iplike regex that supports IPLIKE syntax 
-		//for both IPv4 and IPv6 IPLIKE expressions in the isIpLikeQuery method.  The current Pattern
-		//test currently fails not catching octets ending in '-' such as '10.7-.*.*' and only supports
-		//IPv4 addresses.  This just lets us fail to the underlying IPLIKE stored procedure.  The IPLIKE
-		//Utils class might be a good place to have a static method that validates the query string
-		//since it seems to do something very similar in its matches method.
-        try {
-            alarms = m_AlarmDao.findMatching(dbQueryCriteria);
-            if (alarms.size() == 0) {
-                return results;
-                
-            //FIXME: make this work the criteria is going to have to support alarmId and alarm severity
-//            } else {
-//                if (isAlarmQuery(queryString)) {
-//                    LOG.debug("SearchProvider->query: adding Alarm search spec '{}' to the search results.", queryString);
-//                    SearchResult searchResult = new SearchResult(getSearchProviderNamespace(), queryString, queryString);
-//                    searchResult.setCollapsed(true);
-//                    searchResult.setCollapsible(true);
-//                    results.add(searchResult);
-//                }
-            }
+		List<OnmsAlarm> alarms = findAlarms(results, queryString);
 
-            Set<AlarmSearchResult> queryResults = new HashSet<AlarmSearchResult>();
-            
-            LOG.info("SearchProvider->query: creating IP address set.");
-            for (OnmsAlarm alarm : alarms) {
-                String nodeLabel = alarm.getNodeLabel();
-                LOG.debug("SearchProvider->query: adding '{}' to set of nodes.", nodeLabel);
-                
-                AlarmSearchResult result = new AlarmSearchResult(alarm.getId(), alarm.getNodeId(), queryString, alarm.getNodeLabel());
-                queryResults.add(result);
-                
-            }
-            
+		if (alarms.size() == 0) {
+		    return results;
+		}
+		
+		try {
             LOG.info("SearchProvider->query: building search result from set of alarms.");
-            IPLOOP: for (AlarmSearchResult result : queryResults) {
-                
-                if (findCriterion(String.valueOf(result.getAlarmId()), graphContainer) != null) {
-                    continue IPLOOP;
+		    Set<AlarmSearchResult> queryResults = buildResults(queryString, alarms);
 
-                } else {
-                    results.add(result);
-                }
+		    //Put the alarm search results into a compatible result set for the graph container
+		    IPLOOP: for (AlarmSearchResult result : queryResults) {
+
+		        if (findCriterion(result, graphContainer) != null) {
+		            continue IPLOOP;
+
+		        } else {
+		            results.add(result);
+		            
+		        }
+		    }
+
+		    LOG.info("SearchProvider->query: found: '{}' alarms.", alarms.size());
+
+		} catch (Exception e) {
+		    LOG.error("SearchProvider-query: caught exception during alarm query: {}", e);
+
+		}
+
+		LOG.info("SearchProvider->query: built search result with {} results.", results.size());
+		return results;
+    }
+
+    private Set<AlarmSearchResult> buildResults(final String queryString, List<OnmsAlarm> alarms) {
+        Set<AlarmSearchResult> queryResults = new HashSet<AlarmSearchResult>();
+
+        LOG.info("SearchProvider->query: creating alarm results set.");
+        
+        for (OnmsAlarm alarm : alarms) {
+            String nodeLabel = alarm.getNodeLabel();
+            LOG.debug("SearchProvider->query: adding '{}' to set of results.", nodeLabel);
+
+            AlarmSearchResult result = new AlarmSearchResult(alarm.getId(), alarm.getNodeId(), alarm.getNodeLabel(), queryString);
+            queryResults.add(result);
+
+        }
+        return queryResults;
+    }
+
+    private List<OnmsAlarm> findAlarms(final List<SearchResult> results, final String queryString) {
+        CriteriaBuilder bldr = new CriteriaBuilder(OnmsAlarm.class);
+        
+        OnmsSeverity severity = OnmsSeverity.get(queryString);
+        
+        List<OnmsAlarm> alarms;
+        
+        if (!OnmsSeverity.INDETERMINATE.equals(severity)) {
+            bldr = new CriteriaBuilder(OnmsAlarm.class);
+            bldr.eq("severity", severity);
+            alarms = m_alarmDao.findMatching(bldr.toCriteria());
+            
+            if (alarms.size() > 0) {
+                AlarmSearchResult result = new AlarmSearchResult(queryString);
+                result.setSeverityQuery(true);
+                results.add(result);
             }
             
-            LOG.info("SearchProvider->query: found: '{}' alarms.", alarms.size());
+        } else {
             
-        } catch (Exception e) {
-            LOG.error("SearchProvider-query: caught exception during alarm query: {}", e);
+            bldr.isNotNull("node").ilike("uei", "%"+queryString+"%").orderBy("node");
+            alarms = m_alarmDao.findMatching(bldr.toCriteria());
             
         }
-		
-		LOG.info("SearchProvider->query: built search result with {} results.", results.size());
-        return results;
+        return alarms;
     }
     
 
@@ -240,8 +260,12 @@ public class AlarmSearchProvider extends AbstractSearchProvider implements Searc
      */
     private boolean isAlarmQuery(String queryString) {
         
-        return true;
-        
+        //TODO: find away to throttle the queries
+        if (queryString.length() > 3) {
+            return true;
+        } else {
+            return false;
+        }
 	}
 
     @Override
@@ -254,7 +278,7 @@ public class AlarmSearchProvider extends AbstractSearchProvider implements Searc
     public Set<VertexRef> getVertexRefsBy(SearchResult searchResult, GraphContainer container) {
     	
     	LOG.debug("SearchProvider->getVertexRefsBy: called with search result: '{}'", searchResult);
-    	org.opennms.features.topology.api.topo.Criteria criterion = findCriterion(searchResult.getId(), container);
+    	org.opennms.features.topology.api.topo.Criteria criterion = findCriterion(searchResult, container);
     	
     	Set<VertexRef> vertices = ((AlarmHopCriteria)criterion).getVertices();
     	LOG.debug("SearchProvider->getVertexRefsBy: found '{}' vertices.", vertices.size());
@@ -292,49 +316,34 @@ public class AlarmSearchProvider extends AbstractSearchProvider implements Searc
      */
 	@Override
 	public void addVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
-	    LOG.debug("SearchProvider->addVertexHopCriteria: called with search result: '{}'", searchResult);
-
-	    CriteriaBuilder builder = new CriteriaBuilder(OnmsAlarm.class);
-	    builder.eq("id", Integer.valueOf(searchResult.getId()));
-	    List<OnmsAlarm> alarms = m_AlarmDao.findMatching(builder.toCriteria());
-	    
-	    OnmsAlarm alarm = alarms.get(0);
-
-	    AlarmSearchResult result = new AlarmSearchResult(searchResult);
-	    
-	    result.setAlarmId(Integer.valueOf(searchResult.getId()));
-	    result.setNodeId(alarm.getNodeId());
-	    result.setAlarmQuery(searchResult.getLabel());
-	    result.setNodeLabel(searchResult.getLabel());
-
-	    AlarmHopCriteria criterion = m_alarmHopFactory.createCriteria(result);
-
-	    container.addCriteria(criterion);
-
-	    LOG.debug("SearchProvider->addVertexHop: adding hop criteria {}.", criterion);
-
-	    logCriteriaInContainer(container);
-
+        LOG.debug("SearchProvider->addVertexHopCriteria: called with search result: '{}'", searchResult);
+        
+        AlarmSearchResult aResult = new AlarmSearchResult(searchResult);
+        
+        String id = searchResult.getId();
+        String query = searchResult.getQuery();
+        
+        if (!OnmsSeverity.get(query).equals(OnmsSeverity.INDETERMINATE)) {
+            aResult.setSeverityQuery(true);
+        } else {
+            aResult.setAlarmId(Integer.valueOf(id.substring(id.indexOf(':')+1)));
+            aResult.setNodeId(Integer.valueOf(id.substring(0, id.indexOf(':'))));
+            aResult.setSeverityQuery(false);
+        }
+        
+        container.addCriteria(m_alarmHopFactory.createCriteria(aResult));
+        
+        LOG.debug("SearchProvider->addVertexHop: adding hop criteria {}.", m_alarmHopFactory.createCriteria(aResult));
 	}
 
-    private void logCriteriaInContainer(GraphContainer container) {
-        org.opennms.features.topology.api.topo.Criteria[] criteria = container.getCriteria();
-        LOG.debug("SearchProvider->addVertexHopCriteria: there are now {} criteria in the GraphContainer.", criteria.length);
-        for (org.opennms.features.topology.api.topo.Criteria crit : criteria) {
-            LOG.debug("SearchProvider->addVertexHopCriteria: criterion: '{}' is in the GraphContainer.", crit);
-        }
-    }
-
-	
 	@Override
 	public void removeVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
     	LOG.debug("SearchProvider->removeVertexHopCriteria: called with search result: '{}'", searchResult);
-		org.opennms.features.topology.api.topo.Criteria criterian = findCriterion(searchResult.getId(), container);
+		org.opennms.features.topology.api.topo.Criteria criterian = findCriterion(searchResult, container);
 		
 		if (criterian != null) {
 			container.removeCriteria(criterian);
 		}
-		logCriteriaInContainer(container);
 	}
 	
 	@Override
@@ -349,20 +358,25 @@ public class AlarmSearchProvider extends AbstractSearchProvider implements Searc
         
 	}
 
-	private org.opennms.features.topology.api.topo.Criteria findCriterion(String alarmId, GraphContainer container) {
-		
+	//FIXME: Should only allow there to be one criteria in the container that matches a single node
+	private AlarmHopCriteria findCriterion(SearchResult result, GraphContainer container) {
+
+	    AlarmHopCriteria aCriterion = null;
+	    
 		org.opennms.features.topology.api.topo.Criteria[] criteria = container.getCriteria();
 		for (org.opennms.features.topology.api.topo.Criteria criterion : criteria) {
 			if (criterion instanceof AlarmHopCriteria) {
 				
-				String id = ((AlarmHopCriteria) criterion).getId();
+				AlarmSearchResult searchResult = ((AlarmHopCriteria) criterion).getSearchResult();
 				
-				if (id.equals(alarmId)) {
-					return criterion;
+				if (searchResult.equals(result)) {
+					aCriterion = (AlarmHopCriteria) criterion;
+					break;
 				}
 			}
 		}
-		return null;
+		
+		return aCriterion;
 	}
 	
 

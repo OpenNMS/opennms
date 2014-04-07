@@ -131,8 +131,8 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Sear
             } else {
                 if (isIpLikeQuery(queryString)) {
                     LOG.debug("SearchProvider->query: adding IPLIKE search spec '{}' to the search results.", queryString);
-                    SearchResult searchResult = new SearchResult(getSearchProviderNamespace(), queryString, queryString);
-                    searchResult.setCollapsed(true);
+                    SearchResult searchResult = new SearchResult(getSearchProviderNamespace(), queryString, queryString, queryString);
+                    searchResult.setCollapsed(false);
                     searchResult.setCollapsible(true);
                     results.add(searchResult);
                 }
@@ -154,7 +154,7 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Sear
                     continue IPLOOP;
 
                 } else {
-                    results.add(createSearchResult(ip));
+                    results.add(createSearchResult(ip, queryString));
 
                 }
             }
@@ -170,8 +170,8 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Sear
         return results;
     }
 
-	private SearchResult createSearchResult(String ip) {
-		SearchResult result = new SearchResult(getSearchProviderNamespace(), ip, ip);
+	private SearchResult createSearchResult(String ip, String queryString) {
+		SearchResult result = new SearchResult(getSearchProviderNamespace(), ip, ip, queryString);
 		result.setCollapsible(true);
 		return result;
 	}
@@ -196,7 +196,7 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Sear
         int ipv4delimCnt = StringUtils.countMatches(queryString, ".");
         int ipv6delimCnt = StringUtils.countMatches(queryString, ":");
         
-        if (ipv4delimCnt == 3 || ipv6delimCnt == 7) {
+        if ((ipv4delimCnt == 3 || ipv6delimCnt == 7) && !StringUtils.endsWith(queryString, "-")) {
             validity = true;
         } else {
             validity = false;

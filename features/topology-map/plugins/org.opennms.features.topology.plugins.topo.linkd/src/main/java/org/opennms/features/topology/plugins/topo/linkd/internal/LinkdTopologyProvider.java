@@ -681,14 +681,14 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         }
         
         for (OnmsNode node : nodes) {
-            searchResults.add(createSearchResult(node));
+            searchResults.add(createSearchResult(node, searchQuery.getQueryString()));
         }
         
         return searchResults;
     }
 
-    private SearchResult createSearchResult(OnmsNode node) {
-        SearchResult result = new SearchResult("node", node.getId().toString(), node.getLabel());
+    private SearchResult createSearchResult(OnmsNode node, String queryString) {
+        SearchResult result = new SearchResult("node", node.getId().toString(), node.getLabel(), queryString);
         return result;
     }
 

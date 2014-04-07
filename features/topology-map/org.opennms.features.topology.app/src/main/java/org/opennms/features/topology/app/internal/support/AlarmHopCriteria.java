@@ -46,6 +46,7 @@ import org.opennms.features.topology.app.internal.AlarmSearchProvider.AlarmSearc
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSeverity;
 
 /**
  * This <Criteria> implementation supports the users selection of search results from an IPLIKE query
@@ -91,10 +92,13 @@ public class AlarmHopCriteria extends VertexHopCriteria implements CollapsibleCr
     }
 
 	public AlarmHopCriteria(AlarmSearchResult result, AlarmDao alarmDao) {
-	    super(String.valueOf(result.getAlarmId()), result.getNodeLabel());
+        super(result.getId(), result.getNodeLabel());
         m_searchResult = result;
         m_alarmDao = alarmDao;
-        m_collapsedVertex = new AlarmVertex(NAMESPACE, NAMESPACE+":"+String.valueOf(result.getAlarmId()), String.valueOf(result.getAlarmId()));
+        
+        String severityLabel = OnmsSeverity.get(result.getLabel()).getLabel();
+        
+        m_collapsedVertex = new AlarmVertex(NAMESPACE, severityLabel, "Alarms: "+severityLabel);
         m_collapsedVertex.setChildren(getVertices());
     }
 
@@ -143,25 +147,45 @@ public class AlarmHopCriteria extends VertexHopCriteria implements CollapsibleCr
         return false;
     }
 
-	//TODO: Make this support the alarm ID or the alarm severity
 	@Override
 	public Set<VertexRef> getVertices() {
-		
-		CriteriaBuilder bldr = new CriteriaBuilder(OnmsAlarm.class);
-
-		bldr.eq("id", getSearchResult().getAlarmId());
-		List<OnmsAlarm> alarms = m_alarmDao.findMatching(bldr.toCriteria());
-		
-		Set<VertexRef> vertices = new TreeSet<VertexRef>(new RefComparator());
-		for (OnmsAlarm alarm : alarms) {
-			OnmsNode node = alarm.getNode();
-			vertices.add(new DefaultVertexRef("nodes", String.valueOf(node.getId()), node.getLabel()));
-		}
-		
+		List<OnmsAlarm> alarms = findAlarms();
+		Set<VertexRef> vertices = createVertices(alarms);
 		return vertices;
 	}
 
-	@Override
+    private Set<VertexRef> createVertices(List<OnmsAlarm> alarms) {
+        
+        Set<VertexRef> vertices = new TreeSet<VertexRef>(new RefComparator());
+		for (OnmsAlarm alarm : alarms) {
+			OnmsNode node = alarm.getNode();
+			if (node == null) {
+			    continue;
+			}
+			vertices.add(new DefaultVertexRef("nodes", String.valueOf(node.getId()), node.getLabel()));
+		}
+        return vertices;
+    }
+
+    private List<OnmsAlarm> findAlarms() {
+        CriteriaBuilder bldr = new CriteriaBuilder(OnmsAlarm.class);
+		
+        String query = getSearchResult().getQuery();
+        if (isSeverityQuery()) {
+            bldr.eq("severity", OnmsSeverity.get(query));
+		} else {
+            bldr.eq("id", getSearchResult().getAlarmId());
+		}
+		
+		List<OnmsAlarm> alarms = m_alarmDao.findMatching(bldr.toCriteria());
+        return alarms;
+    }
+
+	private boolean isSeverityQuery() {
+	    return m_searchResult.isSeverityQuery();
+    }
+
+    @Override
 	public boolean isCollapsed() {
 		return m_collapsed;
 	}
