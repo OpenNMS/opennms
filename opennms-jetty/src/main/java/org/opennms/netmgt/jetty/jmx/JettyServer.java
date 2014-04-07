@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -50,4 +50,40 @@ public class JettyServer extends AbstractSpringContextJmxServiceDaemon<org.openn
         return "jettyServerContext";
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public long getHttpsConnectionsTotal() {
+        return getDaemon().getHttpsConnectionsTotal();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getHttpsConnectionsOpen() {
+        return getDaemon().getHttpsConnectionsOpen();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getHttpsConnectionsOpenMax() {
+        return getDaemon().getHttpsConnectionsOpenMax();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getHttpConnectionsTotal() {
+        return getDaemon().getHttpConnectionsTotal();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getHttpConnectionsOpen() {
+        return getDaemon().getHttpConnectionsOpen();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getHttpConnectionsOpenMax() {
+        return getDaemon().getHttpConnectionsOpenMax();
+    }
+    
 }

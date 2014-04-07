@@ -39,6 +39,7 @@ import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.dao.CollectorConfigDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
+import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.RrdRepository;
@@ -137,7 +138,7 @@ final class CollectableService implements ReadyRunnable {
         m_params=new ServiceParameters(m_spec.getReadOnlyPropertyMap());
         m_repository=m_spec.getRrdRepository(m_params.getCollectionName());
 
-        m_thresholdVisitor = ThresholdingVisitor.create(m_nodeId, getHostAddress(), m_spec.getServiceName(), m_repository,  m_params.getParameters());
+        m_thresholdVisitor = ThresholdingVisitor.create(m_nodeId, getHostAddress(), m_spec.getServiceName(), m_repository,  m_params);
     }
     
     /**
@@ -347,7 +348,7 @@ final class CollectableService implements ReadyRunnable {
     }
 
         private BasePersister createPersister(ServiceParameters params, RrdRepository repository) {
-            if (Boolean.getBoolean("org.opennms.rrd.storeByGroup")) {
+            if (ResourceTypeUtils.isStoreByGroup()) {
                 return new GroupPersister(params, repository);
             } else {
                 return new OneToOnePersister(params, repository);
