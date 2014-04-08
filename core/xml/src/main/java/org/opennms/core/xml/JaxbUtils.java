@@ -399,13 +399,15 @@ public abstract class JaxbUtils {
         try {
             final URL url = clazz.getResource("jaxb.properties");
             LOG.trace("Checking for jaxb.properties: {}", url);
-            is = url.openStream();
-            if (is != null) {
-                final Properties props = new Properties();
-                props.load(is);
-                // javax.xml.bind.context.factory=org.eclipse.persistence.jaxb.JAXBContextFactory
-                final String factory = props.getProperty("javax.xml.bind.context.factory");
-                return "org.eclipse.persistence.jaxb.JAXBContextFactory".equals(factory);
+            if (url != null) {
+                is = url.openStream();
+                if (is != null) {
+                    final Properties props = new Properties();
+                    props.load(is);
+                    // javax.xml.bind.context.factory=org.eclipse.persistence.jaxb.JAXBContextFactory
+                    final String factory = props.getProperty("javax.xml.bind.context.factory");
+                    return "org.eclipse.persistence.jaxb.JAXBContextFactory".equals(factory);
+                }
             }
         } catch (final IOException e) {
             // ignore any problems finding/reading jaxb.properties and just return false
