@@ -397,7 +397,9 @@ public abstract class JaxbUtils {
     private static boolean useMoxy(final Class<?> clazz) {
         InputStream is = null;
         try {
-            is = clazz.getResourceAsStream("jaxb.properties");
+            final URL url = clazz.getResource("jaxb.properties");
+            LOG.trace("Checking for jaxb.properties: {}", url);
+            is = url.openStream();
             if (is != null) {
                 final Properties props = new Properties();
                 props.load(is);
