@@ -33,6 +33,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.TreeSet;
 
 import org.opennms.features.topology.api.GraphContainer;
@@ -83,17 +85,53 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
     SearchBoxServerRpc m_rpc = new SearchBoxServerRpc() {
 
         private static final long serialVersionUID = 6945103738578953390L;
+        
+        private Timer m_queryTimer = new Timer();
+        private long m_lastQueryTime = System.currentTimeMillis();
+
+        private TimerTask m_queryTask = new TimerTask() {
+            @Override
+            public void run() {
+            }
+        };
 
         @Override
-        public void querySuggestions(String query, int indexFrom, int indexTo) {
-            LOG.debug("SearchBox->querySuggestions: called with query: {}", query);
-            if (m_serviceManager != null) {
-                getState().setSuggestions(getQueryResults(query));
+        public void querySuggestions(final String query, int indexFrom, int indexTo) {
+            
+            m_queryTask.cancel();
+
+            if (System.currentTimeMillis() - 500 < m_lastQueryTime || query.length() < 2) {
+                LOG.debug("SearchBox->querySuggestions: scheduling timer task for query: '{}'", query);
+                m_queryTask = new TimerTask() {
+
+                    @Override
+                    public void run() {
+                        List<SearchSuggestion> suggestions = getState().getSuggestions();
+                        
+                        synchronized (suggestions) {
+                            LOG.debug("SearchBox->querySuggestions:run timer task executing for query: '{}'", query);
+                            getState().setSuggestions(getQueryResults(query));
+                        }
+
+                    }
+                };
+                m_queryTimer.schedule(m_queryTask, 1000);
+            } else {
+                List<SearchSuggestion> suggestions = getState().getSuggestions();
+                
+                synchronized (suggestions) {
+                    LOG.debug("SearchBox->querySuggestions: executing for query: '{}'", query);
+                    getState().setSuggestions(getQueryResults(query));
+                }
             }
+
+            m_lastQueryTime = System.currentTimeMillis();
         }
 
         @Override
         public void selectSuggestion(SearchSuggestion searchSuggestion) {
+            m_queryTask.cancel();
+            
             LOG.debug("SearchBox->selectSuggestion: called with searchSuggestion: {}", searchSuggestion);
 
             SearchResult searchResult = new SearchResult(searchSuggestion.getNamespace(), searchSuggestion.getId(), searchSuggestion.getLabel(), searchSuggestion.getQuery());
@@ -307,10 +345,15 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
 
         String namespace = m_operationContext.getGraphContainer().getBaseTopology().getVertexNamespace();
 
+        List<SearchResult> results = Lists.newArrayList();
+        
+        if (m_serviceManager == null) {
+            return mapToSuggestions(results);
+        }
+        
         List<SearchProvider> providers = m_serviceManager.getServices(SearchProvider.class, null, new Properties());
         LOG.debug("SearchBox->getQueryResults: service manager reports {} SearchProviders.", providers.size());
         
-        List<SearchResult> results = Lists.newArrayList();
 
         for (SearchProvider provider : providers) {
             
