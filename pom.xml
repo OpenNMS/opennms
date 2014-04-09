@@ -238,10 +238,6 @@
                 <groupId>log4j</groupId>
                 <artifactId>log4j</artifactId>
               </exclusion>
-              <exclusion>
-                <groupId>xerces</groupId>
-                <artifactId>xerces</artifactId>
-              </exclusion>
             </exclusions>
           </dependency>
           <dependency>
@@ -249,11 +245,6 @@
             <artifactId>oro</artifactId>
             <version>${oroVersion}</version>
             <scope>runtime</scope>
-          </dependency>
-          <dependency>
-            <groupId>xerces</groupId>
-            <artifactId>xercesImpl</artifactId>
-            <version>${xercesVersion}</version>
           </dependency>
         </dependencies>
       </plugin>
@@ -1228,6 +1219,11 @@
       <dependency>
         <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.camel</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.castor-properties</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

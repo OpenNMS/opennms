@@ -19,10 +19,13 @@
     </feature>
 
     <feature name="castor" description="Castor" version="1.1.2.1">
-      <bundle dependency="true">wrap:mvn:xerces/xercesImpl/2.9.1</bundle>
+      <!-- This castor.properties file overrides the default settings for Castor so that it works with JDK5+ -->
+      <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.castor-properties/1.13.1-SNAPSHOT</bundle>
       <bundle dependency="true">wrap:mvn:oro/oro/2.0.8</bundle>
-      <!-- We must manually specify the Import-Package directive here because Castor reflectively invokes Xerces -->
-      <bundle>wrap:mvn:org.codehaus.castor/castor/1.1.2.1$Import-Package=javax.naming,javax.naming.directory,javax.xml.parsers,org.apache.commons.logging,org.apache.oro.text.regex,org.apache.xerces.parsers,org.apache.xml.serialize,org.w3c.dom,org.xml.sax,org.xml.sax.helpers</bundle>
+      <!--
+        We must make sure that the Bundle-SymbolicName matches the Fragment-Host of org.opennms.core.castor-properties.
+      -->
+      <bundle>wrap:mvn:org.codehaus.castor/castor/1.1.2.1$Bundle-SymbolicName=org.codehaus.castor&amp;Bundle-Version=1.1.2.1&amp;Import-Package=javax.naming,javax.naming.directory,javax.xml.parsers,org.apache.commons.logging,org.apache.oro.text.regex,org.w3c.dom,org.xml.sax,org.xml.sax.helpers</bundle>
     </feature>
 
     <feature name="commons-codec" description="Apache :: commons-codec" version="1.7">
