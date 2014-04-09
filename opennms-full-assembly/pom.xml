@@ -197,7 +197,7 @@
             <configuration>
               <karafVersion>DONT_USE_STANDARD_FEATURES</karafVersion>
               <descriptors>
-                <descriptor>mvn:org.opennms.osgi/all/${project.version}/xml/features</descriptor>
+                <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/features</descriptor>
               </descriptors>
               <features>
                 <feature>http-whiteboard</feature>
@@ -492,8 +492,8 @@
       <classifier>etc</classifier>
     </dependency>
     <dependency>
-      <groupId>org.opennms.osgi</groupId>
-      <artifactId>all</artifactId>
+      <groupId>org.opennms.karaf</groupId>
+      <artifactId>opennms</artifactId>
       <version>${project.version}</version>
       <type>xml</type>
       <classifier>features</classifier>
