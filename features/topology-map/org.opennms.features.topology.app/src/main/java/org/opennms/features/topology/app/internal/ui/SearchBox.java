@@ -86,9 +86,6 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
 
         private static final long serialVersionUID = 6945103738578953390L;
         
-        private Timer m_queryTimer = new Timer();
-        private long m_lastQueryTime = System.currentTimeMillis();
-
         private TimerTask m_queryTask = new TimerTask() {
             @Override
             public void run() {
@@ -96,39 +93,11 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
         };
 
         @Override
-        public void querySuggestions(final String query, int indexFrom, int indexTo) {
-            
-            m_queryTask.cancel();
-
-            long ct = System.currentTimeMillis();
-            if ((ct - 1000 < m_lastQueryTime) || (ct - m_lastQueryTime > 3000)) {
-                LOG.debug("SearchBox->querySuggestions: scheduling timer task for query: '{}'", query);
-                m_queryTask = new TimerTask() {
-
-                    @Override
-                    public void run() {
-                        List<SearchSuggestion> suggestions = getState().getSuggestions();
-                        
-                        synchronized (suggestions) {
-                            LOG.debug("SearchBox->querySuggestions:run timer task executing for query: '{}'", query);
-                            getState().setSuggestions(getQueryResults(query));
-                            m_operationContext.getGraphContainer().setDirty(true);
-                            m_operationContext.getGraphContainer().fireGraphChanged();
-                        }
-
-                    }
-                };
-                m_queryTimer.schedule(m_queryTask, 2000);
-            } else {
-                List<SearchSuggestion> suggestions = getState().getSuggestions();
-                
-                synchronized (suggestions) {
-                    LOG.debug("SearchBox->querySuggestions: executing for query: '{}'", query);
-                    getState().setSuggestions(getQueryResults(query));
-                }
+        public void querySuggestions(String query, int indexFrom, int indexTo) {
+            LOG.debug("SearchBox->querySuggestions: called with query: {}", query);
+            if (m_serviceManager != null) {
+                getState().setSuggestions(getQueryResults(query));
             }
-
-            m_lastQueryTime = System.currentTimeMillis();
         }
 
         @Override
