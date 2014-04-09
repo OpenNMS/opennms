@@ -33,8 +33,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.TreeSet;
 
 import org.opennms.features.topology.api.GraphContainer;
@@ -47,9 +45,9 @@ import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.FocusNodeHopCriteria;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractSearchQuery;
-import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.CollapsibleCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.SearchProvider;
 import org.opennms.features.topology.api.topo.SearchQuery;
 import org.opennms.features.topology.api.topo.SearchResult;
@@ -86,12 +84,6 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
 
         private static final long serialVersionUID = 6945103738578953390L;
         
-        private TimerTask m_queryTask = new TimerTask() {
-            @Override
-            public void run() {
-            }
-        };
-
         @Override
         public void querySuggestions(String query, int indexFrom, int indexTo) {
             LOG.debug("SearchBox->querySuggestions: called with query: {}", query);
@@ -102,7 +94,6 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
 
         @Override
         public void selectSuggestion(SearchSuggestion searchSuggestion) {
-            m_queryTask.cancel();
             
             LOG.debug("SearchBox->selectSuggestion: called with searchSuggestion: {}", searchSuggestion);
 
