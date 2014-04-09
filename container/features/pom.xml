@@ -6,8 +6,8 @@
     <version>1.13.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.opennms.osgi</groupId>
-  <artifactId>all</artifactId>
+  <groupId>org.opennms.karaf</groupId>
+  <artifactId>opennms</artifactId>
   <packaging>pom</packaging>
   <name>OpenNMS OSGi Container - OpenNMS Features</name>
   <build>
@@ -29,11 +29,15 @@
           <importRepositoryExclusions>
             <value>karaf-${karafVersion}</value>
             <value>activemq-${activemqVersion}</value>
+            <value>camel-${camelVersion}</value>
           </importRepositoryExclusions>
           <repositories>
 
             <!-- Karaf base features -->
             <repository>mvn:org.opennms.container/karaf/${project.version}/xml/features</repository>
+
+            <!-- OpenNMS features bundle -->
+            <repository>file:${project.basedir}/features.xml</repository>
 
             <!-- OpenNMS OSGi core -->
             <repository>mvn:org.opennms.osgi/opennms-osgi-core/${project.version}/xml/features</repository>
