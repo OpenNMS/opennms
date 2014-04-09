@@ -85,4 +85,6 @@ public interface GraphContainer extends DisplayState {
     void setSessionId(String sessionId);
 
     void setDirty(boolean dirty);
+    
+    void fireGraphChanged();
 }

@@ -100,7 +100,8 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
             
             m_queryTask.cancel();
 
-            if (System.currentTimeMillis() - 500 < m_lastQueryTime || query.length() < 2) {
+            long ct = System.currentTimeMillis();
+            if ((ct - 1000 < m_lastQueryTime) || (ct - m_lastQueryTime > 3000)) {
                 LOG.debug("SearchBox->querySuggestions: scheduling timer task for query: '{}'", query);
                 m_queryTask = new TimerTask() {
 
@@ -111,11 +112,13 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
                         synchronized (suggestions) {
                             LOG.debug("SearchBox->querySuggestions:run timer task executing for query: '{}'", query);
                             getState().setSuggestions(getQueryResults(query));
+                            m_operationContext.getGraphContainer().setDirty(true);
+                            m_operationContext.getGraphContainer().fireGraphChanged();
                         }
 
                     }
                 };
-                m_queryTimer.schedule(m_queryTask, 1000);
+                m_queryTimer.schedule(m_queryTask, 2000);
             } else {
                 List<SearchSuggestion> suggestions = getState().getSuggestions();
                 

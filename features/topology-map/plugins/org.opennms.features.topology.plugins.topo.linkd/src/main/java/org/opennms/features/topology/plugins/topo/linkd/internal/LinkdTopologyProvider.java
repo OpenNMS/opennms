@@ -662,7 +662,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     @Override
     public String getSearchProviderNamespace() {
-        return "nodes";
+        return TOPOLOGY_NAMESPACE_LINKD;
     }
     
     @Override
