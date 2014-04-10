@@ -928,7 +928,8 @@ done
 
 printf -- "- cleaning up \$OPENNMS_HOME/data... "
 if [ -d "$RPM_INSTALL_PREFIX0/data" ]; then
-	rm -rf "$RPM_INSTALL_PREFIX0/data"
+	find "$RPM_INSTALL_PREFIX0/data/"* -maxdepth 0 -name tmp -prune -o -print | xargs rm -rf
+	find "$RPM_INSTALL_PREFIX0/data/tmp/"* -maxdepth 0 -name README -prune -o -print | xargs rm -rf
 fi
 echo "done"
 
