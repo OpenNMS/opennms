@@ -382,6 +382,8 @@ public abstract class JaxbUtils {
         } else {
             final List<Class<?>> allRelatedClasses = getAllRelatedClasses(clazz);
             LOG.trace("Creating new context for classes: {}", allRelatedClasses);
+            context = org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(allRelatedClasses.toArray(EMPTY_CLASS_LIST), null);
+            /*
             if (useMoxy(clazz)) {
                 LOG.trace("Using MOXy for JAXB Context.");
                 context = org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(allRelatedClasses.toArray(EMPTY_CLASS_LIST), null);
@@ -389,12 +391,14 @@ public abstract class JaxbUtils {
                 LOG.trace("Using built-in implementation for JAXB Context.");
                 context = JAXBContext.newInstance(allRelatedClasses.toArray(EMPTY_CLASS_LIST));
             }
+            */
             LOG.trace("Context for {}: {}", allRelatedClasses, context);
             m_contexts.put(clazz, context);
         }
         return context;
     }
 
+    @SuppressWarnings("unused")
     private static boolean useMoxy(final Class<?> clazz) {
         InputStream is = null;
         try {
