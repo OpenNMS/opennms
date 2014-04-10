@@ -28,106 +28,23 @@
 
 package org.opennms.netmgt.model;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * <p>OnmsAlarmCollection class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
 @XmlRootElement(name="alarms")
-public class OnmsAlarmCollection implements Serializable {
+public class OnmsAlarmCollection extends RestResponseCollection<OnmsAlarm> {
     private static final long serialVersionUID = 1L;
 
-    @XmlElement(name="alarm")
-    private List<OnmsAlarm> m_alarms = new ArrayList<OnmsAlarm>();
-    private Integer m_totalCount;
-
-    public OnmsAlarmCollection() {}
+    public OnmsAlarmCollection() { super(); }
     public OnmsAlarmCollection(final Collection<? extends OnmsAlarm> alarms) {
-        m_alarms.addAll(alarms);
+        super(alarms);
     }
 
-    public List<OnmsAlarm> getAlarms() {
-        return m_alarms;
-    }
-    public void setAlarms(final List<OnmsAlarm> alarms) {
-        if (alarms == m_alarms) return;
-        m_alarms.clear();
-        m_alarms.addAll(alarms);
-    }
-
-    public void add(final OnmsAlarm alarm) {
-        m_alarms.add(alarm);
-    }
-    public void addAll(final Collection<OnmsAlarm> alarms) {
-        m_alarms.addAll(alarms);
-    }
-    
-    @XmlAttribute(name="count")
-    public Integer getCount() {
-        if (m_alarms.size() == 0) {
-            return null;
-        } else {
-            return m_alarms.size();
-        }
-    }
-    public void setCount(final Integer count) {
-        // dummy to make JAXB happy
-    }
-    public int size() {
-        return m_alarms.size();
-    }
-    
-    @XmlAttribute(name="totalCount")
-    public Integer getTotalCount() {
-        return m_totalCount == null? getCount() : m_totalCount;
-    }
-    public void setTotalCount(final Integer totalCount) {
-        m_totalCount = totalCount;
-    }
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((m_alarms == null) ? 0 : m_alarms.hashCode());
-        result = prime * result + ((m_totalCount == null) ? 0 : m_totalCount.hashCode());
-        return result;
-    }
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (!(obj instanceof OnmsAlarmCollection)) {
-            return false;
-        }
-        final OnmsAlarmCollection other = (OnmsAlarmCollection) obj;
-        if (m_alarms == null) {
-            if (other.m_alarms != null) {
-                return false;
-            }
-        } else if (!m_alarms.equals(other.m_alarms)) {
-            return false;
-        }
-        if (getTotalCount() == null) {
-            if (other.getTotalCount() != null) {
-                return false;
-            }
-        } else if (!getTotalCount().equals(other.getTotalCount())) {
-            return false;
-        }
-        return true;
+    @XmlElement(name="alarm")
+    public List<OnmsAlarm> getObjects() {
+        return super.getObjects();
     }
 }

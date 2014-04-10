@@ -28,106 +28,26 @@
 
 package org.opennms.netmgt.model;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * <p>OnmsCategoryCollection class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
 @XmlRootElement(name = "categories")
-public class OnmsCategoryCollection implements Serializable {
+public class OnmsCategoryCollection extends RestResponseCollection<OnmsCategory> {
     private static final long serialVersionUID = 1L;
 
-    @XmlElement(name="category")
-    private List<OnmsCategory> m_categories = new ArrayList<OnmsCategory>();
-    private Integer m_totalCount;
-
-    public OnmsCategoryCollection() {}
+    public OnmsCategoryCollection() { super(); }
     public OnmsCategoryCollection(final Collection<? extends OnmsCategory> categories) {
-        m_categories.addAll(categories);
+        super(categories);
     }
 
-    public List<OnmsCategory> getCategories() {
-        return m_categories;
+    @XmlElement(name="category")
+    public List<OnmsCategory> getObjects() {
+        return super.getObjects();
     }
-    public void setCategories(final List<OnmsCategory> categories) {
-        if (categories == m_categories) return;
-        m_categories.clear();
-        m_categories.addAll(categories);
-    }
-
-    public void add(final OnmsCategory category) {
-        m_categories.add(category);
-    }
-    public void addAll(final Collection<OnmsCategory> categories) {
-        m_categories.addAll(categories);
-    }
-    
-    @XmlAttribute(name="count")
-    public Integer getCount() {
-        if (m_categories.size() == 0) {
-            return null;
-        } else {
-            return m_categories.size();
-        }
-    }
-    public void setCount(final Integer count) {
-        // dummy to make JAXB happy
-    }
-    public int size() {
-        return m_categories.size();
-    }
-    
-    @XmlAttribute(name="totalCount")
-    public Integer getTotalCount() {
-        return m_totalCount == null? getCount() : m_totalCount;
-    }
-    public void setTotalCount(final Integer totalCount) {
-        m_totalCount = totalCount;
-    }
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((m_categories == null) ? 0 : m_categories.hashCode());
-        result = prime * result + ((m_totalCount == null) ? 0 : m_totalCount.hashCode());
-        return result;
-    }
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (!(obj instanceof OnmsCategoryCollection)) {
-            return false;
-        }
-        final OnmsCategoryCollection other = (OnmsCategoryCollection) obj;
-        if (m_categories == null) {
-            if (other.m_categories != null) {
-                return false;
-            }
-        } else if (!m_categories.equals(other.m_categories)) {
-            return false;
-        }
-        if (getTotalCount() == null) {
-            if (other.getTotalCount() != null) {
-                return false;
-            }
-        } else if (!getTotalCount().equals(other.getTotalCount())) {
-            return false;
-        }
-        return true;
+    public List<? extends OnmsCategory> getCategories() {
+        return getObjects();
     }
 }

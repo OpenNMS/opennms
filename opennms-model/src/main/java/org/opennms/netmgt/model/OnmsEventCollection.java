@@ -28,107 +28,24 @@
 
 package org.opennms.netmgt.model;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * <p>OnmsEventCollection class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
 @XmlRootElement(name="events")
-public class OnmsEventCollection implements Serializable {
+public class OnmsEventCollection extends RestResponseCollection<OnmsEvent> {
     private static final long serialVersionUID = 1L;
 
-    @XmlElement(name="event")
-    private List<OnmsEvent> m_events = new ArrayList<OnmsEvent>();
-    private Integer m_totalCount;
-
-    public OnmsEventCollection() {}
+    public OnmsEventCollection() { super(); }
     public OnmsEventCollection(final Collection<? extends OnmsEvent> events) {
-        m_events.addAll(events);
+        super(events);
     }
 
-    public List<OnmsEvent> getEvents() {
-        return m_events;
-    }
-    public void setEvents(final List<OnmsEvent> events) {
-        if (events == m_events) return;
-        m_events.clear();
-        m_events.addAll(events);
-    }
-
-    public void add(final OnmsEvent event) {
-        m_events.add(event);
-    }
-    public void addAll(final Collection<OnmsEvent> events) {
-        m_events.addAll(events);
-    }
-    
-    @XmlAttribute(name="count")
-    public Integer getCount() {
-        if (m_events.size() == 0) {
-            return null;
-        } else {
-            return m_events.size();
-        }
-    }
-    public void setCount(final Integer count) {
-        // dummy to make JAXB happy
-    }
-    public int size() {
-        return m_events.size();
-    }
-    
-    @XmlAttribute(name="totalCount")
-    public Integer getTotalCount() {
-        return m_totalCount == null? getCount() : m_totalCount;
-    }
-    public void setTotalCount(final Integer totalCount) {
-        m_totalCount = totalCount;
-    }
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((m_events == null) ? 0 : m_events.hashCode());
-        result = prime * result + ((m_totalCount == null) ? 0 : m_totalCount.hashCode());
-        return result;
-    }
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (!(obj instanceof OnmsEventCollection)) {
-            return false;
-        }
-        final OnmsEventCollection other = (OnmsEventCollection) obj;
-        if (m_events == null) {
-            if (other.m_events != null) {
-                return false;
-            }
-        } else if (!m_events.equals(other.m_events)) {
-            return false;
-        }
-        if (getTotalCount() == null) {
-            if (other.getTotalCount() != null) {
-                return false;
-            }
-        } else if (!getTotalCount().equals(other.getTotalCount())) {
-            return false;
-        }
-        return true;
+    @XmlElement(name="event")
+    public List<OnmsEvent> getObjects() {
+        return super.getObjects();
     }
 }
 

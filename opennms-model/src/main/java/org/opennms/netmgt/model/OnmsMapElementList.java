@@ -50,6 +50,4 @@ public class OnmsMapElementList extends RestResponseCollection<OnmsMapElement> {
     public List<OnmsMapElement> getObjects() {
         return super.getObjects();
     }
-
-
 }
