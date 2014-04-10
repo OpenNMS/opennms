@@ -22,7 +22,8 @@ case "$1" in
 
         # clean up the karaf data cache
         if [ -d "/usr/share/opennms/data" ]; then
-                rm -rf /usr/share/opennms/data
+		find /usr/share/opennms/data/* -maxdepth 0 -name tmp -prune -o -print | xargs rm -rf
+		find /usr/share/opennms/data/tmp/* -maxdepth 0 -name README -prune -o -print | xargs rm -rf
         fi
 
         echo ""
