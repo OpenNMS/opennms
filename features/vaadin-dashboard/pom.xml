@@ -104,6 +104,7 @@
                         <bundle>wrap:mvn:org.vaadin.addons/dragdroplayouts/1.0.0.alpha4</bundle>
                     </bundles>
                     <features>
+                        <feature>opennms-core</feature>
                         <feature>vaadin</feature>
                     </features>
                 </configuration>

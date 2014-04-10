@@ -28,6 +28,7 @@
             <repository>mvn:${project.groupId}/opennms-topology-api/${project.version}/xml/features</repository>
           </repositories>
           <features>
+            <feature>opennms-core</feature>
             <feature>opennms-topology-api</feature>
           </features>
           <configs>

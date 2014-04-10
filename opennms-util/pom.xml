@@ -22,13 +22,13 @@
             <Bundle-Version>${project.version}</Bundle-Version>
             <Export-Package>
               org.opennms.core.concurrent.*;version="${project.version}",
-              org.opennms.core.fiber.*;version="${project.version},
-              org.opennms.core.queue.*;version="${project.version},
-              org.opennms.core.resource.*;version="${project.version},
-              org.opennms.core.resource.db.*;version="${project.version},
+              org.opennms.core.fiber.*;version="${project.version}",
+              org.opennms.core.queue.*;version="${project.version}",
+              org.opennms.core.resource.*;version="${project.version}",
+              org.opennms.core.resource.db.*;version="${project.version}",
               <!-- Don't export org.opennms.core.utils to avoid conflicts with core/lib -->
-              <!-- org.opennms.core.utils.*;version="${project.version}, -->
-              org.opennms.core.utils.url.*;version="${project.version}
+              <!-- org.opennms.core.utils.*;version="${project.version}", -->
+              org.opennms.core.utils.url.*;version="${project.version}"
             </Export-Package>
           </instructions>
         </configuration>
