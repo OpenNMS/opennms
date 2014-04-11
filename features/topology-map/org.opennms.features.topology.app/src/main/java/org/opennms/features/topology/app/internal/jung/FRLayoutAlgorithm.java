@@ -28,8 +28,11 @@
 
 package org.opennms.features.topology.app.internal.jung;
 
+import java.awt.*;
+import java.awt.geom.Point2D;
 import java.util.Collection;
 
+import org.apache.commons.collections15.Transformer;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
@@ -65,12 +68,11 @@ public class FRLayoutAlgorithm extends AbstractLayoutAlgorithm {
 		}
 
 		TopoFRLayout<VertexRef, EdgeRef> layout = new TopoFRLayout<VertexRef, EdgeRef>(jungGraph);
-        layout.setRepulsionMultiplier(3/8.0);
-        layout.setAttractionMultiplier(3/8.0);
 		// Initialize the vertex positions to the last known positions from the layout
-		layout.setInitializer(initializer(graphLayout));
-		// Resize the graph to accommodate the number of vertices
-		layout.setSize(selectLayoutSize(graphContainer));
+        Dimension size = selectLayoutSize(graphContainer);
+        layout.setInitializer(initializer(graphLayout, (int)size.getWidth()/2, (int)size.getHeight()/2));
+        // Resize the graph to accommodate the number of vertices
+        layout.setSize(size);
 
 		while(!layout.done()) {
 			layout.step();
@@ -78,7 +80,17 @@ public class FRLayoutAlgorithm extends AbstractLayoutAlgorithm {
 
 		// Store the new positions in the layout
 		for(Vertex v : vertices) {
-			graphLayout.setLocation(v, (int)layout.getX(v), (int)layout.getY(v));
+			graphLayout.setLocation(v, (int)layout.getX(v) - (size.getWidth()/2), (int)layout.getY(v) - (size.getHeight()/2));
 		}
 	}
+
+    protected static Transformer<VertexRef, Point2D> initializer(final Layout graphLayout, final int xOffset, final int yOffset) {
+        return new Transformer<VertexRef, Point2D>() {
+            @Override
+            public Point2D transform(VertexRef v) {
+                org.opennms.features.topology.api.Point location = graphLayout.getLocation(v);
+                return new Point2D.Double(location.getX()+xOffset, location.getY()+yOffset);
+            }
+        };
+    }
 }

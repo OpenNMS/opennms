@@ -124,8 +124,7 @@ public class TopoFRLayout<V, E>  extends AbstractLayout<V, E> implements Iterati
             temperature = d.getWidth() / 10;
 
             forceConstant =
-                    Math
-                            .sqrt(d.getHeight()
+                    Math.sqrt(d.getHeight()
                                     * d.getWidth()
                                     / graph.getVertexCount());
 
@@ -169,9 +168,14 @@ public class TopoFRLayout<V, E>  extends AbstractLayout<V, E> implements Iterati
             } catch(ConcurrentModificationException cme) {}
         }
 
-
         while(true) {
             try {
+                /*for(V v : getGraph().getVertices()) {
+
+                    FRVertexData frData = getFRData(v);
+                    System.out.println("v :: " + v + " x: " + frData.getX() + " y: " + frData.getY() + " norm: " + frData.norm());
+                    //calcPositions(v);
+                }*/
                 for(V v : getGraph().getVertices()) {
                     if (isLocked(v)) continue;
                     calcPositions(v);
@@ -186,18 +190,20 @@ public class TopoFRLayout<V, E>  extends AbstractLayout<V, E> implements Iterati
         FRVertexData fvd = getFRData(v);
         if(fvd == null) return;
         Point2D xyd = transform(v);
-        double deltaLength = Math.max(EPSILON, fvd.norm());
+        double deltaLength = fvd.norm();
+        if(deltaLength <= 0.005) return;
 
-        double newXDisp = fvd.getX() * PERCENTAGE / deltaLength
+        double newXDisp = fvd.getX() * percentage() / deltaLength
                 * Math.min(deltaLength , temperature);
 
         if (Double.isNaN(newXDisp)) {
             throw new IllegalArgumentException(
                     "Unexpected mathematical result in FRLayout:calcPositions [xdisp]"); }
 
-        double newYDisp = fvd.getY() * PERCENTAGE / deltaLength
+        double newYDisp = fvd.getY() * percentage() / deltaLength
                 * Math.min(deltaLength, temperature);
-        xyd.setLocation(xyd.getX()+newXDisp, xyd.getY()+newYDisp);
+//        System.out.printf("v: %s at %s: offset %s norm: %f  newxDisp: %s \n", v, xyd, fvd, fvd.norm(), newXDisp);
+        xyd.setLocation(xyd.getX() + newXDisp, xyd.getY() + newYDisp);
 
         double borderWidth = getSize().getWidth() / 50.0;
         double newXPos = xyd.getX();
@@ -217,6 +223,10 @@ public class TopoFRLayout<V, E>  extends AbstractLayout<V, E> implements Iterati
         }
 
         xyd.setLocation(newXPos, newYPos);
+    }
+
+    private double percentage() {
+        return PERCENTAGE;
     }
 
     private double epsilon() {
@@ -255,10 +265,12 @@ public class TopoFRLayout<V, E>  extends AbstractLayout<V, E> implements Iterati
         double dy = (yDelta / deltaLength) * force;
         if(v1_locked == false) {
             FRVertexData fvd1 = getFRData(v1);
+            //System.out.println("calcAttraction :: v1: " + v1 + " x: " + (-dx) + " y: " + (-dy));
             fvd1.offset(-dx, -dy);
         }
         if(v2_locked == false) {
             FRVertexData fvd2 = getFRData(v2);
+            //System.out.println("calcAttraction :: v2: " + v1 + " x: " + dx + " y: " + dy);
             fvd2.offset(dx, dy);
         }
     }
@@ -289,7 +301,7 @@ public class TopoFRLayout<V, E>  extends AbstractLayout<V, E> implements Iterati
 
                     if (Double.isNaN(force)) { throw new RuntimeException(
                             "Unexpected mathematical result in FRLayout:calcPositions [repulsion]"); }
-
+//                    System.out.println("calcRepulsion :: offset v: " + v1 + " x: " + ((xDelta / deltaLength) * force) + " y: " + ((yDelta / deltaLength) * force));
                     fvd1.offset((xDelta / deltaLength) * force,
                             (yDelta / deltaLength) * force);
                 }

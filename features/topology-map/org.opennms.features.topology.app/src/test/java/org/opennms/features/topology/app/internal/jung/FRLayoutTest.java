@@ -128,36 +128,36 @@ public class FRLayoutTest {
 
     private TopoFRLayout<VertexRef, EdgeRef> runFRLayout(Graph g, Layout graphLayout, List<Vertex> vertices) {
         TopoFRLayout<VertexRef, EdgeRef> layout = new TopoFRLayout<VertexRef, EdgeRef>(createJungGraph(g));
-        layout.setRepulsionMultiplier(3/8.0);
-        layout.setAttractionMultiplier(3/8.0);
-        layout.setInitializer(initializer(graphLayout));
-        layout.setSize(selectLayoutSize(m_graphContainer));
+        Dimension size = selectLayoutSize(m_graphContainer);
+        //layout.setRepulsionMultiplier(3/8.0);
+        //layout.setAttractionMultiplier(3/8.0);
+        layout.setInitializer(initializer(graphLayout, size));
+        layout.setSize(size);
 
         int count = 0;
-        System.out.println("[");
+//        System.out.println("[");
         while (!layout.done()) {
-            System.out.println("[");
+//            System.out.println("[");
 
             for(int i = 0; i < vertices.size(); i++) {
                 Vertex v = vertices.get(i);
                 if(i + 1 == vertices.size()){
-                    System.out.println("{x:" + layout.getX(v) + ", y: " + layout.getY(v) + " }");
+//                    System.out.println("{ x:" + layout.getX(v) + ", y: " + layout.getY(v) + " }");
                 } else{
-                    System.out.println("{x:" + layout.getX(v) + ", y: " + layout.getY(v) + " },");
+//                    System.out.println("{ x:" + layout.getX(v) + ", y: " + layout.getY(v) + " },");
                 }
 
             }
 
             layout.step();
-
-            System.out.println("],");
+//            System.out.println("],");
         }
-        System.out.println("]");
+//        System.out.println("]");
 
         System.out.println("/******** FRLayout Run **********/");
 
         for(Vertex v : vertices) {
-            graphLayout.setLocation(v, layout.getX(v), layout.getY(v) );
+            graphLayout.setLocation(v, layout.getX(v) - size.getWidth()/2.0, layout.getY(v) - size.getHeight()/2.0 );
             System.out.println("layout.getX(): " + layout.getX(v) + " layout.getY(): " + layout.getY(v));
         }
         System.out.println("/******** End FRLayout Run **********/");
@@ -188,7 +188,7 @@ public class FRLayoutTest {
         return jungGraph;
     }
 
-    protected Transformer<VertexRef, Point2D> initializer(final Layout graphLayout) {
+    protected Transformer<VertexRef, Point2D> initializer(final Layout graphLayout, final Dimension dim) {
         return new Transformer<VertexRef, Point2D>() {
             @Override
             public Point2D transform(VertexRef v) {
@@ -197,7 +197,7 @@ public class FRLayoutTest {
                     return new Point(0,0);
                 }
                 org.opennms.features.topology.api.Point location = graphLayout.getLocation(v);
-                return new Point2D.Double(location.getX() , location.getY() );
+                return new Point2D.Double(location.getX() + dim.getWidth()/2.0 , location.getY() + dim.getHeight()/2.0 );
             }
         };
     }
@@ -205,7 +205,7 @@ public class FRLayoutTest {
     protected Dimension selectLayoutSize(GraphContainer g) {
         int vertexCount = g.getGraph().getDisplayVertices().size();
 
-        double height = 1.5*Math.sqrt(vertexCount)*ELBOW_ROOM;
+        double height = 3*Math.sqrt(vertexCount)*ELBOW_ROOM;
         double width = height*16.0/9.0;
 
         Dimension dim = new Dimension((int)width, (int)height);
