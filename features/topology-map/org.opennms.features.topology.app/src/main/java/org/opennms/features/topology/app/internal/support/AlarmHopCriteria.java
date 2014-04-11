@@ -141,7 +141,11 @@ public class AlarmHopCriteria extends VertexHopCriteria implements CollapsibleCr
 
         if (obj instanceof AlarmHopCriteria) {
             AlarmHopCriteria ref = (AlarmHopCriteria)obj;
-			return ref.getSearchResult().getAlarmId().equals(this.getSearchResult().getAlarmId()) && ref.getNamespace().equals(this.getNamespace());
+			String refAlarmId = ref.getSearchResult().getId();
+            String alarmId = this.getSearchResult().getId();
+            String refNamespace = ref.getNamespace();
+            String namespace = this.getNamespace();
+            return refAlarmId.equals(alarmId) && refNamespace.equals(namespace);
         }
         
         return false;
