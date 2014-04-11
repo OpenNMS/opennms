@@ -26,6 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-@XmlSchema(namespace = "http://xmlns.opennms.org/xsd/config/snmp", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+@XmlSchema(
+    namespace="http://xmlns.opennms.org/xsd/config/snmp",
+    elementFormDefault=javax.xml.bind.annotation.XmlNsForm.QUALIFIED,
+    xmlns={
+        @XmlNs(prefix="", namespaceURI="http://xmlns.opennms.org/xsd/config/snmp")
+    }
+)
 package org.opennms.netmgt.config.snmp;
+import javax.xml.bind.annotation.XmlNs;
 import javax.xml.bind.annotation.XmlSchema;

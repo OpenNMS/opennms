@@ -162,7 +162,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     @XmlAttribute(name="id")
     @Transient
     public String getInterfaceId() {
-        return getId().toString();
+        return getId() == null? null : getId().toString();
     }
 
     public void setInterfaceId(final String id) {

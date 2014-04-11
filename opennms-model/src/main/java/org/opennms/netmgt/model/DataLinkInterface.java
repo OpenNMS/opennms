@@ -137,10 +137,10 @@ public class DataLinkInterface implements Serializable, Comparable<DataLinkInter
      * Get the ID as a string.  This exists only for XML serialization.
      */
     @XmlID
-    @XmlAttribute(name = "id")
+    @XmlAttribute(name="id")
     @Transient
     public String getDataLinkInterfaceId() {
-        return getId().toString();
+        return getId() == null? null : getId().toString();
     }
 
     public void setDataLinkInterfaceId(final String id) {
@@ -148,7 +148,7 @@ public class DataLinkInterface implements Serializable, Comparable<DataLinkInter
     }
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "nodeId")
+    @JoinColumn(name="nodeId")
     @XmlTransient
     public OnmsNode getNode() {
         return m_node;

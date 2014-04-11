@@ -28,8 +28,10 @@
 
 package org.opennms.web.rest;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -92,16 +94,18 @@ public class UserRestService extends OnmsRestService {
         readLock();
         try {
             list = m_userManager.getOnmsUserList();
-            Collections.sort(list, new Comparator<OnmsUser>() {
+            final List<OnmsUser> users = new ArrayList<OnmsUser>(list.getUsers());
+            Collections.sort(users, new Comparator<OnmsUser>() {
                 @Override
                 public int compare(final OnmsUser a, final OnmsUser b) {
                     return a.getUsername().compareTo(b.getUsername());
                 }
             });
-            for (OnmsUser eachUser : list) {
+            for (OnmsUser eachUser : users) {
                 eachUser.setPasswordSalted(false);
                 eachUser.setPassword(null);
             }
+            list.setUsers(users);
             return list;
         } catch (final Throwable t) {
             throw getException(Status.BAD_REQUEST, t);

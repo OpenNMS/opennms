@@ -100,7 +100,7 @@ public class UserRestServiceTest extends AbstractSpringJerseyRestTestCase  {
         OnmsUserList list = JaxbUtils.unmarshal(OnmsUserList.class, xml);
         assertEquals(1, list.getUsers().size());
         assertEquals(xml, "admin", list.getUsers().get(0).getUsername());
-        validateNoPasswordHash(list);
+        validateNoPasswordHash(list.getUsers());
 
         // GET admin user
         xml = sendRequest(GET, url + "/admin", 200);

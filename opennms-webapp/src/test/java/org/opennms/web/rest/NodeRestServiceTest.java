@@ -113,14 +113,14 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         String xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("Darwin TestMachine 9.4.0 Darwin Kernel Version 9.4.0"));
         OnmsNodeList list = JaxbUtils.unmarshal(OnmsNodeList.class, xml);
-        assertEquals(1, list.getNodes().size());
-        assertEquals(xml, "TestMachine0", list.getNodes().get(0).getLabel());
+        assertEquals(1, list.size());
+        assertEquals(xml, "TestMachine0", list.get(0).getLabel());
 
         // Testing orderBy
         xml = sendRequest(GET, url, parseParamData("orderBy=sysObjectId"), 200);
         list = JaxbUtils.unmarshal(OnmsNodeList.class, xml);
-        assertEquals(1, list.getNodes().size());
-        assertEquals("TestMachine0", list.getNodes().get(0).getLabel());
+        assertEquals(1, list.size());
+        assertEquals("TestMachine0", list.get(0).getLabel());
 
         // Add 4 more nodes
         for (m_nodeCounter = 1; m_nodeCounter < 5; m_nodeCounter++) {
@@ -130,26 +130,26 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         // Testing limit/offset
         xml = sendRequest(GET, url, parseParamData("limit=3&offset=0&orderBy=label"), 200);
         list = JaxbUtils.unmarshal(OnmsNodeList.class, xml);
-        assertEquals(3, list.getNodes().size());
-        assertEquals(3, list.getCount());
-        assertEquals(5, list.getTotalCount());
-        assertEquals("TestMachine0", list.getNodes().get(0).getLabel());
-        assertEquals("TestMachine1", list.getNodes().get(1).getLabel());
-        assertEquals("TestMachine2", list.getNodes().get(2).getLabel());
+        assertEquals(3, list.size());
+        assertEquals(Integer.valueOf(3), list.getCount());
+        assertEquals(Integer.valueOf(5), list.getTotalCount());
+        assertEquals("TestMachine0", list.get(0).getLabel());
+        assertEquals("TestMachine1", list.get(1).getLabel());
+        assertEquals("TestMachine2", list.get(2).getLabel());
 
         // This filter should match
         xml = sendRequest(GET, url, parseParamData("comparator=like&label=%25Test%25"), 200);
         LOG.info(xml);
         list = JaxbUtils.unmarshal(OnmsNodeList.class, xml);
-        assertEquals(5, list.getCount());
-        assertEquals(5, list.getTotalCount());
+        assertEquals(Integer.valueOf(5), list.getCount());
+        assertEquals(Integer.valueOf(5), list.getTotalCount());
 
         // This filter should fail (return 0 results)
         xml = sendRequest(GET, url, parseParamData("comparator=like&label=%25DOES_NOT_MATCH%25"), 200);
         LOG.info(xml);
         list = JaxbUtils.unmarshal(OnmsNodeList.class, xml);
-        assertEquals(0, list.getCount());
-        assertEquals(0, list.getTotalCount());
+        assertEquals(null, list.getCount());
+        assertEquals(Integer.valueOf(0), list.getTotalCount());
 
         // Testing PUT
         url += "/1";
@@ -174,9 +174,10 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         req.addHeader("Accept", "application/json");
         req.addParameter("limit", "0");
         String json = sendRequest(req, 200);
-        final JSONArray ja = new JSONArray(json);
+        JSONObject jo = new JSONObject(json);
+        final JSONArray ja = jo.getJSONArray("node");
         assertEquals(1, ja.length());
-        final JSONObject jo = ja.getJSONObject(0);
+        jo = ja.getJSONObject(0);
         assertEquals("A", jo.getString("type"));
         assertEquals("TestMachine0", jo.getString("label"));
     }
@@ -195,8 +196,8 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         String xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("Darwin TestMachine 9.4.0 Darwin Kernel Version 9.4.0"));
         OnmsNodeList list = (OnmsNodeList)unmarshaller.unmarshal(new StringReader(xml));
-        assertEquals(1, list.getNodes().size());
-        assertEquals("TestMachine0", list.getNodes().get(0).getLabel());
+        assertEquals(1, list.size());
+        assertEquals("TestMachine0", list.get(0).getLabel());
 
         // Testing PUT
         url += "/1";
@@ -239,9 +240,9 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
         // Validate object by unmarshalling
         OnmsNodeList list = (OnmsNodeList)unmarshaller.unmarshal(new StringReader(xml));
-        assertEquals(10, list.getCount());
-        assertEquals(10, list.getNodes().size());
-        assertEquals(20, list.getTotalCount());
+        assertEquals(Integer.valueOf(10), list.getCount());
+        assertEquals(10, list.size());
+        assertEquals(Integer.valueOf(20), list.getTotalCount());
         int i = 0;
         Set<OnmsNode> sortedNodes = new TreeSet<OnmsNode>(new Comparator<OnmsNode>() {
             @Override
@@ -261,7 +262,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
             }
         });
         // Sort the nodes by ID
-        sortedNodes.addAll(list.getNodes());
+        sortedNodes.addAll(list.getObjects());
         for (OnmsNode node : sortedNodes) {
             assertEquals(node.toString(), "TestMachine" + i++, node.getLabel());
         }
@@ -294,9 +295,10 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         final String json = sendRequest(req, 200);
         assertNotNull(json);
         assertFalse(json.contains("The Owner"));
-        final JSONArray ja = new JSONArray(json);
+        JSONObject jo = new JSONObject(json);
+        JSONArray ja = jo.getJSONArray("ipInterface");
         assertEquals(1, ja.length());
-        final JSONObject jo = ja.getJSONObject(0);
+        jo = ja.getJSONObject(0);
         assertTrue(jo.isNull("ifIndex"));
         assertEquals("10.10.10.10", jo.getString("ipAddress"));
         assertEquals("1", jo.getString("nodeId"));
@@ -365,11 +367,11 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         final String json = sendRequest(req, 200);
         assertNotNull(json);
         assertFalse(json.contains("The Owner"));
-        // [{"id":3,"ifIndex":6,"ifType":6,"ipInterfaces":[2],"lastCapsdPoll":null,"ifOperStatus":1,"ifSpeed":10000000,"ifDescr":"en1","ifAlias":null,"ifName":"en1","physAddr":"001e5271136d","netMask":"255.255.255.0","ifAdminStatus":1,"lastSnmpPoll":null,"collectionUserSpecified":false,"nodeId":1,"collectFlag":"N","collect":false,"pollFlag":"N","poll":false}]
 
-        final JSONArray ja = new JSONArray(json);
+        JSONObject jo = new JSONObject(json);
+        final JSONArray ja = jo.getJSONArray("snmpInterface");
         assertEquals(1, ja.length());
-        final JSONObject jo = ja.getJSONObject(0);
+        jo = ja.getJSONObject(0);
         assertEquals(6, jo.getInt("ifIndex"));
         assertEquals(1, jo.getInt("ifOperStatus"));
         assertEquals("en1", jo.getString("ifDescr"));
@@ -448,7 +450,6 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
         xml = sendRequest(GET, url, parseParamData("comparator=ilike&match=any&label=8%25&ipInterface.ipAddress=8%25&ipInterface.ipHostName=8%25"), 200);
         // Make sure that there were no matches
-        assertTrue(xml, xml.contains("count=\"0\""));
         assertTrue(xml, xml.contains("totalCount=\"0\""));
     }
 

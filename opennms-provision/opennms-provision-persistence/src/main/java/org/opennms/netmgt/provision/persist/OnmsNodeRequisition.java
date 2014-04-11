@@ -60,12 +60,9 @@ public class OnmsNodeRequisition {
     private List<OnmsIpInterfaceRequisition> m_ifaceReqs;
     private List<OnmsNodeCategoryRequisition> m_categoryReqs;
 
-    /**
-     * <p>Constructor for OnmsNodeRequisition.</p>
-     *
-     * @param foreignSource a {@link java.lang.String} object.
-     * @param node a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionNode} object.
-     */
+    public OnmsNodeRequisition() {
+    }
+
     public OnmsNodeRequisition(final String foreignSource, final RequisitionNode node) {
         m_foreignSource = foreignSource;
         m_node = node;
