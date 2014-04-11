@@ -55,11 +55,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 
 @XmlRootElement(name = "ipRouteInterface")
 @Entity
 @Table(name="ipRouteInterface", uniqueConstraints = {@UniqueConstraint(columnNames={"nodeId", "routeDest"})})
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OnmsIpRouteInterface {
 
     private Integer m_id;

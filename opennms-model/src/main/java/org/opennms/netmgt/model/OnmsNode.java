@@ -70,6 +70,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.Type;
 import org.opennms.core.utils.InetAddressUtils;
@@ -96,6 +97,7 @@ import org.springframework.core.style.ToStringCreator;
 @Table(name="node")
 @SecondaryTable(name="pathOutage")
 @Filter(name=FilterManager.AUTH_FILTER_NAME, condition="exists (select distinct x.nodeid from node x join category_node cn on x.nodeid = cn.nodeid join category_group cg on cn.categoryId = cg.categoryId where x.nodeid = nodeid and cg.groupId in (:userGroups))")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OnmsNode extends OnmsEntity implements Serializable, Comparable<OnmsNode> {
     private static final long serialVersionUID = -2081288277603435617L;
     private static final Logger LOG = LoggerFactory.getLogger(OnmsNode.class);

@@ -106,6 +106,32 @@
         <attrib name="TasksTotal"     alias="ONMSCollectTasksTot"  type="counter"/>
         <attrib name="TasksCompleted" alias="ONMSCollectTasksCpt"  type="counter"/>
       </mbean>
+      <mbean name="OpenNMS.Capsd" objectname="OpenNMS:Name=Capsd">
+        <attrib name="ActiveSuspectThreads" alias="ActiveSuspecThreads" type="gauge"/>
+        <attrib name="ActiveRescanThreads" alias="ActiveRescanThreads" type="gauge"/>
+        <attrib name="SuspectCompletedTasks" alias="SuspectCompletTasks" type="counter"/>
+        <attrib name="RescanCompletedTasks" alias="RescanCompletTasks" type="counter"/>
+        <attrib name="SuspectTotalTasks" alias="SuspectTotalTasks" type="counter"/>
+        <attrib name="RescanTotalTasks" alias="RescanTotalTasks" type="counter"/>
+        <attrib name="SuspectTaskCompletionRatio" alias="SuspTaskComplRatio" type="gauge"/>
+        <attrib name="RescanTaskCompletionRatio" alias="RescTaskComplRatio" type="gauge"/>
+        <attrib name="SuspectQueueSize" alias="SuspectQueueSize" type="gauge"/>
+        <attrib name="RescanQueueSize" alias="RescanQueueSize" type="gauge"/>
+      </mbean>
+      <mbean name="OpenNMS.JettyServer" objectname="OpenNMS:Name=JettyServer">
+        <attrib name="HttpsConnectionsTotal" alias="HttpsConnTotal" type="counter"/>
+        <attrib name="HttpsConnectionsOpen" alias="HttpsConnOpen" type="gauge"/>
+        <attrib name="HttpsConnectionsOpenMax" alias="HttpsConnOpenMax" type="gauge"/>
+        <attrib name="HttpConnectionsTotal" alias="HttpConnTotal" type="counter"/>
+        <attrib name="HttpConnectionsOpen" alias="HttpConnOpen" type="gauge"/>
+        <attrib name="HttpConnectionsOpenMax" alias="HttpConnOpenMax" type="gauge"/>
+      </mbean>
+      <mbean name="OpenNMS.Statsd" objectname="OpenNMS:Name=Statsd">
+        <attrib name="ReportsStarted" alias="StaReportsStarted" type="counter"/>
+        <attrib name="ReportsCompleted" alias="StaReportsCompleted" type="counter"/>
+        <attrib name="ReportsPersisted" alias="StaReportsPersisted" type="counter"/>
+        <attrib name="ReportRunTime" alias="StaReportRunTime" type="counter"/>
+      </mbean>
       <mbean name="JVM Memory" objectname="java.lang:type=OperatingSystem">
         <attrib name="FreePhysicalMemorySize" alias="FreeMemory" type="gauge"/>
         <attrib name="TotalPhysicalMemorySize" alias="TotalMemory" type="gauge"/>
