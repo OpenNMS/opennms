@@ -125,7 +125,7 @@ public class DataLinkInterfaceRestServiceTest extends AbstractSpringJerseyRestTe
     @JUnitTemporaryDatabase
     public void testQueryWithParentNodeid() throws Exception {
         String xml = sendRequest(GET, "/links", parseParamData("nodeParentId=2"), 200);
-        assertTrue(xml.contains("<links count=\"0\""));
+        assertTrue(xml.contains("<links/>"));
     }
 
     @Test

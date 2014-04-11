@@ -71,10 +71,10 @@ import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.annotate.JsonValue;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.Type;
 import org.opennms.core.utils.InetAddressUtils;
@@ -83,8 +83,6 @@ import org.opennms.netmgt.model.events.AddEventVisitor;
 import org.opennms.netmgt.model.events.DeleteEventVisitor;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
-import org.opennms.netmgt.xml.bind.NodeLabelSourceXmlAdapter;
-import org.opennms.netmgt.xml.bind.NodeTypeXmlAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.style.ToStringCreator;
@@ -331,6 +329,11 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
             value = c;
         }
 
+        @JsonValue
+        public char value() {
+            return value;
+        }
+
         @Override
         public String toString() {
             return String.valueOf(value);
@@ -531,6 +534,11 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
             value = c;
         }
 
+        @JsonValue
+        public char value() {
+            return value;
+        }
+
         @Override
         public String toString() {
             return String.valueOf(value);
@@ -718,6 +726,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
      * @return a {@link org.opennms.netmgt.model.OnmsAssetRecord} object.
      */
     @OneToOne(mappedBy="node", cascade = CascadeType.ALL, fetch=FetchType.LAZY)
+    @XmlElement(name="assetRecord")
     public OnmsAssetRecord getAssetRecord() {
         return m_assetRecord;
     }

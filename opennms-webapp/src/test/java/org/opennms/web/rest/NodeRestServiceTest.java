@@ -174,9 +174,10 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         req.addHeader("Accept", "application/json");
         req.addParameter("limit", "0");
         String json = sendRequest(req, 200);
-        final JSONArray ja = new JSONArray(json);
+        JSONObject jo = new JSONObject(json);
+        final JSONArray ja = jo.getJSONArray("node");
         assertEquals(1, ja.length());
-        final JSONObject jo = ja.getJSONObject(0);
+        jo = ja.getJSONObject(0);
         assertEquals("A", jo.getString("type"));
         assertEquals("TestMachine0", jo.getString("label"));
     }
@@ -294,9 +295,10 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         final String json = sendRequest(req, 200);
         assertNotNull(json);
         assertFalse(json.contains("The Owner"));
-        final JSONArray ja = new JSONArray(json);
+        JSONObject jo = new JSONObject(json);
+        JSONArray ja = jo.getJSONArray("ipInterface");
         assertEquals(1, ja.length());
-        final JSONObject jo = ja.getJSONObject(0);
+        jo = ja.getJSONObject(0);
         assertTrue(jo.isNull("ifIndex"));
         assertEquals("10.10.10.10", jo.getString("ipAddress"));
         assertEquals("1", jo.getString("nodeId"));
@@ -365,11 +367,11 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         final String json = sendRequest(req, 200);
         assertNotNull(json);
         assertFalse(json.contains("The Owner"));
-        // [{"id":3,"ifIndex":6,"ifType":6,"ipInterfaces":[2],"lastCapsdPoll":null,"ifOperStatus":1,"ifSpeed":10000000,"ifDescr":"en1","ifAlias":null,"ifName":"en1","physAddr":"001e5271136d","netMask":"255.255.255.0","ifAdminStatus":1,"lastSnmpPoll":null,"collectionUserSpecified":false,"nodeId":1,"collectFlag":"N","collect":false,"pollFlag":"N","poll":false}]
 
-        final JSONArray ja = new JSONArray(json);
+        JSONObject jo = new JSONObject(json);
+        final JSONArray ja = jo.getJSONArray("snmpInterface");
         assertEquals(1, ja.length());
-        final JSONObject jo = ja.getJSONObject(0);
+        jo = ja.getJSONObject(0);
         assertEquals(6, jo.getInt("ifIndex"));
         assertEquals(1, jo.getInt("ifOperStatus"));
         assertEquals("en1", jo.getString("ifDescr"));
@@ -448,7 +450,6 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
         xml = sendRequest(GET, url, parseParamData("comparator=ilike&match=any&label=8%25&ipInterface.ipAddress=8%25&ipInterface.ipHostName=8%25"), 200);
         // Make sure that there were no matches
-        assertTrue(xml, xml.contains("count=\"0\""));
         assertTrue(xml, xml.contains("totalCount=\"0\""));
     }
 
