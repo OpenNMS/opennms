@@ -109,10 +109,15 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 	}
 
 	@Override
-	public boolean isNodeReady(AdapterOperation op) {
+	public boolean isNodeReady(final AdapterOperation op) {
+		OnmsNode node = m_template.execute(new TransactionCallback<OnmsNode>() {
+			@Override
+			public OnmsNode doInTransaction(TransactionStatus status) {
+				return m_nodeDao.get(op.getNodeId());
+			}
+		});
+
 		boolean readyState = false;
-		OnmsNode node = m_nodeDao.get(op.getNodeId());
-		
 		if (node != null && node.getSysObjectId() != null) {
 			readyState = true;
 		}

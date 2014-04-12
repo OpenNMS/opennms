@@ -16,6 +16,7 @@ import org.opennms.systemreport.SystemReportPlugin;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -26,6 +27,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
+@Transactional
 public class ReportPluginTestCase {
     @Resource(name="serviceRegistry")
     private ServiceRegistry m_defaultServiceRegistry;
