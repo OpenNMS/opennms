@@ -59,11 +59,7 @@ import javax.xml.bind.Unmarshaller;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
-import org.opennms.core.db.DataSourceFactory;
-import org.opennms.core.db.XADataSourceFactory;
-import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.StringUtils;
-import org.opennms.test.DaoTestConfigBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,13 +104,6 @@ public abstract class AbstractSpringJerseyRestTestCase {
     @Before
     public void setUp() throws Throwable {
         beforeServletStart();
-
-        DaoTestConfigBean bean = new DaoTestConfigBean();
-        bean.afterPropertiesSet();
-
-        MockDatabase db = new MockDatabase(true);
-        DataSourceFactory.setInstance(db);
-        XADataSourceFactory.setInstance(db);
 
         setServletConfig(new MockServletConfig(getServletContext(), "dispatcher"));    
         getServletConfig().addInitParameter("com.sun.jersey.config.property.resourceConfigClass", "com.sun.jersey.api.core.PackagesResourceConfig");
