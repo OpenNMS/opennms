@@ -58,10 +58,10 @@ public class CollectorTest {
     @Test
     public void testStartNotSetEnd() throws ParseException {
         Collector c = new Collector();
-        c.addLog("2010-05-26 12:12:38,027 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: end:24/216.216.217.254/SNMP");	
-        c.addLog("2010-05-26 12:12:40,883 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: begin:24/216.216.217.254/SNMP");
-        c.addLog("2010-05-26 12:12:48,027 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: end:24/216.216.217.254/SNMP");
-        c.addLog("2010-05-26 12:12:50,883 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: begin:24/216.216.217.254/SNMP");
+        c.addLog("2010-05-26 12:12:38,027 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: end:example1/24/216.216.217.254/SNMP");	
+        c.addLog("2010-05-26 12:12:40,883 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: begin:example1/24/216.216.217.254/SNMP");
+        c.addLog("2010-05-26 12:12:48,027 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: end:example1/24/216.216.217.254/SNMP");
+        c.addLog("2010-05-26 12:12:50,883 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: begin:example1/24/216.216.217.254/SNMP");
         assertEquals(getDate("2010-05-26 12:12:40,883"), c.getStartTime());
         assertEquals(getDate("2010-05-26 12:12:48,027"), c.getEndTime());
         assertEquals(7144, c.getDuration());
@@ -69,8 +69,8 @@ public class CollectorTest {
     @Test
     public void testStartAndEndTime() throws ParseException {
         Collector c = new Collector();
-        c.addLog("2010-05-26 12:12:40,883 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: begin:24/216.216.217.254/SNMP");
-        c.addLog("2010-05-26 12:12:48,027 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: end:24/216.216.217.254/SNMP");	
+        c.addLog("2010-05-26 12:12:40,883 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: begin:example1/24/216.216.217.254/SNMP");
+        c.addLog("2010-05-26 12:12:48,027 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: end:example1/24/216.216.217.254/SNMP");	
 
         assertEquals(getDate("2010-05-26 12:12:40,883"), c.getStartTime());
         assertEquals(getDate("2010-05-26 12:12:48,027"), c.getEndTime());
@@ -80,22 +80,22 @@ public class CollectorTest {
     public void testServiceCount(){
         Collector c = new Collector();
         assertEquals(0, c.getServiceCount());
-        c.addLog("2010-05-26 12:12:40,883 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: begin:24/216.216.217.254/SNMP");
-        c.addLog("2010-05-26 12:12:48,027 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: end:24/216.216.217.254/SNMP");
+        c.addLog("2010-05-26 12:12:40,883 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: begin:example1/24/216.216.217.254/SNMP");
+        c.addLog("2010-05-26 12:12:48,027 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: end:example1/24/216.216.217.254/SNMP");
         assertEquals(1, c.getServiceCount());
-        c.addLog("2010-06-01 09:36:28,950 DEBUG [CollectdScheduler-50 Pool-fiber1] Collectd: collector.collect: persistDataQueueing: begin: 19/209.61.128.9/SNMP");
-        c.addLog("2010-06-01 09:36:28,995 DEBUG [CollectdScheduler-50 Pool-fiber1] Collectd: collector.collect: persistDataQueueing: end: 19/209.61.128.9/SNMP");
-        c.addLog("2010-05-26 12:12:40,883 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: begin:24/216.216.217.254/SNMP");
-        c.addLog("2010-05-26 12:12:48,027 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: end:24/216.216.217.254/SNMP");
-        c.addLog("2010-06-01 09:36:02,541 DEBUG [CollectdScheduler-50 Pool-fiber1] Collectd: collector.collect: end:7/172.20.1.12/SNMP");
-        c.addLog("2010-06-01 09:36:02,542 DEBUG [CollectdScheduler-50 Pool-fiber1] Collectd: collector.collect: begin:27/172.20.1.6/SNMP");
-        c.addLog("2010-06-01 09:36:02,544 DEBUG [CollectdScheduler-50 Pool-fiber1] Collectd: collector.collect: begin:27/172.20.1.6/SNMP");
-        c.addLog("2010-06-01 09:36:03,508 DEBUG [CollectdScheduler-50 Pool-fiber1] Collectd: collector.collect: end:27/172.20.1.6/SNMP");
-        c.addLog("2010-06-01 09:36:02,541 DEBUG [CollectdScheduler-50 Pool-fiber1] Collectd: collector.collect: error: 7/172.20.1.12/SNMP: org.opennms.netmgt.collectd.CollectionTimedOut: Timeout retrieving SnmpCollectors for 172.20.1.12 for kenny.internal.opennms.com/172.20.1.12: SnmpCollectors for 172.20.1.12: snmpTimeoutError for: kenny.internal.opennms.com/172.20.1.12");
-        c.addLog("2010-06-01 09:36:27,644 DEBUG [CollectdScheduler-50 Pool-fiber1] Collectd: collector.collect: begin:19/209.61.128.9/SNMP");
-        c.addLog("2010-06-01 09:36:28,950 DEBUG [CollectdScheduler-50 Pool-fiber1] Collectd: collector.collect: end:19/209.61.128.9/SNMP");
-        c.addLog("2010-06-01 09:33:56,292 DEBUG [CollectdScheduler-50 Pool-fiber1] Collectd: collector.collect: begin:83/172.20.1.15/SNMP");
-        c.addLog("2010-06-01 09:33:56,440 DEBUG [CollectdScheduler-50 Pool-fiber1] Collectd: collector.collect: end:83/172.20.1.15/SNMP");
+        c.addLog("2010-06-01 09:36:28,950 DEBUG [CollectdScheduler-50 Pool-fiber1] Collectd: collector.collect: persistDataQueueing: begin: example1/19/209.61.128.9/SNMP");
+        c.addLog("2010-06-01 09:36:28,995 DEBUG [CollectdScheduler-50 Pool-fiber1] Collectd: collector.collect: persistDataQueueing: end: example1/19/209.61.128.9/SNMP");
+        c.addLog("2010-05-26 12:12:40,883 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: begin:example1/24/216.216.217.254/SNMP");
+        c.addLog("2010-05-26 12:12:48,027 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: end:example1/24/216.216.217.254/SNMP");
+        c.addLog("2010-06-01 09:36:02,541 DEBUG [CollectdScheduler-50 Pool-fiber1] Collectd: collector.collect: end:example1/7/172.20.1.12/SNMP");
+        c.addLog("2010-06-01 09:36:02,542 DEBUG [CollectdScheduler-50 Pool-fiber1] Collectd: collector.collect: begin:example1/27/172.20.1.6/SNMP");
+        c.addLog("2010-06-01 09:36:02,544 DEBUG [CollectdScheduler-50 Pool-fiber1] Collectd: collector.collect: begin:example1/27/172.20.1.6/SNMP");
+        c.addLog("2010-06-01 09:36:03,508 DEBUG [CollectdScheduler-50 Pool-fiber1] Collectd: collector.collect: end:example1/27/172.20.1.6/SNMP");
+        c.addLog("2010-06-01 09:36:02,541 DEBUG [CollectdScheduler-50 Pool-fiber1] Collectd: collector.collect: error: example1/7/172.20.1.12/SNMP: org.opennms.netmgt.collectd.CollectionTimedOut: Timeout retrieving SnmpCollectors for 172.20.1.12 for kenny.internal.opennms.com/172.20.1.12: SnmpCollectors for 172.20.1.12: snmpTimeoutError for: kenny.internal.opennms.com/172.20.1.12");
+        c.addLog("2010-06-01 09:36:27,644 DEBUG [CollectdScheduler-50 Pool-fiber1] Collectd: collector.collect: begin:example1/19/209.61.128.9/SNMP");
+        c.addLog("2010-06-01 09:36:28,950 DEBUG [CollectdScheduler-50 Pool-fiber1] Collectd: collector.collect: end:example1/19/209.61.128.9/SNMP");
+        c.addLog("2010-06-01 09:33:56,292 DEBUG [CollectdScheduler-50 Pool-fiber1] Collectd: collector.collect: begin:example1/83/172.20.1.15/SNMP");
+        c.addLog("2010-06-01 09:33:56,440 DEBUG [CollectdScheduler-50 Pool-fiber1] Collectd: collector.collect: end:example1/83/172.20.1.15/SNMP");
         assertEquals(5, c.getServiceCount());
     }
 
@@ -103,105 +103,105 @@ public class CollectorTest {
     public void testThreadcount(){
         Collector c = new Collector();
         assertEquals(0, c.getThreadCount());
-        c.addLog("2010-05-26 12:12:40,883 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: begin:24/216.216.217.254/SNMP");
-        c.addLog("2010-05-26 12:12:48,027 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: end:24/216.216.217.254/SNMP");
+        c.addLog("2010-05-26 12:12:40,883 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: begin:example1/24/216.216.217.254/SNMP");
+        c.addLog("2010-05-26 12:12:48,027 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: end:example1/24/216.216.217.254/SNMP");
         assertEquals(1, c.getThreadCount());
-        c.addLog("2010-06-01 09:36:28,950 DEBUG [CollectdScheduler-50 Pool-fiber1] Collectd: collector.collect: persistDataQueueing: begin: 19/209.61.128.9/SNMP");
-        c.addLog("2010-06-01 09:36:28,995 DEBUG [CollectdScheduler-50 Pool-fiber1] Collectd: collector.collect: persistDataQueueing: end: 19/209.61.128.9/SNMP");
-        c.addLog("2010-06-01 09:33:31,964 DEBUG [CollectdScheduler-50 Pool-fiber0] Collectd: collector.collect: begin:60/172.20.1.202/SNMP");
-        c.addLog("2010-06-01 09:33:32,477 DEBUG [CollectdScheduler-50 Pool-fiber0] Collectd: collector.collect: end:60/172.20.1.202/SNMP");
-        c.addLog("2010-06-01 08:45:12,104 DEBUG [CollectdScheduler-50 Pool-fiber2] Collectd: collector.collect: persistDataQueueing: begin: 86/172.20.1.25/WMI");
-        c.addLog("2010-06-01 08:45:12,104 DEBUG [CollectdScheduler-50 Pool-fiber2] Collectd: collector.collect: persistDataQueueing: end: 86/172.20.1.25/WMI");
-        c.addLog("2010-06-01 08:39:46,648 DEBUG [CollectdScheduler-50 Pool-fiber3] Collectd: collector.collect: begin:58/172.20.1.201/SNMP");
-        c.addLog("2010-06-01 08:39:46,650 DEBUG [CollectdScheduler-50 Pool-fiber3] Collectd: collector.collect: begin:58/172.20.1.201/SNMP");
+        c.addLog("2010-06-01 09:36:28,950 DEBUG [CollectdScheduler-50 Pool-fiber1] Collectd: collector.collect: persistDataQueueing: begin: example1/19/209.61.128.9/SNMP");
+        c.addLog("2010-06-01 09:36:28,995 DEBUG [CollectdScheduler-50 Pool-fiber1] Collectd: collector.collect: persistDataQueueing: end: example1/19/209.61.128.9/SNMP");
+        c.addLog("2010-06-01 09:33:31,964 DEBUG [CollectdScheduler-50 Pool-fiber0] Collectd: collector.collect: begin:example1/60/172.20.1.202/SNMP");
+        c.addLog("2010-06-01 09:33:32,477 DEBUG [CollectdScheduler-50 Pool-fiber0] Collectd: collector.collect: end:example1/60/172.20.1.202/SNMP");
+        c.addLog("2010-06-01 08:45:12,104 DEBUG [CollectdScheduler-50 Pool-fiber2] Collectd: collector.collect: persistDataQueueing: begin: example1/86/172.20.1.25/WMI");
+        c.addLog("2010-06-01 08:45:12,104 DEBUG [CollectdScheduler-50 Pool-fiber2] Collectd: collector.collect: persistDataQueueing: end: example1/86/172.20.1.25/WMI");
+        c.addLog("2010-06-01 08:39:46,648 DEBUG [CollectdScheduler-50 Pool-fiber3] Collectd: collector.collect: begin:example1/58/172.20.1.201/SNMP");
+        c.addLog("2010-06-01 08:39:46,650 DEBUG [CollectdScheduler-50 Pool-fiber3] Collectd: collector.collect: begin:example1/58/172.20.1.201/SNMP");
         assertEquals(5, c.getThreadCount());
     }
 
     @Test 
     public void testCollectionsPerService() {
         Collector c = new Collector();
-        c.addLog("2010-05-26 12:12:40,883 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: begin:24/216.216.217.254/SNMP");
-        c.addLog("2010-05-26 12:12:48,027 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: end:24/216.216.217.254/SNMP");
-        c.addLog("2010-06-01 09:36:28,950 DEBUG [CollectdScheduler-50 Pool-fiber1] Collectd: collector.collect: persistDataQueueing: begin: 19/209.61.128.9/SNMP");
-        c.addLog("2010-06-01 09:36:28,995 DEBUG [CollectdScheduler-50 Pool-fiber1] Collectd: collector.collect: persistDataQueueing: end: 19/209.61.128.9/SNMP");
-        c.addLog("2010-06-01 09:33:31,964 DEBUG [CollectdScheduler-50 Pool-fiber0] Collectd: collector.collect: begin:60/172.20.1.202/SNMP");
-        c.addLog("2010-06-01 09:33:32,477 DEBUG [CollectdScheduler-50 Pool-fiber0] Collectd: collector.collect: end:60/172.20.1.202/SNMP");
-        c.addLog("2010-06-01 08:45:12,104 DEBUG [CollectdScheduler-50 Pool-fiber2] Collectd: collector.collect: persistDataQueueing: begin: 86/172.20.1.25/WMI");
-        c.addLog("2010-06-01 08:45:12,104 DEBUG [CollectdScheduler-50 Pool-fiber2] Collectd: collector.collect: persistDataQueueing: end: 86/172.20.1.25/WMI");
-        c.addLog("2010-06-01 08:39:46,648 DEBUG [CollectdScheduler-50 Pool-fiber3] Collectd: collector.collect: begin:58/172.20.1.201/SNMP");
-        c.addLog("2010-06-01 08:39:46,650 DEBUG [CollectdScheduler-50 Pool-fiber3] Collectd: collector.collect: begin:58/172.20.1.201/SNMP");
-        assertEquals(1,c.getCollectionsPerService("24/216.216.217.254/SNMP"));
-        assertEquals(0,c.getCollectionsPerService("19/209.61.128.9/SNMP"));
-        assertEquals(1,c.getCollectionsPerService("60/172.20.1.202/SNMP"));
-        assertEquals(0,c.getCollectionsPerService("86/172.20.1.25/WMI"));
-        assertEquals(0,c.getCollectionsPerService("58/172.20.1.201/SNMP"));
+        c.addLog("2010-05-26 12:12:40,883 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: begin:example1/24/216.216.217.254/SNMP");
+        c.addLog("2010-05-26 12:12:48,027 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: end:example1/24/216.216.217.254/SNMP");
+        c.addLog("2010-06-01 09:36:28,950 DEBUG [CollectdScheduler-50 Pool-fiber1] Collectd: collector.collect: persistDataQueueing: begin: example1/19/209.61.128.9/SNMP");
+        c.addLog("2010-06-01 09:36:28,995 DEBUG [CollectdScheduler-50 Pool-fiber1] Collectd: collector.collect: persistDataQueueing: end: example1/19/209.61.128.9/SNMP");
+        c.addLog("2010-06-01 09:33:31,964 DEBUG [CollectdScheduler-50 Pool-fiber0] Collectd: collector.collect: begin:example1/60/172.20.1.202/SNMP");
+        c.addLog("2010-06-01 09:33:32,477 DEBUG [CollectdScheduler-50 Pool-fiber0] Collectd: collector.collect: end:example1/60/172.20.1.202/SNMP");
+        c.addLog("2010-06-01 08:45:12,104 DEBUG [CollectdScheduler-50 Pool-fiber2] Collectd: collector.collect: persistDataQueueing: begin: example1/86/172.20.1.25/WMI");
+        c.addLog("2010-06-01 08:45:12,104 DEBUG [CollectdScheduler-50 Pool-fiber2] Collectd: collector.collect: persistDataQueueing: end: example1/86/172.20.1.25/WMI");
+        c.addLog("2010-06-01 08:39:46,648 DEBUG [CollectdScheduler-50 Pool-fiber3] Collectd: collector.collect: begin:example1/58/172.20.1.201/SNMP");
+        c.addLog("2010-06-01 08:39:46,650 DEBUG [CollectdScheduler-50 Pool-fiber3] Collectd: collector.collect: begin:example1/58/172.20.1.201/SNMP");
+        assertEquals(1,c.getCollectionsPerService("example1/24/216.216.217.254/SNMP"));
+        assertEquals(0,c.getCollectionsPerService("example1/19/209.61.128.9/SNMP"));
+        assertEquals(1,c.getCollectionsPerService("example1/60/172.20.1.202/SNMP"));
+        assertEquals(0,c.getCollectionsPerService("example1/86/172.20.1.25/WMI"));
+        assertEquals(0,c.getCollectionsPerService("example1/58/172.20.1.201/SNMP"));
     }
     @Test
     public void testAverageCollectionTimePerService() {
         Collector c = new Collector();
-        c.addLog("2010-05-26 12:12:40,883 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: begin:24/216.216.217.254/SNMP");
-        c.addLog("2010-05-26 12:12:48,027 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: end:24/216.216.217.254/SNMP");
-        c.addLog("2010-06-01 09:36:28,950 DEBUG [CollectdScheduler-50 Pool-fiber1] Collectd: collector.collect: persistDataQueueing: begin: 19/209.61.128.9/SNMP");
-        c.addLog("2010-06-01 09:36:28,995 DEBUG [CollectdScheduler-50 Pool-fiber1] Collectd: collector.collect: persistDataQueueing: end: 19/209.61.128.9/SNMP");
-        c.addLog("2010-06-01 09:33:31,964 DEBUG [CollectdScheduler-50 Pool-fiber0] Collectd: collector.collect: begin:60/172.20.1.202/SNMP");
-        c.addLog("2010-06-01 09:33:32,477 DEBUG [CollectdScheduler-50 Pool-fiber0] Collectd: collector.collect: end:60/172.20.1.202/SNMP");
-        c.addLog("2010-06-01 08:45:12,104 DEBUG [CollectdScheduler-50 Pool-fiber2] Collectd: collector.collect: persistDataQueueing: begin: 86/172.20.1.25/WMI");
-        c.addLog("2010-06-01 08:45:12,104 DEBUG [CollectdScheduler-50 Pool-fiber2] Collectd: collector.collect: persistDataQueueing: end: 86/172.20.1.25/WMI");
-        c.addLog("2010-06-01 08:39:46,648 DEBUG [CollectdScheduler-50 Pool-fiber3] Collectd: collector.collect: begin:58/172.20.1.201/SNMP");
-        c.addLog("2010-06-01 08:39:46,650 DEBUG [CollectdScheduler-50 Pool-fiber3] Collectd: collector.collect: begin:58/172.20.1.201/SNMP");
-        assertEquals(7144,c.getAverageCollectionTimePerService("24/216.216.217.254/SNMP"));
-        assertEquals(0,c.getAverageCollectionTimePerService("19/209.61.128.9/SNMP"));
-        assertEquals(513,c.getAverageCollectionTimePerService("60/172.20.1.202/SNMP"));
-        assertEquals(0,c.getAverageCollectionTimePerService("86/172.20.1.25/WMI"));
-        assertEquals(0,c.getAverageCollectionTimePerService("58/172.20.1.201/SNMP"));
+        c.addLog("2010-05-26 12:12:40,883 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: begin:example1/24/216.216.217.254/SNMP");
+        c.addLog("2010-05-26 12:12:48,027 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: end:example1/24/216.216.217.254/SNMP");
+        c.addLog("2010-06-01 09:36:28,950 DEBUG [CollectdScheduler-50 Pool-fiber1] Collectd: collector.collect: persistDataQueueing: begin: example1/19/209.61.128.9/SNMP");
+        c.addLog("2010-06-01 09:36:28,995 DEBUG [CollectdScheduler-50 Pool-fiber1] Collectd: collector.collect: persistDataQueueing: end: example1/19/209.61.128.9/SNMP");
+        c.addLog("2010-06-01 09:33:31,964 DEBUG [CollectdScheduler-50 Pool-fiber0] Collectd: collector.collect: begin:example1/60/172.20.1.202/SNMP");
+        c.addLog("2010-06-01 09:33:32,477 DEBUG [CollectdScheduler-50 Pool-fiber0] Collectd: collector.collect: end:example1/60/172.20.1.202/SNMP");
+        c.addLog("2010-06-01 08:45:12,104 DEBUG [CollectdScheduler-50 Pool-fiber2] Collectd: collector.collect: persistDataQueueing: begin: example1/86/172.20.1.25/WMI");
+        c.addLog("2010-06-01 08:45:12,104 DEBUG [CollectdScheduler-50 Pool-fiber2] Collectd: collector.collect: persistDataQueueing: end: example1/86/172.20.1.25/WMI");
+        c.addLog("2010-06-01 08:39:46,648 DEBUG [CollectdScheduler-50 Pool-fiber3] Collectd: collector.collect: begin:example1/58/172.20.1.201/SNMP");
+        c.addLog("2010-06-01 08:39:46,650 DEBUG [CollectdScheduler-50 Pool-fiber3] Collectd: collector.collect: begin:example1/58/172.20.1.201/SNMP");
+        assertEquals(7144,c.getAverageCollectionTimePerService("example1/24/216.216.217.254/SNMP"));
+        assertEquals(0,c.getAverageCollectionTimePerService("example1/19/209.61.128.9/SNMP"));
+        assertEquals(513,c.getAverageCollectionTimePerService("example1/60/172.20.1.202/SNMP"));
+        assertEquals(0,c.getAverageCollectionTimePerService("example1/86/172.20.1.25/WMI"));
+        assertEquals(0,c.getAverageCollectionTimePerService("example1/58/172.20.1.201/SNMP"));
     }
     @Test
     public void testTotalCollectionTimePerService() {
         Collector c = new Collector();
-        c.addLog("2010-05-26 12:12:40,883 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: begin:24/216.216.217.254/SNMP");
-        c.addLog("2010-05-26 12:12:48,027 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: end:24/216.216.217.254/SNMP");
-        c.addLog("2010-06-01 09:36:28,950 DEBUG [CollectdScheduler-50 Pool-fiber1] Collectd: collector.collect: persistDataQueueing: begin: 19/209.61.128.9/SNMP");
-        c.addLog("2010-06-01 09:36:28,995 DEBUG [CollectdScheduler-50 Pool-fiber1] Collectd: collector.collect: persistDataQueueing: end: 19/209.61.128.9/SNMP");
-        c.addLog("2010-06-01 09:33:31,964 DEBUG [CollectdScheduler-50 Pool-fiber0] Collectd: collector.collect: begin:60/172.20.1.202/SNMP");
-        c.addLog("2010-06-01 09:33:32,477 DEBUG [CollectdScheduler-50 Pool-fiber0] Collectd: collector.collect: end:60/172.20.1.202/SNMP");
-        c.addLog("2010-06-01 08:45:12,104 DEBUG [CollectdScheduler-50 Pool-fiber2] Collectd: collector.collect: persistDataQueueing: begin: 86/172.20.1.25/WMI");
-        c.addLog("2010-06-01 08:45:12,104 DEBUG [CollectdScheduler-50 Pool-fiber2] Collectd: collector.collect: persistDataQueueing: end: 86/172.20.1.25/WMI");
-        c.addLog("2010-06-01 08:39:46,648 DEBUG [CollectdScheduler-50 Pool-fiber3] Collectd: collector.collect: begin:58/172.20.1.201/SNMP");
-        c.addLog("2010-06-01 08:39:46,650 DEBUG [CollectdScheduler-50 Pool-fiber3] Collectd: collector.collect: begin:58/172.20.1.201/SNMP");
-        assertEquals(7144,c.getAverageCollectionTimePerService("24/216.216.217.254/SNMP"));
-        assertEquals(0,c.getAverageCollectionTimePerService("19/209.61.128.9/SNMP"));
-        assertEquals(513,c.getAverageCollectionTimePerService("60/172.20.1.202/SNMP"));
-        assertEquals(0,c.getAverageCollectionTimePerService("86/172.20.1.25/WMI"));
-        assertEquals(0,c.getAverageCollectionTimePerService("58/172.20.1.201/SNMP"));
+        c.addLog("2010-05-26 12:12:40,883 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: begin:example1/24/216.216.217.254/SNMP");
+        c.addLog("2010-05-26 12:12:48,027 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: end:example1/24/216.216.217.254/SNMP");
+        c.addLog("2010-06-01 09:36:28,950 DEBUG [CollectdScheduler-50 Pool-fiber1] Collectd: collector.collect: persistDataQueueing: begin: example1/19/209.61.128.9/SNMP");
+        c.addLog("2010-06-01 09:36:28,995 DEBUG [CollectdScheduler-50 Pool-fiber1] Collectd: collector.collect: persistDataQueueing: end: example1/19/209.61.128.9/SNMP");
+        c.addLog("2010-06-01 09:33:31,964 DEBUG [CollectdScheduler-50 Pool-fiber0] Collectd: collector.collect: begin:example1/60/172.20.1.202/SNMP");
+        c.addLog("2010-06-01 09:33:32,477 DEBUG [CollectdScheduler-50 Pool-fiber0] Collectd: collector.collect: end:example1/60/172.20.1.202/SNMP");
+        c.addLog("2010-06-01 08:45:12,104 DEBUG [CollectdScheduler-50 Pool-fiber2] Collectd: collector.collect: persistDataQueueing: begin: example1/86/172.20.1.25/WMI");
+        c.addLog("2010-06-01 08:45:12,104 DEBUG [CollectdScheduler-50 Pool-fiber2] Collectd: collector.collect: persistDataQueueing: end: example1/86/172.20.1.25/WMI");
+        c.addLog("2010-06-01 08:39:46,648 DEBUG [CollectdScheduler-50 Pool-fiber3] Collectd: collector.collect: begin:example1/58/172.20.1.201/SNMP");
+        c.addLog("2010-06-01 08:39:46,650 DEBUG [CollectdScheduler-50 Pool-fiber3] Collectd: collector.collect: begin:example1/58/172.20.1.201/SNMP");
+        assertEquals(7144,c.getAverageCollectionTimePerService("example1/24/216.216.217.254/SNMP"));
+        assertEquals(0,c.getAverageCollectionTimePerService("example1/19/209.61.128.9/SNMP"));
+        assertEquals(513,c.getAverageCollectionTimePerService("example1/60/172.20.1.202/SNMP"));
+        assertEquals(0,c.getAverageCollectionTimePerService("example1/86/172.20.1.25/WMI"));
+        assertEquals(0,c.getAverageCollectionTimePerService("example1/58/172.20.1.201/SNMP"));
     }
 
     @Test
     public void testTotalCollectionTime() {
         Collector c = new Collector();
-        c.addLog("2010-03-13 02:20:30,525 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:32028/209.219.9.78/SNMP");
-        c.addLog("2010-03-13 02:21:09,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:32028/209.219.9.78/SNMP");
-        c.addLog("2010-03-13 02:32:42,641 DEBUG [CollectdScheduler-400 Pool-fiber25] Collectd: collector.collect: begin:32028/209.219.9.78/SNMP");
-        c.addLog("2010-03-13 02:33:01,973 DEBUG [CollectdScheduler-400 Pool-fiber25] Collectd: collector.collect: end:32028/209.219.9.78/SNMP");
-        c.addLog("2010-03-13 02:43:27,749 DEBUG [CollectdScheduler-400 Pool-fiber112] Collectd: collector.collect: begin:32028/209.219.9.78/SNMP");
-        c.addLog("2010-03-13 02:43:31,517 DEBUG [CollectdScheduler-400 Pool-fiber112] Collectd: collector.collect: end:32028/209.219.9.78/SNMP");
-        c.addLog("2010-03-13 02:54:13,334 DEBUG [CollectdScheduler-400 Pool-fiber166] Collectd: collector.collect: begin:32028/209.219.9.78/SNMP");
-        c.addLog("2010-03-13 02:54:35,223 DEBUG [CollectdScheduler-400 Pool-fiber166] Collectd: collector.collect: end:32028/209.219.9.78/SNMP");
-        c.addLog("2010-03-13 03:05:47,554 DEBUG [CollectdScheduler-400 Pool-fiber307] Collectd: collector.collect: begin:32028/209.219.9.78/SNMP");
-        c.addLog("2010-03-13 03:06:28,926 DEBUG [CollectdScheduler-400 Pool-fiber307] Collectd: collector.collect: end:32028/209.219.9.78/SNMP");
-        c.addLog("2010-03-13 03:18:27,559 DEBUG [CollectdScheduler-400 Pool-fiber264] Collectd: collector.collect: begin:32028/209.219.9.78/SNMP");
-        c.addLog("2010-03-13 03:19:06,934 DEBUG [CollectdScheduler-400 Pool-fiber264] Collectd: collector.collect: end:32028/209.219.9.78/SNMP");
-        assertEquals(39451+19332+3768+21889+41372+39375,c.getTotalCollectionTimePerService("32028/209.219.9.78/SNMP"));
+        c.addLog("2010-03-13 02:20:30,525 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/32028/209.219.9.78/SNMP");
+        c.addLog("2010-03-13 02:21:09,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/32028/209.219.9.78/SNMP");
+        c.addLog("2010-03-13 02:32:42,641 DEBUG [CollectdScheduler-400 Pool-fiber25] Collectd: collector.collect: begin:example1/32028/209.219.9.78/SNMP");
+        c.addLog("2010-03-13 02:33:01,973 DEBUG [CollectdScheduler-400 Pool-fiber25] Collectd: collector.collect: end:example1/32028/209.219.9.78/SNMP");
+        c.addLog("2010-03-13 02:43:27,749 DEBUG [CollectdScheduler-400 Pool-fiber112] Collectd: collector.collect: begin:example1/32028/209.219.9.78/SNMP");
+        c.addLog("2010-03-13 02:43:31,517 DEBUG [CollectdScheduler-400 Pool-fiber112] Collectd: collector.collect: end:example1/32028/209.219.9.78/SNMP");
+        c.addLog("2010-03-13 02:54:13,334 DEBUG [CollectdScheduler-400 Pool-fiber166] Collectd: collector.collect: begin:example1/32028/209.219.9.78/SNMP");
+        c.addLog("2010-03-13 02:54:35,223 DEBUG [CollectdScheduler-400 Pool-fiber166] Collectd: collector.collect: end:example1/32028/209.219.9.78/SNMP");
+        c.addLog("2010-03-13 03:05:47,554 DEBUG [CollectdScheduler-400 Pool-fiber307] Collectd: collector.collect: begin:example1/32028/209.219.9.78/SNMP");
+        c.addLog("2010-03-13 03:06:28,926 DEBUG [CollectdScheduler-400 Pool-fiber307] Collectd: collector.collect: end:example1/32028/209.219.9.78/SNMP");
+        c.addLog("2010-03-13 03:18:27,559 DEBUG [CollectdScheduler-400 Pool-fiber264] Collectd: collector.collect: begin:example1/32028/209.219.9.78/SNMP");
+        c.addLog("2010-03-13 03:19:06,934 DEBUG [CollectdScheduler-400 Pool-fiber264] Collectd: collector.collect: end:example1/32028/209.219.9.78/SNMP");
+        assertEquals(39451+19332+3768+21889+41372+39375,c.getTotalCollectionTimePerService("example1/32028/209.219.9.78/SNMP"));
     }
 
     @Test 
     public void testReadLogMessagesFromFile() throws IOException {
         Collector c = new Collector();
         c.readLogMessagesFromFile("target/test-classes/TestLogFile.log");
-        assertEquals(7144,c.getAverageCollectionTimePerService("24/216.216.217.254/SNMP"));
-        assertEquals(0,c.getAverageCollectionTimePerService("19/209.61.128.9/SNMP"));
-        assertEquals(513,c.getAverageCollectionTimePerService("60/172.20.1.202/SNMP"));
-        assertEquals(0,c.getAverageCollectionTimePerService("86/172.20.1.25/WMI"));
-        assertEquals(0,c.getAverageCollectionTimePerService("58/172.20.1.201/SNMP"));
+        assertEquals(7144,c.getAverageCollectionTimePerService("example1/24/216.216.217.254/SNMP"));
+        assertEquals(0,c.getAverageCollectionTimePerService("example1/19/209.61.128.9/SNMP"));
+        assertEquals(513,c.getAverageCollectionTimePerService("example1/60/172.20.1.202/SNMP"));
+        assertEquals(0,c.getAverageCollectionTimePerService("example1/86/172.20.1.25/WMI"));
+        assertEquals(0,c.getAverageCollectionTimePerService("example1/58/172.20.1.201/SNMP"));
     }
 
     @Test
@@ -210,7 +210,7 @@ public class CollectorTest {
         c.readLogMessagesFromFile("target/test-classes/instrumentation.log");
         final LogMessage logMessage = c.getFirstValidLogMessage();
         assertNotNull(logMessage);
-        assertEquals("380/10.151.117.34/SNMP", logMessage.getServiceID());
+        assertEquals("example1/380/10.151.117.34/SNMP", logMessage.getServiceID());
         assertEquals(timestamp("2013-07-23 11:39:22,287"), logMessage.getDate());
         assertEquals("LegacyScheduler-Thread-20-of-50", logMessage.getThread());
     }
@@ -233,7 +233,7 @@ public class CollectorTest {
         Collector c = new Collector ();
         c.readLogMessagesFromFile("target/test-classes/TestLogFile.log");
         String expectedOutput = String.format(Collector.SERVICE_DATA_FORMAT, 
-                                              "24/216.216.217.254/SNMP",
+                                              "example1/24/216.216.217.254/SNMP",
                                               "7.144s",
                                               1,
                                               "7.144s",
@@ -246,7 +246,7 @@ public class CollectorTest {
                                               "0s"
                 );
         StringWriter out = new StringWriter();
-        c.printServiceStats("24/216.216.217.254/SNMP", new PrintWriter(out, true));
+        c.printServiceStats("example1/24/216.216.217.254/SNMP", new PrintWriter(out, true));
         String actualOutput = out.toString();
         assertEquals(expectedOutput,actualOutput);
     }
@@ -285,12 +285,12 @@ public class CollectorTest {
 
         Collector c = new Collector();
         c.setSortColumn(SortColumn.AVGCOLLECTTIME);
-        c.addLog("2010-03-13 02:21:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/1.1.1.1/SNMP");
-        c.addLog("2010-03-13 02:21:40,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/1.1.1.1/SNMP");
-        c.addLog("2010-03-13 02:22:20,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:22:50,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:23:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/3.3.3.3/SNMP");
-        c.addLog("2010-03-13 02:23:50,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/3.3.3.3/SNMP");
+        c.addLog("2010-03-13 02:21:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:21:40,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:22:20,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:22:50,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:23:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/3.3.3.3/SNMP");
+        c.addLog("2010-03-13 02:23:50,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/3.3.3.3/SNMP");
         List<ServiceCollector> collectors = c.getServiceCollectors();
         assertEquals(3, collectors.size());
         assertEquals(new Duration(30000), collectors.get(0).getAverageCollectionDuration());
@@ -304,14 +304,14 @@ public class CollectorTest {
 
         Collector c = new Collector();
         c.setSortColumn(SortColumn.AVGCOLLECTTIME);
-        c.addLog("2010-03-13 02:21:10,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/1.1.1.1/SNMP");
-        c.addLog("2010-03-13 02:21:20,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/1.1.1.1/SNMP");
-        c.addLog("2010-03-13 02:21:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/1.1.1.1/SNMP");
-        c.addLog("2010-03-13 02:21:50,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/1.1.1.1/SNMP");
-        c.addLog("2010-03-13 02:22:20,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:22:25,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:23:20,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/3.3.3.3/SNMP");
-        c.addLog("2010-03-13 02:23:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/3.3.3.3/SNMP");
+        c.addLog("2010-03-13 02:21:10,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:21:20,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:21:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:21:50,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:22:20,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:22:25,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:23:20,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/3.3.3.3/SNMP");
+        c.addLog("2010-03-13 02:23:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/3.3.3.3/SNMP");
         List<ServiceCollector> collectors = c.getServiceCollectors();
         assertEquals(3, collectors.size());
         assertEquals(new Duration(30000), collectors.get(0).getTotalCollectionDuration());
@@ -326,18 +326,18 @@ public class CollectorTest {
 
         Collector c = new Collector();
         c.setSortColumn(SortColumn.TOTALCOLLECTS);
-        c.addLog("2010-03-13 02:21:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/1.1.1.1/SNMP");
-        c.addLog("2010-03-13 02:21:31,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/1.1.1.1/SNMP");
-        c.addLog("2010-03-13 02:21:32,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/1.1.1.1/SNMP");
-        c.addLog("2010-03-13 02:21:33,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/1.1.1.1/SNMP");
-        c.addLog("2010-03-13 02:22:33,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:22:34,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:22:34,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:22:35,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:22:35,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:22:36,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:23:37,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/3.3.3.3/SNMP");
-        c.addLog("2010-03-13 02:23:38,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/3.3.3.3/SNMP");
+        c.addLog("2010-03-13 02:21:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:21:31,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:21:32,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:21:33,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:22:33,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:22:34,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:22:34,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:22:35,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:22:35,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:22:36,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:23:37,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/3.3.3.3/SNMP");
+        c.addLog("2010-03-13 02:23:38,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/3.3.3.3/SNMP");
         List<ServiceCollector> collectors = c.getServiceCollectors();
         assertEquals(3, collectors.size());
         assertEquals(3, collectors.get(0).getCollectionCount());
@@ -352,18 +352,18 @@ public class CollectorTest {
 
         Collector c = new Collector();
         c.setSortColumn(SortColumn.AVGTIMEBETWEENCOLLECTS);
-        c.addLog("2010-03-13 02:21:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/1.1.1.1/SNMP");
-        c.addLog("2010-03-13 02:21:32,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/1.1.1.1/SNMP");
-        c.addLog("2010-03-13 02:21:35,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/1.1.1.1/SNMP");
-        c.addLog("2010-03-13 02:21:36,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/1.1.1.1/SNMP");
-        c.addLog("2010-03-13 02:22:20,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:22:22,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:22:23,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:22:25,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:23:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/3.3.3.3/SNMP");
-        c.addLog("2010-03-13 02:23:32,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/3.3.3.3/SNMP");
-        c.addLog("2010-03-13 02:23:37,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/3.3.3.3/SNMP");
-        c.addLog("2010-03-13 02:23:38,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/3.3.3.3/SNMP");
+        c.addLog("2010-03-13 02:21:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:21:32,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:21:35,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:21:36,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:22:20,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:22:22,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:22:23,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:22:25,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:23:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/3.3.3.3/SNMP");
+        c.addLog("2010-03-13 02:23:32,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/3.3.3.3/SNMP");
+        c.addLog("2010-03-13 02:23:37,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/3.3.3.3/SNMP");
+        c.addLog("2010-03-13 02:23:38,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/3.3.3.3/SNMP");
         List<ServiceCollector> collectors = c.getServiceCollectors();
         assertEquals(3, collectors.size());
         assertEquals(5000, collectors.get(0).getAverageTimeBetweenCollections());
@@ -378,16 +378,16 @@ public class CollectorTest {
 
         Collector c = new Collector();
         c.setSortColumn(SortColumn.SUCCESSPERCENTAGE);
-        c.addLog("2010-03-13 02:21:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/1.1.1.1/SNMP");
-        c.addLog("2010-03-13 02:21:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: error:0/1.1.1.1/SNMP");
-        c.addLog("2010-03-13 02:21:40,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/1.1.1.1/SNMP");
-        c.addLog("2010-03-13 02:22:20,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:22:30,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:22:31,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:22:35,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: error:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:22:41,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:23:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/3.3.3.3/SNMP");
-        c.addLog("2010-03-13 02:23:50,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/3.3.3.3/SNMP");
+        c.addLog("2010-03-13 02:21:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:21:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: error:example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:21:40,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:22:20,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:22:30,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:22:31,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:22:35,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: error:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:22:41,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:23:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/3.3.3.3/SNMP");
+        c.addLog("2010-03-13 02:23:50,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/3.3.3.3/SNMP");
         List<ServiceCollector> collectors = c.getServiceCollectors();
         assertEquals(3, collectors.size());
         assertEquals(100.0, collectors.get(0).getSuccessPercentage(),0);
@@ -401,18 +401,18 @@ public class CollectorTest {
 
         Collector c = new Collector();
         c.setSortColumn(SortColumn.TOTALSUCCESSCOLLECTS);
-        c.addLog("2010-03-13 02:21:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/1.1.1.1/SNMP");
-        c.addLog("2010-03-13 02:21:40,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/1.1.1.1/SNMP");
-        c.addLog("2010-03-13 02:21:41,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/1.1.1.1/SNMP");
-        c.addLog("2010-03-13 02:21:42,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/1.1.1.1/SNMP");
-        c.addLog("2010-03-13 02:22:20,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:22:50,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:23:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/3.3.3.3/SNMP");
-        c.addLog("2010-03-13 02:23:31,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/3.3.3.3/SNMP");
-        c.addLog("2010-03-13 02:23:32,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/3.3.3.3/SNMP");
-        c.addLog("2010-03-13 02:23:33,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/3.3.3.3/SNMP");
-        c.addLog("2010-03-13 02:23:34,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/3.3.3.3/SNMP");
-        c.addLog("2010-03-13 02:23:35,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/3.3.3.3/SNMP");
+        c.addLog("2010-03-13 02:21:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:21:40,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:21:41,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:21:42,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:22:20,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:22:50,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:23:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/3.3.3.3/SNMP");
+        c.addLog("2010-03-13 02:23:31,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/3.3.3.3/SNMP");
+        c.addLog("2010-03-13 02:23:32,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/3.3.3.3/SNMP");
+        c.addLog("2010-03-13 02:23:33,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/3.3.3.3/SNMP");
+        c.addLog("2010-03-13 02:23:34,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/3.3.3.3/SNMP");
+        c.addLog("2010-03-13 02:23:35,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/3.3.3.3/SNMP");
         List<ServiceCollector> collectors = c.getServiceCollectors();
         assertEquals(3, collectors.size());
         assertEquals(3, collectors.get(0).getSuccessfulCollectionCount());
@@ -426,12 +426,12 @@ public class CollectorTest {
 
         Collector c = new Collector();
         c.setSortColumn(SortColumn.AVGSUCCESSCOLLECTTIME);
-        c.addLog("2010-03-13 02:21:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/1.1.1.1/SNMP");
-        c.addLog("2010-03-13 02:21:40,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/1.1.1.1/SNMP");
-        c.addLog("2010-03-13 02:22:20,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:22:50,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:23:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/3.3.3.3/SNMP");
-        c.addLog("2010-03-13 02:23:50,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/3.3.3.3/SNMP");
+        c.addLog("2010-03-13 02:21:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:21:40,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:22:20,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:22:50,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:23:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/3.3.3.3/SNMP");
+        c.addLog("2010-03-13 02:23:50,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/3.3.3.3/SNMP");
         List<ServiceCollector> collectors = c.getServiceCollectors();
         assertEquals(3, collectors.size());
         assertEquals(new Duration(30000), collectors.get(0).getAverageCollectionDuration());
@@ -445,17 +445,17 @@ public class CollectorTest {
 
         Collector c = new Collector();
         c.setSortColumn(SortColumn.TOTALUNSUCCESSCOLLECTS);
-        c.addLog("2010-03-13 02:21:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/1.1.1.1/SNMP");
-        c.addLog("2010-03-13 02:21:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: error:0/1.1.1.1/SNMP");
-        c.addLog("2010-03-13 02:21:40,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/1.1.1.1/SNMP");
-        c.addLog("2010-03-13 02:22:20,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:22:25,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: error:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:22:30,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:22:31,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:22:35,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: error:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:22:41,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:23:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/3.3.3.3/SNMP");
-        c.addLog("2010-03-13 02:23:50,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/3.3.3.3/SNMP");
+        c.addLog("2010-03-13 02:21:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:21:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: error:example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:21:40,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:22:20,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:22:25,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: error:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:22:30,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:22:31,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:22:35,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: error:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:22:41,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:23:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/3.3.3.3/SNMP");
+        c.addLog("2010-03-13 02:23:50,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/3.3.3.3/SNMP");
         List<ServiceCollector> collectors = c.getServiceCollectors();
         assertEquals(3, collectors.size());
         assertEquals(2, collectors.get(0).getErrorCollectionCount());
@@ -469,12 +469,12 @@ public class CollectorTest {
 
         Collector c = new Collector();
         c.setSortColumn(SortColumn.TOTALPERSISTTIME);
-        c.addLog("2011-02-19 13:09:45,000 DEBUG [CollectdScheduler-200 Pool-fiber115] Collectd: collector.collect: persistDataQueueing: begin:0/1.1.1.1/SNMP");
-        c.addLog("2011-02-19 13:09:46,000 DEBUG [CollectdScheduler-200 Pool-fiber175] Collectd: collector.collect: persistDataQueueing: end:0/1.1.1.1/SNMP");
-        c.addLog("2011-02-19 13:09:47,000 DEBUG [CollectdScheduler-200 Pool-fiber115] Collectd: collector.collect: persistDataQueueing: begin:0/2.2.2.2/SNMP");
-        c.addLog("2011-02-19 13:09:56,000 DEBUG [CollectdScheduler-200 Pool-fiber175] Collectd: collector.collect: persistDataQueueing: end:0/2.2.2.2/SNMP");
-        c.addLog("2011-02-19 13:10:01,000 DEBUG [CollectdScheduler-200 Pool-fiber115] Collectd: collector.collect: persistDataQueueing: begin:0/3.3.3.3/SNMP");
-        c.addLog("2011-02-19 13:10:03,000 DEBUG [CollectdScheduler-200 Pool-fiber175] Collectd: collector.collect: persistDataQueueing: end:0/3.3.3.3/SNMP");
+        c.addLog("2011-02-19 13:09:45,000 DEBUG [CollectdScheduler-200 Pool-fiber115] Collectd: collector.collect: persistDataQueueing: begin:example1/0/1.1.1.1/SNMP");
+        c.addLog("2011-02-19 13:09:46,000 DEBUG [CollectdScheduler-200 Pool-fiber175] Collectd: collector.collect: persistDataQueueing: end:example1/0/1.1.1.1/SNMP");
+        c.addLog("2011-02-19 13:09:47,000 DEBUG [CollectdScheduler-200 Pool-fiber115] Collectd: collector.collect: persistDataQueueing: begin:example1/0/2.2.2.2/SNMP");
+        c.addLog("2011-02-19 13:09:56,000 DEBUG [CollectdScheduler-200 Pool-fiber175] Collectd: collector.collect: persistDataQueueing: end:example1/0/2.2.2.2/SNMP");
+        c.addLog("2011-02-19 13:10:01,000 DEBUG [CollectdScheduler-200 Pool-fiber115] Collectd: collector.collect: persistDataQueueing: begin:example1/0/3.3.3.3/SNMP");
+        c.addLog("2011-02-19 13:10:03,000 DEBUG [CollectdScheduler-200 Pool-fiber175] Collectd: collector.collect: persistDataQueueing: end:example1/0/3.3.3.3/SNMP");
         List<ServiceCollector> collectors = c.getServiceCollectors();
         assertEquals(3, collectors.size());
         assertEquals(9000, collectors.get(0).getTotalPersistTime());
@@ -490,16 +490,16 @@ public class CollectorTest {
 
         Collector c = new Collector();
         c.setSortColumn(SortColumn.UNSUCCESSPERCENTAGE);
-        c.addLog("2010-03-13 02:21:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/1.1.1.1/SNMP");
-        c.addLog("2010-03-13 02:21:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: error:0/1.1.1.1/SNMP");
-        c.addLog("2010-03-13 02:21:40,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/1.1.1.1/SNMP");
-        c.addLog("2010-03-13 02:22:20,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:22:30,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:22:31,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:22:35,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: error:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:22:41,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:23:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/3.3.3.3/SNMP");
-        c.addLog("2010-03-13 02:23:50,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/3.3.3.3/SNMP");
+        c.addLog("2010-03-13 02:21:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:21:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: error:example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:21:40,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:22:20,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:22:30,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:22:31,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:22:35,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: error:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:22:41,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:23:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/3.3.3.3/SNMP");
+        c.addLog("2010-03-13 02:23:50,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/3.3.3.3/SNMP");
         List<ServiceCollector> collectors = c.getServiceCollectors();
         assertEquals(3, collectors.size());
         assertEquals(100.0, collectors.get(0).getErrorPercentage(),0);
@@ -513,17 +513,17 @@ public class CollectorTest {
 
         Collector c = new Collector();
         c.setSortColumn(SortColumn.AVGUNSUCCESSCOLLECTTIME);
-        c.addLog("2010-03-13 02:21:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/1.1.1.1/SNMP");
-        c.addLog("2010-03-13 02:21:35,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: error:0/1.1.1.1/SNMP");
-        c.addLog("2010-03-13 02:21:40,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/1.1.1.1/SNMP");
-        c.addLog("2010-03-13 02:22:20,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:22:25,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: error:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:22:40,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:23:31,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:23:35,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: error:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:23:46,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:24:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/3.3.3.3/SNMP");
-        c.addLog("2010-03-13 02:24:50,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/3.3.3.3/SNMP");
+        c.addLog("2010-03-13 02:21:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] o.o.n.c.DefaultCollectdInstrumentation: collector.collect: begin: example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:21:35,000 DEBUG [CollectdScheduler-400 Pool-fiber51] o.o.n.c.DefaultCollectdInstrumentation: collector.collect: error: example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:21:40,000 DEBUG [CollectdScheduler-400 Pool-fiber51] o.o.n.c.DefaultCollectdInstrumentation: collector.collect: end: example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:22:20,976 DEBUG [CollectdScheduler-400 Pool-fiber51] o.o.n.c.DefaultCollectdInstrumentation: collector.collect: begin: example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:22:25,976 DEBUG [CollectdScheduler-400 Pool-fiber51] o.o.n.c.DefaultCollectdInstrumentation: collector.collect: error: example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:22:40,976 DEBUG [CollectdScheduler-400 Pool-fiber51] o.o.n.c.DefaultCollectdInstrumentation: collector.collect: end: example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:23:31,976 DEBUG [CollectdScheduler-400 Pool-fiber51] o.o.n.c.DefaultCollectdInstrumentation: collector.collect: begin: example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:23:35,976 DEBUG [CollectdScheduler-400 Pool-fiber51] o.o.n.c.DefaultCollectdInstrumentation: collector.collect: error: example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:23:46,976 DEBUG [CollectdScheduler-400 Pool-fiber51] o.o.n.c.DefaultCollectdInstrumentation: collector.collect: end: example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:24:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] o.o.n.c.DefaultCollectdInstrumentation: collector.collect: begin: example1/0/3.3.3.3/SNMP");
+        c.addLog("2010-03-13 02:24:50,000 DEBUG [CollectdScheduler-400 Pool-fiber51] o.o.n.c.DefaultCollectdInstrumentation: collector.collect: end: example1/0/3.3.3.3/SNMP");
         List<ServiceCollector> collectors = c.getServiceCollectors();
         assertEquals(3, collectors.size());
         assertEquals(17500, collectors.get(0).getAverageErrorCollectionTime());
@@ -538,12 +538,12 @@ public class CollectorTest {
         Collector c = new Collector();
         c.setSortColumn(SortColumn.AVGCOLLECTTIME);
         c.setSortOrder(SortOrder.ASCENDING);
-        c.addLog("2010-03-13 02:21:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/1.1.1.1/SNMP");
-        c.addLog("2010-03-13 02:21:40,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/1.1.1.1/SNMP");
-        c.addLog("2010-03-13 02:22:20,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:22:50,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:23:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/3.3.3.3/SNMP");
-        c.addLog("2010-03-13 02:23:50,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/3.3.3.3/SNMP");
+        c.addLog("2010-03-13 02:21:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:21:40,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:22:20,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:22:50,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:23:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/3.3.3.3/SNMP");
+        c.addLog("2010-03-13 02:23:50,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/3.3.3.3/SNMP");
         List<ServiceCollector> collectors = c.getServiceCollectors();
         assertEquals(3, collectors.size());
         assertEquals(new Duration(10000), collectors.get(0).getAverageCollectionDuration());

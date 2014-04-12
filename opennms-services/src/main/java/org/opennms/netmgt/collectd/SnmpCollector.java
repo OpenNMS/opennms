@@ -318,36 +318,23 @@ public class SnmpCollector implements ServiceCollector {
                 // should we return here?
             }
             
-            Collectd.instrumentation().beginCollectingServiceData(collectionSet.getCollectionAgent().getNodeId(), collectionSet.getCollectionAgent().getHostAddress(), serviceName());
-            try {
-                collectionSet.collect();
-                
+            collectionSet.collect();
+
+            /*
+             * FIXME: Should we even be doing this? I say we get rid of this force rescan thingie
+             * {@see http://issues.opennms.org/browse/NMS-1057}
+             */
+            if (System.getProperty("org.opennms.netmgt.collectd.SnmpCollector.forceRescan", "false").equalsIgnoreCase("true")
+                    && collectionSet.rescanNeeded()) {
                 /*
-                 * FIXME: Should we even be doing this? I say we get rid of this force rescan thingie
-                 * {@see http://issues.opennms.org/browse/NMS-1057}
+                 * TODO: the behavior of this object may have been re-factored away.
+                 * Verify that this is correct and remove this unused object if it
+                 * is no longer needed.  My gut thinks this should be investigated.
                  */
-                if (System.getProperty("org.opennms.netmgt.collectd.SnmpCollector.forceRescan", "false").equalsIgnoreCase("true")
-                        && collectionSet.rescanNeeded()) {
-                    /*
-                     * TODO: the behavior of this object may have been re-factored away.
-                     * Verify that this is correct and remove this unused object if it
-                     * is no longer needed.  My gut thinks this should be investigated.
-                     */
-                    forceRescanState.rescanIndicated();
-                }
-                /**
-                 * Persistence is now done by the BasePersister visitor
-                 * @see CollectableService#doCollection()
-                 * @see CollectionSet#visit(BasePersister visitor)
-                 */
-                //persistData(params, collectionSet);
-                return collectionSet;
-            } finally {
-                Collectd.instrumentation().endCollectingServiceData(collectionSet.getCollectionAgent().getNodeId(), collectionSet.getCollectionAgent().getHostAddress(), serviceName());
+                forceRescanState.rescanIndicated();
             }
+            return collectionSet;
         } catch (CollectionException e) {
-            Collectd.instrumentation().reportCollectionException(agent.getNodeId(), agent.getHostAddress(), serviceName(), e);
-            
             throw e;
         } catch (Throwable t) {
             throw new CollectionException("Unexpected error during node SNMP collection for: " + agent.getHostAddress(), t);

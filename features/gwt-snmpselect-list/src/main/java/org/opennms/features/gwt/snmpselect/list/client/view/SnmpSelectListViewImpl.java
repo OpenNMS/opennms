@@ -67,7 +67,6 @@ public class SnmpSelectListViewImpl extends Composite implements SnmpSelectListV
     FlowPanel m_pagerContainer;
     
     private Presenter<SnmpCellListItem> m_presenter;
-    private SimplePager m_simplePager;
     private ListDataProvider<SnmpCellListItem> m_dataList;
 
     protected SnmpCellListItem m_updatedCell;
@@ -88,10 +87,10 @@ public class SnmpSelectListViewImpl extends Composite implements SnmpSelectListV
             }
         });
         
-        m_simplePager = new SimplePager(TextLocation.CENTER, (Resources) GWT.create(OnmsSimplePagerResources.class), true, 1000, false);
-        m_simplePager.setWidth("100%");
-        m_simplePager.setDisplay(m_snmpSelectTable);
-        m_pagerContainer.add(m_simplePager);
+        SimplePager simplePager = new SimplePager(TextLocation.CENTER, (Resources) GWT.create(OnmsSimplePagerResources.class), true, 1000, false);
+        simplePager.setWidth("100%");
+        simplePager.setDisplay(m_snmpSelectTable);
+        m_pagerContainer.add(simplePager);
         
         m_dataList = new ListDataProvider<SnmpCellListItem>();
         m_dataList.addDataDisplay(m_snmpSelectTable);

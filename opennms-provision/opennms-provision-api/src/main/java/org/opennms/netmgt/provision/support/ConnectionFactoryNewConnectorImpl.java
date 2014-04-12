@@ -63,8 +63,8 @@ public class ConnectionFactoryNewConnectorImpl extends ConnectionFactory {
     
     private static final Logger LOG = LoggerFactory.getLogger(ConnectionFactoryNewConnectorImpl.class);
     
-    private static final Executor m_executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-    private static final IoProcessor<NioSession> m_processor = new SimpleIoProcessorPool<NioSession>(NioProcessor.class, m_executor);
+    //private static final Executor m_executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    //private static final IoProcessor<NioSession> m_processor = new SimpleIoProcessorPool<NioSession>(NioProcessor.class, m_executor);
     private ThreadLocal<Integer> m_port = new ThreadLocal<Integer>();
     private final Object m_portMutex = new Object();
 
@@ -77,7 +77,15 @@ public class ConnectionFactoryNewConnectorImpl extends ConnectionFactory {
 
     private static final NioSocketConnector getSocketConnector(long timeout, IoHandler handler) {
         // Create a new NioSocketConnector
-        NioSocketConnector connector = new NioSocketConnector(m_executor, m_processor);
+        //NioSocketConnector connector = new NioSocketConnector(m_executor, m_processor);
+
+        // To address bug NMS-6412, I'm changing this to use the default constructor so that the
+        // Executor pool and IoProcessor pools are created and destroyed for every connector.
+        // This slows things down but might be an acceptable tradeoff for more reliable detection.
+        //
+        // @see http://issues.opennms.org/browse/NMS-6412
+        //
+        NioSocketConnector connector = new NioSocketConnector(Runtime.getRuntime().availableProcessors());
 
         // Enable SO_REUSEADDR on the socket so that TIMED_WAIT connections that are bound on the
         // same port do not block new outgoing connections. If the connections are blocked, then

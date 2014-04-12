@@ -83,6 +83,11 @@ public class SearchResult {
                 + ((getNamespace() == null) ? 0 : getNamespace().hashCode());
         return result;
     }
+    
+    @Override
+    public String toString() {
+    	return "NameSpace:"+m_namespace+"; ID:"+m_id+"; Label:"+m_label;
+    }
 
 	public final boolean isCollapsible() {
 		return m_collapsible;

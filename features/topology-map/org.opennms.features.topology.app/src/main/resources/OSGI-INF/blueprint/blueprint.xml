@@ -70,8 +70,8 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         </bean>
     </service>
 
-    <service id="ipSearchProvider" interface="org.opennms.features.topology.api.topo.SearchProvider" >
-        <bean class="org.opennms.features.topology.app.internal.IpSearchProvider" >
+    <service id="ipLikeSearchProvider" interface="org.opennms.features.topology.api.topo.SearchProvider" >
+        <bean class="org.opennms.features.topology.app.internal.IpLikeSearchProvider" >
             <argument ref="ipInterfaceDao" />
         </bean>
     </service>

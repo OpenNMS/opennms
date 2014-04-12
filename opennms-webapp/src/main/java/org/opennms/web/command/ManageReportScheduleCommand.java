@@ -28,6 +28,8 @@
 
 package org.opennms.web.command;
 
+import java.util.Arrays;
+
 /**
  * <p>ManageReportScheduleCommand class.</p>
  *
@@ -45,7 +47,7 @@ public class ManageReportScheduleCommand {
      * @param triggerNames an array of {@link java.lang.String} objects.
      */
     public void setTriggerNames(String[] triggerNames) {
-        m_triggerNames = triggerNames;
+        m_triggerNames = Arrays.copyOf(triggerNames, triggerNames.length);
     }
 
     /**

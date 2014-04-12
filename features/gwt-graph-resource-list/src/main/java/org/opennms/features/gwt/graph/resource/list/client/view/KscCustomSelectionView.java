@@ -50,11 +50,8 @@ public class KscCustomSelectionView implements SelectionDisplay {
     RadioButton m_createNewRB;
     RadioButton m_createNewExistingRB;
     RadioButton m_deleteRB;
-    private boolean m_isReadOnly;
     
     public KscCustomSelectionView(boolean isReadOnly) {
-        m_isReadOnly = isReadOnly;
-
         m_vertPanel = new VerticalPanel();
         m_vertPanel.setStyleName("onms-table-no-borders-margin");
         m_submitButton = new Button("Submit");
@@ -66,7 +63,7 @@ public class KscCustomSelectionView implements SelectionDisplay {
         
         m_vertPanel.add(m_viewRB);
         m_viewRB.setValue(true);
-        if(!m_isReadOnly){
+        if(!isReadOnly){
             m_vertPanel.add(m_customizeRB);
             m_vertPanel.add(m_createNewRB);
             m_vertPanel.add(m_createNewExistingRB);

@@ -29,6 +29,7 @@
 package org.opennms.netmgt.rrd;
 
 import java.io.InputStream;
+import java.util.Arrays;
 
 /**
  * Simple RrdGraphDetails implementation.
@@ -96,7 +97,7 @@ public class DefaultRrdGraphDetails implements RrdGraphDetails {
      * @param printLines an array of {@link java.lang.String} objects.
      */
     public void setPrintLines(String[] printLines) {
-        m_printLines = printLines;
+        m_printLines = Arrays.copyOf(printLines, printLines.length);
     }
     
     /**

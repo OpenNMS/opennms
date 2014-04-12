@@ -30,6 +30,7 @@ package org.opennms.netmgt.notifd;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -208,7 +209,7 @@ public class NotificationTask extends Thread {
      *            the commands to call at the console.
      */
     public void setCommands(Command[] commands) {
-        m_commands = commands;
+        m_commands = Arrays.copyOf(commands, commands.length);
     }
     
     /**

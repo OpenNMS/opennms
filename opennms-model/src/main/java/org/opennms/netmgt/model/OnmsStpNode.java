@@ -55,6 +55,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 
 /**
@@ -66,6 +67,7 @@ import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 @XmlRootElement(name = "stpNode")
 @Entity
 @Table(name="stpNode", uniqueConstraints = {@UniqueConstraint(columnNames={"nodeId", "baseVlan"})})
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OnmsStpNode {
 	
     @Embeddable

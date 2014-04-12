@@ -46,7 +46,7 @@ public class RrdtoolDataSource implements JRDataSource {
         @Override
 	public Object getFieldValue(JRField field) throws JRException {
 		if ("Timestamp".equalsIgnoreCase(getColumnName(field))) {
-			long ts = new Long(m_data.getData().getRow(m_currentRow).getT().getContent()) * 1000l;
+			long ts = new Long(m_data.getData().getRow(m_currentRow).getT().getContent()) * 1000L;
 			return new Date(ts);
 		}else if ("Step".equalsIgnoreCase(getColumnName(field))) {
 		    return new Integer(m_data.getMeta().getStep().getContent());

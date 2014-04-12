@@ -99,6 +99,7 @@ public class BroadcastEventProcessor implements EventListener {
     @Override
     protected void finalize() throws Throwable {
         close();
+        super.finalize();
     }
 
     /**

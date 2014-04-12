@@ -146,6 +146,13 @@ abstract public class XmlTest<T> {
     }
 
     protected boolean ignoreDifference(final Difference d) {
+        if ("text value".equals(d.getDescription())) {
+            final String controlValue = d.getControlNodeDetail().getValue();
+            final String testValue = d.getTestNodeDetail().getValue();
+
+            return (controlValue == null || controlValue.trim().isEmpty()) &&
+                    (testValue    == null || testValue.trim().isEmpty());
+        }
         return false;
     }
 

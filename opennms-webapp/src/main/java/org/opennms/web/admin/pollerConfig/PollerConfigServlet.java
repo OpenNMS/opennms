@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -222,9 +223,6 @@ public class PollerConfigServlet extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         reloadFiles();
 
-        List<String> checkedList = new ArrayList<String>();
-        List<String> deleteList = new ArrayList<String>();
-
         m_props.store(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONF_FILE_NAME)), null);
 
         String[] requestActivate = request.getParameterValues("activate");
@@ -233,17 +231,13 @@ public class PollerConfigServlet extends HttpServlet {
         if (requestActivate != null) {
             for (int i = 0; i < requestActivate.length; i++) {
                 modifyPollerInfo("on", requestActivate[i]);
-                checkedList.add(requestActivate[i]);
             }
+            adjustNonChecked(Arrays.asList(requestActivate));
         }
 
         if (requestDelete != null) {
-            for (int j = 0; j < requestDelete.length; j++) {
-                deleteList.add(requestDelete[j]);
-            }
+        	deleteThese(Arrays.asList(requestDelete));
         }
-        adjustNonChecked(checkedList);
-        deleteThese(deleteList);
 
         Writer poller_fileWriter = new OutputStreamWriter(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME)), "UTF-8");
         Writer capsd_fileWriter = new OutputStreamWriter(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.CAPSD_CONFIG_FILE_NAME)), "UTF-8");

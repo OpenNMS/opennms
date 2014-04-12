@@ -28,6 +28,8 @@
 
 package org.opennms.sms.reflector.commands.internal;
 
+import java.util.Arrays;
+
 import org.opennms.sms.reflector.smsservice.GatewayGroup;
 import org.smslib.AGateway;
 
@@ -47,7 +49,7 @@ public class GatewayGroupImpl implements GatewayGroup {
 	 * @param gateways an array of {@link org.smslib.AGateway} objects.
 	 */
 	public void setGateways(AGateway[] gateways){
-		m_gateways = gateways;
+		m_gateways = Arrays.copyOf(gateways, gateways.length);
 	}
 	
 	/**

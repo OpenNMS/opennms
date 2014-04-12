@@ -56,7 +56,7 @@ public class DataCollectionConfigConverter extends AbstractDatacollectionConfigV
         ifIndexResourceType.addColumn(".1.3.6.1.2.1.31.1.1.1.1", "ifName", "string");
 
         m_currentSnmpCollection = new SnmpCollectionImpl(collection.getName());
-        m_currentDataCollectionGroup = new DataCollectionGroupImpl("all");
+        m_currentDataCollectionGroup = new DataCollectionGroupImpl(collection.getName() + "-all");
         m_currentSnmpCollection.addDataCollectionGroup(m_currentDataCollectionGroup);
         
         m_currentDataCollectionGroup.addResourceType(ifIndexResourceType);

@@ -28,6 +28,7 @@
 
 package org.opennms.core.soa.support;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import org.opennms.core.soa.Registration;
@@ -89,7 +90,7 @@ public class ServiceFactoryBean implements FactoryBean<Registration>, BeanFactor
      * @param serviceInterfaces an array of {@link java.lang.Class} objects.
      */
     public void setInterfaces(Class<?>[] serviceInterfaces) {
-        m_serviceInterfaces = serviceInterfaces;
+        m_serviceInterfaces = Arrays.copyOf(serviceInterfaces, serviceInterfaces.length);
     }
     
     /**

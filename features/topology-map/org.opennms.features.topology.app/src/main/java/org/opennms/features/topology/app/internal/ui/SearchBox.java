@@ -57,6 +57,8 @@ import org.opennms.features.topology.app.internal.gwt.client.SearchBoxState;
 import org.opennms.features.topology.app.internal.gwt.client.SearchSuggestion;
 import org.opennms.features.topology.app.internal.support.CategoryHopCriteria;
 import org.opennms.osgi.OnmsServiceManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Function;
 import com.google.common.collect.HashMultimap;
@@ -68,6 +70,8 @@ import com.vaadin.ui.AbstractComponent;
 
 public class SearchBox extends AbstractComponent implements SelectionListener, GraphContainer.ChangeListener {
 
+    private static final Logger LOG = LoggerFactory.getLogger(SearchBox.class);
+
     /**
 	 * 
 	 */
@@ -76,12 +80,13 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
 	Multimap<SearchProvider, SearchResult> m_suggestionMap;
     private OperationContext m_operationContext;
     private OnmsServiceManager m_serviceManager;
-    SearchBoxServerRpc m_rpc = new SearchBoxServerRpc(){
+    SearchBoxServerRpc m_rpc = new SearchBoxServerRpc() {
 
         private static final long serialVersionUID = 6945103738578953390L;
 
         @Override
         public void querySuggestions(String query, int indexFrom, int indexTo) {
+            LOG.debug("SearchBox->querySuggestions: called with query: {}", query);
             if (m_serviceManager != null) {
                 getState().setSuggestions(getQueryResults(query));
             }
@@ -89,11 +94,13 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
 
         @Override
         public void selectSuggestion(SearchSuggestion searchSuggestion) {
+            LOG.debug("SearchBox->selectSuggestion: called with searchSuggestion: {}", searchSuggestion);
+
             SearchResult searchResult = new SearchResult(searchSuggestion.getNamespace(), searchSuggestion.getId(), searchSuggestion.getLabel());
 
             Multiset<SearchProvider> keys = m_suggestionMap.keys();
-            for(SearchProvider key : keys){
-                if(m_suggestionMap.get(key).contains(searchResult)){
+            for (SearchProvider key : keys ) {
+                if (m_suggestionMap.get(key).contains(searchResult)) {
                     //key.onFocusSearchResult(searchResult, m_operationContext);
 
                     break;
@@ -103,6 +110,8 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
 
         @Override
         public void removeSelected(SearchSuggestion searchSuggestion) {
+            LOG.debug("SearchBox->removeSelected: called with searchSuggestion: {}", searchSuggestion);
+
             SearchResult searchResult = new SearchResult(searchSuggestion.getNamespace(), searchSuggestion.getId(), searchSuggestion.getLabel());
 
             Multiset<SearchProvider> keys = m_suggestionMap.keys();
@@ -118,6 +127,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
 
         @Override
         public void addToFocus(SearchSuggestion searchSuggestion) {
+            LOG.debug("SearchBox->addToFocus: called with searchSuggestion: {}", searchSuggestion);
             SearchResult searchResult = new SearchResult(searchSuggestion.getNamespace(), searchSuggestion.getId(), searchSuggestion.getLabel());
 
             Multiset<SearchProvider> keys = m_suggestionMap.keys();
@@ -135,12 +145,19 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
 
         @Override
         public void removeFocused(SearchSuggestion searchSuggestion) {
+            LOG.debug("SearchBox->removeFocused: called with searchSuggestion: {}", searchSuggestion);
+            
             SearchResult searchResult = new SearchResult(searchSuggestion.getNamespace(), searchSuggestion.getId(), searchSuggestion.getLabel());
 
             Multiset<SearchProvider> keys = m_suggestionMap.keys();
-            for(SearchProvider key : keys){
+            
+            LOG.debug("SearchBox->removeFocused: suggestionMap size is: {}", m_suggestionMap.size());
+            
+            for (SearchProvider key : keys) {
+                //LOG.debug("SearchBox->removeFocused: iterating keys with key: {}", key);
                 Collection<SearchResult> searchResults = m_suggestionMap.get(key);
-                if(searchResults.contains(searchResult)) {
+                if (searchResults.contains(searchResult)) {
+                    //LOG.debug("SearchBox->removeFocused: found searchResult '{}' in searchResults.", searchResult);
                     key.onDefocusSearchResult(searchResult, m_operationContext);
                     key.removeVertexHopCriteria(searchResult, m_operationContext.getGraphContainer());
 
@@ -148,7 +165,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
                 }
             }
 
-            if(m_suggestionMap.size() == 0){
+            if (m_suggestionMap.size() == 0) {
                 removeIfSuggMapEmpty(searchResult, m_operationContext.getGraphContainer());
             }
 
@@ -157,7 +174,9 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
         }
 
         @Override
-        public void centerSearchSuggestion(SearchSuggestion searchSuggestion){
+        public void centerSearchSuggestion(SearchSuggestion searchSuggestion) {
+            LOG.debug("SearchBox->centerSearchSuggestion: called with searchSuggestion: {}", searchSuggestion);
+
             SearchResult searchResult = new SearchResult(searchSuggestion.getNamespace(), searchSuggestion.getId(), searchSuggestion.getLabel());
 
             Set<VertexRef> vRefs = new TreeSet<VertexRef>();
@@ -185,6 +204,8 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
 
         @Override
         public void toggleSuggestionCollapse(SearchSuggestion searchSuggestion) {
+            LOG.debug("SearchBox->toggleSuggestionCollapse: called with searchSuggestion: {}", searchSuggestion);
+            
             SearchResult searchResult = new SearchResult(searchSuggestion.getNamespace(), searchSuggestion.getId(), searchSuggestion.getLabel());
             Multiset<SearchProvider> keys = m_suggestionMap.keys();
             for(SearchProvider key : keys){
@@ -208,18 +229,49 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
         init();
     }
 
-    public void removeIfSuggMapEmpty(SearchResult searchResult, GraphContainer graphContainer){
+    private void removeIfSuggMapEmpty(SearchResult searchResult, GraphContainer graphContainer) {
         Criteria[] criterias = graphContainer.getCriteria();
         for(Criteria criteria : criterias){
             try{
-                CategoryHopCriteria crit = (CategoryHopCriteria) criteria;
-                if(crit.getCategoryName().equals(searchResult.getLabel())) graphContainer.removeCriteria(crit);
-            } catch (ClassCastException e){}
+                VertexHopCriteria crit = (VertexHopCriteria) criteria;
+                
+                if (crit == null) {
+                    return;
+                }
+                
+                String critNameSpace = crit.getNamespace();
+                
+                if (critNameSpace == null) {
+                    return;
+                }
+                
+                String critId = crit.getId();
+                
+                if (critId == null) {
+                    return;
+                }
+
+                String critLabel = crit.getLabel();
+
+                if (critLabel == null) {
+                    return;
+                }
+                
+                String resultNameSpace = searchResult.getNamespace();
+                String resultId = searchResult.getId();
+                String resultLabel = searchResult.getLabel();
+                if ( critNameSpace.equals(resultNameSpace) && critId.equals(resultId) && critLabel.equals(resultLabel) ) {
+                    graphContainer.removeCriteria(crit);
+                }
+                
+            } catch (Exception e) {
+                LOG.error("SearchBox->removeIfSuggMapEmpty: caught exception: '{}'.", e);
+            }
 
         }
     }
 
-    public void collapseIfSuggMapEmpty(SearchResult searchResult, GraphContainer graphContainer){
+    private void collapseIfSuggMapEmpty(SearchResult searchResult, GraphContainer graphContainer){
         //A special check for categories that were added then after re-login can't collapse
         boolean isDirty = false;
         Criteria[] criterias = graphContainer.getCriteria();
@@ -240,7 +292,8 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
         }
     }
 
-    public void removeIfSpecialURLCase(SearchResult searchResult) {
+    //TODO figure out why we remove vertexRef and not criteria
+    private void removeIfSpecialURLCase(SearchResult searchResult) {
         FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(m_operationContext.getGraphContainer());
         DefaultVertexRef vertexRef = new DefaultVertexRef(searchResult.getNamespace(), searchResult.getId(), searchResult.getLabel());
         if(criteria.contains(vertexRef)){
@@ -250,25 +303,33 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
 
 
     private List<SearchSuggestion> getQueryResults(final String query) {
+        LOG.debug("SearchBox->getQueryResults: called with query {}", query);
+
         String namespace = m_operationContext.getGraphContainer().getBaseTopology().getVertexNamespace();
 
         List<SearchProvider> providers = m_serviceManager.getServices(SearchProvider.class, null, new Properties());
+        LOG.debug("SearchBox->getQueryResults: service manager reports {} SearchProviders.", providers.size());
+        
         List<SearchResult> results = Lists.newArrayList();
 
-        for(SearchProvider provider : providers) {
-            if(provider.getSearchProviderNamespace().equals(namespace) || provider.contributesTo(namespace)){
-                if(provider.supportsPrefix(query)) {
+        for (SearchProvider provider : providers) {
+            
+            if (provider.getSearchProviderNamespace().equals(namespace) || provider.contributesTo(namespace)) {
+                
+                if (provider.supportsPrefix(query)) {
                     // If there is an '=' divider, strip it off. Otherwise, use an empty query string
                     String queryOnly = query.indexOf('=') > 0 ? query.substring(query.indexOf('=') + 1) : "";
                     List<SearchResult> q = provider.query(getSearchQuery(queryOnly), m_operationContext.getGraphContainer());
                     results.addAll(q);
-                    if(m_suggestionMap.containsKey(provider)){
+                    
+                    if (m_suggestionMap.containsKey(provider)) {
                         m_suggestionMap.get(provider).addAll(q);
-                    } else{
+                        
+                    } else {
                         m_suggestionMap.putAll(provider, q);
                     }
 
-                } else{
+                } else {
                     List<SearchResult> q = provider.query(getSearchQuery(query), m_operationContext.getGraphContainer());
                     results.addAll(q);
                     if (m_suggestionMap.containsKey(provider)) {

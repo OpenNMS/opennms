@@ -138,4 +138,28 @@ public class TableImpl implements ITable {
         return true;
     }
 
+    public static TableImpl asTable(final ITable table) {
+        if (table == null) return null;
+        
+        if (table instanceof TableImpl) {
+            return (TableImpl)table;
+        } else {
+            final TableImpl newTable = new TableImpl();
+            newTable.setName(table.getName());
+            newTable.setInstance(table.getInstance());
+            newTable.setColumns(ColumnImpl.asColumns(table.getColumns()));
+            return newTable;
+        }
+    }
+
+    public static TableImpl[] asTables(final ITable[] tables) {
+        if (tables == null) return null;
+        
+        final TableImpl[] newTables = new TableImpl[tables.length];
+        for (int i=0; i < tables.length; i++) {
+            newTables[i] = TableImpl.asTable(tables[i]);
+        }
+        return newTables;
+    }
+
 }

@@ -29,6 +29,7 @@
 package org.opennms.netmgt.provision.service.lifecycle;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -110,7 +111,7 @@ class DefaultLifeCycleInstance extends SequenceTask implements LifeCycleInstance
      * @param providers an array of {@link java.lang.Object} objects.
      */
     public DefaultLifeCycleInstance(LifeCycleRepository repository, DefaultTaskCoordinator coordinator, String lifeCycleName, String[] phaseNames, Object[] providers) {
-        this(null, repository, coordinator, lifeCycleName, phaseNames, providers);
+        this(null, repository, coordinator, lifeCycleName, Arrays.copyOf(phaseNames, phaseNames.length), Arrays.copyOf(providers, providers.length));
     }
 
     /**

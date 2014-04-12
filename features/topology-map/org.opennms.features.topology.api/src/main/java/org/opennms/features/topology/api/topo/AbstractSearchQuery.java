@@ -42,5 +42,10 @@ public abstract class AbstractSearchQuery implements SearchQuery{
     }
 
     @Override
+    public String toString() {
+    	return m_queryString;
+    }
+
+    @Override
     public abstract boolean matches(String label);
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,5 +37,23 @@ import org.opennms.netmgt.daemon.BaseOnmsMBean;
  * @version $Id: $
  */
 public interface StatsdMBean extends BaseOnmsMBean {
+    /**
+     * @return The number of report runs started since Statsd was last started
+     */
+    public long getReportsStarted();
     
-}
+    /**
+     * @return The number of report runs completed since Statsd was last started
+     */
+    public long getReportsCompleted();
+    
+    /**
+     * @return The number of reports persisted since Statsd was last started
+     */
+    public long getReportsPersisted();
+    
+    /**
+     * @return The time, in milliseconds, spent running reports since Statsd was last started
+     */
+    public long getReportRunTime();
+    }

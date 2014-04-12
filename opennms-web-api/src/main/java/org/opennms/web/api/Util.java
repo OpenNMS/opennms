@@ -36,11 +36,12 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.text.DateFormat;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.SortedMap;
@@ -297,10 +298,7 @@ public abstract class Util extends Object {
 
         final StringBuffer buffer = new StringBuffer();
 
-        final ArrayList<String> ignoreList = new ArrayList<String>();
-        for (int i = 0; i < ignores.length; i++) {
-            ignoreList.add(ignores[i]);
-        }
+        final List<String> ignoreList = Arrays.asList(ignores);
 
         @SuppressWarnings("unchecked")
         final Enumeration<String> names = request.getParameterNames();
@@ -426,10 +424,7 @@ public abstract class Util extends Object {
 
         final StringBuffer buffer = new StringBuffer();
 
-        final ArrayList<String> ignoreList = new ArrayList<String>();
-        for (int i = 0; i < ignores.length; i++) {
-            ignoreList.add(ignores[i]);
-        }
+        final List<String> ignoreList = Arrays.asList(ignores);
 
         @SuppressWarnings("unchecked")
         final Enumeration<String> names = request.getParameterNames();

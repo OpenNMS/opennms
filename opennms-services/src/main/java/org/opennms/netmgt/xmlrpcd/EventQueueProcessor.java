@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.xmlrpcd;
 
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opennms.core.fiber.PausableFiber;
@@ -95,7 +96,7 @@ class EventQueueProcessor implements Runnable, PausableFiber {
     EventQueueProcessor(final FifoQueue<Event> eventQ, final XmlrpcServer[] rpcServers, final int retries, final int elapseTime, final boolean verifyServer, final String localServer, final int maxQSize) {
         m_eventQ = eventQ;
         m_maxQSize = maxQSize;
-        m_notifier = new XmlRpcNotifier(rpcServers, retries, elapseTime, verifyServer, localServer);
+        m_notifier = new XmlRpcNotifier(Arrays.copyOf(rpcServers, rpcServers.length), retries, elapseTime, verifyServer, localServer);
         m_useGenericMessages = XmlrpcdConfigFactory.getInstance().getConfiguration().getGenericMsgs();
     }
 

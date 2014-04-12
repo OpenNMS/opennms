@@ -203,12 +203,12 @@ public class HttpNorthbounder extends AbstractNorthbounder {
     }
 
 
-    private HttpVersion determineHttpVersion(String version) {
+    private static HttpVersion determineHttpVersion(String version) {
         HttpVersion httpVersion = null;
-        if (version != "1.0") {
-            httpVersion = HttpVersion.HTTP_1_1;
-        } else {
+        if ("1.0".equals(version)) {
             httpVersion = HttpVersion.HTTP_1_0;
+        } else {
+            httpVersion = HttpVersion.HTTP_1_1;
         }
         return httpVersion;
     }

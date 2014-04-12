@@ -44,12 +44,12 @@ public class FilterTest {
     ServiceCollector svcCollector = new ServiceCollector(null);
 
     public void setup() {
-        c.addLog("2010-03-13 02:21:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/1.1.1.1/SNMP");
-        c.addLog("2010-03-13 02:21:40,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/1.1.1.1/SNMP");
-        c.addLog("2010-03-13 02:22:20,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:22:50,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:23:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/3.3.3.3/SNMP");
-        c.addLog("2010-03-13 02:23:50,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/3.3.3.3/SNMP");
+        c.addLog("2010-03-13 02:21:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:21:40,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:22:20,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:22:50,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:23:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/3.3.3.3/SNMP");
+        c.addLog("2010-03-13 02:23:50,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/3.3.3.3/SNMP");
     }
 
     @Test
@@ -107,7 +107,7 @@ public class FilterTest {
     public void testFilterServiceCollectorsByServiceID () {
         setup();
         
-        final String serviceID = "0/3.3.3.3/SNMP";
+        final String serviceID = "example1/0/3.3.3.3/SNMP";
         
         Collection<ServiceCollector> filtered = filter(c.getServiceCollectors(), and(eq(serviceID(), serviceID), lessThan(collectionCount(), 2)));
         assertEquals(1, filtered.size());
@@ -118,9 +118,9 @@ public class FilterTest {
     @Test
     public void testCompoundFilters() {
         setup();
-        final String serviceID1 = "0/1.1.1.1/SNMP";
-        final String serviceID2 = "0/2.2.2.2/SNMP";
-        final String serviceID3 = "0/3.3.3.3/SNMP";
+        final String serviceID1 = "example1/0/1.1.1.1/SNMP";
+        final String serviceID2 = "example1/0/2.2.2.2/SNMP";
+        final String serviceID3 = "example1/0/3.3.3.3/SNMP";
         
         Collection<ServiceCollector> compoundOrFilter = filter(c.getServiceCollectors(), or(byServiceID(serviceID2), byServiceID(serviceID3)));
         assertEquals(2, compoundOrFilter.size());

@@ -34,6 +34,7 @@ import static org.opennms.netmgt.icmp.PingConstants.DEFAULT_PACKET_SIZE;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -123,7 +124,7 @@ import org.slf4j.LoggerFactory;
 public class JniPinger implements Pinger {
     private static final Logger LOG = LoggerFactory.getLogger(JniPinger.class);
 
-    private final int m_pingerId = (int) (Math.random() * Short.MAX_VALUE);
+    private final int m_pingerId = new SecureRandom().nextInt(Short.MAX_VALUE);
 
     private RequestTracker<JniPingRequest, JniPingResponse> s_pingTracker;
     private Throwable m_error = null;
