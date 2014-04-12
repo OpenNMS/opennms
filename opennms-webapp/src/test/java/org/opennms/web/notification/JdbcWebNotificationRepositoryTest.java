@@ -63,6 +63,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
+@Transactional
 public class JdbcWebNotificationRepositoryTest implements InitializingBean {
     
     @Autowired

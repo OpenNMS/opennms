@@ -59,6 +59,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
+@Transactional
 public class JdbcWebOutageRepositoryTest implements InitializingBean {
     
     @Autowired

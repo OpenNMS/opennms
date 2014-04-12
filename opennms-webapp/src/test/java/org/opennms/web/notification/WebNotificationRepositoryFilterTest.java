@@ -71,6 +71,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
+@Transactional
 public class WebNotificationRepositoryFilterTest implements InitializingBean {
     
     @Autowired
