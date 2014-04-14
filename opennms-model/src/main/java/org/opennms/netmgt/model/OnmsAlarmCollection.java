@@ -34,8 +34,10 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.config.api.JaxbListWrapper;
+
 @XmlRootElement(name="alarms")
-public class OnmsAlarmCollection extends RestResponseCollection<OnmsAlarm> {
+public class OnmsAlarmCollection extends JaxbListWrapper<OnmsAlarm> {
     private static final long serialVersionUID = 1L;
 
     public OnmsAlarmCollection() { super(); }

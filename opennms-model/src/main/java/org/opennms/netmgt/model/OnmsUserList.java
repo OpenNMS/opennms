@@ -36,9 +36,11 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.config.api.JaxbListWrapper;
+
 @XmlRootElement(name = "users")
 @XmlAccessorType(XmlAccessType.NONE)
-public class OnmsUserList extends RestResponseCollection<OnmsUser> {
+public class OnmsUserList extends JaxbListWrapper<OnmsUser> {
     private static final long serialVersionUID = 1L;
 
     public OnmsUserList() { super(); }

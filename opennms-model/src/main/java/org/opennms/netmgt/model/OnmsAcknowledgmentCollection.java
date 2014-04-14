@@ -34,8 +34,10 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.config.api.JaxbListWrapper;
+
 @XmlRootElement(name="acknowledgments")
-public class OnmsAcknowledgmentCollection extends RestResponseCollection<OnmsAcknowledgment> {
+public class OnmsAcknowledgmentCollection extends JaxbListWrapper<OnmsAcknowledgment> {
     private static final long serialVersionUID = 1L;
 
     public OnmsAcknowledgmentCollection() { super(); }

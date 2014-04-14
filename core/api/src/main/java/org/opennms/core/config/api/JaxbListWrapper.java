@@ -1,4 +1,4 @@
-package org.opennms.netmgt.model;
+package org.opennms.core.config.api;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -14,14 +14,14 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * <p>A simple list wrapper for returning ReST responses.
+ * <p>A simple list wrapper for ensuring lists of JAXB objects serialize correctly.
  * You <b>must</b> annotate subclasses with {@link XmlRootElement} and
  * then implement {@link #getObjects()} with an {@link XmlElement} annotation
  * and a call to super.getObjects() so that it gets serialized properly.</p>
  * <p>Example implementation:</p>
  * {@code
  * @XmlRootElement(name="thingies")
- * public static class ThingyCollection extends RestResponseCollection<Thingy> {
+ * public static class ThingyCollection extends JaxbListWrapper<Thingy> {
  *     private static final long serialVersionUID = 1L;
  *
  *     public ThingyCollection() { super(); }
@@ -36,7 +36,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * }
  */
 @XmlAccessorType(XmlAccessType.NONE)
-public class RestResponseCollection<T> implements Serializable, Iterable<T> {
+public class JaxbListWrapper<T> implements Serializable, Iterable<T> {
     private static final long serialVersionUID = 1L;
 
     private List<T> m_objects = new ArrayList<T>();
@@ -51,8 +51,8 @@ public class RestResponseCollection<T> implements Serializable, Iterable<T> {
         m_objects.addAll(objects);
     };
 
-    public RestResponseCollection() {}
-    public RestResponseCollection(final Collection<? extends T> objects) {
+    public JaxbListWrapper() {}
+    public JaxbListWrapper(final Collection<? extends T> objects) {
         m_objects.addAll(objects);
     }
 
@@ -106,11 +106,11 @@ public class RestResponseCollection<T> implements Serializable, Iterable<T> {
         if (obj == null) {
             return false;
         }
-        if (!(obj instanceof RestResponseCollection)) {
+        if (!(obj instanceof JaxbListWrapper)) {
             return false;
         }
         @SuppressWarnings("unchecked")
-        final RestResponseCollection<T> other = (RestResponseCollection<T>) obj;
+        final JaxbListWrapper<T> other = (JaxbListWrapper<T>) obj;
         if (m_objects == null) {
             if (other.m_objects != null) {
                 return false;
@@ -133,16 +133,16 @@ public class RestResponseCollection<T> implements Serializable, Iterable<T> {
     }
     @SuppressWarnings("unchecked")
     public boolean addAll(final Collection<? extends T> objs) {
-        if (objs instanceof RestResponseCollection) {
-            return m_objects.addAll(((RestResponseCollection<? extends T>) objs).getObjects());
+        if (objs instanceof JaxbListWrapper) {
+            return m_objects.addAll(((JaxbListWrapper<? extends T>) objs).getObjects());
         } else {
             return m_objects.addAll(objs);
         }
     }
     @SuppressWarnings("unchecked")
     public boolean addAll(final int index, final Collection<? extends T> objs) {
-        if (objs instanceof RestResponseCollection) {
-            return m_objects.addAll(index, ((RestResponseCollection<? extends T>) objs).getObjects());
+        if (objs instanceof JaxbListWrapper) {
+            return m_objects.addAll(index, ((JaxbListWrapper<? extends T>) objs).getObjects());
         } else {
             return m_objects.addAll(index, objs);
         }
@@ -155,8 +155,8 @@ public class RestResponseCollection<T> implements Serializable, Iterable<T> {
     }
     @SuppressWarnings("unchecked")
     public boolean containsAll(final Collection<?> objs) {
-        if (objs instanceof RestResponseCollection) {
-            return m_objects.containsAll(((RestResponseCollection<? extends T>) objs).getObjects());
+        if (objs instanceof JaxbListWrapper) {
+            return m_objects.containsAll(((JaxbListWrapper<? extends T>) objs).getObjects());
         } else {
             return m_objects.containsAll(objs);
         }
@@ -184,16 +184,16 @@ public class RestResponseCollection<T> implements Serializable, Iterable<T> {
     }
     @SuppressWarnings("unchecked")
     public boolean removeAll(final Collection<?> objs) {
-        if (objs instanceof RestResponseCollection) {
-            return m_objects.removeAll(((RestResponseCollection<? extends T>) objs).getObjects());
+        if (objs instanceof JaxbListWrapper) {
+            return m_objects.removeAll(((JaxbListWrapper<? extends T>) objs).getObjects());
         } else {
             return m_objects.removeAll(objs);
         }
     }
     @SuppressWarnings("unchecked")
     public boolean retainAll(final Collection<?> objs) {
-        if (objs instanceof RestResponseCollection) {
-            return m_objects.retainAll(((RestResponseCollection<? extends T>) objs).getObjects());
+        if (objs instanceof JaxbListWrapper) {
+            return m_objects.retainAll(((JaxbListWrapper<? extends T>) objs).getObjects());
         } else {
             return m_objects.retainAll(objs);
         }

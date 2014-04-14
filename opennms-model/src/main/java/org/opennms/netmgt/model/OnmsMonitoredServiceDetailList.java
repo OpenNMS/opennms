@@ -34,8 +34,10 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.config.api.JaxbListWrapper;
+
 @XmlRootElement(name="monitored-services")
-public class OnmsMonitoredServiceDetailList extends RestResponseCollection<OnmsMonitoredServiceDetail> {
+public class OnmsMonitoredServiceDetailList extends JaxbListWrapper<OnmsMonitoredServiceDetail> {
     private static final long serialVersionUID = 1L;
 
     public OnmsMonitoredServiceDetailList() { super(); }

@@ -34,6 +34,8 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.config.api.JaxbListWrapper;
+
 
 /**
  * <p>OnmsSnmpInterfaceList class.</p>
@@ -42,7 +44,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @version $Id: $
  */
 @XmlRootElement(name = "snmpInterfaces")
-public class OnmsSnmpInterfaceList extends RestResponseCollection<OnmsSnmpInterface> {
+public class OnmsSnmpInterfaceList extends JaxbListWrapper<OnmsSnmpInterface> {
     private static final long serialVersionUID = 1L;
 
     public OnmsSnmpInterfaceList() { super(); }

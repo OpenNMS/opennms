@@ -34,11 +34,13 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.config.api.JaxbListWrapper;
+
 /**
  * <p>OnmsMapList class.</p>
  */
 @XmlRootElement(name = "maps")
-public class OnmsMapList extends RestResponseCollection<OnmsMap> {
+public class OnmsMapList extends JaxbListWrapper<OnmsMap> {
     private static final long serialVersionUID = 1L;
 
     public OnmsMapList() { super(); }

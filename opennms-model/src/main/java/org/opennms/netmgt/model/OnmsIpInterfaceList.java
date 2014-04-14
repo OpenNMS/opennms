@@ -36,9 +36,11 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.config.api.JaxbListWrapper;
+
 @XmlRootElement(name = "ipInterfaces")
 @XmlAccessorType(XmlAccessType.NONE)
-public class OnmsIpInterfaceList extends RestResponseCollection<OnmsIpInterface> {
+public class OnmsIpInterfaceList extends JaxbListWrapper<OnmsIpInterface> {
     private static final long serialVersionUID = 1L;
 
     public OnmsIpInterfaceList() { super(); }
