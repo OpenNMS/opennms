@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.netmgt.collectd.AbstractCollectionSetVisitor;
+import org.opennms.netmgt.config.collector.AbstractCollectionSetVisitor;
 import org.opennms.netmgt.config.collector.AttributeGroup;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionResource;

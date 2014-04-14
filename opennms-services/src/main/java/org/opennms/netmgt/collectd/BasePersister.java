@@ -36,6 +36,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 
+import org.opennms.netmgt.config.collector.AbstractCollectionSetVisitor;
 import org.opennms.netmgt.config.collector.AttributeDefinition;
 import org.opennms.netmgt.config.collector.AttributeGroup;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
@@ -61,7 +62,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     private boolean m_ignorePersist = false;
     private ServiceParameters m_params;
     private RrdRepository m_repository;
-    private LinkedList<Boolean> m_stack = new LinkedList<Boolean>();
+    private final LinkedList<Boolean> m_stack = new LinkedList<Boolean>();
     private PersistOperationBuilder m_builder;
 
     /**
@@ -102,7 +103,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     private boolean isPersistDisabled() {
         return m_params != null &&
                m_params.getParameters().containsKey("storing-enabled") &&
-               m_params.getParameters().get("storing-enabled").equals("false");
+               "false".equals(m_params.getParameters().get("storing-enabled"));
     }
 
     /** {@inheritDoc} */

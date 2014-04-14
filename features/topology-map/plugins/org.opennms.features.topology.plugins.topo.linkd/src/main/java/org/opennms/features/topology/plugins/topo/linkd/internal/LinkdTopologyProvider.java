@@ -818,7 +818,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     public void addVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
         LOG.debug("SearchProvider->addVertexHopCriteria: called with search result: '{}'", searchResult);
         
-        VertexHopCriteria criterion = m_criteriaHopFactory.createCriteria(searchResult.getId(), searchResult.getLabel());
+        VertexHopCriteria criterion = LinkdHopCriteriaFactory.createCriteria(searchResult.getId(), searchResult.getLabel());
         container.addCriteria(criterion);
         
         LOG.debug("SearchProvider->addVertexHop: adding hop criteria {}.", criterion);
@@ -844,7 +844,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         VertexHopCriteria criterion = null;
         
         if (node != null) {
-            criterion = m_criteriaHopFactory.createCriteria(String.valueOf(node.getId()), node.getLabel());
+            criterion = LinkdHopCriteriaFactory.createCriteria(String.valueOf(node.getId()), node.getLabel());
         }
         
         LOG.debug("SearchProvider->getDefaultCriteria:returning hop criteria: '{}'.", criterion);
