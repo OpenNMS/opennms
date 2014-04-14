@@ -45,8 +45,8 @@ public class WmiMultiInstanceCollectionResource extends WmiCollectionResource {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(WmiMultiInstanceCollectionResource.class);
 
-    private String m_inst;
-    private String m_name;
+    private final String m_inst;
+    private final String m_name;
 
     /**
      * <p>Constructor for WmiMultiInstanceCollectionResource.</p>

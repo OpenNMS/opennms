@@ -49,10 +49,10 @@ import org.opennms.netmgt.model.RrdRepository;
  */
 public class MockCollectionResource implements CollectionResource {
     
-    private String parent;
+    private final String parent;
     private String instance;
-    private String type;
-    private Map<String,String> attributes = new HashMap<String,String>();
+    private final String type;
+    private final Map<String,String> attributes = new HashMap<String,String>();
     
     public MockCollectionResource(String parent, String instance, String type) {
         this.parent = parent;

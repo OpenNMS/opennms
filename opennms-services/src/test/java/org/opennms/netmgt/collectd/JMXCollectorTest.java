@@ -278,7 +278,7 @@ public class JMXCollectorTest {
     }
 
     private Map<String, JMXDataSource> generateDataSourceMap(Map<String, List<Attrib>> attributeMap) {
-        return jmxCollector.buildDataSourceList("foo", attributeMap);
+        return JMXCollector.buildDataSourceList("foo", attributeMap);
     }
         
     private void printDebugAttributeGroup(AttributeGroup group) {

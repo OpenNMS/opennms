@@ -47,13 +47,13 @@ public class XmlMultiInstanceCollectionResource extends XmlCollectionResource {
 
 
     /** The collection resource instance. */
-    private String m_instance;
+    private final String m_instance;
 
     /** The resource label. */
     private String m_resourceLabel;
 
     /** The collection resource type name. */
-    private XmlResourceType m_resourceType;
+    private final XmlResourceType m_resourceType;
 
     /**
      * Instantiates a new XML Multi-instance collection resource.
@@ -122,11 +122,5 @@ public class XmlMultiInstanceCollectionResource extends XmlCollectionResource {
         }
         return m_resourceLabel;
     }
-
-    /**
-     * Log.
-     *
-     * @return the thread category
-     */
 
 }
