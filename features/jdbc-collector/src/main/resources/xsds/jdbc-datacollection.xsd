@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema elementFormDefault="qualified" version="1.0" targetNamespace="http://xmlns.opennms.org/xsd/config/jdbc-datacollection" xmlns:tns="http://xmlns.opennms.org/xsd/config/jdbc-datacollection" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="column" type="tns:jdbcColumn"/>
+
+  <xs:element name="jdbc-datacollection-config" type="tns:jdbcDataCollectionConfig"/>
+
+  <xs:element name="rrd" type="tns:jdbcRrd"/>
+
+  <xs:complexType name="jdbcColumn">
+    <xs:sequence/>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="data-source-name" type="xs:string"/>
+    <xs:attribute name="type" type="xs:string" use="required"/>
+    <xs:attribute name="alias" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="jdbc-collection">
+    <xs:sequence>
+      <xs:element ref="tns:rrd" minOccurs="0"/>
+      <xs:element name="queries" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="query" type="tns:jdbcQuery" maxOccurs="unbounded" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="jdbcRrd">
+    <xs:sequence>
+      <xs:element name="rra" type="xs:string" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="step" type="xs:int"/>
+  </xs:complexType>
+
+  <xs:complexType name="jdbcQuery">
+    <xs:sequence>
+      <xs:element name="statement" type="tns:jdbcStatement"/>
+      <xs:element name="columns" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element ref="tns:column" maxOccurs="unbounded" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="recheckInterval" type="xs:int" use="required"/>
+    <xs:attribute name="ifType" type="xs:string" use="required"/>
+    <xs:attribute name="resourceType" type="xs:string" use="required"/>
+    <xs:attribute name="instance-column" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="jdbcStatement">
+    <xs:sequence>
+      <xs:element name="queryString" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="jdbcDataCollectionConfig">
+    <xs:sequence>
+      <xs:element name="jdbc-collection" type="tns:jdbc-collection" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="rrdRepository" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="jdbcDataCollectionConfigFactory"/>
+</xs:schema>
+

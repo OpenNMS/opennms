@@ -64,10 +64,10 @@ public class TcaCollectionResource extends AbstractCollectionResource {
 	private TimeKeeper m_timeKeeper = new DefaultTimeKeeper();
 
 	/** The m_peer address. */
-	private String m_peerAddress;
+	private final String m_peerAddress;
 
 	/** The m_strategy. */
-	private StorageStrategy m_strategy;
+	private final StorageStrategy m_strategy;
 
 	/**
 	 * Instantiates a new TCA collection resource.

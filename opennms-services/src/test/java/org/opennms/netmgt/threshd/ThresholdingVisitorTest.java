@@ -263,6 +263,60 @@ public class ThresholdingVisitorTest {
         verifyEvents(0);
     }
 
+    @Test
+    public void testTriggersNodeResource() throws Exception {
+        initFactories("/threshd-configuration.xml", "/test-thresholds-triggers.xml");
+        addHighThresholdEvent(3, 10000, 5000, 22000, "Unknown", null, "freeMem", null, null);
+        ThresholdingVisitor visitor = createVisitor();
+        
+        // Trigger = 1
+        runGaugeDataTest(visitor, 15000);
+        
+        // Trigger = 2
+        runGaugeDataTest(visitor, 18000);
+
+        // Drop bellow trigger value
+        runGaugeDataTest(visitor, 8000);
+
+        // Should not trigger
+        runGaugeDataTest(visitor, 20000);
+
+        // Trigger = 2
+        runGaugeDataTest(visitor, 21000);
+
+        // Trigger = 3
+        runGaugeDataTest(visitor, 22000);
+
+        verifyEvents(0);
+    }
+
+    @Test
+    public void testTriggersGenericResource() throws Exception {
+        initFactories("/threshd-configuration.xml","/test-thresholds-triggers.xml");
+        addEvent(EventConstants.LOW_THRESHOLD_EVENT_UEI, "127.0.0.1", "SNMP", 3, 10.0, 15.0, 7.0, "/opt", "1", "hrStorageSize-hrStorageUsed", null, null, m_anticipator, m_anticipatedEvents);
+        ThresholdingVisitor visitor = createVisitor();
+
+        // Trigger = 1
+        runFileSystemDataTest(visitor, 1, "/opt", 95, 100);
+
+        // Trigger = 2
+        runFileSystemDataTest(visitor, 1, "/opt", 96, 100);
+
+        // Raise above trigger value
+        runFileSystemDataTest(visitor, 1, "/opt", 80, 100);
+
+        // Trigger = 1
+        runFileSystemDataTest(visitor, 1, "/opt", 91, 100);
+
+        // Trigger = 2
+        runFileSystemDataTest(visitor, 1, "/opt", 92, 100);
+
+        // Trigger = 3
+        runFileSystemDataTest(visitor, 1, "/opt", 93, 100);
+
+        verifyEvents(0);
+    }
+
     /*
      * This test uses this files from src/test/resources:
      * - threshd-configuration.xml
@@ -506,14 +560,15 @@ public class ThresholdingVisitorTest {
         System.err.println("-----------------------------------------------------------------------------------");
         Map<String,Object> params = new HashMap<String,Object>();
         params.put("thresholding-enabled", "true");
+        ServiceParameters svcParams = new ServiceParameters(params);
         List<ThresholdingVisitor> visitors = new ArrayList<ThresholdingVisitor>();
         for (int i=1; i<=5; i++) {
             String ipAddress = baseIpAddress + i;
-            ThresholdingVisitor visitor = ThresholdingVisitor.create(i, ipAddress, "SNMP", getRepository(), params);
+            ThresholdingVisitor visitor = ThresholdingVisitor.create(i, ipAddress, "SNMP", getRepository(), svcParams);
             assertNotNull(visitor);
             visitors.add(visitor);
             if (i == 5) {
-                ThresholdingVisitor httpVisitor = ThresholdingVisitor.create(i, ipAddress, "HTTP", getRepository(), params);
+                ThresholdingVisitor httpVisitor = ThresholdingVisitor.create(i, ipAddress, "HTTP", getRepository(), svcParams);
                 assertNotNull(httpVisitor);
                 visitors.add(httpVisitor);
             }
@@ -1097,11 +1152,12 @@ public class ThresholdingVisitorTest {
 
         Map<String,Object> params = new HashMap<String,Object>();
         params.put("thresholding-enabled", "true");
+        ServiceParameters svcParams = new ServiceParameters(params);
 
         for (int i=1; i<=numOfNodes; i++) {
             System.err.println("----------------------------------------------------------------------------------- visitor #" + i);
             String ipAddress = baseIpAddress + i;
-            ThresholdingVisitor visitor = ThresholdingVisitor.create(1, ipAddress, "SNMP", getRepository(), params);
+            ThresholdingVisitor visitor = ThresholdingVisitor.create(1, ipAddress, "SNMP", getRepository(), svcParams);
             assertNotNull(visitor);
             assertEquals(4, visitor.getThresholdGroups().size()); // mib2, cisco, ciscoIPRA, ciscoNAS
         }
@@ -1605,13 +1661,12 @@ public class ThresholdingVisitorTest {
     private ThresholdingVisitor createVisitor() {
         Map<String,Object> params = new HashMap<String,Object>();
         params.put("thresholding-enabled", "true");
-        ThresholdingVisitor visitor = ThresholdingVisitor.create(1, "127.0.0.1", "SNMP", getRepository(), params);
-        assertNotNull(visitor);
-        return visitor;
+        return createVisitor(params);
     }
 
     private ThresholdingVisitor createVisitor(Map<String,Object> params) {
-        ThresholdingVisitor visitor = ThresholdingVisitor.create(1, "127.0.0.1", "SNMP", getRepository(), params);
+        ServiceParameters svcParams = new ServiceParameters(params);
+        ThresholdingVisitor visitor = ThresholdingVisitor.create(1, "127.0.0.1", "SNMP", getRepository(), svcParams);
         assertNotNull(visitor);
         return visitor;
     }

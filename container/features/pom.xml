@@ -6,8 +6,8 @@
     <version>1.13.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.opennms.osgi</groupId>
-  <artifactId>all</artifactId>
+  <groupId>org.opennms.karaf</groupId>
+  <artifactId>opennms</artifactId>
   <packaging>pom</packaging>
   <name>OpenNMS OSGi Container - OpenNMS Features</name>
   <build>
@@ -29,11 +29,15 @@
           <importRepositoryExclusions>
             <value>karaf-${karafVersion}</value>
             <value>activemq-${activemqVersion}</value>
+            <value>camel-${camelVersion}</value>
           </importRepositoryExclusions>
           <repositories>
 
             <!-- Karaf base features -->
             <repository>mvn:org.opennms.container/karaf/${project.version}/xml/features</repository>
+
+            <!-- OpenNMS features bundle -->
+            <repository>file:${project.build.outputDirectory}/features.xml</repository>
 
             <!-- OpenNMS OSGi core -->
             <repository>mvn:org.opennms.osgi/opennms-osgi-core/${project.version}/xml/features</repository>
@@ -101,47 +105,27 @@
           </features>
         </configuration>
       </plugin>
+      <!-- Filter the features.xml file -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
-        <version>2.5</version>
         <executions>
           <execution>
-            <id>copy-filtered-resources</id>
-            <phase>process-resources</phase>
+            <id>copy-resources</id>
+            <!-- 
+              Move this task from process-resources to generate-resources in the build cycle 
+              so that it is available for the features-maven-plugin.
+            -->
+            <phase>generate-resources</phase>
             <goals><goal>copy-resources</goal></goals>
             <configuration>
-               <encoding>UTF-8</encoding>
-               <escapeString>\</escapeString>
-               <outputDirectory>target/resources</outputDirectory>
-               <resources>
-                 <resource>
-                   <directory>src/main/filtered-resources</directory>
-                   <filtering>true</filtering>
-                 </resource>
-               </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>attach-artifacts</id>
-            <phase>package</phase>
-            <goals>
-              <goal>attach-artifact</goal>
-            </goals>
-            <configuration>
-              <artifacts>
-                <artifact>
-                  <file>target/resources/features/features.xml</file>
-                  <type>xml</type>
-                  <classifier>features</classifier>
-                </artifact>
-              </artifacts>
+              <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>src/main/resources</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
             </configuration>
           </execution>
         </executions>

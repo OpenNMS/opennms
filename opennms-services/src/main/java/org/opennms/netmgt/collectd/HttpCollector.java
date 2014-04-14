@@ -123,7 +123,7 @@ public class HttpCollector implements ServiceCollector {
 
     private static final NumberFormat PARSER;
 
-    private static NumberFormat RRD_FORMATTER;
+    private static final NumberFormat RRD_FORMATTER;
 
     static {
         PARSER = NumberFormat.getNumberInstance();
@@ -150,22 +150,19 @@ public class HttpCollector implements ServiceCollector {
         return collectionSet;
     }
 
-    protected class HttpCollectionSet implements CollectionSet {
-        private CollectionAgent m_agent;
-        private Map<String, Object> m_parameters;
+    private static class HttpCollectionSet implements CollectionSet {
+        private final CollectionAgent m_agent;
+        private final Map<String, Object> m_parameters;
         private Uri m_uriDef;
         private int m_status;
         private List<HttpCollectionResource> m_collectionResourceList;
 		private Date m_timestamp;
+
         public Uri getUriDef() {
             return m_uriDef;
         }
 
-		public void setUriDef(Uri uriDef) {
-            m_uriDef = uriDef;
-        }
-
-        HttpCollectionSet(CollectionAgent agent, Map<String, Object> parameters) {
+        public HttpCollectionSet(CollectionAgent agent, Map<String, Object> parameters) {
             m_agent = agent;
             m_parameters = parameters;
             m_status=ServiceCollector.COLLECTION_SUCCEEDED;
@@ -208,16 +205,8 @@ public class HttpCollector implements ServiceCollector {
             return m_agent;
         }
 
-        public void setAgent(CollectionAgent agent) {
-            m_agent = agent;
-        }
-
         public Map<String, Object> getParameters() {
             return m_parameters;
-        }
-
-        public void setParameters(Map<String, Object> parameters) {
-            m_parameters = parameters;
         }
 
         @Override
@@ -251,19 +240,19 @@ public class HttpCollector implements ServiceCollector {
 			this.m_timestamp = timestamp;
 		}
 
-	public int getPort() { // This method has been created to deal with NMS-4886
-	    int port = getUriDef().getUrl().getPort();
-	    // Check for service assigned port if UriDef port is not supplied (i.e., is equal to the default port 80)
-	    if (port == 80 && m_parameters.containsKey(ParameterName.PORT.toString())) {
-	        try {
-	            port = Integer.parseInt(m_parameters.get(ParameterName.PORT.toString()).toString());
-	            LOG.debug("getPort: using service provided HTTP port {}", port);
-	        } catch (Exception e) {
-	            LOG.warn("Malformed HTTP port on service definition.");
-	        }
-	    }
-	    return port;
-	}
+		public int getPort() { // This method has been created to deal with NMS-4886
+		    int port = getUriDef().getUrl().getPort();
+		    // Check for service assigned port if UriDef port is not supplied (i.e., is equal to the default port 80)
+		    if (port == 80 && m_parameters.containsKey(ParameterName.PORT.toString())) {
+		        try {
+		            port = Integer.parseInt(m_parameters.get(ParameterName.PORT.toString()).toString());
+		            LOG.debug("getPort: using service provided HTTP port {}", port);
+		        } catch (Exception e) {
+		            LOG.warn("Malformed HTTP port on service definition.");
+		        }
+		    }
+		    return port;
+		}
     }
 
 
@@ -279,7 +268,7 @@ public class HttpCollector implements ServiceCollector {
      * @param collectionSet
      * @throws HttpCollectorException
      */
-    private void doCollection(final HttpCollectionSet collectionSet, final HttpCollectionResource collectionResource) throws HttpCollectorException {
+    private static void doCollection(final HttpCollectionSet collectionSet, final HttpCollectionResource collectionResource) throws HttpCollectorException {
 
         DefaultHttpClient client = null;
         HttpUriRequest method = null;
@@ -331,14 +320,14 @@ public class HttpCollector implements ServiceCollector {
         }
     }
 
-    class HttpCollectionAttribute extends AbstractCollectionAttribute implements AttributeDefinition {
-        String m_alias;
-        String m_type;
-        Object m_value;
-        HttpCollectionResource m_resource;
-        HttpCollectionAttributeType m_attribType;
+    private static class HttpCollectionAttribute extends AbstractCollectionAttribute implements AttributeDefinition {
+        private final String m_alias;
+        private final String m_type;
+        private final Object m_value;
+        private final HttpCollectionResource m_resource;
+        private final HttpCollectionAttributeType m_attribType;
 
-        HttpCollectionAttribute(HttpCollectionResource resource, HttpCollectionAttributeType attribType, String alias, String type, Number value) {
+        public HttpCollectionAttribute(HttpCollectionResource resource, HttpCollectionAttributeType attribType, String alias, String type, Number value) {
             super();
             m_resource=resource;
             m_attribType=attribType;
@@ -347,7 +336,7 @@ public class HttpCollector implements ServiceCollector {
             m_value = value;
         }
 
-        HttpCollectionAttribute(HttpCollectionResource resource, HttpCollectionAttributeType attribType, String alias, String type, String value) { 
+        public HttpCollectionAttribute(HttpCollectionResource resource, HttpCollectionAttributeType attribType, String alias, String type, String value) { 
             super();
             m_resource=resource;
             m_attribType=attribType;
@@ -444,7 +433,7 @@ public class HttpCollector implements ServiceCollector {
 
     }
 
-    private List<HttpCollectionAttribute> processResponse(final Locale responseLocale, final String responseBodyAsString, final HttpCollectionSet collectionSet, HttpCollectionResource collectionResource) {
+    private static List<HttpCollectionAttribute> processResponse(final Locale responseLocale, final String responseBodyAsString, final HttpCollectionSet collectionSet, HttpCollectionResource collectionResource) {
         LOG.debug("processResponse:");
         LOG.debug("responseBody = {}", responseBodyAsString);
         LOG.debug("getmatches = {}", collectionSet.getUriDef().getUrl().getMatches());
@@ -548,7 +537,7 @@ public class HttpCollector implements ServiceCollector {
         return butes;
     }
 
-    public class HttpCollectorException extends RuntimeException {
+    public static class HttpCollectorException extends RuntimeException {
 
         private static final long serialVersionUID = 4413332529546573490L;
 
@@ -569,7 +558,7 @@ public class HttpCollector implements ServiceCollector {
         }
     }
 
-    private void persistResponse(final HttpCollectionSet collectionSet, final HttpCollectionResource collectionResource, final HttpClient client, final HttpResponse response) throws IOException {
+    private static void persistResponse(final HttpCollectionSet collectionSet, final HttpCollectionResource collectionResource, final HttpClient client, final HttpResponse response) throws IOException {
         final String responseString = EntityUtils.toString(response.getEntity());
         if (responseString != null && !"".equals(responseString)) {
             // Get response's locale from the Content-Language header if available
@@ -728,7 +717,7 @@ public class HttpCollector implements ServiceCollector {
         return ub.build();
     }
 
-    private static String substituteKeywords(final HashMap<String,String> substitutions, final String urlFragment, final String desc) {
+    private static String substituteKeywords(final Map<String,String> substitutions, final String urlFragment, final String desc) {
         String newFragment = urlFragment;
         if (newFragment != null)
         {
@@ -820,12 +809,12 @@ public class HttpCollector implements ServiceCollector {
     }
 
 
-    class HttpCollectionResource implements CollectionResource {
+    private static class HttpCollectionResource implements CollectionResource {
 
-        CollectionAgent m_agent;
-        AttributeGroup m_attribGroup;
+        private final CollectionAgent m_agent;
+        private final AttributeGroup m_attribGroup;
 
-        HttpCollectionResource(CollectionAgent agent, Uri uriDef) {
+        public HttpCollectionResource(CollectionAgent agent, Uri uriDef) {
             m_agent=agent;
             m_attribGroup=new AttributeGroup(this, new AttributeGroupType(uriDef.getName(), "all"));
         }
@@ -895,11 +884,11 @@ public class HttpCollector implements ServiceCollector {
         }
     }
 
-    class HttpCollectionAttributeType implements CollectionAttributeType {
-        Attrib m_attribute;
-        AttributeGroupType m_groupType;
+    private static class HttpCollectionAttributeType implements CollectionAttributeType {
+        private final Attrib m_attribute;
+        private final AttributeGroupType m_groupType;
 
-        protected HttpCollectionAttributeType(Attrib attribute, AttributeGroupType groupType) {
+        public HttpCollectionAttributeType(Attrib attribute, AttributeGroupType groupType) {
             m_groupType=groupType;
             m_attribute=attribute;
         }

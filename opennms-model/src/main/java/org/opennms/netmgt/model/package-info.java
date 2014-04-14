@@ -27,7 +27,10 @@
  *******************************************************************************/
 
 @FilterDef( name=FilterManager.AUTH_FILTER_NAME, parameters=@ParamDef( name="userGroups", type="string" ) )
+@XmlSchema(elementFormDefault=javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
 package org.opennms.netmgt.model;
+import javax.xml.bind.annotation.XmlSchema;
+
 import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.ParamDef;
 

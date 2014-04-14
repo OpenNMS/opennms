@@ -44,6 +44,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.MibObject;
+import org.opennms.netmgt.config.collector.AbstractCollectionSetVisitor;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.config.collector.ServiceParameters;
@@ -63,7 +64,7 @@ import org.springframework.core.io.ClassPathResource;
 
 public class SnmpCollectorTestCase extends OpenNMSTestCase {
 
-	private final class AttributeVerifier extends AttributeVisitor {
+	private static final class AttributeVerifier extends AbstractCollectionSetVisitor {
 		private final List<MibObject> list;
 
 		public int attributeCount = 0;
@@ -135,7 +136,7 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
         super.tearDown();
     }
     
-    protected void assertMibObjectsPresent(CollectionResource resource, final List<MibObject> attrList) {
+    protected static void assertMibObjectsPresent(CollectionResource resource, final List<MibObject> attrList) {
         assertNotNull(resource);
         
         AttributeVerifier attributeVerifier = new AttributeVerifier(attrList);
@@ -143,7 +144,7 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
 		assertEquals("Unexpected number of attributes", attrList.size(), attributeVerifier.attributeCount);
     }
 
-    protected void assertMibObjectPresent(SnmpAttribute attribute, List<MibObject> attrList) {
+    protected static void assertMibObjectPresent(SnmpAttribute attribute, List<MibObject> attrList) {
         for (Iterator<MibObject> it = attrList.iterator(); it.hasNext();) {
             MibObject mibObj = it.next();
             if (mibObj.getOid().equals(attribute.getAttributeType().getOid()))

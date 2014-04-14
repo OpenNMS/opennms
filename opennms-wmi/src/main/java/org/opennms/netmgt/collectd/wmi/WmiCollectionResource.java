@@ -41,8 +41,8 @@ import org.opennms.netmgt.config.collector.ServiceParameters;
  */
 public abstract class WmiCollectionResource extends AbstractCollectionResource {
     
-    protected int m_nodeId;
-    protected CollectionAgent m_agent;
+    protected final int m_nodeId;
+    protected final CollectionAgent m_agent;
 
     /**
      * <p>Constructor for WmiCollectionResource.</p>

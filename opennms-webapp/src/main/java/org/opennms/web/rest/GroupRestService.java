@@ -28,6 +28,7 @@
 
 package org.opennms.web.rest;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -97,12 +98,14 @@ public class GroupRestService extends OnmsRestService {
         
         try {
             final OnmsGroupList list = groupService.getOnmsGroupList();
-            Collections.sort(list, new Comparator<OnmsGroup>() {
+            final List<OnmsGroup> groups = new ArrayList<OnmsGroup>(list.getGroups());
+            Collections.sort(groups, new Comparator<OnmsGroup>() {
                 @Override
                 public int compare(final OnmsGroup a, final OnmsGroup b) {
                     return a.getName().compareTo(b.getName());
                 }
             });
+            list.setGroups(groups);
             return list;
         } catch (final Throwable t) {
             throw getException(Status.BAD_REQUEST, t);

@@ -40,6 +40,7 @@
             <bundle>mvn:org.opennms.features/vaadin-snmp-events-and-metrics/${project.version}</bundle>
           </bundles>
           <features>
+            <feature>opennms-core</feature>
             <feature>vaadin</feature>
           </features>
         </configuration>

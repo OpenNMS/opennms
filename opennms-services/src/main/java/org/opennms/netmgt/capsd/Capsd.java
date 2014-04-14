@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -314,6 +314,17 @@ public class Capsd extends AbstractServiceDaemon {
     public void setEventListener(StoppableEventListener eventListener) {
         m_eventListener = eventListener;
     }
+    
+    public ExecutorService getSuspectRunner() {
+        return m_suspectRunner;
+    }
+    
+    public ExecutorService getRescanRunner() {
+        return m_rescanRunner;
+    }
 
+    public Scheduler getScheduler() {
+        return m_scheduler;
+    }
 } // end Capsd class
 

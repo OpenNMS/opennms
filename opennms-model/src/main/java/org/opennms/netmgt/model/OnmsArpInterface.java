@@ -48,11 +48,13 @@ import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.springframework.core.style.ToStringCreator;
 
 @XmlRootElement(name = "arpInterface")
 @Entity
 @Table(name="atInterface")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OnmsArpInterface extends OnmsEntity implements Serializable {
 
     @Embeddable

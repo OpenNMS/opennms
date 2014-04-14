@@ -26,7 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-@XmlSchema(namespace = "http://xmlns.opennms.org/xsd/config/ami", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+@XmlSchema(
+    namespace = "http://xmlns.opennms.org/xsd/config/ami",
+    elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED,
+    xmlns={
+        @XmlNs(prefix="", namespaceURI="http://xmlns.opennms.org/xsd/config/ami")
+    }
+)
 package org.opennms.netmgt.config.ami;
 
+import javax.xml.bind.annotation.XmlNs;
 import javax.xml.bind.annotation.XmlSchema;

@@ -60,6 +60,7 @@ import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 
 
@@ -71,6 +72,7 @@ import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 @XmlRootElement(name = "stpInterface")
 @Entity
 @Table(name="stpInterface", uniqueConstraints = {@UniqueConstraint(columnNames={"nodeId", "bridgePort", "stpVlan"})})
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OnmsStpInterface {
 
     @Embeddable

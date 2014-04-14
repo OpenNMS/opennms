@@ -11,6 +11,7 @@
   <name>OpenNMS Features Juniper TCA Collector</name>
   <build>
     <plugins>
+<!--
       <plugin>
         <groupId>com.sun.tools.jxc.maven2</groupId>
         <artifactId>maven-jaxb-schemagen-plugin</artifactId>
@@ -38,6 +39,7 @@
           </execution>
         </executions>
       </plugin>
+-->
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>

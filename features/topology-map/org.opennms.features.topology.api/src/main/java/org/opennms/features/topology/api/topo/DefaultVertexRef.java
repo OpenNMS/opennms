@@ -60,6 +60,8 @@ public class DefaultVertexRef extends AbstractRef implements VertexRef {
 		super(namespace, id, namespace + ":" + id);
 	}
 
+	
+	//FIXME: Why is this here???
 	@Override
 	public final boolean equals(Object obj) {
 		if (obj instanceof VertexRef) {
