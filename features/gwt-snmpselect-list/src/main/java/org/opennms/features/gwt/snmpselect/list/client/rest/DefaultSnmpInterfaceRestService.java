@@ -42,9 +42,11 @@ import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.json.client.JSONValue;
 
-public class DefaultSnmpInterfaceRestService implements SnmpInterfaceRestService{
+public class DefaultSnmpInterfaceRestService implements SnmpInterfaceRestService {
     
     private static String DEFAULT_RESPONSE = "[ {" +
       "\"poll\" : \"false\"," +
@@ -120,20 +122,42 @@ public class DefaultSnmpInterfaceRestService implements SnmpInterfaceRestService
 
     protected List<SnmpCellListItem> parseJSONData(final String jsonString) {
         final List<SnmpCellListItem> cellList = new ArrayList<SnmpCellListItem>();
-        final JSONArray jArray = JSONParser.parseStrict(jsonString).isArray();
+        final JSONValue value = JSONParser.parseStrict(jsonString);
+        final JSONObject obj = value.isObject();
+        final JSONArray arr = value.isArray();
+        JsArray<SnmpCellListItem> jsArray = null;
 
-        if (jArray != null) {
-            final JsArray<SnmpCellListItem> jsArray = createJsArray(jArray.getJavaScriptObject());
+        if (obj != null) {
+            jsArray = createJsArray(obj.getJavaScriptObject());
+        } else if (arr != null) {
+            jsArray = createJsArray(arr.getJavaScriptObject());
+        } else {
+            doLog(jsonString + " does not parse as an array or object!", value);
+        }
+
+        if (jsArray != null) {
             for(int i = 0; i < jsArray.length(); i++) {
                 cellList.add(jsArray.get(i));
             }
         }
-        
+
         return cellList;
     }
 
     private static native JsArray<SnmpCellListItem> createJsArray(final JavaScriptObject jso) /*-{
-        return jso;
+        if (jso.snmpInterface) {
+            if( Object.prototype.toString.call( jso.snmpInterface ) === '[object Array]' ) {
+                return jso.snmpInterface;
+            } else {
+                return [ jso.snmpInterface ];
+            }
+        } else {
+            if( Object.prototype.toString.call( jso ) === '[object Array]' ) {
+                return jso;
+            } else {
+                return [ jso ];
+            }
+        }
     }-*/;
 
     @Override
@@ -163,5 +187,8 @@ public class DefaultSnmpInterfaceRestService implements SnmpInterfaceRestService
     public void setSnmpInterfaceRequestHandler(SnmpInterfaceRequestHandler handler) {
         m_requestHandler = handler;
     }
-    
+ 
+    public static native void doLog(final String message, final Object o) /*-{
+        console.log(message,o);
+    }-*/;
 }
