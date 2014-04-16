@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.config.collector;
 
+import org.opennms.core.utils.DefaultTimeKeeper;
 import org.opennms.core.utils.TimeKeeper;
 
 /**
@@ -89,10 +90,10 @@ public interface CollectionResource extends ResourceIdentifier, CollectionVisita
     String getLabel();
 
     /**
-     * Returns a not-null time tracker instance when this resource requires to use a special timestamp when updating RRDs/JRBs.
-     * If the resource doesn't need a special time tracker it should return null.
+     * Returns a not-null {@link TimeKeeper} instance when this resource requires to use a special timestamp when updating RRDs/JRBs.
+     * If the resource doesn't need a special {@link TimeKeeper} it should return null.
      * 
-     * @return a {@link org.opennms.core.utils.TimeKeeper} object.
+     * @return a {@link org.opennms.core.utils.TimeKeeper} object or null to indicate that {@link DefaultTimeKeeper} should be used.
      */
     TimeKeeper getTimeKeeper();
 

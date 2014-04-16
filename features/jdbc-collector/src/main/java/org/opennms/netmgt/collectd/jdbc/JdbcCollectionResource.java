@@ -28,21 +28,14 @@
 
 package org.opennms.netmgt.collectd.jdbc;
 
-import org.opennms.core.utils.TimeKeeper;
 import org.opennms.netmgt.collectd.AbstractCollectionResource;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.config.collector.CollectionAttributeType;
-import org.opennms.netmgt.config.collector.ServiceParameters;
 
 public abstract class JdbcCollectionResource extends AbstractCollectionResource {
     
     public JdbcCollectionResource(CollectionAgent agent) {
         super(agent);
-    }
-
-    @Override
-    public boolean shouldPersist(ServiceParameters params) {
-        return true;
     }
 
     public void setAttributeValue(CollectionAttributeType type, String value) {
@@ -64,11 +57,6 @@ public abstract class JdbcCollectionResource extends AbstractCollectionResource 
     @Override
     public String getParent() {
         return m_agent.getStorageDir().toString();
-    }
-
-    @Override
-    public TimeKeeper getTimeKeeper() {
-        return null;
     }
 
 }

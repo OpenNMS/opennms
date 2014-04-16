@@ -59,7 +59,6 @@ import org.opennms.netmgt.collectd.AbstractCollectionResource;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.config.collector.AttributeGroup;
 import org.opennms.netmgt.config.collector.CollectionSetVisitor;
-import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.model.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -207,10 +206,6 @@ public class XmpCollectionResource extends AbstractCollectionResource
      */
     @Override
     public int getType() { return m_nodeType; }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean shouldPersist(ServiceParameters params) { return true; }
 
     /**
      * <p>getGroups</p>

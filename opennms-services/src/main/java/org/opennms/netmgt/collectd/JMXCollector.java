@@ -64,7 +64,6 @@ import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.config.collector.CollectionSetVisitor;
 import org.opennms.netmgt.config.collector.Persister;
-import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.config.collector.ServiceParameters.ParameterName;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
@@ -787,11 +786,6 @@ public abstract class JMXCollector implements ServiceCollector {
         @Override
         public int getType() {
             return -1; //Is this correct?
-        }
-
-        @Override
-        public boolean shouldPersist(ServiceParameters params) {
-            return true;
         }
 
         public void setAttributeValue(CollectionAttributeType type, String value) {

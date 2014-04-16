@@ -185,11 +185,6 @@ public class NSClientCollector implements ServiceCollector {
             return -1; //Is this right?
         }
 
-        @Override
-        public boolean shouldPersist(ServiceParameters params) {
-            return true;
-        }
-
         public void setAttributeValue(CollectionAttributeType type, String value) {
             NSClientCollectionAttribute attr = new NSClientCollectionAttribute(this, type, type.getName(), value);
             addAttribute(attr);

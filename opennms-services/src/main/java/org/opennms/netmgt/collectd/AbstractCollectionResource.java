@@ -32,6 +32,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opennms.core.utils.DefaultTimeKeeper;
 import org.opennms.core.utils.TimeKeeper;
 import org.opennms.netmgt.config.collector.AttributeGroup;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
@@ -138,9 +139,13 @@ public abstract class AbstractCollectionResource implements CollectionResource {
         return false;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Resources should be persisted by default. Returns true.
+     */
     @Override
-    public abstract boolean shouldPersist(ServiceParameters params);
+    public boolean shouldPersist(ServiceParameters params) {
+        return true;
+    }
 
     /**
      * <p>getLabel</p>
@@ -152,6 +157,9 @@ public abstract class AbstractCollectionResource implements CollectionResource {
         return null;
     }
     
+    /**
+     * @return Returns null to indicate that {@link DefaultTimeKeeper} should be used.
+     */
     @Override
     public TimeKeeper getTimeKeeper() {
         return null;
