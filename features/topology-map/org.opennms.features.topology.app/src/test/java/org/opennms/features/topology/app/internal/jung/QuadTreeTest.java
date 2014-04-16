@@ -26,29 +26,29 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api;
+package org.opennms.features.topology.app.internal.jung;
 
-import java.util.Collection;
-import java.util.Map;
+import org.junit.Test;
+import org.opennms.features.topology.api.Point;
+import org.opennms.features.topology.api.topo.Vertex;
 
-import org.opennms.features.topology.api.topo.VertexRef;
+import java.awt.geom.Point2D;
 
-public interface Layout {
+public class QuadTreeTest {
 
-	Point getLocation(VertexRef v);
+    @Test
+    public void testQuadTree() {
+        QuadTree<Integer, String> quadTree = new QuadTree<Integer, String>();
+        quadTree.insert(10, 10, "Vertex1");
+        quadTree.insert(10, 20, "Vertex2");
+        quadTree.insert((int)(Math.random() * 100), (int) (Math.random() * 100), "Vertex3");
+        quadTree.insert((int)(Math.random() * 100), (int) (Math.random() * 100), "Vertex4");
+        quadTree.insert((int)(Math.random() * 100), (int) (Math.random() * 100), "Vertex5");
+        quadTree.insert((int)(Math.random() * 100), (int) (Math.random() * 100), "Vertex6");
+        quadTree.insert((int)(Math.random() * 100), (int) (Math.random() * 100), "Vertex7");
+        quadTree.insert((int)(Math.random() * 100), (int) (Math.random() * 100), "Vertex8");
+        quadTree.insert((int)(Math.random() * 100), (int) (Math.random() * 100), "Vertex9");
 
-	/**
-	 * @return Returns an immutable copy of the current list of locations
-	 */
-	Map<VertexRef, Point> getLocations();
 
-	void setLocation(VertexRef vertex, double x, double y);
-
-	void setLocation(VertexRef v, Point location);
-
-	Point getInitialLocation(VertexRef v);
-
-	BoundingBox getBounds();
-
-	BoundingBox computeBoundingBox(Collection<VertexRef> vertRefs);
+    }
 }

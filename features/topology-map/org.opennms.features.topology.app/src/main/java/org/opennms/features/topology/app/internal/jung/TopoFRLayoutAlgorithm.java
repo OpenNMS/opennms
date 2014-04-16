@@ -28,10 +28,7 @@
 
 package org.opennms.features.topology.app.internal.jung;
 
-import java.awt.*;
-import java.awt.geom.Point2D;
-import java.util.Collection;
-
+import edu.uci.ics.jung.graph.SparseGraph;
 import org.apache.commons.collections15.Transformer;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
@@ -41,48 +38,49 @@ import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
-import edu.uci.ics.jung.algorithms.layout.FRLayout;
-import edu.uci.ics.jung.graph.SparseGraph;
+import java.awt.*;
+import java.awt.geom.Point2D;
+import java.util.Collection;
 
-public class FRLayoutAlgorithm extends AbstractLayoutAlgorithm {
+public class TopoFRLayoutAlgorithm extends AbstractLayoutAlgorithm {
 
-	@Override
-	public void updateLayout(final GraphContainer graphContainer) {
+    @Override
+    public void updateLayout(final GraphContainer graphContainer) {
 
-		Graph g = graphContainer.getGraph();
+        Graph g = graphContainer.getGraph();
 
-		final Layout graphLayout = g.getLayout();
+        final Layout graphLayout = g.getLayout();
 
-		SparseGraph<VertexRef, EdgeRef> jungGraph = new SparseGraph<VertexRef, EdgeRef>();
+        SparseGraph<VertexRef, EdgeRef> jungGraph = new SparseGraph<VertexRef, EdgeRef>();
 
-		Collection<Vertex> vertices = g.getDisplayVertices();
+        Collection<Vertex> vertices = g.getDisplayVertices();
 
-		for(Vertex v : vertices) {
-			jungGraph.addVertex(v);
-		}
+        for(Vertex v : vertices) {
+            jungGraph.addVertex(v);
+        }
 
-		Collection<Edge> edges = g.getDisplayEdges();
+        Collection<Edge> edges = g.getDisplayEdges();
 
-		for(Edge e : edges) {
-			jungGraph.addEdge(e, e.getSource().getVertex(), e.getTarget().getVertex());
-		}
+        for(Edge e : edges) {
+            jungGraph.addEdge(e, e.getSource().getVertex(), e.getTarget().getVertex());
+        }
 
-		FRLayout<VertexRef, EdgeRef> layout = new FRLayout<VertexRef, EdgeRef>(jungGraph);
-		// Initialize the vertex positions to the last known positions from the layout
+        TopoFRLayout<VertexRef, EdgeRef> layout = new TopoFRLayout<VertexRef, EdgeRef>(jungGraph);
+        // Initialize the vertex positions to the last known positions from the layout
         Dimension size = selectLayoutSize(graphContainer);
         layout.setInitializer(initializer(graphLayout, (int)size.getWidth()/2, (int)size.getHeight()/2));
         // Resize the graph to accommodate the number of vertices
         layout.setSize(size);
 
-		while(!layout.done()) {
-			layout.step();
-		}
+        while(!layout.done()) {
+            layout.step();
+        }
 
-		// Store the new positions in the layout
-		for(Vertex v : vertices) {
-			graphLayout.setLocation(v, (int)layout.getX(v) - (size.getWidth()/2), (int)layout.getY(v) - (size.getHeight()/2));
-		}
-	}
+        // Store the new positions in the layout
+        for(Vertex v : vertices) {
+            graphLayout.setLocation(v, (int)layout.getX(v) - (size.getWidth()/2), (int)layout.getY(v) - (size.getHeight()/2));
+        }
+    }
 
     protected static Transformer<VertexRef, Point2D> initializer(final Layout graphLayout, final int xOffset, final int yOffset) {
         return new Transformer<VertexRef, Point2D>() {

@@ -143,8 +143,9 @@ public class SavedHistory {
         for(Map.Entry<VertexRef, Point> entry : m_locations.entrySet()) {
             try {
                 locationsCrc.update(entry.getKey().getId().getBytes("UTF-8"));
-                locationsCrc.update(entry.getValue().getX());
-                locationsCrc.update(entry.getValue().getY());
+                //TODO cast to int for now
+                locationsCrc.update((int)entry.getValue().getX());
+                locationsCrc.update((int)entry.getValue().getY());
             } catch(UnsupportedEncodingException e) {
                 // Impossible on modern JVMs
             }
