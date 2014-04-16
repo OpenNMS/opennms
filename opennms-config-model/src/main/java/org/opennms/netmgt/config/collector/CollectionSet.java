@@ -55,7 +55,7 @@ public interface CollectionSet extends CollectionVisitable {
     
     /**
      * Returns the timestamp of when this data collection was taken.
-     * Used by thresholding
+     * Used by thresholding.
      * @return
     */
     Date getCollectionTimestamp();

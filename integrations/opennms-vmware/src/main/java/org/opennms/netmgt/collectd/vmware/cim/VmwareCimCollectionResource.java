@@ -45,11 +45,6 @@ public abstract class VmwareCimCollectionResource extends AbstractCollectionReso
     }
 
     @Override
-    public boolean rescanNeeded() {
-        return false;
-    }
-
-    @Override
     public boolean shouldPersist(final ServiceParameters params) {
         return true;
     }

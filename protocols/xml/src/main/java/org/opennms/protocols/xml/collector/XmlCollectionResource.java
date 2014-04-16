@@ -61,15 +61,6 @@ public abstract class XmlCollectionResource extends AbstractCollectionResource {
         return true;
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.collectd.AbstractCollectionResource#rescanNeeded()
-     */
-    @Override
-    public boolean rescanNeeded() {
-        // A rescan is never needed for the XmlCollector, at least on resources
-        return false;
-    }
-
     /**
      * Sets the attribute value.
      *

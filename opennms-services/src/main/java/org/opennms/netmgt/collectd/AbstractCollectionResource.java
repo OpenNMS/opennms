@@ -56,8 +56,8 @@ public abstract class AbstractCollectionResource implements CollectionResource {
     
     private static final Logger LOG = LoggerFactory.getLogger(AbstractCollectionResource.class);
 
-    protected CollectionAgent m_agent;
-    private Map<AttributeGroupType, AttributeGroup> m_attributeGroups;
+    protected final CollectionAgent m_agent;
+    private final Map<AttributeGroupType, AttributeGroup> m_attributeGroups = new HashMap<AttributeGroupType, AttributeGroup>();
     
     /**
      * <p>Constructor for AbstractCollectionResource.</p>
@@ -66,7 +66,6 @@ public abstract class AbstractCollectionResource implements CollectionResource {
      */
     protected AbstractCollectionResource(CollectionAgent agent) {
         m_agent=agent;
-        m_attributeGroups=new HashMap<AttributeGroupType, AttributeGroup>();
     }
     
     /**
@@ -134,7 +133,10 @@ public abstract class AbstractCollectionResource implements CollectionResource {
      * @return a boolean.
      */
     @Override
-    public abstract boolean rescanNeeded();
+    public final boolean rescanNeeded() {
+        // A rescan is not needed by default on collection resources
+        return false;
+    }
 
     /** {@inheritDoc} */
     @Override

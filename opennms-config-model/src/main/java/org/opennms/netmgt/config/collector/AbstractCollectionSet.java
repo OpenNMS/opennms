@@ -38,7 +38,7 @@ public abstract class AbstractCollectionSet implements CollectionSet {
 	 * @return a boolean.
 	 */
 	@Override
-	public boolean ignorePersist() {
+	public final boolean ignorePersist() {
 		return false;
 	}
 

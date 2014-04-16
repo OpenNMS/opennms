@@ -123,14 +123,6 @@ public class TcaCollectionResource extends AbstractCollectionResource {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.opennms.netmgt.collectd.AbstractCollectionResource#rescanNeeded()
-	 */
-	@Override
-	public boolean rescanNeeded() {
-		return false;
-	}
-
-	/* (non-Javadoc)
 	 * @see org.opennms.netmgt.collectd.AbstractCollectionResource#shouldPersist(org.opennms.netmgt.config.collector.ServiceParameters)
 	 */
 	@Override

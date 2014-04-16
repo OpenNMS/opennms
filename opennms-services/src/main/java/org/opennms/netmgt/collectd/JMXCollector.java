@@ -795,11 +795,6 @@ public abstract class JMXCollector implements ServiceCollector {
         }
 
         @Override
-        public boolean rescanNeeded() {
-            return false;
-        }
-
-        @Override
         public boolean shouldPersist(ServiceParameters params) {
             return true;
         }

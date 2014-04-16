@@ -45,12 +45,6 @@ public abstract class JdbcCollectionResource extends AbstractCollectionResource 
         return true;
     }
 
-    @Override
-    public boolean rescanNeeded() {
-        // A rescan is never needed for the JdbcCollector, at least on resources
-        return false;
-    }
-    
     public void setAttributeValue(CollectionAttributeType type, String value) {
         JdbcCollectionAttribute attr = new JdbcCollectionAttribute(this, type, type.getName(), value);
         addAttribute(attr);

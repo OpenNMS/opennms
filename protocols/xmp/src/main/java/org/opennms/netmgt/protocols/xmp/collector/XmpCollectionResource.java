@@ -208,13 +208,6 @@ public class XmpCollectionResource extends AbstractCollectionResource
     @Override
     public int getType() { return m_nodeType; }
 
-    /**
-     * <p>rescanNeeded</p>
-     *
-     * @return a boolean.
-     */
-    @Override
-    public boolean rescanNeeded() { return false; }
     /** {@inheritDoc} */
     @Override
     public boolean shouldPersist(ServiceParameters params) { return true; }

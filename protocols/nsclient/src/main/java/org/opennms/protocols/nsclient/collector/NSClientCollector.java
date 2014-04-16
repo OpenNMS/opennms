@@ -190,12 +190,6 @@ public class NSClientCollector implements ServiceCollector {
             return -1; //Is this right?
         }
 
-        //A rescan is never needed for the NSClientCollector, at least on resources
-        @Override
-        public boolean rescanNeeded() {
-            return false;
-        }
-
         @Override
         public boolean shouldPersist(ServiceParameters params) {
             return true;
