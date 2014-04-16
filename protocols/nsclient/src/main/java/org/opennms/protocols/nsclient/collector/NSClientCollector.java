@@ -116,7 +116,7 @@ public class NSClientCollector implements ServiceCollector {
 
     }
     
-    private static class NSClientCollectionAttribute extends AbstractCollectionAttribute implements CollectionAttribute {
+    private static class NSClientCollectionAttribute extends AbstractCollectionAttribute {
 
         private final String m_alias;
         private final String m_value;

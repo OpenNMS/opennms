@@ -112,7 +112,7 @@ public class XmpCollectionResource extends AbstractCollectionResource
             String instanceValue = instance.replace('/','_');
             instanceValue = instanceValue.replace('\\','_');
             instanceValue = instanceValue.replace(':','_');
-            instanceValue.replace(' ','_');
+            instanceValue = instanceValue.replace(' ','_');
             this.m_instance = instanceValue;
         }
         else {

@@ -66,9 +66,7 @@ import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionAttributeType;
 import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.config.collector.ServiceParameters;
-public class XmpCollectionAttribute extends AbstractCollectionAttribute 
-implements CollectionAttribute 
-{
+public class XmpCollectionAttribute extends AbstractCollectionAttribute {
     /* class variables and methods *********************** */
 
     /* instance variables ******************************** */

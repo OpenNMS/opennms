@@ -39,7 +39,7 @@ import org.opennms.netmgt.config.collector.ServiceParameters;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class TcaCollectionAttribute extends AbstractCollectionAttribute implements CollectionAttribute {
+public class TcaCollectionAttribute extends AbstractCollectionAttribute {
 
 	/** The Attribute Name. */
 	private String m_name;

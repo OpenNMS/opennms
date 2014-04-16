@@ -34,7 +34,7 @@ import org.opennms.netmgt.config.collector.CollectionAttributeType;
 import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.config.collector.ServiceParameters;
 
-public class JdbcCollectionAttribute extends AbstractCollectionAttribute implements CollectionAttribute {
+public class JdbcCollectionAttribute extends AbstractCollectionAttribute {
     String m_alias;
     String m_value;
     JdbcCollectionResource m_resource;

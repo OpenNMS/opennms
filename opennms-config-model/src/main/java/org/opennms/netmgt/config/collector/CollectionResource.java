@@ -36,28 +36,14 @@ import org.opennms.core.utils.TimeKeeper;
  * @author ranger
  * @version $Id: $
  */
-public interface CollectionResource extends ResourceIdentifier {
-    /**
-     * <p>shouldPersist</p>
-     *
-     * @param params a {@link org.opennms.netmgt.collectd.ServiceParameters} object.
-     * @return a boolean.
-     */
-    public boolean shouldPersist(ServiceParameters params);
-    
+public interface CollectionResource extends ResourceIdentifier, CollectionVisitable, Persistable {
+
     /**
      * <p>rescanNeeded</p>
      *
      * @return a boolean.
      */
-    public boolean rescanNeeded();
-    
-    /**
-     * <p>visit</p>
-     *
-     * @param visitor a {@link org.opennms.netmgt.collectd.CollectionSetVisitor} object.
-     */
-    public void visit(CollectionSetVisitor visitor);
+    boolean rescanNeeded();
     
     /**
      * Returns something like an ifType; is (but not sure if it should be) -1 for non interface type collections, otherwise
@@ -65,7 +51,7 @@ public interface CollectionResource extends ResourceIdentifier {
      *
      * @return a int.
      */
-    public int getType();
+    int getType();
     
     /**
      * Returns a string which indicates what type of resource.
@@ -76,14 +62,14 @@ public interface CollectionResource extends ResourceIdentifier {
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getResourceTypeName();
+    String getResourceTypeName();
     
     /**
      * Returns the name of the parent resource.
      * 
      * @return a {@link java.lang.String} object.
      */
-    public String getParent();
+    String getParent();
     
     /**
      * Returns the name of the instance this CollectionResource represents.  For node level resources, this will be null
@@ -92,7 +78,7 @@ public interface CollectionResource extends ResourceIdentifier {
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getInstance();
+    String getInstance();
 
     /**
      * Returns a unique label for each resource depending on resource type.
@@ -100,7 +86,7 @@ public interface CollectionResource extends ResourceIdentifier {
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getLabel();
+    String getLabel();
 
     /**
      * Returns a not-null time tracker instance when this resource requires to use a special timestamp when updating RRDs/JRBs.
@@ -108,6 +94,6 @@ public interface CollectionResource extends ResourceIdentifier {
      * 
      * @return a {@link org.opennms.core.utils.TimeKeeper} object.
      */
-    public TimeKeeper getTimeKeeper();
+    TimeKeeper getTimeKeeper();
 
 }

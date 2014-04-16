@@ -40,7 +40,7 @@ import org.opennms.netmgt.config.collector.ServiceParameters;
  * @author ranger
  * @version $Id: $
  */
-public class WmiCollectionAttribute extends AbstractCollectionAttribute implements CollectionAttribute {
+public class WmiCollectionAttribute extends AbstractCollectionAttribute {
     String m_alias;
         String m_value;
         WmiCollectionResource m_resource;

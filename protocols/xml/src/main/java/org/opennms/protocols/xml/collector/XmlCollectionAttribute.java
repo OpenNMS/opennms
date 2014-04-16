@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class XmlCollectionAttribute extends AbstractCollectionAttribute implements CollectionAttribute {
+public class XmlCollectionAttribute extends AbstractCollectionAttribute {
 
 	private static final Logger LOG = LoggerFactory.getLogger(XmlCollectionAttribute.class);
 

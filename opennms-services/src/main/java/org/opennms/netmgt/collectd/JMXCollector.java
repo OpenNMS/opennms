@@ -703,7 +703,7 @@ public abstract class JMXCollector implements ServiceCollector {
 
     }
     
-    private static class JMXCollectionAttribute extends AbstractCollectionAttribute implements CollectionAttribute {
+    private static class JMXCollectionAttribute extends AbstractCollectionAttribute {
 
         private final String m_alias;
         private final String m_value;

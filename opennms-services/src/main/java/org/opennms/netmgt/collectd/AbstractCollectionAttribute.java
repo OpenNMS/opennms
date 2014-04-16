@@ -32,6 +32,7 @@ import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionAttributeType;
 import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.config.collector.CollectionSetVisitor;
+import org.opennms.netmgt.config.collector.CollectionVisitable;
 import org.opennms.netmgt.config.collector.Persister;
 import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.slf4j.Logger;
@@ -43,7 +44,7 @@ import org.slf4j.LoggerFactory;
  * @author ranger
  * @version $Id: $
  */
-public abstract class AbstractCollectionAttribute implements  CollectionAttribute {
+public abstract class AbstractCollectionAttribute implements CollectionAttribute {
     
     private static final Logger LOG = LoggerFactory.getLogger(AbstractCollectionAttribute.class);
 
