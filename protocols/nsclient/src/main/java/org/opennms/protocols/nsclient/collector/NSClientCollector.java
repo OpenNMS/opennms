@@ -158,11 +158,6 @@ public class NSClientCollector implements ServiceCollector {
         }
 
         @Override
-        public boolean shouldPersist(ServiceParameters params) {
-            return true;
-        }
-
-        @Override
         public String getType() {
             return m_attribType.getType();
         }

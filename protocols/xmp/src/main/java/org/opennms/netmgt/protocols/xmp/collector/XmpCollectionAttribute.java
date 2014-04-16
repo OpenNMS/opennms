@@ -62,10 +62,8 @@ package org.opennms.netmgt.protocols.xmp.collector;
 import org.krupczak.xmp.Xmp;
 import org.krupczak.xmp.XmpVar;
 import org.opennms.netmgt.collectd.AbstractCollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionAttributeType;
 import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.collector.ServiceParameters;
 public class XmpCollectionAttribute extends AbstractCollectionAttribute {
     /* class variables and methods *********************** */
 
@@ -149,10 +147,6 @@ public class XmpCollectionAttribute extends AbstractCollectionAttribute {
      */
     @Override
     public String getType() { return Xmp.syntaxToString(aVar.xmpSyntax); }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean shouldPersist(ServiceParameters params) { return true; }
 
     //public void visit(CollectionSetVisitor visitor) { super(visitor); }
 

@@ -29,10 +29,8 @@
 package org.opennms.netmgt.collectd.jdbc;
 
 import org.opennms.netmgt.collectd.AbstractCollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionAttributeType;
 import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.collector.ServiceParameters;
 
 public class JdbcCollectionAttribute extends AbstractCollectionAttribute {
     String m_alias;
@@ -70,11 +68,6 @@ public class JdbcCollectionAttribute extends AbstractCollectionAttribute {
     @Override
     public String getStringValue() {
         return m_value; //Should this be null instead?
-    }
-    
-    @Override
-    public boolean shouldPersist(ServiceParameters params) {
-        return true;
     }
     
     @Override

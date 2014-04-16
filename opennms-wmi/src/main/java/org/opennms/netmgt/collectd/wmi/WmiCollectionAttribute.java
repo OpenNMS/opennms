@@ -29,10 +29,8 @@
 package org.opennms.netmgt.collectd.wmi;
 
 import org.opennms.netmgt.collectd.AbstractCollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionAttributeType;
 import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.collector.ServiceParameters;
 
 /**
  * <p>WmiCollectionAttribute class.</p>
@@ -109,12 +107,6 @@ public class WmiCollectionAttribute extends AbstractCollectionAttribute {
     @Override
         public String getStringValue() {
             return m_value; //Should this be null instead?
-        }
-
-        /** {@inheritDoc} */
-    @Override
-        public boolean shouldPersist(final ServiceParameters params) {
-            return true;
         }
 
         /**

@@ -87,9 +87,10 @@ public abstract class AbstractCollectionAttribute implements CollectionAttribute
     @Override
     public abstract String getStringValue();
 
-    /** {@inheritDoc} */
     @Override
-    public abstract boolean shouldPersist(ServiceParameters params);
+    public boolean shouldPersist(ServiceParameters params) {
+        return true;
+    }
 
     /** {@inheritDoc} */
     @Override

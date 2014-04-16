@@ -227,7 +227,10 @@ public class XmpCollectionResource extends AbstractCollectionResource
     @Override
     public String toString() { return "XmpCollectionResource for "+m_agent+" resType="+m_resourceType+" instance="+m_instance+" nodeType="+m_nodeTypeName+" nodeType="+m_nodeType; }
 
-    /** {@inheritDoc} */
+    /**
+     * @deprecated This class should be changed to store its {@link AttributeGroup}
+     * collection in {@link #m_attributeGroups} like all of the other implementations do. 
+     */
     @Override
     public void visit(CollectionSetVisitor visitor) 
     { 

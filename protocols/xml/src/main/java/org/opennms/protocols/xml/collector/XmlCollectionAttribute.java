@@ -29,10 +29,8 @@
 package org.opennms.protocols.xml.collector;
 
 import org.opennms.netmgt.collectd.AbstractCollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionAttributeType;
 import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -118,14 +116,6 @@ public class XmlCollectionAttribute extends AbstractCollectionAttribute {
     @Override
     public String getStringValue() {
         return m_value;
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.collectd.AbstractCollectionAttribute#shouldPersist(org.opennms.netmgt.config.collector.ServiceParameters)
-     */
-    @Override
-    public boolean shouldPersist(ServiceParameters params) {
-        return true;
     }
 
     /* (non-Javadoc)

@@ -29,10 +29,8 @@
 package org.opennms.netmgt.collectd.vmware.vijava;
 
 import org.opennms.netmgt.collectd.AbstractCollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionAttributeType;
 import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.collector.ServiceParameters;
 
 public class VmwareCollectionAttribute extends AbstractCollectionAttribute {
     private String m_alias;
@@ -75,14 +73,6 @@ public class VmwareCollectionAttribute extends AbstractCollectionAttribute {
     @Override
     public String getStringValue() {
         return m_value; //Should this be null instead?
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean shouldPersist(final ServiceParameters params) {
-        return true;
     }
 
     @Override

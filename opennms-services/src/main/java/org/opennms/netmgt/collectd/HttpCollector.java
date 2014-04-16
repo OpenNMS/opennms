@@ -401,11 +401,6 @@ public class HttpCollector implements ServiceCollector {
         }
 
         @Override
-        public boolean shouldPersist(ServiceParameters params) {
-            return true;
-        }
-
-        @Override
         public int hashCode() {
             return getName().hashCode();
         }

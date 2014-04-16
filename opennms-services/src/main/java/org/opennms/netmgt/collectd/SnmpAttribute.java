@@ -29,9 +29,7 @@
 package org.opennms.netmgt.collectd;
 
 import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.collector.CollectionSetVisitor;
 import org.opennms.netmgt.config.collector.Persister;
-import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -115,10 +113,6 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
         return m_val;
     }
 
-    void store(Persister persister) {
-        getAttributeType().storeAttribute(this, persister);
-    }
-
     /** {@inheritDoc} */
     @Override
     public void storeAttribute(Persister persister) {
@@ -143,12 +137,6 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
     @Override
     public String getType() {
         return getAttributeType().getType();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean shouldPersist(ServiceParameters params) {
-        return true;
     }
 
     /**
