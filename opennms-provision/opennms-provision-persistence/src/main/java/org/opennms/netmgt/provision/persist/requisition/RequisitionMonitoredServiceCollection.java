@@ -29,70 +29,26 @@
 package org.opennms.netmgt.provision.persist.requisition;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.config.api.JaxbListWrapper;
 
-/**
- * <p>RequisitionMonitoredServiceCollection class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
 @XmlRootElement(name="services")
-public class RequisitionMonitoredServiceCollection extends LinkedList<RequisitionMonitoredService> {
+public class RequisitionMonitoredServiceCollection extends JaxbListWrapper<RequisitionMonitoredService> {
+    private static final long serialVersionUID = 1L;
 
-    private static final long serialVersionUID = -1248948292315231797L;
-
-    /**
-	 * <p>Constructor for RequisitionMonitoredServiceCollection.</p>
-	 */
-	public RequisitionMonitoredServiceCollection() {
-        super();
+    public RequisitionMonitoredServiceCollection() { super(); }
+    public RequisitionMonitoredServiceCollection(final Collection<? extends RequisitionMonitoredService> services) {
+        super(services);
     }
 
-    /**
-     * <p>Constructor for RequisitionMonitoredServiceCollection.</p>
-     *
-     * @param c a {@link java.util.Collection} object.
-     */
-    public RequisitionMonitoredServiceCollection(Collection<? extends RequisitionMonitoredService> c) {
-        super(c);
-    }
-
-    /**
-     * <p>getMonitoredServices</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
     @XmlElement(name="monitored-service")
-    public List<RequisitionMonitoredService> getMonitoredServices() {
-        return this;
+    public List<RequisitionMonitoredService> getObjects() {
+        return super.getObjects();
     }
 
-    /**
-     * <p>setMonitoredServices</p>
-     *
-     * @param services a {@link java.util.List} object.
-     */
-    public void setMonitoredServices(List<RequisitionMonitoredService> services) {
-        if (services == this) return;
-        clear();
-        addAll(services);
-    }
-    
-    /**
-     * <p>getCount</p>
-     *
-     * @return a {@link java.lang.Integer} object.
-     */
-    @XmlAttribute(name="count")
-    public Integer getCount() {
-    	return this.size();
-    }
 }
 

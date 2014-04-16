@@ -58,19 +58,19 @@ import org.slf4j.LoggerFactory;
  */
 public class PersistOperationBuilder {
     
-    private RrdRepository m_repository;
-    private String m_rrdName;
-    private ResourceIdentifier m_resource;
-    private Map<AttributeDefinition, String> m_declarations = new TreeMap<AttributeDefinition, String>(new ByNameComparator());
-    private Map<String, String> m_metaData = new LinkedHashMap<String, String>();
+    private final RrdRepository m_repository;
+    private final String m_rrdName;
+    private final ResourceIdentifier m_resource;
+    private final Map<AttributeDefinition, String> m_declarations = new TreeMap<AttributeDefinition, String>(new ByNameComparator());
+    private final Map<String, String> m_metaData = new LinkedHashMap<String, String>();
     private TimeKeeper m_timeKeeper = new DefaultTimeKeeper();
     
     /**
      * RRDTool defined Data Source Types NOTE: "DERIVE" and "ABSOLUTE" not
      * currently supported.
      */
-    static final String DST_GAUGE = "GAUGE";
-    static final String DST_COUNTER = "COUNTER";
+    private static final String DST_GAUGE = "GAUGE";
+    private static final String DST_COUNTER = "COUNTER";
     /** Constant <code>MAX_DS_NAME_LENGTH=19</code> */
     public static final int MAX_DS_NAME_LENGTH = 19;
 

@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.collectd;
 
+import org.opennms.netmgt.config.collector.AbstractCollectionSetVisitor;
 import org.opennms.netmgt.config.collector.CollectionResource;
 
 /**

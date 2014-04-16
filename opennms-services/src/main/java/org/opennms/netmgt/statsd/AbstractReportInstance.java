@@ -48,13 +48,6 @@ public abstract class AbstractReportInstance implements ReportInstance, Initiali
     private Date m_jobStartedDate;
 
     /**
-     * <p>Constructor for AbstractReportInstance.</p>
-     */
-    public AbstractReportInstance() {
-        super();
-    }
-
-    /**
      * <p>getJobCompletedDate</p>
      *
      * @return a {@link java.util.Date} object.

@@ -56,9 +56,9 @@ public abstract class SnmpCollectionResource implements CollectionResource {
     
     private static final Logger LOG = LoggerFactory.getLogger(SnmpCollectionResource.class);
     
-    private ResourceType m_resourceType;
+    private final ResourceType m_resourceType;
 
-    private Map<AttributeGroupType, AttributeGroup> m_groups = new HashMap<AttributeGroupType, AttributeGroup>();
+    private final Map<AttributeGroupType, AttributeGroup> m_groups = new HashMap<AttributeGroupType, AttributeGroup>();
 
     /**
      * <p>Constructor for SnmpCollectionResource.</p>

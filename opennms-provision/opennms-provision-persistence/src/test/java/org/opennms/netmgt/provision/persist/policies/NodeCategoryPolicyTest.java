@@ -34,37 +34,16 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.netmgt.dao.DatabasePopulator;
-import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-@RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations={
-        "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
-        "classpath:/META-INF/opennms/applicationContext-mockEventd.xml"
-})
-@JUnitConfigurationEnvironment
 public class NodeCategoryPolicyTest implements InitializingBean {
-    @Autowired
-    private NodeDao m_nodeDao;
-
-    @Autowired
-    private DatabasePopulator m_populator;
-
     private List<OnmsNode> m_nodes;
 
     @Override
@@ -75,13 +54,13 @@ public class NodeCategoryPolicyTest implements InitializingBean {
     @Before
     public void setUp() {
         MockLogAppender.setupLogging();
-        m_populator.populateDatabase();
-        m_nodes = m_nodeDao.findAll();
-    }
-    
-    @After
-    public void tearDown() {
-        m_populator.resetDatabase();
+        m_nodes = new ArrayList<OnmsNode>();
+        final OnmsNode node1 = new OnmsNode();
+        node1.setNodeId("1");
+        node1.setForeignSource("a");
+        node1.setForeignId("1");
+        node1.setLabel("Node 1");
+        m_nodes.add(node1);
     }
 
     @Test
@@ -110,7 +89,7 @@ public class NodeCategoryPolicyTest implements InitializingBean {
         OnmsNode o;
         List<OnmsNode> populatedNodes = new ArrayList<OnmsNode>();
         List<OnmsNode> matchedNodes = new ArrayList<OnmsNode>();
-        
+
         for (OnmsNode node : m_nodes) {
             System.err.println(node);
             o = p.apply(node);

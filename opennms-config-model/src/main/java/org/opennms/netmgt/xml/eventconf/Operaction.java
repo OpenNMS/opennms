@@ -56,18 +56,18 @@ import org.xml.sax.ContentHandler;
 @XmlRootElement(name="operaction")
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("eventconf.xsd")
-@XmlType(propOrder={"m_state", "m_menutext"})
+@XmlType(propOrder={"m_state", "m_menutext", "m_content"})
 public class Operaction implements Serializable {
-	private static final long serialVersionUID = -576703485771037486L;
+    private static final long serialVersionUID = -576703485771037486L;
 
-	@XmlValue
+    @XmlValue
     private String m_content = "";
 
-	@XmlAttribute(name="state")
+    @XmlAttribute(name="state")
     private String m_state;
 
-	// @NotNull
-	@XmlAttribute(name="menutext", required=true)
+    // @NotNull
+    @XmlAttribute(name="menutext", required=true)
     private String m_menutext;
 
     public String getContent() {
@@ -122,38 +122,38 @@ public class Operaction implements Serializable {
         new Validator().validate(this);
     }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((m_content == null) ? 0 : m_content.hashCode());
-		result = prime * result + ((m_menutext == null) ? 0 : m_menutext.hashCode());
-		result = prime * result + ((m_state == null) ? 0 : m_state.hashCode());
-		return result;
-	}
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((m_content == null) ? 0 : m_content.hashCode());
+        result = prime * result + ((m_menutext == null) ? 0 : m_menutext.hashCode());
+        result = prime * result + ((m_state == null) ? 0 : m_state.hashCode());
+        return result;
+    }
 
-	@Override
-	public boolean equals(final Object obj) {
-		if (this == obj) return true;
-		if (obj == null) return false;
-		if (!(obj instanceof Operaction)) return false;
-		final Operaction other = (Operaction) obj;
-		if (m_content == null) {
-			if (other.m_content != null) return false;
-		} else if (!m_content.equals(other.m_content)) {
-			return false;
-		}
-		if (m_menutext == null) {
-			if (other.m_menutext != null) return false;
-		} else if (!m_menutext.equals(other.m_menutext)) {
-			return false;
-		}
-		if (m_state == null) {
-			if (other.m_state != null) return false;
-		} else if (!m_state.equals(other.m_state)) {
-			return false;
-		}
-		return true;
-	}
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (!(obj instanceof Operaction)) return false;
+        final Operaction other = (Operaction) obj;
+        if (m_content == null) {
+            if (other.m_content != null) return false;
+        } else if (!m_content.equals(other.m_content)) {
+            return false;
+        }
+        if (m_menutext == null) {
+            if (other.m_menutext != null) return false;
+        } else if (!m_menutext.equals(other.m_menutext)) {
+            return false;
+        }
+        if (m_state == null) {
+            if (other.m_state != null) return false;
+        } else if (!m_state.equals(other.m_state)) {
+            return false;
+        }
+        return true;
+    }
 
 }

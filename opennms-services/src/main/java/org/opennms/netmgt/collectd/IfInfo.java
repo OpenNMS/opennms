@@ -56,7 +56,7 @@ public final class IfInfo extends SnmpCollectionResource {
     
     private SNMPCollectorEntry m_entry;
     private String m_ifAlias;
-    private SnmpIfData m_snmpIfData;
+    private final SnmpIfData m_snmpIfData;
 
     /**
      * <p>Constructor for IfInfo.</p>

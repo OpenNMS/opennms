@@ -125,11 +125,11 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
         double[] values = new double[printLines.length];
         
         for (int i = 0; i < printLines.length; i++) {
-            if (printLines[i].endsWith("nan")) {
+            if (printLines[i].toLowerCase().endsWith("nan")) {
                 values[i] = Double.NaN;
             } else {
                 try {
-                    values[i] = Double.parseDouble(printLines[i]);
+                    values[i] = Double.parseDouble(printLines[i].replace(",", ".")); // To avoid NMS-5592 ~ 2,670374e+03 floating point issue.
                 } catch (NumberFormatException e) {
                     throw new DataAccessResourceFailureException("Value of line " + (i + 1) + " of output from RRD is not a valid floating point number: '" + printLines[i] + "'");
                 }

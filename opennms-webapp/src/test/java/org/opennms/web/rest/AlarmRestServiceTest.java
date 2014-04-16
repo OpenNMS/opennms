@@ -276,7 +276,7 @@ public class AlarmRestServiceTest extends AbstractSpringJerseyRestTestCase {
         // assertFalse(xml.contains("<alarm severity=\"CRITICAL\" id=\"2\""));
         assertXpathDoesNotMatch(xml, "//alarm[@severity='CRITICAL' and @id='2']");
         // assertTrue(xml.contains("count=\"0\""));
-        assertXpathMatches(xml, "//alarms[@count='0']");
+        assertXpathMatches(xml, "//alarms[@totalCount='0']");
 
         // original requirements:
         // http://localhost:8980/opennms/rest/alarms?offset=00&limit=10&orderBy=lastEventTime&order=desc&lastEventTime=2011-08-19T11:11:11.000-07:00&comparator=gt&severity=MAJOR&comparator=eq&ackUser=myuser&comparator=eq
@@ -295,7 +295,7 @@ public class AlarmRestServiceTest extends AbstractSpringJerseyRestTestCase {
         parameters.put("query", "lastEventTime > '2011-08-19T11:11:11.000-07:00' AND severity > MAJOR AND alarmAckUser IS NULL");
         xml = sendRequest(GET, "/alarms", parameters, 200);
         // assertTrue(xml.contains("count=\"0\""));
-        assertXpathMatches(xml, "//alarms[@count='0']");
+        assertXpathMatches(xml, "//alarms[@totalCount='0']");
 
         // unacked - modified version:
         // http://localhost:8980/opennms/rest/alarms?offset=00&limit=10&orderBy=lastEventTime&order=desc&query=lastEventTime%20%3E%20'2011-08-19T11%3A11%3A11.000-07%3A00'%20AND%20severity%20%3C%20MAJOR%20AND%20alarmAckUser%20IS%20NULL

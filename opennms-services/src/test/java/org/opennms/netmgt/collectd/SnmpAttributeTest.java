@@ -46,6 +46,7 @@ import junit.framework.TestCase;
 import org.opennms.core.test.MockPlatformTransactionManager;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.MibObject;
+import org.opennms.netmgt.config.collector.AbstractCollectionSetVisitor;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.ServiceParameters;

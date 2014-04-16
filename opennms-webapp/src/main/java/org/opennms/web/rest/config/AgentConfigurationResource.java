@@ -215,6 +215,9 @@ public class AgentConfigurationResource implements InitializingBean {
                     port = config.getPort();
                 }
             }
+            if (node != null && node.getNodeId() != null) {
+                parameters.put("nodeId", node.getNodeId());
+            }
 
             responses.add(new AgentResponse(ipAddress, port, service.getServiceName(), parameters));
         }

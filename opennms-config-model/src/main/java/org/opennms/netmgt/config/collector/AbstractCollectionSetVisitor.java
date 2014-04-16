@@ -26,21 +26,54 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd;
+package org.opennms.netmgt.config.collector;
 
-import org.opennms.netmgt.config.collector.CollectionAttribute;
 
 /**
- * <p>Abstract AttributeVisitor class.</p>
- *
- * @author ranger
- * @version $Id: $
+ * <p>This AbstractCollectionSetVisitor class provides no-op implementations of
+ * all of the {@link CollectionSetVisitor} methods so that you can override 
+ * specific methods as needed to implement your visitor.</p>
  */
-public abstract class AttributeVisitor extends AbstractCollectionSetVisitor {
-    
+public class AbstractCollectionSetVisitor implements CollectionSetVisitor {
+
     /** {@inheritDoc} */
     @Override
-    abstract public void visitAttribute(CollectionAttribute attribute);
+    public void visitAttribute(CollectionAttribute attribute) {
+    }
 
+    /** {@inheritDoc} */
+    @Override
+    public void visitCollectionSet(CollectionSet set) {
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void visitGroup(AttributeGroup group) {
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void visitResource(CollectionResource resource) {
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void completeAttribute(CollectionAttribute attribute) {
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void completeCollectionSet(CollectionSet set) {
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void completeGroup(AttributeGroup group) {
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void completeResource(CollectionResource resource) {
+    }
 
 }

@@ -30,7 +30,6 @@ package org.opennms.web.rest;
 
 import java.text.ParseException;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -54,6 +53,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
@@ -72,8 +72,8 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Scope("prototype")
 @Path("ksc")
 public class KscRestService extends OnmsRestService {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(KscRestService.class);
+
+    private static final Logger LOG = LoggerFactory.getLogger(KscRestService.class);
 
     @Autowired
     private KscReportService m_kscReportService;
@@ -187,49 +187,23 @@ public class KscRestService extends OnmsRestService {
 
     @Entity
     @XmlRootElement(name = "kscReports")
-    @XmlAccessorType(XmlAccessType.NONE)
-    public static final class KscReportCollection extends LinkedList<KscReport> {
-        private static final long serialVersionUID = -4169259948312457702L;
+    public static final class KscReportCollection extends JaxbListWrapper<KscReport> {
+        private static final long serialVersionUID = 1L;
 
-        private int m_totalCount;
-
-        public KscReportCollection() {
-            super();
+        public KscReportCollection() {super();}
+        public KscReportCollection(Collection<? extends KscReport> reports) {
+            super(reports);
         }
-
-        public KscReportCollection(final Collection<? extends KscReport> c) {
-            super(c);
-        }
-
         public KscReportCollection(final Map<Integer, String> reportList) {
+            super();
             for (final Integer key : reportList.keySet()) {
                 add(new KscReport(key, reportList.get(key)));
             }
         }
 
-        @XmlElement(name = "kscReport")
-        public List<KscReport> getKscReports() {
-            return this;
-        }
-
-        public void setKscReports(final List<KscReport> reports) {
-            if (reports == this) return;
-            clear();
-            addAll(reports);
-        }
-
-        @XmlAttribute(name = "count")
-        public Integer getCount() {
-            return this.size();
-        }
-
-        @XmlAttribute(name = "totalCount")
-        public int getTotalCount() {
-            return m_totalCount;
-        }
-
-        public void setTotalCount(final int count) {
-            m_totalCount = count;
+        @XmlElement(name="kscReport")
+        public List<KscReport> getObjects() {
+            return super.getObjects();
         }
     }
 

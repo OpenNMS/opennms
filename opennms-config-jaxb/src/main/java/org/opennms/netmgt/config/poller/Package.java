@@ -291,6 +291,15 @@ public class Package implements Serializable {
         return m_services.remove(service);
     }
 
+    public Service getService(final String serviceName) {
+        for (final Service service : m_services) {
+            if (serviceName.equals(service.getName())) {
+                return service;
+            }
+        }
+        return null;
+    }
+
     public List<String> getOutageCalendars() {
         if (m_outageCalendars == null) {
             return Collections.emptyList();

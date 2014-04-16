@@ -39,7 +39,6 @@ import org.opennms.netmgt.model.EntityVisitor;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.ResourceVisitor;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
 /**
@@ -48,7 +47,7 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @version $Id: $
  */
-public class FilterResourceWalker implements InitializingBean {
+public class FilterResourceWalker implements ResourceWalker {
 
     private NodeDao m_nodeDao;
     private FilterDao m_filterDao;

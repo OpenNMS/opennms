@@ -28,8 +28,12 @@
 
 @XmlSchema(
     namespace = "http://xmlns.opennms.org/xsd/config/datacollection",
-    elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED
+    elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED,
+    xmlns={
+        @XmlNs(prefix="", namespaceURI="http://xmlns.opennms.org/xsd/config/datacollection")
+    }
 )
 package org.opennms.netmgt.config.datacollection;
+import javax.xml.bind.annotation.XmlNs;
 import javax.xml.bind.annotation.XmlSchema;
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,6 +31,7 @@ package org.opennms.features.topology.app.internal.support;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 
 /**
+ * This class supports creation of <IpLikeHopCriteria>.
  * 
  * @author <a href=mailto:thedesloge@opennms.org>Donald Desloge</a>
  * @author <a href=mailto:seth@opennms.org>Seth Leger</a>
@@ -47,6 +48,10 @@ public class IpLikeHopCriteriaFactory {
 	
 	/**
 	 * The ipQuery value is a string representing an IP address or a valid IPLIKE query string
+	 * passed from the UI as a user selection of a <SearchResult>.
+	 * 
+	 * FIXME these should be static operations.
+	 * 
 	 * @param ipQuery
 	 * @return
 	 */

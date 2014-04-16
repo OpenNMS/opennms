@@ -38,8 +38,8 @@ import org.slf4j.LoggerFactory;
 public class JdbcMultiInstanceCollectionResource extends JdbcCollectionResource {
     private static final Logger LOG = LoggerFactory.getLogger(JdbcMultiInstanceCollectionResource.class);
 
-    private String m_inst;
-    private String m_name;
+    private final String m_inst;
+    private final String m_name;
     
     public JdbcMultiInstanceCollectionResource(CollectionAgent agent, String instance, String name) {
         super(agent);

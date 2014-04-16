@@ -380,16 +380,16 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         try {
             load(null);
         } catch (MalformedURLException e) {
-            LoggerFactory.getLogger(LinkdTopologyProvider.class).error(e.getMessage(), e);
+            LOG.error(e.getMessage(), e);
         } catch (JAXBException e) {
-            LoggerFactory.getLogger(LinkdTopologyProvider.class).error(e.getMessage(), e);
+            LOG.error(e.getMessage(), e);
         }
     }
 
     @Override
     public void load(String filename) throws MalformedURLException, JAXBException {
         if (filename != null) {
-            LoggerFactory.getLogger(LinkdTopologyProvider.class).warn("Filename that was specified for linkd topology will be ignored: " + filename + ", using " + m_configurationFile + " instead");
+            LOG.warn("Filename that was specified for linkd topology will be ignored: " + filename + ", using " + m_configurationFile + " instead");
         }
         LOG.debug("loadtopology: resetContainer ");
         resetContainer();
@@ -662,7 +662,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     @Override
     public String getSearchProviderNamespace() {
-        return "nodes";
+        return TOPOLOGY_NAMESPACE_LINKD;
     }
     
     @Override
@@ -671,8 +671,9 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         List<SearchResult> searchResults = Lists.newArrayList();
         
         CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);
-        String ilike = "%"+searchQuery.getQueryString()+"%";
-        cb.alias("assetRecord", "asset").match("any").ilike("label", ilike).ilike("sysDescription", ilike).ilike("asset.comment", ilike);
+        String ilike = "%"+searchQuery.getQueryString()+"%";  //check this for performance reasons
+//        cb.alias("assetRecord", "asset").match("any").ilike("label", ilike).ilike("sysDescription", ilike).ilike("asset.comment", ilike);
+        cb.match("any").ilike("label", ilike).ilike("sysDescription", ilike);
         List<OnmsNode> nodes = m_nodeDao.findMatching(cb.toCriteria());
         
         if (nodes.size() == 0) {
@@ -680,14 +681,14 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         }
         
         for (OnmsNode node : nodes) {
-            searchResults.add(createSearchResult(node));
+            searchResults.add(createSearchResult(node, searchQuery.getQueryString()));
         }
         
         return searchResults;
     }
 
-    private SearchResult createSearchResult(OnmsNode node) {
-        SearchResult result = new SearchResult("node", node.getId().toString(), node.getLabel());
+    private SearchResult createSearchResult(OnmsNode node, String queryString) {
+        SearchResult result = new SearchResult("node", node.getId().toString(), node.getLabel(), queryString);
         return result;
     }
 
@@ -817,7 +818,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     public void addVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
         LOG.debug("SearchProvider->addVertexHopCriteria: called with search result: '{}'", searchResult);
         
-        VertexHopCriteria criterion = m_criteriaHopFactory.createCriteria(searchResult.getId(), searchResult.getLabel());
+        VertexHopCriteria criterion = LinkdHopCriteriaFactory.createCriteria(searchResult.getId(), searchResult.getLabel());
         container.addCriteria(criterion);
         
         LOG.debug("SearchProvider->addVertexHop: adding hop criteria {}.", criterion);
@@ -843,7 +844,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         VertexHopCriteria criterion = null;
         
         if (node != null) {
-            criterion = m_criteriaHopFactory.createCriteria(String.valueOf(node.getId()), node.getLabel());
+            criterion = LinkdHopCriteriaFactory.createCriteria(String.valueOf(node.getId()), node.getLabel());
         }
         
         LOG.debug("SearchProvider->getDefaultCriteria:returning hop criteria: '{}'.", criterion);

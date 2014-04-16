@@ -18,12 +18,12 @@
     <dependency>
       <groupId>com.atomikos</groupId>
       <artifactId>transactions-jta</artifactId>
-      <version>3.9.2</version>
+      <version>${atomikosVersion}</version>
     </dependency>
     <dependency>
       <groupId>com.atomikos</groupId>
       <artifactId>transactions-jdbc</artifactId>
-      <version>3.9.2</version>
+      <version>${atomikosVersion}</version>
     </dependency>
     <dependency>
       <groupId>javax.transaction</groupId>

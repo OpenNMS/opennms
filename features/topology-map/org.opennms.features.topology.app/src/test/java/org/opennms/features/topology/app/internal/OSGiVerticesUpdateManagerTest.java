@@ -444,5 +444,11 @@ public class OSGiVerticesUpdateManagerTest {
         @Override
         public void redoLayout() {
         }
+
+        @Override
+        public void fireGraphChanged() {
+            // TODO Auto-generated method stub
+            
+        }
     }
 }

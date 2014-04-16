@@ -521,7 +521,8 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
         m_bundleContext = bundleContext;
     }
 
-	private void fireGraphChanged() {
+    @Override
+	public void fireGraphChanged() {
 		for(ChangeListener listener : m_listeners) {
 			listener.graphChanged(this);
 		}

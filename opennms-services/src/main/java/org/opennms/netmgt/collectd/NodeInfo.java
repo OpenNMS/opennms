@@ -41,15 +41,12 @@ import org.opennms.netmgt.model.RrdRepository;
  *
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @version $Id: $
  */
 public final class NodeInfo extends SnmpCollectionResource {
 
 	private SNMPCollectorEntry m_entry;
-    private int m_nodeId;
-    private CollectionAgent m_agent;
+    private final int m_nodeId;
+    private final CollectionAgent m_agent;
 
     /**
      * <p>Constructor for NodeInfo.</p>

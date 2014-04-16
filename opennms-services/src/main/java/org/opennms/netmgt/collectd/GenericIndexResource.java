@@ -45,8 +45,8 @@ import org.slf4j.LoggerFactory;
  */
 public class GenericIndexResource extends SnmpCollectionResource {
     private static final Logger LOG = LoggerFactory.getLogger(GenericIndexResource.class);
-    private SnmpInstId m_inst;
-    private String m_name;
+    private final SnmpInstId m_inst;
+    private final String m_name;
     private String m_resourceLabel;
 
     /**
