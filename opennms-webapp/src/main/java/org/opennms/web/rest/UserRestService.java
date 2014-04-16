@@ -130,6 +130,9 @@ public class UserRestService extends OnmsRestService {
     public Response addUser(final OnmsUser user) {
         writeLock();
         try {
+            if (!hasEditRights()) {
+                throw getException(Status.BAD_REQUEST, new RuntimeException(m_securityContext.getUserPrincipal().getName() + " does not have write access to users!"));
+            }
             LOG.debug("addUser: Adding user {}", user);
             m_userManager.save(user);
             return Response.seeOther(getRedirectUri(m_uriInfo, user.getUsername())).build();
@@ -147,6 +150,9 @@ public class UserRestService extends OnmsRestService {
         OnmsUser user = null;
         writeLock();
         try {
+            if (!hasEditRights()) {
+                throw getException(Status.BAD_REQUEST, new RuntimeException(m_securityContext.getUserPrincipal().getName() + " does not have write access to users!"));
+            }
             try {
                 user = m_userManager.getOnmsUser(userCriteria);
             } catch (final Throwable t) {
@@ -180,6 +186,9 @@ public class UserRestService extends OnmsRestService {
     public Response deleteUser(@PathParam("userCriteria") final String userCriteria) {
         writeLock();
         try {
+            if (!hasEditRights()) {
+                throw getException(Status.BAD_REQUEST, new RuntimeException(m_securityContext.getUserPrincipal().getName() + " does not have write access to users!"));
+            }
             OnmsUser user = null;
             try {
                 user = m_userManager.getOnmsUser(userCriteria);
@@ -199,8 +208,8 @@ public class UserRestService extends OnmsRestService {
         }
     }
 
-    public boolean isAdmin() {
-        if (m_securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
+    public boolean hasEditRights() {
+        if (m_securityContext.isUserInRole(Authentication.ROLE_ADMIN) || m_securityContext.isUserInRole(Authentication.ROLE_REST)) {
             return true;
         }
         return false;
@@ -215,7 +224,7 @@ public class UserRestService extends OnmsRestService {
     }
 
     private OnmsUser filterUserPassword(final OnmsUser user) {
-        if (!isAdmin()) {
+        if (!hasEditRights()) {
             final Principal principal = m_securityContext.getUserPrincipal();
             // users may see their own password hash  :)
             if (!user.getUsername().equals(principal.getName())) {
