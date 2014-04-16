@@ -229,13 +229,13 @@ public abstract class LinkdTestHelper implements InitializingBean {
     protected void printSnmpInterface(String nodeStringId,OnmsSnmpInterface snmpinterface) {
         if ( snmpinterface.getIfName() != null)
             System.out.println(nodeStringId+"_IF_IFNAME_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfName()+"\");");
-            if (snmpinterface.getIfDescr() != null)
+        if (snmpinterface.getIfDescr() != null)
             System.out.println(nodeStringId+"_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
-            if (snmpinterface.getPhysAddr() != null)
+        if (snmpinterface.getPhysAddr() != null)
             System.out.println(nodeStringId+"_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
-            if (snmpinterface.getIfAlias() != null)
+        if (snmpinterface.getIfAlias() != null)
             System.out.println(nodeStringId+"_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
-            if (snmpinterface.getNetMask() != null && !snmpinterface.getNetMask().getHostAddress().equals("127.0.0.1"))
+        if (snmpinterface.getNetMask() != null && !snmpinterface.getNetMask().getHostAddress().equals("127.0.0.1"))
             System.out.println(nodeStringId+"_IF_NETMASK_MAP.put("+snmpinterface.getIfIndex()+", InetAddressUtils.addr(\""+snmpinterface.getNetMask().getHostAddress()+"\"));");
     }
     
