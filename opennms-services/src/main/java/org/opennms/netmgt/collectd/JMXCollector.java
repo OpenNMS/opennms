@@ -56,6 +56,7 @@ import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.config.BeanInfo;
 import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
 import org.opennms.netmgt.config.collectd.jmx.Attrib;
+import org.opennms.netmgt.config.collector.AbstractCollectionSet;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionAttributeType;
@@ -829,7 +830,7 @@ public abstract class JMXCollector implements ServiceCollector {
         }
     }
     
-    public static class JMXCollectionSet implements CollectionSet {
+    public static class JMXCollectionSet extends AbstractCollectionSet {
         private int m_status;
         private Date m_timestamp;
         private final JMXCollectionResource m_collectionResource;
@@ -859,11 +860,6 @@ public abstract class JMXCollector implements ServiceCollector {
             visitor.completeCollectionSet(this);
         }
 
-        @Override
-		public boolean ignorePersist() {
-			return false;
-		}        
-		
 		@Override
 		public Date getCollectionTimestamp() {
 			return m_timestamp;

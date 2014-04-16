@@ -45,6 +45,7 @@ import org.opennms.netmgt.collectd.AbstractCollectionResource;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.ServiceCollector;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
+import org.opennms.netmgt.config.collector.AbstractCollectionSet;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionAttributeType;
@@ -221,7 +222,7 @@ public class NSClientCollector implements ServiceCollector {
         }
     }
     
-    private static class NSClientCollectionSet implements CollectionSet {
+    private static class NSClientCollectionSet extends AbstractCollectionSet {
         private int m_status;
         private final Date m_timestamp;
         private final NSClientCollectionResource m_collectionResource;
@@ -251,11 +252,6 @@ public class NSClientCollector implements ServiceCollector {
         public NSClientCollectionResource getResource() {
             return m_collectionResource;
         }
-
-        @Override
-		public boolean ignorePersist() {
-			return false;
-		}
 
 		@Override
 		public Date getCollectionTimestamp() {

@@ -38,9 +38,9 @@ import org.opennms.netmgt.collectd.CollectionException;
 import org.opennms.netmgt.collectd.CollectionTimedOut;
 import org.opennms.netmgt.collectd.CollectionWarning;
 import org.opennms.netmgt.collectd.ServiceCollector;
+import org.opennms.netmgt.config.collector.AbstractCollectionSet;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
 import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.config.collector.CollectionSetVisitor;
 import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdRepository;
@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
-public class TcaCollectionSet implements CollectionSet {	
+public class TcaCollectionSet extends AbstractCollectionSet {	
 	private static final Logger LOG = LoggerFactory.getLogger(TcaCollectionSet.class);
 
 	/** The Constant LAST_TIMESTAMP. */
@@ -122,14 +122,6 @@ public class TcaCollectionSet implements CollectionSet {
 			resource.visit(visitor);
 		}
 		visitor.completeCollectionSet(this);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.opennms.netmgt.config.collector.CollectionSet#ignorePersist()
-	 */
-	@Override
-	public boolean ignorePersist() {
-		return false;
 	}
 
 	/* (non-Javadoc)

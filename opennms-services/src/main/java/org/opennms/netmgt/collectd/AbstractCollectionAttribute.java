@@ -32,7 +32,6 @@ import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionAttributeType;
 import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.config.collector.CollectionSetVisitor;
-import org.opennms.netmgt.config.collector.CollectionVisitable;
 import org.opennms.netmgt.config.collector.Persister;
 import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.slf4j.Logger;
@@ -98,9 +97,12 @@ public abstract class AbstractCollectionAttribute implements CollectionAttribute
         getAttributeType().storeAttribute(this, persister);
     }
 
-    /** {@inheritDoc} */
+    /** 
+     * Since a {@link CollectionAttribute} is a terminal value, we just visit and
+     * complete it since it doesn't have any "children".
+     */
     @Override
-    public void visit(CollectionSetVisitor visitor) {
+    public final void visit(CollectionSetVisitor visitor) {
         LOG.debug("Visiting attribute {}", this);
         visitor.visitAttribute(this);
         visitor.completeAttribute(this);

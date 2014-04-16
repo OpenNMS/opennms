@@ -28,14 +28,18 @@
 
 package org.opennms.netmgt.config.collector;
 
-public interface Persistable {
+/**
+ */
+public abstract class AbstractCollectionSet implements CollectionSet {
 
 	/**
-	 * Determines whether the attribute should be persisted.
+	 * <p>ignorePersist</p>
 	 *
-	 * @param params a {@link org.opennms.netmgt.config.collector.ServiceParameters} object.
 	 * @return a boolean.
 	 */
-	boolean shouldPersist(ServiceParameters params);
+	@Override
+	public boolean ignorePersist() {
+		return false;
+	}
 
 }

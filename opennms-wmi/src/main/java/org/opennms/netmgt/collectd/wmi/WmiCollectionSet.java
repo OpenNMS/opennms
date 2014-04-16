@@ -28,15 +28,15 @@
 
 package org.opennms.netmgt.collectd.wmi;
 
-import org.opennms.netmgt.collectd.CollectionAgent;
-import org.opennms.netmgt.collectd.ServiceCollector;
-import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.collector.CollectionSet;
-import org.opennms.netmgt.config.collector.CollectionSetVisitor;
-
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.ArrayList;
+
+import org.opennms.netmgt.collectd.CollectionAgent;
+import org.opennms.netmgt.collectd.ServiceCollector;
+import org.opennms.netmgt.config.collector.AbstractCollectionSet;
+import org.opennms.netmgt.config.collector.CollectionResource;
+import org.opennms.netmgt.config.collector.CollectionSetVisitor;
 
 /**
  * <p>WmiCollectionSet class.</p>
@@ -44,7 +44,7 @@ import java.util.ArrayList;
  * @author ranger
  * @version $Id: $
  */
-public class WmiCollectionSet implements CollectionSet {
+public class WmiCollectionSet extends AbstractCollectionSet {
     private int m_status;
     private List<WmiCollectionResource> m_collectionResources;
     private Date m_timestamp;
@@ -99,16 +99,6 @@ public class WmiCollectionSet implements CollectionSet {
         return m_collectionResources;
     }
 
-    /**
-     * <p>ignorePersist</p>
-     *
-     * @return a boolean.
-     */
-    @Override
-    public boolean ignorePersist() {
-        return false;
-    }
-    
     @Override
 	public Date getCollectionTimestamp() {
 		return m_timestamp;

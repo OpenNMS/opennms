@@ -86,14 +86,6 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
         return (m_resource.hashCode() ^ m_type.hashCode());
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void visit(CollectionSetVisitor visitor) {
-        LOG.debug("Visiting attribute {}", this);
-        visitor.visitAttribute(this);
-        visitor.completeAttribute(this);
-    }
-
     /**
      * <p>getAttributeType</p>
      *
