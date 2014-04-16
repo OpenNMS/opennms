@@ -45,6 +45,7 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
     private static final double LINK_STRENGTH = 1.0;
     private static final int DEFAULT_CHARGE = -120;
     private double EPSILON = 0.00000000001D;
+    private int m_charge = -30;
 
     private double m_alpha = 0.1;
     private Map<V, VertexData> m_vertexData = LazyMap.decorate(new HashMap<V, VertexData>(), new Factory<VertexData>(){
@@ -147,6 +148,9 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
 
         //Compute quad tree center of mass and apply charge force
         //TODO create a quadtree implementation from D3
+        if(getDefaultCharge() != 0){
+
+        }
 
 
     }
@@ -169,6 +173,14 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
 
     private EdgeData getEdgeData(E e) {
         return m_edgeData.get(e);
+    }
+
+    public int getDefaultCharge() {
+        return m_charge;
+    }
+
+    public void setDefaultCharge(int m_charge) {
+        this.m_charge = m_charge;
     }
 
     protected static class VertexData extends Point2D.Double{
