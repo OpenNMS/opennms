@@ -1201,8 +1201,8 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
      * @param scannedNode a {@link org.opennms.netmgt.model.OnmsNode} object.
      */
     public void mergeCategorySet(OnmsNode scannedNode) {
-        if (!getCategories().equals(scannedNode.getCategories())) {
-            setCategories(scannedNode.getCategories());
+        for (final OnmsCategory cat : scannedNode.getCategories()) {
+            addCategory(cat);
         }
     }
 
