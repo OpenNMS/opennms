@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  * @author ranger
  * @version $Id: $
  */
-public abstract class AbstractCollectionAttribute implements  CollectionAttribute {
+public abstract class AbstractCollectionAttribute implements CollectionAttribute {
     
     private static final Logger LOG = LoggerFactory.getLogger(AbstractCollectionAttribute.class);
 
@@ -87,9 +87,10 @@ public abstract class AbstractCollectionAttribute implements  CollectionAttribut
     @Override
     public abstract String getStringValue();
 
-    /** {@inheritDoc} */
     @Override
-    public abstract boolean shouldPersist(ServiceParameters params);
+    public boolean shouldPersist(ServiceParameters params) {
+        return true;
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -97,9 +98,12 @@ public abstract class AbstractCollectionAttribute implements  CollectionAttribut
         getAttributeType().storeAttribute(this, persister);
     }
 
-    /** {@inheritDoc} */
+    /** 
+     * Since a {@link CollectionAttribute} is a terminal value, we just visit and
+     * complete it since it doesn't have any "children".
+     */
     @Override
-    public void visit(CollectionSetVisitor visitor) {
+    public final void visit(CollectionSetVisitor visitor) {
         LOG.debug("Visiting attribute {}", this);
         visitor.visitAttribute(this);
         visitor.completeAttribute(this);

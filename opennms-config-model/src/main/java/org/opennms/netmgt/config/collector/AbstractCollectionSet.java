@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,36 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd.vmware.cim;
+package org.opennms.netmgt.config.collector;
 
-import org.opennms.netmgt.collectd.AbstractCollectionResource;
-import org.opennms.netmgt.collectd.CollectionAgent;
-import org.opennms.netmgt.config.collector.CollectionAttributeType;
+/**
+ */
+public abstract class AbstractCollectionSet implements CollectionSet {
 
-public abstract class VmwareCimCollectionResource extends AbstractCollectionResource {
+	/**
+	 * <p>ignorePersist</p>
+	 *
+	 * @return a boolean.
+	 */
+	@Override
+	public final boolean ignorePersist() {
+		return false;
+	}
 
-    public VmwareCimCollectionResource(CollectionAgent agent) {
-        super(agent);
-    }
-
-    @Override
-    public int getType() {
-        return -1; //Is this right?
-    }
-
-    public void setAttributeValue(final CollectionAttributeType type, final String value) {
-        final VmwareCimCollectionAttribute attr = new VmwareCimCollectionAttribute(this, type, type.getName(), value);
-        addAttribute(attr);
-    }
-
-    @Override
-    public abstract String getResourceTypeName();
-
-    @Override
-    public abstract String getInstance();
-
-    @Override
-    public String getParent() {
-        return m_agent.getStorageDir().toString();
-    }
 }

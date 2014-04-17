@@ -34,11 +34,11 @@ import java.util.List;
 
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.ServiceCollector;
+import org.opennms.netmgt.config.collector.AbstractCollectionSet;
 import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.config.collector.CollectionSetVisitor;
 
-public class JdbcCollectionSet implements CollectionSet {
+public class JdbcCollectionSet extends AbstractCollectionSet {
     private int m_status;
     private List<JdbcCollectionResource> m_collectionResources;
     private Date m_timestamp;
@@ -75,11 +75,6 @@ public class JdbcCollectionSet implements CollectionSet {
         visitor.completeCollectionSet(this);
     }
 
-    @Override
-    public boolean ignorePersist() {
-        return false;
-    }
-    
     @Override
 	public Date getCollectionTimestamp() {
 		return m_timestamp;

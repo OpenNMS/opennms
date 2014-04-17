@@ -34,8 +34,8 @@ import java.util.List;
 
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.ServiceCollector;
+import org.opennms.netmgt.config.collector.AbstractCollectionSet;
 import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.config.collector.CollectionSetVisitor;
 
 /**
@@ -43,7 +43,7 @@ import org.opennms.netmgt.config.collector.CollectionSetVisitor;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class XmlCollectionSet implements CollectionSet {
+public class XmlCollectionSet extends AbstractCollectionSet {
 
     /** The collection status. */
     private int m_status;
@@ -110,14 +110,6 @@ public class XmlCollectionSet implements CollectionSet {
             resource.visit(visitor);
 
         visitor.completeCollectionSet(this);
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.config.collector.CollectionSet#ignorePersist()
-     */
-    @Override
-    public boolean ignorePersist() {
-        return false;
     }
 
     /* (non-Javadoc)

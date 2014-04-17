@@ -88,6 +88,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeKeeper;
 import org.opennms.netmgt.config.HttpCollectionConfigFactory;
+import org.opennms.netmgt.config.collector.AbstractCollectionSet;
 import org.opennms.netmgt.config.collector.AttributeDefinition;
 import org.opennms.netmgt.config.collector.AttributeGroup;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
@@ -150,7 +151,7 @@ public class HttpCollector implements ServiceCollector {
         return collectionSet;
     }
 
-    private static class HttpCollectionSet implements CollectionSet {
+    private static class HttpCollectionSet extends AbstractCollectionSet {
         private final CollectionAgent m_agent;
         private final Map<String, Object> m_parameters;
         private Uri m_uriDef;
@@ -226,11 +227,6 @@ public class HttpCollector implements ServiceCollector {
             }
             visitor.completeCollectionSet(this);
         }
-
-        @Override
-		public boolean ignorePersist() {
-			return false;
-		}       
 
 		@Override
 		public Date getCollectionTimestamp() {
@@ -402,11 +398,6 @@ public class HttpCollector implements ServiceCollector {
         @Override
         public CollectionResource getResource() {
             return m_resource;
-        }
-
-        @Override
-        public boolean shouldPersist(ServiceParameters params) {
-            return true;
         }
 
         @Override
