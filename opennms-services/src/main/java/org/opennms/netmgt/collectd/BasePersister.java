@@ -41,7 +41,6 @@ import org.opennms.netmgt.config.collector.AttributeDefinition;
 import org.opennms.netmgt.config.collector.AttributeGroup;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.collector.Persistable;
 import org.opennms.netmgt.config.collector.Persister;
 import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.dao.support.ResourceTypeUtils;
@@ -218,10 +217,33 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     /**
      * <p>pushShouldPersist</p>
      *
-     * @param attribute a {@link org.opennms.netmgt.config.collector.Persistable} object.
+     * @param attribute a {@link org.opennms.netmgt.config.collector.CollectionAttribute} object.
      */
-    protected void pushShouldPersist(Persistable attribute) {
-        push(top() && attribute.shouldPersist(m_params));
+    protected void pushShouldPersist(CollectionAttribute attribute) {
+        pushShouldPersist(attribute.shouldPersist(m_params));
+    }
+
+    /**
+     * <p>pushShouldPersist</p>
+     *
+     * @param group a {@link org.opennms.netmgt.config.collector.AttributeGroup} object.
+     */
+    protected void pushShouldPersist(AttributeGroup group) {
+        pushShouldPersist(group.shouldPersist(m_params));
+    }
+
+    private void pushShouldPersist(boolean shouldPersist) {
+        push(top() && shouldPersist);
+    }
+
+    /**
+     * Push {@link CollectionResource} instances directly onto the stack without checking
+     * {@link #top()} since they are the top-level resources.
+     *
+     * @param resource a {@link org.opennms.netmgt.config.collector.CollectionResource} object.
+     */
+    protected void pushShouldPersist(CollectionResource resource) {
+        push(resource.shouldPersist(m_params));
     }
 
     /**
