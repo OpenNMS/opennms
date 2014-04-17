@@ -29,17 +29,15 @@
 package org.opennms.netmgt.collectd.tca;
 
 import org.opennms.netmgt.collectd.AbstractCollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionAttributeType;
 import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.collector.ServiceParameters;
 
 /**
  * The Class TcaCollectionAttribute.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class TcaCollectionAttribute extends AbstractCollectionAttribute implements CollectionAttribute {
+public class TcaCollectionAttribute extends AbstractCollectionAttribute {
 
 	/** The Attribute Name. */
 	private String m_name;
@@ -106,14 +104,6 @@ public class TcaCollectionAttribute extends AbstractCollectionAttribute implemen
         @Override
 	public String getStringValue() {
 		return m_value;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.opennms.netmgt.collectd.AbstractCollectionAttribute#shouldPersist(org.opennms.netmgt.config.collector.ServiceParameters)
-	 */
-        @Override
-	public boolean shouldPersist(ServiceParameters params) {
-		return true;
 	}
 
 	/* (non-Javadoc)

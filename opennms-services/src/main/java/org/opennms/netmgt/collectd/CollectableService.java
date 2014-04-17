@@ -363,7 +363,7 @@ final class CollectableService implements ReadyRunnable {
         m_status = status;
     }
 
-        private BasePersister createPersister(ServiceParameters params, RrdRepository repository) {
+        private static BasePersister createPersister(ServiceParameters params, RrdRepository repository) {
             if (ResourceTypeUtils.isStoreByGroup()) {
                 return new GroupPersister(params, repository);
             } else {

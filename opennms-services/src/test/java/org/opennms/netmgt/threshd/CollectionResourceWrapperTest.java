@@ -157,7 +157,7 @@ public class CollectionResourceWrapperTest {
         Assert.assertFalse(CollectionResourceWrapper.s_cache.containsKey(attributeId));
         Assert.assertEquals(Double.valueOf(Double.NaN), wrapper.getAttributeValue(attributeName)); // Last value is null
         Assert.assertEquals(Double.valueOf(Double.NaN), wrapper.getAttributeValue(attributeName)); // Last value is null
-        Assert.assertEquals(Double.valueOf(1000.0), CollectionResourceWrapper.s_cache.get(attributeId).value);
+        Assert.assertEquals(Double.valueOf(1000.0), CollectionResourceWrapper.s_cache.get(attributeId).getValue());
 
         // Increase counter
         attribute = addAttributeToCollectionResource(resource, attributeName, "counter", "0", "2500");
@@ -167,15 +167,15 @@ public class CollectionResourceWrapperTest {
        
         // Get counter value - second time
         // Last value is 1000.0, so 2500-1000/300 = 1500/300 =  5.
-        Assert.assertEquals(Double.valueOf(1000.0), CollectionResourceWrapper.s_cache.get(attributeId).value);
+        Assert.assertEquals(Double.valueOf(1000.0), CollectionResourceWrapper.s_cache.get(attributeId).getValue());
         Assert.assertEquals(Double.valueOf(5.0), wrapper.getAttributeValue(attributeName));
         //Validate that the cached counter value has been updated
-        Assert.assertEquals(Double.valueOf(2500.0), CollectionResourceWrapper.s_cache.get(attributeId).value);
+        Assert.assertEquals(Double.valueOf(2500.0), CollectionResourceWrapper.s_cache.get(attributeId).getValue());
         //but that calling getAttributeValue doesn't re-calculate the rate inappropriately
         Assert.assertEquals(Double.valueOf(5.0), wrapper.getAttributeValue(attributeName));
-        Assert.assertEquals(Double.valueOf(2500.0), CollectionResourceWrapper.s_cache.get(attributeId).value);
+        Assert.assertEquals(Double.valueOf(2500.0), CollectionResourceWrapper.s_cache.get(attributeId).getValue());
         Assert.assertEquals(Double.valueOf(5.0), wrapper.getAttributeValue(attributeName));
-        Assert.assertEquals(Double.valueOf(2500.0), CollectionResourceWrapper.s_cache.get(attributeId).value);
+        Assert.assertEquals(Double.valueOf(2500.0), CollectionResourceWrapper.s_cache.get(attributeId).getValue());
 
         // Increase counter
         attribute = addAttributeToCollectionResource(resource, attributeName, "counter", "0", "5500");
@@ -185,13 +185,13 @@ public class CollectionResourceWrapperTest {
 
         // Get counter value - third time
         // Last value is 2500.0, so 5500-2500/300 = 3000/300 =  10;
-        Assert.assertEquals(Double.valueOf(2500.0), CollectionResourceWrapper.s_cache.get(attributeId).value);
+        Assert.assertEquals(Double.valueOf(2500.0), CollectionResourceWrapper.s_cache.get(attributeId).getValue());
         Assert.assertEquals(Double.valueOf(10.0), wrapper.getAttributeValue(attributeName));
-        Assert.assertEquals(Double.valueOf(5500.0), CollectionResourceWrapper.s_cache.get(attributeId).value);
+        Assert.assertEquals(Double.valueOf(5500.0), CollectionResourceWrapper.s_cache.get(attributeId).getValue());
         Assert.assertEquals(Double.valueOf(10.0), wrapper.getAttributeValue(attributeName));
-        Assert.assertEquals(Double.valueOf(5500.0), CollectionResourceWrapper.s_cache.get(attributeId).value);
+        Assert.assertEquals(Double.valueOf(5500.0), CollectionResourceWrapper.s_cache.get(attributeId).getValue());
         Assert.assertEquals(Double.valueOf(10.0), wrapper.getAttributeValue(attributeName));
-        Assert.assertEquals(Double.valueOf(5500.0), CollectionResourceWrapper.s_cache.get(attributeId).value);
+        Assert.assertEquals(Double.valueOf(5500.0), CollectionResourceWrapper.s_cache.get(attributeId).getValue());
     }
         
     
@@ -231,7 +231,7 @@ public class CollectionResourceWrapperTest {
 		Assert.assertEquals(Double.valueOf(Double.NaN),
 				wrapper.getAttributeValue(attributeName)); // Last value is null
 		Assert.assertEquals(Double.valueOf(1000.0),
-				CollectionResourceWrapper.s_cache.get(attributeId).value);
+				CollectionResourceWrapper.s_cache.get(attributeId).getValue());
 
         // Increase counter
         attribute = addAttributeToCollectionResource(resource, attributeName, "counter", "0", "2500");
@@ -241,13 +241,13 @@ public class CollectionResourceWrapperTest {
        
         // Get counter value - second time
         // Last value is 1000.0, so 2500-1000/300 = 1500/300 =  5.
-        Assert.assertEquals(Double.valueOf(1000.0), CollectionResourceWrapper.s_cache.get(attributeId).value);
+        Assert.assertEquals(Double.valueOf(1000.0), CollectionResourceWrapper.s_cache.get(attributeId).getValue());
         Assert.assertEquals(Double.valueOf(5.0), wrapper.getAttributeValue(attributeName));
         //Validate that the cached counter value has been updated
-        Assert.assertEquals(Double.valueOf(2500.0), CollectionResourceWrapper.s_cache.get(attributeId).value);
+        Assert.assertEquals(Double.valueOf(2500.0), CollectionResourceWrapper.s_cache.get(attributeId).getValue());
         //but that calling getAttributeValue doesn't re-calculate the rate inappropriately or update the static cache
         Assert.assertEquals(Double.valueOf(5.0), wrapper.getAttributeValue(attributeName));
-        Assert.assertEquals(Double.valueOf(2500.0), CollectionResourceWrapper.s_cache.get(attributeId).value);
+        Assert.assertEquals(Double.valueOf(2500.0), CollectionResourceWrapper.s_cache.get(attributeId).getValue());
 
 		// Now create a collection that is missing the counter value; we're
 		// expecting null result and no cache updates
@@ -262,10 +262,10 @@ public class CollectionResourceWrapperTest {
 		// No change, so we expect the cache to have (and continue to) remain
 		// the same, and to get no attribute value out
 		Assert.assertEquals(Double.valueOf(2500.0),
-				CollectionResourceWrapper.s_cache.get(attributeId).value);
+				CollectionResourceWrapper.s_cache.get(attributeId).getValue());
 		Assert.assertNull(wrapper.getAttributeValue(attributeName)); 
 		Assert.assertEquals(Double.valueOf(2500.0),
-				CollectionResourceWrapper.s_cache.get(attributeId).value);
+				CollectionResourceWrapper.s_cache.get(attributeId).getValue());
 
 		// Now if we collect successfully again, we expect the counter to be the
 		// change divided by two collection cycles
@@ -282,16 +282,16 @@ public class CollectionResourceWrapperTest {
 		// Last value is 5500, but we've had two collection cycles, so
 		// 7300-2500/600 = 4800/600 = 8
 		Assert.assertEquals(Double.valueOf(2500.0),
-				CollectionResourceWrapper.s_cache.get(attributeId).value);
+				CollectionResourceWrapper.s_cache.get(attributeId).getValue());
 		Assert.assertEquals(Double.valueOf(8.0), wrapper.getAttributeValue(attributeName));
 		Assert.assertEquals(Double.valueOf(7300.0),
-				CollectionResourceWrapper.s_cache.get(attributeId).value);
+				CollectionResourceWrapper.s_cache.get(attributeId).getValue());
 		Assert.assertEquals(Double.valueOf(8.0), wrapper.getAttributeValue(attributeName));
 		Assert.assertEquals(Double.valueOf(7300.0),
-				CollectionResourceWrapper.s_cache.get(attributeId).value);
+				CollectionResourceWrapper.s_cache.get(attributeId).getValue());
 		Assert.assertEquals(Double.valueOf(8.0), wrapper.getAttributeValue(attributeName));
 		Assert.assertEquals(Double.valueOf(7300.0),
-				CollectionResourceWrapper.s_cache.get(attributeId).value);
+				CollectionResourceWrapper.s_cache.get(attributeId).getValue());
 
 		EasyMock.verify(agent);
 	}
@@ -319,7 +319,7 @@ public class CollectionResourceWrapperTest {
         Assert.assertFalse(CollectionResourceWrapper.s_cache.containsKey(attributeId));
         Assert.assertEquals(Double.valueOf(Double.NaN), wrapper.getAttributeValue(attributeName)); // Last value is null
         Assert.assertEquals(Double.valueOf(Double.NaN), wrapper.getAttributeValue(attributeName)); // Last value is null
-        Assert.assertEquals(Double.valueOf(initialValue.doubleValue()), CollectionResourceWrapper.s_cache.get(attributeId).value);
+        Assert.assertEquals(Double.valueOf(initialValue.doubleValue()), CollectionResourceWrapper.s_cache.get(attributeId).getValue());
 
         // Increase counter
         attribute = addAttributeToCollectionResource(resource, attributeName, "counter", "0", new BigInteger("40000"));
@@ -328,13 +328,13 @@ public class CollectionResourceWrapperTest {
 
         // Get counter value - second time (wrap)
         // last = MAX - 20000, new = 40000; then last - new = 60000, rate: 60000/300 = 200
-        Assert.assertEquals(Double.valueOf(initialValue.doubleValue()), CollectionResourceWrapper.s_cache.get(attributeId).value);
+        Assert.assertEquals(Double.valueOf(initialValue.doubleValue()), CollectionResourceWrapper.s_cache.get(attributeId).getValue());
         Assert.assertEquals(Double.valueOf(200.0), wrapper.getAttributeValue(attributeName));
-        Assert.assertEquals(Double.valueOf(40000.0), CollectionResourceWrapper.s_cache.get(attributeId).value);
+        Assert.assertEquals(Double.valueOf(40000.0), CollectionResourceWrapper.s_cache.get(attributeId).getValue());
         Assert.assertEquals(Double.valueOf(200.0), wrapper.getAttributeValue(attributeName));
-        Assert.assertEquals(Double.valueOf(40000.0), CollectionResourceWrapper.s_cache.get(attributeId).value);
+        Assert.assertEquals(Double.valueOf(40000.0), CollectionResourceWrapper.s_cache.get(attributeId).getValue());
         Assert.assertEquals(Double.valueOf(200.0), wrapper.getAttributeValue(attributeName));
-        Assert.assertEquals(Double.valueOf(40000.0), CollectionResourceWrapper.s_cache.get(attributeId).value);
+        Assert.assertEquals(Double.valueOf(40000.0), CollectionResourceWrapper.s_cache.get(attributeId).getValue());
 
         EasyMock.verify(agent);
     }

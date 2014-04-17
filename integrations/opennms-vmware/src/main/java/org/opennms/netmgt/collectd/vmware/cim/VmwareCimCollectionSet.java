@@ -28,17 +28,17 @@
 
 package org.opennms.netmgt.collectd.vmware.cim;
 
-import org.opennms.netmgt.collectd.CollectionAgent;
-import org.opennms.netmgt.collectd.ServiceCollector;
-import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.collector.CollectionSet;
-import org.opennms.netmgt.config.collector.CollectionSetVisitor;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class VmwareCimCollectionSet implements CollectionSet {
+import org.opennms.netmgt.collectd.CollectionAgent;
+import org.opennms.netmgt.collectd.ServiceCollector;
+import org.opennms.netmgt.config.collector.AbstractCollectionSet;
+import org.opennms.netmgt.config.collector.CollectionResource;
+import org.opennms.netmgt.config.collector.CollectionSetVisitor;
+
+public class VmwareCimCollectionSet extends AbstractCollectionSet {
     private int m_status;
     private List<VmwareCimCollectionResource> m_collectionResources;
     private Date m_timestamp;
@@ -70,11 +70,6 @@ public class VmwareCimCollectionSet implements CollectionSet {
 
     public List<VmwareCimCollectionResource> getResources() {
         return m_collectionResources;
-    }
-
-    @Override
-    public boolean ignorePersist() {
-        return false;
     }
 
     @Override
