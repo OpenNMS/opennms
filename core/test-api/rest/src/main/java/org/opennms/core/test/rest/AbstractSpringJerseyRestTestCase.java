@@ -210,6 +210,11 @@ public abstract class AbstractSpringJerseyRestTestCase {
         return new MockHttpServletResponse();
     }
 
+    protected static MockHttpServletRequest createRequest(final ServletContext context, final String requestType, final String urlPath) {
+        final Set<String> emptySet = Collections.emptySet();
+        return createRequest(context, requestType, urlPath, "admin", emptySet);
+    }
+
     protected static MockHttpServletRequest createRequest(final ServletContext context, final String requestType, final String urlPath, final String username, final Collection<String> roles) {
         final MockHttpServletRequest request = new MockHttpServletRequest(context, requestType, contextPath + urlPath) {
 
@@ -221,8 +226,8 @@ public abstract class AbstractSpringJerseyRestTestCase {
 
         };
         request.setContextPath(contextPath);
-        MockUserPrincipal.setName(username);
         request.setUserPrincipal(MockUserPrincipal.getInstance());
+        MockUserPrincipal.setName(username);
         if (username != null) {
             for (final String role : roles) {
                 request.addUserRole(role);
