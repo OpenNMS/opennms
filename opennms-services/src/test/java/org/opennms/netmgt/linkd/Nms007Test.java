@@ -73,15 +73,15 @@ public class Nms007Test extends Nms007NetworkBuilder {
      */
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host = FireFly170_IP, port = 161, resource = "classpath:linkd/nms007/mib2_"+FireFly170_IP + ".txt"),
-            @JUnitSnmpAgent(host = FireFly171_IP, port = 161, resource = "classpath:linkd/nms007/mib2_"+FireFly171_IP + ".txt"),
-            @JUnitSnmpAgent(host = FireFly172_IP, port = 161, resource = "classpath:linkd/nms007/mib2_"+FireFly172_IP + ".txt"),
-            @JUnitSnmpAgent(host = FireFly173_IP, port = 161, resource = "classpath:linkd/nms007/mib2_"+FireFly173_IP + ".txt"),
-            @JUnitSnmpAgent(host = FireFly174_IP, port = 161, resource = "classpath:linkd/nms007/mib2_"+FireFly174_IP + ".txt"),
-            @JUnitSnmpAgent(host = FireFly175_IP, port = 161, resource = "classpath:linkd/nms007/mib2_"+FireFly175_IP + ".txt"),
-            @JUnitSnmpAgent(host = FireFly176_IP, port = 161, resource = "classpath:linkd/nms007/mib2_"+FireFly176_IP + ".txt"),
-            @JUnitSnmpAgent(host = FireFly177_IP, port = 161, resource = "classpath:linkd/nms007/mib2_"+FireFly177_IP + ".txt"),
-            @JUnitSnmpAgent(host = FireFly189_IP, port = 161, resource = "classpath:linkd/nms007/mib2_"+FireFly189_IP + ".txt")
+            @JUnitSnmpAgent(host = FireFly170_IP, port = 161, resource = FireFly170_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host = FireFly171_IP, port = 161, resource = FireFly171_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host = FireFly172_IP, port = 161, resource = FireFly172_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host = FireFly173_IP, port = 161, resource = FireFly173_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host = FireFly174_IP, port = 161, resource = FireFly174_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host = FireFly175_IP, port = 161, resource = FireFly175_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host = FireFly176_IP, port = 161, resource = FireFly176_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host = FireFly177_IP, port = 161, resource = FireFly177_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host = FireFly189_IP, port = 161, resource = FireFly189_SNMP_RESOURCE)
     })
     public void testOspfLinks() throws Exception {
         m_nodeDao.save(getFireFly170());

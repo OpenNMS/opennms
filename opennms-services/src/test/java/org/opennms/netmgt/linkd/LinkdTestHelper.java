@@ -396,6 +396,8 @@ public abstract class LinkdTestHelper implements InitializingBean {
 
     //Nms007
     protected static final String FireFly170_IP = "192.168.168.170";
+    final static String FireFly170_ROOT = "FireFly170";
+    final static String FireFly170_SNMP_RESOURCE = "classpath:linkd/nms007/mib2_"+FireFly170_IP + ".txt";
     protected static final String FireFly170_NAME = "FireFly_170";
     static final String FireFly170_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.96";
     protected static final Map<InetAddress,Integer> FireFly170_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
@@ -406,6 +408,8 @@ public abstract class LinkdTestHelper implements InitializingBean {
     static final Map<Integer,InetAddress> FireFly170_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
 
     protected static final String FireFly171_IP = "192.168.168.171";
+    final static String FireFly171_ROOT = "FireFly171";
+    final static String FireFly171_SNMP_RESOURCE = "classpath:linkd/nms007/mib2_"+FireFly171_IP + ".txt";
     protected static final String FireFly171_NAME = "FireFly_171";
     static final String FireFly171_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.96";
     protected static final Map<InetAddress,Integer> FireFly171_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
@@ -416,6 +420,8 @@ public abstract class LinkdTestHelper implements InitializingBean {
     static final Map<Integer,InetAddress> FireFly171_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
 
     protected static final String FireFly172_IP = "192.168.168.172";
+    final static String FireFly172_ROOT = "FireFly172";
+    final static String FireFly172_SNMP_RESOURCE = "classpath:linkd/nms007/mib2_"+FireFly172_IP + ".txt";
     protected static final String FireFly172_NAME = "FireFly_172";
     static final String FireFly172_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.96";
     protected static final Map<InetAddress,Integer> FireFly172_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
@@ -426,6 +432,8 @@ public abstract class LinkdTestHelper implements InitializingBean {
     static final Map<Integer,InetAddress> FireFly172_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
 
     protected static final String FireFly173_IP = "192.168.168.173";
+    final static String FireFly173_ROOT = "FireFly173";
+    final static String FireFly173_SNMP_RESOURCE = "classpath:linkd/nms007/mib2_"+FireFly173_IP + ".txt";
     protected static final String FireFly173_NAME = "FireFly_173";
     static final String FireFly173_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.96";
     protected static final Map<InetAddress,Integer> FireFly173_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
@@ -436,6 +444,8 @@ public abstract class LinkdTestHelper implements InitializingBean {
     static final Map<Integer,InetAddress> FireFly173_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
 
     protected static final String FireFly174_IP = "192.168.168.174";
+    final static String FireFly174_ROOT = "FireFly174";
+    final static String FireFly174_SNMP_RESOURCE = "classpath:linkd/nms007/mib2_"+FireFly174_IP + ".txt";
     protected static final String FireFly174_NAME = "FireFly_174";
     static final String FireFly174_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.96";
     protected static final Map<InetAddress,Integer> FireFly174_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
@@ -446,6 +456,8 @@ public abstract class LinkdTestHelper implements InitializingBean {
     static final Map<Integer,InetAddress> FireFly174_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
 
     protected static final String FireFly175_IP = "192.168.168.175";
+    final static String FireFly175_ROOT = "FireFly175";
+    final static String FireFly175_SNMP_RESOURCE = "classpath:linkd/nms007/mib2_"+FireFly175_IP + ".txt";
     protected static final String FireFly175_NAME = "FireFly_175";
     static final String FireFly175_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.96";
     protected static final Map<InetAddress,Integer> FireFly175_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
@@ -456,6 +468,8 @@ public abstract class LinkdTestHelper implements InitializingBean {
     static final Map<Integer,InetAddress> FireFly175_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
 
     protected static final String FireFly176_IP = "192.168.168.176";
+    final static String FireFly176_ROOT = "FireFly176";
+    final static String FireFly176_SNMP_RESOURCE = "classpath:linkd/nms007/mib2_"+FireFly176_IP + ".txt";
     protected static final String FireFly176_NAME = "FireFly_176";
     static final String FireFly176_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.96";
     protected static final Map<InetAddress,Integer> FireFly176_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
@@ -466,6 +480,8 @@ public abstract class LinkdTestHelper implements InitializingBean {
     static final Map<Integer,InetAddress> FireFly176_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
 
     protected static final String FireFly177_IP = "192.168.168.177";
+    final static String FireFly177_ROOT = "FireFly177";
+    final static String FireFly177_SNMP_RESOURCE = "classpath:linkd/nms007/mib2_"+FireFly177_IP + ".txt";
     protected static final String FireFly177_NAME = "FireFly_177";
     static final String FireFly177_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.96";
     protected static final Map<InetAddress,Integer> FireFly177_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
@@ -476,6 +492,8 @@ public abstract class LinkdTestHelper implements InitializingBean {
     static final Map<Integer,InetAddress> FireFly177_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
 
     protected static final String FireFly189_IP = "192.168.168.189";
+    final static String FireFly189_ROOT = "FireFly189";
+    final static String FireFly189_SNMP_RESOURCE = "classpath:linkd/nms007/mib2_"+FireFly189_IP + ".txt";
     protected static final String FireFly189_NAME = "FireFly_189";
     static final String FireFly189_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.96";
     protected static final Map<InetAddress,Integer> FireFly189_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
@@ -484,6 +502,294 @@ public abstract class LinkdTestHelper implements InitializingBean {
     static final Map<Integer,String> FireFly189_IF_MAC_MAP = new HashMap<Integer, String>();
     static final Map<Integer,String> FireFly189_IF_IFALIAS_MAP = new HashMap<Integer, String>();
     static final Map<Integer,InetAddress> FireFly189_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+
+    //Nms101
+
+    final static String LAPTOP_ROOT = "LAPTOP";
+    final static String LAPTOP_SNMP_RESOURCE = "classpath:linkd/nms101/laptop.properties";
+    protected static final String LAPTOP_IP = "10.1.1.2";
+    protected static final String LAPTOP_NAME = "laptop";
+    protected static final String LAPTOP_SYSOID = ".1.3.6.1.4.1.8072.3.2.255";
+    
+    protected static final Map<InetAddress,Integer> LAPTOP_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    protected static final Map<Integer,String> LAPTOP_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> LAPTOP_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> LAPTOP_IF_MAC_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> LAPTOP_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,InetAddress> LAPTOP_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    final static String CISCO7200A_ROOT = "CISCO7200A";
+    final static String CISCO7200A_SNMP_RESOURCE = "classpath:linkd/nms101/cisco7200a.properties";
+    protected static final String CISCO7200A_IP = "10.1.1.1";
+    protected static final String CISCO7200A_NAME = "cisco7200ATM.befunk.com";
+    protected static final String CISCO7200A_SYSOID = ".1.3.6.1.4.1.9.1.222";
+    
+    protected static final Map<InetAddress,Integer> CISCO7200A_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    protected static final Map<Integer,String> CISCO7200A_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> CISCO7200A_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> CISCO7200A_IF_MAC_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> CISCO7200A_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,InetAddress> CISCO7200A_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    final static String CISCO7200B_ROOT = "CISCO7200B";
+    final static String CISCO7200B_SNMP_RESOURCE = "classpath:linkd/nms101/cisco7200b.properties";
+    protected static final String CISCO7200B_IP = "10.1.2.2";
+    protected static final String CISCO7200B_NAME = "cisco7200";
+    protected static final String CISCO7200B_SYSOID = ".1.3.6.1.4.1.9.1.222";
+    
+    protected static final Map<InetAddress,Integer> CISCO7200B_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    protected static final Map<Integer,String> CISCO7200B_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> CISCO7200B_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> CISCO7200B_IF_MAC_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> CISCO7200B_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,InetAddress> CISCO7200B_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    final static String CISCO3700_ROOT = "CISCO3700";
+    final static String CISCO3700_SNMP_RESOURCE = "classpath:linkd/nms101/cisco3700.properties";
+    protected static final String CISCO3700_IP = "10.1.3.2";
+    protected static final String CISCO3700_NAME = "cisco3700";
+    protected static final String CISCO3700_SYSOID = ".1.3.6.1.4.1.9.1.122";
+    
+    protected static final Map<InetAddress,Integer> CISCO3700_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    protected static final Map<Integer,String> CISCO3700_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> CISCO3700_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> CISCO3700_IF_MAC_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> CISCO3700_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,InetAddress> CISCO3700_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    final static String CISCO2691_ROOT = "CISCO2691";
+    final static String CISCO2691_SNMP_RESOURCE = "classpath:linkd/nms101/cisco2691.properties";
+    protected static final String CISCO2691_IP = "10.1.4.2";
+    protected static final String CISCO2691_NAME = "cisco2691";
+    protected static final String CISCO2691_SYSOID = ".1.3.6.1.4.1.9.1.122";
+    
+    protected static final Map<InetAddress,Integer> CISCO2691_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    protected static final Map<Integer,String> CISCO2691_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> CISCO2691_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> CISCO2691_IF_MAC_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> CISCO2691_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,InetAddress> CISCO2691_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    final static String CISCO1700B_ROOT = "CISCO1700B";
+    final static String CISCO1700B_SNMP_RESOURCE = "classpath:linkd/nms101/cisco1700b.properties";
+    protected static final String CISCO1700B_IP = "10.1.5.1";
+    protected static final String CISCO1700B_NAME = "cisco1700b";
+    protected static final String CISCO1700B_SYSOID = ".1.3.6.1.4.1.9.1.200";
+    
+    protected static final Map<InetAddress,Integer> CISCO1700B_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    protected static final Map<Integer,String> CISCO1700B_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> CISCO1700B_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> CISCO1700B_IF_MAC_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> CISCO1700B_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,InetAddress> CISCO1700B_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    final static String CISCO3600_ROOT = "CISCO3600";
+    final static String CISCO3600_SNMP_RESOURCE = "classpath:linkd/nms101/cisco3600.properties";
+    protected static final String CISCO3600_IP = "10.1.6.2";
+    protected static final String CISCO3600_NAME = "cisco3600";
+    protected static final String CISCO3600_SYSOID = ".1.3.6.1.4.1.9.1.122";
+    
+    protected static final Map<InetAddress,Integer> CISCO3600_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    protected static final Map<Integer,String> CISCO3600_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> CISCO3600_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> CISCO3600_IF_MAC_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> CISCO3600_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,InetAddress> CISCO3600_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    final static String CISCO1700_ROOT = "CISCO1700";
+    final static String CISCO1700_SNMP_RESOURCE = "classpath:linkd/nms101/cisco1700.properties";
+    protected static final String CISCO1700_IP = "10.1.5.2";
+    protected static final String CISCO1700_NAME = "cisco1700";
+    protected static final String CISCO1700_SYSOID = ".1.3.6.1.4.1.9.1.200";
+    
+    protected static final Map<InetAddress,Integer> CISCO1700_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    protected static final Map<Integer,String> CISCO1700_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> CISCO1700_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> CISCO1700_IF_MAC_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> CISCO1700_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,InetAddress> CISCO1700_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    protected static final String EXAMPLECOM_IP = "192.168.1.10";
+    protected static final String EXAMPLECOM_NAME = "test.example.com";
+    protected static final String EXAMPLECOM_SYSOID = ".1.3.6.1.4.1.1724.81";
+
+    protected static final Map<InetAddress,Integer> EXAMPLECOM_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    protected static final Map<Integer,String> EXAMPLECOM_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> EXAMPLECOM_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> EXAMPLECOM_IF_MAC_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> EXAMPLECOM_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,InetAddress> EXAMPLECOM_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    //Nms10205
+    protected static final String MUMBAI_IP = "10.205.56.5";
+    protected static final String MUMBAI_NAME = "Mumbai";
+    final static String MUMBAI_ROOT = "MUMBAI";
+    final static String MUMBAI_SNMP_RESOURCE   = "classpath:linkd/nms10205/"  +MUMBAI_NAME+"_"+MUMBAI_IP+".txt";
+    final static String MUMBAI_SNMP_RESOURCE_B = "classpath:linkd/nms10205b/" +MUMBAI_NAME+"_"+MUMBAI_IP+".txt";
+    static final String MUMBAI_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.9";
+
+    static final Map<InetAddress,Integer> MUMBAI_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    static final Map<Integer,String> MUMBAI_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> MUMBAI_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> MUMBAI_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> MUMBAI_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,InetAddress> MUMBAI_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    protected static final String CHENNAI_IP = "10.205.56.6";
+    protected static final String CHENNAI_NAME = "Chennai";
+    final static String CHENNAI_ROOT = "CHENNAI";
+    final static String CHENNAI_SNMP_RESOURCE   = "classpath:linkd/nms10205/"  +CHENNAI_NAME+"_"+CHENNAI_IP+".txt";
+    final static String CHENNAI_SNMP_RESOURCE_B = "classpath:linkd/nms10205b/" +CHENNAI_NAME+"_"+CHENNAI_IP+".txt";
+    static final String CHENNAI_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.25";
+
+    static final Map<InetAddress,Integer> CHENNAI_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    static final Map<Integer,String> CHENNAI_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> CHENNAI_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> CHENNAI_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> CHENNAI_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,InetAddress> CHENNAI_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    protected static final String DELHI_IP = "10.205.56.7";
+    protected static final String DELHI_NAME = "Delhi";
+    final static String DELHI_ROOT = "DELHI";
+    final static String DELHI_SNMP_RESOURCE   = "classpath:linkd/nms10205/"  +DELHI_NAME+"_"+DELHI_IP+".txt";
+    final static String DELHI_SNMP_RESOURCE_B = "classpath:linkd/nms10205b/" +DELHI_NAME+"_"+DELHI_IP+".txt";
+    static final String DELHI_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.29";
+
+    static final Map<InetAddress,Integer> DELHI_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    static final Map<Integer,String> DELHI_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> DELHI_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> DELHI_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> DELHI_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,InetAddress> DELHI_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    protected static final String BANGALORE_IP = "10.205.56.9";
+    protected static final String BANGALORE_NAME = "Bangalore";
+    final static String BANGALORE_ROOT = "BANGALORE";
+    final static String BANGALORE_SNMP_RESOURCE   = "classpath:linkd/nms10205/"  +BANGALORE_NAME+"_"+BANGALORE_IP+".txt";
+    final static String BANGALORE_SNMP_RESOURCE_B = "classpath:linkd/nms10205b/" +BANGALORE_NAME+"_"+BANGALORE_IP+".txt";
+    static final String BANGALORE_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.10";
+
+    static final Map<InetAddress,Integer> BANGALORE_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    static final Map<Integer,String> BANGALORE_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> BANGALORE_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> BANGALORE_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> BANGALORE_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,InetAddress> BANGALORE_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    protected static final String MYSORE_IP = "10.205.56.22";
+    protected static final String MYSORE_NAME = "Mysore";
+    final static String MYSORE_ROOT = "MYSORE";
+    final static String MYSORE_SNMP_RESOURCE   = "classpath:linkd/nms10205/"  +MYSORE_NAME+"_"+MYSORE_IP+".txt";
+    final static String MYSORE_SNMP_RESOURCE_B = "classpath:linkd/nms10205b/" +MYSORE_NAME+"_"+MYSORE_IP+".txt";
+    static final String MYSORE_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.11";
+
+    static final Map<InetAddress,Integer> MYSORE_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    static final Map<Integer,String> MYSORE_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> MYSORE_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> MYSORE_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> MYSORE_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,InetAddress> MYSORE_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    protected static final String BAGMANE_IP = "10.205.56.20";
+    protected static final String BAGMANE_NAME = "Bagmane";
+    final static String BAGMANE_ROOT = "BAGMANE";
+    final static String BAGMANE_SNMP_RESOURCE   = "classpath:linkd/nms10205/"  +BAGMANE_NAME+"_"+BAGMANE_IP+".txt";
+    final static String BAGMANE_SNMP_RESOURCE_B = "classpath:linkd/nms10205b/" +BAGMANE_NAME+"_"+BAGMANE_IP+".txt";
+    static final String BAGMANE_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.57";
+
+    static final Map<InetAddress,Integer> BAGMANE_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    static final Map<Integer,String> BAGMANE_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> BAGMANE_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> BAGMANE_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> BAGMANE_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,InetAddress> BAGMANE_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    protected static final String SPACE_EX_SW1_IP = "10.205.56.1";
+    protected static final String SPACE_EX_SW1_NAME = "Space-EX-SW1";
+    final static String SPACE_EX_SW1_ROOT = "SPACE_EX_SW1";
+    final static String SPACE_EX_SW1_SNMP_RESOURCE   = "classpath:linkd/nms10205/"  +SPACE_EX_SW1_NAME+"_"+SPACE_EX_SW1_IP+".txt";
+    final static String SPACE_EX_SW1_SNMP_RESOURCE_B = "classpath:linkd/nms10205b/" +SPACE_EX_SW1_NAME+"_"+SPACE_EX_SW1_IP+".txt";
+    static final String SPACE_EX_SW1_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.30";
+
+    static final Map<InetAddress,Integer> SPACE_EX_SW1_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    static final Map<Integer,String> SPACE_EX_SW1_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> SPACE_EX_SW1_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> SPACE_EX_SW1_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> SPACE_EX_SW1_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,InetAddress> SPACE_EX_SW1_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    protected static final String SPACE_EX_SW2_IP = "10.205.56.2";
+    protected static final String SPACE_EX_SW2_NAME = "Space-EX-SW2";
+    final static String SPACE_EX_SW2_ROOT = "SPACE_EX_SW2";
+    final static String SPACE_EX_SW2_SNMP_RESOURCE   = "classpath:linkd/nms10205/"  +SPACE_EX_SW2_NAME+"_"+SPACE_EX_SW2_IP+".txt";
+    final static String SPACE_EX_SW2_SNMP_RESOURCE_B = "classpath:linkd/nms10205b/" +SPACE_EX_SW2_NAME+"_"+SPACE_EX_SW2_IP+".txt";
+    static final String SPACE_EX_SW2_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.31";
+
+    static final Map<InetAddress,Integer> SPACE_EX_SW2_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    static final Map<Integer,String> SPACE_EX_SW2_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> SPACE_EX_SW2_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> SPACE_EX_SW2_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> SPACE_EX_SW2_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,InetAddress> SPACE_EX_SW2_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    protected static final String J6350_41_IP = "10.205.56.41";
+    protected static final String J6350_41_NAME = "J6350-41";
+    final static String J6350_41_ROOT = "J6350_41";
+    final static String J6350_41_SNMP_RESOURCE   = "classpath:linkd/nms10205/"  +J6350_41_NAME+"_"+J6350_41_IP+".txt";
+    final static String J6350_41_SNMP_RESOURCE_B = "classpath:linkd/nms10205b/" +J6350_41_NAME+"_"+J6350_41_IP+".txt";
+    static final String J6350_41_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.20";
+
+    static final Map<InetAddress,Integer> J6350_41_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    static final Map<Integer,String> J6350_41_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> J6350_41_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> J6350_41_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> J6350_41_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,InetAddress> J6350_41_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    protected static final String J6350_42_IP = "10.205.56.42";
+    protected static final String J6350_42_NAME = "J6350-2";
+    final static String J6350_42_ROOT = "J6350_42";
+    final static String J6350_42_SNMP_RESOURCE   = "classpath:linkd/nms10205/" +"J6350-42_"+J6350_42_IP+".txt";
+    final static String J6350_42_SNMP_RESOURCE_B = "classpath:linkd/nms10205b/"+"J6350-42_"+J6350_42_IP+".txt";
+    static final String J6350_42_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.20";
+    protected static final String J6350_42_LLDP_CHASSISID = "2c6bf55dc100";
+    
+    static final Map<InetAddress,Integer> J6350_42_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    static final Map<Integer,String> J6350_42_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> J6350_42_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> J6350_42_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> J6350_42_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,InetAddress> J6350_42_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    protected static final String SRX_100_IP = "10.205.56.23";
+    protected static final String SRX_100_NAME = "SRX_56.23";
+    final static String SRX_100_ROOT = "SRX_100";
+    final static String SRX_100_SNMP_RESOURCE   = "classpath:linkd/nms10205/" +"SRX-100_"+SRX_100_IP+".txt";
+    final static String SRX_100_SNMP_RESOURCE_B = "classpath:linkd/nms10205b/"+"SRX-100_"+SRX_100_IP+".txt";
+    static final String SRX_100_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.41";
+
+    static final Map<InetAddress,Integer> SRX_100_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    static final Map<Integer,String> SRX_100_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> SRX_100_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> SRX_100_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> SRX_100_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,InetAddress> SRX_100_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    protected static final String SSG550_IP = "10.205.35.100";
+    protected static final String SSG550_NAME = "SSG550";
+    final static String SSG550_ROOT = "SSG550";
+    final static String SSG550_SNMP_RESOURCE   = "classpath:linkd/nms10205/"  +SSG550_NAME+"_"+SSG550_IP+".txt";
+    final static String SSG550_SNMP_RESOURCE_B = "classpath:linkd/nms10205b/" +SSG550_NAME+"_"+SSG550_IP+".txt";
+    static final String SSG550_SYSOID = ".1.3.6.1.4.1.3224.1.51";
+
+    static final Map<InetAddress,Integer> SSG550_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    static final Map<Integer,String> SSG550_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> SSG550_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> SSG550_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> SSG550_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,InetAddress> SSG550_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
 
 
     @Autowired
