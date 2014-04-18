@@ -97,7 +97,7 @@ public class LinkdTestCapsdNetworkBuilder extends LinkdTestHelper implements Ini
 
 
     @Test
-//    @Ignore
+    @Ignore
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host = SSeMalmNobe_IP, port = 161, resource = SSeMalmNobe_SNMP_RESOURCE),
     })

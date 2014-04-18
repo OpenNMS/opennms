@@ -1,58 +1,9 @@
 package org.opennms.netmgt.linkd;
 
-import java.net.InetAddress;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
 
 public class Nms102NetworkBuilder extends LinkdTestBuilder {
-
-    protected static final String MIKROTIK_IP = "192.168.0.1";
-    protected static final String MIKROTIK_NAME = "mikrotik";
-    protected static final String MIKROTIK_SYSOID = ".1.3.6.1.4.1.14988.1";
-    
-    protected static final Map<InetAddress,Integer> MIKROTIK_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
-    protected static final Map<Integer,String> MIKROTIK_IF_IFNAME_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> MIKROTIK_IF_IFDESCR_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> MIKROTIK_IF_MAC_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> MIKROTIK_IF_IFALIAS_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,InetAddress> MIKROTIK_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
-
-    protected static final String SAMSUNG_IP = "192.168.0.14";
-    protected static final String SAMSUNG_NAME = "samsung";
-    protected static final String SAMSUNG_SYSOID = ".1.3.6.1.4.1.236.11.5.1";
-    
-    protected static final Map<InetAddress,Integer> SAMSUNG_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
-    protected static final Map<Integer,String> SAMSUNG_IF_IFNAME_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> SAMSUNG_IF_IFDESCR_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> SAMSUNG_IF_MAC_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> SAMSUNG_IF_IFALIAS_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,InetAddress> SAMSUNG_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
-
-    protected static final String MAC1_IP = "192.168.0.16";
-    protected static final String MAC1_NAME = "mac1";
-    protected static final String MAC1_SYSOID = ".1.3.6.1.4.1.8072.3.2.255";
-    
-    protected static final Map<InetAddress,Integer> MAC1_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
-    protected static final Map<Integer,String> MAC1_IF_IFNAME_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> MAC1_IF_IFDESCR_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> MAC1_IF_MAC_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> MAC1_IF_IFALIAS_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,InetAddress> MAC1_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
-
-    protected static final String MAC2_IP = "192.168.0.17";
-    protected static final String MAC2_NAME = "mac2";
-    protected static final String MAC2_SYSOID = ".1.3.6.1.4.1.8072.3.2.255";
-    
-    protected static final Map<InetAddress,Integer> MAC2_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
-    protected static final Map<Integer,String> MAC2_IF_IFNAME_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> MAC2_IF_IFDESCR_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> MAC2_IF_MAC_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> MAC2_IF_IFALIAS_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,InetAddress> MAC2_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
-    
     static {
         MIKROTIK_IP_IF_MAP.put(InetAddressUtils.addr("192.168.0.1"), 2);
         MIKROTIK_IP_IF_MAP.put(InetAddressUtils.addr("10.129.16.165"), 1);
