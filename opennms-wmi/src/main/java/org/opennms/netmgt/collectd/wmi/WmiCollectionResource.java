@@ -91,9 +91,5 @@ public abstract class WmiCollectionResource extends AbstractCollectionResource {
      */
     @Override
     public abstract String getInstance();
-    
-    @Override
-    public String getParent() {
-        return m_agent.getStorageDir().toString();
-    }
+
 }
