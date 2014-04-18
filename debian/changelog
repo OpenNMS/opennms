@@ -1,3 +1,10 @@
+opennms (1.12.6-1) stable; urgency=high
+
+  * New upstream release.  This release contains a number of important fixes
+    including a potential security leak in the ReST interface.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Mon, 21 Apr 2014 10:00:00 -0400
+
 opennms (1.12.5-1) stable; urgency=high
 
   * New upstream release.  This release contains another upgrade fix as well
