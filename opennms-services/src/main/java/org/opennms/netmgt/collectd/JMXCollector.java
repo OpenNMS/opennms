@@ -807,11 +807,6 @@ public abstract class JMXCollector implements ServiceCollector {
         public String getInstance() {
             return null; //For node type resources, use the default instance
         }
-
-        @Override
-        public String getParent() {
-            return m_agent.getStorageDir().toString();
-        }
     }
     
     public static class JMXCollectionSet extends AbstractCollectionSet {
