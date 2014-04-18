@@ -78,10 +78,6 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitTemporaryDatabase
 public class LinkdTestCapsdNetworkBuilder extends LinkdTestHelper implements InitializingBean {
 
-    private final static String IP = "10.111.253.9";
-    private final static String CLASSPATH = "classpath:linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.txt";
-    private final static String ROOT= "RSeMalmNobe";
-    
     @Autowired
     private Capsd m_capsd;
     
@@ -101,17 +97,17 @@ public class LinkdTestCapsdNetworkBuilder extends LinkdTestHelper implements Ini
 
 
     @Test
-    @Ignore
+//    @Ignore
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host = IP, port = 161, resource = CLASSPATH),
+            @JUnitSnmpAgent(host = SSeMalmNobe_IP, port = 161, resource = SSeMalmNobe_SNMP_RESOURCE),
     })
     @Transactional
     public final void testCapsd() throws MarshalException, ValidationException, IOException {
         m_capsd.init();
         m_capsd.start();
-        m_capsd.scanSuspectInterface(IP);
+        m_capsd.scanSuspectInterface(SSeMalmNobe_IP);
 
-        printNode(IP,ROOT);
+        printNode(SSeMalmNobe_IP,SSeMalmNobe_ROOT);
         
         m_capsd.stop();
     }

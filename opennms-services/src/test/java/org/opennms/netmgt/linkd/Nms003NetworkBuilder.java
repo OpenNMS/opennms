@@ -28,11 +28,6 @@
 
 package org.opennms.netmgt.linkd;
 
-
-import java.net.InetAddress;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
 
@@ -43,37 +38,6 @@ import org.opennms.netmgt.model.OnmsNode;
  */
 
 public abstract class Nms003NetworkBuilder extends LinkdTestBuilder {
-
-    protected static final String SWITCH1_IP = "172.16.10.1";
-    protected static final String SWITCH1_NAME = "Switch1";
-    protected static final String SWITCH1_SYSOID = ".1.3.6.1.4.1.9.1.614";
-    
-    protected static final Map<InetAddress,Integer> SWITCH1_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
-    protected static final Map<Integer,String> SWITCH1_IF_IFNAME_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> SWITCH1_IF_IFDESCR_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> SWITCH1_IF_MAC_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> SWITCH1_IF_IFALIAS_MAP = new HashMap<Integer, String>();
-
-    protected static final String SWITCH2_IP = "172.16.10.2";
-    protected static final String SWITCH2_NAME = "Switch2";
-    protected static final String SWITCH2_SYSOID = ".1.3.6.1.4.1.9.1.696";
-    
-    protected static final Map<InetAddress,Integer> SWITCH2_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
-    protected static final Map<Integer,String> SWITCH2_IF_IFNAME_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> SWITCH2_IF_IFDESCR_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> SWITCH2_IF_MAC_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> SWITCH2_IF_IFALIAS_MAP = new HashMap<Integer, String>();
-
-    protected static final String SWITCH3_IP = "172.16.10.3";
-    protected static final String SWITCH3_NAME = "Switch3";
-    protected static final String SWITCH3_SYSOID = ".1.3.6.1.4.1.9.1.716";
-    
-    protected static final Map<InetAddress,Integer> SWITCH3_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
-    protected static final Map<Integer,String> SWITCH3_IF_IFNAME_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> SWITCH3_IF_IFDESCR_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> SWITCH3_IF_MAC_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> SWITCH3_IF_IFALIAS_MAP = new HashMap<Integer, String>();
-
     static {
         SWITCH1_IP_IF_MAP.put(InetAddressUtils.addr("172.16.40.1"), 40);
         SWITCH1_IP_IF_MAP.put(InetAddressUtils.addr("192.168.100.246"), 10101);

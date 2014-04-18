@@ -58,8 +58,8 @@ public class Nms0002Test extends Nms0002NetworkBuilder {
      */
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host = Rluck001_IP, port = 161, resource = "classpath:linkd/nms0002ciscojuniper/" + Rluck001_NAME +".txt"),
-            @JUnitSnmpAgent(host = Sluck001_IP, port = 161, resource = "classpath:linkd/nms0002ciscojuniper/" + Sluck001_NAME+ ".txt")
+            @JUnitSnmpAgent(host = Rluck001_IP, port = 161, resource = Rluck001_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host = Sluck001_IP, port = 161, resource = Sluck001_SNMP_RESOURCE)
     })
     public void testNetworkLinksCiscoJuniperLldp() throws Exception {
         
@@ -101,7 +101,7 @@ public class Nms0002Test extends Nms0002NetworkBuilder {
     
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host = Sluck001_IP, port = 161, resource = "classpath:linkd/nms0002ciscojuniper/" + Sluck001_NAME+ ".txt")
+            @JUnitSnmpAgent(host = Sluck001_IP, port = 161, resource = Sluck001_SNMP_RESOURCE)
     })
     public void testNetworkLinksCiscoJuniperVlan() throws Exception {
         
@@ -134,8 +134,8 @@ public class Nms0002Test extends Nms0002NetworkBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host = Rluck001_IP, port = 161, resource = "classpath:linkd/nms0002ciscojuniper/" + Rluck001_NAME +".txt"),
-            @JUnitSnmpAgent(host = Sluck001_IP, port = 161, resource = "classpath:linkd/nms0002ciscojuniper/" + Sluck001_NAME+ ".txt")
+            @JUnitSnmpAgent(host = Rluck001_IP, port = 161, resource = Rluck001_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host = Sluck001_IP, port = 161, resource = Sluck001_SNMP_RESOURCE)
     })
     public void testNetworkLinksCiscoJuniperVlan1() throws Exception {
         
@@ -172,8 +172,8 @@ public class Nms0002Test extends Nms0002NetworkBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host = Rluck001_IP, port = 161, resource = "classpath:linkd/nms0002ciscojuniper/" + Rluck001_NAME +".txt"),
-            @JUnitSnmpAgent(host = Sluck001_IP, port = 161, resource = "classpath:linkd/nms0002ciscojuniper/" + Sluck001_NAME+ ".vlan100.txt")
+            @JUnitSnmpAgent(host = Rluck001_IP, port = 161, resource = Rluck001_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host = Sluck001_IP, port = 161, resource = Sluck001_SNMP_RESOURCE_VLAN100)
     })
     public void testNetworkLinksCiscoJuniperVlan100() throws Exception {
         
@@ -210,8 +210,8 @@ public class Nms0002Test extends Nms0002NetworkBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host = Rluck001_IP, port = 161, resource = "classpath:linkd/nms0002ciscojuniper/" + Rluck001_NAME +".txt"),
-            @JUnitSnmpAgent(host = Sluck001_IP, port = 161, resource = "classpath:linkd/nms0002ciscojuniper/" + Sluck001_NAME+ ".vlan950.txt")
+            @JUnitSnmpAgent(host = Rluck001_IP, port = 161, resource = Rluck001_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host = Sluck001_IP, port = 161, resource = Sluck001_SNMP_RESOURCE_VLAN950)
     })
     public void testNetworkLinksCiscoJuniperVlan950() throws Exception {
         
@@ -253,8 +253,8 @@ s     * r-uk-nott-newt-103:Fa0:(1)<------>(4):Fa3:r-ro-suce-pict-001
      */
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host = RPict001_IP, port = 161, resource = "classpath:linkd/nms0002UkRoFakeLink/" + RPict001_NAME+".txt"),
-            @JUnitSnmpAgent(host = RNewt103_IP, port = 161, resource = "classpath:linkd/nms0002UkRoFakeLink/" + RNewt103_NAME+".txt")
+            @JUnitSnmpAgent(host = RPict001_IP, port = 161, resource = RPict001_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host = RNewt103_IP, port = 161, resource = RNewt103_SNMP_RESOURCE)
     })
     public void testCdpFakeLinkRoUk() throws Exception {
         
@@ -374,11 +374,11 @@ s     * r-uk-nott-newt-103:Fa0:(1)<------>(4):Fa3:r-ro-suce-pict-001
     
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host = RDeEssnBrue_IP, port = 161, resource = "classpath:linkd/nms0002ciscoalcatel2/" + RDeEssnBrue_NAME+ ".txt"),
-            @JUnitSnmpAgent(host = SDeEssnBrue081_IP, port = 161, resource = "classpath:linkd/nms0002ciscoalcatel2/" + SDeEssnBrue081_NAME+ ".txt"),
-            @JUnitSnmpAgent(host = SDeEssnBrue121_IP, port = 161, resource = "classpath:linkd/nms0002ciscoalcatel2/" + SDeEssnBrue121_NAME+ ".txt"),
-            @JUnitSnmpAgent(host = SDeEssnBrue142_IP, port = 161, resource = "classpath:linkd/nms0002ciscoalcatel2/" + SDeEssnBrue142_NAME+ ".txt"),
-            @JUnitSnmpAgent(host = SDeEssnBrue165_IP, port = 161, resource = "classpath:linkd/nms0002ciscoalcatel2/" + SDeEssnBrue165_NAME+ ".txt")
+            @JUnitSnmpAgent(host = RDeEssnBrue_IP, port = 161, resource = RDeEssnBrue_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host = SDeEssnBrue081_IP, port = 161, resource = SDeEssnBrue081_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host = SDeEssnBrue121_IP, port = 161, resource = SDeEssnBrue121_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host = SDeEssnBrue142_IP, port = 161, resource = SDeEssnBrue142_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host = SDeEssnBrue165_IP, port = 161, resource = SDeEssnBrue165_SNMP_RESOURCE)
     })
     public void testCiscoAlcatelEssnBrueLldp() {
         

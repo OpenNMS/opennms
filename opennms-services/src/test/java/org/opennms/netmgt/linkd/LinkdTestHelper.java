@@ -31,7 +31,10 @@ package org.opennms.netmgt.linkd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.net.InetAddress;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.opennms.netmgt.dao.api.AtInterfaceDao;
 import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
@@ -61,6 +64,427 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 
 public abstract class LinkdTestHelper implements InitializingBean {
+
+    //NMS0001
+    final static String FROH_ROOT= "FROH";
+    protected static final String FROH_IP = "192.168.239.51";
+    protected static final String FROH_NAME = "froh";
+    static final String FROH_SNMP_RESOURCE = "classpath:linkd/nms0001/" + FROH_NAME + "-"+FROH_IP + "-walk.txt";
+    static final String FROH_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.29";
+    
+    protected static final Map<InetAddress,Integer> FROH_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    static final Map<Integer,String> FROH_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> FROH_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> FROH_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> FROH_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,InetAddress> FROH_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    final static String OEDIPUS_ROOT= "OEDIPUS";
+    protected static final String OEDIPUS_IP = "192.168.239.62";
+    protected static final String OEDIPUS_NAME = "oedipus";
+    static final String OEDIPUS_SNMP_RESOURCE = "classpath:linkd/nms0001/" + OEDIPUS_NAME + "-"+OEDIPUS_IP + "-walk.txt";
+    static final String OEDIPUS_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.11";
+   
+    protected static final Map<InetAddress,Integer> OEDIPUS_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    static final Map<Integer,String> OEDIPUS_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> OEDIPUS_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> OEDIPUS_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> OEDIPUS_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,InetAddress> OEDIPUS_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+        
+    final static String SIEGFRIE_ROOT= "SIEGFRIE";
+    protected static final String SIEGFRIE_IP = "192.168.239.54";
+    protected static final String SIEGFRIE_NAME = "siegfrie";
+    static final String SIEGFRIE_SNMP_RESOURCE = "classpath:linkd/nms0001/" + SIEGFRIE_NAME + "-"+SIEGFRIE_IP + "-walk.txt";
+    static final String SIEGFRIE_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.11";
+   
+    protected static final Map<InetAddress,Integer> SIEGFRIE_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    static final Map<Integer,String> SIEGFRIE_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> SIEGFRIE_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> SIEGFRIE_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> SIEGFRIE_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,InetAddress> SIEGFRIE_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    protected static final String FROH_ISIS_SYS_ID     = "000110088500";
+    protected static final String OEDIPUS_ISIS_SYS_ID  = "000110255062";
+    protected static final String SIEGFRIE_ISIS_SYS_ID = "000110255054";
+
+    //NMS0001
+    final static String Rluck001_ROOT= "Rluck001";
+    protected static final String Rluck001_IP = "10.4.79.250";
+    protected static final String Rluck001_NAME = "r-de-juet-luck-001";
+    static final String Rluck001_SNMP_RESOURCE = "classpath:linkd/nms0002ciscojuniper/" + Rluck001_NAME +".txt";
+    static final String Rluck001_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.39";
+    protected static final Map<InetAddress,Integer> Rluck001_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    static final Map<Integer,String> Rluck001_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> Rluck001_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> Rluck001_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> Rluck001_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,InetAddress> Rluck001_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    final static String Sluck001_ROOT= "Sluck001";
+    protected static final String Sluck001_IP = "10.4.68.215";
+    protected static final String Sluck001_NAME = "s-de-juet-luck-001";
+    static final String Sluck001_SNMP_RESOURCE = "classpath:linkd/nms0002ciscojuniper/" + Sluck001_NAME+ ".txt";
+    static final String Sluck001_SNMP_RESOURCE_VLAN100 = "classpath:linkd/nms0002ciscojuniper/" + Sluck001_NAME+ ".vlan100.txt";
+    static final String Sluck001_SNMP_RESOURCE_VLAN950 = "classpath:linkd/nms0002ciscojuniper/" + Sluck001_NAME+ ".vlan950.txt";
+    static final String Sluck001_SYSOID = ".1.3.6.1.4.1.9.1.564";
+   
+    protected static final Map<InetAddress,Integer> Sluck001_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    static final Map<Integer,String> Sluck001_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> Sluck001_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> Sluck001_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> Sluck001_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,InetAddress> Sluck001_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+        
+    final static String RPict001_ROOT= "RPict001";
+    protected static final String RPict001_IP = "10.140.252.57";
+    protected static final String RPict001_NAME = "r-ro-suce-pict-001";
+    static final String RPict001_SNMP_RESOURCE = "classpath:linkd/nms0002UkRoFakeLink/" + RPict001_NAME+".txt";
+    static final String RPict001_SYSOID = ".1.3.6.1.4.1.9.1.571";
+   
+    protected static final Map<InetAddress,Integer> RPict001_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    static final Map<Integer,String> RPict001_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> RPict001_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> RPict001_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> RPict001_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,InetAddress> RPict001_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+    
+    final static String RNewt103_ROOT= "RNewt103";
+    protected static final String RNewt103_IP = "10.239.9.22";
+    protected static final String RNewt103_NAME = "r-uk-nott-newt-103";
+    static final String RNewt103_SNMP_RESOURCE = "classpath:linkd/nms0002UkRoFakeLink/" + RNewt103_NAME+".txt";
+    static final String RNewt103_SYSOID = ".1.3.6.1.4.1.9.1.571";
+   
+    protected static final Map<InetAddress,Integer> RNewt103_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    static final Map<Integer,String> RNewt103_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> RNewt103_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> RNewt103_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> RNewt103_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,InetAddress> RNewt103_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    final static String RDeEssnBrue_ROOT= "RDeEssnBrue";
+    protected static final String RDeEssnBrue_IP = "10.167.254.40";
+    protected static final String RDeEssnBrue_NAME = "r-de-essn-brue-001";
+    static final String RDeEssnBrue_SNMP_RESOURCE = "classpath:linkd/nms0002ciscoalcatel2/" + RDeEssnBrue_NAME+ ".txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_400 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan400.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_450 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan450.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_451 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan451.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_452 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan452.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_453 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan453.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_500 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan500.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_501 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan501.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_502 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan502.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_503 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan503.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_504 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan504.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_505 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan505.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_506 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan506.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_507 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan507.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_508 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan508.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_509 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan509.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_510 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan510.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_511 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan511.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_512 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan512.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_513 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan513.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_514 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan514.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_515 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan515.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_516 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan516.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_517 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan517.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_518 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan518.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_519 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan519.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_520 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan520.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_750 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan750.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_751 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan751.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_752 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan752.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_753 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan753.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_754 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan754.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_755 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan755.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_756 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan756.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_757 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan757.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_758 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan758.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_760 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan760.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_800 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan800.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_801 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan801.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_850 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan850.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_851 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan851.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_852 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan852.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_900 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan900.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_950 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan950.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_951 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan951.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_952 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan952.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_953 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan953.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_954 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan954.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_955 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan955.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_956 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan956.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_957 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan957.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_958 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan958.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_959 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan959.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_960 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan960.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_961 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan961.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_962 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan962.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_963 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan963.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_964 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan964.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_965 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan965.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_966 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan966.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_967 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan967.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_968 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan968.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_969 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan969.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_970 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan970.txt";
+    static final String RDeEssnBrue_SNMP_RESOURCE_VLAN_979 = "classpath:linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan979.txt";
+    static final String RDeEssnBrue_SYSOID = ".1.3.6.1.4.1.9.1.896";
+   
+    protected static final Map<InetAddress,Integer> RDeEssnBrue_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    static final Map<Integer,String> RDeEssnBrue_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> RDeEssnBrue_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> RDeEssnBrue_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> RDeEssnBrue_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,InetAddress> RDeEssnBrue_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    final static String SDeEssnBrue081_ROOT= "SDeEssnBrue081";
+    protected static final String SDeEssnBrue081_IP = "10.165.62.91";
+    protected static final String SDeEssnBrue081_NAME = "s-de-essn-brue-081";
+    static final String SDeEssnBrue081_SNMP_RESOURCE ="classpath:linkd/nms0002ciscoalcatel2/" + SDeEssnBrue081_NAME+ ".txt";
+    static final String SDeEssnBrue081_SYSOID = ".1.3.6.1.4.1.6486.800.1.1.2.1.11.2.2";
+   
+    protected static final Map<InetAddress,Integer> SDeEssnBrue081_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    static final Map<Integer,String> SDeEssnBrue081_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> SDeEssnBrue081_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> SDeEssnBrue081_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> SDeEssnBrue081_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,InetAddress> SDeEssnBrue081_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    final static String SDeEssnBrue121_ROOT= "SDeEssnBrue121";
+    protected static final String SDeEssnBrue121_IP = "10.165.62.131";
+    protected static final String SDeEssnBrue121_NAME = "s-de-essn-brue-121";
+    static final String SDeEssnBrue121_SNMP_RESOURCE ="classpath:linkd/nms0002ciscoalcatel2/" + SDeEssnBrue121_NAME+ ".txt";
+    static final String SDeEssnBrue121_SYSOID = ".1.3.6.1.4.1.6486.800.1.1.2.1.11.2.2";
+   
+    protected static final Map<InetAddress,Integer> SDeEssnBrue121_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    static final Map<Integer,String> SDeEssnBrue121_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> SDeEssnBrue121_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> SDeEssnBrue121_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> SDeEssnBrue121_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,InetAddress> SDeEssnBrue121_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    final static String SDeEssnBrue142_ROOT= "SDeEssnBrue142";
+    protected static final String SDeEssnBrue142_IP = "10.165.62.152";
+    protected static final String SDeEssnBrue142_NAME = "s-de-essn-brue-142";
+    static final String SDeEssnBrue142_SNMP_RESOURCE ="classpath:linkd/nms0002ciscoalcatel2/" + SDeEssnBrue142_NAME+ ".txt";
+    static final String SDeEssnBrue142_SYSOID = ".1.3.6.1.4.1.6486.800.1.1.2.1.11.2.2";
+   
+    protected static final Map<InetAddress,Integer> SDeEssnBrue142_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    static final Map<Integer,String> SDeEssnBrue142_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> SDeEssnBrue142_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> SDeEssnBrue142_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> SDeEssnBrue142_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,InetAddress> SDeEssnBrue142_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    final static String SDeEssnBrue165_ROOT= "SDeEssnBrue165";
+    protected static final String SDeEssnBrue165_IP = "10.165.62.175";
+    protected static final String SDeEssnBrue165_NAME = "s-de-essn-brue-165";
+    static final String SDeEssnBrue165_SNMP_RESOURCE ="classpath:linkd/nms0002ciscoalcatel2/" + SDeEssnBrue165_NAME+ ".txt";
+    static final String SDeEssnBrue165_SYSOID = ".1.3.6.1.4.1.6486.800.1.1.2.1.11.2.2";
+   
+    protected static final Map<InetAddress,Integer> SDeEssnBrue165_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    static final Map<Integer,String> SDeEssnBrue165_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> SDeEssnBrue165_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> SDeEssnBrue165_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> SDeEssnBrue165_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,InetAddress> SDeEssnBrue165_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    final static String RSeMalmNobe_ROOT= "RSeMalmNobe";
+    protected static final String RSeMalmNobe_IP = "10.111.253.9";
+    protected static final String RSeMalmNobe_NAME = "r-se-malm-nobe-013";
+    final static String RSeMalmNobe_SNMP_RESOURCE = "classpath:linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.txt";
+    static final String RSeMalmNobe_SNMP_RESOURCE_VLAN_1 = "classpath:linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.1.txt";
+    static final String RSeMalmNobe_SNMP_RESOURCE_VLAN_1002 = "classpath:linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.1002.txt";
+    static final String RSeMalmNobe_SNMP_RESOURCE_VLAN_1003 = "classpath:linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.1003.txt";
+    static final String RSeMalmNobe_SNMP_RESOURCE_VLAN_1004 = "classpath:linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.1004.txt";
+    static final String RSeMalmNobe_SNMP_RESOURCE_VLAN_1005 = "classpath:linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.1005.txt";
+    static final String RSeMalmNobe_SNMP_RESOURCE_VLAN_3 = "classpath:linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.3.txt";
+    static final String RSeMalmNobe_SNMP_RESOURCE_VLAN_357 = "classpath:linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.357.txt";
+    static final String RSeMalmNobe_SNMP_RESOURCE_VLAN_360 = "classpath:linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.360.txt";
+    static final String RSeMalmNobe_SNMP_RESOURCE_VLAN_389 = "classpath:linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.389.txt";
+    static final String RSeMalmNobe_SNMP_RESOURCE_VLAN_399 = "classpath:linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.399.txt";
+    static final String RSeMalmNobe_SNMP_RESOURCE_VLAN_450 = "classpath:linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.450.txt";
+    static final String RSeMalmNobe_SNMP_RESOURCE_VLAN_451 = "classpath:linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.451.txt";
+    static final String RSeMalmNobe_SNMP_RESOURCE_VLAN_452 = "classpath:linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.452.txt";
+    static final String RSeMalmNobe_SNMP_RESOURCE_VLAN_453 = "classpath:linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.453.txt";
+    static final String RSeMalmNobe_SNMP_RESOURCE_VLAN_454 = "classpath:linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.454.txt";
+    static final String RSeMalmNobe_SNMP_RESOURCE_VLAN_500 = "classpath:linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.500.txt";
+    static final String RSeMalmNobe_SNMP_RESOURCE_VLAN_501 = "classpath:linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.501.txt";
+    static final String RSeMalmNobe_SNMP_RESOURCE_VLAN_502 = "classpath:linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.502.txt";
+    static final String RSeMalmNobe_SNMP_RESOURCE_VLAN_503 = "classpath:linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.503.txt";
+    static final String RSeMalmNobe_SNMP_RESOURCE_VLAN_504 = "classpath:linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.504.txt";
+    static final String RSeMalmNobe_SNMP_RESOURCE_VLAN_505 = "classpath:linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.505.txt";
+    static final String RSeMalmNobe_SNMP_RESOURCE_VLAN_506 = "classpath:linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.506.txt";
+    static final String RSeMalmNobe_SNMP_RESOURCE_VLAN_507 = "classpath:linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.507.txt";
+    static final String RSeMalmNobe_SNMP_RESOURCE_VLAN_508 = "classpath:linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.508.txt";
+    static final String RSeMalmNobe_SNMP_RESOURCE_VLAN_600 = "classpath:linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.600.txt";
+    static final String RSeMalmNobe_SNMP_RESOURCE_VLAN_601 = "classpath:linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.601.txt";
+    static final String RSeMalmNobe_SNMP_RESOURCE_VLAN_602 = "classpath:linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.602.txt";
+    static final String RSeMalmNobe_SNMP_RESOURCE_VLAN_603 = "classpath:linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.603.txt";
+    static final String RSeMalmNobe_SNMP_RESOURCE_VLAN_604 = "classpath:linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.604.txt";
+    static final String RSeMalmNobe_SNMP_RESOURCE_VLAN_605 = "classpath:linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.605.txt";
+    static final String RSeMalmNobe_SNMP_RESOURCE_VLAN_606 = "classpath:linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.606.txt";
+    static final String RSeMalmNobe_SNMP_RESOURCE_VLAN_750 = "classpath:linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.750.txt";
+    static final String RSeMalmNobe_SNMP_RESOURCE_VLAN_800 = "classpath:linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.800.txt";
+    static final String RSeMalmNobe_SNMP_RESOURCE_VLAN_801 = "classpath:linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.801.txt";
+    static final String RSeMalmNobe_SNMP_RESOURCE_VLAN_835 = "classpath:linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.835.txt";
+    static final String RSeMalmNobe_SNMP_RESOURCE_VLAN_836 = "classpath:linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.836.txt";
+    static final String RSeMalmNobe_SNMP_RESOURCE_VLAN_850 = "classpath:linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.850.txt";
+    static final String RSeMalmNobe_SNMP_RESOURCE_VLAN_851 = "classpath:linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.851.txt";
+    static final String RSeMalmNobe_SNMP_RESOURCE_VLAN_950 = "classpath:linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.950.txt";
+    static final String RSeMalmNobe_SYSOID = ".1.3.6.1.4.1.9.1.516";
+   
+    protected static final Map<InetAddress,Integer> RSeMalmNobe_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    static final Map<Integer,String> RSeMalmNobe_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> RSeMalmNobe_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> RSeMalmNobe_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> RSeMalmNobe_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,InetAddress> RSeMalmNobe_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    final static String SSeMalmNobe_ROOT= "SSeMalmNobe";
+    protected static final String SSeMalmNobe_IP = "10.108.191.171";
+    protected static final String SSeMalmNobe_NAME = "s-se-malm-nobe-561";
+    final static String SSeMalmNobe_SNMP_RESOURCE = "classpath:linkd/nms0002ciscoalcatel/s-se-malm-nobe-561.txt";
+    static final String SSeMalmNobe_SYSOID = ".1.3.6.1.4.1.6486.800.1.1.2.1.11.2.2";
+
+    protected static final Map<InetAddress,Integer> SSeMalmNobe_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    static final Map<Integer,String> SSeMalmNobe_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> SSeMalmNobe_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> SSeMalmNobe_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> SSeMalmNobe_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,InetAddress> SSeMalmNobe_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    //nms003
+    final static String SWITCH1_ROOT = "SWITCH1";
+    final static String SWITCH1_SNMP_RESOURCE = "classpath:linkd/nms003/switch1-walk.txt";
+    protected static final String SWITCH1_IP = "172.16.10.1";
+    protected static final String SWITCH1_NAME = "Switch1";
+    protected static final String SWITCH1_SYSOID = ".1.3.6.1.4.1.9.1.614";
+    
+    protected static final Map<InetAddress,Integer> SWITCH1_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    protected static final Map<Integer,String> SWITCH1_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> SWITCH1_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> SWITCH1_IF_MAC_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> SWITCH1_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+
+    final static String SWITCH2_ROOT = "SWITCH2";
+    final static String SWITCH2_SNMP_RESOURCE = "classpath:linkd/nms003/switch2-walk.txt";
+    protected static final String SWITCH2_IP = "172.16.10.2";
+    protected static final String SWITCH2_NAME = "Switch2";
+    protected static final String SWITCH2_SYSOID = ".1.3.6.1.4.1.9.1.696";
+    
+    protected static final Map<InetAddress,Integer> SWITCH2_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    protected static final Map<Integer,String> SWITCH2_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> SWITCH2_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> SWITCH2_IF_MAC_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> SWITCH2_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+
+    final static String SWITCH3_ROOT = "SWITCH3";
+    final static String SWITCH3_SNMP_RESOURCE = "classpath:linkd/nms003/switch3-walk.txt";
+    protected static final String SWITCH3_IP = "172.16.10.3";
+    protected static final String SWITCH3_NAME = "Switch3";
+    protected static final String SWITCH3_SYSOID = ".1.3.6.1.4.1.9.1.716";
+    
+    protected static final Map<InetAddress,Integer> SWITCH3_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    protected static final Map<Integer,String> SWITCH3_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> SWITCH3_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> SWITCH3_IF_MAC_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> SWITCH3_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+
+    //Nms007
+    protected static final String FireFly170_IP = "192.168.168.170";
+    protected static final String FireFly170_NAME = "FireFly_170";
+    static final String FireFly170_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.96";
+    protected static final Map<InetAddress,Integer> FireFly170_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    static final Map<Integer,String> FireFly170_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> FireFly170_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> FireFly170_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> FireFly170_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,InetAddress> FireFly170_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    protected static final String FireFly171_IP = "192.168.168.171";
+    protected static final String FireFly171_NAME = "FireFly_171";
+    static final String FireFly171_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.96";
+    protected static final Map<InetAddress,Integer> FireFly171_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    static final Map<Integer,String> FireFly171_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> FireFly171_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> FireFly171_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> FireFly171_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,InetAddress> FireFly171_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    protected static final String FireFly172_IP = "192.168.168.172";
+    protected static final String FireFly172_NAME = "FireFly_172";
+    static final String FireFly172_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.96";
+    protected static final Map<InetAddress,Integer> FireFly172_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    static final Map<Integer,String> FireFly172_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> FireFly172_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> FireFly172_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> FireFly172_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,InetAddress> FireFly172_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    protected static final String FireFly173_IP = "192.168.168.173";
+    protected static final String FireFly173_NAME = "FireFly_173";
+    static final String FireFly173_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.96";
+    protected static final Map<InetAddress,Integer> FireFly173_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    static final Map<Integer,String> FireFly173_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> FireFly173_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> FireFly173_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> FireFly173_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,InetAddress> FireFly173_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    protected static final String FireFly174_IP = "192.168.168.174";
+    protected static final String FireFly174_NAME = "FireFly_174";
+    static final String FireFly174_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.96";
+    protected static final Map<InetAddress,Integer> FireFly174_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    static final Map<Integer,String> FireFly174_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> FireFly174_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> FireFly174_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> FireFly174_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,InetAddress> FireFly174_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    protected static final String FireFly175_IP = "192.168.168.175";
+    protected static final String FireFly175_NAME = "FireFly_175";
+    static final String FireFly175_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.96";
+    protected static final Map<InetAddress,Integer> FireFly175_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    static final Map<Integer,String> FireFly175_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> FireFly175_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> FireFly175_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> FireFly175_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,InetAddress> FireFly175_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    protected static final String FireFly176_IP = "192.168.168.176";
+    protected static final String FireFly176_NAME = "FireFly_176";
+    static final String FireFly176_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.96";
+    protected static final Map<InetAddress,Integer> FireFly176_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    static final Map<Integer,String> FireFly176_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> FireFly176_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> FireFly176_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> FireFly176_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,InetAddress> FireFly176_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    protected static final String FireFly177_IP = "192.168.168.177";
+    protected static final String FireFly177_NAME = "FireFly_177";
+    static final String FireFly177_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.96";
+    protected static final Map<InetAddress,Integer> FireFly177_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    static final Map<Integer,String> FireFly177_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> FireFly177_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> FireFly177_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> FireFly177_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,InetAddress> FireFly177_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    protected static final String FireFly189_IP = "192.168.168.189";
+    protected static final String FireFly189_NAME = "FireFly_189";
+    static final String FireFly189_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.96";
+    protected static final Map<InetAddress,Integer> FireFly189_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    static final Map<Integer,String> FireFly189_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> FireFly189_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> FireFly189_IF_MAC_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,String> FireFly189_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    static final Map<Integer,InetAddress> FireFly189_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
 
     @Autowired
     protected NodeDao m_nodeDao;
