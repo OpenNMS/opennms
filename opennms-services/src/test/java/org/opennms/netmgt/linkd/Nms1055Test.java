@@ -57,7 +57,7 @@ public class Nms1055Test extends Nms1055NetworkBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=PENROSE_IP, port=161, resource="classpath:linkd/nms1055/"+PENROSE_NAME+"_"+PENROSE_IP+".txt")
+            @JUnitSnmpAgent(host=PENROSE_IP, port=161, resource=PENROSE_SNMP_RESOURCE)
     })
     public void testPenroseLldpLocalBaseCollection() throws Exception {
 
@@ -82,7 +82,7 @@ public class Nms1055Test extends Nms1055NetworkBuilder {
     
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=DELAWARE_IP, port=161, resource="classpath:linkd/nms1055/"+DELAWARE_NAME+"_"+DELAWARE_IP+".txt")
+            @JUnitSnmpAgent(host=DELAWARE_IP, port=161, resource=DELAWARE_SNMP_RESOURCE)
     })
     public void testDelawareLldpLocalBaseCollection() throws Exception {
 
@@ -107,7 +107,7 @@ public class Nms1055Test extends Nms1055NetworkBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=PHOENIX_IP, port=161, resource="classpath:linkd/nms1055/"+PHOENIX_NAME+"_"+PHOENIX_IP+".txt")
+            @JUnitSnmpAgent(host=PHOENIX_IP, port=161, resource=PHOENIX_SNMP_RESOURCE)
     })
     public void testPhoenixLldpLocalBaseCollection() throws Exception {
 
@@ -132,7 +132,7 @@ public class Nms1055Test extends Nms1055NetworkBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=AUSTIN_IP, port=161, resource="classpath:linkd/nms1055/"+AUSTIN_NAME+"_"+AUSTIN_IP+".txt")
+            @JUnitSnmpAgent(host=AUSTIN_IP, port=161, resource=AUSTIN_SNMP_RESOURCE)
     })
     public void testAustinLldpLocalBaseCollection() throws Exception {
 
@@ -157,7 +157,7 @@ public class Nms1055Test extends Nms1055NetworkBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SANJOSE_IP, port=161, resource="classpath:linkd/nms1055/"+SANJOSE_NAME+"_"+SANJOSE_IP+".txt")
+            @JUnitSnmpAgent(host=SANJOSE_IP, port=161, resource=SANJOSE_SNMP_RESOURCE)
     })
     public void testSanjoseLlldpLocalBaseCollection() throws Exception {
 
@@ -182,7 +182,7 @@ public class Nms1055Test extends Nms1055NetworkBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=RIOVISTA_IP, port=161, resource="classpath:linkd/nms1055/"+RIOVISTA_NAME+"_"+RIOVISTA_IP+".txt")
+            @JUnitSnmpAgent(host=RIOVISTA_IP, port=161, resource=RIOVISTA_SNMP_RESOURCE)
     })
     public void testRiovistaLldpLocalBaseCollection() throws Exception {
 
@@ -209,7 +209,7 @@ public class Nms1055Test extends Nms1055NetworkBuilder {
     
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=PENROSE_IP, port=161, resource="classpath:linkd/nms1055/"+PENROSE_NAME+"_"+PENROSE_IP+".txt")
+            @JUnitSnmpAgent(host=PENROSE_IP, port=161, resource=PENROSE_SNMP_RESOURCE)
     })
     public void testPenroseDot1dBaseCollection() throws Exception {
 
@@ -232,7 +232,7 @@ public class Nms1055Test extends Nms1055NetworkBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=DELAWARE_IP, port=161, resource="classpath:linkd/nms1055/"+DELAWARE_NAME+"_"+DELAWARE_IP+".txt")
+            @JUnitSnmpAgent(host=DELAWARE_IP, port=161, resource=DELAWARE_SNMP_RESOURCE)
     })
     public void testDelawareLldpLocTableCollection() throws Exception {
 
@@ -261,7 +261,7 @@ public class Nms1055Test extends Nms1055NetworkBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=DELAWARE_IP, port=161, resource="classpath:linkd/nms1055/"+DELAWARE_NAME+"_"+DELAWARE_IP+".txt")
+            @JUnitSnmpAgent(host=DELAWARE_IP, port=161, resource=DELAWARE_SNMP_RESOURCE)
     })
     public void testDelawareLldpRemTableCollection() throws Exception {
 
@@ -420,12 +420,12 @@ public class Nms1055Test extends Nms1055NetworkBuilder {
      */
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=PENROSE_IP, port=161, resource="classpath:linkd/nms1055/"+PENROSE_NAME+"_"+PENROSE_IP+".txt"),
-            @JUnitSnmpAgent(host=DELAWARE_IP, port=161, resource="classpath:linkd/nms1055/"+DELAWARE_NAME+"_"+DELAWARE_IP+".txt"),
-            @JUnitSnmpAgent(host=PHOENIX_IP, port=161, resource="classpath:linkd/nms1055/"+PHOENIX_NAME+"_"+PHOENIX_IP+".txt"),
-            @JUnitSnmpAgent(host=AUSTIN_IP, port=161, resource="classpath:linkd/nms1055/"+AUSTIN_NAME+"_"+AUSTIN_IP+".txt"),
-            @JUnitSnmpAgent(host=SANJOSE_IP, port=161, resource="classpath:linkd/nms1055/"+SANJOSE_NAME+"_"+SANJOSE_IP+".txt"),
-            @JUnitSnmpAgent(host=RIOVISTA_IP, port=161, resource="classpath:linkd/nms1055/"+RIOVISTA_NAME+"_"+RIOVISTA_IP+".txt")
+            @JUnitSnmpAgent(host=PENROSE_IP, port=161, resource=PENROSE_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=DELAWARE_IP, port=161, resource=DELAWARE_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=PHOENIX_IP, port=161, resource=PHOENIX_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=AUSTIN_IP, port=161, resource=AUSTIN_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SANJOSE_IP, port=161, resource=SANJOSE_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=RIOVISTA_IP, port=161, resource=RIOVISTA_SNMP_RESOURCE)
     })
     public void testNetwork1055Links() throws Exception {
         m_nodeDao.save(getPenrose());
@@ -584,8 +584,8 @@ public class Nms1055Test extends Nms1055NetworkBuilder {
     */
    @Test
    @JUnitSnmpAgents(value={
-           @JUnitSnmpAgent(host=PENROSE_IP, port=161, resource="classpath:linkd/nms1055/"+PENROSE_NAME+"_"+PENROSE_IP+".txt"),
-           @JUnitSnmpAgent(host=DELAWARE_IP, port=161, resource="classpath:linkd/nms1055/"+DELAWARE_NAME+"_"+DELAWARE_IP+".txt")
+           @JUnitSnmpAgent(host=PENROSE_IP, port=161, resource=PENROSE_SNMP_RESOURCE),
+           @JUnitSnmpAgent(host=DELAWARE_IP, port=161, resource=DELAWARE_SNMP_RESOURCE)
    })
    public void testNetwork1055StpLinks() throws Exception {
        m_nodeDao.save(getPenrose());
@@ -629,12 +629,12 @@ public class Nms1055Test extends Nms1055NetworkBuilder {
      */
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=PENROSE_IP, port=161, resource="classpath:linkd/nms1055/"+PENROSE_NAME+"_"+PENROSE_IP+".txt"),
-            @JUnitSnmpAgent(host=DELAWARE_IP, port=161, resource="classpath:linkd/nms1055/"+DELAWARE_NAME+"_"+DELAWARE_IP+".txt"),
-            @JUnitSnmpAgent(host=PHOENIX_IP, port=161, resource="classpath:linkd/nms1055/"+PHOENIX_NAME+"_"+PHOENIX_IP+".txt"),
-            @JUnitSnmpAgent(host=AUSTIN_IP, port=161, resource="classpath:linkd/nms1055/"+AUSTIN_NAME+"_"+AUSTIN_IP+".txt"),
-            @JUnitSnmpAgent(host=SANJOSE_IP, port=161, resource="classpath:linkd/nms1055/"+SANJOSE_NAME+"_"+SANJOSE_IP+".txt"),
-            @JUnitSnmpAgent(host=RIOVISTA_IP, port=161, resource="classpath:linkd/nms1055/"+RIOVISTA_NAME+"_"+RIOVISTA_IP+".txt")
+            @JUnitSnmpAgent(host=PENROSE_IP, port=161, resource=PENROSE_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=DELAWARE_IP, port=161, resource=DELAWARE_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=PHOENIX_IP, port=161, resource=PHOENIX_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=AUSTIN_IP, port=161, resource=AUSTIN_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SANJOSE_IP, port=161, resource=SANJOSE_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=RIOVISTA_IP, port=161, resource=RIOVISTA_SNMP_RESOURCE)
     })
     public void testNetwork1055OspfLinks() throws Exception {
         m_nodeDao.save(getPenrose());

@@ -357,12 +357,55 @@ public abstract class LinkdTestHelper implements InitializingBean {
     static final Map<Integer,String> SSeMalmNobe_IF_IFALIAS_MAP = new HashMap<Integer, String>();
     static final Map<Integer,InetAddress> SSeMalmNobe_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
 
-    //nms003
-    final static String SWITCH1_ROOT = "SWITCH1";
-    final static String SWITCH1_SNMP_RESOURCE = "classpath:linkd/nms003/switch1-walk.txt";
+    //nms003 and nms17216
+    protected static final String ROUTER1_IP = "192.168.100.245";
+    protected static final String ROUTER1_NAME = "Router1";
+    protected static final String ROUTER1_SYSOID = ".1.3.6.1.4.1.9.1.576";
+    protected static final String ROUTER1_LLDP_CHASSISID = "";
+    
+    protected static final Map<InetAddress,Integer> ROUTER1_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    protected static final Map<Integer,String> ROUTER1_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> ROUTER1_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> ROUTER1_IF_MAC_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> ROUTER1_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+
+    protected static final String ROUTER2_IP = "192.168.100.241";
+    protected static final String ROUTER2_NAME = "Router2";
+    protected static final String ROUTER2_SYSOID = ".1.3.6.1.4.1.9.1.1045";
+    protected static final String ROUTER2_LLDP_CHASSISID = "";
+    
+    protected static final Map<InetAddress,Integer> ROUTER2_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    protected static final Map<Integer,String> ROUTER2_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> ROUTER2_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> ROUTER2_IF_MAC_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> ROUTER2_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+
+    protected static final String ROUTER3_IP = "172.16.50.1";
+    protected static final String ROUTER3_NAME = "Router3";
+    protected static final String ROUTER3_SYSOID = ".1.3.6.1.4.1.9.1.1045";
+    protected static final String ROUTER3_LLDP_CHASSISID = "";
+    
+    protected static final Map<InetAddress,Integer> ROUTER3_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    protected static final Map<Integer,String> ROUTER3_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> ROUTER3_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> ROUTER3_IF_MAC_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> ROUTER3_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+
+    protected static final String ROUTER4_IP = "10.10.10.1";
+    protected static final String ROUTER4_NAME = "Router4";
+    protected static final String ROUTER4_SYSOID = ".1.3.6.1.4.1.9.1.1045";
+    protected static final String ROUTER4_LLDP_CHASSISID = "";
+    
+    protected static final Map<InetAddress,Integer> ROUTER4_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    protected static final Map<Integer,String> ROUTER4_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> ROUTER4_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> ROUTER4_IF_MAC_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> ROUTER4_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+
     protected static final String SWITCH1_IP = "172.16.10.1";
     protected static final String SWITCH1_NAME = "Switch1";
     protected static final String SWITCH1_SYSOID = ".1.3.6.1.4.1.9.1.614";
+    protected static final String SWITCH1_LLDP_CHASSISID = "0016c8bd4d80";
     
     protected static final Map<InetAddress,Integer> SWITCH1_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
     protected static final Map<Integer,String> SWITCH1_IF_IFNAME_MAP = new HashMap<Integer, String>();
@@ -370,11 +413,10 @@ public abstract class LinkdTestHelper implements InitializingBean {
     protected static final Map<Integer,String> SWITCH1_IF_MAC_MAP = new HashMap<Integer, String>();
     protected static final Map<Integer,String> SWITCH1_IF_IFALIAS_MAP = new HashMap<Integer, String>();
 
-    final static String SWITCH2_ROOT = "SWITCH2";
-    final static String SWITCH2_SNMP_RESOURCE = "classpath:linkd/nms003/switch2-walk.txt";
     protected static final String SWITCH2_IP = "172.16.10.2";
     protected static final String SWITCH2_NAME = "Switch2";
     protected static final String SWITCH2_SYSOID = ".1.3.6.1.4.1.9.1.696";
+    protected static final String SWITCH2_LLDP_CHASSISID = "0016c894aa80";
     
     protected static final Map<InetAddress,Integer> SWITCH2_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
     protected static final Map<Integer,String> SWITCH2_IF_IFNAME_MAP = new HashMap<Integer, String>();
@@ -382,17 +424,64 @@ public abstract class LinkdTestHelper implements InitializingBean {
     protected static final Map<Integer,String> SWITCH2_IF_MAC_MAP = new HashMap<Integer, String>();
     protected static final Map<Integer,String> SWITCH2_IF_IFALIAS_MAP = new HashMap<Integer, String>();
 
-    final static String SWITCH3_ROOT = "SWITCH3";
-    final static String SWITCH3_SNMP_RESOURCE = "classpath:linkd/nms003/switch3-walk.txt";
     protected static final String SWITCH3_IP = "172.16.10.3";
     protected static final String SWITCH3_NAME = "Switch3";
     protected static final String SWITCH3_SYSOID = ".1.3.6.1.4.1.9.1.716";
+    protected static final String SWITCH3_LLDP_CHASSISID = "f4ea67ebdc00";
     
     protected static final Map<InetAddress,Integer> SWITCH3_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
     protected static final Map<Integer,String> SWITCH3_IF_IFNAME_MAP = new HashMap<Integer, String>();
     protected static final Map<Integer,String> SWITCH3_IF_IFDESCR_MAP = new HashMap<Integer, String>();
     protected static final Map<Integer,String> SWITCH3_IF_MAC_MAP = new HashMap<Integer, String>();
     protected static final Map<Integer,String> SWITCH3_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+
+    protected static final String SWITCH4_IP = "172.16.50.2";
+    protected static final String SWITCH4_NAME = "Switch4";
+    protected static final String SWITCH4_SYSOID = ".1.3.6.1.4.1.9.1.716";
+    protected static final String SWITCH4_LLDP_CHASSISID = "a4187504e400";
+    
+    protected static final Map<InetAddress,Integer> SWITCH4_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    protected static final Map<Integer,String> SWITCH4_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> SWITCH4_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> SWITCH4_IF_MAC_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> SWITCH4_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+
+    protected static final String SWITCH5_IP = "172.16.10.4";
+    protected static final String SWITCH5_NAME = "Switch5";
+    protected static final String SWITCH5_SYSOID = ".1.3.6.1.4.1.9.1.716";
+    protected static final String SWITCH5_LLDP_CHASSISID = "f4ea67f82980";
+    
+    protected static final Map<InetAddress,Integer> SWITCH5_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    protected static final Map<Integer,String> SWITCH5_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> SWITCH5_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> SWITCH5_IF_MAC_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> SWITCH5_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+
+    final static String ROUTER1_ROOT = "ROUTER1";
+    final static String ROUTER2_ROOT = "ROUTER2";
+    final static String ROUTER3_ROOT = "ROUTER3";
+    final static String ROUTER4_ROOT = "ROUTER4";
+    
+    final static String SWITCH1_ROOT = "SWITCH1";
+    final static String SWITCH2_ROOT = "SWITCH2";
+    final static String SWITCH3_ROOT = "SWITCH3";
+    final static String SWITCH4_ROOT = "SWITCH4";
+    final static String SWITCH5_ROOT = "SWITCH5";
+
+    final static String ROUTER1_SNMP_RESOURCE = "classpath:linkd/nms17216/router1-walk.txt";
+    final static String ROUTER2_SNMP_RESOURCE = "classpath:linkd/nms17216/router2-walk.txt";
+    final static String ROUTER3_SNMP_RESOURCE = "classpath:linkd/nms17216/router3-walk.txt";
+    final static String ROUTER4_SNMP_RESOURCE = "classpath:linkd/nms17216/router4-walk.txt";
+
+    final static String SWITCH1_SNMP_RESOURCE = "classpath:linkd/nms17216/switch1-walk.txt";
+    final static String SWITCH2_SNMP_RESOURCE = "classpath:linkd/nms17216/switch2-walk.txt";
+    final static String SWITCH3_SNMP_RESOURCE = "classpath:linkd/nms17216/switch3-walk.txt";
+    final static String SWITCH4_SNMP_RESOURCE = "classpath:linkd/nms17216/switch4-walk.txt";
+    final static String SWITCH5_SNMP_RESOURCE = "classpath:linkd/nms17216/switch5-walk.txt";
+
+    final static String SWITCH1_SNMP_RESOURCE_003 = "classpath:linkd/nms003/switch1-walk.txt";
+    final static String SWITCH2_SNMP_RESOURCE_003 = "classpath:linkd/nms003/switch2-walk.txt";
+    final static String SWITCH3_SNMP_RESOURCE_003 = "classpath:linkd/nms003/switch3-walk.txt";
 
     //Nms007
     protected static final String FireFly170_IP = "192.168.168.170";
@@ -791,6 +880,91 @@ public abstract class LinkdTestHelper implements InitializingBean {
     static final Map<Integer,String> SSG550_IF_IFALIAS_MAP = new HashMap<Integer, String>();
     static final Map<Integer,InetAddress> SSG550_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
 
+    //Nms1055
+    protected static final String PENROSE_IP = "10.155.69.16";
+    protected static final String PENROSE_NAME = "penrose-mx480";
+    final static String PENROSE_ROOT = "PENROSE";
+    final static String PENROSE_SNMP_RESOURCE   = "classpath:linkd/nms1055/"+PENROSE_NAME+"_"+PENROSE_IP+".txt";
+    protected static final String PENROSE_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.25";
+    protected static final String PENROSE_LLDP_CHASSISID = "80711f8fafc0";
+
+    protected static final Map<InetAddress,Integer> PENROSE_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    protected static final Map<Integer,String> PENROSE_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> PENROSE_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> PENROSE_IF_MAC_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> PENROSE_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,InetAddress> PENROSE_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    protected static final String DELAWARE_IP = "10.155.69.17";
+    protected static final String DELAWARE_NAME = "delaware";
+    final static String DELAWARE_ROOT = "DELAWARE";
+    final static String DELAWARE_SNMP_RESOURCE   = "classpath:linkd/nms1055/"+DELAWARE_NAME+"_"+DELAWARE_IP+".txt";
+    protected static final String DELAWARE_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.25";
+    protected static final String DELAWARE_LLDP_CHASSISID = "0022830957c0";
+
+    protected static final Map<InetAddress,Integer> DELAWARE_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    protected static final Map<Integer,String> DELAWARE_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> DELAWARE_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> DELAWARE_IF_MAC_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> DELAWARE_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,InetAddress> DELAWARE_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    protected static final String PHOENIX_IP = "10.155.69.42";
+    protected static final String PHOENIX_NAME = "phoenix-mx80";
+    final static String PHOENIX_ROOT = "PHOENIX";
+    final static String PHOENIX_SNMP_RESOURCE   = "classpath:linkd/nms1055/"+PHOENIX_NAME+"_"+PHOENIX_IP+".txt";
+    protected static final String PHOENIX_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.57";
+    protected static final String PHOENIX_LLDP_CHASSISID = "80711fc414c0";
+
+    protected static final Map<InetAddress,Integer> PHOENIX_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    protected static final Map<Integer,String> PHOENIX_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> PHOENIX_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> PHOENIX_IF_MAC_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> PHOENIX_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,InetAddress> PHOENIX_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+
+    protected static final String AUSTIN_IP = "10.155.69.43";
+    protected static final String AUSTIN_NAME = "Austin";
+    final static String AUSTIN_ROOT = "AUSTIN";
+    final static String AUSTIN_SNMP_RESOURCE   = "classpath:linkd/nms1055/"+AUSTIN_NAME+"_"+AUSTIN_IP+".txt";
+    protected static final String AUSTIN_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.57";
+    protected static final String AUSTIN_LLDP_CHASSISID = "80711fc413c0";
+
+    protected static final Map<InetAddress,Integer> AUSTIN_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    protected static final Map<Integer,String> AUSTIN_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> AUSTIN_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> AUSTIN_IF_MAC_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> AUSTIN_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,InetAddress> AUSTIN_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    protected static final String SANJOSE_IP = "10.155.69.12";
+    protected static final String SANJOSE_NAME = "sanjose-mx240";
+    final static String SANJOSE_ROOT = "SANJOSE";
+    final static String SANJOSE_SNMP_RESOURCE   = "classpath:linkd/nms1055/"+SANJOSE_NAME+"_"+SANJOSE_IP+".txt";
+    protected static final String SANJOSE_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.29";
+    protected static final String SANJOSE_LLDP_CHASSISID = "002283d857c0";
+
+    protected static final Map<InetAddress,Integer> SANJOSE_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    protected static final Map<Integer,String> SANJOSE_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> SANJOSE_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> SANJOSE_IF_MAC_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> SANJOSE_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,InetAddress> SANJOSE_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
+    protected static final String RIOVISTA_IP = "10.155.69.107";
+    protected static final String RIOVISTA_NAME = "Riovista-ce";
+    final static String RIOVISTA_ROOT = "RIOVISTA";
+    final static String RIOVISTA_SNMP_RESOURCE   = "classpath:linkd/nms1055/"+RIOVISTA_NAME+"_"+RIOVISTA_IP+".txt";
+    protected static final String RIOVISTA_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.10";
+    protected static final String RIOVISTA_LLDP_CHASSISID = "001f12373dc0";
+
+    protected static final Map<InetAddress,Integer> RIOVISTA_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    protected static final Map<Integer,String> RIOVISTA_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> RIOVISTA_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> RIOVISTA_IF_MAC_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,String> RIOVISTA_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    protected static final Map<Integer,InetAddress> RIOVISTA_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
 
     @Autowired
     protected NodeDao m_nodeDao;
