@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,15 +26,26 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd.wmi;
+package org.opennms.netmgt.config.collector;
 
-import org.opennms.netmgt.config.collector.MultiResourceCollectionSet;
+public class CollectionConstants {
 
-/**
- * <p>WmiCollectionSet class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
-public class WmiCollectionSet extends MultiResourceCollectionSet<WmiCollectionResource> {
+	/**
+	 * Status of the collector object.
+	 */
+	static final int COLLECTION_UNKNOWN = 0;
+
+	/** Constant <code>COLLECTION_SUCCEEDED=1</code> */
+	static final int COLLECTION_SUCCEEDED = 1;
+
+	/** Constant <code>COLLECTION_FAILED=2</code> */
+	static final int COLLECTION_FAILED = 2;
+
+	/** Constant <code>statusType="{Unknown,COLLECTION_SUCCEEDED,COLLECTIO"{trunked}</code> */
+	static final String[] statusType = {
+		"Unknown",
+		"COLLECTION_SUCCEEDED",
+		"COLLECTION_FAILED"
+	};
+
 }

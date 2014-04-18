@@ -80,7 +80,7 @@ public class HttpCollectionHandler extends AbstractXmlCollectionHandler {
      */
     @Override
     public XmlCollectionSet collect(CollectionAgent agent, XmlDataCollection collection, Map<String, Object> parameters) throws CollectionException {
-        XmlCollectionSet collectionSet = new XmlCollectionSet(agent);
+        XmlCollectionSet collectionSet = new XmlCollectionSet();
         collectionSet.setCollectionTimestamp(new Date());
         collectionSet.setStatus(ServiceCollector.COLLECTION_UNKNOWN);
         try {

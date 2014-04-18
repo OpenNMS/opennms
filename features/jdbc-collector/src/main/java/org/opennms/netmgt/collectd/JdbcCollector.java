@@ -190,7 +190,7 @@ public class JdbcCollector implements ServiceCollector {
             loadAttributeTypeList(collection);
         
             // Create a new collection set.
-            JdbcCollectionSet collectionSet = new JdbcCollectionSet(agent);
+            JdbcCollectionSet collectionSet = new JdbcCollectionSet();
             collectionSet.setCollectionTimestamp(new Date());
         
             // Cycle through all of the queries for this collection

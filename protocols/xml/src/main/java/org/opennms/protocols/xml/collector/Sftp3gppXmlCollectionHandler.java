@@ -90,7 +90,7 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
     @Override
     public XmlCollectionSet collect(CollectionAgent agent, XmlDataCollection collection, Map<String, Object> parameters) throws CollectionException {
         // Create a new collection set.
-        XmlCollectionSet collectionSet = new XmlCollectionSet(agent);
+        XmlCollectionSet collectionSet = new XmlCollectionSet();
         collectionSet.setCollectionTimestamp(new Date());
         collectionSet.setStatus(ServiceCollector.COLLECTION_UNKNOWN);
 
