@@ -130,6 +130,7 @@ public class GroupRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
     @Test
     public void testUsers() throws Exception {
+        addUserRole("ROLE_ADMIN");
         createGroup("deleteMe");
 
         // test add user which does not exist to group
