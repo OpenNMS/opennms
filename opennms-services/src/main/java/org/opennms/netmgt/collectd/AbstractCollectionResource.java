@@ -128,6 +128,11 @@ public abstract class AbstractCollectionResource implements CollectionResource {
     @Override
     public abstract int getType();
 
+    @Override
+    public final String getParent() {
+        return m_agent.getStorageDir().toString();
+    }
+
     /**
      * <p>rescanNeeded</p>
      *

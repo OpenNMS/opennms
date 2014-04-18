@@ -199,11 +199,6 @@ public class NSClientCollector implements ServiceCollector {
         public String getInstance() {
             return null; //For node type resources, use the default instance
         }
-
-        @Override
-        public String getParent() {
-            return m_agent.getStorageDir().toString();
-        }
     }
     
     private static class NSClientCollectionSet extends AbstractCollectionSet {

@@ -76,7 +76,6 @@ public class XmpCollectionResource extends AbstractCollectionResource
     private final String m_resourceType;
     private final int m_nodeType;
     private final Set<AttributeGroup> m_listOfGroups;
-    private final CollectionAgent m_agent;
 
     /* constructors  ************************************* */
     public XmpCollectionResource(CollectionAgent agent, String resourceType, String nodeTypeName, String instance) 
@@ -91,7 +90,6 @@ public class XmpCollectionResource extends AbstractCollectionResource
         // resourceType tells us if we are writing under a separate RRD
         // subdir
 
-        this.m_agent = agent;
         this.m_nodeTypeName = nodeTypeName;
         if ((resourceType == null) || (resourceType.length() == 0)) {
             this.m_resourceType = null;
@@ -243,10 +241,5 @@ public class XmpCollectionResource extends AbstractCollectionResource
         LOG.debug("XmpCollectionResource: visit finished for {}", m_agent);
 
     } /* visit */
-
-    @Override
-    public String getParent() {
-        return m_agent.getStorageDir().toString();
-    }
 
 } /* class XmpCollectionResource */
