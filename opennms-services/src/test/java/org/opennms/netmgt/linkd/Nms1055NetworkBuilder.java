@@ -28,11 +28,6 @@
 
 package org.opennms.netmgt.linkd;
 
-
-import java.net.InetAddress;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
 
@@ -43,79 +38,6 @@ import org.opennms.netmgt.model.OnmsNode;
  */
 
 public abstract class Nms1055NetworkBuilder extends LinkdTestBuilder {
-
-    protected static final String PENROSE_IP = "10.155.69.16";
-    protected static final String PENROSE_NAME = "penrose-mx480";
-    protected static final String PENROSE_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.25";
-    protected static final String PENROSE_LLDP_CHASSISID = "80711f8fafc0";
-
-    protected static final Map<InetAddress,Integer> PENROSE_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
-    protected static final Map<Integer,String> PENROSE_IF_IFNAME_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> PENROSE_IF_IFDESCR_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> PENROSE_IF_MAC_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> PENROSE_IF_IFALIAS_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,InetAddress> PENROSE_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
-
-    protected static final String DELAWARE_IP = "10.155.69.17";
-    protected static final String DELAWARE_NAME = "delaware";
-    protected static final String DELAWARE_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.25";
-    protected static final String DELAWARE_LLDP_CHASSISID = "0022830957c0";
-
-    protected static final Map<InetAddress,Integer> DELAWARE_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
-    protected static final Map<Integer,String> DELAWARE_IF_IFNAME_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> DELAWARE_IF_IFDESCR_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> DELAWARE_IF_MAC_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> DELAWARE_IF_IFALIAS_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,InetAddress> DELAWARE_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
-
-    protected static final String PHOENIX_IP = "10.155.69.42";
-    protected static final String PHOENIX_NAME = "phoenix-mx80";
-    protected static final String PHOENIX_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.57";
-    protected static final String PHOENIX_LLDP_CHASSISID = "80711fc414c0";
-
-    protected static final Map<InetAddress,Integer> PHOENIX_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
-    protected static final Map<Integer,String> PHOENIX_IF_IFNAME_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> PHOENIX_IF_IFDESCR_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> PHOENIX_IF_MAC_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> PHOENIX_IF_IFALIAS_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,InetAddress> PHOENIX_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
-
-
-    protected static final String AUSTIN_IP = "10.155.69.43";
-    protected static final String AUSTIN_NAME = "Austin";
-    protected static final String AUSTIN_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.57";
-    protected static final String AUSTIN_LLDP_CHASSISID = "80711fc413c0";
-
-    protected static final Map<InetAddress,Integer> AUSTIN_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
-    protected static final Map<Integer,String> AUSTIN_IF_IFNAME_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> AUSTIN_IF_IFDESCR_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> AUSTIN_IF_MAC_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> AUSTIN_IF_IFALIAS_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,InetAddress> AUSTIN_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
-
-    protected static final String SANJOSE_IP = "10.155.69.12";
-    protected static final String SANJOSE_NAME = "sanjose-mx240";
-    protected static final String SANJOSE_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.29";
-    protected static final String SANJOSE_LLDP_CHASSISID = "002283d857c0";
-
-    protected static final Map<InetAddress,Integer> SANJOSE_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
-    protected static final Map<Integer,String> SANJOSE_IF_IFNAME_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> SANJOSE_IF_IFDESCR_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> SANJOSE_IF_MAC_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> SANJOSE_IF_IFALIAS_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,InetAddress> SANJOSE_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
-
-    protected static final String RIOVISTA_IP = "10.155.69.107";
-    protected static final String RIOVISTA_NAME = "Riovista-ce";
-    protected static final String RIOVISTA_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.10";
-    protected static final String RIOVISTA_LLDP_CHASSISID = "001f12373dc0";
-
-    protected static final Map<InetAddress,Integer> RIOVISTA_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
-    protected static final Map<Integer,String> RIOVISTA_IF_IFNAME_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> RIOVISTA_IF_IFDESCR_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> RIOVISTA_IF_MAC_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> RIOVISTA_IF_IFALIAS_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,InetAddress> RIOVISTA_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
 
     static {
         PENROSE_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.4"), 18);

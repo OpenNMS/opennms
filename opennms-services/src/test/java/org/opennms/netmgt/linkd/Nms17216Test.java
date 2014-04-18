@@ -63,7 +63,7 @@ public class Nms17216Test extends Nms17216NetworkBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:linkd/nms17216/switch1-walk.txt")
+            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource=SWITCH1_SNMP_RESOURCE)
     })
     public void testSwitch1CdpCacheTableCollection() throws Exception {
 
@@ -89,7 +89,7 @@ public class Nms17216Test extends Nms17216NetworkBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH2_IP, port=161, resource="classpath:linkd/nms17216/switch2-walk.txt")
+            @JUnitSnmpAgent(host=SWITCH2_IP, port=161, resource=SWITCH2_SNMP_RESOURCE)
     })
     public void testSwitch2CdpCacheTableCollection() throws Exception {
 
@@ -115,7 +115,7 @@ public class Nms17216Test extends Nms17216NetworkBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH3_IP, port=161, resource="classpath:linkd/nms17216/switch3-walk.txt")
+            @JUnitSnmpAgent(host=SWITCH3_IP, port=161, resource=SWITCH3_SNMP_RESOURCE)
     })
     public void testSwitch3CdpCacheTableCollection() throws Exception {
 
@@ -141,7 +141,7 @@ public class Nms17216Test extends Nms17216NetworkBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH4_IP, port=161, resource="classpath:linkd/nms17216/switch4-walk.txt")
+            @JUnitSnmpAgent(host=SWITCH4_IP, port=161, resource=SWITCH4_SNMP_RESOURCE)
     })
     public void testSwitch4CdpCacheTableCollection() throws Exception {
 
@@ -167,7 +167,7 @@ public class Nms17216Test extends Nms17216NetworkBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH5_IP, port=161, resource="classpath:linkd/nms17216/switch5-walk.txt")
+            @JUnitSnmpAgent(host=SWITCH5_IP, port=161, resource=SWITCH5_SNMP_RESOURCE)
     })
     public void testSwitch5CdpCacheTableCollection() throws Exception {
 
@@ -193,7 +193,7 @@ public class Nms17216Test extends Nms17216NetworkBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=ROUTER1_IP, port=161, resource="classpath:linkd/nms17216/router1-walk.txt")
+            @JUnitSnmpAgent(host=ROUTER1_IP, port=161, resource=ROUTER1_SNMP_RESOURCE)
     })
     public void testRouter1CdpCacheTableCollection() throws Exception {
 
@@ -219,7 +219,7 @@ public class Nms17216Test extends Nms17216NetworkBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=ROUTER2_IP, port=161, resource="classpath:linkd/nms17216/router2-walk.txt")
+            @JUnitSnmpAgent(host=ROUTER2_IP, port=161, resource=ROUTER2_SNMP_RESOURCE)
     })
     public void testRouter2CdpCacheTableCollection() throws Exception {
 
@@ -245,7 +245,7 @@ public class Nms17216Test extends Nms17216NetworkBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=ROUTER3_IP, port=161, resource="classpath:linkd/nms17216/router3-walk.txt")
+            @JUnitSnmpAgent(host=ROUTER3_IP, port=161, resource=ROUTER3_SNMP_RESOURCE)
     })
     public void testRouter3CdpCacheTableCollection() throws Exception {
 
@@ -271,7 +271,7 @@ public class Nms17216Test extends Nms17216NetworkBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=ROUTER4_IP, port=161, resource="classpath:linkd/nms17216/router4-walk.txt")
+            @JUnitSnmpAgent(host=ROUTER4_IP, port=161, resource=ROUTER4_SNMP_RESOURCE)
     })
     public void testRouter4CdpCacheTableCollection() throws Exception {
 
@@ -297,7 +297,7 @@ public class Nms17216Test extends Nms17216NetworkBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:linkd/nms17216/switch1-walk.txt")
+            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource=SWITCH1_SNMP_RESOURCE)
     })
     public void testSwicth1CiscoVlanTableCollection() throws Exception {
         
@@ -333,7 +333,7 @@ public class Nms17216Test extends Nms17216NetworkBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:linkd/nms17216/switch1-walk.txt")
+            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource=SWITCH1_SNMP_RESOURCE)
     })
     public void testSwitch1CdpInterfaceTableCollection() throws Exception {
         
@@ -365,7 +365,7 @@ public class Nms17216Test extends Nms17216NetworkBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:linkd/nms17216/switch1-walk.txt")
+            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource=SWITCH1_SNMP_RESOURCE)
     })
     public void testSwitch1LldpLocalBaseCollection() throws Exception {
 
@@ -390,7 +390,7 @@ public class Nms17216Test extends Nms17216NetworkBuilder {
     
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH2_IP, port=161, resource="classpath:linkd/nms17216/switch2-walk.txt")
+            @JUnitSnmpAgent(host=SWITCH2_IP, port=161, resource=SWITCH2_SNMP_RESOURCE)
     })
     public void testSwitch2LldpLocalBaseCollection() throws Exception {
 
@@ -415,7 +415,7 @@ public class Nms17216Test extends Nms17216NetworkBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH3_IP, port=161, resource="classpath:linkd/nms17216/switch3-walk.txt")
+            @JUnitSnmpAgent(host=SWITCH3_IP, port=161, resource=SWITCH3_SNMP_RESOURCE)
     })
     public void testSwitch3LldpLocalBaseCollection() throws Exception {
 
@@ -440,7 +440,7 @@ public class Nms17216Test extends Nms17216NetworkBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH4_IP, port=161, resource="classpath:linkd/nms17216/switch4-walk.txt")
+            @JUnitSnmpAgent(host=SWITCH4_IP, port=161, resource=SWITCH4_SNMP_RESOURCE)
     })
     public void testSwitch4LldpLocalBaseCollection() throws Exception {
 
@@ -465,7 +465,7 @@ public class Nms17216Test extends Nms17216NetworkBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH5_IP, port=161, resource="classpath:linkd/nms17216/switch5-walk.txt")
+            @JUnitSnmpAgent(host=SWITCH5_IP, port=161, resource=SWITCH5_SNMP_RESOURCE)
     })
     public void testSwitch5LldpLocalBaseCollection() throws Exception {
 
@@ -490,7 +490,7 @@ public class Nms17216Test extends Nms17216NetworkBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:linkd/nms17216/switch1-walk.txt")
+            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource=SWITCH1_SNMP_RESOURCE)
     })
     public void testSwitch1LldpRemTableCollection() throws Exception {
 
@@ -518,7 +518,7 @@ public class Nms17216Test extends Nms17216NetworkBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH2_IP, port=161, resource="classpath:linkd/nms17216/switch2-walk.txt")
+            @JUnitSnmpAgent(host=SWITCH2_IP, port=161, resource=SWITCH2_SNMP_RESOURCE)
     })
     public void testSwitch2LldpRemTableCollection() throws Exception {
 
@@ -546,7 +546,7 @@ public class Nms17216Test extends Nms17216NetworkBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH3_IP, port=161, resource="classpath:linkd/nms17216/switch3-walk.txt")
+            @JUnitSnmpAgent(host=SWITCH3_IP, port=161, resource=SWITCH3_SNMP_RESOURCE)
     })
     public void testSwitch3LldpRemTableCollection() throws Exception {
 
@@ -574,7 +574,7 @@ public class Nms17216Test extends Nms17216NetworkBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH4_IP, port=161, resource="classpath:linkd/nms17216/switch4-walk.txt")
+            @JUnitSnmpAgent(host=SWITCH4_IP, port=161, resource=SWITCH4_SNMP_RESOURCE)
     })
     public void testSwitch4LldpRemTableCollection() throws Exception {
 
@@ -598,7 +598,7 @@ public class Nms17216Test extends Nms17216NetworkBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH5_IP, port=161, resource="classpath:linkd/nms17216/switch5-walk.txt")
+            @JUnitSnmpAgent(host=SWITCH5_IP, port=161, resource=SWITCH5_SNMP_RESOURCE)
     })
     public void testSwitch5LldpRemTableCollection() throws Exception {
 
@@ -720,7 +720,7 @@ public class Nms17216Test extends Nms17216NetworkBuilder {
     
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:linkd/nms17216/switch1-walk.txt")
+            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource=SWITCH1_SNMP_RESOURCE)
     })
     public void testSwitch1LldpLocTableCollection() throws Exception {
 
@@ -748,7 +748,7 @@ public class Nms17216Test extends Nms17216NetworkBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH2_IP, port=161, resource="classpath:linkd/nms17216/switch2-walk.txt")
+            @JUnitSnmpAgent(host=SWITCH2_IP, port=161, resource=SWITCH2_SNMP_RESOURCE)
     })
     public void testSwitch2LldpLocTableCollection() throws Exception {
 
@@ -776,7 +776,7 @@ public class Nms17216Test extends Nms17216NetworkBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH3_IP, port=161, resource="classpath:linkd/nms17216/switch3-walk.txt")
+            @JUnitSnmpAgent(host=SWITCH3_IP, port=161, resource=SWITCH3_SNMP_RESOURCE)
     })
     public void testSwitch3LldpLocTableCollection() throws Exception {
 
@@ -804,7 +804,7 @@ public class Nms17216Test extends Nms17216NetworkBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH4_IP, port=161, resource="classpath:linkd/nms17216/switch4-walk.txt")
+            @JUnitSnmpAgent(host=SWITCH4_IP, port=161, resource=SWITCH4_SNMP_RESOURCE)
     })
     public void testSwitch4LldpLocTableCollection() throws Exception {
 
@@ -832,7 +832,7 @@ public class Nms17216Test extends Nms17216NetworkBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH5_IP, port=161, resource="classpath:linkd/nms17216/switch5-walk.txt")
+            @JUnitSnmpAgent(host=SWITCH5_IP, port=161, resource=SWITCH5_SNMP_RESOURCE)
     })
     public void testSwitch5LldpLocTableCollection() throws Exception {
 
@@ -1001,15 +1001,15 @@ public class Nms17216Test extends Nms17216NetworkBuilder {
      */
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:linkd/nms17216/switch1-walk.txt"),
-            @JUnitSnmpAgent(host=SWITCH2_IP, port=161, resource="classpath:linkd/nms17216/switch2-walk.txt"),
-            @JUnitSnmpAgent(host=SWITCH3_IP, port=161, resource="classpath:linkd/nms17216/switch3-walk.txt"),
-            @JUnitSnmpAgent(host=SWITCH4_IP, port=161, resource="classpath:linkd/nms17216/switch4-walk.txt"),
-            @JUnitSnmpAgent(host=SWITCH5_IP, port=161, resource="classpath:linkd/nms17216/switch5-walk.txt"),
-            @JUnitSnmpAgent(host=ROUTER1_IP, port=161, resource="classpath:linkd/nms17216/router1-walk.txt"),
-            @JUnitSnmpAgent(host=ROUTER2_IP, port=161, resource="classpath:linkd/nms17216/router2-walk.txt"),
-            @JUnitSnmpAgent(host=ROUTER3_IP, port=161, resource="classpath:linkd/nms17216/router3-walk.txt"),
-            @JUnitSnmpAgent(host=ROUTER4_IP, port=161, resource="classpath:linkd/nms17216/router4-walk.txt")
+            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource=SWITCH1_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SWITCH2_IP, port=161, resource=SWITCH2_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SWITCH3_IP, port=161, resource=SWITCH3_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SWITCH4_IP, port=161, resource=SWITCH4_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SWITCH5_IP, port=161, resource=SWITCH5_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=ROUTER1_IP, port=161, resource=ROUTER1_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=ROUTER2_IP, port=161, resource=ROUTER2_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=ROUTER3_IP, port=161, resource=ROUTER3_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=ROUTER4_IP, port=161, resource=ROUTER4_SNMP_RESOURCE)
     })
     public void testNetwork17216Links() throws Exception {
         
@@ -1216,9 +1216,9 @@ public class Nms17216Test extends Nms17216NetworkBuilder {
      */
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:linkd/nms17216/switch1-walk.txt"),
-            @JUnitSnmpAgent(host=SWITCH2_IP, port=161, resource="classpath:linkd/nms17216/switch2-walk.txt"),
-            @JUnitSnmpAgent(host=SWITCH3_IP, port=161, resource="classpath:linkd/nms17216/switch3-walk.txt")
+            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource=SWITCH1_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SWITCH2_IP, port=161, resource=SWITCH2_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SWITCH3_IP, port=161, resource=SWITCH3_SNMP_RESOURCE)
     })
     public void testNetwork17216LldpLinks() throws Exception {
         m_nodeDao.save(getSwitch1());
@@ -1286,8 +1286,8 @@ public class Nms17216Test extends Nms17216NetworkBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH4_IP, port=161, resource="classpath:linkd/nms17216/switch4-walk.txt"),
-            @JUnitSnmpAgent(host=ROUTER3_IP, port=161, resource="classpath:linkd/nms17216/router3-walk.txt")
+            @JUnitSnmpAgent(host=SWITCH4_IP, port=161, resource=SWITCH4_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=ROUTER3_IP, port=161, resource=ROUTER3_SNMP_RESOURCE)
     })
     public void testNetwork17216Switch4Router4CdpLinks() throws Exception {
         

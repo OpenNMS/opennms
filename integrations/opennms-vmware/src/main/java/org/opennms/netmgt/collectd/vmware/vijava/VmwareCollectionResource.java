@@ -54,8 +54,4 @@ public abstract class VmwareCollectionResource extends AbstractCollectionResourc
     @Override
     public abstract String getInstance();
 
-    @Override
-    public String getParent() {
-        return m_agent.getStorageDir().toString();
-    }
 }

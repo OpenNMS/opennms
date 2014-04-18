@@ -35,7 +35,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Alias.JoinType;
@@ -261,9 +263,12 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
             processVlanTable(onmsNode,node, snmpColl,scanTime);
         }
 
-        for (final OnmsVlan vlan : snmpColl.getSnmpVlanCollections().keySet()) {
-            LOG.debug("storeSnmpCollection: parsing bridge data on VLAN {}/{}", vlan.getVlanId(), vlan.getVlanName());
-            storeSnmpVlanCollection(onmsNode, node, vlan, snmpColl.getSnmpVlanCollections().get(vlan), scanTime);
+        if (!snmpColl.getSnmpVlanCollections().isEmpty()) {
+            node.setMacIdentifiers(getPhysAddrs(node.getNodeId()));
+            for (final OnmsVlan vlan : snmpColl.getSnmpVlanCollections().keySet()) {
+                LOG.debug("storeSnmpCollection: parsing bridge data on VLAN {}/{}", vlan.getVlanId(), vlan.getVlanName());
+                storeSnmpVlanCollection(onmsNode, node, vlan, snmpColl.getSnmpVlanCollections().get(vlan), scanTime);
+            }
         }
 
         markOldDataInactive(scanTime, node.getNodeId());
@@ -428,12 +433,12 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
     }
 
     @Override
-    protected List<String> getPhysAddrs(int nodeId) {
+    protected Set<String> getPhysAddrs(int nodeId) {
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsSnmpInterface.class);
         builder.alias("node", "node");
         builder.eq("node.id", nodeId);
 
-        final List<String> addrs = new ArrayList<String>();
+        final Set<String> addrs = new HashSet<String>();
 
         for (final OnmsSnmpInterface snmpInterface : m_snmpInterfaceDao.findMatching(builder.toCriteria())) {
             addrs.add(snmpInterface.getPhysAddr());

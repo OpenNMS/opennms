@@ -37,6 +37,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.AtInterfaceDao;
@@ -120,7 +121,7 @@ public abstract class AbstractQueryManager implements QueryManager {
 
     protected abstract void saveAtInterface(final OnmsAtInterface saveMe) ;
 
-    protected abstract List<String> getPhysAddrs(final int nodeId);
+    protected abstract Set<String> getPhysAddrs(final int nodeId);
 
     protected abstract void markOldDataInactive(final Date now, final int nodeid);
 
@@ -938,18 +939,18 @@ public abstract class AbstractQueryManager implements QueryManager {
             final int curfdbstatus = dot1dfdbentry.getQBridgeDot1dTpFdbStatus();
 
             if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_LEARNED) {
-                node.addMacAddress(fdbport, curMacAddress, vlan.getVlanId());
+                node.addBridgeForwardingTableEntry(fdbport, curMacAddress, vlan.getVlanId());
                 LOG.debug("processQBridgeDot1DTpFdbTable: Found learned status on bridge port.");
             } else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_SELF) {
-                node.addBridgeIdentifier(curMacAddress);
-                LOG.debug("processQBridgeDot1DTpFdbTable: MAC address ({}) is used as bridge identifier.", curMacAddress);
+                node.getMacIdentifiers().add(curMacAddress);
+                LOG.debug("processQBridgeDot1DTpFdbTable: MAC address ({}) is used as port identifier.", curMacAddress);
             } else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_INVALID) {
                 LOG.debug("processQBridgeDot1DTpFdbTable: Found 'INVALID' status. Skipping.");
             } else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_MGMT) {
-                node.addMacAddress(fdbport, curMacAddress, vlan.getVlanId());
+                node.addBridgeForwardingTableEntry(fdbport, curMacAddress, vlan.getVlanId());
                 LOG.debug("processQBridgeDot1DTpFdbTable: Found 'MGMT' status. Saving.");
             } else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_OTHER) {
-                node.addMacAddress(fdbport, curMacAddress, vlan.getVlanId());
+                node.addBridgeForwardingTableEntry(fdbport, curMacAddress, vlan.getVlanId());
                LOG.debug("processQBridgeDot1DTpFdbTable: Found 'OTHER' status. Saving.");
             } else if (curfdbstatus == -1) {
                 LOG.warn("processQBridgeDot1DTpFdbTable: Unable to determine status. Skipping.");
@@ -986,18 +987,18 @@ public abstract class AbstractQueryManager implements QueryManager {
             LOG.debug("processDot1DTpFdbTable: MAC address ({}) found on bridge port {} on node {}", curMacAddress, fdbport, node.getNodeId());
 
             if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_LEARNED && vlan.getVlanId() != null) {
-                node.addMacAddress(fdbport, curMacAddress, vlan.getVlanId());
+                node.addBridgeForwardingTableEntry(fdbport, curMacAddress, vlan.getVlanId());
                 LOG.debug("processDot1DTpFdbTable: Found learned status on bridge port.");
             } else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_SELF) {
-                node.addBridgeIdentifier(curMacAddress);
-                LOG.debug("processDot1DTpFdbTable: MAC address ({}) is used as bridge identifier.", curMacAddress);
+                node.getMacIdentifiers().add(curMacAddress);
+                LOG.debug("processDot1DTpFdbTable: MAC address ({}) is used as port identifier.", curMacAddress);
             } else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_INVALID) {
                 LOG.debug("processDot1DTpFdbTable: Found 'INVALID' status. Skipping.");
             } else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_MGMT) {
-                node.addMacAddress(fdbport, curMacAddress, vlan.getVlanId());
+                node.addBridgeForwardingTableEntry(fdbport, curMacAddress, vlan.getVlanId());
                 LOG.debug("processDot1DTpFdbTable: Found 'MGMT' status. Saving.");
             } else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_OTHER) {
-                node.addMacAddress(fdbport, curMacAddress, vlan.getVlanId());
+                node.addBridgeForwardingTableEntry(fdbport, curMacAddress, vlan.getVlanId());
                 LOG.debug("processDot1DTpFdbTable: Found 'OTHER' status. Saving.");
             } else if (curfdbstatus == -1) {
                 LOG.warn("processDot1DTpFdbTable: Unable to determine status. Skipping.");

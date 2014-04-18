@@ -28,11 +28,6 @@
 
 package org.opennms.netmgt.linkd;
 
-
-import java.net.InetAddress;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
 
@@ -41,96 +36,6 @@ import org.opennms.netmgt.model.OnmsNode;
  */
 
 public abstract class Nms007NetworkBuilder extends LinkdTestBuilder {
-
-    protected static final String FireFly170_IP = "192.168.168.170";
-    protected static final String FireFly170_NAME = "FireFly_170";
-    static final String FireFly170_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.96";
-    protected static final Map<InetAddress,Integer> FireFly170_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
-    static final Map<Integer,String> FireFly170_IF_IFNAME_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,String> FireFly170_IF_IFDESCR_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,String> FireFly170_IF_MAC_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,String> FireFly170_IF_IFALIAS_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,InetAddress> FireFly170_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
-
-    protected static final String FireFly171_IP = "192.168.168.171";
-    protected static final String FireFly171_NAME = "FireFly_171";
-    static final String FireFly171_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.96";
-    protected static final Map<InetAddress,Integer> FireFly171_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
-    static final Map<Integer,String> FireFly171_IF_IFNAME_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,String> FireFly171_IF_IFDESCR_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,String> FireFly171_IF_MAC_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,String> FireFly171_IF_IFALIAS_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,InetAddress> FireFly171_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
-
-    protected static final String FireFly172_IP = "192.168.168.172";
-    protected static final String FireFly172_NAME = "FireFly_172";
-    static final String FireFly172_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.96";
-    protected static final Map<InetAddress,Integer> FireFly172_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
-    static final Map<Integer,String> FireFly172_IF_IFNAME_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,String> FireFly172_IF_IFDESCR_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,String> FireFly172_IF_MAC_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,String> FireFly172_IF_IFALIAS_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,InetAddress> FireFly172_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
-
-    protected static final String FireFly173_IP = "192.168.168.173";
-    protected static final String FireFly173_NAME = "FireFly_173";
-    static final String FireFly173_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.96";
-    protected static final Map<InetAddress,Integer> FireFly173_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
-    static final Map<Integer,String> FireFly173_IF_IFNAME_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,String> FireFly173_IF_IFDESCR_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,String> FireFly173_IF_MAC_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,String> FireFly173_IF_IFALIAS_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,InetAddress> FireFly173_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
-
-    protected static final String FireFly174_IP = "192.168.168.174";
-    protected static final String FireFly174_NAME = "FireFly_174";
-    static final String FireFly174_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.96";
-    protected static final Map<InetAddress,Integer> FireFly174_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
-    static final Map<Integer,String> FireFly174_IF_IFNAME_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,String> FireFly174_IF_IFDESCR_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,String> FireFly174_IF_MAC_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,String> FireFly174_IF_IFALIAS_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,InetAddress> FireFly174_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
-
-    protected static final String FireFly175_IP = "192.168.168.175";
-    protected static final String FireFly175_NAME = "FireFly_175";
-    static final String FireFly175_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.96";
-    protected static final Map<InetAddress,Integer> FireFly175_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
-    static final Map<Integer,String> FireFly175_IF_IFNAME_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,String> FireFly175_IF_IFDESCR_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,String> FireFly175_IF_MAC_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,String> FireFly175_IF_IFALIAS_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,InetAddress> FireFly175_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
-
-    protected static final String FireFly176_IP = "192.168.168.176";
-    protected static final String FireFly176_NAME = "FireFly_176";
-    static final String FireFly176_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.96";
-    protected static final Map<InetAddress,Integer> FireFly176_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
-    static final Map<Integer,String> FireFly176_IF_IFNAME_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,String> FireFly176_IF_IFDESCR_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,String> FireFly176_IF_MAC_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,String> FireFly176_IF_IFALIAS_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,InetAddress> FireFly176_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
-
-    protected static final String FireFly177_IP = "192.168.168.177";
-    protected static final String FireFly177_NAME = "FireFly_177";
-    static final String FireFly177_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.96";
-    protected static final Map<InetAddress,Integer> FireFly177_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
-    static final Map<Integer,String> FireFly177_IF_IFNAME_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,String> FireFly177_IF_IFDESCR_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,String> FireFly177_IF_MAC_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,String> FireFly177_IF_IFALIAS_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,InetAddress> FireFly177_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
-
-    protected static final String FireFly189_IP = "192.168.168.189";
-    protected static final String FireFly189_NAME = "FireFly_189";
-    static final String FireFly189_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.96";
-    protected static final Map<InetAddress,Integer> FireFly189_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
-    static final Map<Integer,String> FireFly189_IF_IFNAME_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,String> FireFly189_IF_IFDESCR_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,String> FireFly189_IF_MAC_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,String> FireFly189_IF_IFALIAS_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,InetAddress> FireFly189_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
 
     static {
     try {

@@ -29,10 +29,6 @@
 package org.opennms.netmgt.linkd;
 
 
-import java.net.InetAddress;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
 
@@ -43,106 +39,6 @@ import org.opennms.netmgt.model.OnmsNode;
  */
 
 public abstract class Nms17216NetworkBuilder extends LinkdTestBuilder {
-
-    protected static final String ROUTER1_IP = "192.168.100.245";
-    protected static final String ROUTER1_NAME = "Router1";
-    protected static final String ROUTER1_SYSOID = ".1.3.6.1.4.1.9.1.576";
-    protected static final String ROUTER1_LLDP_CHASSISID = "";
-    
-    protected static final Map<InetAddress,Integer> ROUTER1_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
-    protected static final Map<Integer,String> ROUTER1_IF_IFNAME_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> ROUTER1_IF_IFDESCR_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> ROUTER1_IF_MAC_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> ROUTER1_IF_IFALIAS_MAP = new HashMap<Integer, String>();
-
-    protected static final String ROUTER2_IP = "192.168.100.241";
-    protected static final String ROUTER2_NAME = "Router2";
-    protected static final String ROUTER2_SYSOID = ".1.3.6.1.4.1.9.1.1045";
-    protected static final String ROUTER2_LLDP_CHASSISID = "";
-    
-    protected static final Map<InetAddress,Integer> ROUTER2_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
-    protected static final Map<Integer,String> ROUTER2_IF_IFNAME_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> ROUTER2_IF_IFDESCR_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> ROUTER2_IF_MAC_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> ROUTER2_IF_IFALIAS_MAP = new HashMap<Integer, String>();
-
-    protected static final String ROUTER3_IP = "172.16.50.1";
-    protected static final String ROUTER3_NAME = "Router3";
-    protected static final String ROUTER3_SYSOID = ".1.3.6.1.4.1.9.1.1045";
-    protected static final String ROUTER3_LLDP_CHASSISID = "";
-    
-    protected static final Map<InetAddress,Integer> ROUTER3_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
-    protected static final Map<Integer,String> ROUTER3_IF_IFNAME_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> ROUTER3_IF_IFDESCR_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> ROUTER3_IF_MAC_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> ROUTER3_IF_IFALIAS_MAP = new HashMap<Integer, String>();
-
-    protected static final String ROUTER4_IP = "10.10.10.1";
-    protected static final String ROUTER4_NAME = "Router4";
-    protected static final String ROUTER4_SYSOID = ".1.3.6.1.4.1.9.1.1045";
-    protected static final String ROUTER4_LLDP_CHASSISID = "";
-    
-    protected static final Map<InetAddress,Integer> ROUTER4_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
-    protected static final Map<Integer,String> ROUTER4_IF_IFNAME_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> ROUTER4_IF_IFDESCR_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> ROUTER4_IF_MAC_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> ROUTER4_IF_IFALIAS_MAP = new HashMap<Integer, String>();
-
-    protected static final String SWITCH1_IP = "172.16.10.1";
-    protected static final String SWITCH1_NAME = "Switch1";
-    protected static final String SWITCH1_SYSOID = ".1.3.6.1.4.1.9.1.614";
-    protected static final String SWITCH1_LLDP_CHASSISID = "0016c8bd4d80";
-    
-    protected static final Map<InetAddress,Integer> SWITCH1_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
-    protected static final Map<Integer,String> SWITCH1_IF_IFNAME_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> SWITCH1_IF_IFDESCR_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> SWITCH1_IF_MAC_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> SWITCH1_IF_IFALIAS_MAP = new HashMap<Integer, String>();
-
-    protected static final String SWITCH2_IP = "172.16.10.2";
-    protected static final String SWITCH2_NAME = "Switch2";
-    protected static final String SWITCH2_SYSOID = ".1.3.6.1.4.1.9.1.696";
-    protected static final String SWITCH2_LLDP_CHASSISID = "0016c894aa80";
-    
-    protected static final Map<InetAddress,Integer> SWITCH2_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
-    protected static final Map<Integer,String> SWITCH2_IF_IFNAME_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> SWITCH2_IF_IFDESCR_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> SWITCH2_IF_MAC_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> SWITCH2_IF_IFALIAS_MAP = new HashMap<Integer, String>();
-
-    protected static final String SWITCH3_IP = "172.16.10.3";
-    protected static final String SWITCH3_NAME = "Switch3";
-    protected static final String SWITCH3_SYSOID = ".1.3.6.1.4.1.9.1.716";
-    protected static final String SWITCH3_LLDP_CHASSISID = "f4ea67ebdc00";
-    
-    protected static final Map<InetAddress,Integer> SWITCH3_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
-    protected static final Map<Integer,String> SWITCH3_IF_IFNAME_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> SWITCH3_IF_IFDESCR_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> SWITCH3_IF_MAC_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> SWITCH3_IF_IFALIAS_MAP = new HashMap<Integer, String>();
-
-    protected static final String SWITCH4_IP = "172.16.50.2";
-    protected static final String SWITCH4_NAME = "Switch4";
-    protected static final String SWITCH4_SYSOID = ".1.3.6.1.4.1.9.1.716";
-    protected static final String SWITCH4_LLDP_CHASSISID = "a4187504e400";
-    
-    protected static final Map<InetAddress,Integer> SWITCH4_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
-    protected static final Map<Integer,String> SWITCH4_IF_IFNAME_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> SWITCH4_IF_IFDESCR_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> SWITCH4_IF_MAC_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> SWITCH4_IF_IFALIAS_MAP = new HashMap<Integer, String>();
-
-    protected static final String SWITCH5_IP = "172.16.10.4";
-    protected static final String SWITCH5_NAME = "Switch5";
-    protected static final String SWITCH5_SYSOID = ".1.3.6.1.4.1.9.1.716";
-    protected static final String SWITCH5_LLDP_CHASSISID = "f4ea67f82980";
-    
-    protected static final Map<InetAddress,Integer> SWITCH5_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
-    protected static final Map<Integer,String> SWITCH5_IF_IFNAME_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> SWITCH5_IF_IFDESCR_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> SWITCH5_IF_MAC_MAP = new HashMap<Integer, String>();
-    protected static final Map<Integer,String> SWITCH5_IF_IFALIAS_MAP = new HashMap<Integer, String>();
-
     static {
         ROUTER1_IP_IF_MAP.put(InetAddressUtils.addr("192.168.100.249"), 13);
         ROUTER1_IP_IF_MAP.put(InetAddressUtils.addr("192.168.100.245"), 7);

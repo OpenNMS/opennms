@@ -28,11 +28,6 @@
 
 package org.opennms.netmgt.linkd;
 
-
-import java.net.InetAddress;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
 
@@ -42,42 +37,6 @@ import org.opennms.netmgt.model.OnmsNode;
 
 public abstract class Nms0001NetworkBuilder extends LinkdTestBuilder {
 
-    protected static final String FROH_IP = "192.168.239.51";
-    protected static final String FROH_NAME = "froh";
-    static final String FROH_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.29";
-    
-    protected static final Map<InetAddress,Integer> FROH_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
-    static final Map<Integer,String> FROH_IF_IFNAME_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,String> FROH_IF_IFDESCR_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,String> FROH_IF_MAC_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,String> FROH_IF_IFALIAS_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,InetAddress> FROH_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
-
-    protected static final String OEDIPUS_IP = "192.168.239.62";
-    protected static final String OEDIPUS_NAME = "oedipus";
-    static final String OEDIPUS_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.11";
-   
-    protected static final Map<InetAddress,Integer> OEDIPUS_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
-    static final Map<Integer,String> OEDIPUS_IF_IFNAME_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,String> OEDIPUS_IF_IFDESCR_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,String> OEDIPUS_IF_MAC_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,String> OEDIPUS_IF_IFALIAS_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,InetAddress> OEDIPUS_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
-        
-    protected static final String SIEGFRIE_IP = "192.168.239.54";
-    protected static final String SIEGFRIE_NAME = "siegfrie";
-    static final String SIEGFRIE_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.11";
-   
-    protected static final Map<InetAddress,Integer> SIEGFRIE_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
-    static final Map<Integer,String> SIEGFRIE_IF_IFNAME_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,String> SIEGFRIE_IF_IFDESCR_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,String> SIEGFRIE_IF_MAC_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,String> SIEGFRIE_IF_IFALIAS_MAP = new HashMap<Integer, String>();
-    static final Map<Integer,InetAddress> SIEGFRIE_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
-
-    protected static final String FROH_ISIS_SYS_ID     = "000110088500";
-    protected static final String OEDIPUS_ISIS_SYS_ID  = "000110255062";
-    protected static final String SIEGFRIE_ISIS_SYS_ID = "000110255054";
 
     static {
     try {

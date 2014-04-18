@@ -36,6 +36,7 @@ import java.util.Properties;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
@@ -77,10 +78,6 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitTemporaryDatabase
 public class LinkdTestCapsdNetworkBuilder extends LinkdTestHelper implements InitializingBean {
 
-    private final static String IP = "192.168.0.1";
-    private final static String CLASSPATH = "classpath:linkd//nms102/mikrotik-192.168.0.1-walk.txt";
-    private final static String ROOT= "MIKROTIK";
-    
     @Autowired
     private Capsd m_capsd;
     
@@ -100,16 +97,17 @@ public class LinkdTestCapsdNetworkBuilder extends LinkdTestHelper implements Ini
 
 
     @Test
+    @Ignore
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host = IP, port = 161, resource = CLASSPATH),
+            @JUnitSnmpAgent(host = SSeMalmNobe_IP, port = 161, resource = SSeMalmNobe_SNMP_RESOURCE),
     })
     @Transactional
     public final void testCapsd() throws MarshalException, ValidationException, IOException {
         m_capsd.init();
         m_capsd.start();
-        m_capsd.scanSuspectInterface(IP);
+        m_capsd.scanSuspectInterface(SSeMalmNobe_IP);
 
-        printNode(IP,ROOT);
+        printNode(SSeMalmNobe_IP,SSeMalmNobe_ROOT);
         
         m_capsd.stop();
     }

@@ -84,14 +84,6 @@ public abstract class XmlCollectionResource extends AbstractCollectionResource {
     public abstract String getInstance();
 
     /* (non-Javadoc)
-     * @see org.opennms.netmgt.config.collector.CollectionResource#getParent()
-     */
-    @Override
-    public String getParent() {
-        return m_agent.getStorageDir().toString();
-    }
-
-    /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.AbstractCollectionResource#getTimeKeeper()
      */
     @Override

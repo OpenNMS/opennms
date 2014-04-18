@@ -184,8 +184,8 @@ public class Nms101Test extends Nms101NetworkBuilder {
      */
 	@Test
     @JUnitSnmpAgents(value={
-        @JUnitSnmpAgent(host="10.1.5.1", port=161, resource="classpath:linkd/nms101/cisco1700b.properties"),
-        @JUnitSnmpAgent(host="10.1.5.2", port=161, resource="classpath:linkd/nms101/cisco1700.properties")
+        @JUnitSnmpAgent(host=CISCO1700B_IP, port=161, resource=CISCO1700B_SNMP_RESOURCE),
+        @JUnitSnmpAgent(host=CISCO1700_IP, port=161, resource=CISCO1700_SNMP_RESOURCE)
     })
     public void testSimpleFakeConnection() throws Exception {
 	m_nodeDao.save(getCisco1700());
@@ -238,8 +238,8 @@ public class Nms101Test extends Nms101NetworkBuilder {
      */	
     @Test
     @JUnitSnmpAgents(value={
-        @JUnitSnmpAgent(host="10.1.1.1", port=161, resource="classpath:linkd/nms101/cisco7200a.properties"),
-        @JUnitSnmpAgent(host="10.1.2.2", port=161, resource="classpath:linkd/nms101/cisco7200b.properties")
+        @JUnitSnmpAgent(host=CISCO7200A_IP, port=161, resource=CISCO7200A_SNMP_RESOURCE),
+        @JUnitSnmpAgent(host=CISCO7200B_IP, port=161, resource=CISCO7200B_SNMP_RESOURCE)
     })
     public void testsimpleLinkCisco7200aCisco7200b() throws Exception {
 
@@ -283,8 +283,8 @@ public class Nms101Test extends Nms101NetworkBuilder {
      */	
     @Test
     @JUnitSnmpAgents(value={
-        @JUnitSnmpAgent(host="10.1.1.1", port=161, resource="classpath:linkd/nms101/cisco7200a.properties"),
-        @JUnitSnmpAgent(host="10.1.1.2", port=161, resource="classpath:linkd/nms101/laptop.properties")
+        @JUnitSnmpAgent(host=CISCO7200A_IP, port=161, resource=CISCO7200A_SNMP_RESOURCE),
+        @JUnitSnmpAgent(host=LAPTOP_IP, port=161, resource=LAPTOP_SNMP_RESOURCE)
     })
     public void testsimpleLinkCisco7200alaptop() throws Exception {
 
@@ -325,8 +325,8 @@ public class Nms101Test extends Nms101NetworkBuilder {
      */	
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host="10.1.3.2", port=161, resource="classpath:linkd/nms101/cisco3700.properties"),
-            @JUnitSnmpAgent(host="10.1.6.2", port=161, resource="classpath:linkd/nms101/cisco3600.properties")
+            @JUnitSnmpAgent(host=CISCO3700_IP, port=161, resource=CISCO3700_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=CISCO3600_IP, port=161, resource=CISCO3600_SNMP_RESOURCE)
     })
     public void testsimpleLinkCisco3600aCisco3700() throws Exception {
 
@@ -371,13 +371,13 @@ public class Nms101Test extends Nms101NetworkBuilder {
      */	
     @Test
     @JUnitSnmpAgents(value={
-        @JUnitSnmpAgent(host="10.1.1.1", port=161, resource="classpath:linkd/nms101/cisco7200a.properties"),
-        @JUnitSnmpAgent(host="10.1.1.2", port=161, resource="classpath:linkd/nms101/laptop.properties"),
-        @JUnitSnmpAgent(host="10.1.2.2", port=161, resource="classpath:linkd/nms101/cisco7200b.properties"),
-        @JUnitSnmpAgent(host="10.1.3.2", port=161, resource="classpath:linkd/nms101/cisco3700.properties"),
-        @JUnitSnmpAgent(host="10.1.4.2", port=161, resource="classpath:linkd/nms101/cisco2691.properties"),
-        @JUnitSnmpAgent(host="10.1.5.2", port=161, resource="classpath:linkd/nms101/cisco1700.properties"),
-        @JUnitSnmpAgent(host="10.1.6.2", port=161, resource="classpath:linkd/nms101/cisco3600.properties")
+        @JUnitSnmpAgent(host=CISCO7200A_IP, port=161, resource=CISCO7200A_SNMP_RESOURCE),
+        @JUnitSnmpAgent(host=LAPTOP_IP, port=161, resource=LAPTOP_SNMP_RESOURCE),
+        @JUnitSnmpAgent(host=CISCO7200B_IP, port=161, resource=CISCO7200B_SNMP_RESOURCE),
+        @JUnitSnmpAgent(host=CISCO3700_IP, port=161, resource=CISCO3700_SNMP_RESOURCE),
+        @JUnitSnmpAgent(host=CISCO2691_IP, port=161, resource=CISCO2691_SNMP_RESOURCE),
+        @JUnitSnmpAgent(host=CISCO1700_IP, port=161, resource=CISCO1700_SNMP_RESOURCE),
+        @JUnitSnmpAgent(host=CISCO3600_IP, port=161, resource=CISCO3600_SNMP_RESOURCE)
     })
     public void testCiscoNetwork() throws Exception {
 
@@ -481,8 +481,8 @@ public class Nms101Test extends Nms101NetworkBuilder {
      */	
     @Test
     @JUnitSnmpAgents(value={
-        @JUnitSnmpAgent(host="10.1.1.1", port=161, resource="classpath:linkd/nms101/cisco7200a.properties"),
-        @JUnitSnmpAgent(host="10.1.2.2", port=161, resource="classpath:linkd/nms101/cisco7200b.properties")
+        @JUnitSnmpAgent(host=CISCO7200A_IP, port=161, resource=CISCO7200A_SNMP_RESOURCE),
+        @JUnitSnmpAgent(host=CISCO7200B_IP, port=161, resource=CISCO7200B_SNMP_RESOURCE)
     })
     public void testsimpleCdpLinkCisco7200aCisco7200b() throws Exception {
 
