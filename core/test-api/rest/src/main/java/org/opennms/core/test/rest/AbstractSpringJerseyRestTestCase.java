@@ -253,7 +253,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
     }
 
     protected void clearUserInfo() {
-        m_username = null;
+        m_username = "admin";
         m_roles.clear();
     }
 
