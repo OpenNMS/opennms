@@ -26,8 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-@XmlSchema(namespace = "http://junosspace.juniper.net/monitoring", elementFormDefault = XmlNsForm.QUALIFIED)
+@XmlSchema(
+    namespace = "http://junosspace.juniper.net/monitoring",
+    elementFormDefault = XmlNsForm.QUALIFIED,
+    xmlns={
+        @XmlNs(prefix="", namespaceURI="http://junosspace.juniper.net/monitoring")
+    }
+)
 package org.opennms.netmgt.ncs.northbounder.transfer;
+import javax.xml.bind.annotation.XmlNs;
 import javax.xml.bind.annotation.XmlSchema;
 import javax.xml.bind.annotation.XmlNsForm;
 

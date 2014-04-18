@@ -67,21 +67,21 @@
 
 <script type="text/javascript" >
 
-    function edit(index) 
+    function edit_path(index) 
     {
         document.outline.userAction.value="edit";
         document.outline.index.value=index;
         document.outline.submit();
     }
     
-    function add(index)
+    function add_path(index)
     {
         document.outline.userAction.value="add";
         document.outline.index.value=index;
         document.outline.submit();
     }
     
-    function remove(index)
+    function remove_path(index)
     {
         message = "Are you sure you want to remove escalation #" + (index+1);
         if (confirm(message))
@@ -195,12 +195,12 @@
               <%=buildTargetList(i, newPath, "escalate"+i)%>  
             </td>
             <td width="5%" valign="top">
-                <input type="button" value="Edit" onclick="javascript:edit(<%=i-1%>)"/>
+                <input type="button" value="Edit" onclick="edit_path(<%=i-1%>)"/>
                 <br/>
                 &nbsp;
                 <br/>
                 <%if (i > 0) { %>
-                  <input type="button" value="Remove" onclick="remove(<%=i-1%>)"/>
+                  <input type="button" value="Remove" onclick="remove_path(<%=i-1%>)"/>
                 <% } else { %>
                   &nbsp;
                 <% } %>
@@ -211,7 +211,7 @@
     </tr>
     <tr>
       <td>
-        <input type="button" value="Add Escalation" onclick="add(<%=i%>)"/>
+        <input type="button" value="Add Escalation" onclick="add_path(<%=i%>)"/>
       </td>
     </tr>
     <% } %>

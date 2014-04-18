@@ -42,12 +42,12 @@ import org.slf4j.LoggerFactory;
  * @author ranger
  * @version $Id: $
  */
-public class AttributeGroup {
+public class AttributeGroup implements CollectionVisitable, Persistable {
     private static final Logger LOG = LoggerFactory.getLogger(AttributeGroup.class);
     
-    private CollectionResource m_resource;
-    private AttributeGroupType m_groupType;
-    private Set<CollectionAttribute> m_attributes = new HashSet<CollectionAttribute>();
+    private final CollectionResource m_resource;
+    private final AttributeGroupType m_groupType;
+    private final Set<CollectionAttribute> m_attributes = new HashSet<CollectionAttribute>();
     
     /**
      * <p>Constructor for AttributeGroup.</p>
@@ -101,6 +101,7 @@ public class AttributeGroup {
      *
      * @param visitor a {@link org.opennms.netmgt.config.collector.CollectionSetVisitor} object.
      */
+    @Override
     public void visit(CollectionSetVisitor visitor) {
         LOG.debug("Visiting Group {}", this);
         visitor.visitGroup(this);
@@ -118,6 +119,7 @@ public class AttributeGroup {
      * @param params a {@link org.opennms.netmgt.config.collector.ServiceParameters} object.
      * @return a boolean.
      */
+    @Override
     public boolean shouldPersist(ServiceParameters params) {
         boolean shouldPersist = doShouldPersist();
         LOG.debug("{}.shouldPersist = {}", this, shouldPersist);

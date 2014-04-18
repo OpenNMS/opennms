@@ -30,6 +30,7 @@ package org.opennms.netmgt.collectd;
 
 import java.util.List;
 
+import org.opennms.netmgt.config.collector.AbstractCollectionSetVisitor;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.config.datacollection.Parameter;
@@ -59,7 +60,7 @@ public class PersistRegexSelectorStrategy implements PersistenceSelectorStrategy
 
     private List<Parameter> m_parameterCollection;
 
-    protected class EvaluatorContextVisitor extends AbstractCollectionSetVisitor {
+    protected static final class EvaluatorContextVisitor extends AbstractCollectionSetVisitor {
         private StandardEvaluationContext context;
 
         public EvaluatorContextVisitor() {

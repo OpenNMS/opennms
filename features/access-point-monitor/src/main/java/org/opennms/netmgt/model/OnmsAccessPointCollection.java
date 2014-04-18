@@ -29,108 +29,24 @@
 package org.opennms.netmgt.model;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * <p>
- * OnmsAccessPointCollection class.
- * </p>
- * 
- * @author <a href="mailto:jwhite@datavalet.com">Jesse White</a>
- */
+import org.opennms.core.config.api.JaxbListWrapper;
+
 @XmlRootElement(name = "accesspoints")
-public class OnmsAccessPointCollection extends LinkedList<OnmsAccessPoint> {
+public class OnmsAccessPointCollection extends JaxbListWrapper<OnmsAccessPoint> {
+    private static final long serialVersionUID = 1L;
 
-    private static final long serialVersionUID = 4989886422555152257L;
-
-    private int m_totalCount;
-
-    /**
-     * <p>
-     * Constructor for OnmsAccessPointCollection.
-     * </p>
-     */
-    public OnmsAccessPointCollection() {
-        super();
+    public OnmsAccessPointCollection() { super(); }
+    public OnmsAccessPointCollection(final Collection<? extends OnmsAccessPoint> aps) {
+        super(aps);
     }
 
-    /**
-     * <p>
-     * Constructor for OnmsAccessPointCollection.
-     * </p>
-     * 
-     * @param c
-     *            a {@link java.util.Collection} object.
-     */
-    public OnmsAccessPointCollection(Collection<? extends OnmsAccessPoint> c) {
-        super(c);
+    @XmlElement(name="accesspoint")
+    public List<OnmsAccessPoint> getObjects() {
+        return super.getObjects();
     }
-
-    /**
-     * <p>
-     * getAccessPoints
-     * </p>
-     * 
-     * @return a {@link java.util.List} object.
-     */
-    @XmlElement(name = "accesspoint")
-    public List<OnmsAccessPoint> getAccessPoints() {
-        return this;
-    }
-
-    /**
-     * <p>
-     * setAccessPoints
-     * </p>
-     * 
-     * @param accesspoints
-     *            a {@link java.util.List} object.
-     */
-    public void setAccessPoints(List<OnmsAccessPoint> accesspoints) {
-        if (accesspoints == this) return;
-        clear();
-        addAll(accesspoints);
-    }
-
-    /**
-     * <p>
-     * getCount
-     * </p>
-     * 
-     * @return a {@link java.lang.Integer} object.
-     */
-    @XmlAttribute(name = "count")
-    public Integer getCount() {
-        return this.size();
-    }
-
-    /**
-     * <p>
-     * getTotalCount
-     * </p>
-     * 
-     * @return a int.
-     */
-    @XmlAttribute(name = "totalCount")
-    public int getTotalCount() {
-        return m_totalCount;
-    }
-
-    /**
-     * <p>
-     * setTotalCount
-     * </p>
-     * 
-     * @param count
-     *            a int.
-     */
-    public void setTotalCount(int count) {
-        m_totalCount = count;
-    }
-
 }

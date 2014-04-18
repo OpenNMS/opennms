@@ -33,21 +33,23 @@ public class SearchResult {
     private final String m_id;
     private final String m_namespace;
     private final String m_label;
+    private final String m_query;
     private boolean m_collapsible = false;
     private boolean m_collapsed = false;
-
-    public SearchResult(String namespace, String id, String label){
+    
+    public SearchResult(String namespace, String id, String label, String query) {
         m_id = id;
         m_namespace = namespace;
         m_label = label;
+        m_query = query;
     }
 
     public SearchResult(VertexRef vertexRef) {
-        this(vertexRef.getNamespace(), vertexRef.getId(), vertexRef.getLabel());
+        this(vertexRef.getNamespace(), vertexRef.getId(), vertexRef.getLabel(), null);
     }
 
     public SearchResult(SearchResult result) {
-        this(result.getNamespace(), result.getId(), result.getLabel());
+        this(result.getNamespace(), result.getId(), result.getLabel(), result.getQuery());
         setCollapsible(result.isCollapsible());
     }
 
@@ -62,9 +64,13 @@ public class SearchResult {
     public final String getLabel() {
         return m_label;
     }
+    
+    public final String getQuery() {
+        return m_query;
+    }
 
     @Override
-    public boolean equals(Object obj) {
+    public final boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null) return false;
 

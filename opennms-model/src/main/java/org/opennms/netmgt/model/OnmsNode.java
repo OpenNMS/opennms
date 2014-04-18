@@ -62,14 +62,19 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.annotate.JsonValue;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.Type;
 import org.opennms.core.utils.InetAddressUtils;
@@ -78,8 +83,6 @@ import org.opennms.netmgt.model.events.AddEventVisitor;
 import org.opennms.netmgt.model.events.DeleteEventVisitor;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
-import org.opennms.netmgt.xml.bind.NodeLabelSourceXmlAdapter;
-import org.opennms.netmgt.xml.bind.NodeTypeXmlAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.style.ToStringCreator;
@@ -95,7 +98,9 @@ import org.springframework.core.style.ToStringCreator;
 @Entity()
 @Table(name="node")
 @SecondaryTable(name="pathOutage")
+@XmlAccessorType(XmlAccessType.NONE)
 @Filter(name=FilterManager.AUTH_FILTER_NAME, condition="exists (select distinct x.nodeid from node x join category_node cn on x.nodeid = cn.nodeid join category_group cg on cn.categoryId = cg.categoryId where x.nodeid = nodeid and cg.groupId in (:userGroups))")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OnmsNode extends OnmsEntity implements Serializable, Comparable<OnmsNode> {
     private static final long serialVersionUID = -2081288277603435617L;
     private static final Logger LOG = LoggerFactory.getLogger(OnmsNode.class);
@@ -298,26 +303,35 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
         m_parent = parent;
     }
 
+    @XmlEnum
     public enum NodeType {
         /**
          * The character returned if the node is active
          */
+        @XmlEnumValue("A")
         ACTIVE('A'),
 
         /**
          * The character returned if the node is deleted
          */
+        @XmlEnumValue("D")
         DELETED('D'),
 
         /**
          * The character returned if the node type is unset/unknown.
          */
+        @XmlEnumValue(" ")
         UNKNOWN(' ');
 
         private final char value;
 
         NodeType(char c) {
             value = c;
+        }
+
+        @JsonValue
+        public char value() {
+            return value;
         }
 
         @Override
@@ -338,7 +352,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     @XmlAttribute(name="type")
     @Column(name="nodeType", length=1)
     @Type(type="org.opennms.netmgt.model.NodeTypeUserType")
-    @XmlJavaTypeAdapter(NodeTypeXmlAdapter.class)
+    //@XmlJavaTypeAdapter(NodeTypeXmlAdapter.class)
     public NodeType getType() {
         return m_type;
     }
@@ -476,41 +490,53 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
         m_label = nodelabel;
     }
 
+    @XmlEnum
     public enum NodeLabelSource {
         /**
          * Label source set by user
          */
+        @XmlEnumValue("U")
         USER('U'),
 
         /**
          * Label source set by netbios
          */
+        @XmlEnumValue("N")
         NETBIOS('N'),
 
         /**
          * Label source set by hostname
          */
+        @XmlEnumValue("H")
         HOSTNAME('H'),
 
         /**
          * Label source set by SNMP sysname
          */
+        @XmlEnumValue("S")
         SYSNAME('S'),
 
         /**
          * Label source set by IP Address
          */
+        @XmlEnumValue("A")
         ADDRESS('A'),
 
         /**
          * Label source unset/unknown
          */
+        @XmlEnumValue(" ")
         UNKNOWN(' ');
 
         private final char value;
 
         NodeLabelSource(char c) {
             value = c;
+        }
+
+        @JsonValue
+        public char value() {
+            return value;
         }
 
         @Override
@@ -533,7 +559,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     @XmlElement(name="labelSource")
     @Column(name="nodeLabelSource", length=1)
     @Type(type="org.opennms.netmgt.model.NodeLabelSourceUserType")
-    @XmlJavaTypeAdapter(NodeLabelSourceXmlAdapter.class)
+    //@XmlJavaTypeAdapter(NodeLabelSourceXmlAdapter.class)
     public NodeLabelSource getLabelSource() {
         return m_labelSource;
     }
@@ -700,6 +726,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
      * @return a {@link org.opennms.netmgt.model.OnmsAssetRecord} object.
      */
     @OneToOne(mappedBy="node", cascade = CascadeType.ALL, fetch=FetchType.LAZY)
+    @XmlElement(name="assetRecord")
     public OnmsAssetRecord getAssetRecord() {
         return m_assetRecord;
     }

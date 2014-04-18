@@ -33,7 +33,6 @@ import java.util.Collection;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.ResourceVisitor;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
 /**
@@ -42,7 +41,7 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @version $Id: $
  */
-public class ResourceTreeWalker implements InitializingBean {
+public class ResourceTreeWalker implements ResourceWalker {
     private ResourceDao m_resourceDao;
     private ResourceVisitor m_visitor;
 

@@ -35,7 +35,6 @@ import org.opennms.core.utils.TimeKeeper;
 import org.opennms.netmgt.collectd.AbstractCollectionResource;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.config.StorageStrategy;
-import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.dao.support.IndexStorageStrategy;
 import org.opennms.netmgt.model.RrdRepository;
 
@@ -64,10 +63,10 @@ public class TcaCollectionResource extends AbstractCollectionResource {
 	private TimeKeeper m_timeKeeper = new DefaultTimeKeeper();
 
 	/** The m_peer address. */
-	private String m_peerAddress;
+	private final String m_peerAddress;
 
 	/** The m_strategy. */
-	private StorageStrategy m_strategy;
+	private final StorageStrategy m_strategy;
 
 	/**
 	 * Instantiates a new TCA collection resource.
@@ -88,14 +87,6 @@ public class TcaCollectionResource extends AbstractCollectionResource {
 	@Override
 	public String getResourceTypeName() {
 		return RESOURCE_TYPE_NAME;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.opennms.netmgt.config.collector.CollectionResource#getParent()
-	 */
-	@Override
-	public String getParent() {
-		return m_agent.getStorageDir().toString();
 	}
 
 	/* (non-Javadoc)
@@ -120,22 +111,6 @@ public class TcaCollectionResource extends AbstractCollectionResource {
 	@Override
 	public int getType() {
 		return -1; // Is this right?
-	}
-
-	/* (non-Javadoc)
-	 * @see org.opennms.netmgt.collectd.AbstractCollectionResource#rescanNeeded()
-	 */
-	@Override
-	public boolean rescanNeeded() {
-		return false;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.opennms.netmgt.collectd.AbstractCollectionResource#shouldPersist(org.opennms.netmgt.config.collector.ServiceParameters)
-	 */
-	@Override
-	public boolean shouldPersist(ServiceParameters params) {
-		return true;
 	}
 
 	/* (non-Javadoc)

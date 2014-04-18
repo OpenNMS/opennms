@@ -29,12 +29,10 @@
 package org.opennms.netmgt.collectd.vmware.cim;
 
 import org.opennms.netmgt.collectd.AbstractCollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionAttributeType;
 import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.collector.ServiceParameters;
 
-public class VmwareCimCollectionAttribute extends AbstractCollectionAttribute implements CollectionAttribute {
+public class VmwareCimCollectionAttribute extends AbstractCollectionAttribute {
     private String m_alias;
     private String m_value;
     private VmwareCimCollectionResource m_resource;
@@ -75,14 +73,6 @@ public class VmwareCimCollectionAttribute extends AbstractCollectionAttribute im
     @Override
     public String getStringValue() {
         return m_value; //Should this be null instead?
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean shouldPersist(final ServiceParameters params) {
-        return true;
     }
 
     @Override

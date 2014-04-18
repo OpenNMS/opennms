@@ -332,17 +332,17 @@ public class Ssh extends org.opennms.netmgt.protocols.AbstractPoll {
 
         if (isAvailable) {
             ps = PollStatus.available(responseTime);
-        } else if (SSH_AUTHENTICATION_PATTERN.matcher(errorMessage).matches()) {
+        } else if (SSH_AUTHENTICATION_PATTERN.matcher(errorMessage).find()) {
             ps = PollStatus.unavailable("authentication failed");
-        } else if (SSH_NOROUTETOHOST_PATTERN.matcher(errorMessage).matches()) {
+        } else if (SSH_NOROUTETOHOST_PATTERN.matcher(errorMessage).find()) {
             ps = PollStatus.unavailable("no route to host");
-        } else if (SSH_SOCKETERROR_PATTERN.matcher(errorMessage).matches()) {
+        } else if (SSH_SOCKETERROR_PATTERN.matcher(errorMessage).find()) {
             ps = PollStatus.unavailable("connection timed out");
-        } else if (SSH_CONNECTIONERROR_PATTERN.matcher(errorMessage).matches()) {
+        } else if (SSH_CONNECTIONERROR_PATTERN.matcher(errorMessage).find()) {
             ps = PollStatus.unavailable("connection exception");
-        } else if (SSH_NUMBERFORMAT_PATTERN.matcher(errorMessage).matches()) {
+        } else if (SSH_NUMBERFORMAT_PATTERN.matcher(errorMessage).find()) {
             ps = PollStatus.unavailable("an error occurred parsing the server version number");
-        } else if (SSH_IOEXCEPTION_PATTERN.matcher(errorMessage).matches()) {
+        } else if (SSH_IOEXCEPTION_PATTERN.matcher(errorMessage).find()) {
             ps = PollStatus.unavailable("I/O exception");
         }
         

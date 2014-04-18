@@ -28,8 +28,12 @@
 
 @XmlSchema(
     namespace = "http://xmlns.opennms.org/xsd/config/poller/outages",
-    elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED
+    elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED,
+    xmlns={
+        @XmlNs(prefix="", namespaceURI="http://xmlns.opennms.org/xsd/config/poller/outages")
+    }
 )
 package org.opennms.netmgt.config.poller.outages;
-import javax.xml.bind.annotation.XmlSchema;
 
+import javax.xml.bind.annotation.XmlNs;
+import javax.xml.bind.annotation.XmlSchema;

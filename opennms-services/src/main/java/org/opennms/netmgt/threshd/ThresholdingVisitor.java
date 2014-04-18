@@ -35,11 +35,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.netmgt.collectd.AbstractCollectionSetVisitor;
+import org.opennms.netmgt.config.collector.AbstractCollectionSetVisitor;
 import org.opennms.netmgt.config.collector.AttributeGroup;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.config.collector.CollectionSet;
+import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
@@ -92,18 +93,18 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
      * @param hostAddress a {@link java.lang.String} object.
      * @param serviceName a {@link java.lang.String} object.
      * @param repo a {@link org.opennms.netmgt.model.RrdRepository} object.
-     * @param roProps a {@link java.util.Map} object.
+     * @param svcParams a {@link org.opennms.netmgt.config.collector.ServiceParameters} object.
      * @return a {@link org.opennms.netmgt.threshd.ThresholdingVisitor} object.
      */
-    public static ThresholdingVisitor create(int nodeId, String hostAddress, String serviceName, RrdRepository repo, Map<String, Object> roProps) {
+    public static ThresholdingVisitor create(int nodeId, String hostAddress, String serviceName, RrdRepository repo, ServiceParameters svcParams) {
 
-        String enabled = ParameterMap.getKeyedString(roProps, "thresholding-enabled", null);
+        String enabled = ParameterMap.getKeyedString(svcParams.getParameters(), "thresholding-enabled", null);
         if (enabled != null && !"true".equals(enabled)) {
             LOG.info("create: Thresholds processing is not enabled. Check thresholding-enabled param on collectd package");
             return null;
         }
 
-        CollectorThresholdingSet thresholdingSet = new CollectorThresholdingSet(nodeId, hostAddress, serviceName, repo, roProps);
+        CollectorThresholdingSet thresholdingSet = new CollectorThresholdingSet(nodeId, hostAddress, serviceName, repo, svcParams);
         if (!thresholdingSet.hasThresholds()) {
             LOG.warn("create: the ipaddress/service {}/{} on node {} has no configured thresholds.", hostAddress, serviceName, nodeId);
         }

@@ -32,7 +32,6 @@ import org.opennms.core.utils.DefaultTimeKeeper;
 import org.opennms.core.utils.TimeKeeper;
 import org.opennms.netmgt.collectd.AbstractCollectionResource;
 import org.opennms.netmgt.collectd.CollectionAgent;
-import org.opennms.netmgt.config.collector.ServiceParameters;
 
 /**
  * The abstract Class XmlCollectionResource.
@@ -51,23 +50,6 @@ public abstract class XmlCollectionResource extends AbstractCollectionResource {
      */
     public XmlCollectionResource(CollectionAgent agent) {
         super(agent);
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.collectd.AbstractCollectionResource#shouldPersist(org.opennms.netmgt.config.collector.ServiceParameters)
-     */
-    @Override
-    public boolean shouldPersist(ServiceParameters params) {
-        return true;
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.collectd.AbstractCollectionResource#rescanNeeded()
-     */
-    @Override
-    public boolean rescanNeeded() {
-        // A rescan is never needed for the XmlCollector, at least on resources
-        return false;
     }
 
     /**
@@ -100,14 +82,6 @@ public abstract class XmlCollectionResource extends AbstractCollectionResource {
      */
     @Override
     public abstract String getInstance();
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.config.collector.CollectionResource#getParent()
-     */
-    @Override
-    public String getParent() {
-        return m_agent.getStorageDir().toString();
-    }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.AbstractCollectionResource#getTimeKeeper()

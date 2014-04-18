@@ -26,19 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd;
+package org.opennms.netmgt.config.collector;
 
-import org.opennms.netmgt.config.collector.AttributeGroup;
-import org.opennms.netmgt.config.collector.CollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.collector.CollectionSet;
-import org.opennms.netmgt.config.collector.CollectionSetVisitor;
 
 /**
- * <p>AbstractCollectionSetVisitor class.</p>
- *
- * @author ranger
- * @version $Id: $
+ * <p>This AbstractCollectionSetVisitor class provides no-op implementations of
+ * all of the {@link CollectionSetVisitor} methods so that you can override 
+ * specific methods as needed to implement your visitor.</p>
  */
 public class AbstractCollectionSetVisitor implements CollectionSetVisitor {
 

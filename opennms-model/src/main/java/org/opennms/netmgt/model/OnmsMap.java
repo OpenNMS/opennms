@@ -47,12 +47,15 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 /**
  * <p>OnmsMap class.</p>
  */
 @XmlRootElement(name = "map")
 @Entity
 @Table(name = "map")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OnmsMap implements Serializable {
 
     private static final long serialVersionUID = 3885485728813867167L;

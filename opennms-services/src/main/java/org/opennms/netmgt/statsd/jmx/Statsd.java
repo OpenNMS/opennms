@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -47,6 +47,30 @@ public class Statsd extends AbstractSpringContextJmxServiceDaemon<org.opennms.ne
     @Override
     protected String getSpringContext() {
         return "statisticsDaemonContext";       
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getReportsStarted() {
+        return getDaemon().getReportsStarted();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getReportsCompleted() {
+        return getDaemon().getReportsCompleted();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getReportsPersisted() {
+        return getDaemon().getReportsPersisted();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getReportRunTime() {
+        return getDaemon().getReportRunTime();
     }
 
 }

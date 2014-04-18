@@ -44,8 +44,8 @@ import org.opennms.netmgt.model.RrdRepository;
  */
 public class LatencyCollectionResource implements CollectionResource {
     
-    private String m_serviceName;
-    private String m_ipAddress;
+    private final String m_serviceName;
+    private final String m_ipAddress;
 
     /**
      * <p>Constructor for LatencyCollectionResource.</p>

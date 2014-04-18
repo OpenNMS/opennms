@@ -36,6 +36,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 
+import org.opennms.netmgt.config.collector.AbstractCollectionSetVisitor;
 import org.opennms.netmgt.config.collector.AttributeDefinition;
 import org.opennms.netmgt.config.collector.AttributeGroup;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
@@ -61,15 +62,8 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     private boolean m_ignorePersist = false;
     private ServiceParameters m_params;
     private RrdRepository m_repository;
-    private LinkedList<Boolean> m_stack = new LinkedList<Boolean>();
+    private final LinkedList<Boolean> m_stack = new LinkedList<Boolean>();
     private PersistOperationBuilder m_builder;
-
-    /**
-     * <p>Constructor for BasePersister.</p>
-     */
-    public BasePersister() {
-        super();
-    }
 
     /**
      * <p>Constructor for BasePersister.</p>
@@ -102,7 +96,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     private boolean isPersistDisabled() {
         return m_params != null &&
                m_params.getParameters().containsKey("storing-enabled") &&
-               m_params.getParameters().get("storing-enabled").equals("false");
+               "false".equals(m_params.getParameters().get("storing-enabled"));
     }
 
     /** {@inheritDoc} */
@@ -143,8 +137,9 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
      */
     protected void createBuilder(CollectionResource resource, String name, Set<AttributeDefinition> attributeTypes) {
         m_builder = new PersistOperationBuilder(getRepository(), resource, name);
-        if (resource.getTimeKeeper() != null)
+        if (resource.getTimeKeeper() != null) {
             m_builder.setTimeKeeper(resource.getTimeKeeper());
+        }
         for (Iterator<AttributeDefinition> iter = attributeTypes.iterator(); iter.hasNext();) {
             AttributeDefinition attrType = iter.next();
             if (attrType instanceof NumericAttributeType) {
@@ -174,8 +169,8 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     /** {@inheritDoc} */
     @Override
     public void persistNumericAttribute(CollectionAttribute attribute) {
-	LOG.debug("Persisting {} {}", attribute, (isIgnorePersist() ? ". Ignoring value because of sysUpTime changed" : ""));
-    	String value = isIgnorePersist() ? "U" : attribute.getNumericValue();
+        LOG.debug("Persisting {} {}", attribute, (isIgnorePersist() ? ". Ignoring value because of sysUpTime changed." : ""));
+        String value = isIgnorePersist() ? "U" : attribute.getNumericValue();
         m_builder.setAttributeValue(attribute.getAttributeType(), value);
         m_builder.setAttributeMetadata(attribute.getMetricIdentifier(), attribute.getName());
     }
@@ -204,19 +199,15 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
             }
     }
 
-    private boolean pop() {
-        boolean top = top();
-        m_stack.removeLast();
-        return top;
-    }
-
     /**
      * <p>popShouldPersist</p>
      *
      * @return a boolean.
      */
     protected boolean popShouldPersist() {
-        return pop();
+        boolean top = top();
+        m_stack.removeLast();
+        return top;
     }
     
     private void push(boolean b) {
@@ -246,7 +237,8 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     }
 
     /**
-     * <p>pushShouldPersist</p>
+     * Push {@link CollectionResource} instances directly onto the stack without checking
+     * {@link #top()} since they are the top-level resources.
      *
      * @param resource a {@link org.opennms.netmgt.config.collector.CollectionResource} object.
      */
@@ -316,14 +308,5 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
 	public void setIgnorePersist(boolean ignore) {
 		m_ignorePersist = ignore;
 	}
-
-    /**
-     * <p>getBuilder</p>
-     *
-     * @return a {@link org.opennms.netmgt.collectd.PersistOperationBuilder} object.
-     */
-    public PersistOperationBuilder getBuilder() {
-        return m_builder;
-    }
 
 }

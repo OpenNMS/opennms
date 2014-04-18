@@ -55,6 +55,13 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.6</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
+            <!-- 
+              We need to use DynamicImport-Package because we will be exposing service interfaces 
+              that we have no compile-time knowledge of.
+
+              @see http://wiki.osgi.org/wiki/DynamicImport-Package
+            -->
+            <DynamicImport-Package>*</DynamicImport-Package>
             <Export-Package>org.opennms.core.soa.*;version="${project.version}"</Export-Package>
 
             <!-- Launch the Spring context when this bundle is loaded in OSGi -->

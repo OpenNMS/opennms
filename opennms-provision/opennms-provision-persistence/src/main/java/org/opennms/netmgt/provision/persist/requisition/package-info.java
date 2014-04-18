@@ -26,7 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-@XmlSchema(namespace = "http://xmlns.opennms.org/xsd/config/model-import", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+@XmlSchema(
+    namespace = "http://xmlns.opennms.org/xsd/config/model-import",
+    elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED,
+    xmlns={
+        @XmlNs(prefix="", namespaceURI="http://xmlns.opennms.org/xsd/config/model-import")
+    }
+)
 package org.opennms.netmgt.provision.persist.requisition;
+import javax.xml.bind.annotation.XmlNs;
 import javax.xml.bind.annotation.XmlSchema;
 

@@ -1,10 +1,10 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Category, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Category, Inc.
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ * OpenNMS(R) is a registered trademark of The OpenNMS Category, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -29,73 +29,27 @@
 package org.opennms.netmgt.model;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * <p>OnmsCategoryCollection class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
+import org.opennms.core.config.api.JaxbListWrapper;
+
 @XmlRootElement(name = "categories")
-public class OnmsCategoryCollection extends LinkedList<OnmsCategory> {
+public class OnmsCategoryCollection extends JaxbListWrapper<OnmsCategory> {
+    private static final long serialVersionUID = 1L;
 
-    private static final long serialVersionUID = 4731486422555152257L;
-
-    /**
-     * <p>Constructor for OnmsCategoryCollection.</p>
-     */
-    public OnmsCategoryCollection() {
-        super();
+    public OnmsCategoryCollection() { super(); }
+    public OnmsCategoryCollection(final Collection<? extends OnmsCategory> categories) {
+        super(categories);
     }
 
-    /**
-     * <p>Constructor for OnmsCategoryCollection.</p>
-     *
-     * @param c a {@link java.util.Collection} object.
-     */
-    public OnmsCategoryCollection(Collection<? extends OnmsCategory> c) {
-        super(c);
+    @XmlElement(name="category")
+    public List<OnmsCategory> getObjects() {
+        return super.getObjects();
     }
-
-    /**
-     * <p>getCategories</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    @XmlElement(name = "category")
-    public List<OnmsCategory> getCategories() {
-        return this;
-    }
-
-    /**
-     * <p>setCategories</p>
-     *
-     * @param categories a {@link java.util.List} object.
-     */
-    public void setCategories(List<OnmsCategory> categories) {
-        if (categories == this) return;
-        clear();
-        addAll(categories);
-    }
-
-    /**
-     * <p>getCount</p>
-     *
-     * @return a {@link java.lang.Integer} object.
-     */
-    @XmlAttribute(name="count")
-    public Integer getCount() {
-        return this.size();
-    }
-    
-    // make JaxbUtils happy (for a getter there must be a setter)
-    public void setCount(Integer count) {
-        ; // no implementation, because it is calculated
+    public List<? extends OnmsCategory> getCategories() {
+        return getObjects();
     }
 }

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,21 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd;
-
-import org.opennms.netmgt.config.collector.CollectionAttribute;
+package org.opennms.netmgt.config.collector;
 
 /**
- * <p>Abstract AttributeVisitor class.</p>
- *
- * @author ranger
- * @version $Id: $
  */
-public abstract class AttributeVisitor extends AbstractCollectionSetVisitor {
-    
-    /** {@inheritDoc} */
-    @Override
-    abstract public void visitAttribute(CollectionAttribute attribute);
+public abstract class AbstractCollectionSet implements CollectionSet {
 
+	/**
+	 * <p>ignorePersist</p>
+	 *
+	 * @return a boolean.
+	 */
+	@Override
+	public final boolean ignorePersist() {
+		return false;
+	}
 
 }

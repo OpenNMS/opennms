@@ -39,6 +39,7 @@ import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.springframework.core.style.ToStringCreator;
 
 
@@ -50,6 +51,7 @@ import org.springframework.core.style.ToStringCreator;
 @XmlRootElement(name = "serviceType")
 @Entity
 @Table(name="service")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OnmsServiceType implements Serializable {
 
     private static final long serialVersionUID = -459218937667452586L;

@@ -43,13 +43,14 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 
 @XmlRootElement(name="ack")  //hmmm
 @Entity
 @Table(name = "acks")
-
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 /**
  * Persistable object used in acknowledgment activities
  *

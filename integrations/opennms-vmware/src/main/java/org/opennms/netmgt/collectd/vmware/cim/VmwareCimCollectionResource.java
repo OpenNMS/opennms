@@ -31,7 +31,6 @@ package org.opennms.netmgt.collectd.vmware.cim;
 import org.opennms.netmgt.collectd.AbstractCollectionResource;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.config.collector.CollectionAttributeType;
-import org.opennms.netmgt.config.collector.ServiceParameters;
 
 public abstract class VmwareCimCollectionResource extends AbstractCollectionResource {
 
@@ -42,16 +41,6 @@ public abstract class VmwareCimCollectionResource extends AbstractCollectionReso
     @Override
     public int getType() {
         return -1; //Is this right?
-    }
-
-    @Override
-    public boolean rescanNeeded() {
-        return false;
-    }
-
-    @Override
-    public boolean shouldPersist(final ServiceParameters params) {
-        return true;
     }
 
     public void setAttributeValue(final CollectionAttributeType type, final String value) {
@@ -65,8 +54,4 @@ public abstract class VmwareCimCollectionResource extends AbstractCollectionReso
     @Override
     public abstract String getInstance();
 
-    @Override
-    public String getParent() {
-        return m_agent.getStorageDir().toString();
-    }
 }

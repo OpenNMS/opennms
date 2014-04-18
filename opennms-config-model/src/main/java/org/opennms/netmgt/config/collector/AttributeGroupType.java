@@ -40,8 +40,8 @@ import java.util.TreeSet;
  */
 public class AttributeGroupType {
 
-    private String m_name;
-    private String m_ifType;
+    private final String m_name;
+    private final String m_ifType;
     
     private SortedSet<AttributeDefinition> m_attributeTypes = new TreeSet<AttributeDefinition>(new ByNameComparator());
 
