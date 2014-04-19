@@ -2245,6 +2245,22 @@ CREATE INDEX catid_idx3 on category_group(categoryId);
 CREATE INDEX catgroup_idx on category_group(groupId);
 CREATE UNIQUE INDEX catgroup_unique_idx on category_group(categoryId, groupId);
 
+--# Begin enlinkd table
+drop table lldpElement cascade;
+
+create table lldpElement (
+      id integer default nextval('opennmsnxtid') not null,
+      nodeid          integer,
+      lldpChassisId varchar(255),
+      lldpChassisIdSubType integer,
+      lldpSysname varchar(255),
+	  lldpNodeCreateTime	timestamp not null,
+      lldpNodeLastPollTime	timestamp not null,
+      constraint pk_lldpelement_id primary key (id),
+      constraint fk_nodeIDlldp foreign key (nodeid) references node ON DELETE CASCADE
+);
+--# End enlinkd table
+
 --# Begin Quartz persistence tables
 
 CREATE TABLE qrtz_job_details

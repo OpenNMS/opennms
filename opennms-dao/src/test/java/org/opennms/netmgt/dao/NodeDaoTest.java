@@ -45,6 +45,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -53,6 +54,8 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.model.LldpElement;
+import org.opennms.netmgt.model.LldpElement.LldpChassisIdSubType;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -172,6 +175,46 @@ public class NodeDaoTest implements InitializingBean {
 
         getNodeDao().flush();
     }
+    
+    @Test
+    @Transactional
+    @Ignore
+    public void testCreateWithLldp() throws InterruptedException {
+        OnmsDistPoller distPoller = getDistPoller();
+
+        OnmsNode node = new OnmsNode(distPoller);
+        node.setLabel("MyFirstNode");
+        LldpElement lldpElement = new LldpElement();
+        lldpElement.setLldpChassisId("abc123456");
+        lldpElement.setLldpChassisIdSubType(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS);
+        lldpElement.setLldpSysname("prova");
+        lldpElement.setNode(node);
+        node.setLldpElement(lldpElement);
+        getNodeDao().save(node);
+        
+        System.out.println("BEFORE GET");
+        OnmsDistPoller dp = getDistPoller();
+        assertSame(distPoller, dp);
+        System.out.println("AFTER GET");
+        Collection<OnmsNode> nodes = getNodeDao().findNodes(dp);
+        assertEquals(7, nodes.size());
+        System.out.println("AFTER GETNODES");
+        for (OnmsNode retrieved : nodes) {
+            System.out.println("category for "+retrieved.getId()+" = "+retrieved.getAssetRecord().getDisplayCategory());
+            if (node.getId().intValue() == 5) {
+                assertEquals("MyFirstNode", retrieved.getLabel());
+                assertNotNull(node.getLldpElement());
+                System.out.println("lldp element id: " + node.getLldpElement().getId());
+                assertEquals("abc123456", node.getLldpElement().getLldpChassisId());
+                assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, node.getLldpElement().getLldpChassisIdSubType());
+                assertEquals("prova", node.getLldpElement().getLldpSysname());
+                assertNotNull(node.getLldpElement().getLldpNodeCreateTime());
+                assertNotNull(node.getLldpElement().getLldpNodeLastPollTime());
+            }
+        }
+        System.out.println("AFTER Loop");
+        
+    }    
 
     @Test
     @Transactional
