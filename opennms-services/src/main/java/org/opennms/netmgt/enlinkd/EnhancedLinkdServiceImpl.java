@@ -5,10 +5,13 @@ import java.util.Date;
 import java.util.List;
 
 import org.hibernate.criterion.Restrictions;
+import org.opennms.netmgt.dao.api.LldpLinkDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.model.OnmsCriteria;
+import org.opennms.netmgt.model.OnmsIpRouteInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.PrimaryType;
 import org.slf4j.Logger;
@@ -23,19 +26,12 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
     @Autowired
     private PlatformTransactionManager m_transactionManager;
-
-	protected boolean m_ready = true;
 	
 	@Autowired
 	private NodeDao m_nodeDao;
 
-	public NodeDao getNodeDao() {
-		return m_nodeDao;
-	}
-
-	public void setNodeDao(NodeDao nodeDao) {
-		m_nodeDao = nodeDao;
-	}
+	@Autowired
+	private LldpLinkDao m_lldpLinkDao;
 
     @Override
 	public List<LinkableNode> getSnmpNodeList() {
@@ -115,8 +111,40 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
 	@Override
 	public void store(int nodeId, LldpLink link) {
-		// TODO Auto-generated method stub
-		
+		if (link == null)
+			return;
+		saveLldpLink(nodeId, link);
+	}
+
+	@Transactional
+    protected synchronized void saveLldpLink(final int nodeId, final LldpLink saveMe) {
+		new UpsertTemplate<LldpLink, LldpLinkDao>(m_transactionManager,m_lldpLinkDao) {
+
+			@Override
+			protected LldpLink query() {
+				return m_dao.get(nodeId, saveMe.getLldpLocalPortNum());
+			}
+
+			@Override
+			protected LldpLink doUpdate(LldpLink dbLldpLink) {
+				dbLldpLink.merge(saveMe);
+				m_dao.update(dbLldpLink);
+				m_dao.flush();
+				return dbLldpLink;
+			}
+
+			@Override
+			protected LldpLink doInsert() {
+				final OnmsNode node = m_nodeDao.get(nodeId);
+				if ( node == null )
+					return null;
+				saveMe.setNode(node);
+				m_dao.saveOrUpdate(saveMe);
+				m_dao.flush();
+				return saveMe;
+			}
+			
+		}.execute();
 	}
 
 	@Override
@@ -141,10 +169,22 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 		
 	}
 
-	@Override
-	public boolean ready() {
-		// TODO Auto-generated method stub
-		return false;
+	public LldpLinkDao getLldpLinkDao() {
+		return m_lldpLinkDao;
 	}
+
+	public void setLldpLinkDao(LldpLinkDao lldpLinkDao) {
+		m_lldpLinkDao = lldpLinkDao;
+	}
+
+	public NodeDao getNodeDao() {
+		return m_nodeDao;
+	}
+
+	public void setNodeDao(NodeDao nodeDao) {
+		m_nodeDao = nodeDao;
+	}
+
+
 	
 }

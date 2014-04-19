@@ -332,6 +332,23 @@ public class LldpLink implements Serializable {
 	}
 
 
+	public void merge(LldpLink link) {
+		setLldpPortId(link.getLldpPortId());
+		setLldpPortIdSubType(link.getLldpPortIdSubType());
+		setLldpPortDescr(link.getLldpPortDescr());
+		setLldpPortIfindex(link.getLldpPortIfindex());
+		
+		setLldpRemChassisId(link.getLldpRemChassisId());
+		setLldpRemChassisIdSubType(link.getLldpRemChassisIdSubType());
+		setLldpRemSysname(link.getLldpRemSysname());
+		
+		setLldpRemPortId(link.getLldpRemPortId());
+		setLldpRemPortIdSubType(link.getLldpRemPortIdSubType());
+		setLldpRemPortDescr(link.getLldpRemPortDescr());
+
+		setLldpLinkLastPollTime(link.getLldpLinkLastPollTime());
+	}
+	
 	/**
 	 * <p>toString</p>
 	 *

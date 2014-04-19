@@ -111,6 +111,6 @@ public interface EnhancedLinkdService {
 
 //	void store(PseudoMacLink pseudoMacLink);
 	
-	boolean ready();
+//	boolean ready();
 
 }
