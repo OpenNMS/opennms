@@ -61,7 +61,7 @@ public class LldpPortIdSubTypeUserType extends EnumType {
             return null;
         }
         for (LldpPortIdSubType type : LldpPortIdSubType.values()) {
-            if (type.getLldpPortIdSubType().intValue() == c.intValue()) {
+            if (type.getValue().intValue() == c.intValue()) {
                 return type;
             }
         }
@@ -73,7 +73,7 @@ public class LldpPortIdSubTypeUserType extends EnumType {
         if (value == null) {
             IntegerType.INSTANCE.nullSafeSet(st, null, index);
         } else if (value instanceof LldpPortIdSubType){
-            IntegerType.INSTANCE.nullSafeSet(st, ((LldpPortIdSubType)value).getLldpPortIdSubType(), index);
+            IntegerType.INSTANCE.nullSafeSet(st, ((LldpPortIdSubType)value).getValue(), index);
         }
     }
 

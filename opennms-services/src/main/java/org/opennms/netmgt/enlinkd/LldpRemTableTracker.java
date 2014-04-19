@@ -139,7 +139,7 @@ private final static Logger LOG = LoggerFactory.getLogger(LldpRemTableTracker.cl
             LldpLink lldpLink = lldpLocPort.get(getLldpRemLocalPortNum());
 
             LOG.info( "processLldpRemRow: row local port id: {}", lldpLink.getLldpPortId());
-            LOG.info( "processLldpRemRow: row local port subtype: {}", LldpPortIdSubType.getTypeString(lldpLink.getLldpPortIdSubType().getLldpPortIdSubType()));
+            LOG.info( "processLldpRemRow: row local port subtype: {}", LldpPortIdSubType.getTypeString(lldpLink.getLldpPortIdSubType().getValue()));
     	
             lldpLink.setLldpRemChassisId(LldpHelper.decodeLldpChassisId(getLldpRemChassisId(), getLldpRemChassisidSubtype()));
             LOG.info( "processLldpRemRow: row rem lldp identifier: {}", lldpLink.getLldpRemChassisId());

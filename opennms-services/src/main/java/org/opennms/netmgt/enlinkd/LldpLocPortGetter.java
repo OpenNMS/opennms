@@ -41,7 +41,7 @@ public class LldpLocPortGetter extends TableTracker {
 			lldplink.setLldpPortDescr((val[2].toDisplayString()));
 		else
 			lldplink.setLldpPortDescr("");
-		if (val[0].toInt() == LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL.getLldpPortIdSubType().intValue()) {
+		if (val[0].toInt() == LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL.getValue().intValue()) {
 			try {
 				lldplink.setLldpPortIfindex((val[1].toInt()));
 			} catch (Exception e) {

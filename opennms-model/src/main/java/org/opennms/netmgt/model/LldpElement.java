@@ -121,7 +121,7 @@ public final class LldpElement implements Serializable {
             return null;
         }
 
-        public Integer getLldpChassisIdSubType() {
+        public Integer getValue() {
         	return m_type;
         }
 
@@ -252,7 +252,7 @@ public final class LldpElement implements Serializable {
 	public String toString() {
 		return new ToStringBuilder(this)
 			.append("Node", m_node)
-			.append("lldpChassisSubType", LldpChassisIdSubType.getTypeString(m_lldpChassisIdSubType.getLldpChassisIdSubType()))
+			.append("lldpChassisSubType", LldpChassisIdSubType.getTypeString(m_lldpChassisIdSubType.getValue()))
 			.append("lldpChassisId", m_lldpChassisId)
 			.append("lldpSysName", m_lldpSysname)
 			.append("lldpNodeCreateTime", m_lldpNodeCreateTime)

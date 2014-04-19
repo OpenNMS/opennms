@@ -61,7 +61,7 @@ public class LldpChassisIdSubTypeUserType extends EnumType {
             return null;
         }
         for (LldpChassisIdSubType type : LldpChassisIdSubType.values()) {
-            if (type.getLldpChassisIdSubType().intValue() == c.intValue()) {
+            if (type.getValue().intValue() == c.intValue()) {
                 return type;
             }
         }
@@ -73,7 +73,7 @@ public class LldpChassisIdSubTypeUserType extends EnumType {
         if (value == null) {
             IntegerType.INSTANCE.nullSafeSet(st, null, index);
         } else if (value instanceof LldpChassisIdSubType){
-            IntegerType.INSTANCE.nullSafeSet(st, ((LldpChassisIdSubType)value).getLldpChassisIdSubType(), index);
+            IntegerType.INSTANCE.nullSafeSet(st, ((LldpChassisIdSubType)value).getValue(), index);
         }
     }
 
