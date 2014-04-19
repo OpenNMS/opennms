@@ -39,13 +39,13 @@ import javax.xml.bind.annotation.XmlTransient;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.message.BasicNameValuePair;
-import org.opennms.netmgt.model.RestResponseCollection;
+import org.opennms.core.config.api.JaxbListWrapper;
 
 /**
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 @XmlRootElement(name="form-fields")
-public class FormFields extends RestResponseCollection<FormField> {
+public class FormFields extends JaxbListWrapper<FormField> {
     private static final long serialVersionUID = 1L;
 
     public FormFields() { super(); }

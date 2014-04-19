@@ -34,8 +34,10 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.config.api.JaxbListWrapper;
+
 @XmlRootElement
-public class OnmsMonitoringLocationDefinitionList extends RestResponseCollection<OnmsMonitoringLocationDefinition> {
+public class OnmsMonitoringLocationDefinitionList extends JaxbListWrapper<OnmsMonitoringLocationDefinition> {
     private static final long serialVersionUID = 1L;
 
     public OnmsMonitoringLocationDefinitionList() { super(); }

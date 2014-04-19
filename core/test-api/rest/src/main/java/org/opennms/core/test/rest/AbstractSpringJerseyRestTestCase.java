@@ -40,10 +40,14 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -105,8 +109,13 @@ public abstract class AbstractSpringJerseyRestTestCase {
     private Filter filter;
     private WebApplicationContext m_webAppContext;
 
+    private String m_username = "admin";
+    private Set<String> m_roles = Collections.synchronizedSet(new HashSet<String>(Collections.singletonList("ROLE_ADMIN")));
+
     @Before
     public void setUp() throws Throwable {
+        clearUserInfo();
+
         beforeServletStart();
 
         DaoTestConfigBean bean = new DaoTestConfigBean();
@@ -202,6 +211,11 @@ public abstract class AbstractSpringJerseyRestTestCase {
     }
 
     protected static MockHttpServletRequest createRequest(final ServletContext context, final String requestType, final String urlPath) {
+        final Set<String> emptySet = Collections.emptySet();
+        return createRequest(context, requestType, urlPath, "admin", emptySet);
+    }
+
+    protected static MockHttpServletRequest createRequest(final ServletContext context, final String requestType, final String urlPath, final String username, final Collection<String> roles) {
         final MockHttpServletRequest request = new MockHttpServletRequest(context, requestType, contextPath + urlPath) {
 
             @Override
@@ -213,8 +227,36 @@ public abstract class AbstractSpringJerseyRestTestCase {
         };
         request.setContextPath(contextPath);
         request.setUserPrincipal(MockUserPrincipal.getInstance());
+        MockUserPrincipal.setName(username);
+        if (username != null) {
+            for (final String role : roles) {
+                request.addUserRole(role);
+            }
+        }
         return request;
     }
+
+    protected void setUser(final String user) {
+        m_username = user;
+    }
+
+    protected String getUser() {
+        return m_username;
+    }
+
+    protected Collection<String> getUserRoles() {
+        return Collections.unmodifiableSet(new HashSet<String>(m_roles));
+    }
+
+    protected void addUserRole(final String role) {
+        m_roles.add(role);
+    }
+
+    protected void clearUserInfo() {
+        m_username = "admin";
+        m_roles.clear();
+    }
+
 
     /**
      * @param url
@@ -306,7 +348,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
      * @param statusCode
      */
     protected MockHttpServletResponse sendData(String requestType, String contentType, String url, String data, int statusCode) throws Exception {
-        MockHttpServletRequest request = createRequest(getServletContext(), requestType, url);
+        MockHttpServletRequest request = createRequest(getServletContext(), requestType, url, getUser(), getUserRoles());
         request.setContentType(contentType);
 
         if(contentType.equals(MediaType.APPLICATION_FORM_URLENCODED)){
@@ -363,7 +405,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
     }
 
     protected String sendRequest(final String requestType, final String url, final Map<?,?> parameters, final int expectedStatus, final String expectedUrlSuffix) throws Exception {
-        final MockHttpServletRequest request = createRequest(getServletContext(), requestType, url);
+        final MockHttpServletRequest request = createRequest(getServletContext(), requestType, url, getUser(), getUserRoles());
         request.setParameters(parameters);
         request.setQueryString(getQueryString(parameters));
         return sendRequest(request, expectedStatus, expectedUrlSuffix);
@@ -402,7 +444,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
     }
 
     protected String sendRequest(String requestType, String url, int expectedStatus) throws Exception {
-        final MockHttpServletRequest request = createRequest(getServletContext(), requestType, url);
+        final MockHttpServletRequest request = createRequest(getServletContext(), requestType, url, getUser(), getUserRoles());
         return sendRequest(request, expectedStatus);
     }
 
@@ -431,7 +473,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
     }
 
     protected <T> T getXmlObject(JAXBContext context, String url, int expectedStatus, Class<T> expectedClass) throws Exception {
-        MockHttpServletRequest request = createRequest(getServletContext(), GET, url);
+        MockHttpServletRequest request = createRequest(getServletContext(), GET, url, getUser(), getUserRoles());
         MockHttpServletResponse response = createResponse();
         dispatch(request, response);
         assertEquals(expectedStatus, response.getStatus());
@@ -454,7 +496,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
         marshaller.marshal(object, out);
         final byte[] content = out.toByteArray();
 
-        final MockHttpServletRequest request = createRequest(getServletContext(), PUT, url);
+        final MockHttpServletRequest request = createRequest(getServletContext(), PUT, url, getUser(), getUserRoles());
         request.setContentType(MediaType.APPLICATION_XML);
         request.setContent(content);
         final MockHttpServletResponse response = createResponse();

@@ -59,7 +59,6 @@ import org.opennms.netmgt.collectd.AbstractCollectionResource;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.config.collector.AttributeGroup;
 import org.opennms.netmgt.config.collector.CollectionSetVisitor;
-import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.model.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,7 +76,6 @@ public class XmpCollectionResource extends AbstractCollectionResource
     private final String m_resourceType;
     private final int m_nodeType;
     private final Set<AttributeGroup> m_listOfGroups;
-    private final CollectionAgent m_agent;
 
     /* constructors  ************************************* */
     public XmpCollectionResource(CollectionAgent agent, String resourceType, String nodeTypeName, String instance) 
@@ -92,7 +90,6 @@ public class XmpCollectionResource extends AbstractCollectionResource
         // resourceType tells us if we are writing under a separate RRD
         // subdir
 
-        this.m_agent = agent;
         this.m_nodeTypeName = nodeTypeName;
         if ((resourceType == null) || (resourceType.length() == 0)) {
             this.m_resourceType = null;
@@ -112,7 +109,7 @@ public class XmpCollectionResource extends AbstractCollectionResource
             String instanceValue = instance.replace('/','_');
             instanceValue = instanceValue.replace('\\','_');
             instanceValue = instanceValue.replace(':','_');
-            instanceValue.replace(' ','_');
+            instanceValue = instanceValue.replace(' ','_');
             this.m_instance = instanceValue;
         }
         else {
@@ -209,17 +206,6 @@ public class XmpCollectionResource extends AbstractCollectionResource
     public int getType() { return m_nodeType; }
 
     /**
-     * <p>rescanNeeded</p>
-     *
-     * @return a boolean.
-     */
-    @Override
-    public boolean rescanNeeded() { return false; }
-    /** {@inheritDoc} */
-    @Override
-    public boolean shouldPersist(ServiceParameters params) { return true; }
-
-    /**
      * <p>getGroups</p>
      *
      * @return a {@link java.util.Collection} object.
@@ -234,7 +220,10 @@ public class XmpCollectionResource extends AbstractCollectionResource
     @Override
     public String toString() { return "XmpCollectionResource for "+m_agent+" resType="+m_resourceType+" instance="+m_instance+" nodeType="+m_nodeTypeName+" nodeType="+m_nodeType; }
 
-    /** {@inheritDoc} */
+    /**
+     * @deprecated This class should be changed to store its {@link AttributeGroup}
+     * collection in {@link #m_attributeGroups} like all of the other implementations do. 
+     */
     @Override
     public void visit(CollectionSetVisitor visitor) 
     { 
@@ -252,10 +241,5 @@ public class XmpCollectionResource extends AbstractCollectionResource
         LOG.debug("XmpCollectionResource: visit finished for {}", m_agent);
 
     } /* visit */
-
-    @Override
-    public String getParent() {
-        return m_agent.getStorageDir().toString();
-    }
 
 } /* class XmpCollectionResource */

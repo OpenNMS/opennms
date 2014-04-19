@@ -34,10 +34,10 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.netmgt.model.RestResponseCollection;
+import org.opennms.core.config.api.JaxbListWrapper;
 
 @XmlRootElement(name="services")
-public class RequisitionMonitoredServiceCollection extends RestResponseCollection<RequisitionMonitoredService> {
+public class RequisitionMonitoredServiceCollection extends JaxbListWrapper<RequisitionMonitoredService> {
     private static final long serialVersionUID = 1L;
 
     public RequisitionMonitoredServiceCollection() { super(); }

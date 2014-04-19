@@ -34,6 +34,8 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.config.api.JaxbListWrapper;
+
 /**
  * <p>OnmsOutageCollection class.</p>
  *
@@ -41,7 +43,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @version $Id: $
  */
 @XmlRootElement(name="outages")
-public class OnmsOutageCollection extends RestResponseCollection<OnmsOutage> {
+public class OnmsOutageCollection extends JaxbListWrapper<OnmsOutage> {
     private static final long serialVersionUID = 1L;
 
     public OnmsOutageCollection() { super(); }

@@ -36,9 +36,11 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.config.api.JaxbListWrapper;
+
 @XmlRootElement(name="groups")
 @XmlAccessorType(XmlAccessType.NONE)
-public class OnmsGroupList extends RestResponseCollection<OnmsGroup> {
+public class OnmsGroupList extends JaxbListWrapper<OnmsGroup> {
     private static final long serialVersionUID = 1L;
 
     public OnmsGroupList() { super(); }

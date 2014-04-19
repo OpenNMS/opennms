@@ -28,10 +28,9 @@
 
 package org.opennms.netmgt.collectd.wmi;
 
-import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.AbstractCollectionResource;
+import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.config.collector.CollectionAttributeType;
-import org.opennms.netmgt.config.collector.ServiceParameters;
 
 /**
  * <p>Abstract WmiCollectionResource class.</p>
@@ -65,23 +64,6 @@ public abstract class WmiCollectionResource extends AbstractCollectionResource {
         return -1; //Is this right?
     }
 
-    //A rescan is never needed for the WmiCollector, at least on resources
-    /**
-     * <p>rescanNeeded</p>
-     *
-     * @return a boolean.
-     */
-    @Override
-    public boolean rescanNeeded() {
-        return false;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean shouldPersist(final ServiceParameters params) {
-        return true;
-    }
-
     /**
      * <p>setAttributeValue</p>
      *
@@ -109,9 +91,5 @@ public abstract class WmiCollectionResource extends AbstractCollectionResource {
      */
     @Override
     public abstract String getInstance();
-    
-    @Override
-    public String getParent() {
-        return m_agent.getStorageDir().toString();
-    }
+
 }

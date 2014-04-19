@@ -56,6 +56,7 @@ import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.config.BeanInfo;
 import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
 import org.opennms.netmgt.config.collectd.jmx.Attrib;
+import org.opennms.netmgt.config.collector.AbstractCollectionSet;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionAttributeType;
@@ -63,7 +64,6 @@ import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.config.collector.CollectionSetVisitor;
 import org.opennms.netmgt.config.collector.Persister;
-import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.config.collector.ServiceParameters.ParameterName;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
@@ -703,7 +703,7 @@ public abstract class JMXCollector implements ServiceCollector {
 
     }
     
-    private static class JMXCollectionAttribute extends AbstractCollectionAttribute implements CollectionAttribute {
+    private static class JMXCollectionAttribute extends AbstractCollectionAttribute {
 
         private final String m_alias;
         private final String m_value;
@@ -741,11 +741,6 @@ public abstract class JMXCollector implements ServiceCollector {
         @Override
         public String getStringValue() {
             return m_value;
-        }
-
-        @Override
-        public boolean shouldPersist(ServiceParameters params) {
-            return true;
         }
 
         @Override
@@ -793,16 +788,6 @@ public abstract class JMXCollector implements ServiceCollector {
             return -1; //Is this correct?
         }
 
-        @Override
-        public boolean rescanNeeded() {
-            return false;
-        }
-
-        @Override
-        public boolean shouldPersist(ServiceParameters params) {
-            return true;
-        }
-
         public void setAttributeValue(CollectionAttributeType type, String value) {
             JMXCollectionAttribute attr = new JMXCollectionAttribute(this, type, type.getName(), value);
             addAttribute(attr);
@@ -822,14 +807,9 @@ public abstract class JMXCollector implements ServiceCollector {
         public String getInstance() {
             return null; //For node type resources, use the default instance
         }
-
-        @Override
-        public String getParent() {
-            return m_agent.getStorageDir().toString();
-        }
     }
     
-    public static class JMXCollectionSet implements CollectionSet {
+    public static class JMXCollectionSet extends AbstractCollectionSet {
         private int m_status;
         private Date m_timestamp;
         private final JMXCollectionResource m_collectionResource;
@@ -859,11 +839,6 @@ public abstract class JMXCollector implements ServiceCollector {
             visitor.completeCollectionSet(this);
         }
 
-        @Override
-		public boolean ignorePersist() {
-			return false;
-		}        
-		
 		@Override
 		public Date getCollectionTimestamp() {
 			return m_timestamp;

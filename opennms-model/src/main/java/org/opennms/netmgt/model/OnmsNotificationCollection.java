@@ -34,8 +34,10 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.config.api.JaxbListWrapper;
+
 @XmlRootElement(name="notifications")
-public class OnmsNotificationCollection extends RestResponseCollection<OnmsNotification> {
+public class OnmsNotificationCollection extends JaxbListWrapper<OnmsNotification> {
     private static final long serialVersionUID = 1L;
 
     public OnmsNotificationCollection() { super(); }

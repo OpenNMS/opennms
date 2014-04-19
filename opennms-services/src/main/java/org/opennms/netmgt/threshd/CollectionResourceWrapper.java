@@ -66,8 +66,8 @@ public class CollectionResourceWrapper {
     private final String m_hostAddress;
     private final String m_serviceName;
     private String m_dsLabel;
-    private String m_iflabel;
-    private String m_ifindex;
+    private final String m_iflabel;
+    private final String m_ifindex;
     private final RrdRepository m_repository;
     private final CollectionResource m_resource;
     private final Map<String, CollectionAttribute> m_attributes;
@@ -77,20 +77,27 @@ public class CollectionResourceWrapper {
      * 
      * This is necessary for the *correct* calculation of Counter rates, across variable collection times and possible
      * collection failures (see NMS-4244)
-     * 
-     * Just a holder class for two associated values; no need for the formality of accessors
      */
-    static class CacheEntry {
-        final Date timestamp;
-        final Double value;
+    public static class CacheEntry {
+        private final Date m_timestamp;
+        private final Double m_value;
+
         public CacheEntry(final Date timestamp, final Double value) {
             if (timestamp == null) {
                 throw new IllegalArgumentException("Illegal null timestamp in cache value");
             } else if (value == null) {
                 throw new IllegalArgumentException("Illegal null value in cache value");
             }
-            this.timestamp = timestamp;
-            this.value = value;
+            this.m_timestamp = timestamp;
+            this.m_value = value;
+        }
+
+        public Date getTimestamp() {
+            return m_timestamp;
+        }
+
+        public Double getValue() {
+            return m_value;
         }
     }
 
@@ -109,7 +116,7 @@ public class CollectionResourceWrapper {
     /*
      * Holds interface ifInfo data for interface resource only. This avoid multiple calls to database for same resource.
      */
-    private Map<String, String> m_ifInfo;
+    private final Map<String, String> m_ifInfo = new HashMap<String,String>();
     
     /*
 	 * Holds the timestamp of the collection being thresholded, for the calculation of counter rates
@@ -139,33 +146,35 @@ public class CollectionResourceWrapper {
         m_repository = repository;
         m_resource = resource;
         m_attributes = attributes;
+
         if (isAnInterfaceResource()) {
             if (resource instanceof AliasedResource) { // TODO What about AliasedResource's custom attributes?
                 m_iflabel = ((AliasedResource) resource).getLabel();
-                m_ifInfo = ((AliasedResource) resource).getIfInfo().getAttributesMap();
+                m_ifInfo.putAll(((AliasedResource) resource).getIfInfo().getAttributesMap());
                 m_ifInfo.put("domain", ((AliasedResource) resource).getDomain());
-            }
-            if (resource instanceof IfInfo) {
+            } else if (resource instanceof IfInfo) {
                 m_iflabel = ((IfInfo) resource).getLabel();
-                m_ifInfo = ((IfInfo) resource).getAttributesMap();
-            }
-            if (resource instanceof LatencyCollectionResource) {
+                m_ifInfo.putAll(((IfInfo) resource).getAttributesMap());
+            } else if (resource instanceof LatencyCollectionResource) {
                 JdbcIfInfoGetter ifInfoGetter = new JdbcIfInfoGetter();
                 String ipAddress = ((LatencyCollectionResource) resource).getIpAddress();
                 m_iflabel = ifInfoGetter.getIfLabel(getNodeId(), ipAddress);
                 if (m_iflabel != null) { // See Bug 3488
-                    m_ifInfo = ifInfoGetter.getIfInfoForNodeAndLabel(getNodeId(), m_iflabel);
+                    m_ifInfo.putAll(ifInfoGetter.getIfInfoForNodeAndLabel(getNodeId(), m_iflabel));
                 } else {
                     LOG.info("Can't find ifLabel for latency resource {} on node {}", resource.getInstance(), getNodeId());
                 }
-            }
-            if (m_ifInfo != null) {
-                m_ifindex = m_ifInfo.get("snmpifindex");
             } else {
                 LOG.info("Can't find ifInfo for {}", resource);
+                m_iflabel = null;
             }
+
+            m_ifindex = m_ifInfo.get("snmpifindex");
+        } else {
+            m_ifindex = null;
+            m_iflabel = null;
         }
-    }    
+    }
     
     /**
      * <p>getNodeId</p>
@@ -303,9 +312,11 @@ public class CollectionResourceWrapper {
      * @return a {@link java.lang.String} object.
      */
     protected String getIfInfoValue(String attribute) {
-        if (m_ifInfo != null)
+        if (m_ifInfo != null) {
             return m_ifInfo.get(attribute);
-        return null;
+        } else {
+            return null;
+        }
     }
     
     /**
@@ -323,14 +334,12 @@ public class CollectionResourceWrapper {
      * @return a boolean.
      */
     public boolean isValidInterfaceResource() {
-        if (m_ifInfo == null) {
-            return false;
-        }
         try {
-            if(null == m_ifindex)
+            if(m_ifindex == null) {
                 return false;
-            if(Integer.parseInt(m_ifindex) < 0)
+            } else if(Integer.parseInt(m_ifindex) < 0) {
                 return false;
+            }
         } catch(Throwable e) {
             return false;
         }
@@ -389,12 +398,12 @@ public class CollectionResourceWrapper {
         if (m_localCache.containsKey(id) == false) {
             // Atomically replace the CacheEntry with the new value
             CacheEntry last = s_cache.put(id, new CacheEntry(m_collectionTimestamp, current));
-            LOG.debug("getCounterValue: id={}, last={}, current={}", id, (last==null ? last : last.value +"@"+ last.timestamp), current);
+            LOG.debug("getCounterValue: id={}, last={}, current={}", id, (last==null ? last : last.m_value +"@"+ last.m_timestamp), current);
             if (last == null) {
                 m_localCache.put(id, Double.NaN);
                 LOG.info("getCounterValue: unknown last value for {}, ignoring current", id);
             } else {                
-                Double delta = current.doubleValue() - last.value.doubleValue();
+                Double delta = current.doubleValue() - last.m_value.doubleValue();
                 // wrapped counter handling(negative delta), rrd style
                 if (delta < 0) {
                     double newDelta = delta.doubleValue();
@@ -405,14 +414,14 @@ public class CollectionResourceWrapper {
                         // try 64-bit adjustment
                         newDelta += Math.pow(2, 64) - Math.pow(2, 32);
                     }
-                    LOG.info("getCounterValue: {}(counter) wrapped counter adjusted last={}@{}, current={}, olddelta={}, newdelta={}", id, last.value, last.timestamp, current, delta, newDelta);
+                    LOG.info("getCounterValue: {}(counter) wrapped counter adjusted last={}@{}, current={}, olddelta={}, newdelta={}", id, last.m_value, last.m_timestamp, current, delta, newDelta);
                     delta = newDelta;
                 }
                 // Get the interval between when this current collection was taken, and the last time this
                 // value was collected (and had a counter rate calculated for it).
                 // If the interval is zero, than the current rate must returned as 0.0 since there can be 
                 // no delta across a time interval of zero.
-                long interval = ( m_collectionTimestamp.getTime() - last.timestamp.getTime() ) / 1000;
+                long interval = ( m_collectionTimestamp.getTime() - last.m_timestamp.getTime() ) / 1000;
                 if (interval > 0) {
                     final Double value = (delta/interval);
                     LOG.debug("getCounterValue: id={}, value={}, delta={}, interval={}", id, value, delta, interval);

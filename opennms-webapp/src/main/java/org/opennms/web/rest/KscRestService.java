@@ -53,10 +53,10 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
-import org.opennms.netmgt.model.RestResponseCollection;
 import org.opennms.web.svclayer.KscReportService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -187,7 +187,7 @@ public class KscRestService extends OnmsRestService {
 
     @Entity
     @XmlRootElement(name = "kscReports")
-    public static final class KscReportCollection extends RestResponseCollection<KscReport> {
+    public static final class KscReportCollection extends JaxbListWrapper<KscReport> {
         private static final long serialVersionUID = 1L;
 
         public KscReportCollection() {super();}

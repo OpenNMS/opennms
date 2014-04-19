@@ -34,8 +34,10 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.config.api.JaxbListWrapper;
+
 @XmlRootElement(name = "links")
-public class DataLinkInterfaceList extends RestResponseCollection<DataLinkInterface> {
+public class DataLinkInterfaceList extends JaxbListWrapper<DataLinkInterface> {
     private static final long serialVersionUID = 1L;
 
     public DataLinkInterfaceList() { super(); }

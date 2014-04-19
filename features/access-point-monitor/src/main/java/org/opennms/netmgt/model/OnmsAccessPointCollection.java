@@ -34,8 +34,10 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.config.api.JaxbListWrapper;
+
 @XmlRootElement(name = "accesspoints")
-public class OnmsAccessPointCollection extends RestResponseCollection<OnmsAccessPoint> {
+public class OnmsAccessPointCollection extends JaxbListWrapper<OnmsAccessPoint> {
     private static final long serialVersionUID = 1L;
 
     public OnmsAccessPointCollection() { super(); }

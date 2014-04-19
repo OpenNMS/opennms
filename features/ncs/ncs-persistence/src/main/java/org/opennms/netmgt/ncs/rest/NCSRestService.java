@@ -50,7 +50,7 @@ import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.netmgt.model.RestResponseCollection;
+import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.netmgt.model.ncs.NCSComponent;
 import org.opennms.netmgt.ncs.persistence.NCSComponentService;
 import org.slf4j.Logger;
@@ -235,7 +235,7 @@ public class NCSRestService {
     }
 
     @XmlRootElement(name="components")
-    public static class ComponentList extends RestResponseCollection<NCSComponent> {
+    public static class ComponentList extends JaxbListWrapper<NCSComponent> {
         private static final long serialVersionUID = 1L;
 
         public ComponentList() { super(); }

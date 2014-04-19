@@ -67,13 +67,6 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
 
     /**
      * <p>Constructor for BasePersister.</p>
-     */
-    public BasePersister() {
-        super();
-    }
-
-    /**
-     * <p>Constructor for BasePersister.</p>
      *
      * @param params a {@link org.opennms.netmgt.config.collector.ServiceParameters} object.
      * @param repository a {@link org.opennms.netmgt.model.RrdRepository} object.
@@ -144,8 +137,9 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
      */
     protected void createBuilder(CollectionResource resource, String name, Set<AttributeDefinition> attributeTypes) {
         m_builder = new PersistOperationBuilder(getRepository(), resource, name);
-        if (resource.getTimeKeeper() != null)
+        if (resource.getTimeKeeper() != null) {
             m_builder.setTimeKeeper(resource.getTimeKeeper());
+        }
         for (Iterator<AttributeDefinition> iter = attributeTypes.iterator(); iter.hasNext();) {
             AttributeDefinition attrType = iter.next();
             if (attrType instanceof NumericAttributeType) {
@@ -175,8 +169,8 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     /** {@inheritDoc} */
     @Override
     public void persistNumericAttribute(CollectionAttribute attribute) {
-	LOG.debug("Persisting {} {}", attribute, (isIgnorePersist() ? ". Ignoring value because of sysUpTime changed" : ""));
-    	String value = isIgnorePersist() ? "U" : attribute.getNumericValue();
+        LOG.debug("Persisting {} {}", attribute, (isIgnorePersist() ? ". Ignoring value because of sysUpTime changed." : ""));
+        String value = isIgnorePersist() ? "U" : attribute.getNumericValue();
         m_builder.setAttributeValue(attribute.getAttributeType(), value);
         m_builder.setAttributeMetadata(attribute.getMetricIdentifier(), attribute.getName());
     }
@@ -205,19 +199,15 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
             }
     }
 
-    private boolean pop() {
-        boolean top = top();
-        m_stack.removeLast();
-        return top;
-    }
-
     /**
      * <p>popShouldPersist</p>
      *
      * @return a boolean.
      */
     protected boolean popShouldPersist() {
-        return pop();
+        boolean top = top();
+        m_stack.removeLast();
+        return top;
     }
     
     private void push(boolean b) {
@@ -247,7 +237,8 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     }
 
     /**
-     * <p>pushShouldPersist</p>
+     * Push {@link CollectionResource} instances directly onto the stack without checking
+     * {@link #top()} since they are the top-level resources.
      *
      * @param resource a {@link org.opennms.netmgt.config.collector.CollectionResource} object.
      */
@@ -317,14 +308,5 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
 	public void setIgnorePersist(boolean ignore) {
 		m_ignorePersist = ignore;
 	}
-
-    /**
-     * <p>getBuilder</p>
-     *
-     * @return a {@link org.opennms.netmgt.collectd.PersistOperationBuilder} object.
-     */
-    public PersistOperationBuilder getBuilder() {
-        return m_builder;
-    }
 
 }

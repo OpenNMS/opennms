@@ -45,6 +45,7 @@ import org.opennms.netmgt.collectd.AbstractCollectionResource;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.ServiceCollector;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
+import org.opennms.netmgt.config.collector.AbstractCollectionSet;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionAttributeType;
@@ -116,7 +117,7 @@ public class NSClientCollector implements ServiceCollector {
 
     }
     
-    private static class NSClientCollectionAttribute extends AbstractCollectionAttribute implements CollectionAttribute {
+    private static class NSClientCollectionAttribute extends AbstractCollectionAttribute {
 
         private final String m_alias;
         private final String m_value;
@@ -157,11 +158,6 @@ public class NSClientCollector implements ServiceCollector {
         }
 
         @Override
-        public boolean shouldPersist(ServiceParameters params) {
-            return true;
-        }
-
-        @Override
         public String getType() {
             return m_attribType.getType();
         }
@@ -189,17 +185,6 @@ public class NSClientCollector implements ServiceCollector {
             return -1; //Is this right?
         }
 
-        //A rescan is never needed for the NSClientCollector, at least on resources
-        @Override
-        public boolean rescanNeeded() {
-            return false;
-        }
-
-        @Override
-        public boolean shouldPersist(ServiceParameters params) {
-            return true;
-        }
-
         public void setAttributeValue(CollectionAttributeType type, String value) {
             NSClientCollectionAttribute attr = new NSClientCollectionAttribute(this, type, type.getName(), value);
             addAttribute(attr);
@@ -214,14 +199,9 @@ public class NSClientCollector implements ServiceCollector {
         public String getInstance() {
             return null; //For node type resources, use the default instance
         }
-
-        @Override
-        public String getParent() {
-            return m_agent.getStorageDir().toString();
-        }
     }
     
-    private static class NSClientCollectionSet implements CollectionSet {
+    private static class NSClientCollectionSet extends AbstractCollectionSet {
         private int m_status;
         private final Date m_timestamp;
         private final NSClientCollectionResource m_collectionResource;
@@ -251,11 +231,6 @@ public class NSClientCollector implements ServiceCollector {
         public NSClientCollectionResource getResource() {
             return m_collectionResource;
         }
-
-        @Override
-		public boolean ignorePersist() {
-			return false;
-		}
 
 		@Override
 		public Date getCollectionTimestamp() {

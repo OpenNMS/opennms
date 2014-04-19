@@ -55,6 +55,7 @@ import org.opennms.netmgt.config.collectd.Filter;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Parameter;
 import org.opennms.netmgt.config.collectd.Service;
+import org.opennms.netmgt.config.collector.AbstractCollectionSet;
 import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.config.collector.CollectionSetVisitor;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -272,29 +273,24 @@ public class CollectdIntegrationTest extends TestCase {
         @Override
         public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> parameters) {
             m_collectCount++;
-            CollectionSet collectionSetResult=new CollectionSet() {
-            	private Date m_timestamp = new Date();
+            CollectionSet collectionSetResult=new AbstractCollectionSet() {
+                private Date m_timestamp = new Date();
 
-                    @Override
+                @Override
                 public int getStatus() {
                     return ServiceCollector.COLLECTION_SUCCEEDED;
                 }
 
-                    @Override
+                @Override
                 public void visit(CollectionSetVisitor visitor) {
                     visitor.visitCollectionSet(this);   
                     visitor.completeCollectionSet(this);
                 }
 
-                    @Override
-				public boolean ignorePersist() {
-					return false;
-				}
-				
-                    @Override
-				public Date getCollectionTimestamp() {
-					return m_timestamp;
-				}
+                @Override
+                public Date getCollectionTimestamp() {
+                    return m_timestamp;
+                }
             }; 
             return collectionSetResult;
         }

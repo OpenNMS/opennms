@@ -50,7 +50,7 @@ public class AliasedGroup extends AttributeGroup {
     
     private static final Logger LOG = LoggerFactory.getLogger(AliasedGroup.class);
 	
-	AttributeGroup m_group;
+	private final AttributeGroup m_group;
 
 	/**
 	 * <p>Constructor for AliasedGroup.</p>
