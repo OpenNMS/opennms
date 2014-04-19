@@ -178,41 +178,82 @@ public class NodeDaoTest implements InitializingBean {
     
     @Test
     @Transactional
-    @Ignore
-    public void testCreateWithLldp() throws InterruptedException {
+    public void testLldpSaveAndUpdate() throws InterruptedException {
         OnmsDistPoller distPoller = getDistPoller();
 
         OnmsNode node = new OnmsNode(distPoller);
-        node.setLabel("MyFirstNode");
-        LldpElement lldpElement = new LldpElement();
-        lldpElement.setLldpChassisId("abc123456");
-        lldpElement.setLldpChassisIdSubType(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS);
-        lldpElement.setLldpSysname("prova");
-        lldpElement.setNode(node);
-        node.setLldpElement(lldpElement);
+        node.setLabel("MyFirstLldpNode");
         getNodeDao().save(node);
+        getNodeDao().flush();
         
-        System.out.println("BEFORE GET");
         OnmsDistPoller dp = getDistPoller();
         assertSame(distPoller, dp);
-        System.out.println("AFTER GET");
         Collection<OnmsNode> nodes = getNodeDao().findNodes(dp);
         assertEquals(7, nodes.size());
-        System.out.println("AFTER GETNODES");
+        Integer nodeid = null;
         for (OnmsNode retrieved : nodes) {
-            System.out.println("category for "+retrieved.getId()+" = "+retrieved.getAssetRecord().getDisplayCategory());
-            if (node.getId().intValue() == 5) {
-                assertEquals("MyFirstNode", retrieved.getLabel());
-                assertNotNull(node.getLldpElement());
-                System.out.println("lldp element id: " + node.getLldpElement().getId());
-                assertEquals("abc123456", node.getLldpElement().getLldpChassisId());
-                assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, node.getLldpElement().getLldpChassisIdSubType());
-                assertEquals("prova", node.getLldpElement().getLldpSysname());
-                assertNotNull(node.getLldpElement().getLldpNodeCreateTime());
-                assertNotNull(node.getLldpElement().getLldpNodeLastPollTime());
+            if (retrieved.getLabel().equals("MyFirstLldpNode")) {
+            	nodeid = retrieved.getId();
+                System.out.println("nodeid: " +nodeid);
             }
         }
-        System.out.println("AFTER Loop");
+        
+        OnmsNode dbnode1 = getNodeDao().get(nodeid);
+        assertNotNull(dbnode1);
+        
+        if (dbnode1.getLldpElement() == null ) {
+	        LldpElement lldpElement = new LldpElement();
+	        lldpElement.setLldpChassisId("abc123456");
+	        lldpElement.setLldpChassisIdSubType(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS);
+	        lldpElement.setLldpSysname("prova");
+	        lldpElement.setNode(node);
+	        dbnode1.setLldpElement(lldpElement);
+    	}
+        getNodeDao().save(dbnode1);
+        getNodeDao().flush();
+
+        OnmsNode dbnode2 = getNodeDao().get(nodeid);
+        assertNotNull(dbnode2);
+        assertNotNull(dbnode2.getLldpElement());
+
+        System.out.println("lldp element id: " + dbnode2.getLldpElement().getId());
+        System.out.println("lldp element create time: " + dbnode2.getLldpElement().getLldpNodeCreateTime());
+        System.out.println("lldp element last poll time: " + dbnode2.getLldpElement().getLldpNodeLastPollTime());
+        assertEquals("abc123456", dbnode2.getLldpElement().getLldpChassisId());
+        assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, dbnode2.getLldpElement().getLldpChassisIdSubType());
+        assertEquals("prova", dbnode2.getLldpElement().getLldpSysname());
+        assertNotNull(dbnode2.getLldpElement().getLldpNodeCreateTime());
+        assertNotNull(dbnode2.getLldpElement().getLldpNodeLastPollTime());
+        
+        System.out.println("---------");
+        Thread.sleep(1000);
+        System.out.println("---------");
+
+        LldpElement lldpUpdateElement = new LldpElement();
+        lldpUpdateElement.setLldpChassisId("abc012345");
+        lldpUpdateElement.setLldpChassisIdSubType(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS);
+        lldpUpdateElement.setLldpSysname("prova");
+
+        LldpElement dbLldpElement = dbnode2.getLldpElement();
+        dbLldpElement.merge(lldpUpdateElement);
+        dbnode2.setLldpElement(dbLldpElement);
+
+        getNodeDao().save(dbnode2);
+        getNodeDao().flush();
+
+        OnmsNode dbnode3 = getNodeDao().get(nodeid);
+        assertNotNull(dbnode3);
+        assertNotNull(dbnode3.getLldpElement());
+
+        System.out.println("lldp element id: " + dbnode3.getLldpElement().getId());
+        System.out.println("lldp element create time: " + dbnode3.getLldpElement().getLldpNodeCreateTime());
+        System.out.println("lldp element last poll time: " + dbnode3.getLldpElement().getLldpNodeLastPollTime());
+        assertEquals("abc012345", dbnode3.getLldpElement().getLldpChassisId());
+        assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, dbnode3.getLldpElement().getLldpChassisIdSubType());
+        assertEquals("prova", dbnode3.getLldpElement().getLldpSysname());
+        assertNotNull(dbnode3.getLldpElement().getLldpNodeCreateTime());
+        assertNotNull(dbnode3.getLldpElement().getLldpNodeLastPollTime());
+
         
     }    
 

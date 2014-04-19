@@ -144,6 +144,7 @@ public class LldpLink implements Serializable {
 	private OnmsNode m_node;
 	
 	private LldpPortIdSubType m_lldpPortIdSubType;
+	private Integer m_lldpLocalPortNum;
 	private Integer m_lldpPortIfindex;
 	private String m_lldpPortId;
 	private String m_lldpPortDescr;
@@ -186,6 +187,16 @@ public class LldpLink implements Serializable {
 		m_node = node;
 	}
 
+    @Column(name="lldpLocalPortNum", nullable = false)
+	public Integer getLldpLocalPortNum() {
+		return m_lldpLocalPortNum;
+	}
+
+	public void setLldpLocalPortNum(Integer lldpLocalPortNum) {
+		m_lldpLocalPortNum = lldpLocalPortNum;
+	}
+
+
 
     @Column(name="lldpPortIdSubType", nullable = false)
     @Type(type="org.opennms.netmgt.model.LldpPortIdSubTypeUserType")
@@ -198,6 +209,7 @@ public class LldpLink implements Serializable {
 		m_lldpPortIdSubType = lldpPortIdSubType;
 	}
 
+	
     @Column(name="lldpPortId" , length=256, nullable = false)
 	public String getLldpPortId() {
 		return m_lldpPortId;

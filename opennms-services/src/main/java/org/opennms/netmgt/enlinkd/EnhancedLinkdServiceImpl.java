@@ -127,9 +127,14 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 		final OnmsNode node = m_nodeDao.get(nodeId);
 		if ( node == null )
 			return;
+		
 		LldpElement dbelement = node.getLldpElement();
-		dbelement.merge(element);
-        node.setLldpElement(dbelement);
+		if (node.getLldpElement() != null) {
+			dbelement.merge(element);
+			node.setLldpElement(dbelement);
+		} else {
+			node.setLldpElement(element);
+		}
 
         m_nodeDao.saveOrUpdate(node);
 		m_nodeDao.flush();

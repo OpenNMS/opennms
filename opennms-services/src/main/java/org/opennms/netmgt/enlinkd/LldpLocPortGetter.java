@@ -34,6 +34,7 @@ public class LldpLocPortGetter extends TableTracker {
 		if (val == null || val.length != 3 || val[0] == null || val[1] == null || !val[0].isNumeric())
 			return null;
 		LldpLink lldplink = new LldpLink();
+		lldplink.setLldpLocalPortNum(lldpRemLocalPortNum);
 		lldplink.setLldpPortId(LldpHelper.decodeLldpLink(val[0].toInt(),val[1]));
 		lldplink.setLldpPortIdSubType(LldpPortIdSubType.get(val[0].toInt()));
 		if (val[2] != null)

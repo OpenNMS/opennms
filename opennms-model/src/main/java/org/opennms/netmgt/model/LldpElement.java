@@ -265,7 +265,7 @@ public final class LldpElement implements Serializable {
 			return;
 		setLldpChassisId(element.getLldpChassisId());
 		setLldpChassisIdSubType(element.getLldpChassisIdSubType());
-		setLldpSysname(getLldpSysname());
+		setLldpSysname(element.getLldpSysname());
 		setLldpNodeLastPollTime(element.getLldpNodeLastPollTime());
 	}
 }

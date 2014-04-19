@@ -2247,18 +2247,40 @@ CREATE UNIQUE INDEX catgroup_unique_idx on category_group(categoryId, groupId);
 
 --# Begin enlinkd table
 drop table lldpElement cascade;
+drop table lldpLink cascade;
 
 create table lldpElement (
       id integer default nextval('opennmsnxtid') not null,
-      nodeid          integer,
-      lldpChassisId varchar(255),
-      lldpChassisIdSubType integer,
-      lldpSysname varchar(255),
+      nodeid          integer not null,
+      lldpChassisId varchar(255) not null,
+      lldpChassisIdSubType integer not null,
+      lldpSysname varchar(255) not null,
 	  lldpNodeCreateTime	timestamp not null,
       lldpNodeLastPollTime	timestamp not null,
       constraint pk_lldpelement_id primary key (id),
-      constraint fk_nodeIDlldp foreign key (nodeid) references node ON DELETE CASCADE
+      constraint fk_nodeIDlldpelem foreign key (nodeid) references node ON DELETE CASCADE
 );
+
+create table lldpLink (
+      id integer default nextval('opennmsnxtid') not null,
+      nodeid          integer not null,
+      lldpLocalPortNum integer not null,
+      lldpPortId varchar(255) not null,
+      lldpPortIdSubType integer not null,
+      lldpPortDescr varchar(255) not null,
+      lldpPortIfindex integer,
+      lldpRemChassisId varchar(255) not null,
+      lldpRemChassisIdSubType integer not null,
+      lldpRemSysname varchar(255) not null,
+      lldpRemPortId varchar(255) not null,
+      lldpRemPortIdSubType integer not null,
+      lldpRemPortDescr varchar(255) not null,
+	  lldpLinkCreateTime	timestamp not null,
+      lldpLinkLastPollTime	timestamp not null,
+      constraint pk_lldplink_id primary key (id),
+      constraint fk_nodeIDlldplink foreign key (nodeid) references node ON DELETE CASCADE
+);
+
 --# End enlinkd table
 
 --# Begin Quartz persistence tables
