@@ -41,9 +41,6 @@ import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.DELHI_IP;
 import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.DELHI_IP_IF_MAP;
 import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.DELHI_NAME;
 import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.DELHI_SNMP_RESOURCE_B;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CHENNAI_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CHENNAI_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CHENNAI_SNMP_RESOURCE_B;
 import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.BANGALORE_IP;
 import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.BANGALORE_IP_IF_MAP;
 import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.BANGALORE_NAME;
@@ -62,9 +59,6 @@ import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SPACE_EX_SW1_SNMP
 import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SPACE_EX_SW2_IP;
 import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SPACE_EX_SW2_NAME;
 import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SPACE_EX_SW2_SNMP_RESOURCE_B;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.J6350_41_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.J6350_41_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.J6350_41_SNMP_RESOURCE_B;
 import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.J6350_42_IP;
 import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.J6350_42_LLDP_CHASSISID;
 import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.J6350_42_NAME;
@@ -72,9 +66,6 @@ import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.J6350_42_SNMP_RES
 import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SRX_100_IP;
 import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SRX_100_NAME;
 import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SRX_100_SNMP_RESOURCE_B;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SSG550_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SSG550_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SSG550_SNMP_RESOURCE_B;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 

@@ -28,6 +28,25 @@
 
 package org.opennms.netmgt.linkd;
 
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO_C870_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO_C870_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO_C870_BRIDGEID;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO_WS_C2948_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO_WS_C2948_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO_WS_C2948_BRIDGEID;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.DARWIN_10_8_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.DARWIN_10_8_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.LINUX_UBUNTU_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.LINUX_UBUNTU_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.NETGEAR_SW_108_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.NETGEAR_SW_108_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.NETGEAR_SW_108_BRIDGEID;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.WORKSTATION_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.WORKSTATION_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.WORKSTATION_MAC;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.ACCESSPOINT_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.ACCESSPOINT_NAME;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -65,6 +84,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 public class Nms7467Test extends LinkdTestBuilder {
 
+	Nms7467NetworkBuilder builder = new Nms7467NetworkBuilder();
     @Test
     public void testDefaultConfiguration() throws MarshalException, ValidationException, IOException {
         
@@ -109,8 +129,8 @@ public class Nms7467Test extends LinkdTestBuilder {
         
         assertEquals(false, m_linkdConfig.isInterfaceInPackage(InetAddressUtils.addr(CISCO_C870_IP), example1));
         
-        m_nodeDao.save(getCiscoC870());
-        m_nodeDao.save(getCiscoWsC2948());
+        m_nodeDao.save(builder.getCiscoC870());
+        m_nodeDao.save(builder.getCiscoWsC2948());
         m_nodeDao.flush();
         
         m_linkdConfig.update();
@@ -157,13 +177,13 @@ public class Nms7467Test extends LinkdTestBuilder {
         example1.setSaveRouteTable(true);
         example1.setUseCdpDiscovery(true);
 
-        m_nodeDao.save(getCiscoC870());
-        m_nodeDao.save(getCiscoWsC2948());
-        m_nodeDao.save(getNetGearSw108());
-        m_nodeDao.save(getDarwin108());       
-        m_nodeDao.save(getLinuxUbuntu());
-        m_nodeDao.save(getNodeWithoutSnmp(ACCESSPOINT_NAME, ACCESSPOINT_IP));
-        m_nodeDao.save(getNodeWithoutSnmp(WORKSTATION_NAME, WORKSTATION_IP));
+        m_nodeDao.save(builder.getCiscoC870());
+        m_nodeDao.save(builder.getCiscoWsC2948());
+        m_nodeDao.save(builder.getNetGearSw108());
+        m_nodeDao.save(builder.getDarwin108());       
+        m_nodeDao.save(builder.getLinuxUbuntu());
+        m_nodeDao.save(builder.getNodeWithoutSnmp(ACCESSPOINT_NAME, ACCESSPOINT_IP));
+        m_nodeDao.save(builder.getNodeWithoutSnmp(WORKSTATION_NAME, WORKSTATION_IP));
 
         m_nodeDao.flush();
 
@@ -273,7 +293,7 @@ public class Nms7467Test extends LinkdTestBuilder {
     })
     public void testCiscoWsC2948Collection() throws Exception {
         
-        m_nodeDao.save(getCiscoWsC2948());
+        m_nodeDao.save(builder.getCiscoWsC2948());
         m_nodeDao.flush();
         
         Package example1 = m_linkdConfig.getPackage("example1");
@@ -372,7 +392,7 @@ public class Nms7467Test extends LinkdTestBuilder {
             @JUnitSnmpAgent(host=CISCO_C870_IP, port=161, resource="classpath:linkd/nms7467/"+CISCO_C870_IP+"-walk.txt")
     })
     public void testCiscoC870Collection() throws Exception {
-        m_nodeDao.save(getCiscoC870());
+        m_nodeDao.save(builder.getCiscoC870());
         m_nodeDao.flush();
         
         Package example1 = m_linkdConfig.getPackage("example1");
@@ -497,7 +517,7 @@ public class Nms7467Test extends LinkdTestBuilder {
             @JUnitSnmpAgent(host=NETGEAR_SW_108_IP, port=161, resource="classpath:linkd/nms7467/"+NETGEAR_SW_108_IP+"-walk.txt")
     })
     public void testNetGearSw108Collection() throws Exception {
-        m_nodeDao.save(getNetGearSw108());
+        m_nodeDao.save(builder.getNetGearSw108());
         m_nodeDao.flush();
 
         final OnmsNode ngsw108 = m_nodeDao.findByForeignId("linkd", NETGEAR_SW_108_NAME);
@@ -602,7 +622,7 @@ public class Nms7467Test extends LinkdTestBuilder {
             @JUnitSnmpAgent(host=LINUX_UBUNTU_IP, port=161, resource="classpath:linkd/nms7467/"+LINUX_UBUNTU_IP+"-walk.txt")
     })
     public void testLinuxUbuntuCollection() throws Exception {
-        m_nodeDao.save(getLinuxUbuntu());
+        m_nodeDao.save(builder.getLinuxUbuntu());
         m_nodeDao.flush();
         
         final OnmsNode linux = m_nodeDao.findByForeignId("linkd", LINUX_UBUNTU_NAME);
@@ -688,7 +708,7 @@ public class Nms7467Test extends LinkdTestBuilder {
             @JUnitSnmpAgent(host=DARWIN_10_8_IP, port=161, resource="classpath:linkd/nms7467/"+DARWIN_10_8_IP+"-walk.txt")
     })
     public void testDarwin108Collection() throws Exception {
-        m_nodeDao.save(getDarwin108());
+        m_nodeDao.save(builder.getDarwin108());
         m_nodeDao.flush();
         
         Package example1 = m_linkdConfig.getPackage("example1");
@@ -778,7 +798,7 @@ public class Nms7467Test extends LinkdTestBuilder {
 
     @Test
     public void testWorkStation() throws Exception {
-        m_nodeDao.save(getNodeWithoutSnmp(WORKSTATION_NAME,WORKSTATION_IP));
+        m_nodeDao.save(builder.getNodeWithoutSnmp(WORKSTATION_NAME,WORKSTATION_IP));
         m_nodeDao.flush();
         final OnmsNode workstation = m_nodeDao.findByForeignId("linkd", WORKSTATION_NAME);
 
@@ -795,8 +815,8 @@ public class Nms7467Test extends LinkdTestBuilder {
             @JUnitSnmpAgent(host=NETGEAR_SW_108_IP, port=161, resource="classpath:linkd/nms7467/"+NETGEAR_SW_108_IP+"-walk.txt")
     })
     public void testLinkDarwinNetgear() throws Exception {
-        m_nodeDao.save(getNetGearSw108());
-        m_nodeDao.save(getDarwin108());
+        m_nodeDao.save(builder.getNetGearSw108());
+        m_nodeDao.save(builder.getDarwin108());
         m_nodeDao.flush();
 
         final OnmsNode mac = m_nodeDao.findByForeignId("linkd", DARWIN_10_8_NAME);
@@ -843,8 +863,8 @@ public class Nms7467Test extends LinkdTestBuilder {
     	Package example1 = m_linkdConfig.getPackage("example1");
         example1.setForceIpRouteDiscoveryOnEthernet(false);
 
-    	m_nodeDao.save(getNetGearSw108());
-        m_nodeDao.save(getCiscoWsC2948());
+    	m_nodeDao.save(builder.getNetGearSw108());
+        m_nodeDao.save(builder.getCiscoWsC2948());
         m_nodeDao.flush();
 
         final OnmsNode ngsw108 = m_nodeDao.findByForeignId("linkd", NETGEAR_SW_108_NAME);
@@ -891,8 +911,8 @@ public class Nms7467Test extends LinkdTestBuilder {
             @JUnitSnmpAgent(host=LINUX_UBUNTU_IP, port=161, resource="classpath:linkd/nms7467/"+LINUX_UBUNTU_IP+"-walk.txt")
     })
     public void testLinuxUbuntuCiscoWs() throws Exception {
-        m_nodeDao.save(getLinuxUbuntu());
-        m_nodeDao.save(getCiscoWsC2948());
+        m_nodeDao.save(builder.getLinuxUbuntu());
+        m_nodeDao.save(builder.getCiscoWsC2948());
         m_nodeDao.flush();
 
         final OnmsNode linuxubuntu = m_nodeDao.findByForeignId("linkd", LINUX_UBUNTU_NAME);
@@ -936,8 +956,8 @@ public class Nms7467Test extends LinkdTestBuilder {
             @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource="classpath:linkd/nms7467/"+CISCO_WS_C2948_IP+"-walk.txt")
     })
     public void testWorkstationCiscoWs() throws Exception {
-        m_nodeDao.save(getNodeWithoutSnmp(WORKSTATION_NAME, WORKSTATION_IP));
-        m_nodeDao.save(getCiscoWsC2948());
+        m_nodeDao.save(builder.getNodeWithoutSnmp(WORKSTATION_NAME, WORKSTATION_IP));
+        m_nodeDao.save(builder.getCiscoWsC2948());
         m_nodeDao.flush();
 
         final OnmsNode workstation = m_nodeDao.findByForeignId("linkd", WORKSTATION_NAME);
@@ -985,7 +1005,7 @@ public class Nms7467Test extends LinkdTestBuilder {
 
     @Test
     public void testGetNodeidFromIp() throws UnknownHostException, SQLException {
-        m_nodeDao.save(getCiscoC870());
+        m_nodeDao.save(builder.getCiscoC870());
         m_nodeDao.flush();
         
         HibernateEventWriter db = (HibernateEventWriter)m_linkd.getQueryManager();
@@ -997,8 +1017,8 @@ public class Nms7467Test extends LinkdTestBuilder {
     @Test 
     @Transactional
     public void testGetIfIndexByName() throws SQLException {
-        m_nodeDao.save(getCiscoC870());
-        m_nodeDao.save(getCiscoWsC2948());
+        m_nodeDao.save(builder.getCiscoC870());
+        m_nodeDao.save(builder.getCiscoWsC2948());
         m_nodeDao.flush();
 
         OnmsNode ciscorouter = m_nodeDao.findByForeignId("linkd", CISCO_C870_NAME);
@@ -1037,8 +1057,8 @@ public class Nms7467Test extends LinkdTestBuilder {
         example1.setEnableVlanDiscovery(false);
 
     	
-    	m_nodeDao.save(getCiscoC870());
-        m_nodeDao.save(getCiscoWsC2948());
+    	m_nodeDao.save(builder.getCiscoC870());
+        m_nodeDao.save(builder.getCiscoWsC2948());
         m_nodeDao.flush();
 
         assertEquals(2, m_nodeDao.countAll());
@@ -1103,8 +1123,8 @@ public class Nms7467Test extends LinkdTestBuilder {
        example1.setSaveStpInterfaceTable(false);
        example1.setEnableVlanDiscovery(false);
 
-       m_nodeDao.save(getCiscoWsC2948());
-       m_nodeDao.save(getNodeWithoutSnmp(ACCESSPOINT_NAME, ACCESSPOINT_IP));
+       m_nodeDao.save(builder.getCiscoWsC2948());
+       m_nodeDao.save(builder.getNodeWithoutSnmp(ACCESSPOINT_NAME, ACCESSPOINT_IP));
        m_nodeDao.flush();
 
        assertEquals(2, m_nodeDao.countAll());

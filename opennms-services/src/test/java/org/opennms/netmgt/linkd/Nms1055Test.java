@@ -28,6 +28,31 @@
 
 package org.opennms.netmgt.linkd;
 
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.PENROSE_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.PENROSE_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.PENROSE_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.PENROSE_LLDP_CHASSISID;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.DELAWARE_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.DELAWARE_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.DELAWARE_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.DELAWARE_LLDP_CHASSISID;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.PHOENIX_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.PHOENIX_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.PHOENIX_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.PHOENIX_LLDP_CHASSISID;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.AUSTIN_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.AUSTIN_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.AUSTIN_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.AUSTIN_LLDP_CHASSISID;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SANJOSE_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SANJOSE_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SANJOSE_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SANJOSE_LLDP_CHASSISID;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.RIOVISTA_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.RIOVISTA_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.RIOVISTA_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.RIOVISTA_LLDP_CHASSISID;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -55,7 +80,9 @@ import org.opennms.netmgt.snmp.SnmpWalker;
 
 public class Nms1055Test extends LinkdTestBuilder {
 
-    @Test
+	Nms1055NetworkBuilder builder = new Nms1055NetworkBuilder();
+
+	@Test
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=PENROSE_IP, port=161, resource=PENROSE_SNMP_RESOURCE)
     })
@@ -428,12 +455,12 @@ public class Nms1055Test extends LinkdTestBuilder {
             @JUnitSnmpAgent(host=RIOVISTA_IP, port=161, resource=RIOVISTA_SNMP_RESOURCE)
     })
     public void testNetwork1055Links() throws Exception {
-        m_nodeDao.save(getPenrose());
-        m_nodeDao.save(getDelaware());
-        m_nodeDao.save(getPhoenix());
-        m_nodeDao.save(getAustin());
-        m_nodeDao.save(getSanjose());
-        m_nodeDao.save(getRiovista());
+        m_nodeDao.save(builder.getPenrose());
+        m_nodeDao.save(builder.getDelaware());
+        m_nodeDao.save(builder.getPhoenix());
+        m_nodeDao.save(builder.getAustin());
+        m_nodeDao.save(builder.getSanjose());
+        m_nodeDao.save(builder.getRiovista());
         m_nodeDao.flush();
 
         HibernateEventWriter queryManager = (HibernateEventWriter)m_linkd.getQueryManager();
@@ -588,8 +615,8 @@ public class Nms1055Test extends LinkdTestBuilder {
            @JUnitSnmpAgent(host=DELAWARE_IP, port=161, resource=DELAWARE_SNMP_RESOURCE)
    })
    public void testNetwork1055StpLinks() throws Exception {
-       m_nodeDao.save(getPenrose());
-       m_nodeDao.save(getDelaware());
+       m_nodeDao.save(builder.getPenrose());
+       m_nodeDao.save(builder.getDelaware());
        m_nodeDao.flush();
        
        Package example1 = m_linkdConfig.getPackage("example1");
@@ -637,12 +664,12 @@ public class Nms1055Test extends LinkdTestBuilder {
             @JUnitSnmpAgent(host=RIOVISTA_IP, port=161, resource=RIOVISTA_SNMP_RESOURCE)
     })
     public void testNetwork1055OspfLinks() throws Exception {
-        m_nodeDao.save(getPenrose());
-        m_nodeDao.save(getDelaware());
-        m_nodeDao.save(getPhoenix());
-        m_nodeDao.save(getAustin());
-        m_nodeDao.save(getSanjose());
-        m_nodeDao.save(getRiovista());
+        m_nodeDao.save(builder.getPenrose());
+        m_nodeDao.save(builder.getDelaware());
+        m_nodeDao.save(builder.getPhoenix());
+        m_nodeDao.save(builder.getAustin());
+        m_nodeDao.save(builder.getSanjose());
+        m_nodeDao.save(builder.getRiovista());
         m_nodeDao.flush();
 
         Package example1 = m_linkdConfig.getPackage("example1");

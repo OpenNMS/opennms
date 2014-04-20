@@ -28,6 +28,39 @@
 
 package org.opennms.netmgt.linkd;
 
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SWITCH1_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SWITCH1_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SWITCH1_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SWITCH1_LLDP_CHASSISID;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SWITCH2_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SWITCH2_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SWITCH2_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SWITCH2_LLDP_CHASSISID;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SWITCH3_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SWITCH3_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SWITCH3_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SWITCH3_LLDP_CHASSISID;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SWITCH4_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SWITCH4_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SWITCH4_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SWITCH4_LLDP_CHASSISID;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SWITCH5_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SWITCH5_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SWITCH5_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SWITCH5_LLDP_CHASSISID;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.ROUTER1_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.ROUTER1_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.ROUTER1_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.ROUTER2_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.ROUTER2_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.ROUTER2_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.ROUTER3_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.ROUTER3_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.ROUTER3_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.ROUTER4_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.ROUTER4_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.ROUTER4_SNMP_RESOURCE;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -61,6 +94,7 @@ import org.opennms.netmgt.snmp.SnmpWalker;
 
 public class Nms17216Test extends LinkdTestBuilder {
 
+	Nms17216NetworkBuilder builder = new Nms17216NetworkBuilder();
     @Test
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource=SWITCH1_SNMP_RESOURCE)
@@ -1013,15 +1047,15 @@ public class Nms17216Test extends LinkdTestBuilder {
     })
     public void testNetwork17216Links() throws Exception {
         
-        m_nodeDao.save(getSwitch1());
-        m_nodeDao.save(getSwitch2());
-        m_nodeDao.save(getSwitch3());
-        m_nodeDao.save(getSwitch4());
-        m_nodeDao.save(getSwitch5());
-        m_nodeDao.save(getRouter1());
-        m_nodeDao.save(getRouter2());
-        m_nodeDao.save(getRouter3());
-        m_nodeDao.save(getRouter4());
+        m_nodeDao.save(builder.getSwitch1());
+        m_nodeDao.save(builder.getSwitch2());
+        m_nodeDao.save(builder.getSwitch3());
+        m_nodeDao.save(builder.getSwitch4());
+        m_nodeDao.save(builder.getSwitch5());
+        m_nodeDao.save(builder.getRouter1());
+        m_nodeDao.save(builder.getRouter2());
+        m_nodeDao.save(builder.getRouter3());
+        m_nodeDao.save(builder.getRouter4());
 
         m_nodeDao.flush();
 
@@ -1221,9 +1255,9 @@ public class Nms17216Test extends LinkdTestBuilder {
             @JUnitSnmpAgent(host=SWITCH3_IP, port=161, resource=SWITCH3_SNMP_RESOURCE)
     })
     public void testNetwork17216LldpLinks() throws Exception {
-        m_nodeDao.save(getSwitch1());
-        m_nodeDao.save(getSwitch2());
-        m_nodeDao.save(getSwitch3());
+        m_nodeDao.save(builder.getSwitch1());
+        m_nodeDao.save(builder.getSwitch2());
+        m_nodeDao.save(builder.getSwitch3());
         m_nodeDao.flush();
 
         Package example1 = m_linkdConfig.getPackage("example1");
@@ -1291,8 +1325,8 @@ public class Nms17216Test extends LinkdTestBuilder {
     })
     public void testNetwork17216Switch4Router4CdpLinks() throws Exception {
         
-        m_nodeDao.save(getSwitch4());
-        m_nodeDao.save(getRouter3());
+        m_nodeDao.save(builder.getSwitch4());
+        m_nodeDao.save(builder.getRouter3());
 
         m_nodeDao.flush();
 
