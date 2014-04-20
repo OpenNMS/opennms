@@ -30,6 +30,18 @@ package org.opennms.netmgt.linkd;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.FROH_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.FROH_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.FROH_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.OEDIPUS_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.OEDIPUS_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.OEDIPUS_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SIEGFRIE_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SIEGFRIE_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SIEGFRIE_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.FROH_ISIS_SYS_ID;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.OEDIPUS_ISIS_SYS_ID;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SIEGFRIE_ISIS_SYS_ID;
 
 import java.util.Collection;
 import java.util.Date;
@@ -57,8 +69,9 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
 
-public class Nms0001Test extends Nms0001NetworkBuilder {
+public class Nms0001Test extends LinkdTestBuilder {
 
+	Nms0001NetworkBuilder builder = new Nms0001NetworkBuilder();
     @Test
     @JUnitSnmpAgents(value = {
             @JUnitSnmpAgent(host = FROH_IP, port = 161, resource = FROH_SNMP_RESOURCE),
@@ -213,9 +226,9 @@ public class Nms0001Test extends Nms0001NetworkBuilder {
     })
     public void testIsIsLinks() throws Exception {
         
-        m_nodeDao.save(getFroh());
-        m_nodeDao.save(getOedipus());
-        m_nodeDao.save(getSiegFrie());
+        m_nodeDao.save(builder.getFroh());
+        m_nodeDao.save(builder.getOedipus());
+        m_nodeDao.save(builder.getSiegFrie());
         m_nodeDao.flush();
 
         Package example1 = m_linkdConfig.getPackage("example1");

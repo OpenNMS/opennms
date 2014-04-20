@@ -28,6 +28,37 @@
 
 package org.opennms.netmgt.linkd;
 
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.Rluck001_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.Rluck001_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.Rluck001_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.Sluck001_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.Sluck001_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.Sluck001_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.Sluck001_SNMP_RESOURCE_VLAN100;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.Sluck001_SNMP_RESOURCE_VLAN950;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.RPict001_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.RPict001_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.RPict001_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.RNewt103_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.RNewt103_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.RNewt103_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.RDeEssnBrue_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.RDeEssnBrue_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.RDeEssnBrue_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SDeEssnBrue081_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SDeEssnBrue081_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SDeEssnBrue081_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SDeEssnBrue121_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SDeEssnBrue121_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SDeEssnBrue121_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SDeEssnBrue165_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SDeEssnBrue165_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SDeEssnBrue165_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SDeEssnBrue142_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SDeEssnBrue142_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SDeEssnBrue142_SNMP_RESOURCE;
+
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
@@ -39,8 +70,9 @@ import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsNode;
 
-public class Nms0002Test extends Nms0002NetworkBuilder {
+public class Nms0002Test extends LinkdTestBuilder {
 
+	Nms0002NetworkBuilder builder = new Nms0002NetworkBuilder();
     /*
      *
      *     nodelabel           |  snmpifname  | ifindex |       parent       |  parentif  | parentifindex 
@@ -63,8 +95,8 @@ public class Nms0002Test extends Nms0002NetworkBuilder {
     })
     public void testNetworkLinksCiscoJuniperLldp() throws Exception {
         
-        m_nodeDao.save(getRluck001());
-        m_nodeDao.save(getSluck001());
+        m_nodeDao.save(builder.getRluck001());
+        m_nodeDao.save(builder.getSluck001());
         m_nodeDao.flush();
 
         Package example1 = m_linkdConfig.getPackage("example1");
@@ -105,7 +137,7 @@ public class Nms0002Test extends Nms0002NetworkBuilder {
     })
     public void testNetworkLinksCiscoJuniperVlan() throws Exception {
         
-        m_nodeDao.save(getSluck001());
+        m_nodeDao.save(builder.getSluck001());
         m_nodeDao.flush();
 
         Package example1 = m_linkdConfig.getPackage("example1");
@@ -139,8 +171,8 @@ public class Nms0002Test extends Nms0002NetworkBuilder {
     })
     public void testNetworkLinksCiscoJuniperVlan1() throws Exception {
         
-        m_nodeDao.save(getRluck001());
-        m_nodeDao.save(getSluck001());
+        m_nodeDao.save(builder.getRluck001());
+        m_nodeDao.save(builder.getSluck001());
         m_nodeDao.flush();
 
         Package example1 = m_linkdConfig.getPackage("example1");
@@ -177,8 +209,8 @@ public class Nms0002Test extends Nms0002NetworkBuilder {
     })
     public void testNetworkLinksCiscoJuniperVlan100() throws Exception {
         
-        m_nodeDao.save(getRluck001());
-        m_nodeDao.save(getSluck001());
+        m_nodeDao.save(builder.getRluck001());
+        m_nodeDao.save(builder.getSluck001());
         m_nodeDao.flush();
 
         Package example1 = m_linkdConfig.getPackage("example1");
@@ -215,8 +247,8 @@ public class Nms0002Test extends Nms0002NetworkBuilder {
     })
     public void testNetworkLinksCiscoJuniperVlan950() throws Exception {
         
-        m_nodeDao.save(getRluck001());
-        m_nodeDao.save(getSluck001());
+        m_nodeDao.save(builder.getRluck001());
+        m_nodeDao.save(builder.getSluck001());
         m_nodeDao.flush();
 
         Package example1 = m_linkdConfig.getPackage("example1");
@@ -258,8 +290,8 @@ s     * r-uk-nott-newt-103:Fa0:(1)<------>(4):Fa3:r-ro-suce-pict-001
     })
     public void testCdpFakeLinkRoUk() throws Exception {
         
-        m_nodeDao.save(getRPict001());
-        m_nodeDao.save(getRNewt103());
+        m_nodeDao.save(builder.getRPict001());
+        m_nodeDao.save(builder.getRNewt103());
         m_nodeDao.flush();
 
         Package example1 = m_linkdConfig.getPackage("example1");
@@ -382,11 +414,11 @@ s     * r-uk-nott-newt-103:Fa0:(1)<------>(4):Fa3:r-ro-suce-pict-001
     })
     public void testCiscoAlcatelEssnBrueLldp() {
         
-        m_nodeDao.save(getRDeEssnBrue());
-        m_nodeDao.save(getSDeEssnBrue081());
-        m_nodeDao.save(getSDeEssnBrue121());
-        m_nodeDao.save(getSDeEssnBrue142());
-        m_nodeDao.save(getSDeEssnBrue165());
+        m_nodeDao.save(builder.getRDeEssnBrue());
+        m_nodeDao.save(builder.getSDeEssnBrue081());
+        m_nodeDao.save(builder.getSDeEssnBrue121());
+        m_nodeDao.save(builder.getSDeEssnBrue142());
+        m_nodeDao.save(builder.getSDeEssnBrue165());
         m_nodeDao.flush();
 
         Package example1 = m_linkdConfig.getPackage("example1");

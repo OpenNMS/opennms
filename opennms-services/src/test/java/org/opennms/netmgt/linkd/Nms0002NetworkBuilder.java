@@ -35,7 +35,7 @@ import org.opennms.netmgt.model.OnmsNode;
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  */
 
-public abstract class Nms0002NetworkBuilder extends LinkdTestBuilder {
+public class Nms0002NetworkBuilder extends LinkdTestNetworkBuilder {
     static {
     try {
         Rluck001_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.1"), 22);

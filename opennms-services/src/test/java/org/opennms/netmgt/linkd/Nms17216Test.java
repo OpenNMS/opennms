@@ -59,7 +59,7 @@ import org.opennms.netmgt.snmp.SnmpStore;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
 
-public class Nms17216Test extends Nms17216NetworkBuilder {
+public class Nms17216Test extends LinkdTestBuilder {
 
     @Test
     @JUnitSnmpAgents(value={

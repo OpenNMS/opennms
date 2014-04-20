@@ -63,7 +63,7 @@ import org.opennms.netmgt.model.OnmsStpNode.BridgeBaseType;
 import org.opennms.netmgt.model.OnmsStpNode.StpProtocolSpecification;
 import org.springframework.transaction.annotation.Transactional;
 
-public class Nms7467Test extends Nms7467NetworkBuilder {
+public class Nms7467Test extends LinkdTestBuilder {
 
     @Test
     public void testDefaultConfiguration() throws MarshalException, ValidationException, IOException {

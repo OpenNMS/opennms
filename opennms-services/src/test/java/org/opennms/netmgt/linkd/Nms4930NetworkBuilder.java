@@ -1,9 +1,12 @@
 package org.opennms.netmgt.linkd;
 
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 
-public class Nms4930NetworkBuilder extends LinkdTestBuilder {
+public class Nms4930NetworkBuilder extends LinkdTestNetworkBuilder {
+
+	NodeDao m_nodeDao;
 
 	@SuppressWarnings("deprecation")
 	public void buildNetwork4930() {
@@ -27,5 +30,13 @@ public class Nms4930NetworkBuilder extends LinkdTestBuilder {
 
         m_nodeDao.flush();
 
+	}
+
+	public NodeDao getNodeDao() {
+		return m_nodeDao;
+	}
+
+	public void setNodeDao(NodeDao nodeDao) {
+		m_nodeDao = nodeDao;
 	}
 }

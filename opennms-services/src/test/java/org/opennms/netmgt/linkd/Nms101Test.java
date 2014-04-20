@@ -28,6 +28,32 @@
 
 package org.opennms.netmgt.linkd;
 
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO7200A_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO7200A_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO7200A_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO7200B_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO7200B_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO7200B_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO1700_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO1700_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO1700_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO1700B_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO1700B_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO1700B_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.LAPTOP_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.LAPTOP_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.LAPTOP_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO3600_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO3600_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO3600_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO3700_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO3700_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO3700_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO2691_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO2691_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO2691_SNMP_RESOURCE;
+
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -45,8 +71,9 @@ import org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol;
 import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.transaction.annotation.Transactional;
 
-public class Nms101Test extends Nms101NetworkBuilder {
+public class Nms101Test extends LinkdTestBuilder {
 	
+	Nms101NetworkBuilder builder = new Nms101NetworkBuilder();
     @Before
     public void setUpForceDisvoeryOnEthernet() {
     for (Package pkg : Collections.list(m_linkdConfig.enumeratePackage())) {
@@ -57,14 +84,14 @@ public class Nms101Test extends Nms101NetworkBuilder {
     @Test
     @Transactional
     public void testDefaultConfiguration() throws Exception {
-    	m_nodeDao.save(getExampleCom());
-    	m_nodeDao.save(getLaptop());
-    	m_nodeDao.save(getCisco7200a());
-    	m_nodeDao.save(getCisco7200b());
-    	m_nodeDao.save(getCisco3700());
-    	m_nodeDao.save(getCisco2691());
-    	m_nodeDao.save(getCisco1700());
-    	m_nodeDao.save(getCisco3600());
+    	m_nodeDao.save(builder.getExampleCom());
+    	m_nodeDao.save(builder.getLaptop());
+    	m_nodeDao.save(builder.getCisco7200a());
+    	m_nodeDao.save(builder.getCisco7200b());
+    	m_nodeDao.save(builder.getCisco3700());
+    	m_nodeDao.save(builder.getCisco2691());
+    	m_nodeDao.save(builder.getCisco1700());
+    	m_nodeDao.save(builder.getCisco3600());
     	m_nodeDao.flush();
 
         assertEquals(true,m_linkdConfig.useBridgeDiscovery());
@@ -188,9 +215,9 @@ public class Nms101Test extends Nms101NetworkBuilder {
         @JUnitSnmpAgent(host=CISCO1700_IP, port=161, resource=CISCO1700_SNMP_RESOURCE)
     })
     public void testSimpleFakeConnection() throws Exception {
-	m_nodeDao.save(getCisco1700());
-	m_nodeDao.save(getCisco1700b());
-	m_nodeDao.save(getExampleCom());
+	m_nodeDao.save(builder.getCisco1700());
+	m_nodeDao.save(builder.getCisco1700b());
+	m_nodeDao.save(builder.getExampleCom());
         m_nodeDao.flush();
 
         final OnmsNode cisco1700 = m_nodeDao.findByForeignId("linkd", CISCO1700_NAME);
@@ -243,8 +270,8 @@ public class Nms101Test extends Nms101NetworkBuilder {
     })
     public void testsimpleLinkCisco7200aCisco7200b() throws Exception {
 
-    	m_nodeDao.save(getCisco7200a());
-    	m_nodeDao.save(getCisco7200b());
+    	m_nodeDao.save(builder.getCisco7200a());
+    	m_nodeDao.save(builder.getCisco7200b());
     	m_nodeDao.flush();
     	
         final OnmsNode cisco7200a = m_nodeDao.findByForeignId("linkd", CISCO7200A_NAME);
@@ -288,8 +315,8 @@ public class Nms101Test extends Nms101NetworkBuilder {
     })
     public void testsimpleLinkCisco7200alaptop() throws Exception {
 
-    	m_nodeDao.save(getCisco7200a());
-    	m_nodeDao.save(getLaptop());
+    	m_nodeDao.save(builder.getCisco7200a());
+    	m_nodeDao.save(builder.getLaptop());
     	m_nodeDao.flush();
     	
         final OnmsNode cisco7200a = m_nodeDao.findByForeignId("linkd", CISCO7200A_NAME);
@@ -330,8 +357,8 @@ public class Nms101Test extends Nms101NetworkBuilder {
     })
     public void testsimpleLinkCisco3600aCisco3700() throws Exception {
 
-    	m_nodeDao.save(getCisco3700());
-    	m_nodeDao.save(getCisco3600());
+    	m_nodeDao.save(builder.getCisco3700());
+    	m_nodeDao.save(builder.getCisco3600());
     	m_nodeDao.flush();
     	
         final OnmsNode cisco3600 = m_nodeDao.findByForeignId("linkd", CISCO3600_NAME);
@@ -381,14 +408,14 @@ public class Nms101Test extends Nms101NetworkBuilder {
     })
     public void testCiscoNetwork() throws Exception {
 
-    	m_nodeDao.save(getExampleCom());
-    	m_nodeDao.save(getLaptop());
-    	m_nodeDao.save(getCisco7200a());
-    	m_nodeDao.save(getCisco7200b());
-    	m_nodeDao.save(getCisco3700());
-    	m_nodeDao.save(getCisco2691());
-    	m_nodeDao.save(getCisco1700());
-    	m_nodeDao.save(getCisco3600());
+    	m_nodeDao.save(builder.getExampleCom());
+    	m_nodeDao.save(builder.getLaptop());
+    	m_nodeDao.save(builder.getCisco7200a());
+    	m_nodeDao.save(builder.getCisco7200b());
+    	m_nodeDao.save(builder.getCisco3700());
+    	m_nodeDao.save(builder.getCisco2691());
+    	m_nodeDao.save(builder.getCisco1700());
+    	m_nodeDao.save(builder.getCisco3600());
     	m_nodeDao.flush();
     	
         final OnmsNode laptop = m_nodeDao.findByForeignId("linkd", LAPTOP_NAME);
@@ -498,8 +525,8 @@ public class Nms101Test extends Nms101NetworkBuilder {
             pkg.setUseIsisDiscovery(false);
         }
 
-    	m_nodeDao.save(getCisco7200a());
-    	m_nodeDao.save(getCisco7200b());
+    	m_nodeDao.save(builder.getCisco7200a());
+    	m_nodeDao.save(builder.getCisco7200b());
     	m_nodeDao.flush();
     	
         final OnmsNode cisco7200a = m_nodeDao.findByForeignId("linkd", CISCO7200A_NAME);

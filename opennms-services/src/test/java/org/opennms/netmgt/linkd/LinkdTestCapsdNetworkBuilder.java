@@ -31,6 +31,7 @@ package org.opennms.netmgt.linkd;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Properties;
 
 import org.exolab.castor.xml.MarshalException;
@@ -46,6 +47,9 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.capsd.Capsd;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,11 +80,14 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
 @JUnitTemporaryDatabase
-public class LinkdTestCapsdNetworkBuilder extends LinkdTestHelper implements InitializingBean {
+public class LinkdTestCapsdNetworkBuilder extends LinkdTestNetworkBuilder implements InitializingBean {
 
     @Autowired
     private Capsd m_capsd;
-    
+
+    @Autowired
+    private IpInterfaceDao m_ipInterfaceDao;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -111,4 +118,39 @@ public class LinkdTestCapsdNetworkBuilder extends LinkdTestHelper implements Ini
         
         m_capsd.stop();
     }
+    
+    protected final void printNode(String ipAddr, String prefix) {
+
+        List<OnmsIpInterface> ips = m_ipInterfaceDao.findByIpAddress(ipAddr);
+        assertTrue("Has only one ip interface", ips.size() == 1);
+
+        OnmsIpInterface ip = ips.get(0);
+
+        for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
+            if (ipinterface.getIfIndex() != null )
+                printipInterface(prefix, ipinterface);
+        }
+
+        for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
+            printSnmpInterface(prefix, snmpinterface);
+        }
+    }
+
+    protected void printipInterface(String nodeStringId,OnmsIpInterface ipinterface) {
+        System.out.println(nodeStringId+"_IP_IF_MAP.put(InetAddressUtils.addr(\""+ipinterface.getIpHostName()+"\"), "+ipinterface.getIfIndex()+");");
+    }
+    
+    protected void printSnmpInterface(String nodeStringId,OnmsSnmpInterface snmpinterface) {
+        if ( snmpinterface.getIfName() != null)
+            System.out.println(nodeStringId+"_IF_IFNAME_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfName()+"\");");
+        if (snmpinterface.getIfDescr() != null)
+            System.out.println(nodeStringId+"_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
+        if (snmpinterface.getPhysAddr() != null)
+            System.out.println(nodeStringId+"_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
+        if (snmpinterface.getIfAlias() != null)
+            System.out.println(nodeStringId+"_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
+        if (snmpinterface.getNetMask() != null && !snmpinterface.getNetMask().getHostAddress().equals("127.0.0.1"))
+            System.out.println(nodeStringId+"_IF_NETMASK_MAP.put("+snmpinterface.getIfIndex()+", InetAddressUtils.addr(\""+snmpinterface.getNetMask().getHostAddress()+"\"));");
+    }
+
 }

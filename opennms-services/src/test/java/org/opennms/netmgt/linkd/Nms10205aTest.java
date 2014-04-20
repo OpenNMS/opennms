@@ -28,6 +28,42 @@
 
 package org.opennms.netmgt.linkd;
 
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.MUMBAI_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.MUMBAI_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.MUMBAI_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.DELHI_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.DELHI_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.DELHI_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CHENNAI_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CHENNAI_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CHENNAI_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.BANGALORE_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.BANGALORE_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.BANGALORE_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.BAGMANE_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.BAGMANE_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.BAGMANE_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.MYSORE_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.MYSORE_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.MYSORE_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SPACE_EX_SW1_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SPACE_EX_SW1_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SPACE_EX_SW1_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SPACE_EX_SW2_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SPACE_EX_SW2_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SPACE_EX_SW2_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.J6350_41_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.J6350_41_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.J6350_41_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.J6350_42_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.J6350_42_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.J6350_42_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SRX_100_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SRX_100_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SRX_100_SNMP_RESOURCE;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SSG550_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SSG550_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SSG550_SNMP_RESOURCE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -40,9 +76,10 @@ import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol;
 import org.opennms.netmgt.model.OnmsNode;
 
-public class Nms10205aTest extends Nms10205aNetworkBuilder {
+public class Nms10205aTest extends LinkdTestBuilder {
 
-    /*
+	Nms10205aNetworkBuilder builder = new Nms10205aNetworkBuilder();
+	/*
      *  The 
      *  MUMBAI:port ge 0/1/3:ip 192.168.5.5   ------> CHENNAI:port ge 4/0/2: ip 192.168.5.6
      *  MUMBAI:port ge 0/1/2:ip 192.168.5.9   ------> DELHI:port ge 1/0/2: ip 192.168.5.10
@@ -70,18 +107,18 @@ public class Nms10205aTest extends Nms10205aNetworkBuilder {
             @JUnitSnmpAgent(host=SSG550_IP, port=161, resource=SSG550_SNMP_RESOURCE)
     })
     public void testNetwork10205Links() throws Exception {
-        m_nodeDao.save(getMumbai());
-        m_nodeDao.save(getChennai());
-        m_nodeDao.save(getDelhi());
-        m_nodeDao.save(getBangalore());
-        m_nodeDao.save(getBagmane());
-        m_nodeDao.save(getMysore());
-        m_nodeDao.save(getSpaceExSw1());
-        m_nodeDao.save(getSpaceExSw2());
-        m_nodeDao.save(getJ635041());
-        m_nodeDao.save(getJ635042());
-        m_nodeDao.save(getSRX100());
-        m_nodeDao.save(getSGG550());
+        m_nodeDao.save(builder.getMumbai());
+        m_nodeDao.save(builder.getChennai());
+        m_nodeDao.save(builder.getDelhi());
+        m_nodeDao.save(builder.getBangalore());
+        m_nodeDao.save(builder.getBagmane());
+        m_nodeDao.save(builder.getMysore());
+        m_nodeDao.save(builder.getSpaceExSw1());
+        m_nodeDao.save(builder.getSpaceExSw2());
+        m_nodeDao.save(builder.getJ635041());
+        m_nodeDao.save(builder.getJ635042());
+        m_nodeDao.save(builder.getSRX100());
+        m_nodeDao.save(builder.getSGG550());
         m_nodeDao.flush();
 
         Package example1 = m_linkdConfig.getPackage("example1");
@@ -250,18 +287,18 @@ public class Nms10205aTest extends Nms10205aNetworkBuilder {
             @JUnitSnmpAgent(host=SSG550_IP, port=161, resource=SSG550_SNMP_RESOURCE)
     })
     public void testNetwork10205OspfLinks() throws Exception {
-        m_nodeDao.save(getMumbai());
-        m_nodeDao.save(getChennai());
-        m_nodeDao.save(getDelhi());
-        m_nodeDao.save(getBangalore());
-        m_nodeDao.save(getBagmane());
-        m_nodeDao.save(getMysore());
-        m_nodeDao.save(getSpaceExSw1());
-        m_nodeDao.save(getSpaceExSw2());
-        m_nodeDao.save(getJ635041());
-        m_nodeDao.save(getJ635042());
-        m_nodeDao.save(getSRX100());
-        m_nodeDao.save(getSGG550());
+        m_nodeDao.save(builder.getMumbai());
+        m_nodeDao.save(builder.getChennai());
+        m_nodeDao.save(builder.getDelhi());
+        m_nodeDao.save(builder.getBangalore());
+        m_nodeDao.save(builder.getBagmane());
+        m_nodeDao.save(builder.getMysore());
+        m_nodeDao.save(builder.getSpaceExSw1());
+        m_nodeDao.save(builder.getSpaceExSw2());
+        m_nodeDao.save(builder.getJ635041());
+        m_nodeDao.save(builder.getJ635042());
+        m_nodeDao.save(builder.getSRX100());
+        m_nodeDao.save(builder.getSGG550());
         m_nodeDao.flush();
 
         Package example1 = m_linkdConfig.getPackage("example1");

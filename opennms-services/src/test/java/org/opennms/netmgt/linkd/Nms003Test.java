@@ -28,6 +28,15 @@
 
 package org.opennms.netmgt.linkd;
 
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SWITCH1_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SWITCH1_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SWITCH1_SNMP_RESOURCE_003;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SWITCH2_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SWITCH2_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SWITCH2_SNMP_RESOURCE_003;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SWITCH3_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SWITCH3_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SWITCH3_SNMP_RESOURCE_003;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -40,9 +49,9 @@ import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol;
 import org.opennms.netmgt.model.OnmsNode;
 
-public class Nms003Test extends Nms003NetworkBuilder {
+public class Nms003Test extends LinkdTestBuilder {
 
-
+	Nms003NetworkBuilder builder = new Nms003NetworkBuilder();
     /*
      * switch1 0016c8bd4d80 --bft 0016C894AA81/2/3/4-->64
      * switch2 0016c894aa80 --bft 0016C8BD4D89/A/B/C-->64  F4EA67EBDC13/4-->72
@@ -60,9 +69,9 @@ public class Nms003Test extends Nms003NetworkBuilder {
     })
     public void testNetwork003Links() throws Exception {
         
-        m_nodeDao.save(getSwitch1());
-        m_nodeDao.save(getSwitch2());
-        m_nodeDao.save(getSwitch3());
+        m_nodeDao.save(builder.getSwitch1());
+        m_nodeDao.save(builder.getSwitch2());
+        m_nodeDao.save(builder.getSwitch3());
 
         m_nodeDao.flush();
 

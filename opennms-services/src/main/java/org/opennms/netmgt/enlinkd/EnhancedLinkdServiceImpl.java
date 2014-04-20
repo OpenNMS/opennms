@@ -27,10 +27,8 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
     @Autowired
     private PlatformTransactionManager m_transactionManager;
 	
-	@Autowired
 	private NodeDao m_nodeDao;
 
-	@Autowired
 	private LldpLinkDao m_lldpLinkDao;
 
     @Override
@@ -184,7 +182,5 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 	public void setNodeDao(NodeDao nodeDao) {
 		m_nodeDao = nodeDao;
 	}
-
-
 	
 }

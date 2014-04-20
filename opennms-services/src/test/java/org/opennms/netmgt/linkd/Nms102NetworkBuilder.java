@@ -3,7 +3,7 @@ package org.opennms.netmgt.linkd;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
 
-public class Nms102NetworkBuilder extends LinkdTestBuilder {
+public class Nms102NetworkBuilder extends LinkdTestNetworkBuilder {
     static {
         MIKROTIK_IP_IF_MAP.put(InetAddressUtils.addr("192.168.0.1"), 2);
         MIKROTIK_IP_IF_MAP.put(InetAddressUtils.addr("10.129.16.165"), 1);

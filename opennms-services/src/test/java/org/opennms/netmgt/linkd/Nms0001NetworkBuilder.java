@@ -35,7 +35,7 @@ import org.opennms.netmgt.model.OnmsNode;
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  */
 
-public abstract class Nms0001NetworkBuilder extends LinkdTestBuilder {
+public class Nms0001NetworkBuilder extends LinkdTestNetworkBuilder {
 
 
     static {

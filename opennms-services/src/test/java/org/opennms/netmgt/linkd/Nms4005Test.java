@@ -43,7 +43,7 @@ import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsNode;
 
-public class Nms4005Test extends Nms4005NetworkBuilder {
+public class Nms4005Test extends LinkdTestBuilder {
 
     @Before
     public void setUpForceIpRouteOnEthernet() throws Exception {

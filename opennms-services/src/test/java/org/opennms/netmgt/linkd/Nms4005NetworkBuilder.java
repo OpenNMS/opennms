@@ -3,7 +3,7 @@ package org.opennms.netmgt.linkd;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
 
-public class Nms4005NetworkBuilder extends LinkdTestBuilder {
+public class Nms4005NetworkBuilder extends LinkdTestNetworkBuilder {
 
     static {
         R1_IP_IF_MAP.put(InetAddressUtils.addr("10.1.2.1"), 1);

@@ -27,7 +27,54 @@
  *******************************************************************************/
 
 package org.opennms.netmgt.linkd;
-
+import static org.opennms.netmgt.linkd.Nms10205bNetworkBuilder.BANGALORE_OSPF_ID;
+import static org.opennms.netmgt.linkd.Nms10205bNetworkBuilder.BAGMANE_OSPF_ID;
+import static org.opennms.netmgt.linkd.Nms10205bNetworkBuilder.MUMBAI_OSPF_ID;
+import static org.opennms.netmgt.linkd.Nms10205bNetworkBuilder.DELHI_OSPF_ID;
+import static org.opennms.netmgt.linkd.Nms10205bNetworkBuilder.MYSORE_OSPF_ID;
+import static org.opennms.netmgt.linkd.Nms10205bNetworkBuilder.SRX_100_OSPF_ID;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.MUMBAI_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.MUMBAI_IP_IF_MAP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.MUMBAI_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.MUMBAI_SNMP_RESOURCE_B;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.DELHI_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.DELHI_IP_IF_MAP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.DELHI_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.DELHI_SNMP_RESOURCE_B;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CHENNAI_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CHENNAI_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CHENNAI_SNMP_RESOURCE_B;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.BANGALORE_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.BANGALORE_IP_IF_MAP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.BANGALORE_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.BANGALORE_SNMP_RESOURCE_B;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.BAGMANE_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.BAGMANE_IP_IF_MAP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.BAGMANE_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.BAGMANE_SNMP_RESOURCE_B;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.MYSORE_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.MYSORE_IP_IF_MAP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.MYSORE_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.MYSORE_SNMP_RESOURCE_B;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SPACE_EX_SW1_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SPACE_EX_SW1_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SPACE_EX_SW1_SNMP_RESOURCE_B;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SPACE_EX_SW2_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SPACE_EX_SW2_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SPACE_EX_SW2_SNMP_RESOURCE_B;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.J6350_41_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.J6350_41_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.J6350_41_SNMP_RESOURCE_B;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.J6350_42_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.J6350_42_LLDP_CHASSISID;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.J6350_42_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.J6350_42_SNMP_RESOURCE_B;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SRX_100_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SRX_100_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SRX_100_SNMP_RESOURCE_B;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SSG550_IP;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SSG550_NAME;
+import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SSG550_SNMP_RESOURCE_B;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -58,7 +105,9 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
 
-public class Nms10205bTest extends Nms10205bNetworkBuilder {
+public class Nms10205bTest extends LinkdTestBuilder {
+
+	Nms10205bNetworkBuilder builder = new Nms10205bNetworkBuilder();
 
     @Test
     @JUnitSnmpAgents(value = {
@@ -399,15 +448,15 @@ Address          Interface              State     ID               Pri  Dead
             @JUnitSnmpAgent(host=SRX_100_IP, port=161, resource=SRX_100_SNMP_RESOURCE_B)
     })
     public void testNetwork10205bLinks() throws Exception {
-        m_nodeDao.save(getMumbai());
-        m_nodeDao.save(getDelhi());
-        m_nodeDao.save(getBangalore());
-        m_nodeDao.save(getBagmane());
-        m_nodeDao.save(getMysore());
-        m_nodeDao.save(getSpaceExSw1());
-        m_nodeDao.save(getSpaceExSw2());
-        m_nodeDao.save(getJ635042());
-        m_nodeDao.save(getSRX100());
+        m_nodeDao.save(builder.getMumbai());
+        m_nodeDao.save(builder.getDelhi());
+        m_nodeDao.save(builder.getBangalore());
+        m_nodeDao.save(builder.getBagmane());
+        m_nodeDao.save(builder.getMysore());
+        m_nodeDao.save(builder.getSpaceExSw1());
+        m_nodeDao.save(builder.getSpaceExSw2());
+        m_nodeDao.save(builder.getJ635042());
+        m_nodeDao.save(builder.getSRX100());
         m_nodeDao.flush();
 
         Package example1 = m_linkdConfig.getPackage("example1");
@@ -652,15 +701,15 @@ it has a link to Mysore that does not support LLDP
             @JUnitSnmpAgent(host=SRX_100_IP, port=161, resource=SRX_100_SNMP_RESOURCE_B)
     })
     public void testNetwork10205bLldpLinks() throws Exception {
-        m_nodeDao.save(getMumbai());
-        m_nodeDao.save(getDelhi());
-        m_nodeDao.save(getBangalore());
-        m_nodeDao.save(getBagmane());
-        m_nodeDao.save(getMysore());
-        m_nodeDao.save(getSpaceExSw1());
-        m_nodeDao.save(getSpaceExSw2());
-        m_nodeDao.save(getJ635042());
-        m_nodeDao.save(getSRX100());
+        m_nodeDao.save(builder.getMumbai());
+        m_nodeDao.save(builder.getDelhi());
+        m_nodeDao.save(builder.getBangalore());
+        m_nodeDao.save(builder.getBagmane());
+        m_nodeDao.save(builder.getMysore());
+        m_nodeDao.save(builder.getSpaceExSw1());
+        m_nodeDao.save(builder.getSpaceExSw2());
+        m_nodeDao.save(builder.getJ635042());
+        m_nodeDao.save(builder.getSRX100());
         m_nodeDao.flush();
 
         Package example1 = m_linkdConfig.getPackage("example1");
@@ -810,15 +859,15 @@ Address          Interface              State     ID               Pri  Dead
             @JUnitSnmpAgent(host=SRX_100_IP, port=161, resource=SRX_100_SNMP_RESOURCE_B)
     })
     public void testNetwork10205bOspfLinks() throws Exception {
-        m_nodeDao.save(getMumbai());
-        m_nodeDao.save(getDelhi());
-        m_nodeDao.save(getBangalore());
-        m_nodeDao.save(getBagmane());
-        m_nodeDao.save(getMysore());
-        m_nodeDao.save(getSpaceExSw1());
-        m_nodeDao.save(getSpaceExSw2());
-        m_nodeDao.save(getJ635042());
-        m_nodeDao.save(getSRX100());
+        m_nodeDao.save(builder.getMumbai());
+        m_nodeDao.save(builder.getDelhi());
+        m_nodeDao.save(builder.getBangalore());
+        m_nodeDao.save(builder.getBagmane());
+        m_nodeDao.save(builder.getMysore());
+        m_nodeDao.save(builder.getSpaceExSw1());
+        m_nodeDao.save(builder.getSpaceExSw2());
+        m_nodeDao.save(builder.getJ635042());
+        m_nodeDao.save(builder.getSRX100());
         m_nodeDao.flush();
 
         Package example1 = m_linkdConfig.getPackage("example1");

@@ -490,7 +490,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     }
 
 	public String getSource() {
-		return "enhancedlinkd";
+		return "enlinkd";
 	}
 	
     public SnmpAgentConfig getSnmpAgentConfig(InetAddress ipaddr) {

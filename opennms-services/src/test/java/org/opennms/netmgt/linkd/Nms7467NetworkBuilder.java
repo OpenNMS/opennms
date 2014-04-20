@@ -92,24 +92,8 @@ import org.opennms.netmgt.model.OnmsNode;
  * 
  */
 
-public abstract class Nms7467NetworkBuilder extends LinkdTestBuilder {
-    
-    /*
-     * The following parameters
-     * describe a workstation without snmp enabled
-     * the ip address is 172.20.1.101
-     * the mac address is  60334b0817a8 
-     */
-	protected static final String WORKSTATION_NAME        = "workstation";
-	protected static final String WORKSTATION_IP          = "172.20.1.101";
-	protected static final String WORKSTATION_MAC         = "60334b0817a8";
-
-    /*
-     * This is a cisco access point but without snmp walk available 
-     */
-	protected static final String ACCESSPOINT_NAME        = "mrgarrison.internal.opennms.com";
-	protected static final String ACCESSPOINT_IP          = "172.20.1.5";
-
+public class Nms7467NetworkBuilder extends LinkdTestNetworkBuilder {
+ 
     /* 
      * nodelabel:ip:mac:ifindex:ifdescr
      * CISCO_C870:172.20.1.1:001f6cd034e7:12:Vlan1
@@ -144,22 +128,12 @@ public abstract class Nms7467NetworkBuilder extends LinkdTestBuilder {
      *
      */
 
-    protected static final String CISCO_C870_NAME         = "mrmakay.internal.opennms.com";
-    protected static final String CISCO_C870_IP_PRIMARY   = "10.255.255.2";
-    protected static final String CISCO_C870_IP           = "172.20.1.1";
-    protected static final String CISCO_C870_BRIDGEID      = "00000c83d9a8";
-    protected static final String CISCO_C870_SYSOID        = ".1.3.6.1.4.1.9.1.569";
-
-    protected static final Map<InetAddress, Integer> CISCO_C870_IP_IF_MAP = new HashMap<InetAddress, Integer>();
     static {
         CISCO_C870_IP_IF_MAP.put(InetAddressUtils.addr("172.20.1.1"), 12);
         CISCO_C870_IP_IF_MAP.put(InetAddressUtils.addr("172.20.2.1"), 13);
         CISCO_C870_IP_IF_MAP.put(InetAddressUtils.addr("10.255.255.2"), 12);
         CISCO_C870_IP_IF_MAP.put(InetAddressUtils.addr("65.41.39.146"), 14);            
-    }
 
-    protected static final Map<Integer, String> CISCO_C870_IF_IFNAME_MAP = new HashMap<Integer, String>();
-    static {
         CISCO_C870_IF_IFNAME_MAP.put(1, "Fa0");
         CISCO_C870_IF_IFNAME_MAP.put(2, "Fa1");
         CISCO_C870_IF_IFNAME_MAP.put(3, "Fa2");
@@ -176,10 +150,7 @@ public abstract class Nms7467NetworkBuilder extends LinkdTestBuilder {
         CISCO_C870_IF_IFNAME_MAP.put(14, "BV1");
         CISCO_C870_IF_IFNAME_MAP.put(17, "Tu0");        
         CISCO_C870_IF_IFNAME_MAP.put(18, "NV0");        
-    }
 
-    protected static final Map<Integer, String> CISCO_C870_IF_IFDESCR_MAP = new HashMap<Integer, String>();
-    static {
         CISCO_C870_IF_IFDESCR_MAP.put(1, "FastEthernet0");
         CISCO_C870_IF_IFDESCR_MAP.put(2, "FastEthernet1");
         CISCO_C870_IF_IFDESCR_MAP.put(3, "FastEthernet2");
@@ -196,10 +167,7 @@ public abstract class Nms7467NetworkBuilder extends LinkdTestBuilder {
         CISCO_C870_IF_IFDESCR_MAP.put(14, "BVI1");
         CISCO_C870_IF_IFDESCR_MAP.put(17, "Tunnel0");        
         CISCO_C870_IF_IFDESCR_MAP.put(18, "NVI0");        
-    }
 
-    protected static final Map<Integer, String> CISCO_C870_IF_MAC_MAP = new HashMap<Integer, String>();
-    static {
         CISCO_C870_IF_MAC_MAP.put(1, "001f6cd034e7");
         CISCO_C870_IF_MAC_MAP.put(2, "001f6cd034e8");
         CISCO_C870_IF_MAC_MAP.put(3, "001f6cd034e9");
@@ -280,18 +248,9 @@ public abstract class Nms7467NetworkBuilder extends LinkdTestBuilder {
      * Transparent Bridge
      */ 
 
-    protected static final String CISCO_WS_C2948_NAME         = "ciscoswitch";
-    protected static final String CISCO_WS_C2948_IP       = "172.20.1.7";
-    protected static final String CISCO_WS_C2948_BRIDGEID      = "0002baaacc00";
-    protected static final String CISCO_WS_C2948_SYSOID        = ".1.3.6.1.4.1.9.5.42";
-
-    protected static final Map<InetAddress,Integer> CISCO_WS_C2948_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
     static {
         CISCO_WS_C2948_IP_IF_MAP.put(InetAddressUtils.addr(CISCO_WS_C2948_IP), 3);
-    }
-    
-    protected static final Map<Integer,String> CISCO_WS_C2948_IF_IFNAME_MAP = new HashMap<Integer, String>();
-    static {
+
         CISCO_WS_C2948_IF_IFNAME_MAP.put(1,"sc0");
         CISCO_WS_C2948_IF_IFNAME_MAP.put(2,"sl0");
         CISCO_WS_C2948_IF_IFNAME_MAP.put(3,"me1");
@@ -305,10 +264,7 @@ public abstract class Nms7467NetworkBuilder extends LinkdTestBuilder {
             String ifname = "2/"+ i;
             CISCO_WS_C2948_IF_IFNAME_MAP.put(ifindex,ifname);
         }
-    }
 
-    protected static final Map<Integer,String> CISCO_WS_C2948_IF_MAC_MAP = new HashMap<Integer, String>();
-    static {
         CISCO_WS_C2948_IF_MAC_MAP.put(1,"0002baaacfff");
         CISCO_WS_C2948_IF_MAC_MAP.put(2,"000000000000");
         CISCO_WS_C2948_IF_MAC_MAP.put(3,"0002baaacffe");
@@ -389,16 +345,8 @@ public abstract class Nms7467NetworkBuilder extends LinkdTestBuilder {
      * Transparent Bridge
      * 
      */
-    protected static final String NETGEAR_SW_108_NAME         = "ng108switch";
-    protected static final String NETGEAR_SW_108_IP       = "172.20.1.8";
-    protected static final String NETGEAR_SW_108_BRIDGEID      = "00223ff00b7b";
-    protected static final String NETGEAR_SW_108_SYSOID        = ".1.3.6.1.4.1.4526.100.4.8";
-    protected static final Map<InetAddress,Integer> NETGEAR_SW_108_IP_IF_MAP = new HashMap<InetAddress, Integer>();
     static {
         NETGEAR_SW_108_IP_IF_MAP.put(InetAddressUtils.addr(NETGEAR_SW_108_IP), null);
-    }
-    protected static final Map<Integer, String> NETGEAR_SW_108_IF_IFNAME_MAP = new HashMap<Integer, String>();
-    static {
         NETGEAR_SW_108_IF_IFNAME_MAP.put(1, "");
         NETGEAR_SW_108_IF_IFNAME_MAP.put(2, "");
         NETGEAR_SW_108_IF_IFNAME_MAP.put(3, "");
@@ -407,11 +355,7 @@ public abstract class Nms7467NetworkBuilder extends LinkdTestBuilder {
         NETGEAR_SW_108_IF_IFNAME_MAP.put(6, "");
         NETGEAR_SW_108_IF_IFNAME_MAP.put(7, "");
         NETGEAR_SW_108_IF_IFNAME_MAP.put(8, "");
-    }
-    
-    
-    protected static final Map<Integer, String> NETGEAR_SW_108_IF_MAC_MAP = new HashMap<Integer, String>();
-    static {
+
         NETGEAR_SW_108_IF_MAC_MAP.put(1, "00223ff00b7c");
         NETGEAR_SW_108_IF_MAC_MAP.put(2, "00223ff00b7d");
         NETGEAR_SW_108_IF_MAC_MAP.put(3, "00223ff00b7e");
@@ -460,11 +404,6 @@ public abstract class Nms7467NetworkBuilder extends LinkdTestBuilder {
      * 
      */ 
 
-    protected static final String LINUX_UBUNTU_NAME         = "linuxubuntu";
-    protected static final String LINUX_UBUNTU_IP         = "172.20.1.14";
-    protected static final String LINUX_UBUNTU_SYSOID     = ".1.3.6.1.4.1.8072.3.2.10";
-    
-    protected static final Map<InetAddress, Integer> LINUX_UBUNTU_IP_IF_MAP = new HashMap<InetAddress, Integer>();
     static {
         LINUX_UBUNTU_IP_IF_MAP.put(InetAddressUtils.addr("172.20.1.14"), 4);
         LINUX_UBUNTU_IP_IF_MAP.put(InetAddressUtils.addr("192.168.122.1"), 5);
@@ -483,10 +422,7 @@ public abstract class Nms7467NetworkBuilder extends LinkdTestBuilder {
         LINUX_UBUNTU_IP_IF_MAP.put(InetAddressUtils.addr("2001:0470:e2f1:cafe:c1d6:02ad:621a:6401"), 4);
         LINUX_UBUNTU_IP_IF_MAP.put(InetAddressUtils.addr("2001:0470:e2f1:cafe:e17a:e1db:31e1:2a2d"), 4);
         LINUX_UBUNTU_IP_IF_MAP.put(InetAddressUtils.addr("2001:0470:e2f1:cafe:e8f5:957c:ef2a:f427"), 4);
-    }
 
-    protected static final Map<Integer, String> LINUX_UBUNTU_IF_IFNAME_MAP = new HashMap<Integer, String>();
-    static {
         LINUX_UBUNTU_IF_IFNAME_MAP.put(1, "lo0");
         LINUX_UBUNTU_IF_IFNAME_MAP.put(2, "eth0");
         LINUX_UBUNTU_IF_IFNAME_MAP.put(3, "vlan0");
@@ -494,10 +430,7 @@ public abstract class Nms7467NetworkBuilder extends LinkdTestBuilder {
         LINUX_UBUNTU_IF_IFNAME_MAP.put(5, "virbr0");
         LINUX_UBUNTU_IF_IFNAME_MAP.put(9, "vnet0");
         LINUX_UBUNTU_IF_IFNAME_MAP.put(11, "eth1");
-    }
 
-    protected static final Map<Integer, String> LINUX_UBUNTU_IF_MAC_MAP = new HashMap<Integer, String>();
-    static {
         LINUX_UBUNTU_IF_MAC_MAP.put(2, "406186e28b53");
         LINUX_UBUNTU_IF_MAC_MAP.put(3, "70f1a1085de7");
         LINUX_UBUNTU_IF_MAC_MAP.put(4, "406186e28b53");
@@ -521,28 +454,16 @@ public abstract class Nms7467NetworkBuilder extends LinkdTestBuilder {
      * 
      */
 
-    protected static final String DARWIN_10_8_NAME        = "mac";
-    protected static final String DARWIN_10_8_IP          = "172.20.1.28";
-    protected static final String DARWIN_10_8_SYSOID      = ".1.3.6.1.4.1.8072.3.2.255";
-    
-
-    protected static final Map<InetAddress,Integer> DARWIN_10_8_IP_IF_MAP = new HashMap<InetAddress, Integer>();
     static {
         DARWIN_10_8_IP_IF_MAP.put(InetAddressUtils.addr(DARWIN_10_8_IP), 4);
-    }
 
-    protected static final Map<Integer, String> DARWIN_10_8_IF_IFNAME_MAP = new HashMap<Integer, String>();
-    static {
         DARWIN_10_8_IF_IFNAME_MAP.put(1, "lo0");
         DARWIN_10_8_IF_IFNAME_MAP.put(2, "gif0");
         DARWIN_10_8_IF_IFNAME_MAP.put(3, "stf0");
         DARWIN_10_8_IF_IFNAME_MAP.put(4, "en0");
         DARWIN_10_8_IF_IFNAME_MAP.put(5, "fw0");
         DARWIN_10_8_IF_IFNAME_MAP.put(6, "en1");
-    }
     
-    protected static final Map<Integer, String> DARWIN_10_8_IF_MAC_MAP = new HashMap<Integer, String>();
-    static {
         DARWIN_10_8_IF_MAC_MAP.put(4, "0026b0ed8fb8");
         DARWIN_10_8_IF_MAC_MAP.put(5, "0026b0ed8fb8");
         DARWIN_10_8_IF_MAC_MAP.put(6, "002608f86155");
