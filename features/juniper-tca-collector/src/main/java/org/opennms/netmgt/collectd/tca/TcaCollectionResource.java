@@ -90,14 +90,6 @@ public class TcaCollectionResource extends AbstractCollectionResource {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.opennms.netmgt.config.collector.CollectionResource#getParent()
-	 */
-	@Override
-	public String getParent() {
-		return m_agent.getStorageDir().toString();
-	}
-
-	/* (non-Javadoc)
 	 * @see org.opennms.netmgt.config.collector.CollectionResource#getInstance()
 	 */
 	@Override
