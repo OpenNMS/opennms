@@ -23,6 +23,21 @@
 
 	<!-- Start 1.12 -->
 
+	<section id="introduction-1.12.6">
+		<title>Release 1.12.6</title>
+
+		<para>
+			Release 1.12.6 is the seventh in the stable 1.12 series of OpenNMS.
+			It contains a number of important fixes including a potential security leak
+			in the ReST interface.
+			see <ulink url="http://www.opennms.org/wiki/What%27s_New_in_OpenNMS_1.12">What's
+			New in OpenNMS 1.12</ulink>.
+		</para>
+		<para>
+			The codename for 1.12.6 is <emphasis>Sascha Konietzko</emphasis>
+		</para>
+	</section>
+
 	<section id="introduction-1.12.5">
 		<title>Release 1.12.5</title>
 
