@@ -245,7 +245,7 @@ public class VmwareCimCollector implements ServiceCollector {
         // Load the attribute types.
         loadAttributeTypeList(collection);
 
-        VmwareCimCollectionSet collectionSet = new VmwareCimCollectionSet(agent);
+        VmwareCimCollectionSet collectionSet = new VmwareCimCollectionSet();
 
         collectionSet.setCollectionTimestamp(new Date());
 
@@ -361,7 +361,7 @@ public class VmwareCimCollector implements ServiceCollector {
                             vmwareCollectionResource.setAttributeValue(attribType, vmwareViJavaAccess.getPropertyOfCimObject(cimObject, attrib.getName()));
                             logger.debug("Storing multi instance value " + attrib.getName() + "[" + instance + "]='" + vmwareViJavaAccess.getPropertyOfCimObject(cimObject, attrib.getName()) + "' for node " + agent.getNodeId());
                         }
-                        collectionSet.getResources().add(vmwareCollectionResource);
+                        collectionSet.getCollectionResources().add(vmwareCollectionResource);
                     }
                 }
             }

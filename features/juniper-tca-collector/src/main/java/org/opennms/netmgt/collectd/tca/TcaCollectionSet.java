@@ -85,7 +85,7 @@ public class TcaCollectionSet extends AbstractCollectionSet {
 	/** The Collection timestamp. */
 	private Date m_timestamp;
 
-	/** The Colelction Agent. */
+	/** The Collection Agent. */
 	private CollectionAgent m_agent;
 
 	/** The RRD Repository. */

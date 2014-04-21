@@ -200,7 +200,7 @@ public class VmwareCollector implements ServiceCollector {
             }
         }
 
-        VmwareCollectionSet collectionSet = new VmwareCollectionSet(agent);
+        VmwareCollectionSet collectionSet = new VmwareCollectionSet();
 
         collectionSet.setCollectionTimestamp(new Date());
 
@@ -270,7 +270,7 @@ public class VmwareCollector implements ServiceCollector {
                     }
                 }
 
-                collectionSet.getResources().add(vmwareCollectionResource);
+                collectionSet.getCollectionResources().add(vmwareCollectionResource);
             } else {
                 // multi instance value
 
@@ -317,7 +317,7 @@ public class VmwareCollector implements ServiceCollector {
                     }
 
                     for (String instance : resources.keySet()) {
-                        collectionSet.getResources().add(resources.get(instance));
+                        collectionSet.getCollectionResources().add(resources.get(instance));
                     }
                 }
             }
