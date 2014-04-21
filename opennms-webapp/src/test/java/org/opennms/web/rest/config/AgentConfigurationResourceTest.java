@@ -100,6 +100,8 @@ public class AgentConfigurationResourceTest {
 
         final OnmsNode node = new OnmsNode(null, "foo");
         node.setId(1);
+        node.setForeignSource("foo");
+        node.setForeignId("bar");
         node.setSysObjectId(".1.2.3.4.5");
         final OnmsIpInterface iface = new OnmsIpInterface(oneNinetyTwo, node);
         final OnmsServiceType serviceType = new OnmsServiceType("SNMP");
@@ -119,6 +121,8 @@ public class AgentConfigurationResourceTest {
         assertEquals(1161, agentResponses.get(0).getPort().intValue());
         assertEquals(".1.2.3.4.5", agentResponses.get(0).getParameters().get("sysObjectId"));
         assertEquals("1", agentResponses.get(0).getParameters().get("nodeId"));
+        assertEquals("foo", agentResponses.get(0).getParameters().get("foreignSource"));
+        assertEquals("bar", agentResponses.get(0).getParameters().get("foreignId"));
     }
     
     private static final class TestMonitoredServiceDao extends UnimplementedMonitoredServiceDao {
