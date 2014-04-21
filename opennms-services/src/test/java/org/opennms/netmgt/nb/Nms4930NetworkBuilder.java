@@ -1,10 +1,10 @@
-package org.opennms.netmgt.linkd;
+package org.opennms.netmgt.nb;
 
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 
-public class Nms4930NetworkBuilder extends LinkdTestNetworkBuilder {
+public class Nms4930NetworkBuilder extends TestNetworkBuilder {
 
 	NodeDao m_nodeDao;
 

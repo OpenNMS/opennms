@@ -28,30 +28,30 @@
 
 package org.opennms.netmgt.linkd;
 
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO7200A_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO7200A_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO7200A_SNMP_RESOURCE;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO7200B_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO7200B_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO7200B_SNMP_RESOURCE;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO1700_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO1700_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO1700_SNMP_RESOURCE;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO1700B_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO1700B_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO1700B_SNMP_RESOURCE;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.LAPTOP_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.LAPTOP_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.LAPTOP_SNMP_RESOURCE;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO3600_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO3600_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO3600_SNMP_RESOURCE;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO3700_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO3700_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO3700_SNMP_RESOURCE;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO2691_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO2691_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO2691_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO1700B_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO1700B_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO1700B_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO1700_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO1700_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO1700_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO2691_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO2691_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO2691_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO3600_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO3600_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO3600_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO3700_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO3700_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO3700_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO7200A_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO7200A_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO7200A_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO7200B_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO7200B_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO7200B_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.LAPTOP_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.LAPTOP_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.LAPTOP_SNMP_RESOURCE;
 
 
 import static org.junit.Assert.assertEquals;
@@ -69,6 +69,7 @@ import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.nb.Nms101NetworkBuilder;
 import org.springframework.transaction.annotation.Transactional;
 
 public class Nms101Test extends LinkdTestBuilder {

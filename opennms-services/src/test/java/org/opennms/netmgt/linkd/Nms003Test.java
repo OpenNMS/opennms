@@ -28,15 +28,15 @@
 
 package org.opennms.netmgt.linkd;
 
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SWITCH1_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SWITCH1_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SWITCH1_SNMP_RESOURCE_003;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SWITCH2_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SWITCH2_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SWITCH2_SNMP_RESOURCE_003;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SWITCH3_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SWITCH3_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SWITCH3_SNMP_RESOURCE_003;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH1_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH1_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH1_SNMP_RESOURCE_003;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH2_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH2_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH2_SNMP_RESOURCE_003;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH3_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH3_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH3_SNMP_RESOURCE_003;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -48,6 +48,7 @@ import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.nb.Nms003NetworkBuilder;
 
 public class Nms003Test extends LinkdTestBuilder {
 

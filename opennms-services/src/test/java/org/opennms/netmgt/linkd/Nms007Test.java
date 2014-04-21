@@ -28,33 +28,33 @@
 
 package org.opennms.netmgt.linkd;
 
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.FireFly170_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.FireFly170_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.FireFly170_SNMP_RESOURCE;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.FireFly171_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.FireFly171_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.FireFly171_SNMP_RESOURCE;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.FireFly172_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.FireFly172_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.FireFly172_SNMP_RESOURCE;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.FireFly173_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.FireFly173_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.FireFly173_SNMP_RESOURCE;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.FireFly174_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.FireFly174_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.FireFly174_SNMP_RESOURCE;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.FireFly175_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.FireFly175_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.FireFly175_SNMP_RESOURCE;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.FireFly176_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.FireFly176_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.FireFly176_SNMP_RESOURCE;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.FireFly177_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.FireFly177_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.FireFly177_SNMP_RESOURCE;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.FireFly189_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.FireFly189_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.FireFly189_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly170_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly170_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly170_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly171_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly171_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly171_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly172_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly172_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly172_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly173_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly173_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly173_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly174_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly174_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly174_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly175_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly175_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly175_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly176_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly176_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly176_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly177_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly177_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly177_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly189_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly189_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly189_SNMP_RESOURCE;
 
 
 import static org.junit.Assert.assertEquals;
@@ -67,6 +67,7 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.nb.Nms007NetworkBuilder;
 
 public class Nms007Test extends LinkdTestBuilder {
 

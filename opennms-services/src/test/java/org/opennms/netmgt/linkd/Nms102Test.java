@@ -28,14 +28,14 @@
 
 package org.opennms.netmgt.linkd;
 
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.MIKROTIK_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.MIKROTIK_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SAMSUNG_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SAMSUNG_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.MAC1_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.MAC1_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.MAC2_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.MAC2_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.MAC1_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.MAC1_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.MAC2_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.MAC2_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.MIKROTIK_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.MIKROTIK_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SAMSUNG_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SAMSUNG_NAME;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -55,6 +55,7 @@ import org.opennms.netmgt.linkd.snmp.MtxrWlRtabTable;
 import org.opennms.netmgt.linkd.snmp.MtxrWlRtabTableEntry;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.nb.Nms102NetworkBuilder;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;

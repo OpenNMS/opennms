@@ -1,9 +1,9 @@
-package org.opennms.netmgt.linkd;
+package org.opennms.netmgt.nb;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
 
-public class Nms102NetworkBuilder extends LinkdTestNetworkBuilder {
+public class Nms102NetworkBuilder extends TestNetworkBuilder {
     static {
         MIKROTIK_IP_IF_MAP.put(InetAddressUtils.addr("192.168.0.1"), 2);
         MIKROTIK_IP_IF_MAP.put(InetAddressUtils.addr("10.129.16.165"), 1);
@@ -52,19 +52,19 @@ public class Nms102NetworkBuilder extends LinkdTestNetworkBuilder {
         
     }
     
-    protected OnmsNode getMikrotik() {
+    public OnmsNode getMikrotik() {
         return getNode(MIKROTIK_NAME,MIKROTIK_SYSOID,MIKROTIK_IP,MIKROTIK_IP_IF_MAP,MIKROTIK_IF_IFNAME_MAP,MIKROTIK_IF_MAC_MAP,MIKROTIK_IF_IFDESCR_MAP,MIKROTIK_IF_IFALIAS_MAP,MIKROTIK_IF_NETMASK_MAP);        
     }
 
-    protected OnmsNode getSamsung() {
+    public OnmsNode getSamsung() {
         return getNode(SAMSUNG_NAME,SAMSUNG_SYSOID,SAMSUNG_IP,SAMSUNG_IP_IF_MAP,SAMSUNG_IF_IFNAME_MAP,SAMSUNG_IF_MAC_MAP,SAMSUNG_IF_IFDESCR_MAP,SAMSUNG_IF_IFALIAS_MAP,SAMSUNG_IF_NETMASK_MAP);        
     }
 
-    protected OnmsNode getMac1() {
+    public OnmsNode getMac1() {
         return getNode(MAC1_NAME,MAC1_SYSOID,MAC1_IP,MAC1_IP_IF_MAP,MAC1_IF_IFNAME_MAP,MAC1_IF_MAC_MAP,MAC1_IF_IFDESCR_MAP,MAC1_IF_IFALIAS_MAP,MAC1_IF_NETMASK_MAP);        
     }
 
-    protected OnmsNode getMac2() {
+    public OnmsNode getMac2() {
         return getNode(MAC2_NAME,MAC2_SYSOID,MAC2_IP,MAC2_IP_IF_MAP,MAC2_IF_IFNAME_MAP,MAC2_IF_MAC_MAP,MAC2_IF_IFDESCR_MAP,MAC2_IF_IFALIAS_MAP,MAC2_IF_NETMASK_MAP);        
     }
 

@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.linkd;
+package org.opennms.netmgt.nb;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
@@ -35,7 +35,7 @@ import org.opennms.netmgt.model.OnmsNode;
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  */
 
-public class Nms007NetworkBuilder extends LinkdTestNetworkBuilder {
+public class Nms007NetworkBuilder extends TestNetworkBuilder {
 
     static {
     try {
@@ -701,39 +701,39 @@ public class Nms007NetworkBuilder extends LinkdTestNetworkBuilder {
     }
     }
     
-    protected OnmsNode getFireFly170() {
+    public OnmsNode getFireFly170() {
         return getNode(FireFly170_NAME,FireFly170_SYSOID,FireFly170_IP,FireFly170_IP_IF_MAP,FireFly170_IF_IFNAME_MAP,FireFly170_IF_MAC_MAP,FireFly170_IF_IFDESCR_MAP,FireFly170_IF_IFALIAS_MAP,FireFly170_IF_NETMASK_MAP);
     }    
 
-    protected OnmsNode getFireFly171() {
+    public OnmsNode getFireFly171() {
         return getNode(FireFly171_NAME,FireFly171_SYSOID,FireFly171_IP,FireFly171_IP_IF_MAP,FireFly171_IF_IFNAME_MAP,FireFly171_IF_MAC_MAP,FireFly171_IF_IFDESCR_MAP,FireFly171_IF_IFALIAS_MAP,FireFly171_IF_NETMASK_MAP);
     }    
 
-    protected OnmsNode getFireFly172() {
+    public OnmsNode getFireFly172() {
         return getNode(FireFly172_NAME,FireFly172_SYSOID,FireFly172_IP,FireFly172_IP_IF_MAP,FireFly172_IF_IFNAME_MAP,FireFly172_IF_MAC_MAP,FireFly172_IF_IFDESCR_MAP,FireFly172_IF_IFALIAS_MAP,FireFly172_IF_NETMASK_MAP);
     }    
 
-    protected OnmsNode getFireFly173() {
+    public OnmsNode getFireFly173() {
         return getNode(FireFly173_NAME,FireFly173_SYSOID,FireFly173_IP,FireFly173_IP_IF_MAP,FireFly173_IF_IFNAME_MAP,FireFly173_IF_MAC_MAP,FireFly173_IF_IFDESCR_MAP,FireFly173_IF_IFALIAS_MAP,FireFly173_IF_NETMASK_MAP);
     }    
 
-    protected OnmsNode getFireFly174() {
+    public OnmsNode getFireFly174() {
         return getNode(FireFly174_NAME,FireFly174_SYSOID,FireFly174_IP,FireFly174_IP_IF_MAP,FireFly174_IF_IFNAME_MAP,FireFly174_IF_MAC_MAP,FireFly174_IF_IFDESCR_MAP,FireFly174_IF_IFALIAS_MAP,FireFly174_IF_NETMASK_MAP);
     }    
 
-    protected OnmsNode getFireFly175() {
+    public OnmsNode getFireFly175() {
         return getNode(FireFly175_NAME,FireFly175_SYSOID,FireFly175_IP,FireFly175_IP_IF_MAP,FireFly175_IF_IFNAME_MAP,FireFly175_IF_MAC_MAP,FireFly175_IF_IFDESCR_MAP,FireFly175_IF_IFALIAS_MAP,FireFly175_IF_NETMASK_MAP);
     }    
 
-    protected OnmsNode getFireFly176() {
+    public OnmsNode getFireFly176() {
         return getNode(FireFly176_NAME,FireFly176_SYSOID,FireFly176_IP,FireFly176_IP_IF_MAP,FireFly176_IF_IFNAME_MAP,FireFly176_IF_MAC_MAP,FireFly176_IF_IFDESCR_MAP,FireFly176_IF_IFALIAS_MAP,FireFly176_IF_NETMASK_MAP);
     }    
 
-    protected OnmsNode getFireFly177() {
+    public OnmsNode getFireFly177() {
         return getNode(FireFly177_NAME,FireFly177_SYSOID,FireFly177_IP,FireFly177_IP_IF_MAP,FireFly177_IF_IFNAME_MAP,FireFly177_IF_MAC_MAP,FireFly177_IF_IFDESCR_MAP,FireFly177_IF_IFALIAS_MAP,FireFly177_IF_NETMASK_MAP);
     }    
 
-    protected OnmsNode getFireFly189() {
+    public OnmsNode getFireFly189() {
         return getNode(FireFly189_NAME,FireFly189_SYSOID,FireFly189_IP,FireFly189_IP_IF_MAP,FireFly189_IF_IFNAME_MAP,FireFly189_IF_MAC_MAP,FireFly189_IF_IFDESCR_MAP,FireFly189_IF_IFALIAS_MAP,FireFly189_IF_NETMASK_MAP);
     }    
 

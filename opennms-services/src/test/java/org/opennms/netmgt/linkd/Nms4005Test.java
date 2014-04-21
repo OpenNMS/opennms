@@ -28,10 +28,10 @@
 
 package org.opennms.netmgt.linkd;
 
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.R1_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.R2_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.R3_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.R4_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.R1_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.R2_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.R3_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.R4_NAME;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -46,6 +46,7 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.nb.Nms4005NetworkBuilder;
 
 public class Nms4005Test extends LinkdTestBuilder {
 

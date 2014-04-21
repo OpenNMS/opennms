@@ -30,18 +30,18 @@ package org.opennms.netmgt.linkd;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.FROH_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.FROH_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.FROH_SNMP_RESOURCE;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.OEDIPUS_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.OEDIPUS_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.OEDIPUS_SNMP_RESOURCE;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SIEGFRIE_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SIEGFRIE_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SIEGFRIE_SNMP_RESOURCE;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.FROH_ISIS_SYS_ID;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.OEDIPUS_ISIS_SYS_ID;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SIEGFRIE_ISIS_SYS_ID;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FROH_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FROH_ISIS_SYS_ID;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FROH_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FROH_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.OEDIPUS_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.OEDIPUS_ISIS_SYS_ID;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.OEDIPUS_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.OEDIPUS_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SIEGFRIE_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SIEGFRIE_ISIS_SYS_ID;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SIEGFRIE_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SIEGFRIE_SNMP_RESOURCE;
 
 import java.util.Collection;
 import java.util.Date;
@@ -64,6 +64,7 @@ import org.opennms.netmgt.linkd.snmp.IsisISAdjTableEntry.IsisISAdjState;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.nb.Nms0001NetworkBuilder;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -72,6 +73,35 @@ import org.opennms.netmgt.snmp.SnmpWalker;
 public class Nms0001Test extends LinkdTestBuilder {
 
 	Nms0001NetworkBuilder builder = new Nms0001NetworkBuilder();
+	
+    @Test
+    public void testDiscoveryOspfGetSubNetAddress() throws Exception {
+        DiscoveryLink discovery = new DiscoveryLink();
+        OspfNbrInterface ospfinterface = new OspfNbrInterface(InetAddressUtils.addr("192.168.9.1"));
+        ospfinterface.setOspfNbrIpAddr(InetAddressUtils.addr("192.168.15.45"));
+
+        ospfinterface.setOspfNbrNetMask(InetAddressUtils.addr("255.255.255.0"));        
+        assertEquals(InetAddressUtils.addr("192.168.15.0"), discovery.getSubnetAddress(ospfinterface));
+        
+        ospfinterface.setOspfNbrNetMask(InetAddressUtils.addr("255.255.0.0"));
+        assertEquals(InetAddressUtils.addr("192.168.0.0"), discovery.getSubnetAddress(ospfinterface));
+
+        ospfinterface.setOspfNbrNetMask(InetAddressUtils.addr("255.255.255.252"));
+        assertEquals(InetAddressUtils.addr("192.168.15.44"), discovery.getSubnetAddress(ospfinterface));
+
+        ospfinterface.setOspfNbrNetMask(InetAddressUtils.addr("255.255.255.240"));
+        assertEquals(InetAddressUtils.addr("192.168.15.32"), discovery.getSubnetAddress(ospfinterface));
+
+    }
+
+    @Test
+    public void testBridgePortFromDesignatedBridgePort() {
+        assertEquals(5826, 8191 & Integer.parseInt("96c2",16));
+        assertEquals(5781, 8191 & Integer.parseInt("9695",16));
+        assertEquals(4230, 8191 & Integer.parseInt("9086",16));
+        assertEquals(110, 8191 & Integer.parseInt("806e",16));
+     }
+
     @Test
     @JUnitSnmpAgents(value = {
             @JUnitSnmpAgent(host = FROH_IP, port = 161, resource = FROH_SNMP_RESOURCE),

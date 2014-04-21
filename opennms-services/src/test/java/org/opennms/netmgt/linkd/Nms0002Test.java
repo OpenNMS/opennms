@@ -28,35 +28,35 @@
 
 package org.opennms.netmgt.linkd;
 
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.Rluck001_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.Rluck001_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.Rluck001_SNMP_RESOURCE;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.Sluck001_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.Sluck001_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.Sluck001_SNMP_RESOURCE;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.Sluck001_SNMP_RESOURCE_VLAN100;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.Sluck001_SNMP_RESOURCE_VLAN950;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.RPict001_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.RPict001_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.RPict001_SNMP_RESOURCE;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.RNewt103_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.RNewt103_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.RNewt103_SNMP_RESOURCE;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.RDeEssnBrue_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.RDeEssnBrue_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.RDeEssnBrue_SNMP_RESOURCE;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SDeEssnBrue081_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SDeEssnBrue081_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SDeEssnBrue081_SNMP_RESOURCE;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SDeEssnBrue121_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SDeEssnBrue121_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SDeEssnBrue121_SNMP_RESOURCE;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SDeEssnBrue165_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SDeEssnBrue165_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SDeEssnBrue165_SNMP_RESOURCE;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SDeEssnBrue142_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SDeEssnBrue142_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.SDeEssnBrue142_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.RDeEssnBrue_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.RDeEssnBrue_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.RDeEssnBrue_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.RNewt103_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.RNewt103_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.RNewt103_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.RPict001_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.RPict001_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.RPict001_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.Rluck001_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.Rluck001_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.Rluck001_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SDeEssnBrue081_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SDeEssnBrue081_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SDeEssnBrue081_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SDeEssnBrue121_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SDeEssnBrue121_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SDeEssnBrue121_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SDeEssnBrue142_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SDeEssnBrue142_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SDeEssnBrue142_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SDeEssnBrue165_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SDeEssnBrue165_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SDeEssnBrue165_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.Sluck001_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.Sluck001_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.Sluck001_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.Sluck001_SNMP_RESOURCE_VLAN100;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.Sluck001_SNMP_RESOURCE_VLAN950;
 
 
 import static org.junit.Assert.assertEquals;
@@ -69,6 +69,7 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.nb.Nms0002NetworkBuilder;
 
 public class Nms0002Test extends LinkdTestBuilder {
 

@@ -1,9 +1,9 @@
-package org.opennms.netmgt.linkd;
+package org.opennms.netmgt.nb;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
 
-public class Nms4005NetworkBuilder extends LinkdTestNetworkBuilder {
+public class Nms4005NetworkBuilder extends TestNetworkBuilder {
 
     static {
         R1_IP_IF_MAP.put(InetAddressUtils.addr("10.1.2.1"), 1);
@@ -55,19 +55,19 @@ public class Nms4005NetworkBuilder extends LinkdTestNetworkBuilder {
     	R4_IF_IFDESCR_MAP.put(3, "Null0");
     }
 
-    protected OnmsNode getR1() {
+    public OnmsNode getR1() {
         return getNode(R1_NAME,R1_SYSOID,R1_IP,R1_IP_IF_MAP,R1_IF_IFNAME_MAP,R1_IF_MAC_MAP,R1_IF_IFDESCR_MAP,R1_IF_IFALIAS_MAP,R1_IF_NETMASK_MAP);
     }    
 
-    protected OnmsNode getR2() {
+    public OnmsNode getR2() {
         return getNode(R2_NAME,R1_SYSOID,R2_IP,R2_IP_IF_MAP,R2_IF_IFNAME_MAP,R2_IF_MAC_MAP,R2_IF_IFDESCR_MAP,R2_IF_IFALIAS_MAP,R2_IF_NETMASK_MAP);
     }    
 
-    protected OnmsNode getR3() {
+    public OnmsNode getR3() {
         return getNode(R3_NAME,R3_SYSOID,R3_IP,R3_IP_IF_MAP,R3_IF_IFNAME_MAP,R3_IF_MAC_MAP,R3_IF_IFDESCR_MAP,R3_IF_IFALIAS_MAP,R3_IF_NETMASK_MAP);
     }    
 
-    protected OnmsNode getR4() {
+    public OnmsNode getR4() {
         return getNode(R4_NAME,R4_SYSOID,R4_IP,R4_IP_IF_MAP,R4_IF_IFNAME_MAP,R4_IF_MAC_MAP,R4_IF_IFDESCR_MAP,R4_IF_IFALIAS_MAP,R4_IF_NETMASK_MAP);
     }    
 

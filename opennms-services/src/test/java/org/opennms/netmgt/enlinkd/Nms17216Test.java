@@ -27,92 +27,57 @@
  *******************************************************************************/
 
 package org.opennms.netmgt.enlinkd;
-
+/*
+import static org.opennms.netmgt.nb.TestNetworkBuilder.ROUTER1_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.ROUTER1_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.ROUTER1_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.ROUTER2_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.ROUTER2_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.ROUTER2_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.ROUTER3_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.ROUTER3_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.ROUTER3_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.ROUTER4_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.ROUTER4_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.ROUTER4_SNMP_RESOURCE;
+*/
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH1_IP;
+//import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH1_LLDP_CHASSISID;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH1_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH1_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH2_IP;
+//import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH2_LLDP_CHASSISID;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH2_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH2_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH3_IP;
+//import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH3_LLDP_CHASSISID;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH3_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH3_SNMP_RESOURCE;
+/*
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH4_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH4_LLDP_CHASSISID;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH4_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH4_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH5_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH5_LLDP_CHASSISID;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH5_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH5_SNMP_RESOURCE;
+*/
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
-import java.util.Properties;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.opennms.core.spring.BeanUtils;
-import org.opennms.core.test.MockLogAppender;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
-import org.opennms.netmgt.config.EnhancedLinkdConfig;
-import org.opennms.netmgt.dao.api.LldpLinkDao;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.linkd.Nms17216NetworkBuilder;
 import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.test.JUnitConfigurationEnvironment;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
+import org.opennms.netmgt.nb.Nms17216NetworkBuilder;
 
-import static org.opennms.netmgt.enlinkd.EnLinkdTestHelper.printLldpTopology;
-import static org.opennms.netmgt.enlinkd.EnLinkdTestHelper.printLldpElement;
-
-@RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations= {
-        "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
-        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
-        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath*:/META-INF/opennms/applicationContext-enhancedLinkdTest.xml"
-})
-@JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase
-public class Nms17216Test extends Nms17216NetworkBuilder implements InitializingBean {
-
-    @Autowired
-    private EnhancedLinkd m_linkd;
-
-    @Autowired
-    private EnhancedLinkdConfig m_linkdConfig;
-
-    @Autowired
-    private NodeDao m_nodeDao;
-    
-    @Autowired
-    private LldpLinkDao m_topologyDao;
+public class Nms17216Test extends EnLinkdTestBuilder {
         
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
-    }
-
-    @Before
-    public void setUp() throws Exception {
-        Properties p = new Properties();
-        p.setProperty("log4j.logger.org.hibernate.SQL", "WARN");
-        p.setProperty("log4j.logger.org.hibernate.cfg", "WARN");
-        p.setProperty("log4j.logger.org.hibernate.impl", "WARN");
-        p.setProperty("log4j.logger.org.hibernate.hql", "WARN");
-        p.setProperty("log4j.logger.org.opennms.mock.snmp","WARN");
-        p.setProperty("log4j.logger.org.opennms.netmgt.linkd.snmp", "WARN");
-        p.setProperty("log4j.logger.org.opennms.netmgt.snmp", "WARN");
-        p.setProperty("log4j.logger.org.opennms.netmgt.filter", "WARN");
-        p.setProperty("log4j.logger.org.hibernate", "WARN");
-        p.setProperty("log4j.logger.org.springframework","WARN");
-        p.setProperty("log4j.logger.com.mchange.v2.resourcepool", "WARN");
-        MockLogAppender.setupLogging(p);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        for (final OnmsNode node : m_nodeDao.findAll()) {
-            m_nodeDao.delete(node);
-        }
-        m_nodeDao.flush();
-    }
-    
+	Nms17216NetworkBuilder builder = new Nms17216NetworkBuilder();    
     /*
      * These are the links among the following nodes discovered using 
      * only the lldp protocol
@@ -138,14 +103,14 @@ public class Nms17216Test extends Nms17216NetworkBuilder implements Initializing
      */
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:linkd/nms17216/switch1-walk.txt"),
-            @JUnitSnmpAgent(host=SWITCH2_IP, port=161, resource="classpath:linkd/nms17216/switch2-walk.txt"),
-            @JUnitSnmpAgent(host=SWITCH3_IP, port=161, resource="classpath:linkd/nms17216/switch3-walk.txt")
+            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource=SWITCH1_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SWITCH2_IP, port=161, resource=SWITCH2_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SWITCH3_IP, port=161, resource=SWITCH3_SNMP_RESOURCE)
     })
     public void testNetwork17216LldpLinks() throws Exception {
-        m_nodeDao.save(getSwitch1());
-        m_nodeDao.save(getSwitch2());
-        m_nodeDao.save(getSwitch3());
+        m_nodeDao.save(builder.getSwitch1());
+        m_nodeDao.save(builder.getSwitch2());
+        m_nodeDao.save(builder.getSwitch3());
         m_nodeDao.flush();
 
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);

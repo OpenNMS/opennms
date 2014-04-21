@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.linkd;
+package org.opennms.netmgt.nb;
 
 
 import java.net.InetAddress;
@@ -40,41 +40,41 @@ import org.opennms.netmgt.model.OnmsNode;
  * @author <a href="mailto:alejandro@opennms.org">Alejandro Galue</a>
  */
 
-public class Nms10205bNetworkBuilder extends LinkdTestNetworkBuilder {
+public class Nms10205bNetworkBuilder extends TestNetworkBuilder {
 
-    protected OnmsNode getMumbai() {
+    public OnmsNode getMumbai() {
         return getNode(MUMBAI_NAME,MUMBAI_SYSOID,MUMBAI_IP,MUMBAI_IP_IF_MAP,MUMBAI_IF_IFNAME_MAP,MUMBAI_IF_MAC_MAP,MUMBAI_IF_IFDESCR_MAP,MUMBAI_IF_IFALIAS_MAP,MUMBAI_IF_NETMASK_MAP);
     }    
     
-    protected OnmsNode getDelhi() {
+    public OnmsNode getDelhi() {
         return getNode(DELHI_NAME,DELHI_SYSOID,DELHI_IP,DELHI_IP_IF_MAP,DELHI_IF_IFNAME_MAP,DELHI_IF_MAC_MAP,DELHI_IF_IFDESCR_MAP,DELHI_IF_IFALIAS_MAP,DELHI_IF_NETMASK_MAP);
     }    
 
-    protected OnmsNode getBangalore() {
+    public OnmsNode getBangalore() {
         return getNode(BANGALORE_NAME,BANGALORE_SYSOID,BANGALORE_IP,BANGALORE_IP_IF_MAP,BANGALORE_IF_IFNAME_MAP,BANGALORE_IF_MAC_MAP,BANGALORE_IF_IFDESCR_MAP,BANGALORE_IF_IFALIAS_MAP,BANGALORE_IF_NETMASK_MAP);        
     }
 
-    protected OnmsNode getBagmane() {
+    public OnmsNode getBagmane() {
         return getNode(BAGMANE_NAME,BAGMANE_SYSOID,BAGMANE_IP,BAGMANE_IP_IF_MAP,BAGMANE_IF_IFNAME_MAP,BAGMANE_IF_MAC_MAP,BAGMANE_IF_IFDESCR_MAP,BAGMANE_IF_IFALIAS_MAP,BAGMANE_IF_NETMASK_MAP);        
     }
 
-    protected OnmsNode getMysore() {
+    public OnmsNode getMysore() {
         return getNode(MYSORE_NAME,MYSORE_SYSOID,MYSORE_IP,MYSORE_IP_IF_MAP,MYSORE_IF_IFNAME_MAP,MYSORE_IF_MAC_MAP,MYSORE_IF_IFDESCR_MAP,MYSORE_IF_IFALIAS_MAP,MYSORE_IF_NETMASK_MAP);        
     }
 
-    protected OnmsNode getSpaceExSw1() {
+    public OnmsNode getSpaceExSw1() {
         return getNode(SPACE_EX_SW1_NAME,SPACE_EX_SW1_SYSOID,SPACE_EX_SW1_IP,SPACE_EX_SW1_IP_IF_MAP,SPACE_EX_SW1_IF_IFNAME_MAP,SPACE_EX_SW1_IF_MAC_MAP,SPACE_EX_SW1_IF_IFDESCR_MAP,SPACE_EX_SW1_IF_IFALIAS_MAP,SPACE_EX_SW1_IF_NETMASK_MAP);
     }
 
-    protected OnmsNode getSpaceExSw2() {
+    public OnmsNode getSpaceExSw2() {
         return getNode(SPACE_EX_SW2_NAME,SPACE_EX_SW2_SYSOID,SPACE_EX_SW2_IP,SPACE_EX_SW2_IP_IF_MAP,SPACE_EX_SW2_IF_IFNAME_MAP,SPACE_EX_SW2_IF_MAC_MAP,SPACE_EX_SW2_IF_IFDESCR_MAP,SPACE_EX_SW2_IF_IFALIAS_MAP,SPACE_EX_SW2_IF_NETMASK_MAP);
     }
 
-    protected OnmsNode getJ635042() {
+    public OnmsNode getJ635042() {
         return getNode(J6350_42_NAME,J6350_42_SYSOID,J6350_42_IP,J6350_42_IP_IF_MAP,J6350_42_IF_IFNAME_MAP,J6350_42_IF_MAC_MAP,J6350_42_IF_IFDESCR_MAP,J6350_42_IF_IFALIAS_MAP,J6350_42_IF_NETMASK_MAP);        
     }
 
-    protected OnmsNode getSRX100() {
+    public OnmsNode getSRX100() {
         return getNode(SRX_100_NAME,SRX_100_SYSOID,SRX_100_IP,SRX_100_IP_IF_MAP,SRX_100_IF_IFNAME_MAP,SRX_100_IF_MAC_MAP,SRX_100_IF_IFDESCR_MAP,SRX_100_IF_IFALIAS_MAP,SRX_100_IF_NETMASK_MAP);        
     }
 
@@ -1357,15 +1357,15 @@ static {
     SRX_100_IF_MAC_MAP.put(526, "2c6bf502b800");
 }
 
-protected static InetAddress MUMBAI_OSPF_ID;
-protected static InetAddress DELHI_OSPF_ID;
-protected static InetAddress BANGALORE_OSPF_ID;
-protected static InetAddress MYSORE_OSPF_ID;
-protected static InetAddress BAGMANE_OSPF_ID;
-protected static InetAddress SPACE_EX_SW1_OSPF_ID;
-protected static InetAddress SPACE_EX_SW2_OSPF_ID;
-protected static InetAddress J6350_42_OSPF_ID;
-protected static InetAddress SRX_100_OSPF_ID;
+public static InetAddress MUMBAI_OSPF_ID;
+public static InetAddress DELHI_OSPF_ID;
+public static InetAddress BANGALORE_OSPF_ID;
+public static InetAddress MYSORE_OSPF_ID;
+public static InetAddress BAGMANE_OSPF_ID;
+public static InetAddress SPACE_EX_SW1_OSPF_ID;
+public static InetAddress SPACE_EX_SW2_OSPF_ID;
+public static InetAddress J6350_42_OSPF_ID;
+public static InetAddress SRX_100_OSPF_ID;
 static {
     MUMBAI_OSPF_ID  = InetAddressUtils.addr("192.168.5.1");
     DELHI_OSPF_ID  = InetAddressUtils.addr("192.168.7.1");

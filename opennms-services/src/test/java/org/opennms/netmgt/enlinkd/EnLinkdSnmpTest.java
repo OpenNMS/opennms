@@ -42,11 +42,11 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 
-import org.opennms.netmgt.linkd.Nms17216NetworkBuilder;
 import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.LldpElement.LldpChassisIdSubType;
 import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.model.LldpLink.LldpPortIdSubType;
+import org.opennms.netmgt.nb.TestNetworkBuilder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
@@ -61,9 +61,11 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
 @JUnitConfigurationEnvironment
-public class Nms17216SnmpTest extends Nms17216NetworkBuilder implements InitializingBean {
-    private final static Logger LOG = LoggerFactory.getLogger(Nms17216SnmpTest.class);
-    @Override
+public class EnLinkdSnmpTest extends TestNetworkBuilder implements InitializingBean {
+    
+	private final static Logger LOG = LoggerFactory.getLogger(EnLinkdSnmpTest.class);
+    
+	@Override
     public void afterPropertiesSet() throws Exception {
     }
 

@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.linkd;
+package org.opennms.netmgt.nb;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
@@ -37,7 +37,7 @@ import org.opennms.netmgt.model.OnmsNode;
  * @author <a href="mailto:alejandro@opennms.org">Alejandro Galue</a>
  */
 
-public class Nms1055NetworkBuilder extends LinkdTestNetworkBuilder {
+public class Nms1055NetworkBuilder extends TestNetworkBuilder {
 
     static {
         PENROSE_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.4"), 18);
@@ -1644,27 +1644,27 @@ public class Nms1055NetworkBuilder extends LinkdTestNetworkBuilder {
         RIOVISTA_IF_MAC_MAP.put(513, "001f12373dcf");
     }
 
-    protected OnmsNode getPenrose() {
+    public OnmsNode getPenrose() {
         return getNode(PENROSE_NAME,PENROSE_SYSOID,PENROSE_IP,PENROSE_IP_IF_MAP,PENROSE_IF_IFNAME_MAP,PENROSE_IF_MAC_MAP,PENROSE_IF_IFDESCR_MAP,PENROSE_IF_IFALIAS_MAP,PENROSE_IF_NETMASK_MAP);
     }    
 
-    protected OnmsNode getDelaware() {
+    public OnmsNode getDelaware() {
         return getNode(DELAWARE_NAME,DELAWARE_SYSOID,DELAWARE_IP,DELAWARE_IP_IF_MAP,DELAWARE_IF_IFNAME_MAP,DELAWARE_IF_MAC_MAP,DELAWARE_IF_IFDESCR_MAP,DELAWARE_IF_IFALIAS_MAP,DELAWARE_IF_NETMASK_MAP);
     }    
 
-    protected OnmsNode getPhoenix() {
+    public OnmsNode getPhoenix() {
         return getNode(PHOENIX_NAME,PHOENIX_SYSOID,PHOENIX_IP,PHOENIX_IP_IF_MAP,PHOENIX_IF_IFNAME_MAP,PHOENIX_IF_MAC_MAP,PHOENIX_IF_IFDESCR_MAP,PHOENIX_IF_IFALIAS_MAP,PHOENIX_IF_NETMASK_MAP);
     }    
 
-    protected OnmsNode getAustin() {
+    public OnmsNode getAustin() {
         return getNode(AUSTIN_NAME,AUSTIN_SYSOID,AUSTIN_IP,AUSTIN_IP_IF_MAP,AUSTIN_IF_IFNAME_MAP,AUSTIN_IF_MAC_MAP,AUSTIN_IF_IFDESCR_MAP,AUSTIN_IF_IFALIAS_MAP,AUSTIN_IF_NETMASK_MAP);
     }
 
-    protected OnmsNode getSanjose() {
+    public OnmsNode getSanjose() {
         return getNode(SANJOSE_NAME,SANJOSE_SYSOID,SANJOSE_IP,SANJOSE_IP_IF_MAP,SANJOSE_IF_IFNAME_MAP,SANJOSE_IF_MAC_MAP,SANJOSE_IF_IFDESCR_MAP,SANJOSE_IF_IFALIAS_MAP,SANJOSE_IF_NETMASK_MAP);
     }
 
-    protected OnmsNode getRiovista() {
+    public OnmsNode getRiovista() {
         return getNode(RIOVISTA_NAME,RIOVISTA_SYSOID,RIOVISTA_IP,RIOVISTA_IP_IF_MAP,RIOVISTA_IF_IFNAME_MAP,RIOVISTA_IF_MAC_MAP,RIOVISTA_IF_IFDESCR_MAP,RIOVISTA_IF_IFALIAS_MAP,RIOVISTA_IF_NETMASK_MAP);        
     }
 

@@ -26,22 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.linkd;
+package org.opennms.netmgt.nb;
 
 import static org.junit.Assert.assertTrue;
-import static org.opennms.netmgt.linkd.Nms7467NetworkBuilder.CISCO_C870_IP;
-import static org.opennms.netmgt.linkd.Nms7467NetworkBuilder.CISCO_C870_IP_IF_MAP;
-import static org.opennms.netmgt.linkd.Nms7467NetworkBuilder.CISCO_C870_IF_MAC_MAP;
-import static org.opennms.netmgt.linkd.Nms7467NetworkBuilder.CISCO_C870_IP_PRIMARY;
-import static org.opennms.netmgt.linkd.Nms7467NetworkBuilder.CISCO_WS_C2948_IP;
-import static org.opennms.netmgt.linkd.Nms7467NetworkBuilder.CISCO_WS_C2948_IF_MAC_MAP;
-import static org.opennms.netmgt.linkd.Nms7467NetworkBuilder.NETGEAR_SW_108_IP;
-import static org.opennms.netmgt.linkd.Nms7467NetworkBuilder.NETGEAR_SW_108_IF_MAC_MAP;
-import static org.opennms.netmgt.linkd.Nms7467NetworkBuilder.LINUX_UBUNTU_IP;
-import static org.opennms.netmgt.linkd.Nms7467NetworkBuilder.LINUX_UBUNTU_IP_IF_MAP;
-import static org.opennms.netmgt.linkd.Nms7467NetworkBuilder.LINUX_UBUNTU_IF_MAC_MAP;
-import static org.opennms.netmgt.linkd.Nms7467NetworkBuilder.DARWIN_10_8_IP;
-import static org.opennms.netmgt.linkd.Nms7467NetworkBuilder.DARWIN_10_8_IF_MAC_MAP;
 
 import java.io.IOException;
 import java.util.List;
@@ -90,7 +77,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
 @JUnitTemporaryDatabase
-public class Nms7467CapsdIntegrationTest implements InitializingBean {
+public class Nms7467CapsdIntegrationTest extends Nms7467NetworkBuilder implements InitializingBean {
 
 
     @Autowired

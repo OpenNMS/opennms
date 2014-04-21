@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.linkd;
+package org.opennms.netmgt.nb;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
@@ -35,7 +35,7 @@ import org.opennms.netmgt.model.OnmsNode;
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  */
 
-public class Nms0002NetworkBuilder extends LinkdTestNetworkBuilder {
+public class Nms0002NetworkBuilder extends TestNetworkBuilder {
     static {
     try {
         Rluck001_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.1"), 22);
@@ -3319,47 +3319,47 @@ public class Nms0002NetworkBuilder extends LinkdTestNetworkBuilder {
     }
     }
     
-    protected OnmsNode getRluck001() {
+    public OnmsNode getRluck001() {
         return getNode(Rluck001_NAME,Rluck001_SYSOID,Rluck001_IP,Rluck001_IP_IF_MAP,Rluck001_IF_IFNAME_MAP,Rluck001_IF_MAC_MAP,Rluck001_IF_IFDESCR_MAP,Rluck001_IF_IFALIAS_MAP);
     }    
 
-    protected OnmsNode getSluck001() {
+    public OnmsNode getSluck001() {
         return getNode(Sluck001_NAME,Sluck001_SYSOID,Sluck001_IP,Sluck001_IP_IF_MAP,Sluck001_IF_IFNAME_MAP,Sluck001_IF_MAC_MAP,Sluck001_IF_IFDESCR_MAP,Sluck001_IF_IFALIAS_MAP);
     }    
 
-    protected OnmsNode getRPict001() {
+    public OnmsNode getRPict001() {
         return getNode(RPict001_NAME,RPict001_SYSOID,RPict001_IP,RPict001_IP_IF_MAP,RPict001_IF_IFNAME_MAP,RPict001_IF_MAC_MAP,RPict001_IF_IFDESCR_MAP,RPict001_IF_IFALIAS_MAP);
     }    
 
-    protected OnmsNode getRNewt103() {
+    public OnmsNode getRNewt103() {
         return getNode(RNewt103_NAME,RNewt103_SYSOID,RNewt103_IP,RNewt103_IP_IF_MAP,RNewt103_IF_IFNAME_MAP,RNewt103_IF_MAC_MAP,RNewt103_IF_IFDESCR_MAP,RNewt103_IF_IFALIAS_MAP);
     }    
 
-    protected OnmsNode getRDeEssnBrue() {
+    public OnmsNode getRDeEssnBrue() {
         return getNode(RDeEssnBrue_NAME,RDeEssnBrue_SYSOID,RDeEssnBrue_IP,RDeEssnBrue_IP_IF_MAP,RDeEssnBrue_IF_IFNAME_MAP,RDeEssnBrue_IF_MAC_MAP,RDeEssnBrue_IF_IFDESCR_MAP,RDeEssnBrue_IF_IFALIAS_MAP);
     }    
 
-    protected OnmsNode getSDeEssnBrue165() {
+    public OnmsNode getSDeEssnBrue165() {
         return getNode(SDeEssnBrue165_NAME,SDeEssnBrue165_SYSOID,SDeEssnBrue165_IP,SDeEssnBrue165_IP_IF_MAP,SDeEssnBrue165_IF_IFNAME_MAP,SDeEssnBrue165_IF_MAC_MAP,SDeEssnBrue165_IF_IFDESCR_MAP,SDeEssnBrue165_IF_IFALIAS_MAP);
     }    
 
-    protected OnmsNode getSDeEssnBrue081() {
+    public OnmsNode getSDeEssnBrue081() {
         return getNode(SDeEssnBrue081_NAME,SDeEssnBrue081_SYSOID,SDeEssnBrue081_IP,SDeEssnBrue081_IP_IF_MAP,SDeEssnBrue081_IF_IFNAME_MAP,SDeEssnBrue081_IF_MAC_MAP,SDeEssnBrue081_IF_IFDESCR_MAP,SDeEssnBrue081_IF_IFALIAS_MAP);
     }    
 
-    protected OnmsNode getSDeEssnBrue121() {
+    public OnmsNode getSDeEssnBrue121() {
         return getNode(SDeEssnBrue121_NAME,SDeEssnBrue121_SYSOID,SDeEssnBrue121_IP,SDeEssnBrue121_IP_IF_MAP,SDeEssnBrue121_IF_IFNAME_MAP,SDeEssnBrue121_IF_MAC_MAP,SDeEssnBrue121_IF_IFDESCR_MAP,SDeEssnBrue121_IF_IFALIAS_MAP);
     }    
 
-    protected OnmsNode getSDeEssnBrue142() {
+    public OnmsNode getSDeEssnBrue142() {
         return getNode(SDeEssnBrue142_NAME,SDeEssnBrue142_SYSOID,SDeEssnBrue142_IP,SDeEssnBrue142_IP_IF_MAP,SDeEssnBrue142_IF_IFNAME_MAP,SDeEssnBrue142_IF_MAC_MAP,SDeEssnBrue142_IF_IFDESCR_MAP,SDeEssnBrue142_IF_IFALIAS_MAP);
     }    
 
-    protected OnmsNode getRSeMalmNobe013() {
+    public OnmsNode getRSeMalmNobe013() {
         return getNode(RSeMalmNobe_NAME,RSeMalmNobe_SYSOID,RSeMalmNobe_IP,RSeMalmNobe_IP_IF_MAP,RSeMalmNobe_IF_IFNAME_MAP,RSeMalmNobe_IF_MAC_MAP,RSeMalmNobe_IF_IFDESCR_MAP,RSeMalmNobe_IF_IFALIAS_MAP);
     }    
 
-    protected OnmsNode getSSeMalmNobe561() {
+    public OnmsNode getSSeMalmNobe561() {
         return getNode(SSeMalmNobe_NAME,SSeMalmNobe_SYSOID,SSeMalmNobe_IP,SSeMalmNobe_IP_IF_MAP,SSeMalmNobe_IF_IFNAME_MAP,SSeMalmNobe_IF_MAC_MAP,SSeMalmNobe_IF_IFDESCR_MAP,SSeMalmNobe_IF_IFALIAS_MAP);
     }    
 

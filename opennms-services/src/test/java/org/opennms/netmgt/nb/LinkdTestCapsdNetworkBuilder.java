@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.linkd;
+package org.opennms.netmgt.nb;
 
 import static org.junit.Assert.assertTrue;
 
@@ -80,7 +80,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
 @JUnitTemporaryDatabase
-public class LinkdTestCapsdNetworkBuilder extends LinkdTestNetworkBuilder implements InitializingBean {
+public class LinkdTestCapsdNetworkBuilder extends TestNetworkBuilder implements InitializingBean {
 
     @Autowired
     private Capsd m_capsd;

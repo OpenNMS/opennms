@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.linkd;
+package org.opennms.netmgt.nb;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
@@ -35,7 +35,7 @@ import org.opennms.netmgt.model.OnmsNode;
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  */
 
-public class Nms0001NetworkBuilder extends LinkdTestNetworkBuilder {
+public class Nms0001NetworkBuilder extends TestNetworkBuilder {
 
 
     static {
@@ -737,15 +737,15 @@ public class Nms0001NetworkBuilder extends LinkdTestNetworkBuilder {
     }
     }
     
-    protected OnmsNode getFroh() {
+    public OnmsNode getFroh() {
         return getNode(FROH_NAME,FROH_SYSOID,FROH_IP,FROH_IP_IF_MAP,FROH_IF_IFNAME_MAP,FROH_IF_MAC_MAP,FROH_IF_IFDESCR_MAP,FROH_IF_IFALIAS_MAP);
     }    
 
-    protected OnmsNode getOedipus() {
+    public OnmsNode getOedipus() {
         return getNode(OEDIPUS_NAME,OEDIPUS_SYSOID,OEDIPUS_IP,OEDIPUS_IP_IF_MAP,OEDIPUS_IF_IFNAME_MAP,OEDIPUS_IF_MAC_MAP,OEDIPUS_IF_IFDESCR_MAP,OEDIPUS_IF_IFALIAS_MAP);
     }    
 
-    protected OnmsNode getSiegFrie() {
+    public OnmsNode getSiegFrie() {
         return getNode(SIEGFRIE_NAME,SIEGFRIE_SYSOID,SIEGFRIE_IP,SIEGFRIE_IP_IF_MAP,SIEGFRIE_IF_IFNAME_MAP,SIEGFRIE_IF_MAC_MAP,SIEGFRIE_IF_IFDESCR_MAP,SIEGFRIE_IF_IFALIAS_MAP);
     }    
 

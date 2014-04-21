@@ -28,24 +28,24 @@
 
 package org.opennms.netmgt.linkd;
 
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO_C870_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO_C870_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO_C870_BRIDGEID;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO_WS_C2948_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO_WS_C2948_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.CISCO_WS_C2948_BRIDGEID;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.DARWIN_10_8_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.DARWIN_10_8_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.LINUX_UBUNTU_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.LINUX_UBUNTU_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.NETGEAR_SW_108_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.NETGEAR_SW_108_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.NETGEAR_SW_108_BRIDGEID;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.WORKSTATION_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.WORKSTATION_NAME;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.WORKSTATION_MAC;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.ACCESSPOINT_IP;
-import static org.opennms.netmgt.linkd.LinkdTestNetworkBuilder.ACCESSPOINT_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.ACCESSPOINT_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.ACCESSPOINT_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO_C870_BRIDGEID;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO_C870_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO_C870_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO_WS_C2948_BRIDGEID;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO_WS_C2948_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO_WS_C2948_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.DARWIN_10_8_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.DARWIN_10_8_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.LINUX_UBUNTU_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.LINUX_UBUNTU_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.NETGEAR_SW_108_BRIDGEID;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.NETGEAR_SW_108_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.NETGEAR_SW_108_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.WORKSTATION_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.WORKSTATION_MAC;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.WORKSTATION_NAME;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -80,6 +80,7 @@ import org.opennms.netmgt.model.OnmsStpInterface;
 import org.opennms.netmgt.model.OnmsStpNode;
 import org.opennms.netmgt.model.OnmsStpNode.BridgeBaseType;
 import org.opennms.netmgt.model.OnmsStpNode.StpProtocolSpecification;
+import org.opennms.netmgt.nb.Nms7467NetworkBuilder;
 import org.springframework.transaction.annotation.Transactional;
 
 public class Nms7467Test extends LinkdTestBuilder {

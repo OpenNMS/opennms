@@ -1,9 +1,9 @@
-package org.opennms.netmgt.linkd;
+package org.opennms.netmgt.nb;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
 
-public class Nms101NetworkBuilder extends LinkdTestNetworkBuilder {
+public class Nms101NetworkBuilder extends TestNetworkBuilder {
     static {
     	LAPTOP_IP_IF_MAP.put(InetAddressUtils.addr("172.16.8.1"), 8);
     	LAPTOP_IP_IF_MAP.put(InetAddressUtils.addr("172.16.190.1"), 9);
@@ -177,39 +177,39 @@ public class Nms101NetworkBuilder extends LinkdTestNetworkBuilder {
     	CISCO1700B_IF_MAC_MAP.put(1, "d00297a60001");
     }
     
-    protected OnmsNode getLaptop() {
+    public OnmsNode getLaptop() {
         return getNode(LAPTOP_NAME,LAPTOP_SYSOID,LAPTOP_IP,LAPTOP_IP_IF_MAP,LAPTOP_IF_IFNAME_MAP,LAPTOP_IF_MAC_MAP,LAPTOP_IF_IFDESCR_MAP,LAPTOP_IF_IFALIAS_MAP,LAPTOP_IF_NETMASK_MAP);        
     }
 
-    protected OnmsNode getCisco7200a() {
+    public OnmsNode getCisco7200a() {
         return getNode(CISCO7200A_NAME,CISCO7200A_SYSOID,CISCO7200A_IP,CISCO7200A_IP_IF_MAP,CISCO7200A_IF_IFNAME_MAP,CISCO7200A_IF_MAC_MAP,CISCO7200A_IF_IFDESCR_MAP,CISCO7200A_IF_IFALIAS_MAP,CISCO7200A_IF_NETMASK_MAP);        
     }
 
-    protected OnmsNode getCisco7200b() {
+    public OnmsNode getCisco7200b() {
         return getNode(CISCO7200B_NAME,CISCO7200B_SYSOID,CISCO7200B_IP,CISCO7200B_IP_IF_MAP,CISCO7200B_IF_IFNAME_MAP,CISCO7200B_IF_MAC_MAP,CISCO7200B_IF_IFDESCR_MAP,CISCO7200B_IF_IFALIAS_MAP,CISCO7200B_IF_NETMASK_MAP);        
     }
 
-    protected OnmsNode getCisco3700() {
+    public OnmsNode getCisco3700() {
         return getNode(CISCO3700_NAME,CISCO3700_SYSOID,CISCO3700_IP,CISCO3700_IP_IF_MAP,CISCO3700_IF_IFNAME_MAP,CISCO3700_IF_MAC_MAP,CISCO3700_IF_IFDESCR_MAP,CISCO3700_IF_IFALIAS_MAP,CISCO3700_IF_NETMASK_MAP);        
     }
 
-    protected OnmsNode getCisco2691() {
+    public OnmsNode getCisco2691() {
         return getNode(CISCO2691_NAME,CISCO2691_SYSOID,CISCO2691_IP,CISCO2691_IP_IF_MAP,CISCO2691_IF_IFNAME_MAP,CISCO2691_IF_MAC_MAP,CISCO2691_IF_IFDESCR_MAP,CISCO2691_IF_IFALIAS_MAP,CISCO2691_IF_NETMASK_MAP);        
     }
 
-    protected OnmsNode getCisco1700() {
+    public OnmsNode getCisco1700() {
         return getNode(CISCO1700_NAME,CISCO1700_SYSOID,CISCO1700_IP,CISCO1700_IP_IF_MAP,CISCO1700_IF_IFNAME_MAP,CISCO1700_IF_MAC_MAP,CISCO1700_IF_IFDESCR_MAP,CISCO1700_IF_IFALIAS_MAP,CISCO1700_IF_NETMASK_MAP);        
     }
 
-    protected OnmsNode getCisco3600() {
+    public OnmsNode getCisco3600() {
         return getNode(CISCO3600_NAME,CISCO3600_SYSOID,CISCO3600_IP,CISCO3600_IP_IF_MAP,CISCO3600_IF_IFNAME_MAP,CISCO3600_IF_MAC_MAP,CISCO3600_IF_IFDESCR_MAP,CISCO3600_IF_IFALIAS_MAP,CISCO3600_IF_NETMASK_MAP);        
     }
 
-    protected OnmsNode getCisco1700b() {
+    public OnmsNode getCisco1700b() {
         return getNode(CISCO1700B_NAME,CISCO1700B_SYSOID,CISCO1700B_IP,CISCO1700B_IP_IF_MAP,CISCO1700B_IF_IFNAME_MAP,CISCO1700B_IF_MAC_MAP,CISCO1700B_IF_IFDESCR_MAP,CISCO1700B_IF_IFALIAS_MAP,CISCO1700B_IF_NETMASK_MAP);        
     }
 
-    protected OnmsNode getExampleCom() {
+    public OnmsNode getExampleCom() {
         return getNode(EXAMPLECOM_NAME,EXAMPLECOM_SYSOID,EXAMPLECOM_IP,EXAMPLECOM_IP_IF_MAP,EXAMPLECOM_IF_IFNAME_MAP,EXAMPLECOM_IF_MAC_MAP,EXAMPLECOM_IF_IFDESCR_MAP,EXAMPLECOM_IF_IFALIAS_MAP,EXAMPLECOM_IF_NETMASK_MAP);        
     }
 }
