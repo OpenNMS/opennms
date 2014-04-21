@@ -103,7 +103,7 @@ public class WmiCollector implements ServiceCollector {
         loadAttributeTypeList(collection);
 
         // Create a new collection set.
-        final WmiCollectionSet collectionSet = new WmiCollectionSet(agent);        
+        final WmiCollectionSet collectionSet = new WmiCollectionSet();
         collectionSet.setCollectionTimestamp(new Date());
 
         // Iterate through the WMI collection groups.
@@ -160,7 +160,7 @@ public class WmiCollector implements ServiceCollector {
                                 final WmiCollectionAttributeType attribType = m_attribTypeList.get(attrib.getName());
                                 resource.setAttributeValue(attribType, prop.getWmiValue().toString());
                             }
-                            collectionSet.getResources().add(resource);
+                            collectionSet.getCollectionResources().add(resource);
                         }
                     }
                 } catch (final WmiException e) {

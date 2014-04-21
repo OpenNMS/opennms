@@ -45,15 +45,14 @@ import org.opennms.netmgt.collectd.AbstractCollectionResource;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.ServiceCollector;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
-import org.opennms.netmgt.config.collector.AbstractCollectionSet;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionAttributeType;
 import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.config.collector.CollectionSet;
-import org.opennms.netmgt.config.collector.CollectionSetVisitor;
 import org.opennms.netmgt.config.collector.Persister;
 import org.opennms.netmgt.config.collector.ServiceParameters;
+import org.opennms.netmgt.config.collector.SingleResourceCollectionSet;
 import org.opennms.netmgt.config.nsclient.Attrib;
 import org.opennms.netmgt.config.nsclient.NsclientCollection;
 import org.opennms.netmgt.config.nsclient.Wpm;
@@ -201,43 +200,6 @@ public class NSClientCollector implements ServiceCollector {
         }
     }
     
-    private static class NSClientCollectionSet extends AbstractCollectionSet {
-        private int m_status;
-        private final Date m_timestamp;
-        private final NSClientCollectionResource m_collectionResource;
-        
-        public NSClientCollectionSet(CollectionAgent agent, Date timestamp) {
-            m_status = ServiceCollector.COLLECTION_FAILED;
-            m_collectionResource = new NSClientCollectionResource(agent);
-            m_timestamp = timestamp;
-        }
-        
-        @Override
-        public int getStatus() {
-            return m_status;
-        }
-        
-        void setStatus(int status) {
-            m_status = status;
-        }
-
-        @Override
-        public void visit(CollectionSetVisitor visitor) {
-            visitor.visitCollectionSet(this);
-            m_collectionResource.visit(visitor);
-            visitor.completeCollectionSet(this);
-        }
-
-        public NSClientCollectionResource getResource() {
-            return m_collectionResource;
-        }
-
-		@Override
-		public Date getCollectionTimestamp() {
-			return m_timestamp;
-		}
-    }
-    
     /** {@inheritDoc} */
     @Override
     public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> parameters) {
@@ -250,8 +212,8 @@ public class NSClientCollector implements ServiceCollector {
         NsclientCollection collection = NSClientDataCollectionConfigFactory.getInstance().getNSClientCollection(collectionName);
         NSClientAgentState agentState = m_scheduledNodes.get(agent.getNodeId());
         
-        NSClientCollectionSet collectionSet=new NSClientCollectionSet(agent, new Date());
-        NSClientCollectionResource collectionResource=collectionSet.getResource();
+        NSClientCollectionResource collectionResource = new NSClientCollectionResource(agent);
+        SingleResourceCollectionSet collectionSet = new SingleResourceCollectionSet(collectionResource, new Date());
         
         for (Wpm wpm : collection.getWpms().getWpm()) {
             //All NSClient Perfmon counters are per node
