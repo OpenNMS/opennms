@@ -28,9 +28,6 @@
 
 package org.opennms.netmgt.nb;
 
-
-import java.net.InetAddress;
-
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
 
@@ -1355,27 +1352,6 @@ static {
     SRX_100_IF_IFNAME_MAP.put(526, "lt-0/0/0");
     SRX_100_IF_IFDESCR_MAP.put(526, "lt-0/0/0");
     SRX_100_IF_MAC_MAP.put(526, "2c6bf502b800");
-}
-
-public static InetAddress MUMBAI_OSPF_ID;
-public static InetAddress DELHI_OSPF_ID;
-public static InetAddress BANGALORE_OSPF_ID;
-public static InetAddress MYSORE_OSPF_ID;
-public static InetAddress BAGMANE_OSPF_ID;
-public static InetAddress SPACE_EX_SW1_OSPF_ID;
-public static InetAddress SPACE_EX_SW2_OSPF_ID;
-public static InetAddress J6350_42_OSPF_ID;
-public static InetAddress SRX_100_OSPF_ID;
-static {
-    MUMBAI_OSPF_ID  = InetAddressUtils.addr("192.168.5.1");
-    DELHI_OSPF_ID  = InetAddressUtils.addr("192.168.7.1");
-    BANGALORE_OSPF_ID  = InetAddressUtils.addr("192.168.9.1");
-    MYSORE_OSPF_ID = InetAddressUtils.addr("192.168.22.1");
-    BAGMANE_OSPF_ID = InetAddressUtils.addr("192.168.20.1");
-    SPACE_EX_SW1_OSPF_ID = InetAddressUtils.addr("10.205.56.1");
-    SPACE_EX_SW2_OSPF_ID = InetAddressUtils.addr("10.205.56.2");
-    J6350_42_OSPF_ID = InetAddressUtils.addr("10.205.56.42");
-    SRX_100_OSPF_ID = InetAddressUtils.addr("0.0.0.0");
 }
 
 }

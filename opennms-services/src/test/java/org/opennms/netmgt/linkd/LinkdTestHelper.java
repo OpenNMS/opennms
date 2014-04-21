@@ -43,7 +43,6 @@ import org.opennms.netmgt.dao.api.VlanDao;
 import org.opennms.netmgt.linkd.CdpInterface;
 import org.opennms.netmgt.linkd.Linkd;
 import org.opennms.netmgt.linkd.RouterInterface;
-import org.opennms.netmgt.linkd.snmp.CdpCacheTableEntry;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsAtInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -111,45 +110,6 @@ public abstract class LinkdTestHelper implements InitializingBean {
     	
     }
 
-    protected void printCdpRow(CdpCacheTableEntry cdpCacheTableEntry) {
-        System.err.println("-----------------------------------------------------------");    
-        System.err.println("getCdpCacheIfIndex: "+cdpCacheTableEntry.getCdpCacheIfIndex());
-        System.err.println("getCdpCacheDeviceIndex: "+cdpCacheTableEntry.getCdpCacheDeviceIndex());
-        System.err.println("getCdpCacheAddressType: "+cdpCacheTableEntry.getCdpCacheAddressType());
-        System.err.println("getCdpCacheAddress: "+cdpCacheTableEntry.getCdpCacheAddress());
-        if (cdpCacheTableEntry.getCdpCacheIpv4Address() != null )
-            System.err.println("getCdpCacheIpv4Address: "+cdpCacheTableEntry.getCdpCacheIpv4Address().getHostName());
-        System.err.println("getCdpCacheVersion: "+cdpCacheTableEntry.getCdpCacheVersion());
-        System.err.println("getCdpCacheDeviceId: "+cdpCacheTableEntry.getCdpCacheDeviceId());
-        System.err.println("getCdpCacheDevicePort: "+cdpCacheTableEntry.getCdpCacheDevicePort());
-        System.err.println("-----------------------------------------------------------");
-        System.err.println("");        
-        
-    }
-
-    protected void printLldpRemRow(Integer lldpRemLocalPortNum, String lldpRemSysname, 
-            String lldpRemChassiid,Integer lldpRemChassisidSubtype,String lldpRemPortid, Integer lldpRemPortidSubtype) {
-        System.err.println("-----------------------------------------------------------");    
-        System.err.println("getLldpRemLocalPortNum: "+lldpRemLocalPortNum);
-        System.err.println("getLldpRemSysname: "+lldpRemSysname);
-        System.err.println("getLldpRemChassiid: "+lldpRemChassiid);
-        System.err.println("getLldpRemChassisidSubtype: "+lldpRemChassisidSubtype);
-        System.err.println("getLldpRemPortid: "+lldpRemPortid);
-        System.err.println("getLldpRemPortidSubtype: "+lldpRemPortidSubtype);
-        System.err.println("-----------------------------------------------------------");
-        System.err.println("");        
-    }
-    
-    protected void printLldpLocRow(Integer lldpLocPortNum,
-            Integer lldpLocPortidSubtype, String lldpLocPortid) {
-        System.err.println("-----------------------------------------------------------");    
-        System.err.println("getLldpLocPortNum: "+lldpLocPortNum);
-        System.err.println("getLldpLocPortid: "+lldpLocPortid);
-        System.err.println("getLldpRemPortidSubtype: "+lldpLocPortidSubtype);
-        System.err.println("-----------------------------------------------------------");
-        System.err.println("");
-      
-    }
 
     protected void printAtInterface(OnmsAtInterface at) {
         System.out.println("----------------net to media------------------");
@@ -165,6 +125,7 @@ public abstract class LinkdTestHelper implements InitializingBean {
         System.out.println("");
 
     }
+
     protected void printLink(DataLinkInterface datalinkinterface) {
         System.out.println("----------------Link------------------");
         Integer nodeid = datalinkinterface.getNode().getId();

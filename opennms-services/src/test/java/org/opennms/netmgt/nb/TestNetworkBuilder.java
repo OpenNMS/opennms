@@ -31,6 +31,8 @@ package org.opennms.netmgt.nb;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.SnmpInterfaceBuilder;
@@ -689,6 +691,27 @@ public abstract class TestNetworkBuilder {
     public static final Map<Integer,InetAddress> EXAMPLECOM_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
 
     //Nms10205
+    public static InetAddress MUMBAI_OSPF_ID;
+    public static InetAddress DELHI_OSPF_ID;
+    public static InetAddress BANGALORE_OSPF_ID;
+    public static InetAddress MYSORE_OSPF_ID;
+    public static InetAddress BAGMANE_OSPF_ID;
+    public static InetAddress SPACE_EX_SW1_OSPF_ID;
+    public static InetAddress SPACE_EX_SW2_OSPF_ID;
+    public static InetAddress J6350_42_OSPF_ID;
+    public static InetAddress SRX_100_OSPF_ID;
+    static {
+        MUMBAI_OSPF_ID  = InetAddressUtils.addr("192.168.5.1");
+        DELHI_OSPF_ID  = InetAddressUtils.addr("192.168.7.1");
+        BANGALORE_OSPF_ID  = InetAddressUtils.addr("192.168.9.1");
+        MYSORE_OSPF_ID = InetAddressUtils.addr("192.168.22.1");
+        BAGMANE_OSPF_ID = InetAddressUtils.addr("192.168.20.1");
+        SPACE_EX_SW1_OSPF_ID = InetAddressUtils.addr("10.205.56.1");
+        SPACE_EX_SW2_OSPF_ID = InetAddressUtils.addr("10.205.56.2");
+        J6350_42_OSPF_ID = InetAddressUtils.addr("10.205.56.42");
+        SRX_100_OSPF_ID = InetAddressUtils.addr("0.0.0.0");
+    }
+
     public static final String MUMBAI_IP = "10.205.56.5";
     public static final String MUMBAI_NAME = "Mumbai";
     public static final String MUMBAI_ROOT = "MUMBAI";

@@ -45,7 +45,7 @@ public class Nms4930Test extends LinkdTestBuilder {
 
 	Nms4930NetworkBuilder builder = new Nms4930NetworkBuilder();
     @Before
-    public void setUpNetwork4005() throws Exception {
+    public void setUpNetwork4930() throws Exception {
     	builder.setNodeDao(m_nodeDao);
         builder.buildNetwork4930();
     }
