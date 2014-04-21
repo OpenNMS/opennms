@@ -1,6 +1,7 @@
 package org.opennms.netmgt.enlinkd;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -66,21 +67,19 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 	}
 
 	@Override
-	public void reconcile() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void reconcile(int nodeid) {
-		// TODO Auto-generated method stub
-		
+	public void delete(int nodeId) {
+		Date now = new Date();
+		reconcileLldp(nodeId, now);
+		reconcileCdp(nodeId, now);
+		reconcileOspf(nodeId, now);
+		reconcileIpNetToMedia(nodeId, now);
+		reconcileBridge(nodeId, now);
 	}
 
 	@Override
 	public void reconcileLldp(int nodeId, Date now) {
-		// TODO Auto-generated method stub
-		
+		m_lldpLinkDao.deleteByNodeIdOlderThen(nodeId, now);
+		m_lldpLinkDao.flush();
 	}
 
 	@Override

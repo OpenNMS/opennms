@@ -115,7 +115,6 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
                      "must set the eventForwarder property");
 
         m_nodes = m_queryMgr.getSnmpNodeList();
-        m_queryMgr.reconcile();
 
         Assert.notNull(m_nodes);
         scheduleCollection();
@@ -324,7 +323,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         LOG.debug("deleteNode: deleting LinkableNode for node {}",
                         nodeid);
 
-            m_queryMgr.reconcile(nodeid);
+            m_queryMgr.delete(nodeid);
 
         LinkableNode node = removeNode(nodeid);
 

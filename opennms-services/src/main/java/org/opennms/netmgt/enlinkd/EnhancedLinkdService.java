@@ -58,19 +58,9 @@ public interface EnhancedLinkdService {
      * @throws java.sql.SQLException if any.
      */
     LinkableNode getSnmpNode(int nodeid);
-
-    /**
-     * <p>reconcile</p>
-     * <p>This reconcile topology
-     *    with opennms, remove any
-     *    reference to deleted
-     *    nodeid into topology objects
-     * </p> 
-     */
-    void reconcile();
         
     /**
-     * <p>reconcile</p>
+     * <p>delete</p>
      *
      * @param nodeid a int.
      * 
@@ -79,7 +69,7 @@ public interface EnhancedLinkdService {
      * </p>   
      *     
      */
-    void reconcile(int nodeid);
+    void delete(int nodeid);
     
 	void reconcileLldp(int nodeId, Date now);
 

@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.dao.api;
 
+import java.util.Date;
 import java.util.List;
 
 import org.opennms.netmgt.model.LldpLink;
@@ -42,5 +43,6 @@ public interface LldpLinkDao extends LegacyOnmsDao<LldpLink, Integer> {
     
     List<LldpLink> findByNodeId(Integer nodeId);
 
+    void deleteByNodeIdOlderThen(Integer nodeiId, Date now);
 
 }

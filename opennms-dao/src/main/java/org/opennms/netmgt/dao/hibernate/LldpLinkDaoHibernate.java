@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.util.Date;
 import java.util.List;
 
 import org.opennms.netmgt.dao.api.LldpLinkDao;
@@ -69,4 +70,13 @@ public class LldpLinkDaoHibernate extends AbstractDaoHibernate<LldpLink, Integer
         Assert.notNull(nodeId, "nodeId cannot be null");
         return find("from LldpLink lldpLink where lldpLink.node.id = ?", nodeId);
     }
+
+	@Override
+	public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
+		for (LldpLink link: find("from LldpLink lldpLink where lldpLink.node.id = ? and lldpLinkLastPollTime < ?",nodeId,now)) {
+			delete(link);
+		}
+	}
+    
+    
 }
