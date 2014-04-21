@@ -44,7 +44,6 @@ import org.junit.Test;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
-import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.GenericIndexResource;
 import org.opennms.netmgt.collectd.GenericIndexResourceType;
 import org.opennms.netmgt.collectd.IfInfo;
@@ -55,6 +54,7 @@ import org.opennms.netmgt.collectd.NumericAttributeType;
 import org.opennms.netmgt.collectd.OnmsSnmpCollection;
 import org.opennms.netmgt.collectd.SnmpAttribute;
 import org.opennms.netmgt.collectd.SnmpAttributeType;
+import org.opennms.netmgt.collectd.SnmpCollectionAgent;
 import org.opennms.netmgt.collectd.SnmpCollectionResource;
 import org.opennms.netmgt.collectd.SnmpIfData;
 import org.opennms.netmgt.config.MibObject;
@@ -96,7 +96,7 @@ public class CollectionResourceWrapperTest {
     @Test
     public void testGetGaugeValue() throws Exception {
         // Create Resource
-        CollectionAgent agent = createCollectionAgent();
+        SnmpCollectionAgent agent = createCollectionAgent();
         SnmpCollectionResource resource = createNodeResource(agent);
         
         // Add Gauge Attribute
@@ -138,7 +138,7 @@ public class CollectionResourceWrapperTest {
     @Test
     public void testGetCounterValue() throws Exception {
         // Create Resource
-        CollectionAgent agent = createCollectionAgent();
+        SnmpCollectionAgent agent = createCollectionAgent();
         SnmpCollectionResource resource = createNodeResource(agent);
 
         // Add Counter Attribute
@@ -204,9 +204,9 @@ public class CollectionResourceWrapperTest {
       */
 	@Test
 	public void testGetCounterValueWithGap() throws Exception {
-	        m_ignoreWarnings = true; // we get a warning on the first getAttributeValue()
+		m_ignoreWarnings = true; // we get a warning on the first getAttributeValue()
 
-		CollectionAgent agent = createCollectionAgent();
+		SnmpCollectionAgent agent = createCollectionAgent();
 		SnmpCollectionResource resource = createNodeResource(agent);
 
 		// Add Counter Attribute
@@ -299,7 +299,7 @@ public class CollectionResourceWrapperTest {
     @Test
     public void testGetCounterValueWithWrap() throws Exception {
         // Create Resource
-        CollectionAgent agent = createCollectionAgent();
+        SnmpCollectionAgent agent = createCollectionAgent();
         SnmpCollectionResource resource = createNodeResource(agent);
 
 		// We manipulate the Date objects passed to the
@@ -361,7 +361,7 @@ public class CollectionResourceWrapperTest {
         DataSourceFactory.setInstance(db);
 
         // Create Mock Collection Agent
-        CollectionAgent agent = createCollectionAgent();
+        SnmpCollectionAgent agent = createCollectionAgent();
 
         // Create SnmpIfData
         OnmsNode node = new OnmsNode();
@@ -409,7 +409,7 @@ public class CollectionResourceWrapperTest {
 
     @Test
     public void testGenericResource() throws Exception {
-        CollectionAgent agent = createCollectionAgent();
+        SnmpCollectionAgent agent = createCollectionAgent();
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
         OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig);
         ResourceType rt = new ResourceType();
@@ -439,7 +439,7 @@ public class CollectionResourceWrapperTest {
 
     @Test
     public void testNumericFields() throws Exception {
-        CollectionAgent agent = createCollectionAgent();
+        SnmpCollectionAgent agent = createCollectionAgent();
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
         OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig);
         ResourceType rt = new ResourceType();
@@ -474,7 +474,7 @@ public class CollectionResourceWrapperTest {
         Assert.assertEquals("10000.0", wrapper.getFieldValue(total.getName()));
     }
 
-    private SnmpCollectionResource createNodeResource(CollectionAgent agent) {
+    private SnmpCollectionResource createNodeResource(SnmpCollectionAgent agent) {
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();        
         OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig);
         NodeResourceType resourceType = new NodeResourceType(agent, collection);
@@ -491,8 +491,8 @@ public class CollectionResourceWrapperTest {
     	return this.createWrapper(resource, attributes, new Date());
     }
 
-    private CollectionAgent createCollectionAgent() {
-        CollectionAgent agent = EasyMock.createMock(CollectionAgent.class);
+    private SnmpCollectionAgent createCollectionAgent() {
+        SnmpCollectionAgent agent = EasyMock.createMock(SnmpCollectionAgent.class);
         EasyMock.expect(agent.getNodeId()).andReturn(1).anyTimes();
         EasyMock.expect(agent.getHostAddress()).andReturn("127.0.0.1").anyTimes();
         EasyMock.expect(agent.getSnmpInterfaceInfo((IfResourceType)EasyMock.anyObject())).andReturn(new HashSet<IfInfo>()).anyTimes();

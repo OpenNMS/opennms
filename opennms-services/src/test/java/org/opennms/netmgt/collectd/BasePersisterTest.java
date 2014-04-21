@@ -179,7 +179,7 @@ public class BasePersisterTest {
         
         m_easyMockUtils.replayAll();
         
-        CollectionAgent agent = DefaultCollectionAgent.create(m_intf.getId(), m_ifDao, m_transMgr);
+        SnmpCollectionAgent agent = DefaultCollectionAgent.create(m_intf.getId(), m_ifDao, m_transMgr);
         
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
         

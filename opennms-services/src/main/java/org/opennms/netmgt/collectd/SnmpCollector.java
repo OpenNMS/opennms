@@ -272,7 +272,7 @@ public class SnmpCollector implements ServiceCollector {
      */
     @Override
     public void initialize(CollectionAgent agent, Map<String, Object> parameters) throws CollectionInitializationException {
-        agent.validateAgent();
+        ((SnmpCollectionAgent)agent).validateAgent();
         
         // XXX: Experimental code that creates an OnmsSnmpCollection only once
 //        ServiceParameters params = new ServiceParameters(parameters);
@@ -307,11 +307,11 @@ public class SnmpCollector implements ServiceCollector {
             // XXX: This code would be commented out in light if the experimental code above was enabled
             final ServiceParameters params = new ServiceParameters(parameters);
             params.logIfAliasConfig();
-            OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection(agent, params);
+            OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection((SnmpCollectionAgent)agent, params);
 
             final ForceRescanState forceRescanState = new ForceRescanState(agent, eventProxy);
 
-            SnmpCollectionSet collectionSet = snmpCollection.createCollectionSet(agent);
+            SnmpCollectionSet collectionSet = snmpCollection.createCollectionSet((SnmpCollectionAgent)agent);
             collectionSet.setCollectionTimestamp(new Date());
             if (!collectionSet.hasDataToCollect()) {
                 logNoDataToCollect(agent);

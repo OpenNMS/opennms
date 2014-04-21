@@ -77,7 +77,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
 
     }
 
-    private final CollectionAgent m_agent;
+    private final SnmpCollectionAgent m_agent;
     private final OnmsSnmpCollection m_snmpCollection;
     private SnmpIfCollector m_ifCollector;
     private IfNumberTracker m_ifNumber;
@@ -129,7 +129,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
      * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
      * @param snmpCollection a {@link org.opennms.netmgt.collectd.OnmsSnmpCollection} object.
      */
-    public SnmpCollectionSet(CollectionAgent agent, OnmsSnmpCollection snmpCollection) {
+    public SnmpCollectionSet(SnmpCollectionAgent agent, OnmsSnmpCollection snmpCollection) {
         m_agent = agent;
         m_snmpCollection = snmpCollection;
     }
@@ -241,7 +241,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
      *
      * @return a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
      */
-    public CollectionAgent getCollectionAgent() {
+    public SnmpCollectionAgent getCollectionAgent() {
        return m_agent;
     }
 
@@ -452,14 +452,14 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
 
     private void logIfCounts() {
         if (LOG.isDebugEnabled()) {
-            CollectionAgent agent = getCollectionAgent();
+            SnmpCollectionAgent agent = getCollectionAgent();
             LOG.debug("collect: nodeId: {} interface: {} ifCount: {} savedIfCount: {}", agent.getNodeId(), agent.getHostAddress(), getIfNumber().getIntValue(), agent.getSavedIfCount());
         }
     }
 
     private void logSysUpTime() {
         if (LOG.isDebugEnabled()) {
-            CollectionAgent agent = getCollectionAgent();
+            SnmpCollectionAgent agent = getCollectionAgent();
             LOG.debug("collect: nodeId: {} interface: {} sysUpTime: {} savedSysUpTime: {}", agent.getNodeId(), agent.getHostAddress(), getSysUpTime().getLongValue(), agent.getSavedSysUpTime());
         }
     }

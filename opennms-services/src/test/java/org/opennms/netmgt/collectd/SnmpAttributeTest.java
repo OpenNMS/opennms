@@ -142,7 +142,7 @@ public class SnmpAttributeTest extends TestCase {
 
         m_mocks.replayAll();
 
-        CollectionAgent agent = DefaultCollectionAgent.create(ipInterface.getId(), m_ipInterfaceDao, new MockPlatformTransactionManager());
+        SnmpCollectionAgent agent = DefaultCollectionAgent.create(ipInterface.getId(), m_ipInterfaceDao, new MockPlatformTransactionManager());
         OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), new MockDataCollectionConfig());
         NodeResourceType resourceType = new NodeResourceType(agent, snmpCollection);
         NodeInfo nodeInfo = resourceType.getNodeInfo();

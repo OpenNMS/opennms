@@ -93,7 +93,7 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
     protected OnmsNode m_node;
     protected OnmsIpInterface m_iface;
     
-    protected CollectionAgent m_agent;
+    protected SnmpCollectionAgent m_agent;
     private SnmpWalker m_walker;
     protected SnmpCollectionSet m_collectionSet;
     

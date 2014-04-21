@@ -96,7 +96,7 @@ public class PersistOperationBuilderTest {
         m_fileAnticipator.tearDown();
     }
 
-    private CollectionAgent getCollectionAgent() {
+    private SnmpCollectionAgent getCollectionAgent() {
 
         return DefaultCollectionAgent.create(m_intf.getId(), m_ifDao, m_transMgr);
     }
@@ -105,7 +105,7 @@ public class PersistOperationBuilderTest {
     public void testCommitWithNoDeclaredAttributes() throws Exception {
         RrdRepository repository = createRrdRepository();
 
-        CollectionAgent agent = getCollectionAgent();
+        SnmpCollectionAgent agent = getCollectionAgent();
 
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
 
@@ -127,7 +127,7 @@ public class PersistOperationBuilderTest {
 
         RrdRepository repository = createRrdRepository();
 
-        CollectionAgent agent = getCollectionAgent();
+        SnmpCollectionAgent agent = getCollectionAgent();
 
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
 
@@ -163,7 +163,7 @@ public class PersistOperationBuilderTest {
 
         RrdRepository repository = createRrdRepository();
 
-        CollectionAgent agent = getCollectionAgent();
+        SnmpCollectionAgent agent = getCollectionAgent();
 
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
 

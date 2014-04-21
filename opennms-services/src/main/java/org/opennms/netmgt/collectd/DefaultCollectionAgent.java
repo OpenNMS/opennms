@@ -52,7 +52,7 @@ import org.springframework.transaction.PlatformTransactionManager;
  * @author ranger
  * @version $Id: $
  */
-public class DefaultCollectionAgent extends InetNetworkInterface implements CollectionAgent {
+public class DefaultCollectionAgent extends InetNetworkInterface implements SnmpCollectionAgent {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultCollectionAgent.class);
 
     /**
@@ -68,7 +68,7 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Coll
      * @param transMgr a {@link org.springframework.transaction.PlatformTransactionManager} object.
      * @return a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
      */
-    public static CollectionAgent create(final Integer ifaceId, final IpInterfaceDao ifaceDao, final PlatformTransactionManager transMgr) {
+    public static SnmpCollectionAgent create(final Integer ifaceId, final IpInterfaceDao ifaceDao, final PlatformTransactionManager transMgr) {
         return new DefaultCollectionAgent(DefaultCollectionAgentService.create(ifaceId, ifaceDao, transMgr));
     }
 

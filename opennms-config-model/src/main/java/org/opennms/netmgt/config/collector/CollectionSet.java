@@ -32,10 +32,9 @@ import java.util.Date;
 
 
 /**
- * <p>CollectionSet interface.</p>
- *
- * @author ranger
- * @version $Id: $
+ * {@link CollectionSet} represents the results of a collection and generally includes
+ * a {@link List} of {@link CollectionResource} instances that were created during the
+ * collection.
  */
 public interface CollectionSet extends CollectionVisitable {
     

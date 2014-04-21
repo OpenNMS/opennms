@@ -44,7 +44,7 @@ public abstract class ResourceType {
     
     public static final Logger LOG = LoggerFactory.getLogger(ResourceType.class);
     
-    private CollectionAgent m_agent;
+    private SnmpCollectionAgent m_agent;
     private OnmsSnmpCollection m_snmpCollection;
     private Collection<SnmpAttributeType> m_attributeTypes;
 
@@ -54,7 +54,7 @@ public abstract class ResourceType {
      * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
      * @param snmpCollection a {@link org.opennms.netmgt.collectd.OnmsSnmpCollection} object.
      */
-    public ResourceType(CollectionAgent agent, OnmsSnmpCollection snmpCollection) {
+    public ResourceType(SnmpCollectionAgent agent, OnmsSnmpCollection snmpCollection) {
         m_agent = agent;
         m_snmpCollection = snmpCollection;
     }
@@ -64,7 +64,7 @@ public abstract class ResourceType {
      *
      * @return a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
      */
-    public CollectionAgent getAgent() {
+    public SnmpCollectionAgent getAgent() {
         return m_agent;
     }
     

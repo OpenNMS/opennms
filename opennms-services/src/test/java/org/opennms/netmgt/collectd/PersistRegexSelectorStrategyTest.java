@@ -105,7 +105,7 @@ public class PersistRegexSelectorStrategyTest {
         serviceParams = new ServiceParameters(map);
 
         PlatformTransactionManager ptm = new MockPlatformTransactionManager();
-        CollectionAgent agent = DefaultCollectionAgent.create(1, ipInterfaceDao, ptm);
+        SnmpCollectionAgent agent = DefaultCollectionAgent.create(1, ipInterfaceDao, ptm);
         OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection(agent, serviceParams);
 
         org.opennms.netmgt.config.datacollection.ResourceType rt = new org.opennms.netmgt.config.datacollection.ResourceType();

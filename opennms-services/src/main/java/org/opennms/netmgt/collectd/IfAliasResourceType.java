@@ -59,7 +59,7 @@ public class IfAliasResourceType extends ResourceType {
      * @param params a {@link org.opennms.netmgt.config.collector.ServiceParameters} object.
      * @param ifResourceType a {@link org.opennms.netmgt.collectd.IfResourceType} object.
      */
-    public IfAliasResourceType(CollectionAgent agent, OnmsSnmpCollection snmpCollection, ServiceParameters params, IfResourceType ifResourceType) {
+    public IfAliasResourceType(SnmpCollectionAgent agent, OnmsSnmpCollection snmpCollection, ServiceParameters params, IfResourceType ifResourceType) {
         super(agent, snmpCollection);
         m_ifResourceType = ifResourceType;
         m_params = params;

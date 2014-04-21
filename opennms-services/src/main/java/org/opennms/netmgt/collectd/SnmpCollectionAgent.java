@@ -28,11 +28,9 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.io.File;
-import java.net.InetAddress;
+import java.util.Set;
 
-import org.opennms.netmgt.config.StorageStrategyService;
-import org.opennms.netmgt.poller.NetworkInterface;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 /**
  * <p>CollectionAgent interface.</p>
@@ -40,21 +38,7 @@ import org.opennms.netmgt.poller.NetworkInterface;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @version $Id: $
  */
-public interface CollectionAgent extends NetworkInterface<InetAddress>,StorageStrategyService {
-
-    /**
-     * <p>isStoreByForeignSource</p>
-     * 
-     * @return a {@link java.lang.Boolean} object.
-     */
-    Boolean isStoreByForeignSource();
-    
-    /**
-     * <p>getHostAddress</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    String getHostAddress();
+public interface SnmpCollectionAgent extends CollectionAgent {
 
     /**
      * <p>setSavedIfCount</p>
@@ -64,33 +48,12 @@ public interface CollectionAgent extends NetworkInterface<InetAddress>,StorageSt
     void setSavedIfCount(int ifCount);
 
     /**
-     * <p>getNodeId</p>
+     * <p>getSavedIfCount</p>
      *
      * @return a int.
      */
-    int getNodeId();
+    int getSavedIfCount();
 
-    /**
-     * <p>getForeignSource</p>
-     * 
-     * @return a {@link java.lang.String} object.
-     */
-    String getForeignSource();
-    
-    /**
-     * <p>getForeignId</p>
-     * 
-     * @return a {@link java.lang.String} object.
-     */
-    String getForeignId();
-    
-    /**
-     * <p>getStorageDir</p>
-     * 
-     * @return a {@link java.io.File} object.
-     */
-    File getStorageDir();
-    
     /**
      * <p>getSysObjectId</p>
      *
@@ -99,32 +62,25 @@ public interface CollectionAgent extends NetworkInterface<InetAddress>,StorageSt
     String getSysObjectId();
 
     /**
-     * <p>toString</p>
+     * <p>validateAgent</p>
+     * @throws CollectionInitializationException 
+     */
+    void validateAgent() throws CollectionInitializationException;
+
+    /**
+     * <p>getAgentConfig</p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
      */
     @Override
-    String toString();
+    SnmpAgentConfig getAgentConfig();
 
     /**
-     * <p>getInetAddress</p>
+     * <p>getSnmpInterfaceInfo</p>
      *
-     * @return a {@link java.net.InetAddress} object.
+     * @param type a {@link org.opennms.netmgt.collectd.IfResourceType} object.
+     * @return a {@link java.util.Set} object.
      */
-    InetAddress getInetAddress();
-
-    /**
-     * <p>getSavedSysUpTime</p>
-     *
-     * @return a long.
-     */
-    long getSavedSysUpTime();
-
-    /**
-     * <p>setSavedSysUpTime</p>
-     *
-     * @param sysUpTime a long.
-     */
-    void setSavedSysUpTime(long sysUpTime);
+    Set<IfInfo> getSnmpInterfaceInfo(IfResourceType type);
 
 }

@@ -45,13 +45,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A base (partial) implementation of CollectionResource, implementing common features (to reduce repeated code)
- * Typically used by the non-SNMP collectors (SNMP has it's own set of classes for this).  Provides a basic group of ag
- * Provides support, via addAttribute, getGroup, and getGroups, for basic "groups" of attributes.
- * Also provides a sample "visit" implementation based on those groups, although this may well be overridden by subclasses
- *
- * @author opennms
- * @version $Id: $
+ * A base class for {@link CollectionResource} objects, implementing common features (to reduce repeated code).
+ * Typically used by the non-SNMP collectors (SNMP has it's own set of classes for this). Provides a basic set of attributes.
+ * Provides support, via {@link #addAttribute(CollectionAttribute)} and {@link #getGroup(AttributeGroupType)} for basic 
+ * "groups" of attributes. Also provides a sample "visit" implementation based on those groups, although this may well 
+ * be overridden by subclasses.
  */
 public abstract class AbstractCollectionResource implements CollectionResource {
     
@@ -75,8 +73,9 @@ public abstract class AbstractCollectionResource implements CollectionResource {
      * @return a {@link java.lang.String} object.
      */
     @Override
-    public String getOwnerName() {
-        return m_agent.getHostAddress();    }
+    public final String getOwnerName() {
+        return m_agent.getHostAddress();
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -89,7 +88,7 @@ public abstract class AbstractCollectionResource implements CollectionResource {
      *
      * @param attr The Attribute to add
      */
-    protected void addAttribute(CollectionAttribute attr) {
+    protected final void addAttribute(CollectionAttribute attr) {
         AttributeGroup group = getGroup(attr.getAttributeType().getGroupType());
         LOG.debug("Adding attribute {}: {} to group {}", attr.getClass().getName(), attr, group);
         group.addAttribute(attr);
@@ -101,7 +100,7 @@ public abstract class AbstractCollectionResource implements CollectionResource {
      * @param groupType a {@link org.opennms.netmgt.config.collector.AttributeGroupType} object.
      * @return a {@link org.opennms.netmgt.config.collector.AttributeGroup} object.
      */
-    protected AttributeGroup getGroup(AttributeGroupType groupType) {
+    protected final AttributeGroup getGroup(AttributeGroupType groupType) {
         AttributeGroup group = m_attributeGroups.get(groupType);
         if (group == null) {
             group = new AttributeGroup(this, groupType);
