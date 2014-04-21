@@ -137,6 +137,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 				if ( node == null )
 					return null;
 				saveMe.setNode(node);
+				saveMe.setLldpLinkLastPollTime(saveMe.getLldpLinkCreateTime());
 				m_dao.saveOrUpdate(saveMe);
 				m_dao.flush();
 				return saveMe;
@@ -159,6 +160,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 			dbelement.merge(element);
 			node.setLldpElement(dbelement);
 		} else {
+			element.setNode(node);
 			node.setLldpElement(element);
 		}
 

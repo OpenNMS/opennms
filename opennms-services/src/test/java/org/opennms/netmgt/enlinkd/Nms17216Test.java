@@ -61,7 +61,8 @@ import static org.opennms.netmgt.enlinkd.EnLinkdTestHelper.printLldpElement;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath*:/META-INF/opennms/applicationContext-enhancedLinkDaemon.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath*:/META-INF/opennms/applicationContext-enhancedLinkdTest.xml"
@@ -180,7 +181,7 @@ public class Nms17216Test extends Nms17216NetworkBuilder implements Initializing
         assertTrue(m_linkd.runSingleSnmpCollection(switch2.getId()));
         final List<LldpLink> topologyB = m_topologyDao.findAll();
         printLldpTopology(topologyB);
-        assertEquals(10,topologyA.size());
+        assertEquals(10,topologyB.size());
         for (final OnmsNode node: m_nodeDao.findAll()) {
         	if (node.getLldpElement() != null)
         		printLldpElement(node.getLldpElement());
@@ -190,7 +191,7 @@ public class Nms17216Test extends Nms17216NetworkBuilder implements Initializing
         assertTrue(m_linkd.runSingleSnmpCollection(switch3.getId()));
         final List<LldpLink> topologyC = m_topologyDao.findAll();
         printLldpTopology(topologyC);
-        assertEquals(12,topologyA.size());
+        assertEquals(12,topologyC.size());
         for (final OnmsNode node: m_nodeDao.findAll()) {
         	if (node.getLldpElement() != null)
         		printLldpElement(node.getLldpElement());
