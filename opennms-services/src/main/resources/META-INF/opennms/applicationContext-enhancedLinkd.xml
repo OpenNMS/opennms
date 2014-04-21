@@ -38,6 +38,8 @@
       <property name="eventSubscriptionService" ref="eventSubscriptionService" />
     </bean>
 
+    <bean id="enlinkdConfig" class="org.opennms.netmgt.config.EnhancedLinkdConfigFactory" lazy-init="true"/>
+
     <bean name="daemon" class="org.opennms.netmgt.enlinkd.EnhancedLinkd">
       <property name="eventForwarder" ref="eventForwarder" />
     </bean>
