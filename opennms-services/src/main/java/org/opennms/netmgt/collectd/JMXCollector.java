@@ -56,15 +56,14 @@ import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.config.BeanInfo;
 import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
 import org.opennms.netmgt.config.collectd.jmx.Attrib;
-import org.opennms.netmgt.config.collector.AbstractCollectionSet;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionAttributeType;
 import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.config.collector.CollectionSet;
-import org.opennms.netmgt.config.collector.CollectionSetVisitor;
 import org.opennms.netmgt.config.collector.Persister;
 import org.opennms.netmgt.config.collector.ServiceParameters.ParameterName;
+import org.opennms.netmgt.config.collector.SingleResourceCollectionSet;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
@@ -306,10 +305,9 @@ public abstract class JMXCollector implements ServiceCollector {
         if (useFriendlyName) {
             collDir = friendlyName;
         }
-        
-        JMXCollectionSet collectionSet=new JMXCollectionSet(agent,collDir);
-        collectionSet.setCollectionTimestamp(new Date());
-        JMXCollectionResource collectionResource=collectionSet.getResource();
+
+        JMXCollectionResource collectionResource = new JMXCollectionResource(agent, collDir);
+        SingleResourceCollectionSet collectionSet = new SingleResourceCollectionSet(collectionResource, new Date());
         
         ConnectionWrapper connection = null;
 
@@ -807,46 +805,6 @@ public abstract class JMXCollector implements ServiceCollector {
         public String getInstance() {
             return null; //For node type resources, use the default instance
         }
-    }
-    
-    public static class JMXCollectionSet extends AbstractCollectionSet {
-        private int m_status;
-        private Date m_timestamp;
-        private final JMXCollectionResource m_collectionResource;
-        
-        public JMXCollectionSet(CollectionAgent agent, String resourceName) {
-            m_status=ServiceCollector.COLLECTION_FAILED;
-            m_collectionResource=new JMXCollectionResource(agent, resourceName);
-        }
-        
-        public JMXCollectionResource getResource() {
-            return m_collectionResource;
-        }
-
-        public void setStatus(int status) {
-            m_status=status;
-        }
-
-        @Override
-        public int getStatus() {
-            return m_status;
-        }
-
-        @Override
-        public void visit(CollectionSetVisitor visitor) {
-            visitor.visitCollectionSet(this);
-            m_collectionResource.visit(visitor);
-            visitor.completeCollectionSet(this);
-        }
-
-		@Override
-		public Date getCollectionTimestamp() {
-			return m_timestamp;
-		}
-        public void setCollectionTimestamp(Date timestamp) {
-        	this.m_timestamp = timestamp;
-		}
-
     }
     
     /** {@inheritDoc} */
