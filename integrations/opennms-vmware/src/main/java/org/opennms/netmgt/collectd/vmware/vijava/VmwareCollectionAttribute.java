@@ -28,9 +28,9 @@
 
 package org.opennms.netmgt.collectd.vmware.vijava;
 
-import org.opennms.netmgt.collectd.AbstractCollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionAttributeType;
 import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.support.AbstractCollectionAttribute;
 
 public class VmwareCollectionAttribute extends AbstractCollectionAttribute {
     private String m_alias;

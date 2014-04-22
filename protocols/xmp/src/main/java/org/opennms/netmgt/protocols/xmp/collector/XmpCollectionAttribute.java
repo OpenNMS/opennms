@@ -61,9 +61,9 @@ package org.opennms.netmgt.protocols.xmp.collector;
 
 import org.krupczak.xmp.Xmp;
 import org.krupczak.xmp.XmpVar;
-import org.opennms.netmgt.collectd.AbstractCollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionAttributeType;
 import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.support.AbstractCollectionAttribute;
 public class XmpCollectionAttribute extends AbstractCollectionAttribute {
     /* class variables and methods *********************** */
 

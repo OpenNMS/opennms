@@ -31,6 +31,10 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-config-model</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-rrd-api</artifactId>
+    </dependency>
     <!-- 
     <dependency>
       <groupId>org.opennms</groupId>

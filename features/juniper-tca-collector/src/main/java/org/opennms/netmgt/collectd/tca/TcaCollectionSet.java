@@ -35,15 +35,15 @@ import java.util.List;
 
 import org.opennms.netmgt.collectd.CollectionTimedOut;
 import org.opennms.netmgt.collectd.CollectionWarning;
+import org.opennms.netmgt.collectd.SnmpCollectionAgent;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
-import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.support.AbstractCollectionSet;
 import org.opennms.netmgt.dao.support.ResourceTypeUtils;
-import org.opennms.netmgt.model.RrdRepository;
+import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
@@ -86,7 +86,7 @@ public class TcaCollectionSet extends AbstractCollectionSet {
 	private Date m_timestamp;
 
 	/** The Collection Agent. */
-	private CollectionAgent m_agent;
+	private SnmpCollectionAgent m_agent;
 
 	/** The RRD Repository. */
 	private RrdRepository m_rrdRepository;
@@ -97,7 +97,7 @@ public class TcaCollectionSet extends AbstractCollectionSet {
 	 * @param agent the agent
 	 * @param repository the repository
 	 */
-	public TcaCollectionSet(CollectionAgent agent, RrdRepository repository) {
+	public TcaCollectionSet(SnmpCollectionAgent agent, RrdRepository repository) {
 		m_status = ServiceCollector.COLLECTION_FAILED;
 		m_collectionResources = new ArrayList<TcaCollectionResource>();
 		m_agent = agent;

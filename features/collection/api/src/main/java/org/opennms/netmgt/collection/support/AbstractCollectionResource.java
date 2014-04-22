@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd;
+package org.opennms.netmgt.collection.support;
 
 import java.io.File;
 import java.util.HashMap;
@@ -41,7 +41,7 @@ import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.model.RrdRepository;
+import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,7 +101,7 @@ public abstract class AbstractCollectionResource implements CollectionResource {
      * @param groupType a {@link org.opennms.netmgt.collection.api.AttributeGroupType} object.
      * @return a {@link org.opennms.netmgt.collection.api.AttributeGroup} object.
      */
-    protected final AttributeGroup getGroup(AttributeGroupType groupType) {
+    public final AttributeGroup getGroup(AttributeGroupType groupType) {
         AttributeGroup group = m_attributeGroups.get(groupType);
         if (group == null) {
             group = new AttributeGroup(this, groupType);

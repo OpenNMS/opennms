@@ -44,8 +44,8 @@ import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.support.AbstractCollectionSetVisitor;
 import org.opennms.netmgt.dao.support.ResourceTypeUtils;
-import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.rrd.RrdException;
+import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +69,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
      * <p>Constructor for BasePersister.</p>
      *
      * @param params a {@link org.opennms.netmgt.collection.api.ServiceParameters} object.
-     * @param repository a {@link org.opennms.netmgt.model.RrdRepository} object.
+     * @param repository a {@link org.opennms.netmgt.rrd.RrdRepository} object.
      */
     public BasePersister(ServiceParameters params, RrdRepository repository) {
         super();
@@ -151,7 +151,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     /**
      * <p>getRepository</p>
      *
-     * @return a {@link org.opennms.netmgt.model.RrdRepository} object.
+     * @return a {@link org.opennms.netmgt.rrd.RrdRepository} object.
      */
     public RrdRepository getRepository() {
         return m_repository;
@@ -160,7 +160,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     /**
      * <p>setRepository</p>
      *
-     * @param repository a {@link org.opennms.netmgt.model.RrdRepository} object.
+     * @param repository a {@link org.opennms.netmgt.rrd.RrdRepository} object.
      */
     public void setRepository(RrdRepository repository) {
         m_repository = repository;

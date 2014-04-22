@@ -36,7 +36,7 @@ import org.opennms.core.utils.TimeKeeper;
 import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.model.RrdRepository;
+import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.utils.NodeLabel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

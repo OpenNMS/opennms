@@ -44,9 +44,9 @@ import org.opennms.core.utils.TimeKeeper;
 import org.opennms.netmgt.collection.api.AttributeDefinition;
 import org.opennms.netmgt.collection.api.ByNameComparator;
 import org.opennms.netmgt.collection.api.ResourceIdentifier;
-import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
+import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.slf4j.LoggerFactory;
 
@@ -77,7 +77,7 @@ public class PersistOperationBuilder {
     /**
      * <p>Constructor for PersistOperationBuilder.</p>
      *
-     * @param repository a {@link org.opennms.netmgt.model.RrdRepository} object.
+     * @param repository a {@link org.opennms.netmgt.rrd.RrdRepository} object.
      * @param resource a {@link org.opennms.netmgt.collection.api.ResourceIdentifier} object.
      * @param rrdName a {@link java.lang.String} object.
      */
@@ -90,7 +90,7 @@ public class PersistOperationBuilder {
     /**
      * <p>getRepository</p>
      *
-     * @return a {@link org.opennms.netmgt.model.RrdRepository} object.
+     * @return a {@link org.opennms.netmgt.rrd.RrdRepository} object.
      */
     public RrdRepository getRepository() {
         return m_repository;

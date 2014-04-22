@@ -39,7 +39,7 @@ import org.opennms.netmgt.poller.NetworkInterface;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @version $Id: $
  */
-public interface CollectionAgent extends NetworkInterface<InetAddress>,StorageStrategyService {
+public interface CollectionAgent extends NetworkInterface<InetAddress> {
 
     /**
      * <p>isStoreByForeignSource</p>

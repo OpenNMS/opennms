@@ -32,6 +32,7 @@ import java.util.Set;
 
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
+import org.opennms.netmgt.collection.api.StorageStrategyService;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 /**
@@ -40,7 +41,7 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @version $Id: $
  */
-public interface SnmpCollectionAgent extends CollectionAgent {
+public interface SnmpCollectionAgent extends CollectionAgent, StorageStrategyService {
 
     /**
      * <p>setSavedIfCount</p>

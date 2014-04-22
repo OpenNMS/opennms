@@ -50,11 +50,11 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.netmgt.collectd.DefaultCollectionAgent;
 import org.opennms.netmgt.collectd.OneToOnePersister;
+import org.opennms.netmgt.collectd.SnmpCollectionAgent;
 import org.opennms.netmgt.collectd.tca.config.TcaDataCollection;
 import org.opennms.netmgt.collectd.tca.config.TcaDataCollectionConfig;
 import org.opennms.netmgt.collectd.tca.config.TcaRrd;
 import org.opennms.netmgt.collectd.tca.dao.TcaDataCollectionConfigDao;
-import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.config.SnmpPeerFactory;
@@ -104,7 +104,7 @@ public class TcaCollectorTest implements InitializingBean {
 	public final static String TEST_SNMP_DIR = "target/snmp";
 
 	/** The collection agent. */
-	private CollectionAgent m_collectionAgent;
+	private SnmpCollectionAgent m_collectionAgent;
 
 	/** The Node DAO. */
 	@Autowired
