@@ -29,6 +29,15 @@
       </constructor-arg>
     </bean>
 
+    <bean id="enlinkdConfig" class="org.opennms.netmgt.config.EnhancedLinkdConfigFactory" lazy-init="true"/>
+
+    <bean name="daemon" class="org.opennms.netmgt.enlinkd.EnhancedLinkd">
+      <property name="eventForwarder" ref="eventForwarder" />
+      <property name="queryManager"   ref="queryManager" />
+      <property name="linkdConfig"    ref="enlinkdConfig" />
+      <property name="scheduler"      ref="scheduler" />
+    </bean>
+
     <bean id="receiver" class="org.opennms.netmgt.enlinkd.EventProcessor">
       <property name="linkd" ref="daemon"/>
     </bean>
@@ -36,12 +45,6 @@
     <bean id="daemonListener" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
       <property name="annotatedListener" ref="receiver" />
       <property name="eventSubscriptionService" ref="eventSubscriptionService" />
-    </bean>
-
-    <bean id="enlinkdConfig" class="org.opennms.netmgt.config.EnhancedLinkdConfigFactory" lazy-init="true"/>
-
-    <bean name="daemon" class="org.opennms.netmgt.enlinkd.EnhancedLinkd">
-      <property name="eventForwarder" ref="eventForwarder" />
     </bean>
 
 </beans>

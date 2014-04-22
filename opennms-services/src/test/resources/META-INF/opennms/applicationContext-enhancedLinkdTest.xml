@@ -64,9 +64,6 @@
     <property name="sessionFactory" ref="sessionFactory" />
   
   </bean>
-  <!-- 
-  <bean id="topologyDao" class="org.opennms.netmgt.dao.topology.TopologyDaoInMemoryImpl" />
-   -->
    
     <bean id="queryManager" class="org.opennms.netmgt.enlinkd.EnhancedLinkdServiceImpl">
       <property name="nodeDao" ref="nodeDao" />
@@ -91,11 +88,10 @@
 
     <bean name="daemon" class="org.opennms.netmgt.enlinkd.EnhancedLinkd">
       <property name="eventForwarder" ref="eventForwarder" />
-    </bean>
-
-   <bean id="enlinkdConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-      <property name="staticMethod"><value>org.opennms.netmgt.config.EnhancedLinkdConfigFactory.init</value></property>
+      <property name="queryManager"   ref="queryManager" />
+      <property name="linkdConfig"    ref="enlinkdConfig" />
+      <property name="scheduler"      ref="scheduler" />
     </bean>
  
-    <bean id="enlinkdConfig" class="org.opennms.netmgt.config.EnhancedLinkdConfigFactory" depends-on="enlinkdConfig-init" factory-method="getInstance"/>
+    <bean id="enlinkdConfig" class="org.opennms.netmgt.config.EnhancedLinkdConfigFactory" lazy-init="true"/>
 </beans>

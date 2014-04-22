@@ -62,22 +62,10 @@ import org.opennms.netmgt.config.enlinkd.EnlinkdConfiguration;
  */
 public final class EnhancedLinkdConfigFactory extends EnhancedLinkdConfigManager {
     private static final Logger LOG = LoggerFactory.getLogger(EnhancedLinkdConfigFactory.class);
-
-    /**
-     * The singleton instance of this factory
-     */
-    private static EnhancedLinkdConfig m_singleton = null;
-
-    /**
-     * This member is set to true if the configuration file has been loaded.
-     */
-    private static boolean m_loaded = false;
     
-    /**
-     * Loaded version
-     */
-    private long m_currentVersion = -1L;
-
+    public EnhancedLinkdConfigFactory() throws MarshalException, ValidationException, IOException {
+        reload();
+    }
     /**
      * <p>Constructor for LinkdConfigFactory.</p>
      *
@@ -87,42 +75,8 @@ public final class EnhancedLinkdConfigFactory extends EnhancedLinkdConfigManager
      * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    public EnhancedLinkdConfigFactory(final long currentVersion, final InputStream stream) throws MarshalException, ValidationException, IOException {
+    public EnhancedLinkdConfigFactory(final InputStream stream) throws MarshalException, ValidationException, IOException {
         reloadXML(stream);
-        m_currentVersion = currentVersion;
-    }
-
-    /**
-     * Load the config from the default config file and create the singleton
-     * instance of this factory.
-     *
-     * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
-     * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     */
-    public static synchronized void init() throws IOException, MarshalException, ValidationException {
-        if (m_loaded) {
-            // init already called - return
-            // to reload, reload() will need to be called
-            return;
-        }
-
-        final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.ENLINKD_CONFIG_FILE_NAME);
-        LOG.debug("init: config file path: %s", cfgFile.getPath());
-
-        InputStream stream = null;
-        try {
-            stream = new FileInputStream(cfgFile);
-            setInstance(new EnhancedLinkdConfigFactory(cfgFile.lastModified(), stream));
-        } finally {
-            IOUtils.closeQuietly(stream);
-        }
     }
 
     /** {@inheritDoc} */
@@ -140,31 +94,6 @@ public final class EnhancedLinkdConfigFactory extends EnhancedLinkdConfigManager
     }
 
     /**
-     * Return the singleton instance of this factory.
-     *
-     * @return The current factory instance.
-     * @throws java.lang.IllegalStateException
-     *             Thrown if the factory has not yet been initialized.
-     */
-    public static synchronized EnhancedLinkdConfig getInstance() {
-        if (!m_loaded) {
-            throw new IllegalStateException("The factory has not been initialized");
-        }
-
-        return m_singleton;
-    }
-    
-    /**
-     * <p>setInstance</p>
-     *
-     * @param instance a {@link org.opennms.netmgt.config.LinkdConfig} object.
-     */
-    public static synchronized void setInstance(final EnhancedLinkdConfig instance) {
-        m_singleton = instance;
-        m_loaded = true;
-    }
-
-    /**
      * <p>reload</p>
      *
      * @throws java.io.IOException if any.
@@ -175,20 +104,17 @@ public final class EnhancedLinkdConfigFactory extends EnhancedLinkdConfigManager
         getWriteLock().lock();
         try {
             final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.ENLINKD_CONFIG_FILE_NAME);
-            if (cfgFile.lastModified() > m_currentVersion) {
-                m_currentVersion = cfgFile.lastModified();
-               LOG.debug("init: config file path: %s", cfgFile.getPath());
-                InputStream stream = null;
-                try {
-                    stream = new FileInputStream(cfgFile);
-                    reloadXML(stream);
-                } finally {
-                    if (stream != null) {
-                        IOUtils.closeQuietly(stream);
-                    }
+           LOG.debug("init: config file path: %s", cfgFile.getPath());
+            InputStream stream = null;
+            try {
+                stream = new FileInputStream(cfgFile);
+                reloadXML(stream);
+            } finally {
+                if (stream != null) {
+                    IOUtils.closeQuietly(stream);
                 }
-                LOG.debug("init: finished loading config file: %s", cfgFile.getPath());
             }
+            LOG.debug("init: finished loading config file: %s", cfgFile.getPath());
         } finally {
             getWriteLock().unlock();
         }
@@ -230,23 +156,4 @@ public final class EnhancedLinkdConfigFactory extends EnhancedLinkdConfigManager
             getWriteLock().unlock();
         }
     }
-    
-    /**
-     * <p>reloadXML</p>
-     *
-     * @param reader a {@link java.io.Reader} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     * @throws java.io.IOException if any.
-     */
-    @Deprecated
-    protected void reloadXML(final Reader reader) throws MarshalException, ValidationException, IOException {
-        getWriteLock().lock();
-        try {
-            m_config = CastorUtils.unmarshal(EnlinkdConfiguration.class, reader);
-        } finally {
-            getWriteLock().unlock();
-        }
-    }
-
 }

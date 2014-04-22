@@ -44,7 +44,7 @@ public class EnhancedLinkd extends AbstractSpringContextJmxServiceDaemon<org.ope
     /** {@inheritDoc} */
     @Override
     protected String getLoggingPrefix() {
-        return "OpenNMS.Linkd";
+        return "enlinkd";
     }
 
     /** {@inheritDoc} */

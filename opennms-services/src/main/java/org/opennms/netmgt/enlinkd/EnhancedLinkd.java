@@ -46,7 +46,6 @@ import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
 /**
@@ -63,25 +62,22 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     /**
      * The log4j category used to log messages.
      */
-    private static final String LOG4J_CATEGORY = "OpenNMS.Linkd";
+    private static final String LOG_PREFIX = "enlinkd";
 
     /**
      * Rescan scheduler thread
      */
-    @Autowired
     private Scheduler m_scheduler;
 
     /**
      * The DB connection read and write handler
      */
-    @Autowired
     private EnhancedLinkdService m_queryMgr;
 
     /**
      * Linkd Configuration Initialization
      */
 
-    @Autowired
     private EnhancedLinkdConfig m_linkdConfig;
 
     /**
@@ -100,7 +96,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
      * </p>
      */
     public EnhancedLinkd() {
-        super(LOG4J_CATEGORY);
+        super(LOG_PREFIX);
     }
 
     /**
