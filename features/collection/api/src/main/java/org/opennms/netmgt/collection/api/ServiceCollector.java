@@ -26,12 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd;
+package org.opennms.netmgt.collection.api;
 
 import java.util.Map;
 
-import org.opennms.netmgt.config.collector.CollectionConstants;
-import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
 

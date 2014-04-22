@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.collector;
+package org.opennms.netmgt.collection.api;
 
 import org.opennms.core.utils.DefaultTimeKeeper;
 import org.opennms.core.utils.TimeKeeper;

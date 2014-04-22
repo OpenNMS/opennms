@@ -51,7 +51,7 @@ public abstract class ResourceType {
     /**
      * <p>Constructor for ResourceType.</p>
      *
-     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @param agent a {@link org.opennms.netmgt.collection.api.CollectionAgent} object.
      * @param snmpCollection a {@link org.opennms.netmgt.collectd.OnmsSnmpCollection} object.
      */
     public ResourceType(SnmpCollectionAgent agent, OnmsSnmpCollection snmpCollection) {
@@ -62,7 +62,7 @@ public abstract class ResourceType {
     /**
      * <p>getAgent</p>
      *
-     * @return a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @return a {@link org.opennms.netmgt.collection.api.CollectionAgent} object.
      */
     public SnmpCollectionAgent getAgent() {
         return m_agent;

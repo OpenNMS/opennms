@@ -32,9 +32,9 @@ import java.io.File;
 import java.util.Date;
 
 import org.opennms.core.utils.TimeKeeper;
-import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.collector.CollectionSetVisitor;
-import org.opennms.netmgt.config.collector.ServiceParameters;
+import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.api.CollectionSetVisitor;
+import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.model.RrdRepository;
 
 public class MockCollectionResourceWrapper extends CollectionResourceWrapper {

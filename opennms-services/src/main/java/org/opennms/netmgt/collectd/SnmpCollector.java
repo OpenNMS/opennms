@@ -34,10 +34,14 @@ import java.util.Date;
 import java.util.Map;
 
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionException;
+import org.opennms.netmgt.collection.api.CollectionInitializationException;
+import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.ServiceCollector;
+import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.config.collector.CollectionSet;
-import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.slf4j.Logger;

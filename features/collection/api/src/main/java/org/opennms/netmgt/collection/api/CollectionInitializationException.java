@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,36 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.collector;
+package org.opennms.netmgt.collection.api;
 
-import java.util.Date;
+public class CollectionInitializationException extends Exception {
 
+    private static final long serialVersionUID = -8181677826055143390L;
 
-/**
- * {@link CollectionSet} represents the results of a collection and generally includes
- * a {@link List} of {@link CollectionResource} instances that were created during the
- * collection.
- */
-public interface CollectionSet extends CollectionVisitable {
-    
-    /**
-     * <p>getStatus</p>
-     *
-     * @return an int (one of the ServiceCollector.COLLECTION_<FOO> values)
-     */
-    int getStatus();
-    
-    /**
-     * <p>ignorePersist</p>
-     *
-     * @return a boolean.
-     */
-    boolean ignorePersist();
-    
-    /**
-     * Returns the timestamp of when this data collection was taken.
-     * Used by thresholding.
-     * @return
-    */
-    Date getCollectionTimestamp();
+    public CollectionInitializationException(String string) {
+        super(string);
+    }
+
 }

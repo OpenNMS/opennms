@@ -56,9 +56,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.opennms.netmgt.collectd.AbstractCollectionResource;
-import org.opennms.netmgt.collectd.CollectionAgent;
-import org.opennms.netmgt.config.collector.AttributeGroup;
-import org.opennms.netmgt.config.collector.CollectionSetVisitor;
+import org.opennms.netmgt.collection.api.AttributeGroup;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.model.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -167,7 +167,7 @@ public class XmpCollectionResource extends AbstractCollectionResource
     /**
      * <p>addAttributeGroup</p>
      *
-     * @param aGroup a {@link org.opennms.netmgt.config.collector.AttributeGroup} object.
+     * @param aGroup a {@link org.opennms.netmgt.collection.api.AttributeGroup} object.
      */
     public void addAttributeGroup(AttributeGroup aGroup)  
     {  

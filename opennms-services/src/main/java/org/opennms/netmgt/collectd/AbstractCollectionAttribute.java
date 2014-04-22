@@ -28,12 +28,12 @@
 
 package org.opennms.netmgt.collectd;
 
-import org.opennms.netmgt.config.collector.CollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionAttributeType;
-import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.collector.CollectionSetVisitor;
-import org.opennms.netmgt.config.collector.Persister;
-import org.opennms.netmgt.config.collector.ServiceParameters;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.api.CollectionAttributeType;
+import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.api.CollectionSetVisitor;
+import org.opennms.netmgt.collection.api.Persister;
+import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +50,7 @@ public abstract class AbstractCollectionAttribute implements CollectionAttribute
     /**
      * <p>getAttributeType</p>
      *
-     * @return a {@link org.opennms.netmgt.config.collector.CollectionAttributeType} object.
+     * @return a {@link org.opennms.netmgt.collection.api.CollectionAttributeType} object.
      */
     @Override
     public abstract CollectionAttributeType getAttributeType();
@@ -74,7 +74,7 @@ public abstract class AbstractCollectionAttribute implements CollectionAttribute
     /**
      * <p>getResource</p>
      *
-     * @return a {@link org.opennms.netmgt.config.collector.CollectionResource} object.
+     * @return a {@link org.opennms.netmgt.collection.api.CollectionResource} object.
      */
     @Override
     public abstract CollectionResource getResource();

@@ -31,7 +31,7 @@ package org.opennms.protocols.xml.collector;
 import org.opennms.core.utils.DefaultTimeKeeper;
 import org.opennms.core.utils.TimeKeeper;
 import org.opennms.netmgt.collectd.AbstractCollectionResource;
-import org.opennms.netmgt.collectd.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionAgent;
 
 /**
  * The abstract Class XmlCollectionResource.

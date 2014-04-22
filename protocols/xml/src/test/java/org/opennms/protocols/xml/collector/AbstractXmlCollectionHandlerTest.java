@@ -33,9 +33,9 @@ import java.util.Map;
 import org.junit.Assert;
 
 import org.junit.Test;
-import org.opennms.netmgt.collectd.CollectionAgent;
-import org.opennms.netmgt.collectd.CollectionException;
-import org.opennms.netmgt.config.collector.AttributeGroupType;
+import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.protocols.xml.config.XmlDataCollection;

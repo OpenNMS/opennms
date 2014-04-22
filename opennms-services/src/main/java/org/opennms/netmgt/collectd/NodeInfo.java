@@ -30,7 +30,8 @@ package org.opennms.netmgt.collectd;
 
 import java.io.File;
 
-import org.opennms.netmgt.config.collector.ServiceParameters;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.model.RrdRepository;
 
 
@@ -52,7 +53,7 @@ public final class NodeInfo extends SnmpCollectionResource {
      * <p>Constructor for NodeInfo.</p>
      *
      * @param def a {@link org.opennms.netmgt.collectd.NodeResourceType} object.
-     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @param agent a {@link org.opennms.netmgt.collection.api.CollectionAgent} object.
      */
     public NodeInfo(NodeResourceType def, CollectionAgent agent) {
         super(def);

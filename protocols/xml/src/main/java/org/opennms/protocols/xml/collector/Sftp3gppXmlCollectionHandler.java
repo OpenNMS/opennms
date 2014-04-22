@@ -46,10 +46,10 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.netmgt.collectd.CollectionAgent;
-import org.opennms.netmgt.collectd.CollectionException;
-import org.opennms.netmgt.collectd.ServiceCollector;
-import org.opennms.netmgt.config.collector.AttributeGroupType;
+import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionException;
+import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.protocols.sftp.Sftp3gppUrlConnection;
 import org.opennms.protocols.sftp.Sftp3gppUrlHandler;

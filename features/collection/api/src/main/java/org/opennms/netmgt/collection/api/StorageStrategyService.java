@@ -26,46 +26,33 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.collector;
+package org.opennms.netmgt.collection.api;
+
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 /**
- * <p>AttributeDefinition interface.</p>
- *
- * @author ranger
- * @version $Id: $
+ * <p>StorageStrategyService interface.</p>
  */
-public interface AttributeDefinition {
+public interface StorageStrategyService {
 
     /**
-     * <p>getType</p>
+     * <p>getAgentConfig</p>
      *
+     * @return a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
+     */
+    public SnmpAgentConfig getAgentConfig();
+
+    /*
+     * This method is used on StorageStrategy implementation when the resource index is associated to a
+     * physical interface like frame relay resources. OpenNMS always track changes on ifTable so, make SNMP
+     * queries on this table is redundant, and implementations of CollectionAgent know ifTable content always.
+     * This method give interface information from a specific ifIndex.
+     */
+    /**
+     * <p>getSnmpInterfaceLabel</p>
+     *
+     * @param ifIndex a int.
      * @return a {@link java.lang.String} object.
      */
-    public abstract String getType();
-
-    /**
-     * <p>getName</p>
-     * 
-     * Human readable name for the attribute.
-     * @return a {@link java.lang.String} object.
-     */
-    public abstract String getName();
-    
-    /**
-     * <p>equals</p>
-     *
-     * @param o a {@link java.lang.Object} object.
-     * @return a boolean.
-     */
-    @Override
-    public abstract boolean equals(Object o);
-    
-    /**
-     * <p>hashCode</p>
-     *
-     * @return a int.
-     */
-    @Override
-    public abstract int hashCode();
-
+    public String getSnmpInterfaceLabel(int ifIndex);
 }

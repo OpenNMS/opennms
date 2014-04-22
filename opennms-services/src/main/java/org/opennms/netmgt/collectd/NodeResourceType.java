@@ -50,7 +50,7 @@ public class NodeResourceType extends ResourceType {
     /**
      * <p>Constructor for NodeResourceType.</p>
      *
-     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @param agent a {@link org.opennms.netmgt.collection.api.CollectionAgent} object.
      * @param snmpCollection a {@link org.opennms.netmgt.collectd.OnmsSnmpCollection} object.
      */
     public NodeResourceType(SnmpCollectionAgent agent, OnmsSnmpCollection snmpCollection) {

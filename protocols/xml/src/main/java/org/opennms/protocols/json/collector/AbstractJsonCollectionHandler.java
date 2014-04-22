@@ -49,8 +49,8 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import org.opennms.netmgt.collectd.CollectionAgent;
-import org.opennms.netmgt.config.collector.AttributeGroupType;
+import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler;
 import org.opennms.protocols.xml.collector.UrlFactory;
 import org.opennms.protocols.xml.collector.XmlCollectionAttributeType;

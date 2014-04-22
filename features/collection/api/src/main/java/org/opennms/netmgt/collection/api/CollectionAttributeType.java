@@ -26,29 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.collector;
+package org.opennms.netmgt.collection.api;
 
 
 /**
- * <p>Persister interface.</p>
+ * <p>CollectionAttributeType interface.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-public interface Persister {
-
+public interface CollectionAttributeType extends AttributeDefinition {
     /**
-     * <p>persistNumericAttribute</p>
+     * <p>getGroupType</p>
      *
-     * @param attribute a {@link org.opennms.netmgt.config.collector.CollectionAttribute} object.
+     * @return a {@link org.opennms.netmgt.config.collector.AttributeGroupType} object.
      */
-    public abstract void persistNumericAttribute(CollectionAttribute attribute);
-
+    public AttributeGroupType getGroupType();
     /**
-     * <p>persistStringAttribute</p>
+     * <p>storeAttribute</p>
      *
-     * @param attribute a {@link org.opennms.netmgt.config.collector.CollectionAttribute} object.
+     * @param attribute a {@link org.opennms.netmgt.collection.api.CollectionAttribute} object.
+     * @param persister a {@link org.opennms.netmgt.config.collector.Persister} object.
      */
-    public abstract void persistStringAttribute(CollectionAttribute attribute);
-
+    public void storeAttribute(CollectionAttribute attribute, Persister persister);
 }

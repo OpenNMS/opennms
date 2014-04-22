@@ -26,7 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.collector;
+package org.opennms.netmgt.collection.support;
+
+import org.opennms.netmgt.collection.api.AttributeGroup;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.CollectionSetVisitor;
+
 
 
 /**

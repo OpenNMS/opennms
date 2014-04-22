@@ -29,8 +29,8 @@
 package org.opennms.netmgt.collectd.vmware.cim;
 
 import org.opennms.netmgt.collectd.AbstractCollectionResource;
-import org.opennms.netmgt.collectd.CollectionAgent;
-import org.opennms.netmgt.config.collector.CollectionAttributeType;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionAttributeType;
 
 public abstract class VmwareCimCollectionResource extends AbstractCollectionResource {
 

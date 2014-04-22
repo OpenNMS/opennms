@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.collectd;
 
+import org.opennms.netmgt.collection.api.CollectionException;
+
 /**
  * <p>CollectdInstrumentation interface.</p>
  *
@@ -182,7 +184,7 @@ public interface CollectdInstrumentation {
      * @param nodeid a int.
      * @param ipAddress a {@link java.lang.String} object.
      * @param svcName a {@link java.lang.String} object.
-     * @param e a {@link org.opennms.netmgt.collectd.CollectionException} object.
+     * @param e a {@link org.opennms.netmgt.collection.api.CollectionException} object.
      */
     void reportCollectionException(String packageName, int nodeid, String ipAddress, String svcName, CollectionException e);
     

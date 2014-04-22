@@ -33,9 +33,9 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.opennms.core.utils.TimeKeeper;
-import org.opennms.netmgt.config.collector.AttributeGroup;
-import org.opennms.netmgt.config.collector.CollectionSetVisitor;
-import org.opennms.netmgt.config.collector.ServiceParameters;
+import org.opennms.netmgt.collection.api.AttributeGroup;
+import org.opennms.netmgt.collection.api.CollectionSetVisitor;
+import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.utils.NodeLabel;
 import org.slf4j.Logger;

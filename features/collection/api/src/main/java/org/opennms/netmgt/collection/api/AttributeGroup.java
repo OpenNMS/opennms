@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.collector;
+package org.opennms.netmgt.collection.api;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -52,7 +52,7 @@ public class AttributeGroup implements CollectionVisitable, Persistable {
     /**
      * <p>Constructor for AttributeGroup.</p>
      *
-     * @param resource a {@link org.opennms.netmgt.config.collector.CollectionResource} object.
+     * @param resource a {@link org.opennms.netmgt.collection.api.CollectionResource} object.
      * @param groupType a {@link org.opennms.netmgt.collectd.AttributeGroupType} object.
      */
     public AttributeGroup(CollectionResource resource, AttributeGroupType groupType) {
@@ -72,7 +72,7 @@ public class AttributeGroup implements CollectionVisitable, Persistable {
     /**
      * <p>getResource</p>
      *
-     * @return a {@link org.opennms.netmgt.config.collector.CollectionResource} object.
+     * @return a {@link org.opennms.netmgt.collection.api.CollectionResource} object.
      */
     public CollectionResource getResource() {
         return m_resource;
@@ -90,7 +90,7 @@ public class AttributeGroup implements CollectionVisitable, Persistable {
     /**
      * <p>addAttribute</p>
      *
-     * @param attr a {@link org.opennms.netmgt.config.collector.CollectionAttribute} object.
+     * @param attr a {@link org.opennms.netmgt.collection.api.CollectionAttribute} object.
      */
     public void addAttribute(CollectionAttribute attr) {
         m_attributes.add(attr);
@@ -99,7 +99,7 @@ public class AttributeGroup implements CollectionVisitable, Persistable {
     /**
      * <p>visit</p>
      *
-     * @param visitor a {@link org.opennms.netmgt.config.collector.CollectionSetVisitor} object.
+     * @param visitor a {@link org.opennms.netmgt.collection.api.CollectionSetVisitor} object.
      */
     @Override
     public void visit(CollectionSetVisitor visitor) {
@@ -116,7 +116,7 @@ public class AttributeGroup implements CollectionVisitable, Persistable {
     /**
      * <p>shouldPersist</p>
      *
-     * @param params a {@link org.opennms.netmgt.config.collector.ServiceParameters} object.
+     * @param params a {@link org.opennms.netmgt.collection.api.ServiceParameters} object.
      * @return a boolean.
      */
     @Override

@@ -26,7 +26,8 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.collector;
+package org.opennms.netmgt.collection.api;
+
 
 /**
  * <p>CollectionSetVisitor interface.</p>
@@ -46,7 +47,7 @@ public interface CollectionSetVisitor {
     /**
      * <p>visitResource</p>
      *
-     * @param resource a {@link org.opennms.netmgt.config.collector.CollectionResource} object.
+     * @param resource a {@link org.opennms.netmgt.collection.api.CollectionResource} object.
      */
     void visitResource(CollectionResource resource);
 
@@ -60,14 +61,14 @@ public interface CollectionSetVisitor {
     /**
      * <p>visitAttribute</p>
      *
-     * @param attribute a {@link org.opennms.netmgt.collectd.CollectionAttribute} object.
+     * @param attribute a {@link org.opennms.netmgt.collection.api.collectd.CollectionAttribute} object.
      */
     void visitAttribute(CollectionAttribute attribute);
 
     /**
      * <p>completeAttribute</p>
      *
-     * @param attribute a {@link org.opennms.netmgt.collectd.CollectionAttribute} object.
+     * @param attribute a {@link org.opennms.netmgt.collection.api.collectd.CollectionAttribute} object.
      */
     void completeAttribute(CollectionAttribute attribute);
 
@@ -81,7 +82,7 @@ public interface CollectionSetVisitor {
     /**
      * <p>completeResource</p>
      *
-     * @param resource a {@link org.opennms.netmgt.config.collector.CollectionResource} object.
+     * @param resource a {@link org.opennms.netmgt.collection.api.CollectionResource} object.
      */
     void completeResource(CollectionResource resource);
 

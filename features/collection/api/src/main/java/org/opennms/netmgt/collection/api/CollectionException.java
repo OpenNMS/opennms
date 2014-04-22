@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,34 +26,49 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.collector;
+package org.opennms.netmgt.collection.api;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 
-import org.opennms.netmgt.model.RrdRepository;
 
 /**
- * <p>ResourceIdentifier interface.</p>
+ * <p>CollectionException class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-public interface ResourceIdentifier {
-    
+public class CollectionException extends Exception {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -9090428901522833535L;
+
+    private int m_errorCode = ServiceCollector.COLLECTION_FAILED;
+
     /**
-     * <p>getOwnerName</p>
+     * <p>Constructor for CollectionException.</p>
      *
-     * @return a {@link java.lang.String} object.
+     * @param message a {@link java.lang.String} object.
      */
-    public String getOwnerName();
-    
+    public CollectionException(String message) {
+        super(message);
+    }
+
     /**
-     * <p>getResourceDir</p>
+     * <p>Constructor for CollectionException.</p>
      *
-     * @param repository a {@link org.opennms.netmgt.model.RrdRepository} object.
-     * @return a {@link java.io.File} object.
+     * @param message a {@link java.lang.String} object.
+     * @param cause a {@link java.lang.Throwable} object.
      */
-    public File getResourceDir(RrdRepository repository) throws FileNotFoundException;
+    public CollectionException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    void setErrorCode(int errorCode) {
+        m_errorCode = errorCode;
+    }
+
+    int getErrorCode() {
+        return m_errorCode;
+    }
 
 }

@@ -45,11 +45,11 @@ import junit.framework.TestCase;
 
 import org.opennms.core.test.MockPlatformTransactionManager;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.collection.support.AbstractCollectionSetVisitor;
 import org.opennms.netmgt.config.MibObject;
-import org.opennms.netmgt.config.collector.AbstractCollectionSetVisitor;
-import org.opennms.netmgt.config.collector.AttributeGroupType;
-import org.opennms.netmgt.config.collector.CollectionAttribute;
-import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.mock.MockDataCollectionConfig;
 import org.opennms.netmgt.model.OnmsIpInterface;

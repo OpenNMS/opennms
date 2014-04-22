@@ -34,9 +34,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.netmgt.collectd.AliasedResource;
-import org.opennms.netmgt.config.collector.CollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.collector.ServiceParameters;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
@@ -62,7 +62,7 @@ public class CollectorThresholdingSet extends ThresholdingSet {
      * @param hostAddress a {@link java.lang.String} object.
      * @param serviceName a {@link java.lang.String} object.
      * @param repository a {@link org.opennms.netmgt.model.RrdRepository} object.
-     * @param svcParams a {@link org.opennms.netmgt.config.collector.ServiceParameters} object.
+     * @param svcParams a {@link org.opennms.netmgt.collection.api.ServiceParameters} object.
      */
     public CollectorThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository, ServiceParameters svcParams) {
         super(nodeId, hostAddress, serviceName, repository);
@@ -77,7 +77,7 @@ public class CollectorThresholdingSet extends ThresholdingSet {
     /**
      * <p>hasThresholds</p>
      *
-     * @param attribute a {@link org.opennms.netmgt.config.collector.CollectionAttribute} object.
+     * @param attribute a {@link org.opennms.netmgt.collection.api.CollectionAttribute} object.
      * @return a boolean.
      */
     public boolean hasThresholds(CollectionAttribute attribute) {

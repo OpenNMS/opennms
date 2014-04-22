@@ -36,10 +36,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.netmgt.config.collector.AttributeDefinition;
-import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.collector.CollectionSet;
-import org.opennms.netmgt.config.collector.CollectionSetVisitor;
+import org.opennms.netmgt.collection.api.AttributeDefinition;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionException;
+import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.CollectionSetVisitor;
+import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.Collectable;
 import org.opennms.netmgt.snmp.CollectionTracker;
@@ -126,7 +129,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
     /**
      * <p>Constructor for SnmpCollectionSet.</p>
      *
-     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @param agent a {@link org.opennms.netmgt.collection.api.CollectionAgent} object.
      * @param snmpCollection a {@link org.opennms.netmgt.collectd.OnmsSnmpCollection} object.
      */
     public SnmpCollectionSet(SnmpCollectionAgent agent, OnmsSnmpCollection snmpCollection) {
@@ -239,7 +242,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
     /**
      * <p>getCollectionAgent</p>
      *
-     * @return a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @return a {@link org.opennms.netmgt.collection.api.CollectionAgent} object.
      */
     public SnmpCollectionAgent getCollectionAgent() {
        return m_agent;
@@ -519,7 +522,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
     /**
      * <p>notifyIfNotFound</p>
      *
-     * @param attrType a {@link org.opennms.netmgt.config.collector.AttributeDefinition} object.
+     * @param attrType a {@link org.opennms.netmgt.collection.api.AttributeDefinition} object.
      * @param res a {@link org.opennms.netmgt.snmp.SnmpResult} object.
      */
     public void notifyIfNotFound(AttributeDefinition attrType, SnmpResult res) {

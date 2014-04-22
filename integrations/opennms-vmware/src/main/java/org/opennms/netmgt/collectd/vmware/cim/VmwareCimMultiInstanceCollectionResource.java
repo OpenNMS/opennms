@@ -30,7 +30,7 @@ package org.opennms.netmgt.collectd.vmware.cim;
 
 import java.io.File;
 
-import org.opennms.netmgt.collectd.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.model.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

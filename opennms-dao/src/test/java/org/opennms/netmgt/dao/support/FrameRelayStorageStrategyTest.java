@@ -34,7 +34,7 @@ import org.junit.Assert;
 
 import org.easymock.EasyMock;
 import org.junit.Test;
-import org.opennms.netmgt.config.StorageStrategyService;
+import org.opennms.netmgt.collection.api.StorageStrategyService;
 
 /**
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>

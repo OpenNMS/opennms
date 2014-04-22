@@ -28,7 +28,7 @@
 
 package org.opennms.protocols.xml.collector;
 
-import org.opennms.netmgt.config.collector.MultiResourceCollectionSet;
+import org.opennms.netmgt.collection.support.MultiResourceCollectionSet;
 
 /**
  * The Class XmlCollectionSet.

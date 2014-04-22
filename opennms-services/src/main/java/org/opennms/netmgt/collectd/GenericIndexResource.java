@@ -30,8 +30,8 @@ package org.opennms.netmgt.collectd;
 
 import java.io.File;
 
-import org.opennms.netmgt.config.StorageStrategy;
-import org.opennms.netmgt.config.collector.ServiceParameters;
+import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.collection.api.StorageStrategy;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.slf4j.Logger;

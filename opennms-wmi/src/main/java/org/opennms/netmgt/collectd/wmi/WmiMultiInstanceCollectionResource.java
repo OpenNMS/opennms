@@ -30,7 +30,7 @@ package org.opennms.netmgt.collectd.wmi;
 
 import java.io.File;
 
-import org.opennms.netmgt.collectd.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.model.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +51,7 @@ public class WmiMultiInstanceCollectionResource extends WmiCollectionResource {
     /**
      * <p>Constructor for WmiMultiInstanceCollectionResource.</p>
      *
-     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @param agent a {@link org.opennms.netmgt.collection.api.CollectionAgent} object.
      * @param instance a {@link java.lang.String} object.
      * @param name a {@link java.lang.String} object.
      */

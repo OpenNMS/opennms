@@ -26,16 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.collector;
+package org.opennms.netmgt.collection.support;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.api.CollectionSetVisitor;
+import org.opennms.netmgt.collection.api.ServiceCollector;
+
 /**
  */
 public abstract class MultiResourceCollectionSet<T extends CollectionResource> extends AbstractCollectionSet {
-	private int m_status = CollectionConstants.COLLECTION_FAILED;
+	private int m_status = ServiceCollector.COLLECTION_FAILED;
 	private final List<T> m_collectionResources = new ArrayList<T>();
 	private Date m_timestamp;
 

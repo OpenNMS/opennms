@@ -33,8 +33,8 @@ import java.util.Date;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
 
-import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.PersistAllSelectorStrategy;
+import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.StorageStrategy;

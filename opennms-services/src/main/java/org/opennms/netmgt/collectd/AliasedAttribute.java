@@ -28,8 +28,8 @@
 
 package org.opennms.netmgt.collectd;
 
-import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.collector.ServiceParameters;
+import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.snmp.SnmpValue;
 
 /**
@@ -44,7 +44,7 @@ public class AliasedAttribute extends SnmpAttribute {
 	/**
 	 * <p>Constructor for AliasedAttribute.</p>
 	 *
-	 * @param resource a {@link org.opennms.netmgt.config.collector.CollectionResource} object.
+	 * @param resource a {@link org.opennms.netmgt.collection.api.CollectionResource} object.
 	 * @param attr a {@link org.opennms.netmgt.collectd.SnmpAttribute} object.
 	 */
 	public AliasedAttribute(CollectionResource resource, SnmpAttribute attr) {

@@ -35,7 +35,7 @@ import org.junit.Assert;
 import org.easymock.EasyMock;
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.StorageStrategyService;
+import org.opennms.netmgt.collection.api.StorageStrategyService;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 /**

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,26 +26,17 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.collector;
+package org.opennms.netmgt.collection.api;
 
-/**
- * <p>CollectionAttributeType interface.</p>
- *
- * @author ranger
- * @version $Id: $
- */
-public interface CollectionAttributeType extends AttributeDefinition {
-    /**
-     * <p>getGroupType</p>
-     *
-     * @return a {@link org.opennms.netmgt.config.collector.AttributeGroupType} object.
-     */
-    public AttributeGroupType getGroupType();
-    /**
-     * <p>storeAttribute</p>
-     *
-     * @param attribute a {@link org.opennms.netmgt.config.collector.CollectionAttribute} object.
-     * @param persister a {@link org.opennms.netmgt.config.collector.Persister} object.
-     */
-    public void storeAttribute(CollectionAttribute attribute, Persister persister);
+
+public interface Persistable {
+
+	/**
+	 * Determines whether the attribute should be persisted.
+	 *
+	 * @param params a {@link org.opennms.netmgt.collection.api.ServiceParameters} object.
+	 * @return a boolean.
+	 */
+	boolean shouldPersist(ServiceParameters params);
+
 }

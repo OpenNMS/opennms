@@ -29,8 +29,8 @@
 package org.opennms.netmgt.collectd.vmware.vijava;
 
 import org.opennms.netmgt.collectd.AbstractCollectionResource;
-import org.opennms.netmgt.collectd.CollectionAgent;
-import org.opennms.netmgt.config.collector.CollectionAttributeType;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionAttributeType;
 
 public abstract class VmwareCollectionResource extends AbstractCollectionResource {
 

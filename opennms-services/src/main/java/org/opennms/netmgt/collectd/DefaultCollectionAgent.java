@@ -37,6 +37,7 @@ import java.util.Set;
 import org.opennms.core.utils.InetAddressUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.support.DefaultResourceDao;
@@ -66,7 +67,7 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Snmp
      * @param ifaceId a {@link java.lang.Integer} object.
      * @param ifaceDao a {@link org.opennms.netmgt.dao.api.IpInterfaceDao} object.
      * @param transMgr a {@link org.springframework.transaction.PlatformTransactionManager} object.
-     * @return a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @return a {@link org.opennms.netmgt.collection.api.CollectionAgent} object.
      */
     public static SnmpCollectionAgent create(final Integer ifaceId, final IpInterfaceDao ifaceDao, final PlatformTransactionManager transMgr) {
         return new DefaultCollectionAgent(DefaultCollectionAgentService.create(ifaceId, ifaceDao, transMgr));

@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.collectd.jdbc;
 
-import org.opennms.netmgt.collectd.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionAgent;
 
 public class JdbcSingleInstanceCollectionResource extends JdbcCollectionResource {
     

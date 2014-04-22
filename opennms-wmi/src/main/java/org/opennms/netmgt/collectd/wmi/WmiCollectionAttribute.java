@@ -29,8 +29,8 @@
 package org.opennms.netmgt.collectd.wmi;
 
 import org.opennms.netmgt.collectd.AbstractCollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionAttributeType;
-import org.opennms.netmgt.config.collector.CollectionResource;
+import org.opennms.netmgt.collection.api.CollectionAttributeType;
+import org.opennms.netmgt.collection.api.CollectionResource;
 
 /**
  * <p>WmiCollectionAttribute class.</p>
@@ -48,7 +48,7 @@ public class WmiCollectionAttribute extends AbstractCollectionAttribute {
          * <p>Constructor for WmiCollectionAttribute.</p>
          *
          * @param resource a {@link org.opennms.netmgt.collectd.wmi.WmiCollectionResource} object.
-         * @param attribType a {@link org.opennms.netmgt.config.collector.CollectionAttributeType} object.
+         * @param attribType a {@link org.opennms.netmgt.collection.api.CollectionAttributeType} object.
          * @param alias a {@link java.lang.String} object.
          * @param value a {@link java.lang.String} object.
          */
@@ -62,7 +62,7 @@ public class WmiCollectionAttribute extends AbstractCollectionAttribute {
         /**
          * <p>getAttributeType</p>
          *
-         * @return a {@link org.opennms.netmgt.config.collector.CollectionAttributeType} object.
+         * @return a {@link org.opennms.netmgt.collection.api.CollectionAttributeType} object.
          */
     @Override
         public CollectionAttributeType getAttributeType() {
@@ -92,7 +92,7 @@ public class WmiCollectionAttribute extends AbstractCollectionAttribute {
         /**
          * <p>getResource</p>
          *
-         * @return a {@link org.opennms.netmgt.config.collector.CollectionResource} object.
+         * @return a {@link org.opennms.netmgt.collection.api.CollectionResource} object.
          */
     @Override
         public CollectionResource getResource() {

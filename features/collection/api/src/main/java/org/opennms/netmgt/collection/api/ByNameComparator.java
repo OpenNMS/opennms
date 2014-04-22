@@ -26,33 +26,47 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config;
+package org.opennms.netmgt.collection.api;
 
-import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import java.io.Serializable;
+import java.util.Comparator;
+
 
 /**
- * <p>StorageStrategyService interface.</p>
+ * <p>ByNameComparator class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
  */
-public interface StorageStrategyService {
+public final class ByNameComparator implements Comparator<AttributeDefinition>, Serializable {
+
+    private static final long serialVersionUID = -2596801053643459622L;
 
     /**
-     * <p>getAgentConfig</p>
+     * <p>compare</p>
      *
-     * @return a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
+     * @param type0 a {@link org.opennms.netmgt.collection.api.AttributeDefinition} object.
+     * @param type1 a {@link org.opennms.netmgt.collection.api.AttributeDefinition} object.
+     * @return a int.
      */
-    public SnmpAgentConfig getAgentConfig();
-
-    /*
-     * This method is used on StorageStrategy implementation when the resource index is associated to a
-     * physical interface like frame relay resources. OpenNMS always track changes on ifTable so, make SNMP
-     * queries on this table is redundant, and implementations of CollectionAgent know ifTable content always.
-     * This method give interface information from a specific ifIndex.
-     */
+    @Override
+    public int compare(final AttributeDefinition type0, final AttributeDefinition type1) {
+        return type0.getName().compareTo(type1.getName());
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public boolean equals(final Object o) {
+        return o instanceof ByNameComparator;
+    }
+    
     /**
-     * <p>getSnmpInterfaceLabel</p>
+     * <p>hashCode</p>
      *
-     * @param ifIndex a int.
-     * @return a {@link java.lang.String} object.
+     * @return a int.
      */
-    public String getSnmpInterfaceLabel(int ifIndex);
+    @Override
+    public int hashCode() {
+        return 0;
+    }
 }

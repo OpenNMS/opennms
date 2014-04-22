@@ -28,7 +28,7 @@
 
 package org.opennms.protocols.xml.collector;
 
-import org.opennms.netmgt.collectd.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionAgent;
 
 /**
  * The Class XmlSingleInstanceCollectionResource.

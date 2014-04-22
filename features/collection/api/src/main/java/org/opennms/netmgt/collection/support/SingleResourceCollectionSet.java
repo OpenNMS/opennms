@@ -26,9 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.collector;
+package org.opennms.netmgt.collection.support;
 
 import java.util.Date;
+
+import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.CollectionSetVisitor;
+import org.opennms.netmgt.collection.api.ServiceCollector;
 
 /**
  * This is a simple {@link CollectionSet} that is used to encapsulate the collection
@@ -37,7 +42,7 @@ import java.util.Date;
  * to a different value upon collection completion.
  */
 public class SingleResourceCollectionSet extends AbstractCollectionSet {
-	private int m_status = CollectionConstants.COLLECTION_FAILED;
+	private int m_status = ServiceCollector.COLLECTION_FAILED;
 	private final CollectionResource m_collectionResource;
 	private final Date m_timestamp;
 

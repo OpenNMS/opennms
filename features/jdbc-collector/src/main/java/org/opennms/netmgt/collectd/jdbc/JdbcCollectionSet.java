@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.collectd.jdbc;
 
-import org.opennms.netmgt.config.collector.MultiResourceCollectionSet;
+import org.opennms.netmgt.collection.support.MultiResourceCollectionSet;
 
 public class JdbcCollectionSet extends MultiResourceCollectionSet<JdbcCollectionResource> {
 }

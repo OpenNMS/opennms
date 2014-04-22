@@ -62,10 +62,10 @@ import org.joda.time.format.DateTimeFormatter;
 import org.jsoup.Jsoup;
 
 import org.opennms.core.spring.BeanUtils;
-import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.PersistAllSelectorStrategy;
+import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
-import org.opennms.netmgt.config.collector.AttributeGroupType;
 import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.StorageStrategy;

@@ -26,7 +26,8 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.collector;
+package org.opennms.netmgt.collection.api;
+
 
 /**
  * <p>CollectionAttribute interface.</p>

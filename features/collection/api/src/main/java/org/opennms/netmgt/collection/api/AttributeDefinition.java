@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,16 +26,46 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.collector;
+package org.opennms.netmgt.collection.api;
 
-public interface Persistable {
+/**
+ * <p>AttributeDefinition interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
+public interface AttributeDefinition {
 
-	/**
-	 * Determines whether the attribute should be persisted.
-	 *
-	 * @param params a {@link org.opennms.netmgt.config.collector.ServiceParameters} object.
-	 * @return a boolean.
-	 */
-	boolean shouldPersist(ServiceParameters params);
+    /**
+     * <p>getType</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public abstract String getType();
+
+    /**
+     * <p>getName</p>
+     * 
+     * Human readable name for the attribute.
+     * @return a {@link java.lang.String} object.
+     */
+    public abstract String getName();
+    
+    /**
+     * <p>equals</p>
+     *
+     * @param o a {@link java.lang.Object} object.
+     * @return a boolean.
+     */
+    @Override
+    public abstract boolean equals(Object o);
+    
+    /**
+     * <p>hashCode</p>
+     *
+     * @return a int.
+     */
+    @Override
+    public abstract int hashCode();
 
 }

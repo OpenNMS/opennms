@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.opennms.netmgt.config.collector.CollectionAttribute;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.poller.LatencyCollectionAttribute;
 import org.opennms.netmgt.poller.LatencyCollectionResource;

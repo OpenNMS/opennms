@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.collectd;
 
+import org.opennms.netmgt.collection.api.CollectionException;
+
 /**
  * <p>CollectionTimedOut class.</p>
  *

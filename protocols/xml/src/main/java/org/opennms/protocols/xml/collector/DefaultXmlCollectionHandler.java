@@ -31,10 +31,10 @@ package org.opennms.protocols.xml.collector;
 import java.util.Date;
 import java.util.Map;
 
-import org.opennms.netmgt.collectd.CollectionAgent;
-import org.opennms.netmgt.collectd.CollectionException;
-import org.opennms.netmgt.collectd.ServiceCollector;
-import org.opennms.netmgt.config.collector.AttributeGroupType;
+import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionException;
+import org.opennms.netmgt.collection.api.ServiceCollector;
 
 import org.opennms.protocols.xml.config.Request;
 import org.opennms.protocols.xml.config.XmlDataCollection;

@@ -26,16 +26,23 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.collector;
+package org.opennms.netmgt.collection.support;
 
-public interface CollectionVisitable {
+import org.opennms.netmgt.collection.api.CollectionSet;
+
+
+/**
+ */
+public abstract class AbstractCollectionSet implements CollectionSet {
 
 	/**
-	 * Provide a way to visit all the values in the CollectionSet, for any appropriate purposes (persisting, thresholding, or others)
-	 * The expectation is that calling this method will ultimately call visitResource, visitGroup and visitAttribute (as appropriate)
+	 * <p>ignorePersist</p>
 	 *
-	 * @param visitor a {@link org.opennms.netmgt.config.collector.CollectionSetVisitor} object.
+	 * @return a boolean.
 	 */
-	void visit(CollectionSetVisitor visitor);
+	@Override
+	public final boolean ignorePersist() {
+		return false;
+	}
 
 }

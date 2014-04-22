@@ -34,12 +34,13 @@ import java.util.Map;
 
 import org.opennms.core.utils.DefaultTimeKeeper;
 import org.opennms.core.utils.TimeKeeper;
-import org.opennms.netmgt.config.collector.AttributeGroup;
-import org.opennms.netmgt.config.collector.AttributeGroupType;
-import org.opennms.netmgt.config.collector.CollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.collector.CollectionSetVisitor;
-import org.opennms.netmgt.config.collector.ServiceParameters;
+import org.opennms.netmgt.collection.api.AttributeGroup;
+import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.api.CollectionSetVisitor;
+import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.model.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +62,7 @@ public abstract class AbstractCollectionResource implements CollectionResource {
     /**
      * <p>Constructor for AbstractCollectionResource.</p>
      *
-     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @param agent a {@link org.opennms.netmgt.collection.api.CollectionAgent} object.
      */
     protected AbstractCollectionResource(CollectionAgent agent) {
         m_agent=agent;
@@ -97,8 +98,8 @@ public abstract class AbstractCollectionResource implements CollectionResource {
     /**
      * Finds, or creates, and returns the AttributeGroup for the given group Type
      *
-     * @param groupType a {@link org.opennms.netmgt.config.collector.AttributeGroupType} object.
-     * @return a {@link org.opennms.netmgt.config.collector.AttributeGroup} object.
+     * @param groupType a {@link org.opennms.netmgt.collection.api.AttributeGroupType} object.
+     * @return a {@link org.opennms.netmgt.collection.api.AttributeGroup} object.
      */
     protected final AttributeGroup getGroup(AttributeGroupType groupType) {
         AttributeGroup group = m_attributeGroups.get(groupType);

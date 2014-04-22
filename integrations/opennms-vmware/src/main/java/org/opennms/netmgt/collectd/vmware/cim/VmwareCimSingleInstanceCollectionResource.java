@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.collectd.vmware.cim;
 
-import org.opennms.netmgt.collectd.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionAgent;
 
 public class VmwareCimSingleInstanceCollectionResource extends VmwareCimCollectionResource {
     public VmwareCimSingleInstanceCollectionResource(final CollectionAgent agent) {

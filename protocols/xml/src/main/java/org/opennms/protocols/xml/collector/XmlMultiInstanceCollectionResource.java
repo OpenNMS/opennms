@@ -30,8 +30,8 @@ package org.opennms.protocols.xml.collector;
 
 import java.io.File;
 
-import org.opennms.netmgt.collectd.CollectionAgent;
-import org.opennms.netmgt.config.collector.ServiceParameters;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.model.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

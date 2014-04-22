@@ -26,11 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config;
+package org.opennms.netmgt.collection.api;
 
 import java.util.List;
 
-import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.config.datacollection.Parameter;
 
 /**
@@ -61,7 +60,7 @@ public interface StorageStrategy {
      * This method could be expensive because it could require send SNMP queries and make complicated functions to
      * build the name. So you must try to call it only when is necessary.
      *
-     * @param resource a {@link org.opennms.netmgt.config.collector.CollectionResource} object
+     * @param resource a {@link org.opennms.netmgt.collection.api.CollectionResource} object
      * @return a {@link java.lang.String} object.
      */
     public String getResourceNameFromIndex(CollectionResource resource);

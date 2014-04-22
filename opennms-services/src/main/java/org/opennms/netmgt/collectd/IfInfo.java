@@ -35,7 +35,8 @@ import java.io.FileNotFoundException;
 import java.util.Map;
 
 import org.opennms.core.utils.AlphaNumeric;
-import org.opennms.netmgt.config.collector.ServiceParameters;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.model.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +63,7 @@ public final class IfInfo extends SnmpCollectionResource {
      * <p>Constructor for IfInfo.</p>
      *
      * @param def a {@link org.opennms.netmgt.collectd.ResourceType} object.
-     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @param agent a {@link org.opennms.netmgt.collection.api.CollectionAgent} object.
      * @param snmpIfData a {@link org.opennms.netmgt.collectd.SnmpIfData} object.
      */
     public IfInfo(ResourceType def, CollectionAgent agent, SnmpIfData snmpIfData) {

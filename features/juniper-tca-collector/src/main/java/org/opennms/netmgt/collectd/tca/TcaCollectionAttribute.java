@@ -29,8 +29,8 @@
 package org.opennms.netmgt.collectd.tca;
 
 import org.opennms.netmgt.collectd.AbstractCollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionAttributeType;
-import org.opennms.netmgt.config.collector.CollectionResource;
+import org.opennms.netmgt.collection.api.CollectionAttributeType;
+import org.opennms.netmgt.collection.api.CollectionResource;
 
 /**
  * The Class TcaCollectionAttribute.

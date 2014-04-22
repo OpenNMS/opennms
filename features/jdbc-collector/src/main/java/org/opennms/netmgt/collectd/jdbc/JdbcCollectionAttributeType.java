@@ -28,10 +28,10 @@
 
 package org.opennms.netmgt.collectd.jdbc;
 
-import org.opennms.netmgt.config.collector.AttributeGroupType;
-import org.opennms.netmgt.config.collector.CollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionAttributeType;
-import org.opennms.netmgt.config.collector.Persister;
+import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.api.CollectionAttributeType;
+import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.config.jdbc.JdbcColumn;
 
 public class JdbcCollectionAttributeType implements CollectionAttributeType {

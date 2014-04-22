@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.collectd.vmware.cim;
 
-import org.opennms.netmgt.config.collector.MultiResourceCollectionSet;
+import org.opennms.netmgt.collection.support.MultiResourceCollectionSet;
 
 public class VmwareCimCollectionSet extends MultiResourceCollectionSet<VmwareCimCollectionResource> {
 }

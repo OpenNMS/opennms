@@ -33,10 +33,10 @@ import java.util.Map;
 
 import net.sf.json.JSONObject;
 
-import org.opennms.netmgt.collectd.CollectionAgent;
-import org.opennms.netmgt.collectd.CollectionException;
-import org.opennms.netmgt.collectd.ServiceCollector;
-import org.opennms.netmgt.config.collector.AttributeGroupType;
+import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionException;
+import org.opennms.netmgt.collection.api.ServiceCollector;
 
 import org.opennms.protocols.xml.collector.XmlCollectionResource;
 import org.opennms.protocols.xml.collector.XmlCollectionSet;

@@ -41,7 +41,7 @@ import java.util.regex.Pattern;
 import org.opennms.core.utils.LazySet;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.PropertiesUtils.SymbolTable;
-import org.opennms.netmgt.config.StorageStrategy;
+import org.opennms.netmgt.collection.api.StorageStrategy;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.ExternalValueAttribute;
 import org.opennms.netmgt.model.OnmsAttribute;
@@ -72,7 +72,7 @@ public class GenericIndexResourceType implements OnmsResourceType {
      * @param name a {@link java.lang.String} object.
      * @param label a {@link java.lang.String} object.
      * @param resourceLabelExpression a {@link java.lang.String} object.
-     * @param storageStrategy a {@link org.opennms.netmgt.config.StorageStrategy} object.
+     * @param storageStrategy a {@link org.opennms.netmgt.collection.api.StorageStrategy} object.
      */
     public GenericIndexResourceType(ResourceDao resourceDao, String name, String label, String resourceLabelExpression, StorageStrategy storageStrategy) {
         m_resourceDao = resourceDao;
@@ -105,7 +105,7 @@ public class GenericIndexResourceType implements OnmsResourceType {
     /**
      * <p>getStorageStrategy</p>
      *
-     * @return a {@link org.opennms.netmgt.config.StorageStrategy} object.
+     * @return a {@link org.opennms.netmgt.collection.api.StorageStrategy} object.
      */
     public StorageStrategy getStorageStrategy() {
         return m_storageStrategy;

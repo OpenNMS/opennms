@@ -28,8 +28,8 @@
 
 package org.opennms.netmgt.dao.support;
 
-import org.opennms.netmgt.config.collector.AbstractCollectionSetVisitor;
-import org.opennms.netmgt.config.collector.CollectionAttribute;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.support.AbstractCollectionSetVisitor;
 
 /**
  * StringAttributeVisitor

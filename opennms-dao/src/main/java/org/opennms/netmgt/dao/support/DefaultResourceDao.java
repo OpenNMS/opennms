@@ -50,9 +50,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.collection.api.StorageStrategy;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataCollectionConfigDao;
-import org.opennms.netmgt.config.StorageStrategy;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.NodeDao;

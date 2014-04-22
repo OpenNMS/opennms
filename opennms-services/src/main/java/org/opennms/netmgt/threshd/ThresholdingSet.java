@@ -43,11 +43,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigManager;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
-import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.poller.outages.Outage;
 import org.opennms.netmgt.config.threshd.ResourceFilter;
 import org.opennms.netmgt.model.RrdRepository;

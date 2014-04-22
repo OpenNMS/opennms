@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.dao.support;
 
-import org.opennms.netmgt.config.collector.CollectionResource;
+import org.opennms.netmgt.collection.api.CollectionResource;
 
 /**
  * <p>HostFileSystemStorageStrategy class.</p>

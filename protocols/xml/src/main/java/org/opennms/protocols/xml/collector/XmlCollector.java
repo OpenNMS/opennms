@@ -33,11 +33,11 @@ import java.util.Map;
 
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.netmgt.collectd.CollectionAgent;
-import org.opennms.netmgt.collectd.CollectionException;
-import org.opennms.netmgt.collectd.CollectionInitializationException;
-import org.opennms.netmgt.collectd.ServiceCollector;
-import org.opennms.netmgt.config.collector.CollectionSet;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionException;
+import org.opennms.netmgt.collection.api.CollectionInitializationException;
+import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.protocols.xml.config.XmlDataCollection;

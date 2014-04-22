@@ -30,7 +30,7 @@ package org.opennms.protocols.xml.collector;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.opennms.netmgt.config.collector.AttributeGroupType;
+import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.protocols.xml.config.XmlObject;
 
 /**

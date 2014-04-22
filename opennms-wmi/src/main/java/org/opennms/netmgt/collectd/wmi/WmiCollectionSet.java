@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.collectd.wmi;
 
-import org.opennms.netmgt.config.collector.MultiResourceCollectionSet;
+import org.opennms.netmgt.collection.support.MultiResourceCollectionSet;
 
 /**
  * <p>WmiCollectionSet class.</p>

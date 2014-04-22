@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.collectd.wmi;
 
-import org.opennms.netmgt.collectd.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionAgent;
 
 /**
  * <p>WmiSingleInstanceCollectionResource class.</p>
@@ -41,7 +41,7 @@ public class WmiSingleInstanceCollectionResource extends WmiCollectionResource {
     /**
      * <p>Constructor for WmiSingleInstanceCollectionResource.</p>
      *
-     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @param agent a {@link org.opennms.netmgt.collection.api.CollectionAgent} object.
      */
     public WmiSingleInstanceCollectionResource(final CollectionAgent agent) {
         super(agent);

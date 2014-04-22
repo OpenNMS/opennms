@@ -75,11 +75,11 @@ import org.krupczak.xmp.XmpSession;
 import org.krupczak.xmp.XmpVar;
 import org.opennms.core.utils.ParameterMap;
 
-import org.opennms.netmgt.collectd.CollectionAgent;
-import org.opennms.netmgt.collectd.ServiceCollector;
-import org.opennms.netmgt.config.collector.AttributeGroup;
-import org.opennms.netmgt.config.collector.AttributeGroupType;
-import org.opennms.netmgt.config.collector.CollectionSet;
+import org.opennms.netmgt.collection.api.AttributeGroup;
+import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.config.xmpConfig.XmpConfig;
 import org.opennms.netmgt.config.xmpDataCollection.Group;
 import org.opennms.netmgt.config.xmpDataCollection.MibObj;

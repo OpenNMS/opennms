@@ -29,8 +29,8 @@
 package org.opennms.protocols.xml.collector;
 
 import org.opennms.netmgt.collectd.AbstractCollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionAttributeType;
-import org.opennms.netmgt.config.collector.CollectionResource;
+import org.opennms.netmgt.collection.api.CollectionAttributeType;
+import org.opennms.netmgt.collection.api.CollectionResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

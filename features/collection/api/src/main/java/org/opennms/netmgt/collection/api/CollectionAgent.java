@@ -26,12 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd;
+package org.opennms.netmgt.collection.api;
 
 import java.io.File;
 import java.net.InetAddress;
 
-import org.opennms.netmgt.config.StorageStrategyService;
 import org.opennms.netmgt.poller.NetworkInterface;
 
 /**

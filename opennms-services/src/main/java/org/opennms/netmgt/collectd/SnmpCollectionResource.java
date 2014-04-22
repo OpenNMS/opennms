@@ -35,11 +35,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.core.utils.TimeKeeper;
-import org.opennms.netmgt.config.collector.AttributeGroup;
-import org.opennms.netmgt.config.collector.AttributeGroupType;
-import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.collector.CollectionSetVisitor;
-import org.opennms.netmgt.config.collector.ServiceParameters;
+import org.opennms.netmgt.collection.api.AttributeGroup;
+import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.api.CollectionSetVisitor;
+import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.slf4j.Logger;
@@ -81,7 +82,7 @@ public abstract class SnmpCollectionResource implements CollectionResource {
     /**
      * <p>getCollectionAgent</p>
      *
-     * @return a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @return a {@link org.opennms.netmgt.collection.api.CollectionAgent} object.
      */
     public final CollectionAgent getCollectionAgent() {
         return m_resourceType.getAgent();

@@ -60,10 +60,10 @@ package org.opennms.netmgt.protocols.xmp.collector;
 import org.krupczak.xmp.Xmp;
 import org.krupczak.xmp.XmpVar;
 
-import org.opennms.netmgt.config.collector.AttributeGroupType;
-import org.opennms.netmgt.config.collector.CollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionAttributeType;
-import org.opennms.netmgt.config.collector.Persister;
+import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.api.CollectionAttributeType;
+import org.opennms.netmgt.collection.api.Persister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,7 +92,7 @@ class XmpCollectionAttributeType implements CollectionAttributeType {
     /**
      * <p>Getter for the field <code>groupType</code>.</p>
      *
-     * @return a {@link org.opennms.netmgt.config.collector.AttributeGroupType} object.
+     * @return a {@link org.opennms.netmgt.collection.api.AttributeGroupType} object.
      */
     @Override
     public AttributeGroupType getGroupType() { return groupType; }

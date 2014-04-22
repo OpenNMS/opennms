@@ -36,13 +36,13 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 
-import org.opennms.netmgt.config.collector.AbstractCollectionSetVisitor;
-import org.opennms.netmgt.config.collector.AttributeDefinition;
-import org.opennms.netmgt.config.collector.AttributeGroup;
-import org.opennms.netmgt.config.collector.CollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.collector.Persister;
-import org.opennms.netmgt.config.collector.ServiceParameters;
+import org.opennms.netmgt.collection.api.AttributeDefinition;
+import org.opennms.netmgt.collection.api.AttributeGroup;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.api.Persister;
+import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.collection.support.AbstractCollectionSetVisitor;
 import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.rrd.RrdException;
@@ -68,7 +68,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     /**
      * <p>Constructor for BasePersister.</p>
      *
-     * @param params a {@link org.opennms.netmgt.config.collector.ServiceParameters} object.
+     * @param params a {@link org.opennms.netmgt.collection.api.ServiceParameters} object.
      * @param repository a {@link org.opennms.netmgt.model.RrdRepository} object.
      */
     public BasePersister(ServiceParameters params, RrdRepository repository) {
@@ -120,9 +120,9 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     /**
      * <p>createBuilder</p>
      *
-     * @param resource a {@link org.opennms.netmgt.config.collector.CollectionResource} object.
+     * @param resource a {@link org.opennms.netmgt.collection.api.CollectionResource} object.
      * @param name a {@link java.lang.String} object.
-     * @param attributeType a {@link org.opennms.netmgt.config.collector.AttributeDefinition} object.
+     * @param attributeType a {@link org.opennms.netmgt.collection.api.AttributeDefinition} object.
      */
     protected void createBuilder(CollectionResource resource, String name, AttributeDefinition attributeType) {
         createBuilder(resource, name, Collections.singleton(attributeType));
@@ -131,7 +131,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     /**
      * <p>createBuilder</p>
      *
-     * @param resource a {@link org.opennms.netmgt.config.collector.CollectionResource} object.
+     * @param resource a {@link org.opennms.netmgt.collection.api.CollectionResource} object.
      * @param name a {@link java.lang.String} object.
      * @param attributeTypes a {@link java.util.Set} object.
      */
@@ -217,7 +217,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     /**
      * <p>pushShouldPersist</p>
      *
-     * @param attribute a {@link org.opennms.netmgt.config.collector.CollectionAttribute} object.
+     * @param attribute a {@link org.opennms.netmgt.collection.api.CollectionAttribute} object.
      */
     protected void pushShouldPersist(CollectionAttribute attribute) {
         pushShouldPersist(attribute.shouldPersist(m_params));
@@ -226,7 +226,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     /**
      * <p>pushShouldPersist</p>
      *
-     * @param group a {@link org.opennms.netmgt.config.collector.AttributeGroup} object.
+     * @param group a {@link org.opennms.netmgt.collection.api.AttributeGroup} object.
      */
     protected void pushShouldPersist(AttributeGroup group) {
         pushShouldPersist(group.shouldPersist(m_params));
@@ -240,7 +240,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
      * Push {@link CollectionResource} instances directly onto the stack without checking
      * {@link #top()} since they are the top-level resources.
      *
-     * @param resource a {@link org.opennms.netmgt.config.collector.CollectionResource} object.
+     * @param resource a {@link org.opennms.netmgt.collection.api.CollectionResource} object.
      */
     protected void pushShouldPersist(CollectionResource resource) {
         push(resource.shouldPersist(m_params));
@@ -256,7 +256,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     /**
      * <p>storeAttribute</p>
      *
-     * @param attribute a {@link org.opennms.netmgt.config.collector.CollectionAttribute} object.
+     * @param attribute a {@link org.opennms.netmgt.collection.api.CollectionAttribute} object.
      */
     protected void storeAttribute(CollectionAttribute attribute) {
         if (shouldPersist()) {

@@ -34,7 +34,7 @@ import java.io.File;
 
 import junit.framework.TestCase;
 
-import org.opennms.netmgt.config.StorageStrategy;
+import org.opennms.netmgt.collection.api.StorageStrategy;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.rrd.RrdUtils;

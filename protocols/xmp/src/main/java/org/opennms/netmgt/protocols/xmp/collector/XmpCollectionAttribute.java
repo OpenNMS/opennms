@@ -62,8 +62,8 @@ package org.opennms.netmgt.protocols.xmp.collector;
 import org.krupczak.xmp.Xmp;
 import org.krupczak.xmp.XmpVar;
 import org.opennms.netmgt.collectd.AbstractCollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionAttributeType;
-import org.opennms.netmgt.config.collector.CollectionResource;
+import org.opennms.netmgt.collection.api.CollectionAttributeType;
+import org.opennms.netmgt.collection.api.CollectionResource;
 public class XmpCollectionAttribute extends AbstractCollectionAttribute {
     /* class variables and methods *********************** */
 
@@ -98,7 +98,7 @@ public class XmpCollectionAttribute extends AbstractCollectionAttribute {
     /**
      * <p>getAttributeType</p>
      *
-     * @return a {@link org.opennms.netmgt.config.collector.CollectionAttributeType} object.
+     * @return a {@link org.opennms.netmgt.collection.api.CollectionAttributeType} object.
      */
     @Override
     public CollectionAttributeType getAttributeType() { return attribType; }
@@ -106,7 +106,7 @@ public class XmpCollectionAttribute extends AbstractCollectionAttribute {
     /**
      * <p>setAttributeType</p>
      *
-     * @param attribType a {@link org.opennms.netmgt.config.collector.CollectionAttributeType} object.
+     * @param attribType a {@link org.opennms.netmgt.collection.api.CollectionAttributeType} object.
      */
     public void setAttributeType(CollectionAttributeType attribType)
     {
@@ -127,7 +127,7 @@ public class XmpCollectionAttribute extends AbstractCollectionAttribute {
     /**
      * <p>Getter for the field <code>resource</code>.</p>
      *
-     * @return a {@link org.opennms.netmgt.config.collector.CollectionResource} object.
+     * @return a {@link org.opennms.netmgt.collection.api.CollectionResource} object.
      */
     @Override
     public CollectionResource getResource() { return resource; }
