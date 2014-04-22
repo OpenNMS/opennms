@@ -969,7 +969,7 @@
     <camelVersion>2.12.3</camelVersion>
     <cloverVersion>3.2.0</cloverVersion>
     <commonsBeanutilsVersion>1.8.3</commonsBeanutilsVersion>
-    <commonsCodecVersion>1.7</commonsCodecVersion>
+    <commonsCodecVersion>1.9</commonsCodecVersion>
     <commonsCollectionsVersion>3.2.1</commonsCollectionsVersion>
     <commonsIoVersion>2.4</commonsIoVersion>
     <commonsLangVersion>2.6</commonsLangVersion>
