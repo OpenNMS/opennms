@@ -24,7 +24,7 @@ import org.hibernate.annotations.Type;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 @Entity
-@Table(name="lldpElement")
+@Table(name="ospfElement")
 public final class OspfElement implements Serializable {
 
 	public enum TruthValue {
@@ -174,6 +174,7 @@ public final class OspfElement implements Serializable {
 		return m_ospfAdminStat;
 	}
 
+    @Column(name="ospfVersionNumber", nullable = false)
 	public Integer getOspfVersionNumber() {
 		return m_ospfVersionNumber;
 	}
@@ -213,25 +214,21 @@ public final class OspfElement implements Serializable {
 		return m_ospfNodeLastPollTime;
 	}
 
+	public void setOspfRouterId(InetAddress ospfRouterId) {
+		m_ospfRouterId = ospfRouterId;
+	}
+	
 	public void setOspfAdminStat(Status ospfAdminStat) {
 		m_ospfAdminStat = ospfAdminStat;
 	}
-
-
-
 
 	public void setOspfVersionNumber(Integer ospfVersionNumber) {
 		m_ospfVersionNumber = ospfVersionNumber;
 	}
 
-
-
-
 	public void setOspfBdrRtrStatus(TruthValue ospfBdrRtrStatus) {
 		m_ospfBdrRtrStatus = ospfBdrRtrStatus;
 	}
-
-
 
 	public void setOspfASBdrRtrStatus(TruthValue ospfASBdrRtrStatus) {
 		m_ospfASBdrRtrStatus = ospfASBdrRtrStatus;
@@ -245,10 +242,6 @@ public final class OspfElement implements Serializable {
 		m_node = node;
 	}
 
-	public void setOspfRouterId(InetAddress ospfRouterId) {
-		m_ospfRouterId = ospfRouterId;
-	}
-	
 	public void setOspfRouterIdNetmask(InetAddress ospfRouterIdNetmask) {
 		m_ospfRouterIdNetmask = ospfRouterIdNetmask;
 	}
@@ -276,6 +269,10 @@ public final class OspfElement implements Serializable {
 			.append("ospfRouterId", str(m_ospfRouterId))
 			.append("ospfRouterIdNetmask", str(m_ospfRouterIdNetmask))
 			.append("ospfRouterIdIfindex", m_ospfRouterIdIfindex)
+			.append("ospfAdminStat", Status.getTypeString(m_ospfAdminStat.getValue()))
+			.append("ospfVersionNumber", m_ospfVersionNumber)
+			.append("ospfBdrRtrStatus", TruthValue.getTypeString(m_ospfBdrRtrStatus.getValue()))
+			.append("ospfASBdrRtrStatus", TruthValue.getTypeString(m_ospfASBdrRtrStatus.getValue()))
 			.append("createTime", m_ospfNodeCreateTime)
 			.append("lastPollTime", m_ospfNodeLastPollTime)
 			.toString();
