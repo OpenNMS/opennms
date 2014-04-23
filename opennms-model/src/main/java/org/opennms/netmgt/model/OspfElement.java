@@ -20,7 +20,6 @@ import javax.persistence.TemporalType;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Type;
-import org.opennms.netmgt.model.LldpElement.LldpChassisIdSubType;
 
 import static org.opennms.core.utils.InetAddressUtils.str;
 
