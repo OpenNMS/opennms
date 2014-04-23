@@ -87,7 +87,6 @@ import org.opennms.core.utils.EmptyKeyRelaxedTrustSSLContext;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeKeeper;
-import org.opennms.netmgt.collection.api.AttributeDefinition;
 import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
@@ -320,7 +319,7 @@ public class HttpCollector implements ServiceCollector {
         }
     }
 
-    private static class HttpCollectionAttribute extends AbstractCollectionAttribute implements AttributeDefinition {
+    private static class HttpCollectionAttribute extends AbstractCollectionAttribute {
         private final String m_alias;
         private final String m_type;
         private final Object m_value;

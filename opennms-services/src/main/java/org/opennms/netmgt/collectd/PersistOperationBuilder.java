@@ -41,8 +41,8 @@ import java.util.TreeMap;
 import org.opennms.core.utils.DefaultTimeKeeper;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.core.utils.TimeKeeper;
-import org.opennms.netmgt.collection.api.AttributeDefinition;
 import org.opennms.netmgt.collection.api.ByNameComparator;
+import org.opennms.netmgt.collection.api.CollectionAttributeType;
 import org.opennms.netmgt.collection.api.ResourceIdentifier;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
@@ -61,7 +61,7 @@ public class PersistOperationBuilder {
     private final RrdRepository m_repository;
     private final String m_rrdName;
     private final ResourceIdentifier m_resource;
-    private final Map<AttributeDefinition, String> m_declarations = new TreeMap<AttributeDefinition, String>(new ByNameComparator());
+    private final Map<CollectionAttributeType, String> m_declarations = new TreeMap<CollectionAttributeType, String>(new ByNameComparator());
     private final Map<String, String> m_metaData = new LinkedHashMap<String, String>();
     private TimeKeeper m_timeKeeper = new DefaultTimeKeeper();
     
@@ -103,19 +103,19 @@ public class PersistOperationBuilder {
     /**
      * <p>declareAttribute</p>
      *
-     * @param attrType a {@link org.opennms.netmgt.collection.api.AttributeDefinition} object.
+     * @param attrType a {@link org.opennms.netmgt.collection.api.CollectionAttributeType} object.
      */
-    public void declareAttribute(AttributeDefinition attrType) {
+    public void declareAttribute(CollectionAttributeType attrType) {
         m_declarations.put(attrType, "U");
     }
 
     /**
      * <p>setAttributeValue</p>
      *
-     * @param attrType a {@link org.opennms.netmgt.collection.api.AttributeDefinition} object.
+     * @param attrType a {@link org.opennms.netmgt.collection.api.CollectionAttributeType} object.
      * @param value a {@link java.lang.String} object.
      */
-    public void setAttributeValue(AttributeDefinition attrType, String value) {
+    public void setAttributeValue(CollectionAttributeType attrType, String value) {
         m_declarations.put(attrType, value);
     }
     
@@ -168,8 +168,8 @@ public class PersistOperationBuilder {
     private String getValues() {
         boolean first = true;
         StringBuffer values = new StringBuffer();
-        for (Iterator<AttributeDefinition> iter = m_declarations.keySet().iterator(); iter.hasNext();) {
-            AttributeDefinition attrDef = iter.next();
+        for (Iterator<CollectionAttributeType> iter = m_declarations.keySet().iterator(); iter.hasNext();) {
+        	CollectionAttributeType attrDef = iter.next();
             String value = m_declarations.get(attrDef);
             if (!first) {
                 values.append(':');
@@ -187,7 +187,7 @@ public class PersistOperationBuilder {
     
     private List<RrdDataSource> getDataSources() {
         List<RrdDataSource> dataSources = new ArrayList<RrdDataSource>(m_declarations.size());
-        for (AttributeDefinition attrDef : m_declarations.keySet()) {
+        for (CollectionAttributeType attrDef : m_declarations.keySet()) {
 
             String minval = "U";
             String maxval = "U";

@@ -88,7 +88,7 @@ public interface CollectionAttribute extends CollectionVisitable, Persistable {
     CollectionAttributeType getAttributeType();
     
     /**
-     * Returns type of value (typically one of "counter", "gauge", "timeticks", "integer", "octetstring" - see NumericAttributeType)
+     * Returns type of value (typically one of "counter", "gauge", "timeticks", "integer", "octetstring" - see {@link NumericAttributeType})
      *
      * @return type of value stored in this attribute (SNMP semantics)
      */

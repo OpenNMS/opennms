@@ -36,8 +36,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.netmgt.collection.api.AttributeDefinition;
 import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionAttributeType;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
@@ -522,10 +522,10 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
     /**
      * <p>notifyIfNotFound</p>
      *
-     * @param attrType a {@link org.opennms.netmgt.collection.api.AttributeDefinition} object.
+     * @param attrType a {@link org.opennms.netmgt.collection.api.CollectionAttributeType} object.
      * @param res a {@link org.opennms.netmgt.snmp.SnmpResult} object.
      */
-    public void notifyIfNotFound(AttributeDefinition attrType, SnmpResult res) {
+    public void notifyIfNotFound(CollectionAttributeType attrType, SnmpResult res) {
         // Don't bother sending a rescan event in this case since localhost is not going to be there anyway
         //triggerRescan();
         LOG.info("Unable to locate resource for agent {} with instance id {} while collecting attribute {}", getCollectionAgent(), res.getInstance(), attrType);

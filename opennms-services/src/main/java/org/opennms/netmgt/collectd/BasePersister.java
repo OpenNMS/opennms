@@ -36,9 +36,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 
-import org.opennms.netmgt.collection.api.AttributeDefinition;
 import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.api.CollectionAttributeType;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.ServiceParameters;
@@ -122,9 +122,9 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
      *
      * @param resource a {@link org.opennms.netmgt.collection.api.CollectionResource} object.
      * @param name a {@link java.lang.String} object.
-     * @param attributeType a {@link org.opennms.netmgt.collection.api.AttributeDefinition} object.
+     * @param attributeType a {@link org.opennms.netmgt.collection.api.CollectionAttributeType} object.
      */
-    protected void createBuilder(CollectionResource resource, String name, AttributeDefinition attributeType) {
+    protected void createBuilder(CollectionResource resource, String name, CollectionAttributeType attributeType) {
         createBuilder(resource, name, Collections.singleton(attributeType));
     }
 
@@ -135,13 +135,13 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
      * @param name a {@link java.lang.String} object.
      * @param attributeTypes a {@link java.util.Set} object.
      */
-    protected void createBuilder(CollectionResource resource, String name, Set<AttributeDefinition> attributeTypes) {
+    protected void createBuilder(CollectionResource resource, String name, Set<CollectionAttributeType> attributeTypes) {
         m_builder = new PersistOperationBuilder(getRepository(), resource, name);
         if (resource.getTimeKeeper() != null) {
             m_builder.setTimeKeeper(resource.getTimeKeeper());
         }
-        for (Iterator<AttributeDefinition> iter = attributeTypes.iterator(); iter.hasNext();) {
-            AttributeDefinition attrType = iter.next();
+        for (Iterator<CollectionAttributeType> iter = attributeTypes.iterator(); iter.hasNext();) {
+            CollectionAttributeType attrType = iter.next();
             if (attrType instanceof NumericAttributeType) {
                 m_builder.declareAttribute(attrType);
             }

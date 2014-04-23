@@ -35,18 +35,51 @@ package org.opennms.netmgt.collection.api;
  * @author ranger
  * @version $Id: $
  */
-public interface CollectionAttributeType extends AttributeDefinition {
+public interface CollectionAttributeType {
+    /**
+     * <p>getType</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    String getType();
+
+    /**
+     * <p>getName</p>
+     * 
+     * Human readable name for the attribute.
+     * @return a {@link java.lang.String} object.
+     */
+    String getName();
+    
+    /**
+     * <p>equals</p>
+     *
+     * @param o a {@link java.lang.Object} object.
+     * @return a boolean.
+     */
+    @Override
+    boolean equals(Object o);
+    
+    /**
+     * <p>hashCode</p>
+     *
+     * @return a int.
+     */
+    @Override
+    int hashCode();
+    
     /**
      * <p>getGroupType</p>
      *
      * @return a {@link org.opennms.netmgt.config.collector.AttributeGroupType} object.
      */
-    public AttributeGroupType getGroupType();
+    AttributeGroupType getGroupType();
+    
     /**
      * <p>storeAttribute</p>
      *
      * @param attribute a {@link org.opennms.netmgt.collection.api.CollectionAttribute} object.
      * @param persister a {@link org.opennms.netmgt.config.collector.Persister} object.
      */
-    public void storeAttribute(CollectionAttribute attribute, Persister persister);
+    void storeAttribute(CollectionAttribute attribute, Persister persister);
 }

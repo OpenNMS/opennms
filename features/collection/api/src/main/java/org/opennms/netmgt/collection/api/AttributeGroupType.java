@@ -53,7 +53,7 @@ public class AttributeGroupType {
      */
     public static final String IF_TYPE_IGNORE = "ignore";
     
-    private SortedSet<AttributeDefinition> m_attributeTypes = new TreeSet<AttributeDefinition>(new ByNameComparator());
+    private SortedSet<CollectionAttributeType> m_attributeTypes = new TreeSet<CollectionAttributeType>(new ByNameComparator());
 
     /**
      * <p>Constructor for AttributeGroupType.</p>
@@ -114,9 +114,9 @@ public class AttributeGroupType {
     /**
      * <p>addAttributeType</p>
      *
-     * @param attrType a {@link org.opennms.netmgt.collectd.AttributeDefinition} object.
+     * @param attrType a {@link org.opennms.netmgt.collectd.CollectionAttributeType} object.
      */
-    public void addAttributeType(AttributeDefinition attrType) {
+    public void addAttributeType(CollectionAttributeType attrType) {
         m_attributeTypes.add(attrType);
     }
     
@@ -125,7 +125,7 @@ public class AttributeGroupType {
      *
      * @return a {@link java.util.SortedSet} object.
      */
-    public SortedSet<AttributeDefinition> getAttributeTypes() {
+    public SortedSet<CollectionAttributeType> getAttributeTypes() {
         return Collections.unmodifiableSortedSet(m_attributeTypes);
     }
 

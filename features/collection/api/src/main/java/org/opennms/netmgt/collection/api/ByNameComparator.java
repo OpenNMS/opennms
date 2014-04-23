@@ -38,19 +38,19 @@ import java.util.Comparator;
  * @author ranger
  * @version $Id: $
  */
-public final class ByNameComparator implements Comparator<AttributeDefinition>, Serializable {
+public final class ByNameComparator implements Comparator<CollectionAttributeType>, Serializable {
 
     private static final long serialVersionUID = -2596801053643459622L;
 
     /**
      * <p>compare</p>
      *
-     * @param type0 a {@link org.opennms.netmgt.collection.api.AttributeDefinition} object.
-     * @param type1 a {@link org.opennms.netmgt.collection.api.AttributeDefinition} object.
+     * @param type0 a {@link org.opennms.netmgt.collection.api.CollectionAttributeType} object.
+     * @param type1 a {@link org.opennms.netmgt.collection.api.CollectionAttributeType} object.
      * @return a int.
      */
     @Override
-    public int compare(final AttributeDefinition type0, final AttributeDefinition type1) {
+    public int compare(final CollectionAttributeType type0, final CollectionAttributeType type1) {
         return type0.getName().compareTo(type1.getName());
     }
     

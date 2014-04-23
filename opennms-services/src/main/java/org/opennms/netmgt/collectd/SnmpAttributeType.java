@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.opennms.netmgt.collection.api.AttributeDefinition;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionAttributeType;
@@ -57,7 +56,7 @@ import org.slf4j.LoggerFactory;
  * @author ranger
  * @version $Id: $
  */
-public abstract class SnmpAttributeType implements AttributeDefinition, CollectionAttributeType {
+public abstract class SnmpAttributeType implements CollectionAttributeType {
     
     private static final Logger LOG = LoggerFactory.getLogger(SnmpAttributeType.class);
     
