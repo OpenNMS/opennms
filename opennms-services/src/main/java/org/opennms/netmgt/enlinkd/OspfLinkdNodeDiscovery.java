@@ -143,14 +143,12 @@ public final class OspfLinkdNodeDiscovery extends AbstractLinkdNodeDiscovery {
 
         	public void processOspfIfRow(final OspfIfRow row) {
         		OspfLink link = row.getLink(ipAddrTableGetter);
-        		
     			for (OspfLink nbrlink : links) {
     				if (InetAddressUtils.inSameNetwork(link.getOspfIpAddr(),nbrlink.getOspfRemIpAddr(),link.getOspfIpMask())) {
     					nbrlink.setOspfIpAddr(link.getOspfIpAddr());
     					nbrlink.setOspfAddressLessIndex(link.getOspfAddressLessIndex());
     					nbrlink.setOspfIpMask(link.getOspfIpMask());
     					nbrlink.setOspfIfIndex(link.getOspfIfIndex());
-    		    		m_linkd.getQueryManager().store(getNodeId(),link);
     				}
     			}
         	}
@@ -175,6 +173,9 @@ public final class OspfLinkdNodeDiscovery extends AbstractLinkdNodeDiscovery {
             LOG.error("run: collection interrupted, exiting",e);
             return;
         }
+
+        for (OspfLink link: links)
+    		m_linkd.getQueryManager().store(getNodeId(),link);
 
         m_linkd.getQueryManager().reconcileOspf(getNodeId(),now);
     }
