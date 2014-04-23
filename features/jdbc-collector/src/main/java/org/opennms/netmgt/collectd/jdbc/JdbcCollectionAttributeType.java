@@ -50,7 +50,7 @@ public class JdbcCollectionAttributeType implements CollectionAttributeType {
     
     @Override
     public void storeAttribute(CollectionAttribute attribute, Persister persister) {
-        if (m_column.getDataType().equalsIgnoreCase("string")) {
+        if ("string".equalsIgnoreCase(m_column.getDataType())) {
             persister.persistStringAttribute(attribute);
         } else {
             persister.persistNumericAttribute(attribute);

@@ -71,7 +71,7 @@ public class XmlCollectionAttributeType implements CollectionAttributeType {
      */
     @Override
     public void storeAttribute(CollectionAttribute attribute, Persister persister) {
-        if (m_object.getDataType().equalsIgnoreCase("string")) {
+        if ("string".equalsIgnoreCase(m_object.getDataType())) {
             persister.persistStringAttribute(attribute);
         } else {
             persister.persistNumericAttribute(attribute);

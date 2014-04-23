@@ -101,6 +101,7 @@ public class TcaCollectionAttributeType implements CollectionAttributeType {
 	 */
 	@Override
 	public void storeAttribute(CollectionAttribute attribute, Persister persister) {
+		// Only numeric data comes back from this collector
 		persister.persistNumericAttribute(attribute);
 	}
 

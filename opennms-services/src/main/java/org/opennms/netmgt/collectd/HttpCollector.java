@@ -894,7 +894,7 @@ public class HttpCollector implements ServiceCollector {
 
         @Override
         public void storeAttribute(CollectionAttribute attribute, Persister persister) {
-            if(m_attribute.getType().equals("string")) {
+            if("string".equalsIgnoreCase(m_attribute.getType())) {
                 persister.persistStringAttribute(attribute);
             } else {
                 persister.persistNumericAttribute(attribute);

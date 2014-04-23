@@ -36,17 +36,23 @@ package org.opennms.netmgt.collection.api;
  * @version $Id: $
  */
 public interface CollectionAttributeType {
+
     /**
-     * <p>getType</p>
+     * <p>The type of metric that the attribute represents. Valid case-insensitive values are:</p>
+     * <ul>
+     * <li>counter</li>
+     * <li>gauge</li>
+     * <li>string</li>
+     * </ul>
      *
      * @return a {@link java.lang.String} object.
      */
     String getType();
 
     /**
-     * <p>getName</p>
+     * Human readable name for the attribute. Normally these are specified by an "alias" field
+     * in the data collection configuration.
      * 
-     * Human readable name for the attribute.
      * @return a {@link java.lang.String} object.
      */
     String getName();
@@ -71,7 +77,7 @@ public interface CollectionAttributeType {
     /**
      * <p>getGroupType</p>
      *
-     * @return a {@link org.opennms.netmgt.config.collector.AttributeGroupType} object.
+     * @return a {@link org.opennms.netmgt.collection.api.AttributeGroupType} object.
      */
     AttributeGroupType getGroupType();
     
@@ -79,7 +85,7 @@ public interface CollectionAttributeType {
      * <p>storeAttribute</p>
      *
      * @param attribute a {@link org.opennms.netmgt.collection.api.CollectionAttribute} object.
-     * @param persister a {@link org.opennms.netmgt.config.collector.Persister} object.
+     * @param persister a {@link org.opennms.netmgt.collection.api.Persister} object.
      */
     void storeAttribute(CollectionAttribute attribute, Persister persister);
 }
