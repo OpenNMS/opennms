@@ -315,7 +315,7 @@ public abstract class EventPanel extends Panel {
             // Save the XML of the new events
             saveEvents(events, file, logger);
             // Add a reference to the new file into eventconf.xml if there are events
-            String fileName = file.getAbsolutePath().replaceFirst(".*\\/events\\/(.*)", "events/$1");
+            String fileName = file.getAbsolutePath().replaceFirst(".*\\" + File.separatorChar + "events\\" + File.separatorChar + "(.*)", "events" + File.separatorChar + "$1");
             final Events rootEvents = eventConfDao.getRootEvents();
             final File rootFile = ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME);
             if (events.getEventCount() > 0) {

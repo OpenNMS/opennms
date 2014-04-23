@@ -75,7 +75,8 @@ public class MibCompilerPanel extends Panel {
     private static final String MIB_FILE_EXTENTION = ".mib";
 
     /** The Constant MIBS_ROOT_DIR. */
-    private static final File MIBS_ROOT_DIR = new File(ConfigFileConstants.getHome(),  "/share/mibs"); // TODO Must be configurable
+    // TODO Make the MIBs directory configurable
+    private static final File MIBS_ROOT_DIR = new File(ConfigFileConstants.getHome(),  "share" + File.separatorChar + "mibs");
 
     /** The Constant MIBS_COMPILED_DIR. */
     private static final File MIBS_COMPILED_DIR = new File(MIBS_ROOT_DIR, COMPILED);
@@ -387,7 +388,7 @@ public class MibCompilerPanel extends Panel {
                 try {
                     logger.info("Found " + events.getEventCount() + " events.");
                     final String eventsFileName = fileName.replaceFirst("\\..*$", ".events.xml");
-                    final File configDir = new File(ConfigFileConstants.getHome(), "etc/events/");
+                    final File configDir = new File(ConfigFileConstants.getHome(), "etc" + File.separatorChar + "events");
                     final File eventFile = new File(configDir, eventsFileName);
                     final EventWindow w = new EventWindow(eventsDao, eventsProxy, eventFile, events, logger);
                     getUI().addWindow(w);
