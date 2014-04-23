@@ -72,7 +72,7 @@ public class OspfIfTableTracker extends TableTracker {
 
     	public OspfIfRow(int columnCount, SnmpInstId instance) {
 			super(columnCount, instance);
-            LOG.debug( "column count = %d, instance = %s", columnCount, instance);
+            LOG.debug( "column count = {}, instance = {}", columnCount, instance);
 		}
     	
     	public InetAddress getOspfIpAddress() {
@@ -86,8 +86,8 @@ public class OspfIfTableTracker extends TableTracker {
 		public OspfLink getLink(
 				OspfIpAddrTableGetter ipAddrTableGetter) {
 		
-            LOG.info( "processOspfIfRow: row ospf ip address: %s", str(getOspfIpAddress()));
-            LOG.info( "processOspfIfRow: row ospf address less ifindex: %s", getOspfAddressLessIf());
+            LOG.info( "processOspfIfRow: row ospf ip address: {}", str(getOspfIpAddress()));
+            LOG.info( "processOspfIfRow: row ospf address less ifindex: {}", getOspfAddressLessIf());
 
             OspfLink link = new OspfLink();
             link.setOspfIpAddr(getOspfIpAddress());
@@ -98,8 +98,8 @@ public class OspfIfTableTracker extends TableTracker {
 
 		public OspfLink getLink() {
 		
-            LOG.info( "processOspfIfRow: row ospf ip address: %s", str(getOspfIpAddress()));
-            LOG.info( "processOspfIfRow: row ospf address less ifindex: %s", getOspfAddressLessIf());
+            LOG.info( "processOspfIfRow: row ospf ip address: {}", str(getOspfIpAddress()));
+            LOG.info( "processOspfIfRow: row ospf address less ifindex: {}", getOspfAddressLessIf());
 
             OspfLink link = new OspfLink();
             link.setOspfIpAddr(getOspfIpAddress());
