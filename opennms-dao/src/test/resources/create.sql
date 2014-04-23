@@ -2248,6 +2248,8 @@ CREATE UNIQUE INDEX catgroup_unique_idx on category_group(categoryId, groupId);
 --# Begin enlinkd table
 drop table lldpElement cascade;
 drop table lldpLink cascade;
+drop table ospfElement cascade;
+drop table ospfLink cascade;
 
 create table lldpElement (
       id integer default nextval('opennmsnxtid') not null,
@@ -2281,6 +2283,37 @@ create table lldpLink (
       constraint fk_nodeIDlldplink foreign key (nodeid) references node ON DELETE CASCADE
 );
 
+create table ospfElement (
+      id integer default nextval('opennmsnxtid') not null,
+      nodeid          integer not null,
+      ospfRouterId varchar(16) not null,
+      ospfAdminStat      integer not null,
+      ospfVersionNumber  integer not null,
+      ospfBdrRtrStatus   integer not null,
+      ospfASBdrRtrStatus integer not null,
+      ospfRouterIdNetmask varchar(16) not null,
+      ospfRouterIdIfindex      integer not null,
+	  ospfNodeCreateTime	timestamp not null,
+      ospfNodeLastPollTime	timestamp not null,
+      constraint pk_ospfelement_id primary key (id),
+      constraint fk_nodeIDospfelem foreign key (nodeid) references node ON DELETE CASCADE
+);
+
+create table ospfLink (
+      id integer default nextval('opennmsnxtid') not null,
+      nodeid          integer not null,
+      ospfIpAddr varchar(16),
+      ospfIpMask varchar(16),
+      ospfAddressLessIndex integer,
+      ospfIfIndex integer,
+      ospfRemRouterId varchar(16) not null,
+      ospfRemIpAddr varchar(16) not null,
+      ospfRemAddressLessIndex integer not null,
+	  ospfLinkCreateTime	timestamp not null,
+      ospfLinkLastPollTime	timestamp not null,
+      constraint pk_ospflink_id primary key (id),
+      constraint fk_nodeIDospflink foreign key (nodeid) references node ON DELETE CASCADE
+);
 --# End enlinkd table
 
 --# Begin Quartz persistence tables
