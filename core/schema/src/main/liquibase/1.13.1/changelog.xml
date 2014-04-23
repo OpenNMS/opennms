@@ -43,7 +43,7 @@
 			<column name="lldpsysname" type="varchar(255)">
 				<constraints nullable="false" />
 			</column>
-			<column name="lldpnodecreateTime" type="DATETIME">
+			<column name="lldpnodecreatetime" type="DATETIME">
 				<constraints nullable="false" />
 			</column>
 			<column name="lldpnodelastpolltime" type="DATETIME">
@@ -116,7 +116,7 @@
 			<column name="lldpremportdescr" type="varchar(255)">
 				<constraints nullable="false" />
 			</column>
-			<column name="lldplinkcreateTime" type="DATETIME">
+			<column name="lldplinkcreatetime" type="DATETIME">
 				<constraints nullable="false" />
 			</column>
 			<column name="lldplinklastpolltime" type="DATETIME">
@@ -139,6 +139,126 @@
 
 		<rollback>
 			<dropTable tableName="lldplink" />
+		</rollback>
+
+	</changeSet>
+
+	<changeSet author="rssntn67" id="1.13.1-ospfelement">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="ospfelement" /></not>
+		</preConditions>
+
+		<createTable tableName="ospfelement">
+			<column name="id" type="integer">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="nodeid" type="integer" >
+							<constraints nullable="false" />
+			</column>
+			<column name="ospfrouterid" type="varchar(16)">
+				<constraints nullable="false" />
+			</column>
+			<column name="ospfadminstat" type="integer" >
+							<constraints nullable="false" />
+			</column>
+			<column name="ospfversionnumber" type="integer" >
+							<constraints nullable="false" />
+			</column>
+			<column name="ospfbdrrtrstatus" type="integer" >
+							<constraints nullable="false" />
+			</column>
+			<column name="ospfasbdrrtrstatus" type="integer" >
+							<constraints nullable="false" />
+			</column>
+			<column name="ospfrouteridnetmask" type="varchar(16)">
+				<constraints nullable="false" />
+			</column>
+			<column name="ospfrouteridifindex" type="integer">
+				<constraints nullable="false" />
+			</column>
+			<column name="ospfnodecreatetime" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+			<column name="ospfnodelastpolltime" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<ext:addAutoIncrement tableName="ospfelement" columnName="id" sequenceName="opennmsNxtId" />
+
+		<addForeignKeyConstraint constraintName="fk_nodeid61" onDelete="CASCADE"
+			baseTableName="ospfelement" baseColumnNames="nodeid"
+			referencedTableName="node" referencedColumnNames="nodeid" />
+
+		<createIndex tableName="ospfelement" indexName="ospfelement_nodeid_idx">
+			<column name="nodeid" />
+		</createIndex>
+		<createIndex tableName="ospfrouterid" indexName="ospf_routerid_idx">
+			<column name="lldpchassisid" />
+		</createIndex>
+
+		<rollback>
+			<dropTable tableName="ospfelement" />
+		</rollback>
+
+	</changeSet>
+
+	<changeSet author="rssntn67" id="1.13.1-ospflink">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="ospflink" /></not>
+		</preConditions>
+
+		<createTable tableName="ospflink">
+			<column name="id" type="integer">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="nodeid" type="integer" >
+							<constraints nullable="false" />
+			</column>
+			<column name="ospfipaddr" type="varchar(16)">
+				<constraints nullable="true" />
+			</column>
+			<column name="ospfipmask" type="varchar(16)">
+				<constraints nullable="true" />
+			</column>
+			<column name="ospfaddresslessindex" type="integer" >
+							<constraints nullable="true" />
+			</column>
+			<column name="ospfifindex" type="integer" >
+							<constraints nullable="true" />
+			</column>
+			<column name="ospfremrouterid" type="varchar(16)">
+				<constraints nullable="false" />
+			</column>
+			<column name="ospfremipaddr" type="varchar(16)">
+				<constraints nullable="false" />
+			</column>
+			<column name="ospfremaddresslessindex" type="integer">
+				<constraints nullable="false" />
+			</column>
+			<column name="ospflinkcreatetime" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+			<column name="ospflinklastpolltime" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<ext:addAutoIncrement tableName="ospflink" columnName="id" sequenceName="opennmsNxtId" />
+
+		<addForeignKeyConstraint constraintName="fk_nodeid62" onDelete="CASCADE"
+			baseTableName="ospflink" baseColumnNames="nodeid"
+			referencedTableName="node" referencedColumnNames="nodeid" />
+
+		<createIndex tableName="ospflink" indexName="ospflink_nodeid_idx">
+			<column name="nodeid" />
+		</createIndex>
+		<createIndex tableName="ospflink" indexName="ospf_lastpoll_idx">
+			<column name="ospflinklastpolltime" />
+		</createIndex>
+
+		<rollback>
+			<dropTable tableName="ospflink" />
 		</rollback>
 
 	</changeSet>
