@@ -44,7 +44,7 @@ public abstract class VmwareCollectionResource extends AbstractCollectionResourc
     }
 
     public void setAttributeValue(final CollectionAttributeType type, final String value) {
-        final VmwareCollectionAttribute attr = new VmwareCollectionAttribute(this, type, type.getName(), value);
+        final VmwareCollectionAttribute attr = new VmwareCollectionAttribute(this, type, value);
         addAttribute(attr);
     }
 

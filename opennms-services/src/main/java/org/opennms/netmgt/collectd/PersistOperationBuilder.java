@@ -137,9 +137,13 @@ public class PersistOperationBuilder {
     public static String mapType(String objectType) {
         if (objectType.toLowerCase().startsWith("counter")) {
             return PersistOperationBuilder.DST_COUNTER;
+        } else if ("string".equalsIgnoreCase(objectType)) {
+            return null;
+        } else if ("octetstring".equalsIgnoreCase(objectType)) {
+            return null;
+        } else {
+            return PersistOperationBuilder.DST_GAUGE;
         }
-        
-        return PersistOperationBuilder.DST_GAUGE;
     }
 
     /**
@@ -195,9 +199,12 @@ public class PersistOperationBuilder {
                 minval = ((NumericAttributeType) attrDef).getMinval() != null ? ((NumericAttributeType) attrDef).getMinval() : "U";
                 maxval = ((NumericAttributeType) attrDef).getMaxval() != null ? ((NumericAttributeType) attrDef).getMaxval() : "U";
             }
-            RrdDataSource rrdDataSource = new RrdDataSource(StringUtils.truncate(attrDef.getName(), PersistOperationBuilder.MAX_DS_NAME_LENGTH), PersistOperationBuilder.mapType(attrDef.getType()), getRepository().getHeartBeat(), minval, maxval);
-
-            dataSources.add(rrdDataSource);
+            String type = PersistOperationBuilder.mapType(attrDef.getType());
+            // If the type is supported by RRD...
+            if (type != null) {
+                RrdDataSource rrdDataSource = new RrdDataSource(StringUtils.truncate(attrDef.getName(), PersistOperationBuilder.MAX_DS_NAME_LENGTH), type, getRepository().getHeartBeat(), minval, maxval);
+                dataSources.add(rrdDataSource);
+            }
         }
         return dataSources;
     }

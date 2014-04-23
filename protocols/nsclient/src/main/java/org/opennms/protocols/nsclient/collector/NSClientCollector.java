@@ -50,6 +50,7 @@ import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.support.AbstractCollectionAttribute;
+import org.opennms.netmgt.collection.support.AbstractCollectionAttributeType;
 import org.opennms.netmgt.collection.support.AbstractCollectionResource;
 import org.opennms.netmgt.collection.support.SingleResourceCollectionSet;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
@@ -84,18 +85,12 @@ public class NSClientCollector implements ServiceCollector {
     private final HashMap<Integer, NSClientAgentState> m_scheduledNodes = new HashMap<Integer, NSClientAgentState>();
 
 
-    private static class NSClientCollectionAttributeType implements CollectionAttributeType {
-    	private final Attrib m_attribute;
-    	private final AttributeGroupType m_groupType;
+    private static class NSClientCollectionAttributeType extends AbstractCollectionAttributeType {
+        private final Attrib m_attribute;
 
         public NSClientCollectionAttributeType(Attrib attribute, AttributeGroupType groupType) {
-            m_groupType=groupType;
+            super(groupType);
             m_attribute=attribute;
-        }
-
-        @Override
-        public AttributeGroupType getGroupType() {
-            return m_groupType;
         }
 
         @Override
@@ -118,27 +113,13 @@ public class NSClientCollector implements ServiceCollector {
     
     private static class NSClientCollectionAttribute extends AbstractCollectionAttribute {
 
-        private final String m_alias;
         private final String m_value;
         private final NSClientCollectionResource m_resource;
-        private final CollectionAttributeType m_attribType;
         
-        public NSClientCollectionAttribute(NSClientCollectionResource resource, CollectionAttributeType attribType, String alias, String value) {
-            super();
+        public NSClientCollectionAttribute(NSClientCollectionResource resource, CollectionAttributeType attribType, String value) {
+            super(attribType);
             m_resource=resource;
-            m_attribType=attribType;
-            m_alias = alias;
             m_value = value;
-        }
-
-        @Override
-        public CollectionAttributeType getAttributeType() {
-            return m_attribType;
-        }
-
-        @Override
-        public String getName() {
-            return m_alias;
         }
 
         @Override
@@ -157,13 +138,8 @@ public class NSClientCollector implements ServiceCollector {
         }
 
         @Override
-        public String getType() {
-            return m_attribType.getType();
-        }
-        
-        @Override
         public String toString() {
-            return "NSClientCollectionAttribute " + m_alias+"=" + m_value;
+            return "NSClientCollectionAttribute " + getName() + "=" + m_value;
         }
 
         @Override
@@ -185,7 +161,7 @@ public class NSClientCollector implements ServiceCollector {
         }
 
         public void setAttributeValue(CollectionAttributeType type, String value) {
-            NSClientCollectionAttribute attr = new NSClientCollectionAttribute(this, type, type.getName(), value);
+            NSClientCollectionAttribute attr = new NSClientCollectionAttribute(this, type, value);
             addAttribute(attr);
         }
         

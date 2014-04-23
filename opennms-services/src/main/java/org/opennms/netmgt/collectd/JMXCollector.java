@@ -63,6 +63,7 @@ import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceParameters.ParameterName;
 import org.opennms.netmgt.collection.support.AbstractCollectionAttribute;
+import org.opennms.netmgt.collection.support.AbstractCollectionAttributeType;
 import org.opennms.netmgt.collection.support.AbstractCollectionResource;
 import org.opennms.netmgt.collection.support.SingleResourceCollectionSet;
 import org.opennms.netmgt.config.BeanInfo;
@@ -663,13 +664,12 @@ public abstract class JMXCollector implements ServiceCollector {
         this.useFriendlyName = useFriendlyName;
     }
     
-    private static class JMXCollectionAttributeType implements CollectionAttributeType {
+    private static class JMXCollectionAttributeType extends AbstractCollectionAttributeType {
     	private final JMXDataSource m_dataSource;
-    	private final AttributeGroupType m_groupType;
     	private final String m_name;
 
         public JMXCollectionAttributeType(JMXDataSource dataSource, String key, String substitutions,  AttributeGroupType groupType) {
-            m_groupType=groupType;
+            super(groupType);
             m_dataSource=dataSource;
             m_name=createName(key,substitutions);
         }
@@ -680,11 +680,6 @@ public abstract class JMXCollector implements ServiceCollector {
                 name=fixKey(key, m_dataSource.getName(),substitutions)+"_"+name;
             }
             return name;
-        }
-
-        @Override
-        public AttributeGroupType getGroupType() {
-            return m_groupType;
         }
 
         @Override
@@ -707,27 +702,13 @@ public abstract class JMXCollector implements ServiceCollector {
     
     private static class JMXCollectionAttribute extends AbstractCollectionAttribute {
 
-        private final String m_alias;
         private final String m_value;
         private final JMXCollectionResource m_resource;
-        private final CollectionAttributeType m_attribType;
         
-        JMXCollectionAttribute(JMXCollectionResource resource, CollectionAttributeType attribType, String alias, String value) {
-            super();
+        JMXCollectionAttribute(JMXCollectionResource resource, CollectionAttributeType attribType, String value) {
+            super(attribType);
             m_resource=resource;
-            m_attribType=attribType;
-            m_alias = alias;
             m_value = value;
-        }
-
-        @Override
-        public CollectionAttributeType getAttributeType() {
-            return m_attribType;
-        }
-
-        @Override
-        public String getName() {
-            return m_alias;
         }
 
         @Override
@@ -746,13 +727,8 @@ public abstract class JMXCollector implements ServiceCollector {
         }
 
         @Override
-        public String getType() {
-            return m_attribType.getType();
-        }
-
-        @Override
         public String toString() {
-             return "alias " + m_alias + ", value " + m_value + ", resource "
+             return "alias " + getName() + ", value " + m_value + ", resource "
                  + m_resource + ", attributeType " + m_attribType;
         }
 
@@ -791,7 +767,7 @@ public abstract class JMXCollector implements ServiceCollector {
         }
 
         public void setAttributeValue(CollectionAttributeType type, String value) {
-            JMXCollectionAttribute attr = new JMXCollectionAttribute(this, type, type.getName(), value);
+            JMXCollectionAttribute attr = new JMXCollectionAttribute(this, type, value);
             addAttribute(attr);
         }
 

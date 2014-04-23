@@ -34,8 +34,8 @@ import java.util.List;
 
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
-import org.opennms.netmgt.collection.api.CollectionAttributeType;
 import org.opennms.netmgt.collection.api.Persister;
+import org.opennms.netmgt.collection.support.AbstractCollectionAttributeType;
 import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.snmp.Collectable;
 import org.opennms.netmgt.snmp.CollectionTracker;
@@ -56,14 +56,13 @@ import org.slf4j.LoggerFactory;
  * @author ranger
  * @version $Id: $
  */
-public abstract class SnmpAttributeType implements CollectionAttributeType {
+public abstract class SnmpAttributeType extends AbstractCollectionAttributeType {
     
     private static final Logger LOG = LoggerFactory.getLogger(SnmpAttributeType.class);
     
-    private MibObject m_mibObj;
-    private String m_collectionName;
-    private ResourceType m_resourceType;
-    private AttributeGroupType m_groupType;
+    private final MibObject m_mibObj;
+    private final String m_collectionName;
+    private final ResourceType m_resourceType;
 
     /**
      * <p>Constructor for SnmpAttributeType.</p>
@@ -74,16 +73,12 @@ public abstract class SnmpAttributeType implements CollectionAttributeType {
      * @param groupType a {@link org.opennms.netmgt.collection.api.AttributeGroupType} object.
      */
     protected SnmpAttributeType(ResourceType resourceType, String collectionName, MibObject mibObj, AttributeGroupType groupType) {
+        super(groupType);
         m_resourceType = resourceType;
         m_collectionName = collectionName;
         m_mibObj = mibObj;
-        m_groupType = groupType;
     }
 
-    private MibObject getMibObj() {
-        return m_mibObj;
-    }
-    
     /**
      * <p>getCollectionName</p>
      *
@@ -112,9 +107,9 @@ public abstract class SnmpAttributeType implements CollectionAttributeType {
     private CollectionTracker getCollectionTracker() {
         SnmpInstId[] instances = m_resourceType.getCollectionInstances();
         if (instances != null && Boolean.getBoolean("org.opennms.netmgt.collectd.SnmpCollector.limitCollectionToInstances")) {
-            return getMibObj().getCollectionTracker(instances);
+            return m_mibObj.getCollectionTracker(instances);
         } else {
-            return getMibObj().getCollectionTracker();
+            return m_mibObj.getCollectionTracker();
         }
     }
     
@@ -149,22 +144,12 @@ public abstract class SnmpAttributeType implements CollectionAttributeType {
     }
     
     /**
-     * <p>getGroupType</p>
-     *
-     * @return a {@link org.opennms.netmgt.collection.api.AttributeGroupType} object.
-     */
-    @Override
-    public AttributeGroupType getGroupType() {
-        return m_groupType;        
-    }
-    
-    /**
      * <p>getGroupName</p>
      *
      * @return a {@link java.lang.String} object.
      */
     public String getGroupName() {
-        return m_groupType.getName();
+        return getGroupType().getName();
     }
     
     
@@ -295,7 +280,7 @@ public abstract class SnmpAttributeType implements CollectionAttributeType {
      * @return a {@link java.lang.String} object.
      */
     public String getGroupIfType() {
-        return m_groupType.getIfType();
+        return getGroupType().getIfType();
     }
 
     /**

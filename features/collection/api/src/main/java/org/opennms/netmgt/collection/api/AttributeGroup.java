@@ -129,8 +129,8 @@ public class AttributeGroup implements CollectionVisitable, Persistable {
     }
 
     private boolean doShouldPersist() {
-        if ("ignore".equals(getIfType())) return true;
-        if ("all".equals(getIfType())) return true;
+        if (AttributeGroupType.IF_TYPE_IGNORE.equalsIgnoreCase(getIfType())) return true;
+        if (AttributeGroupType.IF_TYPE_ALL.equalsIgnoreCase(getIfType())) return true;
         
         String type = String.valueOf(m_resource.getType());
         

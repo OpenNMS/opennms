@@ -30,10 +30,8 @@ package org.opennms.netmgt.collection.api;
 
 
 /**
- * <p>CollectionAttributeType interface.</p>
- *
- * @author ranger
- * @version $Id: $
+ * This class encapsulates the immutable parts of a {@link CollectionAttribute} such as the name,
+ * metric type, and group membership.
  */
 public interface CollectionAttributeType {
 

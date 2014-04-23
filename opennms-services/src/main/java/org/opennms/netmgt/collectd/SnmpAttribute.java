@@ -48,7 +48,6 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
     public static final Logger LOG = LoggerFactory.getLogger(SnmpAttribute.class);
 
     private CollectionResource m_resource;
-    private SnmpAttributeType m_type;
     private SnmpValue m_val;
 
     /**
@@ -59,9 +58,8 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
      * @param val a {@link org.opennms.netmgt.snmp.SnmpValue} object.
      */
     public SnmpAttribute(CollectionResource resource, SnmpAttributeType type, SnmpValue val) {
-        super();
+        super(type);
         m_resource = resource;
-        m_type = type;
         m_val = val;
     }
 
@@ -70,7 +68,7 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
     public boolean equals(Object obj) {
         if (obj instanceof SnmpAttribute) {
             SnmpAttribute attr = (SnmpAttribute) obj;
-            return (m_resource.equals(attr.m_resource) && m_type.equals(attr.m_type));
+            return (m_resource.equals(attr.m_resource) && m_attribType.equals(attr.m_attribType));
         }
         return false;
     }
@@ -82,17 +80,7 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
      */
     @Override
     public int hashCode() {
-        return (m_resource.hashCode() ^ m_type.hashCode());
-    }
-
-    /**
-     * <p>getAttributeType</p>
-     *
-     * @return a {@link org.opennms.netmgt.collectd.SnmpAttributeType} object.
-     */
-    @Override
-    public SnmpAttributeType getAttributeType() {
-        return m_type;
+        return (m_resource.hashCode() ^ m_attribType.hashCode());
     }
 
     /**
@@ -130,34 +118,14 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
         return getResource()+"."+getAttributeType()+" = "+getValue();
     }
 
-    /**
-     * <p>getType</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @Override
-    public String getType() {
-        return getAttributeType().getType();
-    }
-
-    /**
-     * <p>getName</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @Override
-    public String getName() {
-        return getAttributeType().getName();
-    }
-    
-    
     @Override
     public String getMetricIdentifier() {
         String instance = m_resource.getInstance();
+        SnmpAttributeType type = (SnmpAttributeType)m_attribType;
         if (instance == null) {
-            instance = m_type.getInstance();
+            instance = type.getInstance();
         }
-        return "SNMP_"+SnmpObjId.get(m_type.getSnmpObjId(), instance);
+        return "SNMP_"+SnmpObjId.get(type.getSnmpObjId(), instance);
     }
     
     /**

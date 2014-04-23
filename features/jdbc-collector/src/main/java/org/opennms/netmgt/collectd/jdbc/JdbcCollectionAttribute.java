@@ -33,26 +33,13 @@ import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.support.AbstractCollectionAttribute;
 
 public class JdbcCollectionAttribute extends AbstractCollectionAttribute {
-    String m_alias;
-    String m_value;
-    JdbcCollectionResource m_resource;
-    CollectionAttributeType m_attribType;
+    private final String m_value;
+    private final JdbcCollectionResource m_resource;
     
-    public JdbcCollectionAttribute(JdbcCollectionResource resource, CollectionAttributeType attribType, String alias, String value) {
+    public JdbcCollectionAttribute(JdbcCollectionResource resource, CollectionAttributeType attribType, String value) {
+        super(attribType);
         m_resource=resource;
-        m_attribType=attribType;
-        m_alias = alias;
         m_value = value;
-    }
-    
-    @Override
-    public CollectionAttributeType getAttributeType() {
-        return m_attribType;
-    }
-    
-    @Override
-    public String getName() {
-        return m_alias;
     }
     
     @Override
@@ -71,13 +58,8 @@ public class JdbcCollectionAttribute extends AbstractCollectionAttribute {
     }
     
     @Override
-    public String getType() {
-        return m_attribType.getType();
-    }
-    
-    @Override
     public String toString() {
-        return "JdbcCollectionAttribute " + m_alias+"=" + m_value;
+        return "JdbcCollectionAttribute " + getName()+"=" + m_value;
     }
 
     @Override

@@ -39,10 +39,8 @@ import org.opennms.netmgt.collection.support.AbstractCollectionAttribute;
  * @version $Id: $
  */
 public class WmiCollectionAttribute extends AbstractCollectionAttribute {
-    String m_alias;
-        String m_value;
-        WmiCollectionResource m_resource;
-        CollectionAttributeType m_attribType;
+        private final String m_value;
+        private final WmiCollectionResource m_resource;
 
         /**
          * <p>Constructor for WmiCollectionAttribute.</p>
@@ -52,31 +50,10 @@ public class WmiCollectionAttribute extends AbstractCollectionAttribute {
          * @param alias a {@link java.lang.String} object.
          * @param value a {@link java.lang.String} object.
          */
-        public WmiCollectionAttribute(final WmiCollectionResource resource, final CollectionAttributeType attribType, final String alias, final String value) {
+        public WmiCollectionAttribute(final WmiCollectionResource resource, final CollectionAttributeType attribType, final String value) {
+            super(attribType);
             m_resource=resource;
-            m_attribType=attribType;
-            m_alias = alias;
             m_value = value;
-        }
-
-        /**
-         * <p>getAttributeType</p>
-         *
-         * @return a {@link org.opennms.netmgt.collection.api.CollectionAttributeType} object.
-         */
-    @Override
-        public CollectionAttributeType getAttributeType() {
-            return m_attribType;
-        }
-
-        /**
-         * <p>getName</p>
-         *
-         * @return a {@link java.lang.String} object.
-         */
-    @Override
-        public String getName() {
-            return m_alias;
         }
 
         /**
@@ -84,7 +61,7 @@ public class WmiCollectionAttribute extends AbstractCollectionAttribute {
          *
          * @return a {@link java.lang.String} object.
          */
-    @Override
+        @Override
         public String getNumericValue() {
             return m_value;
         }
@@ -94,7 +71,7 @@ public class WmiCollectionAttribute extends AbstractCollectionAttribute {
          *
          * @return a {@link org.opennms.netmgt.collection.api.CollectionResource} object.
          */
-    @Override
+        @Override
         public CollectionResource getResource() {
             return m_resource;
         }
@@ -104,19 +81,9 @@ public class WmiCollectionAttribute extends AbstractCollectionAttribute {
          *
          * @return a {@link java.lang.String} object.
          */
-    @Override
+        @Override
         public String getStringValue() {
             return m_value; //Should this be null instead?
-        }
-
-        /**
-         * <p>getType</p>
-         *
-         * @return a {@link java.lang.String} object.
-         */
-    @Override
-        public String getType() {
-            return m_attribType.getType();
         }
 
         /**
@@ -124,9 +91,9 @@ public class WmiCollectionAttribute extends AbstractCollectionAttribute {
          *
          * @return a {@link java.lang.String} object.
          */
-    @Override
+        @Override
         public String toString() {
-            return "WmiCollectionAttribute " + m_alias+"=" + m_value;
+            return "WmiCollectionAttribute " + getName() + "=" + m_value;
         }
 
         @Override

@@ -30,22 +30,16 @@ package org.opennms.netmgt.collectd.jdbc;
 
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
-import org.opennms.netmgt.collection.api.CollectionAttributeType;
 import org.opennms.netmgt.collection.api.Persister;
+import org.opennms.netmgt.collection.support.AbstractCollectionAttributeType;
 import org.opennms.netmgt.config.jdbc.JdbcColumn;
 
-public class JdbcCollectionAttributeType implements CollectionAttributeType {
-    JdbcColumn m_column;
-    AttributeGroupType m_groupType;
+public class JdbcCollectionAttributeType extends AbstractCollectionAttributeType {
+    private final JdbcColumn m_column;
     
     public JdbcCollectionAttributeType(JdbcColumn column, AttributeGroupType groupType) {
-        m_groupType=groupType;
+        super(groupType);
         m_column=column;
-    }
-    
-    @Override
-    public AttributeGroupType getGroupType() {
-        return m_groupType;
     }
     
     @Override

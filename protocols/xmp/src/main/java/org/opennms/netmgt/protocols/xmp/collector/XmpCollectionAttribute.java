@@ -59,7 +59,6 @@
 
 package org.opennms.netmgt.protocols.xmp.collector;
 
-import org.krupczak.xmp.Xmp;
 import org.krupczak.xmp.XmpVar;
 import org.opennms.netmgt.collection.api.CollectionAttributeType;
 import org.opennms.netmgt.collection.api.CollectionResource;
@@ -68,61 +67,22 @@ public class XmpCollectionAttribute extends AbstractCollectionAttribute {
     /* class variables and methods *********************** */
 
     /* instance variables ******************************** */
-    private XmpVar aVar;
-    private String alias;
-    private XmpCollectionResource resource;
-    private CollectionAttributeType attribType;
+    private final XmpVar aVar;
+    private final XmpCollectionResource resource;
 
     /* constructors  ************************************* */
-    XmpCollectionAttribute() { aVar = null; }
-
-    XmpCollectionAttribute(XmpVar aVar, String alias, XmpCollectionResource res)
-    {
-        this.aVar = aVar;
-        this.alias = alias;
-        this.resource = res;
-    }
-
     XmpCollectionAttribute(XmpCollectionResource res, 
                            CollectionAttributeType attribType, 
-                           String alias, XmpVar aVar) 
+                           XmpVar aVar) 
                            {
-        this(aVar,alias,res);
-        this.attribType = attribType;
+        super(attribType);
+        this.aVar = aVar;
+        this.resource = res;
                            }
 
     /* private methods *********************************** */
 
     /* public methods ************************************ */
-
-    /**
-     * <p>getAttributeType</p>
-     *
-     * @return a {@link org.opennms.netmgt.collection.api.CollectionAttributeType} object.
-     */
-    @Override
-    public CollectionAttributeType getAttributeType() { return attribType; }
-
-    /**
-     * <p>setAttributeType</p>
-     *
-     * @param attribType a {@link org.opennms.netmgt.collection.api.CollectionAttributeType} object.
-     */
-    public void setAttributeType(CollectionAttributeType attribType)
-    {
-        this.attribType = attribType;
-    }
-
-    /**
-     * <p>getName</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @Override
-    public String getName() 
-    { 
-        return new String(alias);
-    }
 
     /**
      * <p>Getter for the field <code>resource</code>.</p>
@@ -140,14 +100,6 @@ public class XmpCollectionAttribute extends AbstractCollectionAttribute {
     @Override
     public String getNumericValue() { return aVar.getValue(); }
 
-    /**
-     * <p>getType</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @Override
-    public String getType() { return Xmp.syntaxToString(aVar.xmpSyntax); }
-
     //public void visit(CollectionSetVisitor visitor) { super(visitor); }
 
     /**
@@ -158,7 +110,7 @@ public class XmpCollectionAttribute extends AbstractCollectionAttribute {
     @Override
     public String toString() 
     { 
-        return "XmpCollectionAttribute "+alias+"="+aVar.getValue()+" attribType="+attribType; 
+        return "XmpCollectionAttribute "+getName()+"="+aVar.getValue()+" attribType="+getAttributeType(); 
     }
 
     /**

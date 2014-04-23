@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,32 +26,22 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd.jdbc;
+package org.opennms.netmgt.collection.support;
 
-import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAttributeType;
-import org.opennms.netmgt.collection.support.AbstractCollectionResource;
 
-public abstract class JdbcCollectionResource extends AbstractCollectionResource {
-    
-    public JdbcCollectionResource(CollectionAgent agent) {
-        super(agent);
-    }
+public abstract class AbstractCollectionAttributeType implements CollectionAttributeType {
 
-    public void setAttributeValue(CollectionAttributeType type, String value) {
-        JdbcCollectionAttribute attr = new JdbcCollectionAttribute(this, type, value);
-        addAttribute(attr);
-    }
+	private final AttributeGroupType m_groupType;
 
-    @Override
-    public int getType() {
-        return -1; //Is this right?
-    }
+	public AbstractCollectionAttributeType(AttributeGroupType groupType) {
+		m_groupType=groupType;
+	}
 
-    @Override
-    public abstract String getResourceTypeName();
-
-    @Override
-    public abstract String getInstance();
+	@Override
+	public final AttributeGroupType getGroupType() {
+		return m_groupType;
+	}
 
 }

@@ -29,11 +29,11 @@
 package org.opennms.netmgt.rrd;
 
 public class RrdDataSource {
-    private String m_name;
-    private String m_type;
-    private int m_heartBeat;
-    private String m_min;
-    private String m_max;
+    private final String m_name;
+    private final String m_type;
+    private final int m_heartBeat;
+    private final String m_min;
+    private final String m_max;
     
     /**
      * <p>Constructor for RrdDataSource.</p>

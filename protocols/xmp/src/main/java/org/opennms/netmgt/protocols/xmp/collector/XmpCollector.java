@@ -184,7 +184,6 @@ public class XmpCollector implements ServiceCollector {
             attribType = new XmpCollectionAttributeType(vars[i],agt);
             aVar = new XmpCollectionAttribute(scalarResource,
                                               attribType,
-                                              vars[i].getObjName(),
                                               vars[i]);
 
             ag.addAttribute(aVar);
@@ -296,7 +295,6 @@ public class XmpCollector implements ServiceCollector {
                 XmpCollectionAttribute aVar = 
                     new XmpCollectionAttribute(rowResource,
                                                attribType,
-                                               vars[i*numColumns+j].getObjName(),
                                                vars[i*numColumns+j]);
 
                 ag.addAttribute(aVar);

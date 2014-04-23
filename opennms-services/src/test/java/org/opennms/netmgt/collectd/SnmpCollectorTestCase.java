@@ -148,7 +148,7 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
     protected static void assertMibObjectPresent(SnmpAttribute attribute, List<MibObject> attrList) {
         for (Iterator<MibObject> it = attrList.iterator(); it.hasNext();) {
             MibObject mibObj = it.next();
-            if (mibObj.getOid().equals(attribute.getAttributeType().getOid()))
+            if (mibObj.getOid().equals(((SnmpAttributeType)attribute.getAttributeType()).getOid()))
                 return;
         }
         fail("Unable to find attribue "+attribute+" in attribute list");

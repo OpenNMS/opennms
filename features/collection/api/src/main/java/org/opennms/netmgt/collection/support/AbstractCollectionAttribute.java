@@ -47,21 +47,31 @@ public abstract class AbstractCollectionAttribute implements CollectionAttribute
     
     private static final Logger LOG = LoggerFactory.getLogger(AbstractCollectionAttribute.class);
 
+    protected final CollectionAttributeType m_attribType;
+
+    public AbstractCollectionAttribute(CollectionAttributeType attribType) {
+        m_attribType = attribType;
+    }
+
     /**
      * <p>getAttributeType</p>
      *
      * @return a {@link org.opennms.netmgt.collection.api.CollectionAttributeType} object.
      */
     @Override
-    public abstract CollectionAttributeType getAttributeType();
+    public final CollectionAttributeType getAttributeType() {
+        return m_attribType;
+    }
 
-    /**
-     * <p>getName</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
     @Override
-    public abstract String getName();
+    public final String getName() {
+        return m_attribType.getName();
+    }
+
+    @Override
+    public final String getType() {
+        return m_attribType.getType();
+    }
 
     /**
      * <p>getNumericValue</p>

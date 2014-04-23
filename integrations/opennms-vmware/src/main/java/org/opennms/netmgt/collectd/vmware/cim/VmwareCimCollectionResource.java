@@ -44,7 +44,7 @@ public abstract class VmwareCimCollectionResource extends AbstractCollectionReso
     }
 
     public void setAttributeValue(final CollectionAttributeType type, final String value) {
-        final VmwareCimCollectionAttribute attr = new VmwareCimCollectionAttribute(this, type, type.getName(), value);
+        final VmwareCimCollectionAttribute attr = new VmwareCimCollectionAttribute(this, type, value);
         addAttribute(attr);
     }
 

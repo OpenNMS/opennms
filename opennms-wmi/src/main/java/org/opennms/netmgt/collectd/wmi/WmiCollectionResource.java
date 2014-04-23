@@ -71,7 +71,7 @@ public abstract class WmiCollectionResource extends AbstractCollectionResource {
      * @param value a {@link java.lang.String} object.
      */
     public void setAttributeValue(final CollectionAttributeType type, final String value) {
-        final WmiCollectionAttribute attr = new WmiCollectionAttribute(this, type, type.getName(), value);
+        final WmiCollectionAttribute attr = new WmiCollectionAttribute(this, type, value);
         addAttribute(attr);
     }
 

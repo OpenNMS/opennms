@@ -91,7 +91,6 @@ import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
-import org.opennms.netmgt.collection.api.CollectionAttributeType;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
@@ -101,6 +100,7 @@ import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.api.ServiceParameters.ParameterName;
 import org.opennms.netmgt.collection.support.AbstractCollectionAttribute;
+import org.opennms.netmgt.collection.support.AbstractCollectionAttributeType;
 import org.opennms.netmgt.collection.support.AbstractCollectionSet;
 import org.opennms.netmgt.config.HttpCollectionConfigFactory;
 import org.opennms.netmgt.config.httpdatacollection.Attrib;
@@ -320,38 +320,19 @@ public class HttpCollector implements ServiceCollector {
     }
 
     private static class HttpCollectionAttribute extends AbstractCollectionAttribute {
-        private final String m_alias;
-        private final String m_type;
         private final Object m_value;
         private final HttpCollectionResource m_resource;
-        private final HttpCollectionAttributeType m_attribType;
 
-        public HttpCollectionAttribute(HttpCollectionResource resource, HttpCollectionAttributeType attribType, String alias, String type, Number value) {
-            super();
+        public HttpCollectionAttribute(HttpCollectionResource resource, HttpCollectionAttributeType attribType, Number value) {
+            super(attribType);
             m_resource=resource;
-            m_attribType=attribType;
-            m_alias = alias;
-            m_type= type;
             m_value = value;
         }
 
-        public HttpCollectionAttribute(HttpCollectionResource resource, HttpCollectionAttributeType attribType, String alias, String type, String value) { 
-            super();
+        public HttpCollectionAttribute(HttpCollectionResource resource, HttpCollectionAttributeType attribType, String value) { 
+            super(attribType);
             m_resource=resource;
-            m_attribType=attribType;
-            m_alias = alias;
-            m_type= type;
             m_value = value;
-        }
-
-        @Override
-        public String getName() {
-            return m_alias;
-        }
-
-        @Override
-        public String getType() {
-            return m_type;
         }
 
         public Object getValue() {
@@ -392,10 +373,6 @@ public class HttpCollector implements ServiceCollector {
                 return getName().equals(other.getName());
             }
             return false;
-        }
-        @Override
-        public CollectionAttributeType getAttributeType() {
-            return m_attribType;
         }
 
         @Override
@@ -507,8 +484,6 @@ public class HttpCollector implements ServiceCollector {
                     final HttpCollectionAttribute bute = new HttpCollectionAttribute(
                          collectionResource,
                          new HttpCollectionAttributeType(attribDef, groupType), 
-                         attribDef.getAlias(),
-                         type, 
                          num
                      );
                      LOG.debug("processResponse: adding found numeric attribute: {}", bute);
@@ -518,8 +493,6 @@ public class HttpCollector implements ServiceCollector {
                         new HttpCollectionAttribute(
                                                     collectionResource,
                                                     new HttpCollectionAttributeType(attribDef, groupType),
-                                                    attribDef.getAlias(),
-                                                    type,
                                                     value);
                     LOG.debug("processResponse: adding found string attribute: {}", bute);
                     butes.add(bute);
@@ -878,18 +851,12 @@ public class HttpCollector implements ServiceCollector {
         }
     }
 
-    private static class HttpCollectionAttributeType implements CollectionAttributeType {
+    private static class HttpCollectionAttributeType extends AbstractCollectionAttributeType {
         private final Attrib m_attribute;
-        private final AttributeGroupType m_groupType;
 
         public HttpCollectionAttributeType(Attrib attribute, AttributeGroupType groupType) {
-            m_groupType=groupType;
+            super(groupType);
             m_attribute=attribute;
-        }
-
-        @Override
-        public AttributeGroupType getGroupType() {
-            return m_groupType;
         }
 
         @Override

@@ -48,46 +48,16 @@ public class AliasedAttribute extends SnmpAttribute {
 	 * @param attr a {@link org.opennms.netmgt.collectd.SnmpAttribute} object.
 	 */
 	public AliasedAttribute(CollectionResource resource, SnmpAttribute attr) {
-		super(resource, attr.getAttributeType(), attr.getValue());
+		super(resource, (SnmpAttributeType)attr.getAttributeType(), attr.getValue());
 		m_attr = attr;
 	}
 
-	private SnmpAttribute m_attr;
+	private final SnmpAttribute m_attr;
 
 	/** {@inheritDoc} */
         @Override
 	public boolean equals(Object obj) {
 		return m_attr.equals(obj);
-	}
-
-	/**
-	 * <p>getAttributeType</p>
-	 *
-	 * @return a {@link org.opennms.netmgt.collectd.SnmpAttributeType} object.
-	 */
-        @Override
-	public SnmpAttributeType getAttributeType() {
-		return m_attr.getAttributeType();
-	}
-
-	/**
-	 * <p>getName</p>
-	 *
-	 * @return a {@link java.lang.String} object.
-	 */
-        @Override
-	public String getName() {
-		return m_attr.getName();
-	}
-
-	/**
-	 * <p>getType</p>
-	 *
-	 * @return a {@link java.lang.String} object.
-	 */
-        @Override
-	public String getType() {
-		return m_attr.getType();
 	}
 
 	/**
