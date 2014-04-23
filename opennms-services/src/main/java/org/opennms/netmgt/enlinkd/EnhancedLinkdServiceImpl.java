@@ -160,6 +160,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 			node.setLldpElement(dbelement);
 		} else {
 			element.setNode(node);
+			element.setLldpNodeLastPollTime(element.getLldpNodeCreateTime());
 			node.setLldpElement(element);
 		}
 
