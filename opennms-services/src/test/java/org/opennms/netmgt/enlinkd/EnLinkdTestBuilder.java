@@ -40,6 +40,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.config.EnhancedLinkdConfig;
 import org.opennms.netmgt.dao.api.LldpLinkDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.OspfLinkDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
@@ -68,7 +69,10 @@ public abstract class EnLinkdTestBuilder extends EnLinkdTestHelper implements In
     protected NodeDao m_nodeDao;
     
     @Autowired
-    protected LldpLinkDao m_topologyDao;
+    protected LldpLinkDao m_lldpLinkDao;
+        
+    @Autowired
+    protected OspfLinkDao m_ospfLinkDao;
         
     @Override
     public void afterPropertiesSet() throws Exception {

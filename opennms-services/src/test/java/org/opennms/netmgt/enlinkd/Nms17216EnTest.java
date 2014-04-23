@@ -131,10 +131,10 @@ public class Nms17216EnTest extends EnLinkdTestBuilder {
         assertTrue(m_linkd.scheduleNodeCollection(switch2.getId()));
         assertTrue(m_linkd.scheduleNodeCollection(switch3.getId()));
  
-        assertEquals(0,m_topologyDao.countAll());
+        assertEquals(0,m_lldpLinkDao.countAll());
         
         assertTrue(m_linkd.runSingleSnmpCollection(switch1.getId()));
-        final List<LldpLink> topologyA = m_topologyDao.findAll();
+        final List<LldpLink> topologyA = m_lldpLinkDao.findAll();
         printLldpTopology(topologyA);
         assertEquals(4,topologyA.size());
         for (final OnmsNode node: m_nodeDao.findAll()) {
@@ -144,7 +144,7 @@ public class Nms17216EnTest extends EnLinkdTestBuilder {
         
         Thread.sleep(1000);
         assertTrue(m_linkd.runSingleSnmpCollection(switch2.getId()));
-        final List<LldpLink> topologyB = m_topologyDao.findAll();
+        final List<LldpLink> topologyB = m_lldpLinkDao.findAll();
         printLldpTopology(topologyB);
         assertEquals(10,topologyB.size());
         for (final OnmsNode node: m_nodeDao.findAll()) {
@@ -154,7 +154,7 @@ public class Nms17216EnTest extends EnLinkdTestBuilder {
        
         Thread.sleep(1000);
         assertTrue(m_linkd.runSingleSnmpCollection(switch3.getId()));
-        final List<LldpLink> topologyC = m_topologyDao.findAll();
+        final List<LldpLink> topologyC = m_lldpLinkDao.findAll();
         printLldpTopology(topologyC);
         assertEquals(12,topologyC.size());
         for (final OnmsNode node: m_nodeDao.findAll()) {
@@ -163,52 +163,4 @@ public class Nms17216EnTest extends EnLinkdTestBuilder {
         }
 
     }
-/*
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH4_IP, port=161, resource="classpath:linkd/nms17216/switch4-walk.txt"),
-            @JUnitSnmpAgent(host=ROUTER3_IP, port=161, resource="classpath:linkd/nms17216/router3-walk.txt")
-    })
-    public void testNetwork17216Switch4Router4CdpLinks() throws Exception {
-        
-        m_nodeDao.save(getSwitch4());
-        m_nodeDao.save(getRouter3());
-
-        m_nodeDao.flush();
-
-        m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
-        m_linkdConfig.getConfiguration().setUseLldpDiscovery(false);
-        m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
-        m_linkdConfig.getConfiguration().setUseCdpDiscovery(true);
-
-        
-        final OnmsNode switch4 = m_nodeDao.findByForeignId("linkd", SWITCH4_NAME);
-        final OnmsNode router3 = m_nodeDao.findByForeignId("linkd", ROUTER3_NAME);
-        
-        assertTrue(m_linkd.scheduleNodeCollection(switch4.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(router3.getId()));
-
-        final List<TopologyElement> topologyA = m_topologyDao.getTopology();
-        List<EndPoint> endpoints = printEndPointTopology(topologyA);
-        List<Link> links = printLinkTopology(topologyA);
-        assertEquals(0,topologyA.size());
-        assertEquals(0, endpoints.size());
-        assertEquals(0, links.size());
-        
-        assertTrue(m_linkd.runSingleSnmpCollection(switch4.getId()));
-        endpoints = printEndPointTopology(topologyA);
-        links = printLinkTopology(topologyA);
-        assertEquals(2,topologyA.size());
-        assertEquals(2, endpoints.size());
-        assertEquals(1, links.size());
-
-        assertTrue(m_linkd.runSingleSnmpCollection(router3.getId()));
-        endpoints = printEndPointTopology(topologyA);
-        links = printLinkTopology(topologyA);
-        assertEquals(4,topologyA.size());
-        assertEquals(6, endpoints.size());
-        assertEquals(3, links.size());
-        
-    }
-    */
 }
