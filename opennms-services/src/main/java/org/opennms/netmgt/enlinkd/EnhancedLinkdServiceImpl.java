@@ -14,6 +14,8 @@ import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpRouteInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OspfElement;
+import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.model.PrimaryType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -166,6 +168,18 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
         m_nodeDao.saveOrUpdate(node);
 		m_nodeDao.flush();
+		
+	}
+
+	@Override
+	public void store(int nodeId, OspfLink link) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void store(int nodeId, OspfElement element) {
+		// TODO Auto-generated method stub
 		
 	}
 

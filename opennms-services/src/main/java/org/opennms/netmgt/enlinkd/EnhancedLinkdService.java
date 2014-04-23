@@ -33,6 +33,8 @@ import java.util.List;
 
 import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.LldpLink;
+import org.opennms.netmgt.model.OspfElement;
+import org.opennms.netmgt.model.OspfLink;
 
 /**
  * <p>QueryManager interface.</p>
@@ -85,11 +87,13 @@ public interface EnhancedLinkdService {
 
 	void store(int nodeId, LldpElement element);
 
+	void store(int nodeId, OspfLink link);
+
+	void store(int nodeId, OspfElement element);
+
 //	void store(CdpLink link);
 
-//	void store(OspfLink link);
-
-//	void store(MacAddrEndPoint macep);
+	//	void store(MacAddrEndPoint macep);
 
 //	void store(BridgeStpLink link);
 
