@@ -95,12 +95,12 @@ public class OspfLink implements Serializable {
 	}
 
     @Type(type="org.opennms.netmgt.model.InetAddressUserType")
-    @Column(name="ospfRemIpAddr",nullable=true)
+    @Column(name="ospfRemIpAddr",nullable=false)
 	public InetAddress getOspfRemIpAddr() {
 		return m_ospfRemIpAddr;
 	}
 
-    @Column(name="ospfRemAddressLessIndex",nullable=true)
+    @Column(name="ospfRemAddressLessIndex",nullable=false)
 	public Integer getOspfRemAddressLessIndex() {
 		return m_ospfRemAddressLessIndex;
 	}
