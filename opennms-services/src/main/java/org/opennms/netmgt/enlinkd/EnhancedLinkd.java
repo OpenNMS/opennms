@@ -169,8 +169,8 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         if (m_linkdConfig.useOspfDiscovery()) {
             LOG.debug("getSnmpCollections: adding Ospf Discovery: {}",
                     node);
-        //	OspfLinkdNodeDiscovery ospfcoll = new OspfLinkdNodeDiscovery(this, node);
-        //	snmpcolls.add(ospfcoll);
+        	OspfLinkdNodeDiscovery ospfcoll = new OspfLinkdNodeDiscovery(this, node);
+        	snmpcolls.add(ospfcoll);
         }
 
         if (m_linkdConfig.useBridgeDiscovery()) {

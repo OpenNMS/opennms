@@ -8,6 +8,7 @@ import java.util.List;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.dao.api.LldpLinkDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.OspfLinkDao;
 import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.LldpLink;
@@ -33,6 +34,8 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 	private NodeDao m_nodeDao;
 
 	private LldpLinkDao m_lldpLinkDao;
+	
+	private OspfLinkDao m_ospfLinkDao;
 
     @Override
 	public List<LinkableNode> getSnmpNodeList() {
@@ -92,8 +95,8 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
 	@Override
 	public void reconcileOspf(int nodeId, Date now) {
-		// TODO Auto-generated method stub
-		
+		m_ospfLinkDao.deleteByNodeIdOlderThen(nodeId, now);
+		m_ospfLinkDao.flush();
 	}
 
 	@Override
@@ -172,14 +175,60 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 	}
 
 	@Override
-	public void store(int nodeId, OspfLink link) {
-		// TODO Auto-generated method stub
+	@Transactional
+	public void store(final int nodeId,final OspfLink saveMe) {
+		new UpsertTemplate<OspfLink, OspfLinkDao>(m_transactionManager,m_ospfLinkDao) {
+
+			@Override
+			protected OspfLink query() {
+				return m_dao.get(nodeId, saveMe.getOspfRemRouterId(),saveMe.getOspfRemIpAddr(),saveMe.getOspfRemAddressLessIndex());
+			}
+
+			@Override
+			protected OspfLink doUpdate(OspfLink dbLldpLink) {
+				dbLldpLink.merge(saveMe);
+				m_dao.update(dbLldpLink);
+				m_dao.flush();
+				return dbLldpLink;
+			}
+
+			@Override
+			protected OspfLink doInsert() {
+				final OnmsNode node = m_nodeDao.get(nodeId);
+				if ( node == null )
+					return null;
+				saveMe.setNode(node);
+				saveMe.setOspfLinkLastPollTime(saveMe.getOspfLinkCreateTime());
+				m_dao.saveOrUpdate(saveMe);
+				m_dao.flush();
+				return saveMe;
+			}
+			
+		}.execute();
 		
 	}
 
 	@Override
+	@Transactional
 	public void store(int nodeId, OspfElement element) {
-		// TODO Auto-generated method stub
+		if (element ==  null)
+			return;
+		final OnmsNode node = m_nodeDao.get(nodeId);
+		if ( node == null )
+			return;
+		
+		OspfElement dbelement = node.getOspfElement();
+		if (node.getLldpElement() != null) {
+			dbelement.merge(element);
+			node.setOspfElement(dbelement);
+		} else {
+			element.setNode(node);
+			element.setOspfNodeLastPollTime(element.getOspfNodeCreateTime());
+			node.setOspfElement(element);
+		}
+
+        m_nodeDao.saveOrUpdate(node);
+		m_nodeDao.flush();
 		
 	}
 
@@ -197,6 +246,14 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
 	public void setNodeDao(NodeDao nodeDao) {
 		m_nodeDao = nodeDao;
+	}
+
+	public OspfLinkDao getOspfLinkDao() {
+		return m_ospfLinkDao;
+	}
+
+	public void setOspfLinkDao(OspfLinkDao ospfLinkDao) {
+		m_ospfLinkDao = ospfLinkDao;
 	}
 	
 }
