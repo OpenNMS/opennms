@@ -249,6 +249,35 @@ public abstract class InetAddressUtils {
         }
     }
 
+    public static InetAddress getNetwork(InetAddress ipaddress, InetAddress netmask) {
+        final byte[] ipAddress = ipaddress.getAddress();
+        final byte[] netMask = netmask.getAddress();
+        final byte[] netWork = new byte[4];
+
+        for (int i=0;i< 4; i++) {
+                netWork[i] = Integer.valueOf(ipAddress[i] & netMask[i]).byteValue();
+
+        }
+        return InetAddressUtils.getInetAddress(netWork);
+    }
+
+    public static boolean inSameNetwork(final InetAddress addr1, final InetAddress addr2, final InetAddress mask) {
+        if (!(addr1 instanceof Inet4Address) || !(addr2 instanceof Inet4Address) || !(mask instanceof Inet4Address)) 
+        		return false;
+ 
+        final byte[] ipAddress1 = addr1.getAddress();
+        final byte[] ipAddress2 = addr2.getAddress();
+        final byte[] netMask = mask.getAddress();
+
+        for (int i=0;i< 4; i++) {
+        	if ((ipAddress1[i] & netMask[i]) != (ipAddress2[i] & netMask[i]))
+        		return false;
+
+        }
+        return true;
+    	
+    }
+
     public static boolean isInetAddressInRange(final byte[] addr, final byte[] begin, final byte[] end) {
         if (s_BYTE_ARRAY_COMPARATOR.compare(addr, begin) > 0) {
             return (s_BYTE_ARRAY_COMPARATOR.compare(addr, end) <= 0);
