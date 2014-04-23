@@ -207,6 +207,7 @@ public class NodeDaoTest implements InitializingBean {
 	        lldpElement.setLldpChassisIdSubType(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS);
 	        lldpElement.setLldpSysname("prova");
 	        lldpElement.setNode(node);
+	        lldpElement.setLldpNodeLastPollTime(lldpElement.getLldpNodeCreateTime());
 	        dbnode1.setLldpElement(lldpElement);
     	}
         getNodeDao().save(dbnode1);
