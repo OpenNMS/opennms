@@ -197,7 +197,7 @@ public class BasePersisterTest {
         mibObject.setMaxval(null);
         mibObject.setMinval(null);
         
-        SnmpAttributeType attributeType = new StringAttributeType(resourceType, "some-collection", mibObject, new AttributeGroupType("mibGroup", "ignore"));
+        SnmpAttributeType attributeType = new StringAttributeType(resourceType, "some-collection", mibObject, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
         
         return new SnmpAttribute(resource, attributeType, SnmpUtils.getValueFactory().getOctetString("foo".getBytes()));
     }

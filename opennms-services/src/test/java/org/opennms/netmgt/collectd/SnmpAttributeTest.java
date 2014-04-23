@@ -154,7 +154,7 @@ public class SnmpAttributeTest extends TestCase {
         mibObject.setAlias("temp_ulko");
         mibObject.setType("gauge");
 
-        NumericAttributeType attributeType = new NumericAttributeType(resourceType, snmpCollection.getName(), mibObject, new AttributeGroupType("foo", "ignore"));
+        NumericAttributeType attributeType = new NumericAttributeType(resourceType, snmpCollection.getName(), mibObject, new AttributeGroupType("foo", AttributeGroupType.IF_TYPE_IGNORE));
 
         attributeType.storeResult(new SnmpCollectionSet(agent, snmpCollection), null, new SnmpResult(mibObject.getSnmpObjId(), new SnmpInstId(mibObject.getInstance()), snmpValue));
         

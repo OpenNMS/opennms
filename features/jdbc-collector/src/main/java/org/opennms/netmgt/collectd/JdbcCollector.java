@@ -148,7 +148,7 @@ public class JdbcCollector implements ServiceCollector {
             LOG.debug(sb.toString());
             throw new IllegalStateException(sb.toString());
         } else {
-            nodeState = new JdbcAgentState(agent.getInetAddress(), parameters);
+            nodeState = new JdbcAgentState(agent.getAddress(), parameters);
             LOG.info("initialize: Scheduling interface for collection: {}", nodeState.getAddress());
             m_scheduledNodes.put(scheduledNodeKey, nodeState);
         }

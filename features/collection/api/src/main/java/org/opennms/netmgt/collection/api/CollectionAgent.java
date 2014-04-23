@@ -106,13 +106,6 @@ public interface CollectionAgent extends NetworkInterface<InetAddress> {
     String toString();
 
     /**
-     * <p>getInetAddress</p>
-     *
-     * @return a {@link java.net.InetAddress} object.
-     */
-    InetAddress getInetAddress();
-
-    /**
      * <p>getSavedSysUpTime</p>
      *
      * @return a long.

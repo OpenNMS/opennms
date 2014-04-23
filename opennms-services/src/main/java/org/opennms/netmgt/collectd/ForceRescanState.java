@@ -84,7 +84,7 @@ public class ForceRescanState {
         
         bldr.setNodeid(m_agent.getNodeId());
 
-        bldr.setInterface(m_agent.getInetAddress());
+        bldr.setInterface(m_agent.getAddress());
         
         bldr.setService(SnmpCollector.SERVICE_NAME);
         

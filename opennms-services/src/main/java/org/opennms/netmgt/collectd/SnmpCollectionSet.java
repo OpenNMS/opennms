@@ -188,7 +188,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
     private SnmpNodeCollector createNodeCollector() {
         SnmpNodeCollector nodeCollector = null;
         if (!getAttributeList().isEmpty()) {
-            nodeCollector = new SnmpNodeCollector(m_agent.getInetAddress(), getAttributeList(), this);
+            nodeCollector = new SnmpNodeCollector(m_agent.getAddress(), getAttributeList(), this);
         }
         return nodeCollector;
     }
@@ -213,7 +213,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
         SnmpIfCollector ifCollector = null;
         // construct the ifCollector
         if (hasInterfaceDataToCollect() || hasGenericIndexResourceDataToCollect()) {
-            ifCollector = new SnmpIfCollector(m_agent.getInetAddress(), getCombinedIndexedAttributes(), this);
+            ifCollector = new SnmpIfCollector(m_agent.getAddress(), getCombinedIndexedAttributes(), this);
         }
         return ifCollector;
     }

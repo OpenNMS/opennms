@@ -537,7 +537,7 @@ public class OnmsSnmpCollection {
         ifAliasMibObject.setInstance("ifIndex");
         
         ifAliasMibObject.setGroupName("aliasedResource");
-        ifAliasMibObject.setGroupIfType("all");
+        ifAliasMibObject.setGroupIfType(AttributeGroupType.IF_TYPE_ALL);
     
         AttributeGroupType groupType = new AttributeGroupType(ifAliasMibObject.getGroupName(), ifAliasMibObject.getGroupIfType());
     

@@ -217,7 +217,7 @@ public class NSClientCollector implements ServiceCollector {
         
         for (Wpm wpm : collection.getWpms().getWpm()) {
             //All NSClient Perfmon counters are per node
-            AttributeGroupType attribGroupType=new AttributeGroupType(wpm.getName(),"all");
+            AttributeGroupType attribGroupType=new AttributeGroupType(wpm.getName(), AttributeGroupType.IF_TYPE_ALL);
             // A wpm consists of a list of attributes, identified by name
             if (agentState.shouldCheckAvailability(wpm.getName(), wpm.getRecheckInterval())) {
                 LOG.debug("Checking availability of group {}", wpm.getName());
@@ -362,7 +362,7 @@ public class NSClientCollector implements ServiceCollector {
             LOG.debug(sb.toString());
             throw new IllegalStateException(sb.toString());
         } else {
-            nodeState = new NSClientAgentState(agent.getInetAddress(), parameters);
+            nodeState = new NSClientAgentState(agent.getAddress(), parameters);
             LOG.info("initialize: Scheduling interface for collection: {}", nodeState.getAddress());
             m_scheduledNodes.put(scheduledNodeKey, nodeState);
         }

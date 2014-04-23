@@ -43,6 +43,16 @@ public class AttributeGroupType {
     private final String m_name;
     private final String m_ifType;
     
+    /**
+     * TODO Document this value.
+     */
+    public static final String IF_TYPE_ALL = "all";
+    
+    /**
+     * TODO Document this value.
+     */
+    public static final String IF_TYPE_IGNORE = "ignore";
+    
     private SortedSet<AttributeDefinition> m_attributeTypes = new TreeSet<AttributeDefinition>(new ByNameComparator());
 
     /**
