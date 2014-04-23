@@ -505,7 +505,7 @@ public class CollectionResourceWrapperTest {
 
     private SnmpAttribute addAttributeToCollectionResource(SnmpCollectionResource resource, String attributeName, String attributeType, String attributeInstance, String value) {
         MibObject object = createMibObject(attributeType, attributeName, attributeInstance);
-        SnmpAttributeType objectType = new NumericAttributeType(resource.getResourceType(), "default", object, new AttributeGroupType("mibGroup", "ignore"));
+        SnmpAttributeType objectType = new NumericAttributeType(resource.getResourceType(), "default", object, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
         SnmpValue snmpValue = null;
         if (attributeType.equals("string")) {
             snmpValue = SnmpUtils.getValueFactory().getOctetString(value.getBytes());
@@ -519,7 +519,7 @@ public class CollectionResourceWrapperTest {
 
     private SnmpAttribute addAttributeToCollectionResource(SnmpCollectionResource resource, String attributeName, String attributeType, String attributeInstance, BigInteger value) {
         MibObject object = createMibObject(attributeType, attributeName, attributeInstance);
-        SnmpAttributeType objectType = new NumericAttributeType(resource.getResourceType(), "default", object, new AttributeGroupType("mibGroup", "ignore"));
+        SnmpAttributeType objectType = new NumericAttributeType(resource.getResourceType(), "default", object, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
         SnmpValue snmpValue = SnmpUtils.getValueFactory().getCounter64(value);
         resource.setAttributeValue(objectType, snmpValue);
         return new SnmpAttribute(resource, objectType, snmpValue);

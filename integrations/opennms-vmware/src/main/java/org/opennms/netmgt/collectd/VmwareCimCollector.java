@@ -159,7 +159,7 @@ public class VmwareCimCollector implements ServiceCollector {
      */
     private void loadAttributeGroupList(final VmwareCimCollection collection) {
         for (final VmwareCimGroup vpm : collection.getVmwareCimGroup()) {
-            final AttributeGroupType attribGroupType1 = new AttributeGroupType(vpm.getName(), "all");
+            final AttributeGroupType attribGroupType1 = new AttributeGroupType(vpm.getName(), AttributeGroupType.IF_TYPE_ALL);
             m_groupTypeList.put(vpm.getName(), attribGroupType1);
         }
     }
@@ -319,7 +319,7 @@ public class VmwareCimCollector implements ServiceCollector {
                 if (!cimObjects.containsKey(cimClass)) {
                     List<CIMObject> cimList = null;
                     try {
-                        cimList = vmwareViJavaAccess.queryCimObjects(hostSystem, cimClass, InetAddressUtils.str(agent.getInetAddress()));
+                        cimList = vmwareViJavaAccess.queryCimObjects(hostSystem, cimClass, InetAddressUtils.str(agent.getAddress()));
                     } catch (Exception e) {
                         logger.warn("Error retrieving CIM values from host system '{}'. Error message: '{}'", vmwareManagedObjectId, e.getMessage());
                         return collectionSet;

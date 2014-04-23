@@ -124,7 +124,7 @@ public class PersistRegexSelectorStrategyTest {
 
         resourceA = new GenericIndexResource(resourceType, rt.getName(), new SnmpInstId("1.2.3.4.5.6.7.8.9.1.1"));
         
-        AttributeGroupType groupType = new AttributeGroupType("mib2-interfaces", "all");
+        AttributeGroupType groupType = new AttributeGroupType("mib2-interfaces", AttributeGroupType.IF_TYPE_ALL);
         MibObject mibObject = new MibObject();
         mibObject.setOid(".1.2.3.4.5.6.7.8.9.2.1");
         mibObject.setInstance("1");

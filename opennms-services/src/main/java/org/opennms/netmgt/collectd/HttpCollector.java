@@ -466,7 +466,7 @@ public class HttpCollector implements ServiceCollector {
         if (matches) {
             LOG.debug("processResponse: found matching attributes: {}", matches);
             final List<Attrib> attribDefs = collectionSet.getUriDef().getAttributes().getAttribCollection();
-            final AttributeGroupType groupType = new AttributeGroupType(collectionSet.getUriDef().getName(),"all");
+            final AttributeGroupType groupType = new AttributeGroupType(collectionSet.getUriDef().getName(), AttributeGroupType.IF_TYPE_ALL);
 
             final List<Locale> locales = new ArrayList<Locale>();
             if (responseLocale != null) {
@@ -699,7 +699,7 @@ public class HttpCollector implements ServiceCollector {
 
     private static URI buildUri(final HttpCollectionSet collectionSet) throws URISyntaxException {
         HashMap<String,String> substitutions = new HashMap<String,String>();
-        substitutions.put("ipaddr", InetAddressUtils.str(collectionSet.getAgent().getInetAddress()));
+        substitutions.put("ipaddr", InetAddressUtils.str(collectionSet.getAgent().getAddress()));
         substitutions.put("nodeid", Integer.toString(collectionSet.getAgent().getNodeId()));
 
         URIBuilder ub = new URIBuilder();
@@ -811,7 +811,7 @@ public class HttpCollector implements ServiceCollector {
 
         public HttpCollectionResource(CollectionAgent agent, Uri uriDef) {
             m_agent=agent;
-            m_attribGroup=new AttributeGroup(this, new AttributeGroupType(uriDef.getName(), "all"));
+            m_attribGroup=new AttributeGroup(this, new AttributeGroupType(uriDef.getName(), AttributeGroupType.IF_TYPE_ALL));
         }
 
         public void storeResults(List<HttpCollectionAttribute> results) {

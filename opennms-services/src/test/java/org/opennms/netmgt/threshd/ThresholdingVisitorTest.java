@@ -332,7 +332,7 @@ public class ThresholdingVisitorTest {
         SnmpCollectionAgent agent = createCollectionAgent();
         NodeResourceType resourceType = createNodeResourceType(agent);
         MibObject mibObject = createMibObject("counter", "myCounter", "0");
-        SnmpAttributeType attributeType = new NumericAttributeType(resourceType, "default", mibObject, new AttributeGroupType("mibGroup", "ignore"));
+        SnmpAttributeType attributeType = new NumericAttributeType(resourceType, "default", mibObject, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
 
         // Add Events
         addHighThresholdEvent(1, 10, 5, 15, "Unknown", null, "myCounter", null, null);
@@ -372,7 +372,7 @@ public class ThresholdingVisitorTest {
         SnmpCollectionAgent agent = createCollectionAgent();
         NodeResourceType resourceType = createNodeResourceType(agent);
         MibObject mibObject = createMibObject("counter", "myCounter", "0");
-        SnmpAttributeType attributeType = new NumericAttributeType(resourceType, "default", mibObject, new AttributeGroupType("mibGroup", "ignore"));
+        SnmpAttributeType attributeType = new NumericAttributeType(resourceType, "default", mibObject, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
 
         // Add Events
         addHighThresholdEvent(1, 10, 5, 15, "Unknown", null, "myCounter", null, null);
@@ -622,7 +622,7 @@ public class ThresholdingVisitorTest {
         SnmpCollectionAgent agent = createCollectionAgent();
         NodeResourceType resourceType = createNodeResourceType(agent);
         MibObject mibObject = createMibObject("gauge", "bug2746", "0");
-        SnmpAttributeType attributeType = new NumericAttributeType(resourceType, "default", mibObject, new AttributeGroupType("mibGroup", "ignore"));
+        SnmpAttributeType attributeType = new NumericAttributeType(resourceType, "default", mibObject, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
 
         // Add Events
         addHighThresholdEvent(1, 50, 40, 60, "Unknown", null, "bug2746", null, null);
@@ -814,7 +814,7 @@ public class ThresholdingVisitorTest {
         SnmpCollectionAgent agent = createCollectionAgent();
         NodeResourceType resourceType = createNodeResourceType(agent);
         MibObject mibObject = createMibObject("counter", "myCounter", "0");
-        SnmpAttributeType attributeType = new NumericAttributeType(resourceType, "default", mibObject, new AttributeGroupType("mibGroup", "ignore"));
+        SnmpAttributeType attributeType = new NumericAttributeType(resourceType, "default", mibObject, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
 
         // Add Events
         addHighThresholdEvent(1, 100, 90, 110, "Unknown", null, "myCounter", null, null);
@@ -1746,7 +1746,7 @@ public class ThresholdingVisitorTest {
 
         // Creating Data Source
         MibObject object = createMibObject("counter", "ifOutOctets", "ifIndex");
-        SnmpAttributeType objectType = new NumericAttributeType(resourceType, "default", object, new AttributeGroupType("mibGroup", "ignore"));
+        SnmpAttributeType objectType = new NumericAttributeType(resourceType, "default", object, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
 
         long timestamp = new Date().getTime();
         // Step 1 - Initialize Counter
@@ -1808,7 +1808,7 @@ public class ThresholdingVisitorTest {
 
     private static void addAttributeToCollectionResource(SnmpCollectionResource resource, ResourceType type, String attributeName, String attributeType, String attributeInstance, long value) {
         MibObject object = createMibObject(attributeType, attributeName, attributeInstance);
-        SnmpAttributeType objectType = new NumericAttributeType(type, "default", object, new AttributeGroupType("mibGroup", "ignore"));
+        SnmpAttributeType objectType = new NumericAttributeType(type, "default", object, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
         SnmpValue snmpValue = attributeType.equals("counter") ? SnmpUtils.getValueFactory().getCounter32(value) : SnmpUtils.getValueFactory().getGauge32(value);
         resource.setAttributeValue(objectType, snmpValue);
     }

@@ -148,7 +148,7 @@ public class TcaCollectionSet extends AbstractCollectionSet {
 	 */
 	protected void collect() throws CollectionException {
 		try {
-			TcaData tracker = new TcaData(m_agent.getInetAddress());
+			TcaData tracker = new TcaData(m_agent.getAddress());
 			SnmpWalker walker = SnmpUtils.createWalker(m_agent.getAgentConfig(), "TcaCollector for " + m_agent.getHostAddress(), tracker);
 			walker.start();
 			LOG.debug("collect: successfully instantiated TCA Collector for {}", m_agent.getHostAddress());
@@ -205,7 +205,7 @@ public class TcaCollectionSet extends AbstractCollectionSet {
 	 */
 	private void process(TcaData tracker) throws Exception {
 		LOG.debug("process: processing raw TCA data for {} peers.", tracker.size());
-		AttributeGroupType attribGroupType = new AttributeGroupType(TcaCollectionResource.RESOURCE_TYPE_NAME, "all"); // It will be treated like a Multi-Instance Resource
+		AttributeGroupType attribGroupType = new AttributeGroupType(TcaCollectionResource.RESOURCE_TYPE_NAME, AttributeGroupType.IF_TYPE_ALL); // It will be treated like a Multi-Instance Resource
 		long timestamp = 0;
 		for (TcaDataEntry entry : tracker.getEntries()) {
 			long lastTimestamp = getLastTimestamp(new TcaCollectionResource(m_agent, entry.getPeerAddress()));

@@ -159,7 +159,7 @@ public class XmpCollector implements ServiceCollector {
             return false;
         }
 
-        agt = new AttributeGroupType(groupName,"ignore");
+        agt = new AttributeGroupType(groupName, AttributeGroupType.IF_TYPE_IGNORE);
         ag = new AttributeGroup(scalarResource,agt);
 
         // for each variable in reply, store it in collectionSet
@@ -284,7 +284,7 @@ public class XmpCollector implements ServiceCollector {
             else 
                 rowResource = new XmpCollectionResource(collectionSet.getCollectionAgent(),resourceType, tableInfo[1],rowInstance);
 
-            agt = new AttributeGroupType(groupName,"all");
+            agt = new AttributeGroupType(groupName, AttributeGroupType.IF_TYPE_ALL);
             ag = new AttributeGroup(rowResource,agt);
 
             LOG.debug("queryTable instance={}", rowInstance);
@@ -479,7 +479,7 @@ public class XmpCollector implements ServiceCollector {
         oldUptime = 0;
         
         // First go to the peer factory
-        XmpAgentConfig peerConfig = XmpPeerFactory.getInstance().getAgentConfig(agent.getInetAddress());
+        XmpAgentConfig peerConfig = XmpPeerFactory.getInstance().getAgentConfig(agent.getAddress());
         authenUser = peerConfig.getAuthenUser();
         timeout = (int)peerConfig.getTimeout();
         retries = peerConfig.getRetry();
@@ -543,12 +543,12 @@ public class XmpCollector implements ServiceCollector {
 
         // open/get a session with the target agent
 
-        LOG.debug("collect: attempting to open XMP session with {}:{},{}", agent.getInetAddress(), xmpPort, authenUser);
+        LOG.debug("collect: attempting to open XMP session with {}:{},{}", agent.getAddress(), xmpPort, authenUser);
 
         // Set the SO_TIMEOUT, why don't we...
         sockopts.setConnectTimeout(timeout);
 
-        session = new XmpSession(sockopts, agent.getInetAddress(), xmpPort,authenUser);
+        session = new XmpSession(sockopts, agent.getAddress(), xmpPort,authenUser);
 
         if (session.isClosed()) {
             LOG.warn("collect unable to open XMP session with {}", agent);

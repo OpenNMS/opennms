@@ -341,7 +341,7 @@ public abstract class JMXCollector implements ServiceCollector {
                         String excludeList = beanInfo.getExcludes();
                         //All JMX collected values are per node
                         String obj = useMbeanForRrds ? mbeanName : objectName;
-                        AttributeGroupType attribGroupType=new AttributeGroupType(fixGroupName(obj),"all");
+                        AttributeGroupType attribGroupType=new AttributeGroupType(fixGroupName(obj), AttributeGroupType.IF_TYPE_ALL);
                         
                         List<String> attribNames = beanInfo.getAttributeNames();
                         List<String> compAttribNames = beanInfo.getCompositeAttributeNames();

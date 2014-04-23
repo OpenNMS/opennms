@@ -101,12 +101,6 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Snmp
     /** {@inheritDoc} */
     @Override
     public InetAddress getAddress() {
-        return getInetAddress();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public InetAddress getInetAddress() {
         if (m_inetAddress == null) {
             m_inetAddress = m_agentService.getInetAddress();
         }
@@ -136,7 +130,7 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Snmp
      */
     @Override
     public String getHostAddress() {
-        return InetAddressUtils.str(getInetAddress());
+        return InetAddressUtils.str(getAddress());
     }
 
     /* (non-Javadoc)
@@ -335,7 +329,7 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Snmp
      */
     @Override
     public SnmpAgentConfig getAgentConfig() {
-        return SnmpPeerFactory.getInstance().getAgentConfig(getInetAddress());
+        return SnmpPeerFactory.getInstance().getAgentConfig(getAddress());
     }
     
     private Set<SnmpIfData> getSnmpInterfaceData() {
