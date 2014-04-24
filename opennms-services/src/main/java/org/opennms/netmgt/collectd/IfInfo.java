@@ -91,7 +91,7 @@ public final class IfInfo extends SnmpCollectionResource {
      * @return a int.
      */
     @Override
-    public int getType() {
+    public int getSnmpIfType() {
         return m_snmpIfData.getIfType();
     }
 

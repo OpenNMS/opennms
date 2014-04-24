@@ -38,11 +38,6 @@ public abstract class VmwareCimCollectionResource extends AbstractCollectionReso
         super(agent);
     }
 
-    @Override
-    public int getType() {
-        return -1; //Is this right?
-    }
-
     public void setAttributeValue(final CollectionAttributeType type, final String value) {
         final VmwareCimCollectionAttribute attr = new VmwareCimCollectionAttribute(this, type, value);
         addAttribute(attr);

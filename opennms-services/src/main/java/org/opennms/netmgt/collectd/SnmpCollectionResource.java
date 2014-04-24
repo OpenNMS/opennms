@@ -107,12 +107,13 @@ public abstract class SnmpCollectionResource implements CollectionResource {
     public abstract File getResourceDir(RrdRepository repository) throws FileNotFoundException;
 
     /**
-     * <p>getType</p>
+     * Returns ifType; is (but not sure if it should be) -1 for non interface type collections, otherwise
+     * the SNMP type of the interface. This field is used to match the ifType field of the group from 
+     * datacollection-config.xml.
      *
      * @return a int.
      */
-    @Override
-    public abstract int getType();
+    public abstract int getSnmpIfType();
     
     /**
      * <p>rescanNeeded</p>
@@ -144,7 +145,7 @@ public abstract class SnmpCollectionResource implements CollectionResource {
     private AttributeGroup getGroup(final AttributeGroupType groupType) {
         AttributeGroup group = m_groups.get(groupType);
         if (group == null) {
-            group = new AttributeGroup(this, groupType);
+            group = new SnmpAttributeGroup(this, groupType);
             m_groups.put(groupType, group);
         }
         return group;

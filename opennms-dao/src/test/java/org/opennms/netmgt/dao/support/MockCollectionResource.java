@@ -113,11 +113,6 @@ public class MockCollectionResource implements CollectionResource {
     }
 
     @Override
-    public int getType() {
-        return 0;
-    }
-
-    @Override
     public String getResourceTypeName() {
         return type;
     }

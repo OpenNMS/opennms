@@ -47,14 +47,6 @@ public interface CollectionResource extends ResourceIdentifier, CollectionVisita
     boolean rescanNeeded();
     
     /**
-     * Returns something like an ifType; is (but not sure if it should be) -1 for non interface type collections, otherwise
-     * the SNMP type of the interface. Relates to ifType in datacollection-config.xml
-     *
-     * @return a int.
-     */
-    int getType();
-    
-    /**
      * Returns a string which indicates what type of resource.
      * Will be one of
      *          "node" for the node level resource

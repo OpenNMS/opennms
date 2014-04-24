@@ -332,18 +332,13 @@ public class HttpCollector implements ServiceCollector {
             m_value = value;
         }
 
-        public Object getValue() {
-            return m_value;
-        }
-
         @Override
         public String getNumericValue() {
-            Object val = getValue();
-            if (val instanceof Number) {
-                return val.toString();
+            if (m_value instanceof Number) {
+                return m_value.toString();
             } else {
                 try {
-                    return Double.valueOf(val.toString()).toString();
+                    return Double.valueOf(m_value.toString()).toString();
                 } catch (NumberFormatException nfe) { /* Fall through */ }
             }
             LOG.debug("Value for attribute {} does not appear to be a number, skipping", this);
@@ -352,7 +347,7 @@ public class HttpCollector implements ServiceCollector {
 
         @Override
         public String getStringValue() {
-            return getValue().toString();
+            return m_value.toString();
         }
 
         public String getValueAsString() {
@@ -810,11 +805,6 @@ public class HttpCollector implements ServiceCollector {
             visitor.visitResource(this);
             m_attribGroup.visit(visitor);
             visitor.completeResource(this);
-        }
-
-        @Override
-        public int getType() {
-            return -1; //Is this right?
         }
 
         @Override

@@ -106,14 +106,6 @@ public class TcaCollectionResource extends AbstractCollectionResource {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.opennms.netmgt.collectd.AbstractCollectionResource#getType()
-	 */
-	@Override
-	public int getType() {
-		return -1; // Is this right?
-	}
-
-	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	@Override

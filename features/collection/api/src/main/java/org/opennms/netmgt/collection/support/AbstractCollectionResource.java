@@ -120,14 +120,6 @@ public abstract class AbstractCollectionResource implements CollectionResource {
         visitor.completeResource(this);
     }
 
-    /**
-     * <p>getType</p>
-     *
-     * @return a int.
-     */
-    @Override
-    public abstract int getType();
-
     @Override
     public final String getParent() {
         return m_agent.getStorageDir().toString();

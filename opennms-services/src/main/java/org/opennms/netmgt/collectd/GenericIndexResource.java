@@ -85,7 +85,7 @@ public class GenericIndexResource extends SnmpCollectionResource {
 
     /** {@inheritDoc} */
     @Override
-    public int getType() {
+    public int getSnmpIfType() {
         return -1;	// XXX is this right?
     }
 

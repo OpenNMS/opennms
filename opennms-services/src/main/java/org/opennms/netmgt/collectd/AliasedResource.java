@@ -162,8 +162,8 @@ public class AliasedResource extends SnmpCollectionResource {
      * @return a int.
      */
     @Override
-    public int getType() {
-        return getIfInfo().getType();
+    public int getSnmpIfType() {
+        return getIfInfo().getSnmpIfType();
     }
 
     /** {@inheritDoc} */

@@ -123,28 +123,16 @@ public class AttributeGroup implements CollectionVisitable, Persistable {
     public boolean shouldPersist(ServiceParameters params) {
         boolean shouldPersist = doShouldPersist();
         LOG.debug("{}.shouldPersist = {}", this, shouldPersist);
-        return shouldPersist;   
- 
-        
+        return shouldPersist;
     }
 
-    private boolean doShouldPersist() {
+    protected boolean doShouldPersist() {
         if (AttributeGroupType.IF_TYPE_IGNORE.equalsIgnoreCase(getIfType())) return true;
         if (AttributeGroupType.IF_TYPE_ALL.equalsIgnoreCase(getIfType())) return true;
-        
-        String type = String.valueOf(m_resource.getType());
-        
-        if (type.equals(getIfType())) return true;
-        
-        StringTokenizer tokenizer = new StringTokenizer(getIfType(), ",");
-        while(tokenizer.hasMoreTokens()) {
-            if (type.equals(tokenizer.nextToken()))
-                return true;
-        }
         return false;
     }
 
-    private String getIfType() {
+    protected String getIfType() {
         return m_groupType.getIfType();
     }
 

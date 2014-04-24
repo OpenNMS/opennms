@@ -108,16 +108,6 @@ public class LatencyCollectionResource implements CollectionResource {
     }
 
     /**
-     * <p>getType</p>
-     *
-     * @return a int.
-     */
-    @Override
-    public int getType() {
-        return 0;
-    }
-
-    /**
      * <p>rescanNeeded</p>
      *
      * @return a boolean.

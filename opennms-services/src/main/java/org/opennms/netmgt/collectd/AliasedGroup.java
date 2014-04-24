@@ -58,7 +58,7 @@ public class AliasedGroup extends AttributeGroup {
 	 * @param resource a {@link org.opennms.netmgt.collection.api.CollectionResource} object.
 	 * @param group a {@link org.opennms.netmgt.collection.api.AttributeGroup} object.
 	 */
-	public AliasedGroup(CollectionResource resource, AttributeGroup group) {
+	public AliasedGroup(SnmpCollectionResource resource, AttributeGroup group) {
 		super(resource, group.getGroupType());
 		m_group = group;
 	}

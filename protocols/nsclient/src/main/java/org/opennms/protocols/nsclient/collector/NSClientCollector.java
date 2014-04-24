@@ -44,7 +44,6 @@ import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionAttributeType;
-import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.ServiceCollector;
@@ -148,11 +147,6 @@ public class NSClientCollector implements ServiceCollector {
             super(agent);
         }
         
-        @Override
-        public int getType() {
-            return -1; //Is this right?
-        }
-
         public void setAttributeValue(CollectionAttributeType type, String value) {
             NSClientCollectionAttribute attr = new NSClientCollectionAttribute(this, type, value);
             addAttribute(attr);

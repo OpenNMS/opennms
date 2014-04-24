@@ -54,10 +54,6 @@ public class MockCollectionResourceWrapper extends CollectionResourceWrapper {
                 return null;
             }
             @Override
-            public int getType() {
-                return 0;
-            }
-            @Override
             public boolean rescanNeeded() {
                 return false;
             }

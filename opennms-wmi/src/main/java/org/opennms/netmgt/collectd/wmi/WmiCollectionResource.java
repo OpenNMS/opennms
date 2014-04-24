@@ -55,16 +55,6 @@ public abstract class WmiCollectionResource extends AbstractCollectionResource {
     }
 
     /**
-     * <p>getType</p>
-     *
-     * @return a int.
-     */
-    @Override
-    public int getType() {
-        return -1; //Is this right?
-    }
-
-    /**
      * <p>setAttributeValue</p>
      *
      * @param type a {@link org.opennms.netmgt.collection.api.CollectionAttributeType} object.

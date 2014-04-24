@@ -67,7 +67,7 @@ public final class NodeInfo extends SnmpCollectionResource {
       * @return a int.
       */
         @Override
-     public int getType() {
+     public int getSnmpIfType() {
         return -1;
     }
 

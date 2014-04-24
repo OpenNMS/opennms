@@ -64,14 +64,6 @@ public abstract class XmlCollectionResource extends AbstractCollectionResource {
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.netmgt.collectd.AbstractCollectionResource#getType()
-     */
-    @Override
-    public int getType() {
-        return -1; // Is this right?
-    }
-
-    /* (non-Javadoc)
      * @see org.opennms.netmgt.config.collector.CollectionResource#getResourceTypeName()
      */
     @Override

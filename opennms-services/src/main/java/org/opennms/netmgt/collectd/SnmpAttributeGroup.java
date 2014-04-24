@@ -26,27 +26,45 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd.vmware.vijava;
+package org.opennms.netmgt.collectd;
 
-import org.opennms.netmgt.collection.api.CollectionAgent;
-import org.opennms.netmgt.collection.api.CollectionAttributeType;
-import org.opennms.netmgt.collection.support.AbstractCollectionResource;
+import java.util.StringTokenizer;
 
-public abstract class VmwareCollectionResource extends AbstractCollectionResource {
+import org.opennms.netmgt.collection.api.AttributeGroup;
+import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.CollectionResource;
 
-    public VmwareCollectionResource(CollectionAgent agent) {
-        super(agent);
-    }
+/**
+ * This attribute group overrides {@link #doShouldPersist()} so that persistence
+ * can be enabled if the SNMP ifType matches the value of ifType on the 
+ * {@link CollectionResource}.
+ */
+public class SnmpAttributeGroup extends AttributeGroup {
 
-    public void setAttributeValue(final CollectionAttributeType type, final String value) {
-        final VmwareCollectionAttribute attr = new VmwareCollectionAttribute(this, type, value);
-        addAttribute(attr);
-    }
+	public SnmpAttributeGroup(SnmpCollectionResource resource, AttributeGroupType groupType) {
+		super(resource, groupType);
+	}
 
-    @Override
-    public abstract String getResourceTypeName();
+	/**
+	 * 
+	 */
+	@Override
+	protected boolean doShouldPersist() {
+		boolean shouldPersist = super.doShouldPersist();
 
-    @Override
-    public abstract String getInstance();
+		if (shouldPersist) {
+			return shouldPersist;
+		} else {
+			String type = String.valueOf(((SnmpCollectionResource)getResource()).getSnmpIfType());
 
+			if (type.equals(getIfType())) return true;
+
+			StringTokenizer tokenizer = new StringTokenizer(getIfType(), ",");
+			while(tokenizer.hasMoreTokens()) {
+				if (type.equals(tokenizer.nextToken()))
+					return true;
+			}
+			return false;
+		}
+	}
 }

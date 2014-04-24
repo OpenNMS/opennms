@@ -57,7 +57,6 @@ import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionAttributeType;
-import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.ServiceCollector;
@@ -754,11 +753,6 @@ public abstract class JMXCollector implements ServiceCollector {
             return "node["+m_nodeId+']';
         }
         
-        @Override
-        public int getType() {
-            return -1; //Is this correct?
-        }
-
         public void setAttributeValue(CollectionAttributeType type, String value) {
             JMXCollectionAttribute attr = new JMXCollectionAttribute(this, type, value);
             addAttribute(attr);

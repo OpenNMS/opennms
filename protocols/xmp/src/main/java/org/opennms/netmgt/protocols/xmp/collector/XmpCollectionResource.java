@@ -74,7 +74,6 @@ public class XmpCollectionResource extends AbstractCollectionResource
     private final String m_nodeTypeName;
     private final String m_instance;
     private final String m_resourceType;
-    private final int m_nodeType;
     private final Set<AttributeGroup> m_listOfGroups;
 
     /* constructors  ************************************* */
@@ -96,7 +95,6 @@ public class XmpCollectionResource extends AbstractCollectionResource
         } else {
             this.m_resourceType = resourceType;
         }
-        m_nodeType = -1;
 
         // filter the instance so it does not have slashes (/) nor colons 
         // in it as they can munge our rrd file layout
@@ -196,16 +194,6 @@ public class XmpCollectionResource extends AbstractCollectionResource
 
 
     /**
-     * <p>getType</p>
-     * return -1 for non-tabular; what do we return for 
-     * for interface or tabular data?
-     *
-     * @return a int.
-     */
-    @Override
-    public int getType() { return m_nodeType; }
-
-    /**
      * <p>getGroups</p>
      *
      * @return a {@link java.util.Collection} object.
@@ -218,7 +206,7 @@ public class XmpCollectionResource extends AbstractCollectionResource
      * @return a {@link java.lang.String} object.
      */
     @Override
-    public String toString() { return "XmpCollectionResource for "+m_agent+" resType="+m_resourceType+" instance="+m_instance+" nodeType="+m_nodeTypeName+" nodeType="+m_nodeType; }
+    public String toString() { return "XmpCollectionResource for "+m_agent+" resType="+m_resourceType+" instance="+m_instance+" nodeType="+m_nodeTypeName; }
 
     /**
      * @deprecated This class should be changed to store its {@link AttributeGroup}
