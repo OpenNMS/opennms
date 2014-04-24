@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure.dtd">
+
+<Configure id="FileServer" class="org.eclipse.jetty.server.Server">
+
+	<Call name="addConnector">
+		<Arg>
+			<New class="org.eclipse.jetty.server.nio.SelectChannelConnector">
+				<Set name="statsOn">true</Set>
+				<Set name="host">0.0.0.0</Set>
+				<Set name="port">8980</Set>
+				<!-- <Set name="requestHeaderSize">4000</Set> -->
+				<!-- <Set name="org.eclipse.jetty.server.Request.maxFormKeys">2000</Set> -->
+			</New>
+		</Arg>
+	</Call>
+
+	<!-- Add AJP support -->
+	<!--
+	<Call name="addConnector">
+		<Arg>
+			<New class="org.eclipse.jetty.ajp.Ajp13SocketConnector">
+				<Set name="statsOn">true</Set>
+				<Set name="port">8981</Set>
+			</New>
+		</Arg>
+	</Call>
+	-->
+
+	<!-- Add HTTPS support -->
+	<!--
+	<Call name="addConnector">
+		<Arg>
+			<New class="org.eclipse.jetty.server.ssl.SslSelectChannelConnector">
+				<Arg>
+					<New class="org.eclipse.jetty.http.ssl.SslContextFactory">
+						<Set name="keyStore"><SystemProperty name="opennms.home" />/etc/jetty.keystore</Set>
+						<Set name="keyStorePassword">changeit</Set>
+						<Set name="keyManagerPassword">changeit</Set>
+						<Set name="trustStore"><SystemProperty name="opennms.home" />/etc/jetty.keystore</Set>
+						<Set name="trustStorePassword">changeit</Set>
+					</New>
+				</Arg>
+				<Set name="host">0.0.0.0</Set>
+				<Set name="port">8443</Set>
+				<Set name="maxIdleTime">30000</Set>
+			</New>
+		</Arg>
+	</Call>
+	-->
+
+	<Set name="handler">
+		<New class="org.eclipse.jetty.server.handler.HandlerList">
+			<Set name="handlers">
+				<Array type="org.eclipse.jetty.server.Handler">
+					<Item>
+						<New class="org.eclipse.jetty.webapp.WebAppContext">
+						    <Call name="setAttribute">
+						        <Arg>org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern</Arg>
+						        <Arg>.*/[^/]*\.jar$</Arg>
+						    </Call>
+						    <Set name="War"><SystemProperty name="opennms.home" />/jetty-webapps/opennms</Set>
+						    <Set name="ContextPath">/opennms</Set>
+						</New>
+					</Item>
+					<Item>
+						<New class="org.eclipse.jetty.webapp.WebAppContext">
+						    <Set name="War"><SystemProperty name="opennms.home" />/jetty-webapps/opennms-remoting</Set>
+						    <Set name="ContextPath">/opennms-remoting</Set>
+						</New>
+					</Item>
+					<Item>
+						<New class="org.eclipse.jetty.webapp.WebAppContext">
+						    <Set name="War"><SystemProperty name="opennms.home" />/jetty-webapps/ROOT</Set>
+						    <Set name="ContextPath">/</Set>
+						</New>
+					</Item>
+					<!--
+					<Item>
+						<New class="org.eclipse.jetty.server.handler.DefaultHandler"></New>
+					</Item>
+					-->
+				</Array>
+			</Set>
+		</New>
+	</Set>
+</Configure>
