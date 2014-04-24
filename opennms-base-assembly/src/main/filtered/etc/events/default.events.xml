@@ -140,7 +140,7 @@
             Received unformatted enterprise event (enterprise:%id% generic:%generic% specific:%specific%). %parm[##]% args: %parm[all]%
         </logmsg>
         <severity>Normal</severity>
-        <alarm-data reduction-key="%source%:%snmphost%:%id%:%generic%:%specific%" alarm-type="2" />
+        <alarm-data reduction-key="%source%:%snmphost%:%id%:%generic%:%specific%" alarm-type="3" auto-clean="true" />
     </event>
     <event>
         <uei>uei.opennms.org/default/trap</uei>
