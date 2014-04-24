@@ -272,8 +272,8 @@ public abstract class RrdUtils {
             return true;
         } catch (Throwable e) {
             String path = directory + File.separator + rrdName + getStrategy().getDefaultFileExtension();
-            LOG.error("createRRD: An error occured creating rrdfile {}", path, e);
-            throw new org.opennms.netmgt.rrd.RrdException("An error occured creating rrdfile " + path + ": " + e, e);
+            LOG.error("createRRD: An error occurred creating rrdfile {}", path, e);
+            throw new org.opennms.netmgt.rrd.RrdException("An error occurred creating rrdfile " + path + ": " + e, e);
         }
     }
 

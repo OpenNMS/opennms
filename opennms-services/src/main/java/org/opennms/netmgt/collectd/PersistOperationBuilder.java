@@ -160,9 +160,12 @@ public class PersistOperationBuilder {
         try {
             final String ownerName = m_resource.getOwnerName();
             final String absolutePath = getResourceDir(m_resource).getAbsolutePath();
-            RrdUtils.createRRD(ownerName, absolutePath, m_rrdName, getRepository().getStep(), getDataSources(), getRepository().getRraList(), getAttributeMappings());
-            RrdUtils.updateRRD(ownerName, absolutePath, m_rrdName, m_timeKeeper.getCurrentTime(), getValues());
-            RrdUtils.createMetaDataFile(absolutePath, m_rrdName, m_metaData);
+            List<RrdDataSource> dataSources = getDataSources();
+            if (dataSources != null && dataSources.size() > 0) {
+                RrdUtils.createRRD(ownerName, absolutePath, m_rrdName, getRepository().getStep(), dataSources, getRepository().getRraList(), getAttributeMappings());
+                RrdUtils.updateRRD(ownerName, absolutePath, m_rrdName, m_timeKeeper.getCurrentTime(), getValues());
+                RrdUtils.createMetaDataFile(absolutePath, m_rrdName, m_metaData);
+            }
         } catch (FileNotFoundException e) {
             LoggerFactory.getLogger(getClass()).warn("Could not get resource directory: " + e.getMessage(), e);
             return;

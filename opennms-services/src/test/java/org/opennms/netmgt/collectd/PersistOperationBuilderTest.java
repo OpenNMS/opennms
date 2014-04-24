@@ -140,7 +140,7 @@ public class PersistOperationBuilderTest {
         MibObject mibObject = new MibObject();
         mibObject.setOid(".1.1.1.1");
         mibObject.setAlias("mibObjectAlias");
-        mibObject.setType("string");
+        mibObject.setType("counter");
         mibObject.setInstance("0");
         mibObject.setMaxval(null);
         mibObject.setMinval(null);
@@ -176,7 +176,7 @@ public class PersistOperationBuilderTest {
         MibObject mibObject = new MibObject();
         mibObject.setOid(".1.1.1.1");
         mibObject.setAlias("mibObjectAlias");
-        mibObject.setType("string");
+        mibObject.setType("counter");
         mibObject.setInstance("0");
         mibObject.setMaxval(null);
         mibObject.setMinval(null);
@@ -192,6 +192,40 @@ public class PersistOperationBuilderTest {
         builder.commit();
     }
 
+
+    @Test
+    public void testCommitWithDeclaredAttributeAndStringValue() throws Exception {
+
+        RrdRepository repository = createRrdRepository();
+
+        SnmpCollectionAgent agent = getCollectionAgent();
+
+        MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
+
+        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig);
+
+        NodeResourceType resourceType = new NodeResourceType(agent, collection);
+
+        CollectionResource resource = new NodeInfo(resourceType, agent);
+
+        MibObject mibObject = new MibObject();
+        mibObject.setOid(".1.1.1.1");
+        mibObject.setAlias("mibObjectAlias");
+        mibObject.setType("string");
+        mibObject.setInstance("0");
+        mibObject.setMaxval(null);
+        mibObject.setMinval(null);
+
+        SnmpCollectionSet collectionSet = new SnmpCollectionSet(agent, collection);
+
+        SnmpAttributeType attributeType = new StringAttributeType(resourceType, "some-collection", mibObject, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
+        attributeType.storeResult(collectionSet, null, new SnmpResult(mibObject.getSnmpObjId(), new SnmpInstId(mibObject.getInstance()), SnmpUtils.getValueFactory().getOctetString("hello".getBytes())));
+
+        PersistOperationBuilder builder = new PersistOperationBuilder(repository, resource, "rrdName");
+        builder.declareAttribute(attributeType);
+        builder.setAttributeValue(attributeType, "THIS_IS_A_STRING");
+        builder.commit();
+    }
 
     private RrdRepository createRrdRepository() throws IOException {
         RrdRepository repository = new RrdRepository();
