@@ -7,10 +7,9 @@
 		<Arg>
 			<New class="org.eclipse.jetty.server.nio.SelectChannelConnector">
 				<Set name="statsOn">true</Set>
-				<Set name="host">0.0.0.0</Set>
-				<Set name="port">8980</Set>
-				<!-- <Set name="requestHeaderSize">4000</Set> -->
-				<!-- <Set name="org.eclipse.jetty.server.Request.maxFormKeys">2000</Set> -->
+				<Set name="host"><SystemProperty name="org.opennms.netmgt.jetty.host" default="0.0.0.0" /></Set>
+				<Set name="port"><SystemProperty name="org.opennms.netmgt.jetty.port" default="8980" /></Set>
+				<Set name="requestHeaderSize"><SystemProperty name="org.opennms.netmgt.jetty.requestHeaderSize" default="4000" /></Set>
 			</New>
 		</Arg>
 	</Call>
@@ -34,15 +33,15 @@
 			<New class="org.eclipse.jetty.server.ssl.SslSelectChannelConnector">
 				<Arg>
 					<New class="org.eclipse.jetty.http.ssl.SslContextFactory">
-						<Set name="keyStore"><SystemProperty name="opennms.home" />/etc/jetty.keystore</Set>
-						<Set name="keyStorePassword">changeit</Set>
-						<Set name="keyManagerPassword">changeit</Set>
-						<Set name="trustStore"><SystemProperty name="opennms.home" />/etc/jetty.keystore</Set>
-						<Set name="trustStorePassword">changeit</Set>
+						<Set name="keyStore"><SystemProperty name="org.opennms.netmgt.jetty.https-keystore" /></Set>
+						<Set name="keyStorePassword"><SystemProperty name="org.opennms.netmgt.jetty.https-keystorepassword" /></Set>
+						<Set name="keyManagerPassword"><SystemProperty name="org.opennms.netmgt.jetty.https-keypassword" /></Set>
+						<Set name="trustStore"><SystemProperty name="org.opennms.netmgt.jetty.https-keystore" /></Set>
+						<Set name="trustStorePassword"><SystemProperty name="org.opennms.netmgt.jetty.https-keystorepassword" /></Set>
 					</New>
 				</Arg>
-				<Set name="host">0.0.0.0</Set>
-				<Set name="port">8443</Set>
+				<Set name="host"><SystemProperty name="org.opennms.netmgt.jetty.https-host" default="0.0.0.0" /></Set>
+				<Set name="port"><SystemProperty name="org.opennms.netmgt.jetty.https-port" default="8443" /></Set>
 				<Set name="maxIdleTime">30000</Set>
 				<Set name="ExcludeCipherSuites">
 					<Array type="java.lang.String">
