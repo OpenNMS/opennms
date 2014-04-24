@@ -65,7 +65,11 @@ public class JettyServer extends AbstractServiceDaemon {
 
         try {
             m_server = new Server();
-            jettyXmlStream = jettyXml.toURI().toURL().openStream();
+            if (jettyXml.exists()) {
+                jettyXmlStream = jettyXml.toURI().toURL().openStream();
+            } else {
+                jettyXmlStream = getClass().getResourceAsStream("jetty.xml");
+            }
             if (jettyXmlStream == null) {
                 throw new RuntimeException("Unable to locate jetty.xml in the classpath!");
             }
