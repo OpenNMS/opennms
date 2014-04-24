@@ -61,36 +61,25 @@ package org.opennms.netmgt.protocols.xmp.collector;
 
 import org.krupczak.xmp.XmpVar;
 import org.opennms.netmgt.collection.api.CollectionAttributeType;
-import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.support.AbstractCollectionAttribute;
 public class XmpCollectionAttribute extends AbstractCollectionAttribute {
     /* class variables and methods *********************** */
 
     /* instance variables ******************************** */
     private final XmpVar aVar;
-    private final XmpCollectionResource resource;
 
     /* constructors  ************************************* */
     XmpCollectionAttribute(XmpCollectionResource res, 
                            CollectionAttributeType attribType, 
                            XmpVar aVar) 
                            {
-        super(attribType);
+        super(attribType, res);
         this.aVar = aVar;
-        this.resource = res;
                            }
 
     /* private methods *********************************** */
 
     /* public methods ************************************ */
-
-    /**
-     * <p>Getter for the field <code>resource</code>.</p>
-     *
-     * @return a {@link org.opennms.netmgt.collection.api.CollectionResource} object.
-     */
-    @Override
-    public CollectionResource getResource() { return resource; }
 
     /**
      * <p>getNumericValue</p>

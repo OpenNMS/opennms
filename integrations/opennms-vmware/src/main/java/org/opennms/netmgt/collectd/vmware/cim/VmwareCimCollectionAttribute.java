@@ -34,11 +34,9 @@ import org.opennms.netmgt.collection.support.AbstractCollectionAttribute;
 
 public class VmwareCimCollectionAttribute extends AbstractCollectionAttribute {
     private final String m_value;
-    private final VmwareCimCollectionResource m_resource;
 
     public VmwareCimCollectionAttribute(final VmwareCimCollectionResource resource, final CollectionAttributeType attribType, final String value) {
-        super(attribType);
-        m_resource = resource;
+        super(attribType, resource);
         m_value = value;
     }
 
@@ -50,11 +48,6 @@ public class VmwareCimCollectionAttribute extends AbstractCollectionAttribute {
     @Override
     public String getNumericValue() {
         return m_value;
-    }
-
-    @Override
-    public CollectionResource getResource() {
-        return m_resource;
     }
 
     @Override

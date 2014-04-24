@@ -114,22 +114,15 @@ public class NSClientCollector implements ServiceCollector {
     private static class NSClientCollectionAttribute extends AbstractCollectionAttribute {
 
         private final String m_value;
-        private final NSClientCollectionResource m_resource;
         
         public NSClientCollectionAttribute(NSClientCollectionResource resource, CollectionAttributeType attribType, String value) {
-            super(attribType);
-            m_resource=resource;
+            super(attribType, resource);
             m_value = value;
         }
 
         @Override
         public String getNumericValue() {
             return m_value;
-        }
-
-        @Override
-        public CollectionResource getResource() {
-            return m_resource;
         }
 
         @Override

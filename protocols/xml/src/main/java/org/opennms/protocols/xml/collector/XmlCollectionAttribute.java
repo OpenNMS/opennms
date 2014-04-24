@@ -28,7 +28,6 @@
 
 package org.opennms.protocols.xml.collector;
 
-import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.support.AbstractCollectionAttribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,9 +45,6 @@ public class XmlCollectionAttribute extends AbstractCollectionAttribute {
     /** The Attribute Value. */
     private final String m_value;
 
-    /** The XML Collection Resource associated with this attribute. */
-    private final XmlCollectionResource m_resource;
-
     /**
      * Instantiates a new XML collection attribute.
      *
@@ -57,8 +53,7 @@ public class XmlCollectionAttribute extends AbstractCollectionAttribute {
      * @param value the attribute value
      */
     public XmlCollectionAttribute(XmlCollectionResource resource, XmlCollectionAttributeType attribType, String value) {
-        super(attribType);
-        m_resource = resource;
+        super(attribType, resource);
         m_value = value;
     }
 
@@ -80,14 +75,6 @@ public class XmlCollectionAttribute extends AbstractCollectionAttribute {
             }
         }
         return "U"; // Ignoring value from RRDtool/JRobin point of view.
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.collection.support.AbstractCollectionAttribute#getResource()
-     */
-    @Override
-    public CollectionResource getResource() {
-        return m_resource;
     }
 
     /* (non-Javadoc)

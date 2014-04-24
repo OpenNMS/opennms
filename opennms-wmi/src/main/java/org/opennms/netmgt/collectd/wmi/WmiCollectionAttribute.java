@@ -29,7 +29,6 @@
 package org.opennms.netmgt.collectd.wmi;
 
 import org.opennms.netmgt.collection.api.CollectionAttributeType;
-import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.support.AbstractCollectionAttribute;
 
 /**
@@ -40,7 +39,6 @@ import org.opennms.netmgt.collection.support.AbstractCollectionAttribute;
  */
 public class WmiCollectionAttribute extends AbstractCollectionAttribute {
         private final String m_value;
-        private final WmiCollectionResource m_resource;
 
         /**
          * <p>Constructor for WmiCollectionAttribute.</p>
@@ -51,8 +49,7 @@ public class WmiCollectionAttribute extends AbstractCollectionAttribute {
          * @param value a {@link java.lang.String} object.
          */
         public WmiCollectionAttribute(final WmiCollectionResource resource, final CollectionAttributeType attribType, final String value) {
-            super(attribType);
-            m_resource=resource;
+            super(attribType, resource);
             m_value = value;
         }
 
@@ -64,16 +61,6 @@ public class WmiCollectionAttribute extends AbstractCollectionAttribute {
         @Override
         public String getNumericValue() {
             return m_value;
-        }
-
-        /**
-         * <p>getResource</p>
-         *
-         * @return a {@link org.opennms.netmgt.collection.api.CollectionResource} object.
-         */
-        @Override
-        public CollectionResource getResource() {
-            return m_resource;
         }
 
         /**

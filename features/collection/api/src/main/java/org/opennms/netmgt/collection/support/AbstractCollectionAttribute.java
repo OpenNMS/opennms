@@ -48,9 +48,11 @@ public abstract class AbstractCollectionAttribute implements CollectionAttribute
     private static final Logger LOG = LoggerFactory.getLogger(AbstractCollectionAttribute.class);
 
     protected final CollectionAttributeType m_attribType;
+    protected final CollectionResource m_resource;
 
-    public AbstractCollectionAttribute(CollectionAttributeType attribType) {
+    public AbstractCollectionAttribute(CollectionAttributeType attribType, CollectionResource resource) {
         m_attribType = attribType;
+        m_resource = resource;
     }
 
     /**
@@ -61,6 +63,11 @@ public abstract class AbstractCollectionAttribute implements CollectionAttribute
     @Override
     public final CollectionAttributeType getAttributeType() {
         return m_attribType;
+    }
+
+    @Override
+    public final CollectionResource getResource() {
+        return m_resource;
     }
 
     @Override
@@ -80,14 +87,6 @@ public abstract class AbstractCollectionAttribute implements CollectionAttribute
      */
     @Override
     public abstract String getNumericValue();
-
-    /**
-     * <p>getResource</p>
-     *
-     * @return a {@link org.opennms.netmgt.collection.api.CollectionResource} object.
-     */
-    @Override
-    public abstract CollectionResource getResource();
 
     /**
      * <p>getStringValue</p>

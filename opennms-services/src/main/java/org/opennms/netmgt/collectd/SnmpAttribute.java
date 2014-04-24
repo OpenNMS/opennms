@@ -47,7 +47,6 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
     
     public static final Logger LOG = LoggerFactory.getLogger(SnmpAttribute.class);
 
-    private CollectionResource m_resource;
     private SnmpValue m_val;
 
     /**
@@ -58,8 +57,7 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
      * @param val a {@link org.opennms.netmgt.snmp.SnmpValue} object.
      */
     public SnmpAttribute(CollectionResource resource, SnmpAttributeType type, SnmpValue val) {
-        super(type);
-        m_resource = resource;
+        super(type, resource);
         m_val = val;
     }
 
@@ -81,16 +79,6 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
     @Override
     public int hashCode() {
         return (m_resource.hashCode() ^ m_attribType.hashCode());
-    }
-
-    /**
-     * <p>getResource</p>
-     *
-     * @return a {@link org.opennms.netmgt.collection.api.CollectionResource} object.
-     */
-    @Override
-    public CollectionResource getResource() {
-        return m_resource;
     }
 
     /**

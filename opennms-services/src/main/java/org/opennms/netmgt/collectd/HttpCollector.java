@@ -321,17 +321,14 @@ public class HttpCollector implements ServiceCollector {
 
     private static class HttpCollectionAttribute extends AbstractCollectionAttribute {
         private final Object m_value;
-        private final HttpCollectionResource m_resource;
 
         public HttpCollectionAttribute(HttpCollectionResource resource, HttpCollectionAttributeType attribType, Number value) {
-            super(attribType);
-            m_resource=resource;
+            super(attribType, resource);
             m_value = value;
         }
 
         public HttpCollectionAttribute(HttpCollectionResource resource, HttpCollectionAttributeType attribType, String value) { 
-            super(attribType);
-            m_resource=resource;
+            super(attribType, resource);
             m_value = value;
         }
 
@@ -373,11 +370,6 @@ public class HttpCollector implements ServiceCollector {
                 return getName().equals(other.getName());
             }
             return false;
-        }
-
-        @Override
-        public CollectionResource getResource() {
-            return m_resource;
         }
 
         @Override

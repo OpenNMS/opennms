@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.collectd.tca;
 
-import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.support.AbstractCollectionAttribute;
 
 /**
@@ -41,9 +40,6 @@ public class TcaCollectionAttribute extends AbstractCollectionAttribute {
 	/** The Attribute Value. */
 	private final String m_value;
 
-	/** The TCA Collection Resource associated with this attribute. */
-	private final TcaCollectionResource m_resource;
-
 	/**
 	 * Instantiates a new XML collection attribute.
 	 *
@@ -53,8 +49,7 @@ public class TcaCollectionAttribute extends AbstractCollectionAttribute {
 	 * @param value the attribute value
 	 */
 	public TcaCollectionAttribute(TcaCollectionResource resource, TcaCollectionAttributeType attribType, String value) {
-		super(attribType);
-		m_resource = resource;
+		super(attribType, resource);
 		m_value = value;
 	}
 
@@ -64,14 +59,6 @@ public class TcaCollectionAttribute extends AbstractCollectionAttribute {
         @Override
 	public String getNumericValue() {
 		return m_value;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.opennms.netmgt.collectd.AbstractCollectionAttribute#getResource()
-	 */
-        @Override
-	public CollectionResource getResource() {
-		return m_resource;
 	}
 
 	/* (non-Javadoc)

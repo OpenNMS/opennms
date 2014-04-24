@@ -703,22 +703,15 @@ public abstract class JMXCollector implements ServiceCollector {
     private static class JMXCollectionAttribute extends AbstractCollectionAttribute {
 
         private final String m_value;
-        private final JMXCollectionResource m_resource;
         
         JMXCollectionAttribute(JMXCollectionResource resource, CollectionAttributeType attribType, String value) {
-            super(attribType);
-            m_resource=resource;
+            super(attribType, resource);
             m_value = value;
         }
 
         @Override
         public String getNumericValue() {
             return m_value;
-        }
-
-        @Override
-        public CollectionResource getResource() {
-            return m_resource;
         }
 
         @Override

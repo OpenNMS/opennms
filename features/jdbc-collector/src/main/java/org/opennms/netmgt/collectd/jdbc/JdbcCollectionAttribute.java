@@ -34,22 +34,15 @@ import org.opennms.netmgt.collection.support.AbstractCollectionAttribute;
 
 public class JdbcCollectionAttribute extends AbstractCollectionAttribute {
     private final String m_value;
-    private final JdbcCollectionResource m_resource;
     
     public JdbcCollectionAttribute(JdbcCollectionResource resource, CollectionAttributeType attribType, String value) {
-        super(attribType);
-        m_resource=resource;
+        super(attribType, resource);
         m_value = value;
     }
     
     @Override
     public String getNumericValue() {
         return m_value;
-    }
-    
-    @Override
-    public CollectionResource getResource() {
-        return m_resource;
     }
     
     @Override
