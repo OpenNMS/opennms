@@ -153,6 +153,13 @@ public final class LldpElement implements Serializable {
 
     public LldpElement() {}
 
+    public LldpElement(OnmsNode node, String chassisId, String sysName, LldpChassisIdSubType chassisIdSubType) {
+        setNode(node);
+        setLldpChassisId(chassisId);
+        setLldpSysname(sysName);
+        setLldpChassisIdSubType(chassisIdSubType);
+    }
+
     /**
      * <p>getId</p>
      *
