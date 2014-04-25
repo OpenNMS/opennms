@@ -42,17 +42,15 @@ import static org.opennms.netmgt.nb.TestNetworkBuilder.ROUTER4_NAME;
 import static org.opennms.netmgt.nb.TestNetworkBuilder.ROUTER4_SNMP_RESOURCE;
 */
 import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH1_IP;
-//import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH1_LLDP_CHASSISID;
 import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH1_NAME;
 import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH1_SNMP_RESOURCE;
 import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH2_IP;
-//import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH2_LLDP_CHASSISID;
 import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH2_NAME;
 import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH2_SNMP_RESOURCE;
 import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH3_IP;
-//import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH3_LLDP_CHASSISID;
 import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH3_NAME;
 import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH3_SNMP_RESOURCE;
+
 /*
 import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH4_IP;
 import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH4_LLDP_CHASSISID;

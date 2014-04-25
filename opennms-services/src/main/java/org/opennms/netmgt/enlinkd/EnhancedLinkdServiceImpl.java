@@ -1,29 +1,31 @@
 package org.opennms.netmgt.enlinkd;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.hibernate.criterion.Restrictions;
+import org.opennms.core.criteria.Alias;
+import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.Alias.JoinType;
+import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.netmgt.dao.api.LldpLinkDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OspfLinkDao;
 import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.LldpLink;
-import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.OspfElement;
 import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.model.PrimaryType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 		
-	private final static Logger LOG = LoggerFactory.getLogger(EnhancedLinkdServiceImpl.class);
+//	private final static Logger LOG = LoggerFactory.getLogger(EnhancedLinkdServiceImpl.class);
 
     @Autowired
     private PlatformTransactionManager m_transactionManager;
@@ -38,25 +40,28 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 	public List<LinkableNode> getSnmpNodeList() {
 		final List<LinkableNode> nodes = new ArrayList<LinkableNode>();
 		
-		final OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
-        criteria.createAlias("ipInterfaces", "iface", OnmsCriteria.LEFT_JOIN);
-        criteria.add(Restrictions.eq("type", "A"));
-        criteria.add(Restrictions.eq("iface.isSnmpPrimary", PrimaryType.PRIMARY));
+		final Criteria criteria = new Criteria(OnmsNode.class);
+		criteria.setAliases(Arrays.asList(new Alias[] {
+	            new Alias("ipInterfaces", "iface", JoinType.LEFT_JOIN)
+	        }));    
+        criteria.addRestriction(new EqRestriction("type", NodeType.ACTIVE));
+        criteria.addRestriction(new EqRestriction("iface.isSnmpPrimary", PrimaryType.PRIMARY));
         for (final OnmsNode node : m_nodeDao.findMatching(criteria)) {
             final String sysObjectId = node.getSysObjectId();
             nodes.add(new LinkableNode(node.getId(), node.getPrimaryInterface().getIpAddress(), sysObjectId == null? "-1" : sysObjectId));
         }
-
         return nodes;
 	}
 
 	@Override
 	public LinkableNode getSnmpNode(final int nodeid) {
-		final OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
-        criteria.createAlias("ipInterfaces", "iface", OnmsCriteria.LEFT_JOIN);
-        criteria.add(Restrictions.eq("type", "A"));
-        criteria.add(Restrictions.eq("iface.isSnmpPrimary", PrimaryType.PRIMARY));
-        criteria.add(Restrictions.eq("id", nodeid));
+		final Criteria criteria = new Criteria(OnmsNode.class);
+		criteria.setAliases(Arrays.asList(new Alias[] {
+	            new Alias("ipInterfaces", "iface", JoinType.LEFT_JOIN)
+	        }));    
+        criteria.addRestriction(new EqRestriction("type", NodeType.ACTIVE));
+        criteria.addRestriction(new EqRestriction("iface.isSnmpPrimary", PrimaryType.PRIMARY));
+        criteria.addRestriction(new EqRestriction("id", nodeid));
         final List<OnmsNode> nodes = m_nodeDao.findMatching(criteria);
 
         if (nodes.size() > 0) {
