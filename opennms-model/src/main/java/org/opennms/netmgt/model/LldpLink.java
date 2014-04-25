@@ -160,8 +160,25 @@ public class LldpLink implements Serializable {
 	
 	public LldpLink() {
 	}
-	
-	
+
+    public LldpLink(OnmsNode node, Integer localPortNum, Integer portIfIndex, String portId,
+                    String portDescr, LldpPortIdSubType portIdSubType, String remChassisId, String remSysname, LldpChassisIdSubType remChassisIdSubType,
+                    String remPortId, LldpPortIdSubType remPortIdSubType, String remPortDescr) {
+        setNode(node);
+        setLldpLocalPortNum(localPortNum);
+        setLldpPortIfindex(portIfIndex);
+        setLldpPortId(portId);
+        setLldpPortDescr(portDescr);
+        setLldpPortIdSubType(portIdSubType);
+        setLldpRemChassisId(remChassisId);
+        setLldpRemSysname(remSysname);
+        setLldpRemChassisIdSubType(remChassisIdSubType);
+        setLldpRemPortId(remPortId);
+        setLldpRemPortIdSubType(remPortIdSubType);
+        setLldpRemPortDescr(remPortDescr);
+    }
+
+
     @Id
     @Column(nullable = false)
     @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
