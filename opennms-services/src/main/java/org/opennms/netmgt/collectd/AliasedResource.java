@@ -34,6 +34,7 @@ import java.util.Iterator;
 
 import org.opennms.core.utils.TimeKeeper;
 import org.opennms.netmgt.collection.api.AttributeGroup;
+import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.rrd.RrdRepository;
@@ -196,7 +197,7 @@ public class AliasedResource extends SnmpCollectionResource {
      */
     @Override
     public String getResourceTypeName() {
-        return "if"; //AliasedResources are implicitly interface type data, at least as far as I (Craig Miskell) understand.  If anyone is sure, please adjust this comment
+        return CollectionResource.RESOURCE_TYPE_IF; //AliasedResources are implicitly interface type data, at least as far as I (Craig Miskell) understand.  If anyone is sure, please adjust this comment
     }
 
     /**

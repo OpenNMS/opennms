@@ -809,7 +809,7 @@ public class HttpCollector implements ServiceCollector {
 
         @Override
         public String getResourceTypeName() {
-            return "node"; //All node resources for HTTP; nothing of interface or "indexed resource" type
+            return CollectionResource.RESOURCE_TYPE_NODE; //All node resources for HTTP; nothing of interface or "indexed resource" type
         }
 
         @Override

@@ -31,6 +31,7 @@ package org.opennms.netmgt.collectd;
 import java.io.File;
 
 import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.rrd.RrdRepository;
 
@@ -119,7 +120,7 @@ public final class NodeInfo extends SnmpCollectionResource {
      */
         @Override
     public String getResourceTypeName() {
-        return "node"; //This is a nodeInfo; must be a node type resource
+        return CollectionResource.RESOURCE_TYPE_NODE; //This is a nodeInfo; must be a node type resource
     }
     
     

@@ -29,6 +29,7 @@
 package org.opennms.netmgt.collectd.wmi;
 
 import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionResource;
 
 /**
  * <p>WmiSingleInstanceCollectionResource class.</p>
@@ -54,7 +55,7 @@ public class WmiSingleInstanceCollectionResource extends WmiCollectionResource {
      */
     @Override
     public String getResourceTypeName() {
-        return "node";
+        return CollectionResource.RESOURCE_TYPE_NODE;
     }
 
     /**

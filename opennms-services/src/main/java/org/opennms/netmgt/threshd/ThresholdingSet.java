@@ -44,6 +44,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigManager;
@@ -456,9 +457,9 @@ public class ThresholdingSet {
     private static Map<String, Set<ThresholdEntity>> getEntityMap(ThresholdGroup thresholdGroup, String resourceType) {
         LOG.trace("getEntityMap: checking if the resourceType '{}' exists on threshold group {}", resourceType, thresholdGroup);
         Map<String, Set<ThresholdEntity>> entityMap = null;
-        if ("node".equals(resourceType)) {
+        if (CollectionResource.RESOURCE_TYPE_NODE.equals(resourceType)) {
             entityMap = thresholdGroup.getNodeResourceType().getThresholdMap();
-        } else if ("if".equals(resourceType)) {
+        } else if (CollectionResource.RESOURCE_TYPE_IF.equals(resourceType)) {
             entityMap = thresholdGroup.getIfResourceType().getThresholdMap();
         } else {
             Map<String, ThresholdResourceType> typeMap = thresholdGroup.getGenericResourceTypeMap();

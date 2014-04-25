@@ -39,6 +39,9 @@ import org.opennms.core.utils.TimeKeeper;
  */
 public interface CollectionResource extends ResourceIdentifier, CollectionVisitable, Persistable {
 
+    public static final String RESOURCE_TYPE_NODE = "node";
+    public static final String RESOURCE_TYPE_IF = "if";
+
     /**
      * <p>rescanNeeded</p>
      *

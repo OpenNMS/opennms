@@ -266,14 +266,14 @@ public class CollectionResourceWrapper {
     public String getResourceId() {
         String resourceType  = getResourceTypeName();
         String resourceLabel = getInstanceLabel();
-        if ("node".equals(resourceType)) {
+        if (CollectionResource.RESOURCE_TYPE_NODE.equals(resourceType)) {
             resourceType  = "nodeSnmp";
             resourceLabel = "";
         }
-        if ("if".equals(resourceType)) {
+        if (CollectionResource.RESOURCE_TYPE_IF.equals(resourceType)) {
             resourceType = "interfaceSnmp";
         }
-        String parentResourceTypeName = "node";
+        String parentResourceTypeName = CollectionResource.RESOURCE_TYPE_NODE;
         String parentResourceName = Integer.toString(getNodeId());
         // I can't find a better way to deal with this when storeByForeignSource is enabled        
         if (m_resource != null && m_resource.getParent() != null && m_resource.getParent().startsWith(DefaultResourceDao.FOREIGN_SOURCE_DIRECTORY)) {

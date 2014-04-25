@@ -104,7 +104,7 @@ public class LatencyCollectionResource implements CollectionResource {
      */
     @Override
     public String getResourceTypeName() {
-        return "if";
+        return CollectionResource.RESOURCE_TYPE_IF;
     }
 
     /**

@@ -57,6 +57,7 @@ import java.util.Set;
 
 import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.support.AbstractCollectionResource;
 import org.opennms.netmgt.rrd.RrdRepository;
@@ -131,7 +132,7 @@ public class XmpCollectionResource extends AbstractCollectionResource
         // if we are a collection resource for scalars,
         // return what our super class would return
 
-        if (m_nodeTypeName.equalsIgnoreCase("node")) {
+        if (m_nodeTypeName.equalsIgnoreCase(CollectionResource.RESOURCE_TYPE_NODE)) {
             return new File(repository.getRrdBaseDir(), getParent());
         }
 

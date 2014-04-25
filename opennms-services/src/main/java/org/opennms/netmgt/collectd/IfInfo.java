@@ -36,6 +36,7 @@ import java.util.Map;
 
 import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
@@ -263,7 +264,7 @@ public final class IfInfo extends SnmpCollectionResource {
      */
     @Override
     public String getResourceTypeName() {
-        return "if"; //This is IfInfo, must be an interface
+        return CollectionResource.RESOURCE_TYPE_IF; //This is IfInfo, must be an interface
     }
     
     /**
