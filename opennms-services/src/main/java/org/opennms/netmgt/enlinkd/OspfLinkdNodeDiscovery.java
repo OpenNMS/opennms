@@ -38,6 +38,8 @@ import java.util.List;
 
 import org.opennms.core.utils.InetAddressUtils;
 
+import org.opennms.netmgt.model.OspfElement;
+import org.opennms.netmgt.model.OspfElement.Status;
 import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
@@ -95,7 +97,7 @@ public final class OspfLinkdNodeDiscovery extends AbstractLinkdNodeDiscovery {
             LOG.error( "run: Ospf Linkd node collection interrupted, exiting",e);
             return;
         }
-
+        
         if (ospfGeneralGroup.getOspfRouterId() == null ) {
             LOG.info( "ospf mib not supported on: {}", str(getPeer().getAddress()));
             return;
@@ -106,6 +108,11 @@ public final class OspfLinkdNodeDiscovery extends AbstractLinkdNodeDiscovery {
             return;
         } 
 
+        if (Status.get(ospfGeneralGroup.getOspfAdminStat()) == Status.disabled) {
+            LOG.info( "ospf status disabled on: {}", str(getPeer().getAddress()));
+            return;
+        }
+        
         final OspfIpAddrTableGetter ipAddrTableGetter = new OspfIpAddrTableGetter(getPeer());
 
         m_linkd.getQueryManager().store(getNodeId(), ipAddrTableGetter.get(ospfGeneralGroup.getOspfElement()));
