@@ -193,8 +193,8 @@
 		<createIndex tableName="ospfelement" indexName="ospfelement_nodeid_idx">
 			<column name="nodeid" />
 		</createIndex>
-		<createIndex tableName="ospfrouterid" indexName="ospf_routerid_idx">
-			<column name="lldpchassisid" />
+		<createIndex tableName="ospfelement" indexName="ospf_routerid_idx">
+			<column name="ospfrouterid" />
 		</createIndex>
 
 		<rollback>
