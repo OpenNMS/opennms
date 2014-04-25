@@ -166,13 +166,6 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         //     snmpcolls.add(cdpcoll);   	
         }
         
-        if (m_linkdConfig.useOspfDiscovery()) {
-            LOG.debug("getSnmpCollections: adding Ospf Discovery: {}",
-                    node);
-        //	OspfLinkdNodeDiscovery ospfcoll = new OspfLinkdNodeDiscovery(this, node);
-        //	snmpcolls.add(ospfcoll);
-        }
-
         if (m_linkdConfig.useBridgeDiscovery()) {
         	LOG.debug("getSnmpCollections: adding IpNetToMedia Discovery: {}",
                     node);
@@ -183,8 +176,22 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         //	BridgeLinkdNodeDiscovery bridgecoll = new BridgeLinkdNodeDiscovery(this, node);
         //	snmpcolls.add(bridgecoll);
         }
-        return snmpcolls;
 
+        if (m_linkdConfig.useOspfDiscovery()) {
+            LOG.debug("getSnmpCollections: adding Ospf Discovery: {}",
+                    node);
+        	OspfLinkdNodeDiscovery ospfcoll = new OspfLinkdNodeDiscovery(this, node);
+        	snmpcolls.add(ospfcoll);
+        }
+
+        if (m_linkdConfig.useIsisDiscovery()) {
+            LOG.debug("getSnmpCollections: adding Is-Is Discovery: {}",
+                    node);
+        	IsisLinkdNodeDiscovery isiscoll = new IsisLinkdNodeDiscovery(this, node);
+        	snmpcolls.add(isiscoll);
+        }
+
+        return snmpcolls;
     }
 
     /**

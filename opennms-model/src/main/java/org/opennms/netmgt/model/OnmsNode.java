@@ -174,6 +174,12 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     private LldpElement m_lldpElement;
 
     /** persistent field */
+    private OspfElement m_ospfElement;
+
+    /** persistent field */
+    private IsIsElement m_isisElement;
+
+    /** persistent field */
     private Set<OnmsIpInterface> m_ipInterfaces = new LinkedHashSet<OnmsIpInterface>();
 
     /** persistent field */
@@ -749,7 +755,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     /**
      * The lldp element associated with this node
      *
-     * @return a {@link org.opennms.netmgt.model.OnmsAssetRecord} object.
+     * @return a {@link org.opennms.netmgt.model.LldpElement} object.
      */
     @OneToOne(mappedBy="node", cascade = CascadeType.ALL, fetch=FetchType.LAZY)
     public LldpElement getLldpElement() {
@@ -759,10 +765,48 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     /**
      * <p>setLldpElement</p>
      *
-     * @param asset a {@link org.opennms.netmgt.model.OnmsAssetRecord} object.
+     * @param asset a {@link org.opennms.netmgt.model.LldpElement} object.
      */
     public void setLldpElement(LldpElement lldpElement) {
         m_lldpElement = lldpElement;
+    }
+
+    /**
+     * The ospf element associated with this node
+     *
+     * @return a {@link org.opennms.netmgt.model.OspfElement} object.
+     */
+    @OneToOne(mappedBy="node", cascade = CascadeType.ALL, fetch=FetchType.LAZY)
+    public OspfElement getOspfElement() {
+        return m_ospfElement;
+    }
+
+    /**
+     * <p>setOspfElement</p>
+     *
+     * @param asset a {@link org.opennms.netmgt.model.OspfElement} object.
+     */
+    public void setOspfElement(OspfElement ospfElement) {
+        m_ospfElement = ospfElement;
+    }
+
+    /**
+     * The isis element associated with this node
+     *
+     * @return a {@link org.opennms.netmgt.model.IsIsElement} object.
+     */
+    @OneToOne(mappedBy="node", cascade = CascadeType.ALL, fetch=FetchType.LAZY)
+    public IsIsElement getIsisElement() {
+        return m_isisElement;
+    }
+
+    /**
+     * <p>setIsIsElement</p>
+     *
+     * @param asset a {@link org.opennms.netmgt.model.OspfElement} object.
+     */
+    public void setIsisElement(IsIsElement isisElement) {
+        m_isisElement = isisElement;
     }
 
 

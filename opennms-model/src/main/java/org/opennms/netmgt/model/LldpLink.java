@@ -363,7 +363,7 @@ public class LldpLink implements Serializable {
 		setLldpRemPortIdSubType(link.getLldpRemPortIdSubType());
 		setLldpRemPortDescr(link.getLldpRemPortDescr());
 
-		setLldpLinkLastPollTime(link.getLldpLinkLastPollTime());
+		setLldpLinkLastPollTime(link.getLldpLinkCreateTime());
 	}
 	
 	/**

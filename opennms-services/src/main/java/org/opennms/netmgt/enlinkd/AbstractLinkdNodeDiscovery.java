@@ -306,7 +306,7 @@ public abstract class AbstractLinkdNodeDiscovery implements ReadyRunnable {
      * @return a {@link java.lang.String} object.
      */
     public String getPackageName() {
-        return null;
+        return "default";
     }
 
     public void setPackageName(String pkgName) {

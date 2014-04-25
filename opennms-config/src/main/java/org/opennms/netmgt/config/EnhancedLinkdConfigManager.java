@@ -128,6 +128,15 @@ abstract public class EnhancedLinkdConfigManager implements EnhancedLinkdConfig 
         return true;
     }
 
+    /**
+     * <p>useIsisDiscovery</p>
+     *
+     * @return a boolean.
+     */
+    public boolean useIsisDiscovery() {
+        if (m_config.hasUseIsisDiscovery()) return m_config.getUseIsisDiscovery();
+        return true;
+    }
     
 
     public long getInitialSleepTime() {

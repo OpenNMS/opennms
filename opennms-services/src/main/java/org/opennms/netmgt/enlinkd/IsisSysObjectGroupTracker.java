@@ -26,10 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.linkd.snmp;
+package org.opennms.netmgt.enlinkd;
 
-import java.net.InetAddress;
-
+import org.opennms.netmgt.model.IsIsElement;
 import org.opennms.netmgt.model.IsIsElement.IsisAdminState;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.NamedSnmpVar;
@@ -38,10 +37,10 @@ import org.opennms.netmgt.snmp.SnmpStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class IsIsSystemObjectGroup extends AggregateTracker {
+public final class IsisSysObjectGroupTracker extends AggregateTracker {
     
     
-    private static final Logger LOG = LoggerFactory.getLogger(IsIsSystemObjectGroup.class);
+    private static final Logger LOG = LoggerFactory.getLogger(IsisSysObjectGroupTracker.class);
 
     public final static String ISIS_SYS_ID_ALIAS = "isisSysID";
     public final static String ISIS_SYS_ID_OID = ".1.3.6.1.2.1.138.1.1.1.3";
@@ -98,16 +97,14 @@ public final class IsIsSystemObjectGroup extends AggregateTracker {
     public static final String ISIS_SYS_OBJ_OID = ".1.3.6.1.2.1.138.1.1.1";
 
     private SnmpStore m_store;
-    private InetAddress m_address;
     
-    public IsIsSystemObjectGroup(InetAddress address) {
+    public IsisSysObjectGroupTracker() {
         super(NamedSnmpVar.getTrackersFor(ms_elemList));
-        m_address = address;
         m_store = new SnmpStore(ms_elemList);
     }
     
-    public IsisAdminState getIsisSysAdminState() {
-        return IsisAdminState.get(m_store.getInt32(ISIS_SYS_ADMIN_STATE_ALIAS));
+    public Integer getIsisSysAdminState() {
+        return m_store.getInt32(ISIS_SYS_ADMIN_STATE_ALIAS);
         
     }
     
@@ -125,14 +122,20 @@ public final class IsIsSystemObjectGroup extends AggregateTracker {
     /** {@inheritDoc} */
     @Override
     protected void reportGenErr(String msg) {
-        LOG.warn("Error retrieving lldpLocalGroup from {}. {}", m_address, msg);
+        LOG.warn("Error retrieving isisSysObject: {}", msg);
     }
 
     /** {@inheritDoc} */
     @Override
     protected void reportNoSuchNameErr(String msg) {
-        LOG.info("Error retrieving lldpLocalGroup from {}. {}", m_address, msg);
+        LOG.info("Error retrieving isisSysObject: {}", msg);
     }
 
+    public IsIsElement getIsisElement() {
+    	IsIsElement element = new IsIsElement();
+    	element.setIsisSysID(getIsisSysId());
+    	element.setIsisSysAdminState(IsisAdminState.get(getIsisSysAdminState()));
+    	return element;
+    }
 
 }

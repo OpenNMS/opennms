@@ -148,7 +148,7 @@ public final class LldpElement implements Serializable {
 	private String m_lldpSysname;
     private LldpChassisIdSubType m_lldpChassisIdSubType;
     private Date m_lldpNodeCreateTime = new Date();
-    private Date m_lldpNodeLastPollTime = new Date();
+    private Date m_lldpNodeLastPollTime;
 	private OnmsNode m_node;
 
     public LldpElement() {}
@@ -273,6 +273,6 @@ public final class LldpElement implements Serializable {
 		setLldpChassisId(element.getLldpChassisId());
 		setLldpChassisIdSubType(element.getLldpChassisIdSubType());
 		setLldpSysname(element.getLldpSysname());
-		setLldpNodeLastPollTime(element.getLldpNodeLastPollTime());
+		setLldpNodeLastPollTime(element.getLldpNodeCreateTime());
 	}
 }

@@ -2248,6 +2248,9 @@ CREATE UNIQUE INDEX catgroup_unique_idx on category_group(categoryId, groupId);
 --# Begin enlinkd table
 drop table lldpElement cascade;
 drop table lldpLink cascade;
+drop table ospfElement cascade;
+drop table ospfLink cascade;
+drop table isisElement cascade;
 
 create table lldpElement (
       id integer default nextval('opennmsnxtid') not null,
@@ -2255,7 +2258,7 @@ create table lldpElement (
       lldpChassisId varchar(255) not null,
       lldpChassisIdSubType integer not null,
       lldpSysname varchar(255) not null,
-	  lldpNodeCreateTime	timestamp not null,
+      lldpNodeCreateTime	timestamp not null,
       lldpNodeLastPollTime	timestamp not null,
       constraint pk_lldpelement_id primary key (id),
       constraint fk_nodeIDlldpelem foreign key (nodeid) references node ON DELETE CASCADE
@@ -2275,10 +2278,53 @@ create table lldpLink (
       lldpRemPortId varchar(255) not null,
       lldpRemPortIdSubType integer not null,
       lldpRemPortDescr varchar(255) not null,
-	  lldpLinkCreateTime	timestamp not null,
+      lldpLinkCreateTime	timestamp not null,
       lldpLinkLastPollTime	timestamp not null,
       constraint pk_lldplink_id primary key (id),
       constraint fk_nodeIDlldplink foreign key (nodeid) references node ON DELETE CASCADE
+);
+
+create table ospfElement (
+      id integer default nextval('opennmsnxtid') not null,
+      nodeid          integer not null,
+      ospfRouterId varchar(16) not null,
+      ospfAdminStat      integer not null,
+      ospfVersionNumber  integer not null,
+      ospfBdrRtrStatus   integer not null,
+      ospfASBdrRtrStatus integer not null,
+      ospfRouterIdNetmask varchar(16) not null,
+      ospfRouterIdIfindex      integer not null,
+      ospfNodeCreateTime	timestamp not null,
+      ospfNodeLastPollTime	timestamp not null,
+      constraint pk_ospfelement_id primary key (id),
+      constraint fk_nodeIDospfelem foreign key (nodeid) references node ON DELETE CASCADE
+);
+
+create table ospfLink (
+      id integer default nextval('opennmsnxtid') not null,
+      nodeid          integer not null,
+      ospfIpAddr varchar(16),
+      ospfIpMask varchar(16),
+      ospfAddressLessIndex integer,
+      ospfIfIndex integer,
+      ospfRemRouterId varchar(16) not null,
+      ospfRemIpAddr varchar(16) not null,
+      ospfRemAddressLessIndex integer not null,
+      ospfLinkCreateTime	timestamp not null,
+      ospfLinkLastPollTime	timestamp not null,
+      constraint pk_ospflink_id primary key (id),
+      constraint fk_nodeIDospflink foreign key (nodeid) references node ON DELETE CASCADE
+);
+
+create table isisElement (
+      id integer default nextval('opennmsnxtid') not null,
+      nodeid          integer not null,
+      isisSysID varchar(255) not null,
+      isisSysAdminState integer not null,
+      isisNodeCreateTime	timestamp not null,
+      isisNodeLastPollTime	timestamp not null,
+      constraint pk_isiselement_id primary key (id),
+      constraint fk_nodeIDisiselem foreign key (nodeid) references node ON DELETE CASCADE
 );
 
 --# End enlinkd table

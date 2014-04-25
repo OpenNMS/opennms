@@ -69,9 +69,9 @@ import org.opennms.netmgt.linkd.snmp.OspfIfTable;
 import org.opennms.netmgt.linkd.snmp.OspfIfTableEntry;
 import org.opennms.netmgt.linkd.snmp.OspfNbrTable;
 import org.opennms.netmgt.linkd.snmp.OspfNbrTableEntry;
-import org.opennms.netmgt.linkd.snmp.IsIsSystemObjectGroup.IsisAdminState;
 import org.opennms.netmgt.linkd.snmp.IsisISAdjTableEntry.IsisISAdjNeighSysType;
 import org.opennms.netmgt.linkd.snmp.IsisISAdjTableEntry.IsisISAdjState;
+import org.opennms.netmgt.model.IsIsElement.IsisAdminState;
 import org.opennms.netmgt.nb.Nms10205bNetworkBuilder;
 import org.opennms.netmgt.nb.TestNetworkBuilder;
 import org.opennms.netmgt.snmp.CollectionTracker;
@@ -157,7 +157,7 @@ public class LinkdSnmpTest extends TestNetworkBuilder implements InitializingBea
 
         }
 
-        assertEquals(IsisAdminState.ON, m_isisSystemObjectGroup.getIsisSysAdminState());
+        assertEquals(IsisAdminState.on, m_isisSystemObjectGroup.getIsisSysAdminState());
         assertEquals(FROH_ISIS_SYS_ID, m_isisSystemObjectGroup.getIsisSysId());
         
         // oedipus
@@ -173,7 +173,7 @@ public class LinkdSnmpTest extends TestNetworkBuilder implements InitializingBea
 
         }
         
-        assertEquals(IsisAdminState.ON, m_isisSystemObjectGroup.getIsisSysAdminState());
+        assertEquals(IsisAdminState.on, m_isisSystemObjectGroup.getIsisSysAdminState());
         assertEquals(OEDIPUS_ISIS_SYS_ID, m_isisSystemObjectGroup.getIsisSysId());
 
         // siegfrie
@@ -189,7 +189,7 @@ public class LinkdSnmpTest extends TestNetworkBuilder implements InitializingBea
 
         }
         
-        assertEquals(IsisAdminState.ON, m_isisSystemObjectGroup.getIsisSysAdminState());
+        assertEquals(IsisAdminState.on, m_isisSystemObjectGroup.getIsisSysAdminState());
         assertEquals(SIEGFRIE_ISIS_SYS_ID, m_isisSystemObjectGroup.getIsisSysId());
 
     }

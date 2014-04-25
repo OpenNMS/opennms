@@ -51,7 +51,6 @@ import org.opennms.netmgt.linkd.snmp.Dot1dStpPortTableEntry;
 import org.opennms.netmgt.linkd.snmp.Dot1dTpFdbTableEntry;
 import org.opennms.netmgt.linkd.snmp.IpNetToMediaTableEntry;
 import org.opennms.netmgt.linkd.snmp.IpRouteCollectorEntry;
-import org.opennms.netmgt.linkd.snmp.IsIsSystemObjectGroup.IsisAdminState;
 import org.opennms.netmgt.linkd.snmp.IsisCircTableEntry;
 import org.opennms.netmgt.linkd.snmp.IsisISAdjTableEntry;
 import org.opennms.netmgt.linkd.snmp.IsisISAdjTableEntry.IsisISAdjState;
@@ -62,6 +61,7 @@ import org.opennms.netmgt.linkd.snmp.MtxrWlRtabTableEntry;
 import org.opennms.netmgt.linkd.snmp.OspfNbrTableEntry;
 import org.opennms.netmgt.linkd.snmp.QBridgeDot1dTpFdbTableEntry;
 import org.opennms.netmgt.linkd.snmp.Vlan;
+import org.opennms.netmgt.model.IsIsElement.IsisAdminState;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsAtInterface;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -278,7 +278,7 @@ public abstract class AbstractQueryManager implements QueryManager {
         String isisSysId = snmpcoll.getIsIsSystemObjectGroup().getIsisSysId();
         LOG.debug("processIsis: isis node/isissysId: {}/{}",
                   node.getNodeId(), isisSysId);
-        if (snmpcoll.getIsIsSystemObjectGroup().getIsisSysAdminState() == IsisAdminState.OFF) {
+        if (snmpcoll.getIsIsSystemObjectGroup().getIsisSysAdminState() == IsisAdminState.off) {
             LOG.info("processIsis: isis admin down on node/isisSysId: {}/{}. Skipping!",
                      node.getNodeId(), isisSysId);
             return;
