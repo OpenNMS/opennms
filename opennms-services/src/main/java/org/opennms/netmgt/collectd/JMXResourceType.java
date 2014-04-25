@@ -28,7 +28,8 @@
 
 package org.opennms.netmgt.collectd;
 
-import org.opennms.netmgt.config.StorageStrategy;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.StorageStrategy;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
@@ -107,8 +108,6 @@ public class JMXResourceType  {
             throw new ObjectRetrievalFailureException(StorageStrategy.class, className, "Could not instantiate", e);
         }
         m_storageStrategy.setResourceTypeName(m_resourceType);
-        if (m_agent != null)
-            m_storageStrategy.setStorageStrategyService(m_agent);
     }
 
     /**

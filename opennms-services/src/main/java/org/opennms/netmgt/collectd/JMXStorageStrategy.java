@@ -29,7 +29,7 @@
 package org.opennms.netmgt.collectd;
 
 import org.opennms.core.utils.AlphaNumeric;
-import org.opennms.netmgt.config.collector.CollectionResource;
+import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.dao.support.IndexStorageStrategy;
 
 public class JMXStorageStrategy extends IndexStorageStrategy {

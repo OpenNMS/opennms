@@ -29,6 +29,7 @@
 package org.opennms.netmgt.collectd;
 
 import javax.management.ObjectName;
+import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

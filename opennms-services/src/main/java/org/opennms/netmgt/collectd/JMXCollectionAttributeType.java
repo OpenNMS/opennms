@@ -31,10 +31,10 @@ package org.opennms.netmgt.collectd;
 import java.io.File;
 import java.util.StringTokenizer;
 import org.opennms.core.utils.AlphaNumeric;
-import org.opennms.netmgt.config.collector.AttributeGroupType;
-import org.opennms.netmgt.config.collector.CollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionAttributeType;
-import org.opennms.netmgt.config.collector.Persister;
+import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.api.CollectionAttributeType;
+import org.opennms.netmgt.collection.api.Persister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

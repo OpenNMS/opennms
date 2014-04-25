@@ -61,7 +61,6 @@ import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.collection.support.SingleResourceCollectionSet;
 import org.opennms.netmgt.config.BeanInfo;
 import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
 import org.opennms.netmgt.config.collectd.jmx.Attrib;
@@ -354,7 +353,6 @@ public class JMXCollectorTest implements TestContextAware, InitializingBean {
         assertEquals(1, jmxCollectionResources.size());
         JMXCollectionResource jmxCollectionResource = jmxCollectionResources.get(0);
         logger.debug("jmxCollectionResource: {}", jmxCollectionResource);
-        logger.debug("jmxCollectionResource.groups: {}", jmxCollectionResource.getGroups());
         AttributeGroup group = jmxCollectionResource.getGroup(new AttributeGroupType("java_lang_type_Memory", AttributeGroupType.IF_TYPE_ALL));
         printDebugAttributeGroup(group);
         assertEquals(4, group.getAttributes().size());

@@ -31,9 +31,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.collector.CollectionSet;
-import org.opennms.netmgt.config.collector.CollectionSetVisitor;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.CollectionSetVisitor;
+import org.opennms.netmgt.collection.api.ServiceCollector;
 
 // TODO: Auto-generated Javadoc
 /**
