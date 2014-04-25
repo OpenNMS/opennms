@@ -28,67 +28,14 @@
 
 package org.opennms.netmgt.linkd.snmp;
 
-import java.util.HashMap;
-
+import org.opennms.netmgt.model.IsIsLink.IsisISAdjNeighSysType;
+import org.opennms.netmgt.model.IsIsLink.IsisISAdjState;
 import org.opennms.netmgt.snmp.NamedSnmpVar;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpStore;
 
 public class IsisISAdjTableEntry extends SnmpStore {
 
-    public enum IsisISAdjState {
-        DOWN(1),
-        INITIALING(2),
-        UP(3),
-        FAILED(4);
-        private final Integer m_value;
-        private static final HashMap<Integer, IsisISAdjState> m_valueMap = new HashMap<Integer, IsisISAdjState>();
-        
-        static {
-            for (IsisISAdjState state: IsisISAdjState.values()) {
-                m_valueMap.put(state.getValue(), state);
-            }
-        }
-        private IsisISAdjState(Integer value) {
-            m_value = value;
-        }
-        
-        public Integer getValue() {
-            return m_value;
-        }
-        
-        public static IsisISAdjState getByValue(Integer value) {
-            return m_valueMap.get(value);
-        }
-        
-    }
-    
-    public enum IsisISAdjNeighSysType {
-        l1_IntermediateSystem(1),
-        l2IntermediateSystem(2),
-        l1L2IntermediateSystem(3),
-        unknown(4);
-        private final Integer m_value;
-        private static final HashMap<Integer, IsisISAdjNeighSysType> m_valueMap = new HashMap<Integer, IsisISAdjNeighSysType>();
-        
-        static {
-            for (IsisISAdjNeighSysType state: IsisISAdjNeighSysType.values()) {
-                m_valueMap.put(state.getValue(), state);
-            }
-        }
-        private IsisISAdjNeighSysType(Integer value) {
-            m_value = value;
-        }
-        
-        public Integer getValue() {
-            return m_value;
-        }
-        public static IsisISAdjNeighSysType getByValue(Integer value) {
-            return m_valueMap.get(value);
-        }
-
-        
-    }
     
     public final static String ISIS_ADJ_STATE_ALIAS    = "isisISAdjState";
     public final static String ISIS_ADJ_STATE_OID       = ".1.3.6.1.2.1.138.1.6.1.1.2";
@@ -189,7 +136,7 @@ public class IsisISAdjTableEntry extends SnmpStore {
     }
 
     public IsisISAdjState getIsIsAdjStatus() {
-        return IsisISAdjState.getByValue(getInt32(ISIS_ADJ_STATE_ALIAS));
+        return IsisISAdjState.get(getInt32(ISIS_ADJ_STATE_ALIAS));
     }
 
     public String getIsIsAdjNeighSnpaAddress() {
@@ -197,7 +144,7 @@ public class IsisISAdjTableEntry extends SnmpStore {
     }
     
     public IsisISAdjNeighSysType getIsisISAdjNeighSysType() {
-        return IsisISAdjNeighSysType.getByValue(getInt32(ISIS_ADJ_NEIGH_SYS_TYPE_ALIAS));
+        return IsisISAdjNeighSysType.get(getInt32(ISIS_ADJ_NEIGH_SYS_TYPE_ALIAS));
     }
     
     public String getIsIsAdjNeighSysId() {

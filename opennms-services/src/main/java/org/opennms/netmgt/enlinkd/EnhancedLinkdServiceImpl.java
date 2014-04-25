@@ -200,11 +200,11 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 			}
 
 			@Override
-			protected OspfLink doUpdate(OspfLink dbLldpLink) {
-				dbLldpLink.merge(saveMe);
-				m_dao.update(dbLldpLink);
+			protected OspfLink doUpdate(OspfLink dbOspfLink) {
+				dbOspfLink.merge(saveMe);
+				m_dao.update(dbOspfLink);
 				m_dao.flush();
-				return dbLldpLink;
+				return dbOspfLink;
 			}
 
 			@Override
