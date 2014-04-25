@@ -232,11 +232,11 @@ public class SnmpVarBind extends Object implements SnmpSyntax, Cloneable, Serial
      * @param encoder
      *            The encoder used to convert the data
      * 
-     * @exception AnsEncodingException
+     * @exception AsnEncodingException
      *                Thrown if the encoder encounters an error while building
      *                the buffer.
      * 
-     * @return The offset of the next byte immediantly after the last encoded
+     * @return The offset of the next byte immediately after the last encoded
      *         byte by this routine.
      * 
      */
@@ -276,7 +276,7 @@ public class SnmpVarBind extends Object implements SnmpSyntax, Cloneable, Serial
      * @return The byte offset immediantly after the last decoded byte of
      *         information.
      * 
-     * @exception AnsDecodingException
+     * @exception AsnDecodingException
      *                Thrown if an error occurs while attempting to decode the
      *                data. This exception will be thrown byte encoder object.
      * 

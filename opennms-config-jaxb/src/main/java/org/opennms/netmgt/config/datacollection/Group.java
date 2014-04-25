@@ -64,7 +64,7 @@ public class Group implements Serializable {
      * <p>
      * Interface type.
      * </p>
-     * Indicates the interface types from which the groups MIB objects are to
+     * <p>Indicates the interface types from which the groups MIB objects are to
      * be collected.</p>
      * <p>
      * Supports individual ifType values or comma-separated list of ifType
@@ -141,7 +141,7 @@ public class Group implements Serializable {
      * <p>
      * Interface type.
      * </p>
-     * Indicates the interface types from which the groups MIB objects are to
+     * <p>Indicates the interface types from which the groups MIB objects are to
      * be collected.</p>
      * <p>
      * Supports individual ifType values or comma-separated list of ifType

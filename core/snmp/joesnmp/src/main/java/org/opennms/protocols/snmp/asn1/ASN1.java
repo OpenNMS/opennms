@@ -32,7 +32,7 @@ package org.opennms.protocols.snmp.asn1;
  * Public ASN.1 definitions. See "SNMPv1, SNMPv2, SNMPv3 and RMON 1 and 2, 3rd
  * Ed." by William Stallings, Published by Addision Wesley for more information.
  * 
- * @author <a href="mailto:weave@oculan.com>Brian Weaver </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  */
 public class ASN1 {
     /**

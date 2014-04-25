@@ -21,7 +21,7 @@
  *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
+ *     OpenNMS(R) Licensing &lt;license@opennms.org&gt;
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/

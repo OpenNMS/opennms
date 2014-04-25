@@ -33,9 +33,9 @@ import java.text.DecimalFormat;
 /**
  * Utilities for manipulating values in SI units.  This is the
  * International System of Units that you learned in science class.
+ * http://www.physics.nist.gov/cuu/Units/
  *
  * @author djgregor
- * @link http://www.physics.nist.gov/cuu/Units/
  */
 public abstract class SIUtils {
     /**

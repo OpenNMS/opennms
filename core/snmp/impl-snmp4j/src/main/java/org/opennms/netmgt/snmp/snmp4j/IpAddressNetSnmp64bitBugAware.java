@@ -38,7 +38,7 @@ import org.snmp4j.asn1.BERInputStream;
 import org.snmp4j.smi.IpAddress;
 
 /**
- * @author Jeff Gehlbach <jeffg@opennms.org>
+ * @author Jeff Gehlbach &lt;jeffg@opennms.org&gt;
  * 
  * This class exists solely to work around a bug in the Net-SNMP BER library
  * that causes Net-SNMP agents prior to version 5.4.1 on 64-bit platforms to

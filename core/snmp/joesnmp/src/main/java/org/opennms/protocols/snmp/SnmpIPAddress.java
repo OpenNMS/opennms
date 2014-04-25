@@ -290,11 +290,10 @@ public class SnmpIPAddress extends SnmpOctetString {
      * length is not four bytes in length or an error occurs during the
      * conversion then an exception is thrown.
      * 
-     * @return The IPv4Address converted from the appliation string
+     * @return The IPv4Address converted from the application string
      * 
-     * @exception SnmpBadConversionException
-     *                Thrown if the length of the string is invalid. Must be
-     *                equal to four
+     * @exception RuntimeException
+     *                Thrown if the length of the string is invalid. Must be equal to four.
      * 
      */
     public InetAddress convertToIpAddress() {

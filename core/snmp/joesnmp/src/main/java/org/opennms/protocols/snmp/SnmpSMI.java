@@ -31,7 +31,7 @@ package org.opennms.protocols.snmp;
 import org.opennms.protocols.snmp.asn1.ASN1;
 
 /**
- * SNMP SMI v1 & v2 constants.
+ * SNMP SMI v1 &amp; v2 constants.
  * 
  * @see org.opennms.protocols.snmp.asn1.ASN1
  * 
@@ -166,29 +166,6 @@ public class SnmpSMI {
         return ((version == SNMPV1) ? "SNMPv1" : "SNMPv2");
     }
 
-    /**
-         * Creates a single RRD file for the specified RRD data source.
-         * 
-         * @param collectionName
-         *            Name of the collection
-         * @param ipaddr
-         *            Interface address
-         * @param directory
-         *            RRD repository directory
-         * @param ds
-         *            RRD data source
-         * 
-         * @return TRUE if new RRD file created, FALSE if RRD file was not created
-         *         because it already existed.
-         */
-    /*    public boolean createRRD(String collectionName, InetAddress ipaddr, String directory, RRDDataSource ds) throws RrdException {
-            String creator = "primary SNMP interface " + ipaddr.getHostAddress();
-            int step = DataCollectionConfigFactory.getInstance().getStep(collectionName);
-            List rraList = DataCollectionConfigFactory.getInstance().getRRAList(collectionName);
-    
-            return RrdUtils.createRRD(creator, directory, ds.getName(), step, ds.getType(), ds.getHeartbeat(), ds.getMin(), ds.getMax(), rraList);
-        }*/
-    
         public static int toInt(SnmpSyntax result, int deflt) {
             if (result == null)
                 return deflt;

@@ -97,7 +97,7 @@ public abstract class BeanUtils {
      * @param <T> class for the returned factory
      * @param contextId the context ID of the BeanFactory to fetch
      * @param clazz class representing the type for the returned factory
-     * @return the factory casted to <T>
+     * @return the factory casted to &lt;T&gt;
      */
     @SuppressWarnings("unchecked")
     public static <T> T getFactory(String contextId, Class<T> clazz) {

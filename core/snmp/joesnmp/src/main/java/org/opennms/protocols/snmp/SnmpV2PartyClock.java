@@ -41,7 +41,7 @@ import org.opennms.protocols.snmp.asn1.ASN1;
  * 
  * @deprecated Obsoleted in RFC 1902.
  * 
- * @author Brian Weaver <weave@oculan.com>
+ * @author Brian Weaver
  * @version 1.1.1.1
  */
 public class SnmpV2PartyClock extends SnmpUInt32 {

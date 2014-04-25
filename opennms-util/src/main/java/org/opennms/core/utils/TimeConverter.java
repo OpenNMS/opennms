@@ -44,7 +44,7 @@ public class TimeConverter {
      * string:
      * </P>
      *
-     * <TABLE BORDER=0>
+     * <TABLE BORDER=0 summary="Extensions">
      * <TR>
      * <TH>Extension</TH>
      * <TH>Conversion Value</TH>

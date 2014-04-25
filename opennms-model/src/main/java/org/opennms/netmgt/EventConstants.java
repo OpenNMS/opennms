@@ -1300,7 +1300,6 @@ public class EventConstants {
      * webui and a change here should get all time display in the webui changed.
      *
      * @see java.text.DateFormat
-     * @see org.opennms.web.Util.formatDateToUIString
      * @deprecated This is no longer used by the UI. All WebUI-specific code
      *             should under the org.opennms.web packages.
      * @param date a {@link java.util.Date} object.

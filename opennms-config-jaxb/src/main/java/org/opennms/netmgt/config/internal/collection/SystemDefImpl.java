@@ -16,13 +16,13 @@ import org.opennms.netmgt.config.api.collection.ITable;
 
 
 /**
- *  <systemDef name="Enterprise">
- *    <sysoidMask>.1.3.6.1.4.1.</sysoidMask>
- *    <collect>
- *      <include>mib2-host-resources-storage</include>
- *      <include>mib2-coffee-rfc2325</include>
- *    </collect>
- *  </systemDef>
+ *  &lt;systemDef name="Enterprise"&gt;
+ *    &lt;sysoidMask&gt;.1.3.6.1.4.1.&lt;/sysoidMask&gt;
+ *    &lt;collect&gt;
+ *      &lt;include&gt;mib2-host-resources-storage&lt;/include&gt;
+ *      &lt;include&gt;mib2-coffee-rfc2325&lt;/include&gt;
+ *    &lt;/collect&gt;
+ *  &lt;/systemDef&gt;
  *   
  * @author brozow
  *

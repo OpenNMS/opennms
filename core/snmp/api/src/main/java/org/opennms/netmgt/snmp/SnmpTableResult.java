@@ -36,7 +36,6 @@ import java.util.TreeMap;
 
 /**
  * @author brozow
- *
  */
 public class SnmpTableResult implements RowResultFactory {
 
@@ -65,9 +64,6 @@ public class SnmpTableResult implements RowResultFactory {
         return m_columns.length;
     }
 
-    /**
-     * @param result
-     */
     void storeResult(SnmpResult result) {
         SnmpInstId instId = result.getInstance();
         if ( !m_pendingData.containsKey( instId ) ) {
@@ -114,9 +110,6 @@ public class SnmpTableResult implements RowResultFactory {
         handleCompleteRows();
     }
 
-    /**
-     * @param base
-     */
     public void columnFinished(SnmpObjId columnId) {
         m_finishedColumns.add(columnId);
         handleCompleteRows();
