@@ -46,6 +46,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class DiscoveryLink implements ReadyRunnable {
 
+	//FIXME add bridge discovery algorithm
     private class BridgeTopologyPortCandidate {
 
         private final BridgeTopologyPort bridgeTopologyPort;
