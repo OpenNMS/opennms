@@ -95,6 +95,13 @@ public interface EnhancedLinkdConfig {
      */
     boolean useOspfDiscovery();
 
+    /**
+     * <p>useIsisDiscovery</p>
+     *
+     * @return a boolean.
+     */
+    boolean useIsisDiscovery();
+
 
     /**
      * <p>reload</p>

@@ -46,6 +46,8 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 
+import org.opennms.netmgt.model.IsIsElement;
+import org.opennms.netmgt.model.IsIsElement.IsisAdminState;
 import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.model.LldpElement.LldpChassisIdSubType;
@@ -103,7 +105,7 @@ public class EnLinkdSnmpTest extends TestNetworkBuilder implements InitializingB
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:linkd/nms17216/switch1-walk.txt")
     })
-    public void testNetwork17216Switch1OspfGeneralGroup() throws Exception {
+    public void testOspfGeneralGroupWalk() throws Exception {
     	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SWITCH1_IP));
     	String trackerName = "ospfGeneralGroup";
 
@@ -153,7 +155,7 @@ public class EnLinkdSnmpTest extends TestNetworkBuilder implements InitializingB
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:linkd/nms17216/switch1-walk.txt")
     })
-    public void testNetwork17216Switch1OspfNbrTable() throws Exception {
+    public void testOspfNbrTableWalk() throws Exception {
     	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SWITCH1_IP));
         String trackerName = "ospfNbrTable";
         OspfNbrTableTracker ospfNbrTableTracker = new OspfNbrTableTracker() {
@@ -164,7 +166,6 @@ public class EnLinkdSnmpTest extends TestNetworkBuilder implements InitializingB
 					assertEquals(InetAddress.getByName("192.168.100.249"), link.getOspfRemRouterId());
 	        		assertEquals(InetAddress.getByName("192.168.100.245"), link.getOspfRemIpAddr());
 				} catch (UnknownHostException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
         		assertEquals(0, link.getOspfRemAddressLessIndex().intValue());
@@ -194,7 +195,7 @@ public class EnLinkdSnmpTest extends TestNetworkBuilder implements InitializingB
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:linkd/nms17216/switch1-walk.txt")
     })
-    public void testNetwork17216Switch1OspfIfTable() throws Exception {
+    public void testOspfIfTableWalk() throws Exception {
     	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SWITCH1_IP));
         String trackerName = "ospfIfTable";
         final List<OspfLink> links = new ArrayList<OspfLink>();
@@ -252,7 +253,7 @@ public class EnLinkdSnmpTest extends TestNetworkBuilder implements InitializingB
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:linkd/nms17216/switch1-walk.txt")
     })
-    public void testNetwork17216Switch1LldpLocalGroup() throws Exception {
+    public void testLldpLocalGroupWalk() throws Exception {
 
     	String trackerName = "lldpLocalGroup";
     	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SWITCH1_IP));
@@ -290,7 +291,7 @@ public class EnLinkdSnmpTest extends TestNetworkBuilder implements InitializingB
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:linkd/nms17216/switch1-walk.txt")
     })
-    public void testNetwork17216Switch1LldpLocGetter() throws Exception {
+    public void testLldpLocGetter() throws Exception {
 
     	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SWITCH1_IP));
 		
@@ -306,7 +307,7 @@ public class EnLinkdSnmpTest extends TestNetworkBuilder implements InitializingB
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:linkd/nms17216/switch1-walk.txt")
     })
-    public void testNetwork17216Switch1LldpRemTableCollection() throws Exception {
+    public void testLldpRemTableWalk() throws Exception {
 		
         final SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SWITCH1_IP));
         final LldpLocPortGetter lldpLocPort = new LldpLocPortGetter(snmpAgent);
@@ -343,5 +344,40 @@ public class EnLinkdSnmpTest extends TestNetworkBuilder implements InitializingB
         
     }
 
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host = SIEGFRIE_IP, port = 161, resource = SIEGFRIE_SNMP_RESOURCE)
+    })
+    public void testIsisSysObjectWalk() throws Exception {
+
+    	String trackerName = "isisSysObject";
+    	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SIEGFRIE_IP));
+        IsisSysObjectGroupTracker tracker = new IsisSysObjectGroupTracker();
+        SnmpWalker walker =  SnmpUtils.createWalker(config, trackerName, tracker);
+
+        walker.start();
+
+        try {
+            walker.waitFor();
+            if (walker.timedOut()) {
+            	LOG.info(
+                        "run:Aborting node scan : Agent timed out while scanning the {} table", trackerName);
+            }  else if (walker.failed()) {
+            	LOG.info(
+                        "run:Aborting node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
+            }
+        } catch (final InterruptedException e) {
+            LOG.error("run: collection interrupted, exiting",e);
+            return;
+        }
+
+		IsIsElement eiA = tracker.getIsisElement();
+		System.err.println("Is-Is Sys Id: " + eiA.getIsisSysID());
+		System.err.println("Is-Is Sys Admin State: " + IsisAdminState.getTypeString(eiA.getIsisSysAdminState().getValue()));
+		
+		assertEquals(SIEGFRIE_ISIS_SYS_ID, eiA.getIsisSysID());
+		assertEquals(IsisAdminState.on, eiA.getIsisSysAdminState());
+    }
+    
 
 }

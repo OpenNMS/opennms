@@ -13,6 +13,7 @@ import org.opennms.netmgt.dao.api.LldpLinkDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OspfLinkDao;
 import org.opennms.netmgt.dao.support.UpsertTemplate;
+import org.opennms.netmgt.model.IsIsElement;
 import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.model.OnmsNode;
@@ -96,6 +97,12 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 	}
 
 	@Override
+	public void reconcileIsis(int nodeId, Date now) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
 	public void reconcileOspf(int nodeId, Date now) {
 		m_ospfLinkDao.deleteByNodeIdOlderThen(nodeId, now);
 		m_ospfLinkDao.flush();
@@ -162,7 +169,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 			return;
 		
 		LldpElement dbelement = node.getLldpElement();
-		if (node.getLldpElement() != null) {
+		if (dbelement != null) {
 			dbelement.merge(element);
 			node.setLldpElement(dbelement);
 		} else {
@@ -178,7 +185,13 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
 	@Override
 	@Transactional
-	public void store(final int nodeId,final OspfLink saveMe) {
+	public void store(int nodeId, OspfLink link) {
+		if (link == null)
+			return;
+		saveOspfLink(nodeId, link);
+	}
+	
+	private void saveOspfLink(final int nodeId, final OspfLink saveMe) {
 		new UpsertTemplate<OspfLink, OspfLinkDao>(m_transactionManager,m_ospfLinkDao) {
 
 			@Override
@@ -220,13 +233,37 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 			return;
 		
 		OspfElement dbelement = node.getOspfElement();
-		if (node.getLldpElement() != null) {
+		if (dbelement != null) {
 			dbelement.merge(element);
 			node.setOspfElement(dbelement);
 		} else {
 			element.setNode(node);
 			element.setOspfNodeLastPollTime(element.getOspfNodeCreateTime());
 			node.setOspfElement(element);
+		}
+
+        m_nodeDao.saveOrUpdate(node);
+		m_nodeDao.flush();
+		
+	}
+
+	@Override
+	@Transactional
+	public void store(int nodeId, IsIsElement element) {
+		if (element ==  null)
+			return;
+		final OnmsNode node = m_nodeDao.get(nodeId);
+		if ( node == null )
+			return;
+		
+		IsIsElement dbelement = node.getIsisElement();
+		if (dbelement != null) {
+			dbelement.merge(element);
+			node.setIsisElement(dbelement);
+		} else {
+			element.setNode(node);
+			element.setIsisNodeLastPollTime(element.getIsisNodeCreateTime());
+			node.setIsisElement(element);
 		}
 
         m_nodeDao.saveOrUpdate(node);

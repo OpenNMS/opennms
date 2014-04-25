@@ -67,7 +67,7 @@
 				<annotation>
 					<documentation>
 						Whether links discovery process should use
-						Bridge mib.
+						Bridge mib data.
 					</documentation>
 				</annotation>
 			</attribute>
@@ -77,7 +77,7 @@
 				<annotation>
 					<documentation>
 						Whether links discovery process should use
-						link layer discovery protocol mib data.
+						lldp mib data.
 					</documentation>
 				</annotation>
 			</attribute>
@@ -87,7 +87,16 @@
 				<annotation>
 					<documentation>
 						Whether links discovery process should use
-						ospf mib rem table.
+						ospf mib data.
+					</documentation>
+				</annotation>
+			</attribute>
+			<attribute name="use-isis-discovery" type="boolean"
+				use="optional" default="true">
+				<annotation>
+					<documentation>
+						Whether links discovery process should use
+						isis mib data.
 					</documentation>
 				</annotation>
 			</attribute>
