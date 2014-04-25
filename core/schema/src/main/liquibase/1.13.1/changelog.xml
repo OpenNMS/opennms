@@ -263,4 +263,50 @@
 
 	</changeSet>
 
+	<changeSet author="rssntn67" id="1.13.1-isiselement">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="isiselement" /></not>
+		</preConditions>
+
+		<createTable tableName="isiselement">
+			<column name="id" type="integer">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="nodeid" type="integer" >
+							<constraints nullable="false" />
+			</column>
+			<column name="isissysid" type="varchar(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="isissysadminstate" type="integer" >
+							<constraints nullable="false" />
+			</column>
+			<column name="isisnodecreatetime" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+			<column name="isisnodelastpolltime" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<ext:addAutoIncrement tableName="isiselement" columnName="id" sequenceName="opennmsNxtId" />
+
+		<addForeignKeyConstraint constraintName="fk_nodeid71" onDelete="CASCADE"
+			baseTableName="isiselement" baseColumnNames="nodeid"
+			referencedTableName="node" referencedColumnNames="nodeid" />
+
+		<createIndex tableName="isiselement" indexName="isiselement_nodeid_idx">
+			<column name="nodeid" />
+		</createIndex>
+		<createIndex tableName="isiselement" indexName="isis_sysid_idx">
+			<column name="isissysid" />
+		</createIndex>
+
+		<rollback>
+			<dropTable tableName="isiselement" />
+		</rollback>
+
+	</changeSet>
+
+
 </databaseChangeLog>

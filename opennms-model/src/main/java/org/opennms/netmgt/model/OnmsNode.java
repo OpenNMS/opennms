@@ -177,6 +177,9 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     private OspfElement m_ospfElement;
 
     /** persistent field */
+    private IsIsElement m_isisElement;
+
+    /** persistent field */
     private Set<OnmsIpInterface> m_ipInterfaces = new LinkedHashSet<OnmsIpInterface>();
 
     /** persistent field */
@@ -779,12 +782,31 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     }
 
     /**
-     * <p>setLldpElement</p>
+     * <p>setOspfElement</p>
      *
      * @param asset a {@link org.opennms.netmgt.model.OspfElement} object.
      */
     public void setOspfElement(OspfElement ospfElement) {
         m_ospfElement = ospfElement;
+    }
+
+    /**
+     * The isis element associated with this node
+     *
+     * @return a {@link org.opennms.netmgt.model.IsIsElement} object.
+     */
+    @OneToOne(mappedBy="node", cascade = CascadeType.ALL, fetch=FetchType.LAZY)
+    public IsIsElement getIsisElement() {
+        return m_isisElement;
+    }
+
+    /**
+     * <p>setIsIsElement</p>
+     *
+     * @param asset a {@link org.opennms.netmgt.model.OspfElement} object.
+     */
+    public void setIsisElement(IsIsElement isisElement) {
+        m_isisElement = isisElement;
     }
 
 
