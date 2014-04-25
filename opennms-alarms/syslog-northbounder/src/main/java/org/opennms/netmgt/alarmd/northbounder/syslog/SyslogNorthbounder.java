@@ -248,6 +248,7 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements Initiali
 	protected void buildParmMappings(final NorthboundAlarm alarm, final Map<String, String> mapping) {
 		List<EventParm<?>> parmCollection = new LinkedList<EventParm<?>>();
 		String parms = alarm.getEventParms();
+		if (parms == null) return;
 
 		char separator = ';';
 		String[] parmArray = StringUtils.split(parms, separator);
