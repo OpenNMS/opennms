@@ -38,7 +38,6 @@ import java.util.List;
 
 import org.opennms.core.utils.InetAddressUtils;
 
-import org.opennms.netmgt.model.OspfElement;
 import org.opennms.netmgt.model.OspfElement.Status;
 import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.snmp.SnmpUtils;
