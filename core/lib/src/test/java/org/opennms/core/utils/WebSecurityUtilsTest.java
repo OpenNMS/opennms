@@ -55,6 +55,33 @@ public class WebSecurityUtilsTest {
 				script.equals("&lt;&#x73;cript&gt;foo&lt;/&#x73;cript&gt;"));
 		assertTrue("Html is sanitized", html.equals("&lt;table&gt;"));
 	}
+	
+	@Test
+	public void testInnocentEmbeddedOccurrenceOfTheSWord() {
+	    String innocentVictim = "decrementSubscription";
+	    String bystander = WebSecurityUtils.sanitizeString(innocentVictim);
+	    assertTrue("Innocent inline appearance of s-c-r-i-p-t does not get mangled", bystander.equals(innocentVictim));
+	    innocentVictim = "The script failed to execute because blah";
+	    bystander = WebSecurityUtils.sanitizeString(innocentVictim);
+	    assertTrue("Innocent inline appearance of s-c-r-i-p-t does not get mangled", bystander.equals(innocentVictim));
+	}
+
+	@Test
+	public void testInnocentLeadingOccurrenceOfTheSWord() {
+	    String innocentVictim = "scriptsrv01";
+	    String bystander = WebSecurityUtils.sanitizeString(innocentVictim);
+	    assertTrue("Innocent leading appearance of s-c-r-i-p-t does not get mangled", bystander.equals(innocentVictim));
+	}
+
+	@Test
+	public void testSneakyOccurrenceOfTheSWord() {
+	    String percentBadGuy = "decrement%3cscript";
+	    percentBadGuy = WebSecurityUtils.sanitizeString(percentBadGuy);
+	    assertTrue("Percent-encoded sneaky script gets sanitized", percentBadGuy.equals("decrement%3c&#x73;cript"));
+	    String entityBadGuy = "decrement&lt;script";
+	    entityBadGuy = WebSecurityUtils.sanitizeString(entityBadGuy);
+	    assertTrue("Entity-encoded sneaky script gets sanitized", entityBadGuy.equals("decrement&lt;&#x73;cript"));
+	}
 
 	@Test
 	public void testHTMLallowedSanitizeString() {
