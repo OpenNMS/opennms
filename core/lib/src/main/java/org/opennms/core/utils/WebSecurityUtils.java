@@ -51,7 +51,7 @@ public abstract class WebSecurityUtils {
 	
 	private final static Pattern ILLEGAL_IN_COLUMN_NAME_PATTERN = Pattern.compile("[^A-Za-z0-9_]");
 	
-    private final static Pattern scriptPattern = Pattern.compile("([^A-Za-z0-9 ]|%[0-9A-Fa-f]{2})script", Pattern.CASE_INSENSITIVE);
+    private final static Pattern scriptPattern = Pattern.compile("script", Pattern.CASE_INSENSITIVE);
 
     /**
      * <p>sanitizeString</p>
@@ -90,7 +90,7 @@ public abstract class WebSecurityUtils {
         }
 
         Matcher scriptMatcher = scriptPattern.matcher(raw);
-        String next = scriptMatcher.replaceAll("$1&#x73;cript");
+        String next = scriptMatcher.replaceAll("&#x73;cript");
         if (!allowHTML) {
             next = next.replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\"", "&quot;");
         }
