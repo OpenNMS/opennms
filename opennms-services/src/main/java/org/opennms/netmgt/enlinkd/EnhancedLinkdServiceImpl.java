@@ -9,6 +9,7 @@ import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.restrictions.EqRestriction;
+import org.opennms.netmgt.dao.api.IsIsLinkDao;
 import org.opennms.netmgt.dao.api.LldpLinkDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OspfLinkDao;
@@ -36,6 +37,8 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 	private LldpLinkDao m_lldpLinkDao;
 	
 	private OspfLinkDao m_ospfLinkDao;
+	
+	private IsIsLinkDao m_isisLinkDao;
 
     @Override
 	public List<LinkableNode> getSnmpNodeList() {
@@ -294,5 +297,14 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 	public void setOspfLinkDao(OspfLinkDao ospfLinkDao) {
 		m_ospfLinkDao = ospfLinkDao;
 	}
+
+	public IsIsLinkDao getIsisLinkDao() {
+		return m_isisLinkDao;
+	}
+
+	public void setIsisLinkDao(IsIsLinkDao isisLinkDao) {
+		m_isisLinkDao = isisLinkDao;
+	}
 	
+
 }

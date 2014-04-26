@@ -21,6 +21,7 @@
       <property name="nodeDao" ref="nodeDao" />
       <property name="lldpLinkDao" ref="lldpLinkDao" />
       <property name="ospfLinkDao" ref="ospfLinkDao" />
+      <property name="isisLinkDao" ref="isisLinkDao" />
     </bean>
 
     <bean id="scheduler" class="org.opennms.netmgt.linkd.scheduler.Scheduler">
