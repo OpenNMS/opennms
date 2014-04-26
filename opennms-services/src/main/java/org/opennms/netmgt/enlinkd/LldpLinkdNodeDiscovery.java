@@ -63,13 +63,9 @@ private final static Logger LOG = LoggerFactory.getLogger(LldpLinkdNodeDiscovery
     	final Date now = new Date(); 
 
     	String trackerName = "lldpLocalGroup";
-
         final LldpLocalGroupTracker lldpLocalGroup = new LldpLocalGroupTracker();
-
-		LOG.debug( "run: collecting : {}", getPeer());
-
+		LOG.info( "run: collecting {} on: {}",trackerName, str(getTarget()));
         SnmpWalker walker =  SnmpUtils.createWalker(getPeer(), trackerName, lldpLocalGroup);
-
         walker.start();
 
         try {
@@ -106,6 +102,7 @@ private final static Logger LOG = LoggerFactory.getLogger(LldpLinkdNodeDiscovery
         	}
         };
 
+		LOG.info( "run: collecting {} on: {}",trackerName, str(getTarget()));
         walker = SnmpUtils.createWalker(getPeer(), trackerName, lldpRemTable);
         walker.start();
         

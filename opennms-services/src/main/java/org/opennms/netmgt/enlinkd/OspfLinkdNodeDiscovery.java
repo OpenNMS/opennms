@@ -72,11 +72,8 @@ public final class OspfLinkdNodeDiscovery extends AbstractLinkdNodeDiscovery {
     	final Date now = new Date(); 
 
     	String trackerName = "ospfGeneralGroup";
-
         final OspfGeneralGroupTracker ospfGeneralGroup = new OspfGeneralGroupTracker();
-
-		LOG.debug( "run: collecting : {}", getPeer());
-
+		LOG.info( "run: collecting {} on: {}",trackerName, str(getTarget()));
         SnmpWalker walker =  SnmpUtils.createWalker(getPeer(), trackerName, ospfGeneralGroup);
 
         walker.start();
@@ -125,6 +122,7 @@ public final class OspfLinkdNodeDiscovery extends AbstractLinkdNodeDiscovery {
         	}
         };
 
+		LOG.info( "run: collecting {} on: {}",trackerName, str(getTarget()));
         walker = SnmpUtils.createWalker(getPeer(), trackerName, ospfNbrTableTracker);
         walker.start();
         
@@ -161,6 +159,7 @@ public final class OspfLinkdNodeDiscovery extends AbstractLinkdNodeDiscovery {
 
         };
 
+		LOG.info( "run: collecting {} on: {}",trackerName, str(getTarget()));
         walker = SnmpUtils.createWalker(getPeer(), trackerName, ospfIfTableTracker);
         walker.start();
         

@@ -63,11 +63,8 @@ private final static Logger LOG = LoggerFactory.getLogger(IsisLinkdNodeDiscovery
     	final Date now = new Date(); 
 
     	String trackerName = "isisSysObjectCollection";
-
         final IsisSysObjectGroupTracker isisSysObject = new IsisSysObjectGroupTracker();
-
-		LOG.debug( "run: collecting : {}", getPeer());
-
+		LOG.info( "run: collecting {} on: {}",trackerName, str(getTarget()));
         SnmpWalker walker =  SnmpUtils.createWalker(getPeer(), trackerName, isisSysObject);
 
         walker.start();
