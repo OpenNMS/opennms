@@ -136,8 +136,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     private void scheduleCollectionForNode(final LinkableNode node) {
 
         for (final AbstractLinkdNodeDiscovery snmpcoll : getSnmpCollections(node) ){
-            LOG.info("ScheduleCollectionForNode: Scheduling SNMP Collection for Package/NodeId: {}/{}/{}",
-                snmpcoll.getPackageName(), node.getNodeId(),
+            LOG.info("ScheduleCollectionForNode: Scheduling {}",
                 snmpcoll.getInfo());
         	snmpcoll.setScheduler(m_scheduler);
             snmpcoll.schedule();
@@ -266,13 +265,13 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
 
         LinkableNode node = getNode(nodeid);
         if (node != null) {
-            LOG.debug("scheduleNodeCollection: Found Scheduled Linkable node {}. Skipping ",
+            LOG.info("scheduleNodeCollection: Found Scheduled Linkable node {}. Skipping ",
                             nodeid);
             return false;
         }
 
         // First of all get Linkable Node
-        LOG.debug("scheduleNodeCollection: Loading node {} from database",
+        LOG.info("scheduleNodeCollection: Loading node {} from database",
                         nodeid);
         node = m_queryMgr.getSnmpNode(nodeid);
         if (node == null) {
@@ -282,7 +281,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         }
 
         synchronized (m_nodes) {
-            LOG.debug("adding node {} to the collection", node);
+            LOG.info("scheduleNodeCollection: adding node {} to the collection", node);
             m_nodes.add(node);
         }
 
@@ -314,7 +313,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
             // get readyRunnuble
             // wakeup RR
             Collection<AbstractLinkdNodeDiscovery> collections = getSnmpCollections(node);
-            LOG.debug("wakeUpNodeCollection: fetched SnmpCollections from scratch, iterating over {} objects to wake them up",
+            LOG.info("wakeUpNodeCollection: fetched SnmpCollections from scratch, iterating over {} objects to wake them up",
                             collections.size());
             for (AbstractLinkdNodeDiscovery collection : collections) {
                 ReadyRunnable rr = getReadyRunnable(collection);
@@ -329,7 +328,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     }
 
     void deleteNode(int nodeid) {
-        LOG.debug("deleteNode: deleting LinkableNode for node {}",
+        LOG.info("deleteNode: deleting LinkableNode for node {}",
                         nodeid);
 
             m_queryMgr.delete(nodeid);
@@ -340,7 +339,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
             LOG.warn("deleteNode: node not found: {}", nodeid);
         } else {
             Collection<AbstractLinkdNodeDiscovery> collections = getSnmpCollections(node);
-            LOG.debug("deleteNode: fetched SnmpCollections from scratch, iterating over {} objects to wake them up",
+            LOG.info("deleteNode: fetched SnmpCollections from scratch, iterating over {} objects to wake them up",
                             collections.size());
             for (AbstractLinkdNodeDiscovery collection : collections) {
                 ReadyRunnable rr = getReadyRunnable(collection);
@@ -371,7 +370,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
             // get readyRunnuble
             // suspend RR
             Collection<AbstractLinkdNodeDiscovery> collections = getSnmpCollections(node);
-            LOG.debug("suspendNodeCollection: fetched SnmpCollections from scratch, iterating over {} objects to suspend them down",
+            LOG.info("suspendNodeCollection: fetched SnmpCollections from scratch, iterating over {} objects to suspend them down",
                             collections.size());
             for (AbstractLinkdNodeDiscovery collection : collections) {
                 ReadyRunnable rr = getReadyRunnable(collection);
@@ -388,7 +387,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     }
 
     private ReadyRunnable getReadyRunnable(ReadyRunnable runnable) {
-        LOG.debug("getReadyRunnable: get ReadyRunnable from scheduler: {}",
+        LOG.info("getReadyRunnable: getting {} from scheduler",
                         runnable.getInfo());
 
         return m_scheduler.getReadyRunnable(runnable);

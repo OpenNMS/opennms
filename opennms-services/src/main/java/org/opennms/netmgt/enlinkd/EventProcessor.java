@@ -41,7 +41,7 @@ import org.opennms.netmgt.xml.event.Event;
  * @author <a href="mailto:matt@opennms.org">Matt Brozowski </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-@EventListener(name="OpenNMS.EnhancedLinkd")
+@EventListener(name="enlinkd")
 public final class EventProcessor {
 
     private EnhancedLinkd m_linkd;

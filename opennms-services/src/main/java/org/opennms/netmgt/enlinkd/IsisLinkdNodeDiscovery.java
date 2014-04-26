@@ -97,9 +97,8 @@ private final static Logger LOG = LoggerFactory.getLogger(IsisLinkdNodeDiscovery
 
 	@Override
 	public String getInfo() {
-        return "ReadyRunnable IsisLinkNodeDiscovery" + " ip=" + str(getTarget())
-                + " port=" + getPort() + " community=" + getReadCommunity()
-                + " package=" + getPackageName();
+        return "ReadyRunnable:IsisLinkNodeDiscovery node: "+ getNodeId() + " ip:" + str(getTarget())
+                + " package:" + getPackageName();
 	}
 
 	@Override

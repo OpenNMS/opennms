@@ -124,9 +124,8 @@ private final static Logger LOG = LoggerFactory.getLogger(LldpLinkdNodeDiscovery
 
 	@Override
 	public String getInfo() {
-        return "ReadyRunnable LldpLinkNodeDiscovery" + " ip=" + str(getTarget())
-                + " port=" + getPort() + " community=" + getReadCommunity()
-                + " package=" + getPackageName();
+        return "ReadyRunnable:LldpLinkNodeDiscovery node: "+ getNodeId() + " ip:" + str(getTarget())
+                + " package:" + getPackageName();
 	}
 
 	@Override
