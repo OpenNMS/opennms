@@ -35,7 +35,7 @@ import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.model.OnmsNode;
 
 
-public interface LldpLinkDao extends LegacyOnmsDao<LldpLink, Integer> {
+public interface LldpLinkDao extends OnmsDao<LldpLink, Integer> {
 
     LldpLink get(OnmsNode node, Integer lldpLocalPortNum);
 

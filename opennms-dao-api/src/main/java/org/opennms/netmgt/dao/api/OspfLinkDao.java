@@ -32,12 +32,11 @@ import java.net.InetAddress;
 import java.util.Date;
 import java.util.List;
 
-import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OspfLink;
 
 
-public interface OspfLinkDao extends LegacyOnmsDao<OspfLink, Integer> {
+public interface OspfLinkDao extends OnmsDao<OspfLink, Integer> {
 
 
     OspfLink get(OnmsNode node, InetAddress ospfRemRouterId, InetAddress ospfRemIpAddr, Integer ospfRemAddressLessIndex);
