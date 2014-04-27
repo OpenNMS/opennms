@@ -33,7 +33,6 @@ import java.util.List;
 
 import org.opennms.netmgt.dao.api.IsIsLinkDao;
 import org.opennms.netmgt.model.IsIsLink;
-import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.util.Assert;
 
