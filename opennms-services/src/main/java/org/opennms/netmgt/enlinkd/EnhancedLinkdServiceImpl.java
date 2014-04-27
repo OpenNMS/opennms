@@ -9,9 +9,12 @@ import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.restrictions.EqRestriction;
+import org.opennms.netmgt.dao.api.IsIsElementDao;
 import org.opennms.netmgt.dao.api.IsIsLinkDao;
+import org.opennms.netmgt.dao.api.LldpElementDao;
 import org.opennms.netmgt.dao.api.LldpLinkDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.OspfElementDao;
 import org.opennms.netmgt.dao.api.OspfLinkDao;
 import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.model.IsIsElement;
@@ -36,10 +39,16 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
 	private LldpLinkDao m_lldpLinkDao;
 	
+	private LldpElementDao m_lldpElementDao;
+	
 	private OspfLinkDao m_ospfLinkDao;
+	
+	private OspfElementDao m_ospfElementDao;
 	
 	private IsIsLinkDao m_isisLinkDao;
 
+	private IsIsElementDao m_isisElementDao;
+	
     @Override
 	public List<LinkableNode> getSnmpNodeList() {
 		final List<LinkableNode> nodes = new ArrayList<LinkableNode>();
@@ -89,6 +98,11 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
 	@Override
 	public void reconcileLldp(int nodeId, Date now) {
+		LldpElement element = m_lldpElementDao.findByNodeId(nodeId);
+		if (element != null && element.getLldpNodeLastPollTime().getTime() < now.getTime()) {
+			m_lldpElementDao.delete(element);
+			m_lldpElementDao.flush();
+		}
 		m_lldpLinkDao.deleteByNodeIdOlderThen(nodeId, now);
 		m_lldpLinkDao.flush();
 	}
@@ -101,12 +115,20 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
 	@Override
 	public void reconcileIsis(int nodeId, Date now) {
-		// TODO Auto-generated method stub
-		
+		IsIsElement element = m_isisElementDao.findByNodeId(nodeId);
+		if (element != null && element.getIsisNodeLastPollTime().getTime() < now.getTime()) {
+			m_isisElementDao.delete(element);
+			m_isisElementDao.flush();
+		}
 	}
 
 	@Override
 	public void reconcileOspf(int nodeId, Date now) {
+		OspfElement element = m_ospfElementDao.findByNodeId(nodeId);
+		if (element != null && element.getOspfNodeLastPollTime().getTime() <now.getTime()) {
+			m_ospfElementDao.delete(element);
+			m_ospfElementDao.flush();
+		}
 		m_ospfLinkDao.deleteByNodeIdOlderThen(nodeId, now);
 		m_ospfLinkDao.flush();
 	}
@@ -305,6 +327,29 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 	public void setIsisLinkDao(IsIsLinkDao isisLinkDao) {
 		m_isisLinkDao = isisLinkDao;
 	}
-	
+
+	public LldpElementDao getLldpElementDao() {
+		return m_lldpElementDao;
+	}
+
+	public void setLldpElementDao(LldpElementDao lldpElementDao) {
+		m_lldpElementDao = lldpElementDao;
+	}
+
+	public OspfElementDao getOspfElementDao() {
+		return m_ospfElementDao;
+	}
+
+	public void setOspfElementDao(OspfElementDao ospfElementDao) {
+		m_ospfElementDao = ospfElementDao;
+	}
+
+	public IsIsElementDao getIsisElementDao() {
+		return m_isisElementDao;
+	}
+
+	public void setIsisElementDao(IsIsElementDao isisElementDao) {
+		m_isisElementDao = isisElementDao;
+	}
 
 }
