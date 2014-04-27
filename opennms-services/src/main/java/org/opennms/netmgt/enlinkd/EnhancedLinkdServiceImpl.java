@@ -18,6 +18,7 @@ import org.opennms.netmgt.dao.api.OspfElementDao;
 import org.opennms.netmgt.dao.api.OspfLinkDao;
 import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.model.IsIsElement;
+import org.opennms.netmgt.model.IsIsLink;
 import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.model.OnmsNode;
@@ -108,9 +109,14 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 	}
 
 	@Override
-	public void reconcileCdp(int nodeId, Date now) {
-		// TODO Auto-generated method stub
-		
+	public void reconcileOspf(int nodeId, Date now) {
+		OspfElement element = m_ospfElementDao.findByNodeId(nodeId);
+		if (element != null && element.getOspfNodeLastPollTime().getTime() <now.getTime()) {
+			m_ospfElementDao.delete(element);
+			m_ospfElementDao.flush();
+		}
+		m_ospfLinkDao.deleteByNodeIdOlderThen(nodeId, now);
+		m_ospfLinkDao.flush();
 	}
 
 	@Override
@@ -123,14 +129,9 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 	}
 
 	@Override
-	public void reconcileOspf(int nodeId, Date now) {
-		OspfElement element = m_ospfElementDao.findByNodeId(nodeId);
-		if (element != null && element.getOspfNodeLastPollTime().getTime() <now.getTime()) {
-			m_ospfElementDao.delete(element);
-			m_ospfElementDao.flush();
-		}
-		m_ospfLinkDao.deleteByNodeIdOlderThen(nodeId, now);
-		m_ospfLinkDao.flush();
+	public void reconcileCdp(int nodeId, Date now) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
@@ -209,7 +210,6 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 	}
 
 	@Override
-	@Transactional
 	public void store(int nodeId, OspfLink link) {
 		if (link == null)
 			return;
@@ -248,6 +248,44 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 		
 	}
 
+	@Override
+	public void store(int nodeId, IsIsLink link) {
+		if (link == null)
+			return;
+		saveIsisLink(nodeId, link);
+	}
+
+	@Transactional
+    protected synchronized void saveIsisLink(final int nodeId, final IsIsLink saveMe) {
+		new UpsertTemplate<IsIsLink, IsIsLinkDao>(m_transactionManager,m_isisLinkDao) {
+
+			@Override
+			protected IsIsLink query() {
+				return m_dao.get(nodeId, saveMe.getIsisCircIndex(),saveMe.getIsisISAdjIndex());
+			}
+
+			@Override
+			protected IsIsLink doUpdate(IsIsLink dbIsIsLink) {
+				dbIsIsLink.merge(saveMe);
+				m_dao.update(dbIsIsLink);
+				m_dao.flush();
+				return dbIsIsLink;
+			}
+
+			@Override
+			protected IsIsLink doInsert() {
+				final OnmsNode node = m_nodeDao.get(nodeId);
+				if ( node == null )
+					return null;
+				saveMe.setNode(node);
+				saveMe.setIsisLinkLastPollTime(saveMe.getIsisLinkCreateTime());
+				m_dao.saveOrUpdate(saveMe);
+				m_dao.flush();
+				return saveMe;
+			}
+			
+		}.execute();
+	}
 	@Override
 	@Transactional
 	public void store(int nodeId, OspfElement element) {
