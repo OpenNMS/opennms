@@ -48,6 +48,9 @@ import org.opennms.netmgt.config.SnmpPeerFactory;
 
 import org.opennms.netmgt.model.IsIsElement;
 import org.opennms.netmgt.model.IsIsElement.IsisAdminState;
+import org.opennms.netmgt.model.IsIsLink;
+import org.opennms.netmgt.model.IsIsLink.IsisISAdjNeighSysType;
+import org.opennms.netmgt.model.IsIsLink.IsisISAdjState;
 import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.model.LldpElement.LldpChassisIdSubType;
@@ -379,5 +382,60 @@ public class EnLinkdSnmpTest extends TestNetworkBuilder implements InitializingB
 		assertEquals(IsisAdminState.on, eiA.getIsisSysAdminState());
     }
     
+
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host = SIEGFRIE_IP, port = 161, resource = SIEGFRIE_SNMP_RESOURCE)
+    })
+    public void testIsisISAdjTableWalk() throws Exception {
+
+    	final List<IsIsLink> links = new ArrayList<IsIsLink>();
+    	String trackerName = "isisISAdjTable";
+    	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SIEGFRIE_IP));
+        IsisISAdjTableTracker tracker = new IsisISAdjTableTracker() {
+        	public void processIsisAdjRow(final IsIsAdjRow row) {
+        		assertEquals(5, row.getColumnCount());
+        		links.add(row.getIsisLink());
+            }
+        };
+
+        SnmpWalker walker =  SnmpUtils.createWalker(config, trackerName, tracker);
+
+        walker.start();
+
+        try {
+            walker.waitFor();
+            if (walker.timedOut()) {
+            	LOG.info(
+                        "run:Aborting node scan : Agent timed out while scanning the {} table", trackerName);
+            }  else if (walker.failed()) {
+            	LOG.info(
+                        "run:Aborting node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
+            }
+        } catch (final InterruptedException e) {
+            LOG.error("run: collection interrupted, exiting",e);
+            return;
+        }
+
+        assertEquals(2, links.size());
+
+        for (final IsIsLink link: links) {
+    		assertEquals(1,link.getIsisISAdjIndex().intValue());
+    		assertEquals(IsisISAdjState.up, link.getIsisISAdjState());
+    		assertEquals(IsisISAdjNeighSysType.l1_IntermediateSystem, link.getIsisISAdjNeighSysType());
+    		assertEquals(0, link.getIsisISAdjNbrExtendedCircID().intValue());
+    		if (link.getIsisCircIndex().intValue() == 533) {
+    			assertEquals("001f12accbf0", link.getIsisISAdjNeighSNPAAddress());
+    			assertEquals("000110255062",link.getIsisISAdjNeighSysID());
+    		} else if (link.getIsisCircIndex().intValue() == 552) {
+    			assertEquals("0021590e47c2", link.getIsisISAdjNeighSNPAAddress());
+    			assertEquals("000110088500",link.getIsisISAdjNeighSysID());
+    		} else {
+    			assertEquals(true, false);
+    		}
+
+        }
+
+    }
 
 }
