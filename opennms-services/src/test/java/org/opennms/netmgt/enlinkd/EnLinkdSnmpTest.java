@@ -203,7 +203,7 @@ public class EnLinkdSnmpTest extends TestNetworkBuilder implements InitializingB
         OspfIfTableTracker ospfIfTableTracker = new OspfIfTableTracker() {
 
         	public void processOspfIfRow(final OspfIfRow row) {
-        		links.add(row.getLink(ipAddrTableGetter));
+        		links.add(row.getOspfLink(ipAddrTableGetter));
          	}
         };
 
@@ -320,7 +320,7 @@ public class EnLinkdSnmpTest extends TestNetworkBuilder implements InitializingB
         		System.err.println("columns number in the row: " + row.getColumnCount());
 
         		assertEquals(6, row.getColumnCount());
-        		LldpLink link = row.getLink(lldpLocPort);
+        		LldpLink link = row.getLldpLink(lldpLocPort);
 
         		System.err.println("local port number: " + row.getLldpRemLocalPortNum());
         		System.err.println("remote chassis: " + link.getLldpRemChassisId());

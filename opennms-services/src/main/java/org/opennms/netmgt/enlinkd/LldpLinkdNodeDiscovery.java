@@ -98,7 +98,7 @@ private final static Logger LOG = LoggerFactory.getLogger(LldpLinkdNodeDiscovery
         LldpRemTableTracker lldpRemTable = new LldpRemTableTracker() {
 
         	public void processLldpRemRow(final LldpRemRow row) {
-        		m_linkd.getQueryManager().store(getNodeId(),row.getLink(lldpLocPort));
+        		m_linkd.getQueryManager().store(getNodeId(),row.getLldpLink(lldpLocPort));
         	}
         };
 

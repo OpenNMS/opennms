@@ -146,7 +146,7 @@ public final class OspfLinkdNodeDiscovery extends AbstractLinkdNodeDiscovery {
         OspfIfTableTracker ospfIfTableTracker = new OspfIfTableTracker() {
 
         	public void processOspfIfRow(final OspfIfRow row) {
-        		OspfLink link = row.getLink(ipAddrTableGetter);
+        		OspfLink link = row.getOspfLink(ipAddrTableGetter);
     			for (OspfLink nbrlink : links) {
     				if (InetAddressUtils.inSameNetwork(link.getOspfIpAddr(),nbrlink.getOspfRemIpAddr(),link.getOspfIpMask())) {
     					nbrlink.setOspfIpAddr(link.getOspfIpAddr());
