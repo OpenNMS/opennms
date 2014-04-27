@@ -42,7 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class LldpRemTableTracker extends TableTracker {
-private final static Logger LOG = LoggerFactory.getLogger(LldpRemTableTracker.class);
+	private final static Logger LOG = LoggerFactory.getLogger(LldpRemTableTracker.class);
 	
     public static final SnmpObjId LLDP_REM_TABLE_ENTRY = SnmpObjId.get(".1.0.8802.1.1.2.1.4.1.1"); // start of table (GETNEXT)
     
