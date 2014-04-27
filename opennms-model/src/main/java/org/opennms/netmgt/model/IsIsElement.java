@@ -118,7 +118,7 @@ public final class IsIsElement implements Serializable {
 		return m_isisSysAdminState;
 	}
 
-    @Column(name="isisSysID" , length=256, nullable = false)
+    @Column(name="isisSysID" , length=32, nullable = false)
 	public String getIsisSysID() {
 		return m_isisSysID;
 	}

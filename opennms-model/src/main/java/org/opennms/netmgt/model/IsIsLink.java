@@ -210,7 +210,7 @@ public class IsIsLink implements Serializable {
 		m_isisISAdjState = isisISAdjState;
 	}
 
-    @Column(name="isisISAdjNeighSNPAAddress" , length=256, nullable = false)
+    @Column(name="isisISAdjNeighSNPAAddress" , length=80, nullable = false)
 	public String getIsisISAdjNeighSNPAAddress() {
 		return m_isisISAdjNeighSNPAAddress;
 	}
@@ -233,7 +233,7 @@ public class IsIsLink implements Serializable {
 	}
 
 
-    @Column(name="isisISAdjNeighSysID" , length=256, nullable = false)
+    @Column(name="isisISAdjNeighSysID" , length=32, nullable = false)
 	public String getIsisISAdjNeighSysID() {
 		return m_isisISAdjNeighSysID;
 	}

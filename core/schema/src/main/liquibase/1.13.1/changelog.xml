@@ -285,7 +285,7 @@
 			<column name="nodeid" type="integer" >
 							<constraints nullable="false" />
 			</column>
-			<column name="isissysid" type="varchar(255)">
+			<column name="isissysid" type="varchar(32)">
 				<constraints nullable="false" />
 			</column>
 			<column name="isissysadminstate" type="integer" >
@@ -345,13 +345,13 @@
 			<column name="isisisadjstate" type="integer" >
 							<constraints nullable="false" />
 			</column>
-			<column name="isisisadjneighsnpaaddress" type="varchar(255)">
+			<column name="isisisadjneighsnpaaddress" type="varchar(80)">
 				<constraints nullable="false" />
 			</column>
 			<column name="isisisadjneighsysyype" type="integer" >
 							<constraints nullable="false" />
 			</column>
-			<column name="isisisadjneighsysid" type="varchar(255)">
+			<column name="isisisadjneighsysid" type="varchar(32)">
 				<constraints nullable="false" />
 			</column>
 			<column name="isisisadjnbrextendedcircid" type="integer" >
