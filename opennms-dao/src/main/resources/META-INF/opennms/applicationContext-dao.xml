@@ -105,11 +105,35 @@
   
   <onmsgi:service interface="org.opennms.netmgt.dao.api.LldpLinkDao" ref="lldpLinkDao" />
     
+  <bean id="lldpElementDao" class="org.opennms.netmgt.dao.hibernate.LldpElementDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.LldpElementDao" ref="lldpElementDao" />
+    
   <bean id="ospfLinkDao" class="org.opennms.netmgt.dao.hibernate.OspfLinkDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
   
   <onmsgi:service interface="org.opennms.netmgt.dao.api.OspfLinkDao" ref="ospfLinkDao" />
+    
+  <bean id="ospfElementDao" class="org.opennms.netmgt.dao.hibernate.OspfElementDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.OspfElementDao" ref="ospfElementDao" />
+    
+  <bean id="isisLinkDao" class="org.opennms.netmgt.dao.hibernate.IsIsLinkDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.IsIsLinkDao" ref="isisLinkDao" />
+    
+  <bean id="isisElementDao" class="org.opennms.netmgt.dao.hibernate.IsIsElementDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.IsIsElementDao" ref="isisElementDao" />
     
   <bean id="acknowledgmentDao" class="org.opennms.netmgt.dao.hibernate.AcknowledgmentDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />

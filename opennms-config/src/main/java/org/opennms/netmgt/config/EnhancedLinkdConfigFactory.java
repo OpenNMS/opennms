@@ -83,12 +83,12 @@ public final class EnhancedLinkdConfigFactory extends EnhancedLinkdConfigManager
         if (xml != null) {
             long timestamp = System.currentTimeMillis();
             final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.ENLINKD_CONFIG_FILE_NAME);
-            LOG.debug("saveXml: saving config file at %d: %s", timestamp, cfgFile.getPath());
+            LOG.debug("saveXml: saving config file at {}: {}", timestamp, cfgFile.getPath());
             final Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), "UTF-8");
             fileWriter.write(xml);
             fileWriter.flush();
             fileWriter.close();
-            LOG.debug("saveXml: finished saving config file: %s", cfgFile.getPath());
+            LOG.debug("saveXml: finished saving config file: {}", cfgFile.getPath());
         }
     }
 
@@ -103,7 +103,7 @@ public final class EnhancedLinkdConfigFactory extends EnhancedLinkdConfigManager
         getWriteLock().lock();
         try {
             final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.ENLINKD_CONFIG_FILE_NAME);
-           LOG.debug("init: config file path: %s", cfgFile.getPath());
+           LOG.debug("init: config file path: {}", cfgFile.getPath());
             InputStream stream = null;
             try {
                 stream = new FileInputStream(cfgFile);
@@ -113,7 +113,7 @@ public final class EnhancedLinkdConfigFactory extends EnhancedLinkdConfigManager
                     IOUtils.closeQuietly(stream);
                 }
             }
-            LOG.debug("init: finished loading config file: %s", cfgFile.getPath());
+            LOG.debug("init: finished loading config file: {}", cfgFile.getPath());
         } finally {
             getWriteLock().unlock();
         }

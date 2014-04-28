@@ -133,8 +133,12 @@
 		<createIndex tableName="lldplink" indexName="lldplink_nodeid_idx">
 			<column name="nodeid" />
 		</createIndex>
-		<createIndex tableName="lldplink" indexName="lldp_lastpoll_idx">
+		<createIndex tableName="lldplink" indexName="lldplink_lastpoll_idx">
 			<column name="lldplinklastpolltime" />
+		</createIndex>
+		<createIndex tableName="lldplink" indexName="lldplink_pk_idx">
+			<column name="nodeid" />
+			<column name="lldplocalportnum" />
 		</createIndex>
 
 		<rollback>
@@ -193,7 +197,7 @@
 		<createIndex tableName="ospfelement" indexName="ospfelement_nodeid_idx">
 			<column name="nodeid" />
 		</createIndex>
-		<createIndex tableName="ospfelement" indexName="ospf_routerid_idx">
+		<createIndex tableName="ospfelement" indexName="ospfelement_routerid_idx">
 			<column name="ospfrouterid" />
 		</createIndex>
 
@@ -253,8 +257,14 @@
 		<createIndex tableName="ospflink" indexName="ospflink_nodeid_idx">
 			<column name="nodeid" />
 		</createIndex>
-		<createIndex tableName="ospflink" indexName="ospf_lastpoll_idx">
+		<createIndex tableName="ospflink" indexName="ospflink_lastpoll_idx">
 			<column name="ospflinklastpolltime" />
+		</createIndex>
+		<createIndex tableName="ospflink" indexName="ospflink_pk_idx">
+			<column name="nodeid" />
+			<column name="ospfremrouterid" />
+			<column name="ospfremipaddr" />
+			<column name="ospfremaddresslessindex" />
 		</createIndex>
 
 		<rollback>
@@ -275,7 +285,7 @@
 			<column name="nodeid" type="integer" >
 							<constraints nullable="false" />
 			</column>
-			<column name="isissysid" type="varchar(255)">
+			<column name="isissysid" type="varchar(32)">
 				<constraints nullable="false" />
 			</column>
 			<column name="isissysadminstate" type="integer" >
@@ -298,7 +308,7 @@
 		<createIndex tableName="isiselement" indexName="isiselement_nodeid_idx">
 			<column name="nodeid" />
 		</createIndex>
-		<createIndex tableName="isiselement" indexName="isis_sysid_idx">
+		<createIndex tableName="isiselement" indexName="isiselement_sysid_idx">
 			<column name="isissysid" />
 		</createIndex>
 
@@ -308,5 +318,74 @@
 
 	</changeSet>
 
+	<changeSet author="rssntn67" id="1.13.1-isislink">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="isislink" /></not>
+		</preConditions>
 
+		<createTable tableName="isislink">
+			<column name="id" type="integer">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="nodeid" type="integer" >
+							<constraints nullable="false" />
+			</column>
+			<column name="isiscircindex" type="integer" >
+							<constraints nullable="false" />
+			</column>
+			<column name="isisisadjindex" type="integer" >
+							<constraints nullable="false" />
+			</column>
+			<column name="isiscircifindex" type="integer" >
+							<constraints nullable="true" />
+			</column>
+			<column name="isiscircadminstate" type="integer" >
+							<constraints nullable="true" />
+			</column>
+			<column name="isisisadjstate" type="integer" >
+							<constraints nullable="false" />
+			</column>
+			<column name="isisisadjneighsnpaaddress" type="varchar(80)">
+				<constraints nullable="false" />
+			</column>
+			<column name="isisisadjneighsysyype" type="integer" >
+							<constraints nullable="false" />
+			</column>
+			<column name="isisisadjneighsysid" type="varchar(32)">
+				<constraints nullable="false" />
+			</column>
+			<column name="isisisadjnbrextendedcircid" type="integer" >
+				<constraints nullable="false" />
+			</column>
+			<column name="isislinkcreatetime" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+			<column name="isislinklastpolltime" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<ext:addAutoIncrement tableName="isislink" columnName="id" sequenceName="opennmsNxtId" />
+
+		<addForeignKeyConstraint constraintName="fk_nodeid72" onDelete="CASCADE"
+			baseTableName="isislink" baseColumnNames="nodeid"
+			referencedTableName="node" referencedColumnNames="nodeid" />
+
+		<createIndex tableName="isislink" indexName="isislink_nodeid_idx">
+			<column name="nodeid" />
+		</createIndex>
+		<createIndex tableName="isislink" indexName="isislink_lastpoll_idx">
+			<column name="isislinklastpolltime" />
+		</createIndex>
+		<createIndex tableName="isislink" indexName="isislink_pk_idx">
+			<column name="nodeid" />
+			<column name="isiscircindex" />
+			<column name="isisisadjindex" />
+		</createIndex>
+
+		<rollback>
+			<dropTable tableName="isislink" />
+		</rollback>
+
+	</changeSet>
 </databaseChangeLog>

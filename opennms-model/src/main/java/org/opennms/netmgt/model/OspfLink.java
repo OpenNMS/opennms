@@ -161,7 +161,7 @@ public class OspfLink implements Serializable {
 	 */
 	public String toString() {
 		return new ToStringBuilder(this)
-			.append("Node", m_node)
+			.append("NodeId", m_node.getId())
 			.append("ospfIpAddr", str(m_ospfIpAddr))
 			.append("ospfAddressLessIndex", m_ospfAddressLessIndex)
 			.append("ospfIpMask", str(m_ospfIpMask))

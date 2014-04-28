@@ -32,6 +32,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.opennms.netmgt.model.IsIsElement;
+import org.opennms.netmgt.model.IsIsLink;
 import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.model.OspfElement;
@@ -94,9 +95,11 @@ public interface EnhancedLinkdService {
 
 	void store(int nodeId, OspfElement element);
 
-//	void store(int nodeId, IsIsLink link);
+	void store(int nodeId, IsIsLink link);
+	
 	void store(int nodeId, IsIsElement element);
-//	void store(CdpLink link);
+
+	//	void store(CdpLink link);
 
 //	void store(MacAddrEndPoint macep);
 

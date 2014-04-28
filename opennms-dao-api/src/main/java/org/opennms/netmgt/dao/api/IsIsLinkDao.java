@@ -31,17 +31,17 @@ package org.opennms.netmgt.dao.api;
 import java.util.Date;
 import java.util.List;
 
-import org.opennms.netmgt.model.LldpLink;
+import org.opennms.netmgt.model.IsIsLink;
 import org.opennms.netmgt.model.OnmsNode;
 
 
-public interface LldpLinkDao extends OnmsDao<LldpLink, Integer> {
+public interface IsIsLinkDao extends OnmsDao<IsIsLink, Integer> {
 
-    LldpLink get(OnmsNode node, Integer lldpLocalPortNum);
+    IsIsLink get(OnmsNode node, Integer isisCircIndex, Integer isisISAdjIndex);
 
-    LldpLink get(Integer nodeId, Integer lldpLocalPortNum);
+    IsIsLink get(Integer nodeId, Integer isisCircIndex, Integer isisISAdjIndex);
     
-    List<LldpLink> findByNodeId(Integer nodeId);
+    List<IsIsLink> findByNodeId(Integer nodeId);
 
     void deleteByNodeIdOlderThen(Integer nodeiId, Date now);
 

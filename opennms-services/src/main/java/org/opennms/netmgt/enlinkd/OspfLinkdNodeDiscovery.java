@@ -72,11 +72,8 @@ public final class OspfLinkdNodeDiscovery extends AbstractLinkdNodeDiscovery {
     	final Date now = new Date(); 
 
     	String trackerName = "ospfGeneralGroup";
-
         final OspfGeneralGroupTracker ospfGeneralGroup = new OspfGeneralGroupTracker();
-
-		LOG.debug( "run: collecting : {}", getPeer());
-
+		LOG.info( "run: collecting {} on: {}",trackerName, str(getTarget()));
         SnmpWalker walker =  SnmpUtils.createWalker(getPeer(), trackerName, ospfGeneralGroup);
 
         walker.start();
@@ -125,6 +122,7 @@ public final class OspfLinkdNodeDiscovery extends AbstractLinkdNodeDiscovery {
         	}
         };
 
+		LOG.info( "run: collecting {} on: {}",trackerName, str(getTarget()));
         walker = SnmpUtils.createWalker(getPeer(), trackerName, ospfNbrTableTracker);
         walker.start();
         
@@ -148,7 +146,7 @@ public final class OspfLinkdNodeDiscovery extends AbstractLinkdNodeDiscovery {
         OspfIfTableTracker ospfIfTableTracker = new OspfIfTableTracker() {
 
         	public void processOspfIfRow(final OspfIfRow row) {
-        		OspfLink link = row.getLink(ipAddrTableGetter);
+        		OspfLink link = row.getOspfLink(ipAddrTableGetter);
     			for (OspfLink nbrlink : links) {
     				if (InetAddressUtils.inSameNetwork(link.getOspfIpAddr(),nbrlink.getOspfRemIpAddr(),link.getOspfIpMask())) {
     					nbrlink.setOspfIpAddr(link.getOspfIpAddr());
@@ -161,6 +159,7 @@ public final class OspfLinkdNodeDiscovery extends AbstractLinkdNodeDiscovery {
 
         };
 
+		LOG.info( "run: collecting {} on: {}",trackerName, str(getTarget()));
         walker = SnmpUtils.createWalker(getPeer(), trackerName, ospfIfTableTracker);
         walker.start();
         
@@ -188,9 +187,8 @@ public final class OspfLinkdNodeDiscovery extends AbstractLinkdNodeDiscovery {
 
 	@Override
 	public String getInfo() {
-        return "ReadyRunnable OspfLinkNodeDiscovery" + " ip=" + str(getTarget())
-                + " port=" + getPort() + " community=" + getReadCommunity()
-                + " package=" + getPackageName();
+        return "ReadyRunnable:OspfLinkNodeDiscovery node: "+ getNodeId() + " ip:" + str(getTarget())
+                + " package:" + getPackageName();
 	}
 
 	@Override

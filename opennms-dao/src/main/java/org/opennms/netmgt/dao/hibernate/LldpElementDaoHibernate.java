@@ -26,23 +26,44 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.api;
+package org.opennms.netmgt.dao.hibernate;
 
-import java.util.Date;
-import java.util.List;
+import org.opennms.netmgt.dao.api.LldpElementDao;
+import org.opennms.netmgt.model.LldpElement;
 
-import org.opennms.netmgt.model.LldpLink;
-import org.opennms.netmgt.model.OnmsNode;
+public class LldpElementDaoHibernate extends AbstractDaoHibernate<LldpElement, Integer> implements LldpElementDao {
 
+    /**
+     * <p>
+     * Constructor for LldpElementDaoHibernate.
+     * </p>
+     */
+    public LldpElementDaoHibernate() {
+        super(LldpElement.class);
+    }
 
-public interface LldpLinkDao extends OnmsDao<LldpLink, Integer> {
+    /**
+     * <p>
+     * findByNodeId
+     * </p>
+     *
+     * @param id a {@link java.lang.Integer} object.
+     * @return a {@link org.opennms.netmgt.model.LldpElement} object.
+     */
+    @Override
+    public LldpElement findByNodeId(Integer id) {
+        return findUnique("from LldpElement rec where rec.node.id = ?", id);
+    }
 
-    LldpLink get(OnmsNode node, Integer lldpLocalPortNum);
+	@Override
+	public LldpElement findByChassisId(String chassisId) {
+        return findUnique("from LldpElement rec where rec.lldpChassisId = ?", chassisId);
+	}
 
-    LldpLink get(Integer nodeId, Integer lldpLocalPortNum);
-    
-    List<LldpLink> findByNodeId(Integer nodeId);
+	@Override
+	public LldpElement findBySysname(String sysname) {
+        return findUnique("from LldpElement rec where rec.lldpSysname = ?", sysname);
+	}
 
-    void deleteByNodeIdOlderThen(Integer nodeiId, Date now);
 
 }

@@ -26,23 +26,41 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.api;
+package org.opennms.netmgt.dao.hibernate;
 
-import java.util.Date;
-import java.util.List;
+import java.net.InetAddress;
 
-import org.opennms.netmgt.model.LldpLink;
-import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.dao.api.OspfElementDao;
+import org.opennms.netmgt.model.OspfElement;
 
+public class OspfElementDaoHibernate extends AbstractDaoHibernate<OspfElement, Integer> implements OspfElementDao {
 
-public interface LldpLinkDao extends OnmsDao<LldpLink, Integer> {
+    /**
+     * <p>
+     * Constructor for OspfElementDaoHibernate.
+     * </p>
+     */
+    public OspfElementDaoHibernate() {
+        super(OspfElement.class);
+    }
 
-    LldpLink get(OnmsNode node, Integer lldpLocalPortNum);
+    /**
+     * <p>
+     * findByNodeId
+     * </p>
+     *
+     * @param id a {@link java.lang.Integer} object.
+     * @return a {@link org.opennms.netmgt.model.OspfElement} object.
+     */
+    @Override
+    public OspfElement findByNodeId(Integer id) {
+        return findUnique("from OspfElement rec where rec.node.id = ?", id);
+    }
 
-    LldpLink get(Integer nodeId, Integer lldpLocalPortNum);
-    
-    List<LldpLink> findByNodeId(Integer nodeId);
+	@Override
+	public OspfElement findByRouterId(InetAddress routerId) {
+        return findUnique("from OspfElement rec where rec.ospfRouterId = ?", routerId);
+	}
 
-    void deleteByNodeIdOlderThen(Integer nodeiId, Date now);
 
 }

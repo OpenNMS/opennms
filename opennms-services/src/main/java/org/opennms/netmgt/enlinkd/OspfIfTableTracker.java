@@ -83,11 +83,11 @@ public class OspfIfTableTracker extends TableTracker {
 	        return getValue(OSPF_ADDRESS_LESS_IF).toInt();
 	    }
 	    
-		public OspfLink getLink(
+		public OspfLink getOspfLink(
 				OspfIpAddrTableGetter ipAddrTableGetter) {
 		
-            LOG.info( "processOspfIfRow: row ospf ip address: {}", str(getOspfIpAddress()));
-            LOG.info( "processOspfIfRow: row ospf address less ifindex: {}", getOspfAddressLessIf());
+            LOG.info( "getOspfLink: row ospf ip address: {}", str(getOspfIpAddress()));
+            LOG.info( "getOspfLink: row ospf address less ifindex: {}", getOspfAddressLessIf());
 
             OspfLink link = new OspfLink();
             link.setOspfIpAddr(getOspfIpAddress());
@@ -96,10 +96,10 @@ public class OspfIfTableTracker extends TableTracker {
 			return ipAddrTableGetter.get(link);
 		}
 
-		public OspfLink getLink() {
+		public OspfLink getOspfLink() {
 		
-            LOG.info( "processOspfIfRow: row ospf ip address: {}", str(getOspfIpAddress()));
-            LOG.info( "processOspfIfRow: row ospf address less ifindex: {}", getOspfAddressLessIf());
+            LOG.info( "getOspfLink: row ospf ip address: {}", str(getOspfIpAddress()));
+            LOG.info( "getOspfLink: row ospf address less ifindex: {}", getOspfAddressLessIf());
 
             OspfLink link = new OspfLink();
             link.setOspfIpAddr(getOspfIpAddress());

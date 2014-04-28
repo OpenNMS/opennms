@@ -36,9 +36,9 @@ import java.util.Properties;
 import org.hibernate.HibernateException;
 import org.hibernate.type.EnumType;
 import org.hibernate.type.IntegerType;
-import org.opennms.netmgt.model.IsIsElement.IsisAdminState;
+import org.opennms.netmgt.model.IsIsLink.IsisISAdjNeighSysType;
 
-public class IsIsAdminStateUserType extends EnumType {
+public class IsIsISAdjNeighSysTypeUserType extends EnumType {
 
     private static final long serialVersionUID = 2935892942529340988L;
 
@@ -47,7 +47,7 @@ public class IsIsAdminStateUserType extends EnumType {
 	/**
      * A public default constructor is required by Hibernate.
      */
-    public IsIsAdminStateUserType() {}
+    public IsIsISAdjNeighSysTypeUserType() {}
 
     @Override
     public int hashCode(final Object x) throws HibernateException {
@@ -60,7 +60,7 @@ public class IsIsAdminStateUserType extends EnumType {
         if (c == null) {
             return null;
         }
-        for (IsisAdminState type : IsisAdminState.values()) {
+        for (IsisISAdjNeighSysType type : IsisISAdjNeighSysType.values()) {
             if (type.getValue().intValue() == c.intValue()) {
                 return type;
             }
@@ -72,14 +72,14 @@ public class IsIsAdminStateUserType extends EnumType {
     public void nullSafeSet(final PreparedStatement st, final Object value, final int index) throws HibernateException, SQLException {
         if (value == null) {
             IntegerType.INSTANCE.nullSafeSet(st, null, index);
-        } else if (value instanceof IsisAdminState){
-            IntegerType.INSTANCE.nullSafeSet(st, ((IsisAdminState)value).getValue(), index);
+        } else if (value instanceof IsisISAdjNeighSysType){
+            IntegerType.INSTANCE.nullSafeSet(st, ((IsisISAdjNeighSysType)value).getValue(), index);
         }
     }
 
     @Override
-    public Class<IsisAdminState> returnedClass() {
-        return IsisAdminState.class;
+    public Class<IsisISAdjNeighSysType> returnedClass() {
+        return IsisISAdjNeighSysType.class;
     }
 
     @Override

@@ -28,21 +28,17 @@
 
 package org.opennms.netmgt.dao.api;
 
-import java.util.Date;
-import java.util.List;
+import org.opennms.netmgt.model.LldpElement;
 
-import org.opennms.netmgt.model.LldpLink;
-import org.opennms.netmgt.model.OnmsNode;
-
-
-public interface LldpLinkDao extends OnmsDao<LldpLink, Integer> {
-
-    LldpLink get(OnmsNode node, Integer lldpLocalPortNum);
-
-    LldpLink get(Integer nodeId, Integer lldpLocalPortNum);
+/**
+ * <p>LldpElementDao interface.</p>
+ */
+public interface LldpElementDao extends OnmsDao<LldpElement, Integer> {
     
-    List<LldpLink> findByNodeId(Integer nodeId);
+    public LldpElement findByNodeId(Integer id);
 
-    void deleteByNodeIdOlderThen(Integer nodeiId, Date now);
+    public LldpElement findByChassisId(String chassisId);
+
+    public LldpElement findBySysname(String sysname);
 
 }

@@ -136,8 +136,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     private void scheduleCollectionForNode(final LinkableNode node) {
 
         for (final AbstractLinkdNodeDiscovery snmpcoll : getSnmpCollections(node) ){
-            LOG.debug("ScheduleCollectionForNode: Scheduling SNMP Collection for Package/NodeId: {}/{}/{}",
-                snmpcoll.getPackageName(), node.getNodeId(),
+            LOG.info("ScheduleCollectionForNode: Scheduling {}",
                 snmpcoll.getInfo());
         	snmpcoll.setScheduler(m_scheduler);
             snmpcoll.schedule();
@@ -153,39 +152,39 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         List<AbstractLinkdNodeDiscovery> snmpcolls = new ArrayList<AbstractLinkdNodeDiscovery>();
         
         if (m_linkdConfig.useLldpDiscovery()) {
-            LOG.debug("getSnmpCollections: adding Lldp Discovery: {}",
+            LOG.info("getSnmpCollections: adding Lldp Discovery: {}",
                     node);
             LldpLinkdNodeDiscovery lldpcoll = new LldpLinkdNodeDiscovery(this, node);
             snmpcolls.add(lldpcoll);
         }
         
         if (m_linkdConfig.useCdpDiscovery()) {
-            LOG.debug("getSnmpCollections: adding Cdp Discovery: {}",
-                    node);
+         //   LOG.info("getSnmpCollections: adding Cdp Discovery: {}",
+         //           node);
         //     CdpLinkdNodeDiscovery cdpcoll = new CdpLinkdNodeDiscovery(this, node);
         //     snmpcolls.add(cdpcoll);   	
         }
         
         if (m_linkdConfig.useBridgeDiscovery()) {
-        	LOG.debug("getSnmpCollections: adding IpNetToMedia Discovery: {}",
-                    node);
+        //	LOG.info("getSnmpCollections: adding IpNetToMedia Discovery: {}",
+        //            node);
         //	IpNetToMediaLinkdNodeDiscovery ipnettomediacoll = new IpNetToMediaLinkdNodeDiscovery(this, node);
         //	snmpcolls.add(ipnettomediacoll);
-        	LOG.debug("getSnmpCollections: adding Bridge Discovery: {}",
-                    node);
+        //	LOG.info("getSnmpCollections: adding Bridge Discovery: {}",
+        //            node);
         //	BridgeLinkdNodeDiscovery bridgecoll = new BridgeLinkdNodeDiscovery(this, node);
         //	snmpcolls.add(bridgecoll);
         }
 
         if (m_linkdConfig.useOspfDiscovery()) {
-            LOG.debug("getSnmpCollections: adding Ospf Discovery: {}",
+            LOG.info("getSnmpCollections: adding Ospf Discovery: {}",
                     node);
         	OspfLinkdNodeDiscovery ospfcoll = new OspfLinkdNodeDiscovery(this, node);
         	snmpcolls.add(ospfcoll);
         }
 
         if (m_linkdConfig.useIsisDiscovery()) {
-            LOG.debug("getSnmpCollections: adding Is-Is Discovery: {}",
+            LOG.info("getSnmpCollections: adding Is-Is Discovery: {}",
                     node);
         	IsisLinkdNodeDiscovery isiscoll = new IsisLinkdNodeDiscovery(this, node);
         	snmpcolls.add(isiscoll);
@@ -203,9 +202,10 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
 
         // start the scheduler
         //
-        LOG.debug("start: Starting enhanced linkd scheduler");
+        LOG.info("start: Starting enhanced linkd scheduler");
         m_scheduler.start();
-
+        LOG.info("start: Started enhanced linkd scheduler");
+        
         // Set the status of the service as running.
         //
 
@@ -219,9 +219,10 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     protected synchronized void onStop() {
 
         // Stop the scheduler
+        LOG.info("stop: Stopping enhanced linkd scheduler");
         m_scheduler.stop();
-
         m_scheduler = null;
+        LOG.info("stop: Stopped enhanced linkd scheduler");
 
     }
 
@@ -231,7 +232,9 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
      * </p>
      */
     protected synchronized void onPause() {
+        LOG.info("pause: Pausing enhanced linkd scheduler");
         m_scheduler.pause();
+        LOG.info("pause: Paused enhanced linkd scheduler");
     }
 
     /**
@@ -240,7 +243,9 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
      * </p>
      */
     protected synchronized void onResume() {
+        LOG.info("resume: Resuming enhanced linkd scheduler");
         m_scheduler.resume();
+        LOG.info("resume: Resumed enhanced linkd scheduler");
     }
 
     /**
@@ -260,13 +265,13 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
 
         LinkableNode node = getNode(nodeid);
         if (node != null) {
-            LOG.debug("scheduleNodeCollection: Found Scheduled Linkable node {}. Skipping ",
+            LOG.info("scheduleNodeCollection: Found Scheduled Linkable node {}. Skipping ",
                             nodeid);
             return false;
         }
 
         // First of all get Linkable Node
-        LOG.debug("scheduleNodeCollection: Loading node {} from database",
+        LOG.info("scheduleNodeCollection: Loading node {} from database",
                         nodeid);
         node = m_queryMgr.getSnmpNode(nodeid);
         if (node == null) {
@@ -276,7 +281,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         }
 
         synchronized (m_nodes) {
-            LOG.debug("adding node {} to the collection", node);
+            LOG.info("scheduleNodeCollection: adding node {} to the collection", node);
             m_nodes.add(node);
         }
 
@@ -308,7 +313,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
             // get readyRunnuble
             // wakeup RR
             Collection<AbstractLinkdNodeDiscovery> collections = getSnmpCollections(node);
-            LOG.debug("wakeUpNodeCollection: fetched SnmpCollections from scratch, iterating over {} objects to wake them up",
+            LOG.info("wakeUpNodeCollection: fetched SnmpCollections from scratch, iterating over {} objects to wake them up",
                             collections.size());
             for (AbstractLinkdNodeDiscovery collection : collections) {
                 ReadyRunnable rr = getReadyRunnable(collection);
@@ -323,7 +328,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     }
 
     void deleteNode(int nodeid) {
-        LOG.debug("deleteNode: deleting LinkableNode for node {}",
+        LOG.info("deleteNode: deleting LinkableNode for node {}",
                         nodeid);
 
             m_queryMgr.delete(nodeid);
@@ -334,7 +339,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
             LOG.warn("deleteNode: node not found: {}", nodeid);
         } else {
             Collection<AbstractLinkdNodeDiscovery> collections = getSnmpCollections(node);
-            LOG.debug("deleteNode: fetched SnmpCollections from scratch, iterating over {} objects to wake them up",
+            LOG.info("deleteNode: fetched SnmpCollections from scratch, iterating over {} objects to wake them up",
                             collections.size());
             for (AbstractLinkdNodeDiscovery collection : collections) {
                 ReadyRunnable rr = getReadyRunnable(collection);
@@ -365,7 +370,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
             // get readyRunnuble
             // suspend RR
             Collection<AbstractLinkdNodeDiscovery> collections = getSnmpCollections(node);
-            LOG.debug("suspendNodeCollection: fetched SnmpCollections from scratch, iterating over {} objects to suspend them down",
+            LOG.info("suspendNodeCollection: fetched SnmpCollections from scratch, iterating over {} objects to suspend them down",
                             collections.size());
             for (AbstractLinkdNodeDiscovery collection : collections) {
                 ReadyRunnable rr = getReadyRunnable(collection);
@@ -382,7 +387,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     }
 
     private ReadyRunnable getReadyRunnable(ReadyRunnable runnable) {
-        LOG.debug("getReadyRunnable: get ReadyRunnable from scheduler: {}",
+        LOG.info("getReadyRunnable: getting {} from scheduler",
                         runnable.getInfo());
 
         return m_scheduler.getReadyRunnable(runnable);

@@ -202,7 +202,7 @@ public class Snmp4JWalker extends SnmpWalker {
         @Override
     public void start() {
         
-        LOG.info("Walking {} for {} using version {} with config: {}", getName(), getAddress(), m_agentConfig.getVersionString(), m_agentConfig);
+        LOG.debug("Walking {} for {} using version {} with config: {}", getName(), getAddress(), m_agentConfig.getVersionString(), m_agentConfig);
             
         super.start();
     }

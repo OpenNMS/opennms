@@ -48,6 +48,9 @@ import org.opennms.netmgt.config.SnmpPeerFactory;
 
 import org.opennms.netmgt.model.IsIsElement;
 import org.opennms.netmgt.model.IsIsElement.IsisAdminState;
+import org.opennms.netmgt.model.IsIsLink;
+import org.opennms.netmgt.model.IsIsLink.IsisISAdjNeighSysType;
+import org.opennms.netmgt.model.IsIsLink.IsisISAdjState;
 import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.model.LldpElement.LldpChassisIdSubType;
@@ -203,7 +206,7 @@ public class EnLinkdSnmpTest extends TestNetworkBuilder implements InitializingB
         OspfIfTableTracker ospfIfTableTracker = new OspfIfTableTracker() {
 
         	public void processOspfIfRow(final OspfIfRow row) {
-        		links.add(row.getLink(ipAddrTableGetter));
+        		links.add(row.getOspfLink(ipAddrTableGetter));
          	}
         };
 
@@ -320,7 +323,7 @@ public class EnLinkdSnmpTest extends TestNetworkBuilder implements InitializingB
         		System.err.println("columns number in the row: " + row.getColumnCount());
 
         		assertEquals(6, row.getColumnCount());
-        		LldpLink link = row.getLink(lldpLocPort);
+        		LldpLink link = row.getLldpLink(lldpLocPort);
 
         		System.err.println("local port number: " + row.getLldpRemLocalPortNum());
         		System.err.println("remote chassis: " + link.getLldpRemChassisId());
@@ -380,4 +383,137 @@ public class EnLinkdSnmpTest extends TestNetworkBuilder implements InitializingB
     }
     
 
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host = SIEGFRIE_IP, port = 161, resource = SIEGFRIE_SNMP_RESOURCE)
+    })
+    public void testIsisISAdjTableWalk() throws Exception {
+
+    	final List<IsIsLink> links = new ArrayList<IsIsLink>();
+    	String trackerName = "isisISAdjTable";
+    	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SIEGFRIE_IP));
+        IsisISAdjTableTracker tracker = new IsisISAdjTableTracker() {
+        	public void processIsisAdjRow(final IsIsAdjRow row) {
+        		assertEquals(5, row.getColumnCount());
+        		links.add(row.getIsisLink());
+            }
+        };
+
+        SnmpWalker walker =  SnmpUtils.createWalker(config, trackerName, tracker);
+
+        walker.start();
+
+        try {
+            walker.waitFor();
+            if (walker.timedOut()) {
+            	LOG.info(
+                        "run:Aborting node scan : Agent timed out while scanning the {} table", trackerName);
+            }  else if (walker.failed()) {
+            	LOG.info(
+                        "run:Aborting node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
+            }
+        } catch (final InterruptedException e) {
+            LOG.error("run: collection interrupted, exiting",e);
+            return;
+        }
+
+        assertEquals(2, links.size());
+
+        for (final IsIsLink link: links) {
+    		assertEquals(1,link.getIsisISAdjIndex().intValue());
+    		assertEquals(IsisISAdjState.up, link.getIsisISAdjState());
+    		assertEquals(IsisISAdjNeighSysType.l1_IntermediateSystem, link.getIsisISAdjNeighSysType());
+    		assertEquals(0, link.getIsisISAdjNbrExtendedCircID().intValue());
+    		if (link.getIsisCircIndex().intValue() == 533) {
+    			assertEquals("001f12accbf0", link.getIsisISAdjNeighSNPAAddress());
+    			assertEquals("000110255062",link.getIsisISAdjNeighSysID());
+    		} else if (link.getIsisCircIndex().intValue() == 552) {
+    			assertEquals("0021590e47c2", link.getIsisISAdjNeighSNPAAddress());
+    			assertEquals("000110088500",link.getIsisISAdjNeighSysID());
+    		} else {
+    			assertEquals(true, false);
+    		}
+
+        }
+    }
+
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host = SIEGFRIE_IP, port = 161, resource = SIEGFRIE_SNMP_RESOURCE)
+    })
+    public void testIsisCircTableWalk() throws Exception {
+
+    	final List<IsIsLink> links = new ArrayList<IsIsLink>();
+    	String trackerName = "isisCircTable";
+    	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SIEGFRIE_IP));
+        IsisCircTableTracker tracker = new IsisCircTableTracker() {
+        	public void processIsisCircRow(final IsIsCircRow row) {
+        		assertEquals(2, row.getColumnCount());
+        		links.add(row.getIsisLink());
+            }
+        };
+
+        SnmpWalker walker =  SnmpUtils.createWalker(config, trackerName, tracker);
+
+        walker.start();
+
+        try {
+            walker.waitFor();
+            if (walker.timedOut()) {
+            	LOG.info(
+                        "run:Aborting node scan : Agent timed out while scanning the {} table", trackerName);
+            }  else if (walker.failed()) {
+            	LOG.info(
+                        "run:Aborting node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
+            }
+        } catch (final InterruptedException e) {
+            LOG.error("run: collection interrupted, exiting",e);
+            return;
+        }
+
+        assertEquals(12, links.size());
+
+        for (final IsIsLink link: links) {
+    		if (link.getIsisCircIndex().intValue() == 533) {
+    			assertEquals(533, link.getIsisCircIfIndex().intValue());
+            	assertEquals(IsisAdminState.on, link.getIsisCircAdminState());
+    		} else if (link.getIsisCircIndex().intValue() == 552) {
+    			assertEquals(552, link.getIsisCircIfIndex().intValue());
+            	assertEquals(IsisAdminState.on, link.getIsisCircAdminState());
+    		} else if (link.getIsisCircIndex().intValue() == 13) {
+    			assertEquals(13, link.getIsisCircIfIndex().intValue());
+            	assertEquals(IsisAdminState.off, link.getIsisCircAdminState());
+    		} else if (link.getIsisCircIndex().intValue() == 16) {
+    			assertEquals(16, link.getIsisCircIfIndex().intValue());
+            	assertEquals(IsisAdminState.on, link.getIsisCircAdminState());
+    		} else if (link.getIsisCircIndex().intValue() == 504) {
+    			assertEquals(504, link.getIsisCircIfIndex().intValue());
+            	assertEquals(IsisAdminState.on, link.getIsisCircAdminState());
+    		} else if (link.getIsisCircIndex().intValue() == 507) {
+    			assertEquals(507, link.getIsisCircIfIndex().intValue());
+            	assertEquals(IsisAdminState.on, link.getIsisCircAdminState());
+    		} else if (link.getIsisCircIndex().intValue() == 508) {
+    			assertEquals(508, link.getIsisCircIfIndex().intValue());
+            	assertEquals(IsisAdminState.on, link.getIsisCircAdminState());
+    		} else if (link.getIsisCircIndex().intValue() == 512) {
+    			assertEquals(512, link.getIsisCircIfIndex().intValue());
+            	assertEquals(IsisAdminState.on, link.getIsisCircAdminState());
+       		} else if (link.getIsisCircIndex().intValue() == 514) {
+    			assertEquals(514, link.getIsisCircIfIndex().intValue());
+            	assertEquals(IsisAdminState.on, link.getIsisCircAdminState());
+       		} else if (link.getIsisCircIndex().intValue() == 531) {
+    			assertEquals(531, link.getIsisCircIfIndex().intValue());
+            	assertEquals(IsisAdminState.on, link.getIsisCircAdminState());
+       		} else if (link.getIsisCircIndex().intValue() == 572) {
+    			assertEquals(572, link.getIsisCircIfIndex().intValue());
+            	assertEquals(IsisAdminState.on, link.getIsisCircAdminState());
+       		} else if (link.getIsisCircIndex().intValue() == 573) {
+    			assertEquals(573, link.getIsisCircIfIndex().intValue());
+            	assertEquals(IsisAdminState.on, link.getIsisCircAdminState());
+     		} else {
+    			assertEquals(true, false);
+    		}
+
+        }
+    }
 }

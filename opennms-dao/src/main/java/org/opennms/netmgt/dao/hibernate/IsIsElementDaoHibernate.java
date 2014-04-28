@@ -26,23 +26,38 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.api;
+package org.opennms.netmgt.dao.hibernate;
 
-import java.util.Date;
-import java.util.List;
+import org.opennms.netmgt.dao.api.IsIsElementDao;
+import org.opennms.netmgt.model.IsIsElement;
 
-import org.opennms.netmgt.model.LldpLink;
-import org.opennms.netmgt.model.OnmsNode;
+public class IsIsElementDaoHibernate extends AbstractDaoHibernate<IsIsElement, Integer> implements IsIsElementDao {
 
+    /**
+     * <p>
+     * Constructor for IsIsElementDaoHibernate.
+     * </p>
+     */
+    public IsIsElementDaoHibernate() {
+        super(IsIsElement.class);
+    }
 
-public interface LldpLinkDao extends OnmsDao<LldpLink, Integer> {
+    /**
+     * <p>
+     * findByNodeId
+     * </p>
+     *
+     * @param id a {@link java.lang.Integer} object.
+     * @return a {@link org.opennms.netmgt.model.IsIsElement} object.
+     */
+    @Override
+    public IsIsElement findByNodeId(Integer id) {
+        return findUnique("from IsIsElement rec where rec.node.id = ?", id);
+    }
 
-    LldpLink get(OnmsNode node, Integer lldpLocalPortNum);
-
-    LldpLink get(Integer nodeId, Integer lldpLocalPortNum);
-    
-    List<LldpLink> findByNodeId(Integer nodeId);
-
-    void deleteByNodeIdOlderThen(Integer nodeiId, Date now);
+	@Override
+	public IsIsElement findByIsIsSysId(String isisSysId) {
+        return findUnique("from IsIsElement rec where rec.isisSysID = ?", isisSysId);
+	}
 
 }

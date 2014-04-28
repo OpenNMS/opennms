@@ -265,7 +265,7 @@ public final class OspfElement implements Serializable {
 	 */
 	public String toString() {
 		return new ToStringBuilder(this)
-			.append("Node", m_node)
+			.append("NodeId", m_node.getId())
 			.append("ospfRouterId", str(m_ospfRouterId))
 			.append("ospfRouterIdNetmask", str(m_ospfRouterIdNetmask))
 			.append("ospfRouterIdIfindex", m_ospfRouterIdIfindex)

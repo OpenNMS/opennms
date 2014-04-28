@@ -2251,6 +2251,7 @@ drop table lldpLink cascade;
 drop table ospfElement cascade;
 drop table ospfLink cascade;
 drop table isisElement cascade;
+drop table isisLink cascade;
 
 create table lldpElement (
       id integer default nextval('opennmsnxtid') not null,
@@ -2319,12 +2320,30 @@ create table ospfLink (
 create table isisElement (
       id integer default nextval('opennmsnxtid') not null,
       nodeid          integer not null,
-      isisSysID varchar(255) not null,
+      isisSysID varchar(32) not null,
       isisSysAdminState integer not null,
       isisNodeCreateTime	timestamp not null,
       isisNodeLastPollTime	timestamp not null,
       constraint pk_isiselement_id primary key (id),
       constraint fk_nodeIDisiselem foreign key (nodeid) references node ON DELETE CASCADE
+);
+
+create table isisLink (
+      id integer default nextval('opennmsnxtid') not null,
+      nodeid          integer not null,
+      isisCircIndex   integer not null,
+      isisISAdjIndex  integer not null,
+      isisCircIfIndex    integer,
+      isisCircAdminState integer,
+      isisISAdjState  integer not null,
+      isisISAdjNeighSNPAAddress varchar(80) not null,
+      isisISAdjNeighSysType integer not null,
+      isisISAdjNeighSysID varchar(32) not null,
+      isisISAdjNbrExtendedCircID integer,
+      isisLinkCreateTime	timestamp not null,
+      isisLinkLastPollTime	timestamp not null,
+      constraint pk_isislink_id primary key (id),
+      constraint fk_nodeIDisislink foreign key (nodeid) references node ON DELETE CASCADE
 );
 
 --# End enlinkd table

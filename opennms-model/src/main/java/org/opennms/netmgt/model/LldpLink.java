@@ -350,6 +350,7 @@ public class LldpLink implements Serializable {
 
 
 	public void merge(LldpLink link) {
+
 		setLldpPortId(link.getLldpPortId());
 		setLldpPortIdSubType(link.getLldpPortIdSubType());
 		setLldpPortDescr(link.getLldpPortDescr());
@@ -373,9 +374,20 @@ public class LldpLink implements Serializable {
 	 */
 	public String toString() {
 		return new ToStringBuilder(this)
-			.append("sourceNode", m_node)
+			.append("NodeId", m_node.getId())
+			.append("lldpLocalPortNum", m_lldpLocalPortNum)
 			.append("lldpPortIdSubType", LldpPortIdSubType.getTypeString(m_lldpPortIdSubType.getValue()))
 			.append("lldpPortId", m_lldpPortId)
-			.toString();
+			.append("lldpPortDescr", m_lldpPortDescr)
+			.append("lldpPortIfindex", m_lldpPortIfindex)
+			.append("lldpRemChassisId", m_lldpRemChassisId)
+			.append("lldpRemChassisSubType",LldpChassisIdSubType.getTypeString(m_lldpRemChassisIdSubType.getValue()))
+			.append("lldpRemSysname", m_lldpRemSysname)
+			.append("lldpRemPortIdSubType", LldpPortIdSubType.getTypeString(m_lldpRemPortIdSubType.getValue()))
+			.append("lldpRemPortId", m_lldpRemPortId)
+			.append("lldpRemPortDescr", m_lldpRemPortDescr)
+			.append("createTime", m_lldpLinkCreateTime)
+			.append("lastPollTime", m_lldpLinkLastPollTime)
+.toString();
 	}
 }

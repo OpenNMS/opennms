@@ -28,21 +28,18 @@
 
 package org.opennms.netmgt.dao.api;
 
-import java.util.Date;
-import java.util.List;
+import java.net.InetAddress;
 
-import org.opennms.netmgt.model.LldpLink;
-import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OspfElement;
 
 
-public interface LldpLinkDao extends OnmsDao<LldpLink, Integer> {
-
-    LldpLink get(OnmsNode node, Integer lldpLocalPortNum);
-
-    LldpLink get(Integer nodeId, Integer lldpLocalPortNum);
+/**
+ * <p>OspfElementDao interface.</p>
+ */
+public interface OspfElementDao extends OnmsDao<OspfElement, Integer> {
     
-    List<LldpLink> findByNodeId(Integer nodeId);
+    public OspfElement findByNodeId(Integer id);
 
-    void deleteByNodeIdOlderThen(Integer nodeiId, Date now);
+    public OspfElement findByRouterId(InetAddress routerId);
 
 }

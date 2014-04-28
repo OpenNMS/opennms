@@ -53,7 +53,6 @@ import org.opennms.netmgt.linkd.snmp.IpNetToMediaTableEntry;
 import org.opennms.netmgt.linkd.snmp.IpRouteCollectorEntry;
 import org.opennms.netmgt.linkd.snmp.IsisCircTableEntry;
 import org.opennms.netmgt.linkd.snmp.IsisISAdjTableEntry;
-import org.opennms.netmgt.linkd.snmp.IsisISAdjTableEntry.IsisISAdjState;
 import org.opennms.netmgt.linkd.snmp.LldpLocTableEntry;
 import org.opennms.netmgt.linkd.snmp.LldpMibConstants;
 import org.opennms.netmgt.linkd.snmp.LldpRemTableEntry;
@@ -62,6 +61,7 @@ import org.opennms.netmgt.linkd.snmp.OspfNbrTableEntry;
 import org.opennms.netmgt.linkd.snmp.QBridgeDot1dTpFdbTableEntry;
 import org.opennms.netmgt.linkd.snmp.Vlan;
 import org.opennms.netmgt.model.IsIsElement.IsisAdminState;
+import org.opennms.netmgt.model.IsIsLink.IsisISAdjState;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsAtInterface;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -293,7 +293,7 @@ public abstract class AbstractQueryManager implements QueryManager {
 
         List<IsisISAdjInterface> isisinterfaces = new ArrayList<IsisISAdjInterface>();
         for (final IsisISAdjTableEntry isisAdj : snmpcoll.getIsisISAdjTable()) {
-            if (isisAdj.getIsIsAdjStatus() != IsisISAdjState.UP) {
+            if (isisAdj.getIsIsAdjStatus() != IsisISAdjState.up) {
                 LOG.info("processIsis: isis adj status not UP but {}, on node/isisISAdjNeighSysId/isisLocalCircIndex: {}/{}/{}. Skipping!",
                          isisAdj.getIsIsAdjStatus(), node.getNodeId(),
                          isisAdj.getIsIsAdjNeighSysId(),
