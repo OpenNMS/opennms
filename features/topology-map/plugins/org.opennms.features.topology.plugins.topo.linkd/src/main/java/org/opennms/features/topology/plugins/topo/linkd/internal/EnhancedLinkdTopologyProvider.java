@@ -42,6 +42,7 @@ import org.opennms.netmgt.dao.hibernate.HibernateFilterManager;
 import org.opennms.netmgt.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.xml.bind.JAXB;
 import javax.xml.bind.JAXBContext;
@@ -346,57 +347,61 @@ public class EnhancedLinkdTopologyProvider extends AbstractTopologyProvider impl
     }
 
     @Override
+    @Transactional
     public void load(String filename) throws MalformedURLException, JAXBException {
         if (filename != null) {
             LOG.warn("Filename that was specified for linkd topology will be ignored: " + filename + ", using " + m_configurationFile + " instead");
         }
-
-        //TODO: change to one query from the database that will return all links plus elements joined
-        List<LldpLink> allLinks = m_lldpLinkDao.findAll();
-        Set<LldpLinkDetail> combinedLinkDetails = new HashSet<LldpLinkDetail>();
-        for (LldpLink sourceLink : allLinks) {
-            LOG.debug("loadtopology: parsing link: " + sourceLink);
-            OnmsNode sourceNode = sourceLink.getNode();
-            LldpElement sourceElement = sourceNode.getLldpElement();
-            LOG.debug("loadtopology: found source node: " + sourceNode.getLabel());
-            Vertex source = getVertex(getVertexNamespace(), sourceNode.getNodeId());
-            if (source == null) {
-                LOG.debug("loadtopology: adding source node as vertex: " + sourceNode.getLabel());
-                source = getVertex(sourceNode);
-                addVertices(source);
-            }
-
-            for (LldpLink targetLink : allLinks) {
-                OnmsNode targetNode = targetLink.getNode();
-                LldpElement targetLldpElement = targetNode.getLldpElement();
-
-                //Compare the remote data to the targetNode element data
-                boolean bool1 = sourceLink.getLldpRemPortId().equals(targetLink.getLldpPortId()) && targetLink.getLldpRemPortId().equals(sourceLink.getLldpPortId());
-                boolean bool2 = sourceLink.getLldpRemPortDescr().equals(targetLink.getLldpPortDescr()) && targetLink.getLldpRemPortDescr().equals(sourceLink.getLldpPortDescr());
-                boolean bool3 = sourceLink.getLldpRemChassisId().equals(targetLldpElement.getLldpChassisId()) && targetLink.getLldpRemChassisId().equals(sourceElement.getLldpChassisId());
-                boolean bool4 = sourceLink.getLldpRemSysname().equals(targetLldpElement.getLldpSysname()) && targetLink.getLldpRemSysname().equals(sourceElement.getLldpSysname());
-                boolean bool5 = sourceLink.getLldpRemPortIdSubType() == targetLink.getLldpPortIdSubType() && targetLink.getLldpRemPortIdSubType() == sourceLink.getLldpPortIdSubType();
-
-                if (bool1 && bool2 && bool3 && bool4 && bool5) {
-                    Vertex target = getVertex(getVertexNamespace(), targetNode.getNodeId());
-                    if (target == null) {
-                        target = getVertex(targetNode);
-                    }
-
-                    LldpLinkDetail linkDetail = new LldpLinkDetail(
-                            Math.min(sourceLink.getId(), targetLink.getId()) + "|" + Math.max(sourceLink.getId(), targetLink.getId()),
-                            source, sourceLink, target, targetLink);
-                    combinedLinkDetails.add(linkDetail);
+        try{
+            //TODO: change to one query from the database that will return all links plus elements joined
+            //This reset container is set in here for the demo, don't commit
+            resetContainer();
+            List<LldpLink> allLinks = m_lldpLinkDao.findAll();
+            Set<LldpLinkDetail> combinedLinkDetails = new HashSet<LldpLinkDetail>();
+            for (LldpLink sourceLink : allLinks) {
+                LOG.debug("loadtopology: parsing link: " + sourceLink);
+                OnmsNode sourceNode = sourceLink.getNode();
+                LldpElement sourceElement = sourceNode.getLldpElement();
+                LOG.debug("loadtopology: found source node: " + sourceNode.getLabel());
+                Vertex source = getVertex(getVertexNamespace(), sourceNode.getNodeId());
+                if (source == null) {
+                    LOG.debug("loadtopology: adding source node as vertex: " + sourceNode.getLabel());
+                    source = getVertex(sourceNode);
+                    addVertices(source);
                 }
+
+                for (LldpLink targetLink : allLinks) {
+                    OnmsNode targetNode = targetLink.getNode();
+                    LldpElement targetLldpElement = targetNode.getLldpElement();
+
+                    //Compare the remote data to the targetNode element data
+                    boolean bool1 = sourceLink.getLldpRemPortId().equals(targetLink.getLldpPortId()) && targetLink.getLldpRemPortId().equals(sourceLink.getLldpPortId());
+                    boolean bool2 = sourceLink.getLldpRemPortDescr().equals(targetLink.getLldpPortDescr()) && targetLink.getLldpRemPortDescr().equals(sourceLink.getLldpPortDescr());
+                    boolean bool3 = sourceLink.getLldpRemChassisId().equals(targetLldpElement.getLldpChassisId()) && targetLink.getLldpRemChassisId().equals(sourceElement.getLldpChassisId());
+                    boolean bool4 = sourceLink.getLldpRemSysname().equals(targetLldpElement.getLldpSysname()) && targetLink.getLldpRemSysname().equals(sourceElement.getLldpSysname());
+                    boolean bool5 = sourceLink.getLldpRemPortIdSubType() == targetLink.getLldpPortIdSubType() && targetLink.getLldpRemPortIdSubType() == sourceLink.getLldpPortIdSubType();
+
+                    if (bool1 && bool2 && bool3 && bool4 && bool5) {
+                        Vertex target = getVertex(getVertexNamespace(), targetNode.getNodeId());
+                        if (target == null) {
+                            target = getVertex(targetNode);
+                        }
+
+                        LldpLinkDetail linkDetail = new LldpLinkDetail(
+                                Math.min(sourceLink.getId(), targetLink.getId()) + "|" + Math.max(sourceLink.getId(), targetLink.getId()),
+                                source, sourceLink, target, targetLink);
+                        combinedLinkDetails.add(linkDetail);
+                    }
+                }
+
             }
 
-        }
-
-        //Adding all deduplicated links
-        for (LldpLinkDetail linkDetail : combinedLinkDetails) {
-            AbstractEdge edge = connectVertices(linkDetail.getId(), linkDetail.getSource(), linkDetail.getTarget());
-            edge.setTooltipText(getEdgeTooltipText(linkDetail.getSourceLink(), linkDetail.getTargetLink(), linkDetail.getSource(), linkDetail.getTarget()));
-        }
+            //Adding all deduplicated links
+            for (LldpLinkDetail linkDetail : combinedLinkDetails) {
+                AbstractEdge edge = connectVertices(linkDetail.getId(), linkDetail.getSource(), linkDetail.getTarget());
+                edge.setTooltipText(getEdgeTooltipText(linkDetail.getSourceLink(), linkDetail.getTargetLink(), linkDetail.getSource(), linkDetail.getTarget()));
+            }
+        } catch (Exception e){}
 
         LOG.debug("loadtopology: adding nodes without links: " + isAddNodeWithoutLink());
         if (isAddNodeWithoutLink()) {
