@@ -435,7 +435,85 @@ public class EnLinkdSnmpTest extends TestNetworkBuilder implements InitializingB
     		}
 
         }
-
     }
 
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host = SIEGFRIE_IP, port = 161, resource = SIEGFRIE_SNMP_RESOURCE)
+    })
+    public void testIsisCircTableWalk() throws Exception {
+
+    	final List<IsIsLink> links = new ArrayList<IsIsLink>();
+    	String trackerName = "isisCircTable";
+    	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SIEGFRIE_IP));
+        IsisCircTableTracker tracker = new IsisCircTableTracker() {
+        	public void processIsisCircRow(final IsIsCircRow row) {
+        		assertEquals(2, row.getColumnCount());
+        		links.add(row.getIsisLink());
+            }
+        };
+
+        SnmpWalker walker =  SnmpUtils.createWalker(config, trackerName, tracker);
+
+        walker.start();
+
+        try {
+            walker.waitFor();
+            if (walker.timedOut()) {
+            	LOG.info(
+                        "run:Aborting node scan : Agent timed out while scanning the {} table", trackerName);
+            }  else if (walker.failed()) {
+            	LOG.info(
+                        "run:Aborting node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
+            }
+        } catch (final InterruptedException e) {
+            LOG.error("run: collection interrupted, exiting",e);
+            return;
+        }
+
+        assertEquals(12, links.size());
+
+        for (final IsIsLink link: links) {
+    		if (link.getIsisCircIndex().intValue() == 533) {
+    			assertEquals(533, link.getIsisCircIfIndex().intValue());
+            	assertEquals(IsisAdminState.on, link.getIsisCircAdminState());
+    		} else if (link.getIsisCircIndex().intValue() == 552) {
+    			assertEquals(552, link.getIsisCircIfIndex().intValue());
+            	assertEquals(IsisAdminState.on, link.getIsisCircAdminState());
+    		} else if (link.getIsisCircIndex().intValue() == 13) {
+    			assertEquals(13, link.getIsisCircIfIndex().intValue());
+            	assertEquals(IsisAdminState.off, link.getIsisCircAdminState());
+    		} else if (link.getIsisCircIndex().intValue() == 16) {
+    			assertEquals(16, link.getIsisCircIfIndex().intValue());
+            	assertEquals(IsisAdminState.on, link.getIsisCircAdminState());
+    		} else if (link.getIsisCircIndex().intValue() == 504) {
+    			assertEquals(504, link.getIsisCircIfIndex().intValue());
+            	assertEquals(IsisAdminState.on, link.getIsisCircAdminState());
+    		} else if (link.getIsisCircIndex().intValue() == 507) {
+    			assertEquals(507, link.getIsisCircIfIndex().intValue());
+            	assertEquals(IsisAdminState.on, link.getIsisCircAdminState());
+    		} else if (link.getIsisCircIndex().intValue() == 508) {
+    			assertEquals(508, link.getIsisCircIfIndex().intValue());
+            	assertEquals(IsisAdminState.on, link.getIsisCircAdminState());
+    		} else if (link.getIsisCircIndex().intValue() == 512) {
+    			assertEquals(512, link.getIsisCircIfIndex().intValue());
+            	assertEquals(IsisAdminState.on, link.getIsisCircAdminState());
+       		} else if (link.getIsisCircIndex().intValue() == 514) {
+    			assertEquals(514, link.getIsisCircIfIndex().intValue());
+            	assertEquals(IsisAdminState.on, link.getIsisCircAdminState());
+       		} else if (link.getIsisCircIndex().intValue() == 531) {
+    			assertEquals(531, link.getIsisCircIfIndex().intValue());
+            	assertEquals(IsisAdminState.on, link.getIsisCircAdminState());
+       		} else if (link.getIsisCircIndex().intValue() == 572) {
+    			assertEquals(572, link.getIsisCircIfIndex().intValue());
+            	assertEquals(IsisAdminState.on, link.getIsisCircAdminState());
+       		} else if (link.getIsisCircIndex().intValue() == 573) {
+    			assertEquals(573, link.getIsisCircIfIndex().intValue());
+            	assertEquals(IsisAdminState.on, link.getIsisCircAdminState());
+     		} else {
+    			assertEquals(true, false);
+    		}
+
+        }
+    }
 }
