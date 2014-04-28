@@ -173,7 +173,7 @@ public class JSNodeMarker extends Marker implements NodeMarker {
 
     public Coordinates getCoordinates() {
         final LatLng latLng = this.getLatLng();
-        if (latLng == null || latLng.lat() == Double.NaN || latLng.lng() == Double.NaN) {
+        if (latLng == null || Double.isNaN(latLng.lat()) || Double.isNaN(latLng.lng())) {
             return null;
         }
         return new Coordinates(Double.valueOf(latLng.lng()).floatValue(), Double.valueOf(latLng.lat()).floatValue());
