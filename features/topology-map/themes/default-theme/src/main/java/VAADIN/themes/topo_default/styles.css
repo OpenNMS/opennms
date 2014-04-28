@@ -208,6 +208,8 @@ div.v-table-header-wrap {
 
 .search-token-label{
     padding-right: 8px;
+    max-width: 156px;
+    word-wrap: break-word;
 }
 
 .gwt-SuggestBox {
