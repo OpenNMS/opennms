@@ -44,11 +44,11 @@ import java.util.Set;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.opennms.core.utils.PropertiesCache;
 import org.opennms.netmgt.mock.MockResourceType;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.FileAnticipator;
@@ -182,7 +182,7 @@ public class ResourceTypeUtilsTest {
 
     private File createPropertiesFile(OnmsResource childResource, String propertiesContent, boolean onlyCreateParentDirectories) throws IOException {
         m_fileAnticipator.initialize();
-        m_snmp = m_fileAnticipator.tempDir(DefaultResourceDao.SNMP_DIRECTORY);
+        m_snmp = m_fileAnticipator.tempDir(ResourceTypeUtils.SNMP_DIRECTORY);
         m_node = m_fileAnticipator.tempDir(m_snmp, childResource.getParent().getName());
         m_intf = m_fileAnticipator.tempDir(m_node, childResource.getName());
         if (onlyCreateParentDirectories) {

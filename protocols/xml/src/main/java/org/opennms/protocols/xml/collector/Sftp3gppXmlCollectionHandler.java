@@ -50,7 +50,7 @@ import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.ServiceCollector;
-import org.opennms.netmgt.dao.support.ResourceTypeUtils;
+import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.protocols.sftp.Sftp3gppUrlConnection;
 import org.opennms.protocols.sftp.Sftp3gppUrlHandler;
 import org.opennms.protocols.xml.config.Request;

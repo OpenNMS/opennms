@@ -35,16 +35,15 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.support.DefaultResourceDao;
-import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.poller.InetNetworkInterface;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 
 /**
@@ -215,7 +214,7 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Snmp
     public File getStorageDir() {
        File dir = new File(String.valueOf(getNodeId()));
        if(isStoreByForeignSource() && !(getForeignSource() == null) && !(getForeignId() == null)) {
-               File fsDir = new File(DefaultResourceDao.FOREIGN_SOURCE_DIRECTORY, m_foreignSource);
+               File fsDir = new File(ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY, m_foreignSource);
                dir = new File(fsDir, m_foreignId);
        }
         LOG.debug("getStorageDir: isStoreByForeignSource = {}, foreignSource = {}, foreignId = {}, dir = {}", isStoreByForeignSource(), m_foreignSource, m_foreignId, dir);

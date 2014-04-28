@@ -41,6 +41,7 @@ import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
+import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

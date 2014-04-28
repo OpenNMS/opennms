@@ -26,25 +26,23 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.support;
+package org.opennms.netmgt.model;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
-import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
+import org.opennms.core.utils.PropertiesCache;
+import org.opennms.netmgt.rrd.RrdFileConstants;
+import org.opennms.netmgt.rrd.RrdUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.core.utils.PropertiesCache;
-import org.opennms.netmgt.model.OnmsAttribute;
-import org.opennms.netmgt.model.RrdGraphAttribute;
-import org.opennms.netmgt.model.StringPropertyAttribute;
-import org.opennms.netmgt.rrd.RrdUtils;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.util.Assert;
 
@@ -53,12 +51,52 @@ import org.springframework.util.Assert;
  */
 public abstract class ResourceTypeUtils {
     
-    private static Logger LOG = LoggerFactory.getLogger(ResourceTypeUtils.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ResourceTypeUtils.class);
 
-    /** Constant <code>DS_PROPERTIES_FILE="ds.properties"</code> */
-    public static String DS_PROPERTIES_FILE = "ds.properties";
+    /** 
+     * File name to look for in a resource directory for datasource attributes.
+     */
+    public static final String DS_PROPERTIES_FILE = "ds.properties";
 
-    private static PropertiesCache s_cache = new PropertiesCache();
+    /**
+     * File name to look for in a resource directory for string attributes.
+     */
+    public static final String STRINGS_PROPERTIES_FILE_NAME = "strings.properties";
+
+    /**
+     * Directory name of where latency data is stored.
+     */
+    public static final String RESPONSE_DIRECTORY = "response";
+
+    /**
+     * Directory name of where all other collected data is stored.
+     */
+    public static final String SNMP_DIRECTORY = "snmp";
+
+    /**
+     * Directory name of where stored-by-foreign-source data is stored.
+     */
+    public static final String FOREIGN_SOURCE_DIRECTORY = "fs";
+
+    private static final PropertiesCache s_cache = new PropertiesCache();
+
+    private static final String[] s_numericTypes = new String[] { "counter", "gauge", "timeticks", "integer", "octetstring" };
+
+    /**
+     * <p>isNumericType</p>
+     *
+     * @param rawType a {@link java.lang.String} object.
+     * @return a boolean.
+     */
+    public static boolean isNumericType(String rawType) {
+        String type = rawType.toLowerCase();
+        for (int i = 0; i < s_numericTypes.length; i++) {
+            String supportedType = s_numericTypes[i];
+            if (type.startsWith(supportedType))
+                return true;
+        }
+        return false;
+    }
 
     /**
      * <p>getAttributesAtRelativePath</p>
@@ -176,7 +214,7 @@ public abstract class ResourceTypeUtils {
      * @return a boolean.
      */
     public static boolean isResponseTime(String relativePath) {
-        return Pattern.matches("^" + DefaultResourceDao.RESPONSE_DIRECTORY + ".+$", relativePath);
+        return Pattern.matches("^" + RESPONSE_DIRECTORY + ".+$", relativePath);
     }
 
     /**
@@ -197,7 +235,7 @@ public abstract class ResourceTypeUtils {
 
     private static Properties getStringProperties(File resourceDir) {
         Assert.notNull(resourceDir, "resourceDir argumnet must not be null");
-        return getProperties(new File(resourceDir, DefaultResourceDao.STRINGS_PROPERTIES_FILE_NAME));
+        return getProperties(new File(resourceDir, STRINGS_PROPERTIES_FILE_NAME));
     }
 
     /**
@@ -252,7 +290,7 @@ public abstract class ResourceTypeUtils {
      * @throws java.io.IOException if any.
      */
     public static void updateStringProperty(File resourceDir, String attrVal, String attrName) throws FileNotFoundException, IOException {
-        File propertiesFile = new File(resourceDir, DefaultResourceDao.STRINGS_PROPERTIES_FILE_NAME);
+        File propertiesFile = new File(resourceDir, STRINGS_PROPERTIES_FILE_NAME);
         s_cache.setProperty(propertiesFile, attrName, attrVal);
     }
 
@@ -264,7 +302,7 @@ public abstract class ResourceTypeUtils {
      * @return a {@link java.lang.String} object.
      */
     public static String getStringProperty(File directory, String key) {
-        File file = new File(directory, DefaultResourceDao.STRINGS_PROPERTIES_FILE_NAME);
+        File file = new File(directory, STRINGS_PROPERTIES_FILE_NAME);
         try {
             return s_cache.getProperty(file, key);
         } catch (IOException e) {
@@ -281,6 +319,6 @@ public abstract class ResourceTypeUtils {
      */
     public static File getRelativeNodeSourceDirectory(String nodeSource) {
         String[] ident = nodeSource.split(":");
-        return new File(DefaultResourceDao.FOREIGN_SOURCE_DIRECTORY, File.separator + ident[0] + File.separator + ident[1]);
+        return new File(FOREIGN_SOURCE_DIRECTORY, File.separator + ident[0] + File.separator + ident[1]);
     }
 }

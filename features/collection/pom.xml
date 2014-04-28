@@ -12,5 +12,6 @@
   <name>OpenNMS Features Collection</name>
   <modules>
     <module>api</module>
+    <module>persistence-rrd</module>
   </modules>
 </project>

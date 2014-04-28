@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd;
+package org.opennms.netmgt.collection.persistence.rrd;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -40,10 +40,11 @@ import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionAttributeType;
 import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.api.NumericCollectionAttributeType;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.support.AbstractCollectionSetVisitor;
-import org.opennms.netmgt.dao.support.ResourceTypeUtils;
+import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
@@ -80,7 +81,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     /**
      * <p>commitBuilder</p>
      */
-    protected void commitBuilder() {
+    public void commitBuilder() {
         if (isPersistDisabled())
             return;
         String name = m_builder.getName();
@@ -124,7 +125,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
      * @param name a {@link java.lang.String} object.
      * @param attributeType a {@link org.opennms.netmgt.collection.api.CollectionAttributeType} object.
      */
-    protected void createBuilder(CollectionResource resource, String name, CollectionAttributeType attributeType) {
+    public void createBuilder(CollectionResource resource, String name, CollectionAttributeType attributeType) {
         createBuilder(resource, name, Collections.singleton(attributeType));
     }
 
@@ -142,7 +143,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
         }
         for (Iterator<CollectionAttributeType> iter = attributeTypes.iterator(); iter.hasNext();) {
             CollectionAttributeType attrType = iter.next();
-            if (attrType instanceof NumericAttributeType) {
+            if (attrType instanceof NumericCollectionAttributeType) {
                 m_builder.declareAttribute(attrType);
             }
         }
@@ -204,7 +205,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
      *
      * @return a boolean.
      */
-    protected boolean popShouldPersist() {
+    public boolean popShouldPersist() {
         boolean top = top();
         m_stack.removeLast();
         return top;
@@ -219,7 +220,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
      *
      * @param attribute a {@link org.opennms.netmgt.collection.api.CollectionAttribute} object.
      */
-    protected void pushShouldPersist(CollectionAttribute attribute) {
+    public void pushShouldPersist(CollectionAttribute attribute) {
         pushShouldPersist(attribute.shouldPersist(m_params));
     }
 
@@ -242,7 +243,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
      *
      * @param resource a {@link org.opennms.netmgt.collection.api.CollectionResource} object.
      */
-    protected void pushShouldPersist(CollectionResource resource) {
+    public void pushShouldPersist(CollectionResource resource) {
         push(resource.shouldPersist(m_params));
     }
 
@@ -258,7 +259,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
      *
      * @param attribute a {@link org.opennms.netmgt.collection.api.CollectionAttribute} object.
      */
-    protected void storeAttribute(CollectionAttribute attribute) {
+    public void storeAttribute(CollectionAttribute attribute) {
         if (shouldPersist()) {
             attribute.storeAttribute(this);
             LOG.debug("Storing attribute {}", attribute);

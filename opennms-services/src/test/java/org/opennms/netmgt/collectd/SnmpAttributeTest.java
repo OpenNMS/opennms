@@ -48,6 +48,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.collection.persistence.rrd.BasePersister;
 import org.opennms.netmgt.collection.support.AbstractCollectionSetVisitor;
 import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;

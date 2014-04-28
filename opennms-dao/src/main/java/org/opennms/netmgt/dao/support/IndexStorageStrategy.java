@@ -35,6 +35,7 @@ import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.StorageStrategy;
 import org.opennms.netmgt.collection.api.StorageStrategyService;
 import org.opennms.netmgt.config.datacollection.Parameter;
+import org.opennms.netmgt.rrd.RrdFileConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +48,7 @@ public class IndexStorageStrategy implements StorageStrategy {
 
     /** {@inheritDoc} */
     @Override
-    public String getRelativePathForAttribute(String resourceParent, String resource,
+    public final String getRelativePathForAttribute(String resourceParent, String resource,
             String attribute) {
         StringBuffer buffer = new StringBuffer();
         buffer.append(resourceParent);
@@ -65,7 +66,7 @@ public class IndexStorageStrategy implements StorageStrategy {
 
     /** {@inheritDoc} */
     @Override
-    public void setResourceTypeName(String name) {
+    public final void setResourceTypeName(String name) {
         m_resourceTypeName = name;
     }
 
@@ -74,7 +75,7 @@ public class IndexStorageStrategy implements StorageStrategy {
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getResourceTypeName() {
+    public final String getResourceTypeName() {
         return m_resourceTypeName;
     }
 

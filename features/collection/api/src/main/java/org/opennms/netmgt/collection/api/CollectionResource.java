@@ -68,9 +68,11 @@ public interface CollectionResource extends ResourceIdentifier, CollectionVisita
     String getParent();
     
     /**
-     * Returns the name of the instance this CollectionResource represents.  For node level resources, this will be null
-     * to indicate the default instance.   For interface level resources, some label unique to the node (ifIndex probably)
-     * For Generic resources (e.g. the SNMP GenericIndexResource), this will be some identifying label, probably the index in the table
+     * Returns the name of the instance this {@link CollectionResource} represents. For node level resources, this will be null
+     * to indicate the default instance. For interface level resources, some label unique to the node (ifIndex probably).
+     * For Generic resources (e.g. the SNMP {@link GenericIndexResource}), this will be some identifying label, probably the index in the table.
+     * This value is used by the {@link StorageStrategy} implementations to figure out the label for the resource which 
+     * is used in constructing its RRD directory.
      *
      * @return a {@link java.lang.String} object.
      */

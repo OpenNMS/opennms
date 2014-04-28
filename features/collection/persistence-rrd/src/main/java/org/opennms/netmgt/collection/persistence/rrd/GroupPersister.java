@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd;
+package org.opennms.netmgt.collection.persistence.rrd;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.LinkedHashMap;
@@ -35,7 +35,7 @@ import java.util.Map;
 import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.dao.support.ResourceTypeUtils;
+import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.rrd.RrdRepository;
 
 /**
@@ -65,7 +65,7 @@ public class GroupPersister extends BasePersister {
             
             Map<String, String> dsNamesToRrdNames = new LinkedHashMap<String , String>();
             for (CollectionAttribute a : group.getAttributes()) {
-                if (NumericAttributeType.supportsType(a.getType())) {
+                if (ResourceTypeUtils.isNumericType(a.getType())) {
                     dsNamesToRrdNames.put(a.getName(), group.getName());
                 }
             }

@@ -39,9 +39,8 @@ import org.opennms.netmgt.collectd.AliasedResource;
 import org.opennms.netmgt.collectd.IfInfo;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionResource;
-import org.opennms.netmgt.dao.support.DefaultResourceDao;
-import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.poller.LatencyCollectionResource;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
@@ -276,7 +275,7 @@ public class CollectionResourceWrapper {
         String parentResourceTypeName = CollectionResource.RESOURCE_TYPE_NODE;
         String parentResourceName = Integer.toString(getNodeId());
         // I can't find a better way to deal with this when storeByForeignSource is enabled        
-        if (m_resource != null && m_resource.getParent() != null && m_resource.getParent().startsWith(DefaultResourceDao.FOREIGN_SOURCE_DIRECTORY)) {
+        if (m_resource != null && m_resource.getParent() != null && m_resource.getParent().startsWith(ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY)) {
             // If separatorChar is backslash (like on Windows) use a double-escaped backslash in the regex
             String[] parts = m_resource.getParent().split(File.separatorChar == '\\' ? "\\\\" : File.separator);
             if (parts.length == 3) {

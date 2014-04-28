@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd;
+package org.opennms.netmgt.collection.persistence.rrd;
 
 
 import java.io.File;
@@ -43,6 +43,7 @@ import org.opennms.core.utils.StringUtils;
 import org.opennms.core.utils.TimeKeeper;
 import org.opennms.netmgt.collection.api.ByNameComparator;
 import org.opennms.netmgt.collection.api.CollectionAttributeType;
+import org.opennms.netmgt.collection.api.NumericCollectionAttributeType;
 import org.opennms.netmgt.collection.api.ResourceIdentifier;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
@@ -198,9 +199,9 @@ public class PersistOperationBuilder {
 
             String minval = "U";
             String maxval = "U";
-            if(attrDef instanceof NumericAttributeType) {
-                minval = ((NumericAttributeType) attrDef).getMinval() != null ? ((NumericAttributeType) attrDef).getMinval() : "U";
-                maxval = ((NumericAttributeType) attrDef).getMaxval() != null ? ((NumericAttributeType) attrDef).getMaxval() : "U";
+            if(attrDef instanceof NumericCollectionAttributeType) {
+                minval = ((NumericCollectionAttributeType) attrDef).getMinval() != null ? ((NumericCollectionAttributeType) attrDef).getMinval() : "U";
+                maxval = ((NumericCollectionAttributeType) attrDef).getMaxval() != null ? ((NumericCollectionAttributeType) attrDef).getMaxval() : "U";
             }
             String type = PersistOperationBuilder.mapType(attrDef.getType());
             // If the type is supported by RRD...

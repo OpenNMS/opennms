@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.support;
+package org.opennms.netmgt.rrd;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -34,7 +34,6 @@ import java.io.FilenameFilter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.opennms.netmgt.rrd.RrdUtils;
 
 /**
  * A convenience class containing RRD file and directory related constants.

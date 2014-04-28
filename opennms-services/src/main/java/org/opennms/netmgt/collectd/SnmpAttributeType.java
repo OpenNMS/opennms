@@ -37,6 +37,7 @@ import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.support.AbstractCollectionAttributeType;
 import org.opennms.netmgt.config.MibObject;
+import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.snmp.Collectable;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpInstId;
@@ -60,7 +61,7 @@ public abstract class SnmpAttributeType extends AbstractCollectionAttributeType 
     
     private static final Logger LOG = LoggerFactory.getLogger(SnmpAttributeType.class);
     
-    private final MibObject m_mibObj;
+    protected final MibObject m_mibObj;
     private final String m_collectionName;
     private final ResourceType m_resourceType;
 
@@ -124,7 +125,7 @@ public abstract class SnmpAttributeType extends AbstractCollectionAttributeType 
      * @return a {@link org.opennms.netmgt.collectd.SnmpAttributeType} object.
      */
     public static SnmpAttributeType create(ResourceType resourceType, String collectionName, MibObject mibObj, AttributeGroupType groupType) {
-        if (NumericAttributeType.supportsType(mibObj.getType())) {
+        if (ResourceTypeUtils.isNumericType(mibObj.getType())) {
             return new NumericAttributeType(resourceType, collectionName, mibObj, groupType);
         }
         if (StringAttributeType.supportsType(mibObj.getType())) {
@@ -152,14 +153,6 @@ public abstract class SnmpAttributeType extends AbstractCollectionAttributeType 
         return getGroupType().getName();
     }
     
-    
-    public String getMaxval() {
-        return m_mibObj.getMaxval();
-    }
-    
-    public String getMinval() {
-        return m_mibObj.getMinval();
-    }
 
     /**
      * <p>getAlias</p>
