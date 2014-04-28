@@ -46,6 +46,7 @@ import javax.xml.bind.Unmarshaller;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.FocusNodeHopCriteria;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractEdge;
@@ -845,7 +846,12 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         VertexHopCriteria criterion = null;
         
         if (node != null) {
-            criterion = LinkdHopCriteriaFactory.createCriteria(String.valueOf(node.getId()), node.getLabel());
+            final Vertex defaultVertex = getVertex(TOPOLOGY_NAMESPACE_LINKD, node.getNodeId());
+            if (defaultVertex != null) {
+                VertexHopGraphProvider.FocusNodeHopCriteria hopCriteria = new VertexHopGraphProvider.FocusNodeHopCriteria();
+                hopCriteria.add(defaultVertex);
+                return hopCriteria;
+            }
         }
         
         LOG.debug("SearchProvider->getDefaultCriteria:returning hop criteria: '{}'.", criterion);
