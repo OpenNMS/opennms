@@ -165,7 +165,7 @@ public class IsisISAdjTableTracker extends TableTracker {
             LOG.info( "getIsisLink: row count: {}", getColumnCount());
             IsIsLink link = new IsIsLink();
             link.setIsisCircIndex(getIsisCircIndex());
-            LOG.info( "getIsisLink: IS-IS Circ Index: {}",  link.getIsisCircIfIndex());
+            LOG.info( "getIsisLink: IS-IS Circ Index: {}",  link.getIsisCircIndex());
             link.setIsisISAdjIndex(getIsisISAdjIndex());
             LOG.info( "getIsisLink: IS-IS IS Adj Index: {}",  link.getIsisISAdjIndex());
             link.setIsisISAdjState(IsisISAdjState.get(getIsisISAdjStatus()));
