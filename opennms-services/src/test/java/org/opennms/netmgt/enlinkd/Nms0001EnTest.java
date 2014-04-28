@@ -29,6 +29,7 @@
 package org.opennms.netmgt.enlinkd;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.opennms.netmgt.nb.TestNetworkBuilder.FROH_IP;
 import static org.opennms.netmgt.nb.TestNetworkBuilder.FROH_NAME;
@@ -43,6 +44,7 @@ import static org.opennms.netmgt.nb.TestNetworkBuilder.SIEGFRIE_SNMP_RESOURCE;
 import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
+import org.opennms.netmgt.model.IsIsLink;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms0001NetworkBuilder;
 
@@ -83,13 +85,20 @@ public class Nms0001EnTest extends EnLinkdTestBuilder {
         assertTrue(m_linkd.scheduleNodeCollection(siegfrie.getId()));
 
         assertTrue(m_linkd.runSingleSnmpCollection(froh.getId()));
+        assertEquals(2, m_isisLinkDao.countAll());
         assertTrue(m_linkd.runSingleSnmpCollection(oedipus.getId()));
+        assertEquals(4, m_isisLinkDao.countAll());
         assertTrue(m_linkd.runSingleSnmpCollection(siegfrie.getId()));
+        assertEquals(6, m_isisLinkDao.countAll());
 
         for (OnmsNode node: m_nodeDao.findAll()) {
         	assertNotNull(node.getIsisElement());
         	System.err.println(node.getIsisElement());
         }
+        
+        for (IsIsLink link: m_isisLinkDao.findAll())
+        	System.err.println(link);
+        
         /*
          * 
          * These are the links among the following nodes discovered using 

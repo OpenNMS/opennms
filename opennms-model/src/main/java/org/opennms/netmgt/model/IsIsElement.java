@@ -177,7 +177,7 @@ public final class IsIsElement implements Serializable {
 	 */
 	public String toString() {
 		return new ToStringBuilder(this)
-			.append("Node", m_node)
+			.append("NodeId", m_node.getId())
 			.append("isisSysAdminState", IsisAdminState.getTypeString(m_isisSysAdminState.getValue()))
 			.append("isisSysID", m_isisSysID)
 			.append("isisNodeCreateTime", m_isisNodeCreateTime)

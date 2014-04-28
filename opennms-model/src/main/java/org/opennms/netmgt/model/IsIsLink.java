@@ -297,7 +297,7 @@ public class IsIsLink implements Serializable {
 	 */
 	public String toString() {
 		return new ToStringBuilder(this)
-			.append("sourceNode", m_node)
+			.append("NodeId", m_node.getId())
 			.append("isisCircIndex", m_isisCircIndex)
 			.append("isisISAdjIndex", m_isisISAdjIndex)
 			.append("isisCircIfIndex", m_isisCircIfIndex)

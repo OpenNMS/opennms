@@ -55,7 +55,7 @@ public class IsIsLinkDaoHibernate extends AbstractDaoHibernate<IsIsLink, Integer
 	public IsIsLink get(OnmsNode node, Integer isisCircIndex,
 			Integer isisISAdjIndex) {
 		return findUnique(
-				"from IsisLink as isisLink where isisLink.node = ? and isisLink.isisCircIndex = ? and isisLink.isisISAdjIndex = ? ",
+				"from IsIsLink as isisLink where isisLink.node = ? and isisLink.isisCircIndex = ? and isisLink.isisISAdjIndex = ? ",
 				node, isisCircIndex, isisISAdjIndex);
 	}
 
@@ -66,7 +66,7 @@ public class IsIsLinkDaoHibernate extends AbstractDaoHibernate<IsIsLink, Integer
         Assert.notNull(isisCircIndex, "isisCircIndex cannot be null");
         Assert.notNull(isisISAdjIndex, "isisISAdjIndex cannot be null");
         return findUnique(
-        		"from IsisLink as isisLink where isisLink.node.id = ? and isisLink.isisCircIndex = ? and isisLink.isisISAdjIndex = ? ",
+        		"from IsIsLink as isisLink where isisLink.node.id = ? and isisLink.isisCircIndex = ? and isisLink.isisISAdjIndex = ? ",
         		nodeId, isisCircIndex, isisISAdjIndex);
     }
     
@@ -74,12 +74,12 @@ public class IsIsLinkDaoHibernate extends AbstractDaoHibernate<IsIsLink, Integer
     @Override
     public List<IsIsLink> findByNodeId(Integer nodeId) {
         Assert.notNull(nodeId, "nodeId cannot be null");
-        return find("from IsisLink isisLink where isisLink.node.id = ?", nodeId);
+        return find("from IsIsLink isisLink where isisLink.node.id = ?", nodeId);
     }
 
 	@Override
 	public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
-		for (IsIsLink link: find("from IsisLink isisLink where isisLink.node.id = ? and isisLinkLastPollTime < ?",nodeId,now)) {
+		for (IsIsLink link: find("from IsIsLink isisLink where isisLink.node.id = ? and isisLinkLastPollTime < ?",nodeId,now)) {
 			delete(link);
 		}
 	}

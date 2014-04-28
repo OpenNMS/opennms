@@ -258,7 +258,7 @@ public final class LldpElement implements Serializable {
 	 */
 	public String toString() {
 		return new ToStringBuilder(this)
-			.append("Node", m_node)
+			.append("Nodeid", m_node.getId())
 			.append("lldpChassisSubType", LldpChassisIdSubType.getTypeString(m_lldpChassisIdSubType.getValue()))
 			.append("lldpChassisId", m_lldpChassisId)
 			.append("lldpSysName", m_lldpSysname)

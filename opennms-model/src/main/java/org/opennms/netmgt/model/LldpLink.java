@@ -374,7 +374,7 @@ public class LldpLink implements Serializable {
 	 */
 	public String toString() {
 		return new ToStringBuilder(this)
-			.append("sourceNode", m_node)
+			.append("NodeId", m_node.getId())
 			.append("lldpLocalPortNum", m_lldpLocalPortNum)
 			.append("lldpPortIdSubType", LldpPortIdSubType.getTypeString(m_lldpPortIdSubType.getValue()))
 			.append("lldpPortId", m_lldpPortId)

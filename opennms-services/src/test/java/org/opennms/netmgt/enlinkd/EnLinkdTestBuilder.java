@@ -38,6 +38,7 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.config.EnhancedLinkdConfig;
+import org.opennms.netmgt.dao.api.IsIsLinkDao;
 import org.opennms.netmgt.dao.api.LldpLinkDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OspfLinkDao;
@@ -73,7 +74,10 @@ public abstract class EnLinkdTestBuilder extends EnLinkdTestHelper implements In
         
     @Autowired
     protected OspfLinkDao m_ospfLinkDao;
-        
+
+    @Autowired
+    protected IsIsLinkDao m_isisLinkDao;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -87,7 +91,6 @@ public abstract class EnLinkdTestBuilder extends EnLinkdTestHelper implements In
         p.setProperty("log4j.logger.org.hibernate.impl", "WARN");
         p.setProperty("log4j.logger.org.hibernate.hql", "WARN");
         p.setProperty("log4j.logger.org.opennms.mock.snmp","WARN");
-        p.setProperty("log4j.logger.org.opennms.netmgt.linkd.snmp", "WARN");
         p.setProperty("log4j.logger.org.opennms.netmgt.snmp", "WARN");
         p.setProperty("log4j.logger.org.opennms.netmgt.filter", "WARN");
         p.setProperty("log4j.logger.org.hibernate", "WARN");
