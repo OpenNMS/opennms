@@ -161,7 +161,7 @@ public class SnmpAttributeTest extends TestCase {
         
 
         RrdRepository repository = new RrdRepository();
-        repository.setRraList(new ArrayList<String>(Collections.singleton("RRA:AVERAGE:0.5:1:2016")));
+        repository.setRraList(Collections.singletonList("RRA:AVERAGE:0.5:1:2016"));
 
         final BasePersister persister = new BasePersister(new ServiceParameters(new HashMap<String, Object>()), repository);
         persister.createBuilder(nodeInfo, "baz", attributeType);

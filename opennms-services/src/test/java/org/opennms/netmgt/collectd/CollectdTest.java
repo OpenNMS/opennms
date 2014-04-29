@@ -454,10 +454,8 @@ public class CollectdTest extends TestCase {
         @Override
         public RrdRepository getRrdRepository(String collectionName) {
             RrdRepository repo = new RrdRepository();
-            ArrayList<String> rras=new ArrayList<String>();
-            rras.add("RRA:AVERAGE:0.5:1:8928");
             repo.setRrdBaseDir(new File("/usr/local/opennms/share/rrd/snmp/"));
-            repo.setRraList(rras);
+            repo.setRraList(Collections.singletonList("RRA:AVERAGE:0.5:1:8928"));
             repo.setStep(300);
             repo.setHeartBeat(2 * 300);
             return repo;
