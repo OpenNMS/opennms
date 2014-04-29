@@ -169,7 +169,7 @@ public class MonitorTester {
         System.out.printf("Monitor: %s\n", monitor.getClass().getName());
 
         if (config.isPolledLocally(ipAddress, serviceName)) {
-            for (Parameter p : svc.getParameterCollection()) {
+            for (Parameter p : svc.getParameters()) {
                 if (!parameters.containsKey(p.getKey())) {
                     parameters.put(p.getKey(), p.getValue());
                 }
