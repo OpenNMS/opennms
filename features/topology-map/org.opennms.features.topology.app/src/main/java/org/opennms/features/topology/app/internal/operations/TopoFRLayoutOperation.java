@@ -26,29 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api;
+package org.opennms.features.topology.app.internal.operations;
 
-import java.util.Collection;
-import java.util.Map;
+import org.opennms.features.topology.api.LayoutAlgorithm;
+import org.opennms.features.topology.app.internal.jung.TopoFRLayoutAlgorithm;
 
-import org.opennms.features.topology.api.topo.VertexRef;
+public class TopoFRLayoutOperation extends LayoutOperation {
 
-public interface Layout {
+    public TopoFRLayoutOperation() {
+        super(new LayoutFactory() {
 
-	Point getLocation(VertexRef v);
+            private final TopoFRLayoutAlgorithm m_layoutAlgorithm = new TopoFRLayoutAlgorithm();
 
-	/**
-	 * @return Returns an immutable copy of the current list of locations
-	 */
-	Map<VertexRef, Point> getLocations();
+            @Override
+            public LayoutAlgorithm getLayoutAlgorithm() { return m_layoutAlgorithm; }
+        });
+    }
 
-	void setLocation(VertexRef vertex, double x, double y);
-
-	void setLocation(VertexRef v, Point location);
-
-	Point getInitialLocation(VertexRef v);
-
-	BoundingBox getBounds();
-
-	BoundingBox computeBoundingBox(Collection<VertexRef> vertRefs);
+    @Override
+    public String getId() {
+        return getClass().getSimpleName();
+    }
 }

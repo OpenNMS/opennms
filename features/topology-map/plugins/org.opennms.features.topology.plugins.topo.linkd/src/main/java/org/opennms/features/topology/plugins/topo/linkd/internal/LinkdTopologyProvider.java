@@ -46,6 +46,7 @@ import javax.xml.bind.Unmarshaller;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.FocusNodeHopCriteria;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractEdge;
@@ -664,9 +665,10 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     public String getSearchProviderNamespace() {
         return TOPOLOGY_NAMESPACE_LINKD;
     }
-    
-    @Override
-    public List<SearchResult> query(SearchQuery searchQuery, GraphContainer graphContainer) {
+
+
+    //@Override
+    public List<SearchResult> slowQuery(SearchQuery searchQuery, GraphContainer graphContainer) {
         LOG.debug("SearchProvider->query: called with search query: '{}'", searchQuery);
         List<SearchResult> searchResults = Lists.newArrayList();
         
@@ -692,8 +694,8 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         return result;
     }
 
-    //@Override
-    public List<SearchResult> oldQuery(SearchQuery searchQuery, GraphContainer graphContainer) {
+    @Override
+    public List<SearchResult> query(SearchQuery searchQuery, GraphContainer graphContainer) {
     	//LOG.debug("SearchProvider->query: called with search query: '{}'", searchQuery);
     	
         List<Vertex> vertices = getFilteredVertices();
@@ -844,7 +846,12 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         VertexHopCriteria criterion = null;
         
         if (node != null) {
-            criterion = LinkdHopCriteriaFactory.createCriteria(String.valueOf(node.getId()), node.getLabel());
+            final Vertex defaultVertex = getVertex(TOPOLOGY_NAMESPACE_LINKD, node.getNodeId());
+            if (defaultVertex != null) {
+                VertexHopGraphProvider.FocusNodeHopCriteria hopCriteria = new VertexHopGraphProvider.FocusNodeHopCriteria();
+                hopCriteria.add(defaultVertex);
+                return hopCriteria;
+            }
         }
         
         LOG.debug("SearchProvider->getDefaultCriteria:returning hop criteria: '{}'.", criterion);
