@@ -154,7 +154,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 	}
 
 	@Transactional
-    protected synchronized void saveLldpLink(final int nodeId, final LldpLink saveMe) {
+    protected void saveLldpLink(final int nodeId, final LldpLink saveMe) {
 		new UpsertTemplate<LldpLink, LldpLinkDao>(m_transactionManager,m_lldpLinkDao) {
 
 			@Override
@@ -256,7 +256,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 	}
 
 	@Transactional
-    protected synchronized void saveIsisLink(final int nodeId, final IsIsLink saveMe) {
+    protected void saveIsisLink(final int nodeId, final IsIsLink saveMe) {
 		new UpsertTemplate<IsIsLink, IsIsLinkDao>(m_transactionManager,m_isisLinkDao) {
 
 			@Override
