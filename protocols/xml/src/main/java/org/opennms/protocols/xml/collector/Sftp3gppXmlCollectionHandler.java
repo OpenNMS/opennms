@@ -41,9 +41,6 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.collectd.CollectionAgent;
@@ -104,7 +101,7 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
                 if (lastFile == null) {
                     lastFile = connection.get3gppFileName();
                     log().debug("collect(single): retrieving file from " + url.getPath() + File.separatorChar + lastFile + " from " + agent.getHostAddress());
-                    Document doc = getXmlDocument(urlStr, source.getRequest());
+                    Document doc = getXmlDocument(urlStr, request);
                     fillCollectionSet(agent, collectionSet, source, doc);
                     setLastFilename(resourceDir, url.getPath(), lastFile);
                     deleteFile(connection, lastFile);
@@ -112,15 +109,12 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
                     connection.connect();
                     List<String> files = connection.getFileList();
                     long lastTs = connection.getTimeStampFromFile(lastFile);
-                    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                    DocumentBuilder builder = factory.newDocumentBuilder();
-                    factory.setIgnoringComments(true);
                     boolean collected = false;
                     for (String fileName : files) {
                         if (connection.getTimeStampFromFile(fileName) > lastTs) {
                             log().debug("collect(multiple): retrieving file " + fileName + " from " + agent.getHostAddress());
                             InputStream is = connection.getFile(fileName);
-                            Document doc = builder.parse(is);
+                            Document doc = getXmlDocument(is, request);
                             IOUtils.closeQuietly(is);
                             fillCollectionSet(agent, collectionSet, source, doc);
                             setLastFilename(resourceDir, url.getPath(), fileName);
