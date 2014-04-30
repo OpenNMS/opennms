@@ -87,10 +87,8 @@ public class IpAddressNetSnmp64bitBugAware extends IpAddress {
 		}
 		if (value.length != 4) {
 			if ( (value.length == 8) && Boolean.getBoolean("org.opennms.snmp.workarounds.allow64BitIpAddress") ) {
-	            byte[] tempValue = { 0,0,0,0 };
-	            for (int i = 0; i < 4; i++) {
-	            	tempValue[i] = value[i];
-	            }
+	            byte[] tempValue = new byte[4];
+	            System.arraycopy(value, 0, tempValue, 0, 4);
 	            value = tempValue;
 	             LOG.debug("Working around misencoded IpAddress (8 bytes, truncating to 4); likely dealing with a buggy Net-SNMP agent");
 			} else {
