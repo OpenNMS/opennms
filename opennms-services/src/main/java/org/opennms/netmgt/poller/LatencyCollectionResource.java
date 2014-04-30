@@ -93,7 +93,7 @@ public class LatencyCollectionResource implements CollectionResource {
      * @return a {@link java.lang.String} object.
      */
     @Override
-    public String getLabel() {
+    public String getInterfaceLabel() {
         return m_serviceName;
     }
 

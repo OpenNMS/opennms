@@ -101,7 +101,7 @@ public class TcaCollectionResource extends AbstractCollectionResource {
 	 * @see org.opennms.netmgt.collectd.AbstractCollectionResource#getLabel()
 	 */
 	@Override
-	public String getLabel() {
+	public String getInterfaceLabel() {
 		return m_peerAddress;
 	}
 
@@ -110,7 +110,7 @@ public class TcaCollectionResource extends AbstractCollectionResource {
 	 */
 	@Override
 	public String toString() {
-		return "node[" + m_agent.getNodeId() + "]." + getResourceTypeName() + "[" + getLabel() +"]";
+		return "node[" + m_agent.getNodeId() + "]." + getResourceTypeName() + "[" + getInterfaceLabel() +"]";
 	}
 
 	/* (non-Javadoc)
@@ -118,7 +118,7 @@ public class TcaCollectionResource extends AbstractCollectionResource {
 	 */
 	@Override
 	public File getResourceDir(RrdRepository repository) {
-		String resourcePath = m_strategy.getRelativePathForAttribute(getParent(), getLabel(), null);
+		String resourcePath = m_strategy.getRelativePathForAttribute(getParent(), getInterfaceLabel(), null);
 		return new File(repository.getRrdBaseDir(), resourcePath);
 	}
 

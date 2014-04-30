@@ -132,7 +132,7 @@ public class MockCollectionResource implements CollectionResource {
     }
 
     @Override
-    public String getLabel() {
+    public String getInterfaceLabel() {
         return null;
     }
     

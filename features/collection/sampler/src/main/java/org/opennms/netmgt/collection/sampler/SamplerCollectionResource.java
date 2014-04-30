@@ -52,7 +52,7 @@ public class SamplerCollectionResource extends AbstractCollectionResource {
 			return nodeDir;
 		} else if (CollectionResource.RESOURCE_TYPE_IF.equalsIgnoreCase(m_resource.getType())) {
 			// The label field contains the interface label
-			return new File(nodeDir, getLabel());
+			return new File(nodeDir, getInterfaceLabel());
 		} else {
 			// TODO What do we do here?
 			throw new IllegalStateException("Cannot figure out resource directory for type: " + m_resource.getType());

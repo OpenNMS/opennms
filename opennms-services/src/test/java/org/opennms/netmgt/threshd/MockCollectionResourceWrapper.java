@@ -46,7 +46,7 @@ public class MockCollectionResourceWrapper extends CollectionResourceWrapper {
                 return instance;
             }
             @Override
-            public String getLabel() {
+            public String getInterfaceLabel() {
                 return null;
             }
             @Override

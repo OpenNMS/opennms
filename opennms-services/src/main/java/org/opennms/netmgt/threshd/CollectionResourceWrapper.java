@@ -148,11 +148,11 @@ public class CollectionResourceWrapper {
 
         if (isAnInterfaceResource()) {
             if (resource instanceof AliasedResource) { // TODO What about AliasedResource's custom attributes?
-                m_iflabel = ((AliasedResource) resource).getLabel();
+                m_iflabel = ((AliasedResource) resource).getInterfaceLabel();
                 m_ifInfo.putAll(((AliasedResource) resource).getIfInfo().getAttributesMap());
                 m_ifInfo.put("domain", ((AliasedResource) resource).getDomain());
             } else if (resource instanceof IfInfo) {
-                m_iflabel = ((IfInfo) resource).getLabel();
+                m_iflabel = ((IfInfo) resource).getInterfaceLabel();
                 m_ifInfo.putAll(((IfInfo) resource).getAttributesMap());
             } else if (resource instanceof LatencyCollectionResource) {
                 JdbcIfInfoGetter ifInfoGetter = new JdbcIfInfoGetter();
@@ -244,7 +244,7 @@ public class CollectionResourceWrapper {
      * @return a {@link java.lang.String} object.
      */
     public String getInstanceLabel() {
-        return m_resource != null ? m_resource.getLabel() : null;
+        return m_resource != null ? m_resource.getInterfaceLabel() : null;
     }
 
     /**
@@ -372,7 +372,7 @@ public class CollectionResourceWrapper {
             return null;
         }
         // Generating a unique ID for the node/resourceType/resource/metric combination.
-        String id =  "node[" + m_nodeId + "].resourceType[" + m_resource.getResourceTypeName() + "].instance[" + m_resource.getLabel() + "].metric[" + ds + "]";
+        String id =  "node[" + m_nodeId + "].resourceType[" + m_resource.getResourceTypeName() + "].instance[" + m_resource.getInterfaceLabel() + "].metric[" + ds + "]";
         Double current = null;
         try {
             current = Double.parseDouble(numValue);

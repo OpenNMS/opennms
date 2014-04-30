@@ -84,7 +84,7 @@ public interface CollectionResource extends ResourceIdentifier, CollectionVisita
      *
      * @return a {@link java.lang.String} object.
      */
-    String getLabel();
+    String getInterfaceLabel();
 
     /**
      * Returns a not-null {@link TimeKeeper} instance when this resource requires to use a special timestamp when updating RRDs/JRBs.

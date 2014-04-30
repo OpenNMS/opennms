@@ -150,7 +150,7 @@ public abstract class AbstractCollectionResource implements CollectionResource {
      * @return a {@link java.lang.String} object.
      */
     @Override
-    public String getLabel() {
+    public String getInterfaceLabel() {
         return null;
     }
     

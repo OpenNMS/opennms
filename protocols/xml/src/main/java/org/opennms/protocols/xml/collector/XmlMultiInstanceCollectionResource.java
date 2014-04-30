@@ -82,7 +82,7 @@ public class XmlMultiInstanceCollectionResource extends XmlCollectionResource {
      */
     @Override
     public File getResourceDir(RrdRepository repository) {
-        String resourcePath = m_resourceType.getStorageStrategy().getRelativePathForAttribute(getParent(), getLabel(), null);
+        String resourcePath = m_resourceType.getStorageStrategy().getRelativePathForAttribute(getParent(), getInterfaceLabel(), null);
         File resourceDir = new File(repository.getRrdBaseDir(), resourcePath);
             LOG.debug("getResourceDir: {}", resourceDir);
         return resourceDir;
@@ -109,14 +109,14 @@ public class XmlMultiInstanceCollectionResource extends XmlCollectionResource {
      */
     @Override
     public String toString() {
-        return "node[" + m_agent.getNodeId() + "]." + getResourceTypeName() + "[" + getLabel() +"]";
+        return "node[" + m_agent.getNodeId() + "]." + getResourceTypeName() + "[" + getInterfaceLabel() +"]";
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.AbstractCollectionResource#getLabel()
      */
     @Override
-    public String getLabel() {
+    public String getInterfaceLabel() {
         if (m_resourceLabel == null) {
             m_resourceLabel = m_resourceType.getStorageStrategy().getResourceNameFromIndex(this);
         }

@@ -102,7 +102,7 @@ public final class IfInfo extends SnmpCollectionResource {
      * @return a {@link java.lang.String} object.
      */
     @Override
-    public String getLabel() {
+    public String getInterfaceLabel() {
         return m_snmpIfData.getLabelForRRD();
     }
 
@@ -220,7 +220,7 @@ public final class IfInfo extends SnmpCollectionResource {
      * @throws FileNotFoundException */
     @Override
     public File getResourceDir(RrdRepository repository) throws FileNotFoundException {
-        String label = getLabel();
+        String label = getInterfaceLabel();
         File rrdBaseDir = repository.getRrdBaseDir();
         File dir = new File(rrdBaseDir, getCollectionAgent().getStorageDir().toString());
         if (label == null || "".equals(label)) {
@@ -237,7 +237,7 @@ public final class IfInfo extends SnmpCollectionResource {
      */
     @Override
     public String toString() {
-        return "node["+ getNodeId() + "].interfaceSnmp[" + getLabel() + ']';
+        return "node["+ getNodeId() + "].interfaceSnmp[" + getInterfaceLabel() + ']';
     }
 
     boolean shouldStore(ServiceParameters serviceParameters) {

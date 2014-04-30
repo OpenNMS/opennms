@@ -65,7 +65,7 @@ public class GenericIndexResource extends SnmpCollectionResource {
     /** {@inheritDoc} */
     @Override
     public File getResourceDir(RrdRepository repository) {
-        String resourcePath = getStrategy().getRelativePathForAttribute(getParent(), getLabel(), null);
+        String resourcePath = getStrategy().getRelativePathForAttribute(getParent(), getInterfaceLabel(), null);
         File resourceDir = new File(repository.getRrdBaseDir(), resourcePath);
         LOG.debug("getResourceDir: {}", resourceDir);
         return resourceDir;
@@ -134,7 +134,7 @@ public class GenericIndexResource extends SnmpCollectionResource {
      * @return a {@link java.lang.String} object.
      */
     @Override
-    public String getLabel() {
+    public String getInterfaceLabel() {
         if (m_resourceLabel == null) {
             m_resourceLabel = getStrategy().getResourceNameFromIndex(this);
         }

@@ -818,7 +818,7 @@ public class HttpCollector implements ServiceCollector {
         }
 
         @Override
-        public String getLabel() {
+        public String getInterfaceLabel() {
             return null;
         }
 

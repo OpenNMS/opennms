@@ -221,7 +221,7 @@ public class AliasedResource extends SnmpCollectionResource {
      * @return a {@link java.lang.String} object.
      */
     @Override
-    public String getLabel() {
+    public String getInterfaceLabel() {
         return getDomain() + '/' + getAliasDir();
     }
 
