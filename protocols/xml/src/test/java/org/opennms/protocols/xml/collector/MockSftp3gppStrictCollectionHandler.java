@@ -50,9 +50,9 @@ import org.w3c.dom.Document;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class MockSftp3gppStrictCollectionHandler extends Sftp3gppXmlCollectionHandler {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(MockSftp3gppStrictCollectionHandler.class);
 
+    /** The Constant LOG. */
+    private static final Logger LOG = LoggerFactory.getLogger(MockSftp3gppStrictCollectionHandler.class);
 
     /* (non-Javadoc)
      * @see org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler#getXmlDocument(java.lang.String, org.opennms.protocols.xml.config.Request)

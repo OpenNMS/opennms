@@ -3127,6 +3127,11 @@
         </exclusions>
       </dependency>
       <dependency>
+        <groupId>com.ximpleware</groupId>
+        <artifactId>vtd-xml</artifactId>
+        <version>2.11</version>
+      </dependency>
+      <dependency>
         <groupId>xalan</groupId>
         <artifactId>xalan</artifactId>
         <version>${xalanVersion}</version>

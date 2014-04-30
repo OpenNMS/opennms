@@ -59,10 +59,11 @@ import com.jcraft.jsch.SftpException;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class Sftp3gppUrlConnection extends SftpUrlConnection {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(Sftp3gppUrlConnection.class);
 
+    /** The Constant LOG. */
+    private static final Logger LOG = LoggerFactory.getLogger(Sftp3gppUrlConnection.class);
 
+    /** The URL properties map. */
     private Map<String,String> m_urlProperties;
 
     /**

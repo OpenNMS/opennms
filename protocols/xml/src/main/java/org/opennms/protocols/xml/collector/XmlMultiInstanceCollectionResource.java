@@ -42,9 +42,9 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class XmlMultiInstanceCollectionResource extends XmlCollectionResource {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(XmlMultiInstanceCollectionResource.class);
 
+    /** The Constant LOG. */
+    private static final Logger LOG = LoggerFactory.getLogger(XmlMultiInstanceCollectionResource.class);
 
     /** The collection resource instance. */
     private final String m_instance;
@@ -84,7 +84,7 @@ public class XmlMultiInstanceCollectionResource extends XmlCollectionResource {
     public File getResourceDir(RrdRepository repository) {
         String resourcePath = m_resourceType.getStorageStrategy().getRelativePathForAttribute(getParent(), getInterfaceLabel(), null);
         File resourceDir = new File(repository.getRrdBaseDir(), resourcePath);
-            LOG.debug("getResourceDir: {}", resourceDir);
+        LOG.debug("getResourceDir: {}", resourceDir);
         return resourceDir;
     }
 

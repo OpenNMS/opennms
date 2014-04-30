@@ -31,14 +31,15 @@ package org.opennms.protocols.xml.collector;
 import java.util.Map;
 
 import org.junit.Assert;
-
 import org.junit.Test;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.protocols.xml.config.Request;
 import org.opennms.protocols.xml.config.XmlDataCollection;
+import org.opennms.protocols.xml.config.XmlSource;
 
 /**
  * The Test Class for AbstractXmlCollectionHandler.
@@ -67,6 +68,13 @@ public class AbstractXmlCollectionHandlerTest {
             protected void processXmlResource(
                     XmlCollectionResource collectionResource,
                     AttributeGroupType attribGroupType) {
+            }
+
+            @Override
+            protected void fillCollectionSet(String urlString,
+                    Request request, CollectionAgent agent,
+                    XmlCollectionSet collectionSet, XmlSource source)
+                    throws Exception {
             }
         };
         OnmsNode node = new OnmsNode();

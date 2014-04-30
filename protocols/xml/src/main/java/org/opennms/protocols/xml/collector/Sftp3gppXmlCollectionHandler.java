@@ -68,9 +68,9 @@ import org.w3c.dom.Document;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(Sftp3gppXmlCollectionHandler.class);
 
+    /** The Constant LOG. */
+    private static final Logger LOG = LoggerFactory.getLogger(Sftp3gppXmlCollectionHandler.class);
 
     /** The Constant PM_GROUPS_FILENAME. */
     public static final String PM_GROUPS_FILENAME = "3gpp-pmgroups.properties";
@@ -139,6 +139,14 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
             collectionSet.setStatus(ServiceCollector.COLLECTION_FAILED);
             throw new CollectionException(e.getMessage(), e);
         }
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler#fillCollectionSet(java.lang.String, org.opennms.protocols.xml.config.Request, org.opennms.netmgt.collection.api.CollectionAgent, org.opennms.protocols.xml.collector.XmlCollectionSet, org.opennms.protocols.xml.config.XmlSource)
+     */
+    @Override
+    protected void fillCollectionSet(String urlString, Request request, CollectionAgent agent, XmlCollectionSet collectionSet, XmlSource source) throws Exception {
+        // This handler has a custom implementation of the collect method, so there is no need to do something special here.
     }
 
     /**
@@ -294,4 +302,5 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
         properties.put("instance", measInfoId);
         return properties;
     }
+
 }

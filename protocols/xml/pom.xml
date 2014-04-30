@@ -113,6 +113,10 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>com.ximpleware</groupId>
+      <artifactId>vtd-xml</artifactId>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>

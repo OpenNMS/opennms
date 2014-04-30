@@ -42,17 +42,33 @@ import org.apache.http.message.BasicNameValuePair;
 import org.opennms.core.config.api.JaxbListWrapper;
 
 /**
+ * The Class FormFields.
+ *
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 @XmlRootElement(name="form-fields")
 public class FormFields extends JaxbListWrapper<FormField> {
+
+    /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * The Constructor.
+     */
     public FormFields() { super(); }
+
+    /**
+     * The Constructor.
+     *
+     * @param fields the fields
+     */
     public FormFields(final Collection<? extends FormField> fields) {
         super(fields);
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.core.config.api.JaxbListWrapper#getObjects()
+     */
     @XmlElement(name="form-field")
     public List<FormField> getObjects() {
         return super.getObjects();

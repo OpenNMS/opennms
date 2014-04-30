@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,9 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.protocols.json.collector;
-
-import net.sf.json.JSONObject;
+package org.opennms.protocols.xml.vtdxml;
 
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
@@ -36,27 +34,34 @@ import org.opennms.protocols.xml.collector.XmlCollectionResource;
 import org.opennms.protocols.xml.collector.XmlCollectionSet;
 import org.opennms.protocols.xml.config.Request;
 import org.opennms.protocols.xml.config.XmlSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.ximpleware.VTDNav;
 
 /**
- * The default implementation of the interface XmlCollectionHandler based on AbstractJsonCollectionHandler.
- * 
+ * The default implementation of the interface XmlCollectionHandler based on AbstractVTDXmlCollectionHandler.
+ *
  * @author <a href="mailto:ronald.roskens@gmail.com">Ronald Roskens</a>
- * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class DefaultJsonCollectionHandler extends AbstractJsonCollectionHandler {
+public class DefaultVTDXmlCollectionHandler extends AbstractVTDXmlCollectionHandler {
+
+    /** The Constant LOG. */
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultVTDXmlCollectionHandler.class);
+
+    /* (non-Javadoc)
+     * @see org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler#processXmlResource(org.opennms.protocols.xml.collector.XmlCollectionResource, org.opennms.netmgt.config.collector.AttributeGroupType)
+     */
+    @Override
+    protected void processXmlResource(XmlCollectionResource collectionResource, AttributeGroupType attribGroupType) {}
 
     /* (non-Javadoc)
      * @see org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler#fillCollectionSet(java.lang.String, org.opennms.protocols.xml.config.Request, org.opennms.netmgt.collection.api.CollectionAgent, org.opennms.protocols.xml.collector.XmlCollectionSet, org.opennms.protocols.xml.config.XmlSource)
      */
     @Override
     protected void fillCollectionSet(String urlString, Request request, CollectionAgent agent, XmlCollectionSet collectionSet, XmlSource source) throws Exception {
-        JSONObject json = getJSONObject(urlString, request);
-        fillCollectionSet(agent, collectionSet, source, json);
+        VTDNav vn = getVTDXmlDocument(urlString, request);
+        LOG.debug("collect: parsed document for source url '{}' collection", source.getUrl());
+        fillCollectionSet(agent, collectionSet, source, vn);
     }
-
-    /* (non-Javadoc)
-     * @see org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler#processXmlResource(org.opennms.protocols.xml.collector.XmlCollectionResource, org.opennms.netmgt.config.collector.AttributeGroupType)
-     */
-    protected void processXmlResource(XmlCollectionResource collectionResource, AttributeGroupType attribGroupType) {}
-
 }

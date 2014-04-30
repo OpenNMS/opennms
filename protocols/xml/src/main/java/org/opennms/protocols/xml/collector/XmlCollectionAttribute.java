@@ -40,7 +40,8 @@ import org.slf4j.LoggerFactory;
  */
 public class XmlCollectionAttribute extends AbstractCollectionAttribute {
 
-	private static final Logger LOG = LoggerFactory.getLogger(XmlCollectionAttribute.class);
+    /** The Constant LOG. */
+    private static final Logger LOG = LoggerFactory.getLogger(XmlCollectionAttribute.class);
 
     /** The Attribute Value. */
     private final String m_value;
@@ -98,7 +99,7 @@ public class XmlCollectionAttribute extends AbstractCollectionAttribute {
      *
      * @return the thread category
      */
-   
+
 
     @Override
     public String getMetricIdentifier() {

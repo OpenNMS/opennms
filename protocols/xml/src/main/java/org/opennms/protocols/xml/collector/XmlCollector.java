@@ -51,9 +51,9 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class XmlCollector implements ServiceCollector {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(XmlCollector.class);
 
+    /** The Constant LOG. */
+    private static final Logger LOG = LoggerFactory.getLogger(XmlCollector.class);
 
     /** The XML Data Collection DAO. */
     private XmlDataCollectionConfigDao m_xmlCollectionDao;

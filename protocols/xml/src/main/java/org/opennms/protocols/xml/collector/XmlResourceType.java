@@ -44,9 +44,6 @@ public class XmlResourceType  {
     /** The resource type name. */
     private String m_resourceType;
 
-    /** The collection agent. */
-    private CollectionAgent m_agent;
-
     /** The persistence selector strategy. */
     private PersistenceSelectorStrategy m_persistenceSelectorStrategy;
 
@@ -60,7 +57,6 @@ public class XmlResourceType  {
      * @param resourceType the resource type
      */
     public XmlResourceType(CollectionAgent agent, ResourceType resourceType) {
-        m_agent = agent;
         m_resourceType = resourceType.getName();
         instantiatePersistenceSelectorStrategy(resourceType.getPersistenceSelectorStrategy().getClazz());
         instantiateStorageStrategy(resourceType.getStorageStrategy().getClazz());
