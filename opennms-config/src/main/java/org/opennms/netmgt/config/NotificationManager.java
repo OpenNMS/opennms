@@ -566,7 +566,7 @@ public abstract class NotificationManager {
                     String param = null;
                     String value = null;
                     try {
-                        key = match.substring(match.indexOf("[") + 1, match.indexOf("]"));
+                        key = match.substring(match.indexOf('[') + 1, match.indexOf(']'));
                     } catch (Exception e) {}
                     if (key != null) {
                         int numkey = 0;

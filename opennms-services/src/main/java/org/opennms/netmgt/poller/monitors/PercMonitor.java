@@ -204,7 +204,7 @@ final public class PercMonitor extends SnmpMonitorStrategy {
             	
             	for (Map.Entry<SnmpInstId, SnmpValue> disk: arrayDisks.entrySet()) {
             		
-            		if (disk.getValue().toString().contains("A" + arrayNumber.toString() + "-")) {
+            		if (disk.getValue().toString().contains("A" + arrayNumber + "-")) {
             			// this is a member of the array
             			
             			if ( diskStates.get(disk.getKey()).toInt() !=3 ){

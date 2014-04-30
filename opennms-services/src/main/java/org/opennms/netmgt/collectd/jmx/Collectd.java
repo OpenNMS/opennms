@@ -87,10 +87,10 @@ public class Collectd extends AbstractSpringContextJmxServiceDaemon<org.opennms.
             if (getExecutor().getTaskCount() > 0) {
                 return new Double(getExecutor().getCompletedTaskCount() / new Double(getExecutor().getTaskCount()));
             } else {
-                return new Double(0);
+                return 0.0;
             }
         } else {
-            return new Double(0);
+            return 0.0;
         }
     }
 
