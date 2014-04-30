@@ -243,22 +243,11 @@ public class EnhancedLinkdTopologyProviderTest {
 
     @Test
     public void loadSampleGraph() throws Exception {
-        // Temporarily replace the DataLinkInterfaceDao with a mock empty impl
-        LldpLinkDao mockDao = EasyMock.createMock(LldpLinkDao.class);
-        EasyMock.expect(mockDao.findAll()).andReturn(new ArrayList<LldpLink>()).anyTimes();
-        EasyMock.replay(mockDao);
-        m_topologyProvider.setLldpLinkDao(mockDao);
-
-        NodeDao mockNodeDao = EasyMock.createMock(NodeDao.class);
-        EasyMock.expect(mockNodeDao.findAll()).andReturn(new ArrayList<OnmsNode>()).anyTimes();
-        EasyMock.replay(mockNodeDao);
-        m_topologyProvider.setNodeDao(mockNodeDao);
         m_topologyProvider.setConfigurationFile("target/test-classes/saved-vmware-graph.xml");
 
-        m_topologyProvider.resetContainer();
         m_topologyProvider.load(null);
 
-        assertEquals(8, m_topologyProvider.getVertices().size());
+        assertEquals(24, m_topologyProvider.getVertices().size());
         assertEquals(8, m_topologyProvider.getEdges().size());
     }
 

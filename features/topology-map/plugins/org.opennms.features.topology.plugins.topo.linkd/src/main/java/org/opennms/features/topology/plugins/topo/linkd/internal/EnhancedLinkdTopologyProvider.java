@@ -28,9 +28,6 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
@@ -38,22 +35,17 @@ import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.*;
 import org.opennms.netmgt.dao.api.*;
-import org.opennms.netmgt.dao.hibernate.HibernateFilterManager;
 import org.opennms.netmgt.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.xml.bind.JAXB;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import java.io.File;
 import java.net.MalformedURLException;
-import java.text.DecimalFormat;
 import java.util.*;
 
-public class EnhancedLinkdTopologyProvider extends AbstractTopologyProvider implements GraphProvider, SearchProvider {
+public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider implements SearchProvider {
 
     private class LldpLinkDetail{
 
@@ -258,34 +250,6 @@ public class EnhancedLinkdTopologyProvider extends AbstractTopologyProvider impl
     }
 
     private static Logger LOG = LoggerFactory.getLogger(EnhancedLinkdTopologyProvider.class);
-    public static final String TOPOLOGY_NAMESPACE_LINKD = "nodes";
-
-    protected static final String HTML_TOOLTIP_TAG_OPEN = "<p>";
-    protected static final String HTML_TOOLTIP_TAG_END  = "</p>";
-
-    /**
-     * Always print at least one digit after the decimal point,
-     * and at most three digits after the decimal point.
-     */
-    private static final DecimalFormat s_oneDigitAfterDecimal = new DecimalFormat("0.0##");
-
-    /**
-     * Print no digits after the decimal point (heh, nor a decimal point).
-     */
-    private static final DecimalFormat s_noDigitsAfterDecimal = new DecimalFormat("0");
-
-    /**
-     * Do not use directly. Call {@link #getNodeStatusString(org.opennms.netmgt.model.OnmsNode.NodeType)}
-     * getInterfaceStatusMap} instead.
-     */
-    private static final EnumMap<OnmsNode.NodeType, String> m_nodeStatusMap;
-
-    static {
-        m_nodeStatusMap = new EnumMap<OnmsNode.NodeType, String>(OnmsNode.NodeType.class);
-        m_nodeStatusMap.put(OnmsNode.NodeType.ACTIVE, "Active");
-        m_nodeStatusMap.put(OnmsNode.NodeType.UNKNOWN, "Unknown");
-        m_nodeStatusMap.put(OnmsNode.NodeType.DELETED, "Deleted");
-    }
 
     static final String[] OPER_ADMIN_STATUS = new String[] {
             "&nbsp;",          //0 (not supported)
@@ -299,20 +263,9 @@ public class EnhancedLinkdTopologyProvider extends AbstractTopologyProvider impl
     };
 
     private LldpLinkDao m_lldpLinkDao;
-    private NodeDao m_nodeDao;
-    private SnmpInterfaceDao m_snmpInterfaceDao;
-    private IpInterfaceDao m_ipInterfaceDao;
-    private TopologyDao m_topologyDao;
-    private String m_configurationFile;
-    private FilterManager m_filterManager;
-    private LinkdHopCriteriaFactory m_criteriaHopFactory;
-    private boolean m_addNodeWithoutLink = false;
-    private final boolean m_aclEnabled;
 
     public EnhancedLinkdTopologyProvider() {
         super(TOPOLOGY_NAMESPACE_LINKD);
-        String aclsProp = System.getProperty("org.opennms.web.aclsEnabled");
-        m_aclEnabled = aclsProp != null ? aclsProp.equals("true") : false;
     }
 
     /**
@@ -326,31 +279,10 @@ public class EnhancedLinkdTopologyProvider extends AbstractTopologyProvider impl
     }
 
     @Override
-    public void save() {
-        List<WrappedVertex> vertices = new ArrayList<WrappedVertex>();
-        for (Vertex vertex : getVertices()) {
-            if (vertex.isGroup()) {
-                vertices.add(new WrappedGroup(vertex));
-            } else {
-                vertices.add(new WrappedLeafVertex(vertex));
-            }
-        }
-        List<WrappedEdge> edges = new ArrayList<WrappedEdge>();
-        for (Edge edge : getEdges()) {
-            WrappedEdge newEdge = new WrappedEdge(edge, new WrappedLeafVertex(m_vertexProvider.getVertex(edge.getSource().getVertex())), new WrappedLeafVertex(m_vertexProvider.getVertex(edge.getTarget().getVertex())));
-            edges.add(newEdge);
-        }
-
-        WrappedGraph graph = new WrappedGraph(getEdgeNamespace(), vertices, edges);
-
-        JAXB.marshal(graph, new File(m_configurationFile));
-    }
-
-    @Override
     @Transactional
     public void load(String filename) throws MalformedURLException, JAXBException {
         if (filename != null) {
-            LOG.warn("Filename that was specified for linkd topology will be ignored: " + filename + ", using " + m_configurationFile + " instead");
+            LOG.warn("Filename that was specified for linkd topology will be ignored: " + filename + ", using " + getConfigurationFile() + " instead");
         }
         try{
             //TODO: change to one query from the database that will return all links plus elements joined
@@ -419,9 +351,9 @@ public class EnhancedLinkdTopologyProvider extends AbstractTopologyProvider impl
 
         }
 
-        File configFile = new File(m_configurationFile);
+        File configFile = new File(getConfigurationFile());
         if (configFile.exists() && configFile.canRead()) {
-            LOG.debug("loadtopology: loading topology from configuration file: " + m_configurationFile);
+            LOG.debug("loadtopology: loading topology from configuration file: " + getConfigurationFile());
             WrappedGraph graph = getGraphFromFile(configFile);
 
             // Add all groups to the topology
@@ -433,7 +365,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractTopologyProvider impl
                         LoggerFactory.getLogger(this.getClass()).warn("Setting namespace on vertex to default: {}", eachVertexInFile);
                     }
                     if (eachVertexInFile.id == null) {
-                        LoggerFactory.getLogger(this.getClass()).warn("Invalid vertex unmarshalled from {}: {}", m_configurationFile, eachVertexInFile);
+                        LoggerFactory.getLogger(this.getClass()).warn("Invalid vertex unmarshalled from {}: {}", getConfigurationFile(), eachVertexInFile);
                     }
                     AbstractVertex newGroupVertex = addGroup(eachVertexInFile.id, eachVertexInFile.iconKey, eachVertexInFile.label);
                     newGroupVertex.setIpAddress(eachVertexInFile.ipAddr);
@@ -465,7 +397,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractTopologyProvider impl
                 }
             }
         } else {
-            LOG.debug("loadtopology: could not load topology configFile:" + m_configurationFile);
+            LOG.debug("loadtopology: could not load topology configFile:" + getConfigurationFile());
         }
         LOG.debug("Found " + getGroups().size() + " groups");
         LOG.debug("Found " + getVerticesWithoutGroups().size() + " vertices");
@@ -486,62 +418,12 @@ public class EnhancedLinkdTopologyProvider extends AbstractTopologyProvider impl
         }
     }
 
-    @Override
-    public VertexHopCriteria getDefaultCriteria() {
-        return null;
-    }
-
-    private AbstractVertex getVertex(OnmsNode onmsnode) {
-        OnmsIpInterface ip = getAddress(onmsnode);
-        AbstractVertex vertex = new SimpleLeafVertex(TOPOLOGY_NAMESPACE_LINKD, onmsnode.getNodeId(), 0, 0);
-        vertex.setIconKey(getIconName(onmsnode));
-        vertex.setLabel(onmsnode.getLabel());
-        vertex.setIpAddress(ip == null ? null : ip.getIpAddress().getHostAddress());
-        vertex.setNodeID(Integer.parseInt(onmsnode.getNodeId()));
-        vertex.setTooltipText(getNodeTooltipText(onmsnode, vertex, ip));
-        return vertex;
-    }
-
-    protected static String getNodeTooltipText(OnmsNode node, AbstractVertex vertex, OnmsIpInterface ip) {
-        StringBuffer tooltipText = new StringBuffer();
-
-        /*
-        if (node.getSysDescription() != null && node.getSysDescription().length() >0) {
-            tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-            tooltipText.append("Description: " + node.getSysDescription());
-            tooltipText.append(HTML_TOOLTIP_TAG_END);
-        }
-        */
-
-        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append("Management IP and Name: " + vertex.getIpAddress() + " (" + vertex.getLabel() + ")");
-        tooltipText.append(HTML_TOOLTIP_TAG_END);
-
-        if (node.getSysLocation() != null && node.getSysLocation().length() >0) {
-            tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-            tooltipText.append("Location: " + node.getSysLocation());
-            tooltipText.append(HTML_TOOLTIP_TAG_END);
-        }
-
-        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append( "Status: " +getNodeStatusString(node.getType()));
-        if (ip != null && ip.isManaged()) {
-            tooltipText.append( " / Managed");
-        } else {
-            tooltipText.append( " / Unmanaged");
-        }
-        tooltipText.append(HTML_TOOLTIP_TAG_END);
-
-        return tooltipText.toString();
-
-    }
-
     private String getEdgeTooltipText(LldpLink sourceLink,
                                       LldpLink targetLink, Vertex source, Vertex target) {
         StringBuffer tooltipText = new StringBuffer();
 
-        OnmsSnmpInterface sourceInterface = m_snmpInterfaceDao.findByNodeIdAndIfIndex(Integer.parseInt(source.getId()), sourceLink.getLldpPortIfindex());
-        OnmsSnmpInterface targetInterface = m_snmpInterfaceDao.findByNodeIdAndIfIndex(Integer.parseInt(target.getId()), targetLink.getLldpPortIfindex());
+        OnmsSnmpInterface sourceInterface = getSnmpInterfaceDao().findByNodeIdAndIfIndex(Integer.parseInt(source.getId()), sourceLink.getLldpPortIfindex());
+        OnmsSnmpInterface targetInterface = getSnmpInterfaceDao().findByNodeIdAndIfIndex(Integer.parseInt(target.getId()), targetLink.getLldpPortIfindex());
 
         tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
         if (sourceInterface != null && targetInterface != null
@@ -595,168 +477,23 @@ public class EnhancedLinkdTopologyProvider extends AbstractTopologyProvider impl
         return tooltipText.toString();
     }
 
-    /**
-     * Method used to convert an integer bits-per-second value to a more
-     * readable vale using commonly recognized abbreviation for network
-     * interface speeds. Feel free to expand it as necessary to accomodate
-     * different values.
-     *
-     * @param ifSpeed
-     *            The bits-per-second value to be converted into a string
-     *            description
-     * @return A string representation of the speed (&quot;100 Mbps&quot; for
-     *         example)
-     */
-    private static String getHumanReadableIfSpeed(long ifSpeed) {
-        DecimalFormat formatter;
-        double displaySpeed;
-        String units;
-
-        if (ifSpeed >= 1000000000L) {
-            if ((ifSpeed % 1000000000L) == 0) {
-                formatter = s_noDigitsAfterDecimal;
-            } else {
-                formatter = s_oneDigitAfterDecimal;
-            }
-            displaySpeed = ((double) ifSpeed) / 1000000000.0;
-            units = "Gbps";
-        } else if (ifSpeed >= 1000000L) {
-            if ((ifSpeed % 1000000L) == 0) {
-                formatter = s_noDigitsAfterDecimal;
-            } else {
-                formatter = s_oneDigitAfterDecimal;
-            }
-            displaySpeed = ((double) ifSpeed) / 1000000.0;
-            units = "Mbps";
-        } else if (ifSpeed >= 1000L) {
-            if ((ifSpeed % 1000L) == 0) {
-                formatter = s_noDigitsAfterDecimal;
-            } else {
-                formatter = s_oneDigitAfterDecimal;
-            }
-            displaySpeed = ((double) ifSpeed) / 1000.0;
-            units = "kbps";
-        } else {
-            formatter = s_noDigitsAfterDecimal;
-            displaySpeed = (double) ifSpeed;
-            units = "bps";
-        }
-
-        return formatter.format(displaySpeed) + " " + units;
-    }
-
-    private static WrappedGraph getGraphFromFile(File file) throws JAXBException, MalformedURLException {
-        JAXBContext jc = JAXBContext.newInstance(WrappedGraph.class);
-        Unmarshaller u = jc.createUnmarshaller();
-        return (WrappedGraph) u.unmarshal(file.toURI().toURL());
-    }
-
-    /**
-     * Return the human-readable name for a interface status character, may be
-     * null.
-     *
-     * @param c a char.
-     * @return a {@link java.lang.String} object.
-     */
-    private static String getNodeStatusString(OnmsNode.NodeType c) {
-        return m_nodeStatusMap.get(c);
-    }
-
-    private OnmsIpInterface getAddress(OnmsNode node) {
-        //OnmsIpInterface ip = node.getPrimaryInterface();
-        OnmsIpInterface ip = m_ipInterfaceDao.findPrimaryInterfaceByNodeId(node.getId());
-        if ( ip == null) {
-//            for (OnmsIpInterface iterip: node.getIpInterfaces()) {
-            for (OnmsIpInterface iterip: m_ipInterfaceDao.findByNodeId(node.getId())) {
-                ip = iterip;
-                break;
-            }
-        }
-        return ip;
-    }
-
     public void setLldpLinkDao(LldpLinkDao lldpLinkDao) {
         m_lldpLinkDao = lldpLinkDao;
-    }
-
-    public void setNodeDao(NodeDao nodeDao) {
-        m_nodeDao = nodeDao;
-    }
-
-    public void setSnmpInterfaceDao(SnmpInterfaceDao snmpInterfaceDao) {
-        m_snmpInterfaceDao = snmpInterfaceDao;
-    }
-
-    public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
-        m_ipInterfaceDao = ipInterfaceDao;
-    }
-
-    public void setTopologyDao(TopologyDao topologyDao) {
-        m_topologyDao = topologyDao;
-    }
-
-    public void setConfigurationFile(String configurationFile) {
-        m_configurationFile = configurationFile;
-    }
-
-    public String getConfigurationFile() {
-        return m_configurationFile;
-    }
-
-    public static String getIconName(OnmsNode node) {
-        return node.getSysObjectId() == null ? "linkd:system" : "linkd:system:snmp:"+node.getSysObjectId();
     }
 
     public LldpLinkDao getLldpLinkDao() {
         return m_lldpLinkDao;
     }
 
-    public void setAddNodeWithoutLink(boolean addNodeWithoutLink) { m_addNodeWithoutLink = addNodeWithoutLink; }
-
-    public boolean isAddNodeWithoutLink(){ return m_addNodeWithoutLink; }
-
-    public void setFilterManager(FilterManager filterManager) {
-        m_filterManager = filterManager;
-    }
-
-    public FilterManager getFilterManager() {
-        return m_filterManager;
-    }
-
-    public LinkdHopCriteriaFactory getLinkdHopCriteriaFactory() {
-        return m_criteriaHopFactory;
-    }
-
-    public void setLinkdHopCriteriaFactory(LinkdHopCriteriaFactory criteriaHopFactory) {
-        m_criteriaHopFactory = criteriaHopFactory;
-    }
-
-    private List<OnmsNode> getAllNodesNoACL() {
-        if(getFilterManager().isEnabled()){
-            String[] userGroups = getFilterManager().getAuthorizationGroups();
-            List<OnmsNode> nodeList = null;
-            try{
-                getFilterManager().disableAuthorizationFilter();
-                nodeList = m_nodeDao.findAll();
-
-            } finally {
-                // Make sure that we re-enable the authorization filter
-                if(userGroups != null){
-                    getFilterManager().enableAuthorizationFilter(userGroups);
-                }
-            }
-            return nodeList != null ? nodeList : Collections.<OnmsNode>emptyList();
-        } else {
-            return m_nodeDao.findAll();
-        }
-
-
-    }
-
     //Search Provider methods
     @Override
     public String getSearchProviderNamespace() {
         return TOPOLOGY_NAMESPACE_LINKD;
+    }
+
+    @Override
+    public VertexHopCriteria getDefaultCriteria() {
+        return null;
     }
 
     @Override
@@ -873,30 +610,4 @@ public class EnhancedLinkdTopologyProvider extends AbstractTopologyProvider impl
         }
     }
 
-    private List<Vertex> getFilteredVertices() {
-        if(m_aclEnabled){
-            //Get All nodes when called should filter with ACL
-            List<OnmsNode> onmsNodes = m_nodeDao.findAll();
-
-            //Transform the onmsNodes list to a list of Ids
-            final List<Integer> nodes = Lists.transform(onmsNodes, new Function<OnmsNode, Integer>() {
-                @Override
-                public Integer apply(OnmsNode node) {
-                    return node.getId();
-                }
-            });
-
-
-            //Filter out the nodes that are not viewable by the user.
-            return Lists.newArrayList(Collections2.filter(m_vertexProvider.getVertices(), new Predicate<Vertex>() {
-                @Override
-                public boolean apply(Vertex vertex) {
-                    return nodes.contains(vertex.getNodeID());
-                }
-            }));
-        } else{
-            return m_vertexProvider.getVertices();
-        }
-
-    }
 }
