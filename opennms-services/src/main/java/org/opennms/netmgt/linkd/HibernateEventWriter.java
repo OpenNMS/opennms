@@ -448,7 +448,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
     }
 
     @Override
-    protected synchronized void saveIpRouteInterface(final OnmsIpRouteInterface saveMe) {
+    protected void saveIpRouteInterface(final OnmsIpRouteInterface saveMe) {
         new UpsertTemplate<OnmsIpRouteInterface, IpRouteInterfaceDao>(m_transactionManager, m_ipRouteInterfaceDao) {
 
             @Override
@@ -532,7 +532,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
     }
 
     @Override
-    protected synchronized void saveStpNode(final OnmsStpNode saveMe) {
+    protected void saveStpNode(final OnmsStpNode saveMe) {
         new UpsertTemplate<OnmsStpNode, StpNodeDao>(m_transactionManager, m_stpNodeDao) {
 
             @Override
