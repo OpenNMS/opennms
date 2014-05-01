@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
+import org.joda.time.DateTime;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
@@ -74,6 +75,7 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
         collectionSet.setStatus(ServiceCollector.COLLECTION_UNKNOWN);
 
         // TODO We could be careful when handling exceptions because parsing exceptions will be treated different from connection or retrieval exceptions
+        DateTime startTime = new DateTime();
         try {
             File resourceDir = new File(getRrdRepository().getRrdBaseDir(), Integer.toString(agent.getNodeId()));
             for (XmlSource source : collection.getXmlSources()) {
@@ -81,7 +83,7 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
                     throw new CollectionException("The 3GPP SFTP Collection Handler can only use the protocol " + Sftp3gppUrlHandler.PROTOCOL);
                 }
                 String urlStr = parseUrl(source.getUrl(), agent, collection.getXmlRrd().getStep());
-                Request request = parseRequest(source.getRequest(), agent);
+                Request request = parseRequest(source.getRequest(), agent, collection.getXmlRrd().getStep());
                 URL url = UrlFactory.getUrl(urlStr, request);
                 String lastFile = Sftp3gppUtils.getLastFilename(getServiceName(), resourceDir, url.getPath());
                 Sftp3gppUrlConnection connection = (Sftp3gppUrlConnection) url.openConnection();
@@ -120,6 +122,10 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
         } catch (Exception e) {
             collectionSet.setStatus(ServiceCollector.COLLECTION_FAILED);
             throw new CollectionException(e.getMessage(), e);
+        } finally {
+            String status = collectionSet.getStatus() == ServiceCollector.COLLECTION_SUCCEEDED ? "finished" : "failed";
+            DateTime endTime = new DateTime();
+            LOG.debug("collect: {} collection {}: duration: {} ms", status, collection.getName(), endTime.getMillis()-startTime.getMillis());
         }
     }
 
@@ -137,23 +143,6 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
     @Override
     protected void processXmlResource(XmlCollectionResource resource, AttributeGroupType attribGroupType) {
         Sftp3gppUtils.processXmlResource(resource, attribGroupType);
-    }
-
-    /**
-     * Parses the URL.
-     *
-     * @param unformattedUrl the unformatted URL
-     * @param agent the agent
-     * @param collectionStep the collection step (in seconds)
-     * @param currentTimestamp the current timestamp
-     * @return the string
-     */
-    protected String parseUrl(String unformattedUrl, CollectionAgent agent, Integer collectionStep, long currentTimestamp) throws IllegalArgumentException {
-        if (!unformattedUrl.startsWith(Sftp3gppUrlHandler.PROTOCOL)) {
-            throw new IllegalArgumentException("The 3GPP SFTP Collection Handler can only use the protocol " + Sftp3gppUrlHandler.PROTOCOL);
-        }
-        String baseUrl = parseUrl(unformattedUrl, agent, collectionStep);
-        return baseUrl + "&referenceTimestamp=" + currentTimestamp;
     }
 
 }

@@ -83,10 +83,10 @@ public class AbstractXmlCollectionHandlerTest {
         OnmsAssetRecord asset = new OnmsAssetRecord();
         asset.setSerialNumber("1001");
         node.setAssetRecord(asset);
-        String url = handler.parseString("URL", "http://{nodeLabel}/{ipAddress}/serial/{serialNumber}", node, "127.0.0.1");
-        Assert.assertEquals("http://mynode.local/127.0.0.1/serial/1001", url);
+        String url = handler.parseString("URL", "http://{nodeLabel}/{ipAddress}/serial/{serialNumber}/{step}", node, "127.0.0.1", 300);
+        Assert.assertEquals("http://mynode.local/127.0.0.1/serial/1001/300", url);
         String multiline = "<data>\n   <source label='{nodeLabel}'/>\n</data>";
-        String xml = handler.parseString("Content", multiline, node, "127.0.0.1");
+        String xml = handler.parseString("Content", multiline, node, "127.0.0.1", 300);
         Assert.assertEquals("<data>\n   <source label='mynode.local'/>\n</data>", xml);
     }
 
