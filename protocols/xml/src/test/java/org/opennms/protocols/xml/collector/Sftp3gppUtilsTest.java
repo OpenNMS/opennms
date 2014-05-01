@@ -34,11 +34,11 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * The Test Class for MockSftp3gppStrictCollectionHandler.
+ * The Test Class for Sftp3gppUtils.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class MockSftp3gppStrictCollectionHandlerTest {
+public class Sftp3gppUtilsTest {
 
     /**
      * Test parser.
@@ -47,19 +47,17 @@ public class MockSftp3gppStrictCollectionHandlerTest {
      */
     @Test
     public void testParser() throws Exception {
-        MockSftp3gppStrictCollectionHandler handler = new MockSftp3gppStrictCollectionHandler();
-
-        String format = handler.get3gppFormat("cdmaSc");
+        String format = Sftp3gppUtils.get3gppFormat("cdmaSc");
         Assert.assertEquals("system|/=/v=1/sg-name=<mmeScSgName>|", format);
-        Map<String,String> properties = handler.get3gppProperties(format, "system|/=/v=1/sg-name=GA|");
+        Map<String,String> properties = Sftp3gppUtils.get3gppProperties(format, "system|/=/v=1/sg-name=GA|");
         Assert.assertEquals(3, properties.size());
         Assert.assertEquals("system|/=/v=1/sg-name=GA|", properties.get("instance"));
         Assert.assertEquals("GA", properties.get("sg-name"));
         Assert.assertEquals("sg-name=GA", properties.get("label"));
 
-        format = handler.get3gppFormat("gbBssgp");
+        format = Sftp3gppUtils.get3gppFormat("gbBssgp");
         Assert.assertEquals("nse|/=/v=1/nse-id=<nseNumber>|/=/v=1/sg-name=<sgsnGtlSgName>/su-number=<n>", format);
-        properties = handler.get3gppProperties(format, "nse|/=/v=1/nse-id=1201|/=/v=1/sg-name=GB71/su-number=1");
+        properties = Sftp3gppUtils.get3gppProperties(format, "nse|/=/v=1/nse-id=1201|/=/v=1/sg-name=GB71/su-number=1");
         Assert.assertEquals(5, properties.size());
         Assert.assertEquals("nse|/=/v=1/nse-id=1201|/=/v=1/sg-name=GB71/su-number=1", properties.get("instance"));
         Assert.assertEquals("1201", properties.get("nse-id"));
@@ -67,9 +65,9 @@ public class MockSftp3gppStrictCollectionHandlerTest {
         Assert.assertEquals("1", properties.get("su-number"));
         Assert.assertEquals("nse-id=1201, sg-name=GB71, su-number=1", properties.get("label"));
 
-        format = handler.get3gppFormat("platformSystemFilesystem");
+        format = Sftp3gppUtils.get3gppFormat("platformSystemFilesystem");
         Assert.assertEquals("disk|/=/v=1/frame=<frame>/shelf=<shelf>/slot=<slot>/sub-slot=<sub-slot>/name=<directory path>|", format);
-        properties = handler.get3gppProperties(format, "disk|/=/v=1/frame=0/shelf=0/slot=2/sub-slot=0/name=\\/opt\\/hitachi\\/agw\\/data\\/trace|");
+        properties = Sftp3gppUtils.get3gppProperties(format, "disk|/=/v=1/frame=0/shelf=0/slot=2/sub-slot=0/name=\\/opt\\/hitachi\\/agw\\/data\\/trace|");
         Assert.assertEquals(7, properties.size());
         Assert.assertEquals("0", properties.get("frame"));
         Assert.assertEquals("0", properties.get("shelf"));
@@ -86,13 +84,12 @@ public class MockSftp3gppStrictCollectionHandlerTest {
      */
     @Test
     public void testNMS6365() throws Exception {
-        MockSftp3gppStrictCollectionHandler handler = new MockSftp3gppStrictCollectionHandler();
-        String format = handler.get3gppFormat("dnsDns");
-        Map<String,String> properties = handler.get3gppProperties(format, "system|/service=callp1|");
+        String format = Sftp3gppUtils.get3gppFormat("dnsDns");
+        Map<String,String> properties = Sftp3gppUtils.get3gppProperties(format, "system|/service=callp1|");
         Assert.assertEquals("system|/service=callp1|", properties.get("label"));
 
         System.setProperty("org.opennms.collectd.xml.3gpp.useSimpleParserForMeasObjLdn", "true");
-        properties = handler.get3gppProperties(format, "system|/service=callp1|");
+        properties = Sftp3gppUtils.get3gppProperties(format, "system|/service=callp1|");
         Assert.assertEquals("/service=callp1", properties.get("label"));
     }
 }
