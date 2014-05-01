@@ -89,9 +89,7 @@ public class LinkdTopologyProvider extends AbstractLinkdTopologyProvider impleme
         load(null);
     }
     
-    public LinkdTopologyProvider() {
-    	super(TOPOLOGY_NAMESPACE_LINKD);
-    }
+    public LinkdTopologyProvider() { }
 
     @Override
     public void refresh() {

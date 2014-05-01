@@ -264,9 +264,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
 
     private LldpLinkDao m_lldpLinkDao;
 
-    public EnhancedLinkdTopologyProvider() {
-        super(TOPOLOGY_NAMESPACE_LINKD);
-    }
+    public EnhancedLinkdTopologyProvider() { }
 
     /**
      * Used as an init-method in the OSGi blueprint
