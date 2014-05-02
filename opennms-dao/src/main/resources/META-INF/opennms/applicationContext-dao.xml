@@ -52,7 +52,7 @@
     <property name="dataSource" ref="dataSource" />
   </bean>
 
-  <bean id="timeKeeper" class="org.opennms.core.utils.DefaultTimeKeeper" />
+  <bean id="timeKeeper" class="org.opennms.netmgt.collection.support.DefaultTimeKeeper" />
 
   <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
     <property name="dataSource" ref="dataSource" />

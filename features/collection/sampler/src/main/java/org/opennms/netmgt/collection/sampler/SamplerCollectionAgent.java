@@ -43,6 +43,9 @@ public class SamplerCollectionAgent implements CollectionAgent {
 	private final Agent m_agent;
 
 	public SamplerCollectionAgent(Agent agent) {
+		if (agent == null) {
+			throw new IllegalArgumentException("Agent value cannot be null");
+		}
 		m_agent = agent;
 	}
 

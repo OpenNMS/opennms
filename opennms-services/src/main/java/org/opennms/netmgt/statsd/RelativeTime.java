@@ -33,8 +33,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
-import org.opennms.core.utils.DefaultTimeKeeper;
-import org.opennms.core.utils.TimeKeeper;
+import org.opennms.netmgt.collection.api.TimeKeeper;
+import org.opennms.netmgt.collection.support.DefaultTimeKeeper;
 
 /**
  * <p>RelativeTime class.</p>
@@ -298,7 +298,7 @@ public enum RelativeTime {
     /**
      * <p>getTimeKeeper</p>
      *
-     * @return a {@link org.opennms.core.utils.TimeKeeper} object.
+     * @return a {@link org.opennms.netmgt.collection.api.TimeKeeper} object.
      */
     public TimeKeeper getTimeKeeper() {
         return m_timeKeeper;
@@ -307,7 +307,7 @@ public enum RelativeTime {
     /**
      * <p>setTimeKeeper</p>
      *
-     * @param timeKeeper a {@link org.opennms.core.utils.TimeKeeper} object.
+     * @param timeKeeper a {@link org.opennms.netmgt.collection.api.TimeKeeper} object.
      */
     public void setTimeKeeper(TimeKeeper timeKeeper) {
         m_timeKeeper = timeKeeper;

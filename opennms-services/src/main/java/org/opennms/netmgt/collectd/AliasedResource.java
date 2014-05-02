@@ -32,11 +32,11 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.opennms.core.utils.TimeKeeper;
 import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.collection.api.TimeKeeper;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.utils.NodeLabel;
 import org.slf4j.Logger;

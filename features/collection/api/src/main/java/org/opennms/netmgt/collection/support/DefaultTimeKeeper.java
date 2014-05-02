@@ -26,16 +26,41 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.utils;
+package org.opennms.netmgt.collection.support;
 
 import java.util.Date;
 import java.util.TimeZone;
 
-public interface TimeKeeper {
-    
-    long getCurrentTime();
-    
-    Date getCurrentDate();
+import org.opennms.netmgt.collection.api.TimeKeeper;
 
-    TimeZone getTimeZone();
+/**
+ * <p>DefaultTimeKeeper class.</p>
+ */
+public class DefaultTimeKeeper implements TimeKeeper {
+
+    /**
+     * <p>getCurrentDate</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
+    @Override
+    public Date getCurrentDate() {
+        return new Date();
+    }
+
+    /**
+     * <p>getCurrentTime</p>
+     *
+     * @return a long.
+     */
+    @Override
+    public long getCurrentTime() {
+        return System.currentTimeMillis();
+    }
+
+    @Override
+    public TimeZone getTimeZone() {
+        return TimeZone.getDefault();
+    }
+
 }

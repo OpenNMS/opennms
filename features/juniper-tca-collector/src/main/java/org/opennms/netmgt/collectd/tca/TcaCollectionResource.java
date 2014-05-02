@@ -30,11 +30,11 @@ package org.opennms.netmgt.collectd.tca;
 
 import java.io.File;
 
-import org.opennms.core.utils.DefaultTimeKeeper;
-import org.opennms.core.utils.TimeKeeper;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.StorageStrategy;
+import org.opennms.netmgt.collection.api.TimeKeeper;
 import org.opennms.netmgt.collection.support.AbstractCollectionResource;
+import org.opennms.netmgt.collection.support.DefaultTimeKeeper;
 import org.opennms.netmgt.dao.support.IndexStorageStrategy;
 import org.opennms.netmgt.rrd.RrdRepository;
 

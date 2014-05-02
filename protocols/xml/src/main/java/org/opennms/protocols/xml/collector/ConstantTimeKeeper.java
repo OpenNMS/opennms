@@ -31,7 +31,7 @@ package org.opennms.protocols.xml.collector;
 import java.util.Date;
 import java.util.TimeZone;
 
-import org.opennms.core.utils.TimeKeeper;
+import org.opennms.netmgt.collection.api.TimeKeeper;
 
 /**
  * The Class ConstantTimeKeeper.

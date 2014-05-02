@@ -31,10 +31,10 @@ package org.opennms.netmgt.threshd;
 import java.io.File;
 import java.util.Date;
 
-import org.opennms.core.utils.TimeKeeper;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.collection.api.TimeKeeper;
 import org.opennms.netmgt.rrd.RrdRepository;
 
 public class MockCollectionResourceWrapper extends CollectionResourceWrapper {

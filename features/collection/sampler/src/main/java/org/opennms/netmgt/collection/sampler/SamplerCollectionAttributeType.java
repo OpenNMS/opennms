@@ -40,6 +40,9 @@ public class SamplerCollectionAttributeType extends AbstractCollectionAttributeT
 
 	public SamplerCollectionAttributeType(AttributeGroupType groupType, Sample sample) {
 		super(groupType);
+		if (sample == null) {
+			throw new IllegalArgumentException("Sample cannot be null");
+		}
 		m_sample = sample;
 	}
 

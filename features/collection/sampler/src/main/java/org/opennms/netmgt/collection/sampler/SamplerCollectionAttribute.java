@@ -36,6 +36,9 @@ public class SamplerCollectionAttribute extends AbstractCollectionAttribute {
 
 	public SamplerCollectionAttribute(SamplerCollectionAttributeType attribType, SamplerCollectionResource resource, Sample sample) {
 		super(attribType, resource);
+		if (sample == null) {
+			throw new IllegalArgumentException("Sample cannot be null");
+		}
 		m_sample = sample;
 	}
 

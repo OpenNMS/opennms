@@ -38,13 +38,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.opennms.core.utils.DefaultTimeKeeper;
 import org.opennms.core.utils.StringUtils;
-import org.opennms.core.utils.TimeKeeper;
 import org.opennms.netmgt.collection.api.ByNameComparator;
 import org.opennms.netmgt.collection.api.CollectionAttributeType;
 import org.opennms.netmgt.collection.api.NumericCollectionAttributeType;
 import org.opennms.netmgt.collection.api.ResourceIdentifier;
+import org.opennms.netmgt.collection.api.TimeKeeper;
+import org.opennms.netmgt.collection.support.DefaultTimeKeeper;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdRepository;
@@ -225,7 +225,7 @@ public class PersistOperationBuilder {
     /**
      * <p>getTimeKeeper</p>
      *
-     * @return a {@link org.opennms.core.utils.TimeKeeper} object.
+     * @return a {@link org.opennms.netmgt.collection.api.TimeKeeper} object.
      */
     public TimeKeeper getTimeKeeper() {
         return m_timeKeeper;
@@ -234,7 +234,7 @@ public class PersistOperationBuilder {
     /**
      * <p>setTimeKeeper</p>
      *
-     * @param timeKeeper a {@link org.opennms.core.utils.TimeKeeper} object.
+     * @param timeKeeper a {@link org.opennms.netmgt.collection.api.TimeKeeper} object.
      */
     public void setTimeKeeper(TimeKeeper timeKeeper) {
         m_timeKeeper = timeKeeper;
