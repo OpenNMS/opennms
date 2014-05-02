@@ -436,6 +436,20 @@ The Juniper JCA collector provides a collector plugin for Collectd to collect da
 %{extrainfo2}
 
 
+%package plugin-collector-vtdxml-handler
+Summary:	VTD-XML Collection Handler for OpenNMS
+Group:		Applications/System
+Requires(pre):	plugin-protocol-xml = %{version}-%{release}
+Requires:	plugin-protocol-xml = %{version}-%{release}
+
+%description plugin-collector-vtdxml-handler
+The XML Collection Handler for Standard and 3GPP XMLs based on VTD-XML.
+VTD-XML is very fast GPL library for parsing XMLs with XPath Suppoer.
+
+%{extrainfo}
+%{extrainfo2}
+
+
 %prep
 
 tar -xvzf $RPM_SOURCE_DIR/%{name}-source-%{version}-%{release}.tar.gz -C $RPM_BUILD_DIR
@@ -800,7 +814,6 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %{instprefix}/etc/*datacollection*/3gpp*
 %config(noreplace) %{instprefix}/etc/snmp-graph.properties.d/3gpp*
 %{instprefix}/lib/org.opennms.protocols.xml-*.jar
-%{instprefix}/lib/vtd-xml-*.jar
 %attr(755,root,root) %{instprefix}/contrib/xml-collector/*.pl
 %{sharedir}/etc-pristine/xml-*.xml
 %{sharedir}/etc-pristine/*datacollection*/3gpp*
@@ -823,6 +836,11 @@ rm -rf $RPM_BUILD_ROOT
 %{sharedir}/etc-pristine/tca*.xml
 %{sharedir}/etc-pristine/datacollection/juniper-tca*
 %{sharedir}/etc-pristine/snmp-graph.properties.d/juniper-tca*
+
+%files plugin-collector-vtdxml-handler
+%defattr(664 root root 775)
+%{instprefix}/lib/opennms-vtdxml-collector-handler-*.jar
+%{instprefix}/lib/vtd-xml-*.jar
 
 %post docs
 printf -- "- making symlink for $RPM_INSTALL_PREFIX0/docs... "
