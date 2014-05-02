@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.protocols.xml.collector;
+package org.opennms.protocols.xml.vtdxml;
 
 import java.io.File;
 import java.io.InputStream;
@@ -43,12 +43,17 @@ import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.protocols.sftp.Sftp3gppUrlConnection;
 import org.opennms.protocols.sftp.Sftp3gppUrlHandler;
+import org.opennms.protocols.xml.collector.Sftp3gppUtils;
+import org.opennms.protocols.xml.collector.UrlFactory;
+import org.opennms.protocols.xml.collector.XmlCollectionResource;
+import org.opennms.protocols.xml.collector.XmlCollectionSet;
 import org.opennms.protocols.xml.config.Request;
 import org.opennms.protocols.xml.config.XmlDataCollection;
 import org.opennms.protocols.xml.config.XmlSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
+
+import com.ximpleware.VTDNav;
 
 /**
  * The custom implementation of the interface XmlCollectionHandler for 3GPP XML Data.
@@ -56,13 +61,16 @@ import org.w3c.dom.Document;
  * timestamp between files won't be taken in consideration.</p>
  * <p>The state will be persisted on disk by saving the name of the last successfully
  * processed file.</p>
+ * <p>This implementation contains basically the same implementation for the method
+ * from Sftp3gppXmlCollectionHandler, but using the VTD-XML parser instead of DOM
+ * parser for faster performance.</p>
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
+public class Sftp3gppVTDXmlCollectionHandler extends AbstractVTDXmlCollectionHandler {
 
     /** The Constant LOG. */
-    private static final Logger LOG = LoggerFactory.getLogger(Sftp3gppXmlCollectionHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Sftp3gppVTDXmlCollectionHandler.class);
 
     /* (non-Javadoc)
      * @see org.opennms.protocols.xml.collector.XmlCollectionHandler#collect(org.opennms.netmgt.collectd.CollectionAgent, org.opennms.protocols.xml.config.XmlDataCollection, java.util.Map)
@@ -90,7 +98,7 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
                 if (lastFile == null) {
                     lastFile = connection.get3gppFileName();
                     LOG.debug("collect(single): retrieving file from {}{}{} from {}", url.getPath(), File.separatorChar, lastFile, agent.getHostAddress());
-                    Document doc = getXmlDocument(urlStr, request);
+                    VTDNav doc = getVTDXmlDocument(urlStr, request);
                     fillCollectionSet(agent, collectionSet, source, doc);
                     Sftp3gppUtils.setLastFilename(getServiceName(), resourceDir, url.getPath(), lastFile);
                     Sftp3gppUtils.deleteFile(connection, lastFile);
@@ -103,7 +111,7 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
                         if (connection.getTimeStampFromFile(fileName) > lastTs) {
                             LOG.debug("collect(multiple): retrieving file {} from {}", fileName, agent.getHostAddress());
                             InputStream is = connection.getFile(fileName);
-                            Document doc = getXmlDocument(is, request);
+                            VTDNav doc = getVTDXmlDocument(is, request);
                             IOUtils.closeQuietly(is);
                             fillCollectionSet(agent, collectionSet, source, doc);
                             Sftp3gppUtils.setLastFilename(getServiceName(), resourceDir, url.getPath(), fileName);

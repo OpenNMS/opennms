@@ -183,20 +183,20 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
                 LOG.debug("collect: starting source url '{}' collection", source.getUrl());
                 String urlStr = parseUrl(source.getUrl(), agent, collection.getXmlRrd().getStep());
                 LOG.debug("collect: parsed url for source url '{}'", source.getUrl());
-                Request request = parseRequest(source.getRequest(), agent);
+                Request request = parseRequest(source.getRequest(), agent, collection.getXmlRrd().getStep());
                 LOG.debug("collect: parsed request for source url '{}'", source.getUrl());
                 fillCollectionSet(urlStr, request, agent, collectionSet, source);
                 LOG.debug("collect: finished source url '{}' collection", source.getUrl());
             }
             collectionSet.setStatus(ServiceCollector.COLLECTION_SUCCEEDED);
-            DateTime endTime = new DateTime();
-            LOG.debug("collect: finished collection {}: duration: {} ms", collection.getName(), endTime.getMillis()-startTime.getMillis());
             return collectionSet;
         } catch (Exception e) {
             collectionSet.setStatus(ServiceCollector.COLLECTION_FAILED);
-            DateTime endTime = new DateTime();
-            LOG.debug("collect: failed collection {}: duration: {} ms", collection.getName(), endTime.getMillis()-startTime.getMillis());
             throw new CollectionException(e.getMessage(), e);
+        } finally {
+            String status = collectionSet.getStatus() == ServiceCollector.COLLECTION_SUCCEEDED ? "finished" : "failed";
+            DateTime endTime = new DateTime();
+            LOG.debug("collect: {} collection {}: duration: {} ms", status, collection.getName(), endTime.getMillis()-startTime.getMillis());
         }
     }
 
@@ -356,8 +356,7 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
      */
     protected String parseUrl(final String unformattedUrl, final CollectionAgent agent, final Integer collectionStep) throws IllegalArgumentException {
         final OnmsNode node = getNodeDao().get(agent.getNodeId());
-        String url = parseString("URL", unformattedUrl, node, agent.getHostAddress());
-        return url.replaceAll("[{]step[}]", collectionStep.toString());
+        return parseString("URL", unformattedUrl, node, agent.getHostAddress(), collectionStep);
     }
 
     /**
@@ -365,29 +364,30 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
      *
      * @param unformattedRequest the unformatted request
      * @param agent the agent
+     * @param collectionStep the collection step
      * @return the request
      * @throws IllegalArgumentException the illegal argument exception
      */
-    protected Request parseRequest(final Request unformattedRequest, final CollectionAgent agent) throws IllegalArgumentException {
+    protected Request parseRequest(final Request unformattedRequest, final CollectionAgent agent, final Integer collectionStep) throws IllegalArgumentException {
         if (unformattedRequest == null)
             return null;
         final OnmsNode node = getNodeDao().get(agent.getNodeId());
         final Request request = new Request();
         for (Header header : unformattedRequest.getHeaders()) {
-            request.addHeader(header.getName(), parseString(header.getName(), header.getValue(), node, agent.getHostAddress()));
+            request.addHeader(header.getName(), parseString(header.getName(), header.getValue(), node, agent.getHostAddress(), collectionStep));
         }
         for (Parameter param : unformattedRequest.getParameters()) {
-            request.addParameter(param.getName(), parseString(param.getName(), param.getValue(), node, agent.getHostAddress()));
+            request.addParameter(param.getName(), parseString(param.getName(), param.getValue(), node, agent.getHostAddress(), collectionStep));
         }
         final Content cnt = unformattedRequest.getContent();
         if (cnt != null)
-            request.setContent(new Content(cnt.getType(), parseString("Content", cnt.getData(), node, agent.getHostAddress())));
+            request.setContent(new Content(cnt.getType(), parseString("Content", cnt.getData(), node, agent.getHostAddress(), collectionStep)));
         return request;
     }
 
     /**
      * Parses the string.
-     *
+     * 
      * <p>Valid placeholders are:</p>
      * <ul>
      * <li><b>ipaddr</b>, The Node IP Address</li>
@@ -398,18 +398,20 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
      * <li><b>foreignSource</b>, The Node Foreign Source</li>
      * <li>Any asset property defined on the node.</li>
      * </ul>
-     * 
+     *
      * @param reference the reference
      * @param unformattedString the unformatted string
      * @param node the node
      * @param ipAddress the IP address
+     * @param collectionStep the collection step
      * @return the string
      * @throws IllegalArgumentException the illegal argument exception
      */
-    protected String parseString(final String reference, final String unformattedString, final OnmsNode node, final String ipAddress) throws IllegalArgumentException {
-        if (unformattedString == null)
+    protected String parseString(final String reference, final String unformattedString, final OnmsNode node, final String ipAddress, final Integer collectionStep) throws IllegalArgumentException {
+        if (unformattedString == null || node == null)
             return null;
         String formattedString = unformattedString.replaceAll("[{](?i)(ipAddr|ipAddress)[}]", ipAddress);
+        formattedString = formattedString.replaceAll("[{](?i)step[}]", collectionStep.toString());
         formattedString = formattedString.replaceAll("[{](?i)nodeId[}]", node.getNodeId());
         if (node.getLabel() != null)
             formattedString = formattedString.replaceAll("[{](?i)nodeLabel[}]", node.getLabel());
