@@ -28,8 +28,6 @@
 
 package org.opennms.core.utils;
 
-import org.apache.commons.io.IOUtils;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -80,7 +78,13 @@ public class PropertiesCache {
                 }
                 return prop;
             } finally {
-                IOUtils.closeQuietly(in);
+                if (in != null) {
+                    try {
+                        in.close();
+                    } catch (IOException e) {
+                        // Ignore this exception
+                    }
+                }
             }
         }
         
@@ -91,7 +95,13 @@ public class PropertiesCache {
                 out = new FileOutputStream(m_file);
                 m_properties.store(out, null);
             } finally {
-                IOUtils.closeQuietly(out);
+                if (out != null) {
+                    try {
+                        out.close();
+                    } catch (IOException e) {
+                        // Ignore this exception
+                    }
+                }
             }
         }
 
