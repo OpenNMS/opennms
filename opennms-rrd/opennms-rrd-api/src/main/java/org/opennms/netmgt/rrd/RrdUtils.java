@@ -38,9 +38,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.opennms.core.utils.PropertiesCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.core.utils.PropertiesCache;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -74,10 +74,18 @@ public abstract class RrdUtils {
 
     private static RrdStrategy<?, ?> m_rrdStrategy = null;
 
+    /**
+     * Use the {@link ClassPathXmlApplicationContext#ClassPathXmlApplicationContext(String[], Class)}
+     * constructor so that we make sure to load the XML resources from the same classloader as the
+     * class itself so that classloading works under OSGi.
+     */
     private static BeanFactory m_context = new ClassPathXmlApplicationContext(new String[]{
             // Default RRD configuration context
-            "org/opennms/netmgt/rrd/rrd-configuration.xml"
-    });
+            //
+            // Use an absolute path, otherwise Spring will try to resolve the resource relative
+            // to the RrdUtils class package.
+            "/org/opennms/netmgt/rrd/rrd-configuration.xml"
+    }, RrdUtils.class);
 
     /**
      * Writes a file with the attribute to rrd track mapping next to the rrd file.
