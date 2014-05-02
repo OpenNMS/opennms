@@ -329,6 +329,7 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
         }
         Date date = null;
         String value = tsNode.getNodeValue() == null ? tsNode.getTextContent() : tsNode.getNodeValue();
+        LOG.debug("getTimeStamp: time stamp value is {}", value);
         try {
             DateTimeFormatter dtf = DateTimeFormat.forPattern(pattern);
             DateTime dateTime = dtf.parseDateTime(value);
@@ -390,7 +391,7 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
      * 
      * <p>Valid placeholders are:</p>
      * <ul>
-     * <li><b>ipaddr</b>, The Node IP Address</li>
+     * <li><b>ipAddr|ipAddress</b>, The Node IP Address</li>
      * <li><b>step</b>, The Collection Step in seconds</li>
      * <li><b>nodeId</b>, The Node ID</li>
      * <li><b>nodeLabel</b>, The Node Label</li>
