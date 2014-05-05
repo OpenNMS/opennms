@@ -244,11 +244,13 @@ Address          Interface              State     ID               Pri  Dead
         m_linkdConfig.getConfiguration().setUseCdpDiscovery(false);
         m_linkdConfig.getConfiguration().setUseOspfDiscovery(true);
         m_linkdConfig.getConfiguration().setUseLldpDiscovery(false);
+        m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
 
         assertTrue(!m_linkdConfig.useLldpDiscovery());
         assertTrue(!m_linkdConfig.useCdpDiscovery());
         assertTrue(m_linkdConfig.useOspfDiscovery());
         assertTrue(!m_linkdConfig.useBridgeDiscovery());
+        assertTrue(!m_linkdConfig.useIsisDiscovery());
 
         assertTrue(m_linkd.scheduleNodeCollection(mumbai.getId()));
         assertTrue(m_linkd.scheduleNodeCollection(delhi.getId()));
