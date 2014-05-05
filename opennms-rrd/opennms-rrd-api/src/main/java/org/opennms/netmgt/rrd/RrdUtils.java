@@ -79,13 +79,24 @@ public abstract class RrdUtils {
      * constructor so that we make sure to load the XML resources from the same classloader as the
      * class itself so that classloading works under OSGi.
      */
-    private static BeanFactory m_context = new ClassPathXmlApplicationContext(new String[]{
-            // Default RRD configuration context
-            //
-            // Use an absolute path, otherwise Spring will try to resolve the resource relative
-            // to the RrdUtils class package.
-            "/org/opennms/netmgt/rrd/rrd-configuration.xml"
-    }, RrdUtils.class);
+    private static final BeanFactory m_context;
+
+    static {
+        ClassLoader old = null;
+        try {
+            old = Thread.currentThread().getContextClassLoader();
+            Thread.currentThread().setContextClassLoader(RrdUtils.class.getClassLoader());
+            m_context = new ClassPathXmlApplicationContext(new String[]{
+                // Default RRD configuration context
+                //
+                // Use an absolute path, otherwise Spring will try to resolve the resource relative
+                // to the RrdUtils class package.
+                "/org/opennms/netmgt/rrd/rrd-configuration.xml"
+            }, RrdUtils.class);
+        } finally {
+            Thread.currentThread().setContextClassLoader(old);
+        }
+    }
 
     /**
      * Writes a file with the attribute to rrd track mapping next to the rrd file.
