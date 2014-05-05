@@ -69,7 +69,7 @@ public class OspfEdgeProvider implements EdgeProvider {
             if(crit.getNamespace().equals(AbstractLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD)){
                 if(crit instanceof LinkdHopCriteria){
                     String nodeId = ((LinkdHopCriteria) crit).getId();
-                    List<OspfLink> links = getOspfLinkDao().findByNodeId(Integer.valueOf(nodeId));
+                    //List<OspfLink> links = getOspfLinkDao().findByNodeId(Integer.valueOf(nodeId));
                 }
 
                 if (crit instanceof VertexHopGraphProvider.FocusNodeHopCriteria) {

@@ -285,6 +285,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         try{
             //TODO: change to one query from the database that will return all links plus elements joined
             //This reset container is set in here for the demo, don't commit
+
             resetContainer();
             List<LldpLink> allLinks = m_lldpLinkDao.findAll();
             Set<LldpLinkDetail> combinedLinkDetails = new HashSet<LldpLinkDetail>();
