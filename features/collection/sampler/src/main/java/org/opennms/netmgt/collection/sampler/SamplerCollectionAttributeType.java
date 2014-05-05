@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.collection.sampler;
 
-import org.opennms.netmgt.api.sample.Sample;
+import org.opennms.netmgt.api.sample.Metric;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.Persister;
@@ -36,14 +36,14 @@ import org.opennms.netmgt.collection.support.AbstractCollectionAttributeType;
 
 public class SamplerCollectionAttributeType extends AbstractCollectionAttributeType {
 
-	private final Sample m_sample;
+	private final Metric m_metric;
 
-	public SamplerCollectionAttributeType(AttributeGroupType groupType, Sample sample) {
+	public SamplerCollectionAttributeType(AttributeGroupType groupType, Metric sample) {
 		super(groupType);
 		if (sample == null) {
 			throw new IllegalArgumentException("Sample cannot be null");
 		}
-		m_sample = sample;
+		m_metric = sample;
 	}
 
 	@Override
@@ -55,12 +55,12 @@ public class SamplerCollectionAttributeType extends AbstractCollectionAttributeT
 
 	@Override
 	public String getName() {
-		return m_sample.getMetric().getName();
+		return m_metric.getName();
 	}
 
 	@Override
 	public String getType() {
-		return m_sample.getMetric().getType().toString();
+		return m_metric.getType().toString();
 	}
 
 }
