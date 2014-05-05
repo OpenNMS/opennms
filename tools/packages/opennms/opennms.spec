@@ -439,8 +439,8 @@ The Juniper JCA collector provides a collector plugin for Collectd to collect da
 %package plugin-collector-vtdxml-handler
 Summary:	VTD-XML Collection Handler for OpenNMS
 Group:		Applications/System
-Requires(pre):	plugin-protocol-xml = %{version}-%{release}
-Requires:	plugin-protocol-xml = %{version}-%{release}
+Requires(pre):	opennms-plugin-protocol-xml = %{version}-%{release}
+Requires:	opennms-plugin-protocol-xml = %{version}-%{release}
 
 %description plugin-collector-vtdxml-handler
 The XML Collection Handler for Standard and 3GPP XMLs based on VTD-XML.
@@ -650,6 +650,8 @@ find $RPM_BUILD_ROOT%{instprefix}/lib ! -type d | \
 	grep -v 'opennms-integration-otrs' | \
 	grep -v 'opennms-integration-rt' | \
 	grep -v 'org.opennms.protocols.xml' | \
+	grep -v 'opennms-vtdxml-collector-handler' | \
+	grep -v 'vtd-xml' | \
 	grep -v 'org.opennms.protocols.xmp' | \
 	grep -v 'xmp' | \
 	grep -v 'org.opennms.features.juniper-tca-collector' | \
