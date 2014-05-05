@@ -52,7 +52,7 @@ import org.springframework.util.FileCopyUtils;
 
 /**
  * Provides an rrdtool based implementation of RrdStrategy. It uses the existing
- * JNI based single-threaded interface to write the rrdtool compatibile RRD
+ * JNI based single-threaded interface to write the rrdtool compatible RRD
  * files.
  *
  * The JNI interface takes command-like arguments and doesn't provide open files
