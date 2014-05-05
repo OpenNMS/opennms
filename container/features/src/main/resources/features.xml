@@ -81,15 +81,6 @@
       <bundle>mvn:org.slf4j/slf4j-api/${slf4jVersion}</bundle>
     </feature>
 
-    <feature name="spring-security" description="Spring Security :: Core" version="${springSecurityVersion}">
-      <!-- This is necessary for HTTP remoting -->
-      <feature version="[3.2,3.3)">spring-web</feature>
-      <feature>commons-codec</feature>
-
-      <bundle>mvn:org.springframework.security/spring-security-core/${springSecurityVersion}</bundle>
-      <bundle>mvn:org.springframework.security/spring-security-remoting/${springSecurityVersion}</bundle>
-    </feature>
-
     <!-- OpenNMS features -->
     <feature name="opennms-core" description="OpenNMS :: Core" version="${project.version}">
       <feature version="[3.2,3.3)">spring</feature>
