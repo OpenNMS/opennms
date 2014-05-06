@@ -2,15 +2,17 @@ package org.opennms.web.lldp;
 
 public class LldpElementNode {
 
-	private String m_lldpSysIdString;
+	private String m_lldpChassisIdString;
 	private String m_lldpSysName;
-	private String   m_lldpCreateTime;
-	private String   m_lldpLastPollTime;
-	public String getLldpSysIdString() {
-		return m_lldpSysIdString;
+	private String m_lldpCreateTime;
+	private String m_lldpLastPollTime;
+	
+	
+	public String getLldpChassisIdString() {
+		return m_lldpChassisIdString;
 	}
-	public void setLldpSysIdString(String lldpSysIdString) {
-		m_lldpSysIdString = lldpSysIdString;
+	public void setLldpChassisIdString(String lldpSysIdString) {
+		m_lldpChassisIdString = lldpSysIdString;
 	}
 	public String getLldpSysName() {
 		return m_lldpSysName;
