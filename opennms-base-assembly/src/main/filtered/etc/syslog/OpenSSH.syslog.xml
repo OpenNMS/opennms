@@ -34,6 +34,12 @@
         </ueiMatch>
         <ueiMatch>
             <process-match expression="^sshd$" />
+            <match type="regex" expression="^Authentication refused: (.*)$" />
+            <uei>uei.opennms.org/vendor/openssh/syslog/sshd/authenticationRefused</uei>
+                <parameter-assignment matching-group="1" parameter-name="errorMessage" />
+        </ueiMatch>
+        <ueiMatch>
+            <process-match expression="^sshd$" />
             <match type="substr" expression="Cannot bind any address." />
             <uei>uei.opennms.org/vendor/openssh/syslog/sshd/totalBindFailure</uei>
         </ueiMatch>
