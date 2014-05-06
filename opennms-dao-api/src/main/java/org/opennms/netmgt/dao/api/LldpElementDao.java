@@ -29,6 +29,7 @@
 package org.opennms.netmgt.dao.api;
 
 import org.opennms.netmgt.model.LldpElement;
+import org.opennms.netmgt.model.LldpElement.LldpChassisIdSubType;
 
 /**
  * <p>LldpElementDao interface.</p>
@@ -37,7 +38,7 @@ public interface LldpElementDao extends OnmsDao<LldpElement, Integer> {
     
     public LldpElement findByNodeId(Integer id);
 
-    public LldpElement findByChassisId(String chassisId);
+    public LldpElement findByChassisId(String chassisId, LldpChassisIdSubType type);
 
     public LldpElement findBySysname(String sysname);
 
