@@ -58,24 +58,6 @@ public interface ResourceService {
      */
     public List<OnmsResource> findTopLevelResources();
     /**
-     * <p>findNodeResources</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    public List<OnmsResource> findNodeResources();
-    /**
-     * <p>findDomainResources</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    public List<OnmsResource> findDomainResources();
-    /**
-     * <p>findNodeSourceResources</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    public List<OnmsResource> findNodeSourceResources();
-    /**
      * <p>findNodeChildResources</p>
      *
      * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
