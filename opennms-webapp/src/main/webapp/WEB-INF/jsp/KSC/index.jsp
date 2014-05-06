@@ -34,10 +34,7 @@
   session="true"
   import="
   org.opennms.web.api.Util,
-  org.opennms.web.servlet.XssRequestWrapper,
-  org.opennms.web.svclayer.ResourceService,
-  org.springframework.web.context.WebApplicationContext,
-  org.springframework.web.context.support.WebApplicationContextUtils
+  org.opennms.web.servlet.XssRequestWrapper
   "
 %>
 
@@ -47,19 +44,9 @@
 <%
     final HttpServletRequest req = new XssRequestWrapper(request);
     final String match = req.getParameter("match");
-    pageContext.setAttribute("topLevelResources", m_resourceService.findTopLevelResources());
     pageContext.setAttribute("match", match);
 %>
 <c:set var="baseHref" value="<%=Util.calculateUrlBase(request)%>"/>
-
-<%!
-    public ResourceService m_resourceService;
-    
-    public void init() throws ServletException {
-      WebApplicationContext m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
-      m_resourceService = (ResourceService) m_webAppContext.getBean("resourceService", ResourceService.class);
-    }
-%>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Key SNMP Customized Performance Reports" />
