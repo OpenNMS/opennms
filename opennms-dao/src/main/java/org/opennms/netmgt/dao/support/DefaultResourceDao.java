@@ -490,7 +490,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
     protected List<OnmsResource> findNodeResources() {
         List<OnmsResource> resources = new LinkedList<OnmsResource>();
 
-        IntSet snmpNodes = findSnmpNodeDirectories();
+        Set<Integer> snmpNodes = findSnmpNodeDirectories();
         Set<String> nodeSources = findNodeSourceDirectories();
         Set<String> responseTimeInterfaces = findChildrenMatchingFilter(new File(getRrdDirectory(), ResourceTypeUtils.RESPONSE_DIRECTORY), RrdFileConstants.INTERFACE_DIRECTORY_FILTER);
         Set<String> distributedResponseTimeInterfaces = findChildrenChildrenMatchingFilter(new File(new File(getRrdDirectory(), ResourceTypeUtils.RESPONSE_DIRECTORY), "distributed"), RrdFileConstants.INTERFACE_DIRECTORY_FILTER);
