@@ -180,7 +180,7 @@ public class JdbcWebNotificationRepository implements WebNotificationRepository,
     /** {@inheritDoc} */
     @Override
     public Notification[] getMatchingNotifications(NotificationCriteria criteria) {
-        String sql = getSql("SELECT NOTIFICATIONS.*, SERVICE.SERVICENAME FROM NOTIFICATIONS LEFT OUTER JOIN SERVICE USING (SERVICEID)", criteria);
+        String sql = getSql("SELECT NOTIFICATIONS.*, SERVICE.SERVICENAME, EVENTS.EVENTSEVERITY FROM NOTIFICATIONS LEFT OUTER JOIN SERVICE USING (SERVICEID) LEFT OUTER JOIN EVENTS USING (EVENTID)", criteria);
         return getNotifications(sql, paramSetter(criteria));
     }
 
