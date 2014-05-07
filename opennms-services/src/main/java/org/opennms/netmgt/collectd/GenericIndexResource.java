@@ -65,7 +65,7 @@ public class GenericIndexResource extends SnmpCollectionResource {
     /** {@inheritDoc} */
     @Override
     public File getResourceDir(RrdRepository repository) {
-        String resourcePath = getStrategy().getRelativePathForAttribute(getParent(), getInterfaceLabel(), null);
+        String resourcePath = getStrategy().getRelativePathForAttribute(getParent(), getInterfaceLabel());
         File resourceDir = new File(repository.getRrdBaseDir(), resourcePath);
         LOG.debug("getResourceDir: {}", resourceDir);
         return resourceDir;

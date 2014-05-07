@@ -118,7 +118,7 @@ public class TcaCollectionResource extends AbstractCollectionResource {
 	 */
 	@Override
 	public File getResourceDir(RrdRepository repository) {
-		String resourcePath = m_strategy.getRelativePathForAttribute(getParent(), getInterfaceLabel(), null);
+		String resourcePath = m_strategy.getRelativePathForAttribute(getParent(), getInterfaceLabel());
 		return new File(repository.getRrdBaseDir(), resourcePath);
 	}
 
