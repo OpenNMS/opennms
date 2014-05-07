@@ -221,11 +221,11 @@ public final class IfInfo extends SnmpCollectionResource {
     @Override
     public File getResourceDir(RrdRepository repository) throws FileNotFoundException {
         String label = getInterfaceLabel();
-        File rrdBaseDir = repository.getRrdBaseDir();
-        File dir = new File(rrdBaseDir, getCollectionAgent().getStorageDir().toString());
         if (label == null || "".equals(label)) {
-            throw new FileNotFoundException("Could not construct resource directory because label is null or blank: nodeId: " + getNodeId() + ", rrdRepository: " + repository.toString());
+            throw new FileNotFoundException("Could not construct resource directory because interface label is null or blank: nodeId: " + getNodeId() + ", rrdRepository: " + repository.toString());
         } else {
+            File rrdBaseDir = repository.getRrdBaseDir();
+            File dir = new File(rrdBaseDir, getCollectionAgent().getStorageDir().toString());
             return new File(dir, label);
         }
     }
@@ -241,10 +241,10 @@ public final class IfInfo extends SnmpCollectionResource {
     }
 
     boolean shouldStore(ServiceParameters serviceParameters) {
-        if (serviceParameters.getStoreByNodeID().equals("normal")) {
+        if ("normal".equalsIgnoreCase(serviceParameters.getStoreByNodeID())) {
             return isScheduledForCollection();
         } else {
-            return serviceParameters.getStoreByNodeID().equals("true");
+            return "true".equalsIgnoreCase(serviceParameters.getStoreByNodeID());
         }
     }
 

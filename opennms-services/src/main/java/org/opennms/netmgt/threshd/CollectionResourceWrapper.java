@@ -324,7 +324,7 @@ public class CollectionResourceWrapper {
      * @return a boolean.
      */
     public boolean isAnInterfaceResource() {
-        return getResourceTypeName() != null && getResourceTypeName().equals("if");
+        return getResourceTypeName() != null && CollectionResource.RESOURCE_TYPE_IF.equals(getResourceTypeName());
     }
 
     /**
