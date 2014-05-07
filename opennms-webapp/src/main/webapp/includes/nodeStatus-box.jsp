@@ -97,7 +97,7 @@
         } else {
             unackCount++;
         }
-        if (alarm.getSeverity().getId() > maxSeverity) {
+        if (alarm.getSeverity().getId() > maxSeverity && alarm.getAckTime() == null) {
             maxSeverity = alarm.getSeverity().getId();
         }
     }
