@@ -715,7 +715,8 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
     public void handleReloadConfigEvent(Event event) {
         if (isReloadConfigEventTarget(event)) {
-            LogUtils.debugf(this, "reloading the rancid adapter configuration");
+            EventBuilder ebldr = null;
+            LogUtils.infof(this, "reloading the rancid adapter configuration");
             try {
                 RancidAdapterConfigFactory.init();
                 final RancidAdapterConfigFactory factory = RancidAdapterConfigFactory.getInstance();
@@ -731,8 +732,16 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
                 } finally {
                     factory.getWriteLock().unlock();
                 }
+                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Provisiond.RancidProvisioningAdapter");
+                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Provisiond.RancidProvisioningAdapter");
             } catch (Throwable e) {
-                LogUtils.infof(this, e, "unable to reload rancid adapter configuration");
+                LogUtils.errorf(this, e, "unable to reload rancid adapter configuration");
+                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Provisiond.RancidProvisioningAdapter");
+                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Provisiond.RancidProvisioningAdapter");
+                ebldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(1, 128));
+            }
+            if (ebldr != null) {
+                getEventForwarder().sendNow(ebldr.getEvent());
             }
         }
     }
