@@ -52,6 +52,7 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
@@ -399,11 +400,20 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 	@EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
 	public void handleReloadConfigEvent(final Event event) {
 		if (isReloadConfigEventTarget(event)) {
+			EventBuilder ebldr = null;
 			LOG.debug("Reloading the SNMP asset adapter configuration");
 			try {
 				m_config.update();
+		                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Provisiond." + NAME);
+		                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Provisiond." + NAME);
 			} catch (Throwable e) {
 				LOG.info("Unable to reload SNMP asset adapter configuration", e);
+				ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Provisiond." + NAME);
+				ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Provisiond." + NAME);
+				ebldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(1, 128));
+			}
+			if (ebldr != null) {
+				getEventForwarder().sendNow(ebldr.getEvent());
 			}
 		}
 	}
