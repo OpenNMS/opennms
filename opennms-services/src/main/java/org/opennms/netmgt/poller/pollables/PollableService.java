@@ -32,10 +32,10 @@ import java.net.InetAddress;
 import java.util.Date;
 
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.InetNetworkInterface;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
+import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.scheduler.PostponeNecessary;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Schedule;
@@ -182,7 +182,7 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
     /**
      * <p>poll</p>
      *
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     @Override
     public PollStatus poll() {
@@ -389,7 +389,7 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
     /**
      * <p>doRun</p>
      *
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public PollStatus doRun() {
     	return doRun(0);

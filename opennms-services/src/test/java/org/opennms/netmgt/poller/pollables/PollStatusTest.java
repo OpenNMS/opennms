@@ -34,7 +34,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.PollStatus;
 public class PollStatusTest {
     protected PollStatus statusDown1      = null;
     protected PollStatus statusDown2      = null;

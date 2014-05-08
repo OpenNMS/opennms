@@ -39,7 +39,6 @@ import org.slf4j.LoggerFactory;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
-import org.opennms.netmgt.model.PollStatus;
 
 import javax.management.MalformedObjectNameException;
 

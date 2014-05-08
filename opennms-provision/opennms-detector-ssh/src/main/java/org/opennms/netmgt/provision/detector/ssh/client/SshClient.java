@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.opennms.core.utils.TimeoutTracker;
-import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.provision.detector.ssh.request.NullRequest;
 import org.opennms.netmgt.provision.detector.ssh.response.SshResponse;
 import org.opennms.netmgt.provision.support.Client;

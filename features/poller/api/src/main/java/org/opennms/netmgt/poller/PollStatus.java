@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.model;
+package org.opennms.netmgt.poller;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -107,7 +107,7 @@ public class PollStatus implements Serializable {
      * <p>decode</p>
      *
      * @param statusName a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public static PollStatus decode(final String statusName) {
         return decode(statusName, null, null);
@@ -118,7 +118,7 @@ public class PollStatus implements Serializable {
      *
      * @param statusName a {@link java.lang.String} object.
      * @param reason a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public static PollStatus decode(final String statusName, final String reason) {
         return decode(statusName, reason, null);
@@ -129,7 +129,7 @@ public class PollStatus implements Serializable {
      *
      * @param statusName a {@link java.lang.String} object.
      * @param responseTime a {@link java.lang.Double} object.
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public static PollStatus decode(final String statusName, final Double responseTime) {
         return decode(statusName, null, responseTime);
@@ -141,7 +141,7 @@ public class PollStatus implements Serializable {
      * @param statusName a {@link java.lang.String} object.
      * @param reason a {@link java.lang.String} object.
      * @param responseTime a {@link java.lang.Double} object.
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public static PollStatus decode(final String statusName, final String reason, final Double responseTime) {
         return new PollStatus(decodeStatusName(statusName), reason, responseTime);
@@ -152,7 +152,7 @@ public class PollStatus implements Serializable {
      *
      * @param status a int.
      * @param reason a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public static PollStatus get(final int status, final String reason) {
         return get(status, reason, null);
@@ -163,7 +163,7 @@ public class PollStatus implements Serializable {
      *
      * @param status a int.
      * @param responseTime a {@link java.lang.Double} object.
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public static PollStatus get(final int status, final Double responseTime) {
         return get(status, null, responseTime);
@@ -175,7 +175,7 @@ public class PollStatus implements Serializable {
      * @param status a int.
      * @param reason a {@link java.lang.String} object.
      * @param responseTime a {@link java.lang.Double} object.
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public static PollStatus get(final int status, final String reason, final Double responseTime) {
         return new PollStatus(status, reason, responseTime);
@@ -194,7 +194,7 @@ public class PollStatus implements Serializable {
     /**
      * <p>up</p>
      *
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public static PollStatus up() {
         return up(null);
@@ -204,7 +204,7 @@ public class PollStatus implements Serializable {
      * <p>up</p>
      *
      * @param responseTime a {@link java.lang.Double} object.
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public static PollStatus up(final Double responseTime) {
         return available(responseTime);
@@ -213,7 +213,7 @@ public class PollStatus implements Serializable {
     /**
      * <p>available</p>
      *
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public static PollStatus available() {
         return available(null);
@@ -223,7 +223,7 @@ public class PollStatus implements Serializable {
      * <p>available</p>
      *
      * @param responseTime a {@link java.lang.Double} object.
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public static PollStatus available(final Double responseTime) {
         return new PollStatus(SERVICE_AVAILABLE, null, responseTime);
@@ -232,7 +232,7 @@ public class PollStatus implements Serializable {
     /**
      * <p>unknown</p>
      *
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public static PollStatus unknown() {
         return unknown(null);
@@ -242,7 +242,7 @@ public class PollStatus implements Serializable {
      * <p>unknown</p>
      *
      * @param reason a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public static PollStatus unknown(final String reason) {
         return new PollStatus(SERVICE_UNKNOWN, reason, null);
@@ -251,7 +251,7 @@ public class PollStatus implements Serializable {
     /**
      * <p>unresponsive</p>
      *
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public static PollStatus unresponsive() {
         return unresponsive(null);
@@ -261,7 +261,7 @@ public class PollStatus implements Serializable {
      * <p>unresponsive</p>
      *
      * @param reason a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public static PollStatus unresponsive(final String reason) {
         return new PollStatus(SERVICE_UNRESPONSIVE, reason, null);
@@ -270,7 +270,7 @@ public class PollStatus implements Serializable {
     /**
      * <p>down</p>
      *
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public static PollStatus down() {
         return down(null);
@@ -279,7 +279,7 @@ public class PollStatus implements Serializable {
     /**
      * <p>unavailable</p>
      *
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public static PollStatus unavailable() {
         return unavailable(null);
@@ -289,7 +289,7 @@ public class PollStatus implements Serializable {
      * <p>down</p>
      *
      * @param reason a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public static PollStatus down(final String reason) {
         return unavailable(reason);
@@ -299,7 +299,7 @@ public class PollStatus implements Serializable {
      * <p>unavailable</p>
      *
      * @param reason a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public static PollStatus unavailable(final String reason) {
         return new PollStatus(SERVICE_UNAVAILABLE, reason, null);

@@ -71,7 +71,7 @@ import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.mock.MockVisitor;
 import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.mock.OutageAnticipator;
-import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.mock.MockPollContext;
 import org.opennms.netmgt.poller.mock.MockScheduler;
 import org.opennms.netmgt.poller.mock.MockTimer;

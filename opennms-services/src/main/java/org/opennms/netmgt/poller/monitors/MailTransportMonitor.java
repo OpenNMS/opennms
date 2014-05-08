@@ -52,9 +52,9 @@ import org.opennms.javamail.JavaMailerException;
 import org.opennms.netmgt.config.mailtransporttest.JavamailProperty;
 import org.opennms.netmgt.config.mailtransporttest.ReadmailTest;
 import org.opennms.netmgt.config.mailtransporttest.SendmailTest;
-import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
+import org.opennms.netmgt.poller.PollStatus;
 
 //TODO: adjust to use new javamail-configuration.xml
 

@@ -33,7 +33,7 @@ import java.beans.PropertyChangeListener;
 import java.util.Collection;
 import java.util.Date;
 
-import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.PollStatus;
 import org.quartz.Scheduler;
 import org.quartz.Trigger;
 import org.slf4j.Logger;
