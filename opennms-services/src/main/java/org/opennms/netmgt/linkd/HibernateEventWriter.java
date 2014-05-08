@@ -35,9 +35,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Alias.JoinType;
@@ -433,18 +433,21 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
     }
 
     @Override
-    protected Set<String> getPhysAddrs(int nodeId) {
+    protected Map<Integer,String> getPhysAddrs(int nodeId) {
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsSnmpInterface.class);
         builder.alias("node", "node");
         builder.eq("node.id", nodeId);
 
-        final Set<String> addrs = new HashSet<String>();
+        final Map<Integer,String> addrMap = new HashMap<Integer, String>();
 
         for (final OnmsSnmpInterface snmpInterface : m_snmpInterfaceDao.findMatching(builder.toCriteria())) {
-            addrs.add(snmpInterface.getPhysAddr());
+        	Integer ifindex = snmpInterface.getIfIndex();
+        	if (ifindex == null) 
+        		ifindex = -1;
+            addrMap.put(ifindex,snmpInterface.getPhysAddr());
         }
 
-        return addrs;
+        return addrMap;
     }
 
     @Override
