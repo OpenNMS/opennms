@@ -111,6 +111,7 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
             log().info("Loading the configuration file.");
             VacuumdConfigFactory.init();
             getEventManager().addEventListener(this, EventConstants.RELOAD_VACUUMD_CONFIG_UEI);
+            getEventManager().addEventListener(this, EventConstants.RELOAD_DAEMON_CONFIG_UEI);
 
             initializeDataSources();
         } catch (Throwable ex) {
