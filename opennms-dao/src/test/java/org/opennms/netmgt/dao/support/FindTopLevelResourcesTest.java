@@ -132,15 +132,10 @@ public class FindTopLevelResourcesTest {
     private void execute_testFindTopLevelResources_discoveredNodes() throws Exception {
         List<OnmsNode> nodes = new ArrayList<OnmsNode>();
 
-        OnmsNode n1 = new OnmsNode();
-        n1.setId(1);
-        n1.setLabel("node1");
-        OnmsIpInterface ip1 = new OnmsIpInterface();
-        ip1.setId(11);
-        ip1.setIpAddress(InetAddressUtils.addr("10.0.0.1"));
-        ip1.setNode(n1);
-        n1.addIpInterface(ip1);
+        OnmsNode n1 = createNode(1, "node1", null, null, "10.0.0.1"); // Node on the DB with RRD Data
         nodes.add(n1);
+        OnmsNode n2 = createNode(2, "node2", null, null, "10.0.0.2"); // Node on the DB with No RRD Data
+        nodes.add(n2);
 
         expect(m_dataCollectionConfigDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis())).times(2);
         expect(m_dataCollectionConfigDao.getConfiguredResourceTypes()).andReturn(new HashMap<String, ResourceType>());
@@ -149,11 +144,18 @@ public class FindTopLevelResourcesTest {
         expect(m_nodeDao.findAll()).andReturn(nodes);
 
         File snmpDir = m_fileAnticipator.tempDir("snmp");
+
+        // RRD Directory for n1
         File nodeDir = m_fileAnticipator.tempDir(snmpDir, n1.getId().toString());
         m_fileAnticipator.tempFile(nodeDir, "foo" + RrdUtils.getExtension());
 
+        // RRD Directory for an orphan node
+        File orphanDir = m_fileAnticipator.tempDir(snmpDir, "100");
+        m_fileAnticipator.tempFile(orphanDir, "foo" + RrdUtils.getExtension());
+
+        // Response Time RRD Directory for n1
         File responseDir = m_fileAnticipator.tempDir("response");
-        File ipDir = m_fileAnticipator.tempDir(responseDir, ip1.getIpAddress().getHostAddress());
+        File ipDir = m_fileAnticipator.tempDir(responseDir, n1.getIpInterfaces().iterator().next().getIpAddress().getHostAddress());
         m_fileAnticipator.tempFile(ipDir, "foo" + RrdUtils.getExtension());
 
         m_easyMockUtils.replayAll();
@@ -191,17 +193,10 @@ public class FindTopLevelResourcesTest {
         setStoreByForeignSource(storeByForeignSource);
         List<OnmsNode> nodes = new ArrayList<OnmsNode>();
 
-        OnmsNode n1 = new OnmsNode();
-        n1.setId(1);
-        n1.setLabel("node1");
-        n1.setForeignSource("Junit");
-        n1.setForeignId("node1");
-        OnmsIpInterface ip1 = new OnmsIpInterface();
-        ip1.setId(11);
-        ip1.setIpAddress(InetAddressUtils.addr("10.0.0.1"));
-        ip1.setNode(n1);
-        n1.addIpInterface(ip1);
+        OnmsNode n1 = createNode(1, "node1", "Junit", "node1", "10.0.0.1"); // Node on the DB with RRD Data
         nodes.add(n1);
+        OnmsNode n2 = createNode(2, "node2", "Junit", "node2", "10.0.0.2"); // Node on the DB with No RRD Data
+        nodes.add(n2);
 
         expect(m_dataCollectionConfigDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis())).times(2);
         expect(m_dataCollectionConfigDao.getConfiguredResourceTypes()).andReturn(new HashMap<String, ResourceType>());
@@ -214,18 +209,30 @@ public class FindTopLevelResourcesTest {
         }
 
         File snmpDir = m_fileAnticipator.tempDir("snmp");
-        if (storeByForeignSource) {
-            File fsDir = m_fileAnticipator.tempDir(snmpDir, "fs");
-            File node1fsDir = m_fileAnticipator.tempDir(fsDir, n1.getForeignSource());
-            File node1Dir = m_fileAnticipator.tempDir(node1fsDir, n1.getForeignId());
-            m_fileAnticipator.tempFile(node1Dir, "foo" + RrdUtils.getExtension());
-        } else {
-            File nodeDir = m_fileAnticipator.tempDir(snmpDir, n1.getId().toString());
-            m_fileAnticipator.tempFile(nodeDir, "foo" + RrdUtils.getExtension());
-        }
+        File featureDir = m_fileAnticipator.tempDir(snmpDir, "fs");
+        File fsDir = m_fileAnticipator.tempDir(featureDir, "Junit");
 
+        // RRD Directory for n1
+        File nodeDir = null;
+        if (storeByForeignSource) {
+            nodeDir = m_fileAnticipator.tempDir(fsDir, n1.getForeignId());
+        } else {
+            nodeDir = m_fileAnticipator.tempDir(snmpDir, n1.getId().toString());
+        }
+        m_fileAnticipator.tempFile(nodeDir, "foo" + RrdUtils.getExtension());
+
+        // RRD Directory for an orphan node
+        File orphanDir = null;
+        if (storeByForeignSource) {
+            orphanDir = m_fileAnticipator.tempDir(fsDir, "orphan_node");
+        } else {
+            orphanDir = m_fileAnticipator.tempDir(snmpDir, "100");
+        }
+        m_fileAnticipator.tempFile(orphanDir, "foo" + RrdUtils.getExtension());
+
+        // Response Time RRD Directory for n1
         File responseDir = m_fileAnticipator.tempDir("response");
-        File ipDir = m_fileAnticipator.tempDir(responseDir, ip1.getIpAddress().getHostAddress());
+        File ipDir = m_fileAnticipator.tempDir(responseDir, n1.getIpInterfaces().iterator().next().getIpAddress().getHostAddress());
         m_fileAnticipator.tempFile(ipDir, "foo" + RrdUtils.getExtension());
 
         m_easyMockUtils.replayAll();
@@ -272,27 +279,14 @@ public class FindTopLevelResourcesTest {
         setStoreByForeignSource(storeByForeignSource);
         List<OnmsNode> nodes = new ArrayList<OnmsNode>();
 
-        OnmsNode n1 = new OnmsNode(); // discovered node
-        n1.setId(1);
-        n1.setLabel("node1");
-        OnmsIpInterface ip1 = new OnmsIpInterface();
-        ip1.setId(11);
-        ip1.setIpAddress(InetAddressUtils.addr("10.0.0.1"));
-        ip1.setNode(n1);
-        n1.addIpInterface(ip1);
+        OnmsNode n1 = createNode(1, "node1", null, null, "10.0.0.1"); // Discovered node on the DB with RRD Data
         nodes.add(n1);
-
-        OnmsNode n2 = new OnmsNode(); // requisitioned node
-        n2.setId(2);
-        n2.setLabel("node2");
-        n2.setForeignSource("Junit");
-        n2.setForeignId("node2");
-        OnmsIpInterface ip2 = new OnmsIpInterface();
-        ip2.setId(12);
-        ip2.setIpAddress(InetAddressUtils.addr("10.0.0.2"));
-        ip2.setNode(n2);
-        n2.addIpInterface(ip2);
+        OnmsNode n2 = createNode(2, "node2", "Junit", "node2", "10.0.0.2"); // Requisitioned node on the DB with RRD Data
         nodes.add(n2);
+        OnmsNode n3 = createNode(3, "node3", null, null, "10.0.0.3"); // Discovered node on the DB with No RRD Data
+        nodes.add(n3);
+        OnmsNode n4 = createNode(4, "node4", "Junit", "node4", "10.0.0.4"); // Requisitioned node on the DB with RRD Data
+        nodes.add(n4);
 
         expect(m_dataCollectionConfigDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis())).times(3);
         expect(m_dataCollectionConfigDao.getConfiguredResourceTypes()).andReturn(new HashMap<String, ResourceType>());
@@ -307,24 +301,38 @@ public class FindTopLevelResourcesTest {
         expect(m_nodeDao.findAll()).andReturn(nodes);
 
         File snmpDir = m_fileAnticipator.tempDir("snmp");
+        File featureDir = m_fileAnticipator.tempDir(snmpDir, "fs");
+        File fsDir = m_fileAnticipator.tempDir(featureDir, "Junit");
 
+        // RRD Directory for n1
         File node1Dir = m_fileAnticipator.tempDir(snmpDir, n1.getId().toString());
         m_fileAnticipator.tempFile(node1Dir, "foo" + RrdUtils.getExtension());
 
+        // RRD Directory for n2
+        File node2Dir = null;
         if (storeByForeignSource) {
-            File fsDir = m_fileAnticipator.tempDir(snmpDir, "fs");
-            File node2fsDir = m_fileAnticipator.tempDir(fsDir, n2.getForeignSource());
-            File node2Dir = m_fileAnticipator.tempDir(node2fsDir, n2.getForeignId());
-            m_fileAnticipator.tempFile(node2Dir, "foo" + RrdUtils.getExtension());
+            node2Dir = m_fileAnticipator.tempDir(fsDir, n2.getForeignId());
         } else {
-            File node2Dir = m_fileAnticipator.tempDir(snmpDir, n2.getId().toString());
-            m_fileAnticipator.tempFile(node2Dir, "foo" + RrdUtils.getExtension());
+            node2Dir = m_fileAnticipator.tempDir(snmpDir, n2.getId().toString());
         }
+        m_fileAnticipator.tempFile(node2Dir, "foo" + RrdUtils.getExtension());
+
+        // RRD Directory for an orphan discovered node
+        m_fileAnticipator.tempFile(m_fileAnticipator.tempDir(snmpDir, "100"), "foo" + RrdUtils.getExtension());
+
+        // RRD Directory for an orphan requisitioned node
+        File orphanDir = null;
+        if (storeByForeignSource) {
+            orphanDir = m_fileAnticipator.tempDir(fsDir, "orphan_node");
+        } else {
+            orphanDir = m_fileAnticipator.tempDir(snmpDir, "101");
+        }
+        m_fileAnticipator.tempFile(orphanDir, "foo" + RrdUtils.getExtension());
 
         File responseDir = m_fileAnticipator.tempDir("response");
-        File ip1Dir = m_fileAnticipator.tempDir(responseDir, ip1.getIpAddress().getHostAddress());
+        File ip1Dir = m_fileAnticipator.tempDir(responseDir, n1.getIpInterfaces().iterator().next().getIpAddress().getHostAddress());
         m_fileAnticipator.tempFile(ip1Dir, "foo" + RrdUtils.getExtension());
-        File ip2Dir = m_fileAnticipator.tempDir(responseDir, ip2.getIpAddress().getHostAddress());
+        File ip2Dir = m_fileAnticipator.tempDir(responseDir, n2.getIpInterfaces().iterator().next().getIpAddress().getHostAddress());
         m_fileAnticipator.tempFile(ip2Dir, "foo" + RrdUtils.getExtension());
 
         m_easyMockUtils.replayAll();
@@ -369,6 +377,24 @@ public class FindTopLevelResourcesTest {
         }
 
         m_easyMockUtils.verifyAll();
+    }
+
+    private OnmsNode createNode(int nodeId, String nodelabel, String foreignSource, String foreignId, String ipAddress) {
+        OnmsNode n = new OnmsNode();
+        n.setId(nodeId);
+        n.setLabel(nodelabel);
+        if (foreignSource != null) {
+            n.setForeignSource(foreignSource);
+        }
+        if (foreignId != null) {
+            n.setForeignId(foreignId);
+        }
+        OnmsIpInterface ip = new OnmsIpInterface();
+        ip.setId(10 + nodeId);
+        ip.setIpAddress(InetAddressUtils.addr(ipAddress));
+        ip.setNode(n);
+        n.addIpInterface(ip);
+        return n;
     }
 
 }
