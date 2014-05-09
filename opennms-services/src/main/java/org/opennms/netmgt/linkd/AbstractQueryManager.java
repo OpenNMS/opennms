@@ -37,7 +37,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.AtInterfaceDao;
@@ -121,7 +120,7 @@ public abstract class AbstractQueryManager implements QueryManager {
 
     protected abstract void saveAtInterface(final OnmsAtInterface saveMe) ;
 
-    protected abstract Set<String> getPhysAddrs(final int nodeId);
+    protected abstract Map<Integer, String> getPhysAddrs(final int nodeId);
 
     protected abstract void markOldDataInactive(final Date now, final int nodeid);
 
@@ -942,7 +941,10 @@ public abstract class AbstractQueryManager implements QueryManager {
                 node.addBridgeForwardingTableEntry(fdbport, curMacAddress, vlan.getVlanId());
                 LOG.debug("processQBridgeDot1DTpFdbTable: Found learned status on bridge port.");
             } else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_SELF) {
-                node.getMacIdentifiers().add(curMacAddress);
+            	Integer ifIndex = node.getIfindexFromBridgePort(fdbport);
+            	if (ifIndex == null)
+            		ifIndex = -1;
+                node.getMacIdentifiers().put(ifIndex,curMacAddress);
                 LOG.debug("processQBridgeDot1DTpFdbTable: MAC address ({}) is used as port identifier.", curMacAddress);
             } else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_INVALID) {
                 LOG.debug("processQBridgeDot1DTpFdbTable: Found 'INVALID' status. Skipping.");
@@ -990,7 +992,10 @@ public abstract class AbstractQueryManager implements QueryManager {
                 node.addBridgeForwardingTableEntry(fdbport, curMacAddress, vlan.getVlanId());
                 LOG.debug("processDot1DTpFdbTable: Found learned status on bridge port.");
             } else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_SELF) {
-                node.getMacIdentifiers().add(curMacAddress);
+            	Integer ifIndex = node.getIfindexFromBridgePort(fdbport);
+            	if (ifIndex == null)
+            		ifIndex = -1;
+                node.getMacIdentifiers().put(ifIndex,curMacAddress);
                 LOG.debug("processDot1DTpFdbTable: MAC address ({}) is used as port identifier.", curMacAddress);
             } else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_INVALID) {
                 LOG.debug("processDot1DTpFdbTable: Found 'INVALID' status. Skipping.");

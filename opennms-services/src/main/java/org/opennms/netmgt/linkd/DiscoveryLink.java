@@ -110,6 +110,62 @@ public final class DiscoveryLink implements ReadyRunnable {
 		}
     }
 
+    private class SwitchPort {
+        public Integer getIfindex() {
+			return ifindex;
+		}
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + getOuterType().hashCode();
+			result = prime * result
+					+ ((ifindex == null) ? 0 : ifindex.hashCode());
+			result = prime * result
+					+ ((nodeid == null) ? 0 : nodeid.hashCode());
+			return result;
+		}
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			SwitchPort other = (SwitchPort) obj;
+			if (!getOuterType().equals(other.getOuterType()))
+				return false;
+			if (ifindex == null) {
+				if (other.ifindex != null)
+					return false;
+			} else if (!ifindex.equals(other.ifindex))
+				return false;
+			if (nodeid == null) {
+				if (other.nodeid != null)
+					return false;
+			} else if (!nodeid.equals(other.nodeid))
+				return false;
+			return true;
+		}
+
+		public Integer getNodeid() {
+			return nodeid;
+		}
+		
+		private final Integer nodeid;
+        private final Integer ifindex;
+		public SwitchPort(Integer nodeid, Integer ifindex) {
+			super();
+			this.nodeid = nodeid;
+			this.ifindex = ifindex;
+		}
+		private DiscoveryLink getOuterType() {
+			return DiscoveryLink.this;
+		}
+    	
+    }
+    
     private class BridgeTopologyPort {
         private final Integer nodeid;
         private final Integer bridgePort;
@@ -178,8 +234,18 @@ public final class DiscoveryLink implements ReadyRunnable {
     }
 
     private class BridgeTopologyLink {
-        final private BridgeTopologyPort bridgePort;
+        public SwitchPort getLinkedSwitchPort() {
+			return linkedSwitchPort;
+		}
+
+		public void setLinkedSwitchPort(SwitchPort linkedSwitchPort) {
+			this.linkedSwitchPort = linkedSwitchPort;
+		}
+
+		final private BridgeTopologyPort bridgePort;
         private BridgeTopologyPort designatebridgePort;
+        private SwitchPort linkedSwitchPort;
+
         private Set<String> macs = new HashSet<String>();
 
         public Set<String> getMacs() {
@@ -224,13 +290,15 @@ public final class DiscoveryLink implements ReadyRunnable {
 
     private class BridgeTopology {
 
+    	
         private List<BridgeTopologyLink> bridgelinks = new ArrayList<BridgeTopologyLink>();
-        private Map<String, Integer> bridgeAssociatedMacAddressMap = new HashMap<String, Integer>();
+        private Map<String,SwitchPort> bridgeAssociatedMacAddressMap = new HashMap<String, SwitchPort>();
         private List<BridgeTopologyLinkCandidate> bridgeTopologyPortCandidates = new ArrayList<DiscoveryLink.BridgeTopologyLinkCandidate>();
         
-        public void addBridgeAssociatedMac(Integer nodeid, Set<String> macs) {
-            for (String mac : macs)
-                bridgeAssociatedMacAddressMap.put(mac, nodeid);
+        public void addBridgeAssociatedMac(Integer nodeid, Integer ifindex, String mac) {
+            LOG.info("addBridgeAssociatedMac: adding nodeid {}, ifindex {}, mac {}", nodeid, ifindex,mac);
+        	SwitchPort swPort = new SwitchPort(nodeid, ifindex);
+        	bridgeAssociatedMacAddressMap.put(mac, swPort);
         }
 
         public void addNodeToTopology(LinkableNode bridgeNode) {
@@ -253,7 +321,11 @@ public final class DiscoveryLink implements ReadyRunnable {
 	             BridgeTopologyLinkCandidate topologycandidate = new BridgeTopologyLinkCandidate(bridgetopologyport);
 	             for (String mac : curEntry.getValue()) {
 	                 if (bridgeAssociatedMacAddressMap.containsKey(mac)) {
-	                     topologycandidate.addTarget(bridgeAssociatedMacAddressMap.get(mac));
+	                	 SwitchPort swPort = bridgeAssociatedMacAddressMap.get(mac);
+	    	             LOG.info("addNodeToTopology: parsing node {}, port {}, mac {} found on bridge adding target: targetnodeid {}, targetifindex {}",
+	    	                     nodeid, curEntry.getKey(),
+	                             curEntry.getValue(),swPort.getNodeid(),swPort.getIfindex());
+	                     topologycandidate.addTarget(bridgeAssociatedMacAddressMap.get(mac).getNodeid());
 	                 }
 	             }
 	             bridgeTopologyPortCandidates.add(parseBFTEntry(topologycandidate));
@@ -354,30 +426,60 @@ public final class DiscoveryLink implements ReadyRunnable {
         	for (BridgeTopologyLinkCandidate candidateA: bridgeTopologyPortCandidates) {
         		if (parsedNode.contains(candidateA.getBridgeTopologyPort()))
     				continue;
-        		parsedNode.add(candidateA.getBridgeTopologyPort());
         		if (candidateA.getTargets().isEmpty()) {
-					bridgelinks.add(new BridgeTopologyLink(candidateA.getBridgeTopologyPort()));
         			continue;
         		}
+                LOG.info("getTopology: bridgetobridge discovery: parsing nodeidA {}, portA {}, macsA {}, targetsA {}.",
+                        candidateA.getBridgeTopologyPort().getNodeid(), candidateA.getBridgeTopologyPort().getBridgePort(), 
+                        candidateA.getMacs(), candidateA.getTargets());
     			for (BridgeTopologyLinkCandidate candidateB: bridgeTopologyPortCandidates) {
     				if (parsedNode.contains(candidateB.getBridgeTopologyPort()))
     					continue;
     				if (candidateB.getTargets().isEmpty()) {
     					continue;
     				}
+                    LOG.info("getTopology: bridgetobridge discovery: parsing nodeidB {}, portB {}, macsB {}, targetsB {}.",
+                            candidateB.getBridgeTopologyPort().getNodeid(), candidateB.getBridgeTopologyPort().getBridgePort(), 
+                            candidateB.getMacs(), candidateB.getTargets());
     				if (candidateA.getBridgeTopologyPort().getNodeid().intValue() == candidateB.getBridgeTopologyPort().getNodeid().intValue())
     					continue;
     				if (candidateA.getTargets().contains(candidateB.getBridgeTopologyPort().getNodeid()) 
     						&& candidateB.getTargets().contains(candidateA.getBridgeTopologyPort().getNodeid())) {
-    					bridgelinks.add(new BridgeTopologyLink(candidateA.getBridgeTopologyPort(), candidateB.getBridgeTopologyPort()));
+    	        		parsedNode.add(candidateA.getBridgeTopologyPort());
     					parsedNode.add(candidateB.getBridgeTopologyPort());
+    					BridgeTopologyLink link = new BridgeTopologyLink(candidateA.getBridgeTopologyPort(), candidateB.getBridgeTopologyPort());
+    					LOG.info("getTopology: link found {}", link);
+    					bridgelinks.add(link);
     				}
     			}
         	}
         	for (BridgeTopologyLinkCandidate candidate: bridgeTopologyPortCandidates) {
         		if (parsedNode.contains(candidate.getBridgeTopologyPort()))
     				continue;
-        		bridgelinks.add(new BridgeTopologyLink(new BridgeTopologyPort(candidate.getBridgeTopologyPort().getNodeid(), candidate.getBridgeTopologyPort().getBridgePort(), candidate.getMacs())));
+                LOG.info("getTopology: mac discovery: parsing nodeid {}, port {}, macs {}, targets {}.",
+                        candidate.getBridgeTopologyPort().getNodeid(), candidate.getBridgeTopologyPort().getBridgePort(), 
+                        candidate.getMacs(), candidate.getTargets());
+        		BridgeTopologyLink link = new BridgeTopologyLink(new BridgeTopologyPort(candidate.getBridgeTopologyPort().getNodeid(), candidate.getBridgeTopologyPort().getBridgePort(), candidate.getMacs()));
+				SwitchPort swPort = null;
+        		for (String mac: candidate.getMacs()) {
+        			if (!bridgeAssociatedMacAddressMap.containsKey(mac)) {
+        				swPort = null;
+        				break;
+        			}
+        			if (swPort != null && !swPort.equals(bridgeAssociatedMacAddressMap.get(mac))) {
+        				swPort = null;
+        				break;
+        			} else {
+                        swPort = bridgeAssociatedMacAddressMap.get(mac);
+                        LOG.info("getTopology: parsing nodeid {}, port {}: mac {} is associated to switch Node {}, Port {}",
+                                candidate.getBridgeTopologyPort().getNodeid(), candidate.getBridgeTopologyPort().getBridgePort(), 
+                                mac, swPort.getNodeid(),swPort.getIfindex());        				
+        			}
+        		}
+        		if (swPort != null)
+        			link.setLinkedSwitchPort(swPort);
+				LOG.info("getTopology: link found {}", link);
+        		bridgelinks.add(link);
         	}
             return bridgelinks;
         }
@@ -581,14 +683,18 @@ public final class DiscoveryLink implements ReadyRunnable {
                           curNode.getNodeId(), curNode.getSysoid(),
                           str(curNode.getSnmpPrimaryIpAddr()));
                 bridgeNodes.add(curNode);
+                for (Entry<Integer, String> entry: curNode.getMacIdentifiers().entrySet()) {
+                	if (entry.getValue() == null || entry.getValue().equals(""))
+                		continue;
+                    topology.addBridgeAssociatedMac(curNode.getNodeId(), entry.getKey(),
+                                                    entry.getValue());
+                }
             }
         }
 
         for (final LinkableNode curNode : bridgeNodes) {
             final InetAddress curIpAddr = curNode.getSnmpPrimaryIpAddr();
             final Integer curNodeId = curNode.getNodeId();
-            topology.addBridgeAssociatedMac(curNodeId,
-                                            curNode.getMacIdentifiers());
             if (curNode.getStpInterfaces().size() == 0)
                 LOG.info("getLinksFromBridge: no spanning tree info found on bridge with nodeid {} and ip address {}",
                          curNodeId, str(curIpAddr));
@@ -677,22 +783,34 @@ public final class DiscoveryLink implements ReadyRunnable {
             Integer curIfIndex = getIfIndexFromNodeidBridgePort(linkableNodes,
                                                                 curNodeId,
                                                                 link.getBridgeTopologyPort().getBridgePort());
-            macParsed = addLinks(macParsed, link.getMacs(), curNodeId,
+            if (link.getLinkedSwitchPort() != null ) {
+            	final NodeToNodeLink lk = new NodeToNodeLink(
+                        curNodeId,
+                        curIfIndex,
+                        DiscoveryProtocol.bridge);
+            	lk.setNodeparentid(link.getLinkedSwitchPort().getNodeid());
+            	lk.setParentifindex(link.getLinkedSwitchPort().getIfindex());
+            	addNodetoNodeLink(lk);
+            	LOG.info("getLinksFromBridge: saving bridge link: {}",
+                        lk.toString());
+            } else {
+            	macParsed = addLinks(macParsed, link.getMacs(), curNodeId,
                                  curIfIndex, DiscoveryProtocol.bridge);
-            if (link.getDesignatebridgePort() != null) {
-                Integer endNodeId = link.getDesignatebridgePort().getNodeid();
-                Integer endIfIndex = getIfIndexFromNodeidBridgePort(linkableNodes,
-                                                                    endNodeId,
-                                                                    link.getDesignatebridgePort().getBridgePort());
-                final NodeToNodeLink lk = new NodeToNodeLink(
-                                                             curNodeId,
-                                                             curIfIndex,
-                                                             DiscoveryProtocol.bridge);
-                lk.setNodeparentid(endNodeId);
-                lk.setParentifindex(endIfIndex);
-                addNodetoNodeLink(lk);
-                LOG.info("getLinksFromBridge: saving bridge link: {}",
-                         lk.toString());
+	            if (link.getDesignatebridgePort() != null) {
+	                Integer endNodeId = link.getDesignatebridgePort().getNodeid();
+	                Integer endIfIndex = getIfIndexFromNodeidBridgePort(linkableNodes,
+	                                                                    endNodeId,
+	                                                                    link.getDesignatebridgePort().getBridgePort());
+	                final NodeToNodeLink lk = new NodeToNodeLink(
+	                                                             curNodeId,
+	                                                             curIfIndex,
+	                                                             DiscoveryProtocol.bridge);
+	                lk.setNodeparentid(endNodeId);
+	                lk.setParentifindex(endIfIndex);
+	                addNodetoNodeLink(lk);
+	                LOG.info("getLinksFromBridge: saving bridge link: {}",
+	                         lk.toString());
+	            }
             }
         }
         LOG.info("getLinksFromBridge: done finding links using Bridge Discovery");

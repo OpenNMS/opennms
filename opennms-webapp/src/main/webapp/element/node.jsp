@@ -383,14 +383,18 @@
     <table class="o-box">
       <tr>
         <th>chassis id</th>
-        <td>${model.lldp.lldpSysIdString}</td>
+        <td>${model.lldp.lldpChassisIdString}</td>
       </tr>
       <tr>
         <th>sysname</th>
         <td>${model.lldp.lldpSysName}</td>
       </tr>
       <tr>
-        <th>lldp last poll time</th>
+        <th>create time</th>
+        <td>${model.lldp.lldpCreateTime}</td>
+      </tr>
+      <tr>
+        <th>last poll time</th>
         <td>${model.lldp.lldpLastPollTime}</td>
       </tr>
     </table>

@@ -258,7 +258,7 @@ public class Nms10205aTest extends LinkdTestBuilder {
                 checkLink(spaceexsw2, mumbai, 34, 508, datalinkinterface);
                 assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
             } else if (start+19 == id ) {
-                checkLink(spaceexsw2, spaceexsw1, 523, 1361, datalinkinterface);
+                checkLink(spaceexsw1,spaceexsw2, 1361, 501 , datalinkinterface);
                 assertEquals(DiscoveryProtocol.bridge, datalinkinterface.getProtocol());
             } else {
                 assertEquals(-1, 0);
@@ -385,6 +385,60 @@ public class Nms10205aTest extends LinkdTestBuilder {
                 checkLink(mysore, bagmane, 520, 654, datalinkinterface);
             } else {
                 checkLink(mumbai,mumbai,-1,-1,datalinkinterface);
+            }
+        }
+
+    }
+
+    /*
+     *  
+     *  Get only ospf links.
+     */
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=SPACE_EX_SW1_IP, port=161, resource=SPACE_EX_SW1_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SPACE_EX_SW2_IP, port=161, resource=SPACE_EX_SW2_SNMP_RESOURCE)
+    })
+    public void testNetwork10205BridgeLinks() throws Exception {
+        m_nodeDao.save(builder.getSpaceExSw1());
+        m_nodeDao.save(builder.getSpaceExSw2());
+        m_nodeDao.flush();
+
+        Package example1 = m_linkdConfig.getPackage("example1");
+        example1.setUseLldpDiscovery(false);
+        example1.setUseCdpDiscovery(false);
+        example1.setUseOspfDiscovery(false);
+        example1.setUseIpRouteDiscovery(false);
+        example1.setUseIsisDiscovery(false);
+        
+        example1.setSaveRouteTable(false);
+        
+        final OnmsNode spaceexsw1 = m_nodeDao.findByForeignId("linkd", SPACE_EX_SW1_NAME);
+        final OnmsNode spaceexsw2 = m_nodeDao.findByForeignId("linkd", SPACE_EX_SW2_NAME);
+
+        assertTrue(m_linkd.scheduleNodeCollection(spaceexsw1.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(spaceexsw2.getId()));
+
+        assertTrue(m_linkd.runSingleSnmpCollection(spaceexsw1.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(spaceexsw2.getId()));
+             
+        assertEquals(0,m_dataLinkInterfaceDao.countAll());
+
+
+        assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
+
+        final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
+        
+        assertEquals(1, links.size());  
+        
+        int start = getStartPoint(links);
+        for (final DataLinkInterface datalinkinterface: links) {
+            int id = datalinkinterface.getId().intValue();
+            if (start == id ) {
+            	checkLink(spaceexsw1, spaceexsw2, 1361, 501, datalinkinterface);
+                assertEquals(DiscoveryProtocol.bridge, datalinkinterface.getProtocol());
+             } else {
+                checkLink(spaceexsw1,spaceexsw1,-1,-1,datalinkinterface);
             }
         }
 

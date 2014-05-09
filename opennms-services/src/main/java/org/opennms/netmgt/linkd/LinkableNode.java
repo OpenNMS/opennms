@@ -58,7 +58,7 @@ public class LinkableNode {
 
     private List<RouterInterface> m_routeinterfaces = new ArrayList<RouterInterface>();
 
-    private Set<String> m_macIdentifiers = new HashSet<String>();
+    private Map<Integer,String> m_macIdentifiers = new HashMap<Integer,String>();
     private Map<Integer, List<OnmsStpInterface>> m_vlanStpInterfaces = new HashMap<Integer, List<OnmsStpInterface>>();
     private Map<Integer, String> m_vlanBridgeIdentifier = new HashMap<Integer, String>();
     private Map<Integer, Set<String>> m_portMacs = new HashMap<Integer, Set<String>>();
@@ -269,16 +269,16 @@ public class LinkableNode {
         return m_vlanBridgeIdentifier.get(vlan);
     }
 
-    public void setMacIdentifiers(final Set<String> macIdentifiers) {
+    public void setMacIdentifiers(final Map<Integer,String> macIdentifiers) {
         m_macIdentifiers = macIdentifiers;
     }
 
-    public Set<String> getMacIdentifiers() {
+    public Map<Integer,String> getMacIdentifiers() {
         return m_macIdentifiers;
     }
 
     public boolean isMacIdentifier(final String mac) {
-        return m_macIdentifiers.contains(mac);
+        return m_macIdentifiers.values().contains(mac);
     }
 
     public void addWifiMacAddress(final Integer ifindex, final String macAddress) {
