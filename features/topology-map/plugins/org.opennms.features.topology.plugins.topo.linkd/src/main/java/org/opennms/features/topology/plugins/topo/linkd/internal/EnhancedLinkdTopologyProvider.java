@@ -332,7 +332,9 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                 AbstractEdge edge = connectVertices(linkDetail.getId(), linkDetail.getSource(), linkDetail.getTarget());
                 edge.setTooltipText(getEdgeTooltipText(linkDetail.getSourceLink(), linkDetail.getTargetLink(), linkDetail.getSource(), linkDetail.getTarget()));
             }
-        } catch (Exception e){}
+        } catch (Exception e){
+            int t = 1;
+        }
 
         LOG.debug("loadtopology: adding nodes without links: " + isAddNodeWithoutLink());
         if (isAddNodeWithoutLink()) {
@@ -421,8 +423,8 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                                       LldpLink targetLink, Vertex source, Vertex target) {
         StringBuffer tooltipText = new StringBuffer();
 
-        OnmsSnmpInterface sourceInterface = getSnmpInterfaceDao().findByNodeIdAndIfIndex(Integer.parseInt(source.getId()), sourceLink.getLldpPortIfindex());
-        OnmsSnmpInterface targetInterface = getSnmpInterfaceDao().findByNodeIdAndIfIndex(Integer.parseInt(target.getId()), targetLink.getLldpPortIfindex());
+        OnmsSnmpInterface sourceInterface = getByNodeIdAndIfIndex(sourceLink, source);
+        OnmsSnmpInterface targetInterface = getByNodeIdAndIfIndex(targetLink, target);
 
         tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
         if (sourceInterface != null && targetInterface != null
@@ -474,6 +476,13 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         tooltipText.append(HTML_TOOLTIP_TAG_END);
 
         return tooltipText.toString();
+    }
+
+    private OnmsSnmpInterface getByNodeIdAndIfIndex(LldpLink sourceLink, Vertex source) {
+        if(source.getId() != null && sourceLink.getLldpPortIfindex() != null)
+            return getSnmpInterfaceDao().findByNodeIdAndIfIndex(Integer.parseInt(source.getId()), sourceLink.getLldpPortIfindex());
+
+        return null;
     }
 
     public void setLldpLinkDao(LldpLinkDao lldpLinkDao) {
