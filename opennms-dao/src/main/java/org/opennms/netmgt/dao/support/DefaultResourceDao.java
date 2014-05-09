@@ -505,7 +505,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
             boolean nodeIdfound = false;
             boolean nodeSourcefound = false;
             boolean responseTimeFound = false;
-            if (nodeSources.contains(node.getForeignSource() + ":" + node.getForeignId())) {
+            if (node.getForeignSource() != null && node.getForeignId() != null && nodeSources.contains(node.getForeignSource() + ":" + node.getForeignId())) {
                 nodeSourcefound = true;
             } else if (snmpNodes.contains(node.getId())) {
                 nodeIdfound = true;
@@ -658,8 +658,8 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
        Set<String> nodeSourceDirectories = new HashSet<String>();
        File snmpDir = new File(getRrdDirectory(), ResourceTypeUtils.SNMP_DIRECTORY);
        File forSrcDir = new File(snmpDir, ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY);
-       File[] sourceDirs = forSrcDir.listFiles(RrdFileConstants.SOURCE_DIRECTORY_FILTER);
-       if (sourceDirs != null) {
+       File[] sourceDirs = forSrcDir.listFiles(); // TODO There is no need to filter by RrdFileConstants.SOURCE_DIRECTORY_FILTER
+       if (sourceDirs != null && sourceDirs.length > 0) {
            for (File sourceDir : sourceDirs) {
                File [] ids = sourceDir.listFiles(RrdFileConstants.NODESOURCE_DIRECTORY_FILTER);
                for (File id : ids) {
