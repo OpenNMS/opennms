@@ -64,14 +64,14 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
         
         // otherwise, Firefox
         if (driver == null) {
-            //final File phantomJS = new File("/usr/local/bin/phantomjs");
-            //if (phantomJS.exists()) {
-            //    final DesiredCapabilities caps = new DesiredCapabilities();
-            //    caps.setCapability(PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY, "/usr/local/bin/phantomjs");
-            //    driver = new PhantomJSDriver(caps);
-            //} else {
+            final File phantomJS = new File("/usr/local/bin/phantomjs");
+            if (phantomJS.exists()) {
+                final DesiredCapabilities caps = new DesiredCapabilities();
+                caps.setCapability(PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY, "/usr/local/bin/phantomjs");
+                driver = new PhantomJSDriver(caps);
+            } else {
                 driver = new FirefoxDriver();
-            //}
+            }
         }
 
         selenium = new WebDriverBackedSelenium(driver, BASE_URL);
