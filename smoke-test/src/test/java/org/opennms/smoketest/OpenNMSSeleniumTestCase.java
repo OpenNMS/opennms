@@ -34,7 +34,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.opennms.test.mock.MockLogAppender;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebDriverBackedSelenium;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
@@ -43,6 +42,7 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 
 import com.thoughtworks.selenium.SeleneseTestBase;
 import com.thoughtworks.selenium.SeleniumException;
+import com.thoughtworks.selenium.webdriven.WebDriverBackedSelenium;
 
 public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
     protected static final String LOAD_TIMEOUT = "60000";
