@@ -62,6 +62,9 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
+/**
+ * This class is no longer used in favor of the EnhancedLinkdTopologyProvider
+ */
 public class LinkdTopologyProvider extends AbstractLinkdTopologyProvider implements SearchProvider {
 	
 	private static Logger LOG = LoggerFactory.getLogger(LinkdTopologyProvider.class);
@@ -89,9 +92,7 @@ public class LinkdTopologyProvider extends AbstractLinkdTopologyProvider impleme
         load(null);
     }
     
-    public LinkdTopologyProvider() {
-    	super(TOPOLOGY_NAMESPACE_LINKD);
-    }
+    public LinkdTopologyProvider() { }
 
     @Override
     public void refresh() {

@@ -100,8 +100,8 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
     protected boolean m_addNodeWithoutLink = false;
     protected LinkdHopCriteriaFactory m_criteriaHopFactory;
 
-    protected AbstractLinkdTopologyProvider(String namespace) {
-        super(namespace);
+    protected AbstractLinkdTopologyProvider() {
+        super(TOPOLOGY_NAMESPACE_LINKD);
         String aclsProp = System.getProperty("org.opennms.web.aclsEnabled");
         m_aclEnabled = aclsProp != null ? aclsProp.equals("true") : false;
     }
