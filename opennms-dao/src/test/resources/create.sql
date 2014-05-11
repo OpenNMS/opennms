@@ -2252,6 +2252,10 @@ drop table ospfElement cascade;
 drop table ospfLink cascade;
 drop table isisElement cascade;
 drop table isisLink cascade;
+drop table bridgeElement cascade;
+drop table bridgeMacLink cascade;
+drop table bridgeBridgeLink cascade;
+drop table bridgeStpLink cascade;
 
 create table lldpElement (
       id integer default nextval('opennmsnxtid') not null,
@@ -2320,7 +2324,7 @@ create table ospfLink (
 create table isisElement (
       id integer default nextval('opennmsnxtid') not null,
       nodeid          integer not null,
-      isisSysID varchar(255) not null,
+      isisSysID varchar(32) not null,
       isisSysAdminState integer not null,
       isisNodeCreateTime	timestamp not null,
       isisNodeLastPollTime	timestamp not null,
@@ -2336,9 +2340,9 @@ create table isisLink (
       isisCircIfIndex    integer,
       isisCircAdminState integer,
       isisISAdjState  integer not null,
-      isisISAdjNeighSNPAAddress varchar(255) not null,
+      isisISAdjNeighSNPAAddress varchar(80) not null,
       isisISAdjNeighSysType integer not null,
-      isisISAdjNeighSysID varchar(255) not null,
+      isisISAdjNeighSysID varchar(32) not null,
       isisISAdjNbrExtendedCircID integer,
       isisLinkCreateTime	timestamp not null,
       isisLinkLastPollTime	timestamp not null,
@@ -2346,6 +2350,77 @@ create table isisLink (
       constraint fk_nodeIDisislink foreign key (nodeid) references node ON DELETE CASCADE
 );
 
+create table bridgeElement (
+    id                  integer default nextval('opennmsNxtId') not null,
+    nodeid                   integer not null,
+    baseBridgeAddress        varchar(12) not null,
+    baseNumPorts             integer not null,
+    basetype                 integer not null,
+    vlan                     integer,
+    vlanname                 varchar(64),
+    stpProtocolSpecification integer,
+    stpPriority              integer,
+    stpdesignatedroot        varchar(16),
+    stprootcost              integer,
+    stprootport              integer,
+    bridgeNodeCreateTime     timestamp not null,
+    bridgeNodeLastPollTime   timestamp not null,
+    constraint pk_bridgeelement_id primary key (id),
+    constraint fk_nodeIDbridgeelement foreign key (nodeid) references node on delete cascade
+);
+
+create table bridgeMacLink (
+    id                  integer default nextval('opennmsNxtId') not null,
+    nodeid              integer not null,
+    bridgePort          integer not null,
+    bridgePortIfIndex   integer,
+    bridgePortIfName    varchar(32),
+    vlan                integer,
+    macAdreess          varchar(12),
+    bridgeMacLinkCreateTime     timestamp not null,
+    bridgeMacLinkLastPollTime   timestamp not null,
+    constraint pk_bridgemaclink_id primary key (id),
+    constraint fk_nodeIDbridgemaclink foreign key (nodeid) references node on delete cascade
+);
+
+create table bridgeBridgeLink (
+    id                      integer default nextval('opennmsNxtId') not null,
+    nodeid                  integer not null,
+    bridgePort              integer not null,
+    bridgePortIfIndex       integer,
+    bridgePortIfName        varchar(32),
+    vlan                    integer,
+    designatedNodeid        integer,
+    designatedPort          integer not null,
+    designatedPortIfIndex   integer,
+    designatedPortIfName    varchar(32),
+    designatedVlan          integer,
+    bridgeBridgeLinkCreateTime     timestamp not null,
+    bridgeBridgeLinkLastPollTime   timestamp not null,
+    constraint pk_bridgebridgelink_id primary key (id),
+    constraint fk_nodeIDbridgebridgelink foreign key (nodeid) references node on delete cascade,
+    constraint fk_desnodeIDbridgemaclink foreign key (designatednodeid) references node (nodeid) 
+);
+
+create table bridgeStpLink (
+    id                      integer default nextval('opennmsNxtId') not null,
+    nodeid                  integer not null,
+    stpPort              integer not null,
+    stpPortPriority      integer not null,
+    stpPortState         integer not null,
+    stpPortEnable        integer not null,
+    stpPortIfIndex       integer,
+    stpPortIfName        varchar(32),
+    vlan                 integer,
+    designatedRoot       varchar(16) not null,
+    designatedCost       integer not null,
+    designatedBridge     varchar(16) not null,
+    designatedPort          integer not null,
+    bridgeStpLinkCreateTime     timestamp not null,
+    bridgeStpLinkLastPollTime   timestamp not null,
+    constraint pk_bridgestplink_id primary key (id),
+    constraint fk_nodeIDbridgestplink foreign key (nodeid) references node on delete cascade
+);
 --# End enlinkd table
 
 --# Begin Quartz persistence tables
