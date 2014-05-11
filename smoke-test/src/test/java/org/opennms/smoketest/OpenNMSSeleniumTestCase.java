@@ -47,14 +47,12 @@ import com.thoughtworks.selenium.webdriven.WebDriverBackedSelenium;
 public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
     protected static final String LOAD_TIMEOUT = "60000";
     protected static final String BASE_URL = "http://localhost:8980/";
-    private PhantomJSDriver m_phantomDriver = null;
+    private WebDriver m_driver = null;
 
     @Before
     public void setUp() throws Exception {
         final String logLevel = System.getProperty("org.opennms.smoketest.logLevel", "DEBUG");
         MockLogAppender.setupLogging(true, logLevel);
-
-        WebDriver driver = null;
 
         // Google Chrome if chrome driver property is set
         final String chromeDriverLocation = System.getProperty("webdriver.chrome.driver");
@@ -62,24 +60,24 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
             final File chromeDriverFile = new File(chromeDriverLocation);
             if (chromeDriverFile.exists() && chromeDriverFile.canExecute()) {
                 System.err.println("using chrome driver");
-                driver = new ChromeDriver();
+                m_driver = new ChromeDriver();
             }
         }
         
         // otherwise, PhantomJS or Firefox
-        if (driver == null) {
+        if (m_driver == null) {
             final File phantomJS = new File("/usr/local/bin/phantomjs");
             if (phantomJS.exists()) {
                 final DesiredCapabilities caps = new DesiredCapabilities();
                 caps.setCapability(PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY, "/usr/local/bin/phantomjs");
-                m_phantomDriver = new PhantomJSDriver(caps);
-                driver = m_phantomDriver;
+                
+                m_driver = new PhantomJSDriver(caps);
             } else {
-                driver = new FirefoxDriver();
+                m_driver = new FirefoxDriver();
             }
         }
 
-        selenium = new WebDriverBackedSelenium(driver, BASE_URL);
+        selenium = new WebDriverBackedSelenium(m_driver, BASE_URL);
         selenium.open("/opennms/login.jsp");
         selenium.type("name=j_username", "admin");
         selenium.type("name=j_password", "admin");
@@ -96,8 +94,8 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
                 // don't worry about it, this is just for logging out
             }
             selenium.stop();
-            if (m_phantomDriver != null) {
-                m_phantomDriver.quit();
+            if (m_driver != null) {
+                m_driver.quit();
             }
             Thread.sleep(3000);
         }
