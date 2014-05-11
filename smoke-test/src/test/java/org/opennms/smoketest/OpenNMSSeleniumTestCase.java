@@ -47,6 +47,7 @@ import com.thoughtworks.selenium.webdriven.WebDriverBackedSelenium;
 public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
     protected static final String LOAD_TIMEOUT = "60000";
     protected static final String BASE_URL = "http://localhost:8980/";
+    private PhantomJSDriver m_phantomDriver = null;
 
     @Before
     public void setUp() throws Exception {
@@ -65,13 +66,14 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
             }
         }
         
-        // otherwise, Firefox
+        // otherwise, PhantomJS or Firefox
         if (driver == null) {
             final File phantomJS = new File("/usr/local/bin/phantomjs");
             if (phantomJS.exists()) {
                 final DesiredCapabilities caps = new DesiredCapabilities();
                 caps.setCapability(PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY, "/usr/local/bin/phantomjs");
-                driver = new PhantomJSDriver(caps);
+                m_phantomDriver = new PhantomJSDriver(caps);
+                driver = m_phantomDriver;
             } else {
                 driver = new FirefoxDriver();
             }
@@ -86,7 +88,7 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void shutDownSelenium() throws Exception {
         if (selenium != null) {
             try {
                 if (selenium.isElementPresent("link=Log out")) selenium.click("link=Log out");
@@ -94,6 +96,10 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
                 // don't worry about it, this is just for logging out
             }
             selenium.stop();
+            if (m_phantomDriver != null) {
+                m_phantomDriver.quit();
+            }
+            Thread.sleep(3000);
         }
     }
 
