@@ -35,6 +35,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.opennms.core.network.IPAddress;
 import org.slf4j.Logger;
@@ -49,6 +51,10 @@ import org.slf4j.LoggerFactory;
 public abstract class InetAddressUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(InetAddressUtils.class);
+
+    public static final String INVALID_BRIDGE_ADDRESS = "000000000000";
+    public static final String INVALID_STP_BRIDGE_ID  = "0000000000000000";
+    public static final String INVALID_STP_BRIDGE_DESIGNATED_PORT = "0000";
 
     private static final ByteArrayComparator s_BYTE_ARRAY_COMPARATOR = new ByteArrayComparator();
     public static final InetAddress UNPINGABLE_ADDRESS;
@@ -477,4 +483,38 @@ public abstract class InetAddressUtils {
     public static String normalizeMacAddress(String macAddress) {
         return macAddressBytesToString(macAddressStringToBytes(macAddress));
     }
+    
+    public static boolean isValidStpDesignatedPort(String bridgeDesignatedPort) {
+        if (bridgeDesignatedPort == null || bridgeDesignatedPort.equals(INVALID_STP_BRIDGE_DESIGNATED_PORT))
+                return false;
+        Pattern pattern = Pattern.compile("([0-9a-f]{4})");
+        Matcher matcher = pattern.matcher(bridgeDesignatedPort);
+        return matcher.matches();
+    }
+    
+    public static int getBridgeDesignatedPortNumber(String stpPortDesignatedPort) {
+        return 8191 & Integer.parseInt(stpPortDesignatedPort,
+                16);
+    }
+
+    public static boolean isValidBridgeAddress(String bridgeAddress) {
+            if (bridgeAddress == null || bridgeAddress.equals(INVALID_BRIDGE_ADDRESS))
+                    return false;
+            Pattern pattern = Pattern.compile("([0-9a-f]{12})");
+            Matcher matcher = pattern.matcher(bridgeAddress);
+            return matcher.matches();
+    }
+
+    public static boolean isValidStpBridgeId(String bridgeId) {
+            if (bridgeId == null || bridgeId.equals(INVALID_STP_BRIDGE_ID))
+                    return false;
+            Pattern pattern = Pattern.compile("([0-9a-f]{16})");
+            Matcher matcher = pattern.matcher(bridgeId);
+            return matcher.matches();
+    }
+    
+    public static String getBridgeAddressFromStpBridgeId(String bridgeId) {
+        return bridgeId.substring(4, 16);
+}
+
 }
