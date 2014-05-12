@@ -15,6 +15,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Type;
@@ -241,7 +242,8 @@ public class BridgeStpLink {
 	public String getDesignatedRoot() {
 		return m_designatedRoot;
 	}
-    
+   
+    @Transient
     public String getDesignatedRootAddress() {
     	return InetAddressUtils.getBridgeAddressFromStpBridgeId(m_designatedRoot);
     }
@@ -267,6 +269,7 @@ public class BridgeStpLink {
 		return m_designatedBridge;
 	}
 
+    @Transient
     public String getDesignatedBridgeAddress() {
     	return InetAddressUtils.getBridgeAddressFromStpBridgeId(m_designatedBridge);
     }
@@ -281,6 +284,7 @@ public class BridgeStpLink {
 		return m_designatedPort;
 	}
 
+    @Transient
     public int getDesignatedBridgePortNum() {
     	return InetAddressUtils.getBridgeDesignatedPortNumber(m_designatedPort);
     }
@@ -303,7 +307,7 @@ public class BridgeStpLink {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="bridgeStpLinkLastPollTime", nullable=false)
-	public Date getBridgestpLinkLastPollTime() {
+	public Date getBridgeStpLinkLastPollTime() {
 		return m_bridgeStpLinkLastPollTime;
 	}
 

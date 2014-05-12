@@ -15,6 +15,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Type;
@@ -223,6 +224,7 @@ public class BridgeElement {
 		return m_stpProtocolSpecification;
 	}
 
+    @Transient
     public StpProtocolSpecification getStpProtocolSpecificationType() {
     	return StpProtocolSpecification.get(m_stpProtocolSpecification);
     }

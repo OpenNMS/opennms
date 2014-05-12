@@ -391,10 +391,10 @@
 	
 	<changeSet author="rssntn67" id="1.13.1-bridgeelement">
 		<preConditions onFail="MARK_RAN">
-			<not><tableExists tableName="bridgelement" /></not>
+			<not><tableExists tableName="bridgeelement" /></not>
 		</preConditions>
 
-		<createTable tableName="bridgelement">
+		<createTable tableName="bridgeelement">
 			<column name="id" type="integer">
 				<constraints primaryKey="true" nullable="false" />
 			</column>
@@ -581,7 +581,7 @@
 		<createIndex tableName="bridgebridgelink" indexName="bridgebridgelink_nodeid_idx">
 			<column name="nodeid" />
 		</createIndex>
-		<createIndex tableName="bridgebridgelink" indexName="bridgemaclink_lastpoll_idx">
+		<createIndex tableName="bridgebridgelink" indexName="bridgebridgelink_lastpoll_idx">
 			<column name="bridgebridgelinklastpolltime" />
 		</createIndex>
 		<createIndex tableName="bridgebridgelink" indexName="bridgebridgelink_pk_idx">
