@@ -32,6 +32,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.*;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -435,6 +436,24 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
 
     @Override
     public abstract void load(String filename) throws MalformedURLException, JAXBException;
+
+    @Override
+    public VertexHopGraphProvider.VertexHopCriteria getDefaultCriteria() {
+        final OnmsNode node = m_topologyDao.getDefaultFocusPoint();
+
+        VertexHopGraphProvider.VertexHopCriteria criterion = null;
+
+        if (node != null) {
+            final Vertex defaultVertex = getVertex(TOPOLOGY_NAMESPACE_LINKD, node.getNodeId());
+            if (defaultVertex != null) {
+                VertexHopGraphProvider.FocusNodeHopCriteria hopCriteria = new VertexHopGraphProvider.FocusNodeHopCriteria();
+                hopCriteria.add(defaultVertex);
+                return hopCriteria;
+            }
+        }
+
+        return criterion;
+    }
 
     private interface LinkState {
         void setParentInterfaces(OnmsSnmpInterface sourceInterface, OnmsSnmpInterface targetInterface);
