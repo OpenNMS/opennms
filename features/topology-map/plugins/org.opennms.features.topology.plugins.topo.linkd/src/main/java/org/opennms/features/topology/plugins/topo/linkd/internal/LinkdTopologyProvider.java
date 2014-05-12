@@ -361,28 +361,6 @@ public class LinkdTopologyProvider extends AbstractLinkdTopologyProvider impleme
             LOG.debug("SearchProvider->addVertexHopCriteria: criterion: '{}' is in the GraphContainer.", crit);
         }
     }
-    
-
-    @Override
-    public VertexHopCriteria getDefaultCriteria() {
-        LOG.debug("SearchProvider->getDefaultCriteria called.");
-
-        final OnmsNode node = m_topologyDao.getDefaultFocusPoint();
-                
-        VertexHopCriteria criterion = null;
-        
-        if (node != null) {
-            final Vertex defaultVertex = getVertex(TOPOLOGY_NAMESPACE_LINKD, node.getNodeId());
-            if (defaultVertex != null) {
-                VertexHopGraphProvider.FocusNodeHopCriteria hopCriteria = new VertexHopGraphProvider.FocusNodeHopCriteria();
-                hopCriteria.add(defaultVertex);
-                return hopCriteria;
-            }
-        }
-        
-        LOG.debug("SearchProvider->getDefaultCriteria:returning hop criteria: '{}'.", criterion);
-        return criterion;
-    }
 
 
 }

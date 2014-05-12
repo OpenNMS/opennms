@@ -106,147 +106,9 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         }
     }
 
-    private class LinkStateMachine {
-        LinkState m_upState;
-        LinkState m_downState;
-        LinkState m_unknownState;
-        LinkState m_state;
-
-        public LinkStateMachine() {
-            m_upState = new LinkUpState(this);
-            m_downState = new LinkDownState(this);
-            m_unknownState = new LinkUnknownState(this);
-            m_state = m_upState;
-        }
-
-        public void setParentInterfaces(OnmsSnmpInterface sourceInterface, OnmsSnmpInterface targetInterface) {
-            m_state.setParentInterfaces(sourceInterface, targetInterface);
-        }
-
-        public String getLinkStatus() {
-            return m_state.getLinkStatus();
-        }
-
-        public LinkState getUpState() {
-            return m_upState;
-        }
-
-        public LinkState getDownState() {
-            return m_downState;
-        }
-
-        public LinkState getUnknownState() {
-            return m_unknownState;
-        }
-
-        public void setState(LinkState state) {
-            m_state = state;
-        }
-    }
-
     private interface LinkState {
         void setParentInterfaces(OnmsSnmpInterface sourceInterface, OnmsSnmpInterface targetInterface);
         String getLinkStatus();
-    }
-
-    private abstract class AbstractLinkState implements LinkState {
-
-        private LinkStateMachine m_linkStateMachine;
-
-        public AbstractLinkState(LinkStateMachine linkStateMachine) {
-            m_linkStateMachine = linkStateMachine;
-        }
-
-        protected LinkStateMachine getLinkStateMachine() {
-            return m_linkStateMachine;
-        }
-    }
-
-    private class LinkUpState extends AbstractLinkState {
-
-        public LinkUpState(LinkStateMachine linkStateMachine) {
-            super(linkStateMachine);
-        }
-
-        @Override
-        public void setParentInterfaces(OnmsSnmpInterface sourceInterface, OnmsSnmpInterface targetInterface) {
-            if(sourceInterface != null && sourceInterface.getIfOperStatus() != null) {
-                if(sourceInterface.getIfOperStatus() != 1) {
-                    getLinkStateMachine().setState( getLinkStateMachine().getDownState() );
-                }
-            }
-
-            if(targetInterface != null && targetInterface.getIfOperStatus() != null) {
-                if(targetInterface.getIfOperStatus() != 1) {
-                    getLinkStateMachine().setState( getLinkStateMachine().getDownState() );
-                }
-            }
-
-            if(sourceInterface == null && targetInterface == null) {
-                getLinkStateMachine().setState( getLinkStateMachine().getUnknownState() );
-            }
-
-        }
-
-        @Override
-        public String getLinkStatus() {
-            return OPER_ADMIN_STATUS[1];
-        }
-
-    }
-
-    private class LinkDownState extends AbstractLinkState {
-
-        public LinkDownState(LinkStateMachine linkStateMachine) {
-            super(linkStateMachine);
-        }
-
-        @Override
-        public void setParentInterfaces(OnmsSnmpInterface sourceInterface, OnmsSnmpInterface targetInterface) {
-            if(targetInterface != null && targetInterface.getIfOperStatus() != null) {
-                if(sourceInterface != null) {
-                    if(sourceInterface.getIfOperStatus() == 1 && targetInterface.getIfOperStatus() == 1) {
-                        getLinkStateMachine().setState( getLinkStateMachine().getUpState() );
-                    }
-                }
-            } else if(sourceInterface == null) {
-                getLinkStateMachine().setState( getLinkStateMachine().getUnknownState() );
-            }
-        }
-
-        @Override
-        public String getLinkStatus() {
-            return OPER_ADMIN_STATUS[2];
-        }
-
-    }
-
-    private class LinkUnknownState extends AbstractLinkState{
-
-        public LinkUnknownState(LinkStateMachine linkStateMachine) {
-            super(linkStateMachine);
-        }
-
-
-        @Override
-        public void setParentInterfaces(OnmsSnmpInterface sourceInterface, OnmsSnmpInterface targetInterface) {
-            if(targetInterface != null && targetInterface.getIfOperStatus() != null) {
-                if(sourceInterface != null) {
-                    if(sourceInterface.getIfOperStatus() == 1 && targetInterface.getIfOperStatus() == 1) {
-                        getLinkStateMachine().setState( getLinkStateMachine().getUpState() );
-                    } else {
-                        getLinkStateMachine().setState( getLinkStateMachine().getDownState() );
-                    }
-                }
-            }
-
-        }
-
-        @Override
-        public String getLinkStatus() {
-            return OPER_ADMIN_STATUS[4];
-        }
-
     }
 
     private static Logger LOG = LoggerFactory.getLogger(EnhancedLinkdTopologyProvider.class);
@@ -332,9 +194,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                 AbstractEdge edge = connectVertices(linkDetail.getId(), linkDetail.getSource(), linkDetail.getTarget());
                 edge.setTooltipText(getEdgeTooltipText(linkDetail.getSourceLink(), linkDetail.getTargetLink(), linkDetail.getSource(), linkDetail.getTarget()));
             }
-        } catch (Exception e){
-            int t = 1;
-        }
+        } catch (Exception e){   }
 
         LOG.debug("loadtopology: adding nodes without links: " + isAddNodeWithoutLink());
         if (isAddNodeWithoutLink()) {
