@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -54,6 +54,7 @@ import org.opennms.netmgt.config.users.User;
  *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach </a>
  *
  * Modification to pick an ExecuteStrategy based on the "binary" flag in
  * notificationCommands.xml by:
@@ -258,12 +259,25 @@ public class NotificationTask extends Thread {
                                 log().debug("Class created is: " + command.getClass());
                             }
 
+                            getNotificationManager().incrementAttempted(strategy instanceof CommandExecutor);
+                            
                             int returnCode = strategy.execute(command.getExecute(), getArgumentList(command));
                             if (log().isDebugEnabled()) {
                                 log().debug("command " + command.getName() + " return code = " + returnCode);
                             }
+                            
+                            if (returnCode == 0) {
+                                getNotificationManager().incrementSucceeded(strategy instanceof CommandExecutor);
+                            } else {
+                                getNotificationManager().incrementFailed(strategy instanceof CommandExecutor);
+                            }
                         } catch (Throwable e) {
                             log().warn("Notification command failed: " + command.getName(), e);
+                            if (strategy == null) {
+                                getNotificationManager().incrementUnknownInterrupted();
+                            } else {
+                                getNotificationManager().incrementInterrupted(strategy instanceof CommandExecutor);
+                            }
                         }
                     }
                 } else {

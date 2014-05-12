@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -88,6 +88,21 @@ public abstract class NotificationManager {
      * Object containing all Notification objects parsed from the xml file
      */
     public Notifications m_notifications;
+
+    /**
+     * Counters for exposure via JMX
+     */
+    private long m_notifTasksQueued = 0;
+    private long m_binaryNoticesAttempted = 0;
+    private long m_javaNoticesAttempted = 0;
+    private long m_binaryNoticesSucceeded = 0;
+    private long m_javaNoticesSucceeded = 0;
+    private long m_binaryNoticesFailed = 0;
+    private long m_javaNoticesFailed = 0;
+    private long m_binaryNoticesInterrupted = 0;
+    private long m_javaNoticesInterrupted = 0;
+    private long m_unknownNoticesInterrupted = 0;
+    
     /**
      * 
      */
@@ -1267,5 +1282,83 @@ public abstract class NotificationManager {
         querier.execute(eventid);
         return event;
     }
+    
+    public void incrementTasksQueued() {
+        m_notifTasksQueued++;
+    }
+    
+    public void incrementAttempted(boolean isBinary) {
+        if (isBinary) {
+            m_binaryNoticesAttempted++;
+        } else {
+            m_javaNoticesAttempted++;
+        }
+    }
+    
+    public void incrementSucceeded(boolean isBinary) {
+        if (isBinary) {
+            m_binaryNoticesSucceeded++;
+        } else {
+            m_javaNoticesSucceeded++;
+        }
+    }
+    
+    public void incrementFailed(boolean isBinary) {
+        if (isBinary) {
+            m_binaryNoticesFailed++;
+        } else {
+            m_javaNoticesFailed++;
+        }
+    }
+    public void incrementInterrupted(boolean isBinary) {
+        if (isBinary) {
+            m_binaryNoticesInterrupted++;
+        } else {
+            m_javaNoticesInterrupted++;
+        }
+    }
+    
+    public void incrementUnknownInterrupted() {
+        m_unknownNoticesInterrupted++;
+    }
+    
+    public long getNotificationTasksQueued() {
+        return m_notifTasksQueued;
+    }
 
+    public long getBinaryNoticesAttempted() {
+        return m_binaryNoticesAttempted;
+    }
+
+    public long getJavaNoticesAttempted() {
+        return m_javaNoticesAttempted;
+    }
+
+    public long getBinaryNoticesSucceeded() {
+        return m_binaryNoticesSucceeded;
+    }
+
+    public long getJavaNoticesSucceeded() {
+        return m_javaNoticesSucceeded;
+    }
+
+    public long getBinaryNoticesFailed() {
+        return m_binaryNoticesFailed;
+    }
+
+    public long getJavaNoticesFailed() {
+        return m_javaNoticesFailed;
+    }
+
+    public long getBinaryNoticesInterrupted() {
+        return m_binaryNoticesInterrupted;
+    }
+
+    public long getJavaNoticesInterrupted() {
+        return m_javaNoticesInterrupted;
+    }
+
+    public long getUnknownNoticesInterrupted() {
+        return m_unknownNoticesInterrupted;
+    }
 }
