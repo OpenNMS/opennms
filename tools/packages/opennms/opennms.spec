@@ -491,9 +491,9 @@ if [ "%{skip_compile}" = 1 ]; then
 	fi
 	TOPDIR=`pwd`
 	for dir in . opennms-tools; do
-		pushd $dir
+		cd $dir
 			"$TOPDIR"/compile.pl -N $EXTRA_OPTIONS -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" -Dopennms.home="%{instprefix}" install
-		popd
+		cd -
 	done
 else
 	echo "=== RUNNING COMPILE ==="
@@ -505,10 +505,10 @@ echo "=== BUILDING ASSEMBLIES ==="
 ./assemble.pl $EXTRA_OPTIONS -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
 	-Dopennms.home="%{instprefix}" -Dbuild.profile=full install
 
-pushd opennms-tools
+cd opennms-tools
 	../compile.pl $EXTRA_OPTIONS -N -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
         -Dopennms.home="%{instprefix}" install
-popd
+cd -
 
 echo "=== INSTALL COMPLETED ==="
 
@@ -564,7 +564,7 @@ rm -rf $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller
 
 rm -rf $RPM_BUILD_ROOT%{instprefix}/lib/*.tar.gz
 
-pushd $RPM_BUILD_ROOT
+cd $RPM_BUILD_ROOT
 
 # core package files
 find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
@@ -681,7 +681,7 @@ find $RPM_BUILD_ROOT%{jettydir} -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
 	sort >> %{_tmppath}/files.jetty
 
-popd
+cd -
 
 %clean
 rm -rf $RPM_BUILD_ROOT
