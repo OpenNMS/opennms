@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -79,6 +79,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach </a>
  */
 public final class BroadcastEventProcessor implements EventListener {
     
@@ -781,6 +782,7 @@ public final class BroadcastEventProcessor implements EventListener {
                         synchronized(noticeQueue) {
                             noticeQueue.putItem(task.getSendTime(), task);
                         }
+                        getNotificationManager().incrementTasksQueued();
                         targetSiblings.add(task);
                     }
                 }
