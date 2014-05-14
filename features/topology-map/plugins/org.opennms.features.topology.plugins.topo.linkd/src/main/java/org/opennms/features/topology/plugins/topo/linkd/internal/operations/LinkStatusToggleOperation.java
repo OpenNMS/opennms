@@ -26,21 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal.operations;
+package org.opennms.features.topology.plugins.topo.linkd.internal.operations;
 
 import org.opennms.features.topology.api.AbstractCheckedOperation;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.topo.StatusProvider;
+import org.opennms.features.topology.api.topo.EdgeStatusProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-public class AlarmStatusToggleOperation extends AbstractCheckedOperation {
+public class LinkStatusToggleOperation extends AbstractCheckedOperation {
 
-    private StatusProvider m_statusProvider;
+    private EdgeStatusProvider m_edgeStatusProvider;
+    //TODO: add functionality to check bundle context when bundle is deregistered
+    //private BundleContext m_bundleContext;
+
+    @Override
+    protected boolean isChecked(GraphContainer container) {
+        Set<EdgeStatusProvider> edgeStatusProviders = container.getEdgeStatusProviders();
+
+        return edgeStatusProviders.contains(m_edgeStatusProvider);
+    }
+
+    @Override
+    public void applyHistory(GraphContainer container, Map<String, String> settings) {
+
+    }
 
     @Override
     public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
@@ -63,42 +77,19 @@ public class AlarmStatusToggleOperation extends AbstractCheckedOperation {
         return getClass().getSimpleName();
     }
 
-    @Override
-    protected boolean isChecked(GraphContainer container) {
-        return container.getVertexStatusProvider() != null;
-    }
+    private void toggle(GraphContainer graphContainer) {
+        Set<EdgeStatusProvider> edgeStatusProviders = graphContainer.getEdgeStatusProviders();
 
-    @Override
-    public Map<String, String> createHistory(GraphContainer container){
-        return Collections.singletonMap(getClass().getName(), Boolean.toString(isChecked(container)));
-    }
-
-    @Override
-    public void applyHistory(GraphContainer container, Map<String, String> settings) {
-        String historyValue = settings.get(getClass().getName());
-        if (historyValue == null || historyValue.isEmpty()) {
-            container.setVertexStatusProvider(m_statusProvider); // no history value set, use default
+        if(edgeStatusProviders.contains(m_edgeStatusProvider)) {
+            edgeStatusProviders.remove(m_edgeStatusProvider);
         } else {
-            // an history value is set, decide what to do
-            boolean alarmStatusEnabled = Boolean.TRUE.toString().equals(historyValue);
-            if (alarmStatusEnabled) {
-                container.setVertexStatusProvider(m_statusProvider);
-            } else {
-                container.setVertexStatusProvider(null);
-            }
+            edgeStatusProviders.add(m_edgeStatusProvider);
         }
+
+        graphContainer.redoLayout();
     }
 
-    public void setStatusProvider(StatusProvider statusProvider) {
-        m_statusProvider = statusProvider;
-    }
-
-    private void toggle(GraphContainer container) {
-        if (container.getVertexStatusProvider() == null) {
-            container.setVertexStatusProvider(m_statusProvider);
-        } else {
-            container.setVertexStatusProvider(null);
-        }
-        container.redoLayout();
+    public void setEdgeStatusProvider(EdgeStatusProvider edgeStatusProvider) {
+        m_edgeStatusProvider = edgeStatusProvider;
     }
 }
