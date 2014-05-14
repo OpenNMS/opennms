@@ -142,11 +142,6 @@ public class MenuHeaderTest extends OpenNMSSeleniumTestCase {
     }
 
     @Test
-    public void testAddNodeLink() {
-        clickAndVerifyText("//a[@href='admin/node/add.htm']", "Community String:");
-    }
-
-    @Test
     public void testAdminLink() {
         clickAndVerifyText("link=Admin", "Configure Users, Groups and On-Call Roles");
     }
