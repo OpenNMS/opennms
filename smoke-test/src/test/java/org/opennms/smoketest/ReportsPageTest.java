@@ -92,7 +92,7 @@ public class ReportsPageTest extends OpenNMSSeleniumTestCase {
         clickAndWait("//div[@id='content']/div/h2/a[2]");
         clickAndWait("link=KSC Performance, Nodes, Domains");
         waitForText("Customized Reports");
-        waitForText("Node & Domain Interface Reports");
+        waitForText("Node and Domain Reports");
         waitForText("Descriptions");
         clickAndWait("//div[@id='content']/div/h2/a[2]");
         clickAndWait("link=Database Reports");
