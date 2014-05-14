@@ -148,7 +148,7 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
     protected void clickAndVerifyText(final String pattern, final String expectedText) {
         LOG.debug("clickAndVerifyText({}, {})", pattern, expectedText);
         clickAndWait(pattern);
-        assertTrue("'" + expectedText + " must exist in page", selenium.isTextPresent(expectedText));
+        assertTrue("'" + expectedText + "' must exist in page text: " + selenium.getHtmlSource(), selenium.isTextPresent(expectedText));
     }
 
     protected void goBack() {
