@@ -388,4 +388,288 @@
 		</rollback>
 
 	</changeSet>
+	
+	<changeSet author="rssntn67" id="1.13.1-bridgeelement">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="bridgeelement" /></not>
+		</preConditions>
+
+		<createTable tableName="bridgeelement">
+			<column name="id" type="integer">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="nodeid" type="integer" >
+							<constraints nullable="false" />
+			</column>
+			<column name="basebridgeaddress" type="varchar(12)">
+				<constraints nullable="false" />
+			</column>
+			<column name="basenumports" type="integer" >
+							<constraints nullable="false" />
+			</column>
+			<column name="basetype" type="integer" >
+							<constraints nullable="false" />
+			</column>
+			<column name="vlan" type="integer" >
+							<constraints nullable="true" />
+			</column>
+			<column name="vlanname" type="varchar(64)">
+				<constraints nullable="true" />
+			</column>
+			<column name="stpprotocolspecification" type="integer" >
+				<constraints nullable="true" />
+			</column>
+			<column name="stppriority" type="integer" >
+				<constraints nullable="true" />
+			</column>
+			<column name="stpdesignatedroot" type="varchar(16)">
+				<constraints nullable="true" />
+			</column>
+			<column name="stprootcost" type="integer" >
+				<constraints nullable="true" />
+			</column>
+			<column name="stprootport" type="integer" >
+				<constraints nullable="true" />
+			</column>
+			<column name="bridgenodecreatetime" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+			<column name="bridgenodelastpolltime" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<ext:addAutoIncrement tableName="bridgeelement" columnName="id" sequenceName="opennmsNxtId" />
+
+		<addForeignKeyConstraint constraintName="fk_nodeid81" onDelete="CASCADE"
+			baseTableName="bridgeelement" baseColumnNames="nodeid"
+			referencedTableName="node" referencedColumnNames="nodeid" />
+
+		<createIndex tableName="bridgeelement" indexName="bridgeelement_nodeid_idx">
+			<column name="nodeid" />
+		</createIndex>
+		<createIndex tableName="bridgeelement" indexName="bridgeelement_lastpoll_idx">
+			<column name="bridgenodelastpolltime" />
+		</createIndex>
+		<createIndex tableName="bridgeelement" indexName="bridgeelement_pk_idx">
+			<column name="nodeid" />
+			<column name="basebridgeaddress" />
+		</createIndex>
+
+		<rollback>
+			<dropTable tableName="bridgeelement" />
+		</rollback>
+	</changeSet>
+
+	<changeSet author="rssntn67" id="1.13.1-bridgemaclink">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="bridgemaclink" /></not>
+		</preConditions>
+
+		<createTable tableName="bridgemaclink">
+			<column name="id" type="integer">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="nodeid" type="integer" >
+				<constraints nullable="false" />
+			</column>
+			<column name="bridgeport" type="integer" >
+				<constraints nullable="false" />
+			</column>
+			<column name="bridgeportifindex" type="integer" >
+				<constraints nullable="true" />
+			</column>
+			<column name="bridgeportifname" type="varchar(32)">
+				<constraints nullable="true" />
+			</column>
+			<column name="vlan" type="integer" >
+				<constraints nullable="true" />
+			</column>
+			<column name="macaddress" type="varchar(12)">
+				<constraints nullable="false" />
+			</column>
+			<column name="bridgemaclinkcreatetime" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+			<column name="bridgemaclinklastpolltime" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<ext:addAutoIncrement tableName="bridgemaclink" columnName="id" sequenceName="opennmsNxtId" />
+
+		<addForeignKeyConstraint constraintName="fk_nodeid82" onDelete="CASCADE"
+			baseTableName="bridgemaclink" baseColumnNames="nodeid"
+			referencedTableName="node" referencedColumnNames="nodeid" />
+
+		<createIndex tableName="bridgemaclink" indexName="bridgemaclink_nodeid_idx">
+			<column name="nodeid" />
+		</createIndex>
+		<createIndex tableName="bridgemaclink" indexName="bridgemaclink_lastpoll_idx">
+			<column name="bridgemaclinklastpolltime" />
+		</createIndex>
+		<createIndex tableName="bridgemaclink" indexName="bridgemaclink_pk_idx1">
+			<column name="nodeid" />
+			<column name="bridgeport" />
+		</createIndex>
+		<createIndex tableName="bridgemaclink" indexName="bridgemaclink_pk_idx2">
+			<column name="macaddress" />
+		</createIndex>
+
+		<rollback>
+			<dropTable tableName="bridgemaclink" />
+		</rollback>
+	</changeSet>
+
+	<changeSet author="rssntn67" id="1.13.1-bridgebridgelink">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="bridgebridgelink" /></not>
+		</preConditions>
+
+		<createTable tableName="bridgebridgelink">
+			<column name="id" type="integer">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="nodeid" type="integer" >
+				<constraints nullable="false" />
+			</column>
+			<column name="bridgeport" type="integer" >
+				<constraints nullable="false" />
+			</column>
+			<column name="bridgeportifindex" type="integer" >
+				<constraints nullable="true" />
+			</column>
+			<column name="bridgeportifname" type="varchar(32)">
+				<constraints nullable="true" />
+			</column>
+			<column name="vlan" type="integer" >
+				<constraints nullable="true" />
+			</column>
+			<column name="designatednodeid" type="integer" >
+				<constraints nullable="false" />
+			</column>
+			<column name="designatedbridgeport" type="integer" >
+				<constraints nullable="false" />
+			</column>
+			<column name="designatedbridgeportifindex" type="integer" >
+				<constraints nullable="true" />
+			</column>
+			<column name="designatedbridgeportifname" type="varchar(32)">
+				<constraints nullable="true" />
+			</column>
+			<column name="designatedvlan" type="integer" >
+				<constraints nullable="true" />
+			</column>
+			<column name="bridgebridgelinkcreatetime" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+			<column name="bridgebridgelinklastpolltime" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<ext:addAutoIncrement tableName="bridgebridgelink" columnName="id" sequenceName="opennmsNxtId" />
+
+		<addForeignKeyConstraint constraintName="fk_nodeid83" onDelete="CASCADE"
+			baseTableName="bridgebridgelink" baseColumnNames="nodeid"
+			referencedTableName="node" referencedColumnNames="nodeid" />
+
+		<addForeignKeyConstraint constraintName="fk_nodeid84" onDelete="CASCADE"
+			baseTableName="bridgebridgelink" baseColumnNames="designatednodeid"
+			referencedTableName="node" referencedColumnNames="nodeid" />
+
+		<createIndex tableName="bridgebridgelink" indexName="bridgebridgelink_nodeid_idx">
+			<column name="nodeid" />
+		</createIndex>
+		<createIndex tableName="bridgebridgelink" indexName="bridgebridgelink_lastpoll_idx">
+			<column name="bridgebridgelinklastpolltime" />
+		</createIndex>
+		<createIndex tableName="bridgebridgelink" indexName="bridgebridgelink_pk_idx">
+			<column name="nodeid" />
+			<column name="bridgeport" />
+		</createIndex>
+
+		<rollback>
+			<dropTable tableName="bridgebridgelink" />
+		</rollback>
+	</changeSet>
+
+	<changeSet author="rssntn67" id="1.13.1-bridgestplink">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="bridgestplink" /></not>
+		</preConditions>
+
+		<createTable tableName="bridgestplink">
+			<column name="id" type="integer">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="nodeid" type="integer" >
+				<constraints nullable="false" />
+			</column>
+			<column name="stpport" type="integer" >
+				<constraints nullable="false" />
+			</column>
+			<column name="stpportpriority" type="integer" >
+				<constraints nullable="false" />
+			</column>
+			<column name="stpportstate" type="integer" >
+				<constraints nullable="false" />
+			</column>
+			<column name="stpportenable" type="integer" >
+				<constraints nullable="false" />
+			</column>
+			<column name="stpportifindex" type="integer" >
+				<constraints nullable="true" />
+			</column>
+			<column name="stpportifname" type="varchar(32)">
+				<constraints nullable="true" />
+			</column>
+			<column name="vlan" type="integer" >
+				<constraints nullable="true" />
+			</column>
+			<column name="designatedroot" type="varchar(16)">
+				<constraints nullable="false" />
+			</column>
+			<column name="designatedcost" type="integer" >
+				<constraints nullable="false" />
+			</column>
+			<column name="designatedbridge" type="varchar(16)">
+				<constraints nullable="false" />
+			</column>
+			<column name="designatedport" type="varchar(4)">
+				<constraints nullable="false" />
+			</column>
+			<column name="bridgestplinkcreatetime" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+			<column name="bridgestplinklastpolltime" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<ext:addAutoIncrement tableName="bridgestplink" columnName="id" sequenceName="opennmsNxtId" />
+
+		<addForeignKeyConstraint constraintName="fk_nodeid85" onDelete="CASCADE"
+			baseTableName="bridgestplink" baseColumnNames="nodeid"
+			referencedTableName="node" referencedColumnNames="nodeid" />
+
+		<createIndex tableName="bridgestplink" indexName="bridgestplink_nodeid_idx">
+			<column name="nodeid" />
+		</createIndex>
+		<createIndex tableName="bridgestplink" indexName="bridgestplink_lastpoll_idx">
+			<column name="bridgestplinklastpolltime" />
+		</createIndex>
+		<createIndex tableName="bridgestplink" indexName="bridgestplink_pk_idx1">
+			<column name="nodeid" />
+			<column name="stpport" />
+		</createIndex>
+		<createIndex tableName="bridgestplink" indexName="bridgestplink_pk_idx2">
+			<column name="designatedbridge" />
+		</createIndex>
+
+		<rollback>
+			<dropTable tableName="bridgestplink" />
+		</rollback>
+	</changeSet>
+	
 </databaseChangeLog>
