@@ -55,6 +55,7 @@ public class CapsdTest extends OpenNMSTestCase {
     protected void setUp() throws Exception {
 
     	super.setUp();
+    	m_allowWarnings = true;
 
         m_agent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/snmpTestData1.properties"), InetAddressUtils.str(this.myLocalHost()) + "/9161");
 

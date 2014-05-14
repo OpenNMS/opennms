@@ -76,6 +76,7 @@ public class OpenNMSTestCase extends TestCase {
     protected static Eventd m_eventd;
     protected static EventIpcManagerDefaultImpl m_eventdIpcMgr;
 
+    protected static boolean m_allowWarnings = false;
     protected static boolean m_runSupers = true;
     public static int PROXY_PORT = Integer.getInteger("proxy.port", 5837);
 
@@ -244,7 +245,9 @@ public class OpenNMSTestCase extends TestCase {
     public void runTest() throws Throwable {
         try {
             super.runTest();
-            MockLogAppender.assertNoWarningsOrGreater();
+            if (!m_allowWarnings) {
+                MockLogAppender.assertNoWarningsOrGreater();
+            }
         } finally {
             MockUtil.println("------------ End Test "+this+" --------------------------");
         }
