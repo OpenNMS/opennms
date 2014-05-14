@@ -37,7 +37,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.opennms.core.test.MockLogAppender;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebDriverBackedSelenium;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriverService;
@@ -47,11 +46,13 @@ import org.slf4j.LoggerFactory;
 
 import com.thoughtworks.selenium.SeleneseTestBase;
 import com.thoughtworks.selenium.SeleniumException;
+import com.thoughtworks.selenium.webdriven.WebDriverBackedSelenium;
 
 public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
     protected static final Logger LOG = LoggerFactory.getLogger(OpenNMSSeleniumTestCase.class);
     protected static final long LOAD_TIMEOUT = 60000;
     protected static final String BASE_URL = "http://localhost:8980/";
+    private WebDriver m_driver = null;
     private static final boolean usePhantomJS = Boolean.getBoolean("smoketest.usePhantomJS");
 
     @Before
@@ -59,31 +60,29 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
         final String logLevel = System.getProperty("org.opennms.smoketest.logLevel", "DEBUG");
         MockLogAppender.setupLogging(true, logLevel);
 
-        WebDriver driver = null;
-
         final String driverClass = System.getProperty("webdriver.class");
         if (driverClass != null) {
-            driver = (WebDriver)Class.forName(driverClass).newInstance();
+            m_driver = (WebDriver)Class.forName(driverClass).newInstance();
         }
 
         // otherwise, PhantomJS if found, or fall back to Firefox
-        if (driver == null) {
+        if (m_driver == null) {
             if (usePhantomJS) {
                 final File phantomJS = findPhantomJS();
                 if (phantomJS != null) {
                     final DesiredCapabilities caps = new DesiredCapabilities();
                     caps.setCapability(PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY, phantomJS.toString());
-                    driver = new PhantomJSDriver(caps);
+                    m_driver = new PhantomJSDriver(caps);
                 }
             }
-            if (driver == null) {
-                driver = new FirefoxDriver();
+            if (m_driver == null) {
+                m_driver = new FirefoxDriver();
             }
         }
 
-        LOG.debug("Using driver: {}", driver);
+        LOG.debug("Using driver: {}", m_driver);
 
-        selenium = new WebDriverBackedSelenium(driver, BASE_URL);
+        selenium = new WebDriverBackedSelenium(m_driver, BASE_URL);
         selenium.open("/opennms/login.jsp");
         selenium.type("name=j_username", "admin");
         selenium.type("name=j_password", "admin");
@@ -120,7 +119,7 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void shutDownSelenium() throws Exception {
         if (selenium != null) {
             try {
                 if (selenium.isElementPresent("link=Log out")) selenium.click("link=Log out");
@@ -128,6 +127,10 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
                 // don't worry about it, this is just for logging out
             }
             selenium.stop();
+            if (m_driver != null) {
+                m_driver.quit();
+            }
+            Thread.sleep(3000);
         }
     }
 
@@ -145,7 +148,7 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
     protected void clickAndVerifyText(final String pattern, final String expectedText) {
         LOG.debug("clickAndVerifyText({}, {})", pattern, expectedText);
         clickAndWait(pattern);
-        assertTrue("'" + expectedText + " must exist in page", selenium.isTextPresent(expectedText));
+        assertTrue("'" + expectedText + "' must exist in page text: " + selenium.getHtmlSource(), selenium.isTextPresent(expectedText));
     }
 
     protected void goBack() {
@@ -240,5 +243,4 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
             selenium.click("//button[contains(text(), 'OK')]");
         }
     }
-
 }
