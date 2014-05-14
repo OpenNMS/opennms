@@ -93,7 +93,7 @@ public class JMXMultiInstanceCollectionResource extends JMXCollectionResource {
      */
     @Override
     public File getResourceDir(RrdRepository repository) {
-        String resourcePath = m_resourceType.getStorageStrategy().getRelativePathForAttribute(getParent(), getInterfaceLabel(), null);
+        String resourcePath = m_resourceType.getStorageStrategy().getRelativePathForAttribute(getParent(), getInterfaceLabel());
         File resourceDir = new File(repository.getRrdBaseDir(), resourcePath);
         LOG.debug("getResourceDir: {}", resourceDir);
         return resourceDir;
