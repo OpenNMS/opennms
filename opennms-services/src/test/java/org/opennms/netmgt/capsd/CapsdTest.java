@@ -46,6 +46,7 @@ import org.opennms.test.ConfigurationTestUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+@Ignore
 public class CapsdTest extends OpenNMSTestCase {
     private static final int FOREIGN_NODEID = 77;
     private Capsd m_capsd;
