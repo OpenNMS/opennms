@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>dependencies</artifactId>
-    <version>1.13.1-SNAPSHOT</version>
+    <version>1.13.2-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
@@ -18,12 +18,12 @@
     <dependency>
       <groupId>com.atomikos</groupId>
       <artifactId>transactions-jta</artifactId>
-      <version>3.9.2</version>
+      <version>${atomikosVersion}</version>
     </dependency>
     <dependency>
       <groupId>com.atomikos</groupId>
       <artifactId>transactions-jdbc</artifactId>
-      <version>3.9.2</version>
+      <version>${atomikosVersion}</version>
     </dependency>
     <dependency>
       <groupId>javax.transaction</groupId>

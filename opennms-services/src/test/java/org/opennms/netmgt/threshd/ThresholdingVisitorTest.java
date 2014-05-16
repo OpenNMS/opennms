@@ -63,7 +63,6 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.collectd.AliasedResource;
-import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.GenericIndexResource;
 import org.opennms.netmgt.collectd.GenericIndexResourceType;
 import org.opennms.netmgt.collectd.IfInfo;
@@ -73,23 +72,23 @@ import org.opennms.netmgt.collectd.NodeResourceType;
 import org.opennms.netmgt.collectd.NumericAttributeType;
 import org.opennms.netmgt.collectd.OnmsSnmpCollection;
 import org.opennms.netmgt.collectd.ResourceType;
-import org.opennms.netmgt.collectd.ServiceCollector;
 import org.opennms.netmgt.collectd.SnmpAttributeType;
+import org.opennms.netmgt.collectd.SnmpCollectionAgent;
 import org.opennms.netmgt.collectd.SnmpCollectionResource;
 import org.opennms.netmgt.collectd.SnmpIfData;
+import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.CollectionSetVisitor;
+import org.opennms.netmgt.collection.api.ServiceCollector;
+import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigManager;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
-import org.opennms.netmgt.config.collector.AttributeGroupType;
-import org.opennms.netmgt.config.collector.CollectionSet;
-import org.opennms.netmgt.config.collector.CollectionSetVisitor;
-import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
-import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
@@ -98,9 +97,10 @@ import org.opennms.netmgt.mock.MockDataCollectionConfig;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.model.RrdRepository;
+import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventIpcManager;
+import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -329,10 +329,10 @@ public class ThresholdingVisitorTest {
         initFactories("/threshd-configuration.xml", "/test-thresholds-counters.xml");
         ThresholdingVisitor visitor = createVisitor();
 
-        CollectionAgent agent = createCollectionAgent();
+        SnmpCollectionAgent agent = createCollectionAgent();
         NodeResourceType resourceType = createNodeResourceType(agent);
         MibObject mibObject = createMibObject("counter", "myCounter", "0");
-        SnmpAttributeType attributeType = new NumericAttributeType(resourceType, "default", mibObject, new AttributeGroupType("mibGroup", "ignore"));
+        SnmpAttributeType attributeType = new NumericAttributeType(resourceType, "default", mibObject, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
 
         // Add Events
         addHighThresholdEvent(1, 10, 5, 15, "Unknown", null, "myCounter", null, null);
@@ -369,10 +369,10 @@ public class ThresholdingVisitorTest {
         initFactories("/threshd-configuration.xml", "/test-thresholds-counters.xml");
         ThresholdingVisitor visitor = createVisitor();
 
-        CollectionAgent agent = createCollectionAgent();
+        SnmpCollectionAgent agent = createCollectionAgent();
         NodeResourceType resourceType = createNodeResourceType(agent);
         MibObject mibObject = createMibObject("counter", "myCounter", "0");
-        SnmpAttributeType attributeType = new NumericAttributeType(resourceType, "default", mibObject, new AttributeGroupType("mibGroup", "ignore"));
+        SnmpAttributeType attributeType = new NumericAttributeType(resourceType, "default", mibObject, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
 
         // Add Events
         addHighThresholdEvent(1, 10, 5, 15, "Unknown", null, "myCounter", null, null);
@@ -619,10 +619,10 @@ public class ThresholdingVisitorTest {
 
         ThresholdingVisitor visitor = createVisitor();
 
-        CollectionAgent agent = createCollectionAgent();
+        SnmpCollectionAgent agent = createCollectionAgent();
         NodeResourceType resourceType = createNodeResourceType(agent);
         MibObject mibObject = createMibObject("gauge", "bug2746", "0");
-        SnmpAttributeType attributeType = new NumericAttributeType(resourceType, "default", mibObject, new AttributeGroupType("mibGroup", "ignore"));
+        SnmpAttributeType attributeType = new NumericAttributeType(resourceType, "default", mibObject, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
 
         // Add Events
         addHighThresholdEvent(1, 50, 40, 60, "Unknown", null, "bug2746", null, null);
@@ -811,10 +811,10 @@ public class ThresholdingVisitorTest {
         initFactories("/threshd-configuration.xml","/test-thresholds-bug3193.xml");
         ThresholdingVisitor visitor = createVisitor();
 
-        CollectionAgent agent = createCollectionAgent();
+        SnmpCollectionAgent agent = createCollectionAgent();
         NodeResourceType resourceType = createNodeResourceType(agent);
         MibObject mibObject = createMibObject("counter", "myCounter", "0");
-        SnmpAttributeType attributeType = new NumericAttributeType(resourceType, "default", mibObject, new AttributeGroupType("mibGroup", "ignore"));
+        SnmpAttributeType attributeType = new NumericAttributeType(resourceType, "default", mibObject, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
 
         // Add Events
         addHighThresholdEvent(1, 100, 90, 110, "Unknown", null, "myCounter", null, null);
@@ -888,7 +888,7 @@ public class ThresholdingVisitorTest {
     public void testBug3227() throws Exception {
         initFactories("/threshd-configuration.xml","/test-thresholds-bug3227.xml");
         ThresholdingVisitor visitor = createVisitor();
-        CollectionAgent agent = createCollectionAgent();
+        SnmpCollectionAgent agent = createCollectionAgent();
         GenericIndexResourceType resourceType = createGenericIndexResourceType(agent, "frCircuitIfIndex");
 
         // Creating Resource
@@ -995,7 +995,7 @@ public class ThresholdingVisitorTest {
         runGaugeDataTest(visitor, 12000);
         
         // Do nothing, just to check visitor
-        CollectionAgent agent = createCollectionAgent();
+        SnmpCollectionAgent agent = createCollectionAgent();
         GenericIndexResourceType resourceType = createGenericIndexResourceType(agent, "ciscoEnvMonTemperatureStatusIndex");
         SnmpCollectionResource resource = new GenericIndexResource(resourceType, "ciscoEnvMonTemperatureStatusIndex", new SnmpInstId(45));
         resource.visit(visitor);
@@ -1075,7 +1075,7 @@ public class ThresholdingVisitorTest {
         addEvent(EventConstants.LOW_THRESHOLD_EVENT_UEI, "127.0.0.1", "SNMP", 1, null, null, 5.0, "Unknown", null, "memAvailSwap / memTotalSwap * 100.0", null, null, m_anticipator, m_anticipatedEvents);
         ThresholdingVisitor visitor = createVisitor();
 
-        CollectionAgent agent = createCollectionAgent();
+        SnmpCollectionAgent agent = createCollectionAgent();
         NodeResourceType resourceType = createNodeResourceType(agent);
         SnmpCollectionResource resource = new NodeInfo(resourceType, agent);
 
@@ -1296,7 +1296,7 @@ public class ThresholdingVisitorTest {
         ThresholdingVisitor visitor = createVisitor(params);
 
         SnmpIfData ifData = createSnmpIfData("127.0.0.1", ifName, ifSpeed, ifIndex, true);
-        CollectionAgent agent = createCollectionAgent();
+        SnmpCollectionAgent agent = createCollectionAgent();
         IfResourceType resourceType = createInterfaceResourceType(agent);
 
         long timestamp = new Date().getTime();
@@ -1396,7 +1396,7 @@ public class ThresholdingVisitorTest {
         ThresholdingVisitor visitor = createVisitor(); // equals to storeByIfAlias = false
 
         SnmpIfData ifData = createSnmpIfData("127.0.0.1", ifName, ifSpeed, ifIndex, true);
-        CollectionAgent agent = createCollectionAgent();
+        SnmpCollectionAgent agent = createCollectionAgent();
         IfResourceType resourceType = createInterfaceResourceType(agent);
 
         // Step 1
@@ -1436,7 +1436,7 @@ public class ThresholdingVisitorTest {
         
         // Create interface resource with data collection disabled
         SnmpIfData ifData = createSnmpIfData("127.0.0.1", ifName, ifSpeed, ifIndex, false);
-        CollectionAgent agent = createCollectionAgent();
+        SnmpCollectionAgent agent = createCollectionAgent();
         IfResourceType resourceType = createInterfaceResourceType(agent);
         ThresholdingVisitor visitor = createVisitor();
         
@@ -1620,7 +1620,7 @@ public class ThresholdingVisitorTest {
      * - test-thresholds-5.xml
      */
     @Test
-    public void testThresholsFiltersOnNodeResource() throws Exception {
+    public void testThresholdsFiltersOnNodeResource() throws Exception {
         initFactories("/threshd-configuration.xml","/test-thresholds-5.xml");
         ThresholdingVisitor visitor = createVisitor();
         
@@ -1629,7 +1629,7 @@ public class ThresholdingVisitorTest {
         addHighThresholdEvent(1, 50, 45, 60, "/opt", null, "(hda2_hrStorageUsed/hda2_hrStorageSize)*100", null, null);
 
         // Creating Node ResourceType
-        CollectionAgent agent = createCollectionAgent();
+        SnmpCollectionAgent agent = createCollectionAgent();
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();        
         OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig);
         NodeResourceType resourceType = new NodeResourceType(agent, collection);
@@ -1672,7 +1672,7 @@ public class ThresholdingVisitorTest {
     }
 
     private void runGaugeDataTest(ThresholdingVisitor visitor, long value) {
-        CollectionAgent agent = createCollectionAgent();
+        SnmpCollectionAgent agent = createCollectionAgent();
         NodeResourceType resourceType = createNodeResourceType(agent);
         SnmpCollectionResource resource = new NodeInfo(resourceType, agent);
         addAttributeToCollectionResource(resource, resourceType, "freeMem", "gauge", "0", value);        
@@ -1682,7 +1682,7 @@ public class ThresholdingVisitorTest {
 
     private void runInterfaceResource(ThresholdingVisitor visitor, String ipAddress, String ifName, Long ifSpeed, Integer ifIndex, long v1, long v2) {
         SnmpIfData ifData = createSnmpIfData(ipAddress, ifName, ifSpeed, ifIndex, true);
-        CollectionAgent agent = createCollectionAgent();
+        SnmpCollectionAgent agent = createCollectionAgent();
         IfResourceType resourceType = createInterfaceResourceType(agent);
 
         // Step 1
@@ -1703,7 +1703,7 @@ public class ThresholdingVisitorTest {
     }
 
     private void runFileSystemDataTest(ThresholdingVisitor visitor, int resourceId, String fs, long value, long max) throws Exception {
-        CollectionAgent agent = createCollectionAgent();
+        SnmpCollectionAgent agent = createCollectionAgent();
         // Creating Generic ResourceType
         GenericIndexResourceType resourceType = createGenericIndexResourceType(agent, "hrStorageIndex");
         // Creating strings.properties file
@@ -1741,12 +1741,12 @@ public class ThresholdingVisitorTest {
         
         // Creating Interface Resource Type
         SnmpIfData ifData = createSnmpIfData("127.0.0.1", ifName, ifSpeed, ifIndex, true);
-        CollectionAgent agent = createCollectionAgent();
+        SnmpCollectionAgent agent = createCollectionAgent();
         IfResourceType resourceType = createInterfaceResourceType(agent);
 
         // Creating Data Source
         MibObject object = createMibObject("counter", "ifOutOctets", "ifIndex");
-        SnmpAttributeType objectType = new NumericAttributeType(resourceType, "default", object, new AttributeGroupType("mibGroup", "ignore"));
+        SnmpAttributeType objectType = new NumericAttributeType(resourceType, "default", object, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
 
         long timestamp = new Date().getTime();
         // Step 1 - Initialize Counter
@@ -1769,8 +1769,8 @@ public class ThresholdingVisitorTest {
         verifyEvents(0);
     }
     
-    private static CollectionAgent createCollectionAgent() {
-        CollectionAgent agent = EasyMock.createMock(CollectionAgent.class);
+    private static SnmpCollectionAgent createCollectionAgent() {
+        SnmpCollectionAgent agent = EasyMock.createMock(SnmpCollectionAgent.class);
         EasyMock.expect(agent.getNodeId()).andReturn(1).anyTimes();
         EasyMock.expect(agent.getStorageDir()).andReturn(new File(String.valueOf(1))).anyTimes();
         EasyMock.expect(agent.getHostAddress()).andReturn("127.0.0.1").anyTimes();
@@ -1779,19 +1779,19 @@ public class ThresholdingVisitorTest {
         return agent;
     }
 
-    private static NodeResourceType createNodeResourceType(CollectionAgent agent) {
+    private static NodeResourceType createNodeResourceType(SnmpCollectionAgent agent) {
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();        
         OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig);
         return new NodeResourceType(agent, collection);
     }
 
-    private static IfResourceType createInterfaceResourceType(CollectionAgent agent) {
+    private static IfResourceType createInterfaceResourceType(SnmpCollectionAgent agent) {
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();        
         OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig);
         return new IfResourceType(agent, collection);
     }
 
-    private static GenericIndexResourceType createGenericIndexResourceType(CollectionAgent agent, String resourceTypeName) {
+    private static GenericIndexResourceType createGenericIndexResourceType(SnmpCollectionAgent agent, String resourceTypeName) {
         org.opennms.netmgt.config.datacollection.ResourceType type = new org.opennms.netmgt.config.datacollection.ResourceType();
         type.setName(resourceTypeName);
         type.setLabel(resourceTypeName);
@@ -1808,7 +1808,7 @@ public class ThresholdingVisitorTest {
 
     private static void addAttributeToCollectionResource(SnmpCollectionResource resource, ResourceType type, String attributeName, String attributeType, String attributeInstance, long value) {
         MibObject object = createMibObject(attributeType, attributeName, attributeInstance);
-        SnmpAttributeType objectType = new NumericAttributeType(type, "default", object, new AttributeGroupType("mibGroup", "ignore"));
+        SnmpAttributeType objectType = new NumericAttributeType(type, "default", object, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
         SnmpValue snmpValue = attributeType.equals("counter") ? SnmpUtils.getValueFactory().getCounter32(value) : SnmpUtils.getValueFactory().getGauge32(value);
         resource.setAttributeValue(objectType, snmpValue);
     }

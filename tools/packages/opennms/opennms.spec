@@ -800,6 +800,7 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %{instprefix}/etc/*datacollection*/3gpp*
 %config(noreplace) %{instprefix}/etc/snmp-graph.properties.d/3gpp*
 %{instprefix}/lib/org.opennms.protocols.xml-*.jar
+%{instprefix}/lib/vtd-xml-*.jar
 %attr(755,root,root) %{instprefix}/contrib/xml-collector/*.pl
 %{sharedir}/etc-pristine/xml-*.xml
 %{sharedir}/etc-pristine/*datacollection*/3gpp*

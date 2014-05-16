@@ -38,7 +38,7 @@ import java.math.BigInteger;
  * encoding/decoding 64-bit integers. Currently the AsnEncoder interface only
  * supports SNMPv1 types.
  * 
- * @author <a href="mailto:weave@oculan.com>Brian Weaver </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  */
 public interface AsnEncoder {
     /**

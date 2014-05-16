@@ -80,7 +80,7 @@ public class CategorySearchProvider extends AbstractSearchProvider implements Se
         List<SearchResult> results = new ArrayList<SearchResult>();
         for (OnmsCategory category : categories) {
             if (!checkHiddenPrefix(category.getName()) && searchQuery.matches(category.getName())) {
-                SearchResult result = new SearchResult("category", category.getId().toString(), category.getName());
+                SearchResult result = new SearchResult("category", category.getId().toString(), category.getName(), searchQuery.getQueryString());
                 result.setCollapsible(true);
                 CollapsibleCriteria criteria = getMatchingCriteria(graphContainer, category.getName());
                 if (criteria != null) {

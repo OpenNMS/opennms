@@ -58,10 +58,6 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <argument ref="nodeDao"/>
     </bean>
 
-    <bean id="ipLikeHopCriteriaFactory" class="org.opennms.features.topology.app.internal.support.IpLikeHopCriteriaFactory">
-        <argument ref="ipInterfaceDao"/>
-    </bean>
-    
     <service id="categorySearchProvider" interface="org.opennms.features.topology.api.topo.SearchProvider">
         <bean class="org.opennms.features.topology.app.internal.CategorySearchProvider">
             <argument ref="categoryDao"/>
@@ -69,18 +65,33 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
             <property name="hiddenCategoryPrefix" value="${hiddenCategoryPrefix}" />
         </bean>
     </service>
+    
+    <bean id="categoryHistoryOperation" class=" org.opennms.features.topology.app.internal.support.CategoryHopCriteriaHistoryOperation" >
+        <property name="categoryHopCriteriaFactory" ref="categoryHopCriteriaFactory" />
+    </bean>
+    
+    <service interface="org.opennms.features.topology.api.HistoryOperation" ref="categoryHistoryOperation"/>
 
+    <bean id="ipLikeHopCriteriaFactory" class="org.opennms.features.topology.app.internal.support.IpLikeHopCriteriaFactory">
+        <argument ref="ipInterfaceDao"/>
+    </bean>
+    
     <service id="ipLikeSearchProvider" interface="org.opennms.features.topology.api.topo.SearchProvider" >
         <bean class="org.opennms.features.topology.app.internal.IpLikeSearchProvider" >
             <argument ref="ipInterfaceDao" />
         </bean>
     </service>
+    
+    <bean id="AlarmHopCriteriaFactory" class="org.opennms.features.topology.app.internal.support.AlarmHopCriteriaFactory">
+        <argument ref="alarmDao"/>
+    </bean>
+    
+    <service id="AlarmSearchProvider" interface="org.opennms.features.topology.api.topo.SearchProvider" >
+        <bean class="org.opennms.features.topology.app.internal.AlarmSearchProvider" >
+            <argument ref="alarmDao" />
+        </bean>
+    </service>
 
-	<bean id="categoryHistoryOperation" class=" org.opennms.features.topology.app.internal.support.CategoryHopCriteriaHistoryOperation" >
-		<property name="categoryHopCriteriaFactory" ref="categoryHopCriteriaFactory" />
-	</bean>
-	
-	<service interface="org.opennms.features.topology.api.HistoryOperation" ref="categoryHistoryOperation"/>
 
     <!-- status provider -->
     <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory" />
@@ -224,6 +235,14 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
             <entry key="operation.label" value="FR Layout?group=layout"/>
         </service-properties>
         <bean class="org.opennms.features.topology.app.internal.operations.FRLayoutOperation"/>
+    </service>
+
+    <service interface="org.opennms.features.topology.api.CheckedOperation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="View"/>
+            <entry key="operation.label" value="New FR Layout?group=layout"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.app.internal.operations.TopoFRLayoutOperation"/>
     </service>
 
 

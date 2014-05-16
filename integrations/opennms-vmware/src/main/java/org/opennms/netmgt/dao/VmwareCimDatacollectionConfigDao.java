@@ -30,7 +30,7 @@ package org.opennms.netmgt.dao;
 
 import org.opennms.netmgt.config.vmware.cim.VmwareCimCollection;
 import org.opennms.netmgt.config.vmware.cim.VmwareCimDatacollectionConfig;
-import org.opennms.netmgt.model.RrdRepository;
+import org.opennms.netmgt.rrd.RrdRepository;
 
 /**
  * The Interface VmwareCimDatacollectionConfigDao

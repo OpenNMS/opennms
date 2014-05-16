@@ -15,11 +15,11 @@ import org.opennms.netmgt.config.api.collection.IColumn;
 import org.opennms.netmgt.config.api.collection.ITable;
 
 /**
- *  <table name="mib2-host-resources-storage" instance="hrStorageIndex">"
- *      <column oid=".1.3.6.1.2.1.25.2.3.1.4" alias="hrStorageAllocUnits" type="gauge" />
- *      <column oid=".1.3.6.1.2.1.25.2.3.1.5" alias="hrStorageSize"       type="gauge" />
- *      <column oid=".1.3.6.1.2.1.25.2.3.1.6" alias="hrStorageUse\"       type="gauge" />
- *  </table>
+ *  &lt;table name="mib2-host-resources-storage" instance="hrStorageIndex"&gt;"
+ *      &lt;column oid=".1.3.6.1.2.1.25.2.3.1.4" alias="hrStorageAllocUnits" type="gauge" /&gt;
+ *      &lt;column oid=".1.3.6.1.2.1.25.2.3.1.5" alias="hrStorageSize"       type="gauge" /&gt;
+ *      &lt;column oid=".1.3.6.1.2.1.25.2.3.1.6" alias="hrStorageUse"        type="gauge" /&gt;
+ *  &lt;/table&gt;
  *  
  * @author brozow
  *

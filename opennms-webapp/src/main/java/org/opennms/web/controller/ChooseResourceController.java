@@ -33,9 +33,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.web.servlet.MissingParameterException;
 import org.opennms.web.svclayer.ChooseResourceService;
 import org.opennms.web.svclayer.support.ChooseResourceModel;

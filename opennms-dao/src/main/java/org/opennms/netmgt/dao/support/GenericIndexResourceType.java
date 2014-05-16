@@ -41,13 +41,15 @@ import java.util.regex.Pattern;
 import org.opennms.core.utils.LazySet;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.PropertiesUtils.SymbolTable;
-import org.opennms.netmgt.config.StorageStrategy;
+import org.opennms.netmgt.collection.api.StorageStrategy;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.ExternalValueAttribute;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
+import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.StringPropertyAttribute;
+import org.opennms.netmgt.rrd.RrdFileConstants;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
 /**
@@ -72,7 +74,7 @@ public class GenericIndexResourceType implements OnmsResourceType {
      * @param name a {@link java.lang.String} object.
      * @param label a {@link java.lang.String} object.
      * @param resourceLabelExpression a {@link java.lang.String} object.
-     * @param storageStrategy a {@link org.opennms.netmgt.config.StorageStrategy} object.
+     * @param storageStrategy a {@link org.opennms.netmgt.collection.api.StorageStrategy} object.
      */
     public GenericIndexResourceType(ResourceDao resourceDao, String name, String label, String resourceLabelExpression, StorageStrategy storageStrategy) {
         m_resourceDao = resourceDao;
@@ -105,7 +107,7 @@ public class GenericIndexResourceType implements OnmsResourceType {
     /**
      * <p>getStorageStrategy</p>
      *
-     * @return a {@link org.opennms.netmgt.config.StorageStrategy} object.
+     * @return a {@link org.opennms.netmgt.collection.api.StorageStrategy} object.
      */
     public StorageStrategy getStorageStrategy() {
         return m_storageStrategy;
@@ -118,7 +120,7 @@ public class GenericIndexResourceType implements OnmsResourceType {
     }
     
     private File getResourceTypeDirectory(int nodeId, boolean verify) {
-        File snmp = new File(m_resourceDao.getRrdDirectory(verify), DefaultResourceDao.SNMP_DIRECTORY);
+        File snmp = new File(m_resourceDao.getRrdDirectory(verify), ResourceTypeUtils.SNMP_DIRECTORY);
         
         File node = new File(snmp, Integer.toString(nodeId));
         if (verify && !node.isDirectory()) {
@@ -134,7 +136,7 @@ public class GenericIndexResourceType implements OnmsResourceType {
     }
     
     private File getResourceTypeDirectory(String nodeSource, boolean verify) {
-        File snmp = new File(m_resourceDao.getRrdDirectory(verify), DefaultResourceDao.SNMP_DIRECTORY);
+        File snmp = new File(m_resourceDao.getRrdDirectory(verify), ResourceTypeUtils.SNMP_DIRECTORY);
 
         File dir = new File(snmp, ResourceTypeUtils.getRelativeNodeSourceDirectory(nodeSource).toString());
         if (verify && !dir.isDirectory()) {
@@ -426,7 +428,7 @@ public class GenericIndexResourceType implements OnmsResourceType {
      * @return a {@link java.lang.String} object.
      */
     public String getRelativePathForResource(int nodeId, String index) {
-        return DefaultResourceDao.SNMP_DIRECTORY
+        return ResourceTypeUtils.SNMP_DIRECTORY
             + File.separator + Integer.toString(nodeId)
             + File.separator + getName()
             + File.separator + index;
@@ -441,8 +443,8 @@ public class GenericIndexResourceType implements OnmsResourceType {
      */
     public String getRelativePathForNodeSourceResource(String nodeSource, String index) {
        String[] ident = nodeSource.split(":");
-       return DefaultResourceDao.SNMP_DIRECTORY
-            + File.separator + DefaultResourceDao.FOREIGN_SOURCE_DIRECTORY
+       return ResourceTypeUtils.SNMP_DIRECTORY
+            + File.separator + ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY
             + File.separator + ident[0]
             + File.separator + ident[1]
             + File.separator + getName()
@@ -476,7 +478,7 @@ public class GenericIndexResourceType implements OnmsResourceType {
     /** {@inheritDoc} */
     @Override
     public boolean isResourceTypeOnNodeSource(String nodeSource, int nodeId) {
-        File forSrc = new File(m_resourceDao.getRrdDirectory(), DefaultResourceDao.SNMP_DIRECTORY);
+        File forSrc = new File(m_resourceDao.getRrdDirectory(), ResourceTypeUtils.SNMP_DIRECTORY);
 
         File node = new File(forSrc, ResourceTypeUtils.getRelativeNodeSourceDirectory(nodeSource).toString());
         File generic = new File(node, getName());

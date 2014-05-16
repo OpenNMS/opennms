@@ -48,7 +48,7 @@ import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.internal.collection.DataCollectionConfigImpl;
-import org.opennms.netmgt.model.RrdRepository;
+import org.opennms.netmgt.rrd.RrdRepository;
 import org.springframework.core.io.FileSystemResource;
 
 @RunWith(BlockJUnit4ClassRunner.class)

@@ -46,6 +46,7 @@ import javax.xml.bind.Unmarshaller;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.FocusNodeHopCriteria;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractEdge;
@@ -380,16 +381,16 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         try {
             load(null);
         } catch (MalformedURLException e) {
-            LoggerFactory.getLogger(LinkdTopologyProvider.class).error(e.getMessage(), e);
+            LOG.error(e.getMessage(), e);
         } catch (JAXBException e) {
-            LoggerFactory.getLogger(LinkdTopologyProvider.class).error(e.getMessage(), e);
+            LOG.error(e.getMessage(), e);
         }
     }
 
     @Override
     public void load(String filename) throws MalformedURLException, JAXBException {
         if (filename != null) {
-            LoggerFactory.getLogger(LinkdTopologyProvider.class).warn("Filename that was specified for linkd topology will be ignored: " + filename + ", using " + m_configurationFile + " instead");
+            LOG.warn("Filename that was specified for linkd topology will be ignored: " + filename + ", using " + m_configurationFile + " instead");
         }
         LOG.debug("loadtopology: resetContainer ");
         resetContainer();
@@ -662,17 +663,19 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     @Override
     public String getSearchProviderNamespace() {
-        return "nodes";
+        return TOPOLOGY_NAMESPACE_LINKD;
     }
-    
-    @Override
-    public List<SearchResult> query(SearchQuery searchQuery, GraphContainer graphContainer) {
+
+
+    //@Override
+    public List<SearchResult> slowQuery(SearchQuery searchQuery, GraphContainer graphContainer) {
         LOG.debug("SearchProvider->query: called with search query: '{}'", searchQuery);
         List<SearchResult> searchResults = Lists.newArrayList();
         
         CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);
-        String ilike = "%"+searchQuery.getQueryString()+"%";
-        cb.alias("assetRecord", "asset").match("any").ilike("label", ilike).ilike("sysDescription", ilike).ilike("asset.comment", ilike);
+        String ilike = "%"+searchQuery.getQueryString()+"%";  //check this for performance reasons
+//        cb.alias("assetRecord", "asset").match("any").ilike("label", ilike).ilike("sysDescription", ilike).ilike("asset.comment", ilike);
+        cb.match("any").ilike("label", ilike).ilike("sysDescription", ilike);
         List<OnmsNode> nodes = m_nodeDao.findMatching(cb.toCriteria());
         
         if (nodes.size() == 0) {
@@ -680,19 +683,19 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         }
         
         for (OnmsNode node : nodes) {
-            searchResults.add(createSearchResult(node));
+            searchResults.add(createSearchResult(node, searchQuery.getQueryString()));
         }
         
         return searchResults;
     }
 
-    private SearchResult createSearchResult(OnmsNode node) {
-        SearchResult result = new SearchResult("node", node.getId().toString(), node.getLabel());
+    private SearchResult createSearchResult(OnmsNode node, String queryString) {
+        SearchResult result = new SearchResult("node", node.getId().toString(), node.getLabel(), queryString);
         return result;
     }
 
-    //@Override
-    public List<SearchResult> oldQuery(SearchQuery searchQuery, GraphContainer graphContainer) {
+    @Override
+    public List<SearchResult> query(SearchQuery searchQuery, GraphContainer graphContainer) {
     	//LOG.debug("SearchProvider->query: called with search query: '{}'", searchQuery);
     	
         List<Vertex> vertices = getFilteredVertices();
@@ -817,7 +820,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     public void addVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
         LOG.debug("SearchProvider->addVertexHopCriteria: called with search result: '{}'", searchResult);
         
-        VertexHopCriteria criterion = m_criteriaHopFactory.createCriteria(searchResult.getId(), searchResult.getLabel());
+        VertexHopCriteria criterion = LinkdHopCriteriaFactory.createCriteria(searchResult.getId(), searchResult.getLabel());
         container.addCriteria(criterion);
         
         LOG.debug("SearchProvider->addVertexHop: adding hop criteria {}.", criterion);
@@ -843,7 +846,12 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         VertexHopCriteria criterion = null;
         
         if (node != null) {
-            criterion = m_criteriaHopFactory.createCriteria(String.valueOf(node.getId()), node.getLabel());
+            final Vertex defaultVertex = getVertex(TOPOLOGY_NAMESPACE_LINKD, node.getNodeId());
+            if (defaultVertex != null) {
+                VertexHopGraphProvider.FocusNodeHopCriteria hopCriteria = new VertexHopGraphProvider.FocusNodeHopCriteria();
+                hopCriteria.add(defaultVertex);
+                return hopCriteria;
+            }
         }
         
         LOG.debug("SearchProvider->getDefaultCriteria:returning hop criteria: '{}'.", criterion);

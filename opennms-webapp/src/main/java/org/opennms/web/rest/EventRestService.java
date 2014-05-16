@@ -124,7 +124,7 @@ public class EventRestService extends OnmsRestService {
      * Returns all the events which match the filter/query in the query
      * parameters
      * 
-     * @return Collection of OnmsEvents (ready to be XML-ified)
+     * @return Collection of OnmsEventCollection (ready to be XML-ified)
      * @throws java.text.ParseException
      *             if any.
      */
@@ -151,7 +151,7 @@ public class EventRestService extends OnmsRestService {
      * Returns all the events which match the filter/query in the query
      * parameters
      * 
-     * @return Collection of OnmsEvents (ready to be XML-ified)
+     * @return Collection of OnmsEventCollection (ready to be XML-ified)
      * @throws java.text.ParseException
      *             if any.
      */

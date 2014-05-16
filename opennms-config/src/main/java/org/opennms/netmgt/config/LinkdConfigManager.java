@@ -717,9 +717,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
             getReadLock().lock();
     	    final int[] identifiers = snmpObj.getIdentifiers();
     		final int[] rootIdentifiers = new int[identifiers.length - 1];
-    		for (int i = 0; i < identifiers.length - 1; i++) {
-    			rootIdentifiers[i] = identifiers[i];
-    		}
+    		System.arraycopy(identifiers, 0, rootIdentifiers, 0, rootIdentifiers.length);
     		return new SnmpObjectId(rootIdentifiers);
         } finally {
             getReadLock().unlock();

@@ -58,6 +58,7 @@ import org.opennms.netmgt.config.destinationPaths.Path;
 import org.opennms.netmgt.config.destinationPaths.Target;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.notifd.AutoAcknowledge;
+import org.opennms.netmgt.config.notifd.AutoAcknowledgeAlarm;
 import org.opennms.netmgt.config.notificationCommands.Command;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.config.users.Contact;
@@ -279,16 +280,18 @@ public final class BroadcastEventProcessor implements EventListener {
             Collection<AutoAcknowledge> autoAcks = getNotifdConfigManager().getAutoAcknowledges();
 
             // see if this event has an auto acknowledge for a notice
+            boolean processed = false;
             for (AutoAcknowledge curAck : autoAcks) {
                 if (curAck.getUei().equals(event.getUei())) {
                     try {
                         LOG.debug("Acknowledging event {} {}:{}:{}", curAck.getAcknowledge(), event.getNodeid(), event.getInterface(), event.getService());
                         
                         Collection<Integer> notifIDs = getNotificationManager().acknowledgeNotice(event, curAck.getAcknowledge(), curAck.getMatch());
+                        processed = true;
                         try {
                             // only send resolution notifications if notifications are globally turned on
                             if (curAck.getNotify() && notifsOn) {
-                                sendResolvedNotifications(notifIDs, event, curAck.getAcknowledge(), curAck.getMatch(), curAck.getResolutionPrefix(), getNotifdConfigManager().getConfiguration().isNumericSkipResolutionPrefix());
+                                sendResolvedNotifications(notifIDs, event, curAck.getResolutionPrefix(), getNotifdConfigManager().getConfiguration().isNumericSkipResolutionPrefix());
                             }
                         } catch (Throwable e) {
                             LOG.error("Failed to send resolution notifications.", e);
@@ -297,15 +300,35 @@ public final class BroadcastEventProcessor implements EventListener {
                         LOG.error("Failed to auto acknowledge notice.", e);
                     }
                 }
+            }
 
+            // see if this event has an auto acknowledge alarm for a notice
+            if (processed) {
+                return;
+            }
+            final AutoAcknowledgeAlarm autoAck = getNotifdConfigManager().getConfiguration().getAutoAcknowledgeAlarm();
+            if (autoAck == null) {
+                return;
+            }
+            if (!autoAck.getUeiCollection().isEmpty() && !autoAck.getUeiCollection().contains(event.getUei())) {
+                return;
+            }
+            Collection<Integer> notifIDs = getNotificationManager().acknowledgeNoticeBasedOnAlarms(event);
+            try {
+                // only send resolution notifications if notifications are globally turned on
+                if (autoAck.getNotify() && !notifIDs.isEmpty() && notifsOn) {
+                    sendResolvedNotifications(notifIDs, event, autoAck.getResolutionPrefix(), getNotifdConfigManager().getConfiguration().isNumericSkipResolutionPrefix());
+                }
+            } catch (Throwable e) {
+                LOG.error("Failed to send resolution notifications.", e);
             }
         } catch (Throwable e) {
             LOG.error("Unable to auto acknowledge notice due to exception.", e);
         }
     }
 
-    private void sendResolvedNotifications(Collection<Integer> notifIDs, Event event, String acknowledge, 
-            String[] match, String resolutionPrefix, boolean skipNumericPrefix) throws Exception {
+    private void sendResolvedNotifications(Collection<Integer> notifIDs, Event event, 
+            String resolutionPrefix, boolean skipNumericPrefix) throws Exception {
         for (int notifId : notifIDs) {
             boolean wa = false;
             if(notifId < 0) {
@@ -541,7 +564,7 @@ public final class BroadcastEventProcessor implements EventListener {
                         }
 
                         try {
-                            LOG.info(String.format("Inserting notification #{} into database: {}", noticeId, paramMap.get(NotificationManager.PARAM_SUBJECT)));
+                            LOG.info("Inserting notification #{} into database: {}", noticeId, paramMap.get(NotificationManager.PARAM_SUBJECT));
                             getNotificationManager().insertNotice(noticeId, paramMap, queueID, notification);
                         } catch (SQLException e) {
                             LOG.error("Failed to enter notification into database, exiting this notification", e);

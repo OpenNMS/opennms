@@ -39,7 +39,7 @@ import org.opennms.protocols.snmp.asn1.AsnEncodingException;
  * of 8-bit octet data. The format of the 8-bit characters are defined by the
  * application.
  * 
- * @author <a href="mailto:weave@oculan.com>Brian Weaver </a>
+ * @author Brian Weaver
  */
 public class SnmpOctetString extends Object implements SnmpSyntax, Cloneable, Serializable {
     /**

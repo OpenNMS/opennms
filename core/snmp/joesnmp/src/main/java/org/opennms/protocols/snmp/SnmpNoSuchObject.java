@@ -36,7 +36,7 @@ package org.opennms.protocols.snmp;
  * 
  * @see SnmpVarBind
  * 
- * @author Brian Weaver <weave@oculan.com>
+ * @author Brian Weaver
  * 
  */
 public class SnmpNoSuchObject extends SnmpV2Error {

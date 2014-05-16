@@ -42,7 +42,7 @@ public interface Layout {
 	 */
 	Map<VertexRef, Point> getLocations();
 
-	void setLocation(VertexRef vertex, int x, int y);
+	void setLocation(VertexRef vertex, double x, double y);
 
 	void setLocation(VertexRef v, Point location);
 

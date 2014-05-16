@@ -4,7 +4,6 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -181,7 +180,7 @@ public class DefaultPollingContext implements PollingContext {
         OnmsIpInterfaceList ifaces = getInterfaceList();
 
         // If the list of interfaces is empty, print a warning message
-        if (ifaces.isEmpty()) {
+        if (ifaces.getIpInterfaces().isEmpty()) {
             LOG.warn("Package '{}' was scheduled, but no interfaces were matched.", getPackage().getName());
         }
 
@@ -195,11 +194,9 @@ public class DefaultPollingContext implements PollingContext {
         Set<Callable<OnmsAccessPointCollection>> callables = new HashSet<Callable<OnmsAccessPointCollection>>();
 
         // Iterate over all of the matched interfaces
-        for (Iterator<OnmsIpInterface> it = ifaces.iterator(); it.hasNext();) {
-            OnmsIpInterface iface = it.next();
-
+        for (final OnmsIpInterface iface : ifaces.getIpInterfaces()) {
             // Create a new instance of the poller
-            AccessPointPoller p = m_package.getPoller(m_pollerConfig.getMonitors());
+            final AccessPointPoller p = m_package.getPoller(m_pollerConfig.getMonitors());
             p.setInterfaceToPoll(iface);
             p.setAccessPointDao(m_accessPointDao);
             p.setPackage(m_package);
@@ -223,7 +220,7 @@ public class DefaultPollingContext implements PollingContext {
             // Gather the list of APs that are ONLINE
             for (Future<OnmsAccessPointCollection> future : futures) {
                 try {
-                    apsUp.addAll(future.get());
+                    apsUp.addAll(future.get().getObjects());
                     succesfullyPolledAController = true;
                 } catch (ExecutionException e) {
                     LOG.error("An error occurred while polling", e);
@@ -234,7 +231,7 @@ public class DefaultPollingContext implements PollingContext {
         }
 
         // Remove the APs from the list that are ONLINE
-        apsDown.removeAll(apsUp);
+        apsDown.removeAll(apsUp.getObjects());
 
         LOG.debug("({}) APs Online, ({}) APs offline in package '{}'", apsUp.size(), apsDown.size(), getPackage().getName());
 

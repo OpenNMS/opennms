@@ -28,10 +28,10 @@
 
 package org.opennms.netmgt.collectd.tca;
 
-import org.opennms.netmgt.config.collector.AttributeGroupType;
-import org.opennms.netmgt.config.collector.CollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionAttributeType;
-import org.opennms.netmgt.config.collector.Persister;
+import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.api.Persister;
+import org.opennms.netmgt.collection.support.AbstractCollectionAttributeType;
 import org.opennms.netmgt.snmp.SnmpObjId;
 
 /**
@@ -49,11 +49,8 @@ import org.opennms.netmgt.snmp.SnmpObjId;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class TcaCollectionAttributeType implements CollectionAttributeType {
+public class TcaCollectionAttributeType extends AbstractCollectionAttributeType {
 
-	/** The Attribute Group Type. */
-	private final AttributeGroupType m_groupType;
-	
 	private final SnmpObjId m_attributeObjectId; 
 
 	/** The m_name. */
@@ -66,8 +63,7 @@ public class TcaCollectionAttributeType implements CollectionAttributeType {
 	 * @param name the name
 	 */
 	public TcaCollectionAttributeType(AttributeGroupType groupType, SnmpObjId atributeObjectId, String name) {
-		super();
-		this.m_groupType = groupType;
+		super(groupType);
 		this.m_attributeObjectId = atributeObjectId;
 		this.m_name = name;
 	}
@@ -89,18 +85,11 @@ public class TcaCollectionAttributeType implements CollectionAttributeType {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.opennms.netmgt.config.collector.CollectionAttributeType#getGroupType()
-	 */
-	@Override
-	public AttributeGroupType getGroupType() {
-		return m_groupType;
-	}
-
-	/* (non-Javadoc)
 	 * @see org.opennms.netmgt.config.collector.CollectionAttributeType#storeAttribute(org.opennms.netmgt.config.collector.CollectionAttribute, org.opennms.netmgt.config.collector.Persister)
 	 */
 	@Override
 	public void storeAttribute(CollectionAttribute attribute, Persister persister) {
+		// Only numeric data comes back from this collector
 		persister.persistNumericAttribute(attribute);
 	}
 

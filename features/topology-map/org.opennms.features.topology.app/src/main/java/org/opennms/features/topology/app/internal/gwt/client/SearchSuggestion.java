@@ -43,6 +43,8 @@ public class SearchSuggestion implements Serializable, SuggestOracle.Suggestion 
     private boolean m_collapsed = false;
     private boolean m_focused = false;
 
+    private String m_query;
+
     public SearchSuggestion() {}
 
     public SearchSuggestion(String namespace, String id, String label) {
@@ -135,5 +137,13 @@ public class SearchSuggestion implements Serializable, SuggestOracle.Suggestion 
     @Override
     public String toString() {
         return "SearchSuggestion[namespace:" + m_namespace + ",id:" + m_id + ",label:" + m_label + ",focused:" + m_focused + ",collapsible:" + m_collapsible + ",collapsed:" + m_collapsed + "]";
+    }
+    
+    public String getQuery() {
+        return m_query;
+    }
+
+    public void setQuery(String query) {
+        m_query = query;
     }
 }

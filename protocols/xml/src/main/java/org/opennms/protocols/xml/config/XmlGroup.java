@@ -42,6 +42,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
+import org.opennms.netmgt.collection.api.AttributeGroupType;
 
 /**
  * The Class XmlGroup.
@@ -256,7 +257,7 @@ public class XmlGroup implements Serializable, Comparable<XmlGroup> {
      * @return the if type
      */
     public String getIfType() {
-        return m_resourceType.equals("node") ? "ignore" : "all";
+        return m_resourceType.equals("node") ? AttributeGroupType.IF_TYPE_IGNORE : AttributeGroupType.IF_TYPE_ALL;
     }
 
     /**

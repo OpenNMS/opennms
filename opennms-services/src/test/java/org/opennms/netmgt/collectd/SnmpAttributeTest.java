@@ -45,16 +45,18 @@ import junit.framework.TestCase;
 
 import org.opennms.core.test.MockPlatformTransactionManager;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.collection.persistence.rrd.BasePersister;
+import org.opennms.netmgt.collection.support.AbstractCollectionSetVisitor;
 import org.opennms.netmgt.config.MibObject;
-import org.opennms.netmgt.config.collector.AttributeGroupType;
-import org.opennms.netmgt.config.collector.CollectionAttribute;
-import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.mock.MockDataCollectionConfig;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.rrd.RrdDataSource;
+import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.snmp.SnmpInstId;
@@ -141,7 +143,7 @@ public class SnmpAttributeTest extends TestCase {
 
         m_mocks.replayAll();
 
-        CollectionAgent agent = DefaultCollectionAgent.create(ipInterface.getId(), m_ipInterfaceDao, new MockPlatformTransactionManager());
+        SnmpCollectionAgent agent = DefaultCollectionAgent.create(ipInterface.getId(), m_ipInterfaceDao, new MockPlatformTransactionManager());
         OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), new MockDataCollectionConfig());
         NodeResourceType resourceType = new NodeResourceType(agent, snmpCollection);
         NodeInfo nodeInfo = resourceType.getNodeInfo();
@@ -153,13 +155,13 @@ public class SnmpAttributeTest extends TestCase {
         mibObject.setAlias("temp_ulko");
         mibObject.setType("gauge");
 
-        NumericAttributeType attributeType = new NumericAttributeType(resourceType, snmpCollection.getName(), mibObject, new AttributeGroupType("foo", "ignore"));
+        NumericAttributeType attributeType = new NumericAttributeType(resourceType, snmpCollection.getName(), mibObject, new AttributeGroupType("foo", AttributeGroupType.IF_TYPE_IGNORE));
 
         attributeType.storeResult(new SnmpCollectionSet(agent, snmpCollection), null, new SnmpResult(mibObject.getSnmpObjId(), new SnmpInstId(mibObject.getInstance()), snmpValue));
         
 
         RrdRepository repository = new RrdRepository();
-        repository.setRraList(new ArrayList<String>(Collections.singleton("RRA:AVERAGE:0.5:1:2016")));
+        repository.setRraList(Collections.singletonList("RRA:AVERAGE:0.5:1:2016"));
 
         final BasePersister persister = new BasePersister(new ServiceParameters(new HashMap<String, Object>()), repository);
         persister.createBuilder(nodeInfo, "baz", attributeType);

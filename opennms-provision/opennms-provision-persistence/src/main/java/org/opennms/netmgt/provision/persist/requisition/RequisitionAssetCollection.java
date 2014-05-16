@@ -29,70 +29,25 @@
 package org.opennms.netmgt.provision.persist.requisition;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.config.api.JaxbListWrapper;
 
-/**
- * <p>RequisitionAssetCollection class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
 @XmlRootElement(name="assets")
-public class RequisitionAssetCollection extends LinkedList<RequisitionAsset> {
+public class RequisitionAssetCollection extends JaxbListWrapper<RequisitionAsset> {
+    private static final long serialVersionUID = 1L;
 
-    private static final long serialVersionUID = -6944256042334743348L;
-
-    /**
-	 * <p>Constructor for RequisitionAssetCollection.</p>
-	 */
-	public RequisitionAssetCollection() {
-        super();
+    public RequisitionAssetCollection() { super(); }
+    public RequisitionAssetCollection(final Collection<? extends RequisitionAsset> assets) {
+        super(assets);
     }
 
-    /**
-     * <p>Constructor for RequisitionAssetCollection.</p>
-     *
-     * @param c a {@link java.util.Collection} object.
-     */
-    public RequisitionAssetCollection(Collection<? extends RequisitionAsset> c) {
-        super(c);
-    }
-
-    /**
-     * <p>getAssetFields</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
     @XmlElement(name="asset")
-    public List<RequisitionAsset> getAssetFields() {
-        return this;
-    }
-
-    /**
-     * <p>setAssetFields</p>
-     *
-     * @param assets a {@link java.util.List} object.
-     */
-    public void setAssetFields(List<RequisitionAsset> assets) {
-        if (assets == this) return;
-        clear();
-        addAll(assets);
-    }
-    
-    /**
-     * <p>getCount</p>
-     *
-     * @return a {@link java.lang.Integer} object.
-     */
-    @XmlAttribute(name="count")
-    public Integer getCount() {
-    	return this.size();
+    public List<RequisitionAsset> getObjects() {
+        return super.getObjects();
     }
 }
 

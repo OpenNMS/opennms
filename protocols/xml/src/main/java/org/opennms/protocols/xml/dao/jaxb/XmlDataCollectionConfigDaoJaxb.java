@@ -49,6 +49,7 @@ import org.springframework.core.io.FileSystemResource;
  */
 public class XmlDataCollectionConfigDaoJaxb extends AbstractJaxbConfigDao<XmlDataCollectionConfig, XmlDataCollectionConfig> implements XmlDataCollectionConfigDao {
 
+    /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(XmlDataCollectionConfigDaoJaxb.class);
 
     /**

@@ -28,18 +28,15 @@
 
 package org.opennms.netmgt.dao.support;
 
-import org.opennms.netmgt.config.collector.AttributeGroup;
-import org.opennms.netmgt.config.collector.CollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.collector.CollectionSet;
-import org.opennms.netmgt.config.collector.CollectionSetVisitor;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.support.AbstractCollectionSetVisitor;
 
 /**
  * StringAttributeVisitor
  * 
  * @author <a href="mail:agalue@opennms.org">Alejandro Galue</a>
  */
-public class StringAttributeVisitor implements CollectionSetVisitor {
+public class StringAttributeVisitor extends AbstractCollectionSetVisitor {
 
     private String attributeName;
     private String attributeValue;
@@ -57,19 +54,4 @@ public class StringAttributeVisitor implements CollectionSetVisitor {
         if (attribute.getType().toLowerCase().startsWith("string") && attributeName.equals(attribute.getName()))
             attributeValue = attribute.getStringValue();
     }
-
-    @Override
-    public void visitCollectionSet(CollectionSet set) {}
-    @Override
-    public void visitResource(CollectionResource resource) {}
-    @Override
-    public void visitGroup(AttributeGroup group) {}
-    @Override
-    public void completeAttribute(CollectionAttribute attribute) {}
-    @Override
-    public void completeGroup(AttributeGroup group) {}
-    @Override
-    public void completeResource(CollectionResource resource) {}
-    @Override
-    public void completeCollectionSet(CollectionSet set) {}
 }

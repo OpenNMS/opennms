@@ -40,6 +40,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.api.collection.IDataCollectionConfig;
+import org.opennms.netmgt.config.internal.collection.DataCollectionConfigConverter;
 import org.opennms.netmgt.config.internal.collection.DatacollectionConfigVisitor;
 
 /**
@@ -52,6 +54,7 @@ import org.opennms.netmgt.config.internal.collection.DatacollectionConfigVisitor
 @ValidateUsing("datacollection-config.xsd")
 public class DatacollectionConfig implements Serializable {
     private static final long serialVersionUID = 8822093542080103175L;
+    private static final List<IncludeCollection> EMPTY_INCLUDE_LIST = Collections.emptyList();
 
     /**
      * full path to the RRD repository for collected SNMP data
@@ -152,6 +155,32 @@ public class DatacollectionConfig implements Serializable {
         return true;
     }
 
+    public IDataCollectionConfig toDataCollectionConfig() {
+        final DatacollectionConfig modifiable = new DatacollectionConfig();
+        modifiable.setRrdRepository(this.getRrdRepository());
+
+        final String resourceTypeName = "__resource_type_collection";
+        final SnmpCollection resourceTypeCollection = this.getSnmpCollection(resourceTypeName);
+
+        for (final SnmpCollection collection : this.getSnmpCollections()) {
+            if (resourceTypeName.equals(collection.getName())) {
+                // skip the special case collection
+                continue;
+            }
+            final SnmpCollection cloned = collection.clone();
+            // DefaultDataCollectionConfigDao already does all the include work, so don't pass them along
+            cloned.setIncludeCollections(EMPTY_INCLUDE_LIST);
+            if (resourceTypeCollection != null) {
+                cloned.setResourceTypes(resourceTypeCollection.getResourceTypes());
+            }
+            modifiable.addSnmpCollection(cloned);
+        }
+
+        final DataCollectionConfigConverter converter = new DataCollectionConfigConverter();
+        modifiable.visit(converter);
+        return converter.getDataCollectionConfig();
+    }
+
     @Override
     public String toString() {
         return "DatacollectionConfig [rrdRepository=" + m_rrdRepository + ", snmpCollections=" + m_snmpCollections + "]";
@@ -159,7 +188,7 @@ public class DatacollectionConfig implements Serializable {
 
     public void visit(final DatacollectionConfigVisitor visitor) {
         visitor.visitDatacollectionConfig(this);
-        
+
         for (final SnmpCollection collection : m_snmpCollections) {
             collection.visit(visitor);
         }

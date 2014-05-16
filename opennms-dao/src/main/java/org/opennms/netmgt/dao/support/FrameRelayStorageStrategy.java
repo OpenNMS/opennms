@@ -30,7 +30,7 @@ package org.opennms.netmgt.dao.support;
 
 import java.util.StringTokenizer;
 
-import org.opennms.netmgt.config.collector.CollectionResource;
+import org.opennms.netmgt.collection.api.CollectionResource;
 
 /**
  * This class use the new implementation of SnmpStorageStrategy extending the new

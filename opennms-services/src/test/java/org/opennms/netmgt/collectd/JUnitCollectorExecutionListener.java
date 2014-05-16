@@ -34,6 +34,7 @@ import java.lang.reflect.Method;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.test.ConfigurationTestUtils;
+import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.DefaultDataCollectionConfigDao;

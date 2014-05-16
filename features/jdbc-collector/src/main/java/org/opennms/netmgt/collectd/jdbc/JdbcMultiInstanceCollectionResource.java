@@ -30,16 +30,16 @@ package org.opennms.netmgt.collectd.jdbc;
 
 import java.io.File;
 
-import org.opennms.netmgt.collectd.CollectionAgent;
-import org.opennms.netmgt.model.RrdRepository;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class JdbcMultiInstanceCollectionResource extends JdbcCollectionResource {
     private static final Logger LOG = LoggerFactory.getLogger(JdbcMultiInstanceCollectionResource.class);
 
-    private String m_inst;
-    private String m_name;
+    private final String m_inst;
+    private final String m_name;
     
     public JdbcMultiInstanceCollectionResource(CollectionAgent agent, String instance, String name) {
         super(agent);

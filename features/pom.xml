@@ -3,13 +3,14 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>1.13.1-SNAPSHOT</version>
+    <version>1.13.2-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.features</artifactId>
   <packaging>pom</packaging>
   <name>OpenNMS Features</name>
   <modules>
+    <module>collection</module>
     <module>instrumentationLogReader</module>
     <module>jdbc-collector</module>
     <module>juniper-tca-collector</module>

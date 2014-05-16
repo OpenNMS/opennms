@@ -29,66 +29,27 @@
 package org.opennms.netmgt.model;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.opennms.core.config.api.JaxbListWrapper;
 
 /**
  * <p>OnmsMapList class.</p>
  */
 @XmlRootElement(name = "maps")
-public class OnmsMapList extends LinkedList<OnmsMap> {
-    private static final long serialVersionUID = -6071472722900233605L;
+public class OnmsMapList extends JaxbListWrapper<OnmsMap> {
+    private static final long serialVersionUID = 1L;
 
-
-    /**
-     * <p>Constructor for OnmsMapList.</p>
-     */
-    public OnmsMapList() {
-        super();
+    public OnmsMapList() { super(); }
+    public OnmsMapList(final Collection<? extends OnmsMap> maps) {
+        super(maps);
     }
 
-    /**
-     * <p>Constructor for OnmsMapList.</p>
-     *
-     * @param c a {@link java.util.Collection} object.
-     */
-    public OnmsMapList(Collection<? extends OnmsMap> c) {
-        super(c);
+    @XmlElement(name="map")
+    public List<OnmsMap> getObjects() {
+        return super.getObjects();
     }
-
-    /**
-     * <p>getMaps</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    @XmlElement(name = "map")
-    public List<OnmsMap> getMaps() {
-        return this;
-    }
-
-    /**
-     * <p>setMaps</p>
-     *
-     * @param maps a {@link java.util.List} object.
-     */
-    public void setMaps(List<OnmsMap> maps) {
-        if (maps == this) return;
-        clear();
-        addAll(maps);
-    }
-
-    /**
-     * <p>getCount</p>
-     *
-     * @return a {@link java.lang.Integer} object.
-     */
-    @XmlAttribute(name="count")
-    public Integer getCount() {
-        return this.size();
-    }
-
 }

@@ -34,12 +34,16 @@ import java.util.Date;
 import java.util.Map;
 
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionException;
+import org.opennms.netmgt.collection.api.CollectionInitializationException;
+import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.ServiceCollector;
+import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.config.collector.CollectionSet;
-import org.opennms.netmgt.config.collector.ServiceParameters;
-import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -272,7 +276,7 @@ public class SnmpCollector implements ServiceCollector {
      */
     @Override
     public void initialize(CollectionAgent agent, Map<String, Object> parameters) throws CollectionInitializationException {
-        agent.validateAgent();
+        ((SnmpCollectionAgent)agent).validateAgent();
         
         // XXX: Experimental code that creates an OnmsSnmpCollection only once
 //        ServiceParameters params = new ServiceParameters(parameters);
@@ -307,11 +311,11 @@ public class SnmpCollector implements ServiceCollector {
             // XXX: This code would be commented out in light if the experimental code above was enabled
             final ServiceParameters params = new ServiceParameters(parameters);
             params.logIfAliasConfig();
-            OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection(agent, params);
+            OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection((SnmpCollectionAgent)agent, params);
 
             final ForceRescanState forceRescanState = new ForceRescanState(agent, eventProxy);
 
-            SnmpCollectionSet collectionSet = snmpCollection.createCollectionSet(agent);
+            SnmpCollectionSet collectionSet = snmpCollection.createCollectionSet((SnmpCollectionAgent)agent);
             collectionSet.setCollectionTimestamp(new Date());
             if (!collectionSet.hasDataToCollect()) {
                 logNoDataToCollect(agent);

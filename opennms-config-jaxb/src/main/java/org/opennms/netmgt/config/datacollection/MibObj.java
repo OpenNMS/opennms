@@ -77,8 +77,8 @@ public class MibObj implements java.io.Serializable {
      * SNMP data type SNMP supported types: counter, gauge, timeticks,
      * integer, octetstring, string. The SNMP type is mapped to one of two RRD
      * supported data types COUNTER or GAUGE, or the string.properties file.
-     * The mapping is as follows: SNMP counter -> RRD COUNTER; SNMP gauge,
-     * timeticks, integer, octetstring -> RRD GAUGE; SNMP string -> String
+     * The mapping is as follows: SNMP counter -&gt; RRD COUNTER; SNMP gauge,
+     * timeticks, integer, octetstring -&gt; RRD GAUGE; SNMP string -&gt; String
      * properties file
      */
     @XmlAttribute(name="type", required=true)
@@ -156,8 +156,8 @@ public class MibObj implements java.io.Serializable {
      * SNMP data type SNMP supported types: counter, gauge, timeticks,
      * integer, octetstring, string. The SNMP type is mapped to one of two RRD
      * supported data types COUNTER or GAUGE, or the string.properties file.
-     * The mapping is as follows: SNMP counter -> RRD COUNTER; SNMP gauge,
-     * timeticks, integer, octetstring -> RRD GAUGE; SNMP string -> String
+     * The mapping is as follows: SNMP counter -&gt; RRD COUNTER; SNMP gauge,
+     * timeticks, integer, octetstring -&gt; RRD GAUGE; SNMP string -&gt; String
      * properties file
      */
     public String getType() {

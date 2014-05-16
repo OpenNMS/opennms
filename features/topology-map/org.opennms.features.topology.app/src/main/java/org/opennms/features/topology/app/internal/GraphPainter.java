@@ -64,10 +64,11 @@ public class GraphPainter extends BaseGraphVisitor {
 		Point location = m_layout.getLocation(vertex);
 		SharedVertex v = new SharedVertex();
 		v.setKey(vertex.getKey());
-		v.setInitialX(initialLocation.getX());
-		v.setInitialY(initialLocation.getY());
-		v.setX(location.getX());
-		v.setY(location.getY());
+        //TODO cast to int for now
+		v.setInitialX((int)initialLocation.getX());
+		v.setInitialY((int)initialLocation.getY());
+		v.setX((int)location.getX());
+		v.setY((int)location.getY());
 		v.setSelected(isSelected(m_graphContainer.getSelectionManager(), vertex));
         v.setStatus(getStatus(vertex));
         v.setStatusCount(getStatusCount(vertex));

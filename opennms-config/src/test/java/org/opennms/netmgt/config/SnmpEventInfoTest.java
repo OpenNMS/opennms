@@ -376,18 +376,18 @@ public class SnmpEventInfoTest {
         
         String snmpConfigXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
         "<snmp-config timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
-        "    <definition version=\"v2c\">\n" + 
-        "        <specific>192.168.0.5</specific>\n" + 
-        "    </definition>\n" + 
+        "   <definition version=\"v2c\">\n" + 
+        "      <specific>192.168.0.5</specific>\n" + 
+        "   </definition>\n" + 
         "</snmp-config>\n" + 
         "";
         
         String expectedConfig = "" +
         "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
         "<snmp-config timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
-        "    <definition read-community=\"abc\">\n" + 
-        "        <specific>192.168.0.5</specific>\n" + 
-        "    </definition>\n" + 
+        "   <definition read-community=\"abc\">\n" + 
+        "      <specific>192.168.0.5</specific>\n" + 
+        "   </definition>\n" + 
         "</snmp-config>\n" +
         "";
 

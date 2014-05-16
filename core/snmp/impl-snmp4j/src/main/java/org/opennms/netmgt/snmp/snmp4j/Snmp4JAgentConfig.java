@@ -117,8 +117,6 @@ public class Snmp4JAgentConfig {
 
     /**
      * Returns a string representation of the SNMP4J version constant
-     * @param version
-     * @return
      */
     public String getVersionString() {
         switch (getVersion()) {

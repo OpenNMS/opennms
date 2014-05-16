@@ -33,7 +33,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.features.topology.api.GraphContainer;
@@ -52,12 +55,27 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Implementation of the <SearchProvider> API that allows the user to specify
+ * an IPLIKE query.  The query itself is returned in the <SearchResult> set as
+ * a collapsible selection as well as the "distinct" list of IPs from the DB
+ * that are also collapsible since multiple nodes may have the same IP.  The
+ * <IpLikeHopCriteria> supports adding all the nodes having the selected IP.
+ * 
+ * FIXME: Improve the label to support showing how many vertices are supported
+ * by each <SearchResult>
+ * 
+ * @author <a href=mailto:david@opennms.org>David Hustace</a>
+ *
+ */
 public class IpLikeSearchProvider extends AbstractSearchProvider implements SearchProvider {
 
 	private static Logger LOG = LoggerFactory.getLogger(IpLikeSearchProvider.class);
 	
     private IpInterfaceDao m_ipInterfaceDao;
     private IpLikeHopCriteriaFactory m_ipLikeHopFactory;
+
+    private static final Pattern m_iplikePattern = Pattern.compile("^[0-9?,\\-*]*\\.[0-9?,\\-*]*\\.[0-9?,\\-*]*\\.[0-9?,\\-*]*$");
 
 	public IpLikeSearchProvider(IpInterfaceDao ipInterfaceDao) {
     	m_ipInterfaceDao = ipInterfaceDao;
@@ -82,13 +100,14 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Sear
      */
     @Override
     public List<SearchResult> query(SearchQuery searchQuery, GraphContainer graphContainer) {
-    	//LOG.debug("SearchProvider->query: called with search query: '{}'", searchQuery);
+    	LOG.info("SearchProvider->query: called with search query: '{}'", searchQuery);
 
         List<SearchResult> results = new ArrayList<SearchResult>();
         
 		String queryString = searchQuery.getQueryString();
+		
 		if (!isIpLikeQuery(queryString)) {
-			//LOG.debug("SearchProvider->query: query not IPLIKE compatible.");
+			LOG.debug("SearchProvider->query: query not IPLIKE compatible.");
 			return results;
 		}
     	
@@ -96,78 +115,95 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Sear
     	
 		bldr.iplike("ipAddress", queryString).orderBy("ipAddress", true);
 		Criteria dbQueryCriteria = bldr.toCriteria();
-		List<OnmsIpInterface> ips = m_ipInterfaceDao.findMatching(dbQueryCriteria);
-		//LOG.info("SearchProvider->query: found: '{}' IP interfaces.", ips.size());
+		List<OnmsIpInterface> ips;
 		
+		//Here to catch query exceptions and avoid unnecessary exception messages in the Vaadin UI
+		//Mainly do to not having yet found the perfect iplike regex that supports IPLIKE syntax 
+		//for both IPv4 and IPv6 IPLIKE expressions in the isIpLikeQuery method.  The current Pattern
+		//test currently fails not catching octets ending in '-' such as '10.7-.*.*' and only supports
+		//IPv4 addresses.  This just lets us fail to the underlying IPLIKE stored procedure.  The IPLIKE
+		//Utils class might be a good place to have a static method that validates the query string
+		//since it seems to do something very similar in its matches method.
+        try {
+            ips = m_ipInterfaceDao.findMatching(dbQueryCriteria);
+            if (ips.size() == 0) {
+                return results;
+            } else {
+                if (isIpLikeQuery(queryString)) {
+                    LOG.debug("SearchProvider->query: adding IPLIKE search spec '{}' to the search results.", queryString);
+                    SearchResult searchResult = new SearchResult(getSearchProviderNamespace(), queryString, queryString, queryString);
+                    searchResult.setCollapsed(false);
+                    searchResult.setCollapsible(true);
+                    results.add(searchResult);
+                }
+            }
 
-		if (ips.size() == 0) {
-			return results;
-		} else {
-			if (isIpLikeQuery(queryString)) {
-				//LOG.debug("SearchProvider->query: adding IPLIKE search spec '{}' to the search results.", queryString);
-				SearchResult searchResult = new SearchResult(getSearchProviderNamespace(), queryString, queryString);
-				searchResult.setCollapsed(false);
-				searchResult.setCollapsible(true);
-				results.add(searchResult);
-			}
-		}
+            Set<String> ipAddrs = new HashSet<String>();
+            
+            LOG.info("SearchProvider->query: creating IP address set.");
+            for (OnmsIpInterface ip : ips) {
+                String hostAddress = ip.getIpAddress().getHostAddress();
+                LOG.debug("SearchProvider->query: adding '{}' to set of IPs.", hostAddress);
+                ipAddrs.add(hostAddress);
+            }
+            
+            LOG.info("SearchProvider->query: building search result from set of IPs.");
+            IPLOOP: for (String ip : ipAddrs) {
+                
+                if (findCriterion(ip, graphContainer) != null) {
+                    continue IPLOOP;
 
-		Set<String> ipAddrs = new HashSet<String>();
+                } else {
+                    results.add(createSearchResult(ip, queryString));
+
+                }
+            }
+            LOG.info("SearchProvider->query: found: '{}' IP interfaces.", ips.size());
+            
+        } catch (Exception e) {
+            LOG.error("SearchProvider-query: caught exception during iplike query: {}", e);
+            
+        }
 		
-		//LOG.info("SearchProvider->query: creating IP address set.");
-		for (OnmsIpInterface ip : ips) {
-			String hostAddress = ip.getIpAddress().getHostAddress();
-            //LOG.debug("SearchProvider->query: adding '{}' to set of IPs.", hostAddress);
-			ipAddrs.add(hostAddress);
-		}
-		
-		//LOG.info("SearchProvider->query: building search result from set of IPs.");
-		IPLOOP: for (String ip : ipAddrs) {
-			
-			if (findCriterion(ip, graphContainer) != null) {
-				continue IPLOOP;
-
-			} else {
-				results.add(createSearchResult(ip));
-
-			}
-		}
-		
-		//LOG.info("SearchProvider->query: built search result with {} results.", results.size());
+		LOG.info("SearchProvider->query: built search result with {} results.", results.size());
 		
         return results;
     }
 
-	private SearchResult createSearchResult(String ip) {
-		SearchResult result = new SearchResult(getSearchProviderNamespace(), ip, ip);
+	private SearchResult createSearchResult(String ip, String queryString) {
+		SearchResult result = new SearchResult(getSearchProviderNamespace(), ip, ip, queryString);
 		result.setCollapsible(true);
 		return result;
 	}
 
 
     /**
-     * Simple way to know if the query string has any chance of being an IPLIKE query.
+     * Validate if the query string has any chance of being an IPLIKE query.
+     * 
+     * FIXME: validates iplike strings that have an octet ending in '-' such as:
+     * 10.7-.*.*
      * 
      * @param queryString
      * @return true if the string contains a '*' or '-' or ',' ".
      */
     private boolean isIpLikeQuery(String queryString) {
-    	
-    	if (queryString.length() >= 7) {
-
-    		if (queryString.contains("*")) {
-    			return true;
-    			
-    		} else if (queryString.contains("-")) {
-    			return true;
-    			
-    		} else if (queryString.contains(",")) {
-    			return true;
-    			
-    		}
-    	}
-    	
-		return false;
+        
+//        Matcher iplikeMatcher = m_iplikePattern.matcher(queryString);
+//        return iplikeMatcher.matches();
+        
+        boolean validity = false;
+        
+        int ipv4delimCnt = StringUtils.countMatches(queryString, ".");
+        int ipv6delimCnt = StringUtils.countMatches(queryString, ":");
+        
+        if ((ipv4delimCnt == 3 || ipv6delimCnt == 7) && !StringUtils.endsWith(queryString, "-")) {
+            validity = true;
+        } else {
+            validity = false;
+        }
+        
+        return validity;
+    	 
 	}
 
     @Override

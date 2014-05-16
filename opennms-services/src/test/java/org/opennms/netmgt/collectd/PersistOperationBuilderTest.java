@@ -40,15 +40,16 @@ import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.MockPlatformTransactionManager;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.collection.persistence.rrd.PersistOperationBuilder;
 import org.opennms.netmgt.config.MibObject;
-import org.opennms.netmgt.config.collector.AttributeGroupType;
-import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.mock.MockDataCollectionConfig;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.RrdRepository;
+import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpResult;
@@ -96,7 +97,7 @@ public class PersistOperationBuilderTest {
         m_fileAnticipator.tearDown();
     }
 
-    private CollectionAgent getCollectionAgent() {
+    private SnmpCollectionAgent getCollectionAgent() {
 
         return DefaultCollectionAgent.create(m_intf.getId(), m_ifDao, m_transMgr);
     }
@@ -105,7 +106,7 @@ public class PersistOperationBuilderTest {
     public void testCommitWithNoDeclaredAttributes() throws Exception {
         RrdRepository repository = createRrdRepository();
 
-        CollectionAgent agent = getCollectionAgent();
+        SnmpCollectionAgent agent = getCollectionAgent();
 
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
 
@@ -127,7 +128,7 @@ public class PersistOperationBuilderTest {
 
         RrdRepository repository = createRrdRepository();
 
-        CollectionAgent agent = getCollectionAgent();
+        SnmpCollectionAgent agent = getCollectionAgent();
 
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
 
@@ -140,14 +141,14 @@ public class PersistOperationBuilderTest {
         MibObject mibObject = new MibObject();
         mibObject.setOid(".1.1.1.1");
         mibObject.setAlias("mibObjectAlias");
-        mibObject.setType("string");
+        mibObject.setType("counter");
         mibObject.setInstance("0");
         mibObject.setMaxval(null);
         mibObject.setMinval(null);
 
         SnmpCollectionSet collectionSet = new SnmpCollectionSet(agent, collection);
 
-        SnmpAttributeType attributeType = new StringAttributeType(resourceType, "some-collection", mibObject, new AttributeGroupType("mibGroup", "ignore"));
+        SnmpAttributeType attributeType = new StringAttributeType(resourceType, "some-collection", mibObject, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
         attributeType.storeResult(collectionSet, null, new SnmpResult(mibObject.getSnmpObjId(), new SnmpInstId(mibObject.getInstance()), SnmpUtils.getValueFactory().getOctetString("hello".getBytes())));
 
         PersistOperationBuilder builder = new PersistOperationBuilder(repository, resource, "rrdName");
@@ -163,7 +164,42 @@ public class PersistOperationBuilderTest {
 
         RrdRepository repository = createRrdRepository();
 
-        CollectionAgent agent = getCollectionAgent();
+        SnmpCollectionAgent agent = getCollectionAgent();
+
+        MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
+
+        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig);
+
+        NodeResourceType resourceType = new NodeResourceType(agent, collection);
+
+        CollectionResource resource = new NodeInfo(resourceType, agent);
+
+        MibObject mibObject = new MibObject();
+        mibObject.setOid(".1.1.1.1");
+        mibObject.setAlias("mibObjectAlias");
+        mibObject.setType("counter");
+        mibObject.setInstance("0");
+        mibObject.setMaxval(null);
+        mibObject.setMinval(null);
+
+        SnmpCollectionSet collectionSet = new SnmpCollectionSet(agent, collection);
+
+        SnmpAttributeType attributeType = new StringAttributeType(resourceType, "some-collection", mibObject, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
+        attributeType.storeResult(collectionSet, null, new SnmpResult(mibObject.getSnmpObjId(), new SnmpInstId(mibObject.getInstance()), SnmpUtils.getValueFactory().getOctetString("hello".getBytes())));
+
+        PersistOperationBuilder builder = new PersistOperationBuilder(repository, resource, "rrdName");
+        builder.declareAttribute(attributeType);
+        builder.setAttributeValue(attributeType, "6.022E23");
+        builder.commit();
+    }
+
+
+    @Test
+    public void testCommitWithDeclaredAttributeAndStringValue() throws Exception {
+
+        RrdRepository repository = createRrdRepository();
+
+        SnmpCollectionAgent agent = getCollectionAgent();
 
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
 
@@ -183,15 +219,14 @@ public class PersistOperationBuilderTest {
 
         SnmpCollectionSet collectionSet = new SnmpCollectionSet(agent, collection);
 
-        SnmpAttributeType attributeType = new StringAttributeType(resourceType, "some-collection", mibObject, new AttributeGroupType("mibGroup", "ignore"));
+        SnmpAttributeType attributeType = new StringAttributeType(resourceType, "some-collection", mibObject, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
         attributeType.storeResult(collectionSet, null, new SnmpResult(mibObject.getSnmpObjId(), new SnmpInstId(mibObject.getInstance()), SnmpUtils.getValueFactory().getOctetString("hello".getBytes())));
 
         PersistOperationBuilder builder = new PersistOperationBuilder(repository, resource, "rrdName");
         builder.declareAttribute(attributeType);
-        builder.setAttributeValue(attributeType, "6.022E23");
+        builder.setAttributeValue(attributeType, "THIS_IS_A_STRING");
         builder.commit();
     }
-
 
     private RrdRepository createRrdRepository() throws IOException {
         RrdRepository repository = new RrdRepository();

@@ -1,9 +1,23 @@
+opennms (1.13.1-1) stable; urgency=low
+
+  * New upstream release.  This is the 2nd unstable release for the eventual
+    1.14.x stable series.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Mon, 21 Apr 2014 14:21:00 -0400
+
 opennms (1.13.0-1) stable; urgency=low
 
   * New upstream release.  This is the first unstable release for the eventual
     1.14.x stable series.
 
  -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 12 Dec 2013 15:28:00 -0400
+
+opennms (1.12.6-1) stable; urgency=high
+
+  * New upstream release.  This release contains a number of important fixes
+    including a potential security leak in the ReST interface.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Mon, 21 Apr 2014 10:00:00 -0400
 
 opennms (1.12.5-1) stable; urgency=high
 

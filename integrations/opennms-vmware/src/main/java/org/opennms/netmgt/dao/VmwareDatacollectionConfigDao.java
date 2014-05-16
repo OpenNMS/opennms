@@ -30,7 +30,7 @@ package org.opennms.netmgt.dao;
 
 import org.opennms.netmgt.config.vmware.vijava.VmwareCollection;
 import org.opennms.netmgt.config.vmware.vijava.VmwareDatacollectionConfig;
-import org.opennms.netmgt.model.RrdRepository;
+import org.opennms.netmgt.rrd.RrdRepository;
 
 /**
  * The Interface VmwareDatacollectionConfigDao

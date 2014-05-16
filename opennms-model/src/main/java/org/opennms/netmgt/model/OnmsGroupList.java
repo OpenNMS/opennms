@@ -29,57 +29,33 @@
 package org.opennms.netmgt.model;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "groups")
-public class OnmsGroupList extends LinkedList<OnmsGroup> {
-    private static final long serialVersionUID = -3120131643998397193L;
-    private int m_totalCount;
+import org.opennms.core.config.api.JaxbListWrapper;
 
-    public OnmsGroupList() {
-        super();
-    }
-    
-    public OnmsGroupList(final Collection<? extends OnmsGroup> c) {
-        super(c);
+@XmlRootElement(name="groups")
+@XmlAccessorType(XmlAccessType.NONE)
+public class OnmsGroupList extends JaxbListWrapper<OnmsGroup> {
+    private static final long serialVersionUID = 1L;
+
+    public OnmsGroupList() { super(); }
+    public OnmsGroupList(final Collection<? extends OnmsGroup> groups) {
+        super(groups);
     }
 
-    @XmlElement(name = "group")
+    @XmlElement(name="group")
+    public List<OnmsGroup> getObjects() {
+        return super.getObjects();
+    }
     public List<OnmsGroup> getGroups() {
-        return this;
+        return getObjects();
     }
-    
     public void setGroups(final List<OnmsGroup> groups) {
-        if (groups == this) return;
-        clear();
-        addAll(groups);
-    }
-    
-    @XmlAttribute(name="count")
-    public int getCount() {
-        return this.size();
-    }
-
-    // The property has a getter "" but no setter. For unmarshalling, please define setters.
-    public void setCount(final int count) {
-    }
-
-    @XmlAttribute(name="totalCount")
-    public int getTotalCount() {
-        return m_totalCount;
-    }
-    
-    /**
-     * <p>setTotalCount</p>
-     *
-     * @param count a int.
-     */
-    public void setTotalCount(final int count) {
-        m_totalCount = count;
+        setObjects(groups);
     }
 }

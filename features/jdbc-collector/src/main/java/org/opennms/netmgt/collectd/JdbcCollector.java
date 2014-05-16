@@ -47,14 +47,17 @@ import org.opennms.netmgt.collectd.jdbc.JdbcCollectionResource;
 import org.opennms.netmgt.collectd.jdbc.JdbcCollectionSet;
 import org.opennms.netmgt.collectd.jdbc.JdbcMultiInstanceCollectionResource;
 import org.opennms.netmgt.collectd.jdbc.JdbcSingleInstanceCollectionResource;
-import org.opennms.netmgt.config.collector.AttributeGroupType;
-import org.opennms.netmgt.config.collector.CollectionSet;
+import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionException;
+import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.config.jdbc.JdbcColumn;
 import org.opennms.netmgt.config.jdbc.JdbcDataCollection;
 import org.opennms.netmgt.config.jdbc.JdbcQuery;
 import org.opennms.netmgt.dao.JdbcDataCollectionConfigDao;
-import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -145,7 +148,7 @@ public class JdbcCollector implements ServiceCollector {
             LOG.debug(sb.toString());
             throw new IllegalStateException(sb.toString());
         } else {
-            nodeState = new JdbcAgentState(agent.getInetAddress(), parameters);
+            nodeState = new JdbcAgentState(agent.getAddress(), parameters);
             LOG.info("initialize: Scheduling interface for collection: {}", nodeState.getAddress());
             m_scheduledNodes.put(scheduledNodeKey, nodeState);
         }
@@ -190,7 +193,7 @@ public class JdbcCollector implements ServiceCollector {
             loadAttributeTypeList(collection);
         
             // Create a new collection set.
-            JdbcCollectionSet collectionSet = new JdbcCollectionSet(agent);
+            JdbcCollectionSet collectionSet = new JdbcCollectionSet();
             collectionSet.setCollectionTimestamp(new Date());
         
             // Cycle through all of the queries for this collection

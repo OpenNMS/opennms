@@ -114,7 +114,7 @@ public class NetScalerGroupHealthMonitor extends SnmpMonitorStrategy {
                 }
             }
 
-            double health = (new Double(activeServers)/new Double(totalServers)) * new Double(100);
+            double health = (new Double(activeServers)/new Double(totalServers)) * 100.0;
             LOG.debug("There are {} of {} active servers ({}%) on group {} for NetScaler {}", activeServers, totalServers, health, groupName, hostAddress);
 
             if (health >= groupHealth) {

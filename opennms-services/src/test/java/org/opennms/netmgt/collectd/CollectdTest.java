@@ -49,6 +49,14 @@ import junit.framework.TestCase;
 import org.easymock.EasyMock;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionException;
+import org.opennms.netmgt.collection.api.CollectionInitializationException;
+import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.CollectionSetVisitor;
+import org.opennms.netmgt.collection.api.ServiceCollector;
+import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.collection.support.AbstractCollectionSet;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
@@ -58,9 +66,6 @@ import org.opennms.netmgt.config.collectd.Filter;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Parameter;
 import org.opennms.netmgt.config.collectd.Service;
-import org.opennms.netmgt.config.collector.CollectionSet;
-import org.opennms.netmgt.config.collector.CollectionSetVisitor;
-import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
@@ -69,11 +74,11 @@ import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.poller.mock.MockScheduler;
+import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.test.mock.EasyMockUtils;
@@ -406,7 +411,7 @@ public class CollectdTest extends TestCase {
         
         @Override
         public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> parameters) throws CollectionException {
-            return new CollectionSet() {
+            return new AbstractCollectionSet() {
                 private Date m_timestamp = new Date();
                 @Override
                 public int getStatus() {
@@ -417,11 +422,6 @@ public class CollectdTest extends TestCase {
                 public void visit(CollectionSetVisitor visitor) {
                     visitor.visitCollectionSet(this);   
                     visitor.completeCollectionSet(this);
-                }
-
-                @Override
-                public boolean ignorePersist() {
-                    return false;
                 }
 
                 @Override
@@ -454,10 +454,8 @@ public class CollectdTest extends TestCase {
         @Override
         public RrdRepository getRrdRepository(String collectionName) {
             RrdRepository repo = new RrdRepository();
-            ArrayList<String> rras=new ArrayList<String>();
-            rras.add("RRA:AVERAGE:0.5:1:8928");
             repo.setRrdBaseDir(new File("/usr/local/opennms/share/rrd/snmp/"));
-            repo.setRraList(rras);
+            repo.setRraList(Collections.singletonList("RRA:AVERAGE:0.5:1:8928"));
             repo.setStep(300);
             repo.setHeartBeat(2 * 300);
             return repo;

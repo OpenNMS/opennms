@@ -28,29 +28,23 @@
 
 package org.opennms.netmgt.collectd.jdbc;
 
-import org.opennms.netmgt.config.collector.AttributeGroupType;
-import org.opennms.netmgt.config.collector.CollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionAttributeType;
-import org.opennms.netmgt.config.collector.Persister;
+import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.api.Persister;
+import org.opennms.netmgt.collection.support.AbstractCollectionAttributeType;
 import org.opennms.netmgt.config.jdbc.JdbcColumn;
 
-public class JdbcCollectionAttributeType implements CollectionAttributeType {
-    JdbcColumn m_column;
-    AttributeGroupType m_groupType;
+public class JdbcCollectionAttributeType extends AbstractCollectionAttributeType {
+    private final JdbcColumn m_column;
     
     public JdbcCollectionAttributeType(JdbcColumn column, AttributeGroupType groupType) {
-        m_groupType=groupType;
+        super(groupType);
         m_column=column;
     }
     
     @Override
-    public AttributeGroupType getGroupType() {
-        return m_groupType;
-    }
-    
-    @Override
     public void storeAttribute(CollectionAttribute attribute, Persister persister) {
-        if (m_column.getDataType().equalsIgnoreCase("string")) {
+        if ("string".equalsIgnoreCase(m_column.getDataType())) {
             persister.persistStringAttribute(attribute);
         } else {
             persister.persistNumericAttribute(attribute);

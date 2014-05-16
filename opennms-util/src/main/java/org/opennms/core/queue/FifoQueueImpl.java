@@ -33,7 +33,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 /**
- * </p>
+ * <p>
  * This interface defines a queue that uses <em>F</em> irst <em>I</em>n,
  * <em>F</em> irst <em>O</em> ut semantics when adding and removing objects.
  * Each object that is added to the queue is effectively placed at the end of
@@ -77,8 +77,7 @@ public class FifoQueueImpl<T> implements FifoQueue<T> {
      * {@inheritDoc}
      *
      * Inserts a new element into the queue. If the queue has reached an
-     * implementation limit and the <code>
-     * timeout</code> expires, then a false
+     * implementation limit and the <code>timeout</code> expires, then a false
      * value is returned to the caller.
      * 
      * @throws java.lang.InterruptedException

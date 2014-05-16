@@ -50,8 +50,8 @@ import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.criteria.restrictions.LtRestriction;
 import org.opennms.core.criteria.restrictions.NotNullRestriction;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.TimeKeeper;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.collection.api.TimeKeeper;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
@@ -725,7 +725,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     /**
      * <p>setTimeKeeper</p>
      *
-     * @param timeKeeper a {@link org.opennms.core.utils.TimeKeeper} object.
+     * @param timeKeeper a {@link org.opennms.netmgt.collection.api.TimeKeeper} object.
      */
     public void setTimeKeeper(final TimeKeeper timeKeeper) {
         m_timeKeeper = timeKeeper;
