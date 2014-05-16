@@ -42,7 +42,7 @@ public final class GWTEdge extends JavaScriptObject {
     protected GWTEdge() {};
     
     public static final native GWTEdge create(String id, GWTVertex source, GWTVertex target) /*-{
-    	return {"id":id, "source":source, "target":target, "cssClass": "path", "linkNum":1, "tooltipText": ""};
+    	return {"id":id, "source":source, "target":target, "cssClass": "path", "linkNum":1, "tooltipText": "", status:""};
 	}-*/;
 
     public final native GWTVertex getSource() /*-{
@@ -80,11 +80,11 @@ public final class GWTEdge extends JavaScriptObject {
     public final native int getLinkNum() /*-{
         return this.linkNum;
     }-*/;
-    
+
     public final native void setTooltipText(String tooltipText) /*-{
         this.tooltipText = tooltipText;
     }-*/;
-    
+
     public final native String getTooltipText()/*-{
         return this.tooltipText;
     }-*/;
@@ -92,7 +92,15 @@ public final class GWTEdge extends JavaScriptObject {
     public static final native void consoleLog(Object obj)/*-{
         $wnd.console.log(obj);
     }-*/;
-    
+
+    public static final native void setStatus(String status) /*-{
+        this.status = status;
+    }-*/;
+
+    public static final native String getStatus() /*-{
+        return this.status;
+    }-*/;
+
     public static D3Behavior draw() {
         return new D3Behavior() {
 
@@ -102,7 +110,7 @@ public final class GWTEdge extends JavaScriptObject {
             }
         };
     }
-    
+
     protected static Func<String, GWTEdge> createPath(){
         return new Func<String, GWTEdge>(){
 
@@ -114,14 +122,14 @@ public final class GWTEdge extends JavaScriptObject {
                 int dy = Math.abs(target.getY() - source.getY());
                 int dr = edge.getLinkNum() > 1 ? (Math.max(dx, dy) * 10) / edge.getLinkNum() : 0;
                 int direction = edge.getLinkNum() % 2 == 0  ? 0 : 1;
-                
-                return "M" + source.getX() + "," + source.getY() + 
+
+                return "M" + source.getX() + "," + source.getY() +
                        " A" + dr + "," + dr + " 0 0, " + direction + " " + target.getX() + "," + target.getY();
             }
-            
+
         };
     }
-    
+
     protected static Func<String, GWTEdge> getCssStyleClass(){
         return new Func<String, GWTEdge>(){
 
@@ -131,6 +139,16 @@ public final class GWTEdge extends JavaScriptObject {
             }
         };
     }
+
+    protected static Func<String, GWTEdge> getStatusStyle(){
+      return new Func<String, GWTEdge>() {
+          @Override
+          public String call(GWTEdge datum, int index) {
+              return datum.getStatus();
+          }
+      };
+    }
+
 
     public static D3Behavior create() {
         return new D3Behavior() {
@@ -147,6 +165,4 @@ public final class GWTEdge extends JavaScriptObject {
             }
         };
     }
-
-
 }

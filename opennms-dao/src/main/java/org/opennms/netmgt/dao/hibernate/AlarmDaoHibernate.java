@@ -34,6 +34,7 @@ import java.util.List;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
+import org.opennms.netmgt.model.topology.EdgeAlarmStatusSummary;
 
 /**
  * <p>AlarmDaoHibernate class.</p>
@@ -82,6 +83,38 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
         }
         sql.append("GROUP BY node.id, node.label ");
         return findObjects(AlarmSummary.class, sql.toString());
+    }
+
+    @Override
+    public List<EdgeAlarmStatusSummary> getLldpEdgeAlarmSummaries(List<Integer> lldpLinkIds) {
+        if (lldpLinkIds.size() < 1) {
+            return Collections.emptyList();
+        }
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT new org.opennms.netmgt.model.topology.EdgeAlarmStatusSummary( LEAST(s.id, t.id), GREATEST(s.id, t.id), a.eventuei)");
+        sql.append("FROM lldplink as s ");
+        sql.append("JOIN lldplink as t ");
+        sql.append("ON s.lldpremportdescr = t.lldpportdescr AND ");
+        sql.append(" s.lldpremportidsubtype = t.lldpportidsubtype AND ");
+        sql.append(" s.lldpremportid = t.lldpportid ");
+        sql.append("JOIN ");
+        sql.append("  alarms as a ");
+        sql.append("ON ");
+        sql.append(" a.nodeid = s.nodeid AND ");
+        sql.append(" s.lldpportifindex = a.ifindex");
+        sql.append("GROUP BY ");
+        sql.append(" s.id, ");
+        sql.append(" t.id, ");
+        sql.append(" s.nodeid, ");
+        sql.append(" t.nodeid, ");
+        sql.append(" a.eventuei, ");
+        sql.append(" a.lasteventtime ");
+        sql.append("ORDER BY ");
+        sql.append(" a.lasteventtime DESC limit 1;");
+
+
+        return findObjects(EdgeAlarmStatusSummary.class, sql.toString());
     }
 
     /** {@inheritDoc} */
