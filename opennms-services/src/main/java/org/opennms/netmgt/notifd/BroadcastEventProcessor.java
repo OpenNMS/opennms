@@ -186,6 +186,15 @@ public final class BroadcastEventProcessor implements EventListener {
             return;
         }
 
+        if (event.getLogmsg() != null && event.getLogmsg().getDest().equalsIgnoreCase("donotpersist")) {
+            log().warn("discarding event " + event.getUei() + ", the event has been configured as 'doNotPersist'.");
+            return;
+        }
+        if (event.getAlarmData() != null && event.getAlarmData().isAutoClean()) {
+            log().warn("discarding event " + event.getUei() + ", the event has been configured with autoClean=true on its alarmData.");
+            return;
+        }
+
         boolean notifsOn = computeNullSafeStatus();
 
         if (notifsOn && (checkCriticalPath(event, notifsOn))) {
