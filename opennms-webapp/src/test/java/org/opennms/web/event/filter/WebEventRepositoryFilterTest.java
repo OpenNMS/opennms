@@ -64,7 +64,6 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath:/daoWebRepositoryTestContext.xml",
-        "classpath:/jdbcWebRepositoryTestContext.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
@@ -76,10 +75,6 @@ public class WebEventRepositoryFilterTest implements InitializingBean {
     @Autowired
     @Qualifier("dao")
     WebEventRepository m_daoEventRepo;
-    
-    @Autowired
-    @Qualifier("jdbc")
-    WebEventRepository m_jdbcEventRepo;
     
     @Autowired
     ApplicationContext m_appContext;
@@ -155,14 +150,6 @@ public class WebEventRepositoryFilterTest implements InitializingBean {
         assertEquals("TestUser", events[0].getAcknowledgeUser());
         
         m_daoEventRepo.unacknowledgeAll();
-        
-        events = m_jdbcEventRepo.getMatchingEvents(criteria);
-        assertEquals(0, events.length);
-        
-        m_daoEventRepo.acknowledgeAll("TestUser", new Date());
-        events = m_jdbcEventRepo.getMatchingEvents(criteria);
-        assertEquals(2, events.length);
-        
     }
     
     @Test
@@ -171,9 +158,6 @@ public class WebEventRepositoryFilterTest implements InitializingBean {
         AfterDateFilter filter = new AfterDateFilter(yesterday());
         
         Event[] events = getMatchingDaoEvents(filter);
-        assertEquals(2, events.length);
-        
-        events = getMatchingJdbcEvents(filter);
         assertEquals(2, events.length);
     }
     
@@ -184,9 +168,6 @@ public class WebEventRepositoryFilterTest implements InitializingBean {
         
         Event[] events = getMatchingDaoEvents(filter);
         assertEquals(1, events.length);
-        
-        events = getMatchingJdbcEvents(filter);
-        assertEquals(1, events.length);
     }
     
     @Test
@@ -196,9 +177,6 @@ public class WebEventRepositoryFilterTest implements InitializingBean {
         
         Event[] events = getMatchingDaoEvents(filter);
         assertEquals(2, events.length);
-        
-        events = getMatchingJdbcEvents(filter);
-        assertEquals(2, events.length);
     }
     
     @Test
@@ -207,10 +185,6 @@ public class WebEventRepositoryFilterTest implements InitializingBean {
         DescriptionSubstringFilter filter = new DescriptionSubstringFilter("test event");
         
         Event[] events = getMatchingDaoEvents(filter);
-        assertEquals(1, events.length);
-        assertEquals("This is a test event", events[0].getDescription());
-        
-        events = getMatchingJdbcEvents(filter);
         assertEquals(1, events.length);
         assertEquals("This is a test event", events[0].getDescription());
     }
@@ -223,10 +197,6 @@ public class WebEventRepositoryFilterTest implements InitializingBean {
         Event[] events = getMatchingDaoEvents(filter);
         assertEquals(1, events.length);
         assertEquals("uei.opennms.org/test2", events[0].getUei());
-        
-        events = getMatchingJdbcEvents(new ExactUEIFilter("uei.opennms.org/test"));
-        assertEquals(1, events.length);
-        assertEquals("uei.opennms.org/test", events[0].getUei());
     }
     
     @Test
@@ -237,16 +207,10 @@ public class WebEventRepositoryFilterTest implements InitializingBean {
         Event[] events = getMatchingDaoEvents(filter);
         assertEquals(1, events.length);
         
-        events = getMatchingJdbcEvents(filter);
-        assertEquals(1, events.length);
-        
         events = getMatchingDaoEvents(new IfIndexFilter(1));
         assertEquals(0, events.length);
-        
-        events = getMatchingJdbcEvents(new IfIndexFilter(1));
-        assertEquals(0, events.length);
     }
-    
+
     @Test
     @Transactional
     public void testInterfaceFilter(){
@@ -255,11 +219,6 @@ public class WebEventRepositoryFilterTest implements InitializingBean {
         Event[] events = getMatchingDaoEvents(filter);
         assertEquals(1, events.length);
         assertEquals("192.168.1.1", events[0].getIpAddress());
-        
-        events = getMatchingJdbcEvents(filter);
-        assertEquals(1, events.length);
-        assertEquals("192.168.1.1", events[0].getIpAddress());
-        
     }
     
     @Test
@@ -270,14 +229,8 @@ public class WebEventRepositoryFilterTest implements InitializingBean {
         Event[] events = getMatchingDaoEvents(filter);
         assertEquals(1, events.length);
         
-        events = getMatchingJdbcEvents(filter);
-        assertEquals(1, events.length);
-        
         filter = new IPAddrLikeFilter("193.168");
         events = getMatchingDaoEvents(filter);
-        assertEquals(0, events.length);
-        
-        events = getMatchingJdbcEvents(filter);
         assertEquals(0, events.length);
     }
     
@@ -288,11 +241,6 @@ public class WebEventRepositoryFilterTest implements InitializingBean {
         
         Event[] events = getMatchingDaoEvents(filter);
         assertEquals(1, events.length);
-        
-        events = null;
-        
-        events = getMatchingJdbcEvents(filter);
-        assertEquals(1, events.length);
     }
     
     @Test
@@ -301,9 +249,6 @@ public class WebEventRepositoryFilterTest implements InitializingBean {
         LogMessageSubstringFilter filter = new LogMessageSubstringFilter("is a test");
         
         Event[] events = getMatchingDaoEvents(filter);
-        assertEquals(1, events.length);
-        
-        events = getMatchingJdbcEvents(filter);
         assertEquals(1, events.length);
     }
     
@@ -317,15 +262,9 @@ public class WebEventRepositoryFilterTest implements InitializingBean {
         
         events = null;
         
-        events = getMatchingJdbcEvents(filter);
-        assertEquals(2, events.length);
-        
         m_daoEventRepo.acknowledgeAll("TestUser", new Date());
         
         events = getMatchingDaoEvents(filter);
-        assertEquals(0, events.length);
-        
-        events = getMatchingJdbcEvents(filter);
         assertEquals(0, events.length);
     }
     
@@ -337,15 +276,9 @@ public class WebEventRepositoryFilterTest implements InitializingBean {
         Event[] events = getMatchingDaoEvents(filter);
         assertEquals(1, events.length);
         
-        events = getMatchingJdbcEvents(filter);
-        assertEquals(1, events.length);
-        
         filter = new NegativeExactUEIFilter("uei.opennms.org/nontest");
         
         events = getMatchingDaoEvents(filter);
-        assertEquals(2, events.length);
-        
-        events = getMatchingJdbcEvents(filter);
         assertEquals(2, events.length);
     }
     
@@ -357,15 +290,9 @@ public class WebEventRepositoryFilterTest implements InitializingBean {
         Event[] events = getMatchingDaoEvents(filter);
         assertEquals(1, events.length);
         
-        events = getMatchingJdbcEvents(filter);
-        assertEquals(1, events.length);
-        
         filter = new NegativeInterfaceFilter("27.0.0.1");
         
         events = getMatchingDaoEvents(filter);
-        assertEquals(2, events.length);
-        
-        events = getMatchingJdbcEvents(filter);
         assertEquals(2, events.length);
     }
     
@@ -377,15 +304,9 @@ public class WebEventRepositoryFilterTest implements InitializingBean {
         Event[] events = getMatchingDaoEvents(filter);
         assertEquals(2, events.length);
         
-        events = getMatchingJdbcEvents(filter);
-        assertEquals(2, events.length);
-        
         filter = new NegativeNodeFilter(m_dbPopulator.getNode1().getId(), m_appContext);
         
         events = getMatchingDaoEvents(filter);
-        assertEquals(1, events.length);
-        
-        events = getMatchingJdbcEvents(filter);
         assertEquals(1, events.length);
         
         assertEquals("node is not node1", filter.getTextDescription());
@@ -399,15 +320,9 @@ public class WebEventRepositoryFilterTest implements InitializingBean {
         Event[] events = getMatchingDaoEvents(filter);
         assertEquals(0, events.length);
         
-        events = getMatchingJdbcEvents(filter);
-        assertEquals(0, events.length);
-        
         filter = new NegativePartialUEIFilter("puei.org.opennms");
         
         events = getMatchingDaoEvents(filter);
-        assertEquals(2, events.length);
-        
-        events = getMatchingJdbcEvents(filter);
         assertEquals(2, events.length);
     }
     
@@ -419,15 +334,9 @@ public class WebEventRepositoryFilterTest implements InitializingBean {
         Event[] events = getMatchingDaoEvents(filter);
         assertEquals(1, events.length);
         
-        events = getMatchingJdbcEvents(filter);
-        assertEquals(1, events.length);
-        
         filter = new NegativeServiceFilter(2, m_appContext);
         
         events = getMatchingDaoEvents(filter);
-        assertEquals(2, events.length);
-        
-        events = getMatchingJdbcEvents(filter);
         assertEquals(2, events.length);
     }
     
@@ -439,15 +348,9 @@ public class WebEventRepositoryFilterTest implements InitializingBean {
         Event[] events = getMatchingDaoEvents(filter);
         assertEquals(2, events.length);
         
-        events = getMatchingJdbcEvents(filter);
-        assertEquals(2, events.length);
-        
         filter = new NegativeSeverityFilter(OnmsSeverity.CLEARED.getId());
         
         events = getMatchingDaoEvents(filter);
-        assertEquals(1, events.length);
-        
-        events = getMatchingJdbcEvents(filter);
         assertEquals(1, events.length);
     }
     
@@ -460,15 +363,9 @@ public class WebEventRepositoryFilterTest implements InitializingBean {
         Event[] events = getMatchingDaoEvents(filter);
         assertEquals(1, events.length);
         
-        events = getMatchingJdbcEvents(filter);
-        assertEquals(1, events.length);
-        
         filter = new NodeFilter(2, m_appContext);
         
         events = getMatchingDaoEvents(filter);
-        assertEquals(0, events.length);
-        
-        events = getMatchingJdbcEvents(filter);
         assertEquals(0, events.length);
         
         assertEquals("node=node2", filter.getTextDescription());
@@ -482,17 +379,10 @@ public class WebEventRepositoryFilterTest implements InitializingBean {
         Event[] events = getMatchingDaoEvents(filter);
         assertEquals(1, events.length);
         
-        events = getMatchingJdbcEvents(filter);
-        assertEquals(1, events.length);
-        
         filter = new NodeNameLikeFilter("testNode");
         
         events = getMatchingDaoEvents(filter);
         assertEquals(0, events.length);
-        
-        events = getMatchingJdbcEvents(filter);
-        assertEquals(0, events.length);
-        
     }
     
     @Test
@@ -503,15 +393,9 @@ public class WebEventRepositoryFilterTest implements InitializingBean {
         Event[] events = getMatchingDaoEvents(filter);
         assertEquals(2, events.length);
         
-        events = getMatchingJdbcEvents(filter);
-        assertEquals(2, events.length);
-        
         filter = new PartialUEIFilter("unknown");
         
         events = getMatchingDaoEvents(filter);
-        assertEquals(0, events.length);
-        
-        events = getMatchingJdbcEvents(filter);
         assertEquals(0, events.length);
     }
     
@@ -523,15 +407,9 @@ public class WebEventRepositoryFilterTest implements InitializingBean {
         Event[] events = getMatchingDaoEvents(filter);
         assertEquals(0, events.length);
         
-        events = getMatchingJdbcEvents(filter);
-        assertEquals(0, events.length);
-        
         filter = new ServiceFilter(1, m_appContext);
         
         events = getMatchingDaoEvents(filter);
-        assertEquals(1, events.length);
-        
-        events = getMatchingJdbcEvents(filter);
         assertEquals(1, events.length);
     }
     
@@ -543,15 +421,9 @@ public class WebEventRepositoryFilterTest implements InitializingBean {
         Event[] events = getMatchingDaoEvents(filter);
         assertEquals(1, events.length);
         
-        events = getMatchingJdbcEvents(filter);
-        assertEquals(1, events.length);
-        
         filter = new SeverityFilter(OnmsSeverity.MAJOR.getId());
         
         events = getMatchingDaoEvents(filter);
-        assertEquals(0, events.length);
-        
-        events = getMatchingJdbcEvents(filter);
         assertEquals(0, events.length);
     }
     
@@ -563,17 +435,10 @@ public class WebEventRepositoryFilterTest implements InitializingBean {
         return m_daoEventRepo.getMatchingEvents(getCriteria(filters));
     }
     
-    private Event[] getMatchingJdbcEvents(Filter...filters){
-        return m_jdbcEventRepo.getMatchingEvents(getCriteria(filters));
-    }
-
     private void assert1Result(Filter filter){
         EventCriteria criteria = new EventCriteria(filter);
         
-        Event[] events = m_jdbcEventRepo.getMatchingEvents(criteria);
-        assertEquals(1, events.length);
-        
-        events = m_daoEventRepo.getMatchingEvents(criteria);
+        Event[] events = m_daoEventRepo.getMatchingEvents(criteria);
         assertEquals(1, events.length);
     }
     
