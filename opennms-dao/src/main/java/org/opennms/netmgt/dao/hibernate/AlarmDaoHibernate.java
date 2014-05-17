@@ -114,7 +114,7 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
         sql.append(" a.lasteventtime DESC limit 1;");
 
 
-        return findObjects(EdgeAlarmStatusSummary.class, sql.toString());
+        return Collections.emptyList(); //findObjects(EdgeAlarmStatusSummary.class, sql.toString());
     }
 
     /** {@inheritDoc} */

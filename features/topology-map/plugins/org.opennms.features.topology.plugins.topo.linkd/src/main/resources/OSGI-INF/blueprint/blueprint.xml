@@ -119,7 +119,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
     <bean id="lldpLinkStatusProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LldpLinkStatusProvider" >
         <property name="alarmDao" ref="alarmDao" />
     </bean>
-
+<!--
     <service interface="org.opennms.features.topology.api.CheckedOperation" >
         <service-properties>
             <entry key="operation.menuLocation" value="View"/>
@@ -129,7 +129,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
             <property name="edgeStatusProvider" ref="lldpLinkStatusProvider"/>
         </bean>
     </service>
-    
+-->
     <service interface="org.opennms.features.topology.api.IconRepository">
         <bean class="org.opennms.features.topology.api.support.DefaultIconRepository">
             <property name="iconMap">
