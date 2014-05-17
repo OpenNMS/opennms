@@ -46,13 +46,16 @@ import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.test.DaoTestConfigBean;
 import org.springframework.util.StringUtils;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ConfigTesterTest {
     private static Set<String> m_filesTested = new HashSet<String>();
     private static Set<String> m_filesIgnored = new HashSet<String>();
@@ -596,7 +599,7 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testAllConfigs() {
+    public void zz001testAllConfigs() {
         ConfigTester.main(new String[] { "-a" });
     }
 
@@ -616,7 +619,7 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testCheckAllDaemonXmlConfigFilesTested() {
+    public void zz002testCheckAllDaemonXmlConfigFilesTested() {
         File someConfigFile = ConfigurationTestUtils.getFileForConfigFile("discovery-configuration.xml");
         File configDir = someConfigFile.getParentFile();
         assertTrue("daemon configuration directory exists at " + configDir.getAbsolutePath(), configDir.exists());
