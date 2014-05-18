@@ -1050,10 +1050,23 @@
         <module>opennms-tools</module>
       </modules>
     </profile>
+
     <profile>
       <id>build-bamboo</id>
       <modules>
         <module>opennms-full-assembly</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>smoke</id>
+      <activation>
+        <property>
+          <name>smoke</name>
+        </property>
+      </activation>
+      <modules>
+        <module>smoke-test</module>
       </modules>
     </profile>
 
