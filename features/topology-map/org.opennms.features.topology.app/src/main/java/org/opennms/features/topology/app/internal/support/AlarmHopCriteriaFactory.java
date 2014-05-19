@@ -57,7 +57,6 @@ public class AlarmHopCriteriaFactory {
 	 * @return
 	 */
 	public AlarmHopCriteria createCriteria(AlarmSearchResult result) {
-		AlarmHopCriteria retval = new AlarmHopCriteria(result, m_alarmDao);
-		return retval;
+		return new AlarmHopCriteria(result, m_alarmDao);
 	}
 }

@@ -64,7 +64,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
     /**
      * <p>onInit</p>
      */
-    abstract protected void onInit();
+    protected abstract void onInit();
 
     /**
      * <p>onPause</p>
@@ -92,7 +92,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      * @return a {@link java.lang.String} object.
      */
     @Override
-    final public String getName() { return m_name; }
+    public final String getName() { return m_name; }
 
     /**
      * <p>Constructor for AbstractServiceDaemon.</p>
@@ -215,7 +215,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
     /**
      * <p>init</p>
      */
-    final public void init() {
+    public final void init() {
         
         Logging.withPrefix(getName(), new Runnable() {
 
@@ -237,7 +237,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      * <p>pause</p>
      */
     @Override
-    final public void pause() {
+    public final void pause() {
         Logging.withPrefix(getName(), new Runnable() {
 
             @Override
@@ -260,7 +260,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      * <p>resume</p>
      */
     @Override
-    final public void resume() {
+    public final void resume() {
         
         Logging.withPrefix(getName(), new Runnable() {
 
@@ -285,7 +285,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      * <p>start</p>
      */
     @Override
-    final public synchronized void start() {
+    public final synchronized void start() {
         
         Logging.withPrefix(getName(), new Runnable() {
 
@@ -309,7 +309,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      * the command is silently discarded.
      */
     @Override
-    final public synchronized void stop() {
+    public final synchronized void stop() {
         
         Logging.withPrefix(getName(), new Runnable() {
 
@@ -332,7 +332,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      * Destroys the current service.
      */
     @Override
-    final public void destroy() {
+    public final void destroy() {
         stop();
     }
 

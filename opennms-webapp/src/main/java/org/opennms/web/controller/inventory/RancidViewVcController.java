@@ -79,8 +79,7 @@ public class RancidViewVcController implements Controller {
         Map<String, Object> model = m_inventoryService.getRancidNodeBase(nodeid);
         model.put("iframelink", iframelink);
         model.put("group", group);
-        ModelAndView modelAndView = new ModelAndView("inventory/rancidViewVc","model",model);
-        return modelAndView;
+        return new ModelAndView("inventory/rancidViewVc","model",model);
     }
 
 }

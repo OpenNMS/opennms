@@ -151,7 +151,7 @@ public class BottomNAttributeStatisticVisitor implements AttributeStatisticVisit
         }
     }
     
-    public class DoubleComparator implements Comparator<Double> {
+    public static class DoubleComparator implements Comparator<Double> {
         /**
          * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
          */

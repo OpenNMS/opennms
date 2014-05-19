@@ -65,14 +65,14 @@ abstract public class PollEvent {
      *
      * @return a int.
      */
-    abstract public int getEventId();
+    public abstract int getEventId();
 
     /**
      * <p>getDate</p>
      *
      * @return a {@link java.util.Date} object.
      */
-    abstract public Date getDate();
+    public abstract Date getDate();
     
     /**
      * <p>isNodeDown</p>

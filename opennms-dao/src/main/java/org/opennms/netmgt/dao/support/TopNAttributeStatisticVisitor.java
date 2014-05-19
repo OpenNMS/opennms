@@ -45,7 +45,7 @@ public class TopNAttributeStatisticVisitor extends BottomNAttributeStatisticVisi
         setComparator(new ReverseDoubleComparator());
     }
     
-    public class ReverseDoubleComparator implements Comparator<Double> {
+    public static class ReverseDoubleComparator implements Comparator<Double> {
         /**
          * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
          */

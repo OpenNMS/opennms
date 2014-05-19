@@ -34,7 +34,7 @@ import org.opennms.netmgt.model.PrefabGraph;
  */
 public class NrtHelper {
 
-    public final static List<String> RRD_KEYWORDS = Arrays.asList(
+    public static final List<String> RRD_KEYWORDS = Arrays.asList(
             "--",
             "DEF",
             "CDEF",
@@ -86,10 +86,10 @@ public class NrtHelper {
         }
 
         for (final Map.Entry<String,String> entry : rrdGraphAttributesToMetricIds.entrySet()) {
-            final String row = String.format("'%s': '%s:%s', \n", entry.getValue(), rrdFileMapping.get(entry.getKey()), entry.getKey());
+            final String row = String.format("'%s': '%s:%s', %n", entry.getValue(), rrdFileMapping.get(entry.getKey()), entry.getKey());
             stringBuilder.append(row);
         }
 
-        return stringBuilder.toString().substring(0,stringBuilder.toString().length() - ", \n".length());
+        return stringBuilder.toString().substring(0,stringBuilder.toString().length() - ", %n".length());
     }
 }

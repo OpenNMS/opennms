@@ -120,7 +120,7 @@ public class Collectd extends AbstractServiceDaemon implements
     /**
      * Log4j category
      */
-    final static String LOG4J_CATEGORY = "collectd";
+    static final String LOG4J_CATEGORY = "collectd";
     
     /**
      * Instantiated service collectors specified in config file
@@ -459,8 +459,7 @@ public class Collectd extends AbstractServiceDaemon implements
 
 	private OnmsIpInterface getIpInterface(int nodeId, String ipAddress) {
 		OnmsNode node = m_nodeDao.load(nodeId);
-        OnmsIpInterface iface = node.getIpInterfaceByIpAddress(ipAddress);
-		return iface;
+		return node.getIpInterfaceByIpAddress(ipAddress);
 	}
 
     private void scheduleInterface(OnmsIpInterface iface, String svcName, boolean existing) {

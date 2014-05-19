@@ -243,7 +243,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
         return createSurveillanceTable("default", new ProgressMonitor());
     }
 
-    public class SurveillanceView {
+    public static class SurveillanceView {
     	private final SurveillanceViewConfigDao m_surveillanceConfigDao;
         private final CategoryDao m_categoryDao;
         private final View m_view;

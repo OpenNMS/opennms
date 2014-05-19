@@ -229,8 +229,7 @@ public class Starter {
     private File getPropertiesFile() {
         String homeDir = System.getProperty("opennms.home");
         File etcDir = new File(homeDir, "etc");
-        File propertiesFile = new File(etcDir, "opennms.properties");
-        return propertiesFile;
+        return new File(etcDir, "opennms.properties");
     }
 
     private void start() {

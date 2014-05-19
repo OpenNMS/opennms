@@ -164,8 +164,7 @@ public class MicroblogClient extends Bootstrap {
     }
 
     public MicroblogAuthorization requestAuthorization(final String profile) throws MicroblogAuthorizationException {
-        final MicroblogAuthorization auth = new MicroblogAuthorization(getTwitter(profile));
-        return auth;
+    	return new MicroblogAuthorization(getTwitter(profile));
     }
 
     public Twitter getTwitter(final String profile) {

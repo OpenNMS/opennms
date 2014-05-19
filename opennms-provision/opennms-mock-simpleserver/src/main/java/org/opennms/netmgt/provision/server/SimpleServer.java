@@ -305,7 +305,7 @@ public class SimpleServer extends SimpleConversationEndPoint {
         } else {
             out.write(bannerBytes);
         }
-        out.write("\r\n".getBytes());
+        out.write("\r%n".getBytes());
     }
     
     /**
@@ -341,7 +341,7 @@ public class SimpleServer extends SimpleConversationEndPoint {
 
             @Override
             public void doRequest(final OutputStream out) throws IOException {
-                out.write(String.format("%s\r\n", error).getBytes());
+                out.write(String.format("%s\r%n", error).getBytes());
                 
             }
             
@@ -359,7 +359,7 @@ public class SimpleServer extends SimpleConversationEndPoint {
             
             @Override
             public void doRequest(final OutputStream out) throws IOException {
-                out.write(String.format("%s\r\n", response).getBytes());
+                out.write(String.format("%s\r%n", response).getBytes());
                 stopServer();
             }
             

@@ -46,7 +46,7 @@ final class Receiver2 implements Runnable, Fiber {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(Receiver2.class);
 
-    private final static short DHCP_TARGET_PORT = 67;
+    private static final short DHCP_TARGET_PORT = 67;
 
     private DatagramSocket m_receiver;
 

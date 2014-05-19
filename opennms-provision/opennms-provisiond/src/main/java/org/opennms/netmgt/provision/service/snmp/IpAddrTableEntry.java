@@ -56,16 +56,16 @@ public final class IpAddrTableEntry extends SnmpTableEntry {
     // Lookup strings for specific table entries
     //
     /** Constant <code>IP_ADDR_ENT_ADDR="ipAdEntAddr"</code> */
-    public final static String IP_ADDR_ENT_ADDR = "ipAdEntAddr";
+    public static final String IP_ADDR_ENT_ADDR = "ipAdEntAddr";
 
     /** Constant <code>IP_ADDR_IF_INDEX="ipAdEntIfIndex"</code> */
-    public final static String IP_ADDR_IF_INDEX = "ipAdEntIfIndex";
+    public static final String IP_ADDR_IF_INDEX = "ipAdEntIfIndex";
 
     /** Constant <code>IP_ADDR_ENT_NETMASK="ipAdEntNetMask"</code> */
-    public final static String IP_ADDR_ENT_NETMASK = "ipAdEntNetMask";
+    public static final String IP_ADDR_ENT_NETMASK = "ipAdEntNetMask";
 
     /** Constant <code>IP_ADDR_ENT_BCASTADDR="ipAdEntBcastAddr"</code> */
-    public final static String IP_ADDR_ENT_BCASTADDR = "ipAdEntBcastAddr";
+    public static final String IP_ADDR_ENT_BCASTADDR = "ipAdEntBcastAddr";
 
     /** Constant <code>ms_elemList</code> */
     public static NamedSnmpVar[] ms_elemList = null;

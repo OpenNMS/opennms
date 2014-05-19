@@ -89,7 +89,7 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
      *
      * @param psk a {@link org.opennms.netmgt.translator.EventTranslator} object.
      */
-    public synchronized static void setInstance(EventTranslator psk) {
+    public static synchronized void setInstance(EventTranslator psk) {
         s_instance = psk;
     }
 
@@ -98,7 +98,7 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
      *
      * @return a {@link org.opennms.netmgt.translator.EventTranslator} object.
      */
-    public synchronized static EventTranslator getInstance() {
+    public static synchronized EventTranslator getInstance() {
         return s_instance;
     }
 

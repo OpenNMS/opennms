@@ -630,7 +630,7 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
      */
     protected String getFixedDsName(String dsName) {
         if (dsName.contains(".")) {
-            String parts[] = dsName.split("\\.");
+            String[] parts = dsName.split("\\.");
             return parts[0] +  parts[1].substring(0, 1).toUpperCase() + parts[1].substring(1);
         }
         return dsName;

@@ -252,8 +252,7 @@ public class DNSInputStream extends ByteArrayInputStream {
             // Create the route record and return it to
             // the caller.
             //
-            DNSAddressRR rr = new DNSAddressRR(rrName, rrType, rrClass, rrTTL, rrDNSIn);
-            return rr;
+            return new DNSAddressRR(rrName, rrType, rrClass, rrTTL, rrDNSIn);
         } catch (Throwable ex) {
             throw new IOException("Unknown DNSAddressRR (type " + " (" + rrType + "))" + "\nOriginating Exception: " + ex.getMessage());
         }

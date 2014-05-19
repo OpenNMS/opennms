@@ -81,7 +81,7 @@ public abstract class SnmpUtils {
         return getStrategy().get(agentConfig, oid);
     }
     
-    public static SnmpValue[] get(SnmpAgentConfig agentConfig, SnmpObjId oids[]) {
+    public static SnmpValue[] get(SnmpAgentConfig agentConfig, SnmpObjId[] oids) {
         return getStrategy().get(agentConfig, oids);
     }
 

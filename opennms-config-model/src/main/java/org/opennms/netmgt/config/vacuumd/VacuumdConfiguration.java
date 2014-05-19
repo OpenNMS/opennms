@@ -379,8 +379,7 @@ public class VacuumdConfiguration implements Serializable {
      * @return true if the object was removed from the collection.
      */
     public boolean removeStatement(final Statement vStatement) {
-        boolean removed = _statementList.remove(vStatement);
-        return removed;
+    	return _statementList.remove(vStatement);
     }
 
     /**
@@ -390,8 +389,7 @@ public class VacuumdConfiguration implements Serializable {
      * @return the element removed from the collection
      */
     public Statement removeStatementAt(final int index) {
-        Object obj = this._statementList.remove(index);
-        return (Statement) obj;
+    	return (Statement) this._statementList.remove(index);
     }
 
     /**

@@ -208,90 +208,90 @@ public final class EventUtil {
 	 * The string that starts the expansion for an asset field - used to lookup values
 	 * of asset fields by their names
 	 */
-	final static String ASSET_BEGIN = "asset[";
+	static final String ASSET_BEGIN = "asset[";
 
 	/**
 	 * The string that ends the expansion of a parm
 	 */
-	final static String ASSET_END_SUFFIX = "]";
+	static final String ASSET_END_SUFFIX = "]";
 
 	/**
 	 * The '%' sign used to indicate parms to be expanded
 	 */
-	final static char PERCENT = '%';
+	static final char PERCENT = '%';
 
 	/**
 	 * The string that should be expanded to a list of all parm names
 	 */
-	final static String PARMS_NAMES = "parm[names-all]";
+	static final String PARMS_NAMES = "parm[names-all]";
 
 	/**
 	 * The string that should be expanded to a list of all parm values
 	 */
-	final static String PARMS_VALUES = "parm[values-all]";
+	static final String PARMS_VALUES = "parm[values-all]";
 
 	/**
 	 * The string that should be expanded to a list of all parms
 	 */
-	final static String PARMS_ALL = "parm[all]";
+	static final String PARMS_ALL = "parm[all]";
 
 	/**
 	 * The string that starts the expansion for a parm - used to lookup values
 	 * of parameters by their names
 	 */
-	final static String PARM_BEGIN = "parm[";
+	static final String PARM_BEGIN = "parm[";
 
 	/**
 	 * The length of PARM_BEGIN
 	 */
-	final static int PARM_BEGIN_LENGTH = 5;
+	static final int PARM_BEGIN_LENGTH = 5;
 
 	/**
 	 * The string that should be expanded to the number of parms
 	 */
-	final static String NUM_PARMS_STR = "parm[##]";
+	static final String NUM_PARMS_STR = "parm[##]";
 
 	/**
 	 * The string that starts a parm number - used to lookup values of
 	 * parameters by their position
 	 */
-	final static String PARM_NUM_PREFIX = "parm[#";
+	static final String PARM_NUM_PREFIX = "parm[#";
 
 	/**
 	 * The length of PARM_NUM_PREFIX
 	 */
-	final static int PARM_NUM_PREFIX_LENGTH = 6;
+	static final int PARM_NUM_PREFIX_LENGTH = 6;
 	
 	/**
 	 * The string that starts a request for the name of a numbered parm
 	 */
-	final static String PARM_NAME_NUMBERED_PREFIX = "parm[name-#";
+	static final String PARM_NAME_NUMBERED_PREFIX = "parm[name-#";
 	
 	/**
 	 * The length of PARM_NAME_NUMBERED_PREFIX
 	 */
-	final static int PARM_NAME_NUMBERED_PREFIX_LENGTH = 11;
+	static final int PARM_NAME_NUMBERED_PREFIX_LENGTH = 11;
 
 	/**
 	 * The string that ends the expansion of a parm
 	 */
-	final static String PARM_END_SUFFIX = "]";
+	static final String PARM_END_SUFFIX = "]";
 
 	/**
 	 * For expansion of the '%parms[all]%' - the parm name and value are added
 	 * as delimiter separated list of ' <parmName>= <value>' strings
 	 */
-	final static char NAME_VAL_DELIM = '=';
+	static final char NAME_VAL_DELIM = '=';
 
 	/**
 	 */
-	final static char SPACE_DELIM = ' ';
+	static final char SPACE_DELIM = ' ';
 
 	/**
 	 * The values and the corresponding attributes of an element are added
 	 * delimited by ATTRIB_DELIM
 	 */
-	final static char ATTRIB_DELIM = ',';
+	static final char ATTRIB_DELIM = ',';
 
 	/**
 	 * Substitute the actual percent sign

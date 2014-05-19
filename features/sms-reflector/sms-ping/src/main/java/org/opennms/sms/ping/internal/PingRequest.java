@@ -49,7 +49,7 @@ import org.smslib.OutboundMessage;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @version $Id: $
  */
-final public class PingRequest implements Request<PingRequestId, PingRequest, PingReply> {
+public final class PingRequest implements Request<PingRequestId, PingRequest, PingReply> {
 
     /**
      * The id representing the packet

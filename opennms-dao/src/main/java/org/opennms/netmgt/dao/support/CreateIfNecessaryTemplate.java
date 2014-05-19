@@ -48,7 +48,7 @@ public abstract class CreateIfNecessaryTemplate<T, D extends OnmsDao<T, ?>> exte
     }
 
     @Override
-    abstract protected T query();
+    protected abstract T query();
 
     /**
      * There is no need to update the object for this case as we just return the object found.
@@ -59,7 +59,7 @@ public abstract class CreateIfNecessaryTemplate<T, D extends OnmsDao<T, ?>> exte
     }
 
     @Override
-    abstract protected T doInsert();
+    protected abstract T doInsert();
     
 
 }
