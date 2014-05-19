@@ -102,6 +102,7 @@ public class DefaultOutageServiceIntegrationTest implements InitializingBean {
 
     @Test
     @Transactional
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     @Ignore
     @JUnitTemporaryDatabase
     public void testGetSupressedOutages() {
@@ -119,6 +120,7 @@ public class DefaultOutageServiceIntegrationTest implements InitializingBean {
 
     @Test
     @Transactional
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     @Ignore
     @JUnitTemporaryDatabase
     public void testNoOfSuppressedOutages(){
