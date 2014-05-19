@@ -168,7 +168,7 @@ run_tests() {
 	rm -rf ~/.m2/repository/org/opennms
 
 	do_log "bin/bamboo.pl -Psmoke --projects :smoke-test --also-make install"
-	"bin/bamboo.pl -Psmoke --projects :smoke-test --also-make install"
+	bin/bamboo.pl -Psmoke --projects :smoke-test --also-make install
 
 	do_log "compile.pl test"
 	pushd "$SOURCEDIR/smoke-test"
