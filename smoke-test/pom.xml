@@ -9,7 +9,7 @@
   <artifactId>smoke-test</artifactId>
   <name>OpenNMS Smoke Test</name>
   <properties>
-    <seleniumVersion>2.39.0</seleniumVersion>
+    <seleniumVersion>2.41.0</seleniumVersion>
   </properties>
   <dependencies>
     <dependency>
@@ -40,7 +40,7 @@
     <dependency>
       <groupId>com.github.detro.ghostdriver</groupId>
       <artifactId>phantomjsdriver</artifactId>
-      <version>1.0.4</version>
+      <version>1.1.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
@@ -65,7 +65,7 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-exec</artifactId>
-      <version>1.1</version><!--$NO-MVN-MAN-VER$-->
+      <version>1.2</version><!--$NO-MVN-MAN-VER$-->
       <scope>test</scope>
     </dependency>
     <dependency>

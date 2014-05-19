@@ -36,6 +36,8 @@ import org.opennms.netmgt.model.AttributeStatistic;
 import org.opennms.netmgt.model.ResourceReference;
 import org.opennms.netmgt.model.StatisticsReport;
 import org.opennms.netmgt.model.StatisticsReportData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
@@ -46,6 +48,7 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public class DatabaseReportPersister implements ReportPersister, InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(DatabaseReportPersister.class);
     private StatisticsReportDao m_statisticsReportDao;
     private ResourceReferenceDao m_resourceReferenceDao;
 
@@ -69,9 +72,14 @@ public class DatabaseReportPersister implements ReportPersister, InitializingBea
             data.setReport(dbReport);
             data.setValue(stat.getStatistic());
             dbReport.addData(data);
+            LOG.debug("Adding {}", data);
         }
         
-        m_statisticsReportDao.save(dbReport);
+        if (dbReport.getData().isEmpty()) {
+            LOG.warn("Cannot store {} because it doesn't contain data. Probably all the metrics are NaN for the report period.", report);
+        } else {
+            m_statisticsReportDao.save(dbReport);
+        }
     }
 
     private ResourceReference getResourceReference(String id) {

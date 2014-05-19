@@ -116,6 +116,10 @@
       <artifactId>opennms-util</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.poller</groupId>
+      <artifactId>org.opennms.features.poller.api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-api</artifactId>
     </dependency>

@@ -41,10 +41,9 @@ public interface StorageStrategy {
      *
      * @param resourceParent a {@link java.lang.String} object.
      * @param resource a {@link java.lang.String} object.
-     * @param attribute a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    public String getRelativePathForAttribute(String resourceParent, String resource, String attribute);
+    public String getRelativePathForAttribute(String resourceParent, String resource);
 
     /**
      * <p>setResourceTypeName</p>

@@ -30,11 +30,11 @@ package org.opennms.netmgt.poller.monitors;
 
 import java.util.Map;
 
-import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.passive.PassiveStatusKeeper;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
+import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
 /**
  * <p>PassiveServiceMonitor class.</p>

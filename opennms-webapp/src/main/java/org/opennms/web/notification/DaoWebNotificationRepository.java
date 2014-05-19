@@ -73,6 +73,7 @@ public class DaoWebNotificationRepository implements WebNotificationRepository, 
         final OnmsCriteria criteria = new OnmsCriteria(OnmsNotification.class);
         criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
         criteria.createAlias("serviceType", "serviceType", OnmsCriteria.LEFT_JOIN);
+        criteria.createAlias("event", "event", OnmsCriteria.LEFT_JOIN);
         
         notificationCriteria.visit(new NotificationCriteriaVisitor<RuntimeException>(){
 
@@ -122,6 +123,9 @@ public class DaoWebNotificationRepository implements WebNotificationRepository, 
                     case ID:
                         criteria.addOrder(Order.desc("notifyId"));
                         break;
+                    case SEVERITY:
+                        criteria.addOrder(Order.desc("event.eventSeverity"));
+                        break;
                     case REVERSE_RESPONDER:
                         criteria.addOrder(Order.asc("answeredBy"));            
                         break;
@@ -142,6 +146,9 @@ public class DaoWebNotificationRepository implements WebNotificationRepository, 
                         break;
                     case REVERSE_ID:
                         criteria.addOrder(Order.asc("notifyId"));
+                        break;
+                    case REVERSE_SEVERITY:
+                        criteria.addOrder(Order.asc("event.eventSeverity"));
                         break;
                     
                 }

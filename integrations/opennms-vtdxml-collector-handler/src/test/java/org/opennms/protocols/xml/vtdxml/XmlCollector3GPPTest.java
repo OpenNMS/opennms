@@ -52,7 +52,7 @@ public class XmlCollector3GPPTest extends AbstractVTDXmlCollectorTest {
      */
     @Override
     public String getXmlConfigFileName() {
-        return "src/test/resources/3gpp-xml-datacollection-config.xml";
+        return "../../protocols/xml/src/test/resources/3gpp-xml-datacollection-config.xml";
     }
 
     /* (non-Javadoc)
@@ -60,7 +60,7 @@ public class XmlCollector3GPPTest extends AbstractVTDXmlCollectorTest {
      */
     @Override
     public String getXmlSampleFileName() {
-        return "src/test/resources/A20111025.0030-0500-0045-0500_MME00001.xml";
+        return "../../protocols/xml/src/test/resources/A20111025.0030-0500-0045-0500_MME00001.xml";
     }
 
     /**

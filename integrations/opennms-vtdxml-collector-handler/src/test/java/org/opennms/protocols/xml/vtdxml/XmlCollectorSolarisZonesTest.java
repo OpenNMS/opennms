@@ -48,7 +48,7 @@ public class XmlCollectorSolarisZonesTest extends AbstractVTDXmlCollectorTest {
      */
     @Override
     public String getXmlConfigFileName() {
-        return "src/test/resources/solaris-zones-datacollection-config.xml";
+        return "../../protocols/xml/src/test/resources/solaris-zones-datacollection-config.xml";
     }
 
     /* (non-Javadoc)
@@ -56,7 +56,7 @@ public class XmlCollectorSolarisZonesTest extends AbstractVTDXmlCollectorTest {
      */
     @Override
     public String getXmlSampleFileName() {
-        return "src/test/resources/solaris-zones.xml";
+        return "../../protocols/xml/src/test/resources/solaris-zones.xml";
     }
 
     /**

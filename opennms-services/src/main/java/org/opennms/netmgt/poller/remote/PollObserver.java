@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.poller.remote;
 
-import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.PollStatus;
 
 /**
  * <p>PollObserver interface.</p>
@@ -49,7 +49,7 @@ public interface PollObserver {
 	 * <p>pollCompleted</p>
 	 *
 	 * @param pollId a {@link java.lang.String} object.
-	 * @param pollStatus a {@link org.opennms.netmgt.model.PollStatus} object.
+	 * @param pollStatus a {@link org.opennms.netmgt.poller.PollStatus} object.
 	 */
 	void pollCompleted(String pollId, PollStatus pollStatus);
 

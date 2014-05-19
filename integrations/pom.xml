@@ -20,5 +20,6 @@
     <module>opennms-snmp-asset-provisioning-adapter</module>
     <module>opennms-jasper-extensions</module>
     <module>opennms-vmware</module>
+    <module>opennms-vtdxml-collector-handler</module>
   </modules>
 </project>

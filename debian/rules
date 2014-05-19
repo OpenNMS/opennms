@@ -167,7 +167,6 @@ install: build
 	# XML
 	install -d -m 755 debian/opennms-plugin-protocol-xml/var/lib/opennms/etc-pristine/{datacollection,xml-datacollection,snmp-graph.properties.d}
 	mv debian/temp/lib/org.opennms.protocols.xml-*.jar                                         debian/opennms-plugin-protocol-xml/usr/share/java/opennms/
-	mv debian/temp/lib/vtd-xml-*.jar                                                           debian/opennms-plugin-protocol-xml/usr/share/java/opennms/
 	mv debian/temp/etc/xml*-config.xml                                                         debian/opennms-plugin-protocol-xml/etc/opennms/
 	mv debian/temp/etc/datacollection/3gpp*                                                    debian/opennms-plugin-protocol-xml/etc/opennms/datacollection/
 	mv debian/temp/etc/xml-datacollection/3gpp*                                                debian/opennms-plugin-protocol-xml/etc/opennms/xml-datacollection/
@@ -177,6 +176,11 @@ install: build
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/datacollection/3gpp*                 debian/opennms-plugin-protocol-xml/var/lib/opennms/etc-pristine/datacollection/
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/xml-datacollection/3gpp*             debian/opennms-plugin-protocol-xml/var/lib/opennms/etc-pristine/xml-datacollection/
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/snmp-graph.properties.d/3gpp*        debian/opennms-plugin-protocol-xml/var/lib/opennms/etc-pristine/snmp-graph.properties.d/
+	
+	# VTD-XML
+	install -d -m 755 debian/opennms-plugin-collector-vtdxml-handler/usr/share/java/opennms
+	mv debian/temp/lib/vtd-xml-*.jar                                                           debian/opennms-plugin-collector-vtdxml-handler/usr/share/java/opennms/
+	mv debian/temp/lib/opennms-vtdxml-collector-handler-*.jar                                  debian/opennms-plugin-collector-vtdxml-handler/usr/share/java/opennms/
 	
 	# XMP
 	mv debian/temp/lib/xmp-*.jar                                                               debian/opennms-plugin-protocol-xmp/usr/share/java/opennms/

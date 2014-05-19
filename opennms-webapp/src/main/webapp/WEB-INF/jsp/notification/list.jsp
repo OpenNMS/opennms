@@ -201,7 +201,7 @@
 			  <tr>
           <th class="noWrap"><%=this.makeSortLink( parms, SortStyle.ID,SortStyle.REVERSE_ID,     "id",          "ID"           )%></th>
           <th class="noWrap">Event ID</th>
-          <th>Severity</th>
+          <th><%=this.makeSortLink( parms, SortStyle.SEVERITY,    SortStyle.REVERSE_SEVERITY,    "severity",    "Severity"     )%></th>
           <th><%=this.makeSortLink( parms, SortStyle.PAGETIME,    SortStyle.REVERSE_PAGETIME,    "pagetime",    "Sent Time"    )%></th>
           <th><%=this.makeSortLink( parms, SortStyle.RESPONDER,   SortStyle.REVERSE_RESPONDER,   "answeredby",  "Responder"    )%></th>
           <th><%=this.makeSortLink( parms, SortStyle.RESPONDTIME, SortStyle.REVERSE_RESPONDTIME, "respondtime", "Respond Time" )%></th>  

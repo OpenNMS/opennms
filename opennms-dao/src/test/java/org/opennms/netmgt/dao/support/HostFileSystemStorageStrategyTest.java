@@ -61,17 +61,17 @@ public class HostFileSystemStorageStrategyTest {
         // Test Resource Name - root file system
         String parentResource = "1";
         MockCollectionResource resource = new MockCollectionResource(parentResource, "1", "hrStorageIndex");
-        resource.getAttribtueMap().put("hrStorageDescr", "/");
+        resource.getAttributeMap().put("hrStorageDescr", "/");
         String resourceName = strategy.getResourceNameFromIndex(resource);
         Assert.assertEquals("_root_fs", resourceName);
 
         // Test Resource Name - root file system
         resource.setInstance("8");
-        resource.getAttribtueMap().put("hrStorageDescr", "Volumes-iDisk");
+        resource.getAttributeMap().put("hrStorageDescr", "Volumes-iDisk");
         Assert.assertEquals("Volumes-iDisk", strategy.getResourceNameFromIndex(resource));
 
         // Test RelativePath
-        Assert.assertEquals("1" + File.separator + "hrStorageIndex" + File.separator + "_root_fs", strategy.getRelativePathForAttribute(parentResource, resourceName, null));
+        Assert.assertEquals("1" + File.separator + "hrStorageIndex" + File.separator + "_root_fs", strategy.getRelativePathForAttribute(parentResource, resourceName));
 
         EasyMock.verify(service);
     }

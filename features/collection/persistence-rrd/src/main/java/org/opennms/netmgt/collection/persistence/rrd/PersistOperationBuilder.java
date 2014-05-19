@@ -49,6 +49,7 @@ import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.rrd.RrdUtils;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -58,6 +59,7 @@ import org.slf4j.LoggerFactory;
  * @version $Id: $
  */
 public class PersistOperationBuilder {
+    private static final Logger LOG = LoggerFactory.getLogger(PersistOperationBuilder.class);
     
     private final RrdRepository m_repository;
     private final String m_rrdName;
@@ -121,7 +123,15 @@ public class PersistOperationBuilder {
     }
     
     public void setAttributeMetadata(String metricIdentifier, String name) {
-        m_metaData.put(metricIdentifier, name);
+        if (metricIdentifier == null) {
+            if (name == null) {
+                LOG.warn("Cannot set attribute metadata with null key and null value");
+            } else {
+                LOG.warn("Cannot set attribute metadata with null key and value of: {}", name);
+            }
+        } else {
+            m_metaData.put(metricIdentifier, name);
+        }
     }
 
     /**

@@ -33,7 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.PollStatus;
 
 /**
  * <ul>
@@ -137,7 +137,7 @@ abstract public class MockContainer<P extends MockContainer<?,?>, C extends Mock
     /**
      * <p>getPollStatus</p>
      *
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     @Override
     public PollStatus getPollStatus() {

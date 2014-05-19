@@ -35,9 +35,9 @@ import java.util.Map;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
-import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.poller.DistributionContext;
+import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
 
 /**
@@ -126,7 +126,7 @@ public interface PollerBackEnd {
      *
      * @param locationMonitorID the id of the location monitor that did the poll
      * @param serviceId the id of the service that was polled
-     * @param status a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @param status a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     void reportResult(int locationMonitorID, int serviceId, PollStatus status);
 

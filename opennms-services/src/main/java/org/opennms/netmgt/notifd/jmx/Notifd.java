@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -166,4 +166,66 @@ public class Notifd extends AbstractServiceDaemon implements NotifdMBean {
     public int getStatus() {
         return getNotifd().getStatus();
     }
+
+    @Override
+    /** {@inheritDoc} */
+    public long getNotificationTasksQueued() {
+        return getNotifd().getNotificationManager().getNotificationTasksQueued();
+    }
+
+    @Override
+    /** {@inheritDoc} */
+    public long getBinaryNoticesAttempted() {
+        return getNotifd().getNotificationManager().getBinaryNoticesAttempted();
+    }
+
+    @Override
+    /** {@inheritDoc} */
+    public long getJavaNoticesAttempted() {
+        return getNotifd().getNotificationManager().getJavaNoticesAttempted();
+    }
+
+    @Override
+    /** {@inheritDoc} */
+    public long getBinaryNoticesSucceeded() {
+        return getNotifd().getNotificationManager().getBinaryNoticesSucceeded();
+    }
+
+    @Override
+    /** {@inheritDoc} */
+    public long getJavaNoticesSucceeded() {
+        return getNotifd().getNotificationManager().getJavaNoticesSucceeded();
+    }
+
+    @Override
+    /** {@inheritDoc} */
+    public long getBinaryNoticesFailed() {
+        return getNotifd().getNotificationManager().getBinaryNoticesFailed();
+    }
+
+    @Override
+    /** {@inheritDoc} */
+    public long getJavaNoticesFailed() {
+        return getNotifd().getNotificationManager().getJavaNoticesFailed();
+    }
+
+    @Override
+    /** {@inheritDoc} */
+    public long getBinaryNoticesInterrupted() {
+        return getNotifd().getNotificationManager().getBinaryNoticesInterrupted();
+    }
+
+    @Override
+    /** {@inheritDoc} */
+    public long getJavaNoticesInterrupted() {
+        return getNotifd().getNotificationManager().getJavaNoticesInterrupted();
+    }
+
+    @Override
+    /** {@inheritDoc} */
+    public long getUnknownNoticesInterrupted() {
+        return getNotifd().getNotificationManager().getUnknownNoticesInterrupted();
+    }
+    
+    
 }

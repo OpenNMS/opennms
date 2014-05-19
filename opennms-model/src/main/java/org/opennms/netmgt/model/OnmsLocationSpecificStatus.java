@@ -40,6 +40,8 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.opennms.netmgt.poller.PollStatus;
+
 @Entity
 @Table(name="location_specific_status_changes")
 public class OnmsLocationSpecificStatus {
@@ -61,7 +63,7 @@ public class OnmsLocationSpecificStatus {
      *
      * @param locationMonitor a {@link org.opennms.netmgt.model.OnmsLocationMonitor} object.
      * @param monitoredService a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
-     * @param pollResult a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @param pollResult a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public OnmsLocationSpecificStatus(final OnmsLocationMonitor locationMonitor, final OnmsMonitoredService monitoredService, final PollStatus pollResult) {
         m_locationMonitor = locationMonitor;
@@ -134,7 +136,7 @@ public class OnmsLocationSpecificStatus {
     /**
      * <p>getPollResult</p>
      *
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     @Embedded
     public PollStatus getPollResult() {
@@ -144,7 +146,7 @@ public class OnmsLocationSpecificStatus {
     /**
      * <p>setPollResult</p>
      *
-     * @param newStatus a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @param newStatus a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public void setPollResult(final PollStatus newStatus) {
         m_pollResult = newStatus;

@@ -182,6 +182,7 @@ public class RrdFileConstants extends Object {
         }
     };
 
+    // FIXME This is not working and it is not being used
     public static final boolean isValidRRDSourceDir(final File file) {
         if (!file.isDirectory()) {
             return false;

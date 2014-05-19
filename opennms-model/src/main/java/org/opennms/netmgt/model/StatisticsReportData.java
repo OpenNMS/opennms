@@ -41,6 +41,8 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 /**
  * Model class for a piece of statistics report data.
  *
@@ -139,6 +141,7 @@ public class StatisticsReportData implements Serializable {
     public Double getValue() {
         return m_value;
     }
+    
     /**
      * <p>setValue</p>
      *
@@ -147,4 +150,14 @@ public class StatisticsReportData implements Serializable {
     public void setValue(Double value) {
         m_value = value;
     }
+    
+    @Override
+    public String toString() {
+        ToStringBuilder tsb = new ToStringBuilder(this);
+        tsb.append("report", getReport().getName());
+        tsb.append("resourceId", getResourceId());
+        tsb.append("value", getValue());
+        return tsb.toString();
+    }
+    
 }

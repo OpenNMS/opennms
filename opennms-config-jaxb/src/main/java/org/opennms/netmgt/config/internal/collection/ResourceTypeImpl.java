@@ -16,10 +16,10 @@ import org.opennms.netmgt.config.datacollection.ResourceType;
 /**
  *  &lt;resourceType name="hrStorageIndex" label="Storage (MIB-2 Host Resources)"&gt;
  *    &lt;resourceName&gt;
- *      &lt;m_template&gt;${hrStorageDescr}&lt;/m_template&gt;
+ *      &lt;template&gt;${hrStorageDescr}&lt;/template&gt;
  *    &lt;/resourceName&gt;
- *    &lt;resourceLabel&gt;&lt;m_template&gt;${hrStorageDescr}&lt;/m_template&gt;&lt;/resourceLabel&gt;
- *    &lt;resourceKind&gt;&lt;m_template&gt;${hrStorageType}&lt;/m_template&gt;&lt;/resourceKind&gt;
+ *    &lt;resourceLabel&gt;&lt;template&gt;${hrStorageDescr}&lt;/template&gt;&lt;/resourceLabel&gt;
+ *    &lt;resourceKind&gt;&lt;template&gt;${hrStorageType}&lt;/template&gt;&lt;/resourceKind&gt;
  *    &lt;column oid=".1.3.6.1.2.1.25.2.3.1.2" alias="hrStorageType"  type="string" /&gt;
  *    &lt;column oid=".1.3.6.1.2.1.25.2.3.1.3" alias="hrStorageDescr" type="string" /&gt;
  *  &lt;/resourceType&gt;

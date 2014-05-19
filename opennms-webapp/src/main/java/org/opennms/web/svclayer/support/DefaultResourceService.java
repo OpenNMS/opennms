@@ -135,36 +135,6 @@ public class DefaultResourceService implements ResourceService, InitializingBean
     }
 
     /**
-     * <p>findDomainResources</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    @Override
-    public List<OnmsResource> findDomainResources() {
-        return m_resourceDao.findDomainResources();
-    }
-    
-    /**
-     * <p>findNodeSourceResources</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    @Override
-    public List<OnmsResource> findNodeSourceResources() {
-        return m_resourceDao.findNodeSourceResources();
-    }
-
-    /**
-     * <p>findNodeResources</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    @Override
-    public List<OnmsResource> findNodeResources() {
-        return m_resourceDao.findNodeResources();
-    }
-
-    /**
      * <p>findTopLevelResources</p>
      *
      * @return a {@link java.util.List} object.
@@ -179,7 +149,7 @@ public class DefaultResourceService implements ResourceService, InitializingBean
     public List<OnmsResource> findNodeChildResources(OnmsNode node) {
         List<OnmsResource> resources = new ArrayList<OnmsResource>();
         if (node != null) {
-            if (ResourceTypeUtils.isStoreByForeignSource()) {
+            if (ResourceTypeUtils.isStoreByForeignSource() && node.getForeignSource() != null) {
                 String source = node.getForeignSource() + ':' + node.getForeignId();
                 resources.addAll(findNodeSourceChildResources(source));
             } else {

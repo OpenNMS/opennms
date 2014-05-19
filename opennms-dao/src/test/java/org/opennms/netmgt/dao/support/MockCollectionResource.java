@@ -136,7 +136,7 @@ public class MockCollectionResource implements CollectionResource {
         return null;
     }
     
-    public Map<String,String> getAttribtueMap() {
+    public Map<String,String> getAttributeMap() {
         return attributes;
     }
 

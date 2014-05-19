@@ -39,7 +39,7 @@ import java.net.Socket;
 import java.util.regex.Pattern;
 
 import org.opennms.core.utils.TimeoutTracker;
-import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.protocols.InsufficientParametersException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

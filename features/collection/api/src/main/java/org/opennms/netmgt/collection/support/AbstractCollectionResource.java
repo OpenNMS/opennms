@@ -144,7 +144,7 @@ public abstract class AbstractCollectionResource implements CollectionResource {
     }
 
     /**
-     * <p>getLabel</p>
+     * <p>getInterfaceLabel</p>
      *
      * @return a {@link java.lang.String} object.
      */
