@@ -2376,7 +2376,7 @@ create table bridgeMacLink (
     bridgePortIfIndex   integer,
     bridgePortIfName    varchar(32),
     vlan                integer,
-    macAdreess          varchar(12),
+    macAdreess          varchar(12) not null,
     bridgeMacLinkCreateTime     timestamp not null,
     bridgeMacLinkLastPollTime   timestamp not null,
     constraint pk_bridgemaclink_id primary key (id),
@@ -2403,8 +2403,8 @@ create table bridgeBridgeLink (
 );
 
 create table bridgeStpLink (
-    id                      integer default nextval('opennmsNxtId') not null,
-    nodeid                  integer not null,
+    id                   integer default nextval('opennmsNxtId') not null,
+    nodeid               integer not null,
     stpPort              integer not null,
     stpPortPriority      integer not null,
     stpPortState         integer not null,
