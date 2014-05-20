@@ -87,6 +87,7 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
         collectionSet.setStatus(ServiceCollector.COLLECTION_UNKNOWN);
 
         // TODO We could be careful when handling exceptions because parsing exceptions will be treated different from connection or retrieval exceptions
+        Sftp3gppUrlConnection connection = null;
         try {
             File resourceDir = new File(getRrdRepository().getRrdBaseDir(), Integer.toString(agent.getNodeId()));
             for (XmlSource source : collection.getXmlSources()) {
@@ -97,7 +98,7 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
                 Request request = parseRequest(source.getRequest(), agent);
                 URL url = UrlFactory.getUrl(urlStr, request);
                 String lastFile = getLastFilename(resourceDir, url.getPath());
-                Sftp3gppUrlConnection connection = (Sftp3gppUrlConnection) url.openConnection();
+                connection = (Sftp3gppUrlConnection) url.openConnection();
                 if (lastFile == null) {
                     lastFile = connection.get3gppFileName();
                     log().debug("collect(single): retrieving file from " + url.getPath() + File.separatorChar + lastFile + " from " + agent.getHostAddress());
@@ -114,9 +115,12 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
                         if (connection.getTimeStampFromFile(fileName) > lastTs) {
                             log().debug("collect(multiple): retrieving file " + fileName + " from " + agent.getHostAddress());
                             InputStream is = connection.getFile(fileName);
-                            Document doc = getXmlDocument(is, request);
-                            IOUtils.closeQuietly(is);
-                            fillCollectionSet(agent, collectionSet, source, doc);
+                            try {
+                                Document doc = getXmlDocument(is, request);
+                                fillCollectionSet(agent, collectionSet, source, doc);
+                            } finally {
+                                IOUtils.closeQuietly(is);
+                            }
                             setLastFilename(resourceDir, url.getPath(), fileName);
                             deleteFile(connection, fileName);
                             collected = true;
@@ -125,7 +129,6 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
                     if (!collected) {
                         log().warn("collect: could not find any file after " + lastFile + " on " + agent);
                     }
-                    connection.disconnect();
                 }
             }
             collectionSet.setStatus(ServiceCollector.COLLECTION_SUCCEEDED);
@@ -133,6 +136,8 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
         } catch (Exception e) {
             collectionSet.setStatus(ServiceCollector.COLLECTION_FAILED);
             throw new CollectionException(e.getMessage(), e);
+        } finally {
+            UrlFactory.disconnect(connection);
         }
     }
 
