@@ -787,12 +787,7 @@ public abstract class NotificationManager {
             d.watch(statement);
     
             // notifications textMsg field
-            String textMsg = params.get(NotificationManager.PARAM_TEXT_MSG);
-            if (textMsg != null && textMsg.length() > 4000) {
-                log().warn("textmsg too long, it will be truncated");
-                textMsg = textMsg.substring(0, 4000);
-            }
-            statement.setString(1, textMsg);
+            statement.setString(1, params.get(NotificationManager.PARAM_TEXT_MSG));
     
             // notifications numericMsg field
             String numMsg = params.get(NotificationManager.PARAM_NUM_MSG);
