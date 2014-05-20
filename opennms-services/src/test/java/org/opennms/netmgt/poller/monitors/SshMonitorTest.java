@@ -133,7 +133,7 @@ public class SshMonitorTest {
         ServiceMonitor sm = new SshMonitor();
         MonitoredService svc = new MockMonitoredService(1, "Router", InetAddressUtils.addr("127.0.0.1"), "SSH");
         Map<String, Object> parms = new HashMap<String, Object>();
-        parms.put("banner", "^SSH\\-2\\.0\\-OpenSSH_\\d+\\.\\d+$");
+        parms.put("banner", "^SSH\\-2\\.0\\-OpenSSH_\\d+\\.\\d+.*$");
 
         PollStatus ps = sm.poll(svc, parms);
         assertTrue(ps.isUp());

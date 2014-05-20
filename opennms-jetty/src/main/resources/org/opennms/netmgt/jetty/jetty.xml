@@ -64,38 +64,53 @@
 	-->
 
 	<Set name="handler">
-		<New class="org.eclipse.jetty.server.handler.HandlerList">
+		<New id="Handlers" class="org.eclipse.jetty.server.handler.HandlerCollection">
 			<Set name="handlers">
-				<Array type="org.eclipse.jetty.server.Handler">
-					<Item>
-						<New class="org.eclipse.jetty.webapp.WebAppContext">
-						    <Call name="setAttribute">
-						        <Arg>org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern</Arg>
-						        <Arg>.*/[^/]*\.jar$</Arg>
-						    </Call>
-						    <Set name="War"><SystemProperty name="opennms.home" />/jetty-webapps/opennms</Set>
-						    <Set name="ContextPath">/opennms</Set>
-						</New>
-					</Item>
-					<Item>
-						<New class="org.eclipse.jetty.webapp.WebAppContext">
-						    <Set name="War"><SystemProperty name="opennms.home" />/jetty-webapps/opennms-remoting</Set>
-						    <Set name="ContextPath">/opennms-remoting</Set>
-						</New>
-					</Item>
-					<Item>
-						<New class="org.eclipse.jetty.webapp.WebAppContext">
-						    <Set name="War"><SystemProperty name="opennms.home" />/jetty-webapps/ROOT</Set>
-						    <Set name="ContextPath">/</Set>
-						</New>
-					</Item>
-					<!--
-					<Item>
-						<New class="org.eclipse.jetty.server.handler.DefaultHandler"></New>
-					</Item>
-					-->
-				</Array>
+			 <Array type="org.eclipse.jetty.server.Handler">
+				 <Item>
+					 <New id="Contexts" class="org.eclipse.jetty.server.handler.ContextHandlerCollection"/>
+				 </Item>
+				 <Item>
+					 <New id="DefaultHandler" class="org.eclipse.jetty.server.handler.DefaultHandler"/>
+				 </Item>
+			 </Array>
 			</Set>
 		</New>
 	</Set>
+
+	<Call name="addBean">
+		<Arg>
+			<New id="DeploymentManager" class="org.eclipse.jetty.deploy.DeploymentManager">
+				<Set name="contexts">
+					<Ref id="Contexts" />
+				</Set>
+				<Call name="setContextAttribute">
+					<Arg>org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern</Arg>
+					<Arg>.*/[^/]*\.jar$</Arg>
+				</Call>
+			</New>
+		</Arg>
+	</Call>
+
+	<Ref id="DeploymentManager">
+		<Call name="addAppProvider">
+			<Arg>
+				<New class="org.eclipse.jetty.deploy.providers.ContextProvider">
+					<Set name="monitoredDirName"><SystemProperty name="opennms.home" />/contexts</Set>
+					<Set name="scanInterval">10</Set>
+				</New>
+			</Arg>
+		</Call>
+		<Call id="webappprovider" name="addAppProvider">
+			<Arg>
+				<New class="org.eclipse.jetty.deploy.providers.WebAppProvider">
+					<Set name="monitoredDirName"><SystemProperty name="opennms.home" />/jetty-webapps</Set>
+					<Set name="scanInterval">10</Set>
+					<Set name="contextXmlDir"><SystemProperty name="opennms.home" />/contexts</Set>
+					<Set name="extractWars">false</Set>
+				</New>
+			</Arg>
+		</Call>
+	</Ref>
+
 </Configure>

@@ -1100,7 +1100,14 @@ function updateOutageTypeDisplay(selectElement) {
 				<li>
 					<p>Status Polling:</p>
 					<ul>
-						<% for (org.opennms.netmgt.config.poller.Package thisKey : pollingOutages.keySet()) {
+						<% List<org.opennms.netmgt.config.poller.Package> pollerSorted = new ArrayList<org.opennms.netmgt.config.poller.Package>(pollingOutages.keySet());
+					       Collections.sort(pollerSorted, new Comparator<org.opennms.netmgt.config.poller.Package>() {
+					           @Override
+					           public int compare(org.opennms.netmgt.config.poller.Package p1, org.opennms.netmgt.config.poller.Package p2) {
+					               return p1.getName().compareTo(p2.getName());
+					           }
+					       });
+						   for (org.opennms.netmgt.config.poller.Package thisKey : pollerSorted) {
 								String name = "polling-" + thisKey.getName();
 								%>
 								<li><input type="checkbox" name="<%=name%>" <%=enabledOutages.contains(name)?"checked=\"checked\"":""%> id="<%=name%>"/> <label for="<%=name%>"><%= thisKey.getName() %></label> </li>
@@ -1110,7 +1117,14 @@ function updateOutageTypeDisplay(selectElement) {
 				<li>
 					<p>Threshold Checking:</p>
 					<ul>
-						<% for (org.opennms.netmgt.config.threshd.Package thisKey : thresholdOutages.keySet()) {
+						<% List<org.opennms.netmgt.config.threshd.Package> threshdSorted = new ArrayList<org.opennms.netmgt.config.threshd.Package>(thresholdOutages.keySet());
+					       Collections.sort(threshdSorted, new Comparator<org.opennms.netmgt.config.threshd.Package>() {
+					           @Override
+					           public int compare(org.opennms.netmgt.config.threshd.Package p1, org.opennms.netmgt.config.threshd.Package p2) {
+					               return p1.getName().compareTo(p2.getName());
+					           }
+					       });
+  						   for (org.opennms.netmgt.config.threshd.Package thisKey : threshdSorted) {
 								String name = "threshold-" + thisKey.getName();
 								%>
 								<li><input type="checkbox" name="<%=name%>" <%=enabledOutages.contains(name)?"checked=\"checked\"":""%> id="<%=name%>"/> <label for="<%=name%>"><%= thisKey.getName() %></label> </li>
@@ -1120,7 +1134,14 @@ function updateOutageTypeDisplay(selectElement) {
 				<li>
 					<p>Data Collection:</p>
 					<ul>
-						<% for (org.opennms.netmgt.config.collectd.Package thisKey : collectionOutages.keySet()) {
+						<% List<org.opennms.netmgt.config.collectd.Package> collectdSorted = new ArrayList<org.opennms.netmgt.config.collectd.Package>(collectionOutages.keySet());
+					       Collections.sort(collectdSorted, new Comparator<org.opennms.netmgt.config.collectd.Package>() {
+					           @Override
+					           public int compare(org.opennms.netmgt.config.collectd.Package p1, org.opennms.netmgt.config.collectd.Package p2) {
+					               return p1.getName().compareTo(p2.getName());
+					           }
+					       });
+  						   for (org.opennms.netmgt.config.collectd.Package thisKey : collectdSorted) {
 								String name = "collect-" + thisKey.getName();
 								%>
 								<li><input type="checkbox" name="<%=name%>" <%=enabledOutages.contains(name)?"checked=\"checked\"":""%> id="<%=name%>"/> <label for="<%=name%>"><%= thisKey.getName() %></label> </li>

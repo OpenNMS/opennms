@@ -51,6 +51,7 @@ import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.mock.MockDataCollectionConfig;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.test.FileAnticipator;
@@ -113,7 +114,7 @@ public class BasePersisterTest {
         initPersister();
         
         File nodeDir = m_fileAnticipator.tempDir(getSnmpRrdDirectory(), m_node.getId().toString());
-        m_fileAnticipator.tempFile(nodeDir, "strings.properties", "#just a test");
+        m_fileAnticipator.tempFile(nodeDir, ResourceTypeUtils.STRINGS_PROPERTIES_FILE_NAME, "#just a test");
         
         CollectionAttribute attribute = buildStringAttribute();
         m_persister.persistStringAttribute(attribute);
@@ -124,7 +125,7 @@ public class BasePersisterTest {
         initPersister();
         
         File nodeDir = m_fileAnticipator.tempDir(getSnmpRrdDirectory(), m_node.getId().toString());
-        m_fileAnticipator.expecting(nodeDir, "strings.properties");
+        m_fileAnticipator.expecting(nodeDir, ResourceTypeUtils.STRINGS_PROPERTIES_FILE_NAME);
         
         CollectionAttribute attribute = buildStringAttribute();
         m_persister.persistStringAttribute(attribute);
@@ -135,7 +136,7 @@ public class BasePersisterTest {
         initPersister();
         
         File nodeDir = m_fileAnticipator.expecting(getSnmpRrdDirectory(), m_node.getId().toString());
-        m_fileAnticipator.expecting(nodeDir, "strings.properties");
+        m_fileAnticipator.expecting(nodeDir, ResourceTypeUtils.STRINGS_PROPERTIES_FILE_NAME);
         
         CollectionAttribute attribute = buildStringAttribute();
         m_persister.persistStringAttribute(attribute);
@@ -150,7 +151,7 @@ public class BasePersisterTest {
         initPersister();
         
         File nodeDir = m_fileAnticipator.expecting(getSnmpRrdDirectory(), m_node.getId().toString());
-        m_fileAnticipator.expecting(nodeDir, "strings.properties");
+        m_fileAnticipator.expecting(nodeDir, ResourceTypeUtils.STRINGS_PROPERTIES_FILE_NAME);
         
         CollectionAttribute attribute = buildStringAttribute();
 

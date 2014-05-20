@@ -1052,7 +1052,7 @@
     <httpclientVersion>4.2.5</httpclientVersion>
     <jacksonVersion>1.9.13</jacksonVersion>
     <jasperreportsVersion>3.7.6</jasperreportsVersion>
-    <jettyVersion>7.6.14.v20131031</jettyVersion>
+    <jettyVersion>7.6.15.v20140411</jettyVersion>
     <karafVersion>2.3.4</karafVersion>
     <felixVersion>2.2.0</felixVersion>
     <liquibaseVersion>2.0.5</liquibaseVersion>
@@ -1220,10 +1220,23 @@
         <module>opennms-tools</module>
       </modules>
     </profile>
+
     <profile>
       <id>build-bamboo</id>
       <modules>
         <module>opennms-full-assembly</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>smoke</id>
+      <activation>
+        <property>
+          <name>smoke</name>
+        </property>
+      </activation>
+      <modules>
+        <module>smoke-test</module>
       </modules>
     </profile>
 
@@ -2869,6 +2882,11 @@
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-continuation</artifactId>
+        <version>${jettyVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-deploy</artifactId>
         <version>${jettyVersion}</version>
       </dependency>
       <dependency>

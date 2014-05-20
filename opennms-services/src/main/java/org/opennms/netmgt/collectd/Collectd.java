@@ -303,7 +303,7 @@ public class Collectd extends AbstractServiceDaemon implements
     }
 
     private void createScheduler() {
-        Logging.withPrefix("collectd", new Runnable() {
+        Logging.withPrefix(LOG4J_CATEGORY, new Runnable() {
             @Override
             public void run() {
                 // Create a scheduler
