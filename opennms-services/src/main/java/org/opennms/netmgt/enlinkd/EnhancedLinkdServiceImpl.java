@@ -9,6 +9,10 @@ import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.restrictions.EqRestriction;
+import org.opennms.netmgt.dao.api.BridgeBridgeLinkDao;
+import org.opennms.netmgt.dao.api.BridgeElementDao;
+import org.opennms.netmgt.dao.api.BridgeMacLinkDao;
+import org.opennms.netmgt.dao.api.BridgeStpLinkDao;
 import org.opennms.netmgt.dao.api.IsIsElementDao;
 import org.opennms.netmgt.dao.api.IsIsLinkDao;
 import org.opennms.netmgt.dao.api.LldpElementDao;
@@ -17,6 +21,9 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OspfElementDao;
 import org.opennms.netmgt.dao.api.OspfLinkDao;
 import org.opennms.netmgt.dao.support.UpsertTemplate;
+import org.opennms.netmgt.model.BridgeElement;
+import org.opennms.netmgt.model.BridgeMacLink;
+import org.opennms.netmgt.model.BridgeStpLink;
 import org.opennms.netmgt.model.IsIsElement;
 import org.opennms.netmgt.model.IsIsLink;
 import org.opennms.netmgt.model.LldpElement;
@@ -49,6 +56,14 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 	private IsIsLinkDao m_isisLinkDao;
 
 	private IsIsElementDao m_isisElementDao;
+	
+	private BridgeElementDao m_bridgeElementDao;
+	
+	private BridgeMacLinkDao m_bridgeMacLinkDao;
+	
+	private BridgeBridgeLinkDao m_bridgeBridgeLinkDao;
+	
+	private BridgeStpLinkDao m_bridgeStpLinkDao; 
 	
     @Override
 	public List<LinkableNode> getSnmpNodeList() {
@@ -143,7 +158,6 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 	@Override
 	public void reconcileBridge(int nodeId, Date now) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -388,6 +402,56 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
 	public void setIsisElementDao(IsIsElementDao isisElementDao) {
 		m_isisElementDao = isisElementDao;
+	}
+
+	public BridgeElementDao getBridgeElementDao() {
+		return m_bridgeElementDao;
+	}
+
+	public void setBridgeElementDao(BridgeElementDao bridgeElementDao) {
+		m_bridgeElementDao = bridgeElementDao;
+	}
+
+	public BridgeMacLinkDao getBridgeMacLinkDao() {
+		return m_bridgeMacLinkDao;
+	}
+
+	public void setBridgeMacLinkDao(BridgeMacLinkDao bridgeMacLinkDao) {
+		m_bridgeMacLinkDao = bridgeMacLinkDao;
+	}
+
+	public BridgeBridgeLinkDao getBridgeBridgeLinkDao() {
+		return m_bridgeBridgeLinkDao;
+	}
+
+	public void setBridgeBridgeLinkDao(BridgeBridgeLinkDao bridgeBridgeLinkDao) {
+		m_bridgeBridgeLinkDao = bridgeBridgeLinkDao;
+	}
+
+	public BridgeStpLinkDao getBridgeStpLinkDao() {
+		return m_bridgeStpLinkDao;
+	}
+
+	public void setBridgeStpLinkDao(BridgeStpLinkDao bridgeStpLinkDao) {
+		m_bridgeStpLinkDao = bridgeStpLinkDao;
+	}
+
+	@Override
+	public void store(int nodeId, BridgeElement bridge) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void store(int nodeId, BridgeStpLink link) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void store(int nodeId, BridgeMacLink link) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
