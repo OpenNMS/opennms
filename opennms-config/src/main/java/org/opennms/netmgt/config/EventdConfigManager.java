@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.config;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -39,6 +40,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.eventd.EventdConfiguration;
 
@@ -65,30 +67,18 @@ public class EventdConfigManager {
      * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    protected EventdConfigManager(final InputStream stream) throws MarshalException, ValidationException, IOException {
-        m_config = CastorUtils.unmarshal(EventdConfiguration.class, stream);
-
+    public EventdConfigManager() throws MarshalException, ValidationException, IOException {
+        reload();
     }
     
-    /**
-     * <p>Constructor for EventdConfigManager.</p>
-     *
-     * @param configFile a {@link java.lang.String} object.
-     * @throws java.io.FileNotFoundException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     */
-    public EventdConfigManager(final String configFile) throws FileNotFoundException, MarshalException, ValidationException {
-        InputStream stream = null;
-        try {
-            stream = new FileInputStream(configFile);
-            m_config = CastorUtils.unmarshal(EventdConfiguration.class, stream);
-        } finally {
-            if (stream != null) {
-                IOUtils.closeQuietly(stream);
-            }
-        }
+    EventdConfigManager(final InputStream stream) throws MarshalException, ValidationException, IOException {
+    	m_config = CastorUtils.unmarshal(EventdConfiguration.class, stream);		
     }
+    
+    private void reload() throws MarshalException, ValidationException, IOException {
+    	InputStream stream = new FileInputStream(ConfigFileConstants.getFile(ConfigFileConstants.EVENTD_CONFIG_FILE_NAME));
+    	m_config = CastorUtils.unmarshal(EventdConfiguration.class, stream);		
+	}
 
     public Lock getReadLock() {
         return m_readLock;
