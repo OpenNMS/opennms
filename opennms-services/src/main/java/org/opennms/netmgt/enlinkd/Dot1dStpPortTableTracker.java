@@ -28,12 +28,9 @@
 
 package org.opennms.netmgt.enlinkd;
 
-import static org.opennms.core.utils.InetAddressUtils.isValidStpBridgeId;
-import static org.opennms.core.utils.InetAddressUtils.isValidStpDesignatedPort;
-import static org.opennms.core.utils.InetAddressUtils.getBridgeAddressFromStpBridgeId;
-import static org.opennms.core.utils.InetAddressUtils.getBridgeDesignatedPortNumber;
-
-import org.opennms.netmgt.model.BridgeBridgeLink;
+import org.opennms.netmgt.model.BridgeStpLink;
+import org.opennms.netmgt.model.BridgeStpLink.BridgeDot1dStpPortEnable;
+import org.opennms.netmgt.model.BridgeStpLink.BridgeDot1dStpPortState;
 import org.opennms.netmgt.snmp.RowCallback;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -60,11 +57,14 @@ import org.slf4j.LoggerFactory;
 public class Dot1dStpPortTableTracker extends TableTracker {
 
 	private final static Logger LOG = LoggerFactory.getLogger(Dot1dStpPortTableTracker.class); 
-	public final static int DOT1D_STP_PORT_ENABLED = 1;
 	
 	public final static SnmpObjId DOT1D_STP_PORT                   = SnmpObjId.get(".1.3.6.1.2.1.17.2.15.1.1");
+	public final static SnmpObjId DOT1D_STP_PORT_PRIORITY          = SnmpObjId.get(".1.3.6.1.2.1.17.2.15.1.2");
 	public final static SnmpObjId DOT1D_STP_PORT_STATE             = SnmpObjId.get(".1.3.6.1.2.1.17.2.15.1.3");
 	public final static SnmpObjId DOT1D_STP_PORT_ENABLE            = SnmpObjId.get(".1.3.6.1.2.1.17.2.15.1.4");
+	public final static SnmpObjId DOT1D_STP_PORT_PATH_COST         = SnmpObjId.get(".1.3.6.1.2.1.17.2.15.1.5");
+	public final static SnmpObjId DOT1D_STP_PORT_DESIGNATED_ROOT   = SnmpObjId.get(".1.3.6.1.2.1.17.2.15.1.6");
+	public final static SnmpObjId DOT1D_STP_PORT_DESIGNATED_COST   = SnmpObjId.get(".1.3.6.1.2.1.17.2.15.1.7");
 	public final static SnmpObjId DOT1D_STP_PORT_DESIGNATED_BRIDGE = SnmpObjId.get(".1.3.6.1.2.1.17.2.15.1.8");
 	public final static SnmpObjId DOT1D_STP_PORT_DESIGNATED_PORT   = SnmpObjId.get(".1.3.6.1.2.1.17.2.15.1.9");
 
@@ -81,6 +81,7 @@ public class Dot1dStpPortTableTracker extends TableTracker {
          *  
          */
 		DOT1D_STP_PORT,
+		DOT1D_STP_PORT_PRIORITY,
 				
 		/**
 		 *  dot1dStpPortState OBJECT-TYPE
@@ -121,7 +122,9 @@ public class Dot1dStpPortTableTracker extends TableTracker {
          *  "IEEE 802.1D-1998: clause 8.5.5.2"
 		 */
 		DOT1D_STP_PORT_ENABLE,
-		
+		DOT1D_STP_PORT_PATH_COST,
+		DOT1D_STP_PORT_DESIGNATED_ROOT,
+		DOT1D_STP_PORT_DESIGNATED_COST,
 		/**
 		 *    dot1dStpPortDesignatedBridge OBJECT-TYPE
          * SYNTAX      BridgeId
@@ -163,6 +166,10 @@ public class Dot1dStpPortTableTracker extends TableTracker {
 			return getValue(DOT1D_STP_PORT).toInt();
 		}
 			
+
+		public Integer getDot1dStpPortPriority() {
+			return getValue(DOT1D_STP_PORT_PRIORITY).toInt();
+		}
 		/**
 		 * <p>getDot1dStpPortState</p>
 		 *
@@ -181,6 +188,17 @@ public class Dot1dStpPortTableTracker extends TableTracker {
 			return getValue(DOT1D_STP_PORT_ENABLE).toInt();
 		}
 		
+		public Integer getDot1dStpPortPathCost() {
+			return getValue(DOT1D_STP_PORT_PATH_COST).toInt();
+		}
+		
+		public String getDot1dStpPortDesignatedRoot() {
+			return getValue(DOT1D_STP_PORT_DESIGNATED_ROOT).toHexString();
+		}
+
+		public Integer getDot1dStpPortDesignatedCost() {
+			return getValue(DOT1D_STP_PORT_DESIGNATED_COST).toInt();
+		}
 		/**
 		 * <p>getDot1dStpPortDesignatedBridge</p>
 		 *BridgeId ::= TEXTUAL-CONVENTION
@@ -211,49 +229,21 @@ public class Dot1dStpPortTableTracker extends TableTracker {
 			
 		}
 
-		public BridgeBridgeLink getLink() {
-			BridgeBridgeLink link = new BridgeBridgeLink();
+		public BridgeStpLink getLink() {
             LOG.info("processStpPortRow: row count: {}", getColumnCount());
-			/*
-			if (!isValid()) {
-				return null;
-			}
-			if (bridgeIdentifier.getBridgeAddress().equals(getBridgeAddressFromStpBridgeId(getDot1dStpPortDesignatedBridge()))) {
-	            LOG.info("processStpPortRow: designated bridge on port {}  is bridge identifier: {}", getDot1dStpPort(),bridgeIdentifier.getBridgeAddress());
-				return null;
-			}
-			TopologyElement deviceA = new TopologyElement();
-            deviceA.addElementIdentifier(nodeIdentifier);
-            deviceA.addElementIdentifier(bridgeIdentifier);
-            LOG.info("processStpPortRow: row local bridge identifier: {}", bridgeIdentifier.getBridgeAddress());
-
-            BridgeEndPoint endPointA = new BridgeEndPoint(getDot1dStpPort(),nodeIdentifier.getNodeid());
-            deviceA.addEndPoint(endPointA);
-            LOG.info("processStpPortRow: row local bridge port: {}", endPointA.getBridgePort());
-    		
-    		TopologyElement deviceB = new TopologyElement();
-            BridgeElementIdentifier remBridgeElementIdentifier = getRemElementIdentifier(nodeIdentifier.getNodeid());
-            LOG.info("processStpPortRow: row remote bridge identifier: {}", remBridgeElementIdentifier.getBridgeAddress());
-            deviceB.addElementIdentifier(remBridgeElementIdentifier);
-    		
-    		BridgeEndPoint endPointB = getRemEndPoint(nodeIdentifier.getNodeid());
-            LOG.info("processStpPortRow: row remote bridge port: {}", endPointB.getBridgePort());
-    		deviceB.addEndPoint(endPointB);
-    		*/
+			BridgeStpLink link = new BridgeStpLink();
+            link.setStpPort(getDot1dStpPort());
+            link.setStpPortPriority(getDot1dStpPortPriority());
+            link.setStpPortState(BridgeDot1dStpPortState.get(getDot1dStpPortState()));
+            link.setStpPortEnable(BridgeDot1dStpPortEnable.get(getDot1dStpPortEnable()));
+            link.setStpPortPathCost(getDot1dStpPortPathCost());
+            link.setDesignatedRoot(getDot1dStpPortDesignatedRoot());
+            link.setDesignatedCost(getDot1dStpPortDesignatedCost());
+            link.setDesignatedBridge(getDot1dStpPortDesignatedBridge());
+            link.setDesignatedPort(getDot1dStpPortDesignatedPort());
     		return link;
 
 		}
-
-		/*
-		public boolean isValid() {
-			if (isValidStpBridgeId(getDot1dStpPortDesignatedBridge())
-					&& isValidStpDesignatedPort(getDot1dStpPortDesignatedPort())
-					&& getDot1dStpPortEnable() == DOT1D_STP_PORT_ENABLED
-					&& (getDot1dStpPortState() == StpPortStatus.STP_PORT_STATUS_FORWARDING || getDot1dStpPortState() == StpPortStatus.STP_PORT_STATUS_BLOCKING))
-				return true;
-			return false;
-		}
-		*/
 
 	}
 	

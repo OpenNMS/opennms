@@ -28,9 +28,8 @@
 
 package org.opennms.netmgt.enlinkd;
 
-import static org.opennms.core.utils.InetAddressUtils.isValidBridgeAddress;
-
 import org.opennms.netmgt.model.BridgeMacLink;
+import org.opennms.netmgt.model.BridgeMacLink.BridgeDot1qTpFdbStatus;
 import org.opennms.netmgt.snmp.RowCallback;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -156,44 +155,15 @@ public class Dot1dTpFdbTableTracker extends TableTracker {
 			return getValue(DOT1D_TP_FDB_STATUS).toInt();
 		}
 
-		public boolean isValid() {
-			if (isValidBridgeAddress(getDot1dTpFdbAddress())
-					&& getDot1dTpFdbStatus() == SNMP_DOT1D_FDB_STATUS_LEARNED)
-				return true;
-			return false;
-		}
-
 		public BridgeMacLink getLink() {
             LOG.info("processDot1qTpFdbRow: row count: {}", getColumnCount());
 			BridgeMacLink link = new BridgeMacLink();
-            if (!isValid()) {
-				return null;
-			}
-            /*
-			TopologyElement deviceA = new TopologyElement();
-            deviceA.addElementIdentifier(nodeIdentifier);
-            deviceA.addElementIdentifier(bridgeIdentifier);
-            LOG.info("processDot1qTpFdbRow: row local bridge identifier: {}", bridgeIdentifier.getBridgeAddress());
-
-            BridgeEndPoint endPointA = new BridgeEndPoint(getDot1dTpFdbPort(),nodeIdentifier.getNodeid());
-            deviceA.addEndPoint(endPointA);
-            LOG.info("processDot1qTpFdbRow: row local bridge port: {}", endPointA.getBridgePort());
-    		
-            TopologyElement deviceB = new TopologyElement();
-    		MacAddrEndPoint endPointB = getRemEndPoint(nodeIdentifier.getNodeid());
-    		endPointB.setSourceNode(nodeIdentifier.getNodeid());
-            deviceB.addElementIdentifier(new MacAddrElementIdentifier(endPointB.getMacAddress(),nodeIdentifier.getNodeid()));
-    		deviceB.addEndPoint(endPointB);
-            LOG.info("processDot1qTpFdbRow: row remote mac : {}", endPointB.getMacAddress());
-    		*/
+			link.setBridgePort(getDot1dTpFdbPort());
+			link.setMacAddress(getDot1dTpFdbAddress());
+			link.setBridgeDot1qTpFdbStatus(BridgeDot1qTpFdbStatus.get(getDot1dTpFdbStatus()));
             return link;
 		}
 
-		/*
-		public MacAddrEndPoint getRemEndPoint(Integer sourceNode) {
-			return new MacAddrEndPoint(getDot1dTpFdbAddress(),sourceNode);
-		}
-		*/
 	}
 	/**
 	 * <P>The class constructor used to initialize the
