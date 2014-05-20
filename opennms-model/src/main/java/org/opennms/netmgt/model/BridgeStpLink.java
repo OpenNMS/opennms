@@ -121,19 +121,23 @@ public class BridgeStpLink {
 	}
 	private Integer m_id;
 	private OnmsNode m_node;
+
 	private Integer m_stpPort;
 	private Integer m_stpPortPriority;
 	private BridgeDot1dStpPortState m_stpPortState;
 	private BridgeDot1dStpPortEnable m_stpPortEnable;
-	private Integer m_stpPortIfIndex;
-	private String  m_stpPortIfName;
-	private Integer m_vlan;
+	private Integer m_stpPortPathCost;
+	private Integer m_designatedCost;
 	private String m_designatedRoot;
-	private String m_designatedCost;
 	private String m_designatedBridge;
 	private String m_designatedPort;
-    private Date m_bridgeStpLinkCreateTime = new Date();
+
+	private Date m_bridgeStpLinkCreateTime = new Date();
     private Date m_bridgeStpLinkLastPollTime;
+
+    private Integer m_stpPortIfIndex;
+	private String  m_stpPortIfName;
+	private Integer m_vlan;
 	
 	public BridgeStpLink() {}
 
@@ -205,6 +209,15 @@ public class BridgeStpLink {
 		m_stpPortEnable = stpPortEnable;
 	}
 
+    @Column(name="stpPortPathCost", nullable = false)
+	public Integer getStpPortPathCost() {
+		return m_stpPortPathCost;
+	}
+
+
+	public void setStpPortPathCost(Integer stpPortPathCost) {
+		m_stpPortPathCost = stpPortPathCost;
+	}
 
     @Column(name="stpPortIfIndex", nullable = true)
 	public Integer getStpPortIfIndex() {
@@ -255,12 +268,12 @@ public class BridgeStpLink {
 
 
 	@Column(name="designatedCost", nullable = false)
-	public String getDesignatedCost() {
+	public Integer getDesignatedCost() {
 		return m_designatedCost;
 	}
 
 
-	public void setDesignatedCost(String designatedCost) {
+	public void setDesignatedCost(Integer designatedCost) {
 		m_designatedCost = designatedCost;
 	}	
 

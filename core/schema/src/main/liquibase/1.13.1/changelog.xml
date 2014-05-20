@@ -618,6 +618,9 @@
 			<column name="stpportenable" type="integer" >
 				<constraints nullable="false" />
 			</column>
+			<column name="stpportpathcost" type="integer" >
+				<constraints nullable="false" />
+			</column>
 			<column name="stpportifindex" type="integer" >
 				<constraints nullable="true" />
 			</column>
