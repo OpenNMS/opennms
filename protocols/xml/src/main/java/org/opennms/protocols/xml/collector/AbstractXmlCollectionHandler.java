@@ -442,17 +442,18 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
      */
     protected Document getXmlDocument(String urlString, Request request) {
         InputStream is = null;
+        URLConnection c = null;
         try {
             URL url = UrlFactory.getUrl(urlString, request);
-            URLConnection c = url.openConnection();
+            c = url.openConnection();
             is = c.getInputStream();
             final Document doc = getXmlDocument(is, request);
-            UrlFactory.disconnect(c);
             return doc;
         } catch (Exception e) {
             throw new XmlCollectorException(e.getMessage(), e);
         } finally {
             IOUtils.closeQuietly(is);
+            UrlFactory.disconnect(c);
         }
     }
 
@@ -486,7 +487,7 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
      * @throws Exception the exception
      */
     protected InputStream applyXsltTransformation(Request request, InputStream is) throws Exception {
-        if (request == null)
+        if (request == null || is == null)
             return is;
         String xsltFilename = request.getParameter("xslt-source-file");
         if (xsltFilename == null)
@@ -498,9 +499,12 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
         Source xslt = new StreamSource(xsltFile);
         Transformer transformer = factory.newTransformer(xslt);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        transformer.transform(new StreamSource(is), new StreamResult(baos));
-        IOUtils.closeQuietly(is);
-        return new ByteArrayInputStream(baos.toByteArray());
+        try {
+            transformer.transform(new StreamSource(is), new StreamResult(baos));
+            return new ByteArrayInputStream(baos.toByteArray());
+        } finally {
+            IOUtils.closeQuietly(is);
+        }
     }
 
     /**
@@ -512,14 +516,15 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
      * @throws IOException Signals that an I/O exception has occurred.
      */
     protected InputStream preProcessHtml(Request request, InputStream is) throws IOException {
-        if (request == null)
+        if (request == null || is == null || !Boolean.parseBoolean(request.getParameter("pre-parse-html"))) {
             return is;
-        if (Boolean.parseBoolean(request.getParameter("pre-parse-html"))) {
-            org.jsoup.nodes.Document doc = Jsoup.parse(is, "UTF-8", "/");
-            IOUtils.closeQuietly(is);
-            return new ByteArrayInputStream(doc.outerHtml().getBytes());
         }
-        return is;
+        try {
+            org.jsoup.nodes.Document doc = Jsoup.parse(is, "UTF-8", "/");
+            return new ByteArrayInputStream(doc.outerHtml().getBytes());
+        } finally {
+            IOUtils.closeQuietly(is);
+        }
     }
 
     /**

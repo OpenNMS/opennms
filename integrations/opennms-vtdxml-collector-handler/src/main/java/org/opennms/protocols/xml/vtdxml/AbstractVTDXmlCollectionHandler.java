@@ -200,21 +200,22 @@ public abstract class AbstractVTDXmlCollectionHandler extends AbstractXmlCollect
      */
     protected VTDNav getVTDXmlDocument(String urlString, Request request) {
         InputStream is = null;
+        URLConnection c = null;
         try {
             URL url = UrlFactory.getUrl(urlString, request);
             LOG.debug("getXmlDocument: got url");
-            URLConnection c = url.openConnection();
+            c = url.openConnection();
             LOG.debug("getXmlDocument: got connection");
             is = c.getInputStream();
             LOG.debug("getXmlDocument: got input stream");
             VTDNav nav = getVTDXmlDocument(is, request);
-            UrlFactory.disconnect(c);
             LOG.debug("getXmlDocument: returning VTDNav");
             return nav;
         } catch (Exception e) {
             throw new XmlCollectorException(e.getMessage(), e);
         } finally {
             IOUtils.closeQuietly(is);
+            UrlFactory.disconnect(c);
         }
     }
 
@@ -232,7 +233,8 @@ public abstract class AbstractVTDXmlCollectionHandler extends AbstractXmlCollect
             VTDGen vg = new VTDGen();
             vg.setDoc(IOUtils.toByteArray(is));
             vg.parse(true);
-            return vg.getNav();
+            final VTDNav nav = vg.getNav();
+            return nav;
         } catch (Exception e) {
             throw new XmlCollectorException(e.getMessage(), e);
         }
