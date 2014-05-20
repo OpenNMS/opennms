@@ -300,7 +300,7 @@ public class WmiCollector implements ServiceCollector {
         final File f = new File(WmiDataCollectionConfigFactory.getInstance().getRrdPath());
         if (!f.isDirectory()) {
             if (!f.mkdirs()) {
-                throw new RuntimeException("Unable to create RRD file repository.  Path doesn't already exist and could not make directory: " + DataCollectionConfigFactory.getInstance().getRrdPath());
+                throw new RuntimeException("Unable to create RRD file repository.  Path doesn't already exist and could not make directory: " + WmiDataCollectionConfigFactory.getInstance().getRrdPath());
             }
         }
     }
