@@ -147,7 +147,7 @@ final class CollectableService implements ReadyRunnable {
         
         m_spec.initialize(m_agent);
         
-        m_params=new ServiceParameters(m_spec.getReadOnlyPropertyMap());
+        m_params = m_spec.getServiceParameters();
         m_repository=m_spec.getRrdRepository(m_params.getCollectionName());
 
         m_thresholdVisitor = ThresholdingVisitor.create(m_nodeId, getHostAddress(), m_spec.getServiceName(), m_repository,  m_params);
