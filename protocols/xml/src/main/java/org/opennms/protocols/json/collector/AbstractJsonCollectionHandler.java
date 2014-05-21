@@ -170,19 +170,20 @@ public abstract class AbstractJsonCollectionHandler extends AbstractXmlCollectio
      */
     protected JSONObject getJSONObject(String urlString, Request request) {
         InputStream is = null;
+        URLConnection c = null;
         try {
             URL url = UrlFactory.getUrl(urlString, request);
-            URLConnection c = url.openConnection();
+            c = url.openConnection();
             is = c.getInputStream();
             StringWriter writer = new StringWriter();
             IOUtils.copy(is, writer);
-            JSONObject jsonObject = JSONObject.fromObject(writer.toString());
-            UrlFactory.disconnect(c);
+            final JSONObject jsonObject = JSONObject.fromObject(writer.toString());
             return jsonObject;
         } catch (Exception e) {
             throw new XmlCollectorException(e.getMessage(), e);
         } finally {
             IOUtils.closeQuietly(is);
+            UrlFactory.disconnect(c);
         }
     }
 

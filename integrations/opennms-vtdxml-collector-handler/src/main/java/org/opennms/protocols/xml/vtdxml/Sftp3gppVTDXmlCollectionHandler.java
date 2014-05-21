@@ -84,6 +84,7 @@ public class Sftp3gppVTDXmlCollectionHandler extends AbstractVTDXmlCollectionHan
 
         // TODO We could be careful when handling exceptions because parsing exceptions will be treated different from connection or retrieval exceptions
         DateTime startTime = new DateTime();
+        Sftp3gppUrlConnection connection = null;
         try {
             File resourceDir = new File(getRrdRepository().getRrdBaseDir(), Integer.toString(agent.getNodeId()));
             for (XmlSource source : collection.getXmlSources()) {
@@ -94,7 +95,7 @@ public class Sftp3gppVTDXmlCollectionHandler extends AbstractVTDXmlCollectionHan
                 Request request = parseRequest(source.getRequest(), agent, collection.getXmlRrd().getStep());
                 URL url = UrlFactory.getUrl(urlStr, request);
                 String lastFile = Sftp3gppUtils.getLastFilename(getServiceName(), resourceDir, url.getPath());
-                Sftp3gppUrlConnection connection = (Sftp3gppUrlConnection) url.openConnection();
+                connection = (Sftp3gppUrlConnection) url.openConnection();
                 if (lastFile == null) {
                     lastFile = connection.get3gppFileName();
                     LOG.debug("collect(single): retrieving file from {}{}{} from {}", url.getPath(), File.separatorChar, lastFile, agent.getHostAddress());
@@ -111,9 +112,12 @@ public class Sftp3gppVTDXmlCollectionHandler extends AbstractVTDXmlCollectionHan
                         if (connection.getTimeStampFromFile(fileName) > lastTs) {
                             LOG.debug("collect(multiple): retrieving file {} from {}", fileName, agent.getHostAddress());
                             InputStream is = connection.getFile(fileName);
-                            VTDNav doc = getVTDXmlDocument(is, request);
-                            IOUtils.closeQuietly(is);
-                            fillCollectionSet(agent, collectionSet, source, doc);
+                            try {
+                                VTDNav doc = getVTDXmlDocument(is, request);
+                                fillCollectionSet(agent, collectionSet, source, doc);
+                            } finally {
+                                IOUtils.closeQuietly(is);
+                            }
                             Sftp3gppUtils.setLastFilename(getServiceName(), resourceDir, url.getPath(), fileName);
                             Sftp3gppUtils.deleteFile(connection, fileName);
                             collected = true;
@@ -122,7 +126,6 @@ public class Sftp3gppVTDXmlCollectionHandler extends AbstractVTDXmlCollectionHan
                     if (!collected) {
                         LOG.warn("collect: could not find any file after {} on {}", lastFile, agent);
                     }
-                    connection.disconnect();
                 }
             }
             collectionSet.setStatus(ServiceCollector.COLLECTION_SUCCEEDED);
@@ -134,6 +137,7 @@ public class Sftp3gppVTDXmlCollectionHandler extends AbstractVTDXmlCollectionHan
             String status = collectionSet.getStatus() == ServiceCollector.COLLECTION_SUCCEEDED ? "finished" : "failed";
             DateTime endTime = new DateTime();
             LOG.debug("collect: {} collection {}: duration: {} ms", status, collection.getName(), endTime.getMillis()-startTime.getMillis());
+            UrlFactory.disconnect(connection);
         }
     }
 
