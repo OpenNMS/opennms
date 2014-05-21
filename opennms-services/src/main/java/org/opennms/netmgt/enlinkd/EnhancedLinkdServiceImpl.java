@@ -13,6 +13,7 @@ import org.opennms.netmgt.dao.api.BridgeBridgeLinkDao;
 import org.opennms.netmgt.dao.api.BridgeElementDao;
 import org.opennms.netmgt.dao.api.BridgeMacLinkDao;
 import org.opennms.netmgt.dao.api.BridgeStpLinkDao;
+import org.opennms.netmgt.dao.api.IpNetToMediaDao;
 import org.opennms.netmgt.dao.api.IsIsElementDao;
 import org.opennms.netmgt.dao.api.IsIsLinkDao;
 import org.opennms.netmgt.dao.api.LldpElementDao;
@@ -24,6 +25,7 @@ import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.BridgeStpLink;
+import org.opennms.netmgt.model.IpNetToMedia;
 import org.opennms.netmgt.model.IsIsElement;
 import org.opennms.netmgt.model.IsIsLink;
 import org.opennms.netmgt.model.LldpElement;
@@ -56,6 +58,8 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 	private IsIsLinkDao m_isisLinkDao;
 
 	private IsIsElementDao m_isisElementDao;
+	
+	private IpNetToMediaDao m_ipNetToMediaDao;
 	
 	private BridgeElementDao m_bridgeElementDao;
 	
@@ -141,6 +145,8 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 			m_isisElementDao.delete(element);
 			m_isisElementDao.flush();
 		}
+		m_isisLinkDao.deleteByNodeIdOlderThen(nodeId, now);
+		m_isisLinkDao.flush();
 	}
 
 	@Override
@@ -152,7 +158,6 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 	@Override
 	public void reconcileIpNetToMedia(int nodeId, Date now) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -348,6 +353,30 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 		
 	}
 
+	@Override
+	public void store(int nodeId, BridgeElement bridge) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void store(int nodeId, BridgeStpLink link) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void store(int nodeId, BridgeMacLink link) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void store(int nodeId, IpNetToMedia link) {
+		// TODO Auto-generated method stub
+	}
+
+
 	public LldpLinkDao getLldpLinkDao() {
 		return m_lldpLinkDao;
 	}
@@ -436,22 +465,11 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 		m_bridgeStpLinkDao = bridgeStpLinkDao;
 	}
 
-	@Override
-	public void store(int nodeId, BridgeElement bridge) {
-		// TODO Auto-generated method stub
-		
+	public IpNetToMediaDao getIpNetToMediaDao() {
+		return m_ipNetToMediaDao;
 	}
 
-	@Override
-	public void store(int nodeId, BridgeStpLink link) {
-		// TODO Auto-generated method stub
-		
+	public void setIpNetToMediaDao(IpNetToMediaDao ipNetToMediaDao) {
+		m_ipNetToMediaDao = ipNetToMediaDao;
 	}
-
-	@Override
-	public void store(int nodeId, BridgeMacLink link) {
-		// TODO Auto-generated method stub
-		
-	}
-
 }
