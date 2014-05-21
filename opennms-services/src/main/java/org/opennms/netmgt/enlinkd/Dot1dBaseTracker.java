@@ -49,9 +49,9 @@ import org.opennms.netmgt.snmp.SnmpStore;
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
  * @version $Id: $
  */
-public final class Dot1dBase extends AggregateTracker
+public final class Dot1dBaseTracker extends AggregateTracker
 {
-	private final static Logger LOG = LoggerFactory.getLogger(Dot1dBase.class);
+	private final static Logger LOG = LoggerFactory.getLogger(Dot1dBaseTracker.class);
     /**
      * the bridge type
      */
@@ -173,7 +173,7 @@ public final class Dot1dBase extends AggregateTracker
 	 *
 	 * @param address a {@link java.net.InetAddress} object.
 	 */
-	public Dot1dBase() {
+	public Dot1dBaseTracker() {
         super(NamedSnmpVar.getTrackersFor(ms_elemList));
         m_store = new SnmpStore(ms_elemList); 
 	}
@@ -260,6 +260,13 @@ public final class Dot1dBase extends AggregateTracker
     	bridge.setBaseBridgeAddress(getBridgeAddress());
     	bridge.setBaseNumPorts(getNumberOfPorts());
     	bridge.setBaseType(BridgeDot1dBaseType.get(getBridgeType()));
+    	if (getStpProtocolSpecification() != null) {
+    		bridge.setStpProtocolSpecification(getStpProtocolSpecification());
+    		bridge.setStpPriority(getStpPriority());
+    		bridge.setStpDesignatedRoot(getStpDesignatedRoot());
+    		bridge.setStpRootPort(getStpRootPort());
+    		bridge.setStpRootCost(getStpRootCost());
+    	}
     	return bridge;
     }
     

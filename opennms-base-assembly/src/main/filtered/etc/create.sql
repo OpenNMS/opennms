@@ -2252,6 +2252,7 @@ drop table ospfElement cascade;
 drop table ospfLink cascade;
 drop table isisElement cascade;
 drop table isisLink cascade;
+drop table ipNetToMedia cascade;
 drop table bridgeElement cascade;
 drop table bridgeMacLink cascade;
 drop table bridgeBridgeLink cascade;
@@ -2350,6 +2351,18 @@ create table isisLink (
       constraint fk_nodeIDisislink foreign key (nodeid) references node ON DELETE CASCADE
 );
 
+create table ipNetToMedia (
+    id                      integer default nextval('opennmsNxtId') not null,
+    netAddress              text not null,
+    physAddress             varchar(32) not null,
+    sourceNodeId            integer not null,
+    sourceIfIndex           integer not null,
+    createTime     timestamp not null,
+    lastPollTime   timestamp not null,
+    constraint pk_ipnettomedia_id primary key (id),
+    constraint fk_sourcenodeid_ipnettomedia foreign key (sourcenodeid) references node (nodeid) 
+);
+
 create table bridgeElement (
     id                  integer default nextval('opennmsNxtId') not null,
     nodeid                   integer not null,
@@ -2376,7 +2389,7 @@ create table bridgeMacLink (
     bridgePortIfIndex   integer,
     bridgePortIfName    varchar(32),
     vlan                integer,
-    macAdreess          varchar(12),
+    macAdreess          varchar(12) not null,
     bridgeMacLinkCreateTime     timestamp not null,
     bridgeMacLinkLastPollTime   timestamp not null,
     constraint pk_bridgemaclink_id primary key (id),
@@ -2403,17 +2416,18 @@ create table bridgeBridgeLink (
 );
 
 create table bridgeStpLink (
-    id                      integer default nextval('opennmsNxtId') not null,
-    nodeid                  integer not null,
+    id                   integer default nextval('opennmsNxtId') not null,
+    nodeid               integer not null,
     stpPort              integer not null,
     stpPortPriority      integer not null,
     stpPortState         integer not null,
     stpPortEnable        integer not null,
+    stpPortPathCost      integer not null,
     stpPortIfIndex       integer,
     stpPortIfName        varchar(32),
     vlan                 integer,
-    designatedRoot       varchar(16) not null,
     designatedCost       integer not null,
+    designatedRoot       varchar(16) not null,
     designatedBridge     varchar(16) not null,
     designatedPort       varchar(4) not null,
     bridgeStpLinkCreateTime     timestamp not null,

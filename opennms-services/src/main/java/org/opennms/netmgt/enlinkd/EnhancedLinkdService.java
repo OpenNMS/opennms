@@ -31,6 +31,10 @@ package org.opennms.netmgt.enlinkd;
 import java.util.Date;
 import java.util.List;
 
+import org.opennms.netmgt.model.BridgeElement;
+import org.opennms.netmgt.model.BridgeMacLink;
+import org.opennms.netmgt.model.BridgeStpLink;
+import org.opennms.netmgt.model.IpNetToMedia;
 import org.opennms.netmgt.model.IsIsElement;
 import org.opennms.netmgt.model.IsIsLink;
 import org.opennms.netmgt.model.LldpElement;
@@ -99,20 +103,15 @@ public interface EnhancedLinkdService {
 	
 	void store(int nodeId, IsIsElement element);
 
-	//	void store(CdpLink link);
-
-//	void store(MacAddrEndPoint macep);
-
-//	void store(BridgeStpLink link);
-
-//	void store(BridgeDot1dTpFdbLink link);
-
-//	void store(BridgeDot1qTpFdbLink link);
-
-//	void store(PseudoBridgeLink link);
-
-//	void store(PseudoMacLink pseudoMacLink);
+	//	void store(int nodeId, CdpElement cdp);
+	//	void store(int nodeId, CdpLink link);
 	
-//	boolean ready();
+	void store(int nodeId, IpNetToMedia link);
+
+	void store(int nodeId, BridgeElement bridge);
+
+	void store(int nodeId, BridgeStpLink link);
+
+	void store(int nodeId, BridgeMacLink link);
 
 }

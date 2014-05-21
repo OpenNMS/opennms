@@ -74,7 +74,7 @@ public class LldpLinkDaoHibernate extends AbstractDaoHibernate<LldpLink, Integer
 
 	@Override
 	public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
-		for (LldpLink link: find("from LldpLink lldpLink where lldpLink.node.id = ? and lldpLinkLastPollTime < ?",nodeId,now)) {
+		for (LldpLink link: find("from LldpLink lldpLink where lldpLink.node.id = ? and lldplink.lldpLinkLastPollTime < ?",nodeId,now)) {
 			delete(link);
 		}
 	}
