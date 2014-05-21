@@ -29,7 +29,6 @@
 package org.opennms.netmgt.accesspointmonitor;
 
 import static org.junit.Assert.assertEquals;
-
 import static org.junit.Assert.assertNotNull;
 
 import java.io.ByteArrayInputStream;
@@ -42,33 +41,32 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.db.TemporaryDatabase;
+import org.opennms.core.test.db.TemporaryDatabaseAware;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.accesspointmonitor.AccessPointMonitord;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
+import org.opennms.netmgt.config.accesspointmonitor.AccessPointMonitorConfigFactory;
 import org.opennms.netmgt.dao.AccessPointDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
-import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.core.test.db.TemporaryDatabase;
-import org.opennms.core.test.db.TemporaryDatabaseAware;
-import org.opennms.netmgt.filter.JdbcFilterDao;
-import org.opennms.test.JUnitConfigurationEnvironment;
-import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.eventd.mock.EventAnticipator;
 import org.opennms.netmgt.eventd.mock.MockEventIpcManager;
+import org.opennms.netmgt.filter.FilterDaoFactory;
+import org.opennms.netmgt.filter.JdbcFilterDao;
+import org.opennms.netmgt.model.AccessPointStatus;
 import org.opennms.netmgt.model.NetworkBuilder;
+import org.opennms.netmgt.model.OnmsAccessPoint;
 import org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.AccessPointStatus;
-import org.opennms.netmgt.model.OnmsAccessPoint;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.opennms.netmgt.config.accesspointmonitor.AccessPointMonitorConfigFactory;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:/META-INF/opennms/applicationContext-soa.xml", "classpath:/META-INF/opennms/applicationContext-dao.xml",
@@ -108,6 +106,7 @@ public class AccessPointMonitordTest implements InitializingBean, TemporaryDatab
     private final static String AP2_MAC = "07:08:09:0A:0B:0C";
     private final static String AP3_MAC = "F0:05:BA:11:00:FF";
     private final static int PACKAGE_SCAN_INTERVAL = 1000;
+    private final static int PACKAGE_WAIT_INTERVAL = PACKAGE_SCAN_INTERVAL * 4;
 
     public void setTemporaryDatabase(TemporaryDatabase database) {
         m_database = database;
@@ -124,8 +123,7 @@ public class AccessPointMonitordTest implements InitializingBean, TemporaryDatab
 
     @Before
     public void setUp() throws Exception {
-        // Initialise the JdbcFilterDao so that it will connect to the correct
-        // database
+        // Initialize the JdbcFilterDao so that it will connect to the correct database
         DatabaseSchemaConfigFactory.init();
         JdbcFilterDao jdbcFilterDao = new JdbcFilterDao();
         jdbcFilterDao.setDataSource(m_database);
@@ -208,6 +206,18 @@ public class AccessPointMonitordTest implements InitializingBean, TemporaryDatab
         m_accessPointDao.flush();
     }
 
+    // it's not the SIZE of the package...
+    private void awaitPackageSize(final int size) throws InterruptedException {
+        final long end = System.currentTimeMillis() + PACKAGE_WAIT_INTERVAL;
+        Thread.sleep(PACKAGE_SCAN_INTERVAL + 200);
+        do {
+            if (m_apm.getActivePackageNames().size() == size) {
+                return;
+            }
+            Thread.sleep(200);
+        } while (System.currentTimeMillis() <= end);
+    }
+
     @Test
     public void testDynamicPackages() throws Exception {
         // A package name that matches the mask
@@ -215,7 +225,7 @@ public class AccessPointMonitordTest implements InitializingBean, TemporaryDatab
 
         initApmdWithConfig(getDynamicPackageConfig());
         m_apm.start();
-        sleep(PACKAGE_SCAN_INTERVAL * 2);
+        sleep(PACKAGE_WAIT_INTERVAL);
         assertEquals(1, m_apm.getActivePackageNames().size());
 
         // Another package name that matches the mask
@@ -224,8 +234,7 @@ public class AccessPointMonitordTest implements InitializingBean, TemporaryDatab
         // A package name that does not match the mask
         addNewAccessPoint("ap3", AP3_MAC, "default");
 
-        sleep(PACKAGE_SCAN_INTERVAL * 2);
-        assertEquals(2, m_apm.getActivePackageNames().size());
+        awaitPackageSize(2);
 
         // Change the package name for AP1 - the package should be unscheduled
         OnmsAccessPoint ap1 = m_accessPointDao.findByPhysAddr(AP1_MAC);
@@ -236,23 +245,19 @@ public class AccessPointMonitordTest implements InitializingBean, TemporaryDatab
         List<String> packageNames = m_accessPointDao.findDistinctPackagesLike("dynamic-pkg-%");
         assertEquals(1, packageNames.size());
 
-        sleep(PACKAGE_SCAN_INTERVAL * 2);
-        assertEquals(1, m_apm.getActivePackageNames().size());
+        awaitPackageSize(1);
 
         // Change the package name for AP1 - the package should be unscheduled
         ap1.setPollingPackage("dynamic-pkg-2");
         m_accessPointDao.update(ap1);
         m_accessPointDao.flush();
 
-        sleep(PACKAGE_SCAN_INTERVAL * 2);
-        assertEquals(1, m_apm.getActivePackageNames().size());
+        awaitPackageSize(1);
 
         // Reload the daemon
         updateConfigAndReloadDaemon(getDynamicPackageConfig(), true);
 
-        sleep(PACKAGE_SCAN_INTERVAL * 2);
-
-        assertEquals(1, m_apm.getActivePackageNames().size());
+        awaitPackageSize(1);
     }
 
     private void sleep(long millis) {
