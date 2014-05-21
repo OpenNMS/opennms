@@ -135,6 +135,12 @@
   
   <onmsgi:service interface="org.opennms.netmgt.dao.api.IsIsElementDao" ref="isisElementDao" />
 
+  <bean id="ipNetToMediaDao" class="org.opennms.netmgt.dao.hibernate.IpNetToMediaDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.IpNetToMediaDao" ref="ipNetToMediaDao" />
+
   <bean id="bridgeMacLinkDao" class="org.opennms.netmgt.dao.hibernate.BridgeMacLinkDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
