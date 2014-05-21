@@ -2252,6 +2252,7 @@ drop table ospfElement cascade;
 drop table ospfLink cascade;
 drop table isisElement cascade;
 drop table isisLink cascade;
+drop table ipNetToMedia cascade;
 drop table bridgeElement cascade;
 drop table bridgeMacLink cascade;
 drop table bridgeBridgeLink cascade;
@@ -2348,6 +2349,18 @@ create table isisLink (
       isisLinkLastPollTime	timestamp not null,
       constraint pk_isislink_id primary key (id),
       constraint fk_nodeIDisislink foreign key (nodeid) references node ON DELETE CASCADE
+);
+
+create table ipNetToMedia (
+    id                      integer default nextval('opennmsNxtId') not null,
+    netAddress              text not null,
+    physAddress             varchar(32) not null,
+    sourceNodeId            integer not null,
+    sourceIfIndex           integer not null,
+    createTime     timestamp not null,
+    lastPollTime   timestamp not null,
+    constraint pk_ipnettomedia_id primary key (id),
+    constraint fk_sourcenodeid_ipnettomedia foreign key (sourcenodeid) references node (nodeid) 
 );
 
 create table bridgeElement (
