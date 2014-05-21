@@ -42,6 +42,7 @@ import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.config.DataCollectionConfigDao;
+import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.MibObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -265,7 +266,13 @@ public class OnmsSnmpCollection {
         return m_params.getSnmpPrivProtocol(current);
     }
 
-    
+    private DataCollectionConfigDao getDataCollectionConfigDao() {
+        if (m_dataCollectionConfigDao == null) {
+            setDataCollectionConfigDao(DataCollectionConfigFactory.getInstance());
+        }
+        return m_dataCollectionConfigDao;
+    }
+
     /**
      * <p>setDataCollectionConfig</p>
      *
@@ -282,7 +289,7 @@ public class OnmsSnmpCollection {
      */
     public String getStorageFlag() {
         String collectionName = getName();
-        String storageFlag = m_dataCollectionConfigDao.getSnmpStorageFlag(collectionName);
+        String storageFlag = getDataCollectionConfigDao().getSnmpStorageFlag(collectionName);
         if (storageFlag == null) {
             LOG.warn("getStorageFlag: Configuration error, failed to retrieve SNMP storage flag for collection: {}", collectionName);
             storageFlag = SnmpCollector.SNMP_STORAGE_PRIMARY;
@@ -357,7 +364,7 @@ public class OnmsSnmpCollection {
     public List<SnmpAttributeType> loadAttributeTypes(SnmpCollectionAgent agent, int ifType) {
         String sysObjectId = agent.getSysObjectId();
         String hostAddress = agent.getHostAddress();
-        List<MibObject> oidList = m_dataCollectionConfigDao.getMibObjectList(getName(), sysObjectId, hostAddress, ifType);
+        List<MibObject> oidList = getDataCollectionConfigDao().getMibObjectList(getName(), sysObjectId, hostAddress, ifType);
 
         Map<String, AttributeGroupType> groupTypes = new HashMap<String, AttributeGroupType>();
 
@@ -450,7 +457,8 @@ public class OnmsSnmpCollection {
 
     private Map<String, ResourceType> getGenericIndexResourceTypeMap(SnmpCollectionAgent agent) {
         if (m_genericIndexResourceTypes == null) {
-            Collection<org.opennms.netmgt.config.datacollection.ResourceType> configuredResourceTypes = m_dataCollectionConfigDao.getConfiguredResourceTypes().values();
+            Collection<org.opennms.netmgt.config.datacollection.ResourceType> configuredResourceTypes =
+                getDataCollectionConfigDao().getConfiguredResourceTypes().values();
             Map<String,ResourceType> resourceTypes = new HashMap<String,ResourceType>();
             for (org.opennms.netmgt.config.datacollection.ResourceType configuredResourceType : configuredResourceTypes) {
                 try {
