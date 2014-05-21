@@ -166,10 +166,11 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         }
         
         if (m_linkdConfig.useBridgeDiscovery()) {
-        //	LOG.info("getSnmpCollections: adding IpNetToMedia Discovery: {}",
-        //            node);
-        //	IpNetToMediaLinkdNodeDiscovery ipnettomediacoll = new IpNetToMediaLinkdNodeDiscovery(this, node);
-        //	snmpcolls.add(ipnettomediacoll);
+        	LOG.info("getSnmpCollections: adding IpNetToMedia Discovery: {}",
+                    node);
+        	IpNetToMediaLinkdNodeDiscovery ipnettomediacoll = new IpNetToMediaLinkdNodeDiscovery(this, node);
+        	snmpcolls.add(ipnettomediacoll);
+        	
         	LOG.info("getSnmpCollections: adding Bridge Discovery: {}",
                     node);
         	BridgeLinkdNodeDiscovery bridgecoll = new BridgeLinkdNodeDiscovery(this, node);

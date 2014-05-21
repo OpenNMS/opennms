@@ -34,6 +34,7 @@ import java.util.List;
 import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.BridgeStpLink;
+import org.opennms.netmgt.model.IpNetToMedia;
 import org.opennms.netmgt.model.IsIsElement;
 import org.opennms.netmgt.model.IsIsLink;
 import org.opennms.netmgt.model.LldpElement;
@@ -104,6 +105,8 @@ public interface EnhancedLinkdService {
 
 	//	void store(int nodeId, CdpElement cdp);
 	//	void store(int nodeId, CdpLink link);
+	
+	void store(int nodeId, IpNetToMedia link);
 
 	void store(int nodeId, BridgeElement bridge);
 
