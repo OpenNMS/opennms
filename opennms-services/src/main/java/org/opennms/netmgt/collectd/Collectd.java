@@ -49,6 +49,7 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.capsd.InsufficientInformationException;
+import org.opennms.netmgt.collection.api.CollectionInstrumentation;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.config.CollectdConfigFactory;
@@ -97,18 +98,18 @@ public class Collectd extends AbstractServiceDaemon implements
     
     private static final Logger LOG = LoggerFactory.getLogger(Collectd.class);
     
-    private static CollectdInstrumentation s_instrumentation = null;
+    private static CollectionInstrumentation s_instrumentation = null;
     
     /**
      * <p>instrumentation</p>
      *
-     * @return a {@link org.opennms.netmgt.collectd.CollectdInstrumentation} object.
+     * @return a {@link org.opennms.netmgt.collection.api.CollectionInstrumentation} object.
      */
-    public static CollectdInstrumentation instrumentation() {
+    public static CollectionInstrumentation instrumentation() {
         if (s_instrumentation == null) {
             String className = System.getProperty("org.opennms.collectd.instrumentationClass", DefaultCollectdInstrumentation.class.getName());
             try { 
-                s_instrumentation = (CollectdInstrumentation) ClassUtils.forName(className, Thread.currentThread().getContextClassLoader()).newInstance();
+                s_instrumentation = (CollectionInstrumentation) ClassUtils.forName(className, Thread.currentThread().getContextClassLoader()).newInstance();
             } catch (Throwable e) {
                 s_instrumentation = new DefaultCollectdInstrumentation();
             }

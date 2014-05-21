@@ -26,9 +26,8 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd;
+package org.opennms.netmgt.collection.api;
 
-import org.opennms.netmgt.collection.api.CollectionException;
 
 /**
  * <p>CollectdInstrumentation interface.</p>
@@ -36,7 +35,7 @@ import org.opennms.netmgt.collection.api.CollectionException;
  * @author ranger
  * @version $Id: $
  */
-public interface CollectdInstrumentation {
+public interface CollectionInstrumentation {
     
     /**
      * <p>beginScheduleExistingInterfaces</p>
