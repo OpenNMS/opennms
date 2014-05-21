@@ -190,8 +190,8 @@ public class GraphPainter extends BaseGraphVisitor {
 		String styleName = edge.getStyleName();
 		// If the style is null, use a blank string
 		styleName = (styleName == null ? "" : styleName);
-
-		return isSelected(m_graphContainer.getSelectionManager(), edge) ? styleName + " selected" : styleName;
+        String status = " " + getEdgeStatus(edge);
+        return isSelected(m_graphContainer.getSelectionManager(), edge) ? styleName + " selected" + status : styleName + status;
 	}
 
 	private static boolean isSelected(SelectionManager selectionManager, Vertex vertex) {

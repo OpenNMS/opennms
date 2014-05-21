@@ -92,6 +92,14 @@ div.v-table-header-wrap {
 	stroke: #ccc;
 }
 
+.edge.up{
+    stroke:#336600;
+}
+
+.edge.down{
+    stroke:#CC0000;
+}
+
 .edge.selected {
 	stroke: #00ffff;
 }

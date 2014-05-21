@@ -135,20 +135,12 @@ public final class GWTEdge extends JavaScriptObject {
 
             @Override
             public String call(GWTEdge datum, int index) {
+                int i = index;
+                String status = datum.getStatus();
                 return datum.getCssClass();
             }
         };
     }
-
-    protected static Func<String, GWTEdge> getStatusStyle(){
-      return new Func<String, GWTEdge>() {
-          @Override
-          public String call(GWTEdge datum, int index) {
-              return datum.getStatus();
-          }
-      };
-    }
-
 
     public static D3Behavior create() {
         return new D3Behavior() {
