@@ -33,12 +33,16 @@ public class EdgeAlarmStatusSummary {
 
     private final String m_targetId;
     private final String m_sourceId;
-    private final String m_eventUEI;
+    private String m_eventUEI;
 
-    public EdgeAlarmStatusSummary(int sourceId, int targetId, String eventUei){
+    public EdgeAlarmStatusSummary(int sourceId, int targetId, String eventUEI){
         m_sourceId = String.valueOf(sourceId);
         m_targetId = String.valueOf(targetId);
-        m_eventUEI = eventUei;
+        m_eventUEI = eventUEI;
+    }
+
+    public void setEventUEI(String eventUEI) {
+        m_eventUEI = eventUEI;
     }
 
     public String getSourceId() {
@@ -53,5 +57,6 @@ public class EdgeAlarmStatusSummary {
         return getSourceId() + "|" + getTargetId();
     }
 
-    public String getEventUEI() { return m_eventUEI; }
+    public String getEventUEI() { return m_eventUEI == null ? "unknown" : m_eventUEI; }
+
 }

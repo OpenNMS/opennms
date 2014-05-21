@@ -28,9 +28,17 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
+import org.hibernate.criterion.Restrictions;
+import org.opennms.core.criteria.*;
+import org.opennms.core.criteria.restrictions.EqRestriction;
+import org.opennms.core.criteria.restrictions.NeRestriction;
+import org.opennms.core.criteria.restrictions.NotRestriction;
 import org.opennms.features.topology.api.topo.*;
+import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.LldpLinkDao;
+import org.opennms.netmgt.model.*;
 import org.opennms.netmgt.model.topology.EdgeAlarmStatusSummary;
 
 import java.util.*;
@@ -64,6 +72,7 @@ public class LldpLinkStatusProvider implements EdgeStatusProvider {
     }
 
     private AlarmDao m_alarmDao;
+    private LldpLinkDao m_lldpLinkDao;
 
     @Override
     public String getNameSpace() {
@@ -87,7 +96,7 @@ public class LldpLinkStatusProvider implements EdgeStatusProvider {
             }
         }
 
-        List<EdgeAlarmStatusSummary> lldpEdgeAlarmSummaries = m_alarmDao.getLldpEdgeAlarmSummaries(new ArrayList<Integer>(lldpLinkIds));
+        List<EdgeAlarmStatusSummary> lldpEdgeAlarmSummaries = getEdgeAlarmSummaries(new ArrayList<Integer>(lldpLinkIds));//m_alarmDao.getLldpEdgeAlarmSummaries(new ArrayList<Integer>(lldpLinkIds));
 
         for (EdgeAlarmStatusSummary eSum : lldpEdgeAlarmSummaries) {
             String linkId = eSum.getLldpLinkId();
@@ -98,6 +107,53 @@ public class LldpLinkStatusProvider implements EdgeStatusProvider {
 
         //TODO: handle child edges
         return returnMap;
+    }
+
+    private List<EdgeAlarmStatusSummary> getEdgeAlarmSummaries(List<Integer> linkIds) {
+        List<LldpLink> links = m_lldpLinkDao.findLinksForIds(linkIds);
+
+        Map<String, EdgeAlarmStatusSummary> summaryMap = new HashMap<String, EdgeAlarmStatusSummary>();
+        for (LldpLink sourceLink : links) {
+
+            OnmsNode sourceNode = sourceLink.getNode();
+            LldpElement sourceElement = sourceNode.getLldpElement();
+
+            for (LldpLink targetLink : links) {
+                OnmsNode targetNode = targetLink.getNode();
+                LldpElement targetLldpElement = targetNode.getLldpElement();
+
+                //Compare the remote data to the targetNode element data
+                boolean bool1 = sourceLink.getLldpRemPortId().equals(targetLink.getLldpPortId()) && targetLink.getLldpRemPortId().equals(sourceLink.getLldpPortId());
+                boolean bool2 = sourceLink.getLldpRemPortDescr().equals(targetLink.getLldpPortDescr()) && targetLink.getLldpRemPortDescr().equals(sourceLink.getLldpPortDescr());
+                boolean bool3 = sourceLink.getLldpRemChassisId().equals(targetLldpElement.getLldpChassisId()) && targetLink.getLldpRemChassisId().equals(sourceElement.getLldpChassisId());
+                boolean bool4 = sourceLink.getLldpRemSysname().equals(targetLldpElement.getLldpSysname()) && targetLink.getLldpRemSysname().equals(sourceElement.getLldpSysname());
+                boolean bool5 = sourceLink.getLldpRemPortIdSubType() == targetLink.getLldpPortIdSubType() && targetLink.getLldpRemPortIdSubType() == sourceLink.getLldpPortIdSubType();
+
+                if (bool1 && bool2 && bool3 && bool4 && bool5) {
+
+                    summaryMap.put(sourceNode.getNodeId() + ":" + sourceLink.getLldpPortIfindex(),
+                            new EdgeAlarmStatusSummary(sourceLink.getId(),
+                                    targetLink.getId(), null)
+                    );
+
+                }
+            }
+        }
+
+        org.opennms.core.criteria.Criteria criteria = new org.opennms.core.criteria.Criteria(OnmsAlarm.class);
+        criteria.addRestriction(new EqRestriction("uei", "uei.opennms.org/internal/topology/linkDown"));
+        criteria.addRestriction(new NeRestriction("severity", OnmsSeverity.CLEARED));
+        List<OnmsAlarm> alarms = m_alarmDao.findMatching(criteria);
+
+        for (OnmsAlarm alarm : alarms) {
+            String key = alarm.getNodeId() + ":" + alarm.getIfIndex();
+            if (summaryMap.containsKey(key)) {
+                EdgeAlarmStatusSummary summary = summaryMap.get(key);
+                summary.setEventUEI(alarm.getUei());
+            }
+
+        }
+        return new ArrayList<EdgeAlarmStatusSummary>(summaryMap.values());
     }
 
     private Map<String, EdgeRef> mapRefs(Collection<EdgeRef> edges) {
@@ -111,7 +167,7 @@ public class LldpLinkStatusProvider implements EdgeStatusProvider {
     private Map<EdgeRef, Status> initializeMap(Collection<EdgeRef> edges) {
         Map<EdgeRef, Status> retVal = new HashMap<EdgeRef, Status>();
         for (EdgeRef edge : edges) {
-            if(edge.getNamespace().equals(AbstractLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD)) retVal.put(edge, new LldpLinkStatus("UP"));
+            if(edge.getNamespace().equals(AbstractLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD)) retVal.put(edge, new LldpLinkStatus("unknown"));
         }
         return retVal;
     }
@@ -138,5 +194,9 @@ public class LldpLinkStatusProvider implements EdgeStatusProvider {
 
     public void setAlarmDao(AlarmDao alarmDao) {
         m_alarmDao = alarmDao;
+    }
+
+    public void setLldpLinkDao(LldpLinkDao lldpLinkDao) {
+        m_lldpLinkDao = lldpLinkDao;
     }
 }

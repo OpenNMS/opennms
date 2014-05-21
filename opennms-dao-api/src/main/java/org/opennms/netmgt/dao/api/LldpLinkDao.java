@@ -43,6 +43,8 @@ public interface LldpLinkDao extends OnmsDao<LldpLink, Integer> {
     
     List<LldpLink> findByNodeId(Integer nodeId);
 
+    List<LldpLink> findLinksForIds(List<Integer> ids);
+
     void deleteByNodeIdOlderThen(Integer nodeiId, Date now);
 
 }
