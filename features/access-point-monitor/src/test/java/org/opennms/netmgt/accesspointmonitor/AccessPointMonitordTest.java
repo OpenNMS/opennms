@@ -109,6 +109,7 @@ public class AccessPointMonitordTest implements InitializingBean {
     private final static String AP2_MAC = "07:08:09:0A:0B:0C";
     private final static String AP3_MAC = "F0:05:BA:11:00:FF";
     private final static int PACKAGE_SCAN_INTERVAL = 1000;
+    private final static int PACKAGE_WAIT_INTERVAL = PACKAGE_SCAN_INTERVAL * 4;
 
     @Override
     public void afterPropertiesSet() {
@@ -196,6 +197,18 @@ public class AccessPointMonitordTest implements InitializingBean {
         m_accessPointDao.flush();
     }
 
+    // it's not the SIZE of the package...
+    private void awaitPackageSize(final int size) throws InterruptedException {
+        final long end = System.currentTimeMillis() + PACKAGE_WAIT_INTERVAL;
+        Thread.sleep(PACKAGE_SCAN_INTERVAL + 200);
+        do {
+            if (m_apm.getActivePackageNames().size() == size) {
+                return;
+            }
+            Thread.sleep(200);
+        } while (System.currentTimeMillis() <= end);
+    }
+
     @Test
     public void testDynamicPackages() throws Exception {
         // A package name that matches the mask
@@ -203,7 +216,7 @@ public class AccessPointMonitordTest implements InitializingBean {
 
         initApmdWithConfig(getDynamicPackageConfig());
         m_apm.start();
-        sleep(PACKAGE_SCAN_INTERVAL * 2);
+        sleep(PACKAGE_WAIT_INTERVAL);
         assertEquals(1, m_apm.getActivePackageNames().size());
 
         // Another package name that matches the mask
@@ -212,8 +225,7 @@ public class AccessPointMonitordTest implements InitializingBean {
         // A package name that does not match the mask
         addNewAccessPoint("ap3", AP3_MAC, "default");
 
-        sleep(PACKAGE_SCAN_INTERVAL * 2);
-        assertEquals(2, m_apm.getActivePackageNames().size());
+        awaitPackageSize(2);
 
         // Change the package name for AP1 - the package should be unscheduled
         OnmsAccessPoint ap1 = m_accessPointDao.get(AP1_MAC);
@@ -224,23 +236,19 @@ public class AccessPointMonitordTest implements InitializingBean {
         List<String> packageNames = m_accessPointDao.findDistinctPackagesLike("dynamic-pkg-%");
         assertEquals(1, packageNames.size());
 
-        sleep(PACKAGE_SCAN_INTERVAL * 2);
-        assertEquals(1, m_apm.getActivePackageNames().size());
+        awaitPackageSize(1);
 
         // Change the package name for AP1 - the package should be unscheduled
         ap1.setPollingPackage("dynamic-pkg-2");
         m_accessPointDao.update(ap1);
         m_accessPointDao.flush();
 
-        sleep(PACKAGE_SCAN_INTERVAL * 2);
-        assertEquals(1, m_apm.getActivePackageNames().size());
+        awaitPackageSize(1);
 
         // Reload the daemon
         updateConfigAndReloadDaemon(getDynamicPackageConfig(), true);
 
-        sleep(PACKAGE_SCAN_INTERVAL * 2);
-
-        assertEquals(1, m_apm.getActivePackageNames().size());
+        awaitPackageSize(1);
     }
 
     private void sleep(long millis) {
