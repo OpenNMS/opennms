@@ -90,6 +90,6 @@ public class NrtHelper {
             stringBuilder.append(row);
         }
 
-        return stringBuilder.toString().substring(0,stringBuilder.toString().length() - ", %n".length());
+        return stringBuilder.toString().substring(0,stringBuilder.toString().length() - ", \n".length());
     }
 }
