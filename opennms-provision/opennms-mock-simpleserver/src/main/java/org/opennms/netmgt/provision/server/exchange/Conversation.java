@@ -63,7 +63,7 @@ public class Conversation {
 
         @Override
         public boolean sendRequest(OutputStream out) throws IOException {
-            out.write(String.format("%s\r%n", ERROR_STRING).getBytes());
+            out.write(String.format("%s\r\n", ERROR_STRING).getBytes());
             return true;
         }
         
