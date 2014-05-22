@@ -312,7 +312,7 @@ public abstract class Nms1055NetworkBuilder extends LinkdTestBuilder {
         DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.123"), 641);
         DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.110"), 619);
         DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.121"), 631);
-        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("192.168.0.2"), 16);
+        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("192.0.2.2"), 16);
         DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.105"), 614);
         DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.125"), 634);
         DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.114"), 624);
@@ -1044,7 +1044,7 @@ public abstract class Nms1055NetworkBuilder extends LinkdTestBuilder {
         AUSTIN_IP_IF_MAP.put(InetAddressUtils.addr("10.155.69.43"), 13);
         AUSTIN_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.1"), 18);
         AUSTIN_IP_IF_MAP.put(InetAddressUtils.addr("20.1.1.5"), 555);
-        AUSTIN_IP_IF_MAP.put(InetAddressUtils.addr("192.168.0.2"), 16);
+        AUSTIN_IP_IF_MAP.put(InetAddressUtils.addr("192.0.2.2"), 16);
         AUSTIN_IP_IF_MAP.put(InetAddressUtils.addr("20.1.11.1"), 553);
         AUSTIN_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.4"), 18);
         AUSTIN_IF_IFNAME_MAP.put(519, "ge-1/0/7");

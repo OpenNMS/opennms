@@ -167,8 +167,8 @@ public class Nms4335Test implements InitializingBean {
 
     @Test
     public void testAuthFailureShouldLog() throws Exception {
-        doMessageTest("Jan 7 12:42:46 192.168.0.1 su[25856]: pam_unix(su:auth): authentication failure; logname=jeffg uid=1004 euid=0 tty=pts/1 ruser=jeffg rhost= user=root",
-                      "192.168.0.1",
+        doMessageTest("Jan 7 12:42:46 192.0.2.1 su[25856]: pam_unix(su:auth): authentication failure; logname=jeffg uid=1004 euid=0 tty=pts/1 ruser=jeffg rhost= user=root",
+                      "192.0.2.1",
                       "uei.opennms.org/syslog/pam/su/suFailure",
                       "pam_unix(su:auth): authentication failure; logname=jeffg uid=1004 euid=0 tty=pts/1 ruser=jeffg rhost= user=root");
     }
@@ -177,7 +177,7 @@ public class Nms4335Test implements InitializingBean {
     @Ignore
     public void testAuthFailureShouldNotLog() throws Exception {
         doMessageTest("Jan 7 12:42:48 cartman su[25856]: pam_authenticate: Authentication failure",
-                      "192.168.0.1",
+                      "192.0.2.1",
                       "uei.opennms.org/blah",
                       "");
         

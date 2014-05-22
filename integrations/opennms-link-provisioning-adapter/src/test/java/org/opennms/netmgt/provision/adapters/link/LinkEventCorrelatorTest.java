@@ -87,9 +87,9 @@ public class LinkEventCorrelatorTest {
 
         m_network = new MockNetwork();
         m_node1 = new MockNode(m_network, 1, "pittsboro-1");
-        m_node1.addInterface("192.168.0.1").addService("EndPoint", 1);
+        m_node1.addInterface("192.0.2.1").addService("EndPoint", 1);
         m_node2 = new MockNode(m_network, 2, "pittsboro-2");
-        m_node2.addInterface("192.168.0.2").addService("EndPoint", 1);
+        m_node2.addInterface("192.0.2.2").addService("EndPoint", 1);
 
         m_nodeLinkService = createMock(NodeLinkService.class);
 
@@ -193,7 +193,7 @@ public class LinkEventCorrelatorTest {
         correlator.setNodeLinkService(m_nodeLinkService);
         correlator.setEndPointConfigDao(m_endPointConfigDao);
         
-        expect(m_nodeLinkService.getPrimaryAddress(1)).andStubReturn("192.168.0.1");
+        expect(m_nodeLinkService.getPrimaryAddress(1)).andStubReturn("192.0.2.1");
         
         m_nodeLinkService.saveLinkState(new OnmsLinkState(m_dataLinkInterface, LinkState.LINK_PARENT_NODE_DOWN));
         m_nodeLinkService.saveLinkState(new OnmsLinkState(m_dataLinkInterface, LinkState.LINK_PARENT_NODE_DOWN));
@@ -207,10 +207,10 @@ public class LinkEventCorrelatorTest {
         m_anticipator.anticipateEvent(m_failedEvent);
         m_anticipator.anticipateEvent(m_regainedEvent);
 
-        correlator.handleInterfaceDown(m_node1.getInterface("192.168.0.1").createDownEvent());
+        correlator.handleInterfaceDown(m_node1.getInterface("192.0.2.1").createDownEvent());
         correlator.handleNodeDown(m_node1.createDownEvent());
         correlator.handleNodeDown(m_node2.createDownEvent());
-        correlator.handleInterfaceUp(m_node1.getInterface("192.168.0.1").createUpEvent());
+        correlator.handleInterfaceUp(m_node1.getInterface("192.0.2.1").createUpEvent());
         correlator.handleNodeUp(m_node1.createUpEvent());
         correlator.handleNodeUp(m_node2.createUpEvent());
 
@@ -243,8 +243,8 @@ public class LinkEventCorrelatorTest {
         correlator.setNodeLinkService(m_nodeLinkService);
         correlator.setEndPointConfigDao(m_endPointConfigDao);
         
-        expect(m_nodeLinkService.getPrimaryAddress(1)).andStubReturn("192.168.0.1");
-        expect(m_nodeLinkService.getPrimaryAddress(2)).andStubReturn("192.168.0.2");
+        expect(m_nodeLinkService.getPrimaryAddress(1)).andStubReturn("192.0.2.1");
+        expect(m_nodeLinkService.getPrimaryAddress(2)).andStubReturn("192.0.2.2");
         
         m_nodeLinkService.saveLinkState(new OnmsLinkState(m_dataLinkInterface, LinkState.LINK_NODE_UNMANAGED));
         m_nodeLinkService.saveLinkState(new OnmsLinkState(m_dataLinkInterface, LinkState.LINK_UP));
@@ -256,9 +256,9 @@ public class LinkEventCorrelatorTest {
         m_anticipator.anticipateEvent(m_unmanagedEvent);
         
         
-        correlator.handleNodeGainedService(m_node1.getInterface("192.168.0.1").getService("EndPoint").createNewEvent());
-        correlator.handleNodeGainedService(m_node2.getInterface("192.168.0.2").getService("EndPoint").createNewEvent());
-        correlator.handleServiceDeleted(m_node1.getInterface("192.168.0.1").getService("EndPoint").createDeleteEvent());
+        correlator.handleNodeGainedService(m_node1.getInterface("192.0.2.1").getService("EndPoint").createNewEvent());
+        correlator.handleNodeGainedService(m_node2.getInterface("192.0.2.2").getService("EndPoint").createNewEvent());
+        correlator.handleServiceDeleted(m_node1.getInterface("192.0.2.1").getService("EndPoint").createDeleteEvent());
         
 
         m_eventIpcManager.finishProcessingEvents();

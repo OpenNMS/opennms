@@ -82,7 +82,7 @@ public class RancidProvisioningAdapterTest implements InitializingBean {
     public void setUp() throws Exception {
         NetworkBuilder nb = new NetworkBuilder();
         nb.addNode("test.example.com").setForeignSource("rancid").setForeignId("1");
-        nb.addInterface("192.168.0.1");
+        nb.addInterface("192.0.2.1");
         m_nodeDao.save(nb.getCurrentNode());
         m_nodeDao.flush();
 

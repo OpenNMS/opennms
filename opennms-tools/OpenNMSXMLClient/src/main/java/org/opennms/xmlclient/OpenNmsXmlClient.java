@@ -481,7 +481,7 @@ public class OpenNmsXmlClient  {
 		                    Optionally, you can set additional options as key=value
 		                    pairs. For example:
 
-		                            snmp set 192.168.0.1 public version=v1 timeout=1000
+		                            snmp set 192.0.2.1 public version=v1 timeout=1000
 
 		                    Valid options are:
 

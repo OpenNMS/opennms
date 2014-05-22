@@ -45,7 +45,7 @@ public class NetworkBuilderTest {
         final NetworkBuilder nb = new NetworkBuilder();
         nb.addNode("test").setForeignId("foo").setForeignSource("bar");
         final OnmsSnmpInterface iface = nb.addSnmpInterface(1).getSnmpInterface();
-        nb.addInterface("192.168.0.1", iface).setIsManaged("M").setIsSnmpPrimary("P");
+        nb.addInterface("192.0.2.1", iface).setIsManaged("M").setIsSnmpPrimary("P");
         nb.addInterface("192.168.1.1", iface).setIsManaged("M").setIsSnmpPrimary("S");
 
         final OnmsNode node = nb.getCurrentNode();

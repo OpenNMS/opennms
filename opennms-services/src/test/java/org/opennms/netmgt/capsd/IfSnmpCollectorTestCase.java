@@ -162,7 +162,7 @@ public class IfSnmpCollectorTestCase extends OpenNMSTestCase {
         assertEquals("ipAddrTable ifIndex of 127.0.0.1", 1, ipAddrTable.getIfIndex(InetAddressUtils.addr(DEFAULT_HOST)));
         
         List<InetAddress> addresses = ipAddrTable.getIpAddresses();
-        assertTrue("ipAddrTable should contain 172.20.1.201", addresses.contains(InetAddressUtils.addr("172.20.1.201")));
+        assertTrue("ipAddrTable should contain 192.0.2.201", addresses.contains(InetAddressUtils.addr("192.0.2.201")));
         assertTrue("ipAddrTable should contain 127.0.0.1 like any good IP stack should", addresses.contains(InetAddressUtils.addr(DEFAULT_HOST)));
     }
 
@@ -207,7 +207,7 @@ public class IfSnmpCollectorTestCase extends OpenNMSTestCase {
 
     @Test
     public final void testGetIfIndex() throws UnknownHostException {
-        int ifIndex = m_ifSnmpc.getIfIndex(InetAddressUtils.addr("172.20.1.201"));
+        int ifIndex = m_ifSnmpc.getIfIndex(InetAddressUtils.addr("192.0.2.201"));
         assertEquals("ifIndex", 5, ifIndex);
     }
 

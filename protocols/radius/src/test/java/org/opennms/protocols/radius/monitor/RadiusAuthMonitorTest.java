@@ -64,7 +64,7 @@ public class RadiusAuthMonitorTest {
 		final Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
 
 		final ServiceMonitor monitor = new RadiusAuthMonitor();
-		final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, InetAddressUtils.addr("192.168.211.11"), "RADIUS");
+		final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, InetAddressUtils.addr("192.0.2.11"), "RADIUS");
 
         m.put("user", "testing");
         m.put("password", "password");

@@ -92,7 +92,7 @@ public class ConfigureSnmpTest extends TestCase {
      * @throws UnknownHostException
      */
     public void testSnmpEventInfoClassWithSpecific() throws UnknownHostException {
-        final String addr = "192.168.0.5";
+        final String addr = "192.0.2.5";
         EventBuilder bldr = createConfigureSnmpEventBuilder(addr, null);
         addCommunityStringToEvent(bldr, "abc");
         SnmpEventInfo info = new SnmpEventInfo(bldr.getEvent());
@@ -105,14 +105,14 @@ public class ConfigureSnmpTest extends TestCase {
     }
     
     /**
-     * This test should remove the specific 192.168.0.5 from the first definition and
-     * replace it with a range 192.168.0.5 - 192.168.0.7.
+     * This test should remove the specific 192.0.2.5 from the first definition and
+     * replace it with a range 192.0.2.5 - 192.0.2.7.
      * 
      * @throws UnknownHostException
      */
     public void testSnmpEventInfoClassWithRangeReplacingSpecific() throws UnknownHostException {
-        final String addr1 = "192.168.0.5";
-        final String addr2 = "192.168.0.7";
+        final String addr1 = "192.0.2.5";
+        final String addr2 = "192.0.2.7";
         
         SnmpAgentConfig agent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(addr1));
         assertEquals(SnmpAgentConfig.VERSION2C, agent.getVersion());

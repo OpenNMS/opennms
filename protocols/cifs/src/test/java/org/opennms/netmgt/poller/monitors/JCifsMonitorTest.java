@@ -71,7 +71,7 @@ public class JCifsMonitorTest {
 
         mockSmbFileSmbHost = createNiceMock(SmbFile.class);
         expect(mockSmbFileSmbHost.exists()).andThrow(new SmbException(SmbException.ERROR_ACCESS_DENIED, true));
-        expectNew(SmbFile.class, new Class<?>[]{String.class, NtlmPasswordAuthentication.class}, eq("smb://192.168.0.123/smbException"), isA(NtlmPasswordAuthentication.class)).andReturn(mockSmbFileSmbHost).anyTimes();
+        expectNew(SmbFile.class, new Class<?>[]{String.class, NtlmPasswordAuthentication.class}, eq("smb://192.0.2.123/smbException"), isA(NtlmPasswordAuthentication.class)).andReturn(mockSmbFileSmbHost).anyTimes();
     }
 
     @Test
@@ -239,7 +239,7 @@ public class JCifsMonitorTest {
         m.put("password", "pass");
         m.put("domain", "dom");
         m.put("mode", "PATH_EXIST");
-        m.put("smbHost", "192.168.0.123");
+        m.put("smbHost", "192.0.2.123");
         m.put("path", "/smbException");
 
         pollStatus = jCifsMonitor.poll(svc, m);

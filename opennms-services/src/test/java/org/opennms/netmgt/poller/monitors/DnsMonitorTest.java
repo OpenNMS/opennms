@@ -64,7 +64,7 @@ import org.xbill.DNS.Type;
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/emptyContext.xml"})
 @JUnitDNSServer(port=9153, zones={
             @DNSZone(name="example.com", entries={
-                    @DNSEntry(hostname="test", address="192.168.0.1")
+                    @DNSEntry(hostname="test", address="192.0.2.1")
             }),
             @DNSZone(name="ipv6.example.com", entries= {
                     @DNSEntry(hostname="ipv6test", address="2001:4860:8007::63", ipv6=true)

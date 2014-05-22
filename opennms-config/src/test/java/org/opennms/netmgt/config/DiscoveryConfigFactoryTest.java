@@ -95,8 +95,8 @@ public class DiscoveryConfigFactoryTest {
                 final DiscoveryConfiguration conf = new DiscoveryConfiguration();
 
                 IncludeRange ir = new IncludeRange();
-                ir.setBegin("192.168.0.1");
-                ir.setEnd("192.168.0.254");
+                ir.setBegin("192.0.2.1");
+                ir.setEnd("192.0.2.254");
                 conf.addIncludeRange(ir);
 
                 ir = new IncludeRange();
@@ -113,8 +113,8 @@ public class DiscoveryConfigFactoryTest {
                 conf.addSpecific(s);
 
                 ExcludeRange er = new ExcludeRange();
-                er.setBegin("192.168.0.100");
-                er.setEnd("192.168.0.150");
+                er.setBegin("192.0.2.100");
+                er.setEnd("192.0.2.150");
                 conf.addExcludeRange(er);
 
                 er = new ExcludeRange();
@@ -126,13 +126,13 @@ public class DiscoveryConfigFactoryTest {
             }
         };
 
-        assertFalse(factory.isExcluded(InetAddressUtils.addr("192.168.0.1")));
-        assertFalse(factory.isExcluded(InetAddressUtils.addr("192.168.0.2")));
-        assertFalse(factory.isExcluded(InetAddressUtils.addr("192.168.0.99")));
-        assertTrue(factory.isExcluded(InetAddressUtils.addr("192.168.0.100")));
-        assertTrue(factory.isExcluded(InetAddressUtils.addr("192.168.0.140")));
-        assertTrue(factory.isExcluded(InetAddressUtils.addr("192.168.0.150")));
-        assertFalse(factory.isExcluded(InetAddressUtils.addr("192.168.0.151")));
+        assertFalse(factory.isExcluded(InetAddressUtils.addr("192.0.2.1")));
+        assertFalse(factory.isExcluded(InetAddressUtils.addr("192.0.2.2")));
+        assertFalse(factory.isExcluded(InetAddressUtils.addr("192.0.2.99")));
+        assertTrue(factory.isExcluded(InetAddressUtils.addr("192.0.2.100")));
+        assertTrue(factory.isExcluded(InetAddressUtils.addr("192.0.2.140")));
+        assertTrue(factory.isExcluded(InetAddressUtils.addr("192.0.2.150")));
+        assertFalse(factory.isExcluded(InetAddressUtils.addr("192.0.2.151")));
         assertFalse(factory.isExcluded(InetAddressUtils.addr("192.168.1.1")));
         assertFalse(factory.isExcluded(InetAddressUtils.addr("192.168.2.1")));
         assertFalse(factory.isExcluded(InetAddressUtils.addr("192.168.2.100")));
@@ -152,24 +152,24 @@ public class DiscoveryConfigFactoryTest {
                 final DiscoveryConfiguration conf = new DiscoveryConfiguration();
 
                 IncludeRange ir = new IncludeRange();
-                ir.setBegin("192.168.0.1");
-                ir.setEnd("192.168.0.254");
+                ir.setBegin("192.0.2.1");
+                ir.setEnd("192.0.2.254");
                 conf.addIncludeRange(ir);
 
                 ExcludeRange er = new ExcludeRange();
-                er.setBegin("192.168.0.100");
-                er.setEnd("192.168.0.100");
+                er.setBegin("192.0.2.100");
+                er.setEnd("192.0.2.100");
                 conf.addExcludeRange(er);
 
                 return conf;
             }
         };
 
-        assertFalse(factory.isExcluded(InetAddressUtils.addr("192.168.0.1")));
-        assertFalse(factory.isExcluded(InetAddressUtils.addr("192.168.0.2")));
-        assertFalse(factory.isExcluded(InetAddressUtils.addr("192.168.0.99")));
-        assertTrue(factory.isExcluded(InetAddressUtils.addr("192.168.0.100")));
-        assertFalse(factory.isExcluded(InetAddressUtils.addr("192.168.0.101")));
-        assertFalse(factory.isExcluded(InetAddressUtils.addr("192.168.0.151")));
+        assertFalse(factory.isExcluded(InetAddressUtils.addr("192.0.2.1")));
+        assertFalse(factory.isExcluded(InetAddressUtils.addr("192.0.2.2")));
+        assertFalse(factory.isExcluded(InetAddressUtils.addr("192.0.2.99")));
+        assertTrue(factory.isExcluded(InetAddressUtils.addr("192.0.2.100")));
+        assertFalse(factory.isExcluded(InetAddressUtils.addr("192.0.2.101")));
+        assertFalse(factory.isExcluded(InetAddressUtils.addr("192.0.2.151")));
     }
 }

@@ -52,24 +52,24 @@ import org.opennms.netmgt.model.OnmsNode;
 /*
  * Here are relevant device descriptions for link detection:
  * 
- * CISCO_C870:172.20.1.1:001f6cd034e7:12:Vlan1
+ * CISCO_C870:192.0.2.1:001f6cd034e7:12:Vlan1
  * Run the spanning tree with bridge identifier: 00000c83d9a8
  * Type SRT
  *
  *
- * CISCO_WS_C2948_IP:172.20.1.7:0002baaacffe:3:me1
+ * CISCO_WS_C2948_IP:192.0.2.7:0002baaacffe:3:me1
  * Run the spanning tree protocol
  * with bridge identifier: 0002baaacc00
  * Transparent Bridge
  * 
- * NETGEAR_SW_108:172.20.1.8:00223ff00b7b::
+ * NETGEAR_SW_108:192.0.2.8:00223ff00b7b::
  * Run the spanning tree protocol
  * with bridge identifier: 00223ff00b7b
  * Transparent Bridge
  * 
- * LINUX_UBUNTU:172.20.1.14:406186e28b53:4:br0
+ * LINUX_UBUNTU:192.0.2.14:406186e28b53:4:br0
  * 
- * DARWIN_10_8:172.20.1.28:0026b0ed8fb8:4:en0
+ * DARWIN_10_8:192.0.2.28:0026b0ed8fb8:4:en0
  * 
  * Here are listed the links
  * in the test network laboratory
@@ -97,22 +97,22 @@ public abstract class Nms7467NetworkBuilder extends LinkdTestBuilder {
     /*
      * The following parameters
      * describe a workstation without snmp enabled
-     * the ip address is 172.20.1.101
+     * the ip address is 192.0.2.101
      * the mac address is  60334b0817a8 
      */
 	protected static final String WORKSTATION_NAME        = "workstation";
-	protected static final String WORKSTATION_IP          = "172.20.1.101";
+	protected static final String WORKSTATION_IP          = "192.0.2.101";
 	protected static final String WORKSTATION_MAC         = "60334b0817a8";
 
     /*
      * This is a cisco access point but without snmp walk available 
      */
 	protected static final String ACCESSPOINT_NAME        = "mrgarrison.internal.opennms.com";
-	protected static final String ACCESSPOINT_IP          = "172.20.1.5";
+	protected static final String ACCESSPOINT_IP          = "192.0.2.5";
 
     /* 
      * nodelabel:ip:mac:ifindex:ifdescr
-     * CISCO_C870:172.20.1.1:001f6cd034e7:12:Vlan1
+     * CISCO_C870:192.0.2.1:001f6cd034e7:12:Vlan1
      * CISCO_C870:172.20.2.1:001f6cd034e7:13:Vlan2
      * CISCO_C870:10.255.255.2:001f6cd034e7:12:Vlan1
      * CISCO_C870:65.41.39.146:00000c03b09e:14:BVI1
@@ -146,13 +146,13 @@ public abstract class Nms7467NetworkBuilder extends LinkdTestBuilder {
 
     protected static final String CISCO_C870_NAME         = "mrmakay.internal.opennms.com";
     protected static final String CISCO_C870_IP_PRIMARY   = "10.255.255.2";
-    protected static final String CISCO_C870_IP           = "172.20.1.1";
+    protected static final String CISCO_C870_IP           = "192.0.2.1";
     protected static final String CISCO_C870_BRIDGEID      = "00000c83d9a8";
     protected static final String CISCO_C870_SYSOID        = ".1.3.6.1.4.1.9.1.569";
 
     protected static final Map<InetAddress, Integer> CISCO_C870_IP_IF_MAP = new HashMap<InetAddress, Integer>();
     static {
-        CISCO_C870_IP_IF_MAP.put(InetAddressUtils.addr("172.20.1.1"), 12);
+        CISCO_C870_IP_IF_MAP.put(InetAddressUtils.addr("192.0.2.1"), 12);
         CISCO_C870_IP_IF_MAP.put(InetAddressUtils.addr("172.20.2.1"), 13);
         CISCO_C870_IP_IF_MAP.put(InetAddressUtils.addr("10.255.255.2"), 12);
         CISCO_C870_IP_IF_MAP.put(InetAddressUtils.addr("65.41.39.146"), 14);            
@@ -212,7 +212,7 @@ public abstract class Nms7467NetworkBuilder extends LinkdTestBuilder {
     /*
      * nodelabel:ip:mac:ifindex:ifdescr
      *      
-     * CISCO_WS_C2948_IP:172.20.1.7:0002baaacffe:3:me1
+     * CISCO_WS_C2948_IP:192.0.2.7:0002baaacffe:3:me1
      * this device ha 48 Ports
      * the mac address range is: 0002baaacf00 0002baaacfff
      *  snmpifindex | snmpifname |            snmpifdescr            | snmpphysaddr 
@@ -281,7 +281,7 @@ public abstract class Nms7467NetworkBuilder extends LinkdTestBuilder {
      */ 
 
     protected static final String CISCO_WS_C2948_NAME         = "ciscoswitch";
-    protected static final String CISCO_WS_C2948_IP       = "172.20.1.7";
+    protected static final String CISCO_WS_C2948_IP       = "192.0.2.7";
     protected static final String CISCO_WS_C2948_BRIDGEID      = "0002baaacc00";
     protected static final String CISCO_WS_C2948_SYSOID        = ".1.3.6.1.4.1.9.5.42";
 
@@ -372,7 +372,7 @@ public abstract class Nms7467NetworkBuilder extends LinkdTestBuilder {
 
     /*
      *  nodelabel:ip:mac:ifindex:ifdescr
-     *  NETGEAR_SW_108:172.20.1.8:00223ff00b7b::
+     *  NETGEAR_SW_108:192.0.2.8:00223ff00b7b::
      * 
      *  snmpifindex | snmpifname |       snmpifdescr       | snmpphysaddr 
      *-------------+------------+-------------------------+--------------
@@ -390,7 +390,7 @@ public abstract class Nms7467NetworkBuilder extends LinkdTestBuilder {
      * 
      */
     protected static final String NETGEAR_SW_108_NAME         = "ng108switch";
-    protected static final String NETGEAR_SW_108_IP       = "172.20.1.8";
+    protected static final String NETGEAR_SW_108_IP       = "192.0.2.8";
     protected static final String NETGEAR_SW_108_BRIDGEID      = "00223ff00b7b";
     protected static final String NETGEAR_SW_108_SYSOID        = ".1.3.6.1.4.1.4526.100.4.8";
     protected static final Map<InetAddress,Integer> NETGEAR_SW_108_IP_IF_MAP = new HashMap<InetAddress, Integer>();
@@ -423,7 +423,7 @@ public abstract class Nms7467NetworkBuilder extends LinkdTestBuilder {
     }
     
     /* 
-     * LINUX_UBUNTU:172.20.1.14:406186e28b53:4:br0
+     * LINUX_UBUNTU:192.0.2.14:406186e28b53:4:br0
      * 
      *   snmpifindex | snmpifname | snmpifdescr | snmpphysaddr 
      *-------------+------------+-------------+--------------
@@ -440,7 +440,7 @@ public abstract class Nms7467NetworkBuilder extends LinkdTestBuilder {
      * 
      *                  ipaddr                 | ifindex 
      *-----------------------------------------+---------
-     * 172.20.1.14                             |       4
+     * 192.0.2.14                             |       4
      * 192.168.122.1                           |       5
      * 2001:0470:e2f1:0000:4261:86ff:fee2:8b53 |       4
      * 2001:0470:e2f1:0000:695c:e7ef:425e:63b0 |       4
@@ -461,12 +461,12 @@ public abstract class Nms7467NetworkBuilder extends LinkdTestBuilder {
      */ 
 
     protected static final String LINUX_UBUNTU_NAME         = "linuxubuntu";
-    protected static final String LINUX_UBUNTU_IP         = "172.20.1.14";
+    protected static final String LINUX_UBUNTU_IP         = "192.0.2.14";
     protected static final String LINUX_UBUNTU_SYSOID     = ".1.3.6.1.4.1.8072.3.2.10";
     
     protected static final Map<InetAddress, Integer> LINUX_UBUNTU_IP_IF_MAP = new HashMap<InetAddress, Integer>();
     static {
-        LINUX_UBUNTU_IP_IF_MAP.put(InetAddressUtils.addr("172.20.1.14"), 4);
+        LINUX_UBUNTU_IP_IF_MAP.put(InetAddressUtils.addr("192.0.2.14"), 4);
         LINUX_UBUNTU_IP_IF_MAP.put(InetAddressUtils.addr("192.168.122.1"), 5);
         LINUX_UBUNTU_IP_IF_MAP.put(InetAddressUtils.addr("2001:0470:e2f1:0000:4261:86ff:fee2:8b53"), 4);
         LINUX_UBUNTU_IP_IF_MAP.put(InetAddressUtils.addr("2001:0470:e2f1:0000:695c:e7ef:425e:63b0"), 4);
@@ -506,7 +506,7 @@ public abstract class Nms7467NetworkBuilder extends LinkdTestBuilder {
         LINUX_UBUNTU_IF_MAC_MAP.put(11, "9227e40d2b88");
     }
 
-    /* DARWIN_10_8:172.20.1.28:0026b0ed8fb8:4:en0
+    /* DARWIN_10_8:192.0.2.28:0026b0ed8fb8:4:en0
      * 
      *  snmpifindex | snmpifname | snmpifdescr | snmpphysaddr 
      *-------------+------------+-------------+--------------
@@ -522,7 +522,7 @@ public abstract class Nms7467NetworkBuilder extends LinkdTestBuilder {
      */
 
     protected static final String DARWIN_10_8_NAME        = "mac";
-    protected static final String DARWIN_10_8_IP          = "172.20.1.28";
+    protected static final String DARWIN_10_8_IP          = "192.0.2.28";
     protected static final String DARWIN_10_8_SYSOID      = ".1.3.6.1.4.1.8072.3.2.255";
     
 

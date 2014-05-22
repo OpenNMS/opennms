@@ -45,8 +45,8 @@ public class DefinitionTest extends XmlTestNoCastor<Definition> {
 	@Parameters
 	public static Collection<Object[]> data() throws ParseException {
 		final Range range = new Range();
-		range.setBegin("192.168.0.1");
-		range.setEnd("192.168.0.255");
+		range.setBegin("192.0.2.1");
+		range.setEnd("192.0.2.255");
 
 		final Definition def = new Definition();
 		def.setVersion("v3");
@@ -62,8 +62,8 @@ public class DefinitionTest extends XmlTestNoCastor<Definition> {
 				+ "    read-community=\"public\" "
 				+ "    write-community=\"private\" "
 				+ "    version=\"v3\">" + "    <range "
-				+ "      begin=\"192.168.0.1\" "
-				+ "      end=\"192.168.0.255\"/>"
+				+ "      begin=\"192.0.2.1\" "
+				+ "      end=\"192.0.2.255\"/>"
 				+ "    <specific>192.168.1.1</specific>"
 				+ "    <ip-match>10.0.0.*</ip-match>"
 				+ "  </definition>\n",

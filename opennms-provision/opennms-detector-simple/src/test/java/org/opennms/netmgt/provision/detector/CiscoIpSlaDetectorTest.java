@@ -53,7 +53,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitSnmpAgent(host=CiscoIpSlaDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/ciscoIpSlaSnmpTestData1.properties")
 public class CiscoIpSlaDetectorTest implements InitializingBean {
-    static final String TEST_IP_ADDRESS = "192.168.0.1";
+    static final String TEST_IP_ADDRESS = "192.0.2.1";
 
     @Autowired
     private CiscoIpSlaDetector m_detector;

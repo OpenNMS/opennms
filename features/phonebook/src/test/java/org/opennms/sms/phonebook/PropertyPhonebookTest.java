@@ -41,9 +41,9 @@ public class PropertyPhonebookTest {
         PropertyPhonebook p = new PropertyPhonebook();
         p.setPropertyFile(fileName);
         
-        assertEquals("919-533-0160", p.getTargetForAddress("192.168.0.1"));
-        assertEquals("877-666-7911", p.getTargetForAddress("192.168.0.2"));
-        assertEquals("sms@example.com", p.getTargetForAddress("192.168.0.3"));
+        assertEquals("919-533-0160", p.getTargetForAddress("192.0.2.1"));
+        assertEquals("877-666-7911", p.getTargetForAddress("192.0.2.2"));
+        assertEquals("sms@example.com", p.getTargetForAddress("192.0.2.3"));
     }
 
     @Test
@@ -51,9 +51,9 @@ public class PropertyPhonebookTest {
         PropertyPhonebook p = new PropertyPhonebook();
         p.setPropertyFile("phonebook-test.properties");
         
-        assertEquals("919-533-0160", p.getTargetForAddress("192.168.0.1"));
-        assertEquals("877-666-7911", p.getTargetForAddress("192.168.0.2"));
-        assertEquals("sms@example.com", p.getTargetForAddress("192.168.0.3"));
+        assertEquals("919-533-0160", p.getTargetForAddress("192.0.2.1"));
+        assertEquals("877-666-7911", p.getTargetForAddress("192.0.2.2"));
+        assertEquals("sms@example.com", p.getTargetForAddress("192.0.2.3"));
     }
 
 }

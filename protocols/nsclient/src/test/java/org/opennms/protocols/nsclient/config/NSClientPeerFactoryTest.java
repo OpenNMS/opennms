@@ -59,7 +59,7 @@ public class NSClientPeerFactoryTest {
         "<nsclient-config retry=\"3\" timeout=\"800\"\n" + 
         "   password=\"password\">\n" + 
         "   <definition>\n" + 
-        "       <specific>192.168.0.5</specific>\n" + 
+        "       <specific>192.0.2.5</specific>\n" + 
         "   </definition>\n" + 
         "\n" + 
         "</nsclient-config>\n" + 
@@ -89,8 +89,8 @@ public class NSClientPeerFactoryTest {
         "<nsclient-config retry=\"3\" timeout=\"800\"\n" + 
         "   password=\"password\">\n" + 
         "   <definition>\n" + 
-        "       <specific>192.168.0.5</specific>\n" + 
-        "       <specific>192.168.0.6</specific>\n" + 
+        "       <specific>192.0.2.5</specific>\n" + 
+        "       <specific>192.0.2.6</specific>\n" + 
         "   </definition>\n" + 
         "\n" + 
         "</nsclient-config>\n" + 
@@ -107,8 +107,8 @@ public class NSClientPeerFactoryTest {
         assertEquals(1, factory.getConfig().getDefinitionCount());
         assertEquals(0, factory.getConfig().getDefinition(0).getSpecificCount());
         assertEquals(1, factory.getConfig().getDefinition(0).getRangeCount());
-        assertEquals("192.168.0.5", factory.getConfig().getDefinition(0).getRange(0).getBegin());
-        assertEquals("192.168.0.6", factory.getConfig().getDefinition(0).getRange(0).getEnd());
+        assertEquals("192.0.2.5", factory.getConfig().getDefinition(0).getRange(0).getBegin());
+        assertEquals("192.0.2.6", factory.getConfig().getDefinition(0).getRange(0).getEnd());
     }
 
     @Test
@@ -294,8 +294,8 @@ public class NSClientPeerFactoryTest {
         "<nsclient-config retry=\"3\" timeout=\"800\"\n" + 
         "   password=\"password\">\n" + 
         "   <definition>\n" + 
-        "       <range begin=\"192.168.0.6\" end=\"192.168.0.12\"/>\n" + 
-        "       <specific>192.168.0.6</specific>\n" + 
+        "       <range begin=\"192.0.2.6\" end=\"192.0.2.12\"/>\n" + 
+        "       <specific>192.0.2.6</specific>\n" + 
         "   </definition>\n" + 
         "\n" + 
         "</nsclient-config>\n" + 
@@ -312,8 +312,8 @@ public class NSClientPeerFactoryTest {
         assertEquals(1, factory.getConfig().getDefinitionCount());
         assertEquals(0, factory.getConfig().getDefinition(0).getSpecificCount());
         assertEquals(1, factory.getConfig().getDefinition(0).getRangeCount());
-        assertEquals("192.168.0.6", factory.getConfig().getDefinition(0).getRange(0).getBegin());
-        assertEquals("192.168.0.12", factory.getConfig().getDefinition(0).getRange(0).getEnd());
+        assertEquals("192.0.2.6", factory.getConfig().getDefinition(0).getRange(0).getBegin());
+        assertEquals("192.0.2.12", factory.getConfig().getDefinition(0).getRange(0).getEnd());
     }
 
     /**
@@ -331,8 +331,8 @@ public class NSClientPeerFactoryTest {
         "<nsclient-config retry=\"3\" timeout=\"800\"\n" + 
         "   password=\"password\">\n" + 
         "   <definition>\n" + 
-        "       <range begin=\"192.168.0.6\" end=\"192.168.0.12\"/>\n" + 
-        "       <specific>192.168.0.12</specific>\n" + 
+        "       <range begin=\"192.0.2.6\" end=\"192.0.2.12\"/>\n" + 
+        "       <specific>192.0.2.12</specific>\n" + 
         "   </definition>\n" + 
         "\n" + 
         "</nsclient-config>\n" + 
@@ -349,8 +349,8 @@ public class NSClientPeerFactoryTest {
         assertEquals(1, factory.getConfig().getDefinitionCount());
         assertEquals(0, factory.getConfig().getDefinition(0).getSpecificCount());
         assertEquals(1, factory.getConfig().getDefinition(0).getRangeCount());
-        assertEquals("192.168.0.6", factory.getConfig().getDefinition(0).getRange(0).getBegin());
-        assertEquals("192.168.0.12", factory.getConfig().getDefinition(0).getRange(0).getEnd());
+        assertEquals("192.0.2.6", factory.getConfig().getDefinition(0).getRange(0).getBegin());
+        assertEquals("192.0.2.12", factory.getConfig().getDefinition(0).getRange(0).getEnd());
     }
 
     /**
@@ -368,9 +368,9 @@ public class NSClientPeerFactoryTest {
         "<nsclient-config retry=\"3\" timeout=\"800\"\n" + 
         "   password=\"password\">\n" + 
         "   <definition>\n" + 
-        "       <range begin=\"192.168.0.6\" end=\"192.168.0.12\"/>\n" + 
-        "       <range begin=\"192.168.0.20\" end=\"192.168.0.100\"/>\n" + 
-        "       <range begin=\"192.168.0.8\" end=\"192.168.0.30\"/>\n" + 
+        "       <range begin=\"192.0.2.6\" end=\"192.0.2.12\"/>\n" + 
+        "       <range begin=\"192.0.2.20\" end=\"192.0.2.100\"/>\n" + 
+        "       <range begin=\"192.0.2.8\" end=\"192.0.2.30\"/>\n" + 
         "   </definition>\n" + 
         "\n" + 
         "</nsclient-config>\n" + 
@@ -387,7 +387,7 @@ public class NSClientPeerFactoryTest {
         assertEquals(1, factory.getConfig().getDefinitionCount());
         assertEquals(0, factory.getConfig().getDefinition(0).getSpecificCount());
         assertEquals(1, factory.getConfig().getDefinition(0).getRangeCount());
-        assertEquals("192.168.0.6", factory.getConfig().getDefinition(0).getRange(0).getBegin());
-        assertEquals("192.168.0.100", factory.getConfig().getDefinition(0).getRange(0).getEnd());
+        assertEquals("192.0.2.6", factory.getConfig().getDefinition(0).getRange(0).getBegin());
+        assertEquals("192.0.2.100", factory.getConfig().getDefinition(0).getRange(0).getEnd());
     }
 }

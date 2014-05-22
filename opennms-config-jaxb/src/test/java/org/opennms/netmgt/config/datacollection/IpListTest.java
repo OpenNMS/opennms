@@ -44,13 +44,13 @@ public class IpListTest extends XmlTestNoCastor<IpList> {
     @Parameters
     public static Collection<Object[]> data() throws ParseException {
         final IpList list = new IpList();
-        list.addIpAddress("192.168.0.1");
-        list.addIpAddress("192.168.0.2");
+        list.addIpAddress("192.0.2.1");
+        list.addIpAddress("192.0.2.2");
         list.addIpAddressMask("255.255.255.0");
 
         return Arrays.asList(new Object[][] { {
                 list,
-                "<ipList><ipAddr>192.168.0.1</ipAddr><ipAddr>192.168.0.2</ipAddr><ipAddrMask>255.255.255.0</ipAddrMask></ipList>",
+                "<ipList><ipAddr>192.0.2.1</ipAddr><ipAddr>192.0.2.2</ipAddr><ipAddrMask>255.255.255.0</ipAddrMask></ipList>",
                 "target/classes/xsds/datacollection-config.xsd" } });
     }
 

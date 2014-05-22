@@ -96,7 +96,7 @@ public class AccessPointMonitorConfigTest {
         pkg.setName("default");
         pkg.setFilter("IPADDR != '0.0.0.0'");
         pkg.addSpecific("172.23.1.1");
-        pkg.addIncludeRange(new IpRange("192.168.0.0", "192.168.255.255"));
+        pkg.addIncludeRange(new IpRange("192.0.2.0", "192.168.255.255"));
         pkg.addExcludeRange(new IpRange("192.168.1.0", "192.168.1.255"));
         pkg.setService(svc);
 

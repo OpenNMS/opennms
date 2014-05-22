@@ -107,7 +107,7 @@ public class RadiusAuthDetectorTest implements ApplicationContextAware, Initiali
 	    m_detector.setSecret("testing123");
 	    m_detector.setUser("testing");
 	    m_detector.onInit();
-		assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.211.11")));
+		assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr("192.0.2.11")));
 	}
 
 

@@ -70,7 +70,7 @@ public abstract class InetAddressUtils {
         try {
             // This address is within a subnet of "Unique Unicast" IPv6 addresses
             // that are defined by RFC4193. This is the IPv6 equivalent of the
-            // 192.168.0.0/16 subnet and because the IPv6 address space is so large,
+            // 192.0.2.0/16 subnet and because the IPv6 address space is so large,
             // you can just randomly generate the first portion of the address. :)
             // I used an online address generator to get this particular address.
             //

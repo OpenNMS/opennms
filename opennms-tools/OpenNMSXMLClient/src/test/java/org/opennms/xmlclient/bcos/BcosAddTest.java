@@ -35,7 +35,7 @@ public class BcosAddTest {
 			{
 				put("description",   "this is a first test node"); //  Added to node description inventory record
 				put("machine_ident", "BTNode1");             //  Set as foreign ID and OpenNMS Node Label
-				put("ip_address",    "192.168.0.201");       //  Set as IP address of first port on node
+				put("ip_address",    "192.0.2.201");       //  Set as IP address of first port on node
 				put("http_listen_port",  "80" );             //  NOT USED - automatically discovered
 				put("https_listen_port", "443" );            // NOT USED - trial not using Https
 			}
@@ -53,7 +53,7 @@ public class BcosAddTest {
 			{
 				put("description",   "this is a second test node"); //  Added to node description inventory record
 				put("machine_ident", "BTNode2");             //  Set as foreign ID and OpenNMS Node Label
-				put("ip_address",    "192.168.0.203");       //  Set as IP address of first port on node
+				put("ip_address",    "192.0.2.203");       //  Set as IP address of first port on node
 				put("http_listen_port",  "80" );             //  NOT USED - automatically discovered
 				put("https_listen_port", "443" );            // NOT USED - trial not using Https
 			}

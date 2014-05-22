@@ -39,7 +39,7 @@ public class InterfaceAddTest {
 
 		// Add a requisition with the given foreign source.
 		String foreign_id="node1";
-		String ip_address="192.168.0.250";
+		String ip_address="192.0.2.250";
 
 		assertTrue (onmsClient.interfaceAdd(foreign_source, foreign_id, ip_address));
 

@@ -101,7 +101,7 @@
                commas are used for list demarcation.
             </p>
             <p>The following examples are all valid and yield the set of addresses from
-	       192.168.0.0 through 192.168.3.255.</p>
+	       192.0.2.0 through 192.168.3.255.</p>
                <ul>
                   <li>192.168.0-3.*
                   <li>192.168.0-3.0-255

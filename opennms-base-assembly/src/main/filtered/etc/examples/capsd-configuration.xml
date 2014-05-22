@@ -428,7 +428,7 @@
         <smb-auth user="guest" password="guest" type="domain">WORKGROUP</smb-auth>
     </smb-config>
     <ip-management policy="managed">
-        <range begin="192.168.0.0" end="192.168.0.255" />
+        <range begin="192.0.2.0" end="192.0.2.255" />
         <include-url>file:${install.etc.dir}/include</include-url>
     </ip-management>
     <ip-management policy="unmanaged">

@@ -138,14 +138,14 @@ public class Nms7467Test extends Nms7467NetworkBuilder {
             @JUnitSnmpAgent(host=NETGEAR_SW_108_IP, port=161, resource="classpath:linkd/nms7467/"+NETGEAR_SW_108_IP+"-walk.txt"),
             @JUnitSnmpAgent(host=LINUX_UBUNTU_IP, port=161, resource="classpath:linkd/nms7467/"+LINUX_UBUNTU_IP+"-walk.txt")
     })
-    // mrgarrison:172.20.1.5:-1   -------- ciscoswitch:172.20.1.7:47 ---bridge
-    // workstation:172.20.1.101:-1-------- ciscoswitch:172.20.1.7:47 ---bridge
-    // mrmakay:172.20.1.1:3       -------- ciscoswitch:172.20.1.7:52 ---cdp
-    // mrmakay:172.20.1.1:13      -------- ciscoswitch:172.20.1.7:52 ---bridge 
-    // mrmakay:172.20.1.1:12      -------- ciscoswitch:172.20.1.7:52 ---bridge 
-    // linuxubuntu:172.20.1.14:4  -------- ciscoswitch:172.20.1.7:11 ---bridge
-    // ng108switch:172.20.1.8:8   -------- ciscoswitch:172.20.1.7:9  ---bridge
-    // mac:172.20.1.28:4          -------- ng108switch:172.20.1.8:1  ---bridge
+    // mrgarrison:192.0.2.5:-1   -------- ciscoswitch:192.0.2.7:47 ---bridge
+    // workstation:192.0.2.101:-1-------- ciscoswitch:192.0.2.7:47 ---bridge
+    // mrmakay:192.0.2.1:3       -------- ciscoswitch:192.0.2.7:52 ---cdp
+    // mrmakay:192.0.2.1:13      -------- ciscoswitch:192.0.2.7:52 ---bridge 
+    // mrmakay:192.0.2.1:12      -------- ciscoswitch:192.0.2.7:52 ---bridge 
+    // linuxubuntu:192.0.2.14:4  -------- ciscoswitch:192.0.2.7:11 ---bridge
+    // ng108switch:192.0.2.8:8   -------- ciscoswitch:192.0.2.7:9  ---bridge
+    // mac:192.0.2.28:4          -------- ng108switch:192.0.2.8:1  ---bridge
     public void testAllTogether() throws Exception {
 
         Package example1 = m_linkdConfig.getPackage("example1");
@@ -328,7 +328,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder {
         /*
         * nodelabel:ip:mac:ifindex:ifdescr
         *      
-        * CISCO_WS_C2948_IP:172.20.1.7:0002baaacffe:3:me1
+        * CISCO_WS_C2948_IP:192.0.2.7:0002baaacffe:3:me1
         */
         
         final List<AtInterface> atInterfaces = m_linkd.getAtInterfaces(packageName, "0002baaacffe");
@@ -423,7 +423,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder {
         /*
         * nodelabel:ip:mac:ifindex:ifdescr
         *      
-        * CISCO_C870:172.20.1.1:001f6cd034e7:12:Vlan1
+        * CISCO_C870:192.0.2.1:001f6cd034e7:12:Vlan1
         * CISCO_C870:172.20.2.1:001f6cd034e7:13:Vlan2
         * CISCO_C870:10.255.255.2:001f6cd034e7:12:Vlan1
         * CISCO_C870:65.41.39.146:00000c03b09e:14:BVI1
@@ -436,7 +436,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder {
         
         assertEquals(3, ats.size());
         for (final AtInterface at :ats) {
-            if( at.getIpAddress().getHostAddress().equals("172.20.1.1"))
+            if( at.getIpAddress().getHostAddress().equals("192.0.2.1"))
                 assertEquals(12, at.getIfIndex().intValue());
             else if( at.getIpAddress().getHostAddress().equals("172.20.2.1"))
                 assertEquals(13, at.getIfIndex().intValue());
@@ -543,7 +543,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder {
         /*
         * nodelabel:ip:mac:ifindex:ifdescr
         *      
-        * NETGEAR_SW_108:172.20.1.8:00223ff00b7b::
+        * NETGEAR_SW_108:192.0.2.8:00223ff00b7b::
         * Run the spanning tree protocol
         * with bridge identifier: 00223ff00b7b
         * Transparent Bridge
@@ -555,7 +555,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder {
         List<AtInterface> ats = m_linkd.getAtInterfaces(packageName, "00223ff00b7b");
         
         for (AtInterface at : ats) {
-            if( at.getIpAddress().getHostAddress().equals("172.20.1.8"))
+            if( at.getIpAddress().getHostAddress().equals("192.0.2.8"))
                 assertTrue(at.getIfIndex().intValue() == -1);
             else 
                 fail("ip: "+ at.getIpAddress().getHostAddress() + "does not match any known ip address");
@@ -637,7 +637,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder {
         // This make shure that the ip/mac association is saved
         /*
         * nodelabel:ip:mac:ifindex:ifdescr
-        * LINUX_UBUNTU:172.20.1.14:406186e28b53:4:br0
+        * LINUX_UBUNTU:192.0.2.14:406186e28b53:4:br0
         * 
         */
         
@@ -649,7 +649,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder {
         assertEquals("should have saved 1 ip to mac",1, ats.size());        
         
         for (AtInterface at : ats) {
-            if( at.getIpAddress().getHostAddress().equals("172.20.1.14"))
+            if( at.getIpAddress().getHostAddress().equals("192.0.2.14"))
                 assertTrue(at.getIfIndex().intValue() == 4);
             else 
                 assertTrue("ip: "+ at.getIpAddress().getHostAddress() + "does not match any known ip address", false);
@@ -730,7 +730,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder {
         // This make shure that the ip/mac association is saved
         /*
         * nodelabel:ip:mac:ifindex:ifdescr
-        * DARWIN_10_8:172.20.1.28:0026b0ed8fb8:4:en0
+        * DARWIN_10_8:192.0.2.28:0026b0ed8fb8:4:en0
         *  
         */
         
@@ -743,7 +743,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder {
         assertEquals("should have saved 1 ip to mac",1, ats.size());        
         
         for (AtInterface at : ats) {
-            if( at.getIpAddress().getHostAddress().equals("172.20.1.28"))
+            if( at.getIpAddress().getHostAddress().equals("192.0.2.28"))
                 assertTrue(at.getIfIndex().intValue() == 4);
             else 
                 assertTrue("ip: "+ at.getIpAddress().getHostAddress() + "does not match any known ip address", false);

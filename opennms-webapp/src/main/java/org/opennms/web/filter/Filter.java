@@ -78,7 +78,7 @@ public interface Filter {
      * Some examples:
      * <ul>
      * <li>"node=1"</li>
-     * <li>"interface=192.168.0.1"</li>
+     * <li>"interface=192.0.2.1"</li>
      * <li>"severity=3"</li>
      * <li>"nodenamelike=opennms"</li>
      * </ul>
@@ -97,7 +97,7 @@ public interface Filter {
      * {@link #getDescription getDescription}):
      * <ul>
      * <li>"node=nodelabel_of_node_1"</li>
-     * <li>"interface=192.168.0.1"</li>
+     * <li>"interface=192.0.2.1"</li>
      * <li>"severity=Normal"</li>
      * <li>"node name containing \"opennms\""</li>
      * </ul>

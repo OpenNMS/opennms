@@ -5,9 +5,9 @@
 		<time day="sunday" begins="13:30:00" ends="14:45:00"/>
 		<time day="monday" begins="13:30:00" ends="14:45:00"/>
 		<time day="tuesday" begins="13:00:00" ends="14:45:00"/>
-		<interface address="192.168.0.1"/>
-		<interface address="192.168.0.36"/>
-		<interface address="192.168.0.38"/>
+		<interface address="192.0.2.1"/>
+		<interface address="192.0.2.36"/>
+		<interface address="192.0.2.38"/>
 	</outage>
 
 	<outage name="hub maintaince" type="monthly">
@@ -26,7 +26,7 @@
 
 	<outage name="proxy server tuning" type="specific">
 		<time begins="10-Nov-2001 17:30:00" ends="11-Nov-2001 08:00:00"/>
-		<interface address="192.168.0.1"/>
+		<interface address="192.0.2.1"/>
 	</outage>
 </outages>
 

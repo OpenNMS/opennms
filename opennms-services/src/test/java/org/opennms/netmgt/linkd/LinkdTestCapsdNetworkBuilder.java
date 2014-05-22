@@ -77,8 +77,8 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitTemporaryDatabase
 public class LinkdTestCapsdNetworkBuilder extends LinkdTestHelper implements InitializingBean {
 
-    private final static String IP = "192.168.0.1";
-    private final static String CLASSPATH = "classpath:linkd//nms102/mikrotik-192.168.0.1-walk.txt";
+    private final static String IP = "192.0.2.1";
+    private final static String CLASSPATH = "classpath:linkd//nms102/mikrotik-192.0.2.1-walk.txt";
     private final static String ROOT= "MIKROTIK";
     
     @Autowired

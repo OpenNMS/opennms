@@ -5,9 +5,9 @@ void forwardEvent(Event event) {
 
             log.debug("Forwarding an OpenNMS event.");
 
-            SnmpTrapBuilder trap = snmpTrapHelper.createV1Trap(".1.3.6.1.4.1.5813.1", "172.20.1.11", 6, 1, 0);
+            SnmpTrapBuilder trap = snmpTrapHelper.createV1Trap(".1.3.6.1.4.1.5813.1", "192.0.2.11", 6, 1, 0);
 
-            /*  This sends an enterprise id of ".1.3.6.1.4.1.5813.1" from agent "172.20.1.11" (einstein), 
+            /*  This sends an enterprise id of ".1.3.6.1.4.1.5813.1" from agent "192.0.2.11" (einstein), 
 	        which should be the IP address of the OpenNMS system, generic value of 6 and specific value of 1 */
 
             t_dbid = new Integer(event.dbid);
@@ -109,9 +109,9 @@ void forwardEvent(Event event) {
             else
                 snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.22", "OctetString", "text", "null");
 
-            trap.send("172.20.1.15", 162, "public");
+            trap.send("192.0.2.15", 162, "public");
 
-            /* 172.20.1.15 is the destination for the trap, the port (162) and the community string (usually public for traps) */
+            /* 192.0.2.15 is the destination for the trap, the port (162) and the community string (usually public for traps) */
 
         } catch (e) {
             sw = new StringWriter();

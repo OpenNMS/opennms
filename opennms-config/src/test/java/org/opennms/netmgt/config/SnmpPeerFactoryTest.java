@@ -123,7 +123,7 @@ public class SnmpPeerFactoryTest extends TestCase {
                 "   </definition>\n" + 
                 "\n" + 
                 "   <definition version=\"v2c\" read-community=\"specificv2c\">\n" + 
-                "       <specific>192.168.0.50</specific>\n" +
+                "       <specific>192.0.2.50</specific>\n" +
                 "   </definition>\n" + 
                 "\n" + 
                 "   <definition version=\"v2c\" read-community=\"ipmatch\" max-vars-per-pdu=\"128\" max-repetitions=\"7\" >\n" + 
@@ -305,7 +305,7 @@ public class SnmpPeerFactoryTest extends TestCase {
      * @throws UnknownHostException
      */
     public void testGetV2cConfig() throws UnknownHostException {
-        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr("192.168.0.50"));
+        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr("192.0.2.50"));
         assertNotNull(agentConfig);
         assertEquals(agentConfig.getVersion(), SnmpAgentConfig.VERSION2C);
         assertEquals("specificv2c", agentConfig.getReadCommunity());

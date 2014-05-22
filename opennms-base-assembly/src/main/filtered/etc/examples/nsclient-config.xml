@@ -4,7 +4,7 @@
   
   
 	<definition password="differentPassword">
-		<specific>192.168.0.102</specific>
+		<specific>192.0.2.102</specific>
 	</definition>
 	
 	<!-- Sample new IP matching support

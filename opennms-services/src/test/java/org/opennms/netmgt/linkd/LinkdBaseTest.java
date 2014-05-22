@@ -46,7 +46,7 @@ public class LinkdBaseTest  {
         assertEquals(InetAddressUtils.addr("192.168.15.0"), discovery.getSubnetAddress(ospfinterface));
         
         ospfinterface.setOspfNbrNetMask(InetAddressUtils.addr("255.255.0.0"));
-        assertEquals(InetAddressUtils.addr("192.168.0.0"), discovery.getSubnetAddress(ospfinterface));
+        assertEquals(InetAddressUtils.addr("192.0.2.0"), discovery.getSubnetAddress(ospfinterface));
 
         ospfinterface.setOspfNbrNetMask(InetAddressUtils.addr("255.255.255.252"));
         assertEquals(InetAddressUtils.addr("192.168.15.44"), discovery.getSubnetAddress(ospfinterface));

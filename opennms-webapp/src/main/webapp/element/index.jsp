@@ -176,7 +176,7 @@
       </p>
         
       <p>For example, the following search fields are all valid and would each create
-        the same result set--all TCP/IP addresses from 192.168.0.0 through
+        the same result set--all TCP/IP addresses from 192.0.2.0 through
         192.168.255.255:
       </p>
       

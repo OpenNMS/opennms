@@ -223,7 +223,7 @@ public class OutageDaoTest implements InitializingBean {
         node.setLabel("shoes");
         m_nodeDao.save(node);
         insertEntitiesAndOutage("172.16.1.1", "ICMP", node);
-        insertEntitiesAndOutage("172.20.1.1", "ICMP", node);
+        insertEntitiesAndOutage("192.0.2.1", "ICMP", node);
         
         node = new OnmsNode(getLocalHostDistPoller());
         node.setLabel("megaphone");
@@ -252,7 +252,7 @@ public class OutageDaoTest implements InitializingBean {
         node.setLabel("shoes");
         m_nodeDao.save(node);
         insertEntitiesAndOutage("172.16.1.1", "ICMP", node);
-        insertEntitiesAndOutage("172.20.1.1", "ICMP", node);
+        insertEntitiesAndOutage("192.0.2.1", "ICMP", node);
         
         node = new OnmsNode(getLocalHostDistPoller());
         node.setLabel("megaphone");

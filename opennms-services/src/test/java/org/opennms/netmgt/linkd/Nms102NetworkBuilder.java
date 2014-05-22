@@ -9,7 +9,7 @@ import org.opennms.netmgt.model.OnmsNode;
 
 public class Nms102NetworkBuilder extends LinkdTestBuilder {
 
-    protected static final String MIKROTIK_IP = "192.168.0.1";
+    protected static final String MIKROTIK_IP = "192.0.2.1";
     protected static final String MIKROTIK_NAME = "mikrotik";
     protected static final String MIKROTIK_SYSOID = ".1.3.6.1.4.1.14988.1";
     
@@ -20,7 +20,7 @@ public class Nms102NetworkBuilder extends LinkdTestBuilder {
     protected static final Map<Integer,String> MIKROTIK_IF_IFALIAS_MAP = new HashMap<Integer, String>();
     protected static final Map<Integer,InetAddress> MIKROTIK_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
 
-    protected static final String SAMSUNG_IP = "192.168.0.14";
+    protected static final String SAMSUNG_IP = "192.0.2.14";
     protected static final String SAMSUNG_NAME = "samsung";
     protected static final String SAMSUNG_SYSOID = ".1.3.6.1.4.1.236.11.5.1";
     
@@ -31,7 +31,7 @@ public class Nms102NetworkBuilder extends LinkdTestBuilder {
     protected static final Map<Integer,String> SAMSUNG_IF_IFALIAS_MAP = new HashMap<Integer, String>();
     protected static final Map<Integer,InetAddress> SAMSUNG_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
 
-    protected static final String MAC1_IP = "192.168.0.16";
+    protected static final String MAC1_IP = "192.0.2.16";
     protected static final String MAC1_NAME = "mac1";
     protected static final String MAC1_SYSOID = ".1.3.6.1.4.1.8072.3.2.255";
     
@@ -42,7 +42,7 @@ public class Nms102NetworkBuilder extends LinkdTestBuilder {
     protected static final Map<Integer,String> MAC1_IF_IFALIAS_MAP = new HashMap<Integer, String>();
     protected static final Map<Integer,InetAddress> MAC1_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
 
-    protected static final String MAC2_IP = "192.168.0.17";
+    protected static final String MAC2_IP = "192.0.2.17";
     protected static final String MAC2_NAME = "mac2";
     protected static final String MAC2_SYSOID = ".1.3.6.1.4.1.8072.3.2.255";
     
@@ -54,7 +54,7 @@ public class Nms102NetworkBuilder extends LinkdTestBuilder {
     protected static final Map<Integer,InetAddress> MAC2_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
     
     static {
-        MIKROTIK_IP_IF_MAP.put(InetAddressUtils.addr("192.168.0.1"), 2);
+        MIKROTIK_IP_IF_MAP.put(InetAddressUtils.addr("192.0.2.1"), 2);
         MIKROTIK_IP_IF_MAP.put(InetAddressUtils.addr("10.129.16.165"), 1);
         MIKROTIK_IF_IFNAME_MAP.put(2, "wlan1");
         MIKROTIK_IF_IFDESCR_MAP.put(2, "wlan1");
@@ -64,14 +64,14 @@ public class Nms102NetworkBuilder extends LinkdTestBuilder {
         MIKROTIK_IF_IFALIAS_MAP.put(1, "salvatore");
         MIKROTIK_IF_NETMASK_MAP.put(1, InetAddressUtils.addr("255.255.248.0"));
         
-        SAMSUNG_IP_IF_MAP.put(InetAddressUtils.addr("192.168.0.14"), 1);
+        SAMSUNG_IP_IF_MAP.put(InetAddressUtils.addr("192.0.2.14"), 1);
         SAMSUNG_IF_IFDESCR_MAP.put(1, "Embedded Ethernet Controller, 10/100 Mbps, v1.0, UTP RJ-45, connector A1, 10 half duplex");
         SAMSUNG_IF_IFNAME_MAP.put(1, "ethernet0");
         SAMSUNG_IF_IFDESCR_MAP.put(2, "Loopback Interface");
         SAMSUNG_IF_IFNAME_MAP.put(2, "loopback0");
         SAMSUNG_IF_NETMASK_MAP.put(1, InetAddressUtils.addr("255.255.255.0"));
         
-        MAC1_IP_IF_MAP.put(InetAddressUtils.addr("192.168.0.16"), 5);
+        MAC1_IP_IF_MAP.put(InetAddressUtils.addr("192.0.2.16"), 5);
         MAC1_IF_IFNAME_MAP.put(4, "en0");
         MAC1_IF_IFDESCR_MAP.put(4, "en0");
         MAC1_IF_IFALIAS_MAP.put(4, "roberta");
@@ -86,7 +86,7 @@ public class Nms102NetworkBuilder extends LinkdTestBuilder {
         MAC1_IF_IFNAME_MAP.put(6, "fw0");
         MAC1_IF_IFDESCR_MAP.put(6, "fw0");
         
-        MAC2_IP_IF_MAP.put(InetAddressUtils.addr("192.168.0.17"), 6);
+        MAC2_IP_IF_MAP.put(InetAddressUtils.addr("192.0.2.17"), 6);
         MAC2_IF_IFDESCR_MAP.put(2, "gif0");
         MAC2_IF_IFDESCR_MAP.put(3, "stf0");
         MAC2_IF_IFDESCR_MAP.put(4, "en0");

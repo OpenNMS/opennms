@@ -398,10 +398,10 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
 
         final MockNetwork network = new MockNetwork();
         final MockNode node = network.addNode(nextNodeId, nodeLabel);
-        network.addInterface("172.20.1.204");
+        network.addInterface("192.0.2.204");
         network.addService("ICMP");
         network.addService("HTTP");
-        network.addInterface("172.20.1.201");
+        network.addInterface("192.0.2.201");
         network.addService("ICMP");
         network.addService("SNMP");
 
@@ -470,7 +470,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
     }
 
     @Test(timeout=300000)
-    @JUnitSnmpAgent(host="172.20.1.201", resource="classpath:snmpTestData1.properties")
+    @JUnitSnmpAgent(host="192.0.2.201", resource="classpath:snmpTestData1.properties")
     public void testPopulateWithSnmp() throws Exception {
         m_populator.resetDatabase();
 

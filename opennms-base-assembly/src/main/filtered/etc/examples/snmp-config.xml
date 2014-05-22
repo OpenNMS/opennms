@@ -8,14 +8,14 @@
          the proxy-host, if configured, otherwise with the entity's address
          if proxy-host is not set, as always.
      -->
-    <definition version="v2c" proxy-host="192.168.0.3" port="1161" >
+    <definition version="v2c" proxy-host="192.0.2.3" port="1161" >
       <specific>10.0.0.3</specific>
     </definition>
     
     
     <!-- Sample Version 2c configuration -->
 	<definition version="v2c">
-		<specific>192.168.0.50</specific>
+		<specific>192.0.2.50</specific>
 	</definition>
 	
 	<!-- Sample v3 configuration 
@@ -26,7 +26,7 @@
 	-->
   
 	<definition version="v3" security-name="opennmsUser" auth-passphrase="0p3nNMSv3" auth-protocol="MD5" privacy-passphrase="0p3nNMSv3" privacy-protocol="DES">
-		<specific>192.168.0.102</specific>
+		<specific>192.0.2.102</specific>
 	</definition>
 	
 	<!-- Sample new IP matching support

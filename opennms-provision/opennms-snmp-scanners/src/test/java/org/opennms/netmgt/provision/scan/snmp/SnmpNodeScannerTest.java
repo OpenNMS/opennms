@@ -52,7 +52,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitSnmpAgent(host=SnmpNodeScannerTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/scan/snmp/snmpTestData1.properties")
 public class SnmpNodeScannerTest implements InitializingBean {
-	static final String TEST_IP_ADDRESS = "172.20.1.205";
+	static final String TEST_IP_ADDRESS = "192.0.2.205";
 	
 	@Autowired
 	private SnmpPeerFactory m_snmpPeerFactory;

@@ -140,14 +140,14 @@ public class SnmpValueTest {
     @Test
     public void testInetAddress() {
         for (final SnmpValueFactory factory : m_factories) {
-            final InetAddress address = InetAddressUtils.addr("192.168.0.1");
+            final InetAddress address = InetAddressUtils.addr("192.0.2.1");
             final SnmpValue value = factory.getIpAddress(address);
             final String className = factory.getClass().getName();
 
             assertTrue(className + ": getInetAddress isDisplayable should be true", value.isDisplayable());
-            assertEquals(className + ": getInetAddress to InetAddress should return 192.168.0.1", address, value.toInetAddress());
-            assertEquals(className + ": getInetAddress to String should return 192.168.0.1", "192.168.0.1", value.toString());
-            assertEquals(className + ": getInetAddress to DisplayString should return 192.168.0.1", "192.168.0.1", value.toDisplayString());
+            assertEquals(className + ": getInetAddress to InetAddress should return 192.0.2.1", address, value.toInetAddress());
+            assertEquals(className + ": getInetAddress to String should return 192.0.2.1", "192.0.2.1", value.toString());
+            assertEquals(className + ": getInetAddress to DisplayString should return 192.0.2.1", "192.0.2.1", value.toDisplayString());
             try {
                 value.toInt();
                 fail(className + ": getInetAddress to int should throw an IllegalArgumentException");

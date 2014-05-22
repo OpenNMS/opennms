@@ -3,8 +3,8 @@
 	retries="1" timeout="2000">
 
 	<include-range>
-		<begin>192.168.0.1</begin>
-		<end>192.168.0.254</end>
+		<begin>192.0.2.1</begin>
+		<end>192.0.2.254</end>
 	</include-range>
    <include-url>file:/opt/opennms/etc/include.txt</include-url>
    <include-url>http://example.com/ip-address-list.txt</include-url>

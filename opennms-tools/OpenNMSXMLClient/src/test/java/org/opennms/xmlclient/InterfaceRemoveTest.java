@@ -36,7 +36,7 @@ public class InterfaceRemoveTest {
 
 		// remove an interface with the given foreign source.
 		String foreign_id="node1";
-		String ip_address="192.168.0.300";
+		String ip_address="192.0.2.300";
 		assertTrue (onmsClient.interfaceRemove(foreign_source, foreign_id, ip_address));
 
 	}

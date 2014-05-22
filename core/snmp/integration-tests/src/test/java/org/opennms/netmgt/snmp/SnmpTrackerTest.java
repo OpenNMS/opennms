@@ -58,7 +58,7 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(locations={
 		"classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
-@JUnitSnmpAgent(host="172.20.1.205", resource="classpath:snmpTestData1.properties")
+@JUnitSnmpAgent(host="192.0.2.205", resource="classpath:snmpTestData1.properties")
 public class SnmpTrackerTest implements InitializingBean {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(SnmpTrackerTest.class);
@@ -173,7 +173,7 @@ public class SnmpTrackerTest implements InitializingBean {
     }
 
     private void walk(final CollectionTracker c, final int maxVarsPerPdu, final int maxRepetitions) throws Exception {
-    	final SnmpAgentConfig config = m_snmpPeerFactory.getAgentConfig(InetAddressUtils.addr("172.20.1.205"));
+    	final SnmpAgentConfig config = m_snmpPeerFactory.getAgentConfig(InetAddressUtils.addr("192.0.2.205"));
         config.setVersion(SnmpAgentConfig.VERSION2C);
         config.setMaxVarsPerPdu(maxVarsPerPdu);
         config.setMaxRepetitions(maxRepetitions);
@@ -221,7 +221,7 @@ public class SnmpTrackerTest implements InitializingBean {
     }
 
     @Test
-    @JUnitSnmpAgent(host="172.20.1.205", resource="classpath:snmpTestDataIncompleteTable.properties")
+    @JUnitSnmpAgent(host="192.0.2.205", resource="classpath:snmpTestDataIncompleteTable.properties")
     public void testIncompleteTableData() throws Exception {
     	final TestRowCallback rc = new TestRowCallback();
         final TableTracker tt = new TableTracker(rc,

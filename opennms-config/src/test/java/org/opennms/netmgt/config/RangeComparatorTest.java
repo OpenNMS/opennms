@@ -122,7 +122,7 @@ public class RangeComparatorTest {
         <snmp-config retry="3" timeout="800"
            read-community="public" write-community="private">
            <definition version="v2c">
-               <specific>192.168.0.5</specific>
+               <specific>192.0.2.5</specific>
            </definition>
 
            <definition read-community="opennmsrules">
@@ -134,7 +134,7 @@ public class RangeComparatorTest {
                <range begin="192.168.105.1" end="192.168.105.254"/>
                <range begin="192.168.106.1" end="192.168.106.254"/>
                <range begin="192.168.107.1" end="192.168.107.254"/>
-               <range begin="192.168.0.1" end="192.168.0.10"/>
+               <range begin="192.0.2.1" end="192.0.2.10"/>
            </definition>
            <definition version="v2c" read-community="splice-test">
                <range begin="10.1.2.1" end="10.1.2.100"/>

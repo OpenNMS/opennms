@@ -93,7 +93,7 @@ public class AgentConfigurationResourceTest {
 
     @Test
     public void testSimpleFilter() throws Exception {
-        final InetAddress oneNinetyTwo = addr("192.168.0.1");
+        final InetAddress oneNinetyTwo = addr("192.0.2.1");
 
         final List<InetAddress> addresses = Arrays.asList(oneNinetyTwo);
         m_filterDao.setActiveIPAddressList(addresses);

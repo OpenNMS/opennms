@@ -119,7 +119,7 @@ public class Nms102Test extends Nms102NetworkBuilder {
         m_nodeDao.save(getMac2());
         m_nodeDao.save(getMikrotik());
    	m_nodeDao.save(getSamsung());
-   	m_nodeDao.save(getNodeWithoutSnmp("mobile", "192.168.0.13"));
+   	m_nodeDao.save(getNodeWithoutSnmp("mobile", "192.0.2.13"));
     	m_nodeDao.flush();
     	
         final OnmsNode mac1 = m_nodeDao.findByForeignId("linkd", MAC1_NAME);
@@ -171,7 +171,7 @@ public class Nms102Test extends Nms102NetworkBuilder {
         m_nodeDao.save(getMac2());
         m_nodeDao.save(getMikrotik());
         m_nodeDao.save(getSamsung());
-        m_nodeDao.save(getNodeWithoutSnmp("mobile", "192.168.0.13"));
+        m_nodeDao.save(getNodeWithoutSnmp("mobile", "192.0.2.13"));
         m_nodeDao.flush();
         
         final OnmsNode mac1 = m_nodeDao.findByForeignId("linkd", MAC1_NAME);
@@ -214,7 +214,7 @@ public class Nms102Test extends Nms102NetworkBuilder {
         m_nodeDao.save(getMac2());
         m_nodeDao.save(getMikrotik());
         m_nodeDao.save(getSamsung());
-        m_nodeDao.save(getNodeWithoutSnmp("mobile", "192.168.0.13"));
+        m_nodeDao.save(getNodeWithoutSnmp("mobile", "192.0.2.13"));
         m_nodeDao.flush();
         
         final OnmsNode mac1 = m_nodeDao.findByForeignId("linkd", MAC1_NAME);
@@ -261,7 +261,7 @@ public class Nms102Test extends Nms102NetworkBuilder {
         m_nodeDao.save(getMac2());
         m_nodeDao.save(getMikrotik());
         m_nodeDao.save(getSamsung());
-        m_nodeDao.save(getNodeWithoutSnmp("mobile", "192.168.0.13"));
+        m_nodeDao.save(getNodeWithoutSnmp("mobile", "192.0.2.13"));
         m_nodeDao.flush();
         
         final OnmsNode mac1 = m_nodeDao.findByForeignId("linkd", MAC1_NAME);

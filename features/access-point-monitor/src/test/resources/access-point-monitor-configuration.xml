@@ -11,7 +11,7 @@
 	<package name="default">
 		<filter>IPADDR != '0.0.0.0'</filter>
 		<specific>172.23.1.1</specific>
-		<include-range begin="192.168.0.0" end="192.168.255.255" />
+		<include-range begin="192.0.2.0" end="192.168.255.255" />
 		<exclude-range begin="192.168.1.0" end="192.168.1.255" />
 		<service name="IsAPAdoptedOnController" template-name="IsAPAdoptedOnController-Template" status="on">
 			<parameter key="retry" value="3"/>

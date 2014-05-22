@@ -98,7 +98,7 @@ public class SnmpEventInfoTest {
     @Test
     public void testContainsAddr() {
         IPAddressRange range = new IPAddressRange("192.168.1.1", "192.168.1.3");
-        assertFalse(range.contains("192.168.0.1"));
+        assertFalse(range.contains("192.0.2.1"));
         assertTrue(range.contains("192.168.1.1"));
         assertTrue(range.contains("192.168.1.2"));
         assertTrue(range.contains("192.168.1.3"));
@@ -118,7 +118,7 @@ public class SnmpEventInfoTest {
     @Test
     public void testContainsAddrIPv6() {
         IPAddressRange r = new IPAddressRange("2001:db8::10", "2001:db8::20");
-        assertFalse(r.contains("192.168.0.1"));
+        assertFalse(r.contains("192.0.2.1"));
         assertFalse(r.contains("2001:db8::1"));
         assertTrue(r.contains("2001:db8::10"));
         assertTrue(r.contains("2001:db8::15"));
@@ -377,7 +377,7 @@ public class SnmpEventInfoTest {
         String snmpConfigXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
         "<snmp-config timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
         "   <definition version=\"v2c\">\n" + 
-        "      <specific>192.168.0.5</specific>\n" + 
+        "      <specific>192.0.2.5</specific>\n" + 
         "   </definition>\n" + 
         "</snmp-config>\n" + 
         "";
@@ -386,7 +386,7 @@ public class SnmpEventInfoTest {
         "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
         "<snmp-config timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
         "   <definition read-community=\"abc\">\n" + 
-        "      <specific>192.168.0.5</specific>\n" + 
+        "      <specific>192.0.2.5</specific>\n" + 
         "   </definition>\n" + 
         "</snmp-config>\n" +
         "";
@@ -397,7 +397,7 @@ public class SnmpEventInfoTest {
         
         SnmpEventInfo info = new SnmpEventInfo();
         info.setReadCommunityString("abc");
-        info.setFirstIPAddress("192.168.0.5");
+        info.setFirstIPAddress("192.0.2.5");
         
         SnmpPeerFactory.getInstance().define(info);
         
@@ -456,7 +456,7 @@ public class SnmpEventInfoTest {
         		"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
         		"<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
         		"    <definition version=\"v2c\">\n" + 
-        		"        <specific>192.168.0.5</specific>\n" + 
+        		"        <specific>192.0.2.5</specific>\n" + 
         		"    </definition>\n" + 
         		"</snmp-config>\n" +
         		"";
@@ -465,7 +465,7 @@ public class SnmpEventInfoTest {
         "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
         "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
         "    <definition version=\"v2c\">\n" + 
-        "        <range begin=\"192.168.0.5\" end=\"192.168.0.6\"/>\n" + 
+        "        <range begin=\"192.0.2.5\" end=\"192.0.2.6\"/>\n" + 
         "    </definition>\n" + 
         "</snmp-config>\n" +
         "";
@@ -477,7 +477,7 @@ public class SnmpEventInfoTest {
         
         SnmpEventInfo info = new SnmpEventInfo();
         info.setVersion("v2c");
-        info.setFirstIPAddress("192.168.0.6");
+        info.setFirstIPAddress("192.0.2.6");
         
         SnmpPeerFactory.getInstance().define(info);
         
@@ -538,8 +538,8 @@ public class SnmpEventInfoTest {
         String snmpConfigXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
         "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
         "    <definition version=\"v2c\">\n" + 
-        "        <specific>192.168.0.5</specific>\n" + 
-        "        <specific>192.168.0.7</specific>\n" + 
+        "        <specific>192.0.2.5</specific>\n" + 
+        "        <specific>192.0.2.7</specific>\n" + 
         "    </definition>\n" + 
         "</snmp-config>\n" + 
         "";
@@ -547,7 +547,7 @@ public class SnmpEventInfoTest {
         String expectedConfig = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
         "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
         "    <definition version=\"v2c\">\n" + 
-        "        <range begin=\"192.168.0.5\" end=\"192.168.0.7\"/>\n" + 
+        "        <range begin=\"192.0.2.5\" end=\"192.0.2.7\"/>\n" + 
         "    </definition>\n" + 
         "</snmp-config>\n" + 
         "";
@@ -558,7 +558,7 @@ public class SnmpEventInfoTest {
         
         SnmpEventInfo info = new SnmpEventInfo();
         info.setVersion("v2c");
-        info.setFirstIPAddress("192.168.0.6");
+        info.setFirstIPAddress("192.0.2.6");
         
         SnmpPeerFactory.getInstance().define(info);
 
@@ -650,8 +650,8 @@ public class SnmpEventInfoTest {
         String snmpConfigXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
         "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
         "    <definition version=\"v2c\">\n" + 
-        "        <range begin=\"192.168.0.7\" end=\"192.168.0.9\"/>\n" + 
-        "        <specific>192.168.0.5</specific>\n" + 
+        "        <range begin=\"192.0.2.7\" end=\"192.0.2.9\"/>\n" + 
+        "        <specific>192.0.2.5</specific>\n" + 
         "    </definition>\n" + 
         "</snmp-config>\n" + 
         "";
@@ -659,7 +659,7 @@ public class SnmpEventInfoTest {
         String expectedConfig = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
         "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
         "    <definition version=\"v2c\">\n" + 
-        "        <range begin=\"192.168.0.5\" end=\"192.168.0.9\"/>\n" + 
+        "        <range begin=\"192.0.2.5\" end=\"192.0.2.9\"/>\n" + 
         "    </definition>\n" + 
         "</snmp-config>\n" + 
         "";
@@ -670,7 +670,7 @@ public class SnmpEventInfoTest {
         
         SnmpEventInfo info = new SnmpEventInfo();
         info.setVersion("v2c");
-        info.setFirstIPAddress("192.168.0.6");
+        info.setFirstIPAddress("192.0.2.6");
         
         SnmpPeerFactory.getInstance().define(info);
 
@@ -995,7 +995,7 @@ public class SnmpEventInfoTest {
         String snmpConfigXml = "<?xml version=\"1.0\" standalone=\"yes\"?>\n" + 
         "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
         "   <definition version=\"v2c\">\n" + 
-        "       <range begin=\"192.168.0.3\" end=\"192.168.0.100\"/>" + 
+        "       <range begin=\"192.0.2.3\" end=\"192.0.2.100\"/>" + 
         "   </definition>\n" + 
         "\n" + 
         "</snmp-config>\n" + 
@@ -1005,8 +1005,8 @@ public class SnmpEventInfoTest {
 
         SnmpEventInfo info = new SnmpEventInfo();
         info.setVersion("v1");
-        info.setFirstIPAddress("192.168.0.3");
-        info.setLastIPAddress("192.168.0.1");
+        info.setFirstIPAddress("192.0.2.3");
+        info.setLastIPAddress("192.0.2.1");
 
         try {
             SnmpPeerFactory.getInstance().define(info);
@@ -1026,7 +1026,7 @@ public class SnmpEventInfoTest {
         String snmpConfigXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
         "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
         "    <definition version=\"v2c\">\n" + 
-        "        <range begin=\"192.168.0.3\" end=\"192.168.0.100\"/>\n" + 
+        "        <range begin=\"192.0.2.3\" end=\"192.0.2.100\"/>\n" + 
         "    </definition>\n" + 
         "</snmp-config>\n" + 
         "";
@@ -1035,10 +1035,10 @@ public class SnmpEventInfoTest {
         "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
         "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
         "    <definition version=\"v2c\">\n" + 
-        "        <range begin=\"192.168.0.4\" end=\"192.168.0.100\"/>\n" + 
+        "        <range begin=\"192.0.2.4\" end=\"192.0.2.100\"/>\n" + 
         "    </definition>\n" + 
         "    <definition version=\"v1\">\n" + 
-        "        <specific>192.168.0.3</specific>\n" + 
+        "        <specific>192.0.2.3</specific>\n" + 
         "    </definition>\n" + 
         "</snmp-config>\n" + 
         "";
@@ -1051,7 +1051,7 @@ public class SnmpEventInfoTest {
 
         SnmpEventInfo info = new SnmpEventInfo();
         info.setVersion("v1");
-        info.setFirstIPAddress("192.168.0.3");
+        info.setFirstIPAddress("192.0.2.3");
 
         SnmpPeerFactory.getInstance().define(info);
         
@@ -1253,8 +1253,8 @@ public class SnmpEventInfoTest {
         String snmpConfigXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
         "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
         "    <definition version=\"v2c\">\n" + 
-        "        <specific>192.168.0.5</specific>\n" + 
-        "        <specific>192.168.0.6</specific>\n" + 
+        "        <specific>192.0.2.5</specific>\n" + 
+        "        <specific>192.0.2.6</specific>\n" + 
         "    </definition>\n" + 
         "</snmp-config>\n" + 
         "";
@@ -1263,10 +1263,10 @@ public class SnmpEventInfoTest {
         "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
         "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
         "    <definition version=\"v2c\">\n" + 
-        "        <specific>192.168.0.5</specific>\n" + 
+        "        <specific>192.0.2.5</specific>\n" + 
         "    </definition>\n" + 
         "    <definition version=\"v1\">\n" + 
-        "        <specific>192.168.0.6</specific>\n" + 
+        "        <specific>192.0.2.6</specific>\n" + 
         "    </definition>\n" + 
         "</snmp-config>\n" + 
         "";
@@ -1278,7 +1278,7 @@ public class SnmpEventInfoTest {
         
         SnmpEventInfo info = new SnmpEventInfo();
         info.setVersion("v1");
-        info.setFirstIPAddress("192.168.0.6");
+        info.setFirstIPAddress("192.0.2.6");
         
         SnmpPeerFactory.getInstance().define(info);
 
@@ -1308,7 +1308,7 @@ public class SnmpEventInfoTest {
           SnmpEventInfo info = new SnmpEventInfo();
           info.setVersion("v2c");
           info.setTimeout(800);
-          info.setFirstIPAddress("192.168.0.8");
+          info.setFirstIPAddress("192.0.2.8");
           
           SnmpPeerFactory.getInstance().define(info);
           
@@ -1331,7 +1331,7 @@ public class SnmpEventInfoTest {
 		"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
 		"<snmp-config port=\"161\" retry=\"3\" timeout=\"800\" read-community=\"public\" version=\"v1\" max-repetitions=\"17\" max-vars-per-pdu=\"13\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n"+
 		"    <definition version=\"v2c\" max-repetitions=\"5\">\n" + 
-		"        <specific>192.168.0.8</specific>\n" + 
+		"        <specific>192.0.2.8</specific>\n" + 
 		"    </definition>\n" + 
 		"</snmp-config>\n";
     	
@@ -1343,7 +1343,7 @@ public class SnmpEventInfoTest {
         info.setVersion("v2c");
         info.setMaxVarsPerPdu(13);
         info.setMaxRepetitions(5);
-        info.setFirstIPAddress("192.168.0.8");
+        info.setFirstIPAddress("192.0.2.8");
         
         SnmpPeerFactory.getInstance().define(info);
         
@@ -1364,7 +1364,7 @@ public class SnmpEventInfoTest {
 		"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
 		"<snmp-config port=\"161\" retry=\"3\" timeout=\"800\" read-community=\"public\" version=\"v1\" max-repetitions=\"17\" max-vars-per-pdu=\"13\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n"+
 		"    <definition proxy-host=\"127.0.0.1\">\n" + 
-		"        <specific>192.168.0.8</specific>\n" + 
+		"        <specific>192.0.2.8</specific>\n" + 
 		"    </definition>\n" + 
 		"</snmp-config>\n";
     	
@@ -1374,7 +1374,7 @@ public class SnmpEventInfoTest {
 
         SnmpEventInfo info = new SnmpEventInfo();
         info.setProxyHost("127.0.0.1");
-        info.setFirstIPAddress("192.168.0.8");
+        info.setFirstIPAddress("192.0.2.8");
         
         SnmpPeerFactory.getInstance().define(info);
         

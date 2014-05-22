@@ -66,7 +66,7 @@ public class AmiPeerFactoryTest extends TestCase {
         "<ami-config retry=\"3\" timeout=\"800\"\n" + 
         "   username=\"user\" password=\"password\">\n" + 
         "   <definition>\n" + 
-        "       <specific>192.168.0.5</specific>\n" + 
+        "       <specific>192.0.2.5</specific>\n" + 
         "   </definition>\n" + 
         "\n" + 
         "</ami-config>\n" + 
@@ -96,8 +96,8 @@ public class AmiPeerFactoryTest extends TestCase {
         "<ami-config retry=\"3\" timeout=\"800\"\n" + 
         "   username=\"user\" password=\"password\">\n" + 
         "   <definition>\n" + 
-        "       <specific>192.168.0.5</specific>\n" + 
-        "       <specific>192.168.0.6</specific>\n" + 
+        "       <specific>192.0.2.5</specific>\n" + 
+        "       <specific>192.0.2.6</specific>\n" + 
         "   </definition>\n" + 
         "\n" + 
         "</ami-config>\n" + 
@@ -115,8 +115,8 @@ public class AmiPeerFactoryTest extends TestCase {
         assertEquals(1, AmiPeerFactory.getAmiConfig().getDefinitionCount());
         assertEquals(0, AmiPeerFactory.getAmiConfig().getDefinition(0).getSpecificCount());
         assertEquals(1, AmiPeerFactory.getAmiConfig().getDefinition(0).getRangeCount());
-        assertEquals("192.168.0.5", AmiPeerFactory.getAmiConfig().getDefinition(0).getRange(0).getBegin());
-        assertEquals("192.168.0.6", AmiPeerFactory.getAmiConfig().getDefinition(0).getRange(0).getEnd());
+        assertEquals("192.0.2.5", AmiPeerFactory.getAmiConfig().getDefinition(0).getRange(0).getBegin());
+        assertEquals("192.0.2.6", AmiPeerFactory.getAmiConfig().getDefinition(0).getRange(0).getEnd());
     }
 
     public final void testAddAdjacentSpecificToDefIPv6() throws MarshalException, ValidationException, IOException {
@@ -301,8 +301,8 @@ public class AmiPeerFactoryTest extends TestCase {
         "<ami-config retry=\"3\" timeout=\"800\"\n" + 
         "   username=\"user\" password=\"password\">\n" + 
         "   <definition>\n" + 
-        "       <range begin=\"192.168.0.6\" end=\"192.168.0.12\"/>\n" + 
-        "       <specific>192.168.0.6</specific>\n" + 
+        "       <range begin=\"192.0.2.6\" end=\"192.0.2.12\"/>\n" + 
+        "       <specific>192.0.2.6</specific>\n" + 
         "   </definition>\n" + 
         "\n" + 
         "</ami-config>\n" + 
@@ -320,8 +320,8 @@ public class AmiPeerFactoryTest extends TestCase {
         assertEquals(1, AmiPeerFactory.getAmiConfig().getDefinitionCount());
         assertEquals(0, AmiPeerFactory.getAmiConfig().getDefinition(0).getSpecificCount());
         assertEquals(1, AmiPeerFactory.getAmiConfig().getDefinition(0).getRangeCount());
-        assertEquals("192.168.0.6", AmiPeerFactory.getAmiConfig().getDefinition(0).getRange(0).getBegin());
-        assertEquals("192.168.0.12", AmiPeerFactory.getAmiConfig().getDefinition(0).getRange(0).getEnd());
+        assertEquals("192.0.2.6", AmiPeerFactory.getAmiConfig().getDefinition(0).getRange(0).getBegin());
+        assertEquals("192.0.2.12", AmiPeerFactory.getAmiConfig().getDefinition(0).getRange(0).getEnd());
     }
 
     /**
@@ -338,8 +338,8 @@ public class AmiPeerFactoryTest extends TestCase {
         "<ami-config retry=\"3\" timeout=\"800\"\n" + 
         "   username=\"user\" password=\"password\">\n" + 
         "   <definition>\n" + 
-        "       <range begin=\"192.168.0.6\" end=\"192.168.0.12\"/>\n" + 
-        "       <specific>192.168.0.12</specific>\n" + 
+        "       <range begin=\"192.0.2.6\" end=\"192.0.2.12\"/>\n" + 
+        "       <specific>192.0.2.12</specific>\n" + 
         "   </definition>\n" + 
         "\n" + 
         "</ami-config>\n" + 
@@ -357,8 +357,8 @@ public class AmiPeerFactoryTest extends TestCase {
         assertEquals(1, AmiPeerFactory.getAmiConfig().getDefinitionCount());
         assertEquals(0, AmiPeerFactory.getAmiConfig().getDefinition(0).getSpecificCount());
         assertEquals(1, AmiPeerFactory.getAmiConfig().getDefinition(0).getRangeCount());
-        assertEquals("192.168.0.6", AmiPeerFactory.getAmiConfig().getDefinition(0).getRange(0).getBegin());
-        assertEquals("192.168.0.12", AmiPeerFactory.getAmiConfig().getDefinition(0).getRange(0).getEnd());
+        assertEquals("192.0.2.6", AmiPeerFactory.getAmiConfig().getDefinition(0).getRange(0).getBegin());
+        assertEquals("192.0.2.12", AmiPeerFactory.getAmiConfig().getDefinition(0).getRange(0).getEnd());
     }
 
     /**
@@ -375,9 +375,9 @@ public class AmiPeerFactoryTest extends TestCase {
         "<ami-config retry=\"3\" timeout=\"800\"\n" + 
         "   username=\"user\" password=\"password\">\n" + 
         "   <definition>\n" + 
-        "       <range begin=\"192.168.0.6\" end=\"192.168.0.12\"/>\n" + 
-        "       <range begin=\"192.168.0.20\" end=\"192.168.0.100\"/>\n" + 
-        "       <range begin=\"192.168.0.8\" end=\"192.168.0.30\"/>\n" + 
+        "       <range begin=\"192.0.2.6\" end=\"192.0.2.12\"/>\n" + 
+        "       <range begin=\"192.0.2.20\" end=\"192.0.2.100\"/>\n" + 
+        "       <range begin=\"192.0.2.8\" end=\"192.0.2.30\"/>\n" + 
         "   </definition>\n" + 
         "\n" + 
         "</ami-config>\n" + 
@@ -395,7 +395,7 @@ public class AmiPeerFactoryTest extends TestCase {
         assertEquals(1, AmiPeerFactory.getAmiConfig().getDefinitionCount());
         assertEquals(0, AmiPeerFactory.getAmiConfig().getDefinition(0).getSpecificCount());
         assertEquals(1, AmiPeerFactory.getAmiConfig().getDefinition(0).getRangeCount());
-        assertEquals("192.168.0.6", AmiPeerFactory.getAmiConfig().getDefinition(0).getRange(0).getBegin());
-        assertEquals("192.168.0.100", AmiPeerFactory.getAmiConfig().getDefinition(0).getRange(0).getEnd());
+        assertEquals("192.0.2.6", AmiPeerFactory.getAmiConfig().getDefinition(0).getRange(0).getBegin());
+        assertEquals("192.0.2.100", AmiPeerFactory.getAmiConfig().getDefinition(0).getRange(0).getEnd());
     }
 }

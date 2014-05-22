@@ -53,7 +53,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitSnmpAgent(host=PercDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/percDetector.properties")
 public class PercDetectorTest implements InitializingBean {
-    static final String TEST_IP_ADDRESS = "192.168.0.1";
+    static final String TEST_IP_ADDRESS = "192.0.2.1";
 
     @Autowired
     private PercDetector m_detector;

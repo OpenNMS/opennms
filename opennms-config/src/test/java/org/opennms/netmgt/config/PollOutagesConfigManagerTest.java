@@ -59,9 +59,9 @@ public class PollOutagesConfigManagerTest extends TestCase {
                 "       <time day=\"sunday\" begins=\"13:30:00\" ends=\"14:45:00\"/>\n" + 
                 "       <time day=\"monday\" begins=\"13:30:00\" ends=\"14:45:00\"/>\n" + 
                 "       <time day=\"tuesday\" begins=\"13:00:00\" ends=\"14:45:00\"/>\n" + 
-                "       <interface address=\"192.168.0.1\"/>\n" + 
-                "       <interface address=\"192.168.0.36\"/>\n" + 
-                "       <interface address=\"192.168.0.38\"/>\n" + 
+                "       <interface address=\"192.0.2.1\"/>\n" + 
+                "       <interface address=\"192.0.2.36\"/>\n" + 
+                "       <interface address=\"192.0.2.38\"/>\n" + 
                 "   </outage>\n" + 
                 "\n" + 
                 "   <outage name=\"two\" type=\"monthly\">\n" + 
@@ -80,7 +80,7 @@ public class PollOutagesConfigManagerTest extends TestCase {
                 "\n" + 
                 "   <outage name=\"three\" type=\"specific\">\n" + 
                 "       <time begins=\"21-Feb-2005 05:30:00\" ends=\"21-Feb-2005 15:00:00\"/>\n" + 
-                "       <interface address=\"192.168.0.1\"/>\n" + 
+                "       <interface address=\"192.0.2.1\"/>\n" + 
                 "   </outage>\n" + 
                 "</outages>\n";
         

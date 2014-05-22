@@ -39,7 +39,7 @@ public class ResourceIdParserTest {
 	
 	@Test
 	public void testGetNodeId() {
-		String resourceId = "node[7].responseTime[172.20.1.5]";
+		String resourceId = "node[7].responseTime[192.0.2.5]";
 		
 		ResourceIdParser parser = new ResourceIdParser();
 		assertEquals("7", parser.getNodeId(resourceId));
@@ -47,10 +47,10 @@ public class ResourceIdParserTest {
 	
 	@Test
 	public void testGetResource() {
-		String resourceId = "node[7].responseTime[172.20.1.5]";
+		String resourceId = "node[7].responseTime[192.0.2.5]";
 		
 		ResourceIdParser parser = new ResourceIdParser();
-		assertEquals("172.20.1.5", parser.getResource(resourceId));
+		assertEquals("192.0.2.5", parser.getResource(resourceId));
 	}
 	
 }
