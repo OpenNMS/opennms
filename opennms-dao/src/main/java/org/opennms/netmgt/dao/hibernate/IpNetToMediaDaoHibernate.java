@@ -51,12 +51,12 @@ public class IpNetToMediaDaoHibernate extends AbstractDaoHibernate<IpNetToMedia,
 	@Override
 	public IpNetToMedia getByNetAndPhysAddress(InetAddress netAddress,
 			String physAddress) {
-		return findUnique("from IpNetToMedia rec.netAddress = ? and rec.physAddress = ?", netAddress, physAddress);
+		return findUnique("from IpNetToMedia rec where rec.netAddress = ? and rec.physAddress = ?", netAddress, physAddress);
 	}
 
 	@Override
 	public void deleteBySourceNodeIdOlderThen(Integer nodeId, Date now) {
-		for (IpNetToMedia elem: find("from IpNetToMedia rec where rec.sourceNode.id = ? and reclastPollTime < ?",nodeId,now)) {
+		for (IpNetToMedia elem: find("from IpNetToMedia rec where rec.sourceNode.id = ? and rec.lastPollTime < ?",nodeId,now)) {
 			delete(elem);
 		}
 	}

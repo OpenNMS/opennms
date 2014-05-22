@@ -157,7 +157,8 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
 	@Override
 	public void reconcileIpNetToMedia(int nodeId, Date now) {
-		// TODO Auto-generated method stub
+		m_ipNetToMediaDao.deleteBySourceNodeIdOlderThen(nodeId, now);
+		m_ipNetToMediaDao.flush();
 	}
 
 	@Override
@@ -305,6 +306,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 			
 		}.execute();
 	}
+
 	@Override
 	@Transactional
 	public void store(int nodeId, OspfElement element) {
@@ -372,11 +374,49 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 	}
 
 	@Override
-	public void store(int nodeId, IpNetToMedia link) {
-		// TODO Auto-generated method stub
+	public void store(int nodeId, IpNetToMedia ipnettomedia) {
+		if (ipnettomedia == null)
+			return;
+		saveIpNetToMedia(nodeId, ipnettomedia);
 	}
 
+	@Transactional
+    protected void saveIpNetToMedia(final int nodeId, final IpNetToMedia saveMe) {
+		new UpsertTemplate<IpNetToMedia, IpNetToMediaDao>(m_transactionManager,m_ipNetToMediaDao) {
 
+			@Override
+			protected IpNetToMedia query() {
+				return m_dao.getByNetAndPhysAddress(saveMe.getNetAddress(),saveMe.getPhysAddress());
+			}
+
+			@Override
+			protected IpNetToMedia doUpdate(IpNetToMedia dbIpNetToMedia) {
+				final OnmsNode node = m_nodeDao.get(nodeId);
+				if (node == null)
+					return null;
+				saveMe.setSourceNode(node);
+				dbIpNetToMedia.merge(saveMe);
+				m_dao.update(dbIpNetToMedia);
+				m_dao.flush();
+				return dbIpNetToMedia;
+			}
+
+			@Override
+			protected IpNetToMedia doInsert() {
+				final OnmsNode node = m_nodeDao.get(nodeId);
+				if ( node == null )
+					return null;
+				saveMe.setSourceNode(node);
+				saveMe.setLastPollTime(saveMe.getCreateTime());
+				m_dao.saveOrUpdate(saveMe);
+				m_dao.flush();
+				return saveMe;
+			}
+			
+		}.execute();
+	}
+
+	
 	public LldpLinkDao getLldpLinkDao() {
 		return m_lldpLinkDao;
 	}
