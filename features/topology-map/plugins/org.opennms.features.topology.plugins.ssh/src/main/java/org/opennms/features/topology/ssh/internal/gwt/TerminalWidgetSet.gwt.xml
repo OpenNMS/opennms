@@ -25,4 +25,6 @@
   
 
     <inherits name="com.github.wolfie.refresher.RefresherApplicationWidgetset" />
+
+    <collapse-all-properties/>
 </module>

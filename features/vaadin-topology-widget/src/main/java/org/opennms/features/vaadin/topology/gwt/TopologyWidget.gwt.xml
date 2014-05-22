@@ -30,5 +30,6 @@
      for webkit based browsers including Google Chrome.
     -->
   	<!-- <set-property name="user.agent" value="gecko1_8"/> -->
-    
+
+	<collapse-all-properties/>
 </module>

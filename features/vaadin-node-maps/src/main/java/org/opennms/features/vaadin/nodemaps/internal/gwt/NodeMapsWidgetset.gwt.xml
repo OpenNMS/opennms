@@ -19,4 +19,5 @@
     <!-- <stylesheet src="leaflet-search/leaflet-search.css" /> -->
     <stylesheet src="node-maps.css" />
 
+    <collapse-all-properties/>
 </module>
