@@ -35,7 +35,6 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
-import org.opennms.core.test.MockLogAppender;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
@@ -58,7 +57,12 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
     @Before
     public void setUp() throws Exception {
         final String logLevel = System.getProperty("org.opennms.smoketest.logLevel", "DEBUG");
-        MockLogAppender.setupLogging(true, logLevel);
+        //ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
+        final Logger logger = org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
+        if (logger instanceof ch.qos.logback.classic.Logger) {
+            final ch.qos.logback.classic.Logger logbackLogger = (ch.qos.logback.classic.Logger) logger;
+            logbackLogger.setLevel(ch.qos.logback.classic.Level.valueOf(logLevel));
+        }
 
         final String driverClass = System.getProperty("webdriver.class");
         if (driverClass != null) {
