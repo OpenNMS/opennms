@@ -25,6 +25,7 @@
   </changeSet>
 
   <changeSet author="rssntn67" id="1.13.1-lldpelement">
+    <validCheckSum>ANY</validCheckSum>
 
     <createTable tableName="lldpelement">
       <column name="id" type="integer">
@@ -69,6 +70,7 @@
   </changeSet>
 
   <changeSet author="rssntn67" id="1.13.1-lldplink">
+    <validCheckSum>ANY</validCheckSum>
 
     <createTable tableName="lldplink">
       <column name="id" type="integer">
@@ -136,6 +138,7 @@
   </changeSet>
 
   <changeSet author="rssntn67" id="1.13.1-ospfelement">
+    <validCheckSum>ANY</validCheckSum>
 
     <createTable tableName="ospfelement">
       <column name="id" type="integer">
@@ -189,6 +192,7 @@
   </changeSet>
 
   <changeSet author="rssntn67" id="1.13.1-ospflink">
+    <validCheckSum>ANY</validCheckSum>
 
     <createTable tableName="ospflink">
       <column name="id" type="integer">
@@ -248,6 +252,7 @@
   </changeSet>
 
   <changeSet author="rssntn67" id="1.13.1-isiselement">
+    <validCheckSum>ANY</validCheckSum>
 
     <createTable tableName="isiselement">
       <column name="id" type="integer">
@@ -286,6 +291,7 @@
   </changeSet>
 
   <changeSet author="rssntn67" id="1.13.1-isislink">
+    <validCheckSum>ANY</validCheckSum>
 
     <createTable tableName="isislink">
       <column name="id" type="integer">
@@ -350,6 +356,7 @@
   </changeSet>
 
   <changeSet author="rssntn67" id="1.13.1-ipnettomedia">
+    <validCheckSum>ANY</validCheckSum>
 
     <createTable tableName="ipnettomedia">
       <column name="id" type="integer">
@@ -395,6 +402,7 @@
   </changeSet>
 
   <changeSet author="rssntn67" id="1.13.1-bridgeelement">
+    <validCheckSum>ANY</validCheckSum>
 
     <createTable tableName="bridgeelement">
       <column name="id" type="integer">
@@ -461,6 +469,7 @@
   </changeSet>
 
   <changeSet author="rssntn67" id="1.13.1-bridgemaclink">
+    <validCheckSum>ANY</validCheckSum>
 
     <createTable tableName="bridgemaclink">
       <column name="id" type="integer">
@@ -515,6 +524,7 @@
   </changeSet>
 
   <changeSet author="rssntn67" id="1.13.1-bridgestplink">
+    <validCheckSum>ANY</validCheckSum>
 
     <createTable tableName="bridgestplink">
       <column name="id" type="integer">
@@ -590,6 +600,7 @@
   </changeSet>
 
   <changeSet author="rssntn67" id="1.13.1-bridgebridgelink">
+    <validCheckSum>ANY</validCheckSum>
 
     <createTable tableName="bridgebridgelink">
       <column name="id" type="integer">
