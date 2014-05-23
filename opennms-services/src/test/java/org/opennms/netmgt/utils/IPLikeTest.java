@@ -96,15 +96,15 @@ public class IPLikeTest {
     public void testVerifyIpMatch() {
         assertTrue(IPLike.matches("192.0.2.1", "*.*.*.*"));
         assertTrue(IPLike.matches("192.0.2.1", "192.*.*.*"));
-        assertTrue(IPLike.matches("192.0.2.1", "*.168.*.*"));
-        assertTrue(IPLike.matches("192.0.2.1", "*.*.0.*"));
+        assertTrue(IPLike.matches("192.0.2.1", "*.0.*.*"));
+        assertTrue(IPLike.matches("192.0.2.1", "*.*.2.*"));
         assertTrue(IPLike.matches("192.0.2.1", "*.*.*.1"));
         assertTrue(IPLike.matches("192.0.2.1", "*.*.*.0-7"));
         assertTrue(IPLike.matches("192.0.2.1", "192.0.2.0-7"));
-        assertTrue(IPLike.matches("192.0.2.1", "192.166,167,168.*.0,1,5-10"));
+        assertTrue(IPLike.matches("192.0.2.1", "192.166,167,168,0.*.2,1,5-10"));
         assertFalse(IPLike.matches("192.0.2.1", "10.0.0.1"));
-        assertFalse(IPLike.matches("192.0.2.1", "*.168.*.2"));
-        assertFalse(IPLike.matches("192.0.2.1", "10.168.0.1"));
+        assertFalse(IPLike.matches("192.0.2.1", "*.0.*.2"));
+        assertFalse(IPLike.matches("192.0.2.1", "10.0.2.1"));
         assertTrue(IPLike.matches("10.1.1.1", "10.1.1.1"));
 
         assertTrue(IPLike.matches("fe80:0000:0000:0000:aaaa:bbbb:cccc:dddd", "*:*:*:*:*:*:*:*"));
