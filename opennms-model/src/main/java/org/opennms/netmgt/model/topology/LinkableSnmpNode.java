@@ -14,7 +14,7 @@
  * http://www.opennms.org/ http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.linkd;
+package org.opennms.netmgt.model.topology;
 
 import static org.opennms.core.utils.InetAddressUtils.str;
 

@@ -26,78 +26,80 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.enlinkd;
-
-import static org.opennms.core.utils.InetAddressUtils.str;
-
-import java.net.InetAddress;
-
-import org.apache.commons.lang.builder.ToStringBuilder;
+package org.opennms.netmgt.model.topology;
 
 /**
- * <p>LinkableNode class.</p>
+ * <p>MacToNodeLink class.</p>
  *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  * @version $Id: $
  */
-public class LinkableNode {
+public class MacToNodeLink {
 
-    private final int m_nodeId;
+	private final String macAddress;
+	int nodeparentid;
+	int parentifindex;
 
-    private final InetAddress m_snmpprimaryaddr;
-	
-    private final String m_sysoid;
-        
 	/**
-	 * <p>Constructor for LinkableNode.</p>
+	 * <p>Constructor for MacToNodeLink.</p>
 	 *
-	 * @param nodeId a int.
-	 * @param snmprimaryaddr a {@link java.net.InetAddress} object.
-	 * @param sysoid a {@link java.lang.String} object.
+	 * @param macAddress a {@link java.lang.String} object.
 	 */
-	public LinkableNode(final int nodeId, final InetAddress snmpPrimaryAddr, final String sysoid) {
-		m_nodeId = nodeId;
-		m_snmpprimaryaddr = snmpPrimaryAddr;
-		m_sysoid = sysoid;
+	public MacToNodeLink(String macAddress) {
+		this.macAddress = macAddress;
 	}
+
 	/**
 	 * <p>toString</p>
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+        @Override
 	public String toString() {
-	    return new ToStringBuilder(this)
-	        .append("nodeId", m_nodeId)
-	        .append("snmpPrimaryAddr", str(m_snmpprimaryaddr))
-	        .append("sysOid", m_sysoid)
-	        .toString();
+		StringBuffer str = new StringBuffer("Mac Address = " + macAddress + "\n");
+		str.append("Node ParentId = " + nodeparentid + "\n");
+		str.append("Parent IfIndex = " + parentifindex + "\n");
+		return str.toString();
 	}
 
 	/**
-	 * <p>getNodeId</p>
+	 * <p>Getter for the field <code>nodeparentid</code>.</p>
 	 *
-	 * @return a int.
+	 * @return Returns the nodeparentid.
 	 */
-	public int getNodeId() {
-		return m_nodeId;
+	public int getNodeparentid() {
+		return nodeparentid;
 	}
-
 	/**
-	 * <p>getSnmpPrimaryIpAddr</p>
+	 * <p>Setter for the field <code>nodeparentid</code>.</p>
 	 *
-	 * @return a {@link java.lang.String} object.
+	 * @param nodeparentid The nodeparentid to set.
 	 */
-	public InetAddress getSnmpPrimaryIpAddr() {
-		return m_snmpprimaryaddr;
+	public void setNodeparentid(int nodeparentid) {
+		this.nodeparentid = nodeparentid;
 	}
-
 	/**
-	 * <p>getSysoid</p>
+	 * <p>Getter for the field <code>parentifindex</code>.</p>
 	 *
-	 * @return a {@link java.lang.String} object.
+	 * @return Returns the parentifindex.
 	 */
-	public String getSysoid() {
-		return m_sysoid;
+	public int getParentifindex() {
+		return parentifindex;
 	}
-
+	/**
+	 * <p>Setter for the field <code>parentifindex</code>.</p>
+	 *
+	 * @param parentifindex The parentifindex to set.
+	 */
+	public void setParentifindex(int parentifindex) {
+		this.parentifindex = parentifindex;
+	}
+	/**
+	 * <p>Getter for the field <code>macAddress</code>.</p>
+	 *
+	 * @return Returns the ifindex.
+	 */
+	public String getMacAddress() {
+		return macAddress;
+	}
 }

@@ -32,6 +32,7 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.util.Date;
 
+import org.opennms.netmgt.model.topology.LinkableSnmpNode;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
 import org.slf4j.Logger;
@@ -54,7 +55,7 @@ private final static Logger LOG = LoggerFactory.getLogger(LldpLinkdNodeDiscovery
 	 * @param EnhancedLinkd linkd
 	 * @param LinkableNode node
 	 */
-    public LldpLinkdNodeDiscovery(final EnhancedLinkd linkd, final LinkableNode node) {
+    public LldpLinkdNodeDiscovery(final EnhancedLinkd linkd, final LinkableSnmpNode node) {
     	super(linkd, node);
     }
 

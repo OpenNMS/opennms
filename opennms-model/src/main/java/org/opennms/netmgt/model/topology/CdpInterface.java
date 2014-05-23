@@ -31,7 +31,7 @@
  *
  * Class that holds informations for node bridges
  */
-package org.opennms.netmgt.linkd;
+package org.opennms.netmgt.model.topology;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
@@ -61,7 +61,7 @@ public class CdpInterface {
 	private String m_cdpTargetDeviceId;
 	private String m_cdpTargetIfName;
 
-	CdpInterface(int ifindex) {
+	public CdpInterface(int ifindex) {
 		m_cdpIfIndex = ifindex;
 	}
 	

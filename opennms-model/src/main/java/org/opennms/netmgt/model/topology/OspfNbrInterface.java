@@ -31,7 +31,7 @@
  * 
  * Class that holds informations for node bridges
  */
-package org.opennms.netmgt.linkd;
+package org.opennms.netmgt.model.topology;
 
 import java.net.InetAddress;
 
@@ -61,7 +61,7 @@ public class OspfNbrInterface {
 
     int m_ospfNbrIfIndex;
 
-    OspfNbrInterface(InetAddress ospfNbrRouterId) {
+    public OspfNbrInterface(InetAddress ospfNbrRouterId) {
         m_ospfNbrRouterId = ospfNbrRouterId;
     }
 

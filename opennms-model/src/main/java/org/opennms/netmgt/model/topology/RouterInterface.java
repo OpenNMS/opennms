@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.linkd;
+package org.opennms.netmgt.model.topology;
 
 import java.net.InetAddress;
 
@@ -42,13 +42,13 @@ public class RouterInterface {
     private InetAddress m_nextHop;
     
 
-	RouterInterface(final int nextHopNodeId, final int nextHopIfIndex, final InetAddress nextHopNetmask) {
+	public RouterInterface(final int nextHopNodeId, final int nextHopIfIndex, final InetAddress nextHopNetmask) {
 		m_nextHopNodeId = nextHopNodeId;
 		m_nextHopIfIndex = nextHopIfIndex;
 		m_nextHopNetmask = nextHopNetmask;
 	}
 
-	RouterInterface(final int nextHopNodeId, final int nextHopIfIndex) {
+	public RouterInterface(final int nextHopNodeId, final int nextHopIfIndex) {
 		m_nextHopNodeId = nextHopNodeId;
 		m_nextHopIfIndex = nextHopIfIndex;
 		m_nextHopNetmask = InetAddressUtils.TWO_FIFTY_FIVES;

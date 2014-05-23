@@ -14,7 +14,7 @@
  * http://www.opennms.org/ http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.linkd;
+package org.opennms.netmgt.model.topology;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -353,7 +353,7 @@ public class LinkableNode {
         return -1;
     }
 
-    void setIfIndexBridgePort(final Integer ifindex, final Integer bridgeport) {
+    public void setIfIndexBridgePort(final Integer ifindex, final Integer bridgeport) {
         Assert.notNull(ifindex);
         Assert.notNull(bridgeport);
         m_bridgePortIfindex.put(bridgeport, ifindex);

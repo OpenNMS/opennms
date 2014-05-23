@@ -72,6 +72,7 @@ import org.opennms.netmgt.linkd.snmp.OspfNbrTableEntry;
 import org.opennms.netmgt.model.IsIsElement.IsisAdminState;
 import org.opennms.netmgt.model.IsIsLink.IsisISAdjNeighSysType;
 import org.opennms.netmgt.model.IsIsLink.IsisISAdjState;
+import org.opennms.netmgt.model.topology.OspfNbrInterface;
 import org.opennms.netmgt.nb.Nms10205bNetworkBuilder;
 import org.opennms.netmgt.nb.TestNetworkBuilder;
 import org.opennms.netmgt.snmp.CollectionTracker;

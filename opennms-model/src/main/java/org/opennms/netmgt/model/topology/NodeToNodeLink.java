@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.linkd;
+package org.opennms.netmgt.model.topology;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol;

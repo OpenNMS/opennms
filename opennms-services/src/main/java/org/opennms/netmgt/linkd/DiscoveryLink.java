@@ -33,6 +33,14 @@ import org.opennms.netmgt.linkd.scheduler.ReadyRunnable;
 import org.opennms.netmgt.linkd.scheduler.Scheduler;
 import org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.topology.AtInterface;
+import org.opennms.netmgt.model.topology.CdpInterface;
+import org.opennms.netmgt.model.topology.IsisISAdjInterface;
+import org.opennms.netmgt.model.topology.LinkableNode;
+import org.opennms.netmgt.model.topology.LldpRemInterface;
+import org.opennms.netmgt.model.topology.NodeToNodeLink;
+import org.opennms.netmgt.model.topology.OspfNbrInterface;
+import org.opennms.netmgt.model.topology.RouterInterface;
 import org.opennms.netmgt.model.OnmsStpInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1247,7 +1255,7 @@ public final class DiscoveryLink implements ReadyRunnable {
      * Getter for the field <code>links</code>.
      * </p>
      * 
-     * @return an array of {@link org.opennms.netmgt.linkd.NodeToNodeLink}
+     * @return an array of {@link org.opennms.netmgt.model.topology.NodeToNodeLink}
      *         objects.
      */
     public NodeToNodeLink[] getLinks() {

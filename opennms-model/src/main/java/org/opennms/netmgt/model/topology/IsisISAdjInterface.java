@@ -26,56 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.linkd;
+package org.opennms.netmgt.model.topology;
 
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-public class LldpRemInterface {
+public class IsisISAdjInterface {
 	
-    private final Integer m_lldpRemChassidSubtype;
-    private final String m_lldpRemChassisid;
-    private final Integer m_lldpRemNodeid;
-    private final Integer m_lldpRemIfIndex;
-    private final Integer m_lldpLocIfIndex;
+    private final String m_isisISAdjNeighSysId;
+    private final Integer m_isisLocalIfIndex;
+    private final Integer m_isisISAdjIndex;
+    private final String m_isisISAdjNeighSNPAAddress;
 
 
-    public LldpRemInterface(Integer lldpRemChassidSubtype,
-            String lldpRemChassisid, Integer lldpRemNodeid,Integer lldpRemIfIndex,
-            Integer lldpLocIfIndex) {
+    public IsisISAdjInterface(String isisISAdjSysId, Integer isisLocalIfIndex, String isisISAdjNeighSNPAAddress, Integer isisISAdjIndex) {
         super();
-        m_lldpRemChassidSubtype = lldpRemChassidSubtype;
-        m_lldpRemChassisid = lldpRemChassisid;
-        m_lldpRemNodeid = lldpRemNodeid;
-        m_lldpRemIfIndex = lldpRemIfIndex;
-        m_lldpLocIfIndex = lldpLocIfIndex;
+        m_isisISAdjNeighSysId = isisISAdjSysId;
+        m_isisLocalIfIndex =isisLocalIfIndex;
+        m_isisISAdjNeighSNPAAddress = isisISAdjNeighSNPAAddress;
+        m_isisISAdjIndex = isisISAdjIndex;
     }
 	
-    
-    public Integer getLldpRemNodeid() {
-        return m_lldpRemNodeid;
-    }
-
-
-    public Integer getLldpRemChassidSubtype() {
-        return m_lldpRemChassidSubtype;
-    }
-
-
-    public String getLldpRemChassisid() {
-        return m_lldpRemChassisid;
-    }
-
-
-    public Integer getLldpRemIfIndex() {
-        return m_lldpRemIfIndex;
-    }
-
-    public Integer getLldpLocIfIndex() {
-        return m_lldpLocIfIndex;
-    }
-
-
     /**
 	 * <p>toString</p>
 	 *
@@ -84,12 +55,27 @@ public class LldpRemInterface {
     @Override
 	public String toString() {
 	    return new ToStringBuilder(this)
-	    .append("lldpRemChassidSubtype", m_lldpRemChassidSubtype)
-	    .append("lldpRemChassisid", m_lldpRemChassisid)
-            .append("lldpRemNodeid", m_lldpRemNodeid)
-	    .append("lldpRemIfIndex", m_lldpRemIfIndex)
-	    .append("lldpLocIfIndex", m_lldpLocIfIndex)
+	    .append("isisISAdjNeighSysID", m_isisISAdjNeighSysId)
+	    .append("isisLocalIfIndex", m_isisLocalIfIndex)
+	    .append("isisISAdjNeighSNPAAddress", m_isisISAdjNeighSNPAAddress)
+            .append("isisISAdjIndex", m_isisISAdjIndex)
 	    .toString();
 	}
+
+    public String getIsisISAdjNeighSysId() {
+        return m_isisISAdjNeighSysId;
+    }
+
+    public Integer getIsisLocalIfIndex() {
+        return m_isisLocalIfIndex;
+    }
+
+    public String getIsisISAdjNeighSNPAAddress() {
+        return m_isisISAdjNeighSNPAAddress;
+    }
+
+    public Integer getIsisISAdjIndex() {
+        return m_isisISAdjIndex;
+    }
 }
 

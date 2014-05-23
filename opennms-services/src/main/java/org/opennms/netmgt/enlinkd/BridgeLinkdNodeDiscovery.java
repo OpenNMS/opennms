@@ -42,6 +42,7 @@ import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeElement.BridgeDot1dBaseType;
 import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.BridgeStpLink;
+import org.opennms.netmgt.model.topology.LinkableSnmpNode;
 
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
@@ -71,7 +72,7 @@ public final class BridgeLinkdNodeDiscovery extends AbstractLinkdNodeDiscovery {
 	 *            node
 	 */
 	public BridgeLinkdNodeDiscovery(final EnhancedLinkd linkd,
-			final LinkableNode node) {
+			final LinkableSnmpNode node) {
 		super(linkd, node);
 	}
 

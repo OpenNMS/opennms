@@ -36,6 +36,7 @@ import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.OspfElement;
 import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.netmgt.model.topology.LinkableSnmpNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,8 +72,8 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 	private BridgeStpLinkDao m_bridgeStpLinkDao; 
 	
     @Override
-	public List<LinkableNode> getSnmpNodeList() {
-		final List<LinkableNode> nodes = new ArrayList<LinkableNode>();
+	public List<LinkableSnmpNode> getSnmpNodeList() {
+		final List<LinkableSnmpNode> nodes = new ArrayList<LinkableSnmpNode>();
 		
 		final Criteria criteria = new Criteria(OnmsNode.class);
 		criteria.setAliases(Arrays.asList(new Alias[] {
@@ -81,14 +82,13 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
         criteria.addRestriction(new EqRestriction("type", NodeType.ACTIVE));
         criteria.addRestriction(new EqRestriction("iface.isSnmpPrimary", PrimaryType.PRIMARY));
         for (final OnmsNode node : m_nodeDao.findMatching(criteria)) {
-            final String sysObjectId = node.getSysObjectId();
-            nodes.add(new LinkableNode(node.getId(), node.getPrimaryInterface().getIpAddress(), sysObjectId == null? "-1" : sysObjectId));
+            nodes.add(new LinkableSnmpNode(node.getId(), node.getPrimaryInterface().getIpAddress(), node.getSysObjectId(),node.getSysName()));
         }
         return nodes;
 	}
 
 	@Override
-	public LinkableNode getSnmpNode(final int nodeid) {
+	public LinkableSnmpNode getSnmpNode(final int nodeid) {
 		final Criteria criteria = new Criteria(OnmsNode.class);
 		criteria.setAliases(Arrays.asList(new Alias[] {
 	            new Alias("ipInterfaces", "iface", JoinType.LEFT_JOIN)
@@ -100,8 +100,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
         if (nodes.size() > 0) {
         	final OnmsNode node = nodes.get(0);
-        	final String sysObjectId = node.getSysObjectId();
-			return new LinkableNode(node.getId(), node.getPrimaryInterface().getIpAddress(), sysObjectId == null? "-1" : sysObjectId);
+			return new LinkableSnmpNode(node.getId(), node.getPrimaryInterface().getIpAddress(), node.getSysObjectId(),node.getSysName());
         } else {
         	return null;
         }

@@ -37,6 +37,7 @@ import java.util.Date;
 
 import org.opennms.netmgt.model.IpNetToMedia;
 import org.opennms.netmgt.model.IpNetToMedia.IpNetToMediaType;
+import org.opennms.netmgt.model.topology.LinkableSnmpNode;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
 import org.slf4j.Logger;
@@ -61,7 +62,7 @@ public final class IpNetToMediaLinkdNodeDiscovery extends AbstractLinkdNodeDisco
 	 * @param EnhancedLinkd linkd
 	 * @param LinkableNode node
 	 */
-    public IpNetToMediaLinkdNodeDiscovery(final EnhancedLinkd linkd, final LinkableNode node) {
+    public IpNetToMediaLinkdNodeDiscovery(final EnhancedLinkd linkd, final LinkableSnmpNode node) {
     	super(linkd, node);
     }
 

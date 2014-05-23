@@ -35,6 +35,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.opennms.netmgt.model.IsIsLink;
+import org.opennms.netmgt.model.topology.LinkableSnmpNode;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
 import org.slf4j.Logger;
@@ -57,7 +58,7 @@ private final static Logger LOG = LoggerFactory.getLogger(IsisLinkdNodeDiscovery
 	 * @param EnhancedLinkd linkd
 	 * @param LinkableNode node
 	 */
-    public IsisLinkdNodeDiscovery(final EnhancedLinkd linkd, final LinkableNode node) {
+    public IsisLinkdNodeDiscovery(final EnhancedLinkd linkd, final LinkableSnmpNode node) {
     	super(linkd, node);
     }
 
