@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,6 +38,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.WebSecurityUtils;
 
@@ -64,8 +65,7 @@ public class XssRequestWrapper extends HttpServletRequestWrapper
         super(req);
         original_parameters = req.getParameterMap();   
         sanitized_parameters = getParameterMap();
-        if (log().isDebugEnabled())
-            snzLogger();
+        snzLogger();
     }       
 
     /** {@inheritDoc} */
@@ -148,6 +148,7 @@ public class XssRequestWrapper extends HttpServletRequestWrapper
 
     private void snzLogger()
     {
+        LogUtils.debugf(this, "XssRequestWrapper sanitization details follow");
         for (String key : (Set<String>) original_parameters.keySet())
         {
             String[] rawVals = original_parameters.get(key);
@@ -157,16 +158,12 @@ public class XssRequestWrapper extends HttpServletRequestWrapper
                 for (int i=0; i < rawVals.length; i++) 
                 {
                     if (rawVals[i].equals(snzVals[i]))                                                          
-                        log().debug("Sanitization. Param seems safe: " + key + "[" + i + "]=" + snzVals[i]);               
+                        LogUtils.debugf(this, "Sanitization. Param seems safe: %s[%d]=%s", key, i, snzVals[i]);               
                     else
-                        log().debug("Sanitization. Param modified: " + key + "[" + i + "]=" + snzVals[i]);
+                        LogUtils.debugf(this, "Sanitization. Param modified: %s[%d]=%s", key, i, snzVals[i]);
                 }       
             }
         }
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 
 }

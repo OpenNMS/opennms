@@ -66,7 +66,7 @@
 <%
     XssRequestWrapper req = new XssRequestWrapper(request);
     Alarm alarm = (Alarm)request.getAttribute("alarm");
-    final String alarmId = (String)request.getAttribute("alarmId");
+    final String alarmId = (String)req.getAttribute("alarmId");
 
     if (alarm == null) {
         throw new AlarmIdNotFoundException("Missing alarm request attribute.", alarmId);
