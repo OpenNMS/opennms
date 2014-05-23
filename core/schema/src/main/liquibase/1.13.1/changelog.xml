@@ -610,7 +610,7 @@
         <constraints nullable="false" />
       </column>
       <column name="bridgeport" type="integer">
-        <constraints nullable="false" />
+        <constraints nullable="true" />
       </column>
       <column name="bridgeportifindex" type="integer">
         <constraints nullable="true" />
@@ -625,7 +625,7 @@
         <constraints nullable="false" />
       </column>
       <column name="designatedbridgeport" type="integer">
-        <constraints nullable="false" />
+        <constraints nullable="true" />
       </column>
       <column name="designatedbridgeportifindex" type="integer">
         <constraints nullable="true" />

@@ -61,7 +61,7 @@ public class BridgeBridgeLink {
 		m_node = node;
 	}
 
-    @Column(name="bridgePort", nullable = false)
+    @Column(name="bridgePort", nullable = true)
 	public Integer getBridgePort() {
 		return m_bridgePort;
 	}
@@ -112,7 +112,7 @@ public class BridgeBridgeLink {
 		m_designatedNode = designatedNode;
 	}
 
-    @Column(name="designatedPort", nullable = false)
+    @Column(name="designatedPort", nullable = true)
 	public Integer getDesignatedPort() {
 		return m_designatedPort;
 	}
