@@ -54,14 +54,30 @@ public class BridgeBridgeLinkDaoHibernate extends AbstractDaoHibernate<BridgeBri
 		return find("from BridgeBridgeLink rec where rec.node.id = ?", id);
 	}
 
+	@Override
+	public List<BridgeBridgeLink> findByDesignatedNodeId(Integer id) {
+		return find("from BridgeBridgeLink rec where rec.designatednode.id = ?", id);
+	}
 
 	@Override
 	public BridgeBridgeLink getByNodeIdBridgePort(Integer id, Integer port) {
 		return findUnique("from BridgeBridgeLink rec where rec.node.id = ?  and rec.bridgePort = ?", id,port);
 	}
 
+	@Override
+	public BridgeBridgeLink getByNodeIdBridgePortIfIndex(Integer id, Integer ifindex) {
+		return findUnique("from BridgeBridgeLink rec where rec.node.id = ?  and rec.bridgePortIfIndex = ?", id,ifindex);
+	}
 
+	@Override
+	public BridgeBridgeLink getByDesignatedNodeIdBridgePort(Integer id, Integer port) {
+		return findUnique("from BridgeBridgeLink rec where rec.designatedNode.id = ?  and rec.designatedBridgePort = ?", id,port);
+	}
 
+	@Override
+	public BridgeBridgeLink getByDesignatedNodeIdBridgePortIfIndex(Integer id, Integer ifindex) {
+		return findUnique("from BridgeBridgeLink rec where rec.designatedNode.id = ?  and rec.designatedBridgePortIfIndex = ?", id,ifindex);
+	}
 
 	@Override
 	public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
@@ -69,6 +85,15 @@ public class BridgeBridgeLinkDaoHibernate extends AbstractDaoHibernate<BridgeBri
 			delete(elem);
 		}
 	}
+
+	@Override
+	public void deleteByDesignatedNodeIdOlderThen(Integer nodeId, Date now) {
+		for (BridgeBridgeLink elem: find("from BridgeBridgeLink rec where rec.designatedNode.id = ? and rec.bridgeBridgeLinkLastPollTime < ?",nodeId,now)) {
+			delete(elem);
+		}
+	}
+
+
 
 
 
