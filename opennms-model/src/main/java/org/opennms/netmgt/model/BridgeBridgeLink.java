@@ -13,6 +13,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
@@ -61,7 +62,7 @@ public class BridgeBridgeLink {
 		m_node = node;
 	}
 
-    @Column(name="bridgePort", nullable = false)
+    @Column(name="bridgePort", nullable = true)
 	public Integer getBridgePort() {
 		return m_bridgePort;
 	}
@@ -112,7 +113,7 @@ public class BridgeBridgeLink {
 		m_designatedNode = designatedNode;
 	}
 
-    @Column(name="designatedPort", nullable = false)
+    @Column(name="designatedPort", nullable = true)
 	public Integer getDesignatedPort() {
 		return m_designatedPort;
 	}
@@ -213,5 +214,23 @@ public class BridgeBridgeLink {
 		setBridgeBridgeLinkLastPollTime(element.getBridgeBridgeLinkCreateTime());
 	}
 
+	@Transient
+	public BridgeBridgeLink getReverseBridgeBridgeLink() {
+		
+		BridgeBridgeLink link = new BridgeBridgeLink();
+		link.setNode(getDesignatedNode());
+		link.setBridgePort(getDesignatedPort());
+		link.setBridgePortIfIndex(getDesignatedPortIfIndex());
+		link.setBridgePortIfName(getDesignatedPortIfName());
+		link.setVlan(getDesignatedVlan());
+		
+		link.setDesignatedNode(getNode());
+		link.setDesignatedPort(getBridgePort());
+		link.setDesignatedPortIfIndex(getBridgePortIfIndex());
+		link.setDesignatedPortIfName(getBridgePortIfName());
+		link.setDesignatedVlan(getVlan());
+
+		return link;
+	}
 	
 }

@@ -44,7 +44,17 @@ public interface BridgeBridgeLinkDao extends OnmsDao<BridgeBridgeLink, Integer> 
     
     public List<BridgeBridgeLink> findByNodeId(Integer id);
 
+    public List<BridgeBridgeLink> findByDesignatedNodeId(Integer id);
+
     public BridgeBridgeLink getByNodeIdBridgePort(Integer id, Integer port);
 
+    public BridgeBridgeLink getByNodeIdBridgePortIfIndex(Integer id, Integer ifindex);
+
+    public BridgeBridgeLink getByDesignatedNodeIdBridgePort(Integer id, Integer port);
+
+    public BridgeBridgeLink getByDesignatedNodeIdBridgePortIfIndex(Integer id, Integer ifindex);
+
     void deleteByNodeIdOlderThen(Integer nodeiId, Date now);
+
+    void deleteByDesignatedNodeIdOlderThen(Integer nodeiId, Date now);
 }

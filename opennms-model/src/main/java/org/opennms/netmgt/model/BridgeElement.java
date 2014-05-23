@@ -323,8 +323,7 @@ public class BridgeElement {
 		//nodeid and vlan are unique primary key
 		if (element == null)
 			return;
-		if (element.getVlan().intValue() != m_vlan.intValue())
-			return;
+		
 		setBaseBridgeAddress(element.getBaseBridgeAddress());
 		setBaseNumPorts(element.getBaseNumPorts());
 		setBaseType(element.getBaseType());

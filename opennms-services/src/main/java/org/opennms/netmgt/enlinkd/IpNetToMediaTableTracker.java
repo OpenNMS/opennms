@@ -68,6 +68,7 @@ public class IpNetToMediaTableTracker extends TableTracker
     public static final SnmpObjId  IPNETTOMEDIA_TABLE_ENTRY   = SnmpObjId.get(".1.3.6.1.2.1.4.22.1");    // start of table (GETNEXT)
 	// Lookup strings for specific table entries
 	//
+	public final static	SnmpObjId	IPNETTOMEDIA_TABLE_IFINDEX	= SnmpObjId.get(IPNETTOMEDIA_TABLE_ENTRY, "1");
 	public final static	SnmpObjId	IPNETTOMEDIA_TABLE_PHYSADDR	= SnmpObjId.get(IPNETTOMEDIA_TABLE_ENTRY, "2");
 	public final static	SnmpObjId	IPNETTOMEDIA_TABLE_NETADDR	= SnmpObjId.get(IPNETTOMEDIA_TABLE_ENTRY, "3");
 	public final static	SnmpObjId	IPNETTOMEDIA_TABLE_TYPE		= SnmpObjId.get(IPNETTOMEDIA_TABLE_ENTRY, "4");
@@ -80,6 +81,7 @@ public class IpNetToMediaTableTracker extends TableTracker
 	 * this class.</P>
 	 */
 	public static SnmpObjId[] ms_elemList = new SnmpObjId[] {
+		IPNETTOMEDIA_TABLE_IFINDEX,
 		/**
          * The media-dependent `physical' address. 
          */
@@ -169,8 +171,13 @@ public class IpNetToMediaTableTracker extends TableTracker
 			return getValue(IPNETTOMEDIA_TABLE_TYPE).toInt();
 		}
 		
+		public Integer getIpNetToMediaIfIndex() {
+			return getValue(IPNETTOMEDIA_TABLE_IFINDEX).toInt();
+		}
+		
 		public IpNetToMedia getIpNetToMedia() {
 			IpNetToMedia at = new IpNetToMedia();
+			at.setSourceIfIndex(getIpNetToMediaIfIndex());
 			at.setPhysAddress(getIpNetToMediaPhysAddress());
 			at.setNetAddress(getIpNetToMediaNetAddress());
 			at.setIpNetToMediaType(IpNetToMediaType.get(getIpNetToMediatype()));
