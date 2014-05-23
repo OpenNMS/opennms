@@ -213,5 +213,22 @@ public class BridgeBridgeLink {
 		setBridgeBridgeLinkLastPollTime(element.getBridgeBridgeLinkCreateTime());
 	}
 
+	public BridgeBridgeLink getReverseBridgeBridgeLink() {
+		
+		BridgeBridgeLink link = new BridgeBridgeLink();
+		link.setNode(getDesignatedNode());
+		link.setBridgePort(getDesignatedPort());
+		link.setBridgePortIfIndex(getDesignatedPortIfIndex());
+		link.setBridgePortIfName(getDesignatedPortIfName());
+		link.setVlan(getDesignatedVlan());
+		
+		link.setDesignatedNode(getNode());
+		link.setDesignatedPort(getBridgePort());
+		link.setDesignatedPortIfIndex(getBridgePortIfIndex());
+		link.setDesignatedPortIfName(getBridgePortIfName());
+		link.setDesignatedVlan(getVlan());
+
+		return link;
+	}
 	
 }
