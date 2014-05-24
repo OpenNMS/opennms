@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.enlinkd;
+package org.opennms.netmgt.enlinkd.snmp;
 
 import java.net.InetAddress;
 
@@ -82,7 +82,7 @@ public class OspfNbrTableTracker extends TableTracker {
         OSPF_NBR_ROUTERID
     };
         
-    class OspfNbrRow extends SnmpRowResult {
+    public class OspfNbrRow extends SnmpRowResult {
     	
         public OspfNbrRow(int columnCount, SnmpInstId instance) {
 			super(columnCount, instance);
@@ -137,7 +137,7 @@ public class OspfNbrTableTracker extends TableTracker {
     /**
      * <p>processOspfIfRow</p>
      *
-     * @param row a {@link org.opennms.netmgt.enlinkd.OspfNbrTableTracker.OspfNbrRow} object.
+     * @param row a {@link org.opennms.netmgt.enlinkd.snmp.OspfNbrTableTracker.OspfNbrRow} object.
      */
     public void processOspfNbrRow(final OspfNbrRow row) {
     }

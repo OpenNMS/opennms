@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.enlinkd;
+package org.opennms.netmgt.enlinkd.snmp;
 
 import org.opennms.netmgt.model.IsIsLink;
 import org.opennms.netmgt.model.IsIsLink.IsisISAdjNeighSysType;
@@ -127,7 +127,7 @@ public class IsisISAdjTableTracker extends TableTracker {
 
     };
     
-    class IsIsAdjRow extends SnmpRowResult {
+    public class IsIsAdjRow extends SnmpRowResult {
 		public IsIsAdjRow(int columnCount, SnmpInstId instance) {
 			super(columnCount, instance);
             LOG.debug( "column count = {}, instance = {}", columnCount, instance);
@@ -206,7 +206,7 @@ public class IsisISAdjTableTracker extends TableTracker {
     /**
      * <p>processIsisAdjRow</p>
      *
-     * @param row a {@link org.opennms.netmgt.enlinkd.IsisISAdjTableTracker.IsIsAdjRow} object.
+     * @param row a {@link org.opennms.netmgt.enlinkd.snmp.IsisISAdjTableTracker.IsIsAdjRow} object.
      */
     public void processIsisAdjRow(final IsIsAdjRow row) {
     }

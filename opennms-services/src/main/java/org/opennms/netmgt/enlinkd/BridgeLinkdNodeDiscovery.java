@@ -38,6 +38,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.opennms.netmgt.enlinkd.snmp.CiscoVtpTracker;
+import org.opennms.netmgt.enlinkd.snmp.CiscoVtpVlanTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.Dot1dBaseTracker;
+import org.opennms.netmgt.enlinkd.snmp.Dot1dStpPortTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.Dot1dTpFdbTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.Dot1qTpFdbTableTracker;
 import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeElement.BridgeDot1dBaseType;
 import org.opennms.netmgt.model.BridgeMacLink;

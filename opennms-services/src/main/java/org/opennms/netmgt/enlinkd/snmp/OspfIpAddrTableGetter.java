@@ -1,4 +1,4 @@
-package org.opennms.netmgt.enlinkd;
+package org.opennms.netmgt.enlinkd.snmp;
 
 import java.net.InetAddress;
 

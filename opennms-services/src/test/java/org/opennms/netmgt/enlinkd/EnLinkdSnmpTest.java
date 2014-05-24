@@ -45,6 +45,16 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.enlinkd.snmp.IsisCircTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.IsisISAdjTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.IsisSysObjectGroupTracker;
+import org.opennms.netmgt.enlinkd.snmp.LldpLocPortGetter;
+import org.opennms.netmgt.enlinkd.snmp.LldpLocalGroupTracker;
+import org.opennms.netmgt.enlinkd.snmp.LldpRemTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.OspfGeneralGroupTracker;
+import org.opennms.netmgt.enlinkd.snmp.OspfIfTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.OspfIpAddrTableGetter;
+import org.opennms.netmgt.enlinkd.snmp.OspfNbrTableTracker;
 
 import org.opennms.netmgt.model.IsIsElement;
 import org.opennms.netmgt.model.IsIsElement.IsisAdminState;

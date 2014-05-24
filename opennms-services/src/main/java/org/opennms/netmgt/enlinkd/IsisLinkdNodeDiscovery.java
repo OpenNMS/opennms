@@ -34,6 +34,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.opennms.netmgt.enlinkd.snmp.IsisCircTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.IsisISAdjTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.IsisSysObjectGroupTracker;
 import org.opennms.netmgt.model.IsIsLink;
 import org.opennms.netmgt.model.topology.LinkableSnmpNode;
 import org.opennms.netmgt.snmp.SnmpUtils;

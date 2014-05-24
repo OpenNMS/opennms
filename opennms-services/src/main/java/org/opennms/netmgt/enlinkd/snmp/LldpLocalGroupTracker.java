@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.enlinkd;
+package org.opennms.netmgt.enlinkd.snmp;
 
 import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.LldpElement.LldpChassisIdSubType;

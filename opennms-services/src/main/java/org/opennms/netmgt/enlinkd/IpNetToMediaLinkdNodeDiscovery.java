@@ -35,6 +35,7 @@ import java.util.Date;
 
 
 
+import org.opennms.netmgt.enlinkd.snmp.IpNetToMediaTableTracker;
 import org.opennms.netmgt.model.IpNetToMedia;
 import org.opennms.netmgt.model.IpNetToMedia.IpNetToMediaType;
 import org.opennms.netmgt.model.topology.LinkableSnmpNode;

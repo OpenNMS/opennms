@@ -1,4 +1,4 @@
-package org.opennms.netmgt.enlinkd;
+package org.opennms.netmgt.enlinkd.snmp;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.LldpElement.LldpChassisIdSubType;

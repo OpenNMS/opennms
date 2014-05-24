@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.enlinkd;
+package org.opennms.netmgt.enlinkd.snmp;
 
 
 import org.opennms.netmgt.model.LldpLink;
@@ -95,7 +95,7 @@ public class LldpRemTableTracker extends TableTracker {
     };
     
 
-    class LldpRemRow extends SnmpRowResult {
+    public class LldpRemRow extends SnmpRowResult {
 
 		public LldpRemRow(int columnCount, SnmpInstId instance) {
 			super(columnCount, instance);
@@ -190,7 +190,7 @@ public class LldpRemTableTracker extends TableTracker {
     /**
      * <p>processLldpRemRow</p>
      *
-     * @param row a {@link org.opennms.netmgt.enlinkd.LldpRemTableTracker.LldpRemRow} object.
+     * @param row a {@link org.opennms.netmgt.enlinkd.snmp.LldpRemTableTracker.LldpRemRow} object.
      */
     public void processLldpRemRow(final LldpRemRow row) {
     }

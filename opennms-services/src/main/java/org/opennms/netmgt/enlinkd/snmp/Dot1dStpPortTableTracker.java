@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.enlinkd;
+package org.opennms.netmgt.enlinkd.snmp;
 
 import org.opennms.netmgt.model.BridgeStpLink;
 import org.opennms.netmgt.model.BridgeStpLink.BridgeDot1dStpPortEnable;
@@ -151,7 +151,7 @@ public class Dot1dStpPortTableTracker extends TableTracker {
 		DOT1D_STP_PORT_DESIGNATED_PORT
 	};
 
-	class Dot1dStpPortRow extends SnmpRowResult {
+	public class Dot1dStpPortRow extends SnmpRowResult {
 
 		public Dot1dStpPortRow(int columnCount, SnmpInstId instance) {
 			super(columnCount, instance);
@@ -270,7 +270,7 @@ public class Dot1dStpPortTableTracker extends TableTracker {
     /**
      * <p>processDot1dStpPortRow</p>
      *
-     * @param row a {@link org.opennms.netmgt.enlinkd.Dot1dStpPortTableTracker.Dot1dStpPortRow} object.
+     * @param row a {@link org.opennms.netmgt.enlinkd.snmp.Dot1dStpPortTableTracker.Dot1dStpPortRow} object.
      */
     public void processDot1dStpPortRow(final Dot1dStpPortRow row) {
     }

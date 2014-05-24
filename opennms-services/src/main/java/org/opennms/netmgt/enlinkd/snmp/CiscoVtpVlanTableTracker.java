@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.enlinkd;
+package org.opennms.netmgt.enlinkd.snmp;
 
 import org.opennms.netmgt.model.OnmsVlan.VlanStatus;
 import org.opennms.netmgt.model.OnmsVlan.VlanType;
@@ -84,7 +84,7 @@ public class CiscoVtpVlanTableTracker extends TableTracker {
 	    CISCO_VTP_VLAN_NAME
 	};
 
-	class CiscoVtpVlanRow extends SnmpRowResult {
+	public class CiscoVtpVlanRow extends SnmpRowResult {
 
 		public CiscoVtpVlanRow(int columnCount, SnmpInstId instance) {
 			super(columnCount, instance);
@@ -140,7 +140,7 @@ public class CiscoVtpVlanTableTracker extends TableTracker {
     /**
      * <p>processCiscoVtpVlanRow</p>
      *
-     * @param row a {@link org.opennms.netmgt.enlinkd.CiscoVtpVlanTableTracker.CiscoVtpVlanRow} object.
+     * @param row a {@link org.opennms.netmgt.enlinkd.snmp.CiscoVtpVlanTableTracker.CiscoVtpVlanRow} object.
      */
     public void processCiscoVtpVlanRow(final CiscoVtpVlanRow row) {
     }

@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.enlinkd;
+package org.opennms.netmgt.enlinkd.snmp;
 
 import org.opennms.netmgt.model.IsIsLink;
 import org.opennms.netmgt.model.IsIsElement.IsisAdminState;
@@ -73,7 +73,7 @@ public class IsisCircTableTracker extends TableTracker {
 
     };
     
-    class IsIsCircRow extends SnmpRowResult {
+    public class IsIsCircRow extends SnmpRowResult {
 
 		public IsIsCircRow(int columnCount, SnmpInstId instance) {
 			super(columnCount, instance);
@@ -129,7 +129,7 @@ public class IsisCircTableTracker extends TableTracker {
     /**
      * <p>processIsisAdjRow</p>
      *
-     * @param row a {@link org.opennms.netmgt.enlinkd.IsisCircTableTracker.IsIsCircRow} object.
+     * @param row a {@link org.opennms.netmgt.enlinkd.snmp.IsisCircTableTracker.IsIsCircRow} object.
      */
     public void processIsisCircRow(final IsIsCircRow row) {
     }

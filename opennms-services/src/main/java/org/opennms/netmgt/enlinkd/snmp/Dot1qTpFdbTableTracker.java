@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.enlinkd;
+package org.opennms.netmgt.enlinkd.snmp;
 
 import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.BridgeMacLink.BridgeDot1qTpFdbStatus;
@@ -123,7 +123,7 @@ public class Dot1qTpFdbTableTracker extends TableTracker {
 	};
 
 
-	class Dot1qTpFdbRow extends SnmpRowResult {
+	public class Dot1qTpFdbRow extends SnmpRowResult {
 
 		public Dot1qTpFdbRow(int columnCount, SnmpInstId instance) {
 			super(columnCount, instance);
@@ -202,7 +202,7 @@ public class Dot1qTpFdbTableTracker extends TableTracker {
     /**
      * <p>processIpNetToMediaRow</p>
      *
-     * @param row a {@link org.opennms.netmgt.enlinkd.Dot1qTpFdbTableTracker.Dot1qTpFdbRow} object.
+     * @param row a {@link org.opennms.netmgt.enlinkd.snmp.Dot1qTpFdbTableTracker.Dot1qTpFdbRow} object.
      */
     public void processDot1qTpFdbRow(final Dot1qTpFdbRow row) {
     }

@@ -1,4 +1,4 @@
-package org.opennms.netmgt.enlinkd;
+package org.opennms.netmgt.enlinkd.snmp;
 
 import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.model.LldpLink.LldpPortIdSubType;

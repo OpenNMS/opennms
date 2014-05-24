@@ -32,6 +32,9 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.util.Date;
 
+import org.opennms.netmgt.enlinkd.snmp.LldpLocPortGetter;
+import org.opennms.netmgt.enlinkd.snmp.LldpLocalGroupTracker;
+import org.opennms.netmgt.enlinkd.snmp.LldpRemTableTracker;
 import org.opennms.netmgt.model.topology.LinkableSnmpNode;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;

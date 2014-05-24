@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.enlinkd;
+package org.opennms.netmgt.enlinkd.snmp;
 
 import static org.opennms.core.utils.InetAddressUtils.normalizeMacAddress;
 
@@ -120,7 +120,7 @@ public class IpNetToMediaTableTracker extends TableTracker
 		IPNETTOMEDIA_TABLE_TYPE
 		};
 
-	class IpNetToMediaRow extends SnmpRowResult {
+	public class IpNetToMediaRow extends SnmpRowResult {
 
 		public IpNetToMediaRow(int columnCount, SnmpInstId instance) {
 			super(columnCount, instance);
@@ -219,7 +219,7 @@ public class IpNetToMediaTableTracker extends TableTracker
     /**
      * <p>processIpNetToMediaRow</p>
      *
-     * @param row a {@link org.opennms.netmgt.enlinkd.IpNetToMediaTableTracker.IpNetToMediaRow} object.
+     * @param row a {@link org.opennms.netmgt.enlinkd.snmp.IpNetToMediaTableTracker.IpNetToMediaRow} object.
      */
     public void processIpNetToMediaRow(final IpNetToMediaRow row) {
     }
