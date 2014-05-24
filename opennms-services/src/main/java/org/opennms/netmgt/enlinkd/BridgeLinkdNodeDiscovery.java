@@ -84,7 +84,7 @@ public final class BridgeLinkdNodeDiscovery extends AbstractLinkdNodeDiscovery {
 	
 		final Map<Integer,String> vlanmap = new HashMap<Integer, String>();
 		String trackerName = "vtpVersion";
-		final CiscoVtpStatus vtpStatus = new CiscoVtpStatus();
+		final CiscoVtpTracker vtpStatus = new CiscoVtpTracker();
 		SnmpWalker walker = SnmpUtils.createWalker(getPeer(), trackerName,
 				vtpStatus);
 		walker.start();

@@ -36,9 +36,9 @@ import org.opennms.netmgt.snmp.NamedSnmpVar;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpStore;
 
-public final class CiscoVtpStatus extends AggregateTracker
+public final class CiscoVtpTracker extends AggregateTracker
 {
-	private static final Logger LOG = LoggerFactory.getLogger(CiscoVtpStatus.class);
+	private static final Logger LOG = LoggerFactory.getLogger(CiscoVtpTracker.class);
     /**
      * the bridge type
      */
@@ -78,7 +78,7 @@ public final class CiscoVtpStatus extends AggregateTracker
 	 *
 	 * @param address a {@link java.net.InetAddress} object.
 	 */
-	public CiscoVtpStatus() {
+	public CiscoVtpTracker() {
         super(NamedSnmpVar.getTrackersFor(ms_elemList));
         m_store = new SnmpStore(ms_elemList); 
 	}
