@@ -45,6 +45,7 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.enlinkd.snmp.IpNetToMediaTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.IsisCircTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.IsisISAdjTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.IsisSysObjectGroupTracker;
@@ -56,6 +57,8 @@ import org.opennms.netmgt.enlinkd.snmp.OspfIfTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.OspfIpAddrTableGetter;
 import org.opennms.netmgt.enlinkd.snmp.OspfNbrTableTracker;
 
+import org.opennms.netmgt.model.IpNetToMedia;
+import org.opennms.netmgt.model.IpNetToMedia.IpNetToMediaType;
 import org.opennms.netmgt.model.IsIsElement;
 import org.opennms.netmgt.model.IsIsElement.IsisAdminState;
 import org.opennms.netmgt.model.IsIsLink;
@@ -526,4 +529,68 @@ public class EnLinkdSnmpTest extends TestNetworkBuilder implements InitializingB
 
         }
     }
+    
+    
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=MIKROTIK_IP, port=161, resource=MIKROTIK_SNMP_RESOURCE)
+    })
+    public void testIpNetToMediaTableWalk() throws Exception {
+
+    	final List<IpNetToMedia> rows = new ArrayList<IpNetToMedia>();
+    	String trackerName = "ipNetToMediaTable";
+    	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(MIKROTIK_IP));
+        IpNetToMediaTableTracker tracker = new IpNetToMediaTableTracker() {
+        	public void processIpNetToMediaRow(final IpNetToMediaRow row) {
+        		rows.add(row.getIpNetToMedia());
+            }
+        };
+
+        SnmpWalker walker =  SnmpUtils.createWalker(config, trackerName, tracker);
+
+        walker.start();
+
+        try {
+            walker.waitFor();
+            if (walker.timedOut()) {
+            	LOG.info(
+                        "run:Aborting node scan : Agent timed out while scanning the {} table", trackerName);
+            }  else if (walker.failed()) {
+            	LOG.info(
+                        "run:Aborting node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
+            }
+        } catch (final InterruptedException e) {
+            LOG.error("run: collection interrupted, exiting",e);
+            return;
+        }
+
+        assertEquals(6, rows.size());
+
+        for (final IpNetToMedia row: rows) {
+    		assertEquals(IpNetToMediaType.IPNETTOMEDIA_TYPE_DYNAMIC,row.getIpNetToMediaType());
+        	if (row.getPhysAddress().equals("00901a4222f8")) {
+        		assertEquals(InetAddressUtils.addr("10.129.16.1"), row.getNetAddress());
+        		assertEquals(1, row.getSourceIfIndex().intValue());
+        	} else if (row.getPhysAddress().equals("0013c8f1d242")) {
+        		assertEquals(InetAddressUtils.addr("10.129.16.164"), row.getNetAddress());
+        		assertEquals(1, row.getSourceIfIndex().intValue());
+        	} else if (row.getPhysAddress().equals("f0728c99994d")) {
+        		assertEquals(InetAddressUtils.addr("192.168.0.13"), row.getNetAddress());
+        		assertEquals(2, row.getSourceIfIndex().intValue());
+        	} else if (row.getPhysAddress().equals("0015999f07ef")) {
+        		assertEquals(InetAddressUtils.addr("192.168.0.14"), row.getNetAddress());
+        		assertEquals(2, row.getSourceIfIndex().intValue());
+        	} else if (row.getPhysAddress().equals("60334b0817a8")) {
+        		assertEquals(InetAddressUtils.addr("192.168.0.16"), row.getNetAddress());
+        		assertEquals(2, row.getSourceIfIndex().intValue());
+        	} else if (row.getPhysAddress().equals("001b63cda9fd")) {
+        		assertEquals(InetAddressUtils.addr("192.168.0.17"), row.getNetAddress());
+        		assertEquals(2, row.getSourceIfIndex().intValue());
+        	} else {
+        		assertEquals(false, true);
+        	}
+        }        
+        
+    }
+
 }

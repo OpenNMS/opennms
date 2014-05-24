@@ -535,7 +535,7 @@ public class LinkdSnmpTest extends TestNetworkBuilder implements InitializingBea
 
 	@Test
     @JUnitSnmpAgents(value={
-        @JUnitSnmpAgent(host=MIKROTIK_IP, port=161, resource="classpath:linkd/nms102/"+MIKROTIK_NAME+"-"+MIKROTIK_IP+"-walk.txt")
+        @JUnitSnmpAgent(host=MIKROTIK_IP, port=161, resource=MIKROTIK_SNMP_RESOURCE)
     })
     public void testMtxrWlRtabTableCollection() throws Exception {
         

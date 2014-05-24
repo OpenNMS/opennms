@@ -28,6 +28,10 @@
 
 package org.opennms.netmgt.nb;
 
+import static org.opennms.netmgt.nb.TestNetworkBuilder.MAC1_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.MIKROTIK_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.MIKROTIK_NAME;
+
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
@@ -970,6 +974,7 @@ public abstract class TestNetworkBuilder {
     //nms102
     public static final String MIKROTIK_IP = "192.168.0.1";
     public static final String MIKROTIK_NAME = "mikrotik";
+    public static final String MIKROTIK_SNMP_RESOURCE = "classpath:linkd/nms102/"+MIKROTIK_NAME+"-"+MIKROTIK_IP+"-walk.txt";
     public static final String MIKROTIK_SYSOID = ".1.3.6.1.4.1.14988.1";
     
     public static final Map<InetAddress,Integer> MIKROTIK_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
@@ -981,6 +986,7 @@ public abstract class TestNetworkBuilder {
 
     public static final String SAMSUNG_IP = "192.168.0.14";
     public static final String SAMSUNG_NAME = "samsung";
+    public static final String SAMSUNG_SNMP_RESOURCE = "classpath:linkd/nms102/"+SAMSUNG_NAME+"-"+SAMSUNG_IP+"-walk.txt";
     public static final String SAMSUNG_SYSOID = ".1.3.6.1.4.1.236.11.5.1";
     
     public static final Map<InetAddress,Integer> SAMSUNG_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
@@ -992,6 +998,7 @@ public abstract class TestNetworkBuilder {
 
     public static final String MAC1_IP = "192.168.0.16";
     public static final String MAC1_NAME = "mac1";
+    public static final String MAC1_SNMP_RESOURCE = "classpath:linkd/nms102/"+"mac-"+MAC1_IP+"-walk.txt";
     public static final String MAC1_SYSOID = ".1.3.6.1.4.1.8072.3.2.255";
     
     public static final Map<InetAddress,Integer> MAC1_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
@@ -1003,6 +1010,7 @@ public abstract class TestNetworkBuilder {
 
     public static final String MAC2_IP = "192.168.0.17";
     public static final String MAC2_NAME = "mac2";
+    public static final String MAC2_SNMP_RESOURCE = "classpath:linkd/nms102/"+"mac-"+MAC2_IP+"-walk.txt";
     public static final String MAC2_SYSOID = ".1.3.6.1.4.1.8072.3.2.255";
     
     public static final Map<InetAddress,Integer> MAC2_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
