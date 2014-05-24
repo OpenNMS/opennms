@@ -34,7 +34,6 @@ import org.opennms.netmgt.snmp.RowCallback;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpRowResult;
-import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.TableTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -144,7 +143,8 @@ public class Dot1qTpFdbTableTracker extends TableTracker {
                     sb.append("0").append(Integer.toHexString(identifiers[i]));
                 }
             }
-			return	SnmpUtils.getValueFactory().getOctetString(sb.toString().getBytes()).toHexString();
+//			return	SnmpUtils.getValueFactory().getOctetString(sb.toString().getBytes()).toHexString();
+			return sb.toString();
 		}
 
 		/**
@@ -162,7 +162,9 @@ public class Dot1qTpFdbTableTracker extends TableTracker {
 		 * @return a int.
 		 */
 		public Integer getDot1qTpFdbStatus() {
-			return getValue(DOT1Q_TP_FDB_STATUS).toInt();
+			if (getValue(DOT1Q_TP_FDB_STATUS) != null)
+				return getValue(DOT1Q_TP_FDB_STATUS).toInt();
+			return null;
 		}
 
 		public BridgeMacLink getLink() {
@@ -170,7 +172,8 @@ public class Dot1qTpFdbTableTracker extends TableTracker {
 			BridgeMacLink link = new BridgeMacLink();
 			link.setBridgePort(getDot1qTpFdbPort());
 			link.setMacAddress(getDot1qTpFdbAddress());
-			link.setBridgeDot1qTpFdbStatus(BridgeDot1qTpFdbStatus.get(getDot1qTpFdbStatus()));
+			if (getDot1qTpFdbStatus() != null)
+				link.setBridgeDot1qTpFdbStatus(BridgeDot1qTpFdbStatus.get(getDot1qTpFdbStatus()));
             return link;
 		}
 

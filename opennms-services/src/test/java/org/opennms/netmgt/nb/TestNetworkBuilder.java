@@ -28,10 +28,6 @@
 
 package org.opennms.netmgt.nb;
 
-import static org.opennms.netmgt.nb.TestNetworkBuilder.MAC1_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.MIKROTIK_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.MIKROTIK_NAME;
-
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;

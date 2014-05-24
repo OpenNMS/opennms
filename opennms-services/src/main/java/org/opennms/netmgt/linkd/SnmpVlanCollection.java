@@ -333,28 +333,26 @@ public final class SnmpVlanCollection implements ReadyRunnable {
 
         // if not found macaddresses forwarding table find it in Qbridge
         // ExtremeNetwork works.....
+        //Check in any case qbridge too!
+        LOG.info("run: Trying to collect QbridgeDot1dTpFdbTable for {} Community: {}",
+                 hostAddress, m_agentConfig.getReadCommunity());
+        m_dot1qTpFdbTable = new QBridgeDot1dTpFdbTable(m_address);
+        walker = SnmpUtils.createWalker(m_agentConfig,
+                                        "qBridgedot1dTpFdbTable ",
+                                        new CollectionTracker[] { m_dot1qTpFdbTable });
+        walker.start();
 
-        if (m_dot1dTpFdbTable.isEmpty() && m_collectBridge) {
-            LOG.info("run: Trying to collect QbridgeDot1dTpFdbTable for {} Community: {}",
+        try {
+            walker.waitFor();
+        } catch (final InterruptedException e) {
+            m_dot1qTpFdbTable = null;
+            LOG.warn("SnmpVlanCollection.run: collection interrupted", e);
+
+        }
+
+        if (!hasQBridgeDot1dTpFdbTable()) {
+            LOG.info("run: failed to collect QBridgeDot1dTpFdbTable for {} Community: {}",
                      hostAddress, m_agentConfig.getReadCommunity());
-            m_dot1qTpFdbTable = new QBridgeDot1dTpFdbTable(m_address);
-            walker = SnmpUtils.createWalker(m_agentConfig,
-                                            "qBridgedot1dTpFdbTable ",
-                                            new CollectionTracker[] { m_dot1qTpFdbTable });
-            walker.start();
-
-            try {
-                walker.waitFor();
-            } catch (final InterruptedException e) {
-                m_dot1qTpFdbTable = null;
-                LOG.warn("SnmpVlanCollection.run: collection interrupted", e);
-
-            }
-
-            if (!hasQBridgeDot1dTpFdbTable()) {
-                LOG.info("run: failed to collect QBridgeDot1dTpFdbTable for {} Community: {}",
-                         hostAddress, m_agentConfig.getReadCommunity());
-            }
         }
     }
 

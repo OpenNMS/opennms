@@ -45,6 +45,11 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.enlinkd.snmp.Dot1dBasePortTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.Dot1dBaseTracker;
+import org.opennms.netmgt.enlinkd.snmp.Dot1dStpPortTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.Dot1dTpFdbTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.Dot1qTpFdbTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.IpNetToMediaTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.IsisCircTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.IsisISAdjTableTracker;
@@ -56,7 +61,16 @@ import org.opennms.netmgt.enlinkd.snmp.OspfGeneralGroupTracker;
 import org.opennms.netmgt.enlinkd.snmp.OspfIfTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.OspfIpAddrTableGetter;
 import org.opennms.netmgt.enlinkd.snmp.OspfNbrTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.Dot1dBasePortTableTracker.Dot1dBasePortRow;
 
+import org.opennms.netmgt.model.BridgeElement;
+import org.opennms.netmgt.model.BridgeElement.BridgeDot1dBaseType;
+import org.opennms.netmgt.model.BridgeElement.BridgeDot1dStpProtocolSpecification;
+import org.opennms.netmgt.model.BridgeMacLink;
+import org.opennms.netmgt.model.BridgeMacLink.BridgeDot1qTpFdbStatus;
+import org.opennms.netmgt.model.BridgeStpLink;
+import org.opennms.netmgt.model.BridgeStpLink.BridgeDot1dStpPortEnable;
+import org.opennms.netmgt.model.BridgeStpLink.BridgeDot1dStpPortState;
 import org.opennms.netmgt.model.IpNetToMedia;
 import org.opennms.netmgt.model.IpNetToMedia.IpNetToMediaType;
 import org.opennms.netmgt.model.IsIsElement;
@@ -529,8 +543,7 @@ public class EnLinkdSnmpTest extends TestNetworkBuilder implements InitializingB
 
         }
     }
-    
-    
+        
     @Test
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=MIKROTIK_IP, port=161, resource=MIKROTIK_SNMP_RESOURCE)
@@ -591,6 +604,260 @@ public class EnLinkdSnmpTest extends TestNetworkBuilder implements InitializingB
         	}
         }        
         
+    }
+
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host="10.1.1.2", port=161, resource="classpath:linkd/nms4930/dlink_DES-3026.properties")
+    })
+    public void testDot1dBaseWalk() throws Exception {
+
+    	String trackerName = "dot1dbase";
+    	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("10.1.1.2"));
+        Dot1dBaseTracker tracker = new Dot1dBaseTracker();
+
+        SnmpWalker walker =  SnmpUtils.createWalker(config, trackerName, tracker);
+
+        walker.start();
+
+        try {
+            walker.waitFor();
+            if (walker.timedOut()) {
+            	LOG.info(
+                        "run:Aborting node scan : Agent timed out while scanning the {} table", trackerName);
+            }  else if (walker.failed()) {
+            	LOG.info(
+                        "run:Aborting node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
+            }
+        } catch (final InterruptedException e) {
+            LOG.error("run: collection interrupted, exiting",e);
+            return;
+        }
+
+    	final BridgeElement bridge =tracker.getBridgeElement();
+    	assertEquals("001e58a32fcd", bridge.getBaseBridgeAddress());
+    	assertEquals(26, bridge.getBaseNumPorts().intValue());
+    	assertEquals(BridgeDot1dBaseType.DOT1DBASETYPE_TRANSPARENT_ONLY,bridge.getBaseType());
+    	assertEquals(BridgeDot1dStpProtocolSpecification.DOT1D_STP_PROTOCOL_SPECIFICATION_IEEE8021D,bridge.getStpProtocolSpecificationType());
+    	assertEquals(32768,bridge.getStpPriority().intValue());
+    	assertEquals("0000000000000000",bridge.getStpDesignatedRoot());
+    	assertEquals(0, bridge.getStpRootCost().intValue());
+    	assertEquals(0, bridge.getStpRootPort().intValue());
+    }
+
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host="10.1.1.2", port=161, resource="classpath:linkd/nms4930/dlink_DES-3026.properties")
+    })
+    public void testDot1dBasePortTableWalk() throws Exception {
+
+    	String trackerName = "dot1dbasePortTable";
+    	final List<Dot1dBasePortRow> rows = new ArrayList<Dot1dBasePortTableTracker.Dot1dBasePortRow>();
+    	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("10.1.1.2"));
+        Dot1dBasePortTableTracker tracker = new Dot1dBasePortTableTracker() {
+            @Override
+        	public void processDot1dBasePortRow(final Dot1dBasePortRow row) {
+            	rows.add(row);
+            }
+        };
+
+        SnmpWalker walker =  SnmpUtils.createWalker(config, trackerName, tracker);
+
+        walker.start();
+
+        try {
+            walker.waitFor();
+            if (walker.timedOut()) {
+            	LOG.info(
+                        "run:Aborting node scan : Agent timed out while scanning the {} table", trackerName);
+            }  else if (walker.failed()) {
+            	LOG.info(
+                        "run:Aborting node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
+            }
+        } catch (final InterruptedException e) {
+            LOG.error("run: collection interrupted, exiting",e);
+            return;
+        }
+
+        assertEquals(26, rows.size());
+        for (Dot1dBasePortRow row: rows) {
+        	assertEquals(row.getBaseBridgePort().intValue(), row.getBaseBridgePortIfindex().intValue());
+        }
+    }
+
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host="10.1.1.2", port=161, resource="classpath:linkd/nms4930/dlink_DES-3026.properties")
+    })
+    public void testDot1dStpPortTableWalk() throws Exception {
+
+    	String trackerName = "dot1dbaseStpTable";
+    	final List<BridgeStpLink> links = new ArrayList<BridgeStpLink>();
+    	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("10.1.1.2"));
+        Dot1dStpPortTableTracker tracker = new Dot1dStpPortTableTracker() {
+            @Override
+        	public void processDot1dStpPortRow(final Dot1dStpPortRow row) {
+            	links.add(row.getLink());
+            }
+        };
+
+        SnmpWalker walker =  SnmpUtils.createWalker(config, trackerName, tracker);
+
+        walker.start();
+
+        try {
+            walker.waitFor();
+            if (walker.timedOut()) {
+            	LOG.info(
+                        "run:Aborting node scan : Agent timed out while scanning the {} table", trackerName);
+            }  else if (walker.failed()) {
+            	LOG.info(
+                        "run:Aborting node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
+            }
+        } catch (final InterruptedException e) {
+            LOG.error("run: collection interrupted, exiting",e);
+            return;
+        }
+
+        assertEquals(26, links.size());
+        int i = 0;
+        for (BridgeStpLink link: links) {
+        	assertEquals(++i, link.getStpPort().intValue());
+        	assertEquals(128, link.getStpPortPriority().intValue());
+        	if (link.getStpPort() <= 6 || link.getStpPort() == 24 )
+        		assertEquals(BridgeDot1dStpPortState.DOT1D_STP_PORT_STATUS_FORWARDING, link.getStpPortState());
+        	else
+        		assertEquals(BridgeDot1dStpPortState.DOT1D_STP_PORT_STATUS_DISABLED, link.getStpPortState());
+        	assertEquals(BridgeDot1dStpPortEnable.DOT1D_STP_PORT_ENABLED, link.getStpPortEnable());
+        	assertEquals(2000000,link.getStpPortPathCost().intValue());
+        	assertEquals("0000000000000000",link.getDesignatedRoot());
+        	assertEquals(0,link.getDesignatedCost().intValue());
+        	assertEquals("0000000000000000",link.getDesignatedBridge());
+        	assertEquals("0000",link.getDesignatedPort());
+        }
+    }
+
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host="10.1.1.2", port=161, resource="classpath:linkd/nms4930/dlink_DES-3026.properties")
+    })
+    public void testDot1dTpFdbTableWalk() throws Exception {
+
+    	String trackerName = "dot1dTpFdbTable";
+    	final List<BridgeMacLink> links = new ArrayList<BridgeMacLink>();
+    	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("10.1.1.2"));
+        Dot1dTpFdbTableTracker tracker = new Dot1dTpFdbTableTracker() {
+            @Override
+        	public void processDot1dTpFdbRow(final Dot1dTpFdbRow row) {
+            	links.add(row.getLink());
+            }
+        };
+
+        SnmpWalker walker =  SnmpUtils.createWalker(config, trackerName, tracker);
+
+        walker.start();
+
+        try {
+            walker.waitFor();
+            if (walker.timedOut()) {
+            	LOG.info(
+                        "run:Aborting node scan : Agent timed out while scanning the {} table", trackerName);
+            }  else if (walker.failed()) {
+            	LOG.info(
+                        "run:Aborting node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
+            }
+        } catch (final InterruptedException e) {
+            LOG.error("run: collection interrupted, exiting",e);
+            return;
+        }
+
+        assertEquals(17, links.size());
+        for (BridgeMacLink link: links) {
+        	assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
+        	System.out.println(link.getMacAddress());
+        	if (link.getMacAddress().equals("000c29dcc076")) {
+        		assertEquals(24,link.getBridgePort().intValue());
+        	} else if(link.getMacAddress().equals("000ffeb10d1e")) {
+        		assertEquals(6,link.getBridgePort().intValue());
+        	} else if(link.getMacAddress().equals("000ffeb10e26")) {
+        		assertEquals(6,link.getBridgePort().intValue());
+        	} else if(link.getMacAddress().equals("001a4b802790")) {
+        		assertEquals(6,link.getBridgePort().intValue());
+        	} else if(link.getMacAddress().equals("001d6004acbc")) {
+        		assertEquals(6,link.getBridgePort().intValue());
+        	} else if(link.getMacAddress().equals("001e58865d0f")) {
+        		assertEquals(6,link.getBridgePort().intValue());
+        	} else if(link.getMacAddress().equals("0021913b5108")) {
+        		assertEquals(6,link.getBridgePort().intValue());
+        	} else if(link.getMacAddress().equals("002401ad3416")) {
+        		assertEquals(6,link.getBridgePort().intValue());
+        	} else if(link.getMacAddress().equals("00248c4c8bd0")) {
+        		assertEquals(6,link.getBridgePort().intValue());
+        	} else if(link.getMacAddress().equals("0024d608693e")) {
+        		assertEquals(6,link.getBridgePort().intValue());
+        	} else if(link.getMacAddress().equals("000ffeb10d1e")) {
+        		assertEquals(6,link.getBridgePort().intValue());
+        	} else if(link.getMacAddress().equals("1caff737cc33")) {
+        		assertEquals(6,link.getBridgePort().intValue());
+        	} else if(link.getMacAddress().equals("1caff7443339")) {
+        		assertEquals(6,link.getBridgePort().intValue());
+        	} else if(link.getMacAddress().equals("1cbdb9b56160")) {
+        		assertEquals(6,link.getBridgePort().intValue());
+        	} else if(link.getMacAddress().equals("5cd998667abb")) {
+        		assertEquals(6,link.getBridgePort().intValue());
+        	} else if(link.getMacAddress().equals("e0cb4e3e7fc0")) {
+        		assertEquals(6,link.getBridgePort().intValue());
+        	} else if(link.getMacAddress().equals("f07d68711f89")) {
+        		assertEquals(24,link.getBridgePort().intValue());
+        	} else if(link.getMacAddress().equals("f07d6876c565")) {
+        		assertEquals(24,link.getBridgePort().intValue());
+           } else {
+        		assertEquals(false, true);
+        	}
+        }
+    }
+
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host="10.1.1.2", port=161, resource="classpath:linkd/nms4930/dlink_DES-3026.properties")
+    })
+    public void testDot1qTpFdbTableWalk() throws Exception {
+
+    	String trackerName = "dot1qTpFdbTable";
+    	final List<BridgeMacLink> links = new ArrayList<BridgeMacLink>();
+    	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("10.1.1.2"));
+        Dot1qTpFdbTableTracker tracker = new Dot1qTpFdbTableTracker() {
+            @Override
+        	public void processDot1qTpFdbRow(final Dot1qTpFdbRow row) {
+            	links.add(row.getLink());
+            }
+        };
+
+        SnmpWalker walker =  SnmpUtils.createWalker(config, trackerName, tracker);
+
+        walker.start();
+
+        try {
+            walker.waitFor();
+            if (walker.timedOut()) {
+            	LOG.info(
+                        "run:Aborting node scan : Agent timed out while scanning the {} table", trackerName);
+            }  else if (walker.failed()) {
+            	LOG.info(
+                        "run:Aborting node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
+            }
+        } catch (final InterruptedException e) {
+            LOG.error("run: collection interrupted, exiting",e);
+            return;
+        }
+
+        assertEquals(61, links.size());
+        for (BridgeMacLink link: links) {
+        	System.out.println(link.getMacAddress());
+        	System.out.println(link.getBridgePort());
+        	if (link.getBridgeDot1qTpFdbStatus() != null)
+        	System.out.println(BridgeDot1qTpFdbStatus.getTypeString(link.getBridgeDot1qTpFdbStatus().getValue()));
+        }
     }
 
 }

@@ -234,12 +234,11 @@ public final class BridgeLinkdNodeDiscovery extends AbstractLinkdNodeDiscovery {
 		} else {
 			walkSpanningTree(bridge.getBaseBridgeAddress(),vlan);
 		}		
-		boolean hasDot1dTpFdp = walkDot1DTpFdp(vlan);
-		if (vlan == null && !hasDot1dTpFdp)
-			walkDot1QTpFdp();
+		walkDot1DTpFdp(vlan);
+		walkDot1QTpFdp();
 	}
 
-	private boolean walkDot1DTpFdp(final Integer vlan) {
+	private void walkDot1DTpFdp(final Integer vlan) {
 		String trackerName = "dot1dTbFdbPortTable";
 
 		Dot1dTpFdbTableTracker stpPortTableTracker = new Dot1dTpFdbTableTracker() {
@@ -262,17 +261,16 @@ public final class BridgeLinkdNodeDiscovery extends AbstractLinkdNodeDiscovery {
 			if (walker.timedOut()) {
 				LOG.info("run:Aborting Bridge Linkd node scan : Agent timed out while scanning the {} table",
 						trackerName);
-				return false;
+				return;
 			} else if (walker.failed()) {
 				LOG.info("run:Aborting Bridge Linkd node scan : Agent failed while scanning the {} table: {}",
 						trackerName, walker.getErrorMessage());
-				return false;
+				return;
 			}
 		} catch (final InterruptedException e) {
 			LOG.error("run: Bridge Linkd node collection interrupted, exiting",e);
-			return false;
+			return;
 		}
-		return true;
 	}
 
 	private void walkDot1QTpFdp() {

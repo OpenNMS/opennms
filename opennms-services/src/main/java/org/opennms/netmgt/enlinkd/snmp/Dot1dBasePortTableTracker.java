@@ -34,7 +34,7 @@ import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpRowResult;
 import org.opennms.netmgt.snmp.TableTracker;
 
-public final class Dot1dBasePortTableTracker extends TableTracker {
+public class Dot1dBasePortTableTracker extends TableTracker {
 	public final static SnmpObjId DOT1D_BASE_PORT = SnmpObjId.get(".1.3.6.1.2.1.17.1.4.1.1");
 	public final static SnmpObjId DOT1D_BASE_IFINDEX = SnmpObjId.get(".1.3.6.1.2.1.17.1.4.1.2");
 
@@ -54,9 +54,9 @@ public final class Dot1dBasePortTableTracker extends TableTracker {
 		
 	};
 
-	class Dot1DBasePortRow extends SnmpRowResult {
+	public class Dot1dBasePortRow extends SnmpRowResult {
 
-		public Dot1DBasePortRow(int columnCount, SnmpInstId instance) {
+		public Dot1dBasePortRow(int columnCount, SnmpInstId instance) {
 			super(columnCount, instance);
 		}
 
@@ -91,21 +91,21 @@ public final class Dot1dBasePortTableTracker extends TableTracker {
     /** {@inheritDoc} */
     @Override
     public SnmpRowResult createRowResult(final int columnCount, final SnmpInstId instance) {
-        return new Dot1DBasePortRow(columnCount, instance);
+        return new Dot1dBasePortRow(columnCount, instance);
     }
 
     /** {@inheritDoc} */
     @Override
     public void rowCompleted(final SnmpRowResult row) {
-        processDot1DBasePortRow((Dot1DBasePortRow)row);
+        processDot1dBasePortRow((Dot1dBasePortRow)row);
     }
 
     /**
      * <p>processDot1DBasePortRow</p>
      *
-     * @param row a {@link org.opennms.netmgt.enlinkd.Dot1DBasePortTableTracker.Dot1DBasePortRow} object.
+     * @param row a {@link org.opennms.netmgt.enlinkd.Dot1dBasePortRow.Dot1DBasePortRow} object.
      */
-    public void processDot1DBasePortRow(final Dot1DBasePortRow row) {
+    public void processDot1dBasePortRow(final Dot1dBasePortRow row) {
     }
 
 
