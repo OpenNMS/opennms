@@ -44,6 +44,14 @@ import org.opennms.netmgt.model.OnmsNode.NodeType;
  * 
  */
 public abstract class TestNetworkBuilder {
+    //NMS4943
+    public static final String DLINK1_IP = "10.1.1.2";
+    public static final String DLINK1_NAME = "dlink1";
+    public static final String DLINK1_SNMP_RESOURCE = "classpath:linkd/nms4930/dlink_DES-3026.properties";
+
+    public static final String DLINK2_IP = "10.1.2.2";
+    public static final String DLINK2_NAME = "dlink2";
+    public static final String DLINK2_SNMP_RESOURCE = "classpath:linkd/nms4930/dlink_DGS-3612G.properties";
 
     //NMS0001
     public final static String FROH_ROOT= "FROH";

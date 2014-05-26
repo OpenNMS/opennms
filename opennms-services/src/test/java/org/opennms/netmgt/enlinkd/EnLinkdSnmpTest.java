@@ -33,7 +33,10 @@ import static org.junit.Assert.assertEquals;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.junit.Before;
@@ -608,12 +611,12 @@ public class EnLinkdSnmpTest extends TestNetworkBuilder implements InitializingB
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host="10.1.1.2", port=161, resource="classpath:linkd/nms4930/dlink_DES-3026.properties")
+        @JUnitSnmpAgent(host=DLINK1_IP, port=161, resource=DLINK1_SNMP_RESOURCE),
     })
     public void testDot1dBaseWalk() throws Exception {
 
     	String trackerName = "dot1dbase";
-    	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("10.1.1.2"));
+    	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(DLINK1_IP));
         Dot1dBaseTracker tracker = new Dot1dBaseTracker();
 
         SnmpWalker walker =  SnmpUtils.createWalker(config, trackerName, tracker);
@@ -647,13 +650,13 @@ public class EnLinkdSnmpTest extends TestNetworkBuilder implements InitializingB
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host="10.1.1.2", port=161, resource="classpath:linkd/nms4930/dlink_DES-3026.properties")
+            @JUnitSnmpAgent(host=DLINK1_IP, port=161, resource=DLINK1_SNMP_RESOURCE),
     })
     public void testDot1dBasePortTableWalk() throws Exception {
 
     	String trackerName = "dot1dbasePortTable";
     	final List<Dot1dBasePortRow> rows = new ArrayList<Dot1dBasePortTableTracker.Dot1dBasePortRow>();
-    	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("10.1.1.2"));
+    	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(DLINK1_IP));
         Dot1dBasePortTableTracker tracker = new Dot1dBasePortTableTracker() {
             @Override
         	public void processDot1dBasePortRow(final Dot1dBasePortRow row) {
@@ -687,13 +690,13 @@ public class EnLinkdSnmpTest extends TestNetworkBuilder implements InitializingB
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host="10.1.1.2", port=161, resource="classpath:linkd/nms4930/dlink_DES-3026.properties")
+        @JUnitSnmpAgent(host=DLINK1_IP, port=161, resource=DLINK1_SNMP_RESOURCE),
     })
     public void testDot1dStpPortTableWalk() throws Exception {
 
     	String trackerName = "dot1dbaseStpTable";
     	final List<BridgeStpLink> links = new ArrayList<BridgeStpLink>();
-    	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("10.1.1.2"));
+    	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(DLINK1_IP));
         Dot1dStpPortTableTracker tracker = new Dot1dStpPortTableTracker() {
             @Override
         	public void processDot1dStpPortRow(final Dot1dStpPortRow row) {
@@ -739,13 +742,13 @@ public class EnLinkdSnmpTest extends TestNetworkBuilder implements InitializingB
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host="10.1.1.2", port=161, resource="classpath:linkd/nms4930/dlink_DES-3026.properties")
+        @JUnitSnmpAgent(host=DLINK1_IP, port=161, resource=DLINK1_SNMP_RESOURCE),
     })
     public void testDot1dTpFdbTableWalk() throws Exception {
 
     	String trackerName = "dot1dTpFdbTable";
     	final List<BridgeMacLink> links = new ArrayList<BridgeMacLink>();
-    	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("10.1.1.2"));
+    	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(DLINK1_IP));
         Dot1dTpFdbTableTracker tracker = new Dot1dTpFdbTableTracker() {
             @Override
         	public void processDot1dTpFdbRow(final Dot1dTpFdbRow row) {
@@ -819,21 +822,23 @@ public class EnLinkdSnmpTest extends TestNetworkBuilder implements InitializingB
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host="10.1.1.2", port=161, resource="classpath:linkd/nms4930/dlink_DES-3026.properties")
+            @JUnitSnmpAgent(host=DLINK1_IP, port=161, resource=DLINK1_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=DLINK2_IP, port=161, resource=DLINK2_SNMP_RESOURCE)
     })
     public void testDot1qTpFdbTableWalk() throws Exception {
 
     	String trackerName = "dot1qTpFdbTable";
-    	final List<BridgeMacLink> links = new ArrayList<BridgeMacLink>();
-    	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("10.1.1.2"));
-        Dot1qTpFdbTableTracker tracker = new Dot1qTpFdbTableTracker() {
+    	final Map<String,Integer> macs1 = new HashMap<String, Integer>();
+    	final Map<String,Integer> macs2 = new HashMap<String, Integer>();
+    	SnmpAgentConfig  config1 = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(DLINK1_IP));
+        Dot1qTpFdbTableTracker tracker1 = new Dot1qTpFdbTableTracker() {
             @Override
         	public void processDot1qTpFdbRow(final Dot1qTpFdbRow row) {
-            	links.add(row.getLink());
+            	macs1.put(row.getDot1qTpFdbAddress(),row.getDot1qTpFdbPort());
             }
         };
 
-        SnmpWalker walker =  SnmpUtils.createWalker(config, trackerName, tracker);
+        SnmpWalker walker =  SnmpUtils.createWalker(config1, trackerName, tracker1);
 
         walker.start();
 
@@ -851,13 +856,58 @@ public class EnLinkdSnmpTest extends TestNetworkBuilder implements InitializingB
             return;
         }
 
-        assertEquals(61, links.size());
-        for (BridgeMacLink link: links) {
-        	System.out.println(link.getMacAddress());
-        	System.out.println(link.getBridgePort());
-        	if (link.getBridgeDot1qTpFdbStatus() != null)
-        	System.out.println(BridgeDot1qTpFdbStatus.getTypeString(link.getBridgeDot1qTpFdbStatus().getValue()));
+        SnmpAgentConfig  config2 = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(DLINK2_IP));
+        Dot1qTpFdbTableTracker tracker2 = new Dot1qTpFdbTableTracker() {
+            @Override
+        	public void processDot1qTpFdbRow(final Dot1qTpFdbRow row) {
+            	macs2.put(row.getDot1qTpFdbAddress(),row.getDot1qTpFdbPort());
+            }
+        };
+
+        walker =  SnmpUtils.createWalker(config2, trackerName, tracker2);
+
+        walker.start();
+
+        try {
+            walker.waitFor();
+            if (walker.timedOut()) {
+            	LOG.info(
+                        "run:Aborting node scan : Agent timed out while scanning the {} table", trackerName);
+            }  else if (walker.failed()) {
+            	LOG.info(
+                        "run:Aborting node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
+            }
+        } catch (final InterruptedException e) {
+            LOG.error("run: collection interrupted, exiting",e);
+            return;
         }
+
+        assertEquals(59, macs1.size());
+        assertEquals(979, macs2.size());
+
+       for (Entry<String,Integer> entry: macs1.entrySet()) {
+        	if (macs2.containsKey(entry.getKey())) {
+                System.out.println("-----------mac on 1 learned on 2 port-----------------");
+        		System.out.println("Mac: " + entry.getKey());
+        		System.out.println("learned on PortOn1: " + entry.getValue());
+        		System.out.println("learned on PortOn2: " + macs2.get(entry.getKey()));
+        	} else {
+                System.out.println("-----------mac found on 1 not learned on 2 port-----------------");
+        		System.out.println("Mac: " + entry.getKey());
+        		System.out.println("learned on PortOn1: " + entry.getValue());
+        	}
+        }
+
+        for (Entry<String,Integer> entry: macs2.entrySet()) {
+        	if (macs1.containsKey(entry.getKey())) {
+           	    System.out.println("-----------mac on 2 learned on 1 port-----------------");
+        	    System.out.println("Mac: " + entry.getKey());
+        		System.out.println("learned on PortOn2: " + entry.getValue());
+        		System.out.println("learned on PortOn1: " + macs1.get(entry.getKey()));
+        	}
+        }
+
+        
     }
 
 }
