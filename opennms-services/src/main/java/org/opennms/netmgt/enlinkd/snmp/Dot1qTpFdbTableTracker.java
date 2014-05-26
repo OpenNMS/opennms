@@ -143,7 +143,6 @@ public class Dot1qTpFdbTableTracker extends TableTracker {
                     sb.append("0").append(Integer.toHexString(identifiers[i]));
                 }
             }
-//			return	SnmpUtils.getValueFactory().getOctetString(sb.toString().getBytes()).toHexString();
 			return sb.toString();
 		}
 
@@ -153,7 +152,9 @@ public class Dot1qTpFdbTableTracker extends TableTracker {
 		 * @return a int.
 		 */
 		public Integer getDot1qTpFdbPort() {
-			return getValue(DOT1Q_TP_FDB_PORT).toInt();
+			if (getValue(DOT1Q_TP_FDB_PORT) != null)
+				return getValue(DOT1Q_TP_FDB_PORT).toInt();
+			return null;
 		}
 	
 		/**

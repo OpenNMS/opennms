@@ -134,7 +134,9 @@ public class Dot1dTpFdbTableTracker extends TableTracker {
 		 * @return a {@link java.lang.String} object.
 		 */
 		public String getDot1dTpFdbAddress() {
-			return getValue(DOT1D_TP_FDB_ADDRESS).toHexString();
+			if (getValue(DOT1D_TP_FDB_ADDRESS) != null)
+				return getValue(DOT1D_TP_FDB_ADDRESS).toHexString();
+			return null;
 		}
 	
 		/**
@@ -143,7 +145,9 @@ public class Dot1dTpFdbTableTracker extends TableTracker {
 		 * @return a int.
 		 */
 		public Integer getDot1dTpFdbPort() {
-			return getValue(DOT1D_TP_FDB_PORT).toInt();
+			if (getValue(DOT1D_TP_FDB_PORT) != null)
+				return getValue(DOT1D_TP_FDB_PORT).toInt();
+			return null;
 		}
 	
 		/**
@@ -152,7 +156,9 @@ public class Dot1dTpFdbTableTracker extends TableTracker {
 		 * @return a int.
 		 */
 		public Integer getDot1dTpFdbStatus() {
-			return getValue(DOT1D_TP_FDB_STATUS).toInt();
+			if (getValue(DOT1D_TP_FDB_STATUS) != null)
+				return getValue(DOT1D_TP_FDB_STATUS).toInt();
+			return null;
 		}
 
 		public BridgeMacLink getLink() {
@@ -160,7 +166,8 @@ public class Dot1dTpFdbTableTracker extends TableTracker {
 			BridgeMacLink link = new BridgeMacLink();
 			link.setBridgePort(getDot1dTpFdbPort());
 			link.setMacAddress(getDot1dTpFdbAddress());
-			link.setBridgeDot1qTpFdbStatus(BridgeDot1qTpFdbStatus.get(getDot1dTpFdbStatus()));
+			if (getDot1dTpFdbStatus() != null)
+				link.setBridgeDot1qTpFdbStatus(BridgeDot1qTpFdbStatus.get(getDot1dTpFdbStatus()));
             return link;
 		}
 
