@@ -25,6 +25,7 @@ public class BridgeTopology {
         private Set<Integer> targets = new HashSet<Integer>();
         private BridgePortRole role;
         private BridgeTopologyPort linkportcandidate;
+        private SwitchPort linkedswitchport;
         
         public BridgeTopologyLinkCandidate(BridgeTopologyPort btp) {
             bridgeTopologyPort = btp;
@@ -97,6 +98,14 @@ public class BridgeTopology {
 
 		public void setLinkPortCandidate(BridgeTopologyPort linkportcandidate) {
 			this.linkportcandidate = linkportcandidate;
+		}
+
+		public SwitchPort getLinkedSwitchPort() {
+			return linkedswitchport;
+		}
+
+		public void setLinkedswitchport(SwitchPort linkedswitchport) {
+			this.linkedswitchport = linkedswitchport;
 		}
     }
 
@@ -295,10 +304,13 @@ public class BridgeTopology {
              for (String mac : curEntry.getValue()) {
                  if (bridgeAssociatedMacAddressMap.containsKey(mac)) {
                 	 SwitchPort swPort = bridgeAssociatedMacAddressMap.get(mac);
+                	 if (swPort.getNodeid().intValue() == bridgeNode.getNodeId())
+                		 continue;
     	             LOG.info("addNodeToTopology: parsing node {}, port {}: mac {} found on bridge adding target: targetnodeid {}, targetifindex {}",
     	                     nodeid, curEntry.getKey(),
                              mac,swPort.getNodeid(),swPort.getIfindex());
-                     topologycandidate.addTarget(bridgeAssociatedMacAddressMap.get(mac).getNodeid());
+                     topologycandidate.setLinkedswitchport(swPort);
+                     topologycandidate.addTarget(swPort.getNodeid());
                  }
              }
              bridgeTopologyPortCandidates.add(parseBFTEntry(topologycandidate));
@@ -411,7 +423,6 @@ public class BridgeTopology {
             	topologyLinkCandidate.setRole(BridgePortRole.DIRECT);
             	linkcandidate.addTarget(topologyLinkCandidate.getBridgeTopologyPort().getNodeid());
             	linkcandidate.setRole(BridgePortRole.BACKBONE);
-        		//FIXME remember to put set the designated candidate port as a DIRECT;
             	continue;
         	}
         	
@@ -422,7 +433,6 @@ public class BridgeTopology {
         		linkcandidate.setRole(BridgePortRole.DIRECT);
         		topologyLinkCandidate.addTarget(linkcandidate.getBridgeTopologyPort().getNodeid());
         		topologyLinkCandidate.setRole(BridgePortRole.BACKBONE);
-        		//FIXME remember to put set the designated candidate port as a DIRECT;
         		continue;
         	}
         }
@@ -470,9 +480,10 @@ public class BridgeTopology {
     }
 
     public List<BridgeTopologyLink> getTopology() {
-    	Set<BridgeTopologyPort> parsedBridgeTopologyPorts = new HashSet<BridgeTopologyPort>(); 
+    	Set<BridgeTopologyPort> foundedOnBridgeLink = new HashSet<BridgeTopologyPort>(); 
+    	
     	for (BridgeTopologyLinkCandidate candidateA: bridgeTopologyPortCandidates) {
-    		if (parsedBridgeTopologyPorts.contains(candidateA.getBridgeTopologyPort()))
+    		if (foundedOnBridgeLink.contains(candidateA.getBridgeTopologyPort()))
 				continue;
     		if (candidateA.getTargets().isEmpty()) {
     			continue;
@@ -481,7 +492,7 @@ public class BridgeTopology {
                     candidateA.getBridgeTopologyPort().getNodeid(), candidateA.getBridgeTopologyPort().getBridgePort(), 
                     candidateA.getTargets());
 			for (BridgeTopologyLinkCandidate candidateB: bridgeTopologyPortCandidates) {
-				if (parsedBridgeTopologyPorts.contains(candidateB.getBridgeTopologyPort()))
+				if (foundedOnBridgeLink.contains(candidateB.getBridgeTopologyPort()))
 					continue;
 				if (candidateB.getTargets().isEmpty())
 					continue;
@@ -492,39 +503,23 @@ public class BridgeTopology {
                         candidateB.getTargets());
 				if (candidateA.getTargets().contains(candidateB.getBridgeTopologyPort().getNodeid()) 
 						&& candidateB.getTargets().contains(candidateA.getBridgeTopologyPort().getNodeid())) {
-					parsedBridgeTopologyPorts.add(candidateB.getBridgeTopologyPort());
+					foundedOnBridgeLink.add(candidateB.getBridgeTopologyPort());
+		    		foundedOnBridgeLink.add(candidateA.getBridgeTopologyPort());
 					BridgeTopologyLink link = new BridgeTopologyLink(candidateA.getBridgeTopologyPort(), candidateB.getBridgeTopologyPort());
 					LOG.info("getTopology: bridgetobridge discovery: link found {}", link);
 					bridgelinks.add(link);
 				}
 			}
-    		parsedBridgeTopologyPorts.add(candidateA.getBridgeTopologyPort());
     	}
     	for (BridgeTopologyLinkCandidate candidate: bridgeTopologyPortCandidates) {
-    		if (parsedBridgeTopologyPorts.contains(candidate.getBridgeTopologyPort()))
+    		if (foundedOnBridgeLink.contains(candidate.getBridgeTopologyPort()))
 				continue;
             LOG.info("getTopology: mac discovery: parsing nodeid {}, port {}, macs {}, targets {}.",
                     candidate.getBridgeTopologyPort().getNodeid(), candidate.getBridgeTopologyPort().getBridgePort(), 
                     candidate.getMacs(), candidate.getTargets());
     		BridgeTopologyLink link = new BridgeTopologyLink(new BridgeTopologyPort(candidate.getBridgeTopologyPort().getNodeid(), candidate.getBridgeTopologyPort().getBridgePort(), candidate.getMacs()));
-			SwitchPort swPort = null;
-    		for (String mac: candidate.getMacs()) {
-    			if (!bridgeAssociatedMacAddressMap.containsKey(mac)) {
-    				swPort = null;
-    				break;
-    			}
-    			if (swPort != null && !swPort.equals(bridgeAssociatedMacAddressMap.get(mac))) {
-    				swPort = null;
-    				break;
-    			} else {
-                    swPort = bridgeAssociatedMacAddressMap.get(mac);
-                    LOG.info("getTopology: parsing nodeid {}, port {}: mac {} is associated to switch Node {}, Port {}",
-                            candidate.getBridgeTopologyPort().getNodeid(), candidate.getBridgeTopologyPort().getBridgePort(), 
-                            mac, swPort.getNodeid(),swPort.getIfindex());        				
-    			}
-    		}
-    		if (swPort != null)
-    			link.setLinkedSwitchPort(swPort);
+    		if (candidate.getLinkedSwitchPort() != null)
+    			link.setLinkedSwitchPort(candidate.getLinkedSwitchPort());
 			LOG.info("getTopology: link found {}", link);
     		bridgelinks.add(link);
     	}
