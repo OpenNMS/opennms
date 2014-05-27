@@ -293,8 +293,7 @@ public class LinkableNode {
         return m_wifiIfIndexMac;
     }
 
-    public void addBridgeForwardingTableEntry(final int bridgeport, final String macAddress,
-            final Integer vlan) {
+    public void addBridgeForwardingTableEntry(final int bridgeport, final String macAddress) {
         Set<String> macs = new HashSet<String>();
         if (m_portMacs.containsKey(bridgeport)) {
             macs = m_portMacs.get(bridgeport);
