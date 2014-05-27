@@ -392,7 +392,7 @@ public class Nms10205aTest extends LinkdTestBuilder {
 
     /*
      *  
-     *  Get only ospf links.
+     *  Get only bridge links.
      */
     @Test
     @JUnitSnmpAgents(value={
