@@ -85,7 +85,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/applicationContext-pollerBackEnd.xml",
         "classpath:/META-INF/opennms/applicationContext-exportedPollerBackEnd-http.xml",
-        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
+        //"classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/org/opennms/netmgt/poller/remote/applicationContext-configOverride.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={

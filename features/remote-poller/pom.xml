@@ -140,6 +140,10 @@ groovy.compiler.output.path=target/classes
       <artifactId>opennms-services</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.poller</groupId>
+      <artifactId>org.opennms.features.poller.remote</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-wmi</artifactId>
     </dependency>

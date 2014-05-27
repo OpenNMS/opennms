@@ -61,7 +61,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-pollerBackEnd.xml",
         "classpath:/META-INF/opennms/applicationContext-pollerFrontEnd.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-        "classpath*:/META-INF/opennms/applicationContext-minimal-conf.xml",
+        //"classpath*:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/org/opennms/netmgt/poller/remote/applicationContext-configOverride.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
@@ -120,7 +120,7 @@ public class PollerFrontEndIntegrationTest implements InitializingBean, Temporar
 
     @Test
     @Transactional
-    @Ignore
+    //@Ignore
     public void testRegister() throws Exception {
         // Check preconditions
         assertFalse(m_frontEnd.isRegistered());
