@@ -39,14 +39,15 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
-import org.drools.RuleBase;
-import org.drools.RuleBaseConfiguration;
-import org.drools.RuleBaseConfiguration.AssertBehaviour;
-import org.drools.RuleBaseFactory;
-import org.drools.WorkingMemory;
-import org.drools.compiler.DroolsParserException;
-import org.drools.compiler.PackageBuilder;
-import org.drools.compiler.PackageBuilderConfiguration;
+import org.drools.compiler.compiler.DroolsParserException;
+import org.drools.compiler.compiler.PackageBuilder;
+import org.drools.compiler.compiler.PackageBuilderConfiguration;
+import org.drools.core.RuleBase;
+import org.drools.core.RuleBaseConfiguration;
+import org.drools.core.RuleBaseConfiguration.AssertBehaviour;
+import org.drools.core.RuleBaseFactory;
+import org.drools.core.WorkingMemory;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.correlation.AbstractCorrelationEngine;

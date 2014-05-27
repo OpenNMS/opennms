@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.drools.FactHandle;
+import org.drools.core.FactHandle;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine;

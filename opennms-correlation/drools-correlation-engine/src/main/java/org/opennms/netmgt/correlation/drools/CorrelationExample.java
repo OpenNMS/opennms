@@ -38,11 +38,11 @@ import java.util.Map;
 import java.util.Scanner;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.drools.RuleBase;
-import org.drools.RuleBaseFactory;
-import org.drools.WorkingMemory;
-import org.drools.audit.WorkingMemoryFileLogger;
-import org.drools.compiler.PackageBuilder;
+import org.drools.core.RuleBase;
+import org.drools.core.RuleBaseFactory;
+import org.drools.core.WorkingMemory;
+import org.drools.core.audit.WorkingMemoryFileLogger;
+import org.drools.compiler.compiler.PackageBuilder;
 
 /**
  * <p>CorrelationExample class.</p>
