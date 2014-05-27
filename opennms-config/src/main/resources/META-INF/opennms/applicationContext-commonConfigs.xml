@@ -74,4 +74,69 @@
 
   <bean id="userManager" class="org.opennms.netmgt.config.UserFactory" depends-on="userManager-init" factory-method="getInstance"/>
   
+   <bean id="discoveryConfig-factory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.DiscoveryConfigFactory.init</value></property>
+  </bean>
+
+  <bean id="discoveryFactory" class="org.opennms.netmgt.config.DiscoveryConfigFactory" depends-on="discoveryConfig-factory-init" factory-method="getInstance"/>
+  
+  <bean id="databaseSchemaConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.DatabaseSchemaConfigFactory.init</value></property>
+  </bean>
+
+  <bean id="databaseSchemaConfigFactory" class="org.opennms.netmgt.config.DatabaseSchemaConfigFactory" depends-on="databaseSchemaConfigFactory-init" factory-method="getInstance"/>
+  
+  <bean id="collectdConfig" class="org.opennms.netmgt.config.CollectdConfigFactory"/>
+  
+   <bean id="dataCollectionConfigDao" class="org.opennms.netmgt.config.DefaultDataCollectionConfigDao">
+    <property name="configResource" ref="dataCollectionConfigResourceLocation" />
+    <property name="configDirectory" ref="dataCollectionConfigDirectoryLocation" />
+    <property name="reloadCheckInterval" ref="dataCollectionConfigReloadCheckInterval" />
+  </bean>
+
+  <bean id="dataCollectionConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod">
+      <value>org.opennms.netmgt.config.DataCollectionConfigFactory.setInstance</value>
+    </property>
+    <property name="arguments">
+      <list>
+        <ref bean="dataCollectionConfigDao" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="dataCollectionConfig" class="org.opennms.netmgt.config.DataCollectionConfigFactory" depends-on="dataCollectionConfig-init" factory-method="getInstance" />
+
+  <onmsgi:service interface="org.opennms.netmgt.config.DataCollectionConfigDao" ref="dataCollectionConfigDao" />
+  
+  <bean id="snmpPeerFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.SnmpPeerFactory.init</value></property>
+  </bean>
+
+  <bean id="snmpPeerFactory" class="org.opennms.netmgt.config.SnmpPeerFactory" depends-on="snmpPeerFactory-init" factory-method="getInstance"/>
+
+  <onmsgi:service interface="org.opennms.netmgt.config.api.SnmpAgentConfigFactory" ref="snmpPeerFactory"/>
+  
+  <bean id="eventdConfigManager" class="org.opennms.netmgt.config.EventdConfigManager"/>
+  
+  <bean id="trapdConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" lazy-init="true">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.TrapdConfigFactory.init</value></property>
+  </bean>
+
+  <bean id="trapdConfig" class="org.opennms.netmgt.config.TrapdConfigFactory" depends-on="trapdConfig-init" lazy-init="true" factory-method="getInstance"/>
+  
+  <bean id="dataCollectionConfigResourceLocation" class="java.lang.String">
+    <constructor-arg value="file:${opennms.home}/etc/datacollection-config.xml" />
+  </bean>
+
+  <bean id="dataCollectionConfigDirectoryLocation" class="java.lang.String">
+    <constructor-arg value="${opennms.home}/etc/datacollection" />
+  </bean>
+
+  <bean id="dataCollectionConfigReloadCheckInterval" class="java.lang.Long">
+    <constructor-arg value="${org.opennms.snmp.dataCollectionConfig.reloadCheckInterval:30000}" />
+  </bean>
+  
+  
+  
 </beans>

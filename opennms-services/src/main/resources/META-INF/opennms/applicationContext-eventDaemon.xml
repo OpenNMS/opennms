@@ -31,8 +31,6 @@
   </bean>
   
   
-  <bean id="eventdConfigManager" class="org.opennms.netmgt.config.EventdConfigManager"/>
-
   <bean id="eventExpander" class="org.opennms.netmgt.eventd.EventExpander">
     <property name="eventConfDao" ref="eventConfDao"/>
   </bean>
