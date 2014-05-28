@@ -19,7 +19,7 @@ import org.opennms.netmgt.xml.event.Value;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;
-import org.drools.spi.KnowledgeHelper;
+import org.drools.core.spi.KnowledgeHelper;
 import org.opennms.netmgt.correlation.ncs.NCSCorrelationService;
 import org.opennms.netmgt.correlation.ncs.NCSCorrelationService.AttrParmMap;
 
