@@ -83,7 +83,8 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
-        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.rrd.storeByGroup=false")
 @JUnitTemporaryDatabase(reuseDatabase=false) // Relies on records created in @Before so we need a fresh database for each test

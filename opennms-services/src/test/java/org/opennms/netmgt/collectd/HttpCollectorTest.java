@@ -85,7 +85,8 @@ import org.springframework.transaction.PlatformTransactionManager;
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/applicationContext-collectdTest.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath*:/META-INF/opennms/applicationContext-minimal-conf.xml"
+        "classpath*:/META-INF/opennms/applicationContext-minimal-conf.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.rrd.storeByGroup=false")
 @JUnitTemporaryDatabase
