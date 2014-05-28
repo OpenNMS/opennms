@@ -38,8 +38,13 @@ import java.util.List;
 
 import org.opennms.core.utils.InetAddressUtils;
 
+import org.opennms.netmgt.enlinkd.snmp.OspfGeneralGroupTracker;
+import org.opennms.netmgt.enlinkd.snmp.OspfIfTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.OspfIpAddrTableGetter;
+import org.opennms.netmgt.enlinkd.snmp.OspfNbrTableTracker;
 import org.opennms.netmgt.model.OspfElement.Status;
 import org.opennms.netmgt.model.OspfLink;
+import org.opennms.netmgt.model.topology.LinkableSnmpNode;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
 import org.slf4j.Logger;
@@ -63,7 +68,7 @@ public final class OspfLinkdNodeDiscovery extends AbstractLinkdNodeDiscovery {
 	 * @param EnhancedLinkd linkd
 	 * @param LinkableNode node
 	 */
-    public OspfLinkdNodeDiscovery(final EnhancedLinkd linkd, final LinkableNode node) {
+    public OspfLinkdNodeDiscovery(final EnhancedLinkd linkd, final LinkableSnmpNode node) {
     	super(linkd, node);
     }
 

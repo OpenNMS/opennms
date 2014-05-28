@@ -59,6 +59,8 @@ import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsAtInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.topology.AtInterface;
+import org.opennms.netmgt.model.topology.LinkableNode;
 import org.opennms.netmgt.nb.Nms7467NetworkBuilder;
 
 public class Nms7467Test extends LinkdTestBuilder {
@@ -72,24 +74,28 @@ public class Nms7467Test extends LinkdTestBuilder {
             @JUnitSnmpAgent(host=NETGEAR_SW_108_IP, port=161, resource="classpath:linkd/nms7467/"+NETGEAR_SW_108_IP+"-walk.txt"),
             @JUnitSnmpAgent(host=LINUX_UBUNTU_IP, port=161, resource="classpath:linkd/nms7467/"+LINUX_UBUNTU_IP+"-walk.txt")
     })
-    // mrgarrison:172.20.1.5:-1   -------- ciscoswitch:172.20.1.7:47 ---bridge
-    // workstation:172.20.1.101:-1-------- ciscoswitch:172.20.1.7:47 ---bridge
-    // mrmakay:172.20.1.1:3       -------- ciscoswitch:172.20.1.7:52 ---cdp
-    // mrmakay:172.20.1.1:13      -------- ciscoswitch:172.20.1.7:52 ---bridge 
-    // mrmakay:172.20.1.1:12      -------- ciscoswitch:172.20.1.7:52 ---bridge 
-    // linuxubuntu:172.20.1.14:4  -------- ciscoswitch:172.20.1.7:11 ---bridge
-    // ng108switch:172.20.1.8:8   -------- ciscoswitch:172.20.1.7:9  ---bridge
-    // mac:172.20.1.28:4          -------- ng108switch:172.20.1.8:1  ---bridge
+    // mrgarrison:172.20.1.5:-1    -------- ciscoswitch:172.20.1.7:47 ---cdp 
+    // workstation:172.20.1.101:-1 -------- ciscoswitch:172.20.1.7:47 ---bridge 
+    // cisco870:172.20.1.1:3       -------- ciscoswitch:172.20.1.7:52 ---cdp 
+    // cisco870:172.20.1.1:1       -------- ciscoswitch:172.20.1.7:52 ---bridge 
+    // cisco870:172.20.1.1:13      -------- ciscoswitch:172.20.1.7:52 ---bridge 
+    // cisco870:172.20.1.1:12      -------- ciscoswitch:172.20.1.7:52 ---bridge 
+    // linuxubuntu:172.20.1.14:4   -------- ciscoswitch:172.20.1.7:11 ---bridge 
+    // ng108switch:172.20.1.8:8    -------- ciscoswitch:172.20.1.7:9  ---bridge 
+    // darwin108:172.20.1.28:4     -------- ng108switch:172.20.1.8:1  ---bridge 
     public void testAllLink() throws Exception {
 
         Package example1 = m_linkdConfig.getPackage("example1");
+        example1.setUseBridgeDiscovery(true);
         example1.setUseLldpDiscovery(false);
         example1.setUseOspfDiscovery(false);
         example1.setUseIsisDiscovery(false);
         example1.setUseIpRouteDiscovery(false);
-        example1.setForceIpRouteDiscoveryOnEthernet(false);
-        example1.setSaveRouteTable(true);
         example1.setUseCdpDiscovery(true);
+        example1.setForceIpRouteDiscoveryOnEthernet(false);
+        example1.setSaveRouteTable(false);
+        example1.setSaveStpNodeTable(false);
+        example1.setSaveStpInterfaceTable(false);
 
         m_nodeDao.save(builder.getCiscoC870());
         m_nodeDao.save(builder.getCiscoWsC2948());
@@ -131,18 +137,13 @@ public class Nms7467Test extends LinkdTestBuilder {
         final Collection<LinkableNode> linkables = m_linkd.getLinkableNodesOnPackage("example1");
         assertEquals(5, linkables.size());       
 
-        for (OnmsAtInterface onmsat: m_atInterfaceDao.findAll()) {
-            printAtInterface(onmsat);
-        }
         assertEquals(0,m_dataLinkInterfaceDao.countAll());
                                        
         assertEquals(5, m_linkd.getLinkableNodesOnPackage("example1").size());
 
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
 
-        for (DataLinkInterface link: m_dataLinkInterfaceDao.findAll())
-            printLink(link);
-        assertEquals(8,m_dataLinkInterfaceDao.countAll());
+        assertEquals(9,m_dataLinkInterfaceDao.countAll());
         
         //
         final DataLinkInterface mactongsw108link = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(mac.getId(),4).iterator().next();
@@ -196,8 +197,63 @@ public class Nms7467Test extends LinkdTestBuilder {
         assertTrue(m_linkd.runSingleSnmpCollection(linux.getId()));
 
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
+        for (OnmsAtInterface onmsat: m_atInterfaceDao.findAll()) {
+            printAtInterface(onmsat);
+        }
+        for (DataLinkInterface link: m_dataLinkInterfaceDao.findAll())
+            printLink(link);
 
-        assertEquals(8,m_dataLinkInterfaceDao.countAll());
+        assertEquals(9,m_dataLinkInterfaceDao.countAll());
+
+    }
+
+    // mrmakay:fa0:1              -------- ciscoswitch:172.20.1.7:52 ---bridge
+    // mrmakay:172.20.1.1:13      -------- ciscoswitch:172.20.1.7:52 ---bridge
+    // mrmakay:172.20.2.1:12      -------- ciscoswitch:172.20.1.7:52 ---bridge 
+    // the point is that all three interface share the same mac address "001f6cd034e7"
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource="classpath:linkd/nms7467/"+CISCO_WS_C2948_IP+"-walk.txt"),
+            @JUnitSnmpAgent(host=CISCO_C870_IP, port=161, resource="classpath:linkd/nms7467/"+CISCO_C870_IP+"-walk.txt")
+    })
+    public void testBridgeLinkCiscoSwitchVsRouter() throws Exception {
+
+        Package example1 = m_linkdConfig.getPackage("example1");
+        example1.setUseBridgeDiscovery(true);
+        example1.setUseLldpDiscovery(false);
+        example1.setUseOspfDiscovery(false);
+        example1.setUseIsisDiscovery(false);
+        example1.setUseIpRouteDiscovery(false);
+        example1.setUseCdpDiscovery(false);
+        example1.setForceIpRouteDiscoveryOnEthernet(false);
+        example1.setSaveRouteTable(false);
+        example1.setSaveStpNodeTable(false);
+        example1.setSaveStpInterfaceTable(false);
+
+        m_nodeDao.save(builder.getCiscoC870());
+        m_nodeDao.save(builder.getCiscoWsC2948());
+
+        m_nodeDao.flush();
+
+
+        final OnmsNode ciscorouter = m_nodeDao.findByForeignId("linkd", CISCO_C870_NAME);
+        final OnmsNode ciscows = m_nodeDao.findByForeignId("linkd", CISCO_WS_C2948_NAME);
+
+        assertTrue(m_linkd.scheduleNodeCollection(ciscows.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(ciscorouter.getId()));
+
+        assertTrue(m_linkd.runSingleSnmpCollection(ciscorouter.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(ciscows.getId()));
+        
+        assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
+
+        for (OnmsAtInterface onmsat: m_atInterfaceDao.findAll()) {
+            printAtInterface(onmsat);
+        }
+        for (DataLinkInterface link: m_dataLinkInterfaceDao.findAll())
+            printLink(link);
+        
+        assertEquals(3,m_dataLinkInterfaceDao.countAll());
 
     }
 

@@ -40,6 +40,12 @@ import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms4930NetworkBuilder;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.DLINK1_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.DLINK1_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.DLINK1_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.DLINK2_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.DLINK2_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.DLINK2_SNMP_RESOURCE;
 
 public class Nms4930Test extends LinkdTestBuilder {
 
@@ -62,8 +68,8 @@ public class Nms4930Test extends LinkdTestBuilder {
      */
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host="10.1.1.2", port=161, resource="classpath:linkd/nms4930/dlink_DES-3026.properties"),
-            @JUnitSnmpAgent(host="10.1.2.2", port=161, resource="classpath:linkd/nms4930/dlink_DGS-3612G.properties")
+            @JUnitSnmpAgent(host=DLINK1_IP, port=161, resource=DLINK1_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=DLINK2_IP, port=161, resource=DLINK2_SNMP_RESOURCE)
     })
     public void testNms4930Network() throws Exception {
 
@@ -78,14 +84,55 @@ public class Nms4930Test extends LinkdTestBuilder {
         example1.setSaveRouteTable(false);
         example1.setEnableVlanDiscovery(false);
         
-    	final OnmsNode cisco1 = m_nodeDao.findByForeignId("linkd", "cisco1");
-        final OnmsNode cisco2 = m_nodeDao.findByForeignId("linkd", "cisco2");
+    	final OnmsNode dlink1 = m_nodeDao.findByForeignId("linkd", DLINK1_NAME);
+        final OnmsNode dlink2 = m_nodeDao.findByForeignId("linkd", DLINK2_NAME);
 
-        assertTrue(m_linkd.scheduleNodeCollection(cisco1.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(cisco2.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(dlink1.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(dlink2.getId()));
 
-        assertTrue(m_linkd.runSingleSnmpCollection(cisco1.getId()));
-        assertTrue(m_linkd.runSingleSnmpCollection(cisco2.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(dlink1.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(dlink2.getId()));
+
+        assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
+
+        final List<DataLinkInterface> ifaces = m_dataLinkInterfaceDao.findAll();
+        
+        // FIXME These switches have both do1d and dot1q forwarding table,
+        // this must be further analyzed.
+        // this is a link bridgetobridge discovery: parsing nodeidA 2, portA 10, targetsA [1]
+        // must be considered in discovery algorithm
+        assertEquals("we should have found 1 link", 1, ifaces.size());
+        for (final DataLinkInterface link: ifaces) {
+            printLink(link);
+        }
+    }
+    
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=DLINK1_IP, port=161, resource=DLINK1_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=DLINK2_IP, port=161, resource=DLINK2_SNMP_RESOURCE)
+    })
+    public void testNms4930NetworkReverse() throws Exception {
+
+        Package example1 = m_linkdConfig.getPackage("example1");
+        example1.setUseLldpDiscovery(false);
+        example1.setUseOspfDiscovery(false);
+        example1.setUseCdpDiscovery(false);
+        example1.setUseIpRouteDiscovery(false);
+        example1.setUseBridgeDiscovery(true);
+        example1.setUseIsisDiscovery(false);
+
+        example1.setSaveRouteTable(false);
+        example1.setEnableVlanDiscovery(false);
+        
+    	final OnmsNode dlink1 = m_nodeDao.findByForeignId("linkd", DLINK1_NAME);
+        final OnmsNode dlink2 = m_nodeDao.findByForeignId("linkd", DLINK2_NAME);
+
+        assertTrue(m_linkd.scheduleNodeCollection(dlink2.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(dlink1.getId()));
+
+        assertTrue(m_linkd.runSingleSnmpCollection(dlink2.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(dlink1.getId()));
 
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
 
@@ -94,8 +141,12 @@ public class Nms4930Test extends LinkdTestBuilder {
             printLink(link);
         }
         
-        // Note By AR: I've inspected the snmp file, only the bridge mib are there
-        //             and no link is found
-        assertEquals("we should have found no links", 0, ifaces.size());
+        // FIXME These switches have both do1d and dot1q forwarding table,
+        // this must be further analyzed.
+        // this is a link bridgetobridge discovery: parsing nodeidA 2, portA 10, targetsA [1]
+        // must be considered in discovery algorithm
+        // the link is between node1 port 24 and node2 port 10
+        assertEquals("we should have found one link", 1, ifaces.size());
     }
+
 }

@@ -38,10 +38,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.opennms.netmgt.enlinkd.snmp.CiscoVtpTracker;
+import org.opennms.netmgt.enlinkd.snmp.CiscoVtpVlanTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.Dot1dBaseTracker;
+import org.opennms.netmgt.enlinkd.snmp.Dot1dStpPortTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.Dot1dTpFdbTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.Dot1qTpFdbTableTracker;
 import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeElement.BridgeDot1dBaseType;
 import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.BridgeStpLink;
+import org.opennms.netmgt.model.topology.LinkableSnmpNode;
 
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
@@ -71,7 +78,7 @@ public final class BridgeLinkdNodeDiscovery extends AbstractLinkdNodeDiscovery {
 	 *            node
 	 */
 	public BridgeLinkdNodeDiscovery(final EnhancedLinkd linkd,
-			final LinkableNode node) {
+			final LinkableSnmpNode node) {
 		super(linkd, node);
 	}
 
@@ -83,7 +90,7 @@ public final class BridgeLinkdNodeDiscovery extends AbstractLinkdNodeDiscovery {
 	
 		final Map<Integer,String> vlanmap = new HashMap<Integer, String>();
 		String trackerName = "vtpVersion";
-		final CiscoVtpStatus vtpStatus = new CiscoVtpStatus();
+		final CiscoVtpTracker vtpStatus = new CiscoVtpTracker();
 		SnmpWalker walker = SnmpUtils.createWalker(getPeer(), trackerName,
 				vtpStatus);
 		walker.start();
@@ -227,12 +234,11 @@ public final class BridgeLinkdNodeDiscovery extends AbstractLinkdNodeDiscovery {
 		} else {
 			walkSpanningTree(bridge.getBaseBridgeAddress(),vlan);
 		}		
-		boolean hasDot1dTpFdp = walkDot1DTpFdp(vlan);
-		if (vlan == null && !hasDot1dTpFdp)
-			walkDot1QTpFdp();
+		walkDot1DTpFdp(vlan);
+		walkDot1QTpFdp();
 	}
 
-	private boolean walkDot1DTpFdp(final Integer vlan) {
+	private void walkDot1DTpFdp(final Integer vlan) {
 		String trackerName = "dot1dTbFdbPortTable";
 
 		Dot1dTpFdbTableTracker stpPortTableTracker = new Dot1dTpFdbTableTracker() {
@@ -255,17 +261,16 @@ public final class BridgeLinkdNodeDiscovery extends AbstractLinkdNodeDiscovery {
 			if (walker.timedOut()) {
 				LOG.info("run:Aborting Bridge Linkd node scan : Agent timed out while scanning the {} table",
 						trackerName);
-				return false;
+				return;
 			} else if (walker.failed()) {
 				LOG.info("run:Aborting Bridge Linkd node scan : Agent failed while scanning the {} table: {}",
 						trackerName, walker.getErrorMessage());
-				return false;
+				return;
 			}
 		} catch (final InterruptedException e) {
 			LOG.error("run: Bridge Linkd node collection interrupted, exiting",e);
-			return false;
+			return;
 		}
-		return true;
 	}
 
 	private void walkDot1QTpFdp() {

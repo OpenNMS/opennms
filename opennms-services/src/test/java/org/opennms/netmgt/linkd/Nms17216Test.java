@@ -67,6 +67,7 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol;
+import org.opennms.netmgt.model.topology.LinkableNode;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms17216NetworkBuilder;
 
