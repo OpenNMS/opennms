@@ -75,7 +75,8 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:META-INF/opennms/mockEventIpcManager.xml",
         "classpath:META-INF/opennms/applicationContext-daemon.xml",
         "classpath:META-INF/opennms/applicationContext-trapDaemon.xml",
-        "classpath:org/opennms/netmgt/trapd/applicationContext-trapDaemonTest.xml"}
+        "classpath:org/opennms/netmgt/trapd/applicationContext-trapDaemonTest.xml",
+        "classpath:META-INF/opennms/applicationContext-commonConfigs.xml"}
 )
 @JUnitConfigurationEnvironment
 public class TrapHandlerTestCase implements InitializingBean {
