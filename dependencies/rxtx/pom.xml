@@ -21,6 +21,7 @@
       <version>2.2-pre2</version>
     </dependency>
   </dependencies>
+<!--
   <repositories>
     <repository>
       <snapshots>
@@ -36,4 +37,5 @@
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </repository>
   </repositories>
+-->
 </project>

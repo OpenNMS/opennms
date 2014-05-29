@@ -116,14 +116,8 @@
   </dependencies>
   <repositories>
     <repository>
-      <snapshots>
-        <enabled>false</enabled>
-        <updatePolicy>${updatePolicy}</updatePolicy>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>${updatePolicy}</updatePolicy>
-      </releases>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
       <id>coova</id>
       <name>Coova Repository</name>
       <url>http://maven.opennms.org/content/groups/coova-release</url>

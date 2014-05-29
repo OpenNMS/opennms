@@ -51,6 +51,7 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
+<!--
   <repositories>
     <repository>
       <snapshots>
@@ -66,4 +67,5 @@
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </repository>
   </repositories>
+-->
 </project>
