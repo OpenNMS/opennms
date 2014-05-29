@@ -641,6 +641,7 @@ public class WillItUnmarshalTest {
         allXml.remove("drools-engine.d/nodeParentRules/drools-engine.xml");
         allXml.remove("drools-engine.d/nodeParentRules/nodeParentRules-context.xml");
         allXml.remove("drools-engine.d/nodeParentRules/locationMonitorRules-context.xml");
+        allXml.remove("jetty.xml");
         allXml.remove("nsclient-config.xml");
         allXml.remove("Juniper/mcg/3gpp.kpis.xml");
         allXml.remove("Juniper/mcg/MCG-collectd-configuration.xml");

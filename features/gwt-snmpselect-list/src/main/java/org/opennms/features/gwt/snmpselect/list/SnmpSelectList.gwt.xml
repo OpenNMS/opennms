@@ -10,4 +10,6 @@
 	<source path="client" />
 	<entry-point
 		class="org.opennms.features.gwt.snmpselect.list.client.SnmpSelectListEntry" />
+
+  <collapse-all-properties/>
 </module>

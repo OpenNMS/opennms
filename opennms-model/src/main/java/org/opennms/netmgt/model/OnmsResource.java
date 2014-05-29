@@ -147,6 +147,7 @@ public class OnmsResource implements Comparable<OnmsResource> {
      * @param o a {@link org.opennms.netmgt.model.OnmsResource} object.
      * @return a int.
      */
+    // FIXME This doesn't seem to be correct, for example Fa0_1 could exist on multiple devices, so it should include the nodeId or the parent resource
     public int compareTo(OnmsResource o) {
         return getLabel().compareTo(o.getLabel());
     }

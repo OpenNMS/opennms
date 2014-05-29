@@ -74,6 +74,10 @@
     <td class="standard"><%=Vault.getProperty("org.opennms.rrd.storeByGroup")%></td>
   </tr>
   <tr>
+    <td class="standardheader">RRD store by Foreign Source:</td>
+    <td class="standard"><%=Vault.getProperty("org.opennms.rrd.storeByForeignSource")%></td>
+  </tr>
+  <tr>
     <td class="standardheader">Web-Application Logfiles:</td>
     <td class="standard"><%=Vault.getProperty("opennms.webapplogs.dir")%></td>
   </tr>

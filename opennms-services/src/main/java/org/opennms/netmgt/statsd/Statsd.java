@@ -215,6 +215,7 @@ public class Statsd implements SpringServiceDaemon {
             throw t;
         }
         
+        // FIXME What if the walker or the persister throws an exception ?
         getTransactionTemplate().execute(new TransactionCallbackWithoutResult() {
             public void doInTransactionWithoutResult(TransactionStatus status) {
                 long reportStartTime = System.currentTimeMillis();

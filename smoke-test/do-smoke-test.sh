@@ -167,9 +167,14 @@ run_tests() {
 	local RETVAL=0
 	rm -rf ~/.m2/repository/org/opennms
 
-	do_log "bamboo.pl test"
+	pushd "$SOURCEDIR"
+		do_log "bin/bamboo.pl -Psmoke --projects :smoke-test --also-make install"
+		bin/bamboo.pl -Psmoke --projects :smoke-test --also-make install
+	popd
+
+	do_log "compile.pl test"
 	pushd "$SOURCEDIR/smoke-test"
-		../bin/bamboo.pl -t -Denable.snapshots=true -DupdatePolicy=always -Dorg.opennms.smoketest.logLevel=INFO test
+		../compile.pl -t -Denable.snapshots=true -DupdatePolicy=always -Dorg.opennms.smoketest.logLevel=INFO test
 		RETVAL=$?
 	popd
 

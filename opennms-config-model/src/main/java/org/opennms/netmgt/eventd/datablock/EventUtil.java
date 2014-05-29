@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -48,6 +48,7 @@ import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.Base64;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.capsd.DbIpInterfaceEntry;
 import org.opennms.netmgt.model.capsd.DbSnmpInterfaceEntry;
@@ -422,7 +423,7 @@ public final class EventUtil {
 				}
 			}
 			if (nodeLabel != null)
-				retParmVal = nodeLabel;
+				retParmVal = WebSecurityUtils.sanitizeString(nodeLabel);
 			else
 				retParmVal = "Unknown";
 		} else if (parm.equals(TAG_TIME)) {

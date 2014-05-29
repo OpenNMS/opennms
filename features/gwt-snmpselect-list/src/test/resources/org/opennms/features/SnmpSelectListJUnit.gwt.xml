@@ -6,4 +6,5 @@
   <!-- Specify the path to any remote services.                   -->
   <servlet path="/SnmpSelectList/greet" class="org.opennms.features.server.GreetingServiceImpl" />
 
+  <collapse-all-properties/>
 </module>

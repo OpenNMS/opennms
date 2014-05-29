@@ -342,12 +342,8 @@ public class DefaultResourceDaoTest extends TestCase {
         OnmsIpInterface ip = createIpInterface();
         node.addIpInterface(ip);
         nodes.add(node);
-        List<Integer> nodeIds = new ArrayList<Integer>();
-        nodeIds.add(node.getId());
         
-        expect(m_nodeDao.getNodeIds()).andReturn(nodeIds);
-        expect(m_nodeDao.get(1)).andReturn(node).times(2);
-        
+        expect(m_nodeDao.findAll()).andReturn(nodes);
 
         File response = m_fileAnticipator.tempDir("response");
         File ipDir = m_fileAnticipator.tempDir(response, "192.168.1.1");
@@ -368,11 +364,8 @@ public class DefaultResourceDaoTest extends TestCase {
         OnmsIpInterface ip = createIpInterface();
         node.addIpInterface(ip);
         nodes.add(node);
-        List<Integer> nodeIds = new ArrayList<Integer>();
-        nodeIds.add(node.getId());
-        
-        expect(m_nodeDao.getNodeIds()).andReturn(nodeIds);
-        expect(m_nodeDao.get(1)).andReturn(node).times(2);
+
+        expect(m_nodeDao.findAll()).andReturn(nodes);
 
         File response = m_fileAnticipator.tempDir("response");
         File distributed = m_fileAnticipator.tempDir(response, "distributed");
@@ -394,11 +387,8 @@ public class DefaultResourceDaoTest extends TestCase {
         OnmsIpInterface ip = createIpInterface();
         node.addIpInterface(ip);
         nodes.add(node);
-        List<Integer> nodeIds = new ArrayList<Integer>();
-        nodeIds.add(node.getId());
         
-        expect(m_nodeDao.getNodeIds()).andReturn(nodeIds);
-        expect(m_nodeDao.get(1)).andReturn(node).times(1);
+        expect(m_nodeDao.findAll()).andReturn(nodes);
 
         File snmp = m_fileAnticipator.tempDir("snmp");
         File nodeDir = m_fileAnticipator.tempDir(snmp, "1");
@@ -419,11 +409,8 @@ public class DefaultResourceDaoTest extends TestCase {
         OnmsIpInterface ip = createIpInterface();
         node.addIpInterface(ip);
         nodes.add(node);
-        List<Integer> nodeIds = new ArrayList<Integer>();
-        nodeIds.add(node.getId());
         
-        expect(m_nodeDao.getNodeIds()).andReturn(nodeIds);
-        expect(m_nodeDao.get(1)).andReturn(node).times(1);
+        expect(m_nodeDao.findAll()).andReturn(nodes);
 
         File snmp = m_fileAnticipator.tempDir("snmp");
         File nodeDir = m_fileAnticipator.tempDir(snmp, "1");

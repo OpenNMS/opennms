@@ -28,11 +28,11 @@
 
 package org.opennms.protocols.xml.collector;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.protocols.http.HttpUrlConnection;
 import org.opennms.protocols.http.HttpUrlHandler;
 import org.opennms.protocols.http.HttpsUrlHandler;
@@ -88,12 +88,17 @@ public class UrlFactory {
      * Disconnect.
      *
      * @param connection the URL connection
-     * @throws IOException Signals that an I/O exception has occurred.
      */
-    public static void disconnect(URLConnection connection) throws IOException {
-        if (connection != null && connection instanceof SftpUrlConnection) // We need to be sure to close the connections for SFTP
-            ((SftpUrlConnection)connection).disconnect();
-        if (connection != null && connection instanceof HttpUrlConnection)
-            ((HttpUrlConnection)connection).disconnect();
+    public static void disconnect(URLConnection connection) {
+        try {
+            if (connection == null)
+                return;
+            if (connection instanceof SftpUrlConnection) // We need to be sure to close the connections for SFTP
+                ((SftpUrlConnection)connection).disconnect();
+            if (connection instanceof HttpUrlConnection)
+                ((HttpUrlConnection)connection).disconnect();
+        } catch (Exception e) {
+            LogUtils.errorf(UrlFactory.class, e, "Can't close open connection.");
+        }
     }
 }

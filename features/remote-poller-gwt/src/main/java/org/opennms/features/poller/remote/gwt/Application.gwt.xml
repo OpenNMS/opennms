@@ -24,4 +24,5 @@
   <!-- Specify the app entry point class. -->
   <entry-point class='org.opennms.features.poller.remote.gwt.client.Main'/>
 
+  <collapse-all-properties/>
 </module>

@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>1.12.7-SNAPSHOT</version>
+  <version>1.12.8-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
@@ -805,7 +805,7 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>1.12.7.SNAPSHOT</opennms.osgi.version>
+    <opennms.osgi.version>1.12.8.SNAPSHOT</opennms.osgi.version>
     <maven.metadata.legacy>true</maven.metadata.legacy>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
@@ -884,7 +884,7 @@
     <httpcoreVersion>4.2.4</httpcoreVersion>
     <httpclientVersion>4.2.5</httpclientVersion>
     <jasperreportsVersion>3.7.6</jasperreportsVersion>
-    <jettyVersion>7.6.12.v20130726</jettyVersion>
+    <jettyVersion>7.6.15.v20140411</jettyVersion>
     <karafVersion>2.3.1</karafVersion>
     <felixVersion>2.2.0</felixVersion>
     <liquibaseVersion>2.0.5</liquibaseVersion>
@@ -1050,10 +1050,23 @@
         <module>opennms-tools</module>
       </modules>
     </profile>
+
     <profile>
       <id>build-bamboo</id>
       <modules>
         <module>opennms-full-assembly</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>smoke</id>
+      <activation>
+        <property>
+          <name>smoke</name>
+        </property>
+      </activation>
+      <modules>
+        <module>smoke-test</module>
       </modules>
     </profile>
 
@@ -2526,6 +2539,11 @@
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-continuation</artifactId>
+        <version>${jettyVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-deploy</artifactId>
         <version>${jettyVersion}</version>
       </dependency>
       <dependency>

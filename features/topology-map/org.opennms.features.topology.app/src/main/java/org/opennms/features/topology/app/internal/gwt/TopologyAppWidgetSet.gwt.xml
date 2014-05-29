@@ -25,4 +25,5 @@
     <script src="topologywidget/js/d3.v3.js"/>
     <script src="topologywidget/js/d3.interpolate-zoom.v0.js"/>
 
+    <collapse-all-properties/>
 </module>

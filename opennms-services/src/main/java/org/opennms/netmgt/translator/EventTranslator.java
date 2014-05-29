@@ -53,7 +53,7 @@ import org.opennms.netmgt.xml.event.Parm;
  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
  */
 public class EventTranslator extends AbstractServiceDaemon implements EventListener {
-    
+
     private static EventTranslator s_instance = new EventTranslator();
 
     private volatile EventIpcManager m_eventMgr;
@@ -62,24 +62,24 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
 
     private DataSource m_dataSource;
 
-    
+
     /**
      * <p>Constructor for EventTranslator.</p>
      */
     public EventTranslator() {
-    	super(EventTranslatorConfig.TRANSLATOR_NAME);
+        super(EventTranslatorConfig.TRANSLATOR_NAME);
     }
-    
+
     /**
      * <p>Constructor for EventTranslator.</p>
      *
      * @param eventMgr a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
      */
     public EventTranslator(EventIpcManager eventMgr) {
-    	this();
+        this();
         setEventManager(eventMgr);
     }
-    
+
     /**
      * <p>setInstance</p>
      *
@@ -88,7 +88,7 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
     public synchronized static void setInstance(EventTranslator psk) {
         s_instance = psk;
     }
-    
+
     /**
      * <p>getInstance</p>
      *
@@ -98,16 +98,16 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
         return s_instance;
     }
 
-    
+
     /**
      * <p>onInit</p>
      */
     protected void onInit() {
         if (m_initialized) return;
-        
+
         checkPreRequisites();
         createMessageSelectorAndSubscribe();
-                
+
         m_initialized = true;
     }
 
@@ -155,7 +155,7 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
         }
 
         log().debug("onEvent: received valid registered translation event: \n"+EventUtils.toString(e));
-        
+
         List<Event> translated = m_config.translateEvent(e);
         if (translated != null) {
             Log log = new Log();
@@ -182,12 +182,12 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
         try {
             List<String> previousUeis = m_config.getUEIList();
             m_config.update();
-            
+
             //need to re-register the UEIs not including those the daemon
             //registered separate from the config (i.e. reloadDaemonConfig)
             getEventManager().removeEventListener(this, previousUeis);
             getEventManager().addEventListener(this, m_config.getUEIList());
-            
+
             log().debug("onEvent: configuration reloaded.");
             ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, getName());
             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Translator");
@@ -200,7 +200,7 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
         if (ebldr != null) {
             m_eventMgr.sendNow(ebldr.getEvent());
         }
-        
+
         log().info("onEvent: reload configuration: reload configuration contains "+m_config.getUEIList().size()+" UEI specs.");
     }
 
@@ -241,7 +241,7 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
     public void setEventManager(EventIpcManager eventMgr) {
         m_eventMgr = eventMgr;
     }
-    
+
     /**
      * <p>getConfig</p>
      *
@@ -250,7 +250,7 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
     public EventTranslatorConfig getConfig() {
         return m_config;
     }
-    
+
     /**
      * <p>setConfig</p>
      *
@@ -259,7 +259,7 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
     public void setConfig(EventTranslatorConfig config) {
         m_config = config;
     }
-    
+
     /**
      * <p>getDataSource</p>
      *
@@ -268,7 +268,7 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
     public DataSource getDataSource() {
         return m_dataSource;
     }
-    
+
     /**
      * <p>setDataSource</p>
      *
@@ -278,5 +278,5 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
         m_dataSource = dataSource;
     }
 
-    
+
 }

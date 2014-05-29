@@ -20,4 +20,5 @@
 	<source path='client' />
 	<source path='shared' />
 
+	<collapse-all-properties/>
 </module>
