@@ -28,9 +28,11 @@
 
 package org.opennms.netmgt.model.topology;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
+import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
@@ -56,13 +58,13 @@ public class DefaultBridgeTopologyTest {
 	protected void printBridgeTopologyLink(BridgeTopologyLink path) {
        System.err.println("");
        System.err.println("------link-----");
+       System.err.println("macs on link: " + path.getMacs());
        System.err.println("------bridge port-----");
        printBridgeTopologyPort(path.getBridgeTopologyPort());
        if (path.getDesignatebridgePort() != null ) {
 	       System.err.println("------designated port-----");
     	   printBridgeTopologyPort(path.getDesignatebridgePort());
        }
-       System.err.println("macs on link: " + path.getMacs());
 	}
 
 	protected void printBridgeTopologyPort(BridgeTopologyPort port) {
@@ -102,8 +104,30 @@ public class DefaultBridgeTopologyTest {
         
         bridgeTopology.addNodeToTopology(linkablenodeA);
 
-        printBridgeTopologyLinks(bridgeTopology.getTopology());
-
+        List<BridgeTopologyLink> links = bridgeTopology.getTopology();
+        printBridgeTopologyLinks(links);
+        assertEquals(5, links.size());
+        for (BridgeTopologyLink link: links) {
+        	assertEquals(null,link.getDesignatebridgePort());
+        	BridgeTopologyPort port = link.getBridgeTopologyPort();
+        	assertEquals(nodeA, port.getNodeid());
+    		assertEquals(1, link.getMacs().size());
+    		assertEquals(1, port.getMacs().size());
+    		assertEquals(port.getMacs().iterator().next(),link.getMacs().iterator().next());
+        	if (link.getBridgeTopologyPort().getBridgePort() == portA1) {
+        		assertEquals(mac1, link.getMacs().iterator().next());
+        	} else if (link.getBridgeTopologyPort().getBridgePort() == portA2) {
+        		assertEquals(mac2, link.getMacs().iterator().next());
+        	} else if (link.getBridgeTopologyPort().getBridgePort() == portA3) {
+        		assertEquals(mac3, link.getMacs().iterator().next());
+        	} else if (link.getBridgeTopologyPort().getBridgePort() == portA4) {
+        		assertEquals(mac4, link.getMacs().iterator().next());
+        	} else if (link.getBridgeTopologyPort().getBridgePort() == portA5) {
+        		assertEquals(mac5, link.getMacs().iterator().next());
+        	} else {
+        		assertEquals(-1, 1);
+        	}
+        }
 	}
 
 	@Test
@@ -130,7 +154,24 @@ public class DefaultBridgeTopologyTest {
         
         bridgeTopology.addNodeToTopology(linkablenodeA);
 
-        printBridgeTopologyLinks(bridgeTopology.getTopology());
+        List<BridgeTopologyLink> links = bridgeTopology.getTopology();
+        printBridgeTopologyLinks(links);
+        assertEquals(1, links.size());
+        for (BridgeTopologyLink link: links) {
+        	BridgeTopologyPort port = link.getBridgeTopologyPort();
+    		assertEquals(port.getMacs(),link.getMacs());
+        	assertEquals(null,link.getDesignatebridgePort());
+        	if (link.getBridgeTopologyPort().getBridgePort() == portA1) {
+        		assertEquals(4, link.getMacs().size());
+        		Iterator<String> macs = link.getMacs().iterator();
+        		assertEquals(mac4, macs.next());
+        		assertEquals(mac3, macs.next());
+        		assertEquals(mac2, macs.next());
+        		assertEquals(mac1, macs.next());
+        	} else {
+        		assertEquals(-1, 1);
+        	}
+        }
 
 	}
 
@@ -196,7 +237,54 @@ public class DefaultBridgeTopologyTest {
         
         bridgeTopology.addNodeToTopology(linkablenodeA);
 
-        printBridgeTopologyLinks(bridgeTopology.getTopology());
+        List<BridgeTopologyLink> links = bridgeTopology.getTopology();
+        printBridgeTopologyLinks(links);
+        assertEquals(7, links.size());
+        for (BridgeTopologyLink link: links) {
+        	BridgeTopologyPort port = link.getBridgeTopologyPort();
+    		assertEquals(port.getMacs(),link.getMacs());
+        	assertEquals(null,link.getDesignatebridgePort());
+        	if (link.getBridgeTopologyPort().getBridgePort() == portA1) {
+        		assertEquals(1, link.getMacs().size());
+        		Iterator<String> macs = link.getMacs().iterator();
+        		assertEquals(mac1, macs.next());
+        	} else if (link.getBridgeTopologyPort().getBridgePort() == portA2) {
+        		assertEquals(1, link.getMacs().size());
+        		Iterator<String> macs = link.getMacs().iterator();
+        		assertEquals(mac2, macs.next());
+        	} else if (link.getBridgeTopologyPort().getBridgePort() == portA3) {
+        		assertEquals(1, link.getMacs().size());
+        		Iterator<String> macs = link.getMacs().iterator();
+        		assertEquals(mac3, macs.next());
+        	} else if (link.getBridgeTopologyPort().getBridgePort() == portA4) {
+        		assertEquals(1, link.getMacs().size());
+        		Iterator<String> macs = link.getMacs().iterator();
+        		assertEquals(mac4, macs.next());
+        	} else if (link.getBridgeTopologyPort().getBridgePort() == portA23) {
+        		assertEquals(4, link.getMacs().size());
+        		Iterator<String> macs = link.getMacs().iterator();
+        		assertEquals(mac232, macs.next());
+        		assertEquals(mac231, macs.next());
+        		assertEquals(mac234, macs.next());
+        		assertEquals(mac233, macs.next());
+        	} else if (link.getBridgeTopologyPort().getBridgePort() == portA24) {
+        		assertEquals(5, link.getMacs().size());
+        		Iterator<String> macs = link.getMacs().iterator();
+        		assertEquals(mac241, macs.next());
+        		assertEquals(mac245, macs.next());
+        		assertEquals(mac244, macs.next());
+        		assertEquals(mac243, macs.next());
+        		assertEquals(mac242, macs.next());
+        	} else if (link.getBridgeTopologyPort().getBridgePort() == portA25) {
+        		assertEquals(3, link.getMacs().size());
+        		Iterator<String> macs = link.getMacs().iterator();
+        		assertEquals(mac253, macs.next());
+        		assertEquals(mac251, macs.next());
+        		assertEquals(mac252, macs.next());
+        	} else {
+        		assertEquals(-1, 1);
+        	}
+        }
 
 	}
 
