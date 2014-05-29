@@ -6,6 +6,34 @@
 
 	<!-- Start 1.13 -->
 
+	<section id="opennms-1.13.2">
+		<title>Changes in OpenNMS 1.13.2</title>
+
+		<section id="opennms-1.13.2-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>Using the Sftp3gppXmlCollectionHandler affecting the XSLT pre processing. Both are not working together. (Issue <ulink url='http://issues.opennms.org/browse/NMS-6533'>NMS-6533</ulink>)</para></listitem>
+				<listitem><para>ResourceDao.findTopLevelResources() is returning duplicated data because of storeByForeignSource (Issue <ulink url='http://issues.opennms.org/browse/NMS-6545'>NMS-6545</ulink>)</para></listitem>
+				<listitem><para>Notifications are truncated at 4000 chars in database (Issue <ulink url='http://issues.opennms.org/browse/NMS-6562'>NMS-6562</ulink>)</para></listitem>
+				<listitem><para>The SFTP Connection are not closed when an exception is thrown using 3GPP XML Collector  (Issue <ulink url='http://issues.opennms.org/browse/NMS-6564'>NMS-6564</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.13.2-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>Patch for auto-acknowledgement of threshold events (Issue <ulink url='http://issues.opennms.org/browse/NMS-1462'>NMS-1462</ulink>)</para></listitem>
+				<listitem><para>Embed JMS provider inside OpenNMS (Issue <ulink url='http://issues.opennms.org/browse/NMS-2638'>NMS-2638</ulink>)</para></listitem>
+				<listitem><para>Add ability to match event parms for auto-ack (Issue <ulink url='http://issues.opennms.org/browse/NMS-3090'>NMS-3090</ulink>)</para></listitem>
+				<listitem><para>Alphabetize the polling packages on scheduled outages (Issue <ulink url='http://issues.opennms.org/browse/NMS-5243'>NMS-5243</ulink>)</para></listitem>
+				<listitem><para>Sort notifications by severity (Issue <ulink url='http://issues.opennms.org/browse/NMS-6504'>NMS-6504</ulink>)</para></listitem>
+				<listitem><para>snmp mib compiler should use twin column select for systemDefs (Issue <ulink url='http://issues.opennms.org/browse/NMS-6525'>NMS-6525</ulink>)</para></listitem>
+				<listitem><para>Make visible the scheduled outages that are being executed. (Issue <ulink url='http://issues.opennms.org/browse/NMS-6558'>NMS-6558</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
 	<section id="opennms-1.13.1">
 		<title>Changes in OpenNMS 1.13.1</title>
 
