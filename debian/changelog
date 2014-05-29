@@ -12,6 +12,13 @@ opennms (1.13.0-1) stable; urgency=low
 
  -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 12 Dec 2013 15:28:00 -0400
 
+opennms (1.12.7-1) stable; urgency=high
+
+  * New upstream release.  This release contains a number of important fixes
+    including an XSS vulnerability.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 29 May 2014 11:55:00 -0400
+
 opennms (1.12.6-1) stable; urgency=high
 
   * New upstream release.  This release contains a number of important fixes
