@@ -29,16 +29,6 @@
 package org.opennms.netmgt.nb;
 
 import static org.junit.Assert.assertTrue;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO_C870_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO_C870_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO_WS_C2948_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO_WS_C2948_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.DARWIN_10_8_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.DARWIN_10_8_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.LINUX_UBUNTU_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.LINUX_UBUNTU_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.NETGEAR_SW_108_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.NETGEAR_SW_108_SNMP_RESOURCE;
 
 import java.io.IOException;
 import java.util.List;
@@ -176,7 +166,7 @@ public class Nms7467CapsdIntegrationTest extends Nms7467NetworkBuilder implement
     
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=CISCO_C870_IP, port=161, resource=CISCO_C870_SNMP_RESOURCE)
+            @JUnitSnmpAgent(host=CISCO_C870_IP_PRIMARY, port=161, resource=CISCO_C870_SNMP_RESOURCE)
     })
     @Transactional
     public final void testCISCO870CapsdCollection() throws MarshalException, ValidationException, IOException {
