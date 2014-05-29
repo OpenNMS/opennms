@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -68,7 +68,7 @@ public class XssRequestWrapper extends HttpServletRequestWrapper
         super(req);
         original_parameters = req.getParameterMap();   
         sanitized_parameters = getParameterMap();
-            snzLogger();
+        snzLogger();
     }       
 
     /** {@inheritDoc} */
@@ -159,13 +159,12 @@ public class XssRequestWrapper extends HttpServletRequestWrapper
                 for (int i=0; i < rawVals.length; i++) 
                 {
                     if (rawVals[i].equals(snzVals[i]))                                                          
-                        LOG.debug("Sanitization. Param seems safe: {}[{}]={}", key, i, snzVals[i]);               
+                        LOG.debug("Sanitization. Param seems safe: {}[{}]={}", key, i, snzVals[i]);
                     else
                         LOG.debug("Sanitization. Param modified: {}[{}]={}", key, i, snzVals[i]);
                 }       
             }
         }
     }
-
 
 }
