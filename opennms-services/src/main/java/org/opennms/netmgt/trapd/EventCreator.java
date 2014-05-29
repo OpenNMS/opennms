@@ -54,13 +54,12 @@ public class EventCreator implements TrapProcessor {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(EventCreator.class);
     
-    private EventBuilder m_eventBuilder;
-    private TrapdIpMgr m_trapdIpMgr;
+    private final EventBuilder m_eventBuilder;
+    private final TrapdIpMgr m_trapdIpMgr;
 
     
     public EventCreator(TrapdIpMgr trapdIpMgr) {
         m_trapdIpMgr = trapdIpMgr;
-        
         m_eventBuilder = new EventBuilder(null, "trapd");
     }
     
