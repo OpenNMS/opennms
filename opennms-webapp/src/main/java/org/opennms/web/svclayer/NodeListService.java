@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -50,6 +50,14 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Transactional(readOnly = true)
 public interface NodeListService {
+    /**
+     * <p>createNodeList</p>
+     *
+     * @param command a {@link org.opennms.web.command.NodeListCommand} object.
+     * @return a {@link org.opennms.web.svclayer.support.NodeListModel} object.
+     */
+    public NodeListModel createNodeList(NodeListCommand command, boolean sanitizeLabels);
+
     /**
      * <p>createNodeList</p>
      *
