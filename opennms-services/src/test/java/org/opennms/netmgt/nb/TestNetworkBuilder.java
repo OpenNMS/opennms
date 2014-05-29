@@ -1075,28 +1075,21 @@ public abstract class TestNetworkBuilder {
     
     //nms7467
     
-    /*
-     * The following parameters
-     * describe a workstation without snmp enabled
-     * the ip address is 172.20.1.101
-     * the mac address is  60334b0817a8 
-     */
-	public static final String WORKSTATION_NAME        = "workstation";
-	public static final String WORKSTATION_IP          = "172.20.1.101";
-	public static final String WORKSTATION_MAC         = "60334b0817a8";
+	public static final String WORKSTATION_NAME         = "workstation";
+	public static final String WORKSTATION_IP           = "172.20.1.101";
+	public static final String WORKSTATION_MAC          = "60334b0817a8";
 
-    /*
-     * This is a cisco access point but without snmp walk available 
-     */
-	public static final String ACCESSPOINT_NAME        = "mrgarrison.internal.opennms.com";
-	public static final String ACCESSPOINT_IP          = "172.20.1.5";
+	public static final String ACCESSPOINT_NAME         = "mrgarrison.internal.opennms.com";
+	public static final String ACCESSPOINT_IP           = "172.20.1.5";
 
-    public static final String CISCO_C870_NAME         = "mrmakay.internal.opennms.com";
-    public static final String CISCO_C870_IP_PRIMARY   = "10.255.255.2";
-    public static final String CISCO_C870_IP           = "172.20.1.1";
+    public static final String CISCO_C870_NAME          = "mrmakay.internal.opennms.com";
+    public static final String CISCO_C870_IP_PRIMARY    = "10.255.255.2";
+    public static final String CISCO_C870_IP            = "172.20.1.1";
     public static final String CISCO_C870_BRIDGEID      = "00000c83d9a8";
     public static final String CISCO_C870_SYSOID        = ".1.3.6.1.4.1.9.1.569";
-
+    public static final String CISCO_C870_ROOT          = "CISCO_C870";
+    public static final String CISCO_C870_SNMP_RESOURCE = "classpath:linkd/nms7467/"+CISCO_C870_IP+"-walk.txt";
+    
     public static final Map<Integer, String> CISCO_C870_IF_IFDESCR_MAP = new HashMap<Integer, String>();
     public static final Map<Integer, String> CISCO_C870_IF_IFNAME_MAP = new HashMap<Integer, String>();
     public static final Map<Integer, String> CISCO_C870_IF_MAC_MAP = new HashMap<Integer, String>();
@@ -1106,31 +1099,39 @@ public abstract class TestNetworkBuilder {
     public static final String CISCO_WS_C2948_IP       = "172.20.1.7";
     public static final String CISCO_WS_C2948_BRIDGEID      = "0002baaacc00";
     public static final String CISCO_WS_C2948_SYSOID        = ".1.3.6.1.4.1.9.5.42";
+    public static final String CISCO_WS_C2948_ROOT          = "CISCO_WS_C2948";
+    public static final String CISCO_WS_C2948_SNMP_RESOURCE = "classpath:linkd/nms7467/"+CISCO_WS_C2948_IP+"-walk.txt";
 
     public static final Map<InetAddress,Integer> CISCO_WS_C2948_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
     public static final Map<Integer,String> CISCO_WS_C2948_IF_IFNAME_MAP = new HashMap<Integer, String>();
     public static final Map<Integer,String> CISCO_WS_C2948_IF_MAC_MAP = new HashMap<Integer, String>();
 
-    public static final String NETGEAR_SW_108_NAME         = "ng108switch";
-    public static final String NETGEAR_SW_108_IP       = "172.20.1.8";
+    public static final String NETGEAR_SW_108_NAME          = "ng108switch";
+    public static final String NETGEAR_SW_108_IP            = "172.20.1.8";
     public static final String NETGEAR_SW_108_BRIDGEID      = "00223ff00b7b";
     public static final String NETGEAR_SW_108_SYSOID        = ".1.3.6.1.4.1.4526.100.4.8";
+    public static final String NETGEAR_SW_108_ROOT          = "NETGEAR_SW_108";
+    public static final String NETGEAR_SW_108_SNMP_RESOURCE = "classpath:linkd/nms7467/"+NETGEAR_SW_108_IP+"-walk.txt";
 
     public static final Map<InetAddress,Integer> NETGEAR_SW_108_IP_IF_MAP = new HashMap<InetAddress, Integer>();
     public static final Map<Integer, String> NETGEAR_SW_108_IF_IFNAME_MAP = new HashMap<Integer, String>();
     public static final Map<Integer, String> NETGEAR_SW_108_IF_MAC_MAP = new HashMap<Integer, String>();
 
-    public static final String LINUX_UBUNTU_NAME         = "linuxubuntu";
-    public static final String LINUX_UBUNTU_IP         = "172.20.1.14";
-    public static final String LINUX_UBUNTU_SYSOID     = ".1.3.6.1.4.1.8072.3.2.10";
+    public static final String LINUX_UBUNTU_NAME          = "linuxubuntu";
+    public static final String LINUX_UBUNTU_IP            = "172.20.1.14";
+    public static final String LINUX_UBUNTU_SYSOID        = ".1.3.6.1.4.1.8072.3.2.10";
+    public static final String LINUX_UBUNTU_ROOT          = "LINUX_UBUNTU";
+    public static final String LINUX_UBUNTU_SNMP_RESOURCE = "classpath:linkd/nms7467/"+LINUX_UBUNTU_IP+"-walk.txt";
     
     public static final Map<InetAddress, Integer> LINUX_UBUNTU_IP_IF_MAP = new HashMap<InetAddress, Integer>();
     public static final Map<Integer, String> LINUX_UBUNTU_IF_IFNAME_MAP = new HashMap<Integer, String>();
     public static final Map<Integer, String> LINUX_UBUNTU_IF_MAC_MAP = new HashMap<Integer, String>();
 
-    public static final String DARWIN_10_8_NAME        = "mac";
-    public static final String DARWIN_10_8_IP          = "172.20.1.28";
-    public static final String DARWIN_10_8_SYSOID      = ".1.3.6.1.4.1.8072.3.2.255";
+    public static final String DARWIN_10_8_NAME          = "mac";
+    public static final String DARWIN_10_8_IP            = "172.20.1.28";
+    public static final String DARWIN_10_8_SYSOID        = ".1.3.6.1.4.1.8072.3.2.255";
+    public static final String DARWIN_10_8_ROOT          = "DARWIN_10_8";
+    public static final String DARWIN_10_8_SNMP_RESOURCE = "classpath:linkd/nms7467/"+DARWIN_10_8_IP+"-walk.txt";
     
     public static final Map<InetAddress,Integer> DARWIN_10_8_IP_IF_MAP = new HashMap<InetAddress, Integer>();
     public static final Map<Integer, String> DARWIN_10_8_IF_IFNAME_MAP = new HashMap<Integer, String>();

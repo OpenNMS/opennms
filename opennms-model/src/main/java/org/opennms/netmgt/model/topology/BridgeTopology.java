@@ -25,7 +25,6 @@ public class BridgeTopology {
         private Set<Integer> targets = new HashSet<Integer>();
         private BridgePortRole role;
         private BridgeTopologyPort linkportcandidate;
-        private Set<SwitchPort> linkedswitchports = new HashSet<BridgeTopology.SwitchPort>(); 
         
         public BridgeTopologyLinkCandidate(BridgeTopologyPort btp) {
             bridgeTopologyPort = btp;
@@ -100,63 +99,6 @@ public class BridgeTopology {
 			this.linkportcandidate =linkportcandidate;
 		}
 
-		public Set<SwitchPort> getLinkedSwitchPorts() {
-			return linkedswitchports;
-		}
-
-		public void addLinkedSwitchPort(SwitchPort linkedswitchport) {
-			linkedswitchports.add(linkedswitchport);
-		}
-    }
-
-    public class SwitchPort {
-        public Integer getIfindex() {
-			return ifindex;
-		}
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result
-					+ ((ifindex == null) ? 0 : ifindex.hashCode());
-			result = prime * result
-					+ ((nodeid == null) ? 0 : nodeid.hashCode());
-			return result;
-		}
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			SwitchPort other = (SwitchPort) obj;
-			if (ifindex == null) {
-				if (other.ifindex != null)
-					return false;
-			} else if (!ifindex.equals(other.ifindex))
-				return false;
-			if (nodeid == null) {
-				if (other.nodeid != null)
-					return false;
-			} else if (!nodeid.equals(other.nodeid))
-				return false;
-			return true;
-		}
-
-		public Integer getNodeid() {
-			return nodeid;
-		}
-		
-		private final Integer nodeid;
-        private final Integer ifindex;
-		public SwitchPort(Integer nodeid, Integer ifindex) {
-			super();
-			this.nodeid = nodeid;
-			this.ifindex = ifindex;
-		}
-    	
     }
     
     public class BridgeTopologyPort {
@@ -221,7 +163,6 @@ public class BridgeTopology {
     public class BridgeTopologyLink {
 		final private BridgeTopologyPort bridgePort;
         private BridgeTopologyPort designatebridgePort;
-        private SwitchPort linkedSwitchPort;
 
         private Set<String> macs = new HashSet<String>();
 
@@ -254,14 +195,6 @@ public class BridgeTopology {
             return designatebridgePort;
         }
 
-        public SwitchPort getLinkedSwitchPort() {
-			return linkedSwitchPort;
-		}
-
-		public void setLinkedSwitchPort(SwitchPort linkedSwitchPort) {
-			this.linkedSwitchPort = linkedSwitchPort;
-		}
-
         public boolean contains(BridgeTopologyPort bridgeport) {
             if (this.bridgePort.equals(bridgeport))
                 return true;
@@ -274,16 +207,16 @@ public class BridgeTopology {
     }
 
     private List<BridgeTopologyLink> bridgelinks = new ArrayList<BridgeTopologyLink>();
-    private Map<String,Set<SwitchPort>> bridgeAssociatedMacAddressMap = new HashMap<String, Set<SwitchPort>>();
+    private Map<String,Set<BridgeTopologyPort>> bridgeAssociatedMacAddressMap = new HashMap<String, Set<BridgeTopologyPort>>();
     private List<BridgeTopologyLinkCandidate> bridgeTopologyPortCandidates = new ArrayList<BridgeTopologyLinkCandidate>();
     
-    public void addBridgeAssociatedMac(Integer nodeid, Integer ifindex, String mac) {
-        LOG.info("addBridgeAssociatedMac: adding nodeid {}, ifindex {}, mac {}", nodeid, ifindex,mac);
+    public void addBridgeAssociatedMac(Integer nodeid, Integer port, Set<String> macsonport, String mac) {
+        LOG.info("addBridgeAssociatedMac: adding nodeid {}, bridge port {}, mac {}", nodeid, port,mac);
     	if (bridgeAssociatedMacAddressMap.containsKey(mac))
-    		bridgeAssociatedMacAddressMap.get(mac).add(new SwitchPort(nodeid, ifindex));
+    		bridgeAssociatedMacAddressMap.get(mac).add(new BridgeTopologyPort(nodeid, port,macsonport));
     	else {
-    		Set<SwitchPort> ports = new HashSet<BridgeTopology.SwitchPort>();
-    		ports.add(new SwitchPort(nodeid, ifindex));
+    		Set<BridgeTopologyPort> ports = new HashSet<BridgeTopologyPort>();
+    		ports.add(new BridgeTopologyPort(nodeid, port,macsonport));
     		bridgeAssociatedMacAddressMap.put(mac, ports);
     	}
     }
@@ -308,13 +241,13 @@ public class BridgeTopology {
              BridgeTopologyLinkCandidate topologycandidate = new BridgeTopologyLinkCandidate(bridgetopologyport);
              for (String mac : curEntry.getValue()) {
                  if (bridgeAssociatedMacAddressMap.containsKey(mac)) {
-                	 for (SwitchPort swPort : bridgeAssociatedMacAddressMap.get(mac)) {
+                	 for (BridgeTopologyPort swPort : bridgeAssociatedMacAddressMap.get(mac)) {
                 		 if (swPort.getNodeid().intValue() == bridgeNode.getNodeId())
                 			 continue;
-                		 LOG.info("addNodeToTopology: parsing node {}, port {}: mac {} found on bridge adding target: targetnodeid {}, targetifindex {}",
+                		 LOG.info("addNodeToTopology: parsing node {}, port {}: mac {} found on bridge adding target: targetnodeid {}, targetport {}",
     	                     nodeid, curEntry.getKey(),
-                             mac,swPort.getNodeid(),swPort.getIfindex());
-                		 topologycandidate.addLinkedSwitchPort(swPort);
+                             mac,swPort.getNodeid(),swPort.getBridgePort());
+                		 topologycandidate.setLinkPortCandidate(swPort);
                 		 topologycandidate.addTarget(swPort.getNodeid());
                 	 }
                  }
@@ -523,18 +456,18 @@ public class BridgeTopology {
             LOG.info("getTopology: mac discovery: parsing nodeid {}, port {}, macs {}, targets {}.",
                     candidate.getBridgeTopologyPort().getNodeid(), candidate.getBridgeTopologyPort().getBridgePort(), 
                     candidate.getMacs(), candidate.getTargets());
-    		if (candidate.getLinkedSwitchPorts().isEmpty()) {
+    		if (candidate.getLinkPortCandidate() == null ) {
         		BridgeTopologyLink link = new BridgeTopologyLink(new BridgeTopologyPort(candidate.getBridgeTopologyPort().getNodeid(), candidate.getBridgeTopologyPort().getBridgePort(), candidate.getMacs()));
-    			LOG.info("getTopology: link found {}", link);
+    			LOG.info("getTopology: bridgetomac link found {}", link);
         		bridgelinks.add(link);
         		continue;
     		} 
-    		for (SwitchPort swport: candidate.getLinkedSwitchPorts()) {
-        		BridgeTopologyLink link = new BridgeTopologyLink(new BridgeTopologyPort(candidate.getBridgeTopologyPort().getNodeid(), candidate.getBridgeTopologyPort().getBridgePort(), candidate.getMacs()));
-    			link.setLinkedSwitchPort(swport);
-    			LOG.info("getTopology: link found {}", link);
-        		bridgelinks.add(link);
+    		if (foundedOnBridgeLink.contains(candidate.getLinkPortCandidate())) {
+    			continue;
     		}
+    		BridgeTopologyLink link = new BridgeTopologyLink(new BridgeTopologyPort(candidate.getBridgeTopologyPort().getNodeid(), candidate.getBridgeTopologyPort().getBridgePort(), candidate.getMacs()),candidate.getLinkPortCandidate());
+			LOG.info("getTopology: bridgebridge link found using port associated mac {}", link);
+    		bridgelinks.add(link);
     	}
         return bridgelinks;
     }

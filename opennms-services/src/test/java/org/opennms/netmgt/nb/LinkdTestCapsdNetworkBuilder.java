@@ -118,7 +118,23 @@ public class LinkdTestCapsdNetworkBuilder extends TestNetworkBuilder implements 
         
         m_capsd.stop();
     }
-    
+
+    @Test
+    @Ignore
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host = CISCO_C870_IP, port = 161, resource = CISCO_C870_SNMP_RESOURCE),
+    })
+    @Transactional
+    public final void testCapsdA() throws MarshalException, ValidationException, IOException {
+        m_capsd.init();
+        m_capsd.start();
+        m_capsd.scanSuspectInterface(CISCO_C870_IP);
+
+        printNode(CISCO_C870_IP,CISCO_C870_ROOT);
+        
+        m_capsd.stop();
+    }
+
     protected final void printNode(String ipAddr, String prefix) {
 
         List<OnmsIpInterface> ips = m_ipInterfaceDao.findByIpAddress(ipAddr);

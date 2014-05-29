@@ -36,7 +36,6 @@ import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.model.topology.BridgeTopology.BridgeTopologyLink;
 import org.opennms.netmgt.model.topology.BridgeTopology.BridgeTopologyPort;
-import org.opennms.netmgt.model.topology.BridgeTopology.SwitchPort;
 public class DefaultBridgeTopologyTest {
     
     @Before
@@ -63,10 +62,6 @@ public class DefaultBridgeTopologyTest {
 	       System.err.println("------designated port-----");
     	   printBridgeTopologyPort(path.getDesignatebridgePort());
        }
-       if (path.getLinkedSwitchPort() != null) {
-	       System.err.println("------linked switch port-----");
-    	   System.err.println(path.getLinkedSwitchPort());
-       }
        System.err.println("macs on link: " + path.getMacs());
 	}
 
@@ -76,11 +71,6 @@ public class DefaultBridgeTopologyTest {
 		System.err.println("learned macs: " + port.getMacs());
 	}
 	
-	protected void printSwitchPort(SwitchPort port) {
-		System.err.println("nodeid: " + port.getNodeid());
-		System.err.println("ifindex: " + port.getIfindex());
-	}
-
 		
 	@Test
     public void testOneBridgeOnePortOneMac() throws Exception {
