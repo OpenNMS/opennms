@@ -92,6 +92,14 @@ div.v-table-header-wrap {
 	stroke: #ccc;
 }
 
+.edge.up{
+    stroke:#336600;
+}
+
+.edge.down{
+    stroke:#CC0000;
+}
+
 .edge.selected {
 	stroke: #00ffff;
 }
@@ -208,6 +216,8 @@ div.v-table-header-wrap {
 
 .search-token-label{
     padding-right: 8px;
+    max-width: 156px;
+    word-wrap: break-word;
 }
 
 .gwt-SuggestBox {

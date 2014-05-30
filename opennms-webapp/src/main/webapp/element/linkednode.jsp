@@ -29,6 +29,9 @@
 
 --%>
 
+<%@page import="org.opennms.web.lldp.LldpLinkNode"%>
+<%@page import="org.opennms.web.lldp.LldpElementFactory"%>
+<%@page import="org.opennms.web.lldp.LldpElementFactoryInterface"%>
 <%@page
 	language="java"
 	contentType="text/html"
@@ -96,6 +99,7 @@
 
 <%
     NetworkElementFactoryInterface factory = NetworkElementFactory.getInstance(getServletContext());
+    LldpElementFactoryInterface lldpfactory = LldpElementFactory.getInstance(getServletContext());
 
     String nodeIdString = request.getParameter( "node" );
 
@@ -276,8 +280,14 @@
 			<% }%>
 	</div>
 <hr />        
-
-<h3><%=node_db.getLabel()%> Links</h3>
+<%
+   if (factory.getDataLinksOnNode(nodeId).isEmpty()) {
+%>
+	<div class="TwoColLeft">
+		<h3>No Links found on <%=node_db.getLabel()%> by Linkd</h3>
+	</div>
+<% } else { %>
+<h3><%=node_db.getLabel()%> Links found by Linkd</h3>
 		
 		<!-- Link box -->
 		<table class="standard">
@@ -433,7 +443,69 @@
 		    
 	    </table>
 
+<% }  %>
 
-<form method="post" name="setStatus" />
+<hr />        
+<%
+   if (lldpfactory.getLldpLinks(nodeId).isEmpty()) {
+%>
+	<div class="TwoColLeft">
+		<h3>No Lldp Remote Table Links found on <%=node_db.getLabel()%> by Enhanced Linkd</h3>
+	</div>
+<% } else { %>
+<h3><%=node_db.getLabel()%> Lldp Remote Table Links found by Enhanced Linkd</h3>
+		
+		<!-- Link box -->
+		<table class="standard">
+		
+		<thead>
+			<tr>
+			<th>Local Port</th> 
+            <th>Local Port Descr</th>
+			<th>Remote Chassis Id</th>
+			<th>Remote Sysname</th>
+			<th>Remote Port</th> 
+            <th>Remote Port Descr</th>
+			<th>Created</th>
+			<th>Last Poll</th>
+			</tr>
+		</thead>
+				
+		<% for( LldpLinkNode lldplink: lldpfactory.getLldpLinks(nodeId)) { %>
+	    <tr>
+		    <td class="standard">
+		 	<% if (lldplink.getLldpPortUrl() != null) { %>
+            	<a href="<%=lldplink.getLldpPortUrl()%>"><%=lldplink.getLldpPortString()%></a>
+            <% } else { %> 
+                    <%=lldplink.getLldpPortString()%>
+    		<% } %> 
+            </td>
+		    <td class="standard"><%=lldplink.getLldpPortDescr()%></td>
+            <td class="standard">
+            <% if (lldplink.getLldpRemChassisIdUrl() != null) { %>
+            	<a href="<%=lldplink.getLldpRemChassisIdUrl()%>"><%=lldplink.getLldpRemChassisIdString()%></a>
+            <% } else { %> 
+                    <%=lldplink.getLldpRemChassisIdString()%>
+    			<% } %> 
+            </td>
+            <td class="standard">
+                    <%=lldplink.getLldpRemSysName()%>
+            </td>
+		    <td class="standard">
+		 	<% if (lldplink.getLldpRemPortUrl() != null) { %>
+            	<a href="<%=lldplink.getLldpRemPortUrl()%>"><%=lldplink.getLldpRemPortString()%></a>
+            <% } else { %> 
+                    <%=lldplink.getLldpRemPortString()%>
+    		<% } %> 
+            </td>
+		    <td class="standard"><%=lldplink.getLldpRemPortDescr()%></td>
+		    <td class="standard"><%=lldplink.getLldpCreateTime()%></td>
+		    <td class="standard"><%=lldplink.getLldpLastPollTime()%></td>
+	    </tr>
+	    <% } %>
+		    
+	    </table>
+
+<% }  %>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />

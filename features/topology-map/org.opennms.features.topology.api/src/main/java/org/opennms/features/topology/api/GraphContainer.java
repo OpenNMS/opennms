@@ -30,10 +30,10 @@ package org.opennms.features.topology.api;
 
 import com.vaadin.data.Property;
 import java.util.Collection;
-import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.GraphProvider;
-import org.opennms.features.topology.api.topo.StatusProvider;
-import org.opennms.features.topology.api.topo.VertexRef;
+import java.util.List;
+import java.util.Set;
+
+import org.opennms.features.topology.api.topo.*;
 
 public interface GraphContainer extends DisplayState {
 
@@ -74,9 +74,11 @@ public interface GraphContainer extends DisplayState {
 
     Property<Double> getScaleProperty();
 
-    StatusProvider getStatusProvider();
+    StatusProvider getVertexStatusProvider();
 
-    void setStatusProvider(StatusProvider statusProvider);
+    void setVertexStatusProvider(StatusProvider statusProvider);
+
+    Set<EdgeStatusProvider> getEdgeStatusProviders();
 
     // TODO move to another location. This should not be stored here! (maybe VaadinApplicationContext is the right place)
     String getSessionId();

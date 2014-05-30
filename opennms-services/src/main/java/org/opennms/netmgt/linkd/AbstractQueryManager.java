@@ -50,10 +50,8 @@ import org.opennms.netmgt.linkd.snmp.Dot1dStpPortTableEntry;
 import org.opennms.netmgt.linkd.snmp.Dot1dTpFdbTableEntry;
 import org.opennms.netmgt.linkd.snmp.IpNetToMediaTableEntry;
 import org.opennms.netmgt.linkd.snmp.IpRouteCollectorEntry;
-import org.opennms.netmgt.linkd.snmp.IsIsSystemObjectGroup.IsisAdminState;
 import org.opennms.netmgt.linkd.snmp.IsisCircTableEntry;
 import org.opennms.netmgt.linkd.snmp.IsisISAdjTableEntry;
-import org.opennms.netmgt.linkd.snmp.IsisISAdjTableEntry.IsisISAdjState;
 import org.opennms.netmgt.linkd.snmp.LldpLocTableEntry;
 import org.opennms.netmgt.linkd.snmp.LldpMibConstants;
 import org.opennms.netmgt.linkd.snmp.LldpRemTableEntry;
@@ -61,6 +59,8 @@ import org.opennms.netmgt.linkd.snmp.MtxrWlRtabTableEntry;
 import org.opennms.netmgt.linkd.snmp.OspfNbrTableEntry;
 import org.opennms.netmgt.linkd.snmp.QBridgeDot1dTpFdbTableEntry;
 import org.opennms.netmgt.linkd.snmp.Vlan;
+import org.opennms.netmgt.model.IsIsElement.IsisAdminState;
+import org.opennms.netmgt.model.IsIsLink.IsisISAdjState;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsAtInterface;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -120,7 +120,7 @@ public abstract class AbstractQueryManager implements QueryManager {
 
     protected abstract void saveAtInterface(final OnmsAtInterface saveMe) ;
 
-    protected abstract List<String> getPhysAddrs(final int nodeId);
+    protected abstract Map<Integer, String> getPhysAddrs(final int nodeId);
 
     protected abstract void markOldDataInactive(final Date now, final int nodeid);
 
@@ -277,7 +277,7 @@ public abstract class AbstractQueryManager implements QueryManager {
         String isisSysId = snmpcoll.getIsIsSystemObjectGroup().getIsisSysId();
         LOG.debug("processIsis: isis node/isissysId: {}/{}",
                   node.getNodeId(), isisSysId);
-        if (snmpcoll.getIsIsSystemObjectGroup().getIsisSysAdminState() == IsisAdminState.OFF) {
+        if (snmpcoll.getIsIsSystemObjectGroup().getIsisSysAdminState() == IsisAdminState.off) {
             LOG.info("processIsis: isis admin down on node/isisSysId: {}/{}. Skipping!",
                      node.getNodeId(), isisSysId);
             return;
@@ -292,7 +292,7 @@ public abstract class AbstractQueryManager implements QueryManager {
 
         List<IsisISAdjInterface> isisinterfaces = new ArrayList<IsisISAdjInterface>();
         for (final IsisISAdjTableEntry isisAdj : snmpcoll.getIsisISAdjTable()) {
-            if (isisAdj.getIsIsAdjStatus() != IsisISAdjState.UP) {
+            if (isisAdj.getIsIsAdjStatus() != IsisISAdjState.up) {
                 LOG.info("processIsis: isis adj status not UP but {}, on node/isisISAdjNeighSysId/isisLocalCircIndex: {}/{}/{}. Skipping!",
                          isisAdj.getIsIsAdjStatus(), node.getNodeId(),
                          isisAdj.getIsIsAdjNeighSysId(),
@@ -938,18 +938,21 @@ public abstract class AbstractQueryManager implements QueryManager {
             final int curfdbstatus = dot1dfdbentry.getQBridgeDot1dTpFdbStatus();
 
             if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_LEARNED) {
-                node.addMacAddress(fdbport, curMacAddress, vlan.getVlanId());
+                node.addBridgeForwardingTableEntry(fdbport, curMacAddress, vlan.getVlanId());
                 LOG.debug("processQBridgeDot1DTpFdbTable: Found learned status on bridge port.");
             } else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_SELF) {
-                node.addBridgeIdentifier(curMacAddress);
-                LOG.debug("processQBridgeDot1DTpFdbTable: MAC address ({}) is used as bridge identifier.", curMacAddress);
+            	Integer ifIndex = node.getIfindexFromBridgePort(fdbport);
+            	if (ifIndex == null)
+            		ifIndex = -1;
+                node.getMacIdentifiers().put(ifIndex,curMacAddress);
+                LOG.debug("processQBridgeDot1DTpFdbTable: MAC address ({}) is used as port identifier.", curMacAddress);
             } else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_INVALID) {
                 LOG.debug("processQBridgeDot1DTpFdbTable: Found 'INVALID' status. Skipping.");
             } else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_MGMT) {
-                node.addMacAddress(fdbport, curMacAddress, vlan.getVlanId());
+                node.addBridgeForwardingTableEntry(fdbport, curMacAddress, vlan.getVlanId());
                 LOG.debug("processQBridgeDot1DTpFdbTable: Found 'MGMT' status. Saving.");
             } else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_OTHER) {
-                node.addMacAddress(fdbport, curMacAddress, vlan.getVlanId());
+                node.addBridgeForwardingTableEntry(fdbport, curMacAddress, vlan.getVlanId());
                LOG.debug("processQBridgeDot1DTpFdbTable: Found 'OTHER' status. Saving.");
             } else if (curfdbstatus == -1) {
                 LOG.warn("processQBridgeDot1DTpFdbTable: Unable to determine status. Skipping.");
@@ -986,18 +989,21 @@ public abstract class AbstractQueryManager implements QueryManager {
             LOG.debug("processDot1DTpFdbTable: MAC address ({}) found on bridge port {} on node {}", curMacAddress, fdbport, node.getNodeId());
 
             if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_LEARNED && vlan.getVlanId() != null) {
-                node.addMacAddress(fdbport, curMacAddress, vlan.getVlanId());
+                node.addBridgeForwardingTableEntry(fdbport, curMacAddress, vlan.getVlanId());
                 LOG.debug("processDot1DTpFdbTable: Found learned status on bridge port.");
             } else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_SELF) {
-                node.addBridgeIdentifier(curMacAddress);
-                LOG.debug("processDot1DTpFdbTable: MAC address ({}) is used as bridge identifier.", curMacAddress);
+            	Integer ifIndex = node.getIfindexFromBridgePort(fdbport);
+            	if (ifIndex == null)
+            		ifIndex = -1;
+                node.getMacIdentifiers().put(ifIndex,curMacAddress);
+                LOG.debug("processDot1DTpFdbTable: MAC address ({}) is used as port identifier.", curMacAddress);
             } else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_INVALID) {
                 LOG.debug("processDot1DTpFdbTable: Found 'INVALID' status. Skipping.");
             } else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_MGMT) {
-                node.addMacAddress(fdbport, curMacAddress, vlan.getVlanId());
+                node.addBridgeForwardingTableEntry(fdbport, curMacAddress, vlan.getVlanId());
                 LOG.debug("processDot1DTpFdbTable: Found 'MGMT' status. Saving.");
             } else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_OTHER) {
-                node.addMacAddress(fdbport, curMacAddress, vlan.getVlanId());
+                node.addBridgeForwardingTableEntry(fdbport, curMacAddress, vlan.getVlanId());
                 LOG.debug("processDot1DTpFdbTable: Found 'OTHER' status. Saving.");
             } else if (curfdbstatus == -1) {
                 LOG.warn("processDot1DTpFdbTable: Unable to determine status. Skipping.");

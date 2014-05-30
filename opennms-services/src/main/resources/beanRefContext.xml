@@ -106,6 +106,15 @@
      <constructor-arg ref="commonContext" />
    </bean>
         
+   <bean id="enhancedLinkdContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
+     <constructor-arg>
+       <list>
+         <value>META-INF/opennms/applicationContext-enhancedLinkd.xml</value>
+       </list>
+     </constructor-arg>
+     <constructor-arg ref="commonContext" />
+   </bean>
+        
     <bean id="eventDaemonContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
      <constructor-arg>
        <list>
