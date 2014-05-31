@@ -63,8 +63,10 @@ public class BridgeTopology {
         }
         
         public boolean strictContained(BridgeTopologyLinkCandidate portcandidate) {
-        	for (String mac: getMacs()) {
-        		if (!portcandidate.getMacs().contains(mac))
+        	if (portcandidate.getBridgeTopologyPort().getMacs().size() <= getBridgeTopologyPort().getMacs().size())
+        		return false;
+        	for (String mac: getBridgeTopologyPort().getMacs()) {
+        		if (!portcandidate.getBridgeTopologyPort().getMacs().contains(mac))
         			return false;
         	}
         	return true;
@@ -300,34 +302,9 @@ public class BridgeTopology {
         		LOG.info("parseBFTEntry: rule 0: intesection null: do nothing");
         		continue;
         	} 
-
-        	if (linkcandidate.getRole() == BridgePortRole.BACKBONE) {
-        		LOG.info("parseBFTEntry: rule 1: found old backbone port: setting new port to DIRECT");
-        		linkcandidate.removeMacs(topologyLinkCandidate.getMacs());
-            	topologyLinkCandidate.setRole(BridgePortRole.DIRECT);
-            	continue;
-        	}
-
-        	if (topologyLinkCandidate.getRole() == BridgePortRole.BACKBONE) {
-        		LOG.info("parseBFTEntry: rule 2: found new backbone port: setting old port to DIRECT");
-        		topologyLinkCandidate.removeMacs(linkcandidate.getMacs());
-            	linkcandidate.setRole(BridgePortRole.DIRECT);
-            	continue;
-        	}
-
-           // regola della dipendenza assoluta direzione avanti
-        	if (linkcandidate.strictContained(topologyLinkCandidate)) {
-                LOG.info("parseBFTEntry: rule 3: old contained in new: adding target {} to node {}, backbone port {}", linkcandidate.getBridgeTopologyPort().getNodeid(),
-                		topologyLinkCandidate.getBridgeTopologyPort().getNodeid(),topologyLinkCandidate.getBridgeTopologyPort().getBridgePort());
-            	topologyLinkCandidate.setRole(BridgePortRole.BACKBONE);
-            	topologyLinkCandidate.removeMacs(linkcandidate.getMacs());
-            	topologyLinkCandidate.addTarget(linkcandidate.getBridgeTopologyPort().getNodeid());
-            	linkcandidate.setRole(BridgePortRole.DIRECT);
-            	continue;
-        	} 
-        	// regola della dipendenza assoluta direzione dietro
+        	// regola della dipendenza assoluta new
         	if (topologyLinkCandidate.strictContained(linkcandidate)) {
-                LOG.info("parseBFTEntry: rule 4: new contained in old: adding target {} to node {},backbone port {}", topologyLinkCandidate.getBridgeTopologyPort().getNodeid(),
+                LOG.info("parseBFTEntry: rule 1: new contained in old: adding target {} to node {},backbone port {}", topologyLinkCandidate.getBridgeTopologyPort().getNodeid(),
                 		linkcandidate.getBridgeTopologyPort().getNodeid(),linkcandidate.getBridgeTopologyPort().getBridgePort());
             	linkcandidate.setRole(BridgePortRole.BACKBONE);
         		linkcandidate.removeMacs(topologyLinkCandidate.getMacs());
@@ -335,17 +312,55 @@ public class BridgeTopology {
             	topologyLinkCandidate.setRole(BridgePortRole.DIRECT);
         		continue;
         	}
-        	
-         	if (linkcandidate.getLinkPortCandidate() == null) {
+
+            // regola della dipendenza assoluta old
+         	if (linkcandidate.strictContained(topologyLinkCandidate)) {
+                 LOG.info("parseBFTEntry: rule 2: old contained in new: adding target {} to node {}, backbone port {}", linkcandidate.getBridgeTopologyPort().getNodeid(),
+                 		topologyLinkCandidate.getBridgeTopologyPort().getNodeid(),topologyLinkCandidate.getBridgeTopologyPort().getBridgePort());
+             	topologyLinkCandidate.setRole(BridgePortRole.BACKBONE);
+             	topologyLinkCandidate.removeMacs(linkcandidate.getMacs());
+             	topologyLinkCandidate.addTarget(linkcandidate.getBridgeTopologyPort().getNodeid());
+             	linkcandidate.setRole(BridgePortRole.DIRECT);
+             	continue;
+         	} 
+
+        	if (linkcandidate.getRole() == BridgePortRole.BACKBONE) {
+        		LOG.info("parseBFTEntry: rule 3: found old backbone port: setting new port to DIRECT");
+        		linkcandidate.removeMacs(topologyLinkCandidate.getMacs());
+            	topologyLinkCandidate.setRole(BridgePortRole.DIRECT);
+            	continue;
+        	}
+
+        	if (topologyLinkCandidate.getRole() == BridgePortRole.BACKBONE) {
+        		LOG.info("parseBFTEntry: rule 4: found new backbone port: setting old port to DIRECT");
+        		topologyLinkCandidate.removeMacs(linkcandidate.getMacs());
+            	linkcandidate.setRole(BridgePortRole.DIRECT);
+            	continue;
+        	}
+
+         	if (linkcandidate.getLinkPortCandidate() == null && topologyLinkCandidate.getLinkPortCandidate() == null) {
                 LOG.info("parseBFTEntry: rule 5: no suitable data: setting candidate each other");
         		linkcandidate.setLinkPortCandidate(topologyLinkCandidate.getBridgeTopologyPort());
         		topologyLinkCandidate.setLinkPortCandidate(linkcandidate.getBridgeTopologyPort());
         		continue;
         	} 
 
-        	if (linkcandidate.getBridgeTopologyPort().getNodeid().intValue() == topologyLinkCandidate.getLinkPortCandidate().getNodeid().intValue()
+        	if (linkcandidate.getLinkPortCandidate() != null && topologyLinkCandidate.getBridgeTopologyPort().getNodeid().intValue() == linkcandidate.getLinkPortCandidate().getNodeid().intValue()  
+        			&& topologyLinkCandidate.getBridgeTopologyPort().getBridgePort().intValue() != linkcandidate.getLinkPortCandidate().getBridgePort().intValue()) {
+                LOG.info("parseBFTEntry: rule 6: new contained in old: adding target {} to node {},backbone port {}", topologyLinkCandidate.getBridgeTopologyPort().getNodeid(),
+                		linkcandidate.getBridgeTopologyPort().getNodeid(),linkcandidate.getBridgeTopologyPort().getBridgePort());
+        		linkcandidate.setRole(BridgePortRole.BACKBONE);
+        		linkcandidate.removeMacs(topologyLinkCandidate.getMacs());
+            	linkcandidate.addTarget(topologyLinkCandidate.getBridgeTopologyPort().getNodeid());
+	
+        		topologyLinkCandidate.setRole(BridgePortRole.DIRECT);
+            	topologyLinkCandidate.setLinkPortCandidate(null);
+            	continue;
+        	}
+        	
+        	if (topologyLinkCandidate.getLinkPortCandidate() != null && linkcandidate.getBridgeTopologyPort().getNodeid().intValue() == topologyLinkCandidate.getLinkPortCandidate().getNodeid().intValue()
         			&& linkcandidate.getBridgeTopologyPort().getBridgePort().intValue() != topologyLinkCandidate.getLinkPortCandidate().getBridgePort().intValue()) {
-                LOG.info("parseBFTEntry: rule 6: old contained in new: adding target {} to node {}, backbone port {}", linkcandidate.getBridgeTopologyPort().getNodeid(),
+                LOG.info("parseBFTEntry: rule 7: old contained in new: adding target {} to node {}, backbone port {}", linkcandidate.getBridgeTopologyPort().getNodeid(),
                 		topologyLinkCandidate.getBridgeTopologyPort().getNodeid(),topologyLinkCandidate.getBridgeTopologyPort().getBridgePort());
            		topologyLinkCandidate.setRole(BridgePortRole.BACKBONE);
         		topologyLinkCandidate.removeMacs(linkcandidate.getMacs());
@@ -356,18 +371,6 @@ public class BridgeTopology {
         		continue;
         	}
 
-        	if (topologyLinkCandidate.getBridgeTopologyPort().getNodeid().intValue() == linkcandidate.getLinkPortCandidate().getNodeid().intValue()  
-        			&& topologyLinkCandidate.getBridgeTopologyPort().getBridgePort().intValue() != linkcandidate.getLinkPortCandidate().getBridgePort().intValue()) {
-                LOG.info("parseBFTEntry: rule 7: new contained in old: adding target {} to node {},backbone port {}", topologyLinkCandidate.getBridgeTopologyPort().getNodeid(),
-                		linkcandidate.getBridgeTopologyPort().getNodeid(),linkcandidate.getBridgeTopologyPort().getBridgePort());
-        		linkcandidate.setRole(BridgePortRole.BACKBONE);
-        		linkcandidate.removeMacs(topologyLinkCandidate.getMacs());
-            	linkcandidate.addTarget(topologyLinkCandidate.getBridgeTopologyPort().getNodeid());
-	
-        		topologyLinkCandidate.setRole(BridgePortRole.DIRECT);
-            	topologyLinkCandidate.setLinkPortCandidate(null);
-            	continue;
-        	}
 
         }
         return topologyLinkCandidate;
