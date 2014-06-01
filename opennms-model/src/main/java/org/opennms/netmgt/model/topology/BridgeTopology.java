@@ -260,8 +260,54 @@ public class BridgeTopology {
     }
     
     private void mergeTopology() {
+    	// first: cannot have two backbone from one bridge, so if a backbone and b with candidate, then b is direct
     	for (BridgeTopologyLinkCandidate candidateA: bridgeTopologyPortCandidates) {
-    		candidateA.setRole(null);
+    		if (candidateA.getRole() != BridgePortRole.BACKBONE)
+    			continue;
+        	for (BridgeTopologyLinkCandidate candidateB: bridgeTopologyPortCandidates) {
+        		if (candidateB.getBridgeTopologyPort().getNodeid().intValue() != candidateA.getBridgeTopologyPort().getNodeid().intValue())
+        			continue;
+        		if (candidateB.getRole() != null)
+        			continue;
+        		if (candidateB.getLinkPortCandidate() == null)
+        			continue;
+        		if (candidateA.getTargets().contains(candidateB.getLinkPortCandidate().getNodeid())) {
+            		LOG.info("mergeTopology: rule A: node {} BACKBONE port {}: only one backbone port is allowed for targets {}: setting port {} to DIRECT",
+            				candidateA.getBridgeTopologyPort().getNodeid(), candidateA.getBridgeTopologyPort().getBridgePort(),
+            				candidateA.getTargets(), candidateB.getBridgeTopologyPort().getBridgePort());
+            		candidateB.setRole(BridgePortRole.DIRECT);
+        		}
+        	}
+    	}
+    	// second: if  a contains mac and is direct and b contains mac: then b is backbone 
+    	for (BridgeTopologyLinkCandidate candidateA: bridgeTopologyPortCandidates) {
+    		if (candidateA.getRole() != BridgePortRole.DIRECT)
+    			continue;
+        	for (BridgeTopologyLinkCandidate candidateB: bridgeTopologyPortCandidates) {
+        		if (candidateB.getBridgeTopologyPort().getNodeid().intValue() == candidateA.getBridgeTopologyPort().getNodeid().intValue())
+        			continue;
+           		if (candidateB.getRole() == BridgePortRole.DIRECT)
+        			continue;
+        			Set<String> otherMacs = new HashSet<String>();
+        		for (String mac: candidateA.getMacs()) {
+	        		if (candidateB.getMacs().contains(mac)) {
+	        			otherMacs.add(mac);
+	        		}
+        		}
+        		if (otherMacs.isEmpty())
+        			continue;
+        		
+        		LOG.info("mergeTopology: rule B: macs {}: node {} DIRECT port {}: removing from node {} BACKBONE port {} ",otherMacs,
+        				candidateA.getBridgeTopologyPort().getNodeid(), candidateA.getBridgeTopologyPort().getBridgePort(),
+        				candidateB.getBridgeTopologyPort().getNodeid(), candidateB.getBridgeTopologyPort().getBridgePort());
+        		candidateB.removeMacs(otherMacs);
+        		candidateB.addTarget(candidateA.getBridgeTopologyPort().getNodeid());
+        	}
+    	}
+    	
+    	// reset all roles
+    	for (BridgeTopologyLinkCandidate candidate: bridgeTopologyPortCandidates) {
+    		candidate.setRole(null);
     	}
     }
    

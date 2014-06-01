@@ -38,6 +38,8 @@ import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.model.topology.BridgeTopology.BridgeTopologyLink;
 import org.opennms.netmgt.model.topology.BridgeTopology.BridgeTopologyPort;
+//FIXME
+// ABC Topology is not detected
 public class DefaultBridgeTopologyTest {
     
     @Before
@@ -349,8 +351,9 @@ public class DefaultBridgeTopologyTest {
         bridgeTopology.addNodeToTopology(linkablenodeA);
         bridgeTopology.addNodeToTopology(linkablenodeB);
 
-        printBridgeTopologyLinks(bridgeTopology.getTopology());
-
+        List<BridgeTopologyLink> links = bridgeTopology.getTopology();
+        printBridgeTopologyLinks(links);
+        assertEquals(10, links.size());
   
     }
 
@@ -408,7 +411,9 @@ public class DefaultBridgeTopologyTest {
         bridgeTopology.addNodeToTopology(linkablenodeA);
         bridgeTopology.addNodeToTopology(linkablenodeB);
 
-        printBridgeTopologyLinks(bridgeTopology.getTopology());
+        List<BridgeTopologyLink> links = bridgeTopology.getTopology();
+        printBridgeTopologyLinks(links);
+        assertEquals(3, links.size());
 
     }
 
@@ -453,7 +458,9 @@ public class DefaultBridgeTopologyTest {
         bridgeTopology.addNodeToTopology(linkablenodeA);
         bridgeTopology.addNodeToTopology(linkablenodeB);
 
-        printBridgeTopologyLinks(bridgeTopology.getTopology());
+        List<BridgeTopologyLink> links = bridgeTopology.getTopology();
+        printBridgeTopologyLinks(links);
+        assertEquals(3, links.size());
 
 	}
 
@@ -466,8 +473,9 @@ public class DefaultBridgeTopologyTest {
         bridgeTopology.addNodeToTopology(topology.getA());
         bridgeTopology.addNodeToTopology(topology.getB());
 
-        printBridgeTopologyLinks(bridgeTopology.getTopology());
-
+        List<BridgeTopologyLink> links = bridgeTopology.getTopology();
+        printBridgeTopologyLinks(links);
+        assertEquals(3, links.size());
 
 	}
 
@@ -480,7 +488,9 @@ public class DefaultBridgeTopologyTest {
         bridgeTopology.addNodeToTopology(topology.getA());
         bridgeTopology.addNodeToTopology(topology.getC());
 
-        printBridgeTopologyLinks(bridgeTopology.getTopology());
+        List<BridgeTopologyLink> links = bridgeTopology.getTopology();
+        printBridgeTopologyLinks(links);
+        assertEquals(3, links.size());
 	}
 
 	@Test
@@ -492,7 +502,9 @@ public class DefaultBridgeTopologyTest {
         bridgeTopology.addNodeToTopology(topology.getB());
         bridgeTopology.addNodeToTopology(topology.getC());
 
-        printBridgeTopologyLinks(bridgeTopology.getTopology());
+        List<BridgeTopologyLink> links = bridgeTopology.getTopology();
+        printBridgeTopologyLinks(links);
+        assertEquals(3, links.size());
 
 	}
 	
@@ -503,9 +515,11 @@ public class DefaultBridgeTopologyTest {
         BridgeTopology bridgeTopology = new BridgeTopology();
         
         bridgeTopology.addNodeToTopology(topology.getD());
-        bridgeTopology.addNodeToTopology(topology.getD());
+        bridgeTopology.addNodeToTopology(topology.getE());
 
-        printBridgeTopologyLinks(bridgeTopology.getTopology());
+        List<BridgeTopologyLink> links = bridgeTopology.getTopology();
+        printBridgeTopologyLinks(links);
+        assertEquals(3, links.size());
 
 	}
 
@@ -518,7 +532,9 @@ public class DefaultBridgeTopologyTest {
         bridgeTopology.addNodeToTopology(topology.getD());
         bridgeTopology.addNodeToTopology(topology.getF());
 
-        printBridgeTopologyLinks(bridgeTopology.getTopology());
+        List<BridgeTopologyLink> links = bridgeTopology.getTopology();
+        printBridgeTopologyLinks(links);
+        assertEquals(3, links.size());
 	}
 
 	@Test
@@ -530,7 +546,9 @@ public class DefaultBridgeTopologyTest {
         bridgeTopology.addNodeToTopology(topology.getE());
         bridgeTopology.addNodeToTopology(topology.getF());
 
-        printBridgeTopologyLinks(bridgeTopology.getTopology());
+        List<BridgeTopologyLink> links = bridgeTopology.getTopology();
+        printBridgeTopologyLinks(links);
+        assertEquals(3, links.size());
 	}
 
 
@@ -544,7 +562,9 @@ public class DefaultBridgeTopologyTest {
         bridgeTopology.addNodeToTopology(topology.getB());
         bridgeTopology.addNodeToTopology(topology.getC());
 
-        printBridgeTopologyLinks(bridgeTopology.getTopology());
+        List<BridgeTopologyLink> links = bridgeTopology.getTopology();
+        printBridgeTopologyLinks(links);
+        assertEquals(5, links.size());
 	}
 
 	@Test
@@ -557,7 +577,9 @@ public class DefaultBridgeTopologyTest {
         bridgeTopology.addNodeToTopology(topology.getC());
         bridgeTopology.addNodeToTopology(topology.getB());
 
-        printBridgeTopologyLinks(bridgeTopology.getTopology());
+        List<BridgeTopologyLink> links = bridgeTopology.getTopology();
+        printBridgeTopologyLinks(links);
+        assertEquals(6, links.size());
 
 	}
 
@@ -572,7 +594,9 @@ public class DefaultBridgeTopologyTest {
         bridgeTopology.addNodeToTopology(topology.getE());
         bridgeTopology.addNodeToTopology(topology.getF());
 
-        printBridgeTopologyLinks(bridgeTopology.getTopology());
+        List<BridgeTopologyLink> links = bridgeTopology.getTopology();
+        printBridgeTopologyLinks(links);
+        assertEquals(5, links.size());
 
 	}
 	
@@ -586,7 +610,9 @@ public class DefaultBridgeTopologyTest {
         bridgeTopology.addNodeToTopology(topology.getF());
         bridgeTopology.addNodeToTopology(topology.getE());
 
-        printBridgeTopologyLinks(bridgeTopology.getTopology());
+        List<BridgeTopologyLink> links = bridgeTopology.getTopology();
+        printBridgeTopologyLinks(links);
+        assertEquals(5, links.size());
 	}
 
 	private class DEFTopology {
