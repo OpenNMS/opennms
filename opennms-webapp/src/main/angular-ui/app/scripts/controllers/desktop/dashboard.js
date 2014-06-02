@@ -2,6 +2,7 @@
 	'use strict';
 
 	angular.module('opennms.controllers.desktop.dashboard', [
+		'opennms.controllers.desktop.app',
 		'opennms.services.shared.alarms',
 		'opennms.services.shared.outages'
 	])
@@ -38,7 +39,7 @@
 		};
 	}])
 
-	.controller('DashboardCtrl', ['$log', '$scope', 'AlarmService', 'OutageService', function($log, $scope, alarms, outages) {
+    .controller('DashboardCtrl', ['$log', '$scope', 'AlarmService', 'OutageService', function($log, $scope, alarms, outages) {
 		alarms.summaries().then(function(alarms) {
 			$log.debug('Got summaries:',alarms);
 			$scope.alarms = alarms;
@@ -49,5 +50,18 @@
 		});
 	}])
 
+    .config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
+		$stateProvider.state('app.dashboard', {
+            url: '/dashboard',
+            views: {
+                'mainContent': {
+                    templateUrl: 'templates/desktop/dashboard.html',
+                    controller: 'DashboardCtrl'
+                }
+            }
+        });
+        $urlRouterProvider.otherwise('/app/dashboard');
+    }])
+    
 	;
 }());

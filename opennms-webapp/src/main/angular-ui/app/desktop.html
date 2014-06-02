@@ -1,54 +1,151 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
-    <title>OpenNMS</title>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+        <title>OpenNMS</title>
 
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800,300' rel='stylesheet' type='text/css'>
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800,300' rel='stylesheet' type='text/css'>
 
-    <!-- build:css styles/vendor.css -->
-    <!-- <link rel="stylesheet" href="vendor/some.contrib.css"> -->
-    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap-theme.min.css" />
-    <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
-    <!-- endbuild -->
+        <!-- build:css styles/vendor.css -->
+        <!-- <link rel="stylesheet" href="vendor/some.contrib.css"> -->
+        <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap-theme.min.css" />
+        <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+        <!-- endbuild -->
 
-    <!-- build:css({.tmp,app}) styles/desktop.css -->
-    <!-- <link rel="stylesheet" href="styles/default.css"> -->
-    <!-- <link rel="stylesheet" href="styles/opennms.css"> -->
-    <link rel="stylesheet" href="styles/desktop.css">
-    <!-- endbuild -->
-  </head>
+        <!-- build:css({.tmp,app}) styles/opennms-desktop.css -->
+        <!-- <link rel="stylesheet" href="styles/default.css"> -->
+        <!-- <link rel="stylesheet" href="styles/opennms.css"> -->
+        <link rel="stylesheet" href="styles/desktop.css">
+        <!-- endbuild -->
+        
+        <style>
+            [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+                display: none !important;
+            }
+        </style>
+    </head>
 
-  <body ng-app="opennms">
-    <ui-view></ui-view>
+    <body class="ng-cloak">
+        <nav class="navbar navbar-inverse" role="navigation" ng-controller="MenuCtrl">
+            <div class="container-fluid">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#"><img src="images/logo-only.png" style="max-height: 40px; overflow: visible; padding-top: 0; padding-bottom: 0; margin-left: -10px; margin-top: -10px"></a>
+                </div>
 
-    <!-- build:js scripts/vendor.js -->
-    <!-- <script src="vendor/someContribJs.js"></script> -->
-    <script src="bower_components/jquery/dist/jquery.js"></script>
-    <script src="bower_components/x2js/xml2json.js"></script>
-    <script src="bower_components/momentjs/moment.js"></script>
-    <script src="bower_components/angular/angular.js"></script>
-    <script src="bower_components/angular-animate/angular-animate.js"></script>
-    <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
-    <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
-    <script src="bower_components/ionic/release/js/ionic.js"></script>
-    <script src="bower_components/ionic/release/js/ionic-angular.js"></script>
-    <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
-    <!-- endbuild -->
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+                        <li class="dropdown" ng-repeat="item in menuItems">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{item.name}} <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li ng-repeat="entry in item.entries"><a ng-href="#{{entry.route}}">{{entry.name}}</a></li>
+                            </ul>
+                        </li>
+                        <!--
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Info <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">Events</a></li>
+                                <li><a href="#">Alarms</a></li>
+                                <li><a href="#">Notifications</a></li>
+                                <li><a href="#">Nodes</a></li>
+                                <li><a href="#">Assets</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Status <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">Outages</a></li>
+                                <li><a href="#">Path Outages</a></li>
+                                <li><a href="#">Distributed Status</a></li>
+                                <li><a href="#">Surveillance View</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Reports <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">Charts</a></li>
+                                <li><a href="#">Resource Graphs</a></li>
+                                <li><a href="#">KSC</a></li>
+                                <li><a href="#">Statistics</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Maps <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">Distributed</a></li>
+                                <li><a href="#">Topology</a></li>
+                                <li><a href="#">Geographical</a></li>
+                                <li><a href="#">Legacy</a></li>
+                            </ul>
+                        </li>
+                        -->
+                    </ul>
+                    <form class="navbar-form navbar-left" role="search">
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="Search">
+                        </div>
+                        <button type="submit" class="btn btn-default">Submit</button>
+                    </form>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="#">Notifications: <span class="glyphicon glyphicon-ok" style="color: green"></span></a></li>
+                        <li><a href="#">Support</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">Change Password</a></li>
+                                <li class="divider"></li>
+                                <li><a href="#">Log Off</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div><!-- /.navbar-collapse -->
+            </div><!-- /.container-fluid -->
+        </nav>
+
+        <ui-view></ui-view>
+
+        <!-- build:js scripts/vendor.js -->
+        <!-- <script src="vendor/someContribJs.js"></script> -->
+        <script src="bower_components/jquery/dist/jquery.js"></script>
+        <script src="bower_components/x2js/xml2json.js"></script>
+        <script src="bower_components/momentjs/moment.js"></script>
+        <script src="bower_components/angular/angular.js"></script>
+        <script src="bower_components/angular-animate/angular-animate.js"></script>
+        <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
+        <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+        <script src="bower_components/ionic/release/js/ionic.js"></script>
+        <script src="bower_components/ionic/release/js/ionic-angular.js"></script>
+        <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
+        <!-- endbuild -->
     
-    <!-- build:js({.tmp,app}) scripts/scripts.js -->
-    <script src="scripts/model/alarm-summary.js"></script>
-    <script src="scripts/model/outage-summary.js"></script>
-    <script src="scripts/services/shared/config.js"></script>
-    <script src="scripts/services/shared/alarm.js"></script>
-    <script src="scripts/services/shared/outage.js"></script>
-    <script src="scripts/controllers/shared/playlists.js"></script>
-    <script src="scripts/controllers/shared/alarms.js"></script>
-    <script src="scripts/controllers/desktop/dashboard.js"></script>
-    <script src="scripts/controllers/desktop/app.js"></script>
-    <script src="scripts/desktop.js"></script>
-    <!-- endbuild -->
-  </body>
+        <!-- build:js({.tmp,app}) scripts/scripts.js -->
+        <script src="scripts/services/shared/plugin.js"></script>
+        <script src="scripts/model/alarm-summary.js"></script>
+        <script src="scripts/model/menu.js"></script>
+        <script src="scripts/model/outage-summary.js"></script>
+        <script src="scripts/services/shared/config.js"></script>
+        <script src="scripts/services/shared/alarm.js"></script>
+        <script src="scripts/services/shared/menu.js"></script>
+        <script src="scripts/services/shared/outage.js"></script>
+        <script src="scripts/controllers/shared/alarms.js"></script>
+        <script src="scripts/controllers/shared/menu.js"></script>
+        <script src="scripts/controllers/desktop/app.js"></script>
+        <script src="scripts/controllers/desktop/dashboard.js"></script>
+        <script src="scripts/desktop.js"></script>
+        <!-- endbuild -->
+        <script>
+            var modules = PluginManager.getModules();
+            angular.bootstrap(document, modules);
+        </script>
+    </body>
 </html>
