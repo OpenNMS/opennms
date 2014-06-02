@@ -1,42 +1,53 @@
-describe('Shared Node Controllers', function() {
+describe('Shared Node Controllers Module', function() {
+  var getThenObject;
+
+  beforeEach(function() {
+    // This is helpful for promises.
+    getThenObject = function(response) {
+      return { then: function(cb) { cb(response) } };
+    }
+  })
   beforeEach(module('opennms.controllers.shared.nodes'));
   beforeEach(function() {
      module('opennms.controllers.shared.nodes');
   });
-  describe('NodeController', function() {
+  describe('NodesController', function() {
     var scope;
     var $controller;
     var rootScope;
 
-    var nodeController;
-    var nodeFactory;
+    var nodesController;
+    var NodeService;
 
-    beforeEach(inject(function(_$rootScope_, _$controller_, _nodeFactory_) {
+    beforeEach(inject(function(_$rootScope_, _$controller_, _$log_, _NodeService_) {
       rootScope = _$rootScope_;
       scope = rootScope.$new();
       $controller = _$controller_;
-      nodeFactory = _nodeFactory_;
-      nodeController = $controller('NodeController', {
+      NodeService = _NodeService_;
+
+      // Stub these out.
+      NodeService.list = function() {}
+      spyOn(NodeService, 'list').andReturn(getThenObject({}));
+
+      nodesController = $controller('NodesController', {
         $rootScope: rootScope,
         $scope: scope,
-        nodeFactory: nodeFactory
+        $log: _$log_,
+        NodeService: NodeService
       });
 
     }));
 
     describe('init', function() {
       it('should call node factory for nodes', function() {
-        spyOn(nodeFactory, 'getNodes');
-
         scope.init();
-        //expect(nodeFactory.getNodes).toHaveBeenCalled();
+        expect(NodeService.list).toHaveBeenCalled();
       });
     });
 
     describe('getNodeLink', function() {
       it('should return a hash-path with node id', function() {
         var node = { id: 3};
-
         expect(scope.getNodeLink(node)).toBe('#/node/3');
       });
     });
@@ -48,13 +59,13 @@ describe('Shared Node Controllers', function() {
     var rootScope;
 
     var nodeDetailController;
-    var nodeDetailFactory;
+    var NodeService;
 
-    beforeEach(inject(function(_$rootScope_, _$controller_, _nodeDetailFactory_) {
+    beforeEach(inject(function(_$rootScope_, _$controller_, _NodeService_) {
       rootScope = _$rootScope_;
       scope = rootScope.$new();
       $controller = _$controller_;
-      nodeDetailFactory = _nodeDetailFactory_;
+      NodeService = _NodeService_;
 
       // Add fake state params.
       scope.fakeStateParams = { id: 1 };
@@ -62,17 +73,17 @@ describe('Shared Node Controllers', function() {
       nodeDetailController = $controller('NodeDetailController', {
         $rootScope: rootScope,
         $scope: scope,
-        nodeDetailFactory: nodeDetailFactory,
-        $stateParams: scope.fakeStateParams
+        $stateParams: scope.fakeStateParams,
+        NodeService: NodeService
       });
     }));
 
     describe('init', function() {
       it('should populate the node from the node detail factory', function() {
-        spyOn(nodeDetailFactory, 'getNode');
+        spyOn(NodeService, 'get');
 
         scope.init();
-        expect(nodeDetailFactory.getNode).toHaveBeenCalled();
+        expect(NodeService.get).toHaveBeenCalledWith(1);
       })
     })
   });

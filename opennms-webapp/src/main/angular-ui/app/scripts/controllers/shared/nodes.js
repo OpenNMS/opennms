@@ -2,16 +2,21 @@
   'use strict';
 
   angular.module('opennms.controllers.shared.nodes', [
-    'opennms.services.shared.nodes'
+    'opennms.services.shared.nodes',
+    'opennms.services.shared.menu',
+    'ui.router'
   ])
-    .controller('NodesController', ['$scope', 'nodeFactory', function ($scope, nodeFactory) {
+    .controller('NodesController', ['$scope', '$log', 'NodeService', function ($scope, $log, NodeService) {
       $scope.listInterfaces = false;
       $scope.nodes = [];
 
       $scope.init = function() {
-        $scope.nodes = nodeFactory.getNodes();
-      }
-      ;
+        NodeService.list().then(function(nodes) {
+          $log.debug('Got nodes:', nodes);
+          $scope.nodes = nodes;
+        });
+      };
+
       $scope.getNodeLink = function (node) {
         return '#/node/' + node.id;
       };
@@ -19,7 +24,7 @@
       /// Runtime stuff.
       $scope.init();
     }])
-    .controller('NodeDetailController', ['$scope', '$stateParams', 'nodeDetailFactory', function ($scope, $stateParams, nodeDetailFactory) {
+    .controller('NodeDetailController', ['$scope', '$stateParams', 'NodeService', function ($scope, $stateParams, NodeService) {
       $scope.node = {};
       $scope.node.label = 'node8';
       $scope.node.id = 1;
@@ -43,9 +48,9 @@
       };
 
       $scope.init = function() {
-        $scope.node = nodeDetailFactory.getNode($stateParams.id);
-      }
-      ;
+        $scope.node = NodeService.get($stateParams.id);
+      };
+
       console.log($scope.node);
 
       /// Runtime stuff.
