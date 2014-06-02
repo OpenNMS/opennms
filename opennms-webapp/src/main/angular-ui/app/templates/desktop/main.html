@@ -1,3 +1,13 @@
+<style>
+ul.nav li.dropdown:hover > ul.dropdown-menu {
+    display: block;    
+}
+/*
+ul.nav li.dropdown:hover > a.dropdown-toggle > b.caret {
+    visibility: hidden;
+}
+*/
+</style>
 <nav class="navbar navbar-default" role="navigation">
 	<div class="container-fluid">
 		<!-- Brand and toggle get grouped for better mobile display -->
@@ -8,26 +18,49 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<a class="navbar-brand" href="#">OpenNMS</a>
+			<a class="navbar-brand" href="#"><img src="images/logo-only.png" style="max-height: 40px; overflow: visible; padding-top: 0; padding-bottom: 0; margin-left: -10px; margin-top: -10px"></a>
 		</div>
 
 		<!-- Collect the nav links, forms, and other content for toggling -->
 		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 			<ul class="nav navbar-nav">
-				<li class="active"><a href="#">Link</a></li>
-				<li><a href="#">Link</a></li>
-				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
-					<ul class="dropdown-menu">
-						<li><a href="#">Action</a></li>
-						<li><a href="#">Another action</a></li>
-						<li><a href="#">Something else here</a></li>
-						<li class="divider"></li>
-						<li><a href="#">Separated link</a></li>
-						<li class="divider"></li>
-						<li><a href="#">One more separated link</a></li>
-					</ul>
-				</li>
+                <li class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown">Info <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Events</a></li>
+                        <li><a href="#">Alarms</a></li>
+                        <li><a href="#">Notifications</a></li>
+                        <li><a href="#">Nodes</a></li>
+                        <li><a href="#">Assets</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown">Status <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Outages</a></li>
+                        <li><a href="#">Path Outages</a></li>
+                        <li><a href="#">Distributed Status</a></li>
+                        <li><a href="#">Surveillance View</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown">Reports <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Charts</a></li>
+                        <li><a href="#">Resource Graphs</a></li>
+                        <li><a href="#">KSC</a></li>
+                        <li><a href="#">Statistics</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown">Maps <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Distributed</a></li>
+                        <li><a href="#">Topology</a></li>
+                        <li><a href="#">Geographical</a></li>
+                        <li><a href="#">Legacy</a></li>
+                    </ul>
+                </li>
 			</ul>
 			<form class="navbar-form navbar-left" role="search">
 				<div class="form-group">
@@ -36,21 +69,20 @@
 				<button type="submit" class="btn btn-default">Submit</button>
 			</form>
 			<ul class="nav navbar-nav navbar-right">
-				<li><a href="#">Link</a></li>
+				<li><a href="#">Notifications: <span class="glyphicon glyphicon-ok" style="color: green"></span></a></li>
+                <li><a href="#">Support</a></li>
 				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin <b class="caret"></b></a>
 					<ul class="dropdown-menu">
-						<li><a href="#">Action</a></li>
-						<li><a href="#">Another action</a></li>
-						<li><a href="#">Something else here</a></li>
+						<li><a href="#">Change Password</a></li>
 						<li class="divider"></li>
-						<li><a href="#">Separated link</a></li>
+						<li><a href="#">Log Off</a></li>
 					</ul>
 				</li>
 			</ul>
 		</div><!-- /.navbar-collapse -->
 	</div><!-- /.container-fluid -->
 </nav>
-<div class="container-fluid">
+<div class="container-fluid main">
 	<ui-view name="mainContent"></ui-view>
 </div>
