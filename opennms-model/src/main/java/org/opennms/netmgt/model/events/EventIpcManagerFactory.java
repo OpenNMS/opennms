@@ -71,8 +71,10 @@ public abstract class EventIpcManagerFactory {
     /**
      * This is here for unit testing so we can reset this class before
      * every test.
+     * 
+     * @deprecated Only for unit testing!
      */
-    protected static void reset() {
+    public static void reset() {
         m_ipcManager = null;
     }
 
