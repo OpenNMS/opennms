@@ -149,6 +149,7 @@ public class NodeRestService extends OnmsRestService {
                 }
             }
 
+            System.err.println("NodeRestService criteria: " + crit);
             final OnmsNodeList coll = new OnmsNodeList(m_nodeDao.findMatching(crit));
             
             crit.setLimit(null);
