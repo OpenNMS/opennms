@@ -72,7 +72,7 @@ import org.springframework.util.Assert;
 		"classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
 		"classpath*:/META-INF/opennms/provisiond-extensions.xml",
 		"classpath*:/META-INF/opennms/component-dao.xml",
-	        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
+		"classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
@@ -81,6 +81,7 @@ import org.springframework.util.Assert;
 		@JUnitSnmpAgent(host="172.20.1.201", resource = "classpath:snmpAssetTestData.properties"),
 		@JUnitSnmpAgent(host="172.20.1.204", resource = "classpath:snmpAssetTestData.properties")
 })
+@Transactional
 public class SnmpAssetProvisioningAdapterIntegrationTest implements InitializingBean {
 
 	@Autowired
@@ -160,7 +161,6 @@ public class SnmpAssetProvisioningAdapterIntegrationTest implements Initializing
 
 	@Test
 	@JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
-	@Transactional
 	public void testAddNodeDirectly() throws InterruptedException {
 		OnmsNode node = m_nodeDao.get(NODE_ID);
 		assertNotNull(node);
