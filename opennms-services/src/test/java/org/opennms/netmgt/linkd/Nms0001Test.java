@@ -30,192 +30,46 @@ package org.opennms.netmgt.linkd;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FROH_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FROH_ISIS_SYS_ID;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FROH_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FROH_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.OEDIPUS_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.OEDIPUS_ISIS_SYS_ID;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.OEDIPUS_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.OEDIPUS_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SIEGFRIE_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SIEGFRIE_ISIS_SYS_ID;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SIEGFRIE_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SIEGFRIE_SNMP_RESOURCE;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.linkd.Package;
-import org.opennms.netmgt.linkd.snmp.IsIsSystemObjectGroup;
-import org.opennms.netmgt.linkd.snmp.IsisCircTable;
-import org.opennms.netmgt.linkd.snmp.IsisCircTableEntry;
-import org.opennms.netmgt.linkd.snmp.IsisISAdjTable;
-import org.opennms.netmgt.linkd.snmp.IsisISAdjTableEntry;
-import org.opennms.netmgt.linkd.snmp.IsIsSystemObjectGroup.IsisAdminState;
-import org.opennms.netmgt.linkd.snmp.IsisISAdjTableEntry.IsisISAdjNeighSysType;
-import org.opennms.netmgt.linkd.snmp.IsisISAdjTableEntry.IsisISAdjState;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.snmp.CollectionTracker;
-import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.netmgt.snmp.SnmpWalker;
+import org.opennms.netmgt.nb.Nms0001NetworkBuilder;
 
-public class Nms0001Test extends Nms0001NetworkBuilder {
+public class Nms0001Test extends LinkdTestBuilder {
 
-    @Test
-    @JUnitSnmpAgents(value = {
-            @JUnitSnmpAgent(host = FROH_IP, port = 161, resource = "classpath:linkd/nms0001/" + FROH_NAME + "-"+FROH_IP + "-walk.txt"),
-            @JUnitSnmpAgent(host = OEDIPUS_IP, port = 161, resource = "classpath:linkd/nms0001/" + OEDIPUS_NAME + "-"+OEDIPUS_IP + "-walk.txt"),
-            @JUnitSnmpAgent(host = SIEGFRIE_IP, port = 161, resource = "classpath:linkd/nms0001/" + SIEGFRIE_NAME + "-"+SIEGFRIE_IP + "-walk.txt")
-    })
-    public void testIsisSysObjGroupCollection() throws Exception {
-
-        String name = "isisSystemObjectGroup";
-
-        // froh
-        IsIsSystemObjectGroup m_isisSystemObjectGroup = new IsIsSystemObjectGroup(InetAddressUtils.addr(FROH_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[]{m_isisSystemObjectGroup};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(FROH_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-            walker.waitFor();
-        } catch (final InterruptedException e) {
-
-        }
-
-        assertEquals(IsisAdminState.ON, m_isisSystemObjectGroup.getIsisSysAdminState());
-        assertEquals(FROH_ISIS_SYS_ID, m_isisSystemObjectGroup.getIsisSysId());
-        
-        // oedipus
-        m_isisSystemObjectGroup = new IsIsSystemObjectGroup(InetAddressUtils.addr(OEDIPUS_IP));
-        tracker = new CollectionTracker[]{m_isisSystemObjectGroup};
-        snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(OEDIPUS_IP));
-        walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-            walker.waitFor();
-        } catch (final InterruptedException e) {
-
-        }
-        
-        assertEquals(IsisAdminState.ON, m_isisSystemObjectGroup.getIsisSysAdminState());
-        assertEquals(OEDIPUS_ISIS_SYS_ID, m_isisSystemObjectGroup.getIsisSysId());
-
-        // siegfrie
-        m_isisSystemObjectGroup = new IsIsSystemObjectGroup(InetAddressUtils.addr(SIEGFRIE_IP));
-        tracker = new CollectionTracker[]{m_isisSystemObjectGroup};
-        snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(SIEGFRIE_IP));
-        walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-            walker.waitFor();
-        } catch (final InterruptedException e) {
-
-        }
-        
-        assertEquals(IsisAdminState.ON, m_isisSystemObjectGroup.getIsisSysAdminState());
-        assertEquals(SIEGFRIE_ISIS_SYS_ID, m_isisSystemObjectGroup.getIsisSysId());
-
-    }
-
-    @Test
-    @JUnitSnmpAgents(value = {
-            @JUnitSnmpAgent(host = FROH_IP, port = 161, resource = "classpath:linkd/nms0001/" + FROH_NAME + "-"+FROH_IP + "-walk.txt"),
-            @JUnitSnmpAgent(host = OEDIPUS_IP, port = 161, resource = "classpath:linkd/nms0001/" + OEDIPUS_NAME + "-"+OEDIPUS_IP + "-walk.txt"),
-            @JUnitSnmpAgent(host = SIEGFRIE_IP, port = 161, resource = "classpath:linkd/nms0001/" + SIEGFRIE_NAME + "-"+SIEGFRIE_IP + "-walk.txt")
-    })
-    public void testIsisISAdjTableCollection() throws Exception {
-
-        String name = "isisISAdjTable";
-        IsisISAdjTable m_isisISAdjTable = new IsisISAdjTable(InetAddressUtils.addr(FROH_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[]{m_isisISAdjTable};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(FROH_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-            walker.waitFor();
-        } catch (final InterruptedException e) {
-            assertEquals(false, true);
-        }
-
-        Collection<IsisISAdjTableEntry> isisISAdjTableEntryCollection = m_isisISAdjTable.getEntries();
-        assertEquals(2, isisISAdjTableEntryCollection.size());
-        Iterator<IsisISAdjTableEntry> iter = isisISAdjTableEntryCollection.iterator();
-        IsisISAdjTableEntry entry1 = iter.next();
-        assertEquals(599, entry1.getIsisCircIndex().intValue());
-        assertEquals(1, entry1.getIsisISAdjIndex().intValue());
-        assertEquals(IsisISAdjState.UP, entry1.getIsIsAdjStatus());
-        assertEquals("001f12accbf1", entry1.getIsIsAdjNeighSnpaAddress());
-        assertEquals(IsisISAdjNeighSysType.l1_IntermediateSystem, entry1.getIsisISAdjNeighSysType());
-        assertEquals(OEDIPUS_ISIS_SYS_ID, entry1.getIsIsAdjNeighSysId());
-        assertEquals(0, entry1.getIsisAdjNbrExtendedCircID().intValue());
-        
-        IsisISAdjTableEntry entry2 = iter.next();
-        assertEquals(600, entry2.getIsisCircIndex().intValue());
-        assertEquals(1, entry2.getIsisISAdjIndex().intValue());
-        assertEquals(IsisISAdjState.UP, entry2.getIsIsAdjStatus());
-        assertEquals("001f12acc3f2", entry2.getIsIsAdjNeighSnpaAddress());
-        assertEquals(IsisISAdjNeighSysType.l1_IntermediateSystem, entry2.getIsisISAdjNeighSysType());
-        assertEquals(SIEGFRIE_ISIS_SYS_ID, entry2.getIsIsAdjNeighSysId());
-        assertEquals(0, entry2.getIsisAdjNbrExtendedCircID().intValue());
-
-        
-    }
-
-    @Test
-    @JUnitSnmpAgents(value = {
-            @JUnitSnmpAgent(host = FROH_IP, port = 161, resource = "classpath:linkd/nms0001/" + FROH_NAME + "-"+FROH_IP + "-walk.txt"),
-            @JUnitSnmpAgent(host = OEDIPUS_IP, port = 161, resource = "classpath:linkd/nms0001/" + OEDIPUS_NAME + "-"+OEDIPUS_IP + "-walk.txt"),
-            @JUnitSnmpAgent(host = SIEGFRIE_IP, port = 161, resource = "classpath:linkd/nms0001/" + SIEGFRIE_NAME + "-"+SIEGFRIE_IP + "-walk.txt")
-    })
-    public void testIsisCircTableCollection() throws Exception {
-
-        String name = "isisCircTable";
-        IsisCircTable m_isisCircTable = new IsisCircTable(InetAddressUtils.addr(FROH_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[]{m_isisCircTable};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(FROH_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-            walker.waitFor();
-        } catch (final InterruptedException e) {
-            assertEquals(false, true);
-        }
-
-        Collection<IsisCircTableEntry> isisCircTableEntryCollection = m_isisCircTable.getEntries();
-        assertEquals(3, isisCircTableEntryCollection.size());
-        Iterator<IsisCircTableEntry> iter = isisCircTableEntryCollection.iterator();
-        IsisCircTableEntry entry1 = iter.next();
-        assertEquals(16, entry1.getIsisCircIndex().intValue());
-        assertEquals(16, entry1.getIsisCircIfIndex().intValue());
-        
-        IsisCircTableEntry entry2 = iter.next();
-        assertEquals(599, entry2.getIsisCircIndex().intValue());
-        assertEquals(599, entry2.getIsisCircIfIndex().intValue());
-
-        IsisCircTableEntry entry3 = iter.next();
-        assertEquals(600, entry3.getIsisCircIndex().intValue());
-        assertEquals(600, entry3.getIsisCircIfIndex().intValue());
-        
-    }
+	Nms0001NetworkBuilder builder = new Nms0001NetworkBuilder();
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host = FROH_IP, port = 161, resource = "classpath:linkd/nms0001/" + FROH_NAME + "-"+FROH_IP + "-walk.txt"),
-            @JUnitSnmpAgent(host = OEDIPUS_IP, port = 161, resource = "classpath:linkd/nms0001/" + OEDIPUS_NAME + "-"+OEDIPUS_IP + "-walk.txt"),
-            @JUnitSnmpAgent(host = SIEGFRIE_IP, port = 161, resource = "classpath:linkd/nms0001/" + SIEGFRIE_NAME + "-"+SIEGFRIE_IP + "-walk.txt")
+            @JUnitSnmpAgent(host = FROH_IP, port = 161, resource = FROH_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host = OEDIPUS_IP, port = 161, resource = OEDIPUS_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host = SIEGFRIE_IP, port = 161, resource = SIEGFRIE_SNMP_RESOURCE)
     })
     public void testIsIsLinks() throws Exception {
         
-        m_nodeDao.save(getFroh());
-        m_nodeDao.save(getOedipus());
-        m_nodeDao.save(getSiegFrie());
+        m_nodeDao.save(builder.getFroh());
+        m_nodeDao.save(builder.getOedipus());
+        m_nodeDao.save(builder.getSiegFrie());
         m_nodeDao.flush();
 
         Package example1 = m_linkdConfig.getPackage("example1");

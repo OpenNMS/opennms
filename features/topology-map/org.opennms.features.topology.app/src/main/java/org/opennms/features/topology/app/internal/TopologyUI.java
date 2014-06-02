@@ -391,6 +391,8 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                 } catch (ClassCastException e) {}
             }
         }
+        //Initialize the Base Topology provider just in case
+        getGraphContainer().getBaseTopology().refresh();
     }
 
     private void createLayouts() {

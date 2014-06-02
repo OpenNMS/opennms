@@ -171,6 +171,15 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     private OnmsAssetRecord m_assetRecord;
 
     /** persistent field */
+    private LldpElement m_lldpElement;
+
+    /** persistent field */
+    private OspfElement m_ospfElement;
+
+    /** persistent field */
+    private IsIsElement m_isisElement;
+
+    /** persistent field */
     private Set<OnmsIpInterface> m_ipInterfaces = new LinkedHashSet<OnmsIpInterface>();
 
     /** persistent field */
@@ -178,6 +187,9 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
 
     /** persistent field */
     private Set<OnmsArpInterface> m_arpInterfaces = new LinkedHashSet<OnmsArpInterface>();
+
+    /** persistent field */
+    private Set<LldpLink> m_lldpLinks = new LinkedHashSet<LldpLink>();
 
     /** persistent field */
     private Set<OnmsArpInterface> m_arpInterfacesBySource = new LinkedHashSet<OnmsArpInterface>();
@@ -741,6 +753,64 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     }
 
     /**
+     * The lldp element associated with this node
+     *
+     * @return a {@link org.opennms.netmgt.model.LldpElement} object.
+     */
+    @OneToOne(mappedBy="node", cascade = CascadeType.ALL, fetch=FetchType.LAZY)
+    public LldpElement getLldpElement() {
+        return m_lldpElement;
+    }
+
+    /**
+     * <p>setLldpElement</p>
+     *
+     * @param asset a {@link org.opennms.netmgt.model.LldpElement} object.
+     */
+    public void setLldpElement(LldpElement lldpElement) {
+        m_lldpElement = lldpElement;
+    }
+
+    /**
+     * The ospf element associated with this node
+     *
+     * @return a {@link org.opennms.netmgt.model.OspfElement} object.
+     */
+    @OneToOne(mappedBy="node", cascade = CascadeType.ALL, fetch=FetchType.LAZY)
+    public OspfElement getOspfElement() {
+        return m_ospfElement;
+    }
+
+    /**
+     * <p>setOspfElement</p>
+     *
+     * @param asset a {@link org.opennms.netmgt.model.OspfElement} object.
+     */
+    public void setOspfElement(OspfElement ospfElement) {
+        m_ospfElement = ospfElement;
+    }
+
+    /**
+     * The isis element associated with this node
+     *
+     * @return a {@link org.opennms.netmgt.model.IsIsElement} object.
+     */
+    @OneToOne(mappedBy="node", cascade = CascadeType.ALL, fetch=FetchType.LAZY)
+    public IsIsElement getIsisElement() {
+        return m_isisElement;
+    }
+
+    /**
+     * <p>setIsIsElement</p>
+     *
+     * @param asset a {@link org.opennms.netmgt.model.OspfElement} object.
+     */
+    public void setIsisElement(IsIsElement isisElement) {
+        m_isisElement = isisElement;
+    }
+
+
+    /**
      * <p>getPathElement</p>
      *
      * @return a {@link org.opennms.netmgt.model.PathElement} object.
@@ -797,6 +867,37 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
         iface.setNode(this);
         getIpInterfaces().add(iface);
     }
+
+    /**
+     * The interfaces on this node
+     *
+     * @return a {@link java.util.Set} object.
+     */
+    @OneToMany(mappedBy="node",orphanRemoval=true)
+    @org.hibernate.annotations.Cascade(org.hibernate.annotations.CascadeType.ALL)
+    public Set<LldpLink> getLldpLinks() {
+        return m_lldpLinks;
+    }
+
+    /**
+     * <p>setIpInterfaces</p>
+     *
+     * @param ipinterfaces a {@link java.util.Set} object.
+     */
+    public void setLldpLinks(Set<LldpLink> lldpLinks) {
+        m_lldpLinks = lldpLinks;
+    }
+
+    /**
+     * <p>addIpInterface</p>
+     *
+     * @param iface a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
+     */
+    public void addLldpLink(LldpLink lldpLink) {
+        lldpLink.setNode(this);
+        getLldpLinks().add(lldpLink);
+    }
+
 
     /**
      * The information from the SNMP interfaces/ipAddrTables for the node

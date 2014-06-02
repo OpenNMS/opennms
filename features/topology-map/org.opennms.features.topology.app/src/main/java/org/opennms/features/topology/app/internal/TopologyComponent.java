@@ -206,7 +206,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 
         Graph graph = getGraph();
         //Set Status provider from the graph container because I may move it later
-        GraphVisitor painter = new GraphPainter(m_graphContainer, graph.getLayout(), m_iconRepoManager, m_graphContainer.getStatusProvider(), getState());
+        GraphVisitor painter = new GraphPainter(m_graphContainer, graph.getLayout(), m_iconRepoManager, m_graphContainer.getVertexStatusProvider(), getState());
         try {
             graph.visit(painter);
         } catch (Exception e) {

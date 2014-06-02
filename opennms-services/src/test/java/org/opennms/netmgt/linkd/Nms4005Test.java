@@ -30,6 +30,10 @@ package org.opennms.netmgt.linkd;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.R1_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.R2_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.R3_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.R4_NAME;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,16 +48,19 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.nb.Nms4005NetworkBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
-public class Nms4005Test extends Nms4005NetworkBuilder {
+public class Nms4005Test extends LinkdTestBuilder {
 
     @Autowired
     TransactionTemplate m_transactionTemplate; 
+
+    Nms4005NetworkBuilder builder = new Nms4005NetworkBuilder();
 
     @Before
     public void setUpForceIpRouteOnEthernet() throws Exception {
@@ -65,10 +72,10 @@ public class Nms4005Test extends Nms4005NetworkBuilder {
         m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
-                m_nodeDao.save(getR1());
-                m_nodeDao.save(getR2());
-                m_nodeDao.save(getR3());
-                m_nodeDao.save(getR4());
+                m_nodeDao.save(builder.getR1());
+                m_nodeDao.save(builder.getR2());
+                m_nodeDao.save(builder.getR3());
+                m_nodeDao.save(builder.getR4());
                 m_nodeDao.flush();
             }
         });
@@ -106,7 +113,6 @@ public class Nms4005Test extends Nms4005NetworkBuilder {
     })
     @JUnitTemporaryDatabase
     public void testNms4005Network() throws Exception {
-
         final OnmsNode cisco1 = m_nodeDao.findByForeignId("linkd", R1_NAME);
         final OnmsNode cisco2 = m_nodeDao.findByForeignId("linkd", R2_NAME);
         final OnmsNode cisco3 = m_nodeDao.findByForeignId("linkd", R3_NAME);

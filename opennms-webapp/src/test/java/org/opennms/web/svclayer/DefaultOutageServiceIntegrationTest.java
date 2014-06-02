@@ -104,7 +104,6 @@ public class DefaultOutageServiceIntegrationTest implements InitializingBean {
     @Test
     @Transactional
     @Ignore
-    @JUnitTemporaryDatabase
     public void testGetSupressedOutages() {
         Collection<OnmsOutage> outages = m_outageService.getSuppressedOutages();
         assertTrue("Collection should be emtpy ", outages.isEmpty());
@@ -121,7 +120,6 @@ public class DefaultOutageServiceIntegrationTest implements InitializingBean {
     @Test
     @Transactional
     @Ignore
-    @JUnitTemporaryDatabase
     public void testNoOfSuppressedOutages(){
         Integer outages = m_outageService.getSuppressedOutageCount();
         assertTrue("We should find suppressed messages ", outages == 0);

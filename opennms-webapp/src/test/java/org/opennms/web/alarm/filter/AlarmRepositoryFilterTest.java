@@ -272,9 +272,6 @@ public class AlarmRepositoryFilterTest implements InitializingBean {
         
         OnmsAlarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(AlarmUtil.getOnmsCriteria(criteria));
         assertEquals(1, alarms.length);
-        
-        //alarms = m_jdbcWebAlarmRepo.getMatchingAlarms(AlarmUtil.getOnmsCriteria(criteria));
-        //assertEquals(1, alarms);
     }
     
     @Test
@@ -284,9 +281,6 @@ public class AlarmRepositoryFilterTest implements InitializingBean {
         
         OnmsAlarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(AlarmUtil.getOnmsCriteria(criteria));
         assertEquals(1, alarms.length);
-        
-        //alarms = m_jdbcWebAlarmRepo.getMatchingAlarms(AlarmUtil.getOnmsCriteria(criteria));
-        //assertEquals(1, alarms.length);
     }
     
     @Test
