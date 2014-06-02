@@ -120,17 +120,34 @@ public class NodeRestService extends OnmsRestService {
             final MultivaluedMap<String, String> params = m_uriInfo.getQueryParameters();
             final String type = params.getFirst("type");
 
-            final CriteriaBuilder builder = getCriteriaBuilder(params);
-            builder.orderBy("label").asc();
-            
-            final Criteria crit = builder.toCriteria();
-    
-            if (type == null) {
-                final List<Restriction> restrictions = new ArrayList<Restriction>(crit.getRestrictions());
-                restrictions.add(Restrictions.ne("type", "D"));
-                crit.setRestrictions(restrictions);
+            Criteria crit = null;
+
+            if (params.size() == 1 && params.getFirst("nodeId") != null && params.getFirst("nodeId").contains(",")) {
+                // we've been specifically asked for a list of nodes by ID
+
+                final List<Integer> nodeIds = new ArrayList<Integer>();
+                for (final String id : params.getFirst("nodeId").split(",")) {
+                    nodeIds.add(Integer.valueOf(id));
+                }
+                builder.ne("type", "D");
+                builder.in("id", nodeIds);
+                builder.distinct();
+
+                crit = builder.toCriteria();
+            } else {
+                applyQueryFilters(params, builder);
+                builder.orderBy("label").asc();
+
+                crit = builder.toCriteria();
+
+                if (type == null) {
+                    final List<Restriction> restrictions = new ArrayList<Restriction>(crit.getRestrictions());
+                    restrictions.add(Restrictions.ne("type", "D"));
+                    crit.setRestrictions(restrictions);
+                }
             }
-            
+
+            System.err.println("NodeRestService criteria: " + crit);
             final OnmsNodeList coll = new OnmsNodeList(m_nodeDao.findMatching(crit));
             
             crit.setLimit(null);
