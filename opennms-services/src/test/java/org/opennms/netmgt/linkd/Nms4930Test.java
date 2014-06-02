@@ -39,12 +39,15 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.nb.Nms4930NetworkBuilder;
 
-public class Nms4930Test extends Nms4930NetworkBuilder {
+public class Nms4930Test extends LinkdTestBuilder {
 
+	Nms4930NetworkBuilder builder = new Nms4930NetworkBuilder();
     @Before
-    public void setUpNetwork4005() throws Exception {
-        buildNetwork4930();
+    public void setUpNetwork4930() throws Exception {
+    	builder.setNodeDao(m_nodeDao);
+        builder.buildNetwork4930();
     }
 
     /*

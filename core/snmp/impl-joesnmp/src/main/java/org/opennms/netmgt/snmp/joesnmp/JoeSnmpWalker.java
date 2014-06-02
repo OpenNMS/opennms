@@ -194,7 +194,7 @@ public class JoeSnmpWalker extends SnmpWalker {
 
         @Override
     public void start() {
-        LOG.info("Walking {} for {} using version {} with config: {}", getName(), getAddress(), SnmpSMI.getVersionString(getVersion()), m_agentConfig);
+        LOG.debug("Walking {} for {} using version {} with config: {}", getName(), getAddress(), SnmpSMI.getVersionString(getVersion()), m_agentConfig);
         super.start();
     }
 

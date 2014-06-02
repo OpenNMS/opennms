@@ -270,7 +270,7 @@ public class LinkdTopologyProviderTest {
 		//GraphProvider topologyProvider = new LinkdTopologyProvider();
 		m_topologyProvider.load(null);
 		
-		assertEquals(8, m_topologyProvider.getVertices().size());
+		assertEquals(24, m_topologyProvider.getVertices().size());
 		assertEquals(8, m_topologyProvider.getEdges().size());
 	}
 	

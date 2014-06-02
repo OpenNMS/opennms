@@ -28,6 +28,37 @@
 
 package org.opennms.netmgt.linkd;
 
+import static org.opennms.netmgt.nb.TestNetworkBuilder.RDeEssnBrue_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.RDeEssnBrue_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.RDeEssnBrue_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.RNewt103_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.RNewt103_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.RNewt103_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.RPict001_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.RPict001_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.RPict001_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.Rluck001_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.Rluck001_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.Rluck001_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SDeEssnBrue081_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SDeEssnBrue081_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SDeEssnBrue081_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SDeEssnBrue121_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SDeEssnBrue121_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SDeEssnBrue121_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SDeEssnBrue142_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SDeEssnBrue142_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SDeEssnBrue142_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SDeEssnBrue165_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SDeEssnBrue165_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SDeEssnBrue165_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.Sluck001_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.Sluck001_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.Sluck001_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.Sluck001_SNMP_RESOURCE_VLAN100;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.Sluck001_SNMP_RESOURCE_VLAN950;
+
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
@@ -38,9 +69,11 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.nb.Nms0002NetworkBuilder;
 
-public class Nms0002Test extends Nms0002NetworkBuilder {
+public class Nms0002Test extends LinkdTestBuilder {
 
+	Nms0002NetworkBuilder builder = new Nms0002NetworkBuilder();
     /*
      *
      *     nodelabel           |  snmpifname  | ifindex |       parent       |  parentif  | parentifindex 
@@ -58,13 +91,13 @@ public class Nms0002Test extends Nms0002NetworkBuilder {
      */
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host = Rluck001_IP, port = 161, resource = "classpath:linkd/nms0002ciscojuniper/" + Rluck001_NAME +".txt"),
-            @JUnitSnmpAgent(host = Sluck001_IP, port = 161, resource = "classpath:linkd/nms0002ciscojuniper/" + Sluck001_NAME+ ".txt")
+            @JUnitSnmpAgent(host = Rluck001_IP, port = 161, resource = Rluck001_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host = Sluck001_IP, port = 161, resource = Sluck001_SNMP_RESOURCE)
     })
     public void testNetworkLinksCiscoJuniperLldp() throws Exception {
         
-        m_nodeDao.save(getRluck001());
-        m_nodeDao.save(getSluck001());
+        m_nodeDao.save(builder.getRluck001());
+        m_nodeDao.save(builder.getSluck001());
         m_nodeDao.flush();
 
         Package example1 = m_linkdConfig.getPackage("example1");
@@ -101,11 +134,11 @@ public class Nms0002Test extends Nms0002NetworkBuilder {
     
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host = Sluck001_IP, port = 161, resource = "classpath:linkd/nms0002ciscojuniper/" + Sluck001_NAME+ ".txt")
+            @JUnitSnmpAgent(host = Sluck001_IP, port = 161, resource = Sluck001_SNMP_RESOURCE)
     })
     public void testNetworkLinksCiscoJuniperVlan() throws Exception {
         
-        m_nodeDao.save(getSluck001());
+        m_nodeDao.save(builder.getSluck001());
         m_nodeDao.flush();
 
         Package example1 = m_linkdConfig.getPackage("example1");
@@ -134,13 +167,13 @@ public class Nms0002Test extends Nms0002NetworkBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host = Rluck001_IP, port = 161, resource = "classpath:linkd/nms0002ciscojuniper/" + Rluck001_NAME +".txt"),
-            @JUnitSnmpAgent(host = Sluck001_IP, port = 161, resource = "classpath:linkd/nms0002ciscojuniper/" + Sluck001_NAME+ ".txt")
+            @JUnitSnmpAgent(host = Rluck001_IP, port = 161, resource = Rluck001_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host = Sluck001_IP, port = 161, resource = Sluck001_SNMP_RESOURCE)
     })
     public void testNetworkLinksCiscoJuniperVlan1() throws Exception {
         
-        m_nodeDao.save(getRluck001());
-        m_nodeDao.save(getSluck001());
+        m_nodeDao.save(builder.getRluck001());
+        m_nodeDao.save(builder.getSluck001());
         m_nodeDao.flush();
 
         Package example1 = m_linkdConfig.getPackage("example1");
@@ -172,13 +205,13 @@ public class Nms0002Test extends Nms0002NetworkBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host = Rluck001_IP, port = 161, resource = "classpath:linkd/nms0002ciscojuniper/" + Rluck001_NAME +".txt"),
-            @JUnitSnmpAgent(host = Sluck001_IP, port = 161, resource = "classpath:linkd/nms0002ciscojuniper/" + Sluck001_NAME+ ".vlan100.txt")
+            @JUnitSnmpAgent(host = Rluck001_IP, port = 161, resource = Rluck001_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host = Sluck001_IP, port = 161, resource = Sluck001_SNMP_RESOURCE_VLAN100)
     })
     public void testNetworkLinksCiscoJuniperVlan100() throws Exception {
         
-        m_nodeDao.save(getRluck001());
-        m_nodeDao.save(getSluck001());
+        m_nodeDao.save(builder.getRluck001());
+        m_nodeDao.save(builder.getSluck001());
         m_nodeDao.flush();
 
         Package example1 = m_linkdConfig.getPackage("example1");
@@ -210,13 +243,13 @@ public class Nms0002Test extends Nms0002NetworkBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host = Rluck001_IP, port = 161, resource = "classpath:linkd/nms0002ciscojuniper/" + Rluck001_NAME +".txt"),
-            @JUnitSnmpAgent(host = Sluck001_IP, port = 161, resource = "classpath:linkd/nms0002ciscojuniper/" + Sluck001_NAME+ ".vlan950.txt")
+            @JUnitSnmpAgent(host = Rluck001_IP, port = 161, resource = Rluck001_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host = Sluck001_IP, port = 161, resource = Sluck001_SNMP_RESOURCE_VLAN950)
     })
     public void testNetworkLinksCiscoJuniperVlan950() throws Exception {
         
-        m_nodeDao.save(getRluck001());
-        m_nodeDao.save(getSluck001());
+        m_nodeDao.save(builder.getRluck001());
+        m_nodeDao.save(builder.getSluck001());
         m_nodeDao.flush();
 
         Package example1 = m_linkdConfig.getPackage("example1");
@@ -253,13 +286,13 @@ s     * r-uk-nott-newt-103:Fa0:(1)<------>(4):Fa3:r-ro-suce-pict-001
      */
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host = RPict001_IP, port = 161, resource = "classpath:linkd/nms0002UkRoFakeLink/" + RPict001_NAME+".txt"),
-            @JUnitSnmpAgent(host = RNewt103_IP, port = 161, resource = "classpath:linkd/nms0002UkRoFakeLink/" + RNewt103_NAME+".txt")
+            @JUnitSnmpAgent(host = RPict001_IP, port = 161, resource = RPict001_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host = RNewt103_IP, port = 161, resource = RNewt103_SNMP_RESOURCE)
     })
     public void testCdpFakeLinkRoUk() throws Exception {
         
-        m_nodeDao.save(getRPict001());
-        m_nodeDao.save(getRNewt103());
+        m_nodeDao.save(builder.getRPict001());
+        m_nodeDao.save(builder.getRNewt103());
         m_nodeDao.flush();
 
         Package example1 = m_linkdConfig.getPackage("example1");
@@ -374,19 +407,19 @@ s     * r-uk-nott-newt-103:Fa0:(1)<------>(4):Fa3:r-ro-suce-pict-001
     
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host = RDeEssnBrue_IP, port = 161, resource = "classpath:linkd/nms0002ciscoalcatel2/" + RDeEssnBrue_NAME+ ".txt"),
-            @JUnitSnmpAgent(host = SDeEssnBrue081_IP, port = 161, resource = "classpath:linkd/nms0002ciscoalcatel2/" + SDeEssnBrue081_NAME+ ".txt"),
-            @JUnitSnmpAgent(host = SDeEssnBrue121_IP, port = 161, resource = "classpath:linkd/nms0002ciscoalcatel2/" + SDeEssnBrue121_NAME+ ".txt"),
-            @JUnitSnmpAgent(host = SDeEssnBrue142_IP, port = 161, resource = "classpath:linkd/nms0002ciscoalcatel2/" + SDeEssnBrue142_NAME+ ".txt"),
-            @JUnitSnmpAgent(host = SDeEssnBrue165_IP, port = 161, resource = "classpath:linkd/nms0002ciscoalcatel2/" + SDeEssnBrue165_NAME+ ".txt")
+            @JUnitSnmpAgent(host = RDeEssnBrue_IP, port = 161, resource = RDeEssnBrue_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host = SDeEssnBrue081_IP, port = 161, resource = SDeEssnBrue081_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host = SDeEssnBrue121_IP, port = 161, resource = SDeEssnBrue121_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host = SDeEssnBrue142_IP, port = 161, resource = SDeEssnBrue142_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host = SDeEssnBrue165_IP, port = 161, resource = SDeEssnBrue165_SNMP_RESOURCE)
     })
     public void testCiscoAlcatelEssnBrueLldp() {
         
-        m_nodeDao.save(getRDeEssnBrue());
-        m_nodeDao.save(getSDeEssnBrue081());
-        m_nodeDao.save(getSDeEssnBrue121());
-        m_nodeDao.save(getSDeEssnBrue142());
-        m_nodeDao.save(getSDeEssnBrue165());
+        m_nodeDao.save(builder.getRDeEssnBrue());
+        m_nodeDao.save(builder.getSDeEssnBrue081());
+        m_nodeDao.save(builder.getSDeEssnBrue121());
+        m_nodeDao.save(builder.getSDeEssnBrue142());
+        m_nodeDao.save(builder.getSDeEssnBrue165());
         m_nodeDao.flush();
 
         Package example1 = m_linkdConfig.getPackage("example1");

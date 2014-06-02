@@ -242,10 +242,13 @@ public class OpenNMSTestCase {
     
     @After
     public void runTest() throws Throwable {
-        if (!m_allowWarnings) {
-            MockLogAppender.assertNoWarningsOrGreater();
+        try {
+            if (!m_allowWarnings) {
+                MockLogAppender.assertNoWarningsOrGreater();
+            }
+        } finally {
+            MockUtil.println("------------ End Test "+this+" --------------------------");
         }
-        MockUtil.println("------------ End Test "+this+" --------------------------");
     }
 
     @After
