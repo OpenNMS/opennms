@@ -22,6 +22,7 @@ module.exports = function(config) {
       'app/bower_components/ionic/release/js/ionic.js',
       'app/bower_components/ionic/release/js/ionic-angular.js',
       'app/bower_components/angular-mocks/angular-mocks.js',
+      'app/bower_components/x2js/xml2json.js',
       'app/scripts/services/**/*.js',
       'app/scripts/controllers/**/*.js',
       'test/**/*_spec.js'
