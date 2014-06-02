@@ -4,10 +4,10 @@
 	angular.module('opennms.services.shared.config', [
 	])
 
-	.factory('ConfigService', ['$log', function($log) {
+	.factory('ConfigService', ['$log', '$location', function($log, $location) {
 		return {
 			'getRoot': function() {
-				return 'http://admin:admin@localhost:8980/opennms';
+				return '/opennms';
 			}
 		};
 	}])
