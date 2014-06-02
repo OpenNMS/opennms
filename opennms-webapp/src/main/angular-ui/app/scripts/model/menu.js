@@ -1,6 +1,6 @@
 function MenuDropdown(name) {
-	'use strict';
-	var self = this;
+  'use strict';
+  var self = this;
 
     self.name = name;
     self.entries = [];
@@ -36,7 +36,7 @@ function MenuDropdown(name) {
 
 function MenuEntry(name, route) {
     'use strict';
-	var self = this;
+  var self = this;
 
     self.name = name;
     self.route = route;

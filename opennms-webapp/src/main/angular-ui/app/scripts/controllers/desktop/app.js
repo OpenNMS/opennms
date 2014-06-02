@@ -1,12 +1,12 @@
 (function() {
-	'use strict';
+  'use strict';
 
-	angular.module('opennms.controllers.desktop.app', [
-	])
-	
-	.controller('AppCtrl', ['$scope', function($scope) {
-		$scope.type = 'Desktop';
-	}])
+  angular.module('opennms.controllers.desktop.app', [
+  ])
+  
+  .controller('AppCtrl', ['$scope', function($scope) {
+    $scope.type = 'Desktop';
+  }])
 
     .config(['$stateProvider', function($stateProvider) {
         var $injector = angular.injector();

@@ -1,11 +1,11 @@
 (function() {
-	'use strict';
+  'use strict';
 
-	angular.module('opennms.services.shared.menu', [
+  angular.module('opennms.services.shared.menu', [
         'ui.router'
     ])
 
-	.factory('MenuService', ['$log', function($log) {
+  .factory('MenuService', ['$log', function($log) {
         var _menuData = {};
 
         var getMenuEntries = function() {
@@ -46,7 +46,7 @@
             get: getMenuEntries,
             add: addMenuItem
         };
-	}])
+  }])
 
-	;
+  ;
 }());
