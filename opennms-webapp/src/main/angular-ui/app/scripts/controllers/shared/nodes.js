@@ -53,7 +53,7 @@
     }])
 
       .config(['$stateProvider', function($stateProvider) {
-		$stateProvider.state('app.nodes', {
+    $stateProvider.state('app.nodes', {
             url: '/nodes',
             views: {
                 'mainContent': {

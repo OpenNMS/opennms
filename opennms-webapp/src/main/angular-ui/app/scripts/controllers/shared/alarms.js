@@ -1,25 +1,25 @@
 (function(PluginManager) {
-	'use strict';
+  'use strict';
 
-	angular.module('opennms.controllers.shared.alarms', [
+  angular.module('opennms.controllers.shared.alarms', [
         'ui.router',
         'opennms.services.shared.menu',
-		'opennms.services.shared.alarms'
-	])
+    'opennms.services.shared.alarms'
+  ])
 
-	.controller('AlarmsCtrl', ['$log', '$scope', 'AlarmService', function($log, $scope, alarms) {
+  .controller('AlarmsCtrl', ['$log', '$scope', 'AlarmService', function($log, $scope, alarms) {
         $scope.init = function(options) {
             $log.info('Initializing Alarms Controller:',options);
         };
 
         alarms.list().then(function(alarms) {
-			$log.debug('Got alarms:',alarms);
-			$scope.alarms = alarms;
-		});
-	}])
+      $log.debug('Got alarms:',alarms);
+      $scope.alarms = alarms;
+    });
+  }])
 
     .config(['$stateProvider', function($stateProvider) {
-		$stateProvider.state('app.alarms', {
+    $stateProvider.state('app.alarms', {
             url: '/alarms',
             views: {
                 'mainContent': {
