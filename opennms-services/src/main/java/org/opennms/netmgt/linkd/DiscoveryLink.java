@@ -358,7 +358,7 @@ public final class DiscoveryLink implements ReadyRunnable {
         }
 
         for (final LinkableNode bridgeNode : bridgeNodes) {
-        	topology.addNodeToTopology(bridgeNode);
+        	topology.parseBFT(bridgeNode.getNodeId(),bridgeNode.getBridgeForwardingTable());
         }
 
         List<String> macParsed = new ArrayList<String>();
@@ -369,11 +369,11 @@ public final class DiscoveryLink implements ReadyRunnable {
                                                                 link.getBridgeTopologyPort().getBridgePort());
         	macParsed = addLinks(macParsed, link.getMacs(), curNodeId,
                              curIfIndex, DiscoveryProtocol.bridge);
-            if (link.getDesignatebridgePort() != null) {
-                Integer endNodeId = link.getDesignatebridgePort().getNodeid();
+            if (link.getDesignateBridgePort() != null) {
+                Integer endNodeId = link.getDesignateBridgePort().getNodeid();
                 Integer endIfIndex = getIfIndexFromNodeidBridgePort(linkableNodes,
                                                                     endNodeId,
-                                                                    link.getDesignatebridgePort().getBridgePort());
+                                                                    link.getDesignateBridgePort().getBridgePort());
                 final NodeToNodeLink lk = new NodeToNodeLink(
                                                              curNodeId,
                                                              curIfIndex,
