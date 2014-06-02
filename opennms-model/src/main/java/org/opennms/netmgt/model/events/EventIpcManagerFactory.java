@@ -26,9 +26,8 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.eventd;
+package org.opennms.netmgt.model.events;
 
-import org.opennms.netmgt.model.events.EventIpcManager;
 import org.springframework.util.Assert;
 
 /**

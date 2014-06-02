@@ -53,7 +53,7 @@
   </bean>
 
   <bean id="eventIpcManagerFactory-setInstance" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="eventIpcManagerImpl">
-    <property name="staticMethod"><value>org.opennms.netmgt.eventd.EventIpcManagerFactory.setIpcManager</value></property>
+    <property name="staticMethod"><value>org.opennms.netmgt.model.events.EventIpcManagerFactory.setIpcManager</value></property>
     <property name="arguments">
       <list>
         <ref bean="eventIpcManager"/>
