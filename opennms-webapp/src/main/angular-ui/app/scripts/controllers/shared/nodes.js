@@ -1,10 +1,10 @@
-(function () {
+(function (PluginManager) {
   'use strict';
 
   angular.module('opennms.controllers.shared.nodes', [
     'opennms.services.shared.nodes'
   ])
-    .controller('NodeController', ['$scope', 'nodeFactory', function ($scope, nodeFactory) {
+    .controller('NodesController', ['$scope', 'nodeFactory', function ($scope, nodeFactory) {
       $scope.listInterfaces = false;
       $scope.nodes = [];
 
@@ -51,8 +51,28 @@
       /// Runtime stuff.
       $scope.init();
     }])
+
+      .config(['$stateProvider', function($stateProvider) {
+		$stateProvider.state('app.nodes', {
+            url: '/nodes',
+            views: {
+                'mainContent': {
+                    templateUrl: 'templates/desktop/nodes.html',
+                    controller: 'NodesController'
+                }
+            }
+        });
+    }])
+
+    .run(['$log', 'MenuService', function($log, menu) {
+        menu.add('Info', '/app/nodes', 'Nodes');
+    }])
+
+    ;
+    
+    PluginManager.register('opennms.controllers.shared.nodes');
   ;
-}());
+}(PluginManager));
 
 
 
