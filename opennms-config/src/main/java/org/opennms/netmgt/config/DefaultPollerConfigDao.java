@@ -93,6 +93,7 @@ public class DefaultPollerConfigDao implements InitializingBean {
                 stream = getConfigResource().getInputStream();
             }
     
+            LOG.debug("loadConfig: creating new PollerConfigFactory from file path: {}", file.getPath());
             setPollerConfig(new PollerConfigFactory(lastModified, stream, getLocalServer(), isVerifyServer()));
         } finally {
             if (stream != null) stream.close();
