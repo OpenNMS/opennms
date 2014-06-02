@@ -42,6 +42,11 @@
       <artifactId>opennms-jetty</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.poller</groupId>
+      <artifactId>org.opennms.features.poller.remote</artifactId>
+      <scope>test</scope>
+    </dependency>
 
     <!-- Contains model code for the WillItUnmarshall test -->
     <dependency>
