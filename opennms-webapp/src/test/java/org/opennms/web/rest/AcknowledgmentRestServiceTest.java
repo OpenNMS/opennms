@@ -50,8 +50,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -78,16 +76,17 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class AcknowledgmentRestServiceTest extends AbstractSpringJerseyRestTestCase {
 	@Autowired
 	TransactionTemplate m_template;
+	
+	@Autowired
+	private DatabasePopulator m_populator;
 
 	@Override
 	protected void afterServletStart() {
-		final WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
-		final DatabasePopulator dbp = context.getBean("databasePopulator", DatabasePopulator.class);
 		m_template.execute(new TransactionCallbackWithoutResult() {
 
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				dbp.populateDatabase();
+				m_populator.populateDatabase();
 			}
 		});
 	}

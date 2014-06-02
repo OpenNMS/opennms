@@ -63,8 +63,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -92,13 +90,12 @@ public class AlarmRestServiceTest extends AbstractSpringJerseyRestTestCase {
 	@Autowired
 	TransactionTemplate m_template;
 
+	@Autowired
 	private DatabasePopulator m_databasePopulator;
 
 	@Override
 	protected void afterServletStart() {
 		MockLogAppender.setupLogging(true, "DEBUG");
-		final WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
-		m_databasePopulator = context.getBean("databasePopulator", DatabasePopulator.class);
 		m_template.execute(new TransactionCallbackWithoutResult() {
 
 			@Override

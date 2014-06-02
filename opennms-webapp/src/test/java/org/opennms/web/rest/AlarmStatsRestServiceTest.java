@@ -55,11 +55,10 @@ import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -86,27 +85,34 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @Transactional
 public class AlarmStatsRestServiceTest extends AbstractSpringJerseyRestTestCase {
     private static final Logger LOG = LoggerFactory.getLogger(AlarmStatsRestServiceTest.class);
+
+    @Autowired
     private DatabasePopulator m_databasePopulator;
-    private WebApplicationContext m_context;
+
+    @Autowired
+    private AlarmDao m_alarmDao;
+
+    @Autowired
+    private DistPollerDao m_distPollerDao;
+
+    @Autowired
+    private EventDao m_eventDao;
+
     private int count = 0;
 
 	@Override
 	protected void afterServletStart() throws Exception {
 	    count = 0;
         MockLogAppender.setupLogging(true, "DEBUG");
-        m_context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
-        m_databasePopulator = m_context.getBean("databasePopulator", DatabasePopulator.class);
         m_databasePopulator.populateDatabase();
-        final EventDao eventDao = getEventDao();
-        for (final OnmsEvent event : eventDao.findAll()) {
-            eventDao.delete(event);
+        for (final OnmsEvent event : m_eventDao.findAll()) {
+            m_eventDao.delete(event);
         }
-        eventDao.flush();
-        final AlarmDao alarmDao = getAlarmDao();
-        for (final OnmsAlarm alarm : alarmDao.findAll()) {
-            alarmDao.delete(alarm);
+        m_eventDao.flush();
+        for (final OnmsAlarm alarm : m_alarmDao.findAll()) {
+            m_alarmDao.delete(alarm);
         }
-        alarmDao.flush();
+        m_alarmDao.flush();
 	}
 
     @Test
@@ -204,7 +210,7 @@ public class AlarmStatsRestServiceTest extends AbstractSpringJerseyRestTestCase 
         final OnmsEvent event = createEvent();
         
         final OnmsAlarm alarm = new OnmsAlarm();
-        alarm.setDistPoller(getDistPollerDao().load("localhost"));
+        alarm.setDistPoller(m_distPollerDao.load("localhost"));
         alarm.setUei(event.getEventUei());
         alarm.setAlarmType(1);
         alarm.setNode(m_databasePopulator.getNode1());
@@ -221,8 +227,8 @@ public class AlarmStatsRestServiceTest extends AbstractSpringJerseyRestTestCase 
             alarm.setAlarmAckUser(ackUser);
         }
         
-        getAlarmDao().save(alarm);
-        getAlarmDao().flush();
+        m_alarmDao.save(alarm);
+        m_alarmDao.flush();
         
         LOG.debug("CreateAlarm: {}", alarm);
 
@@ -238,7 +244,7 @@ public class AlarmStatsRestServiceTest extends AbstractSpringJerseyRestTestCase 
         final Date date = new Date(time + (count * 60 * 60 * 1000));
 
         final OnmsEvent event = new OnmsEvent();
-        event.setDistPoller(getDistPollerDao().load("localhost"));
+        event.setDistPoller(m_distPollerDao.load("localhost"));
         event.setEventUei("uei.opennms.org/test/" + count);
         event.setEventCreateTime(date);
         event.setEventTime(date);
@@ -251,24 +257,11 @@ public class AlarmStatsRestServiceTest extends AbstractSpringJerseyRestTestCase 
         event.setEventSource("AlarmStatsRestServiceTest");
         event.setNode(m_databasePopulator.getNode1());
 
-        getEventDao().save(event);
-        getEventDao().flush();
+        m_eventDao.save(event);
+        m_eventDao.flush();
 
         count++;
 
         return event;
     }
-
-    private AlarmDao getAlarmDao() {
-        return m_context.getBean("alarmDao", AlarmDao.class);
-    }
-
-    private DistPollerDao getDistPollerDao() {
-        return m_context.getBean("distPollerDao", DistPollerDao.class);
-    }
-
-    private EventDao getEventDao() {
-        return m_context.getBean("eventDao", EventDao.class);
-    }
-
 }

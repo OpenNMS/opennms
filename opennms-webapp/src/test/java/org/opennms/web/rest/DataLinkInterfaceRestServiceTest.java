@@ -39,12 +39,11 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -70,13 +69,13 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @JUnitTemporaryDatabase
 @Transactional
 public class DataLinkInterfaceRestServiceTest extends AbstractSpringJerseyRestTestCase {
+
+    @Autowired
     private DatabasePopulator m_databasePopulator;
 
     @Override
     protected void afterServletStart() {
         MockLogAppender.setupLogging(true, "DEBUG");
-        final WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
-        m_databasePopulator = context.getBean("databasePopulator", DatabasePopulator.class);
         m_databasePopulator.populateDatabase();
     }
 
