@@ -1,0 +1,161 @@
+/* Default Stylesheet */
+
+/* =Reset default browser CSS. Based on work by Eric Meyer: http://meyerweb.com/eric/tools/css/reset/index.html
+-------------------------------------------------------------- */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+	border: 0;
+	font-family: inherit;
+	font-size: 100%;
+	font-style: inherit;
+	font-weight: inherit;
+	margin: 0;
+	outline: 0;
+	padding: 0;
+	vertical-align: baseline;
+}
+:focus {/* remember to define focus styles! */	outline: 0;}
+body {	background: #fff;line-height: 1;}
+ol, ul {list-style: none;}
+table {/* tables still need 'cellspacing="0"' in the markup */
+	border-collapse: separate;
+	border-spacing: 0;
+}
+caption, th, td {font-weight: normal;text-align: left;}
+blockquote:before, blockquote:after,
+q:before, q:after {	content: "";}
+blockquote, q {	quotes: "" "";}
+a img {	border: 0;}
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {display: block;}
+
+/* =Global
+----------------------------------------------- */
+
+body, input, textarea {
+	color: #444;
+	font: 15px 'Open Sans', Arial, sans-serif;
+	font-weight: 300;
+	line-height: 1.625;
+}
+
+/* Headings */
+h1,h2,h3,h4,h5,h6 {
+	clear: both;
+	font-weight:700; 
+}
+h1 { font-size:36px; }
+h2 { font-size:30px; }
+h3 { font-size:24px; }
+h4 { font-size:18px; }
+h5 { font-size:14px; }
+h6 { font-size:12px; }
+
+hr {
+	background-color: #ccc;
+	border: 0;
+	height: 1px;
+	margin-bottom: 1.625em;
+}
+
+/* Text elements */
+p {	margin-bottom: 1.625em;}
+ul, ol {margin: 0 0 1.625em 16px;}
+ul {list-style: square;}
+ol {list-style-type: decimal;}
+ol ol {list-style: upper-alpha;}
+ol ol ol {list-style: lower-roman;}
+ol ol ol ol {list-style: lower-alpha;}
+ul ul, ol ol, ul ol, ol ul {margin-bottom: 0;}
+dl {margin: 0 1.625em;}
+dt {font-weight: bold;}
+dd {margin-bottom: 1.625em;}
+strong {font-weight: bold;}
+cite, em, i {font-style: italic;}
+blockquote {	font-family: Georgia, "Bitstream Charter", serif;font-style: italic;font-weight: normal;margin: 0 3em;}
+blockquote em, blockquote i, blockquote cite {font-style: normal;}
+blockquote cite {color: #666;font: 12px "Helvetica Neue", Helvetica, Arial, sans-serif;font-weight: 300;letter-spacing: 0.05em;text-transform: uppercase;}
+pre {background:#16171B;color:#FFFF99;font: 13px "Courier 10 Pitch", Courier, monospace;line-height: 1.5;margin-bottom: 1.625em;overflow: auto;padding: 0.75em 1.625em;}
+code, kbd {font: 14px Monaco, Consolas, "Andale Mono", "DejaVu Sans Mono", monospace;color:#FFFF99;}
+abbr, acronym, dfn {border-bottom: 1px dotted #666;cursor: help;}
+address {display: block;margin: 0 0 1.625em;}
+ins {background: #fff9c0;text-decoration: none;}
+sup,sub {font-size: 10px;height: 0;	line-height: 1;	position: relative;	vertical-align: baseline;}
+sup {bottom: 1ex;}
+sub {top: .5ex;}
+
+/* Forms */
+input[type=text],
+input[type=password],
+input[type=email],
+textarea {
+	color: #333;
+	font: 100% Arial, Helvetica, sans-serif;
+	padding: 6px 10px;
+	border: solid 1px #aaa;
+}
+input[type=text]:focus,
+textarea:focus {
+}
+input[type=submit],
+a.button,
+select {
+	text-decoration: none !important;
+	color: #333;
+	margin:0 2px;
+	font: 16px Arial, Helvetica, sans-serif;
+	padding: 9px 15px;
+	border: solid 1px #aaa;
+	background-color: #fff;
+	background-image: -moz-linear-gradient(top, rgba(255,255,255,0.35) 0%, rgba(170,170,170,0.15) 66%, rgba(0,0,0,0.05) 100%);
+	background-image: -webkit-linear-gradient(top, rgba(255,255,255,0.35) 0%,rgba(170,170,170,0.15) 66%,rgba(0,0,0,0.05) 100%);
+	background-image: linear-gradient(to bottom, rgba(255,255,255,0.35) 0%,rgba(170,170,170,0.15) 66%,rgba(0,0,0,0.05) 100%);
+	vertical-align: middle;
+	display: inline-block;
+}
+a.button:hover,
+input[type=submit]:hover {
+	text-decoration:none;
+	cursor:pointer;
+	background-color:#eee;
+}
+a.button:active,
+input[type=submit]:active {
+	position: relative;
+	top: 1px;
+}
+textarea {
+	width: 94%;
+}
+select {
+	padding: 6px 10px;
+}
+
+/* Links */
+a {
+	color: #309E3D;
+	text-decoration: none;
+}
+a:focus,
+a:active,
+a:hover {
+	text-decoration: underline;
+}
+
+/* Clear Fix */
+.clearfix:after {
+	content: ".";
+	display: block;
+	clear: both;
+	visibility: hidden;
+	line-height: 0;
+	height: 0;
+}
+html[xmlns] .clearfix {	display: block;}
+* html .clearfix {	height: 1%;}
