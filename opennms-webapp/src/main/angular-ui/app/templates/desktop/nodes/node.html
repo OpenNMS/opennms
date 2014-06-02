@@ -1,0 +1,220 @@
+<div class="onms" ng-controller="NodeDetailController">
+    <h2>Node: {{node.label}} (ID: {{node.id}})</h2>
+    <h2 ui-if="node.foreignSource"><em>Created via provisioning requisition <strong>{{node.foreignSource}} (foreignId: {{node.foreignId}})</strong></em></h2>
+    <h2 ui-if="!node.foreignSource"><em>Not a member of any provisioning requisition</em></h2>
+    <div id="linkbar">
+        <ul class="o-menu">
+            <li class="o-menuitem">
+                <a ng-href="#/node/{{node.id}}/events">View Events</a>
+            </li>
+
+            <li class="o-menuitem">
+                <a ng-href="#/node/{{node.id}}/alarms">View Alarms</a>
+            </li>
+
+            <li class="o-menuitem">
+                <a ng-href="#/node/{{node.id}}/outages">View Outages</a>
+            </li>
+
+            <li class="o-menuitem">
+                <a ng-href="#/node/{{node.id}}/asset">Asset Info</a>
+            </li>
+
+            <li class="o-menuitem" ui-if="node.statusSite">
+                <a ng-href="#/site/{{node.statusSite}}">Site Status</a>
+            </li>
+
+            <li class="o-menuitem" ng-repeat="link in node.links">
+                <a ng-href="{{link.url}}">{{link.text}}</a>
+            </li>
+
+            <li class="o-menuitem" ui-if="node.resources.length">
+                <a ng-href="#/graph/?nodeid={{id}}">Resource Graphs</a>
+            </li>
+
+            <div ui-view="adminLinks"></div>
+
+            <li class="o-menuitem" ng-repeat="entry in node.navEntries">
+                {{entry}}
+            </li>
+        </ul>
+    </div>
+</div>
+
+<table class="o-box" ui-if="node.schedOutages">
+    <tr class="CellStatus">
+        <td align="left" class="Critical">
+            <b>This node is currently affected by the following scheduled outages: </b> {{node.schedOutages}}
+        </td>
+    </tr>
+</table>
+
+<!-- % String showNodeStatusBar = System.getProperty("opennms.nodeStatusBar.show", "false");
+if (Boolean.parseBoolean(showNodeStatusBar)) { %>
+<ng-include src="/includes/nodeStatus-box.jsp?nodeId={{node.id}}" flush="false" />
+<% } % -->
+
+<div class="TwoColLeft">
+    <!-- Asset box, if info available -->
+    <div ui-if="node.asset">
+        <h3 class="o-box">Asset Information</h3>
+        <table class="o-box">
+            <tr>
+                <th>Description</th>
+                <td>{{node.asset.description}}</td>
+            </tr>
+
+            <tr>
+                <th>Comments</th>
+                <td>{{node.asset.comments}}</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- SNMP box, if info available -->
+    <ui-if="node.snmp">
+        <h3 class="o-box">SNMP Attributes</h3>
+        <table class="o-box">
+            <tr>
+                <th>Name</th>
+                <td>{{node.sysName}}</td>
+            </tr>
+            <tr>
+                <th>sysObjectID</th>
+                <td>{{node.sysObjectId}}</td>
+            </tr>
+            <tr>
+                <th>Location</th>
+                <td>{{node.sysLocation}}</td>
+            </tr>
+            <tr>
+                <th>Contact</th>
+                <td>{{node.sysContact}}</td>
+            </tr>
+            <tr>
+                <th valign="top">Description</th>
+                <td valign="top">{{node.sysDescription}}</td>
+            </tr>
+        </table>
+    </ui-if>
+
+    <!-- Critical Path info, if info available -->
+    <div ui-if="node.criticalPath != node.noCriticalPath">
+        <h3 class="o-box">Path Outage - Critical Path</h3>
+        <div class="boxWrapper">
+            <ul class="plain o-box">
+                <li>
+                    {{node.criticalPath}}
+                </li>
+            </ul>           
+        </div>    
+    </div>
+
+    <!-- Availability box -->
+    <ng-include src="/includes/nodeAvailability-box.html" ui-if="node.interfaces.length < 10">
+    </ng-include> 
+
+    <div id="interface-panel-gwt">
+        <h3 class="o-box">Node Interfaces</h3>
+        <opennms-interfacelist id="gwtnodeList"></opennms-interfacelist>
+        <div name="opennms-interfacelist" id="gwtnodeList-ie"></div>
+    </div>
+
+    <!-- Vlan box if available -->
+    <ui-if="node.vlans">
+        <h3 class="o-box">VLAN Information</h3>
+        <table class="o-box">
+            <thead>
+                <tr>
+                    <th>Vlan ID</th>
+                    <th>Vlan Name</th>
+                    <th>Vlan Type</th>
+                    <th>Vlan Status</th>
+                    <th>Status</th>
+                    <th>Last Poll Time</th>
+                </tr>
+            </thead>
+
+            <c:forEach items="{{node.vlans}}" var="vlan">
+                <tr>
+                    <td>${vlan.vlanId}</td>
+                    <td>${vlan.vlanName}</td>
+                    <td>${vlan.vlanTypeString}</td>
+                    <td>${vlan.vlanStatusString}</td>
+                    <td>${vlan.statusString}</td>
+                    <td>${vlan.lastPollTime}</td>
+                </tr>
+            </c:forEach>
+        </table>
+    </ui-if>>
+
+</div>
+
+<div class="TwoColRight">
+
+    <!-- general info box -->
+    <h3 class="o-box">General (Status: {{node.status}})</h3>
+    <div class="boxWrapper">
+        <ul class="plain o-box">
+            <c:if test="{{node.showRancid}}">
+                <c:url var="rancidLink" value="inventory/rancid.htm">
+                    <c:param name="node" value="{{node.id}}"/>
+                </c:url>
+                <li>
+                    <a ng-href="{{node.rancidLink}}">View Node Rancid Inventory Info </a>
+                </li>
+            </c:if>
+
+            <c:if test="{{node.showIpRoute}}">
+                <c:url var="ipRouteLink" value="element/routeipnode.jsp">
+                    <c:param name="node" value="{{node.id}}"/>
+                </c:url>
+                <li>
+                    <a ng-href="{{node.ipRouteLink}}">View Node IP Route Info</a>
+                </li>
+            </c:if>
+
+            <c:if test="{{node.showBridge}}">
+                <c:url var="bridgeLink" value="element/bridgenode.jsp">
+                    <c:param name="node" value="{{node.id}}"/>
+                </c:url>
+                <li>
+                    <a ng-href="{{node.bridgeLink}}">View Node Bridge/STP Info</a>
+                </li>
+            </c:if>
+
+            <c:url var="detailLink" value="element/linkednode.jsp">
+                <c:param name="node" value="{{node.id}}"/>
+            </c:url>
+            <li>
+                <a ng-href="{{node.detailLink}}">View Node Link Detailed Info</a>
+            </li>
+        </ul>	     
+    </div>
+
+    <!-- Category box -->
+    <ng-include src="/includes/nodeCategory-box.htm" flush="false" >
+        <jsp:param name="node" value="{{node.id}}" />
+    </ng-include>
+
+    <!-- notification box -->
+    <ng-include src="/includes/notification-box.jsp" flush="false" >
+        <jsp:param name="node" value="{{node.id}}" />
+    </ng-include>
+
+    <!-- events list  box -->
+    <c:url var="eventListUrl" value="event/list">
+        <c:param name="filter" value="node={{node.id}}"/>
+    </c:url>
+    <ng-include src="/includes/eventlist.jsp" flush="false" >
+        <jsp:param name="node" value="{{node.id}}" />
+        <jsp:param name="throttle" value="5" />
+        <jsp:param name="header" value="<a ng-href='${eventListUrl}'>Recent Events</a>" />
+        <jsp:param name="moreUrl" value="${eventListUrl}" />
+    </ng-include>
+
+    <!-- Recent outages box -->
+    <ng-include src="/outage/nodeOutages-box.htm" flush="false"> 
+        <jsp:param name="node" value="{{node.id}}" />
+    </ng-include>
+</div>

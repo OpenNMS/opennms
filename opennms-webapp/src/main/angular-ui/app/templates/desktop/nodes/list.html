@@ -1,0 +1,60 @@
+<!-- c:if test="${model.nodeCount == 1 && command.snmpParm == null && command.maclike == null}">
+  <jsp:forward page="/element/node.jsp?node=${model.nodes[0].node.id}"/>
+</c:if -->
+
+<!-- jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Node List" />
+  <jsp:param name="headTitle" value="Node List" />
+  <jsp:param name="location" value="nodelist" />
+  <jsp:param name="breadcrumb" value="<a href ='element/index.jsp'>Search</a>"/>
+  <jsp:param name="breadcrumb" value="Node List"/>
+</jsp:include -->
+
+<h3 ng-if="listInterfaces">Nodes and their interfaces</h3>
+<h3 ng-if="!listInterfaces">Nodes</h3>
+<div class="boxWrapper" ng-controller="NodesController">
+    <p ui-if="!nodes.length">None found.</p>
+    <ui-if="nodes.length">
+        <div class="TwoColLeft" >
+            <ul class="plain">
+                <li ng-repeat="node in nodes">
+                    <a ui-if="node.foreignSource" href="#/node/{{node.id}}" title="foreignID: {{node.foreignSource}}:{{node.foreignId}}">{{node.label}}</a>
+                    <a ui-if="!node.foreignSource" href="#/node/{{node.id}}">{{node.label}}</a>
+                    (ID: {{node.id}})
+                    <ul ui-if="node.interfaces">
+                        <li ng-repeat="interface in node.interfaces">
+
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+            <!-- element:nodelist nodes="${model.nodesLeft}" snmpParm="${command.snmpParm}" isMaclikeSearch="${command.maclike != null}"/ -->
+        </div>
+
+        <div class="TwoColRight">
+            <ul class="plain">
+                <li ng-repeat="node in nodes">
+                    <a ui-if="node.foreignSource" href="#/node/{{node.id}}" title="foreignID: {{node.foreignSource}}:{{node.foreignId}}">{{node.label}}</a>
+                    <a ui-if="!node.foreignSource" href="#/node/{{node.id}}">{{node.label}}</a>
+                    (ID: {{node.id}})
+                    <ul></ul>
+                </li>
+            </ul>
+            <!-- element:nodelist nodes="${model.nodesRight}" snmpParm="${command.snmpParm}" isMaclikeSearch="${command.maclike != null}"/ -->
+        </div>
+    </ui-if>
+
+    <div class="spacer"><!-- --></div>
+</div>
+<p>
+<ui-if="listInterfaces">
+    {{nodeCount}} {{nodePluralized}}, {{interfaceCount}} {{interfacePluralized}}
+</ui-if>
+<ui-if="!listInterfaces">
+    {{nodeCount}} {{nodePluralized}}
+</ui-if>
+
+<a ui-if="listInterfaces" ng-href="{{thisURL}}">Show interfaces</a>
+<a ui-if="!listInterfaces" ng-href="{{thisURL}}">Hide interfaces</a>
+</p>
+

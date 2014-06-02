@@ -53,19 +53,42 @@
     }])
 
       .config(['$stateProvider', function($stateProvider) {
-    $stateProvider.state('app.nodes', {
-            url: '/nodes',
-            views: {
-                'mainContent': {
-                    templateUrl: 'templates/desktop/nodes.html',
-                    controller: 'NodesController'
-                }
-            }
-        });
+		    $stateProvider.state('node', {
+          abstract: true,
+          url: '/node',
+          template: '<ui-view/>'
+          //templateUrl: 'partials/node.html'
+        })
+          .state('node.default', {
+            url: '',
+            templateUrl: 'templates/desktop/nodes/search.html',
+            // controller: 'NodeController',
+            title: 'Node List'
+          })
+          .state('node.list', {
+            url: '/list',
+            templateUrl: 'templates/desktop/nodes/list.html',
+            controller: 'NodesController',
+            title: 'Node List'
+          })
+          .state('node.search', {
+            url: '/search',
+            templateUrl: 'templates/desktop/nodes/search.html',
+            // controller: 'NodeController',
+            title: 'Node Search'
+          })
+          .state('node.node', {
+            url: '/node/:id',
+            templateUrl: 'templates/desktop/node/node.html',
+            controller: 'NodeDetailController',
+            title: 'Node Detail List'
+          });
     }])
 
+
+
     .run(['$log', 'MenuService', function($log, menu) {
-        menu.add('Info', '/app/nodes', 'Nodes');
+        menu.add('Info', 'node', 'Nodes');
     }])
 
     ;
