@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,7 +37,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.lf5.util.StreamUtils;
 import org.opennms.api.reporting.ReportFormat;
+import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.WebSecurityUtils;
+import org.opennms.netmgt.dao.ReportdConfigurationDao;
 import org.opennms.reporting.core.svclayer.ReportStoreService;
 import org.opennms.web.servlet.MissingParameterException;
 import org.springframework.web.servlet.ModelAndView;
@@ -53,13 +56,25 @@ import org.springframework.web.servlet.mvc.AbstractController;
 public class DownloadReportController extends AbstractController {
 
     private ReportStoreService m_reportStoreService;
+    private ReportdConfigurationDao m_reportdConfigurationDao;
+    
 
     /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
-
+                
         String fileName = request.getParameter("fileName");
+        final File requestedFile = new File(fileName);
+
+        m_reportdConfigurationDao = BeanUtils.getBean("reportdContext", "reportdConfigDao", ReportdConfigurationDao.class);
+        final File storageDirectory = new File(m_reportdConfigurationDao.getStorageDirectory());
+        
+        if (!requestedFile.getParentFile().getCanonicalFile().equals(storageDirectory.getCanonicalFile())) {
+            LogUtils.warnf(this, "User attempted to retrieve file %s but was restricted to %s", requestedFile, storageDirectory);
+            throw new IllegalArgumentException("Cannot retrieve reports from outside Reportd storage directory");
+        }
+        
         if (fileName != null) {
             if (fileName.toLowerCase().endsWith(".pdf")) {
                 response.setContentType("application/pdf;charset=UTF-8");
