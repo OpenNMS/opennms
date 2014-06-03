@@ -2,8 +2,9 @@
   'use strict';
 
   angular.module('opennms.controllers.shared.alarms', [
-        'ui.router',
-        'opennms.services.shared.menu',
+    'ui.router',
+    'opennms.controllers.desktop.app',
+    'opennms.services.shared.menu',
     'opennms.services.shared.alarms'
   ])
 
@@ -18,23 +19,22 @@
     });
   }])
 
-    .config(['$stateProvider', function($stateProvider) {
+  .config(['$stateProvider', function($stateProvider) {
     $stateProvider.state('app.alarms', {
-            url: '/alarms',
-            views: {
-                'mainContent': {
-                    templateUrl: 'templates/desktop/alarms.html',
-                    controller: 'AlarmsCtrl'
-                }
-            }
-        });
-    }])
+      url: '/alarms',
+      views: {
+        'mainContent': {
+          templateUrl: 'templates/desktop/alarms.html',
+          controller: 'AlarmsCtrl'
+        }
+      }
+    });
+  }])
 
-    .run(['$log', 'MenuService', function($log, menu) {
-        menu.add('Info', '/app/alarms', 'Alarms');
-    }])
+  .run(['$log', 'MenuService', function($log, menu) {
+    menu.add('Info', '/app/alarms', 'Alarms');
+  }])
+  ;
 
-    ;
-    
-    PluginManager.register('opennms.controllers.shared.alarms');
+  PluginManager.register('opennms.controllers.shared.alarms');
 }(PluginManager));

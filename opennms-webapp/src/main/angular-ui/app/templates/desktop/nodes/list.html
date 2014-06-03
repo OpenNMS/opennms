@@ -1,19 +1,22 @@
-<!-- c:if test="${model.nodeCount == 1 && command.snmpParm == null && command.maclike == null}">
-  <jsp:forward page="/element/node.jsp?node=${model.nodes[0].node.id}"/>
-</c:if -->
+<div class="container-fluid">
+  <h4 ng-if="listInterfaces">Nodes and their interfaces</h4>
+  <h4 ng-if="!listInterfaces">Nodes</h4>
 
-<!-- jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Node List" />
-  <jsp:param name="headTitle" value="Node List" />
-  <jsp:param name="location" value="nodelist" />
-  <jsp:param name="breadcrumb" value="<a href ='element/index.jsp'>Search</a>"/>
-  <jsp:param name="breadcrumb" value="Node List"/>
-</jsp:include -->
+  <div ng-if="!nodes.length">None found.</div>
 
-<h3 ng-if="listInterfaces">Nodes and their interfaces</h3>
-<h3 ng-if="!listInterfaces">Nodes</h3>
+  <div ng-repeat="node in nodes | orderBy:'_id' track by node._id">
+    <h5>{{node._label}} (Node ID: {{node._id}}<span ng-if="node._foreignId">, Foreign Source: {{node._foreignSource}}, Foreign ID: {{node._foreignId}}</span>)</h5>
+    <div style="padding-left: 20px" ng-if="ifaces[node._id]">
+      <div ng-repeat="iface in ifaces[node._id] | orderBy: '_ifIndex' track by iface._id">
+        <strong>{{iface.ipAddress}}</strong><span ng-if="iface._ifIndex">: ifIndex={{iface._ifIndex}}</span>
+      </div>
+    </div>
+  </div>
+</div>
+<div>&nbsp;</div>
+
+<!--
 <div class="boxWrapper" ng-controller="NodesController">
-    <p ui-if="!nodes.length">None found.</p>
     <ui-if="nodes.length">
         <div class="TwoColLeft" >
             <ul class="plain">
@@ -28,7 +31,6 @@
                     </ul>
                 </li>
             </ul>
-            <!-- element:nodelist nodes="${model.nodesLeft}" snmpParm="${command.snmpParm}" isMaclikeSearch="${command.maclike != null}"/ -->
         </div>
 
         <div class="TwoColRight">
@@ -40,11 +42,8 @@
                     <ul></ul>
                 </li>
             </ul>
-            <!-- element:nodelist nodes="${model.nodesRight}" snmpParm="${command.snmpParm}" isMaclikeSearch="${command.maclike != null}"/ -->
         </div>
     </ui-if>
-
-    <div class="spacer"><!-- --></div>
 </div>
 <p>
 <ui-if="listInterfaces">
@@ -57,4 +56,4 @@
 <a ui-if="listInterfaces" ng-href="{{thisURL}}">Show interfaces</a>
 <a ui-if="!listInterfaces" ng-href="{{thisURL}}">Hide interfaces</a>
 </p>
-
+-->

@@ -2,107 +2,99 @@
   'use strict';
 
   angular.module('opennms.controllers.shared.nodes', [
+    'ui.router',
+    'opennms.controllers.desktop.app',
     'opennms.services.shared.nodes',
-    'opennms.services.shared.menu',
-    'ui.router'
+    'opennms.services.shared.menu'
   ])
-    .controller('NodesController', ['$scope', '$log', 'NodeService', function ($scope, $log, NodeService) {
-      $scope.listInterfaces = false;
-      $scope.nodes = [];
+  .controller('NodesCtrl', ['$scope', '$log', 'NodeService', function ($scope, $log, NodeService) {
+    $log.debug('Initializing NodesCtrl.');
+    $scope.listInterfaces = true;
+    //$scope.nodes = [];
+    $scope.ifaces = {};
 
-      $scope.init = function() {
-        NodeService.list().then(function(nodes) {
-          $log.debug('Got nodes:', nodes);
-          $scope.nodes = nodes;
-        });
-      };
+    $scope.init = function() {
+      NodeService.list().then(function(nodes) {
+        $log.debug('Got nodes:', nodes);
+        $scope.nodes = nodes;
 
-      $scope.getNodeLink = function (node) {
-        return '#/node/' + node.id;
-      };
+        if ($scope.listInterfaces) {
+          for (var i=0; i < nodes.length; i++) {
+            var nodeId = nodes[i]['_id'];
+            NodeService.getIpInterfaces(nodeId).then(function(ifaces) {
+              if (ifaces) {
+                if (!angular.isArray(ifaces)) {
+                  ifaces = [ifaces];
+                }
 
-      /// Runtime stuff.
-      $scope.init();
-    }])
-    .controller('NodeDetailController', ['$scope', '$stateParams', 'NodeService', function ($scope, $stateParams, NodeService) {
-      $scope.node = {};
-      $scope.node.label = 'node8';
-      $scope.node.id = 1;
-      $scope.node.foreignSource = 'bigreq';
-      $scope.node.foreignId = 'node8';
-      $scope.node.statusSite = '';
-      $scope.node.links = [];
-      $scope.node.resources = [];
-      $scope.node.navEntries = [];
-      $scope.node.schedOutages = '';
-      $scope.node.asset = {
-        'description': '',
-        'comments': ''
-      };
-      $scope.node.snmp = {
-        'sysName': '',
-        'sysObjectId': '',
-        'sysLocation': '',
-        'sysContact': '',
-        'sysDescription': ''
-      };
+                var nodeId = ifaces[0].nodeId;
+                $log.debug('Interfaces for node ' + nodeId + ':', ifaces);
+                $scope.ifaces[nodeId] = ifaces;
+              }
+            });
+          }
+        }
 
-      $scope.init = function() {
-        $scope.node = NodeService.get($stateParams.id);
-      };
+      });
+    };
 
-      console.log($scope.node);
+    $scope.getNodeLink = function (node) {
+      return '#/node/' + node.id;
+    };
 
-      /// Runtime stuff.
-      $scope.init();
-    }])
+    $scope.init();
+  }])
+  .controller('NodeDetailController', ['$scope', '$stateParams', 'NodeService', function ($scope, $stateParams, NodeService) {
+    $scope.node = {};
+    $scope.node.label = 'node8';
+    $scope.node.id = 1;
+    $scope.node.foreignSource = 'bigreq';
+    $scope.node.foreignId = 'node8';
+    $scope.node.statusSite = '';
+    $scope.node.links = [];
+    $scope.node.resources = [];
+    $scope.node.navEntries = [];
+    $scope.node.schedOutages = '';
+    $scope.node.asset = {
+      'description': '',
+      'comments': ''
+    };
+    $scope.node.snmp = {
+      'sysName': '',
+      'sysObjectId': '',
+      'sysLocation': '',
+      'sysContact': '',
+      'sysDescription': ''
+    };
 
-      .config(['$stateProvider', function($stateProvider) {
-		    $stateProvider.state('node', {
-          abstract: true,
-          url: '/node',
-          template: '<ui-view/>'
-          //templateUrl: 'partials/node.html'
-        })
-          .state('node.default', {
-            url: '',
-            templateUrl: 'templates/desktop/nodes/search.html',
-            // controller: 'NodeController',
-            title: 'Node List'
-          })
-          .state('node.list', {
-            url: '/list',
-            templateUrl: 'templates/desktop/nodes/list.html',
-            controller: 'NodesController',
-            title: 'Node List'
-          })
-          .state('node.search', {
-            url: '/search',
-            templateUrl: 'templates/desktop/nodes/search.html',
-            // controller: 'NodeController',
-            title: 'Node Search'
-          })
-          .state('node.node', {
-            url: '/node/:id',
-            templateUrl: 'templates/desktop/node/node.html',
-            controller: 'NodeDetailController',
-            title: 'Node Detail List'
-          });
-    }])
+    $scope.init = function() {
+      $scope.node = NodeService.get($stateParams.id);
+    };
 
+    console.log($scope.node);
 
+    /// Runtime stuff.
+    $scope.init();
+  }])
 
-    .run(['$log', 'MenuService', function($log, menu) {
-        menu.add('Info', 'node', 'Nodes');
-    }])
-
+  .config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
+    $stateProvider.state('app.nodes', {
+      url: '/nodes',
+      views: {
+        'mainContent': {
+          templateUrl: 'templates/desktop/nodes/list.html',
+          controller: 'NodesCtrl',
+          title: 'Node List'
+        }
+      }
+    })
     ;
-    
-    PluginManager.register('opennms.controllers.shared.nodes');
+  }])
+
+  .run(['$log', 'MenuService', function($log, menu) {
+      menu.add('Info', '/app/nodes', 'Nodes');
+  }])
   ;
+
+  PluginManager.register('opennms.controllers.shared.nodes');
 }(PluginManager));
-
-
-
-
-

@@ -1,7 +1,8 @@
-(function() {
+(function(PluginManager) {
   'use strict';
 
   angular.module('opennms.controllers.desktop.dashboard', [
+    'ui.router',
     'opennms.controllers.desktop.app',
     'opennms.services.shared.alarms',
     'opennms.services.shared.outages'
@@ -12,7 +13,7 @@
       return $sce.trustAsHtml(text);
     };
   }])
-  
+
   .filter('fuzzy', [function() {
     /* global moment: true */
 
@@ -50,18 +51,19 @@
     });
   }])
 
-    .config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
+  .config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
     $stateProvider.state('app.dashboard', {
-            url: '/dashboard',
-            views: {
-                'mainContent': {
-                    templateUrl: 'templates/desktop/dashboard.html',
-                    controller: 'DashboardCtrl'
-                }
-            }
-        });
-        $urlRouterProvider.otherwise('/app/dashboard');
-    }])
-    
+      url: '/dashboard',
+      views: {
+        'mainContent': {
+          templateUrl: 'templates/desktop/dashboard.html',
+          controller: 'DashboardCtrl'
+        }
+      }
+    });
+    $urlRouterProvider.otherwise('/app/dashboard');
+  }])
   ;
-}());
+
+  PluginManager.register('opennms.controllers.desktop.dashboard');
+}(PluginManager));
