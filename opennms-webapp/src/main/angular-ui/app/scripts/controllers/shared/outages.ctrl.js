@@ -2,7 +2,7 @@
   'use strict';
 
   angular.module('opennms.controllers.shared.outages', [
-    'ui.router',
+    'ui.router', 'angularMoment',
     'opennms.controllers.desktop.app',
     'opennms.services.shared.outages',
     'opennms.services.shared.menu'
@@ -20,15 +20,17 @@
           });
         };
 
+        $scope.filter = {
+          type: 'both'
+        };
         $scope.sort = {
           sortingOrder: 'id',
           reverse: false
         };
-        $scope.maxGap = 4;
-        $scope.gap = $scope.maxGap;
+        $scope.gap = 5;
         $scope.filteredItems = [];
         $scope.groupedItems = [];
-        $scope.itemsPerPage = 4;
+        $scope.itemsPerPage = 20;
         $scope.pagedItems = [];
         $scope.currentPage = 0;
         $scope.items = [];
@@ -44,6 +46,9 @@
           return haystack.toLowerCase().indexOf(needle.toLowerCase()) !== -1;
         };
         // init the filtered items
+        $scope.filterItems = function () {
+
+        };
         $scope.search = function() {
           $scope.filteredItems = $filter('filter')($scope.items, function(item) {
             for (var attr in item) {
@@ -73,7 +78,7 @@
         };
         $scope.range = function(size, start, end) {
           var ret = [];
-          $log.debug('range(): size: '+size+', start: '+start+', end: '+end);
+          //$log.debug('range(): size: '+size+', start: '+start+', end: '+end);
 
           if (size < end) {
             end = size;
@@ -88,7 +93,7 @@
           for (var i = start; i < end; i++) {
             ret.push(i);
           }
-          console.log('range(): ret:', ret);
+          //$log.debug('range(): ret:', ret);
           return ret;
         };
         $scope.firstPage = function() {
@@ -115,7 +120,7 @@
           $scope.currentPage = this.n;
         };
         $scope.getStatusLabel = function(outage) {
-          if (outage.serviceRegainedEvent === null) {
+          if (!outage.hasOwnProperty('serviceRegainedEvent') || outage.serviceRegainedEvent === null) {
             return 'DOWN';
           }
         };

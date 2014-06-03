@@ -15,9 +15,33 @@
         <pre>items.length: {{items.length|json}}</pre>
         <pre>currentPage: {{currentPage|json}}</pre>
         <pre>sort: {{sort|json}}</pre>
+        <pre>itemsPerPage: <select ng-model="itemsPerPage" type="text" ng-change="{{search()}}">
+        <option>10</option>
+        <option>20</option>
+        <option>50</option>
+        <option>100</option>
+        <option>200</option>
+        <option>500</option>
+        <option>1000</option>
+        <option>2000</option>
+        </select></pre>
+        <pre>sortingOrder: <select ng-model="sort.sortingOrder" ng-change="{{search()}}">
+            <option>id</option>
+            <option>node.foreignSource</option>
+            <option>nodeId</option>
+            <option>ipAddress</option>
+            <option>monitoredService.serviceName</option>
+            <option>outage.ifLostService</option>
+            <option>outage.ifRegainedService</option>
+</select></pre>
+        <pre>Outage type: <select ng-model="filter.type" ng-change="{{search()}}">
+            <option value="current">Current</option>
+            <option value="resolved">Resolved</option>
+            <option value="both">Both Current &amp; Resolved</option>
+</select></pre>
         <tbody>
             <tr ng-repeat="outage in pagedItems[currentPage]| orderBy:sort.sortingOrder:sort.reverse">
-                <td><a ui-sref="app.outages-detail({ outageId: outage.id })">{{outage.id}}</a><button class="btn btn-default" ng-click="$log.log('outage:', outage)"></button</td>
+                <td><a ui-sref="app.outages-detail({ outageId: outage.id })">{{outage.id}}</a></td>
                 <td>
                     <span ng-if="outage.node && outage.node.foreignSource">
                         {{outage.node.foreignSource}}
@@ -41,10 +65,10 @@
                         <span ng-switch-default="false">{{outage.monitoredService.serviceName}}</span>
                     </span>
                 </td>
-                <td>{{outage.ifLostService| date:'MM/dd/yy HH:mm:ss'}}</td>
+                <td>{{outage.ifLostService| amDateFormat:'MM/DD/YYYY HH:mm:ss'}}</td>
                 <td>
-                    <span ng-if="outage.ifRegainedService">{{outage.ifRegainedService| amDateFormat:'MM/dd/yy HH:mm:ss' }}</span>
-                    <span ng-if="!outage.ifRegainedService">{{getStatusLabel(outage)}}</span>
+                    <span ng-if="outage.ifRegainedService">{{outage.ifRegainedService| amDateFormat:'MM/DD/YYYY HH:mm:ss' }}</span>
+                    <span ng-if="!outage.ifRegainedService"><font color='red'>{{getStatusLabel(outage)}}</font></span>
                 </td>
             </tr>
         </tbody>
