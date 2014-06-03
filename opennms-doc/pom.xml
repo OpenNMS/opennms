@@ -1,41 +1,58 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.opennms</groupId>
-    <artifactId>opennms</artifactId>
-    <version>1.12.8-SNAPSHOT</version>
-  </parent>
-  <artifactId>opennms-doc</artifactId>
-  <packaging>pom</packaging>
-  <name>OpenNMS :: Documentation</name>
-  <description>Official documentation</description>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-site-plugin</artifactId>
-        <version>3.3</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>site</goal>
-            </goals>
-            <phase>package</phase>
-          </execution>
-        </executions>
-        <dependencies>
-          <!-- Support for makrdown -->
-          <dependency>
-            <groupId>org.apache.maven.doxia</groupId>
-            <artifactId>doxia-module-markdown</artifactId>
-            <version>1.5</version>
-          </dependency>
-        </dependencies>
-        <configuration>
-          <generateReports>false</generateReports>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <artifactId>opennms</artifactId>
+        <groupId>org.opennms</groupId>
+        <version>1.12.8-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>documentation</artifactId>
+    <packaging>pom</packaging>
+    <name>OpenNMS :: Documentation</name>
+    <description>Official documentation</description>
+
+    <modules>
+        <module>guide-install</module>
+        <module>guide-user</module>
+        <module>guide-development</module>
+        <module>guide-admin</module>
+        <module>releasenotes</module>
+    </modules>
+
+    <properties>
+        <mavenSitePluginVersion>3.3</mavenSitePluginVersion>
+        <doxiaModuleMarkdownVersion>1.5</doxiaModuleMarkdownVersion>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>${mavenSitePluginVersion}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>site</goal>
+                        </goals>
+                        <phase>package</phase>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <!-- Support for markdown -->
+                    <dependency>
+                        <groupId>org.apache.maven.doxia</groupId>
+                        <artifactId>doxia-module-markdown</artifactId>
+                        <version>${doxiaModuleMarkdownVersion}</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <generateReports>false</generateReports>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

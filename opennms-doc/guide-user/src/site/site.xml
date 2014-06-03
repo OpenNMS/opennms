@@ -1,10 +1,9 @@
 <project name="opennms-pris-docs">
     <body>
-        <menu name="Overview">
+        <menu name="User Guide">
             <item name="Overview" href="index.html" />
-            <item name="Quickstart example" href="quickstart.html" />
         </menu>
-        <menu name="Driver">
+        <menu name="User Guide">
             <item name="Driver" href="drivers.html" />
             <item name="File driver" href="driver.file.html" />
             <item name="HTTP driver" href="driver.http.html" />
