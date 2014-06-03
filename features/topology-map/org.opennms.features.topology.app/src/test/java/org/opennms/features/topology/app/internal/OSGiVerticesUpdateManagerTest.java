@@ -29,10 +29,9 @@
 package org.opennms.features.topology.app.internal;
 
 import com.vaadin.data.Property;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Properties;
+
+import java.util.*;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.topology.api.AutoRefreshSupport;
@@ -45,13 +44,7 @@ import org.opennms.features.topology.api.MapViewManager;
 import org.opennms.features.topology.api.SelectionContext;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.VerticesUpdateManager;
-import org.opennms.features.topology.api.topo.DefaultVertexRef;
-import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.Edge;
-import org.opennms.features.topology.api.topo.GraphProvider;
-import org.opennms.features.topology.api.topo.StatusProvider;
-import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.api.topo.*;
 import org.opennms.osgi.EventProxy;
 import org.opennms.osgi.EventRegistry;
 import org.opennms.osgi.OnmsServiceManager;
@@ -388,13 +381,18 @@ public class OSGiVerticesUpdateManagerTest {
         }
 
         @Override
-        public StatusProvider getStatusProvider() {
+        public StatusProvider getVertexStatusProvider() {
             return null; 
         }
 
         @Override
-        public void setStatusProvider(StatusProvider statusProvider) {
+        public void setVertexStatusProvider(StatusProvider statusProvider) {
            
+        }
+
+        @Override
+        public Set<EdgeStatusProvider> getEdgeStatusProviders() {
+            return Collections.EMPTY_SET;
         }
 
         @Override

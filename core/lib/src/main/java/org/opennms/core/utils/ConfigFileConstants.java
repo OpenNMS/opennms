@@ -374,6 +374,11 @@ public final class ConfigFileConstants {
     public static final int LINKD_CONFIG_FILE_NAME;
     
     /**
+     * The ENHANCED Linkd discovery configuration file
+     */
+    public static final int ENLINKD_CONFIG_FILE_NAME;
+
+    /**
      * The OpenNMS DataSourceConfiguration file
      */
     public static final int OPENNMS_DATASOURCE_CONFIG_FILE_NAME;
@@ -604,10 +609,10 @@ public final class ConfigFileConstants {
         
         JDBC_COLLECTION_CONFIG_FILE_NAME = 80;
         
-        
+        ENLINKD_CONFIG_FILE_NAME = 81;
         // Allocate and build the mapping of identifiers to names
         //
-        FILE_ID_TO_NAME = new String[81];
+        FILE_ID_TO_NAME = new String[82];
 
         FILE_ID_TO_NAME[DB_CONFIG_FILE_NAME] = "opennms-database.xml";
         FILE_ID_TO_NAME[JMS_CONFIG_FILE_NAME] = "opennms-jms.xml";
@@ -683,6 +688,7 @@ public final class ConfigFileConstants {
         FILE_ID_TO_NAME[TRANSLATOR_CONFIG_FILE_NAME] = "translator-configuration.xml";
         FILE_ID_TO_NAME[SYSLOGD_CONFIG_FILE_NAME] = "syslogd-configuration.xml";
         FILE_ID_TO_NAME[LINKD_CONFIG_FILE_NAME] = "linkd-configuration.xml";
+        FILE_ID_TO_NAME[ENLINKD_CONFIG_FILE_NAME] = "enlinkd-configuration.xml";
         FILE_ID_TO_NAME[MAP_PROPERTIES_FILE_NAME] = "map.properties";
         FILE_ID_TO_NAME[SURVEILLANCE_VIEWS_FILE_NAME] = "surveillance-views.xml";
         FILE_ID_TO_NAME[SITE_STATUS_VIEWS_FILE_NAME] = "site-status-views.xml";

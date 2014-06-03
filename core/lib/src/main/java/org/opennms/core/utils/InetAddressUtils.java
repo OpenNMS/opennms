@@ -35,6 +35,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.opennms.core.network.IPAddress;
 import org.slf4j.Logger;
@@ -49,6 +51,10 @@ import org.slf4j.LoggerFactory;
 public abstract class InetAddressUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(InetAddressUtils.class);
+
+    public static final String INVALID_BRIDGE_ADDRESS = "000000000000";
+    public static final String INVALID_STP_BRIDGE_ID  = "0000000000000000";
+    public static final String INVALID_STP_BRIDGE_DESIGNATED_PORT = "0000";
 
     private static final ByteArrayComparator s_BYTE_ARRAY_COMPARATOR = new ByteArrayComparator();
     public static final InetAddress UNPINGABLE_ADDRESS;
@@ -247,6 +253,35 @@ public abstract class InetAddressUtils {
                 return Integer.valueOf(((Inet6Address)addr1).getScopeId()).compareTo(((Inet6Address)addr2).getScopeId()) == 0;
             }
         }
+    }
+
+    public static InetAddress getNetwork(InetAddress ipaddress, InetAddress netmask) {
+        final byte[] ipAddress = ipaddress.getAddress();
+        final byte[] netMask = netmask.getAddress();
+        final byte[] netWork = new byte[4];
+
+        for (int i=0;i< 4; i++) {
+                netWork[i] = Integer.valueOf(ipAddress[i] & netMask[i]).byteValue();
+
+        }
+        return InetAddressUtils.getInetAddress(netWork);
+    }
+
+    public static boolean inSameNetwork(final InetAddress addr1, final InetAddress addr2, final InetAddress mask) {
+        if (!(addr1 instanceof Inet4Address) || !(addr2 instanceof Inet4Address) || !(mask instanceof Inet4Address)) 
+        		return false;
+ 
+        final byte[] ipAddress1 = addr1.getAddress();
+        final byte[] ipAddress2 = addr2.getAddress();
+        final byte[] netMask = mask.getAddress();
+
+        for (int i=0;i< 4; i++) {
+        	if ((ipAddress1[i] & netMask[i]) != (ipAddress2[i] & netMask[i]))
+        		return false;
+
+        }
+        return true;
+    	
     }
 
     public static boolean isInetAddressInRange(final byte[] addr, final byte[] begin, final byte[] end) {
@@ -448,4 +483,38 @@ public abstract class InetAddressUtils {
     public static String normalizeMacAddress(String macAddress) {
         return macAddressBytesToString(macAddressStringToBytes(macAddress));
     }
+    
+    public static boolean isValidStpDesignatedPort(String bridgeDesignatedPort) {
+        if (bridgeDesignatedPort == null || bridgeDesignatedPort.equals(INVALID_STP_BRIDGE_DESIGNATED_PORT))
+                return false;
+        Pattern pattern = Pattern.compile("([0-9a-f]{4})");
+        Matcher matcher = pattern.matcher(bridgeDesignatedPort);
+        return matcher.matches();
+    }
+    
+    public static int getBridgeDesignatedPortNumber(String stpPortDesignatedPort) {
+        return 8191 & Integer.parseInt(stpPortDesignatedPort,
+                16);
+    }
+
+    public static boolean isValidBridgeAddress(String bridgeAddress) {
+            if (bridgeAddress == null || bridgeAddress.equals(INVALID_BRIDGE_ADDRESS))
+                    return false;
+            Pattern pattern = Pattern.compile("([0-9a-f]{12})");
+            Matcher matcher = pattern.matcher(bridgeAddress);
+            return matcher.matches();
+    }
+
+    public static boolean isValidStpBridgeId(String bridgeId) {
+            if (bridgeId == null || bridgeId.equals(INVALID_STP_BRIDGE_ID))
+                    return false;
+            Pattern pattern = Pattern.compile("([0-9a-f]{16})");
+            Matcher matcher = pattern.matcher(bridgeId);
+            return matcher.matches();
+    }
+    
+    public static String getBridgeAddressFromStpBridgeId(String bridgeId) {
+        return bridgeId.substring(4, 16);
+}
+
 }

@@ -75,4 +75,23 @@ public final class EventUtils {
             throw new InsufficientInformationException("nodeid for event is unavailable");
         }
     }
+    
+    /**
+     * Ensures that the given Event has a node id
+     *
+     * @param e
+     *            the event
+     * @throws org.opennms.netmgt.linkd.InsufficientInformationException
+     *             if a node id is not available
+     */
+    static public void checkService(Event e) throws InsufficientInformationException {
+        if (e == null) {
+            throw new NullPointerException("e is null");
+        }
+
+        String service = e.getService();
+        if (service == null ) {
+            throw new  InsufficientInformationException("service for event is unavailable");
+        }
+    }
 }

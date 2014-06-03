@@ -12,4 +12,6 @@
   </bean>
   
   <bean id="networkElementFactory" class="org.opennms.web.element.NetworkElementFactory"/>
+  <bean id="lldpElementFactory" class="org.opennms.web.lldp.LldpElementFactory"/>
+  
 </beans>

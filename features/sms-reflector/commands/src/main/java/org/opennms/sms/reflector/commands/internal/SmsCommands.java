@@ -473,7 +473,7 @@ public class SmsCommands implements CommandProvider, BundleContextAware {
         return buffer.toString(); 
     } 
 
-    public class OutboundNotification implements IOutboundMessageNotification {
+    public static class OutboundNotification implements IOutboundMessageNotification {
         @Override
         public void process(AGateway gateway, OutboundMessage msg) {
             LOG.debug("Outbound handler called from Gateway: {}", gateway.getGatewayId());
@@ -481,7 +481,7 @@ public class SmsCommands implements CommandProvider, BundleContextAware {
         }
     }
 
-    public class InboundNotification implements IInboundMessageNotification{
+    public static class InboundNotification implements IInboundMessageNotification{
 
         @Override
         public void process(AGateway gateway, MessageTypes msgType, InboundMessage msg) {
@@ -495,7 +495,7 @@ public class SmsCommands implements CommandProvider, BundleContextAware {
         }
     }
 
-    public class CallNotification implements ICallNotification{
+    public static class CallNotification implements ICallNotification{
 
         @Override
         public void process(AGateway gateway, String callerId) {
@@ -504,7 +504,7 @@ public class SmsCommands implements CommandProvider, BundleContextAware {
 
     }
 
-    public class GatewayStatusNotification implements IGatewayStatusNotification{
+    public static class GatewayStatusNotification implements IGatewayStatusNotification{
 
         @Override
         public void process(AGateway gateway, GatewayStatuses oldStatus, GatewayStatuses newStatus) {

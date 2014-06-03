@@ -38,7 +38,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <argument ref="providerManager" />
         <property name="bundleContext" ref="blueprintBundleContext" />
         <property name="autoRefreshSupport" ref="defaultAutoRefreshSupport"/>
-        <property name="statusProvider" ref="statusProvider"/>
+        <property name="vertexStatusProvider" ref="statusProvider"/>
     </bean>
 
     <!--  Header reference -->
