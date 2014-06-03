@@ -1,0 +1,79 @@
+<div ng-controller="OutageCtrl">
+    <table class="table table-striped table-condensed table-hover">
+        <thead>
+            <tr>
+                <th class="noWrap" custom-sort order="'id'" sort="sort">ID&nbsp;</th>
+                <th class="noWrap" custom-sort order="'node.foreignSource'" sort="sort">Foreign Source&nbsp;</th>
+                <th class="noWrap" custom-sort order="'nodeId'" sort="sort">Node&nbsp;</th>
+                <th class="noWrap" custom-sort order="'ipAddress'" sort="sort">Interface&nbsp;</th>
+                <th class="noWrap" custom-sort order="'monitoredService.serviceName'" sort="sort">Service&nbsp;</th>
+                <th class="noWrap" custom-sort order="'outage.ifLostService'" sort="sort">Down&nbsp;</th>
+                <th class="noWrap" custom-sort order="'outage.ifRegainedService'" sort="sort">Up&nbsp;</th>
+            </tr>
+        </thead>
+        <pre>pagedItems.length: {{pagedItems.length|json}}</pre>
+        <pre>items.length: {{items.length|json}}</pre>
+        <pre>currentPage: {{currentPage|json}}</pre>
+        <pre>sort: {{sort|json}}</pre>
+        <tbody>
+            <tr ng-repeat="outage in pagedItems[currentPage]| orderBy:sort.sortingOrder:sort.reverse">
+                <td><a ui-sref="app.outages-detail({ outageId: outage.id })">{{outage.id}}</a><button class="btn btn-default" ng-click="$log.log('outage:', outage)"></button</td>
+                <td>
+                    <span ng-if="outage.node && outage.node.foreignSource">
+                        {{outage.node.foreignSource}}
+                    </span>
+                </td>
+                <td>
+                    <span ng-if="outage.nodeId !== null">
+                        <a ui-sref="app.node.detail({ nodeId: outage.nodeId })" title="{{outage.node.nodeLabel}}">{{outage.node.nodeLabel}}</a>
+                    </span>
+                </td>
+                <td>
+                    <span ng-if="outage.ipAddress !== null">
+                        <a ng-if="outage.nodeId" ui-sref="app.node.ipaddress.detail({ nodeId: outage.nodeId, ipAddress: outage.ipAddress })" title="More info on this interface">{{outage.ipAddress}}</a>
+                        <ng-if="!outage.nodeId">{{outage.ipAddress}}</ng-if>
+                    </span>
+                </td>
+                <td>
+                    <!-- span ng-if="outage.monitoredService" -->
+                    <span ng-switch on="outage.nodeId !== null && outage.ipAddress !== null">
+                        <span ng-switch-when="true"><a ng-href="{{getNodeServiceLink(outage)}}" title="More info on this service">{{outage.monitoredService.serviceName}}</a></span>
+                        <span ng-switch-default="false">{{outage.monitoredService.serviceName}}</span>
+                    </span>
+                </td>
+                <td>{{outage.ifLostService| date:'MM/dd/yy HH:mm:ss'}}</td>
+                <td>
+                    <span ng-if="outage.ifRegainedService">{{outage.ifRegainedService| amDateFormat:'MM/dd/yy HH:mm:ss' }}</span>
+                    <span ng-if="!outage.ifRegainedService">{{getStatusLabel(outage)}}</span>
+                </td>
+            </tr>
+        </tbody>
+        <tfoot class="onms">
+        <td colspan="7">
+            <div class="pull-right">
+                <ul class="pagination">
+                    <li ng-class="{disabled: currentPage == 0}">
+                        <a ng-href ng-click="firstPage()">First</a>
+                    </li>
+                    <li ng-class="{disabled: currentPage < 1}">
+                        <a ng-href ng-click="prevPage()">« Prev</a>
+                    </li>
+
+                    <li ng-repeat="n in range(pagedItems.length, currentPage, currentPage + gap)"
+                        ng-class="{active: n == currentPage}"
+                        ng-click="setPage()">
+                        <a ng-href ng-bind="n + 1">1</a>
+                    </li>
+
+                    <li ng-class="{disabled: (currentPage + 1) == pagedItems.length}">
+                        <a ng-href ng-click="nextPage()">Next »</a>
+                    </li>
+                    <li ng-class="{disabled: (currentPage + 1) >= pagedItems.length}">
+                        <a ng-href ng-click="lastPage()">Last</a>
+                    </li>
+                </ul>
+            </div>
+        </td>
+        </tfoot>
+    </table>
+</div>
