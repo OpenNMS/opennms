@@ -37,14 +37,16 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.api.reporting.ReportFormat;
 import org.opennms.core.utils.StreamUtils;
-import org.opennms.core.utils.BeanUtils;
-import org.opennms.core.utils.LogUtils;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.WebSecurityUtils;
-import org.opennms.netmgt.dao.ReportdConfigurationDao;
+import org.opennms.netmgt.dao.api.ReportdConfigurationDao;
 import org.opennms.reporting.core.svclayer.ReportStoreService;
 import org.opennms.web.servlet.MissingParameterException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>DownloadReportController class.</p>
@@ -54,6 +56,7 @@ import org.springframework.web.servlet.mvc.AbstractController;
  * @since 1.8.1
  */
 public class DownloadReportController extends AbstractController {
+    private static Logger LOG = LoggerFactory.getLogger(DownloadReportController.class);
 
     private ReportStoreService m_reportStoreService;
     private ReportdConfigurationDao m_reportdConfigurationDao;
@@ -71,7 +74,7 @@ public class DownloadReportController extends AbstractController {
         final File storageDirectory = new File(m_reportdConfigurationDao.getStorageDirectory());
         
         if (!requestedFile.getParentFile().getCanonicalFile().equals(storageDirectory.getCanonicalFile())) {
-            LogUtils.warnf(this, "User attempted to retrieve file %s but was restricted to %s", requestedFile, storageDirectory);
+            LOG.warn("User attempted to retrieve file {} but was restricted to {}", requestedFile, storageDirectory);
             throw new IllegalArgumentException("Cannot retrieve reports from outside Reportd storage directory");
         }
         
