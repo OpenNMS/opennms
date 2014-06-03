@@ -1739,8 +1739,14 @@ public class ThresholdingVisitorTest {
 
     private File createHrStoragePropertiesFile(int resourceId) throws IOException {
         if (!m_hrStorageProperties.containsKey(resourceId)) {
-            File nodeDir = m_fileAnticipator.tempDir("1");
-            File hrStorageDir = m_fileAnticipator.tempDir(nodeDir, "hrStorageIndex");
+            File nodeDir;
+            if (!(nodeDir = new File(m_fileAnticipator.getTempDir(), "1")).exists()) {
+                nodeDir = m_fileAnticipator.tempDir("1");
+            }
+            File hrStorageDir;
+            if (!(hrStorageDir = new File(nodeDir,  "hrStorageIndex")).exists()) {
+                hrStorageDir = m_fileAnticipator.tempDir(nodeDir, "hrStorageIndex");
+            }
             File resourceDir = m_fileAnticipator.tempDir(hrStorageDir, String.valueOf(resourceId));
             m_hrStorageProperties.put(resourceId, m_fileAnticipator.tempFile(resourceDir, "strings.properties"));
         }
