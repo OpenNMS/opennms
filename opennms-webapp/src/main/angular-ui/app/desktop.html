@@ -10,7 +10,7 @@
         <!-- build:css styles/vendor.css -->
         <!-- <link rel="stylesheet" href="vendor/some.contrib.css"> -->
         <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css" />
-        <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap-theme.min.css" />
+        <!-- <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap-theme.min.css" /> -->
         <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
         <!-- endbuild -->
 
@@ -19,7 +19,7 @@
         <!-- <link rel="stylesheet" href="styles/opennms.css"> -->
         <link rel="stylesheet" href="styles/desktop.css">
         <!-- endbuild -->
-        
+
         <style>
             [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
                 display: none !important;
@@ -127,7 +127,7 @@
         <script src="bower_components/ionic/release/js/ionic-angular.js"></script>
         <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
         <!-- endbuild -->
-    
+
         <!-- build:js({.tmp,app}) scripts/scripts.js -->
         <script src="scripts/services/shared/plugin.js"></script>
         <script src="scripts/model/alarm-summary.js"></script>
@@ -138,15 +138,16 @@
         <script src="scripts/services/shared/menu.js"></script>
         <script src="scripts/services/shared/nodes.js"></script>
         <script src="scripts/services/shared/outage.js"></script>
+        <script src="scripts/controllers/desktop/app.js"></script>
+        <script src="scripts/controllers/desktop/dashboard.js"></script>
         <script src="scripts/controllers/shared/alarms.js"></script>
         <script src="scripts/controllers/shared/menu.js"></script>
         <script src="scripts/controllers/shared/nodes.js"></script>
-        <script src="scripts/controllers/desktop/app.js"></script>
-        <script src="scripts/controllers/desktop/dashboard.js"></script>
         <script src="scripts/desktop.js"></script>
         <!-- endbuild -->
         <script>
             var modules = PluginManager.getModules();
+            console.log('loading modules: ' + modules);
             angular.bootstrap(document, modules);
         </script>
     </body>

@@ -1,77 +1,154 @@
-<!--
-<jsp:param name="title" value="Element Search" />
-  <jsp:param name="headTitle" value="Element Search" />
-  <jsp:param name="location" value="element" />
-  <jsp:param name="breadcrumb" value="Search" />
-</jsp:include>
--->
+<div class="container-fluid main">
+<div class="row">
+  <div class="col-md-6">
+    <div class="box">
+      <h4>Search for Nodes</h4>
 
-<div class="TwoColLeft" >
-    <h3>Search for Nodes</h3>
-    <div class="boxWrapper">
-        <form action="#/element/nodelist" method="get">
-            <p class="right">Name containing:
-                <input type="hidden" name="listInterfaces" value="false"/>
-                <input type="text" name="nodename" />
-                <input type="submit" value="Search"/></p>
-        </form>
+      <form action="#/element/nodelist" method="get" role="form" class="row">
+        <input type="hidden" name="listInterfaces" value="false"/>
+        <div class="col-xs-5 col-md-2">
+          <label for="nodename">Name Contains:</label>
+        </div>
+        <div class="col-xs-7 col-md-4">
+          <input type="text" name="nodename" />
+          <button type="submit" class="btn btn-default btn-sm">Search</button>
+        </div>
+      </form>
 
-        <form action="#/element/nodelist" method="get">
-            <p class="right">TCP/IP Address like:
-                <input type="hidden" name="listInterfaces" value="false"/>
-                <input type="text" name="iplike" value="*.*.*.*" />
-                <input type="submit" value="Search"/></p>
-        </form>
+      <form action="#/element/nodelist" method="get" role="form" class="row">
+        <input type="hidden" name="listInterfaces" value="false"/>
+        <div class="col-xs-5 col-md-2">
+          <label for="iplike">IP Address Like:</label>
+        </div>
+        <div class="col-xs-7 col-md-4">
+          <input type="text" name="iplike" value="*.*.*.*" />
+          <button type="submit" class="btn btn-default btn-sm">Search</button>
+        </div>
+      </form>
 
-        <form action="#/element/nodelist" method="get">
-            <p class="right">
-                <select name="snmpParm" size="1">
-                    <option>ifAlias</option>
-                    <option>ifName</option>
-                    <option>ifDescr</option>
-                </select>
-                <select name="snmpParmMatchType" size="1">
-                    <option>contains</option>
-                    <option>equals</option>
-                </select>:
-                <input type="hidden" name="listInterfaces" value="false"/>
-                <input type="text" name="snmpParmValue" />
-                <input type="submit" value="Search"/></p>
-        </form>
+      <form action="#/element/nodelist" method="get" role="form" class="row">
+        <input type="hidden" name="listInterfaces" value="false"/>
+        <div class="col-xs-5 col-md-2">
+          <select name="snmpParm" size="1">
+            <option>ifAlias</option>
+            <option>ifName</option>
+            <option>ifDescr</option>
+          </select>
+          <select name="snmpParmMatchType" size="1">
+            <option>contains</option>
+            <option>equals</option>
+          </select>:
+        </div>
+        <div class="col-xs-7 col-md-4">
+          <input type="text" name="snmpParmValue" />
+          <button type="submit" class="btn btn-default btn-sm">Search</button>
+        </div>
+      </form>
 
-        <form action="#/element/nodelist" method="get">
-            <p class="right">Providing service:
-                <input type="hidden" name="listInterfaces" value="false"/>
-                <select name="service" size="1">
-                    <option value="{{service.value}}" ng-repeat="service in services">{{service.name}}</option>
-                </select>
-                <input type="submit" value="Search"/></p>
-        </form>
+      <form action="#/element/nodelist" method="get" role="form" class="row">
+        <input type="hidden" name="listInterfaces" value="false"/>
+        <div class="col-xs-5 col-md-2">
+          <label for="service">Providing service:</label>
+        </div>
+        <div class="col-xs-7 col-md-4">
+          <select name="service" size="1">
+            <option value="{{service.value}}" ng-repeat="service in services">{{service.name}}</option>
+          </select>
+          <button type="submit" class="btn btn-default btn-sm">Search</button>
+        </div>
+      </form>
 
-        <form action="#/element/nodelist" method="get">
-            <p class="right">MAC Address like:
-                <input type="hidden" name="listInterfaces" value="false"/>
-                <input type="text" name="maclike" />
-                <input type="submit" value="Search"/></p>
-        </form>
+      <form action="#/element/nodelist" method="get" role="form" class="row">
+        <input type="hidden" name="listInterfaces" value="false"/>
+        <div class="col-xs-5 col-md-2">
+          <label for="maclike">MAC Address like:</label>
+        </div>
+        <div class="col-xs-7 col-md-4">
+          <input type="text" name="maclike" />
+          <button type="submit" class="btn btn-default btn-sm">Submit</button>
+        </div>
+      </form>
 
-        <form action="#/element/nodelist" method="get">
-            <p class="right">Foreign Source name like:
-                <input type="hidden" name="listInterfaces" value="false"/>
-                <input type="text" name="foreignSource"/>
-                <input type="submit" value="Search"/>
-            </p>
-        </form>
+      <form action="#/element/nodelist" method="get" role="form" class="row">
+        <input type="hidden" name="listInterfaces" value="false"/>
+        <div class="col-xs-5 col-md-2">
+          <label for="foreignSource">Foreign Source name like:</label>
+        </div>
+        <div class="col-xs-7 col-md-4">
+          <input type="text" name="foreignSource"/>
+          <button type="submit" class="btn btn-default btn-sm">Submit</button>
+        </div>
+      </form>
 
-        <ul class="plain">
-            <li><a href="#/element/nodelist">All nodes</a></li>
-            <li><a href="#/element/nodelist?listInterfaces=true">All nodes and their interfaces</a></li>
-        </ul>
+      <ul class="plain">
+        <li><a href="#/element/nodelist">All nodes</a></li>
+        <li><a href="#/element/nodelist?listInterfaces=true">All nodes and their interfaces</a></li>
+      </ul>
+
     </div>
+  </div>
+  <div class="col-md-6">
+    <h4>Search Options</h4>
+    <p>
+      Searching by name is a case-insensitive, inclusive search. For example,
+      searching on <em>serv</em> would find any of <em>serv</em>, <em>Service</em>,
+      <em>Reserved</em>, <em>NTSERV</em>, <em>UserVortex</em>, etc. The underscore
+      character acts as a single character wildcard. The percent character acts as a multiple
+      character wildcard.
+    </p>
+    <p>
+      Searching by TCP/IP address uses a very flexible search format, allowing you
+      to separate the four octets (fields) of a TCP/IP address into specific
+      searches.  An asterisk (*) in place of any octet matches any value for that
+      octet. Ranges are indicated by two numbers separated by a dash (-), and
+      commas are used for list demarcation.
+    </p>
+    <p>
+      For example, the following search fields are all valid and would each create
+      the same result set--all TCP/IP addresses from 192.168.0.0 through
+      192.168.255.255:
+    </p>
+    <ul>
+      <li>192.168.*.*</li>
+      <li>192.168.0-255.0-255</li>
+      <li>192.168.0,1,2,3-255.*</li>
+    </ul>
+    <p>
+      A search for ifAlias, ifName, or ifDescr "contains" will find nodes with interfaces
+      that match the given search string. This is a case-insensitive inclusive search
+      similar to the "name" search described above. If the search modifier is "equals" rather
+      than "contains" an exact match must be found.
+    </p>
+    <p>
+      To search by Service, click the down arrow and select the service you would
+      like to search for.
+    </p>
+    <p>
+      Searching by MAC Address allows you to find interfaces with hardware (MAC) addresses
+      matching the search string. This is a case-insensitive partial string match. For
+      example, you can find all interfaces with a specified manufacturer's code by entering
+      the first 6 characters of the mac address. Octet separators (dash or colon) are optional.
+    </p>
+    <p>
+      Searching for assets allows you to search for all assets which have been
+      associated with a particular category, as well as to select a specific asset
+      field (with all available fields listed in the drop-down list box) and
+      search for text which matches its current value.  The latter search is very
+      similar to the text search for node names described above.
+    </p>
+    <p>
+      Also note that you can quickly search for all nodes which have asset
+      information assigned by clicking the <em>List all nodes with asset info</em> link.
+    </p>
+  </div>
+</div>
+</div>
+
+<!--
+<div class="TwoColLeft" >
 
     <h3>Search Asset Information</h3>
     <div class="boxWrapper">
-        <!-- category -->
         <form action="#/asset/nodelist" method="get">
             <p class="right">Category:
                 <input type="hidden" name="column" value="category" />
@@ -98,59 +175,8 @@
 
 
 <div class="TwoColRight">
-    <h3>Search Options</h3>
-    <div class="boxWrapper">
-        <p>Searching by name is a case-insensitive, inclusive search. For example,
-            searching on <em>serv</em> would find any of <em>serv</em>, <em>Service</em>,
-            <em>Reserved</em>, <em>NTSERV</em>, <em>UserVortex</em>, etc. The underscore
-            character acts as a single character wildcard. The percent character acts as a multiple
-            character wildcard.
-        </p>
 
-        <p>Searching by TCP/IP address uses a very flexible search format, allowing you
-            to separate the four octets (fields) of a TCP/IP address into specific
-            searches.  An asterisk (*) in place of any octet matches any value for that
-            octet. Ranges are indicated by two numbers separated by a dash (-), and
-            commas are used for list demarcation.
-        </p>
-
-        <p>For example, the following search fields are all valid and would each create
-            the same result set--all TCP/IP addresses from 192.168.0.0 through
-            192.168.255.255:
-        </p>
-
-        <ul>
-            <li>192.168.*.*
-            <li>192.168.0-255.0-255
-            <li>192.168.0,1,2,3-255.*
-        </ul>
-
-        <p>A search for ifAlias, ifName, or ifDescr "contains" will find nodes with interfaces
-            that match the given search string. This is a case-insensitive inclusive search
-            similar to the "name" search described above. If the search modifier is "equals" rather
-            than "contains" an exact match must be found.
-        </p>
-
-        <p>To search by Service, click the down arrow and select the service you would
-            like to search for.
-        </p>
-
-        <p>Searching by MAC Address allows you to find interfaces with hardware (MAC) addresses
-            matching the search string. This is a case-insensitive partial string match. For
-            example, you can find all interfaces with a specified manufacturer's code by entering
-            the first 6 characters of the mac address. Octet separators (dash or colon) are optional.
-        </p>
-
-        <p>Searching for assets allows you to search for all assets which have been
-            associated with a particular category, as well as to select a specific asset
-            field (with all available fields listed in the drop-down list box) and
-            search for text which matches its current value.  The latter search is very
-            similar to the text search for node names described above.
-        </p>
-
-        <p>Also note that you can quickly search for all nodes which have asset
-            information assigned by clicking the <em>List all nodes with asset info</em> link.
-        </p>
-    </div>
 </div>
 <hr />
+
+-->

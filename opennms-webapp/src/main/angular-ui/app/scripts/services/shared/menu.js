@@ -20,10 +20,10 @@
             if (location === '') {
                 location = undefined;
             }
-            
-            $log.warn('location=',location);
-            $log.warn('route=',route);
-            $log.warn('label=',label);
+
+            //$log.warn('location=',location);
+            //$log.warn('route=',route);
+            //$log.warn('label=',label);
 
             var menuEntry = {
                 name: label,
