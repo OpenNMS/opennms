@@ -30,7 +30,6 @@ package org.opennms.netmgt.enlinkd;
 
 
 import java.net.InetAddress;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -40,12 +39,17 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.config.EnhancedLinkdConfig;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.opennms.netmgt.linkd.SnmpCollection;
 import org.opennms.netmgt.linkd.scheduler.ReadyRunnable;
 import org.opennms.netmgt.linkd.scheduler.Scheduler;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
 /**
@@ -90,6 +94,9 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
      */
     private volatile EventForwarder m_eventForwarder;
 
+    @Autowired
+    private TransactionTemplate m_transactionTemplate;
+
     /**
      * <p>
      * Constructor for EnhancedLinkd.
@@ -110,10 +117,14 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         Assert.state(m_eventForwarder != null,
                      "must set the eventForwarder property");
 
-        m_nodes = m_queryMgr.getSnmpNodeList();
-
-        Assert.notNull(m_nodes);
-        scheduleCollection();
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+                m_nodes = m_queryMgr.getSnmpNodeList();
+                Assert.notNull(m_nodes);
+                scheduleCollection();
+            }
+        });
 
         LOG.info("init: ENHANCED LINKD CONFIGURATION INITIALIZED");
     }

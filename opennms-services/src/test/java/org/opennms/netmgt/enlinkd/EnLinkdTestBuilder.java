@@ -47,10 +47,12 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
@@ -58,6 +60,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
+@Transactional
 public abstract class EnLinkdTestBuilder extends EnLinkdTestHelper implements InitializingBean {
 
     @Autowired
