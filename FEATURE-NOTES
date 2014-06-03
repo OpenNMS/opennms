@@ -9,3 +9,20 @@ Next Generation UI for OpenNMS using AngularJS and ReST
 * Need a way to handle 503 jetty not yet ready...
 
 * Make templates for single view and multiple view pages.
+
+* Make Model's for
+    * Node
+    * Interface
+    * Service
+    * Event
+    * Event.Config
+    * Outage
+    * Alarm
+    * Notification
+    * Notification.Config
+    * User
+    * Asset
+    * Report
+
+Document how to link to the individual pages. Example: given a node id, use:
+    <a ui-sref="app.node-detail({ nodeId: nodeId })">...</a>
