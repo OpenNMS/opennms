@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -267,12 +267,14 @@ class AlarmQueue<T extends Preservable> {
     }
     
     public void accept(T a) {
-        m_queue.offer(a);
+        boolean result = m_queue.offer(a);
+        LOG.debug("Alarm {} accepted, offered to blocking-queue. Actually queued? {}", a, result);
     }
     
     public void preserve(T a) {
         a.setPreserved(true);
-        m_queue.offer(a);
+        boolean result = m_queue.offer(a);
+        LOG.debug("Alarm {} preserved, offered to blocking-queue. Actually queued? {}", a, result);
     }
     
     public List<T> getAlarmsToForward() throws InterruptedException {

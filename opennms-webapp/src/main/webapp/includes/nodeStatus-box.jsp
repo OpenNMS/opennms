@@ -43,14 +43,15 @@
         import="
           org.opennms.web.alarm.*,
           org.opennms.web.alarm.AcknowledgeType,
-          org.opennms.netmgt.dao.hibernate.AlarmRepositoryHibernate,
           org.opennms.web.alarm.filter.AlarmCriteria,
           org.opennms.web.alarm.filter.NodeFilter,
           org.opennms.web.filter.Filter,
           org.opennms.web.servlet.MissingParameterException,
+          org.opennms.core.spring.BeanUtils,
           org.opennms.core.utils.WebSecurityUtils,
           org.opennms.netmgt.model.OnmsAlarm,
-          org.opennms.netmgt.model.OnmsSeverity
+          org.opennms.netmgt.model.OnmsSeverity,
+          org.opennms.netmgt.dao.api.AlarmRepository
         "
 %>
 
@@ -69,7 +70,10 @@
         nodeId = WebSecurityUtils.safeParseInt(nodeIdStr);
         NodeFilter filter = new NodeFilter(nodeId, getServletContext());
         AlarmCriteria criteria = new AlarmCriteria(new Filter[] { filter }, SortStyle.ID, AcknowledgeType.BOTH, AlarmCriteria.NO_LIMIT, AlarmCriteria.NO_OFFSET);
-        alarms = new AlarmRepositoryHibernate().getMatchingAlarms(AlarmUtil.getOnmsCriteria(criteria));
+        AlarmRepository repository = BeanUtils.getBean("daoContext", "alarmRepository", AlarmRepository.class);
+        if (repository != null) {
+            alarms = repository.getMatchingAlarms(AlarmUtil.getOnmsCriteria(criteria));
+        }
     }
 
     boolean nodeDown = false;
@@ -93,7 +97,7 @@
         } else {
             unackCount++;
         }
-        if (alarm.getSeverity().getId() > maxSeverity) {
+        if (alarm.getSeverity().getId() > maxSeverity && alarm.getAckTime() == null) {
             maxSeverity = alarm.getSeverity().getId();
         }
     }

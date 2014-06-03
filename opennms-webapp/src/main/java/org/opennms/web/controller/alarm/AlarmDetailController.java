@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -43,6 +43,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
+import org.opennms.web.servlet.XssRequestWrapper;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -99,13 +103,13 @@ public class AlarmDetailController extends MultiActionController {
     public ModelAndView detail(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {
 
         OnmsAlarm m_alarm = null;
+        XssRequestWrapper safeRequest = new XssRequestWrapper(httpServletRequest);
         String alarmIdString = "";
         List<OnmsAcknowledgment> acknowledgments = Collections.emptyList();
 
         // Try to parse alarm ID as string to integer
         try {
-            alarmIdString = httpServletRequest.getParameter("id");
-            // Try to parse alarm ID as string to integer
+            alarmIdString = safeRequest.getParameter("id");
             int alarmId = Integer.parseInt(alarmIdString);
             acknowledgments = m_webAlarmRepository.getAcknowledgments(alarmId);
 
@@ -113,7 +117,7 @@ public class AlarmDetailController extends MultiActionController {
             m_alarm = m_webAlarmRepository.getAlarm(alarmId);
             logger.debug("Alarm retrieved: '{}'", m_alarm.toString());
         } catch (NumberFormatException e) {
-            logger.error("Could not parse alarm ID '{}' to integer.", httpServletRequest.getParameter("id"));
+            logger.error("Could not parse alarm ID '{}' to integer.", safeRequest.getParameter("id"));
         } catch (Throwable e) {
             logger.error("Could not retrieve alarm from webAlarmRepository for ID='{}'", alarmIdString);
         }

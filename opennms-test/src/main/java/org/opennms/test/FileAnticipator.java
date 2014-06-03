@@ -54,11 +54,8 @@ import org.slf4j.LoggerFactory;
  * File anticipator.
  *
  * Example usage with late initialization:
- * <pre>
- * private FileAnticipator m_fileAnticipator;
  *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @version $Id: $
  */
 public class FileAnticipator extends Assert {
 	
@@ -92,10 +89,12 @@ public class FileAnticipator extends Assert {
         }
     }
     
-    /** {@inheritDoc} */
+    /** {@inheritDoc} 
+     * @throws Throwable */
     @Override
-    protected void finalize() {
+    protected void finalize() throws Throwable {
         tearDown();
+        super.finalize();
     }
 
     /**

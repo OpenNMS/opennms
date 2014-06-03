@@ -51,21 +51,10 @@ public class DataSourceDbConnectionFactory implements DbConnectionFactory {
         m_dataSource = dataSource;
     }
     
-    /**
-     * <p>destroy</p>
-     *
-     * @throws java.sql.SQLException if any.
-     */
     @Override
     public void destroy() {
     }
 
-    /**
-     * <p>getConnection</p>
-     *
-     * @return a {@link java.sql.Connection} object.
-     * @throws java.sql.SQLException if any.
-     */
     @Override
     public Connection getConnection() throws SQLException {
         return m_dataSource.getConnection();

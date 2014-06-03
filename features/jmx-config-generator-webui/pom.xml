@@ -5,12 +5,12 @@
     <parent>
         <artifactId>org.opennms.features</artifactId>
         <groupId>org.opennms</groupId>
-        <version>1.13.1-SNAPSHOT</version>
+        <version>1.13.3-SNAPSHOT</version>
     </parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>jmxconfiggenerator.webui</artifactId>
     <packaging>bundle</packaging>
-    <name>OpenNMS Features Jmx Config Generator Web UI</name>
+    <name>OpenNMS Features JMX Config Generator Web UI</name>
     <url>http://www.opennms.org</url>
 
     <properties>

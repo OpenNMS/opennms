@@ -142,7 +142,7 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements Initiali
     	try {
     		instance = Syslog.getInstance(m_destination.getName());
     	} catch (SyslogRuntimeException e) {
-    		LOG.error("Could not find Syslog instance for destination: {}.", m_destination.getName(), e);
+    		LOG.error("Could not find Syslog instance for destination: '{}': {}", m_destination.getName(), e);
     		throw e;
     	}
 
@@ -182,7 +182,7 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements Initiali
     			instance.log(level, syslogMessage);
     			
     		} catch (Exception e1) {
-    			LOG.error("Caught exception sending to destination: {}", m_destination.getName(), e1);
+    			LOG.error("Caught exception sending to destination: '{}': {}", m_destination.getName(), e1);
     		}
     	}
     }
@@ -250,6 +250,7 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements Initiali
 	protected void buildParmMappings(final NorthboundAlarm alarm, final Map<String, Object> mapping) {
 		List<EventParm<?>> parmCollection = new LinkedList<EventParm<?>>();
 		String parms = alarm.getEventParms();
+		if (parms == null) return;
 
 		char separator = ';';
 		String[] parmArray = StringUtils.split(parms, separator);
@@ -325,7 +326,7 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements Initiali
     	try {
     		Syslog.createInstance(instName, instanceConfiguration);
     	} catch (SyslogRuntimeException e) {
-    		LOG.error("Could not create northbound instance, {}", instName, e);
+    		LOG.error("Could not create northbound instance, '{}': {}", instName, e);
     		throw e;
     	}
 

@@ -44,10 +44,8 @@ import org.slf4j.LoggerFactory;
  */
 @XmlRootElement(name = "snmpAgentConfig")
 public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
-
-	private static final long serialVersionUID = 1456963719970029200L;
-
-	private static final transient Logger LOG = LoggerFactory.getLogger(SnmpAgentConfig.class);
+    private static final long serialVersionUID = 1456963719970029200L;
+    private static final transient Logger LOG = LoggerFactory.getLogger(SnmpAgentConfig.class);
 
     private InetAddress m_address;
     private InetAddress m_proxyFor;
@@ -117,15 +115,15 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
             } else if ("read-community".equalsIgnoreCase(key)) {
                 agentConfig.setReadCommunity(value);
             } else if ("context-name".equalsIgnoreCase(key)) {
-            	agentConfig.setContextName(value);
+                agentConfig.setContextName(value);
             } else if ("engine-id".equalsIgnoreCase(key)) {
-            	agentConfig.setEngineId(value);
+                agentConfig.setEngineId(value);
             } else if ("context-engine-id".equalsIgnoreCase(key)) {
-            	agentConfig.setContextEngineId(value);
+                agentConfig.setContextEngineId(value);
             } else if ("enterprise-id".equalsIgnoreCase(key)) {
-            	agentConfig.setEnterpriseId(value);
+                agentConfig.setEnterpriseId(value);
             } else if ("write-community".equalsIgnoreCase(key)) {
-            	agentConfig.setWriteCommunity(value);
+                agentConfig.setWriteCommunity(value);
             } else {
                 LOG.warn("Unexpected attribute in protocol configuration string for SnmpAgentConfig: '{}'", attribute);
             }
@@ -161,7 +159,7 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
         return buff.toString();
     }
 
-        @Override
+    @Override
     public String toString() {
         StringBuffer buff = new StringBuffer("SnmpAgentConfig[");
         buff.append("Address: ").append((m_address == null? null : InetAddrUtils.str(m_address)));
@@ -185,8 +183,8 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
             buff.append(", Context Engine ID: ").append(getContextEngineId());
             buff.append(", Enterprise ID:").append(getEnterpriseId());
         } else {
-        	buff.append(", ReadCommunity: ").append(getReadCommunity());
-        	buff.append(", WriteCommunity: ").append(getWriteCommunity());
+            buff.append(", ReadCommunity: ").append(getReadCommunity());
+            buff.append(", WriteCommunity: ").append(getWriteCommunity());
         }
         buff.append("]");
         return buff.toString();

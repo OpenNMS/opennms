@@ -38,12 +38,11 @@ import java.util.Set;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.support.DefaultResourceDao;
-import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -188,7 +187,7 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
     public File getStorageDir() {
         File dir = new File(String.valueOf(getIpInterface().getNode().getId()));
         if(isStoreByForeignSource() && !(getIpInterface().getNode().getForeignSource() == null) && !(getIpInterface().getNode().getForeignId() == null)) {
-               File fsDir = new File(DefaultResourceDao.FOREIGN_SOURCE_DIRECTORY, getIpInterface().getNode().getForeignSource());
+               File fsDir = new File(ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY, getIpInterface().getNode().getForeignSource());
             dir = new File(fsDir, getIpInterface().getNode().getForeignId());
         }
         return dir;

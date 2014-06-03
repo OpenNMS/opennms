@@ -33,6 +33,7 @@ import org.opennms.web.alarm.AlarmQueryParms;
 import org.opennms.web.alarm.SortStyle;
 import org.opennms.web.filter.Filter;
 
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -94,7 +95,7 @@ public class AlarmCriteria {
     }
 
     public AlarmCriteria(Filter[] filters, SortStyle sortStyle, AcknowledgeType ackType, int limit, int offset) {
-        m_filters = filters;
+        m_filters = Arrays.copyOf(filters, filters.length);
         m_sortStyle = sortStyle;
         m_ackType = ackType;
         m_limit = limit;

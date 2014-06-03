@@ -33,6 +33,8 @@ import org.opennms.netmgt.model.AttributeStatisticVisitor;
 import org.opennms.netmgt.model.AttributeVisitor;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.RrdGraphAttribute;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
@@ -43,6 +45,7 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public class RrdStatisticAttributeVisitor implements AttributeVisitor, InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(RrdStatisticAttributeVisitor.class);
     private RrdDao m_rrdDao;
     private String m_consolidationFunction;
     private Long m_startTime;
@@ -58,6 +61,8 @@ public class RrdStatisticAttributeVisitor implements AttributeVisitor, Initializ
         }
         
         double statistic = m_rrdDao.getPrintValue(attribute, m_consolidationFunction, m_startTime, m_endTime);
+        
+        LOG.debug("The value of {} is {}", attribute, statistic);
         
         /*
          * We don't want to do anything with NaN data, since

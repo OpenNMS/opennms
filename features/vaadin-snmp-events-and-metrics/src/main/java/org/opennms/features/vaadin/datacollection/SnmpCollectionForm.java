@@ -170,4 +170,21 @@ public class SnmpCollectionForm extends CustomComponent {
         return super.isReadOnly() && snmpCollectionEditor.isReadOnly();
     }
 
+    /**
+     * Gets the SNMP collection name.
+     *
+     * @return the SNMP collection name
+     */
+    public String getSnmpCollectionName() {
+        return name.getValue();
+    }
+
+    /**
+     * Gets the RRD step.
+     *
+     * @return the RRD step
+     */
+    public Integer getRrdStep() {
+        return rrd.getStepValue();
+    }
 }

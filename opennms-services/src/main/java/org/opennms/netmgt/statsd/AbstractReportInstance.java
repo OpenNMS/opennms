@@ -30,6 +30,7 @@ package org.opennms.netmgt.statsd;
 
 import java.util.Date;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
@@ -45,13 +46,6 @@ public abstract class AbstractReportInstance implements ReportInstance, Initiali
     private ReportDefinition m_reportDefinition;
     private Date m_jobCompletedDate;
     private Date m_jobStartedDate;
-
-    /**
-     * <p>Constructor for AbstractReportInstance.</p>
-     */
-    public AbstractReportInstance() {
-        super();
-    }
 
     /**
      * <p>getJobCompletedDate</p>
@@ -150,6 +144,15 @@ public abstract class AbstractReportInstance implements ReportInstance, Initiali
     @Override
     public void afterPropertiesSet() {
         Assert.state(m_reportDefinition != null, "property reportDefinition must be set to a non-null value");
+    }
+    
+    @Override
+    public String toString() {
+        ToStringBuilder tsb = new ToStringBuilder(this);
+        tsb.append("name", getName());
+        tsb.append("description", getDescription());
+        tsb.append("retainInterval", getRetainInterval());
+        return tsb.toString();
     }
 
 }

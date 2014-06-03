@@ -30,7 +30,7 @@ package org.opennms.netmgt.poller.remote;
 
 import java.util.Collection;
 
-import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
 
 /**
@@ -47,7 +47,7 @@ class DemoPollService implements PollService {
 	 * <p>Constructor for DemoPollService.</p>
 	 *
 	 * @param repetitions a int.
-	 * @param initialStatus a {@link org.opennms.netmgt.model.PollStatus} object.
+	 * @param initialStatus a {@link org.opennms.netmgt.poller.PollStatus} object.
 	 */
 	public DemoPollService(int repetitions, PollStatus initialStatus) {
 		m_repetitions = repetitions;

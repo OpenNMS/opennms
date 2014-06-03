@@ -28,62 +28,7 @@
 
 package org.opennms.netmgt.collectd.vmware.cim;
 
-import org.opennms.netmgt.collectd.CollectionAgent;
-import org.opennms.netmgt.collectd.ServiceCollector;
-import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.collector.CollectionSet;
-import org.opennms.netmgt.config.collector.CollectionSetVisitor;
+import org.opennms.netmgt.collection.support.MultiResourceCollectionSet;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-public class VmwareCimCollectionSet implements CollectionSet {
-    private int m_status;
-    private List<VmwareCimCollectionResource> m_collectionResources;
-    private Date m_timestamp;
-
-    public VmwareCimCollectionSet(final CollectionAgent agent) {
-        m_status = ServiceCollector.COLLECTION_FAILED;
-        m_collectionResources = new ArrayList<VmwareCimCollectionResource>();
-    }
-
-    @Override
-    public int getStatus() {
-        return m_status;
-    }
-
-    public void setStatus(final int status) {
-        m_status = status;
-    }
-
-    @Override
-    public void visit(final CollectionSetVisitor visitor) {
-        visitor.visitCollectionSet(this);
-
-        for (final CollectionResource resource : getResources()) {
-            resource.visit(visitor);
-        }
-
-        visitor.completeCollectionSet(this);
-    }
-
-    public List<VmwareCimCollectionResource> getResources() {
-        return m_collectionResources;
-    }
-
-    @Override
-    public boolean ignorePersist() {
-        return false;
-    }
-
-    @Override
-    public Date getCollectionTimestamp() {
-        return m_timestamp;
-    }
-
-    public void setCollectionTimestamp(Date timestamp) {
-        this.m_timestamp = timestamp;
-    }
-
+public class VmwareCimCollectionSet extends MultiResourceCollectionSet<VmwareCimCollectionResource> {
 }

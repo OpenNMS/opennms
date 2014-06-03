@@ -12,16 +12,17 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.opennms.netmgt.config.api.collection.IGroup;
 import org.opennms.netmgt.config.api.collection.ISystemDef;
+import org.opennms.netmgt.config.api.collection.ITable;
 
 
 /**
- *  <systemDef name="Enterprise">
- *    <sysoidMask>.1.3.6.1.4.1.</sysoidMask>
- *    <collect>
- *      <include>mib2-host-resources-storage</include>
- *      <include>mib2-coffee-rfc2325</include>
- *    </collect>
- *  </systemDef>
+ *  &lt;systemDef name="Enterprise"&gt;
+ *    &lt;sysoidMask&gt;.1.3.6.1.4.1.&lt;/sysoidMask&gt;
+ *    &lt;collect&gt;
+ *      &lt;include&gt;mib2-host-resources-storage&lt;/include&gt;
+ *      &lt;include&gt;mib2-coffee-rfc2325&lt;/include&gt;
+ *    &lt;/collect&gt;
+ *  &lt;/systemDef&gt;
  *   
  * @author brozow
  *
@@ -97,6 +98,14 @@ public class SystemDefImpl implements ISystemDef {
 
     public void setGroups(final IGroup[] groups) {
         m_groups = GroupImpl.asGroups(groups);
+    }
+    
+    public ITable[] getTables() {
+        return (ITable[])m_tables;
+    }
+    
+    public void setTables(final ITable[] tables) {
+        m_tables = TableImpl.asTables(tables);
     }
 
     @Override

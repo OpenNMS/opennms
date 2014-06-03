@@ -34,6 +34,7 @@ import static org.opennms.netmgt.icmp.PingConstants.DEFAULT_TIMEOUT;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -56,7 +57,7 @@ import org.slf4j.LoggerFactory;
 public class JnaPinger implements Pinger {
     private static final Logger LOG = LoggerFactory.getLogger(JnaPinger.class);
 
-    private final int m_pingerId = (int) (Math.random() * Short.MAX_VALUE);
+    private final int m_pingerId = new SecureRandom().nextInt(Short.MAX_VALUE);
 
     private RequestTracker<JnaPingRequest, JnaPingReply> m_pingTracker;
     private JnaIcmpMessenger m_messenger;

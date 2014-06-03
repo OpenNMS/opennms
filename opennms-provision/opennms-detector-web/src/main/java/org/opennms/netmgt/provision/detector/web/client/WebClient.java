@@ -85,8 +85,6 @@ public class WebClient implements Client<WebRequest, WebResponse> {
 
     private String queryString;
 
-    private boolean useSSLFilter;
-
     public WebClient(boolean override) {
         if (override) {
             m_httpClient = new DefaultHttpClient();
@@ -146,8 +144,12 @@ public class WebClient implements Client<WebRequest, WebResponse> {
         this.queryString = queryString;
     }
 
+    /**
+     * @deprecated Unused?
+     * @param sslFilter
+     */
     public void setUseSSLFilter(boolean sslFilter) {
-        this.useSSLFilter = sslFilter;
+        // Unused?
     }
 
     public void setSchema(String schema) {

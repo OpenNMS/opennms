@@ -34,7 +34,6 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -46,6 +45,11 @@ import junit.framework.TestCase;
 import org.easymock.EasyMock;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.InsufficientInformationException;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.CollectionSetVisitor;
+import org.opennms.netmgt.collection.api.ServiceCollector;
+import org.opennms.netmgt.collection.support.AbstractCollectionSet;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
@@ -55,8 +59,6 @@ import org.opennms.netmgt.config.collectd.Filter;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Parameter;
 import org.opennms.netmgt.config.collectd.Service;
-import org.opennms.netmgt.config.collector.CollectionSet;
-import org.opennms.netmgt.config.collector.CollectionSetVisitor;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
@@ -70,10 +72,10 @@ import org.opennms.netmgt.model.NetworkBuilder.NodeBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsServiceType;
-import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -272,29 +274,24 @@ public class CollectdIntegrationTest extends TestCase {
         @Override
         public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> parameters) {
             m_collectCount++;
-            CollectionSet collectionSetResult=new CollectionSet() {
-            	private Date m_timestamp = new Date();
+            CollectionSet collectionSetResult=new AbstractCollectionSet() {
+                private Date m_timestamp = new Date();
 
-                    @Override
+                @Override
                 public int getStatus() {
                     return ServiceCollector.COLLECTION_SUCCEEDED;
                 }
 
-                    @Override
+                @Override
                 public void visit(CollectionSetVisitor visitor) {
                     visitor.visitCollectionSet(this);   
                     visitor.completeCollectionSet(this);
                 }
 
-                    @Override
-				public boolean ignorePersist() {
-					return false;
-				}
-				
-                    @Override
-				public Date getCollectionTimestamp() {
-					return m_timestamp;
-				}
+                @Override
+                public Date getCollectionTimestamp() {
+                    return m_timestamp;
+                }
             }; 
             return collectionSetResult;
         }
@@ -332,10 +329,8 @@ public class CollectdIntegrationTest extends TestCase {
         @Override
         public RrdRepository getRrdRepository(String collectionName) {
             RrdRepository repo = new RrdRepository();
-            ArrayList<String> rras=new ArrayList<String>();
-            rras.add("RRA:AVERAGE:0.5:1:8928");
             repo.setRrdBaseDir(new File("/usr/local/opennms/share/rrd/snmp/"));
-            repo.setRraList(rras);
+            repo.setRraList(Collections.singletonList("RRA:AVERAGE:0.5:1:8928"));
             repo.setStep(300);
             repo.setHeartBeat(2 * 300);
             return repo;

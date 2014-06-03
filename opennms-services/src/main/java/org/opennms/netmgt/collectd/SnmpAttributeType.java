@@ -32,12 +32,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.api.Persister;
+import org.opennms.netmgt.collection.support.AbstractCollectionAttributeType;
 import org.opennms.netmgt.config.MibObject;
-import org.opennms.netmgt.config.collector.AttributeDefinition;
-import org.opennms.netmgt.config.collector.AttributeGroupType;
-import org.opennms.netmgt.config.collector.CollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionAttributeType;
-import org.opennms.netmgt.config.collector.Persister;
+import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.snmp.Collectable;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpInstId;
@@ -57,14 +57,13 @@ import org.slf4j.LoggerFactory;
  * @author ranger
  * @version $Id: $
  */
-public abstract class SnmpAttributeType implements AttributeDefinition, CollectionAttributeType {
+public abstract class SnmpAttributeType extends AbstractCollectionAttributeType {
     
     private static final Logger LOG = LoggerFactory.getLogger(SnmpAttributeType.class);
     
-    private MibObject m_mibObj;
-    private String m_collectionName;
-    private ResourceType m_resourceType;
-    private AttributeGroupType m_groupType;
+    protected final MibObject m_mibObj;
+    private final String m_collectionName;
+    private final ResourceType m_resourceType;
 
     /**
      * <p>Constructor for SnmpAttributeType.</p>
@@ -72,19 +71,15 @@ public abstract class SnmpAttributeType implements AttributeDefinition, Collecti
      * @param resourceType a {@link org.opennms.netmgt.collectd.ResourceType} object.
      * @param collectionName a {@link java.lang.String} object.
      * @param mibObj a {@link org.opennms.netmgt.config.MibObject} object.
-     * @param groupType a {@link org.opennms.netmgt.config.collector.AttributeGroupType} object.
+     * @param groupType a {@link org.opennms.netmgt.collection.api.AttributeGroupType} object.
      */
     protected SnmpAttributeType(ResourceType resourceType, String collectionName, MibObject mibObj, AttributeGroupType groupType) {
+        super(groupType);
         m_resourceType = resourceType;
         m_collectionName = collectionName;
         m_mibObj = mibObj;
-        m_groupType = groupType;
     }
 
-    private MibObject getMibObj() {
-        return m_mibObj;
-    }
-    
     /**
      * <p>getCollectionName</p>
      *
@@ -113,9 +108,9 @@ public abstract class SnmpAttributeType implements AttributeDefinition, Collecti
     private CollectionTracker getCollectionTracker() {
         SnmpInstId[] instances = m_resourceType.getCollectionInstances();
         if (instances != null && Boolean.getBoolean("org.opennms.netmgt.collectd.SnmpCollector.limitCollectionToInstances")) {
-            return getMibObj().getCollectionTracker(instances);
+            return m_mibObj.getCollectionTracker(instances);
         } else {
-            return getMibObj().getCollectionTracker();
+            return m_mibObj.getCollectionTracker();
         }
     }
     
@@ -126,11 +121,11 @@ public abstract class SnmpAttributeType implements AttributeDefinition, Collecti
      * @param resourceType a {@link org.opennms.netmgt.collectd.ResourceType} object.
      * @param collectionName a {@link java.lang.String} object.
      * @param mibObj a {@link org.opennms.netmgt.config.MibObject} object.
-     * @param groupType a {@link org.opennms.netmgt.config.collector.AttributeGroupType} object.
+     * @param groupType a {@link org.opennms.netmgt.collection.api.AttributeGroupType} object.
      * @return a {@link org.opennms.netmgt.collectd.SnmpAttributeType} object.
      */
     public static SnmpAttributeType create(ResourceType resourceType, String collectionName, MibObject mibObj, AttributeGroupType groupType) {
-        if (NumericAttributeType.supportsType(mibObj.getType())) {
+        if (ResourceTypeUtils.isNumericType(mibObj.getType())) {
             return new NumericAttributeType(resourceType, collectionName, mibObj, groupType);
         }
         if (StringAttributeType.supportsType(mibObj.getType())) {
@@ -150,32 +145,14 @@ public abstract class SnmpAttributeType implements AttributeDefinition, Collecti
     }
     
     /**
-     * <p>getGroupType</p>
-     *
-     * @return a {@link org.opennms.netmgt.config.collector.AttributeGroupType} object.
-     */
-    @Override
-    public AttributeGroupType getGroupType() {
-        return m_groupType;        
-    }
-    
-    /**
      * <p>getGroupName</p>
      *
      * @return a {@link java.lang.String} object.
      */
     public String getGroupName() {
-        return m_groupType.getName();
+        return getGroupType().getName();
     }
     
-    
-    public String getMaxval() {
-        return m_mibObj.getMaxval();
-    }
-    
-    public String getMinval() {
-        return m_mibObj.getMinval();
-    }
 
     /**
      * <p>getAlias</p>
@@ -296,7 +273,7 @@ public abstract class SnmpAttributeType implements AttributeDefinition, Collecti
      * @return a {@link java.lang.String} object.
      */
     public String getGroupIfType() {
-        return m_groupType.getIfType();
+        return getGroupType().getIfType();
     }
 
     /**

@@ -45,12 +45,6 @@ import org.springframework.util.Assert;
  * configuration files that might be edited outside of the application.
  * </p>
  *
- * <p>
- * <!--
- *      Can't use generics in @see and @link tags.  See Sun bug 5096551:
- *          http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5096551
- *      Leaving off the <T> bits and using Object seem to work okay.
- * -->
  * There are two constructors:
  * <ol>
  *  <li>{@link #FileReloadContainer(Object, Resource, FileReloadCallback)
@@ -64,7 +58,6 @@ import org.springframework.util.Assert;
  * non-reloadable data of the same type can be handled similarly (the only
  * difference in code is at initialization time when one constructor or the
  * other is used).
- * </p>
  *
  * <p>
  * If the first constructor is used, the Resource will be stored for later
@@ -73,7 +66,7 @@ import org.springframework.util.Assert;
  * {@link File#lastModified() File.lastModified()} will be called every time
  * the {@link #getObject() getObject()} method is called to see if the file
  * has changed.  If the file has changed, the last modified time is updated
- * and the reload callback, {@link FileReloadCallback#reload(Object, File)
+ * and the reload callback, {@link FileReloadCallback#reload(Object, Resource)
  * FileReloadCallback.reload}, is called.  If it returns a non-null object,
  * the new object is stored and it gets returned to the caller.  If a null
  * object is returned, the stored object isn't modified and the old object
@@ -114,17 +107,16 @@ public class FileReloadContainer<T> {
      * object.  If reloadCheckInterval is set to a non-negative value
      * (default is 1000 milliseconds), the last modified timestamp on
      * the file will be checked and the
-     * {@link FileReloadCallback#reload(Object, File) reload}
+     * {@link FileReloadCallback#reload(Object, Resource) reload}
      * on the callback will be called when the file is modified.  The
      * check will be performed when {@link #getObject()} is called and
      * at least reloadCheckInterval milliseconds have passed.
      *
      * @param object object to be stored in this container
-     * @param callback {@link FileReloadCallback#reload(Object, File) reload}
+     * @param callback {@link FileReloadCallback#reload(Object, Resource) reload}
      *  will be called when the underlying file object is modified
      * @throws java.lang.IllegalArgumentException if object, file, or callback are null
      * @param resource a {@link org.springframework.core.io.Resource} object.
-     * @param <T> a T object.
      */
     public FileReloadContainer(final T object, final Resource resource, final FileReloadCallback<T> callback) {
         Assert.notNull(object, "argument object cannot be null");

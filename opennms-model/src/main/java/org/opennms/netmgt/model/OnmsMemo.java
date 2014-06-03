@@ -49,6 +49,8 @@ import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 /**
  * <p>Generic memo for any element inside OpenNMS</p>
  *
@@ -60,6 +62,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name="type", discriminatorType= DiscriminatorType.STRING)
 @DiscriminatorValue(value="Memo")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OnmsMemo implements Serializable {
 
     private static final long serialVersionUID = 7272348439687562161L;

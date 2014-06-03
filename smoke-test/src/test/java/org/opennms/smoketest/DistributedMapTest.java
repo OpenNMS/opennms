@@ -34,8 +34,8 @@ import org.junit.Test;
 public class DistributedMapTest extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
-    	super.setUp();
-    	clickAndWait("//a[@href='maps.htm']");
+        super.setUp();
+        clickAndWait("//a[@href='maps.htm']");
         clickAndWait("//div[@id='content']//a[contains(@href,'RemotePollerMap')]");
     }
 

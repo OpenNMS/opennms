@@ -28,11 +28,10 @@
 
 package org.opennms.protocols.xml.collector;
 
-import org.opennms.core.utils.DefaultTimeKeeper;
-import org.opennms.core.utils.TimeKeeper;
-import org.opennms.netmgt.collectd.AbstractCollectionResource;
-import org.opennms.netmgt.collectd.CollectionAgent;
-import org.opennms.netmgt.config.collector.ServiceParameters;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.TimeKeeper;
+import org.opennms.netmgt.collection.support.AbstractCollectionResource;
+import org.opennms.netmgt.collection.support.DefaultTimeKeeper;
 
 /**
  * The abstract Class XmlCollectionResource.
@@ -53,23 +52,6 @@ public abstract class XmlCollectionResource extends AbstractCollectionResource {
         super(agent);
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.collectd.AbstractCollectionResource#shouldPersist(org.opennms.netmgt.config.collector.ServiceParameters)
-     */
-    @Override
-    public boolean shouldPersist(ServiceParameters params) {
-        return true;
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.collectd.AbstractCollectionResource#rescanNeeded()
-     */
-    @Override
-    public boolean rescanNeeded() {
-        // A rescan is never needed for the XmlCollector, at least on resources
-        return false;
-    }
-
     /**
      * Sets the attribute value.
      *
@@ -79,14 +61,6 @@ public abstract class XmlCollectionResource extends AbstractCollectionResource {
     public void setAttributeValue(XmlCollectionAttributeType type, String value) {
         XmlCollectionAttribute attr = new XmlCollectionAttribute(this, type, value);
         addAttribute(attr);
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.collectd.AbstractCollectionResource#getType()
-     */
-    @Override
-    public int getType() {
-        return -1; // Is this right?
     }
 
     /* (non-Javadoc)
@@ -100,14 +74,6 @@ public abstract class XmlCollectionResource extends AbstractCollectionResource {
      */
     @Override
     public abstract String getInstance();
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.config.collector.CollectionResource#getParent()
-     */
-    @Override
-    public String getParent() {
-        return m_agent.getStorageDir().toString();
-    }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.AbstractCollectionResource#getTimeKeeper()

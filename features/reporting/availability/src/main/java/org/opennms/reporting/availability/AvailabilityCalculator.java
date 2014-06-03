@@ -184,13 +184,6 @@ public interface AvailabilityCalculator {
     Report getReport();
 
     /**
-     * <p>setCalendar</p>
-     *
-     * @param calendar a {@link java.util.Calendar} object.
-     */
-    void setCalendar(Calendar calendar);
-
-    /**
      * <p>getPeriodEndDate</p>
      *
      * @return a {@link java.util.Date} object.

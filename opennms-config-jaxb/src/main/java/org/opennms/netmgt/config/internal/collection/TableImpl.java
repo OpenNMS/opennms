@@ -15,11 +15,11 @@ import org.opennms.netmgt.config.api.collection.IColumn;
 import org.opennms.netmgt.config.api.collection.ITable;
 
 /**
- *  <table name="mib2-host-resources-storage" instance="hrStorageIndex">"
- *      <column oid=".1.3.6.1.2.1.25.2.3.1.4" alias="hrStorageAllocUnits" type="gauge" />
- *      <column oid=".1.3.6.1.2.1.25.2.3.1.5" alias="hrStorageSize"       type="gauge" />
- *      <column oid=".1.3.6.1.2.1.25.2.3.1.6" alias="hrStorageUse\"       type="gauge" />
- *  </table>
+ *  &lt;table name="mib2-host-resources-storage" instance="hrStorageIndex"&gt;"
+ *      &lt;column oid=".1.3.6.1.2.1.25.2.3.1.4" alias="hrStorageAllocUnits" type="gauge" /&gt;
+ *      &lt;column oid=".1.3.6.1.2.1.25.2.3.1.5" alias="hrStorageSize"       type="gauge" /&gt;
+ *      &lt;column oid=".1.3.6.1.2.1.25.2.3.1.6" alias="hrStorageUse"        type="gauge" /&gt;
+ *  &lt;/table&gt;
  *  
  * @author brozow
  *
@@ -136,6 +136,30 @@ public class TableImpl implements ITable {
             return false;
         }
         return true;
+    }
+
+    public static TableImpl asTable(final ITable table) {
+        if (table == null) return null;
+        
+        if (table instanceof TableImpl) {
+            return (TableImpl)table;
+        } else {
+            final TableImpl newTable = new TableImpl();
+            newTable.setName(table.getName());
+            newTable.setInstance(table.getInstance());
+            newTable.setColumns(ColumnImpl.asColumns(table.getColumns()));
+            return newTable;
+        }
+    }
+
+    public static TableImpl[] asTables(final ITable[] tables) {
+        if (tables == null) return null;
+        
+        final TableImpl[] newTables = new TableImpl[tables.length];
+        for (int i=0; i < tables.length; i++) {
+            newTables[i] = TableImpl.asTable(tables[i]);
+        }
+        return newTables;
     }
 
 }

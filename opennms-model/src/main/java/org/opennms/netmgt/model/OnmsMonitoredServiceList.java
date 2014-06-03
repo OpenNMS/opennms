@@ -29,81 +29,24 @@
 package org.opennms.netmgt.model;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * <p>OnmsMonitoredServiceList class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
+import org.opennms.core.config.api.JaxbListWrapper;
+
 @XmlRootElement(name = "services")
-public class OnmsMonitoredServiceList extends LinkedList<OnmsMonitoredService> {
+public class OnmsMonitoredServiceList extends JaxbListWrapper<OnmsMonitoredService> {
+    private static final long serialVersionUID = 1L;
 
-    private static final long serialVersionUID = 8031737923157780179L;
-
-    /**
-     * <p>Constructor for OnmsMonitoredServiceList.</p>
-     */
-    public OnmsMonitoredServiceList() {
-        super();
+    public OnmsMonitoredServiceList() { super(); }
+    public OnmsMonitoredServiceList(final Collection<? extends OnmsMonitoredService> services) {
+        super(services);
     }
 
-    /**
-     * <p>Constructor for OnmsMonitoredServiceList.</p>
-     *
-     * @param c a {@link java.util.Collection} object.
-     */
-    public OnmsMonitoredServiceList(Collection<? extends OnmsMonitoredService> c) {
-        super(c);
-    }
-
-    /**
-     * <p>getServices</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    @XmlElement(name = "service")
-    public List<OnmsMonitoredService> getServices() {
-        return this;
-    }
-
-    /**
-     * <p>setServices</p>
-     *
-     * @param services a {@link java.util.List} object.
-     */
-    public void setServices(List<OnmsMonitoredService> services) {
-        if (services == this) return;
-        clear();
-        addAll(services);
-    }
-
-    /**
-     * <p>getCount</p>
-     *
-     * @return a {@link java.lang.Integer} object.
-     */
-    @XmlAttribute(name="count")
-    public Integer getCount() {
-        return this.size();
-    }
-
-    /**
-     * <p>getTotalCount</p>
-     * 
-     * Note that this list is different than others: count always equals totalCount
-     * because we don't perform any limit/offset queries inside {$link OnmsMonitoredServiceResource}
-     *
-     * @return a int.
-     */
-    @XmlAttribute(name="totalCount")
-    public int getTotalCount() {
-        return this.size();
+    @XmlElement(name="service")
+    public List<OnmsMonitoredService> getObjects() {
+        return super.getObjects();
     }
 }

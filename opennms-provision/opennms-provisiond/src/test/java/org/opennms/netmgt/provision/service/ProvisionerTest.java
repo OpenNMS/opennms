@@ -1303,7 +1303,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
 
         m_provisionService.updateNodeAttributes(nodeCopy);
 
-        // Flush here to force a write so we are sure that the OnmsCategories are correctly created
+        // Flush here to force a write so we are sure that the OnmsCategoryCollection are correctly created
         m_nodeDao.flush();
 
         // Query by the new node label

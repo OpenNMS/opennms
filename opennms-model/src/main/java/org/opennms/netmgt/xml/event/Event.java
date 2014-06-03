@@ -1445,11 +1445,7 @@ public class Event implements Serializable {
 	}
 
 	/**
-	 * Sets the value of field 'interface'. The field 'interface' has the
-	 * following description: The interface to which this event is pertinent
-	 * 
-	 * @param _interface
-	 * @param interface the value of field 'interface'.
+	 * The interface to which this event is pertinent
 	 */
 	public void setInterface(final String _interface) {
 		_interfaceAddress = addr(_interface);

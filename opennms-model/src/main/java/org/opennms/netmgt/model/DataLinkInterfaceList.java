@@ -29,71 +29,24 @@
 package org.opennms.netmgt.model;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * <p>OnmsMapList class.</p>
- */
+import org.opennms.core.config.api.JaxbListWrapper;
+
 @XmlRootElement(name = "links")
-public class DataLinkInterfaceList extends LinkedList<DataLinkInterface> {
+public class DataLinkInterfaceList extends JaxbListWrapper<DataLinkInterface> {
+    private static final long serialVersionUID = 1L;
 
-
-
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1980683067851461914L;
-
-    /**
-     * <p>Constructor for OnmsMapList.</p>
-     */
-    public DataLinkInterfaceList() {
-        super();
+    public DataLinkInterfaceList() { super(); }
+    public DataLinkInterfaceList(final Collection<? extends DataLinkInterface> ifaces) {
+        super(ifaces);
     }
 
-    /**
-     * <p>Constructor for OnmsMapList.</p>
-     *
-     * @param c a {@link java.util.Collection} object.
-     */
-    public DataLinkInterfaceList(Collection<? extends DataLinkInterface> c) {
-        super(c);
+    @XmlElement(name="link")
+    public List<DataLinkInterface> getObjects() {
+        return super.getObjects();
     }
-
-    /**
-     * <p>getMaps</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    @XmlElement(name = "link")
-    public List<DataLinkInterface> getLinks() {
-        return this;
-    }
-
-    /**
-     * <p>setMaps</p>
-     *
-     * @param maps a {@link java.util.List} object.
-     */
-    public void setLinks(List<DataLinkInterface> links) {
-        if (links == this) return;
-        clear();
-        addAll(links);
-    }
-
-    /**
-     * <p>getCount</p>
-     *
-     * @return a {@link java.lang.Integer} object.
-     */
-    @XmlAttribute(name="count")
-    public Integer getCount() {
-        return this.size();
-    }
-
 }

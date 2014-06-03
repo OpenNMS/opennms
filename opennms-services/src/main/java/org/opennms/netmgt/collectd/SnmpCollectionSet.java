@@ -36,10 +36,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.netmgt.config.collector.AttributeDefinition;
-import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.collector.CollectionSet;
-import org.opennms.netmgt.config.collector.CollectionSetVisitor;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionAttributeType;
+import org.opennms.netmgt.collection.api.CollectionException;
+import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.CollectionSetVisitor;
+import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.Collectable;
 import org.opennms.netmgt.snmp.CollectionTracker;
@@ -77,7 +80,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
 
     }
 
-    private final CollectionAgent m_agent;
+    private final SnmpCollectionAgent m_agent;
     private final OnmsSnmpCollection m_snmpCollection;
     private SnmpIfCollector m_ifCollector;
     private IfNumberTracker m_ifNumber;
@@ -126,10 +129,10 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
     /**
      * <p>Constructor for SnmpCollectionSet.</p>
      *
-     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @param agent a {@link org.opennms.netmgt.collection.api.CollectionAgent} object.
      * @param snmpCollection a {@link org.opennms.netmgt.collectd.OnmsSnmpCollection} object.
      */
-    public SnmpCollectionSet(CollectionAgent agent, OnmsSnmpCollection snmpCollection) {
+    public SnmpCollectionSet(SnmpCollectionAgent agent, OnmsSnmpCollection snmpCollection) {
         m_agent = agent;
         m_snmpCollection = snmpCollection;
     }
@@ -185,7 +188,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
     private SnmpNodeCollector createNodeCollector() {
         SnmpNodeCollector nodeCollector = null;
         if (!getAttributeList().isEmpty()) {
-            nodeCollector = new SnmpNodeCollector(m_agent.getInetAddress(), getAttributeList(), this);
+            nodeCollector = new SnmpNodeCollector(m_agent.getAddress(), getAttributeList(), this);
         }
         return nodeCollector;
     }
@@ -210,7 +213,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
         SnmpIfCollector ifCollector = null;
         // construct the ifCollector
         if (hasInterfaceDataToCollect() || hasGenericIndexResourceDataToCollect()) {
-            ifCollector = new SnmpIfCollector(m_agent.getInetAddress(), getCombinedIndexedAttributes(), this);
+            ifCollector = new SnmpIfCollector(m_agent.getAddress(), getCombinedIndexedAttributes(), this);
         }
         return ifCollector;
     }
@@ -239,9 +242,9 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
     /**
      * <p>getCollectionAgent</p>
      *
-     * @return a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @return a {@link org.opennms.netmgt.collection.api.CollectionAgent} object.
      */
-    public CollectionAgent getCollectionAgent() {
+    public SnmpCollectionAgent getCollectionAgent() {
        return m_agent;
     }
 
@@ -452,14 +455,14 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
 
     private void logIfCounts() {
         if (LOG.isDebugEnabled()) {
-            CollectionAgent agent = getCollectionAgent();
+            SnmpCollectionAgent agent = getCollectionAgent();
             LOG.debug("collect: nodeId: {} interface: {} ifCount: {} savedIfCount: {}", agent.getNodeId(), agent.getHostAddress(), getIfNumber().getIntValue(), agent.getSavedIfCount());
         }
     }
 
     private void logSysUpTime() {
         if (LOG.isDebugEnabled()) {
-            CollectionAgent agent = getCollectionAgent();
+            SnmpCollectionAgent agent = getCollectionAgent();
             LOG.debug("collect: nodeId: {} interface: {} sysUpTime: {} savedSysUpTime: {}", agent.getNodeId(), agent.getHostAddress(), getSysUpTime().getLongValue(), agent.getSavedSysUpTime());
         }
     }
@@ -519,10 +522,10 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
     /**
      * <p>notifyIfNotFound</p>
      *
-     * @param attrType a {@link org.opennms.netmgt.config.collector.AttributeDefinition} object.
+     * @param attrType a {@link org.opennms.netmgt.collection.api.CollectionAttributeType} object.
      * @param res a {@link org.opennms.netmgt.snmp.SnmpResult} object.
      */
-    public void notifyIfNotFound(AttributeDefinition attrType, SnmpResult res) {
+    public void notifyIfNotFound(CollectionAttributeType attrType, SnmpResult res) {
         // Don't bother sending a rescan event in this case since localhost is not going to be there anyway
         //triggerRescan();
         LOG.info("Unable to locate resource for agent {} with instance id {} while collecting attribute {}", getCollectionAgent(), res.getInstance(), attrType);

@@ -40,6 +40,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -54,7 +55,6 @@ import org.apache.commons.io.IOUtils;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.capsd.DbIfServiceEntry;
 import org.opennms.netmgt.config.NotificationFactory;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
@@ -109,10 +109,10 @@ public class ManageNodeServlet extends HttpServlet {
         List<ManagedInterface> allNodes = getManagedInterfacesFromSession(userSession);
 
         // the list of all interfaces marked as managed
-        List<String> interfaceList = getList(request.getParameterValues("interfaceCheck"));
+        List<String> interfaceList = Arrays.asList(request.getParameterValues("interfaceCheck"));
 
         // the list of all services marked as managed
-        List<String> serviceList = getList(request.getParameterValues("serviceCheck"));
+        List<String> serviceList = Arrays.asList(request.getParameterValues("serviceCheck"));
 
         // the list of interfaces that need to be put into the URL file
         List<String> addToURL = new ArrayList<String>();
@@ -181,21 +181,20 @@ public class ManageNodeServlet extends HttpServlet {
                             // newEvent.setService(curService.getName());
                             // newEvent.setTime(curDate);
 
-                            stmt.setString(1, String.valueOf(DbIfServiceEntry.STATUS_RESUME));
+                            stmt.setString(1, String.valueOf("A"));
                             stmt.setString(2, curInterface.getAddress());
                             stmt.setInt(3, curInterface.getNodeid());
                             stmt.setInt(4, curService.getId());
                             LOG.debug("doPost: executing manage service update for {} {}", curInterface.getAddress(), curService.getName());
                             stmt.executeUpdate();
-                        } else if (!serviceList.contains(serviceKey) && curService.getStatus().equals("managed")) {
                             
-                            EventBuilder bldr = new EventBuilder(EventConstants.SERVICE_UNMANAGED_EVENT_UEI, "web ui", curDate);
+                            EventBuilder bldr = new EventBuilder(EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI, "web ui", curDate);
                             bldr.setNodeid(curInterface.getNodeid());
                             bldr.setInterface(addr(curInterface.getAddress()));
                             bldr.setService(curService.getName());
                             sendEvent(bldr.getEvent());
-
-                            stmt.setString(1, String.valueOf(DbIfServiceEntry.STATUS_SUSPEND));
+                        } else if (!serviceList.contains(serviceKey) && curService.getStatus().equals("managed")) {
+                            stmt.setString(1, String.valueOf("F"));
                             stmt.setString(2, curInterface.getAddress());
                             stmt.setInt(3, curInterface.getNodeid());
                             stmt.setInt(4, curService.getId());
@@ -205,6 +204,15 @@ public class ManageNodeServlet extends HttpServlet {
                             LOG.debug("doPost: executing unmanage service update for {} {}", curInterface.getAddress(), curService.getName());
                             stmt.executeUpdate();
                             outagesstmt.executeUpdate();
+
+                            EventBuilder bldr = new EventBuilder(EventConstants.SERVICE_UNMANAGED_EVENT_UEI, "web ui", curDate);
+                            bldr.setNodeid(curInterface.getNodeid());
+                            bldr.setInterface(addr(curInterface.getAddress()));
+                            bldr.setService(curService.getName());
+                            sendEvent(bldr.getEvent());
+
+                            bldr.setUei(EventConstants.SUSPEND_POLLING_SERVICE_EVENT_UEI);
+                            sendEvent(bldr.getEvent());
                         }
                     } // end k loop
                 } // end j loop
@@ -322,21 +330,7 @@ public class ManageNodeServlet extends HttpServlet {
 
     /**
      */
-    private List<String> getList(String[] array) {
-        List<String> newList = new ArrayList<String>();
-
-        if (array != null) {
-            for (int i = 0; i < array.length; i++) {
-                newList.add(array[i]);
-            }
-        }
-
-        return newList;
-    }
-
-    /**
-     */
-    private void sendEvent(Event event) throws ServletException {
+    private static void sendEvent(Event event) throws ServletException {
         try {
             Util.createEventProxy().send(event);
         } catch (Throwable e) {

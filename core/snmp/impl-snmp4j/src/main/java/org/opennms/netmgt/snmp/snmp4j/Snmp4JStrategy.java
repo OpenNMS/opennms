@@ -236,14 +236,8 @@ public class Snmp4JStrategy implements SnmpStrategy {
     }
 
     /**
-     * Sends and SNMP4J request pdu.  The attributes in SnmpAgentConfig should have been
+     * Sends and SNMP4J request PDU.  The attributes in SnmpAgentConfig should have been
      * adapted from default SnmpAgentConfig values to those compatible with the SNMP4J library.
-     * 
-     * @param agentConfig
-     * @param pduType TODO
-     * @param oids
-     * @param values can be null
-     * @return
      */
     protected SnmpValue[] send(Snmp4JAgentConfig agentConfig, PDU pdu, boolean expectResponse) {
         Snmp session;
@@ -317,7 +311,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
     }
 
     /**
-     * TODO: Merge this logic with {@link Snmp4JWalker.Snmp4JResponseListener#processResponse(PDU response)}
+     * TODO: Merge this logic with {@link Snmp4JWalker.Snmp4JResponseListener} #processResponse(PDU response)
      */
     private static SnmpValue[] processResponse(Snmp4JAgentConfig agentConfig, ResponseEvent responseEvent) throws IOException {
         SnmpValue[] retvalues = { null };

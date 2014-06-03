@@ -256,4 +256,13 @@ public class RrdField extends CustomField<Rrd> implements Button.ClickListener {
         }
     }
 
+    /**
+     * Gets the step value.
+     *
+     * @return the step value
+     */
+    public Integer getStepValue() {
+        final String value = step.getValue();
+        return value == null ? null : new Integer(value);
+    }
 }

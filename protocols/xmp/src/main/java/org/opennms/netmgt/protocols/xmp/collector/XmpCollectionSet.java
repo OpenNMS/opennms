@@ -56,10 +56,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 
-import org.opennms.netmgt.collectd.CollectionAgent;
-import org.opennms.netmgt.collectd.ServiceCollector;
-import org.opennms.netmgt.config.collector.CollectionSet;
-import org.opennms.netmgt.config.collector.CollectionSetVisitor;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.CollectionSetVisitor;
+import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 public class XmpCollectionSet implements CollectionSet {
@@ -121,13 +121,13 @@ public class XmpCollectionSet implements CollectionSet {
     /**
      * <p>getCollectionAgent</p>
      *
-     * @return a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @return a {@link org.opennms.netmgt.collection.api.CollectionAgent} object.
      */
     public CollectionAgent getCollectionAgent() { return agent; }
     /**
      * <p>setCollectionAgent</p>
      *
-     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @param agent a {@link org.opennms.netmgt.collection.api.CollectionAgent} object.
      */
     public void setCollectionAgent(CollectionAgent agent) { this.agent = agent; }
 

@@ -11,9 +11,4 @@
 
 	<bean id="linkdConfig" class="org.opennms.netmgt.config.mock.MockLinkdConfig" />
 
-	<bean id="linkdConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="linkdConfig">
-		<property name="staticMethod"><value>org.opennms.netmgt.config.LinkdConfigFactory.setInstance</value></property>
-		<property name="arguments"><array><ref bean="linkdConfig" /></array></property>
-	</bean>
-
 </beans>

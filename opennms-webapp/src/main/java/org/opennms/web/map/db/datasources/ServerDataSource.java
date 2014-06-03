@@ -138,13 +138,13 @@ public class ServerDataSource implements DataSourceInterface {
         @Override
 	protected void finalize() throws Throwable {
 		LOG.debug("Finalizing...closing db connections");
-		super.finalize();
 		if(opennmsConn!=null){
 			opennmsConn.close();
 		}
 		if(externalConn!=null && !externalConn.isClosed()){
 			externalConn.close();
 		}
+		super.finalize();
 	}
 	
 

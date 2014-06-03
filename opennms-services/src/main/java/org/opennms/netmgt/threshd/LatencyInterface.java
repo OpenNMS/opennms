@@ -36,9 +36,9 @@ import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.threshd.Threshold;
-import org.opennms.netmgt.dao.support.RrdFileConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.poller.NetworkInterface;
+import org.opennms.netmgt.rrd.RrdFileConstants;
 import org.opennms.netmgt.threshd.ThresholdingVisitor.ThresholdingResult;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;

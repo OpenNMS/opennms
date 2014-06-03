@@ -40,24 +40,25 @@ import java.util.Map;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.collectd.AbstractCollectionAttribute;
-import org.opennms.netmgt.collectd.AbstractCollectionResource;
-import org.opennms.netmgt.collectd.CollectionAgent;
-import org.opennms.netmgt.collectd.ServiceCollector;
+import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.api.CollectionAttributeType;
+import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.Persister;
+import org.opennms.netmgt.collection.api.ServiceCollector;
+import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.collection.support.AbstractCollectionAttribute;
+import org.opennms.netmgt.collection.support.AbstractCollectionAttributeType;
+import org.opennms.netmgt.collection.support.AbstractCollectionResource;
+import org.opennms.netmgt.collection.support.SingleResourceCollectionSet;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
-import org.opennms.netmgt.config.collector.AttributeGroupType;
-import org.opennms.netmgt.config.collector.CollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionAttributeType;
-import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.collector.CollectionSet;
-import org.opennms.netmgt.config.collector.CollectionSetVisitor;
-import org.opennms.netmgt.config.collector.Persister;
-import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.config.nsclient.Attrib;
 import org.opennms.netmgt.config.nsclient.NsclientCollection;
 import org.opennms.netmgt.config.nsclient.Wpm;
-import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.protocols.nsclient.NSClientAgentConfig;
 import org.opennms.protocols.nsclient.NsclientCheckParams;
 import org.opennms.protocols.nsclient.NsclientException;
@@ -84,18 +85,12 @@ public class NSClientCollector implements ServiceCollector {
     private final HashMap<Integer, NSClientAgentState> m_scheduledNodes = new HashMap<Integer, NSClientAgentState>();
 
 
-    class NSClientCollectionAttributeType implements CollectionAttributeType {
-        Attrib m_attribute;
-        AttributeGroupType m_groupType;
+    private static class NSClientCollectionAttributeType extends AbstractCollectionAttributeType {
+        private final Attrib m_attribute;
 
-        protected NSClientCollectionAttributeType(Attrib attribute, AttributeGroupType groupType) {
-            m_groupType=groupType;
+        public NSClientCollectionAttributeType(Attrib attribute, AttributeGroupType groupType) {
+            super(groupType);
             m_attribute=attribute;
-        }
-
-        @Override
-        public AttributeGroupType getGroupType() {
-            return m_groupType;
         }
 
         @Override
@@ -116,29 +111,13 @@ public class NSClientCollector implements ServiceCollector {
 
     }
     
-    class NSClientCollectionAttribute extends AbstractCollectionAttribute implements CollectionAttribute {
+    private static class NSClientCollectionAttribute extends AbstractCollectionAttribute {
 
-        String m_alias;
-        String m_value;
-        NSClientCollectionResource m_resource;
-        CollectionAttributeType m_attribType;
+        private final String m_value;
         
-        NSClientCollectionAttribute(NSClientCollectionResource resource, CollectionAttributeType attribType, String alias, String value) {
-            super();
-            m_resource=resource;
-            m_attribType=attribType;
-            m_alias = alias;
+        public NSClientCollectionAttribute(NSClientCollectionResource resource, CollectionAttributeType attribType, String value) {
+            super(attribType, resource);
             m_value = value;
-        }
-
-        @Override
-        public CollectionAttributeType getAttributeType() {
-            return m_attribType;
-        }
-
-        @Override
-        public String getName() {
-            return m_alias;
         }
 
         @Override
@@ -147,28 +126,13 @@ public class NSClientCollector implements ServiceCollector {
         }
 
         @Override
-        public CollectionResource getResource() {
-            return m_resource;
-        }
-
-        @Override
         public String getStringValue() {
             return m_value; //Should this be null instead?
         }
 
         @Override
-        public boolean shouldPersist(ServiceParameters params) {
-            return true;
-        }
-
-        @Override
-        public String getType() {
-            return m_attribType.getType();
-        }
-        
-        @Override
         public String toString() {
-            return "NSClientCollectionAttribute " + m_alias+"=" + m_value;
+            return "NSClientCollectionAttribute " + getName() + "=" + m_value;
         }
 
         @Override
@@ -178,88 +142,26 @@ public class NSClientCollector implements ServiceCollector {
         
     }
     
-    class NSClientCollectionResource extends AbstractCollectionResource {
+    private static class NSClientCollectionResource extends AbstractCollectionResource {
          
-		NSClientCollectionResource(CollectionAgent agent) { 
+        public NSClientCollectionResource(CollectionAgent agent) { 
             super(agent);
         }
         
-        @Override
-        public int getType() {
-            return -1; //Is this right?
-        }
-
-        //A rescan is never needed for the NSClientCollector, at least on resources
-        @Override
-        public boolean rescanNeeded() {
-            return false;
-        }
-
-        @Override
-        public boolean shouldPersist(ServiceParameters params) {
-            return true;
-        }
-
         public void setAttributeValue(CollectionAttributeType type, String value) {
-            NSClientCollectionAttribute attr = new NSClientCollectionAttribute(this, type, type.getName(), value);
+            NSClientCollectionAttribute attr = new NSClientCollectionAttribute(this, type, value);
             addAttribute(attr);
         }
         
         @Override
         public String getResourceTypeName() {
-            return "node"; //All node resources for NSClient; nothing of interface or "indexed resource" type
+            return CollectionResource.RESOURCE_TYPE_NODE; //All node resources for NSClient; nothing of interface or "indexed resource" type
         }
         
         @Override
         public String getInstance() {
             return null; //For node type resources, use the default instance
         }
-
-        @Override
-        public String getParent() {
-            return m_agent.getStorageDir().toString();
-        }
-    }
-    
-    class NSClientCollectionSet implements CollectionSet {
-        private int m_status;
-        private Date m_timestamp;
-        private NSClientCollectionResource m_collectionResource;
-        
-        NSClientCollectionSet(CollectionAgent agent, Date timestamp) {
-            m_status = ServiceCollector.COLLECTION_FAILED;
-            m_collectionResource = new NSClientCollectionResource(agent);
-        }
-        
-        @Override
-        public int getStatus() {
-            return m_status;
-        }
-        
-        void setStatus(int status) {
-            m_status = status;
-        }
-
-        @Override
-        public void visit(CollectionSetVisitor visitor) {
-            visitor.visitCollectionSet(this);
-            m_collectionResource.visit(visitor);
-            visitor.completeCollectionSet(this);
-        }
-
-        public NSClientCollectionResource getResource() {
-            return m_collectionResource;
-        }
-
-        @Override
-		public boolean ignorePersist() {
-			return false;
-		}
-
-		@Override
-		public Date getCollectionTimestamp() {
-			return m_timestamp;
-		}        
     }
     
     /** {@inheritDoc} */
@@ -274,12 +176,12 @@ public class NSClientCollector implements ServiceCollector {
         NsclientCollection collection = NSClientDataCollectionConfigFactory.getInstance().getNSClientCollection(collectionName);
         NSClientAgentState agentState = m_scheduledNodes.get(agent.getNodeId());
         
-        NSClientCollectionSet collectionSet=new NSClientCollectionSet(agent, new Date());
-        NSClientCollectionResource collectionResource=collectionSet.getResource();
+        NSClientCollectionResource collectionResource = new NSClientCollectionResource(agent);
+        SingleResourceCollectionSet collectionSet = new SingleResourceCollectionSet(collectionResource, new Date());
         
         for (Wpm wpm : collection.getWpms().getWpm()) {
             //All NSClient Perfmon counters are per node
-            AttributeGroupType attribGroupType=new AttributeGroupType(wpm.getName(),"all");
+            AttributeGroupType attribGroupType=new AttributeGroupType(wpm.getName(), AttributeGroupType.IF_TYPE_ALL);
             // A wpm consists of a list of attributes, identified by name
             if (agentState.shouldCheckAvailability(wpm.getName(), wpm.getRecheckInterval())) {
                 LOG.debug("Checking availability of group {}", wpm.getName());
@@ -352,7 +254,7 @@ public class NSClientCollector implements ServiceCollector {
         initializeRrdRepository();
     }
 
-    private void initNSClientPeerFactory() {
+    private static void initNSClientPeerFactory() {
         LOG.debug("initialize: Initializing NSClientPeerFactory");
         try {
             NSClientPeerFactory.init();
@@ -368,8 +270,8 @@ public class NSClientCollector implements ServiceCollector {
         }
     }
 
-    private void initNSClientCollectionConfig() {
-        LOG.debug("initialize: Initializing collector: {}", getClass());
+    private static void initNSClientCollectionConfig() {
+        LOG.debug("initialize: Initializing collector: {}", NSClientCollector.class);
         try {
             NSClientDataCollectionConfigFactory.init();
         } catch (MarshalException e) {
@@ -387,12 +289,12 @@ public class NSClientCollector implements ServiceCollector {
         }
     }
 
-    private void initializeRrdRepository() {
+    private static void initializeRrdRepository() {
         LOG.debug("initializeRrdRepository: Initializing RRD repo from NSClientCollector...");
         initializeRrdDirs();
     }
 
-    private void initializeRrdDirs() {
+    private static void initializeRrdDirs() {
         /*
          * If the RRD file repository directory does NOT already exist, create
          * it.
@@ -424,7 +326,7 @@ public class NSClientCollector implements ServiceCollector {
             LOG.debug(sb.toString());
             throw new IllegalStateException(sb.toString());
         } else {
-            nodeState = new NSClientAgentState(agent.getInetAddress(), parameters);
+            nodeState = new NSClientAgentState(agent.getAddress(), parameters);
             LOG.info("initialize: Scheduling interface for collection: {}", nodeState.getAddress());
             m_scheduledNodes.put(scheduledNodeKey, nodeState);
         }
@@ -448,11 +350,11 @@ public class NSClientCollector implements ServiceCollector {
         }
     }
 
-    private class NSClientAgentState {
-        private NsclientManager m_manager;
-        private NSClientAgentConfig m_agentConfig; // Do we need to keep this?
-        private String m_address;
-        private HashMap<String, NSClientGroupState> m_groupStates = new HashMap<String, NSClientGroupState>();
+    private static class NSClientAgentState {
+        private final NsclientManager m_manager;
+        private final NSClientAgentConfig m_agentConfig; // Do we need to keep this?
+        private final String m_address;
+        private final HashMap<String, NSClientGroupState> m_groupStates = new HashMap<String, NSClientGroupState>();
 
         public NSClientAgentState(InetAddress address, Map<String, Object> parameters) {
             m_address = InetAddressUtils.str(address);
@@ -515,7 +417,7 @@ public class NSClientCollector implements ServiceCollector {
 
     }
 
-    private class NSClientGroupState {
+    private static class NSClientGroupState {
         private boolean available = false;
         private Date lastChecked;
 

@@ -30,6 +30,7 @@ package org.opennms.netmgt.collectd;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
@@ -55,7 +56,7 @@ public class ForceRescanState {
     /**
      * <p>Constructor for ForceRescanState.</p>
      *
-     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @param agent a {@link org.opennms.netmgt.collection.api.CollectionAgent} object.
      * @param eventProxy a {@link org.opennms.netmgt.model.events.EventProxy} object.
      */
     public ForceRescanState(CollectionAgent agent, EventProxy eventProxy) {
@@ -83,7 +84,7 @@ public class ForceRescanState {
         
         bldr.setNodeid(m_agent.getNodeId());
 
-        bldr.setInterface(m_agent.getInetAddress());
+        bldr.setInterface(m_agent.getAddress());
         
         bldr.setService(SnmpCollector.SERVICE_NAME);
         
@@ -95,7 +96,7 @@ public class ForceRescanState {
     /**
      * <p>getAgent</p>
      *
-     * @return a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @return a {@link org.opennms.netmgt.collection.api.CollectionAgent} object.
      */
     public CollectionAgent getAgent() {
         return m_agent;

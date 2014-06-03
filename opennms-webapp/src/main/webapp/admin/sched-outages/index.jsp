@@ -180,9 +180,10 @@ div.nodeintbox {
 			
 					for (int i = 0; i < outages.length; i++) {
 						Outage thisOutage = outages[i];
+						String rowClass   = pollFactory.isCurTimeInOutage(thisOutage) ? "Critical" : "Cleared";
 						String outageName = thisOutage.getName();
 	%>
-	<tr valign="top">
+	<tr valign="top" class="<%=rowClass%>">
 		<td><%=outageName%></td>
 		<td><%=pollFactory.getOutageType(outageName)%></td>
 		<td><div class="nodeintbox">

@@ -30,7 +30,7 @@ package org.opennms.netmgt.poller.remote;
 
 import java.util.Collection;
 
-import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
 
 /**
@@ -59,7 +59,7 @@ public interface PollService {
 	 * <p>poll</p>
 	 *
 	 * @param polledService a {@link org.opennms.netmgt.poller.remote.PolledService} object.
-	 * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+	 * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
 	 */
 	public PollStatus poll(PolledService polledService);
     

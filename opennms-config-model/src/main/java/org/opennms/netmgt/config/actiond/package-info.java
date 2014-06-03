@@ -28,8 +28,12 @@
 
 @XmlSchema(
     namespace = "http://xmlns.opennms.org/xsd/config/actiond",
-    elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED
+    elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED,
+    xmlns={
+        @XmlNs(prefix="", namespaceURI="http://xmlns.opennms.org/xsd/config/actiond")
+    }
 )
 package org.opennms.netmgt.config.actiond;
 
+import javax.xml.bind.annotation.XmlNs;
 import javax.xml.bind.annotation.XmlSchema;

@@ -39,6 +39,7 @@ import org.apache.commons.io.IOUtils;
 import org.opennms.netmgt.mock.MockResourceType;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
@@ -109,7 +110,7 @@ public class DefaultRrdDaoIntegrationTest extends TestCase {
         OnmsResource childResource = new OnmsResource("eth0", "Interface One: eth0", childResourceType, attributeSet);
         childResource.setParent(topResource);
         
-        File snmp = m_fileAnticipator.tempDir(DefaultResourceDao.SNMP_DIRECTORY);
+        File snmp = m_fileAnticipator.tempDir(ResourceTypeUtils.SNMP_DIRECTORY);
         File node = m_fileAnticipator.tempDir(snmp, topResource.getName());
         File intf = m_fileAnticipator.tempDir(node, childResource.getName());
         

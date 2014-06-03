@@ -46,7 +46,6 @@ import org.opennms.web.filter.SQLType;
 public class NegativeForeignSourceFilter extends EqualsFilter<String> {
     /** Constant <code>TYPE="foreignsourcenot"</code> */
     public static final String TYPE = "foreignsourcenot";
-    private ServletContext m_servletContext;
 
     /**
      * Constructor for NegativeForeignSourceFilter.
@@ -55,7 +54,6 @@ public class NegativeForeignSourceFilter extends EqualsFilter<String> {
      */
     public NegativeForeignSourceFilter(String foreignSource, ServletContext servletContext) {
         super(TYPE, SQLType.STRING, "OUTAGES.NODEID", "NODE.foreignSource", foreignSource);
-        m_servletContext = servletContext;
     }
 
     /** {@inheritDoc} */

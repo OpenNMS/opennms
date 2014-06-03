@@ -28,6 +28,8 @@
 
 package org.opennms.sms.reflector.smsservice.internal;
 
+import java.util.Arrays;
+
 import org.opennms.sms.reflector.smsservice.SmsService;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -48,7 +50,7 @@ public class SmsServiceFactoryBean implements FactoryBean<SmsService>, Initializ
 	 * @param serviceList an array of {@link org.opennms.sms.reflector.smsservice.SmsService} objects.
 	 */
 	public void setSmsServiceList(SmsService[] serviceList) {
-		m_serviceList = serviceList;
+		m_serviceList = Arrays.copyOf(serviceList, serviceList.length);
 	}
 	
 	/**

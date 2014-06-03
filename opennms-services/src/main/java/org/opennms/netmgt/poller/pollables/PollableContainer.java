@@ -35,7 +35,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.PollStatus;
 
 
 
@@ -331,7 +331,7 @@ abstract public class PollableContainer extends PollableElement {
      * <p>pollRemainingMembers</p>
      *
      * @param member a {@link org.opennms.netmgt.poller.pollables.PollableElement} object.
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public PollStatus pollRemainingMembers(final PollableElement member) {
         SimpleIter<PollStatus> iter = new SimpleIter<PollStatus>(member.getStatus()) {
@@ -350,7 +350,7 @@ abstract public class PollableContainer extends PollableElement {
     /**
      * <p>getMemberStatus</p>
      *
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public PollStatus getMemberStatus() {
         SimpleIter<PollStatus> iter = new SimpleIter<PollStatus>(PollStatus.down()) {
@@ -368,7 +368,7 @@ abstract public class PollableContainer extends PollableElement {
     /**
      * <p>poll</p>
      *
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     @Override
     public PollStatus poll() {

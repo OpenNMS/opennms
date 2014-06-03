@@ -40,6 +40,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
@@ -105,10 +106,10 @@ public class ManageNodesServlet extends HttpServlet {
         List<ManagedInterface> allNodes = getManagedInterfacesFromSession(userSession);
 
         // the list of all interfaces marked as managed
-        List<String> interfaceList = getList(request.getParameterValues("interfaceCheck"));
+        List<String> interfaceList = Arrays.asList(request.getParameterValues("interfaceCheck"));
 
         // the list of all services marked as managed
-        List<String> serviceList = getList(request.getParameterValues("serviceCheck"));
+        List<String> serviceList = Arrays.asList(request.getParameterValues("serviceCheck"));
 
         // the list of interfaces that need to be put into the URL file
         List<String> addToURL = new ArrayList<String>();
@@ -318,21 +319,7 @@ public class ManageNodesServlet extends HttpServlet {
 
     /**
      */
-    private List<String> getList(String[] array) {
-        List<String> newList = new ArrayList<String>();
-
-        if (array != null) {
-            for (int i = 0; i < array.length; i++) {
-                newList.add(array[i]);
-            }
-        }
-
-        return newList;
-    }
-
-    /**
-     */
-    private void sendEvent(Event event) throws ServletException {
+    private static void sendEvent(Event event) throws ServletException {
         try {
             Util.createEventProxy().send(event);
         } catch (Throwable e) {

@@ -29,94 +29,30 @@
 package org.opennms.netmgt.model;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.config.api.JaxbListWrapper;
 
-/**
- * <p>OnmsIpInterfaceList class.</p>
- */
 @XmlRootElement(name = "ipInterfaces")
 @XmlAccessorType(XmlAccessType.NONE)
-public class OnmsIpInterfaceList extends LinkedList<OnmsIpInterface> {
+public class OnmsIpInterfaceList extends JaxbListWrapper<OnmsIpInterface> {
+    private static final long serialVersionUID = 1L;
 
-    private static final long serialVersionUID = 1123252152117491694L;
-    private int m_totalCount;
-
-    /**
-     * <p>Constructor for OnmsIpInterfaceList.</p>
-     */
-    public OnmsIpInterfaceList() {
-        super();
+    public OnmsIpInterfaceList() { super(); }
+    public OnmsIpInterfaceList(final Collection<? extends OnmsIpInterface> iface) {
+        super(iface);
     }
 
-    /**
-     * <p>Constructor for OnmsIpInterfaceList.</p>
-     *
-     * @param c a {@link java.util.Collection} object.
-     */
-    public OnmsIpInterfaceList(Collection<? extends OnmsIpInterface> c) {
-        super(c);
+    @XmlElement(name="ipInterface")
+    public List<OnmsIpInterface> getObjects() {
+        return super.getObjects();
     }
-
-    /**
-     * <p>getInterfaces</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    @XmlElement(name = "ipInterface")
-    public List<OnmsIpInterface> getInterfaces() {
-        return this;
+    public List<OnmsIpInterface> getIpInterfaces() {
+        return getObjects();
     }
-    
-    /**
-     * <p>setInterfaces</p>
-     *
-     * @param interfaces a {@link java.util.List} object.
-     */
-    public void setInterfaces(List<OnmsIpInterface> interfaces) {
-        if (interfaces == this) return;
-        clear();
-        addAll(interfaces);
-    }
-    
-    /**
-     * <p>getCount</p>
-     *
-     * @return a {@link java.lang.Integer} object.
-     */
-    @XmlAttribute(name="count")
-    public Integer getCount() {
-        return this.size();
-    }
-    
-    public void setCount(final Integer count) {
-        // dummy to make serialization happy
-    }
-
-    /**
-     * <p>getTotalCount</p>
-     *
-     * @return a int.
-     */
-    @XmlAttribute(name="totalCount")
-    public int getTotalCount() {
-        return m_totalCount;
-    }
-    
-    /**
-     * <p>setTotalCount</p>
-     *
-     * @param count a int.
-     */
-    public void setTotalCount(int count) {
-        m_totalCount = count;
-    }
-
 }

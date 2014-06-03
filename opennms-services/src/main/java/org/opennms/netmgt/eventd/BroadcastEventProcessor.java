@@ -32,6 +32,7 @@ import java.util.List;
 
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.model.events.EventListener;
@@ -76,6 +77,7 @@ public class BroadcastEventProcessor implements EventListener {
      */
     private void addEventListener() {
         m_eventIpcManager.addEventListener(this, EventConstants.EVENTSCONFIG_CHANGED_EVENT_UEI);
+        m_eventIpcManager.addEventListener(this, EventConstants.RELOAD_DAEMON_CONFIG_UEI);
     }
 
     /**
@@ -99,6 +101,7 @@ public class BroadcastEventProcessor implements EventListener {
     @Override
     protected void finalize() throws Throwable {
         close();
+        super.finalize();
     }
 
     /**
@@ -125,6 +128,7 @@ public class BroadcastEventProcessor implements EventListener {
         EventBuilder ebldr = null;
         
         if (isReloadConfigEvent(event)) {
+            LOG.info("onEvent: Reloading events configuration in response to event with UEI " + event.getUei());
             try {
                 m_eventConfDao.reload();
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, getName());
@@ -147,15 +151,9 @@ public class BroadcastEventProcessor implements EventListener {
         boolean isTarget = false;
         
         if (EventConstants.RELOAD_DAEMON_CONFIG_UEI.equals(event.getUei())) {
-            List<Parm> parmCollection = event.getParmCollection();
-            
-            for (Parm parm : parmCollection) {
-                if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && "Eventd".equalsIgnoreCase(parm.getValue().getContent())) {
-                    isTarget = true;
-                    break;
-                }
+            if ("Eventd".equalsIgnoreCase(EventUtils.getParm(event, EventConstants.PARM_DAEMON_NAME))) {
+                isTarget = true;
             }
-        
         // Deprecating this one...
         } else if (EventConstants.EVENTSCONFIG_CHANGED_EVENT_UEI.equals(event.getUei())) {
             isTarget = true;

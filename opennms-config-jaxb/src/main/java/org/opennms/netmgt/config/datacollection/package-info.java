@@ -21,15 +21,19 @@
  *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
+ *     OpenNMS(R) Licensing &lt;license@opennms.org&gt;
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
 
 @XmlSchema(
     namespace = "http://xmlns.opennms.org/xsd/config/datacollection",
-    elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED
+    elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED,
+    xmlns={
+        @XmlNs(prefix="", namespaceURI="http://xmlns.opennms.org/xsd/config/datacollection")
+    }
 )
 package org.opennms.netmgt.config.datacollection;
+import javax.xml.bind.annotation.XmlNs;
 import javax.xml.bind.annotation.XmlSchema;
 

@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.provision.support.ssh;
 
-import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.PollStatus;
 /**
  * <p>Poll interface.</p>
  *

@@ -28,8 +28,8 @@
 
 package org.opennms.protocols.xml.collector;
 
-import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.dao.support.IndexStorageStrategy;
+import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.support.IndexStorageStrategy;
 
 /**
  * The Class XML StorageStrategy.

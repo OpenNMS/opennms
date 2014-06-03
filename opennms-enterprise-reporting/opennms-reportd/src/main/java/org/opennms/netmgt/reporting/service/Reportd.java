@@ -163,7 +163,7 @@ public class Reportd implements SpringServiceDaemon {
      */
     @EventHandler(uei = EventConstants.REPORTD_RUN_REPORT)
     public void handleRunReportEvent(Event e){
-       String reportName = new String();
+       String reportName = "";
        
        for(Parm parm : e.getParmCollection()){
        

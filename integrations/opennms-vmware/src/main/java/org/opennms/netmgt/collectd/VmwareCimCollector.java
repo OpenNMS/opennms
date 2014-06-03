@@ -56,16 +56,20 @@ import org.opennms.netmgt.collectd.vmware.cim.VmwareCimCollectionAttributeType;
 import org.opennms.netmgt.collectd.vmware.cim.VmwareCimCollectionResource;
 import org.opennms.netmgt.collectd.vmware.cim.VmwareCimCollectionSet;
 import org.opennms.netmgt.collectd.vmware.cim.VmwareCimMultiInstanceCollectionResource;
-import org.opennms.netmgt.config.collector.AttributeGroupType;
-import org.opennms.netmgt.config.collector.CollectionSet;
+import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionException;
+import org.opennms.netmgt.collection.api.CollectionInitializationException;
+import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.config.vmware.cim.Attrib;
 import org.opennms.netmgt.config.vmware.cim.VmwareCimCollection;
 import org.opennms.netmgt.config.vmware.cim.VmwareCimGroup;
 import org.opennms.netmgt.dao.VmwareCimDatacollectionConfigDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.protocols.vmware.VmwareViJavaAccess;
 import org.sblim.wbem.cim.CIMObject;
 import org.slf4j.Logger;
@@ -155,7 +159,7 @@ public class VmwareCimCollector implements ServiceCollector {
      */
     private void loadAttributeGroupList(final VmwareCimCollection collection) {
         for (final VmwareCimGroup vpm : collection.getVmwareCimGroup()) {
-            final AttributeGroupType attribGroupType1 = new AttributeGroupType(vpm.getName(), "all");
+            final AttributeGroupType attribGroupType1 = new AttributeGroupType(vpm.getName(), AttributeGroupType.IF_TYPE_ALL);
             m_groupTypeList.put(vpm.getName(), attribGroupType1);
         }
     }
@@ -245,7 +249,7 @@ public class VmwareCimCollector implements ServiceCollector {
         // Load the attribute types.
         loadAttributeTypeList(collection);
 
-        VmwareCimCollectionSet collectionSet = new VmwareCimCollectionSet(agent);
+        VmwareCimCollectionSet collectionSet = new VmwareCimCollectionSet();
 
         collectionSet.setCollectionTimestamp(new Date());
 
@@ -315,7 +319,7 @@ public class VmwareCimCollector implements ServiceCollector {
                 if (!cimObjects.containsKey(cimClass)) {
                     List<CIMObject> cimList = null;
                     try {
-                        cimList = vmwareViJavaAccess.queryCimObjects(hostSystem, cimClass, InetAddressUtils.str(agent.getInetAddress()));
+                        cimList = vmwareViJavaAccess.queryCimObjects(hostSystem, cimClass, InetAddressUtils.str(agent.getAddress()));
                     } catch (Exception e) {
                         logger.warn("Error retrieving CIM values from host system '{}'. Error message: '{}'", vmwareManagedObjectId, e.getMessage());
                         return collectionSet;
@@ -361,7 +365,7 @@ public class VmwareCimCollector implements ServiceCollector {
                             vmwareCollectionResource.setAttributeValue(attribType, vmwareViJavaAccess.getPropertyOfCimObject(cimObject, attrib.getName()));
                             logger.debug("Storing multi instance value " + attrib.getName() + "[" + instance + "]='" + vmwareViJavaAccess.getPropertyOfCimObject(cimObject, attrib.getName()) + "' for node " + agent.getNodeId());
                         }
-                        collectionSet.getResources().add(vmwareCollectionResource);
+                        collectionSet.getCollectionResources().add(vmwareCollectionResource);
                     }
                 }
             }

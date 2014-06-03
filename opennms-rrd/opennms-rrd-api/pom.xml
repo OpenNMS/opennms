@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms-rrd</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.13.1-SNAPSHOT</version>
+    <version>1.13.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-rrd-api</artifactId>
@@ -20,6 +20,19 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.6</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
+            <!--
+              Manually add org.springframework.beans.factory.config to the import list since the
+              org/opennms/netmgt/rrd/rrd-configuration.xml resource needs it.
+              
+              Add all optional imports of RRD strategies to the import list as well.
+            -->
+            <Import-Package>
+              *,
+              org.springframework.beans.factory.config;version="[3.2,3.3)",
+              org.opennms.netmgt.rrd.jrobin;resolution:=optional,
+              org.opennms.netmgt.rrd.rrdtool;resolution:=optional,
+              org.opennms.netmgt.rrd.tcp;resolution:=optional
+            </Import-Package>
             <Export-Package>org.opennms.netmgt.rrd.*;version="${project.version}"</Export-Package>
           </instructions>
         </configuration>

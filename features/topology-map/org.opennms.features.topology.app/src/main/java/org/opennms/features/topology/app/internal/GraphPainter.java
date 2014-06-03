@@ -24,7 +24,9 @@ public class GraphPainter extends BaseGraphVisitor {
     private final List<SharedEdge> m_edges = new ArrayList<SharedEdge>();
     private static final Logger s_log = LoggerFactory.getLogger(VEProviderGraphContainer.class);
     private final Map<VertexRef,Status> m_statusMap = new HashMap<VertexRef, Status>();
+    private final Map<EdgeRef,Status> m_edgeStatusMap = new HashMap<EdgeRef, Status>();
     private Set<VertexRef> m_focusVertices = new HashSet<VertexRef>();
+
 
     GraphPainter(GraphContainer graphContainer, Layout layout, IconRepositoryManager iconRepoManager, StatusProvider statusProvider, TopologyComponentState componentState) {
 		m_graphContainer = graphContainer;
@@ -56,6 +58,16 @@ public class GraphPainter extends BaseGraphVisitor {
                 m_statusMap.putAll(newStatusMap);
             }
         }
+
+        if(m_graphContainer.getEdgeStatusProviders() != null) {
+            for (EdgeStatusProvider statusProvider : m_graphContainer.getEdgeStatusProviders()) {
+                if (statusProvider.getNameSpace().equals(m_graphContainer.getBaseTopology().getEdgeNamespace())) {
+                    m_edgeStatusMap.putAll(statusProvider.getStatusForEdges(m_graphContainer.getBaseTopology(),
+                            new ArrayList<EdgeRef>(graph.getDisplayEdges()),
+                            m_graphContainer.getCriteria()));
+                }
+            }
+        }
     }
 
     @Override
@@ -64,10 +76,11 @@ public class GraphPainter extends BaseGraphVisitor {
 		Point location = m_layout.getLocation(vertex);
 		SharedVertex v = new SharedVertex();
 		v.setKey(vertex.getKey());
-		v.setInitialX(initialLocation.getX());
-		v.setInitialY(initialLocation.getY());
-		v.setX(location.getX());
-		v.setY(location.getY());
+        //TODO cast to int for now
+		v.setInitialX((int)initialLocation.getX());
+		v.setInitialY((int)initialLocation.getY());
+		v.setX((int)location.getX());
+		v.setY((int)location.getY());
 		v.setSelected(isSelected(m_graphContainer.getSelectionManager(), vertex));
         v.setStatus(getStatus(vertex));
         v.setStatusCount(getStatusCount(vertex));
@@ -127,6 +140,7 @@ public class GraphPainter extends BaseGraphVisitor {
 			e.setSourceKey(sourceKey);
 			e.setTargetKey(targetKey);
 			e.setSelected(isSelected(m_graphContainer.getSelectionManager(), edge));
+            e.setStatus(getEdgeStatus(edge));
 
             if(m_componentState.isHighlightFocus()){
                 e.setCssClass(getStyleName(edge) + " opacity-50");
@@ -139,7 +153,12 @@ public class GraphPainter extends BaseGraphVisitor {
 		}
 	}
 
-	/**
+    private String getEdgeStatus(Edge edge) {
+        Status status = m_edgeStatusMap.get(edge);
+        return status != null ? status.computeStatus() : "";
+    }
+
+    /**
 	 * Cannot return null
 	 */
 	private static String getTooltipText(Edge edge) {
@@ -171,8 +190,8 @@ public class GraphPainter extends BaseGraphVisitor {
 		String styleName = edge.getStyleName();
 		// If the style is null, use a blank string
 		styleName = (styleName == null ? "" : styleName);
-
-		return isSelected(m_graphContainer.getSelectionManager(), edge) ? styleName + " selected" : styleName;
+        String status = " " + getEdgeStatus(edge);
+        return isSelected(m_graphContainer.getSelectionManager(), edge) ? styleName + " selected" + status : styleName + status;
 	}
 
 	private static boolean isSelected(SelectionManager selectionManager, Vertex vertex) {

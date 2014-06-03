@@ -58,7 +58,8 @@ import com.vaadin.ui.VerticalLayout;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
-// TODO When renaming a group, all the SNMP collections must be updated.
+// FIXME: When renaming a datacollection-group, all the SNMP collections must be updated.
+// FIXME: When a different group is selected and the current one is being edited, warn about discard the changes or save them before continue
 @SuppressWarnings("serial")
 public abstract class DataCollectionGroupPanel extends Panel implements TabSheet.SelectedTabChangeListener {
 
@@ -184,7 +185,7 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
      */
     private void processDataCollection(final DataCollectionConfigDao dataCollectionConfigDao, final Logger logger) {
         final DatacollectionGroup dcGroup = getOnmsDataCollection();
-        final File configDir = new File(ConfigFileConstants.getHome(), "etc/datacollection/");
+        final File configDir = new File(ConfigFileConstants.getHome(), "etc" + File.separatorChar + "datacollection");
         final File file = new File(configDir, dcGroup.getName().replaceAll(" ", "_") + ".xml");
         if (file.exists()) {
             ConfirmDialog.show(getUI(),

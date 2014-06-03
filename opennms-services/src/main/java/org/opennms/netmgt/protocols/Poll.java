@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.protocols;
 
-import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.PollStatus;
 
 /**
  * <p>Poll interface.</p>

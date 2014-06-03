@@ -14,15 +14,15 @@ import org.opennms.netmgt.config.api.collection.IResourceType;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 
 /**
- *  <resourceType name="hrStorageIndex" label="Storage (MIB-2 Host Resources)">
- *	  <resourceName>
- *      <m_template>${hrStorageDescr}</m_template>
- *    </resourceName>
- *    <resourceLabel><m_template>${hrStorageDescr}</m_template></resourceLabel>
- *    <resourceKind><m_template>${hrStorageType}</m_template></resourceKind>
- *    <column oid=".1.3.6.1.2.1.25.2.3.1.2" alias="hrStorageType"  type="string" />
- *    <column oid=".1.3.6.1.2.1.25.2.3.1.3" alias="hrStorageDescr" type="string" />
- *  </resourceType>
+ *  &lt;resourceType name="hrStorageIndex" label="Storage (MIB-2 Host Resources)"&gt;
+ *    &lt;resourceName&gt;
+ *      &lt;template&gt;${hrStorageDescr}&lt;/template&gt;
+ *    &lt;/resourceName&gt;
+ *    &lt;resourceLabel&gt;&lt;template&gt;${hrStorageDescr}&lt;/template&gt;&lt;/resourceLabel&gt;
+ *    &lt;resourceKind&gt;&lt;template&gt;${hrStorageType}&lt;/template&gt;&lt;/resourceKind&gt;
+ *    &lt;column oid=".1.3.6.1.2.1.25.2.3.1.2" alias="hrStorageType"  type="string" /&gt;
+ *    &lt;column oid=".1.3.6.1.2.1.25.2.3.1.3" alias="hrStorageDescr" type="string" /&gt;
+ *  &lt;/resourceType&gt;
  *   
  * @author brozow
  *

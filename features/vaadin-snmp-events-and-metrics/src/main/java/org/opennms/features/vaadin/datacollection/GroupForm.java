@@ -161,4 +161,13 @@ public class GroupForm extends CustomComponent {
     public boolean isReadOnly() {
         return super.isReadOnly() && groupEditor.isReadOnly();
     }
+
+    /**
+     * Gets the group name.
+     *
+     * @return the group name
+     */
+    public String getGroupName() {
+        return name.getValue();
+    }
 }

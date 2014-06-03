@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -47,14 +47,17 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 
 /**
+ * This <Criteria> implementation supports the users selection of search results from an IPLIKE query
+ * in the topology UI.
  * 
+ * @author <a href=mailto:david@opennms.org>David Hustace</a>
  * @author <a href=mailto:thedesloge@opennms.org>Donald Desloge</a>
  * @author <a href=mailto:seth@opennms.org>Seth Leger</a>
  *
  */
 public class IpLikeHopCriteria extends VertexHopCriteria implements CollapsibleCriteria {
 
-	public static final String NAMESPACE = "IP";
+	public static final String NAMESPACE = "iplike";
 	private final String m_ipQuery;
 	
 	private boolean m_collapsed = false;
@@ -164,4 +167,5 @@ public class IpLikeHopCriteria extends VertexHopCriteria implements CollapsibleC
 	public Vertex getCollapsedRepresentation() {
 		return m_collapsedVertex;
 	}
+	
 }

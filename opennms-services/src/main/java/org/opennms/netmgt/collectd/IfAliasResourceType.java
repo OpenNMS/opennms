@@ -32,7 +32,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.opennms.netmgt.config.collector.ServiceParameters;
+import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,12 +54,12 @@ public class IfAliasResourceType extends ResourceType {
     /**
      * <p>Constructor for IfAliasResourceType.</p>
      *
-     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @param agent a {@link org.opennms.netmgt.collection.api.CollectionAgent} object.
      * @param snmpCollection a {@link org.opennms.netmgt.collectd.OnmsSnmpCollection} object.
-     * @param params a {@link org.opennms.netmgt.config.collector.ServiceParameters} object.
+     * @param params a {@link org.opennms.netmgt.collection.api.ServiceParameters} object.
      * @param ifResourceType a {@link org.opennms.netmgt.collectd.IfResourceType} object.
      */
-    public IfAliasResourceType(CollectionAgent agent, OnmsSnmpCollection snmpCollection, ServiceParameters params, IfResourceType ifResourceType) {
+    public IfAliasResourceType(SnmpCollectionAgent agent, OnmsSnmpCollection snmpCollection, ServiceParameters params, IfResourceType ifResourceType) {
         super(agent, snmpCollection);
         m_ifResourceType = ifResourceType;
         m_params = params;

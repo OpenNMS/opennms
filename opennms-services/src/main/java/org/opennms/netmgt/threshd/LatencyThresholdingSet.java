@@ -35,10 +35,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.opennms.netmgt.config.collector.CollectionAttribute;
-import org.opennms.netmgt.model.RrdRepository;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.poller.LatencyCollectionAttribute;
 import org.opennms.netmgt.poller.LatencyCollectionResource;
+import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -55,7 +55,7 @@ public class LatencyThresholdingSet extends ThresholdingSet {
      * @param nodeId a int.
      * @param hostAddress a {@link java.lang.String} object.
      * @param serviceName a {@link java.lang.String} object.
-     * @param repository a {@link org.opennms.netmgt.model.RrdRepository} object.
+     * @param repository a {@link org.opennms.netmgt.rrd.RrdRepository} object.
      * @param interval a long.
      */
     public LatencyThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository) {

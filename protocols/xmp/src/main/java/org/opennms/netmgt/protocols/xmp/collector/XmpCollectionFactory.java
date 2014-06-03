@@ -67,7 +67,7 @@ import org.opennms.core.utils.ConfigFileConstants;
 
 import org.opennms.netmgt.config.xmpDataCollection.XmpCollection;
 import org.opennms.netmgt.config.xmpDataCollection.XmpDatacollectionConfig;
-import org.opennms.netmgt.model.RrdRepository;
+import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 public class XmpCollectionFactory {
@@ -186,7 +186,7 @@ public class XmpCollectionFactory {
      *       the XmpDatacollectionConfig class and return an new repository *
      *
      * @param collectionName a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.model.RrdRepository} object.
+     * @return a {@link org.opennms.netmgt.rrd.RrdRepository} object.
      */
     public RrdRepository getRrdRepository(String collectionName) 
     { 

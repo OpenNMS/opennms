@@ -36,11 +36,11 @@ import java.util.Map;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
+import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -204,7 +204,7 @@ final public class PercMonitor extends SnmpMonitorStrategy {
             	
             	for (Map.Entry<SnmpInstId, SnmpValue> disk: arrayDisks.entrySet()) {
             		
-            		if (disk.getValue().toString().contains("A" + arrayNumber.toString() + "-")) {
+            		if (disk.getValue().toString().contains("A" + arrayNumber + "-")) {
             			// this is a member of the array
             			
             			if ( diskStates.get(disk.getKey()).toInt() !=3 ){

@@ -1,0 +1,8 @@
+$ grep -r '"[^<>]*[/]' *
+
+src/main/java/org/opennms/features/vaadin/datacollection/DataCollectionGroupPanel.java:        final File configDir = new File(ConfigFileConstants.getHome(), "etc/datacollection/");
+src/main/java/org/opennms/features/vaadin/datacollection/DataCollectionWindow.java:        final File configDir = new File(ConfigFileConstants.getHome(), "etc/snmp-graph.properties.d/");
+src/main/java/org/opennms/features/vaadin/events/EventPanel.java:            String fileName = file.getAbsolutePath().replaceFirst(".*\\/events\\/(.*)", "events/$1");
+src/main/java/org/opennms/features/vaadin/mibcompiler/MibCompilerPanel.java:    private static final File MIBS_ROOT_DIR = new File(ConfigFileConstants.getHome(),  "/share/mibs"); // TODO Must be configurable
+src/main/java/org/opennms/features/vaadin/mibcompiler/MibCompilerPanel.java:                    final File configDir = new File(ConfigFileConstants.getHome(), "etc/events/"); // FIXME What about Windows ?
+src/main/java/org/opennms/features/vaadin/mibcompiler/services/OnmsProblemEventHandler.java:    private static final String FILE_PREFIX = "file://";

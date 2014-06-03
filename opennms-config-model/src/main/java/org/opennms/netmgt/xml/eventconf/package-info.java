@@ -26,9 +26,18 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-@XmlSchema(namespace = "http://xmlns.opennms.org/xsd/eventconf", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+@XmlSchema(
+    namespace = "http://xmlns.opennms.org/xsd/eventconf",
+    elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED,
+    xmlns={
+        @XmlNs(prefix="", namespaceURI="http://xmlns.opennms.org/xsd/eventconf")
+    }
+)
 @XmlJavaTypeAdapter(value=StringTrimAdapter.class,type=String.class)
 package org.opennms.netmgt.xml.eventconf;
+import javax.xml.bind.annotation.XmlNs;
 import javax.xml.bind.annotation.XmlSchema;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import org.opennms.core.xml.StringTrimAdapter;
+

@@ -115,7 +115,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
 
     private String m_collect = "N";
     
-    private String m_poll = "N";
+    private String m_poll;
 
     private Date m_lastSnmpPoll;
 

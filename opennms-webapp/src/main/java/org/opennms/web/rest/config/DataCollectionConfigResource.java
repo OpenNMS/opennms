@@ -12,8 +12,6 @@ import org.opennms.core.config.api.ConfigurationResourceException;
 import org.opennms.core.xml.AbstractJaxbConfigDao;
 import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
-import org.opennms.netmgt.config.datacollection.SnmpCollection;
-import org.opennms.netmgt.config.internal.collection.DataCollectionConfigConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -61,28 +59,6 @@ public class DataCollectionConfigResource implements InitializingBean {
             return Response.status(404).build();
         }
 
-        // we want our own copy so we don't modify anything in the datacollection config dao
-        final DatacollectionConfig modifiable = new DatacollectionConfig();
-        modifiable.setRrdRepository(dcc.getRrdRepository());
-
-        final String resourceTypeName = "__resource_type_collection";
-        final SnmpCollection resourceTypeCollection = dcc.getSnmpCollection(resourceTypeName);
-        
-        for (final SnmpCollection collection : dcc.getSnmpCollections()) {
-            if (resourceTypeName.equals(collection.getName())) {
-                // skip the special case collection
-                continue;
-            }
-            final SnmpCollection cloned = collection.clone();
-            if (resourceTypeCollection != null) {
-                cloned.setResourceTypes(resourceTypeCollection.getResourceTypes());
-            }
-            modifiable.addSnmpCollection(cloned);
-        }
-
-        final DataCollectionConfigConverter converter = new DataCollectionConfigConverter();
-        modifiable.visit(converter);
-
-        return Response.ok(converter.getDataCollectionConfig()).build();
+        return Response.ok(dcc.toDataCollectionConfig()).build();
     }
 }

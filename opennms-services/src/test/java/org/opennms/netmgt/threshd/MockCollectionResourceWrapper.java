@@ -31,11 +31,11 @@ package org.opennms.netmgt.threshd;
 import java.io.File;
 import java.util.Date;
 
-import org.opennms.core.utils.TimeKeeper;
-import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.collector.CollectionSetVisitor;
-import org.opennms.netmgt.config.collector.ServiceParameters;
-import org.opennms.netmgt.model.RrdRepository;
+import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.api.CollectionSetVisitor;
+import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.collection.api.TimeKeeper;
+import org.opennms.netmgt.rrd.RrdRepository;
 
 public class MockCollectionResourceWrapper extends CollectionResourceWrapper {
 
@@ -46,16 +46,12 @@ public class MockCollectionResourceWrapper extends CollectionResourceWrapper {
                 return instance;
             }
             @Override
-            public String getLabel() {
+            public String getInterfaceLabel() {
                 return null;
             }
             @Override
             public String getResourceTypeName() {
                 return null;
-            }
-            @Override
-            public int getType() {
-                return 0;
             }
             @Override
             public boolean rescanNeeded() {

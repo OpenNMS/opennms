@@ -71,9 +71,15 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
         }
     }
 
-    public class RemoteSuggestOracle extends SuggestOracle{
-
-        RemoteSuggestOracle(){
+    public class RemoteSuggestOracle extends SuggestOracle {
+        
+        private Timer m_keyTimer = new Timer() {
+            @Override
+            public void run() {
+            }
+        };
+        
+        RemoteSuggestOracle() {
         }
 
         @Override
@@ -82,8 +88,20 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
         }
 
         @Override
-        public void requestSuggestions(Request request, Callback callback) {
-            m_connector.query(request, callback, m_indexFrom, m_indexTo);
+        public void requestSuggestions(final Request request, final Callback callback) {
+
+            m_keyTimer.cancel();
+            
+            m_keyTimer = new Timer() {
+                @Override
+                public void run() {
+                    m_connector.query(request, callback, m_indexFrom, m_indexTo);
+
+                }
+            };
+            
+            m_keyTimer.schedule(1500);
+            
         }
     }
 

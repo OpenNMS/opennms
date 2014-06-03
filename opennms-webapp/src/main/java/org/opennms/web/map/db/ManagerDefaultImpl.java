@@ -801,10 +801,11 @@ public class ManagerDefaultImpl implements Manager {
             String iconname, int x, int y) throws MapsException {
         VElement velem = newElement(mapId, elementId, type);
         if (iconname == null ) {
-            if (type == MapsConstants.MAP_TYPE)
+            if (MapsConstants.MAP_TYPE.equals(type)) {
                 iconname = mapsPropertiesFactory.getDefaultMapIcon();
-            else 
+            } else {
                 iconname = mapsPropertiesFactory.getDefaultNodeIcon();
+            }
         }
         velem.setIcon(iconname);
         velem.setX(x);

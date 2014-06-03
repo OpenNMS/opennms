@@ -63,7 +63,7 @@ public class OwnedInterval extends TimeInterval {
     /**
      * <p>Constructor for OwnedInterval.</p>
      *
-     * @param owner a {@link org.opennms.netmgt.config.Owner} object.
+     * @param owner a {@link org.opennms.core.utils.Owner} object.
      * @param interval a {@link org.opennms.core.utils.TimeInterval} object.
      */
     public OwnedInterval(Owner owner, TimeInterval interval) {
@@ -93,7 +93,7 @@ public class OwnedInterval extends TimeInterval {
     /**
      * <p>Constructor for OwnedInterval.</p>
      *
-     * @param owner a {@link org.opennms.netmgt.config.Owner} object.
+     * @param owner a {@link org.opennms.core.utils.Owner} object.
      * @param start a {@link java.util.Date} object.
      * @param end a {@link java.util.Date} object.
      */
@@ -124,14 +124,14 @@ public class OwnedInterval extends TimeInterval {
     /**
      * <p>addOwner</p>
      *
-     * @param owner a {@link org.opennms.netmgt.config.Owner} object.
+     * @param owner a {@link org.opennms.core.utils.Owner} object.
      */
     public void addOwner(Owner owner) { m_owners.add(owner); Collections.sort(m_owners); }
     
     /**
      * <p>removeOwner</p>
      *
-     * @param owner a {@link org.opennms.netmgt.config.Owner} object.
+     * @param owner a {@link org.opennms.core.utils.Owner} object.
      */
     public void removeOwner(Owner owner) { m_owners.remove(owner); }
     
@@ -152,7 +152,7 @@ public class OwnedInterval extends TimeInterval {
     /**
      * <p>isOwner</p>
      *
-     * @param owner a {@link org.opennms.netmgt.config.Owner} object.
+     * @param owner a {@link org.opennms.core.utils.Owner} object.
      * @return a boolean.
      */
     public boolean isOwner(Owner owner) { return m_owners.contains(owner); }

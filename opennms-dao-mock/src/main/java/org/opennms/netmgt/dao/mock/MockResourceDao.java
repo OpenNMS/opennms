@@ -39,17 +39,7 @@ public class MockResourceDao implements ResourceDao {
     }
 
     @Override
-    public List<OnmsResource> findNodeResources() {
-        throw new UnsupportedOperationException("Not yet implemented!");
-    }
-
-    @Override
     public List<OnmsResource> findDomainResources() {
-        throw new UnsupportedOperationException("Not yet implemented!");
-    }
-
-    @Override
-    public List<OnmsResource> findNodeSourceResources() {
         throw new UnsupportedOperationException("Not yet implemented!");
     }
 

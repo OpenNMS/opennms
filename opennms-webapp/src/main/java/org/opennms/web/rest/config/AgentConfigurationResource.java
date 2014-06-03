@@ -94,9 +94,20 @@ public class AgentConfigurationResource implements InitializingBean {
     }
 
     @GET
+    @Path("{filterName}/{serviceName}.xml")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
+    public Response getAgentsXmlWithExtension(@PathParam("filterName") final String filterName, @PathParam("serviceName") final String serviceName) throws ConfigurationResourceException {
+        return getAgentsXml(filterName, serviceName);
+    }
+
+    @GET
     @Path("{filterName}/{serviceName}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
-    public Response getAgentsXml(@PathParam("filterName") final String filterName, @PathParam("serviceName") final String serviceName) throws ConfigurationResourceException {
+    public Response getAgentsXmlWithoutExtension(@PathParam("filterName") final String filterName, @PathParam("serviceName") final String serviceName) throws ConfigurationResourceException {
+        return getAgentsXml(filterName, serviceName);
+    }
+
+    public Response getAgentsXml(final String filterName, final String serviceName) throws ConfigurationResourceException {
         final List<AgentResponse> responses = getResponses(filterName, serviceName);
 
         if (responses.size() == 0) {
@@ -107,9 +118,20 @@ public class AgentConfigurationResource implements InitializingBean {
     }
 
     @GET
+    @Path("{filterName}/{serviceName}.json")
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response getAgentsJsonWithExtension(@PathParam("filterName") final String filterName, @PathParam("serviceName") final String serviceName) throws ConfigurationResourceException {
+        return getAgentsJson(filterName, serviceName);
+    }
+
+    @GET
     @Path("{filterName}/{serviceName}")
     @Produces({MediaType.APPLICATION_JSON})
-    public Response getAgentsJson(@PathParam("filterName") final String filterName, @PathParam("serviceName") final String serviceName) throws ConfigurationResourceException {
+    public Response getAgentsJsonWithoutExtension(@PathParam("filterName") final String filterName, @PathParam("serviceName") final String serviceName) throws ConfigurationResourceException {
+        return getAgentsJson(filterName, serviceName);
+    }
+
+    public Response getAgentsJson(final String filterName, final String serviceName) throws ConfigurationResourceException {
         final List<AgentResponse> responses = getResponses(filterName, serviceName);
 
         if (responses.size() == 0) {
@@ -191,6 +213,17 @@ public class AgentConfigurationResource implements InitializingBean {
                 final SnmpAgentConfig config = m_agentConfigFactory.getAgentConfig(ipAddress);
                 if (config != null) {
                     port = config.getPort();
+                }
+            }
+            if (node != null) {
+                if (node.getNodeId() != null && !node.getNodeId().trim().isEmpty()) {
+                    parameters.put("nodeId", node.getNodeId());
+                }
+                if (node.getForeignSource() != null && !node.getForeignSource().trim().isEmpty()) {
+                    parameters.put("foreignSource", node.getForeignSource());
+                }
+                if (node.getForeignId() != null && !node.getForeignId().trim().isEmpty()) {
+                    parameters.put("foreignId", node.getForeignId());
                 }
             }
 

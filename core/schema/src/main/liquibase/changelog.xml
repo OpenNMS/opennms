@@ -61,7 +61,9 @@
 	<include file="1.11.95/changelog.xml"/>
 	<include file="1.12.2/changelog.xml"/>
 	<include file="1.12.5/changelog.xml"/>
+	<include file="1.12.6/changelog.xml"/>
 	<include file="1.13.0/changelog.xml"/>
+	<include file="1.13.1/changelog.xml"/>
 
 	<include file="stored-procedures/getManagePercentAvailIntfWindow.xml" />
 	<include file="stored-procedures/getManagePercentAvailNodeWindow.xml" />

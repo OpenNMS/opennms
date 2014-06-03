@@ -28,6 +28,10 @@
 
 package org.opennms.netmgt.linkd;
 
+import static org.opennms.netmgt.nb.TestNetworkBuilder.R1_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.R2_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.R3_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.R4_NAME;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -42,9 +46,11 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.nb.Nms4005NetworkBuilder;
 
-public class Nms4005Test extends Nms4005NetworkBuilder {
+public class Nms4005Test extends LinkdTestBuilder {
 
+	Nms4005NetworkBuilder builder = new Nms4005NetworkBuilder();
     @Before
     public void setUpForceIpRouteOnEthernet() throws Exception {
 
@@ -71,10 +77,10 @@ public class Nms4005Test extends Nms4005NetworkBuilder {
             @JUnitSnmpAgent(host="10.1.4.2", port=161, resource="classpath:linkd/nms4005/10.1.4.2-walk.txt")
     })
     public void testNms4005Network() throws Exception {
-    	m_nodeDao.save(getR1());
-    	m_nodeDao.save(getR2());
-    	m_nodeDao.save(getR3());
-    	m_nodeDao.save(getR4());
+    	m_nodeDao.save(builder.getR1());
+    	m_nodeDao.save(builder.getR2());
+    	m_nodeDao.save(builder.getR3());
+    	m_nodeDao.save(builder.getR4());
     	
         final OnmsNode cisco1 = m_nodeDao.findByForeignId("linkd", R1_NAME);
         final OnmsNode cisco2 = m_nodeDao.findByForeignId("linkd", R2_NAME);
@@ -122,10 +128,10 @@ public class Nms4005Test extends Nms4005NetworkBuilder {
             @JUnitSnmpAgent(host="10.1.4.2", port=161, resource="classpath:linkd/nms4005/10.1.4.2-walk.txt")
     })
     public void testNms4005NetworkWithThreads() throws Exception {
-    	m_nodeDao.save(getR1());
-    	m_nodeDao.save(getR2());
-    	m_nodeDao.save(getR3());
-    	m_nodeDao.save(getR4());
+    	m_nodeDao.save(builder.getR1());
+    	m_nodeDao.save(builder.getR2());
+    	m_nodeDao.save(builder.getR3());
+    	m_nodeDao.save(builder.getR4());
 
         final OnmsNode cisco1 = m_nodeDao.findByForeignId("linkd", R1_NAME);
         final OnmsNode cisco2 = m_nodeDao.findByForeignId("linkd", R2_NAME);

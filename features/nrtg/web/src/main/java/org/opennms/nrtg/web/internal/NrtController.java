@@ -192,6 +192,7 @@ public class NrtController {
      * @param create
      * @return Map of nrtCollectionTaskId to CollectionJob
      */
+    @SuppressWarnings("unchecked") // Since this is caused by the servlet API
     private Map<String, CollectionJob> getCollectionJobMap(HttpSession httpSession, boolean create) {
         if (create && httpSession.getAttribute("NrtCollectionTasks") == null) {
             httpSession.setAttribute("NrtCollectionTasks", new HashMap<String, CollectionJob>());
@@ -297,7 +298,7 @@ public class NrtController {
             final String onmsResouceName = entry.getKey();
             final String value = entry.getValue();
 
-            final String rrdGraphAttributeName = onmsResouceName.substring(onmsResouceName.lastIndexOf(".") +1);
+            final String rrdGraphAttributeName = onmsResouceName.substring(onmsResouceName.lastIndexOf('.') +1);
             rrdGraphAttributesToMetricIds.put(rrdGraphAttributeName, getMetricIdFromMetaDataLine(value));
         }
         return rrdGraphAttributesToMetricIds;

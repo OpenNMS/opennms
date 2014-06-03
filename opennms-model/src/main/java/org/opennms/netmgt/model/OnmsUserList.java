@@ -29,58 +29,34 @@
 package org.opennms.netmgt.model;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.config.api.JaxbListWrapper;
+
 @XmlRootElement(name = "users")
-public class OnmsUserList extends LinkedList<OnmsUser> {
-    private static final long serialVersionUID = 870025150817734414L;
-    private int m_totalCount;
-    
-    public OnmsUserList() {
-        super();
+@XmlAccessorType(XmlAccessType.NONE)
+public class OnmsUserList extends JaxbListWrapper<OnmsUser> {
+    private static final long serialVersionUID = 1L;
+
+    public OnmsUserList() { super(); }
+    public OnmsUserList(final Collection<? extends OnmsUser> users) {
+        super(users);
     }
 
-    public OnmsUserList(final Collection<? extends OnmsUser> c) {
-        super(c);
+    @XmlElement(name="user")
+    public List<OnmsUser> getObjects() {
+        return super.getObjects();
     }
 
-    @XmlElement(name = "user")
     public List<OnmsUser> getUsers() {
-        return this;
+        return getObjects();
     }
-    
     public void setUsers(final List<OnmsUser> users) {
-        if (users == this) return;
-        clear();
-        addAll(users);
+        setObjects(users);
     }
-    
-    @XmlAttribute(name="count")
-    public int getCount() {
-        return this.size();
-    }
-
-    // The property has a getter "" but no setter. For unmarshalling, please define setters.
-    public void setCount(final int count) {
-    }
-
-    @XmlAttribute(name="totalCount")
-    public int getTotalCount() {
-        return m_totalCount;
-    }
-    
-    /**
-     * <p>setTotalCount</p>
-     *
-     * @param count a int.
-     */
-    public void setTotalCount(final int count) {
-        m_totalCount = count;
-    }
-
 }

@@ -28,6 +28,8 @@
 
 package org.opennms.web.command;
 
+import java.util.Arrays;
+
 /**
  * <p>ManageDatabaseReportCommand class.</p>
  *
@@ -45,7 +47,7 @@ public class ManageDatabaseReportCommand {
      * @param ids an array of {@link java.lang.Integer} objects.
      */
     public void setIds(Integer[] ids) {
-    m_ids = ids;
+    m_ids = Arrays.copyOf(ids, ids.length);
     }
 
     /**

@@ -28,7 +28,8 @@
 
 package org.opennms.netmgt.collectd.jdbc;
 
-import org.opennms.netmgt.collectd.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionResource;
 
 public class JdbcSingleInstanceCollectionResource extends JdbcCollectionResource {
     
@@ -38,7 +39,7 @@ public class JdbcSingleInstanceCollectionResource extends JdbcCollectionResource
 
     @Override
     public String getResourceTypeName() {
-        return "node";
+        return CollectionResource.RESOURCE_TYPE_NODE;
     }
 
     @Override

@@ -31,27 +31,20 @@ package org.opennms.protocols.http.collector;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-
-import org.opennms.netmgt.collectd.CollectionAgent;
-import org.opennms.netmgt.collectd.CollectionException;
-import org.opennms.netmgt.collectd.ServiceCollector;
-import org.opennms.netmgt.config.collector.AttributeGroupType;
+import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler;
 import org.opennms.protocols.xml.collector.UrlFactory;
 import org.opennms.protocols.xml.collector.XmlCollectionAttributeType;
@@ -59,11 +52,9 @@ import org.opennms.protocols.xml.collector.XmlCollectionResource;
 import org.opennms.protocols.xml.collector.XmlCollectionSet;
 import org.opennms.protocols.xml.collector.XmlCollectorException;
 import org.opennms.protocols.xml.config.Request;
-import org.opennms.protocols.xml.config.XmlDataCollection;
 import org.opennms.protocols.xml.config.XmlGroup;
 import org.opennms.protocols.xml.config.XmlObject;
 import org.opennms.protocols.xml.config.XmlSource;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,48 +64,16 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class HttpCollectionHandler extends AbstractXmlCollectionHandler {
+
+    /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(HttpCollectionHandler.class);
 
     /* (non-Javadoc)
-     * @see org.opennms.protocols.xml.collector.XmlCollectionHandler#collect(org.opennms.netmgt.collectd.CollectionAgent, org.opennms.protocols.xml.config.XmlDataCollection, java.util.Map)
+     * @see org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler#fillCollectionSet(java.lang.String, org.opennms.protocols.xml.config.Request, org.opennms.netmgt.collection.api.CollectionAgent, org.opennms.protocols.xml.collector.XmlCollectionSet, org.opennms.protocols.xml.config.XmlSource)
      */
     @Override
-    public XmlCollectionSet collect(CollectionAgent agent, XmlDataCollection collection, Map<String, Object> parameters) throws CollectionException {
-        XmlCollectionSet collectionSet = new XmlCollectionSet(agent);
-        collectionSet.setCollectionTimestamp(new Date());
-        collectionSet.setStatus(ServiceCollector.COLLECTION_UNKNOWN);
-        try {
-            for (XmlSource source : collection.getXmlSources()) {
-                String urlStr = parseUrl(source.getUrl(), agent, collection.getXmlRrd().getStep());
-                Request request = parseRequest(source.getRequest(), agent);
-                Document doc = getJsoupDocument(urlStr, request);
-                fillCollectionSet(agent, collectionSet, source, doc);
-            }
-            collectionSet.setStatus(ServiceCollector.COLLECTION_SUCCEEDED);
-            return collectionSet;
-        } catch (Exception e) {
-            collectionSet.setStatus(ServiceCollector.COLLECTION_FAILED);
-            throw new CollectionException(e.getMessage(), e);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler#processXmlResource(org.opennms.protocols.xml.collector.XmlCollectionResource, org.opennms.netmgt.config.collector.AttributeGroupType)
-     */
-    @Override
-    protected void processXmlResource(XmlCollectionResource collectionResource, AttributeGroupType attribGroupType) {
-    }
-
-    /**
-     * Fill collection set.
-     *
-     * @param agent the agent
-     * @param collectionSet the collection set
-     * @param source the source
-     * @param document the JSoup document
-     * @throws ParseException the parse exception
-     */
-    protected void fillCollectionSet(CollectionAgent agent, XmlCollectionSet collectionSet, XmlSource source, Document doc) throws ParseException {
+    protected void fillCollectionSet(String urlString, Request request, CollectionAgent agent, XmlCollectionSet collectionSet, XmlSource source) throws Exception {
+        Document doc = getJsoupDocument(urlString, request);
         for (XmlGroup group : source.getXmlGroups()) {
             LOG.debug("fillCollectionSet: getting resources for XML group {} using selector {}", group.getName(), group.getResourceXpath());
             Date timestamp = getTimeStamp(doc, group);
@@ -132,6 +91,13 @@ public class HttpCollectionHandler extends AbstractXmlCollectionHandler {
             processXmlResource(collectionResource, attribGroupType);
             collectionSet.getCollectionResources().add(collectionResource);
         }
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler#processXmlResource(org.opennms.protocols.xml.collector.XmlCollectionResource, org.opennms.netmgt.config.collector.AttributeGroupType)
+     */
+    @Override
+    protected void processXmlResource(XmlCollectionResource collectionResource, AttributeGroupType attribGroupType) {
     }
 
     /**
@@ -202,17 +168,18 @@ public class HttpCollectionHandler extends AbstractXmlCollectionHandler {
      */
     protected Document getJsoupDocument(String urlString, Request request) {
         InputStream is = null;
+        URLConnection c = null;
         try {
             URL url = UrlFactory.getUrl(urlString, request);
-            URLConnection c = url.openConnection();
+            c = url.openConnection();
             is = c.getInputStream();
-            Document doc = Jsoup.parse(is, "UTF-8", "/");
-            UrlFactory.disconnect(c);
+            final Document doc = Jsoup.parse(is, "UTF-8", "/");
             return doc;
         } catch (Exception e) {
             throw new XmlCollectorException(e.getMessage(), e);
         } finally {
             IOUtils.closeQuietly(is);
+            UrlFactory.disconnect(c);
         }
     }
 

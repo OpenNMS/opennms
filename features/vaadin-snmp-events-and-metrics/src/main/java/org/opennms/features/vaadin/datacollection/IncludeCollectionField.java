@@ -104,7 +104,7 @@ public class IncludeCollectionField extends CustomField<List<IncludeCollection>>
                     Notification.show("Please select a IncludeCollection from the table.");
                     return;
                 }
-                IncludeCollectionWindow w = new IncludeCollectionWindow(dataCollectionConfigDao, container, (IncludeCollectionWrapper) value) {
+                IncludeCollectionWindow w = new IncludeCollectionWindow(dataCollectionConfigDao, container, container.getOnmsBean(value)) {
                     @Override
                     public void fieldChanged() {}
                 };

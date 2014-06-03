@@ -28,11 +28,7 @@
 
 package org.opennms.protocols.xml.collector;
 
-import org.opennms.netmgt.collectd.AbstractCollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionAttributeType;
-import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.collector.ServiceParameters;
+import org.opennms.netmgt.collection.support.AbstractCollectionAttribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,18 +38,13 @@ import org.slf4j.LoggerFactory;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class XmlCollectionAttribute extends AbstractCollectionAttribute implements CollectionAttribute {
+public class XmlCollectionAttribute extends AbstractCollectionAttribute {
 
-	private static final Logger LOG = LoggerFactory.getLogger(XmlCollectionAttribute.class);
+    /** The Constant LOG. */
+    private static final Logger LOG = LoggerFactory.getLogger(XmlCollectionAttribute.class);
 
     /** The Attribute Value. */
-    private String m_value;
-
-    /** The XML Collection Resource associated with this attribute. */
-    private XmlCollectionResource m_resource;
-
-    /** The XML Attribute Type. */
-    private XmlCollectionAttributeType m_attribType;
+    private final String m_value;
 
     /**
      * Instantiates a new XML collection attribute.
@@ -63,29 +54,12 @@ public class XmlCollectionAttribute extends AbstractCollectionAttribute implemen
      * @param value the attribute value
      */
     public XmlCollectionAttribute(XmlCollectionResource resource, XmlCollectionAttributeType attribType, String value) {
-        m_resource = resource;
-        m_attribType = attribType;
+        super(attribType, resource);
         m_value = value;
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.netmgt.collectd.AbstractCollectionAttribute#getAttributeType()
-     */
-    @Override
-    public CollectionAttributeType getAttributeType() {
-        return m_attribType;
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.collectd.AbstractCollectionAttribute#getName()
-     */
-    @Override
-    public String getName() {
-        return m_attribType.getName();
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.collectd.AbstractCollectionAttribute#getNumericValue()
+     * @see org.opennms.netmgt.collection.support.AbstractCollectionAttribute#getNumericValue()
      */
     @Override
     public String getNumericValue() {
@@ -105,35 +79,11 @@ public class XmlCollectionAttribute extends AbstractCollectionAttribute implemen
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.netmgt.collectd.AbstractCollectionAttribute#getResource()
-     */
-    @Override
-    public CollectionResource getResource() {
-        return m_resource;
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.collectd.AbstractCollectionAttribute#getStringValue()
+     * @see org.opennms.netmgt.collection.support.AbstractCollectionAttribute#getStringValue()
      */
     @Override
     public String getStringValue() {
         return m_value;
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.collectd.AbstractCollectionAttribute#shouldPersist(org.opennms.netmgt.config.collector.ServiceParameters)
-     */
-    @Override
-    public boolean shouldPersist(ServiceParameters params) {
-        return true;
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.config.collector.CollectionAttribute#getType()
-     */
-    @Override
-    public String getType() {
-        return m_attribType.getType();
     }
 
     /* (non-Javadoc)
@@ -149,7 +99,7 @@ public class XmlCollectionAttribute extends AbstractCollectionAttribute implemen
      *
      * @return the thread category
      */
-   
+
 
     @Override
     public String getMetricIdentifier() {

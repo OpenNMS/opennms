@@ -34,6 +34,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.opennms.core.utils.InetAddressUtils;
@@ -241,7 +242,7 @@ public class SimpleUDPServer {
      * @param response an array of byte.
      */
     protected void addRequestResponse(DatagramPacket request, byte[] response){
-        m_conversation.add(new SimpleServerExchange(recievedPacket(request), response));
+        m_conversation.add(new SimpleServerExchange(recievedPacket(request), Arrays.copyOf(response, response.length)));
     }
     
     /**

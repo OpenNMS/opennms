@@ -116,10 +116,22 @@ public class VertexHopGraphProvider implements GraphProvider {
         private String m_label = "";
         private String m_id = "";
         
+        @Override
+        public String toString() {
+            return "Namespace:"+getNamespace()+", ID:"+getId()+", Label:"+getLabel();
+        }
+
+        
         //Adding explicit constructor because I found that this label must be set
         //for the focus list to have meaningful information in the focus list.
         public VertexHopCriteria(String label) {
         	super();
+        	m_label = label;
+        }
+        
+        public VertexHopCriteria(String id, String label) {
+        	super();
+        	m_id = id;
         	m_label = label;
         }
 
@@ -152,7 +164,6 @@ public class VertexHopGraphProvider implements GraphProvider {
 
         //FIXME: Since the criteria must have a label set, this constructor is being deprecated
         //Be sure that your constructing class calls setLabel()
-        @Deprecated
         public FocusNodeHopCriteria() {
         	super(null);
         }
@@ -161,7 +172,12 @@ public class VertexHopGraphProvider implements GraphProvider {
         	super(label);
         }
         
+        public FocusNodeHopCriteria(String id, String label) {
+        	super(id, label);
+        }
+        
         /**
+         * FIXME: I think it does matter ;)
          * TODO: This return value doesn't matter since we just delegate
          * to the m_delegate provider.
          */
@@ -232,14 +248,20 @@ public class VertexHopGraphProvider implements GraphProvider {
                 return false;
             }
             final FocusNodeHopCriteria other = (FocusNodeHopCriteria) obj;
-            if (m_vertices == null) {
-                if (other.m_vertices != null) {
-                    return false;
-                }
-            } else if (!m_vertices.equals(other.m_vertices)) {
-                return false;
+            
+            if (other.getNamespace().equals(getNamespace()) &&  other.getId().equals(getId()) && other.getLabel().equals(getLabel())) {
+               return true; 
             }
-            return true;
+            
+//            if (m_vertices == null) {
+//                if (other.m_vertices != null) {
+//                    return false;
+//                }
+//            } else if (!m_vertices.equals(other.m_vertices)) {
+//                return false;
+//            }
+            
+            return false;
         }
     }
 
@@ -696,5 +718,11 @@ public class VertexHopGraphProvider implements GraphProvider {
     @Override
     public Criteria getDefaultCriteria() {
         return m_delegate.getDefaultCriteria();
+    }
+    
+    @Override
+    public String toString() {
+        // TODO Auto-generated method stub
+        return super.toString();
     }
 }

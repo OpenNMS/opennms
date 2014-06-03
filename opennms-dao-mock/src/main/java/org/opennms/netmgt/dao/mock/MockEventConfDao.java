@@ -29,7 +29,6 @@ import org.springframework.util.Assert;
 public class MockEventConfDao implements EventConfDao, InitializingBean {
     private Resource m_resource;
     private Events m_events;
-    private EnterpriseIdPartition m_partition;
 
     public void setResource(final Resource resource) {
         m_resource = resource;
@@ -53,8 +52,7 @@ public class MockEventConfDao implements EventConfDao, InitializingBean {
             isr = new InputStreamReader(is);
             m_events = Events.unmarshal(isr);
             m_events.loadEventFiles(m_resource);
-            m_partition = new EnterpriseIdPartition();
-            m_events.initialize(m_partition);
+            m_events.initialize(new EnterpriseIdPartition());
         } catch (final IOException e) {
             throw new DataRetrievalFailureException("Failed to read from " + m_resource.toString(), e);
         } finally {

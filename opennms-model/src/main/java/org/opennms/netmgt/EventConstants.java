@@ -656,6 +656,11 @@ public class EventConstants {
     /** Constant <code>DATA_LINK_UNMANAGED_EVENT_UEI="uei.opennms.org/internal/linkd/dataLink"{trunked}</code> */
     public static final String DATA_LINK_UNMANAGED_EVENT_UEI = "uei.opennms.org/internal/linkd/dataLinkUnmanaged";
 
+    /** Constant <code>TOPOLOGY_LINK_DOWN_EVENT_UEI="uei.opennms.org/internal/topology/linkDown"{trunked}</code> */
+    public static final String TOPOLOGY_LINK_DOWN_EVENT_UEI = "uei.opennms.org/internal/topology/linkDown";
+    /** Constant <code>TOPOLOGY_LINK_UP_EVENT_UEI="uei.opennms.org/internal/topology/linkUp"{trunked}</code> */
+    public static final String TOPOLOGY_LINK_UP_EVENT_UEI = "uei.opennms.org/internal/topology/linkUp";
+
    
     //
     // end eventUEIs
@@ -1300,7 +1305,6 @@ public class EventConstants {
      * webui and a change here should get all time display in the webui changed.
      *
      * @see java.text.DateFormat
-     * @see org.opennms.web.Util.formatDateToUIString
      * @deprecated This is no longer used by the UI. All WebUI-specific code
      *             should under the org.opennms.web packages.
      * @param date a {@link java.util.Date} object.

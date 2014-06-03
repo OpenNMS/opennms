@@ -48,16 +48,20 @@ import org.opennms.netmgt.collectd.vmware.vijava.VmwareCollectionSet;
 import org.opennms.netmgt.collectd.vmware.vijava.VmwareMultiInstanceCollectionResource;
 import org.opennms.netmgt.collectd.vmware.vijava.VmwarePerformanceValues;
 import org.opennms.netmgt.collectd.vmware.vijava.VmwareSingleInstanceCollectionResource;
-import org.opennms.netmgt.config.collector.AttributeGroupType;
-import org.opennms.netmgt.config.collector.CollectionSet;
+import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionException;
+import org.opennms.netmgt.collection.api.CollectionInitializationException;
+import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.config.vmware.vijava.Attrib;
 import org.opennms.netmgt.config.vmware.vijava.VmwareCollection;
 import org.opennms.netmgt.config.vmware.vijava.VmwareGroup;
 import org.opennms.netmgt.dao.VmwareDatacollectionConfigDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.protocols.vmware.VmwareViJavaAccess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -200,7 +204,7 @@ public class VmwareCollector implements ServiceCollector {
             }
         }
 
-        VmwareCollectionSet collectionSet = new VmwareCollectionSet(agent);
+        VmwareCollectionSet collectionSet = new VmwareCollectionSet();
 
         collectionSet.setCollectionTimestamp(new Date());
 
@@ -252,7 +256,7 @@ public class VmwareCollector implements ServiceCollector {
         }
 
         for (final VmwareGroup vmwareGroup : collection.getVmwareGroup()) {
-            final AttributeGroupType attribGroupType = new AttributeGroupType(vmwareGroup.getName(), "all");
+            final AttributeGroupType attribGroupType = new AttributeGroupType(vmwareGroup.getName(), AttributeGroupType.IF_TYPE_ALL);
 
             if ("node".equalsIgnoreCase(vmwareGroup.getResourceType())) {
                 // single instance value
@@ -270,7 +274,7 @@ public class VmwareCollector implements ServiceCollector {
                     }
                 }
 
-                collectionSet.getResources().add(vmwareCollectionResource);
+                collectionSet.getCollectionResources().add(vmwareCollectionResource);
             } else {
                 // multi instance value
 
@@ -317,7 +321,7 @@ public class VmwareCollector implements ServiceCollector {
                     }
 
                     for (String instance : resources.keySet()) {
-                        collectionSet.getResources().add(resources.get(instance));
+                        collectionSet.getCollectionResources().add(resources.get(instance));
                     }
                 }
             }

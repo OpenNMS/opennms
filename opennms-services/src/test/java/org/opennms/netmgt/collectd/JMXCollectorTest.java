@@ -48,16 +48,17 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.collectd.JMXCollector.JMXCollectionResource;
-import org.opennms.netmgt.collectd.JMXCollector.JMXCollectionSet;
 import org.opennms.netmgt.collectd.jmxhelper.JmxTest;
 import org.opennms.netmgt.collectd.jmxhelper.JmxTestMBean;
+import org.opennms.netmgt.collection.api.AttributeGroup;
+import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.support.SingleResourceCollectionSet;
 import org.opennms.netmgt.config.BeanInfo;
 import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
 import org.opennms.netmgt.config.collectd.jmx.Attrib;
-import org.opennms.netmgt.config.collector.AttributeGroup;
-import org.opennms.netmgt.config.collector.AttributeGroupType;
-import org.opennms.netmgt.config.collector.CollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -149,9 +150,9 @@ public class JMXCollectorTest {
         
         //start collection
         CollectionSet collectionSet = jmxCollector.collect(collectionAgent, null, null);
-        JMXCollectionSet jmxCollectionSet = (JMXCollectionSet) collectionSet;
-        JMXCollectionResource jmxCollectionResource = jmxCollectionSet.getResource();
-        AttributeGroup group = jmxCollectionResource.getGroup(new AttributeGroupType("java_lang_type_Compilation", "all"));
+        SingleResourceCollectionSet jmxCollectionSet = (SingleResourceCollectionSet) collectionSet;
+        JMXCollectionResource jmxCollectionResource = (JMXCollectionResource)jmxCollectionSet.getCollectionResource();
+        AttributeGroup group = jmxCollectionResource.getGroup(new AttributeGroupType("java_lang_type_Compilation", AttributeGroupType.IF_TYPE_ALL));
         assertEquals(1, group.getAttributes().size());
         printDebugAttributeGroup(group);
         
@@ -170,9 +171,9 @@ public class JMXCollectorTest {
         
         //start collection
         CollectionSet collectionSet = jmxCollector.collect(collectionAgent, null, null);
-        JMXCollectionSet jmxCollectionSet = (JMXCollectionSet) collectionSet;
-        JMXCollectionResource jmxCollectionResource = jmxCollectionSet.getResource();
-        AttributeGroup group = jmxCollectionResource.getGroup(new AttributeGroupType("java_lang_type_Compilation", "all"));
+        SingleResourceCollectionSet jmxCollectionSet = (SingleResourceCollectionSet) collectionSet;
+        JMXCollectionResource jmxCollectionResource = (JMXCollectionResource)jmxCollectionSet.getCollectionResource();
+        AttributeGroup group = jmxCollectionResource.getGroup(new AttributeGroupType("java_lang_type_Compilation", AttributeGroupType.IF_TYPE_ALL));
         assertEquals(0, group.getAttributes().size());
         printDebugAttributeGroup(group);
         
@@ -187,9 +188,9 @@ public class JMXCollectorTest {
         
         //start collection
         CollectionSet collectionSet = jmxCollector.collect(collectionAgent, null, null);
-        JMXCollectionSet jmxCollectionSet = (JMXCollectionSet) collectionSet;
-        JMXCollectionResource jmxCollectionResource = jmxCollectionSet.getResource();
-        AttributeGroup group = jmxCollectionResource.getGroup(new AttributeGroupType("java_lang_type_Compilation", "all"));
+        SingleResourceCollectionSet jmxCollectionSet = (SingleResourceCollectionSet) collectionSet;
+        JMXCollectionResource jmxCollectionResource = (JMXCollectionResource)jmxCollectionSet.getCollectionResource();
+        AttributeGroup group = jmxCollectionResource.getGroup(new AttributeGroupType("java_lang_type_Compilation", AttributeGroupType.IF_TYPE_ALL));
         assertEquals(1, group.getAttributes().size());
         printDebugAttributeGroup(group);
         
@@ -204,9 +205,9 @@ public class JMXCollectorTest {
         
         //start collection
         CollectionSet collectionSet = jmxCollector.collect(collectionAgent, null, null);
-        JMXCollectionSet jmxCollectionSet = (JMXCollectionSet) collectionSet;
-        JMXCollectionResource jmxCollectionResource = jmxCollectionSet.getResource();
-        AttributeGroup group = jmxCollectionResource.getGroup(new AttributeGroupType("java_lang_type_OperatingSystem", "all"));
+        SingleResourceCollectionSet jmxCollectionSet = (SingleResourceCollectionSet) collectionSet;
+        JMXCollectionResource jmxCollectionResource = (JMXCollectionResource)jmxCollectionSet.getCollectionResource();
+        AttributeGroup group = jmxCollectionResource.getGroup(new AttributeGroupType("java_lang_type_OperatingSystem", AttributeGroupType.IF_TYPE_ALL));
         assertEquals(8, group.getAttributes().size());
         printDebugAttributeGroup(group);
         
@@ -221,9 +222,9 @@ public class JMXCollectorTest {
         
         //start collection
         CollectionSet collectionSet = jmxCollector.collect(collectionAgent, null, null);
-        JMXCollectionSet jmxCollectionSet = (JMXCollectionSet) collectionSet;
-        JMXCollectionResource jmxCollectionResource = jmxCollectionSet.getResource();
-        AttributeGroup group = jmxCollectionResource.getGroup(new AttributeGroupType("java_lang_type_Memory", "all"));
+        SingleResourceCollectionSet jmxCollectionSet = (SingleResourceCollectionSet) collectionSet;
+        JMXCollectionResource jmxCollectionResource = (JMXCollectionResource)jmxCollectionSet.getCollectionResource();
+        AttributeGroup group = jmxCollectionResource.getGroup(new AttributeGroupType("java_lang_type_Memory", AttributeGroupType.IF_TYPE_ALL));
         assertEquals(4, group.getAttributes().size());
         printDebugAttributeGroup(group);
         
@@ -238,9 +239,9 @@ public class JMXCollectorTest {
         
         //start collection
         CollectionSet collectionSet = jmxCollector.collect(collectionAgent, null, null);
-        JMXCollectionSet jmxCollectionSet = (JMXCollectionSet) collectionSet;
-        JMXCollectionResource jmxCollectionResource = jmxCollectionSet.getResource();
-        AttributeGroup group = jmxCollectionResource.getGroup(new AttributeGroupType("java_lang_type_Memory", "all"));
+        SingleResourceCollectionSet jmxCollectionSet = (SingleResourceCollectionSet) collectionSet;
+        JMXCollectionResource jmxCollectionResource = (JMXCollectionResource)(JMXCollectionResource)jmxCollectionSet.getCollectionResource();
+        AttributeGroup group = jmxCollectionResource.getGroup(new AttributeGroupType("java_lang_type_Memory", AttributeGroupType.IF_TYPE_ALL));
         assertEquals(3, group.getAttributes().size());
         printDebugAttributeGroup(group);
         
@@ -278,7 +279,7 @@ public class JMXCollectorTest {
     }
 
     private Map<String, JMXDataSource> generateDataSourceMap(Map<String, List<Attrib>> attributeMap) {
-        return jmxCollector.buildDataSourceList("foo", attributeMap);
+        return JMXCollector.buildDataSourceList("foo", attributeMap);
     }
         
     private void printDebugAttributeGroup(AttributeGroup group) {

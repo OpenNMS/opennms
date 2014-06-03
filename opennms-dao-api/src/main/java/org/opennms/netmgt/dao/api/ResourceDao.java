@@ -83,26 +83,12 @@ public interface ResourceDao {
     public List<OnmsResource> getResourceListById(String id);
     
     /**
-     * <p>findNodeResources</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    public List<OnmsResource> findNodeResources();
-
-    /**
      * <p>findDomainResources</p>
      *
      * @return a {@link java.util.List} object.
      */
     public List<OnmsResource> findDomainResources();
-    
-    /**
-     * <p>findNodeSourceResources</p>
-     * 
-     * @return a {@link java.util.List} object.
-     */
-    public List<OnmsResource> findNodeSourceResources();
-    
+   
     /**
      * <p>findTopLevelResources</p>
      *

@@ -33,14 +33,18 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionException;
+import org.opennms.netmgt.collection.api.CollectionInitializationException;
+import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Parameter;
 import org.opennms.netmgt.config.collectd.Service;
-import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
-import org.opennms.netmgt.model.RrdRepository;
+import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +69,7 @@ public class CollectionSpecification {
      *
      * @param wpkg a {@link org.opennms.netmgt.config.CollectdPackage} object.
      * @param svcName a {@link java.lang.String} object.
-     * @param collector a {@link org.opennms.netmgt.collectd.ServiceCollector} object.
+     * @param collector a {@link org.opennms.netmgt.collection.api.ServiceCollector} object.
      */
     public CollectionSpecification(Package wpkg, String svcName, ServiceCollector collector) {
         m_package = wpkg;
@@ -221,57 +225,66 @@ public class CollectionSpecification {
                 LOG.debug(sb.toString());
             }
         }
+        m.put("packageName", m_package.getName());
         m_parameters = m;
     }
 
     /**
      * <p>initialize</p>
      *
-     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @param agent a {@link org.opennms.netmgt.collection.api.CollectionAgent} object.
      */
     public void initialize(CollectionAgent agent) throws CollectionInitializationException {
-        Collectd.instrumentation().beginCollectorInitialize(agent.getNodeId(), agent.getHostAddress(), m_svcName);
+        Collectd.instrumentation().beginCollectorInitialize(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName);
         try {
             m_collector.initialize(agent, getPropertyMap());
         } finally {
-            Collectd.instrumentation().endCollectorInitialize(agent.getNodeId(), agent.getHostAddress(), m_svcName);
+            Collectd.instrumentation().endCollectorInitialize(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName);
         }
     }
 
     /**
      * <p>release</p>
      *
-     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @param agent a {@link org.opennms.netmgt.collection.api.CollectionAgent} object.
      */
     public void release(CollectionAgent agent) {
-        Collectd.instrumentation().beginCollectorRelease(agent.getNodeId(), agent.getHostAddress(), m_svcName);
+        Collectd.instrumentation().beginCollectorRelease(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName);
         try {
             m_collector.release(agent);
         } finally {
-            Collectd.instrumentation().endCollectorRelease(agent.getNodeId(), agent.getHostAddress(), m_svcName);
+            Collectd.instrumentation().endCollectorRelease(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName);
         }
     }
 
     /**
      * <p>collect</p>
      *
-     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
-     * @return a {@link org.opennms.netmgt.config.collector.CollectionSet} object.
-     * @throws org.opennms.netmgt.collectd.CollectionException if any.
+     * @param agent a {@link org.opennms.netmgt.collection.api.CollectionAgent} object.
+     * @return a {@link org.opennms.netmgt.collection.api.CollectionSet} object.
+     * @throws org.opennms.netmgt.collection.api.CollectionException if any.
      */
     public CollectionSet collect(CollectionAgent agent) throws CollectionException {
-        Collectd.instrumentation().beginCollectorCollect(agent.getNodeId(), agent.getHostAddress(), m_svcName);
+        Collectd.instrumentation().beginCollectorCollect(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName);
         try {
-            return getCollector().collect(agent, EventIpcManagerFactory.getIpcManager(), getPropertyMap());
+            CollectionSet set = getCollector().collect(agent, EventIpcManagerFactory.getIpcManager(), getPropertyMap());
+            // There are collector implementations that never throw an exception just return a collection failed
+            if (set.getStatus() == ServiceCollector.COLLECTION_FAILED) {
+                Collectd.instrumentation().reportCollectionException(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName, new CollectionFailed(ServiceCollector.COLLECTION_FAILED));
+            }
+            return set;
+        } catch (CollectionException e) {
+            Collectd.instrumentation().reportCollectionException(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName, e);
+            throw e;
         } finally {
-            Collectd.instrumentation().endCollectorCollect(agent.getNodeId(), agent.getHostAddress(), m_svcName);
+            Collectd.instrumentation().endCollectorCollect(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName);
         }
     }
 
     /**
      * <p>scheduledOutage</p>
      *
-     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @param agent a {@link org.opennms.netmgt.collection.api.CollectionAgent} object.
      * @return a boolean.
      */
     public boolean scheduledOutage(CollectionAgent agent) {
@@ -319,7 +332,7 @@ public class CollectionSpecification {
      * <p>getRrdRepository</p>
      *
      * @param collectionName a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.model.RrdRepository} object.
+     * @return a {@link org.opennms.netmgt.rrd.RrdRepository} object.
      */
     public RrdRepository getRrdRepository(String collectionName) {
         return m_collector.getRrdRepository(collectionName);

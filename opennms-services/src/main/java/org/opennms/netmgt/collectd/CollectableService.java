@@ -34,15 +34,23 @@ import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.collectd.Collectd.SchedulingCompletedFlag;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionException;
+import org.opennms.netmgt.collection.api.CollectionInitializationException;
+import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.ServiceCollector;
+import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.collection.persistence.rrd.BasePersister;
+import org.opennms.netmgt.collection.persistence.rrd.GroupPersister;
+import org.opennms.netmgt.collection.persistence.rrd.OneToOnePersister;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
-import org.opennms.netmgt.config.collector.CollectionSet;
-import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.RrdRepository;
+import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.netmgt.threshd.ThresholdingVisitor;
@@ -142,7 +150,7 @@ final class CollectableService implements ReadyRunnable {
         m_params=new ServiceParameters(m_spec.getReadOnlyPropertyMap());
         m_repository=m_spec.getRrdRepository(m_params.getCollectionName());
 
-        m_thresholdVisitor = ThresholdingVisitor.create(m_nodeId, getHostAddress(), m_spec.getServiceName(), m_repository,  m_params.getParameters());
+        m_thresholdVisitor = ThresholdingVisitor.create(m_nodeId, getHostAddress(), m_spec.getServiceName(), m_repository,  m_params);
     }
     
     /**
@@ -203,7 +211,7 @@ final class CollectableService implements ReadyRunnable {
 	 * Uses the existing package name to try and re-obtain the package from the collectd config factory.
 	 * Should be called when the collect config has been reloaded.
 	 *
-	 * @param collectorConfigDao a {@link org.opennms.netmgt.dao.api.CollectorConfigDao} object.
+	 * @param collectorConfigDao a {@link org.opennms.netmgt.config.CollectdConfigFactory} object.
 	 */
 	public void refreshPackage(CollectdConfigFactory collectorConfigDao) {
 		m_spec.refresh(collectorConfigDao);
@@ -254,7 +262,7 @@ final class CollectableService implements ReadyRunnable {
     private void sendEvent(String uei, String reason) {
         EventBuilder builder = new EventBuilder(uei, "OpenNMS.Collectd");
         builder.setNodeid(m_nodeId);
-        builder.setInterface(m_agent.getInetAddress());
+        builder.setInterface(m_agent.getAddress());
         builder.setService(m_spec.getServiceName());
         builder.setHost(InetAddressUtils.getLocalHostName());
         
@@ -362,8 +370,8 @@ final class CollectableService implements ReadyRunnable {
         m_status = status;
     }
 
-        private BasePersister createPersister(ServiceParameters params, RrdRepository repository) {
-            if (Boolean.getBoolean("org.opennms.rrd.storeByGroup")) {
+        private static BasePersister createPersister(ServiceParameters params, RrdRepository repository) {
+            if (ResourceTypeUtils.isStoreByGroup()) {
                 return new GroupPersister(params, repository);
             } else {
                 return new OneToOnePersister(params, repository);
@@ -379,13 +387,13 @@ final class CollectableService implements ReadyRunnable {
 		try {
 		    result = m_spec.collect(m_agent);
 		    if (result != null) {
-                        Collectd.instrumentation().beginPersistingServiceData(m_nodeId, getHostAddress(), m_spec.getServiceName());
+                        Collectd.instrumentation().beginPersistingServiceData(m_spec.getPackageName(), m_nodeId, getHostAddress(), m_spec.getServiceName());
                         try {
                             BasePersister persister = createPersister(m_params, m_repository);
                             persister.setIgnorePersist(result.ignorePersist());
                             result.visit(persister);
                         } finally {
-                            Collectd.instrumentation().endPersistingServiceData(m_nodeId, getHostAddress(), m_spec.getServiceName());
+                            Collectd.instrumentation().endPersistingServiceData(m_spec.getPackageName(), m_nodeId, getHostAddress(), m_spec.getServiceName());
                         }
                         
                         /*

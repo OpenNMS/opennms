@@ -29,6 +29,7 @@ package org.opennms.protocols.http;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -38,24 +39,39 @@ import javax.xml.bind.annotation.XmlTransient;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.message.BasicNameValuePair;
+import org.opennms.core.config.api.JaxbListWrapper;
 
 /**
  * The Class FormFields.
- * 
+ *
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 @XmlRootElement(name="form-fields")
-@SuppressWarnings("serial")
-public class FormFields extends ArrayList<FormField> {
+public class FormFields extends JaxbListWrapper<FormField> {
+
+    /** The Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
 
     /**
-     * Gets the fields.
+     * The Constructor.
+     */
+    public FormFields() { super(); }
+
+    /**
+     * The Constructor.
      *
-     * @return the fields
+     * @param fields the fields
+     */
+    public FormFields(final Collection<? extends FormField> fields) {
+        super(fields);
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.core.config.api.JaxbListWrapper#getObjects()
      */
     @XmlElement(name="form-field")
-    public List<FormField> getFields() {
-        return this;
+    public List<FormField> getObjects() {
+        return super.getObjects();
     }
 
     /**
