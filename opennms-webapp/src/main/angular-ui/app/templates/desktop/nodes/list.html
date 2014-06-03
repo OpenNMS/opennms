@@ -21,9 +21,9 @@
         <div class="TwoColLeft" >
             <ul class="plain">
                 <li ng-repeat="node in nodes">
-                    <a ui-if="node.foreignSource" href="#/node/{{node.id}}" title="foreignID: {{node.foreignSource}}:{{node.foreignId}}">{{node.label}}</a>
-                    <a ui-if="!node.foreignSource" href="#/node/{{node.id}}">{{node.label}}</a>
-                    (ID: {{node.id}})
+                    <a ui-if="node.foreignSource" href="#/node/{{node._id}}" title="foreignID: {{node.foreignSource}}:{{node.foreignId}}">{{node._label}}</a>
+                    <a ui-if="!node.foreignSource" href="#/node/{{node._id}}">{{node._label}}</a>
+                    (ID: {{node._id}})
                     <ul ui-if="node.interfaces">
                         <li ng-repeat="interface in node.interfaces">
 
@@ -36,9 +36,9 @@
         <div class="TwoColRight">
             <ul class="plain">
                 <li ng-repeat="node in nodes">
-                    <a ui-if="node.foreignSource" href="#/node/{{node.id}}" title="foreignID: {{node.foreignSource}}:{{node.foreignId}}">{{node.label}}</a>
-                    <a ui-if="!node.foreignSource" href="#/node/{{node.id}}">{{node.label}}</a>
-                    (ID: {{node.id}})
+                    <a ui-if="node.foreignSource" href="#/node/{{node._id}}" title="foreignID: {{node.foreignSource}}:{{node.foreignId}}">{{node._label}}</a>
+                    <a ui-if="!node.foreignSource" href="#/node/{{node._id}}">{{node.label}}</a>
+                    (ID: {{node._id}})
                     <ul></ul>
                 </li>
             </ul>
