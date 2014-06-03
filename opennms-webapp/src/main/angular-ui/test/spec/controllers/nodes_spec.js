@@ -11,7 +11,7 @@ describe('Shared Node Controllers Module', function() {
   beforeEach(function() {
      module('opennms.controllers.shared.nodes');
   });
-  describe('NodesController', function() {
+  describe('NodesCtrl', function() {
     var scope;
     var $controller;
     var rootScope;
@@ -29,7 +29,7 @@ describe('Shared Node Controllers Module', function() {
       NodeService.list = function() {}
       spyOn(NodeService, 'list').andReturn(getThenObject({}));
 
-      nodesController = $controller('NodesController', {
+      nodesController = $controller('NodesCtrl', {
         $rootScope: rootScope,
         $scope: scope,
         $log: _$log_,
@@ -53,7 +53,7 @@ describe('Shared Node Controllers Module', function() {
     });
   });
 
-  describe('NodeDetailController', function() {
+  describe('NodeDetailCtrl', function() {
     var scope;
     var $controller;
     var rootScope;
@@ -70,7 +70,7 @@ describe('Shared Node Controllers Module', function() {
       // Add fake state params.
       scope.fakeStateParams = { id: 1 };
 
-      nodeDetailController = $controller('NodeDetailController', {
+      nodeDetailController = $controller('NodeDetailCtrl', {
         $rootScope: rootScope,
         $scope: scope,
         $stateParams: scope.fakeStateParams,

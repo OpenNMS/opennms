@@ -1,5 +1,5 @@
-<div class="onms" ng-controller="NodeDetailController">
-    <h2>Node: {{node.label}} (ID: {{node.id}})</h2>
+<div class="onms">
+    <h2>Node: {{node._label}} (ID: {{node.id}})</h2>
     <h2 ui-if="node.foreignSource"><em>Created via provisioning requisition <strong>{{node.foreignSource}} (foreignId: {{node.foreignId}})</strong></em></h2>
     <h2 ui-if="!node.foreignSource"><em>Not a member of any provisioning requisition</em></h2>
     <div id="linkbar">

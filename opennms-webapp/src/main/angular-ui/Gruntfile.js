@@ -332,7 +332,7 @@ module.exports = function (grunt) {
     karma: {
       options: {
         basePath: '',
-        frameworks: ['mocha', 'chai'],
+        frameworks: ['jasmine'],
         files: [
           '<%= yeoman.app %>/bower_components/angular/angular.js',
           '<%= yeoman.app %>/bower_components/angular-animate/angular-animate.js',
@@ -341,11 +341,14 @@ module.exports = function (grunt) {
           '<%= yeoman.app %>/bower_components/ionic/release/js/ionic.js',
           '<%= yeoman.app %>/bower_components/ionic/release/js/ionic-angular.js',
           '<%= yeoman.app %>/bower_components/angular-mocks/angular-mocks.js',
+          '<%= yeoman.app %>/bower_components/x2js/xml2json.js',
+          '<%= yeoman.app %>/<%= yeoman.scripts %>/services/**/*.js',
+          '<%= yeoman.app %>/<%= yeoman.scripts %>/controllers/**/*.js',
           '<%= yeoman.app %>/<%= yeoman.scripts %>/**/*.js',
-          'test/mock/**/*.js',
+          //'test/mock/**/*.js',
           'test/spec/**/*.js'
         ],
-        autoWatch: false,
+        autoWatch: true,
         reporters: ['dots', 'coverage'],
         port: 8080,
         singleRun: false,
@@ -368,7 +371,8 @@ module.exports = function (grunt) {
       },
       continuous: {
         browsers: ['PhantomJS'],
-        singleRun: true,
+        singleRun: false,
+        autoWatch: true
       }
     },
 

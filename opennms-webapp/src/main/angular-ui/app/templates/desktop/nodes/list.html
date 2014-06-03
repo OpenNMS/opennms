@@ -1,29 +1,37 @@
 <div class="container-fluid">
-  <h4 ng-if="listInterfaces">Nodes and their interfaces</h4>
-  <h4 ng-if="!listInterfaces">Nodes</h4>
+    <div class="row">
+        <div class="col-sm-12 col-md-3">
+            <!-- Node List -->
+            <h4 ng-if="listInterfaces">Nodes and their interfaces</h4>
+            <h4 ng-if="!listInterfaces">Nodes</h4>
 
-  <div ng-if="!nodes.length">None found.</div>
+            <div ng-if="!nodes.length">None found.</div>
 
-  <div ng-repeat="node in nodes | orderBy:'_id' track by node._id">
-    <h5>{{node._label}} (Node ID: {{node._id}}<span ng-if="node._foreignId">, Foreign Source: {{node._foreignSource}}, Foreign ID: {{node._foreignId}}</span>)</h5>
-    <div style="padding-left: 20px" ng-if="ifaces[node._id]">
-      <div ng-repeat="iface in ifaces[node._id] | orderBy: '_ifIndex' track by iface._id">
-        <strong>{{iface.ipAddress}}</strong><span ng-if="iface._ifIndex">: ifIndex={{iface._ifIndex}}</span>
-      </div>
+            <div ng-repeat="node in nodes | orderBy:'_id' track by node._id">
+                <h5><a ui-sref="app.nodes.detail({ nodeId: node._id})">{{node._label}}</a> (Node ID: {{node._id}}<span ng-if="node._foreignId">, Foreign Source: {{node._foreignSource}}, Foreign ID: {{node._foreignId}}</span>)</h5>
+                <div style="padding-left: 20px" ng-if="ifaces[node._id]">
+                    <div ng-repeat="iface in ifaces[node._id] | orderBy: '_ifIndex' track by iface._id">
+                        <strong>{{iface.ipAddress}}</strong><span ng-if="iface._ifIndex">: ifIndex={{iface._ifIndex}}</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-sm-12 col-md-9">
+            <!-- Node Details -->
+            <div ui-view="nodeDetails"></div>
+        </div>
     </div>
-  </div>
 </div>
-<div>&nbsp;</div>
-
 <!--
 <div class="boxWrapper" ng-controller="NodesController">
     <ui-if="nodes.length">
         <div class="TwoColLeft" >
             <ul class="plain">
                 <li ng-repeat="node in nodes">
-                    <a ui-if="node.foreignSource" href="#/node/{{node._id}}" title="foreignID: {{node.foreignSource}}:{{node.foreignId}}">{{node._label}}</a>
-                    <a ui-if="!node.foreignSource" href="#/node/{{node._id}}">{{node._label}}</a>
-                    (ID: {{node._id}})
+                    <a ui-if="node.foreignSource" href="#/node/{{node.id}}" title="foreignID: {{node.foreignSource}}:{{node.foreignId}}">{{node.label}}</a>
+                    <a ui-if="!node.foreignSource" href="#/node/{{node.id}}">{{node.label}}</a>
+                    (ID: {{node.id}})
                     <ul ui-if="node.interfaces">
                         <li ng-repeat="interface in node.interfaces">
 
@@ -36,9 +44,9 @@
         <div class="TwoColRight">
             <ul class="plain">
                 <li ng-repeat="node in nodes">
-                    <a ui-if="node.foreignSource" href="#/node/{{node._id}}" title="foreignID: {{node.foreignSource}}:{{node.foreignId}}">{{node._label}}</a>
-                    <a ui-if="!node.foreignSource" href="#/node/{{node._id}}">{{node.label}}</a>
-                    (ID: {{node._id}})
+                    <a ui-if="node.foreignSource" href="#/node/{{node.id}}" title="foreignID: {{node.foreignSource}}:{{node.foreignId}}">{{node.label}}</a>
+                    <a ui-if="!node.foreignSource" href="#/node/{{node.id}}">{{node.label}}</a>
+                    (ID: {{node.id}})
                     <ul></ul>
                 </li>
             </ul>
