@@ -7,75 +7,72 @@
     'truncate',
     'opennms.controllers.desktop.app',
     'opennms.services.shared.nodes',
+    'opennms.services.shared.alarms',
     'opennms.services.shared.menu',
     'opennms.directives.shared.nodes'
   ])
     .controller('NodesCtrl', ['$scope', '$log', 'NodeService', function ($scope, $log, NodeService) {
       $log.debug('Initializing NodesCtrl.');
       $scope.listInterfaces = true;
-      //$scope.nodes = [];
-      $scope.ifaces = {};
+      $scope.nodes = [];
+      $scope.ifaces = [];
 
       $scope.limit = 10;
       $scope.offset = 0;
+      $scope.fetchedAll = false;
+
+      var self = this;
 
       $scope.init = function() {
-        NodeService.list($scope.offset, $scope.limit).then(function(nodes) {
-          $log.debug('Got nodes:', nodes);
-          $scope.nodes = nodes;
-
-          if ($scope.listInterfaces) {
-            for (var i=0; i < nodes.length; i++) {
-              var nodeId = nodes[i]['_id'];
-              NodeService.getIpInterfaces(nodeId).then(function(ifaces) {
-                if (ifaces) {
-                  if (!angular.isArray(ifaces)) {
-                    ifaces = [ifaces];
-                  }
-
-                  var nodeId = ifaces[0].nodeId;
-                  $log.debug('Interfaces for node ' + nodeId + ':', ifaces);
-                  $scope.ifaces[nodeId] = ifaces;
-                }
-              });
-            }
-          }
-
-        });
+        self.fetchNodes();
       };
 
       $scope.fetchMoreNodes = function() {
         $scope.offset += $scope.limit;
+        self.fetchNodes();
       };
+
+      $scope.fetchAllNodes = function() {
+        $scope.limit = 0;
+        self.fetchNodes();
+      }
 
       $scope.getNodeLink = function (node) {
         return '#/node/' + node.id;
       };
 
+      self.fetchNodes = function() {
+        NodeService.list($scope.offset, $scope.limit).then(self.processNodes);
+      };
+
+      self.processNodes = function(nodes) {
+        $log.debug('Got nodes:', nodes);
+        $scope.nodes = $scope.nodes.concat(nodes);
+
+        if ($scope.listInterfaces) {
+          for (var i=0; i < nodes.length; i++) {
+            var nodeId = nodes[i]['_id'];
+            NodeService.getIpInterfaces(nodeId).then(self.processIfaces);
+          }
+        }
+      };
+
+      self.processIfaces = function(ifaces) {
+        if (ifaces) {
+          if (!angular.isArray(ifaces)) {
+            ifaces = [ifaces];
+          }
+
+          var nodeId = ifaces[0].nodeId;
+          $log.debug('Interfaces for node ' + nodeId + ':', ifaces);
+          $scope.ifaces[nodeId] = ifaces;
+        }
+      };
+
       $scope.init();
     }])
-    .controller('NodeDetailCtrl', ['$scope', '$stateParams', '$log', 'NodeService', function ($scope, $stateParams, $log, NodeService) {
+    .controller('NodeDetailCtrl', ['$scope', '$stateParams', '$log', 'NodeService', 'AlarmService', function ($scope, $stateParams, $log, NodeService) {
       $scope.node = {};
-//      $scope.node.label = 'node8';
-//      $scope.node.id = 1;
-//      $scope.node.foreignSource = 'bigreq';
-//      $scope.node.foreignId = 'node8';
-//      $scope.node.statusSite = '';
-//      $scope.node.links = [];
-//      $scope.node.resources = [];
-//      $scope.node.navEntries = [];
-//      $scope.node.schedOutages = '';
-//      $scope.node.asset = {
-//        'description': '',
-//        'comments': ''
-//      };
-//      $scope.node.snmp = {
-//        'sysName': '',
-//        'sysObjectId': '',
-//        'sysLocation': '',
-//        'sysContact': '',
-//        'sysDescription': ''
-//      };
 
       $scope.init = function() {
         NodeService.get($stateParams.nodeId).then(function(node) {
@@ -93,11 +90,6 @@
           })
         });
       };
-
-      $scope.getServicesForInterface = function(iface) {
-
-      }
-      console.log($scope.node);
 
       /// Runtime stuff.
       $scope.init();

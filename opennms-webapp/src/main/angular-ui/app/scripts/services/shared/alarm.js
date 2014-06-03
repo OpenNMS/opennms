@@ -12,6 +12,17 @@
     var getAlarm = function() {
     };
 
+    var getAlarmsByNode = function(offset, limit, nodeId) {
+      if (limit === undefined) {
+        limit = 50;
+      }
+      if (offset === undefined) {
+        offset = 0;
+      }
+
+      var alarmsUrl = config.getRoot() + '/rest/alarms?limit=' + limit + '&offset=' + offset + '&comparator=eq&nodeId=' + nodeId;
+      fetchAlarms(offset, limit, alarmsUrl);
+    }
     var getAlarms = function(offset, limit) {
       if (limit === undefined) {
         limit = 50;
@@ -19,8 +30,12 @@
       if (offset === undefined) {
         offset = 0;
       }
-      
+
       var alarmsUrl = config.getRoot() + '/rest/alarms?limit=' + limit + '&offset=' + offset;
+      fetchAlarms(offset, limit, alarmsUrl);
+    };
+
+    var fetchAlarms = function (offset, limit, nodeId) {
       $log.debug('getAlarms: GET ' + alarmsUrl);
 
       var deferred = $q.defer();
@@ -77,7 +92,8 @@
     return {
       'summaries': getAlarmSummaries,
       'list': getAlarms,
-      'get': getAlarm
+      'get': getAlarm,
+      'getByNode': getAlarmsByNode
     };
   }])
 
