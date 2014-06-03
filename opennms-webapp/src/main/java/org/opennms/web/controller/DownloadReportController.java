@@ -40,8 +40,6 @@ import org.opennms.api.reporting.ReportFormat;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.WebSecurityUtils;
-import org.opennms.core.xml.CastorUtils;
-import org.opennms.netmgt.config.reportd.ReportdConfiguration;
 import org.opennms.netmgt.dao.ReportdConfigurationDao;
 import org.opennms.reporting.core.svclayer.ReportStoreService;
 import org.opennms.web.servlet.MissingParameterException;
