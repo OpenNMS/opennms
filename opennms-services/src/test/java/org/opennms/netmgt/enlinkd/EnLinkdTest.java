@@ -46,7 +46,9 @@ import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.nb.Nms10205bNetworkBuilder;
 import org.opennms.netmgt.nb.Nms17216NetworkBuilder;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 public class EnLinkdTest extends EnLinkdTestBuilder {
 
 	Nms10205bNetworkBuilder builder10205a = new Nms10205bNetworkBuilder();

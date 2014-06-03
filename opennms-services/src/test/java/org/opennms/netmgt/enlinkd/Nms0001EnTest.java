@@ -47,7 +47,9 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.model.IsIsLink;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms0001NetworkBuilder;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 public class Nms0001EnTest extends EnLinkdTestBuilder {
 
 	Nms0001NetworkBuilder builder = new Nms0001NetworkBuilder();

@@ -47,7 +47,9 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
@@ -60,7 +62,6 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-@Transactional
 public abstract class EnLinkdTestBuilder extends EnLinkdTestHelper implements InitializingBean {
 
     @Autowired
@@ -80,6 +81,9 @@ public abstract class EnLinkdTestBuilder extends EnLinkdTestHelper implements In
 
     @Autowired
     protected IsIsLinkDao m_isisLinkDao;
+
+    @Autowired
+    protected TransactionTemplate m_transactionTemplate;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -104,10 +108,15 @@ public abstract class EnLinkdTestBuilder extends EnLinkdTestHelper implements In
 
     @After
     public void tearDown() throws Exception {
-        for (final OnmsNode node : m_nodeDao.findAll()) {
-            m_nodeDao.delete(node);
-        }
-        m_nodeDao.flush();
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+                for (final OnmsNode node : m_nodeDao.findAll()) {
+                    m_nodeDao.delete(node);
+                }
+                m_nodeDao.flush();
+            }
+        });
     }
     
 }
