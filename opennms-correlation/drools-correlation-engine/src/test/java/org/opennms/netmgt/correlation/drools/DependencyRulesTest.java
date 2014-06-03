@@ -63,7 +63,7 @@ public class DependencyRulesTest extends CorrelationRulesTestCase {
 
         Event event = createNodeLostServiceEvent( 1, "10.1.1.1", "ICMP" );
         event.setDbid(17);
-		engine.correlate( event );
+	engine.correlate(event);
 
         // event + initialized
         m_anticipatedMemorySize = 18;
