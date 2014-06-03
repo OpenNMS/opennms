@@ -1,3 +1,22 @@
 @import "shared.scss";
-
 @import "desktop/dashboard.scss";
+
+
+body {
+  font-size: 1.2em;
+}
+
+.nodeHeader {
+  background-color: $node-summary-header-color;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+p.nodeHeaderLocation {
+  margin-bottom: 0px;
+}
+
+
+[node-list-popover] .popover {
+  min-width: 300px;
+}

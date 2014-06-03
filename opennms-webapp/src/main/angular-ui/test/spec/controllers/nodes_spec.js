@@ -61,26 +61,31 @@ describe('Shared Node Controllers Module', function() {
     var nodeDetailController;
     var NodeService;
 
-    beforeEach(inject(function(_$rootScope_, _$controller_, _NodeService_) {
+    beforeEach(inject(function(_$rootScope_, _$controller_, _$log_, _NodeService_) {
       rootScope = _$rootScope_;
       scope = rootScope.$new();
       $controller = _$controller_;
       NodeService = _NodeService_;
 
-      // Add fake state params.
-      scope.fakeStateParams = { id: 1 };
+      // Stub these out.
+      scope.fakeStateParams = { nodeId: 1 };  // Add fake state params.
+      NodeService.list = function() {
+        return { then: function(cb) { cb({}) } };
+      };
+
 
       nodeDetailController = $controller('NodeDetailCtrl', {
         $rootScope: rootScope,
         $scope: scope,
         $stateParams: scope.fakeStateParams,
+        $log: _$log_,
         NodeService: NodeService
       });
     }));
 
     describe('init', function() {
       it('should populate the node from the node detail factory', function() {
-        spyOn(NodeService, 'get');
+        spyOn(NodeService, 'get').andReturn(getThenObject({_id: 1}));
 
         scope.init();
         expect(NodeService.get).toHaveBeenCalledWith(1);
