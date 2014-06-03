@@ -8,83 +8,33 @@
   </parent>
   <artifactId>opennms-doc</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Documentation</name>
-  <description>Various Guides for using OpenNMS</description>
+  <name>OpenNMS :: Documentation</name>
+  <description>Official documentation</description>
   <build>
     <plugins>
       <plugin>
-        <groupId>com.agilejava.docbkx</groupId>
-        <artifactId>docbkx-maven-plugin</artifactId>
-        <version>2.0.8-onms</version>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>3.3</version>
         <executions>
           <execution>
             <goals>
-              <goal>generate-html</goal>
-              <goal>generate-pdf</goal>
+              <goal>site</goal>
             </goals>
-            <phase>compile</phase>
+            <phase>package</phase>
           </execution>
         </executions>
         <dependencies>
+          <!-- Support for makrdown -->
           <dependency>
-            <groupId>org.docbook</groupId>
-            <artifactId>docbook-xml</artifactId>
-            <version>4.4</version>
-            <scope>runtime</scope>
+            <groupId>org.apache.maven.doxia</groupId>
+            <artifactId>doxia-module-markdown</artifactId>
+            <version>1.5</version>
           </dependency>
         </dependencies>
         <configuration>
-          <chunkedOutput>false</chunkedOutput>
-          <htmlStylesheet>common/html.css</htmlStylesheet>
-          <xincludeSupported>true</xincludeSupported>
-          <foCustomization>${basedir}/src/docbkx/common/fopdf.xsl</foCustomization>
-          <draftWatermarkImage>${basedir}/src/docbkx/images/draft.png</draftWatermarkImage>
-          <entities>
-            <entity>
-              <name>version</name>
-              <value>${project.version}</value>
-            </entity>
-          </entities>
-          <postProcess>
-            <copy todir="target/docbkx/html/common">
-              <fileset dir="src/docbkx/common">
-                <include name="*.css"/>
-              </fileset>
-              <fileset dir="src/docbkx/images">
-                <include name="*.gif"/>
-                <include name="*.png"/>
-              </fileset>
-            </copy>
-            <!--
-            <copy todir="target/site/reference">
-              <fileset dir="target/docbkx">
-                <include name="**/*.css" />
-                <include name="**/*.png" />
-                <include name="**/*.gif" />
-                <include name="**/*.jpg" />
-                <include name="**/*.html" />
-                <include name="**/*.pdf" />
-              </fileset>
-            </copy>
-            -->
-          </postProcess>
+          <generateReports>false</generateReports>
         </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <configuration>
-          <descriptors>
-            <descriptor>src/assembly/doc.xml</descriptor>
-          </descriptors>
-        </configuration>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>
