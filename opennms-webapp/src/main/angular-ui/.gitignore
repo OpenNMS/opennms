@@ -4,6 +4,7 @@ www
 .sass-cache
 .DS_Store
 app/bower_components
+app/styles/generated
 coverage
 platforms
 plugins

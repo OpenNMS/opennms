@@ -154,7 +154,7 @@ module.exports = function (grunt) {
     compass: {
       options: {
         sassDir: '<%= yeoman.app %>/<%= yeoman.styles %>',
-        cssDir: '.tmp/<%= yeoman.styles %>',
+        cssDir: '<%= yeoman.app %>/<%= yeoman.styles %>/generated',
         generatedImagesDir: '.tmp/img/generated',
         imagesDir: '<%= yeoman.app %>/img',
         javascriptsDir: '<%= yeoman.app %>/<%= yeoman.scripts %>',
