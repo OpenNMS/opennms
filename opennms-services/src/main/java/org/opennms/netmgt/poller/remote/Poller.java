@@ -33,7 +33,7 @@ import java.beans.PropertyChangeListener;
 import java.util.Collection;
 import java.util.Date;
 
-import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.PollStatus;
 import org.quartz.Scheduler;
 import org.quartz.Trigger;
 import org.slf4j.Logger;
@@ -135,7 +135,7 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
 
             // remove any currently scheduled job
             if (m_scheduler.deleteJob(jobName, PollJobDetail.GROUP)) {
-                LOG.debug(String.format("Job for {} already scheduled.  Rescheduling", polledService));
+                LOG.debug("Job for {} already scheduled.  Rescheduling", polledService);
             } else {
                 LOG.debug("Scheduling job for {}", polledService);
             }

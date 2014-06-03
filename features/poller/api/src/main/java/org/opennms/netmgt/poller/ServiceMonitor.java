@@ -30,7 +30,6 @@ package org.opennms.netmgt.poller;
 
 import java.util.Map;
 
-import org.opennms.netmgt.model.PollStatus;
 
 /**
  * <p>

@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  *******************************************************************************/
 
 /**
- * @author <a mailto:seth@opennms.org>Seth Leger</a>
+ * @author <a href="mailto:seth@opennms.org">Seth Leger</a>
  */
 public final class EmptyKeyRelaxedTrustSSLContext extends SSLContextSpi {
 	

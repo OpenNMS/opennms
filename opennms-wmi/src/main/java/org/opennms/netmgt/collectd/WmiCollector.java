@@ -45,16 +45,18 @@ import org.opennms.netmgt.collectd.wmi.WmiCollectionResource;
 import org.opennms.netmgt.collectd.wmi.WmiCollectionSet;
 import org.opennms.netmgt.collectd.wmi.WmiMultiInstanceCollectionResource;
 import org.opennms.netmgt.collectd.wmi.WmiSingleInstanceCollectionResource;
+import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.WmiDataCollectionConfigFactory;
 import org.opennms.netmgt.config.WmiPeerFactory;
-import org.opennms.netmgt.config.collector.AttributeGroupType;
-import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.config.wmi.Attrib;
 import org.opennms.netmgt.config.wmi.WmiCollection;
 import org.opennms.netmgt.config.wmi.Wpm;
-import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.protocols.wmi.WmiClient;
 import org.opennms.protocols.wmi.WmiException;
 import org.opennms.protocols.wmi.WmiManager;
@@ -103,7 +105,7 @@ public class WmiCollector implements ServiceCollector {
         loadAttributeTypeList(collection);
 
         // Create a new collection set.
-        final WmiCollectionSet collectionSet = new WmiCollectionSet(agent);        
+        final WmiCollectionSet collectionSet = new WmiCollectionSet();
         collectionSet.setCollectionTimestamp(new Date());
 
         // Iterate through the WMI collection groups.
@@ -160,7 +162,7 @@ public class WmiCollector implements ServiceCollector {
                                 final WmiCollectionAttributeType attribType = m_attribTypeList.get(attrib.getName());
                                 resource.setAttributeValue(attribType, prop.getWmiValue().toString());
                             }
-                            collectionSet.getResources().add(resource);
+                            collectionSet.getCollectionResources().add(resource);
                         }
                     }
                 } catch (final WmiException e) {
@@ -321,7 +323,7 @@ public class WmiCollector implements ServiceCollector {
             LOG.debug(sb.toString());
             throw new IllegalStateException(sb.toString());
         } else {
-            nodeState = new WmiAgentState(agent.getInetAddress(), parameters);
+            nodeState = new WmiAgentState(agent.getAddress(), parameters);
             LOG.info("initialize: Scheduling interface for collection: {}", nodeState.getAddress());
             m_scheduledNodes.put(scheduledNodeKey, nodeState);
         }

@@ -57,9 +57,9 @@ public class Package implements Serializable {
 
     /**
      * A file URL holding specific addresses to be polled. Each line in the
-     * URL file can be one of: "<IP><space>#<comments>"; "<IP>";
-     * "#<comments>"; Lines starting with a '#' are ignored and so are
-     * characters after a '<space>#' in a line.
+     * URL file can be one of: "&lt;IP&gt;&lt;space&gt;#&lt;comments&gt;"; "&lt;IP&gt;";
+     * "#&lt;comments&gt;"; Lines starting with a '#' are ignored and so are
+     * characters after a '&lt;space&gt;#' in a line.
      */
     @XmlElement(name="include-url")
     private List<String> m_includeUrls = new ArrayList<String>();

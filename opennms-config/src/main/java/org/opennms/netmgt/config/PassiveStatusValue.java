@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.config;
 
-import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.PollStatus;
 
 /**
  * <p>PassiveStatusValue class.</p>
@@ -47,7 +47,7 @@ public class PassiveStatusValue {
      * @param nodeLabel a {@link java.lang.String} object.
      * @param ipAddr a {@link java.lang.String} object.
      * @param serviceName a {@link java.lang.String} object.
-     * @param status a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @param status a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public PassiveStatusValue(String nodeLabel, String ipAddr, String serviceName, PollStatus status) {
         this(new PassiveStatusKey(nodeLabel, ipAddr, serviceName), status);
@@ -57,7 +57,7 @@ public class PassiveStatusValue {
      * <p>Constructor for PassiveStatusValue.</p>
      *
      * @param key a {@link org.opennms.netmgt.config.PassiveStatusKey} object.
-     * @param status a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @param status a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public PassiveStatusValue(PassiveStatusKey key, PollStatus status) {
         m_key = key;
@@ -67,7 +67,7 @@ public class PassiveStatusValue {
     /**
      * <p>getStatus</p>
      *
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public PollStatus getStatus() {
         return m_status;
@@ -76,7 +76,7 @@ public class PassiveStatusValue {
     /**
      * <p>setStatus</p>
      *
-     * @param status a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @param status a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public void setStatus(PollStatus status) {
         m_status = status;

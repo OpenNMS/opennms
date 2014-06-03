@@ -41,7 +41,7 @@ public abstract class AbstractLayoutAlgorithm implements LayoutAlgorithm, Layout
 					return new Point(0,0);
 				}
 				org.opennms.features.topology.api.Point location = graphLayout.getLocation(v);
-				return new Point(location.getX(), location.getY());
+				return new Point2D.Double(location.getX(), location.getY());
 			}
 		};
 	}
@@ -51,7 +51,7 @@ public abstract class AbstractLayoutAlgorithm implements LayoutAlgorithm, Layout
 			@Override
 			public Point2D transform(VertexRef v) {
 				org.opennms.features.topology.api.Point location = graphLayout.getLocation(v);
-				return new Point(location.getX()-xOffset, location.getY()-yOffset);
+				return new Point2D.Double(location.getX()-xOffset, location.getY()-yOffset);
 			}
 		};
 	}

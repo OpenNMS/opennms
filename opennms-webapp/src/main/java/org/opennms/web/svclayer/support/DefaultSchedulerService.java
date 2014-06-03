@@ -103,10 +103,12 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
             String[] triggerNames = m_scheduler.getTriggerNames(m_triggerGroup);
             for (int j = 0; j < triggerNames.length; j++) {
                 TriggerDescription description = new TriggerDescription();
-                description.setNextFireTime(m_scheduler.getTrigger(
-                                                                   triggerNames[j],
-                                                                   m_triggerGroup).getNextFireTime());
+                Trigger trigger = m_scheduler.getTrigger(triggerNames[j], m_triggerGroup);
+                description.setNextFireTime(trigger.getNextFireTime());
                 description.setTriggerName(triggerNames[j]);
+                description.setReportId((String)trigger.getJobDataMap().get("reportId"));
+                description.setDeliveryOptions((DeliveryOptions) trigger.getJobDataMap().get("deliveryOptions"));
+                description.setReportParameters(((ReportParameters) trigger.getJobDataMap().get("criteria")).getReportParms());
                 triggerDescriptions.add(description);
 
             }

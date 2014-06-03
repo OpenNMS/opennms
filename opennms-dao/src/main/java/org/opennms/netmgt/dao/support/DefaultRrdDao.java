@@ -34,6 +34,7 @@ import java.io.InputStream;
 import org.opennms.netmgt.dao.api.RrdDao;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.RrdGraphAttribute;
+import org.opennms.netmgt.rrd.RrdFileConstants;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.slf4j.Logger;

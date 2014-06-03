@@ -28,9 +28,9 @@
 
 package org.opennms.netmgt.collectd.vmware.cim;
 
-import org.opennms.netmgt.collectd.AbstractCollectionResource;
-import org.opennms.netmgt.collectd.CollectionAgent;
-import org.opennms.netmgt.config.collector.CollectionAttributeType;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionAttributeType;
+import org.opennms.netmgt.collection.support.AbstractCollectionResource;
 
 public abstract class VmwareCimCollectionResource extends AbstractCollectionResource {
 
@@ -38,13 +38,8 @@ public abstract class VmwareCimCollectionResource extends AbstractCollectionReso
         super(agent);
     }
 
-    @Override
-    public int getType() {
-        return -1; //Is this right?
-    }
-
     public void setAttributeValue(final CollectionAttributeType type, final String value) {
-        final VmwareCimCollectionAttribute attr = new VmwareCimCollectionAttribute(this, type, type.getName(), value);
+        final VmwareCimCollectionAttribute attr = new VmwareCimCollectionAttribute(this, type, value);
         addAttribute(attr);
     }
 

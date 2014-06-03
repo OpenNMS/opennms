@@ -92,7 +92,7 @@ public class Capsd extends AbstractSpringContextJmxServiceDaemon<org.opennms.net
     @Override
     public double getSuspectTaskCompletionRatio() {
         if (getSuspectTotalTasks() == 0) {
-            return new Double(0);
+            return 0.0;
         }
         return new Double(getSuspectCompletedTasks()) / new Double(getSuspectTotalTasks());
     }
@@ -101,7 +101,7 @@ public class Capsd extends AbstractSpringContextJmxServiceDaemon<org.opennms.net
     @Override
     public double getRescanTaskCompletionRatio() {
         if (getRescanTotalTasks() == 0) {
-            return new Double(0);
+            return 0.0;
         }
         return new Double(getRescanCompletedTasks()) / new Double(getRescanTotalTasks());
     }

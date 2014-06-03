@@ -222,6 +222,7 @@ public class PhysInterfaceTableTracker extends TableTracker {
             snmpIface.setIfSpeed(getSpeed());
             snmpIface.setIfType(getIfType());
             snmpIface.setPhysAddr(getPhysAddr());
+            snmpIface.setPoll("N");
             return snmpIface;
         }
 

@@ -19,8 +19,9 @@ import javax.xml.bind.annotation.XmlRootElement;
  * then implement {@link #getObjects()} with an {@link XmlElement} annotation
  * and a call to super.getObjects() so that it gets serialized properly.</p>
  * <p>Example implementation:</p>
+ * <blockquote><pre>
  * {@code
- * @XmlRootElement(name="thingies")
+ * \@XmlRootElement(name="thingies")
  * public static class ThingyCollection extends JaxbListWrapper<Thingy> {
  *     private static final long serialVersionUID = 1L;
  *
@@ -28,12 +29,12 @@ import javax.xml.bind.annotation.XmlRootElement;
  *     public ThingyCollection(final Collection<? extends Thingy> thingies) {
  *         super(thingies);
  *     }
- *     @XmlElement(name="thingy")
+ *     \@XmlElement(name="thingy")
  *     public List<Thingy> getObjects() {
  *         return super.getObjects();
  *     }
  * }
- * }
+ * }</pre></blockquote>
  */
 @XmlAccessorType(XmlAccessType.NONE)
 public class JaxbListWrapper<T> implements Serializable, Iterable<T> {

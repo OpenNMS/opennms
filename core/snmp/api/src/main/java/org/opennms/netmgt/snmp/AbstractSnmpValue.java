@@ -31,17 +31,19 @@ package org.opennms.netmgt.snmp;
 public abstract class AbstractSnmpValue implements SnmpValue {
     
     /**
-     * <p>If the value is in the unprintable ASCII range (< 32) and is not a:</p>
+     * <p>If the value is in the unprintable ASCII range (&lt; 32) and is not a:</p>
+     * 
      * <ul>
      *   <li>Tab (9)</li>
      *   <li>Linefeed (10)</li>
      *   <li>Carriage return (13)</li>
-     * <ul>
-     * <p>or the byte is Delete (127) then this method will return false. Also, if the byte 
+     * </ul>
+     * 
+     * <p>...or the byte is Delete (127) then this method will return false. Also, if the byte 
      * array has a NULL byte (0) that occurs anywhere besides the last character, return false. 
      * We will allow the NULL byte as a special case at the end of the string.</p>
      * 
-     * Based on a modified version of http://stackoverflow.com/a/1447720 for UTF-8 detection.
+     * <p>Based on a modified version of <a href="http://stackoverflow.com/a/1447720">http://stackoverflow.com/a/1447720</a> for UTF-8 detection.</p>
      */
     protected boolean allBytesDisplayable(final byte[] bytes) {
         int i = 0;

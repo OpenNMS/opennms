@@ -103,7 +103,7 @@ public class DataCollectionWindow extends Window {
      * @param logger the logger
      */
     public void generateGraphTemplates(final MibParser parser, final Logger logger) {
-        final File configDir = new File(ConfigFileConstants.getHome(), "etc/snmp-graph.properties.d/");
+        final File configDir = new File(ConfigFileConstants.getHome(), "etc" + File.separatorChar + "snmp-graph.properties.d");
         final File file = new File(configDir, parser.getMibName().replaceAll(" ", "_") + "-graph.properties");
         try {
             FileWriter writer = new FileWriter(file);

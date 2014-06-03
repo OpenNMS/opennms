@@ -436,6 +436,20 @@ The Juniper JCA collector provides a collector plugin for Collectd to collect da
 %{extrainfo2}
 
 
+%package plugin-collector-vtdxml-handler
+Summary:	VTD-XML Collection Handler for OpenNMS
+Group:		Applications/System
+Requires(pre):	opennms-plugin-protocol-xml = %{version}-%{release}
+Requires:	opennms-plugin-protocol-xml = %{version}-%{release}
+
+%description plugin-collector-vtdxml-handler
+The XML Collection Handler for Standard and 3GPP XMLs based on VTD-XML.
+VTD-XML is very fast GPL library for parsing XMLs with XPath Suppoer.
+
+%{extrainfo}
+%{extrainfo2}
+
+
 %prep
 
 tar -xvzf $RPM_SOURCE_DIR/%{name}-source-%{version}-%{release}.tar.gz -C $RPM_BUILD_DIR
@@ -477,9 +491,9 @@ if [ "%{skip_compile}" = 1 ]; then
 	fi
 	TOPDIR=`pwd`
 	for dir in . opennms-tools; do
-		pushd $dir
+		cd $dir
 			"$TOPDIR"/compile.pl -N $EXTRA_OPTIONS -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" -Dopennms.home="%{instprefix}" install
-		popd
+		cd -
 	done
 else
 	echo "=== RUNNING COMPILE ==="
@@ -491,10 +505,10 @@ echo "=== BUILDING ASSEMBLIES ==="
 ./assemble.pl $EXTRA_OPTIONS -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
 	-Dopennms.home="%{instprefix}" -Dbuild.profile=full install
 
-pushd opennms-tools
+cd opennms-tools
 	../compile.pl $EXTRA_OPTIONS -N -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
         -Dopennms.home="%{instprefix}" install
-popd
+cd -
 
 echo "=== INSTALL COMPLETED ==="
 
@@ -550,7 +564,7 @@ rm -rf $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller
 
 rm -rf $RPM_BUILD_ROOT%{instprefix}/lib/*.tar.gz
 
-pushd $RPM_BUILD_ROOT
+cd $RPM_BUILD_ROOT
 
 # core package files
 find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
@@ -636,6 +650,8 @@ find $RPM_BUILD_ROOT%{instprefix}/lib ! -type d | \
 	grep -v 'opennms-integration-otrs' | \
 	grep -v 'opennms-integration-rt' | \
 	grep -v 'org.opennms.protocols.xml' | \
+	grep -v 'opennms-vtdxml-collector-handler' | \
+	grep -v 'vtd-xml' | \
 	grep -v 'org.opennms.protocols.xmp' | \
 	grep -v 'xmp' | \
 	grep -v 'org.opennms.features.juniper-tca-collector' | \
@@ -665,7 +681,7 @@ find $RPM_BUILD_ROOT%{jettydir} -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
 	sort >> %{_tmppath}/files.jetty
 
-popd
+cd -
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -822,6 +838,11 @@ rm -rf $RPM_BUILD_ROOT
 %{sharedir}/etc-pristine/tca*.xml
 %{sharedir}/etc-pristine/datacollection/juniper-tca*
 %{sharedir}/etc-pristine/snmp-graph.properties.d/juniper-tca*
+
+%files plugin-collector-vtdxml-handler
+%defattr(664 root root 775)
+%{instprefix}/lib/opennms-vtdxml-collector-handler-*.jar
+%{instprefix}/lib/vtd-xml-*.jar
 
 %post docs
 printf -- "- making symlink for $RPM_INSTALL_PREFIX0/docs... "

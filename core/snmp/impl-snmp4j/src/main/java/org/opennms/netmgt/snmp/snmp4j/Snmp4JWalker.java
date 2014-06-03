@@ -130,7 +130,7 @@ public class Snmp4JWalker extends SnmpWalker {
     }
 
     /**
-     * TODO: Merge this logic with {@link Snmp4JStrategy#processResponse()}
+     * TODO: Merge this logic with {@link org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy} processResponse()
      */
     public class Snmp4JResponseListener implements ResponseListener {
 
@@ -202,7 +202,7 @@ public class Snmp4JWalker extends SnmpWalker {
         @Override
     public void start() {
         
-        LOG.info("Walking {} for {} using version {} with config: {}", getName(), getAddress(), m_agentConfig.getVersionString(), m_agentConfig);
+        LOG.debug("Walking {} for {} using version {} with config: {}", getName(), getAddress(), m_agentConfig.getVersionString(), m_agentConfig);
             
         super.start();
     }

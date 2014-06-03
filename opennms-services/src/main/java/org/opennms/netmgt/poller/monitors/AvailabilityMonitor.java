@@ -32,9 +32,9 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.opennms.core.utils.TimeoutTracker;
-import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
+import org.opennms.netmgt.poller.PollStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 /**

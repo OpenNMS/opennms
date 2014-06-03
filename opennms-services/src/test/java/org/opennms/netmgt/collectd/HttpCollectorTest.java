@@ -49,11 +49,13 @@ import org.opennms.core.test.TestContextAwareExecutionListener;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.http.annotations.JUnitHttpServer;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.config.collectd.Filter;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Parameter;
 import org.opennms.netmgt.config.collectd.Service;
-import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
@@ -181,7 +183,7 @@ public class HttpCollectorTest implements TestContextAware, InitializingBean {
 
     /**
      * Test method for {@link org.opennms.netmgt.collectd.HttpCollector#collect(
-     *   org.opennms.netmgt.collectd.CollectionAgent, org.opennms.netmgt.model.events.EventProxy, Map)}.
+     *   org.opennms.netmgt.collection.api.CollectionAgent, org.opennms.netmgt.model.events.EventProxy, Map)}.
      */
     @Test
     @JUnitHttpServer(port=10342, vhosts={"127.0.0.1"})

@@ -479,8 +479,6 @@
                 <attrib name="mem.zero.average" alias="MemZeroAvg" type="Gauge"/>
                 <attrib name="net.broadcastRx.summation" alias="NetBroadcastRxSum" type="Gauge"/>
                 <attrib name="net.broadcastTx.summation" alias="NetBroadcastTxSum" type="Gauge"/>
-                <attrib name="net.bytesRx.average" alias="NetBytesRxAvg" type="Gauge"/>
-                <attrib name="net.bytesTx.average" alias="NetBytesTxAvg" type="Gauge"/>
                 <attrib name="net.errorsRx.summation" alias="NetErrorsRxSum" type="Gauge"/>
                 <attrib name="net.errorsTx.summation" alias="NetErrorsTxSum" type="Gauge"/>
                 <attrib name="net.multicastRx.summation" alias="NetMulticastRxSum" type="Gauge"/>
@@ -490,7 +488,6 @@
                 <attrib name="net.packetsRx.summation" alias="NetPacketsRxSum" type="Gauge"/>
                 <attrib name="net.packetsTx.summation" alias="NetPacketsTxSum" type="Gauge"/>
                 <attrib name="net.received.average" alias="NetReceivedAvg" type="Gauge"/>
-                <attrib name="net.usage.average" alias="NetUsageAvg" type="Gauge"/>
                 <attrib name="power.energy.summation" alias="PowerEnergySum" type="Gauge"/>
                 <attrib name="power.power.average" alias="PowerPowerAvg" type="Gauge"/>
                 <attrib name="power.powerCap.average" alias="PowerPowerCapAvg" type="Gauge"/>
@@ -518,8 +515,6 @@
             <vmware-group name="vmware5Net" resourceType="vmware5Net">
                 <attrib name="net.broadcastRx.summation" alias="NetBroadcastRxSum" type="Gauge"/>
                 <attrib name="net.broadcastTx.summation" alias="NetBroadcastTxSum" type="Gauge"/>
-                <attrib name="net.bytesRx.average" alias="NetBytesRxAvg" type="Gauge"/>
-                <attrib name="net.bytesTx.average" alias="NetBytesTxAvg" type="Gauge"/>
                 <attrib name="net.droppedRx.summation" alias="NetDroppedRxSum" type="Gauge"/>
                 <attrib name="net.droppedTx.summation" alias="NetDroppedTxSum" type="Gauge"/>
                 <attrib name="net.errorsRx.summation" alias="NetErrorsRxSum" type="Gauge"/>
@@ -531,7 +526,6 @@
                 <attrib name="net.received.average" alias="NetReceivedAvg" type="Gauge"/>
                 <attrib name="net.transmitted.average" alias="NetTransmittedAvg" type="Gauge"/>
                 <attrib name="net.unknownProtos.summation" alias="NetUnknownPsSum" type="Gauge"/>
-                <attrib name="net.usage.average" alias="NetUsageAvg" type="Gauge"/>
             </vmware-group>
             <vmware-group name="vmware5Disk" resourceType="vmware5Disk">
                 <attrib name="disk.busResets.summation" alias="DiskBusResetsSum" type="Gauge"/>
@@ -707,8 +701,6 @@
             <vmware-group name="vmware5Net" resourceType="vmware5Net">
                 <attrib name="net.broadcastRx.summation" alias="NetBroadcastRxSum" type="Gauge"/>
                 <attrib name="net.broadcastTx.summation" alias="NetBroadcastTxSum" type="Gauge"/>
-                <attrib name="net.bytesRx.average" alias="NetBytesRxAvg" type="Gauge"/>
-                <attrib name="net.bytesTx.average" alias="NetBytesTxAvg" type="Gauge"/>
                 <attrib name="net.droppedRx.summation" alias="NetDroppedRxSum" type="Gauge"/>
                 <attrib name="net.droppedTx.summation" alias="NetDroppedTxSum" type="Gauge"/>
                 <attrib name="net.multicastRx.summation" alias="NetMulticastRxSum" type="Gauge"/>
@@ -717,7 +709,6 @@
                 <attrib name="net.packetsTx.summation" alias="NetPacketsTxSum" type="Gauge"/>
                 <attrib name="net.received.average" alias="NetReceivedAvg" type="Gauge"/>
                 <attrib name="net.transmitted.average" alias="NetTransmittedAvg" type="Gauge"/>
-                <attrib name="net.usage.average" alias="NetUsageAvg" type="Gauge"/>
             </vmware-group>
             <vmware-group name="vmware5VrtDisk" resourceType="vmware5VrtDisk">
                 <attrib name="virtualDisk.numberReadAveraged.average" alias="VrtDiskNrRdAdAvg" type="Gauge"/>

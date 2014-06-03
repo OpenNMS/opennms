@@ -19,7 +19,7 @@
 	
 	<!-- <set-property name="user.agent" value="safari" /> -->
 
-    <inherits name="com.github.wolfie.refresher.RefresherApplicationWidgetset" />
+	<inherits name="com.github.wolfie.refresher.RefresherApplicationWidgetset" />
 
-    <collapse-all-properties/>
+	<collapse-all-properties/>
 </module>

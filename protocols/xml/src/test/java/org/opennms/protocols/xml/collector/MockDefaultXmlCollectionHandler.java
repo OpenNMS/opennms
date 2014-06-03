@@ -28,7 +28,7 @@
 
 package org.opennms.protocols.xml.collector;
 
-import org.opennms.netmgt.collectd.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.protocols.xml.config.Request;
 import org.opennms.protocols.xml.config.XmlResourceUtils;
 import org.w3c.dom.Document;

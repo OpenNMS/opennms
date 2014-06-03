@@ -28,10 +28,10 @@
 
 package org.opennms.netmgt.collectd.wmi;
 
-import org.opennms.netmgt.config.collector.AttributeGroupType;
-import org.opennms.netmgt.config.collector.CollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionAttributeType;
-import org.opennms.netmgt.config.collector.Persister;
+import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.api.Persister;
+import org.opennms.netmgt.collection.support.AbstractCollectionAttributeType;
 import org.opennms.netmgt.config.wmi.Attrib;
 
 /**
@@ -40,33 +40,22 @@ import org.opennms.netmgt.config.wmi.Attrib;
  * @author ranger
  * @version $Id: $
  */
-public class WmiCollectionAttributeType implements CollectionAttributeType {
+public class WmiCollectionAttributeType extends AbstractCollectionAttributeType {
         Attrib m_attribute;
-        AttributeGroupType m_groupType;
 
         /**
          * <p>Constructor for WmiCollectionAttributeType.</p>
          *
          * @param attribute a {@link org.opennms.netmgt.config.wmi.Attrib} object.
-         * @param groupType a {@link org.opennms.netmgt.config.collector.AttributeGroupType} object.
+         * @param groupType a {@link org.opennms.netmgt.collection.api.AttributeGroupType} object.
          */
         public WmiCollectionAttributeType(final Attrib attribute, final AttributeGroupType groupType) {
-            m_groupType = groupType;
+            super(groupType);
             m_attribute = attribute;
         }
 
-        /**
-         * <p>getGroupType</p>
-         *
-         * @return a {@link org.opennms.netmgt.config.collector.AttributeGroupType} object.
-         */
-    @Override
-        public AttributeGroupType getGroupType() {
-            return m_groupType;
-        }
-
         /** {@inheritDoc} */
-    @Override
+        @Override
         public void storeAttribute(final CollectionAttribute attribute, final Persister persister) {
             if ("string".equalsIgnoreCase(m_attribute.getType())) {
                 persister.persistStringAttribute(attribute);
@@ -80,7 +69,7 @@ public class WmiCollectionAttributeType implements CollectionAttributeType {
          *
          * @return a {@link java.lang.String} object.
          */
-    @Override
+        @Override
         public String getName() {
             return m_attribute.getAlias();
         }
@@ -90,7 +79,7 @@ public class WmiCollectionAttributeType implements CollectionAttributeType {
          *
          * @return a {@link java.lang.String} object.
          */
-    @Override
+        @Override
         public String getType() {
             return m_attribute.getType();
         }

@@ -30,8 +30,10 @@ package org.opennms.netmgt.collectd;
 
 import java.io.File;
 
-import org.opennms.netmgt.config.collector.ServiceParameters;
-import org.opennms.netmgt.model.RrdRepository;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.rrd.RrdRepository;
 
 
 /**
@@ -52,7 +54,7 @@ public final class NodeInfo extends SnmpCollectionResource {
      * <p>Constructor for NodeInfo.</p>
      *
      * @param def a {@link org.opennms.netmgt.collectd.NodeResourceType} object.
-     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @param agent a {@link org.opennms.netmgt.collection.api.CollectionAgent} object.
      */
     public NodeInfo(NodeResourceType def, CollectionAgent agent) {
         super(def);
@@ -66,7 +68,7 @@ public final class NodeInfo extends SnmpCollectionResource {
       * @return a int.
       */
         @Override
-     public int getType() {
+     public int getSnmpIfType() {
         return -1;
     }
 
@@ -118,7 +120,7 @@ public final class NodeInfo extends SnmpCollectionResource {
      */
         @Override
     public String getResourceTypeName() {
-        return "node"; //This is a nodeInfo; must be a node type resource
+        return CollectionResource.RESOURCE_TYPE_NODE; //This is a nodeInfo; must be a node type resource
     }
     
     
@@ -138,7 +140,7 @@ public final class NodeInfo extends SnmpCollectionResource {
      * @return a {@link java.lang.String} object.
      */
         @Override
-    public String getLabel() {
+    public String getInterfaceLabel() {
         return null;
     }
 

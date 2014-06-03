@@ -107,15 +107,6 @@ public class InetNetworkInterface implements NetworkInterface<InetAddress>, Seri
     }
     
     /**
-     * <p>getInetAddress</p>
-     *
-     * @return a {@link java.net.InetAddress} object.
-     */
-    public InetAddress getInetAddress() {
-        return m_address;
-    }
-
-    /**
      * {@inheritDoc}
      *
      * <P>

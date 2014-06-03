@@ -30,9 +30,9 @@ package org.opennms.netmgt.collectd;
 
 import java.util.List;
 
-import org.opennms.netmgt.config.collector.AbstractCollectionSetVisitor;
-import org.opennms.netmgt.config.collector.CollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionResource;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.support.AbstractCollectionSetVisitor;
 import org.opennms.netmgt.config.datacollection.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

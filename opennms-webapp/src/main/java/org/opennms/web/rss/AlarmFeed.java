@@ -32,9 +32,9 @@ import java.util.ArrayList;
 
 import javax.servlet.ServletContext;
 
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.dao.api.AlarmRepository;
-import org.opennms.netmgt.dao.hibernate.AlarmRepositoryHibernate;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -59,7 +59,21 @@ import com.sun.syndication.feed.synd.SyndFeedImpl;
  */
 public class AlarmFeed extends AbstractFeed {
 
-    private final AlarmRepository m_webAlarmRepository = new AlarmRepositoryHibernate();
+    private AlarmRepository m_webAlarmRepository;
+
+    public AlarmFeed() {
+        super();
+        initialize();
+    }
+
+    public AlarmFeed(String feedType) {
+        super(feedType);
+        initialize();
+    }
+
+    private void initialize() {
+        m_webAlarmRepository = BeanUtils.getBean("daoContext", "alarmRepository", AlarmRepository.class);
+    }
 
     /**
      * <p>getFeed</p>

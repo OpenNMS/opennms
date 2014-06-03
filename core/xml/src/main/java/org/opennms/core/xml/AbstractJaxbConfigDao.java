@@ -62,8 +62,6 @@ public abstract class AbstractJaxbConfigDao<K, V> implements InitializingBean {
      *
      * @param entityClass a {@link java.lang.Class} object.
      * @param description a {@link java.lang.String} object.
-     * @param <K> a K object.
-     * @param <V> a V object.
      */
     public AbstractJaxbConfigDao(final Class<K> entityClass, final String description) {
         super();
@@ -136,7 +134,7 @@ public abstract class AbstractJaxbConfigDao<K, V> implements InitializingBean {
     /**
      * <p>getContainer</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.support.FileReloadContainer} object.
+     * @return a {@link org.opennms.core.spring.FileReloadContainer} object.
      */
     public FileReloadContainer<V> getContainer() {
         return m_container;

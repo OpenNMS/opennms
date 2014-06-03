@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>1.13.1-SNAPSHOT</version>
+    <version>1.13.3-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <groupId>org.opennms</groupId>
@@ -409,6 +409,11 @@
       <version>${project.version}</version>
       <type>tar.gz</type>
       <classifier>contrib</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-vtdxml-collector-handler</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.protocols</groupId>

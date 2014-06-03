@@ -53,7 +53,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitSnmpAgent(host=OmsaStorageDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/omsaStorageDetector.properties")
 public class OmsaStorageDetectorTest implements InitializingBean {
-    static final String TEST_IP_ADDRESS = "192.168.0.1";
+    static final String TEST_IP_ADDRESS = "192.0.2.1";
 
     @Autowired
     private OmsaStorageDetector m_detector;
@@ -68,7 +68,7 @@ public class OmsaStorageDetectorTest implements InitializingBean {
         MockLogAppender.setupLogging();
 
         m_detector.setRetries(2);
-        m_detector.setTimeout(500);
+        m_detector.setTimeout(5000);
         m_detector.setVirtualDiskNumber("1");
     }
 

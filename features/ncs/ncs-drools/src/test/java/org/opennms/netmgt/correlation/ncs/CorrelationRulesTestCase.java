@@ -37,8 +37,6 @@ import java.util.Collection;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.netmgt.EventConstants;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 import org.opennms.netmgt.correlation.CorrelationEngineRegistrar;
 import org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
@@ -49,6 +47,8 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -61,6 +61,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:test-context.xml"
 })
 @JUnitConfigurationEnvironment
+@Transactional
 public abstract class CorrelationRulesTestCase {
 
     @Autowired

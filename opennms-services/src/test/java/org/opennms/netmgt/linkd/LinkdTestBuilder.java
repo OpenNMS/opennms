@@ -29,9 +29,6 @@
 package org.opennms.netmgt.linkd;
 
 
-import java.net.InetAddress;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 import org.junit.After;
@@ -43,10 +40,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.config.LinkdConfig;
 import org.opennms.netmgt.config.LinkdConfigFactory;
-import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.SnmpInterfaceBuilder;
-import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -85,8 +79,6 @@ public abstract class LinkdTestBuilder extends LinkdTestHelper {
         BeanUtils.assertAutowiring(this);
     }
     
-    NetworkBuilder m_networkBuilder;
-
     @Before
     public void setUp() throws Exception {
         if (firstTest) {
@@ -119,77 +111,5 @@ public abstract class LinkdTestBuilder extends LinkdTestHelper {
         }
         m_nodeDao.flush();
     }
-
-    NetworkBuilder getNetworkBuilder() {
-        if ( m_networkBuilder == null )
-            m_networkBuilder = new NetworkBuilder();
-        return m_networkBuilder;
-    }
-
-    OnmsNode getNode(String name, String sysoid, String primaryip,
-            Map<InetAddress, Integer> ipinterfacemap,
-            Map<Integer,String> ifindextoifnamemap,
-            Map<Integer,String> ifindextomacmap, 
-            Map<Integer,String> ifindextoifdescrmap,
-            Map<Integer,String> ifindextoifalias) {
-        return getNode(name, sysoid, primaryip, ipinterfacemap, ifindextoifnamemap, ifindextomacmap, ifindextoifdescrmap, ifindextoifalias, new HashMap<Integer, InetAddress>());
-    }
-    
-    OnmsNode getNode(String name, String sysoid, String primaryip,
-            Map<InetAddress, Integer> ipinterfacemap,
-            Map<Integer,String> ifindextoifnamemap,
-            Map<Integer,String> ifindextomacmap, 
-            Map<Integer,String> ifindextoifdescrmap,
-            Map<Integer,String> ifindextoifalias, 
-            Map<Integer,InetAddress>ifindextonetmaskmap)
-    {
-        NetworkBuilder nb = getNetworkBuilder();
-        nb.addNode(name).setForeignSource("linkd").setForeignId(name).setSysObjectId(sysoid).setSysName(name).setType(NodeType.ACTIVE);
-        final Map<Integer, SnmpInterfaceBuilder> ifindexsnmpbuildermap = new HashMap<Integer, SnmpInterfaceBuilder>();
-        for (Integer ifIndex: ifindextoifnamemap.keySet()) {
-            ifindexsnmpbuildermap.put(ifIndex, nb.addSnmpInterface(ifIndex).
-                                      setIfType(6).
-                                      setIfName(ifindextoifnamemap.get(ifIndex)).
-                                      setIfAlias(getSuitableString(ifindextoifalias, ifIndex)).
-                                      setIfSpeed(100000000).
-                                      setNetMask(getMask(ifindextonetmaskmap,ifIndex)).
-                                      setPhysAddr(getSuitableString(ifindextomacmap, ifIndex)).setIfDescr(getSuitableString(ifindextoifdescrmap,ifIndex)));
-        }
         
-        for (InetAddress ipaddr: ipinterfacemap.keySet()) { 
-            String isSnmpPrimary="N";
-            Integer ifIndex = ipinterfacemap.get(ipaddr);
-            if (ipaddr.getHostAddress().equals(primaryip))
-                isSnmpPrimary="P";
-            if (ifIndex == null)
-                nb.addInterface(ipaddr.getHostAddress()).setIsSnmpPrimary(isSnmpPrimary).setIsManaged("M");
-            else {
-                nb.addInterface(ipaddr.getHostAddress(), ifindexsnmpbuildermap.get(ifIndex).getSnmpInterface()).
-                setIsSnmpPrimary(isSnmpPrimary).setIsManaged("M");            }
-        }
-            
-        return nb.getCurrentNode();
-    }
-    
-    private InetAddress getMask(
-            Map<Integer, InetAddress> ifindextonetmaskmap, Integer ifIndex) {
-        if (ifindextonetmaskmap.containsKey(ifIndex))
-            return ifindextonetmaskmap.get(ifIndex);
-        return null;
-    }
-
-    private String getSuitableString(Map<Integer,String> ifindextomacmap, Integer ifIndex) {
-        String value = "";
-        if (ifindextomacmap.containsKey(ifIndex))
-            value = ifindextomacmap.get(ifIndex);
-        return value;
-    }
-    
-    
-    protected OnmsNode getNodeWithoutSnmp(String name, String ipaddr) {
-        NetworkBuilder nb = getNetworkBuilder();
-        nb.addNode(name).setForeignSource("linkd").setForeignId(name).setType(NodeType.ACTIVE);
-        nb.addInterface(ipaddr).setIsSnmpPrimary("N").setIsManaged("M");
-        return nb.getCurrentNode();
-    }    
 }

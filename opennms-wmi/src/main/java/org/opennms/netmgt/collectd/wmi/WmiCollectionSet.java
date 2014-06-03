@@ -28,15 +28,7 @@
 
 package org.opennms.netmgt.collectd.wmi;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import org.opennms.netmgt.collectd.CollectionAgent;
-import org.opennms.netmgt.collectd.ServiceCollector;
-import org.opennms.netmgt.config.collector.AbstractCollectionSet;
-import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.collector.CollectionSetVisitor;
+import org.opennms.netmgt.collection.support.MultiResourceCollectionSet;
 
 /**
  * <p>WmiCollectionSet class.</p>
@@ -44,67 +36,5 @@ import org.opennms.netmgt.config.collector.CollectionSetVisitor;
  * @author ranger
  * @version $Id: $
  */
-public class WmiCollectionSet extends AbstractCollectionSet {
-    private int m_status;
-    private List<WmiCollectionResource> m_collectionResources;
-    private Date m_timestamp;
-
-    /**
-     * <p>Constructor for WmiCollectionSet.</p>
-     *
-     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
-     */
-    public WmiCollectionSet(final CollectionAgent agent) {
-        m_status = ServiceCollector.COLLECTION_FAILED;
-        m_collectionResources = new ArrayList<WmiCollectionResource>();
-    }
-
-    /**
-     * <p>getStatus</p>
-     *
-     * @return a int.
-     */
-    @Override
-    public int getStatus() {
-        return m_status;
-    }
-
-    /**
-     * <p>setStatus</p>
-     *
-     * @param status a int.
-     */
-    public void setStatus(final int status) {
-        m_status = status;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void visit(final CollectionSetVisitor visitor) {
-        visitor.visitCollectionSet(this);
-
-        for(final CollectionResource resource : getResources()) {
-                resource.visit(visitor);
-        }
-
-        visitor.completeCollectionSet(this);
-    }
-
-    /**
-     * <p>getResources</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    public List<WmiCollectionResource> getResources() {
-        return m_collectionResources;
-    }
-
-    @Override
-	public Date getCollectionTimestamp() {
-		return m_timestamp;
-	}
-    public void setCollectionTimestamp(Date timestamp) {
-    	this.m_timestamp = timestamp;
-	}
-
+public class WmiCollectionSet extends MultiResourceCollectionSet<WmiCollectionResource> {
 }

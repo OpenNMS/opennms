@@ -27,287 +27,50 @@
  *******************************************************************************/
 
 package org.opennms.netmgt.linkd;
-
+import static org.opennms.netmgt.nb.TestNetworkBuilder.BAGMANE_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.BAGMANE_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.BAGMANE_SNMP_RESOURCE_B;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.BANGALORE_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.BANGALORE_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.BANGALORE_SNMP_RESOURCE_B;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.DELHI_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.DELHI_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.DELHI_SNMP_RESOURCE_B;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.J6350_42_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.J6350_42_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.J6350_42_SNMP_RESOURCE_B;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.MUMBAI_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.MUMBAI_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.MUMBAI_SNMP_RESOURCE_B;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.MYSORE_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.MYSORE_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.MYSORE_SNMP_RESOURCE_B;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SPACE_EX_SW1_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SPACE_EX_SW1_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SPACE_EX_SW1_SNMP_RESOURCE_B;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SPACE_EX_SW2_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SPACE_EX_SW2_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SPACE_EX_SW2_SNMP_RESOURCE_B;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SRX_100_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SRX_100_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SRX_100_SNMP_RESOURCE_B;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.net.InetAddress;
-import java.util.Collection;
 import java.util.List;
 import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.linkd.Package;
-import org.opennms.netmgt.linkd.snmp.LldpLocTable;
-import org.opennms.netmgt.linkd.snmp.LldpLocTableEntry;
-import org.opennms.netmgt.linkd.snmp.LldpLocalGroup;
-import org.opennms.netmgt.linkd.snmp.LldpRemTable;
-import org.opennms.netmgt.linkd.snmp.LldpRemTableEntry;
-import org.opennms.netmgt.linkd.snmp.OspfGeneralGroup;
-import org.opennms.netmgt.linkd.snmp.OspfIfTable;
-import org.opennms.netmgt.linkd.snmp.OspfIfTableEntry;
-import org.opennms.netmgt.linkd.snmp.OspfNbrTable;
-import org.opennms.netmgt.linkd.snmp.OspfNbrTableEntry;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.snmp.CollectionTracker;
-import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.netmgt.snmp.SnmpWalker;
+import org.opennms.netmgt.nb.Nms10205bNetworkBuilder;
 
-public class Nms10205bTest extends Nms10205bNetworkBuilder {
+public class Nms10205bTest extends LinkdTestBuilder {
 
-    @Test
-    @JUnitSnmpAgents(value = {
-            @JUnitSnmpAgent(host = MUMBAI_IP, port = 161, resource = "classpath:linkd/nms10205b/" + MUMBAI_NAME + "_" + MUMBAI_IP + ".txt")
-    })
-    public void testMumbayOspfGeneralGroupCollection() throws Exception {
+	Nms10205bNetworkBuilder builder = new Nms10205bNetworkBuilder();
 
-        String name = "ospfGeneralGroup";
-        OspfGeneralGroup m_ospfGeneralGroup = new OspfGeneralGroup(InetAddressUtils.addr(MUMBAI_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[]{m_ospfGeneralGroup};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(MUMBAI_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-            walker.waitFor();
-        } catch (final InterruptedException e) {
-
-        }
-
-        assertEquals(MUMBAI_OSPF_ID, m_ospfGeneralGroup.getOspfRouterId());
-    }
-
-    @Test
-    @JUnitSnmpAgents(value = {
-            @JUnitSnmpAgent(host = SRX_100_IP, port = 161, resource = "classpath:linkd/nms10205b/" + "SRX-100_" + SRX_100_IP + ".txt")
-    })
-    public void testSrx100OspfGeneralGroupCollection() throws Exception {
-
-        String name = "ospfGeneralGroup";
-        OspfGeneralGroup m_ospfGeneralGroup = new OspfGeneralGroup(InetAddressUtils.addr(SRX_100_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[]{m_ospfGeneralGroup};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(SRX_100_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-            walker.waitFor();
-        } catch (final InterruptedException e) {
-
-        }
-
-        assertEquals(SRX_100_OSPF_ID, m_ospfGeneralGroup.getOspfRouterId());
-    }
-
-    @Test
-    @JUnitSnmpAgents(value = {
-            @JUnitSnmpAgent(host = MUMBAI_IP, port = 161, resource = "classpath:linkd/nms10205b/" + MUMBAI_NAME + "_" + MUMBAI_IP + ".txt")
-    })
-    public void testMumbayOspfIfTableCollection() throws Exception {
-
-        String name = "ospfIfTable";
-        OspfIfTable m_ospfIfTable = new OspfIfTable(InetAddressUtils.addr(MUMBAI_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[]{m_ospfIfTable};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(MUMBAI_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-            walker.waitFor();
-        } catch (final InterruptedException e) {
-
-        }
-
-        final Collection<OspfIfTableEntry> ospfifTableCollection = m_ospfIfTable.getEntries();
-        assertEquals(6, ospfifTableCollection.size());
-        for (final OspfIfTableEntry entry : ospfifTableCollection) {
-            assertEquals(0, entry.getOspfAddressLessIf().intValue());
-            InetAddress ospfIpAddress = entry.getOspfIpAddress();
-            assertEquals(true, MUMBAI_IP_IF_MAP.containsKey(ospfIpAddress));
-        }
-    }
-
-    @Test
-    @JUnitSnmpAgents(value = {
-            @JUnitSnmpAgent(host = SRX_100_IP, port = 161, resource = "classpath:linkd/nms10205b/" + "SRX-100_" + SRX_100_IP + ".txt")
-    })
-    public void testSrx100OspfIfTableCollection() throws Exception {
-
-        String name = "ospfIfTable";
-        OspfIfTable m_ospfIfTable = new OspfIfTable(InetAddressUtils.addr(SRX_100_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[]{m_ospfIfTable};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(SRX_100_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-            walker.waitFor();
-        } catch (final InterruptedException e) {
-
-        }
-
-        final Collection<OspfIfTableEntry> ospfifTableCollection = m_ospfIfTable.getEntries();
-        assertEquals(0, ospfifTableCollection.size());
-    }
-
-    @Test
-    @JUnitSnmpAgents(value = {
-            @JUnitSnmpAgent(host = MUMBAI_IP, port = 161, resource = "classpath:linkd/nms10205b/" + MUMBAI_NAME + "_" + MUMBAI_IP + ".txt")
-    })
-    public void testMumbayOspfNbrTableCollection() throws Exception {
-
-        String name = "ospfNbrTable";
-        OspfNbrTable m_ospfNbrTable = new OspfNbrTable(InetAddressUtils.addr(MUMBAI_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[]{m_ospfNbrTable};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(MUMBAI_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-            walker.waitFor();
-        } catch (final InterruptedException e) {
-
-        }
-
-        final Collection<OspfNbrTableEntry> ospfNbrTableCollection = m_ospfNbrTable.getEntries();
-        assertEquals(4, ospfNbrTableCollection.size());
-        for (final OspfNbrTableEntry entry : ospfNbrTableCollection) {
-            assertEquals(0, entry.getOspfNbrAddressLessIndex().intValue());
-            assertEquals(OspfNbrTableEntry.OSPF_NBR_STATE_FULL, entry.getOspfNbrState());
-            checkrow(entry);
-        }
-    }
-
-    @Test
-    @JUnitSnmpAgents(value = {
-            @JUnitSnmpAgent(host = SRX_100_IP, port = 161, resource = "classpath:linkd/nms10205b/" + "SRX-100_" + SRX_100_IP + ".txt")
-    })
-    public void testSrx100OspfNbrTableCollection() throws Exception {
-
-        String name = "ospfNbrTable";
-        OspfNbrTable m_ospfNbrTable = new OspfNbrTable(InetAddressUtils.addr(SRX_100_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[]{m_ospfNbrTable};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(SRX_100_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-            walker.waitFor();
-        } catch (final InterruptedException e) {
-
-        }
-
-        final Collection<OspfNbrTableEntry> ospfNbrTableCollection = m_ospfNbrTable.getEntries();
-        assertEquals(0, ospfNbrTableCollection.size());
-    }
-
-    private void checkrow(OspfNbrTableEntry entry) {
-        InetAddress ip = entry.getOspfNbrIpAddress();
-        if (ip.getHostAddress().equals("192.168.5.10")) {
-            assertEquals(DELHI_OSPF_ID, entry.getOspfNbrRouterId());
-            assertEquals(true, DELHI_IP_IF_MAP.containsKey(ip));
-        } else if (ip.getHostAddress().equals("192.168.5.14")) {
-            assertEquals(BANGALORE_OSPF_ID, entry.getOspfNbrRouterId());
-            assertEquals(true, BANGALORE_IP_IF_MAP.containsKey(ip));
-        } else if (ip.getHostAddress().equals("192.168.5.18")) {
-            assertEquals(BAGMANE_OSPF_ID, entry.getOspfNbrRouterId());
-            assertEquals(true, BAGMANE_IP_IF_MAP.containsKey(ip));
-        } else if (ip.getHostAddress().equals("192.168.5.22")) {
-            assertEquals(MYSORE_OSPF_ID, entry.getOspfNbrRouterId());
-            assertEquals(true, MYSORE_IP_IF_MAP.containsKey(ip));
-        } else {
-            assertEquals(true, false);
-        }
-    }
-    
-    @Test
-    @JUnitSnmpAgents(value = {
-            @JUnitSnmpAgent(host = J6350_42_IP, port = 161, resource = "classpath:linkd/nms10205b/" + "J6350-42_" + J6350_42_IP + ".txt")
-    })
-    public void testLldpLocalBaseCollection() throws Exception {
-
-        String name = "lldpLocGroup";
-        LldpLocalGroup m_lLldpLocalGroup = new LldpLocalGroup(InetAddressUtils.addr(J6350_42_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[]{m_lLldpLocalGroup};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(J6350_42_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-            walker.waitFor();
-        } catch (final InterruptedException e) {
-
-        }
-
-        assertEquals(4, m_lLldpLocalGroup.getLldpLocChassisidSubType().intValue());
-        assertEquals(J6350_42_LLDP_CHASSISID, m_lLldpLocalGroup.getLldpLocChassisid());
-        assertEquals(J6350_42_NAME, m_lLldpLocalGroup.getLldpLocSysname());
-    }
-
-
-    @Test
-    @JUnitSnmpAgents(value = {
-            @JUnitSnmpAgent(host = J6350_42_IP, port = 161, resource = "classpath:linkd/nms10205b/" + "J6350-42_" + J6350_42_IP + ".txt")
-    })
-    public void testLldpRemTableCollection() throws Exception {
-
-        String name = "lldpRemTable";
-        LldpRemTable m_lldpRemTable = new LldpRemTable(InetAddressUtils.addr(J6350_42_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[]{m_lldpRemTable};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(J6350_42_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-            walker.waitFor();
-        } catch (final InterruptedException e) {
-            assertEquals(false, true);
-        }
-
-        final Collection<LldpRemTableEntry> lldpTableEntryCollection = m_lldpRemTable.getEntries();
-        assertEquals(0, lldpTableEntryCollection.size());
-    }
-
-    @Test
-    @JUnitSnmpAgents(value = {
-            @JUnitSnmpAgent(host = J6350_42_IP, port = 161, resource = "classpath:linkd/nms10205b/" + "J6350-42_" + J6350_42_IP + ".txt")
-    })
-    public void testLldpLocTableCollection() throws Exception {
-
-        String name = "lldpLocTable";
-        LldpLocTable m_lldpLocTable = new LldpLocTable(InetAddressUtils.addr(J6350_42_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[]{m_lldpLocTable};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(J6350_42_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-            walker.waitFor();
-        } catch (final InterruptedException e) {
-            assertEquals(false, true);
-        }
-
-        final Collection<LldpLocTableEntry> lldpTableEntryCollection = m_lldpLocTable.getEntries();
-        assertEquals(4, lldpTableEntryCollection.size());
-        for (final LldpLocTableEntry entry : lldpTableEntryCollection) {
-            assertEquals(7, entry.getLldpLocPortIdSubtype().intValue());
-        }
-
-    }
     /*
      * 
 MUMBAI_10.205.56.5: (LLDP is not supported on this device_family=m320)
@@ -388,26 +151,26 @@ Address          Interface              State     ID               Pri  Dead
 */
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=MUMBAI_IP, port=161, resource="classpath:linkd/nms10205b/"+MUMBAI_NAME+"_"+MUMBAI_IP+".txt"),
-            @JUnitSnmpAgent(host=DELHI_IP, port=161, resource="classpath:linkd/nms10205b/"+DELHI_NAME+"_"+DELHI_IP+".txt"),
-            @JUnitSnmpAgent(host=BANGALORE_IP, port=161, resource="classpath:linkd/nms10205b/"+BANGALORE_NAME+"_"+BANGALORE_IP+".txt"),
-            @JUnitSnmpAgent(host=BAGMANE_IP, port=161, resource="classpath:linkd/nms10205b/"+BAGMANE_NAME+"_"+BAGMANE_IP+".txt"),
-            @JUnitSnmpAgent(host=MYSORE_IP, port=161, resource="classpath:linkd/nms10205b/"+MYSORE_NAME+"_"+MYSORE_IP+".txt"),
-            @JUnitSnmpAgent(host=SPACE_EX_SW1_IP, port=161, resource="classpath:linkd/nms10205b/"+SPACE_EX_SW1_NAME+"_"+SPACE_EX_SW1_IP+".txt"),
-            @JUnitSnmpAgent(host=SPACE_EX_SW2_IP, port=161, resource="classpath:linkd/nms10205b/"+SPACE_EX_SW2_NAME+"_"+SPACE_EX_SW2_IP+".txt"),
-            @JUnitSnmpAgent(host=J6350_42_IP, port=161, resource="classpath:linkd/nms10205b/"+"J6350-42_"+J6350_42_IP+".txt"),
-            @JUnitSnmpAgent(host=SRX_100_IP, port=161, resource="classpath:linkd/nms10205b/"+"SRX-100_"+SRX_100_IP+".txt")
+            @JUnitSnmpAgent(host=MUMBAI_IP, port=161, resource=MUMBAI_SNMP_RESOURCE_B),
+            @JUnitSnmpAgent(host=DELHI_IP, port=161, resource=DELHI_SNMP_RESOURCE_B),
+            @JUnitSnmpAgent(host=BANGALORE_IP, port=161, resource=BANGALORE_SNMP_RESOURCE_B),
+            @JUnitSnmpAgent(host=BAGMANE_IP, port=161, resource=BAGMANE_SNMP_RESOURCE_B),
+            @JUnitSnmpAgent(host=MYSORE_IP, port=161, resource=MYSORE_SNMP_RESOURCE_B),
+            @JUnitSnmpAgent(host=SPACE_EX_SW1_IP, port=161, resource=SPACE_EX_SW1_SNMP_RESOURCE_B),
+            @JUnitSnmpAgent(host=SPACE_EX_SW2_IP, port=161, resource=SPACE_EX_SW2_SNMP_RESOURCE_B),
+            @JUnitSnmpAgent(host=J6350_42_IP, port=161, resource=J6350_42_SNMP_RESOURCE_B),
+            @JUnitSnmpAgent(host=SRX_100_IP, port=161, resource=SRX_100_SNMP_RESOURCE_B)
     })
     public void testNetwork10205bLinks() throws Exception {
-        m_nodeDao.save(getMumbai());
-        m_nodeDao.save(getDelhi());
-        m_nodeDao.save(getBangalore());
-        m_nodeDao.save(getBagmane());
-        m_nodeDao.save(getMysore());
-        m_nodeDao.save(getSpaceExSw1());
-        m_nodeDao.save(getSpaceExSw2());
-        m_nodeDao.save(getJ635042());
-        m_nodeDao.save(getSRX100());
+        m_nodeDao.save(builder.getMumbai());
+        m_nodeDao.save(builder.getDelhi());
+        m_nodeDao.save(builder.getBangalore());
+        m_nodeDao.save(builder.getBagmane());
+        m_nodeDao.save(builder.getMysore());
+        m_nodeDao.save(builder.getSpaceExSw1());
+        m_nodeDao.save(builder.getSpaceExSw2());
+        m_nodeDao.save(builder.getJ635042());
+        m_nodeDao.save(builder.getSRX100());
         m_nodeDao.flush();
 
         Package example1 = m_linkdConfig.getPackage("example1");
@@ -641,26 +404,26 @@ it has a link to Mysore that does not support LLDP
      */
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=MUMBAI_IP, port=161, resource="classpath:linkd/nms10205b/"+MUMBAI_NAME+"_"+MUMBAI_IP+".txt"),
-            @JUnitSnmpAgent(host=DELHI_IP, port=161, resource="classpath:linkd/nms10205b/"+DELHI_NAME+"_"+DELHI_IP+".txt"),
-            @JUnitSnmpAgent(host=BANGALORE_IP, port=161, resource="classpath:linkd/nms10205b/"+BANGALORE_NAME+"_"+BANGALORE_IP+".txt"),
-            @JUnitSnmpAgent(host=BAGMANE_IP, port=161, resource="classpath:linkd/nms10205b/"+BAGMANE_NAME+"_"+BAGMANE_IP+".txt"),
-            @JUnitSnmpAgent(host=MYSORE_IP, port=161, resource="classpath:linkd/nms10205b/"+MYSORE_NAME+"_"+MYSORE_IP+".txt"),
-            @JUnitSnmpAgent(host=SPACE_EX_SW1_IP, port=161, resource="classpath:linkd/nms10205b/"+SPACE_EX_SW1_NAME+"_"+SPACE_EX_SW1_IP+".txt"),
-            @JUnitSnmpAgent(host=SPACE_EX_SW2_IP, port=161, resource="classpath:linkd/nms10205b/"+SPACE_EX_SW2_NAME+"_"+SPACE_EX_SW2_IP+".txt"),
-            @JUnitSnmpAgent(host=J6350_42_IP, port=161, resource="classpath:linkd/nms10205b/"+"J6350-42_"+J6350_42_IP+".txt"),
-            @JUnitSnmpAgent(host=SRX_100_IP, port=161, resource="classpath:linkd/nms10205b/"+"SRX-100_"+SRX_100_IP+".txt")
+            @JUnitSnmpAgent(host=MUMBAI_IP, port=161, resource=MUMBAI_SNMP_RESOURCE_B),
+            @JUnitSnmpAgent(host=DELHI_IP, port=161, resource=DELHI_SNMP_RESOURCE_B),
+            @JUnitSnmpAgent(host=BANGALORE_IP, port=161, resource=BANGALORE_SNMP_RESOURCE_B),
+            @JUnitSnmpAgent(host=BAGMANE_IP, port=161, resource=BAGMANE_SNMP_RESOURCE_B),
+            @JUnitSnmpAgent(host=MYSORE_IP, port=161, resource=MYSORE_SNMP_RESOURCE_B),
+            @JUnitSnmpAgent(host=SPACE_EX_SW1_IP, port=161, resource=SPACE_EX_SW1_SNMP_RESOURCE_B),
+            @JUnitSnmpAgent(host=SPACE_EX_SW2_IP, port=161, resource=SPACE_EX_SW2_SNMP_RESOURCE_B),
+            @JUnitSnmpAgent(host=J6350_42_IP, port=161, resource=J6350_42_SNMP_RESOURCE_B),
+            @JUnitSnmpAgent(host=SRX_100_IP, port=161, resource=SRX_100_SNMP_RESOURCE_B)
     })
     public void testNetwork10205bLldpLinks() throws Exception {
-        m_nodeDao.save(getMumbai());
-        m_nodeDao.save(getDelhi());
-        m_nodeDao.save(getBangalore());
-        m_nodeDao.save(getBagmane());
-        m_nodeDao.save(getMysore());
-        m_nodeDao.save(getSpaceExSw1());
-        m_nodeDao.save(getSpaceExSw2());
-        m_nodeDao.save(getJ635042());
-        m_nodeDao.save(getSRX100());
+        m_nodeDao.save(builder.getMumbai());
+        m_nodeDao.save(builder.getDelhi());
+        m_nodeDao.save(builder.getBangalore());
+        m_nodeDao.save(builder.getBagmane());
+        m_nodeDao.save(builder.getMysore());
+        m_nodeDao.save(builder.getSpaceExSw1());
+        m_nodeDao.save(builder.getSpaceExSw2());
+        m_nodeDao.save(builder.getJ635042());
+        m_nodeDao.save(builder.getSRX100());
         m_nodeDao.flush();
 
         Package example1 = m_linkdConfig.getPackage("example1");
@@ -799,26 +562,26 @@ Address          Interface              State     ID               Pri  Dead
 */
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=MUMBAI_IP, port=161, resource="classpath:linkd/nms10205b/"+MUMBAI_NAME+"_"+MUMBAI_IP+".txt"),
-            @JUnitSnmpAgent(host=DELHI_IP, port=161, resource="classpath:linkd/nms10205b/"+DELHI_NAME+"_"+DELHI_IP+".txt"),
-            @JUnitSnmpAgent(host=BANGALORE_IP, port=161, resource="classpath:linkd/nms10205b/"+BANGALORE_NAME+"_"+BANGALORE_IP+".txt"),
-            @JUnitSnmpAgent(host=BAGMANE_IP, port=161, resource="classpath:linkd/nms10205b/"+BAGMANE_NAME+"_"+BAGMANE_IP+".txt"),
-            @JUnitSnmpAgent(host=MYSORE_IP, port=161, resource="classpath:linkd/nms10205b/"+MYSORE_NAME+"_"+MYSORE_IP+".txt"),
-            @JUnitSnmpAgent(host=SPACE_EX_SW1_IP, port=161, resource="classpath:linkd/nms10205b/"+SPACE_EX_SW1_NAME+"_"+SPACE_EX_SW1_IP+".txt"),
-            @JUnitSnmpAgent(host=SPACE_EX_SW2_IP, port=161, resource="classpath:linkd/nms10205b/"+SPACE_EX_SW2_NAME+"_"+SPACE_EX_SW2_IP+".txt"),
-            @JUnitSnmpAgent(host=J6350_42_IP, port=161, resource="classpath:linkd/nms10205b/"+"J6350-42_"+J6350_42_IP+".txt"),
-            @JUnitSnmpAgent(host=SRX_100_IP, port=161, resource="classpath:linkd/nms10205b/"+"SRX-100_"+SRX_100_IP+".txt")
+            @JUnitSnmpAgent(host=MUMBAI_IP, port=161, resource=MUMBAI_SNMP_RESOURCE_B),
+            @JUnitSnmpAgent(host=DELHI_IP, port=161, resource=DELHI_SNMP_RESOURCE_B),
+            @JUnitSnmpAgent(host=BANGALORE_IP, port=161, resource=BANGALORE_SNMP_RESOURCE_B),
+            @JUnitSnmpAgent(host=BAGMANE_IP, port=161, resource=BAGMANE_SNMP_RESOURCE_B),
+            @JUnitSnmpAgent(host=MYSORE_IP, port=161, resource=MYSORE_SNMP_RESOURCE_B),
+            @JUnitSnmpAgent(host=SPACE_EX_SW1_IP, port=161, resource=SPACE_EX_SW1_SNMP_RESOURCE_B),
+            @JUnitSnmpAgent(host=SPACE_EX_SW2_IP, port=161, resource=SPACE_EX_SW2_SNMP_RESOURCE_B),
+            @JUnitSnmpAgent(host=J6350_42_IP, port=161, resource=J6350_42_SNMP_RESOURCE_B),
+            @JUnitSnmpAgent(host=SRX_100_IP, port=161, resource=SRX_100_SNMP_RESOURCE_B)
     })
     public void testNetwork10205bOspfLinks() throws Exception {
-        m_nodeDao.save(getMumbai());
-        m_nodeDao.save(getDelhi());
-        m_nodeDao.save(getBangalore());
-        m_nodeDao.save(getBagmane());
-        m_nodeDao.save(getMysore());
-        m_nodeDao.save(getSpaceExSw1());
-        m_nodeDao.save(getSpaceExSw2());
-        m_nodeDao.save(getJ635042());
-        m_nodeDao.save(getSRX100());
+        m_nodeDao.save(builder.getMumbai());
+        m_nodeDao.save(builder.getDelhi());
+        m_nodeDao.save(builder.getBangalore());
+        m_nodeDao.save(builder.getBagmane());
+        m_nodeDao.save(builder.getMysore());
+        m_nodeDao.save(builder.getSpaceExSw1());
+        m_nodeDao.save(builder.getSpaceExSw2());
+        m_nodeDao.save(builder.getJ635042());
+        m_nodeDao.save(builder.getSRX100());
         m_nodeDao.flush();
 
         Package example1 = m_linkdConfig.getPackage("example1");

@@ -29,10 +29,12 @@
 package org.opennms.netmgt.collectd;
 
 
+import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.api.NumericCollectionAttributeType;
+import org.opennms.netmgt.collection.api.Persister;
+import org.opennms.netmgt.collection.persistence.rrd.PersistOperationBuilder;
 import org.opennms.netmgt.config.MibObject;
-import org.opennms.netmgt.config.collector.AttributeGroupType;
-import org.opennms.netmgt.config.collector.CollectionAttribute;
-import org.opennms.netmgt.config.collector.Persister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,37 +44,18 @@ import org.slf4j.LoggerFactory;
  * @author ranger
  * @version $Id: $
  */
-public class NumericAttributeType extends SnmpAttributeType {
+public class NumericAttributeType extends SnmpAttributeType implements NumericCollectionAttributeType {
     private static final Logger LOG = LoggerFactory.getLogger(NumericAttributeType.class);
     
-    private static String[] s_supportedTypes = new String[] { "counter", "gauge", "timeticks", "integer", "octetstring" };
-    
-    /**
-     * <p>supportsType</p>
-     *
-     * @param rawType a {@link java.lang.String} object.
-     * @return a boolean.
-     */
-    public static boolean supportsType(String rawType) {
-        String type = rawType.toLowerCase();
-        for (int i = 0; i < s_supportedTypes.length; i++) {
-            String supportedType = s_supportedTypes[i];
-            if (type.startsWith(supportedType))
-                return true;
-        }
-        return false;
-    }
-
-
-
     static final String DST_COUNTER = "COUNTER";
+    
     /**
      * <p>Constructor for NumericAttributeType.</p>
      *
      * @param resourceType a {@link org.opennms.netmgt.collectd.ResourceType} object.
      * @param collectionName a {@link java.lang.String} object.
      * @param mibObj a {@link org.opennms.netmgt.config.MibObject} object.
-     * @param groupType a {@link org.opennms.netmgt.config.collector.AttributeGroupType} object.
+     * @param groupType a {@link org.opennms.netmgt.collection.api.AttributeGroupType} object.
      */
     public NumericAttributeType(ResourceType resourceType, String collectionName, MibObject mibObj, AttributeGroupType groupType) {
         super(resourceType, collectionName, mibObj, groupType);
@@ -86,6 +69,16 @@ public class NumericAttributeType extends SnmpAttributeType {
             }
 
 
+    }
+    
+    @Override
+    public String getMaxval() {
+        return m_mibObj.getMaxval();
+    }
+    
+    @Override
+    public String getMinval() {
+        return m_mibObj.getMinval();
     }
     
     /** {@inheritDoc} */

@@ -74,6 +74,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HttpUrlConnection extends URLConnection {
 
+    /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(HttpUrlConnection.class);
 
     /** The URL. */

@@ -55,11 +55,12 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.opennms.netmgt.collectd.AbstractCollectionResource;
-import org.opennms.netmgt.collectd.CollectionAgent;
-import org.opennms.netmgt.config.collector.AttributeGroup;
-import org.opennms.netmgt.config.collector.CollectionSetVisitor;
-import org.opennms.netmgt.model.RrdRepository;
+import org.opennms.netmgt.collection.api.AttributeGroup;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.api.CollectionSetVisitor;
+import org.opennms.netmgt.collection.support.AbstractCollectionResource;
+import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +75,6 @@ public class XmpCollectionResource extends AbstractCollectionResource
     private final String m_nodeTypeName;
     private final String m_instance;
     private final String m_resourceType;
-    private final int m_nodeType;
     private final Set<AttributeGroup> m_listOfGroups;
 
     /* constructors  ************************************* */
@@ -96,7 +96,6 @@ public class XmpCollectionResource extends AbstractCollectionResource
         } else {
             this.m_resourceType = resourceType;
         }
-        m_nodeType = -1;
 
         // filter the instance so it does not have slashes (/) nor colons 
         // in it as they can munge our rrd file layout
@@ -133,7 +132,7 @@ public class XmpCollectionResource extends AbstractCollectionResource
         // if we are a collection resource for scalars,
         // return what our super class would return
 
-        if (m_nodeTypeName.equalsIgnoreCase("node")) {
+        if (m_nodeTypeName.equalsIgnoreCase(CollectionResource.RESOURCE_TYPE_NODE)) {
             return new File(repository.getRrdBaseDir(), getParent());
         }
 
@@ -167,7 +166,7 @@ public class XmpCollectionResource extends AbstractCollectionResource
     /**
      * <p>addAttributeGroup</p>
      *
-     * @param aGroup a {@link org.opennms.netmgt.config.collector.AttributeGroup} object.
+     * @param aGroup a {@link org.opennms.netmgt.collection.api.AttributeGroup} object.
      */
     public void addAttributeGroup(AttributeGroup aGroup)  
     {  
@@ -196,16 +195,6 @@ public class XmpCollectionResource extends AbstractCollectionResource
 
 
     /**
-     * <p>getType</p>
-     * return -1 for non-tabular; what do we return for 
-     * for interface or tabular data?
-     *
-     * @return a int.
-     */
-    @Override
-    public int getType() { return m_nodeType; }
-
-    /**
      * <p>getGroups</p>
      *
      * @return a {@link java.util.Collection} object.
@@ -218,7 +207,7 @@ public class XmpCollectionResource extends AbstractCollectionResource
      * @return a {@link java.lang.String} object.
      */
     @Override
-    public String toString() { return "XmpCollectionResource for "+m_agent+" resType="+m_resourceType+" instance="+m_instance+" nodeType="+m_nodeTypeName+" nodeType="+m_nodeType; }
+    public String toString() { return "XmpCollectionResource for "+m_agent+" resType="+m_resourceType+" instance="+m_instance+" nodeType="+m_nodeTypeName; }
 
     /**
      * @deprecated This class should be changed to store its {@link AttributeGroup}

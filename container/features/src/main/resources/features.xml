@@ -69,21 +69,16 @@
       <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jaxb-impl/2.2.6_1</bundle>
     </feature>
 
+    <feature name="jrobin" description="JRobin" version="1.6.0-SNAPSHOT">
+      <bundle>mvn:org.jrobin/jrobin/1.6.0-SNAPSHOT</bundle>
+    </feature>
+
     <feature name="postgresql" description="PostgreSQL :: JDBC Driver" version="9.3-1100-jdbc4">
       <bundle>wrap:mvn:org.postgresql/postgresql/9.3-1100-jdbc4</bundle>
     </feature>
 
     <feature name="slf4j-api" description="slf4j :: API" version="${slf4jVersion}">
       <bundle>mvn:org.slf4j/slf4j-api/${slf4jVersion}</bundle>
-    </feature>
-
-    <feature name="spring-security" description="Spring Security :: Core" version="${springSecurityVersion}">
-      <!-- This is necessary for HTTP remoting -->
-      <feature version="[3.2,3.3)">spring-web</feature>
-      <feature>commons-codec</feature>
-
-      <bundle>mvn:org.springframework.security/spring-security-core/${springSecurityVersion}</bundle>
-      <bundle>mvn:org.springframework.security/spring-security-remoting/${springSecurityVersion}</bundle>
     </feature>
 
     <!-- OpenNMS features -->
@@ -118,7 +113,21 @@
       <feature version="[3.2,3.3)">spring-orm</feature>
       <feature version="[3.2,3.3)">spring-tx</feature>
 
+      <!-- 
+        We can't use the Karaf spring-security feature because it pulls in the "war" feature
+        which conflicts with our bridge implementation of the "http" feature when loaded
+        in the OpenNMS Karaf container.
+      -->
+      <!--
       <feature version="[3.1,3.2)">spring-security</feature>
+      -->
+
+      <!-- Hack in a replacement for spring-security -->
+      <!-- spring-web is necessary for HTTP remoting -->
+      <feature version="[3.2,3.3)">spring-web</feature>
+      <feature>commons-codec</feature>
+      <bundle dependency="true">mvn:org.springframework.security/spring-security-core/${springSecurityVersion}</bundle>
+      <bundle dependency="true">mvn:org.springframework.security/spring-security-remoting/${springSecurityVersion}</bundle>
 
       <feature>castor</feature>
       <feature>commons-io</feature>
@@ -136,9 +145,27 @@
       <bundle>mvn:org.opennms/opennms-model/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-collection-api" description="OpenNMS :: Collection API" version="${project.version}">
+      <feature version="[3.2,3.3)">spring</feature>
+
+      <feature>opennms-config-api</feature>
+      <feature>opennms-poller-api</feature>
+      <feature>opennms-rrd-api</feature>
+
+      <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.api/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-collection-persistence-rrd" description="OpenNMS :: Collection :: Persistence :: RRD" version="${project.version}">
+      <feature>opennms-collection-api</feature>
+      <feature>opennms-rrd-api</feature>
+
+      <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.persistence.rrd/${project.version}</bundle>
+    </feature>
+
     <feature name="opennms-config-api" description="OpenNMS :: Configuration API" version="${project.version}">
       <feature>opennms-core</feature>
       <feature>opennms-model</feature>
+
       <bundle>mvn:org.opennms/opennms-config-api/${project.version}</bundle>
       <bundle>mvn:org.opennms/opennms-config-model/${project.version}</bundle>
       <bundle>mvn:org.opennms/opennms-config-jaxb/${project.version}</bundle>
@@ -147,6 +174,7 @@
     <feature name="opennms-config-jaxb" description="OpenNMS :: Configuration :: JAXB" version="${project.version}">
       <feature>opennms-core</feature>
       <feature>opennms-snmp</feature>
+
       <bundle>mvn:org.opennms/opennms-config-jaxb/${project.version}</bundle>
     </feature>
 
@@ -154,9 +182,10 @@
       <feature>c3p0</feature>
       <feature>opennms-config-api</feature>
       <feature>opennms-core-db</feature>
+      <feature>opennms-poller-api</feature>
       <feature>opennms-snmp</feature>
+
       <bundle dependency="true">wrap:mvn:org.jasypt/jasypt/1.9.0</bundle>
-      <bundle dependency="true">mvn:org.opennms.features.poller/org.opennms.features.poller.api/${project.version}</bundle>
       <bundle>mvn:org.opennms/opennms-config/${project.version}</bundle>
     </feature>
 
@@ -164,7 +193,33 @@
       <feature>opennms-core</feature>
       <feature>opennms-model</feature>
       <feature>opennms-config-api</feature>
+
       <bundle>mvn:org.opennms/opennms-dao-api/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-poller-api" description="OpenNMS :: Poller API" version="${project.version}">
+      <feature version="[3.2,3.3)">spring</feature>
+
+      <feature>opennms-core</feature>
+
+      <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.api/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-rrd-api" description="OpenNMS :: RRD API" version="${project.version}">
+      <feature version="[3.2,3.3)">spring</feature>
+
+      <feature>opennms-core</feature>
+
+      <bundle>mvn:org.opennms/opennms-rrd-api/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-rrd-jrobin" description="OpenNMS :: RRD :: JRobin" version="${project.version}">
+      <feature version="[3.2,3.3)">spring</feature>
+
+      <feature>jrobin</feature>
+      <feature>opennms-rrd-api</feature>
+
+      <bundle>mvn:org.opennms/opennms-rrd-jrobin/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-snmp" description="OpenNMS :: Core :: SNMP" version="${project.version}">

@@ -31,13 +31,14 @@ package org.opennms.netmgt.dao.support;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.core.utils.ReplaceAllOperation;
 import org.opennms.core.utils.ReplaceFirstOperation;
 import org.opennms.core.utils.StringReplaceOperation;
-import org.opennms.netmgt.config.collector.CollectionResource;
+import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.support.IndexStorageStrategy;
 import org.opennms.netmgt.config.datacollection.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>SiblingColumnStorageStrategy class.</p>

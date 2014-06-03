@@ -37,13 +37,10 @@ import java.net.URLStreamHandler;
 
 /**
  * <p>GenericURLStreamHandler class.</p>
- * <p/>
  * Customized URL stream handler creates dynamically created URL connections from customized URL protocols.
  *
  * @author <a href="mailto:christian.pape@informatik.hs-fulda.de">Christian Pape</a>
  * @author <a href="mailto:ronny@opennms.org">Ronny Trommer</a>
- * @version $Id: $
- * @since 1.8.1
  */
 public class GenericURLStreamHandler extends URLStreamHandler {
     private Class<? extends URLConnection> urlConnectionClass;
@@ -51,7 +48,6 @@ public class GenericURLStreamHandler extends URLStreamHandler {
 
     /**
      * <p>GenericURLStreamHandler</p>
-     * <p/>
      * Create URL stream handler with given class and customized default port.
      *
      * @param urlConnectionClass full qualified classname as {@link java.lang.String} object.
@@ -64,7 +60,6 @@ public class GenericURLStreamHandler extends URLStreamHandler {
 
     /**
      * <p>GenericURLStreamHandler</p>
-     * <p/>
      * Create URL stream handler with given class and default port -1.
      *
      * @param urlConnectionClass full qualified classname as {@link java.lang.String} object.

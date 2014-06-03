@@ -30,13 +30,13 @@ package org.opennms.netmgt.collectd.tca;
 
 import java.io.File;
 
-import org.opennms.core.utils.DefaultTimeKeeper;
-import org.opennms.core.utils.TimeKeeper;
-import org.opennms.netmgt.collectd.AbstractCollectionResource;
-import org.opennms.netmgt.collectd.CollectionAgent;
-import org.opennms.netmgt.config.StorageStrategy;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.StorageStrategy;
+import org.opennms.netmgt.collection.api.TimeKeeper;
+import org.opennms.netmgt.collection.support.AbstractCollectionResource;
+import org.opennms.netmgt.collection.support.DefaultTimeKeeper;
 import org.opennms.netmgt.dao.support.IndexStorageStrategy;
-import org.opennms.netmgt.model.RrdRepository;
+import org.opennms.netmgt.rrd.RrdRepository;
 
 /**
  * The Class TcaCollectionResource.
@@ -101,16 +101,8 @@ public class TcaCollectionResource extends AbstractCollectionResource {
 	 * @see org.opennms.netmgt.collectd.AbstractCollectionResource#getLabel()
 	 */
 	@Override
-	public String getLabel() {
+	public String getInterfaceLabel() {
 		return m_peerAddress;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.opennms.netmgt.collectd.AbstractCollectionResource#getType()
-	 */
-	@Override
-	public int getType() {
-		return -1; // Is this right?
 	}
 
 	/* (non-Javadoc)
@@ -118,7 +110,7 @@ public class TcaCollectionResource extends AbstractCollectionResource {
 	 */
 	@Override
 	public String toString() {
-		return "node[" + m_agent.getNodeId() + "]." + getResourceTypeName() + "[" + getLabel() +"]";
+		return "node[" + m_agent.getNodeId() + "]." + getResourceTypeName() + "[" + getInterfaceLabel() +"]";
 	}
 
 	/* (non-Javadoc)
@@ -126,7 +118,7 @@ public class TcaCollectionResource extends AbstractCollectionResource {
 	 */
 	@Override
 	public File getResourceDir(RrdRepository repository) {
-		String resourcePath = m_strategy.getRelativePathForAttribute(getParent(), getLabel(), null);
+		String resourcePath = m_strategy.getRelativePathForAttribute(getParent(), getInterfaceLabel());
 		return new File(repository.getRrdBaseDir(), resourcePath);
 	}
 
@@ -154,7 +146,7 @@ public class TcaCollectionResource extends AbstractCollectionResource {
      * @param value the value
      */
     public void setAttributeValue(TcaCollectionAttributeType type, String value) {
-        TcaCollectionAttribute attr = new TcaCollectionAttribute(this, type, type.getName(), value);
+        TcaCollectionAttribute attr = new TcaCollectionAttribute(this, type, value);
         addAttribute(attr);
     }
 

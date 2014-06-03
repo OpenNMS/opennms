@@ -43,7 +43,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.utils.TimeKeeper;
+import org.opennms.netmgt.collection.api.TimeKeeper;
 
 /**
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>

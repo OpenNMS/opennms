@@ -28,24 +28,18 @@
 
 package org.opennms.netmgt.collectd.vmware.cim;
 
-import org.opennms.netmgt.config.collector.AttributeGroupType;
-import org.opennms.netmgt.config.collector.CollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionAttributeType;
-import org.opennms.netmgt.config.collector.Persister;
+import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.api.Persister;
+import org.opennms.netmgt.collection.support.AbstractCollectionAttributeType;
 import org.opennms.netmgt.config.vmware.cim.Attrib;
 
-public class VmwareCimCollectionAttributeType implements CollectionAttributeType {
-    private Attrib m_attribute;
-    private AttributeGroupType m_groupType;
+public class VmwareCimCollectionAttributeType extends AbstractCollectionAttributeType {
+    private final Attrib m_attribute;
 
     public VmwareCimCollectionAttributeType(final Attrib attribute, final AttributeGroupType groupType) {
-        m_groupType = groupType;
+        super(groupType);
         m_attribute = attribute;
-    }
-
-    @Override
-    public AttributeGroupType getGroupType() {
-        return m_groupType;
     }
 
     /**

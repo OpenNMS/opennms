@@ -50,13 +50,13 @@ class AdapterOperationChecker implements AdapterOperationQueueListener {
 		executeLatch = new CountDownLatch(numberOfOperations);
 	}
 
-        @Override
+	@Override
 	public void onEnqueueOperation(AdapterOperation op) {
 		enqueueLatch.countDown();
 		System.out.println("Enqueued!");
 	}
 
-        @Override
+	@Override
 	public void onDequeueOperation(final AdapterOperation op) {
 		dequeueLatch.countDown();
 		System.out.println("Dequeued!");
@@ -64,7 +64,7 @@ class AdapterOperationChecker implements AdapterOperationQueueListener {
 		final CountDownLatch threadStartup = new CountDownLatch(1);
 
 		Thread dequeueWatcher = new Thread() {
-                        @Override
+			@Override
 			public void run() {
 				synchronized (op) {
 					try {

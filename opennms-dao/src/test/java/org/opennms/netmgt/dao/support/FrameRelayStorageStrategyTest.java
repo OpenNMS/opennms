@@ -34,7 +34,7 @@ import org.junit.Assert;
 
 import org.easymock.EasyMock;
 import org.junit.Test;
-import org.opennms.netmgt.config.StorageStrategyService;
+import org.opennms.netmgt.collection.api.StorageStrategyService;
 
 /**
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
@@ -71,7 +71,7 @@ public class FrameRelayStorageStrategyTest {
         Assert.assertEquals("2.100", strategy.getResourceNameFromIndex(resource));
 
         // Test RelativePath
-        Assert.assertEquals("1" + File.separator + "frCircuitIfIndex" + File.separator + "Se0_0.100", strategy.getRelativePathForAttribute(parentResource, resourceName, null));
+        Assert.assertEquals("1" + File.separator + "frCircuitIfIndex" + File.separator + "Se0_0.100", strategy.getRelativePathForAttribute(parentResource, resourceName));
         
         EasyMock.verify(service);
     }

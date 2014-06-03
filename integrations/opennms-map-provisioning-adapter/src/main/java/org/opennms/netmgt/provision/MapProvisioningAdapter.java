@@ -278,12 +278,21 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
     public void handleReloadConfigEvent(Event event) {
         if (isReloadConfigEventTarget(event)) {
+            EventBuilder ebldr = null;
             LOG.debug("reloading the maps adapter configuration");
             try {
                 MapsAdapterConfigFactory.reload();
                 syncMaps();
+                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Provisiond.MapProvisioningAdapter");
+                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Provisiond.MapProvisioningAdapter");
             } catch (Throwable e) {
                 LOG.info("unable to reload maps adapter configuration", e);
+                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Provisiond.MapProvisioningAdapter");
+                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Provisiond.MapProvisioningAdapter");
+                ebldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(1, 128));
+            }
+            if (ebldr != null) {
+                getEventForwarder().sendNow(ebldr.getEvent());
             }
         }
     }

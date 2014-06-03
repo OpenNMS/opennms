@@ -34,11 +34,11 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
-import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
+import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.protocols.InsufficientParametersException;
 import org.opennms.netmgt.protocols.ssh.Ssh;
 import org.slf4j.Logger;
@@ -113,7 +113,6 @@ public final class SshMonitor extends AbstractServiceMonitor {
         } catch (final PatternSyntaxException e) {
             final String matchString = match == null ? banner : match;
             LOG.info("Invalid regular expression for SSH banner match /{}/: {}", matchString, e.getMessage());
-            LOG.debug("Invalid Regular expression for SSH banner match /{}/", matchString, e);
             return ps;
         }
 

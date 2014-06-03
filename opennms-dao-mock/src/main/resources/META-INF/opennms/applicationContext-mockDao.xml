@@ -221,6 +221,6 @@
         <property name="dataLinkInterfaceDao" ref="dataLinkInterfaceDao" />
     </bean>
 
-    <bean id="timeKeeper" class="org.opennms.core.utils.DefaultTimeKeeper" />
+    <bean id="timeKeeper" class="org.opennms.netmgt.collection.support.DefaultTimeKeeper" />
 
 </beans>

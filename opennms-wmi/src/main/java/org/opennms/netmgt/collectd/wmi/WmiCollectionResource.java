@@ -28,9 +28,9 @@
 
 package org.opennms.netmgt.collectd.wmi;
 
-import org.opennms.netmgt.collectd.AbstractCollectionResource;
-import org.opennms.netmgt.collectd.CollectionAgent;
-import org.opennms.netmgt.config.collector.CollectionAttributeType;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionAttributeType;
+import org.opennms.netmgt.collection.support.AbstractCollectionResource;
 
 /**
  * <p>Abstract WmiCollectionResource class.</p>
@@ -46,7 +46,7 @@ public abstract class WmiCollectionResource extends AbstractCollectionResource {
     /**
      * <p>Constructor for WmiCollectionResource.</p>
      *
-     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @param agent a {@link org.opennms.netmgt.collection.api.CollectionAgent} object.
      */
     public WmiCollectionResource(CollectionAgent agent) {
         super(agent);
@@ -55,23 +55,13 @@ public abstract class WmiCollectionResource extends AbstractCollectionResource {
     }
 
     /**
-     * <p>getType</p>
-     *
-     * @return a int.
-     */
-    @Override
-    public int getType() {
-        return -1; //Is this right?
-    }
-
-    /**
      * <p>setAttributeValue</p>
      *
-     * @param type a {@link org.opennms.netmgt.config.collector.CollectionAttributeType} object.
+     * @param type a {@link org.opennms.netmgt.collection.api.CollectionAttributeType} object.
      * @param value a {@link java.lang.String} object.
      */
     public void setAttributeValue(final CollectionAttributeType type, final String value) {
-        final WmiCollectionAttribute attr = new WmiCollectionAttribute(this, type, type.getName(), value);
+        final WmiCollectionAttribute attr = new WmiCollectionAttribute(this, type, value);
         addAttribute(attr);
     }
 

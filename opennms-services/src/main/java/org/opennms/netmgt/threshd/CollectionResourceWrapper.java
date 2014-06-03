@@ -37,13 +37,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.opennms.netmgt.collectd.AliasedResource;
 import org.opennms.netmgt.collectd.IfInfo;
-import org.opennms.netmgt.config.collector.CollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.dao.support.DefaultResourceDao;
-import org.opennms.netmgt.dao.support.ResourceTypeUtils;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.model.OnmsResource;
-import org.opennms.netmgt.model.RrdRepository;
+import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.poller.LatencyCollectionResource;
+import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -130,8 +129,8 @@ public class CollectionResourceWrapper {
      * @param nodeId a int.
      * @param hostAddress a {@link java.lang.String} object.
      * @param serviceName a {@link java.lang.String} object.
-     * @param repository a {@link org.opennms.netmgt.model.RrdRepository} object.
-     * @param resource a {@link org.opennms.netmgt.config.collector.CollectionResource} object.
+     * @param repository a {@link org.opennms.netmgt.rrd.RrdRepository} object.
+     * @param resource a {@link org.opennms.netmgt.collection.api.CollectionResource} object.
      * @param attributes a {@link java.util.Map} object.
      */
     public CollectionResourceWrapper(Date collectionTimestamp, int nodeId, String hostAddress, String serviceName, RrdRepository repository, CollectionResource resource, Map<String, CollectionAttribute> attributes) {
@@ -149,11 +148,11 @@ public class CollectionResourceWrapper {
 
         if (isAnInterfaceResource()) {
             if (resource instanceof AliasedResource) { // TODO What about AliasedResource's custom attributes?
-                m_iflabel = ((AliasedResource) resource).getLabel();
+                m_iflabel = ((AliasedResource) resource).getInterfaceLabel();
                 m_ifInfo.putAll(((AliasedResource) resource).getIfInfo().getAttributesMap());
                 m_ifInfo.put("domain", ((AliasedResource) resource).getDomain());
             } else if (resource instanceof IfInfo) {
-                m_iflabel = ((IfInfo) resource).getLabel();
+                m_iflabel = ((IfInfo) resource).getInterfaceLabel();
                 m_ifInfo.putAll(((IfInfo) resource).getAttributesMap());
             } else if (resource instanceof LatencyCollectionResource) {
                 JdbcIfInfoGetter ifInfoGetter = new JdbcIfInfoGetter();
@@ -206,7 +205,7 @@ public class CollectionResourceWrapper {
     /**
      * <p>getRepository</p>
      *
-     * @return a {@link org.opennms.netmgt.model.RrdRepository} object.
+     * @return a {@link org.opennms.netmgt.rrd.RrdRepository} object.
      */
     public RrdRepository getRepository() {
         return m_repository;
@@ -245,7 +244,7 @@ public class CollectionResourceWrapper {
      * @return a {@link java.lang.String} object.
      */
     public String getInstanceLabel() {
-        return m_resource != null ? m_resource.getLabel() : null;
+        return m_resource != null ? m_resource.getInterfaceLabel() : null;
     }
 
     /**
@@ -266,17 +265,17 @@ public class CollectionResourceWrapper {
     public String getResourceId() {
         String resourceType  = getResourceTypeName();
         String resourceLabel = getInstanceLabel();
-        if ("node".equals(resourceType)) {
+        if (CollectionResource.RESOURCE_TYPE_NODE.equals(resourceType)) {
             resourceType  = "nodeSnmp";
             resourceLabel = "";
         }
-        if ("if".equals(resourceType)) {
+        if (CollectionResource.RESOURCE_TYPE_IF.equals(resourceType)) {
             resourceType = "interfaceSnmp";
         }
-        String parentResourceTypeName = "node";
+        String parentResourceTypeName = CollectionResource.RESOURCE_TYPE_NODE;
         String parentResourceName = Integer.toString(getNodeId());
         // I can't find a better way to deal with this when storeByForeignSource is enabled        
-        if (m_resource != null && m_resource.getParent() != null && m_resource.getParent().startsWith(DefaultResourceDao.FOREIGN_SOURCE_DIRECTORY)) {
+        if (m_resource != null && m_resource.getParent() != null && m_resource.getParent().startsWith(ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY)) {
             // If separatorChar is backslash (like on Windows) use a double-escaped backslash in the regex
             String[] parts = m_resource.getParent().split(File.separatorChar == '\\' ? "\\\\" : File.separator);
             if (parts.length == 3) {
@@ -325,7 +324,7 @@ public class CollectionResourceWrapper {
      * @return a boolean.
      */
     public boolean isAnInterfaceResource() {
-        return getResourceTypeName() != null && getResourceTypeName().equals("if");
+        return getResourceTypeName() != null && CollectionResource.RESOURCE_TYPE_IF.equals(getResourceTypeName());
     }
 
     /**
@@ -373,7 +372,7 @@ public class CollectionResourceWrapper {
             return null;
         }
         // Generating a unique ID for the node/resourceType/resource/metric combination.
-        String id =  "node[" + m_nodeId + "].resourceType[" + m_resource.getResourceTypeName() + "].instance[" + m_resource.getLabel() + "].metric[" + ds + "]";
+        String id =  "node[" + m_nodeId + "].resourceType[" + m_resource.getResourceTypeName() + "].instance[" + m_resource.getInterfaceLabel() + "].metric[" + ds + "]";
         Double current = null;
         try {
             current = Double.parseDouble(numValue);

@@ -53,11 +53,11 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.SocketWrapper;
 import org.opennms.core.utils.TimeoutTracker;
-import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
+import org.opennms.netmgt.poller.PollStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -188,7 +188,7 @@ public class HttpMonitor extends AbstractServiceMonitor {
                     LOG.info("checkStatus: HTTP socket connection timed out with {}", httpClient.getTimeoutTracker().toString());
                     httpClient.setReason("HTTP connection timeout");
                 } catch (InterruptedIOException e) {
-                    LOG.info(String.format("checkStatus: HTTP connection interrupted after {} bytes transferred with {}", e.bytesTransferred, httpClient.getTimeoutTracker().toString()), e);
+                    LOG.info(String.format("checkStatus: HTTP connection interrupted after %d bytes transferred with %s", e.bytesTransferred, httpClient.getTimeoutTracker().toString()), e);
                     httpClient.setReason(String.format("HTTP connection interrupted, %d bytes transferred", e.bytesTransferred));
                 } catch (ConnectException e) {
                     LOG.warn("Connection exception for {}:{}", iface.getAddress(), determinePorts(httpClient.getParameters())[portIndex], e);

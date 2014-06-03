@@ -35,13 +35,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.netmgt.config.collector.AbstractCollectionSetVisitor;
-import org.opennms.netmgt.config.collector.AttributeGroup;
-import org.opennms.netmgt.config.collector.CollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.collector.CollectionSet;
-import org.opennms.netmgt.config.collector.ServiceParameters;
-import org.opennms.netmgt.model.RrdRepository;
+import org.opennms.netmgt.collection.api.AttributeGroup;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.collection.support.AbstractCollectionSetVisitor;
+import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,8 +92,8 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
      * @param nodeId a int.
      * @param hostAddress a {@link java.lang.String} object.
      * @param serviceName a {@link java.lang.String} object.
-     * @param repo a {@link org.opennms.netmgt.model.RrdRepository} object.
-     * @param svcParams a {@link org.opennms.netmgt.config.collector.ServiceParameters} object.
+     * @param repo a {@link org.opennms.netmgt.rrd.RrdRepository} object.
+     * @param svcParams a {@link org.opennms.netmgt.collection.api.ServiceParameters} object.
      * @return a {@link org.opennms.netmgt.threshd.ThresholdingVisitor} object.
      */
     public static ThresholdingVisitor create(int nodeId, String hostAddress, String serviceName, RrdRepository repo, ServiceParameters svcParams) {

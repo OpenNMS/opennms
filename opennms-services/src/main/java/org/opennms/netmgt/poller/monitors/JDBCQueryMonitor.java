@@ -36,7 +36,7 @@ import java.util.Map;
 import java.util.HashMap;
 
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.PollStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

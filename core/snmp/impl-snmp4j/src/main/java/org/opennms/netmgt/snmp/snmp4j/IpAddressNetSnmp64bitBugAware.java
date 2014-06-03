@@ -38,7 +38,7 @@ import org.snmp4j.asn1.BERInputStream;
 import org.snmp4j.smi.IpAddress;
 
 /**
- * @author Jeff Gehlbach <jeffg@opennms.org>
+ * @author Jeff Gehlbach &lt;jeffg@opennms.org&gt;
  * 
  * This class exists solely to work around a bug in the Net-SNMP BER library
  * that causes Net-SNMP agents prior to version 5.4.1 on 64-bit platforms to
@@ -87,10 +87,8 @@ public class IpAddressNetSnmp64bitBugAware extends IpAddress {
 		}
 		if (value.length != 4) {
 			if ( (value.length == 8) && Boolean.getBoolean("org.opennms.snmp.workarounds.allow64BitIpAddress") ) {
-	            byte[] tempValue = { 0,0,0,0 };
-	            for (int i = 0; i < 4; i++) {
-	            	tempValue[i] = value[i];
-	            }
+	            byte[] tempValue = new byte[4];
+	            System.arraycopy(value, 0, tempValue, 0, 4);
 	            value = tempValue;
 	             LOG.debug("Working around misencoded IpAddress (8 bytes, truncating to 4); likely dealing with a buggy Net-SNMP agent");
 			} else {

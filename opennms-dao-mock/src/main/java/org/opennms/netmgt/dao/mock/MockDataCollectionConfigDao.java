@@ -9,7 +9,7 @@ import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.ResourceType;
-import org.opennms.netmgt.model.RrdRepository;
+import org.opennms.netmgt.rrd.RrdRepository;
 
 public class MockDataCollectionConfigDao implements DataCollectionConfigDao {
 

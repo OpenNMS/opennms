@@ -66,11 +66,11 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath:/daoWebRepositoryTestContext.xml",
-        "classpath:/jdbcWebRepositoryTestContext.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
+@Transactional
 public class WebNotificationRepositoryFilterTest implements InitializingBean {
     
     @Autowired
@@ -79,10 +79,6 @@ public class WebNotificationRepositoryFilterTest implements InitializingBean {
     @Autowired
     @Qualifier("dao")
     WebNotificationRepository m_daoNotificationRepo;
-    
-    @Autowired
-    @Qualifier("jdbc")
-    WebNotificationRepository m_jdbcNotificationRepo;
     
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -176,9 +172,6 @@ public class WebNotificationRepositoryFilterTest implements InitializingBean {
         System.out.println(filter.getSql());
         NotificationCriteria criteria = new NotificationCriteria(filter);
         Notification[] notifs = m_daoNotificationRepo.getMatchingNotifications(criteria);
-        assertEquals(1, notifs.length);
-        
-        notifs = m_jdbcNotificationRepo.getMatchingNotifications(criteria);
         assertEquals(1, notifs.length);
     }
 }

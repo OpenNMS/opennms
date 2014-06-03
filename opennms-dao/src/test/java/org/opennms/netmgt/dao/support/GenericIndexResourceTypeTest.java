@@ -34,9 +34,10 @@ import java.io.File;
 
 import junit.framework.TestCase;
 
-import org.opennms.netmgt.config.StorageStrategy;
+import org.opennms.netmgt.collection.api.StorageStrategy;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
@@ -109,7 +110,7 @@ public class GenericIndexResourceTypeTest extends TestCase {
         File snmpNodeDir = m_fileAnticipator.tempDir(snmpDir, "1");
         File fooDir = m_fileAnticipator.tempDir(snmpNodeDir, "foo");
         File indexDir = m_fileAnticipator.tempDir(fooDir, "1");
-        m_fileAnticipator.tempFile(indexDir, DefaultResourceDao.STRINGS_PROPERTIES_FILE_NAME, "stringAttribute=hello!!!!");
+        m_fileAnticipator.tempFile(indexDir, ResourceTypeUtils.STRINGS_PROPERTIES_FILE_NAME, "stringAttribute=hello!!!!");
         
         m_mocks.replayAll();
         OnmsResource resource = rt.getResourceByNodeAndIndex(1, "1");
@@ -131,7 +132,7 @@ public class GenericIndexResourceTypeTest extends TestCase {
         File forIdDir = m_fileAnticipator.tempDir(snmpNodeSourceDir, "123");
         File fooDir = m_fileAnticipator.tempDir(forIdDir, "foo");
         File indexDir = m_fileAnticipator.tempDir(fooDir, "1");
-        m_fileAnticipator.tempFile(indexDir, DefaultResourceDao.STRINGS_PROPERTIES_FILE_NAME, "stringAttribute=hello!!!!");
+        m_fileAnticipator.tempFile(indexDir, ResourceTypeUtils.STRINGS_PROPERTIES_FILE_NAME, "stringAttribute=hello!!!!");
 
         m_mocks.replayAll();
         OnmsResource resource = rt.getResourceByNodeSourceAndIndex("source1:123", "1");

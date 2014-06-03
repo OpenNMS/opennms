@@ -35,9 +35,9 @@ import java.util.Map;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
+import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.snmp.RowCallback;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpInstId;
@@ -114,7 +114,7 @@ public class NetScalerGroupHealthMonitor extends SnmpMonitorStrategy {
                 }
             }
 
-            double health = (new Double(activeServers)/new Double(totalServers)) * new Double(100);
+            double health = (new Double(activeServers)/new Double(totalServers)) * 100.0;
             LOG.debug("There are {} of {} active servers ({}%) on group {} for NetScaler {}", activeServers, totalServers, health, groupName, hostAddress);
 
             if (health >= groupHealth) {

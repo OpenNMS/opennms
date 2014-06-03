@@ -41,6 +41,7 @@ import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
+import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -146,7 +147,7 @@ public class NodeResourceType implements OnmsResourceType {
         
         public NodeChildResourceLoader(int nodeId, String foreignSource, String foreignId) {
             m_nodeId = nodeId;
-            m_nodeSource = foreignSource + ':' + foreignId;
+            m_nodeSource = foreignSource == null || foreignId == null ? null : foreignSource + ':' + foreignId;
         }
         
         public void setParent(OnmsResource parent) {
@@ -157,7 +158,7 @@ public class NodeResourceType implements OnmsResourceType {
         public List<OnmsResource> load() {
             List<OnmsResource> children = new LinkedList<OnmsResource>();
 
-            if (ResourceTypeUtils.isStoreByForeignSource()) {
+            if (ResourceTypeUtils.isStoreByForeignSource() && m_nodeSource != null) {
                 for (OnmsResourceType resourceType : getResourceTypesForNodeSource(m_nodeSource, m_nodeId)) {
                     for (OnmsResource resource : resourceType.getResourcesForNodeSource(m_nodeSource, m_nodeId)) {
                         resource.setParent(m_parent);

@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.poller.pollables;
 
-import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.scheduler.Timer;
 
 
@@ -43,7 +43,7 @@ public interface PollConfig extends Timer {
     /**
      * <p>poll</p>
      *
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public PollStatus poll();
 

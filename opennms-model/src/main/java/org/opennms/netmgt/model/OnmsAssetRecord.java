@@ -58,7 +58,7 @@ import org.springframework.core.style.ToStringCreator;
 
 /**
  * Represents the asset information for a node.
- *
+ * 
  * @hibernate.class table="assets"
  */
 @XmlRootElement(name = "assetRecord")
@@ -998,7 +998,7 @@ public class OnmsAssetRecord implements Serializable {
      * --# maintContractNumber: The maintenance contract number for this asset.
      *
      * @return a {@link java.lang.String} object.
-     * @deprecated This field is provided for backwards compatibility with OpenNMS < 1.10
+     * @deprecated This field is provided for backwards compatibility with OpenNMS &lt; 1.10
      */
     @Transient
     public String getMaintContractNumber() {
@@ -1009,7 +1009,7 @@ public class OnmsAssetRecord implements Serializable {
      * <p>setMaintContractNumber</p>
      *
      * @param maintcontract a {@link java.lang.String} object.
-     * @deprecated This field is provided for backwards compatibility with OpenNMS < 1.10
+     * @deprecated This field is provided for backwards compatibility with OpenNMS &lt; 1.10
      */
     public void setMaintContractNumber(final String maintcontract) {
         setMaintcontract(maintcontract);
@@ -1337,11 +1337,6 @@ public class OnmsAssetRecord implements Serializable {
         return m_rackunitheight;
     }
 
-    /**
-     * <p>setRackunitheight</p>
-     *
-     * @param snmpcommunity a {@link java.lang.String} object.
-     */
     public void setRackunitheight(final String rackunitheight) {
         m_rackunitheight = rackunitheight;
     }
@@ -1685,7 +1680,7 @@ public class OnmsAssetRecord implements Serializable {
 
     /**
      * <p>getVmwareManagedEntityType</p>
-     * <p/>
+     * 
      * Set the VMware management entity type defines if the machine is a virtual machine or a host system
      *
      * @return a {@link java.lang.String} object
@@ -1697,7 +1692,7 @@ public class OnmsAssetRecord implements Serializable {
 
     /**
      * <p>setVmwareManagedEntityType</p>
-     * <p/>
+     * 
      * Set the VMware management entity type defines if the machine is a virtual machine or a host system
      *
      * @param vmwareManagedEntityType a {@link java.lang.String} object
@@ -1708,7 +1703,7 @@ public class OnmsAssetRecord implements Serializable {
 
     /**
      * <p>getVmwareManagedObjectId</p>
-     * <p/>
+     * 
      * Get the VMware managed object ID as a unique identifier for VMware API
      *
      * @return a {@link java.lang.String} object
@@ -1720,10 +1715,8 @@ public class OnmsAssetRecord implements Serializable {
 
     /**
      * <p>setVmwareManagedObjectId</p>
-     * <p/>
+     * 
      * Set the VMware managed object ID as a unique identifier for VMware API
-     *
-     * @return a {@link java.lang.String} object
      */
     public void setVmwareManagedObjectId(final String vmwareManagedObjectId) {
         m_vmwareManagedObjectId = vmwareManagedObjectId;
@@ -1731,7 +1724,7 @@ public class OnmsAssetRecord implements Serializable {
 
     /**
      * <p>getVmwareManagementServer</p>
-     * <p/>
+     * 
      * Get the vCenter host or ip address
      *
      * @return a {@link java.lang.String} object
@@ -1743,7 +1736,7 @@ public class OnmsAssetRecord implements Serializable {
 
     /**
      * <p>setVmwareManagementServer</p>
-     * <p/>
+     * 
      * Set the vCenter host or ip address
      *
      * @param vmwareManagementServer a {@link java.lang.String} object
@@ -1754,7 +1747,7 @@ public class OnmsAssetRecord implements Serializable {
 
     /**
      * <p>getVmwareState</p>
-     * <p/>
+     * 
      * Get the VMware managed entity state
      *
      * @return a {@link java.lang.String} object
@@ -1766,7 +1759,7 @@ public class OnmsAssetRecord implements Serializable {
 
     /**
      * <p>setVmwareState</p>
-     * <p/>
+     * 
      * Set the VMware managed entity state
      *
      * @param vmwareState a {@link java.lang.String} object
@@ -1777,7 +1770,7 @@ public class OnmsAssetRecord implements Serializable {
 
     /**
      * <p>getVmwareTopologyInfo</p>
-     * <p/>
+     * 
      * Get the VMware topology information
      *
      * @return a {@link java.lang.String} object
@@ -1789,7 +1782,7 @@ public class OnmsAssetRecord implements Serializable {
 
     /**
      * <p>setVmwareTopologyInfo</p>
-     * <p/>
+     * 
      * Set the VMware topology information
      *
      * @param vmwareTopologyInfo a {@link java.lang.String} object

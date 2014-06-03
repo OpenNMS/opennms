@@ -11,6 +11,8 @@ public class SharedEdge implements Serializable {
     private String m_styleName;
     private String m_tooltipText;
 
+    private String m_status;
+
     public void setKey(String key) {
         m_key = key;
     }
@@ -30,7 +32,7 @@ public class SharedEdge implements Serializable {
     public void setCssClass(String styleName) {
         m_styleName = styleName;
     }
-    
+
     public String getCssClass() {
         return m_styleName;
     }
@@ -70,5 +72,9 @@ public class SharedEdge implements Serializable {
     public boolean getSelected() {
         return m_selected;
     }
+
+    public String getStatus() { return m_status; }
+
+    public void setStatus(String status) { m_status = status; }
 
 }

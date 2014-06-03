@@ -30,9 +30,9 @@ package org.opennms.netmgt.collectd;
 
 import java.io.File;
 
-import org.opennms.netmgt.config.StorageStrategy;
-import org.opennms.netmgt.config.collector.ServiceParameters;
-import org.opennms.netmgt.model.RrdRepository;
+import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.collection.api.StorageStrategy;
+import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +65,7 @@ public class GenericIndexResource extends SnmpCollectionResource {
     /** {@inheritDoc} */
     @Override
     public File getResourceDir(RrdRepository repository) {
-        String resourcePath = getStrategy().getRelativePathForAttribute(getParent(), getLabel(), null);
+        String resourcePath = getStrategy().getRelativePathForAttribute(getParent(), getInterfaceLabel());
         File resourceDir = new File(repository.getRrdBaseDir(), resourcePath);
         LOG.debug("getResourceDir: {}", resourceDir);
         return resourceDir;
@@ -85,7 +85,7 @@ public class GenericIndexResource extends SnmpCollectionResource {
 
     /** {@inheritDoc} */
     @Override
-    public int getType() {
+    public int getSnmpIfType() {
         return -1;	// XXX is this right?
     }
 
@@ -134,7 +134,7 @@ public class GenericIndexResource extends SnmpCollectionResource {
      * @return a {@link java.lang.String} object.
      */
     @Override
-    public String getLabel() {
+    public String getInterfaceLabel() {
         if (m_resourceLabel == null) {
             m_resourceLabel = getStrategy().getResourceNameFromIndex(this);
         }

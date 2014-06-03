@@ -215,8 +215,16 @@ public class AgentConfigurationResource implements InitializingBean {
                     port = config.getPort();
                 }
             }
-            if (node != null && node.getNodeId() != null) {
-                parameters.put("nodeId", node.getNodeId());
+            if (node != null) {
+                if (node.getNodeId() != null && !node.getNodeId().trim().isEmpty()) {
+                    parameters.put("nodeId", node.getNodeId());
+                }
+                if (node.getForeignSource() != null && !node.getForeignSource().trim().isEmpty()) {
+                    parameters.put("foreignSource", node.getForeignSource());
+                }
+                if (node.getForeignId() != null && !node.getForeignId().trim().isEmpty()) {
+                    parameters.put("foreignId", node.getForeignId());
+                }
             }
 
             responses.add(new AgentResponse(ipAddress, port, service.getServiceName(), parameters));

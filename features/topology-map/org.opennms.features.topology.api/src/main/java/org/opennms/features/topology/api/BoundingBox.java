@@ -46,8 +46,8 @@ public class BoundingBox{
     }
     
     public BoundingBox(Point center, int width, int height) {
-        m_left = center.getX() - width /2 ;
-        m_top = center.getY() - height /2;
+        m_left = (int)center.getX() - width /2 ;
+        m_top = (int)center.getY() - height /2;
         m_right = m_left + width;
         m_bottom = m_top + height;
     }
@@ -69,10 +69,11 @@ public class BoundingBox{
     }
 
     public void addPoint(Point location) {
-        m_left = Math.min(m_left, location.getX());
-        m_right = Math.max(m_right, location.getX());
-        m_top = Math.min(m_top,  location.getY());
-        m_bottom = Math.max(m_bottom, location.getY());
+        //TODO cast to int for now
+        m_left = Math.min(m_left, (int)location.getX());
+        m_right = Math.max(m_right, (int)location.getX());
+        m_top = Math.min(m_top,  (int)location.getY());
+        m_bottom = Math.max(m_bottom, (int)location.getY());
     }
     
     public Point getCenter() {
@@ -81,8 +82,9 @@ public class BoundingBox{
     }
     
     public void setCenter(Point center) {
-        m_left = center.getX() - getWidth()/2;
-        m_top = center.getY() - getHeight()/2; 
+        //TODO cast to in for now
+        m_left = (int)center.getX() - getWidth()/2;
+        m_top = (int)center.getY() - getHeight()/2;
     }
     
     public BoundingBox computeWithAspectRatio(double R) {
@@ -90,8 +92,9 @@ public class BoundingBox{
         int width =  (int) (r < R ? Math.round(getHeight() * R ): getWidth());
         int height = (int) (r < R ? getHeight() : Math.round(getWidth() / R));
         Point center = getCenter();
-        int x = center.getX() - width/2;
-        int y = center.getY() - height/2;
+        //TODO cast to int for now
+        int x = (int)center.getX() - width/2;
+        int y = (int)center.getY() - height/2;
         return new BoundingBox(x, y, width, height);
     }
 

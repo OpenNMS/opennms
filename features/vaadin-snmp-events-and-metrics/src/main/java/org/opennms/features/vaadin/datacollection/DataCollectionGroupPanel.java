@@ -185,7 +185,7 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
      */
     private void processDataCollection(final DataCollectionConfigDao dataCollectionConfigDao, final Logger logger) {
         final DatacollectionGroup dcGroup = getOnmsDataCollection();
-        final File configDir = new File(ConfigFileConstants.getHome(), "etc/datacollection/");
+        final File configDir = new File(ConfigFileConstants.getHome(), "etc" + File.separatorChar + "datacollection");
         final File file = new File(configDir, dcGroup.getName().replaceAll(" ", "_") + ".xml");
         if (file.exists()) {
             ConfirmDialog.show(getUI(),

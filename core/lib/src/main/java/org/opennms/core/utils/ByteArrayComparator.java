@@ -35,7 +35,7 @@ import java.util.Comparator;
  * IP addresses using {@link java.net.InetAddress#getAddress()} and can be used to
  * compare any pair of IPv4 and/or IPv6 addresses.
  * 
- * @author Seth <seth@opennms.org>
+ * @author Seth &lt;seth@opennms.org&gt;
  */
 public class ByteArrayComparator implements Comparator<byte[]> {
 

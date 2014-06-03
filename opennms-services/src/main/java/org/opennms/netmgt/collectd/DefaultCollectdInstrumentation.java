@@ -29,6 +29,7 @@
 package org.opennms.netmgt.collectd;
 
 import org.opennms.core.logging.Logging;
+import org.opennms.netmgt.collection.api.CollectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

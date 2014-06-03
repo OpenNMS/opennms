@@ -12,12 +12,12 @@ import org.opennms.netmgt.config.api.collection.IGroup;
 import org.opennms.netmgt.config.api.collection.IMibObject;
 
 /**
- * 	<group name="mib2-coffee-rfc2325">
- *      <mibObj oid=".1.3.6.1.2.1.10.132.2" instance="0" alias="coffeePotCapacity" type="integer" />
- *      <mibObj oid=".1.3.6.1.2.1.10.132.4.1.2" instance="0" alias="coffeePotLevel" type="integer" />
- *      <mibObj oid=".1.3.6.1.2.1.10.132.4.1.6" instance="0" alias="coffeePotTemp" type="integer" />
- *  </group>
- *  
+ * &lt;group name="mib2-coffee-rfc2325"&gt;
+ *      &lt;mibObj oid=".1.3.6.1.2.1.10.132.2" instance="0" alias="coffeePotCapacity" type="integer" /&gt;
+ *      &lt;mibObj oid=".1.3.6.1.2.1.10.132.4.1.2" instance="0" alias="coffeePotLevel" type="integer" /&gt;
+ *      &lt;mibObj oid=".1.3.6.1.2.1.10.132.4.1.6" instance="0" alias="coffeePotTemp" type="integer" /&gt;
+ * &lt;/group&gt;
+ * 
  * @author brozow
  *
  */

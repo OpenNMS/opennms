@@ -30,7 +30,7 @@ package org.opennms.netmgt.mock;
 
 import java.util.Date;
 
-import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -126,7 +126,7 @@ abstract public class MockElement {
     /**
      * <p>getPollStatus</p>
      *
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     abstract public PollStatus getPollStatus();
 
@@ -165,7 +165,7 @@ abstract public class MockElement {
     /**
      * <p>setServicePollStatus</p>
      *
-     * @param newStatus a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @param newStatus a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     protected void setServicePollStatus(final PollStatus newStatus) {
         MockVisitor statusSetter = new MockVisitorAdapter() {
