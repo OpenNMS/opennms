@@ -7,11 +7,11 @@
                     <p class="nodeHeaderLocation"><em>{{node.sysLocation | characters:50}}</em></p>
                 </div>
                 <div class="col-md-6">
-                   asdf
+                   <button class="btn btn-lg btn-danger"><i class="glyphicon glyphicon-exclamation-sign"></i></button>
                 </div>
             </div>
         </div>
-        <h4>Node: {{node._label}} (ID: {{node._id}})</h4>
+
         <h4 ng-if="node._foreignSource"><em>Created via provisioning requisition <strong>{{node._foreignSource}}
             (foreignId: {{node._foreignId}})</strong></em></h4>
         <h4 ng-if="!node._foreignSource"><em>Not a member of any provisioning requisition</em></h4>
