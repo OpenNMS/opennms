@@ -337,6 +337,7 @@ module.exports = function (grunt) {
           '<%= yeoman.app %>/bower_components/angular/angular.js',
           '<%= yeoman.app %>/bower_components/angular-animate/angular-animate.js',
           '<%= yeoman.app %>/bower_components/angular-sanitize/angular-sanitize.js',
+          '<%= yeoman.app %>/bower_components/angular-moment/angular-moment.js',
           '<%= yeoman.app %>/bower_components/angular-bootstrap/ui-bootstrap.js',
           '<%= yeoman.app %>/bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
           '<%= yeoman.app %>/bower_components/angular-truncate-original/src/truncate.js',
