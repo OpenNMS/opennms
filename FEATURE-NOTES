@@ -1,0 +1,11 @@
+Next Generation UI for OpenNMS using AngularJS and ReST
+
+* Are there good debugging techniques?
+
+* Are there good editors?
+
+* Can we make some template projects showing a single page & a page with sub views?
+
+* Need a way to handle 503 jetty not yet ready...
+
+* Make templates for single view and multiple view pages.
