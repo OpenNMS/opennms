@@ -351,7 +351,7 @@ module.exports = function (grunt) {
         autoWatch: true,
         reporters: ['dots', 'coverage'],
         port: 8080,
-        singleRun: false,
+        singleRun: true,
         preprocessors: {
           // Update this if you change the yeoman config path
           'app/scripts/**/*.js': ['coverage']
@@ -369,10 +369,14 @@ module.exports = function (grunt) {
         browsers: ['PhantomJS'],
         background: true
       },
+      single: {
+        // Change this to 'Chrome', 'Firefox', etc. Note that you will need
+        // to install a karma launcher plugin for browsers other than Chrome.
+        browsers: ['PhantomJS']
+      },
       continuous: {
         browsers: ['PhantomJS'],
-        singleRun: false,
-        autoWatch: true
+        singleRun: false
       }
     },
 
