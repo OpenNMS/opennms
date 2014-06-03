@@ -256,6 +256,7 @@ sub get_version_from_java {
 	($version) = $output =~ / version \"?([\d\.]+?(?:[\-\_]\S+?)?)\"?$/ms;
 	($version, $build) = $version =~ /^([\d\.]+)(?:[\-\_](.*?))?$/;
 	($shortversion) = $version =~ /^(\d+\.\d+)/;
+	$build = 0 if (not defined $build);
 
 	$bindir = dirname($javacmd);
 	$java_home = Cwd::realpath(File::Spec->catdir($bindir, '..'));
