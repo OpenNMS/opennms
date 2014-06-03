@@ -7,6 +7,15 @@
 
             <div ng-if="!nodes.length">None found.</div>
 
+            <ul class="list-unstyled">
+                <li ng-repeat="node in nodes | orderBy:'_id' track by node._id">
+                    <!--<a ui-sref="app.nodes.detail({ nodeId: node._id})" popover="I appeared on mouse enter!" popover-trigger="mouseenter" popover-placement="right" popover-append-to-body="true">{{node._label}}</a>-->
+                    <a ui-sref="app.nodes.detail({ nodeId: node._id})" node-list-popover popover-node="node">{{node._label}}</a>
+                </li>
+            </ul>
+
+
+
             <div ng-repeat="node in nodes | orderBy:'_id' track by node._id">
                 <h5><a ui-sref="app.nodes.detail({ nodeId: node._id})">{{node._label}}</a> (Node ID: {{node._id}}<span ng-if="node._foreignId">, Foreign Source: {{node._foreignSource}}, Foreign ID: {{node._foreignId}}</span>)</h5>
                 <div style="padding-left: 20px" ng-if="ifaces[node._id]">

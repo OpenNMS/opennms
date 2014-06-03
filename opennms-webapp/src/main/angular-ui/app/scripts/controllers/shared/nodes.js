@@ -3,9 +3,12 @@
 
   angular.module('opennms.controllers.shared.nodes', [
     'ui.router',
+    'ui.bootstrap',
+    'truncate',
     'opennms.controllers.desktop.app',
     'opennms.services.shared.nodes',
-    'opennms.services.shared.menu'
+    'opennms.services.shared.menu',
+    'opennms.directives.shared.nodes'
   ])
     .controller('NodesCtrl', ['$scope', '$log', 'NodeService', function ($scope, $log, NodeService) {
       $log.debug('Initializing NodesCtrl.');
@@ -13,8 +16,11 @@
       //$scope.nodes = [];
       $scope.ifaces = {};
 
+      $scope.limit = 10;
+      $scope.offset = 0;
+
       $scope.init = function() {
-        NodeService.list().then(function(nodes) {
+        NodeService.list($scope.offset, $scope.limit).then(function(nodes) {
           $log.debug('Got nodes:', nodes);
           $scope.nodes = nodes;
 
@@ -38,39 +44,59 @@
         });
       };
 
+      $scope.fetchMoreNodes = function() {
+        $scope.offset += $scope.limit;
+      };
+
       $scope.getNodeLink = function (node) {
         return '#/node/' + node.id;
       };
 
       $scope.init();
     }])
-    .controller('NodeDetailCtrl', ['$scope', '$stateParams', 'NodeService', function ($scope, $stateParams, NodeService) {
+    .controller('NodeDetailCtrl', ['$scope', '$stateParams', '$log', 'NodeService', function ($scope, $stateParams, $log, NodeService) {
       $scope.node = {};
-      $scope.node.label = 'node8';
-      $scope.node.id = 1;
-      $scope.node.foreignSource = 'bigreq';
-      $scope.node.foreignId = 'node8';
-      $scope.node.statusSite = '';
-      $scope.node.links = [];
-      $scope.node.resources = [];
-      $scope.node.navEntries = [];
-      $scope.node.schedOutages = '';
-      $scope.node.asset = {
-        'description': '',
-        'comments': ''
-      };
-      $scope.node.snmp = {
-        'sysName': '',
-        'sysObjectId': '',
-        'sysLocation': '',
-        'sysContact': '',
-        'sysDescription': ''
-      };
+//      $scope.node.label = 'node8';
+//      $scope.node.id = 1;
+//      $scope.node.foreignSource = 'bigreq';
+//      $scope.node.foreignId = 'node8';
+//      $scope.node.statusSite = '';
+//      $scope.node.links = [];
+//      $scope.node.resources = [];
+//      $scope.node.navEntries = [];
+//      $scope.node.schedOutages = '';
+//      $scope.node.asset = {
+//        'description': '',
+//        'comments': ''
+//      };
+//      $scope.node.snmp = {
+//        'sysName': '',
+//        'sysObjectId': '',
+//        'sysLocation': '',
+//        'sysContact': '',
+//        'sysDescription': ''
+//      };
 
       $scope.init = function() {
-        $scope.node = NodeService.get($stateParams.nodeId);
+        NodeService.get($stateParams.nodeId).then(function(node) {
+          $log.debug('Got node:', node);
+          $scope.node = node;
+          NodeService.getIpInterfaces(node._id).then(function(ifaces) {
+            $log.debug('Got node ifaces:', ifaces);
+            $scope.node.ifaces = ifaces;
+            $scope.node.ifaces.forEach(function(iface, index) {
+              NodeService.getIpInterfaceServices($scope.node._id, iface.ipAddress).then(function(services) {
+                $log.debug('Got node iface services:', services);
+                $scope.node.ifaces[index].services = services;
+              });
+            });
+          })
+        });
       };
 
+      $scope.getServicesForInterface = function(iface) {
+
+      }
       console.log($scope.node);
 
       /// Runtime stuff.

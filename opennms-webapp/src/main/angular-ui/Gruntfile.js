@@ -337,6 +337,9 @@ module.exports = function (grunt) {
           '<%= yeoman.app %>/bower_components/angular/angular.js',
           '<%= yeoman.app %>/bower_components/angular-animate/angular-animate.js',
           '<%= yeoman.app %>/bower_components/angular-sanitize/angular-sanitize.js',
+          '<%= yeoman.app %>/bower_components/angular-bootstrap/ui-bootstrap.js',
+          '<%= yeoman.app %>/bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
+          '<%= yeoman.app %>/bower_components/angular-truncate-original/src/truncate.js',
           '<%= yeoman.app %>/bower_components/angular-ui-router/release/angular-ui-router.js',
           '<%= yeoman.app %>/bower_components/ionic/release/js/ionic.js',
           '<%= yeoman.app %>/bower_components/ionic/release/js/ionic-angular.js',
@@ -344,6 +347,7 @@ module.exports = function (grunt) {
           '<%= yeoman.app %>/bower_components/x2js/xml2json.js',
           '<%= yeoman.app %>/<%= yeoman.scripts %>/services/**/*.js',
           '<%= yeoman.app %>/<%= yeoman.scripts %>/controllers/**/*.js',
+          '<%= yeoman.app %>/<%= yeoman.scripts %>/directives/**/*.js',
           '<%= yeoman.app %>/<%= yeoman.scripts %>/**/*.js',
           //'test/mock/**/*.js',
           'test/spec/**/*.js'

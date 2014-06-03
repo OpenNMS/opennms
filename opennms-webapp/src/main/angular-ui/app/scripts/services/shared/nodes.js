@@ -25,7 +25,12 @@
           var results = x2js.xml_str2json(data);
           var ifaces = [];
           if (results && results.ipInterfaces && results.ipInterfaces.ipInterface) {
-            ifaces = results.ipInterfaces.ipInterface;
+            if(angular.isArray(results.ipInterfaces.ipInterface)) {
+              ifaces = results.ipInterfaces.ipInterface;
+            } else {
+              ifaces.push(results.ipInterfaces.ipInterface);
+            }
+
             for (var i=0; i < ifaces.length; i++) {
               ifaces[i]['_id']      = parseInt(ifaces[i]['_id']);
               ifaces[i]['_ifIndex'] = parseInt(ifaces[i]['_ifIndex']);
@@ -33,6 +38,40 @@
             }
           }
           deferred.resolve(ifaces);
+        }).error(function(data, status, headers, config) {
+
+        });
+        return deferred.promise;
+      };
+
+      var getIpInterfaceServices = function(nodeId, ipAddress) {
+        var ipsUrl = config.getRoot() + '/rest/nodes/' + nodeId + '/ipinterfaces/' + ipAddress + '/services';
+        $log.debug('getIpInterfaceServices: GET ' + ipsUrl);
+
+        var deferred = $q.defer();
+        $http({
+          'method': 'GET',
+          'url': ipsUrl,
+          'headers': {
+            'Accept': 'application/xml'
+          }
+        }).success(function(data, status, headers, config) {
+          var results = x2js.xml_str2json(data);
+          var ifaceServices = [];
+          if (results && results.services && results.services.service) {
+            if(angular.isArray(results.services.service)) {
+              ifaceServices = results.services.service;
+            } else {
+              ifaceServices.push(results.services.service);
+            }
+
+//            for (var i=0; i < ifaces.length; i++) {
+//              ifaces[i]['_id']      = parseInt(ifaces[i]['_id']);
+//              ifaces[i]['_ifIndex'] = parseInt(ifaces[i]['_ifIndex']);
+//              ifaces[i].nodeId      = parseInt(ifaces[i].nodeId);
+//            }
+          }
+          deferred.resolve(ifaceServices);
         }).error(function(data, status, headers, config) {
 
         });
@@ -107,7 +146,8 @@
       return {
         'list': getNodes,
         'get': getNode,
-        'getIpInterfaces': getIpInterfaces
+        'getIpInterfaces': getIpInterfaces,
+        'getIpInterfaceServices': getIpInterfaceServices
       };
     }])
 
