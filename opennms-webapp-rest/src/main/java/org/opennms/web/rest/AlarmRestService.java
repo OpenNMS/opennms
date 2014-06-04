@@ -51,6 +51,7 @@ import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAlarmCollection;
+import org.opennms.netmgt.model.alarm.AlarmSummaryCollection;
 import org.opennms.web.api.Authentication;
 import org.opennms.netmgt.model.acknowledgments.AckService;
 import org.opennms.netmgt.model.alarm.AlarmSummaryCollection;
