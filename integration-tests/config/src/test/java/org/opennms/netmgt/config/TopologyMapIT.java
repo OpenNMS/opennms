@@ -57,7 +57,7 @@ import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 
 @RunWith(JUnit4TestRunner.class)
 //@ExamReactorStrategy(AllConfinedStagedReactorFactory.class)
-public class TopologyMapIntegrationTest extends KarafTestSupport {
+public class TopologyMapIT extends KarafTestSupport {
 
     //@Inject
     //private TopologyProvider<?,?,?,?> m_topologyProvider;

@@ -83,7 +83,7 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @Transactional
-public class DefaultAckServiceTest implements InitializingBean {
+public class DefaultAckServiceIT implements InitializingBean {
 
     @Autowired AcknowledgmentDao m_ackDao;
 

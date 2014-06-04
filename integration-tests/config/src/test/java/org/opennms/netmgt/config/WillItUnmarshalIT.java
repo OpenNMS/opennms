@@ -111,7 +111,7 @@ import org.springframework.core.io.Resource;
  * @see WillItUnmarshalMetaTest
  */
 @RunWith(value = Parameterized.class)
-public class WillItUnmarshalTest {
+public class WillItUnmarshalIT {
     private static final String CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY = "org.exolab.castor.xml.lenient.sequence.order";
 
     /**
@@ -320,7 +320,7 @@ public class WillItUnmarshalTest {
     private final boolean lenient;
     private final String exception;
 
-    public WillItUnmarshalTest(final Source source,
+    public WillItUnmarshalIT(final Source source,
             final String file,
             final Class<?> clazz,
             final Impl impl,

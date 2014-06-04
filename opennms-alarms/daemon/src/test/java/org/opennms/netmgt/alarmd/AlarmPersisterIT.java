@@ -57,7 +57,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class AlarmPersisterTest implements InitializingBean {
+public class AlarmPersisterIT implements InitializingBean {
 
     @Autowired
     private MockEventIpcManager m_mockEventIpcManager;

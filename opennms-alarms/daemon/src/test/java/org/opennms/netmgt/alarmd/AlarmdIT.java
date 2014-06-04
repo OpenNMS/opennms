@@ -88,7 +88,7 @@ import org.springframework.util.StringUtils;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false,tempDbClass=MockDatabase.class)
-public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase>, InitializingBean {
+public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, InitializingBean {
 
     public class MockNorthbounder implements Northbounder {
 

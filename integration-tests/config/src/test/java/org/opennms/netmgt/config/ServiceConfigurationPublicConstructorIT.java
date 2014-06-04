@@ -54,7 +54,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
     OpenNMSConfigurationExecutionListener.class
 })
 @JUnitConfigurationEnvironment
-public class ServiceConfigurationPublicConstructorTest extends PublicConstructorTest {
+public class ServiceConfigurationPublicConstructorIT extends PublicConstructorTest {
 	@Override
 	protected List<Class<? extends Object>> getClasses() throws MarshalException, ValidationException, IOException, ClassNotFoundException {
 		List<Class<? extends Object>> retval = new ArrayList<Class<? extends Object>>();

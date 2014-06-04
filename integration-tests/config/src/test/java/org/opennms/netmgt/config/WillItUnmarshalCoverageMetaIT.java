@@ -25,9 +25,9 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
 
 /**
- * This is a meta test, testing the coverage of {@link WillItUnmarshalTest}.
+ * This is a meta test, testing the coverage of {@link WillItUnmarshalIT}.
  *
- * The {@link WillItUnmarshalTest} uses parameterized tests to check
+ * The {@link WillItUnmarshalIT} uses parameterized tests to check
  * unmarshalling of provided config files. To ensure the checked list of files
  * covers all files in the example directories, this test fetches the file list
  * of the directories to test and checks them against the defined files to test.
@@ -35,8 +35,8 @@ import com.google.common.collect.ImmutableList;
  * @author Dustin Frisch<fooker@lab.sh>
  */
 @RunWith(value = Parameterized.class)
-public class WillItUnmarshalCoverageMetaTest {
-    private static final Logger LOG = LoggerFactory.getLogger(WillItUnmarshalCoverageMetaTest.class);
+public class WillItUnmarshalCoverageMetaIT {
+    private static final Logger LOG = LoggerFactory.getLogger(WillItUnmarshalCoverageMetaIT.class);
 
     /**
      * A set of test parameters to execute.
@@ -131,7 +131,7 @@ public class WillItUnmarshalCoverageMetaTest {
     }
     
     /**
-     * The set of files covered by the {@link WillItUnmarshalTest}.
+     * The set of files covered by the {@link WillItUnmarshalIT}.
      */
     final static Set<File> COVERED_FILES = new HashSet<File>();
     
@@ -140,12 +140,12 @@ public class WillItUnmarshalCoverageMetaTest {
         // Get the constructor of test to create the instances - we can assume
         // that there is only one constructor as JUnit requires it.
         @SuppressWarnings("unchecked")
-        final Constructor<WillItUnmarshalTest> constructor = (Constructor<WillItUnmarshalTest>) WillItUnmarshalTest.class.getConstructors()[0];
+        final Constructor<WillItUnmarshalIT> constructor = (Constructor<WillItUnmarshalIT>) WillItUnmarshalIT.class.getConstructors()[0];
         
         // Build set of covered files
-        for (final Object[] parameters : WillItUnmarshalTest.files()) {
+        for (final Object[] parameters : WillItUnmarshalIT.files()) {
             // Create instance of test
-            final WillItUnmarshalTest test = constructor.newInstance(parameters);
+            final WillItUnmarshalIT test = constructor.newInstance(parameters);
             
             // Get the file for the resource used by the test instance and add
             // it to the set of covered files
@@ -158,7 +158,7 @@ public class WillItUnmarshalCoverageMetaTest {
      */
     private final File file;
 
-    public WillItUnmarshalCoverageMetaTest(final String file) {
+    public WillItUnmarshalCoverageMetaIT(final String file) {
         this.file = new File(file);
     }
 
@@ -166,8 +166,8 @@ public class WillItUnmarshalCoverageMetaTest {
      * Tests if the current file is in the set of covered files.
      * 
      * If this test fails, you should add an entry for the uncovered file to
-     * {@link WillItUnmarshalTest#FILES} in the static constructor of
-     * {@link WillItUnmarshalTest} or mark the file as ignored by calling
+     * {@link WillItUnmarshalIT#FILES} in the static constructor of
+     * {@link WillItUnmarshalIT} or mark the file as ignored by calling
      * {@link #ignoreFile(java.io.File)} in the static constructor of
      * {@link WillItUnmarshalMetaTest}.
      */

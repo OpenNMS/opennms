@@ -81,7 +81,7 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @Transactional
-public class HypericAckProcessorTest implements InitializingBean {
+public class HypericAckProcessorIT implements InitializingBean {
 
     @Autowired
     private Ackd m_daemon;

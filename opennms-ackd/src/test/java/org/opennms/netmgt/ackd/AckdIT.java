@@ -90,7 +90,7 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false)
 @Transactional
-public class AckdTest implements InitializingBean {
+public class AckdIT implements InitializingBean {
 
     @Autowired
     private AlarmDao m_alarmDao;

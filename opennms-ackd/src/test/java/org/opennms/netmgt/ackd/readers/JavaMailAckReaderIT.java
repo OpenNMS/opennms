@@ -100,7 +100,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class JavaMailAckReaderTest implements InitializingBean {
+public class JavaMailAckReaderIT implements InitializingBean {
 
     @Autowired
     private Ackd m_daemon;
