@@ -28,9 +28,9 @@
 
 package org.opennms.netmgt.enlinkd;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.opennms.netmgt.nb.TestNetworkBuilder.FROH_IP;
 import static org.opennms.netmgt.nb.TestNetworkBuilder.FROH_NAME;
 import static org.opennms.netmgt.nb.TestNetworkBuilder.FROH_SNMP_RESOURCE;
@@ -47,9 +47,7 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.model.IsIsLink;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms0001NetworkBuilder;
-import org.springframework.transaction.annotation.Transactional;
 
-@Transactional
 public class Nms0001EnTest extends EnLinkdTestBuilder {
 
 	Nms0001NetworkBuilder builder = new Nms0001NetworkBuilder();

@@ -27,18 +27,18 @@
  *******************************************************************************/
 
 package org.opennms.netmgt.enlinkd;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH1_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH1_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH1_SYSOID;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.opennms.netmgt.nb.TestNetworkBuilder.DELHI_IP;
 import static org.opennms.netmgt.nb.TestNetworkBuilder.DELHI_NAME;
 import static org.opennms.netmgt.nb.TestNetworkBuilder.DELHI_SYSOID;
 import static org.opennms.netmgt.nb.TestNetworkBuilder.MUMBAI_IP;
 import static org.opennms.netmgt.nb.TestNetworkBuilder.MUMBAI_NAME;
 import static org.opennms.netmgt.nb.TestNetworkBuilder.MUMBAI_SYSOID;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNotNull;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH1_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH1_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH1_SYSOID;
 
 import java.util.List;
 
@@ -46,9 +46,7 @@ import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.nb.Nms10205bNetworkBuilder;
 import org.opennms.netmgt.nb.Nms17216NetworkBuilder;
-import org.springframework.transaction.annotation.Transactional;
 
-@Transactional
 public class EnLinkdTest extends EnLinkdTestBuilder {
 
 	Nms10205bNetworkBuilder builder10205a = new Nms10205bNetworkBuilder();
