@@ -6,6 +6,19 @@
 
 	<!-- Start 1.10 -->
 
+	<section id="introduction-1.10.14">
+		<title>Release 1.10.14</title>
+
+		<para>
+			Release 1.10.14 is the latest in the stable 1.10 series of OpenNMS
+			releases.  It contains a few small bugfixes including an important
+			security fix.
+		</para>
+		<para>
+			The codename for 1.10.14 is <emphasis>Chalumeau</emphasis>.
+		</para>
+	</section>
+
 	<section id="introduction-1.10.13">
 		<title>Release 1.10.13</title>
 
