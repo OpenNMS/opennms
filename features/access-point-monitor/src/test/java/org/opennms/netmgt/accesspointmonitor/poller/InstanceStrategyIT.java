@@ -90,8 +90,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase = false)
 @DirtiesContext
-public class InstanceStrategyIntegrationTest implements InitializingBean {
-    private static final Logger LOG = LoggerFactory.getLogger(InstanceStrategyIntegrationTest.class);
+public class InstanceStrategyIT implements InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(InstanceStrategyIT.class);
 
     @Autowired
     private PlatformTransactionManager m_transactionManager;

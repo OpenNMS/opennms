@@ -36,11 +36,6 @@ package org.opennms.reporting.datablock;
  */
 public class Outage extends Object {
     /**
-     * The log4j category used to log debug messsages and statements.
-     */
-    private static final String LOG4J_CATEGORY = "OpenNMS.Report";
-
-    /**
      * Time at which the service was lost.
      */
     private long m_svcLostTime; // in milliseconds.

@@ -33,8 +33,9 @@ import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import javax.servlet.http.HttpServletRequest;
 
 public class OnmsAuthenticationDetails extends WebAuthenticationDetails {
-
-    String[] m_userGroupList;
+	private static final long serialVersionUID = 1L;
+	
+	String[] m_userGroupList;
 
     /**
      * Records the remote address and will also set the session Id if a session

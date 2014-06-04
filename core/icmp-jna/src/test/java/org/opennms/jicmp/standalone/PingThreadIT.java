@@ -46,7 +46,7 @@ import com.sun.jna.Platform;
  * @author brozow
  */
 
-public class PingThreadTest {
+public class PingThreadIT {
     
     @Before
     public void setUp() throws Exception {

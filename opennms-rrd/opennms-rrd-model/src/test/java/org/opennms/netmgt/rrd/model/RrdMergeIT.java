@@ -43,7 +43,7 @@ import org.opennms.netmgt.rrd.model.v3.RRA;
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
-public class RrdMergeTest {
+public class RrdMergeIT {
 
     /**
      * Test RRD merge.

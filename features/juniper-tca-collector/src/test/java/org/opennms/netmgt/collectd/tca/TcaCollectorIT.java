@@ -92,9 +92,9 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase=false)
-@JUnitSnmpAgent(host = TcaCollectorTest.TEST_NODE_IP, port = 9161, resource = "classpath:juniperTcaSample.properties")
+@JUnitSnmpAgent(host = TcaCollectorIT.TEST_NODE_IP, port = 9161, resource = "classpath:juniperTcaSample.properties")
 @Transactional
-public class TcaCollectorTest implements InitializingBean {
+public class TcaCollectorIT implements InitializingBean {
 
 	/** The Constant TEST_NODE_IP. */
 	public final static String TEST_NODE_IP = "127.0.0.1"; 

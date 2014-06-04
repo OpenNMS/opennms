@@ -39,7 +39,7 @@ import org.opennms.netmgt.rrd.model.v3.RRDv3;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
-public class NMS6302 {
+public class NMS6302IT {
 
     /**
      * Test JRobin parse.

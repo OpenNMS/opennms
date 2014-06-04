@@ -66,8 +66,8 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class AvailabilityDatabasePopulatorTest implements InitializingBean {
-    private static final Logger LOG = LoggerFactory.getLogger(AvailabilityDatabasePopulatorTest.class);
+public class AvailabilityDatabasePopulatorIT implements InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(AvailabilityDatabasePopulatorIT.class);
 
 	@Autowired
 	AvailabilityDatabasePopulator m_dbPopulator;

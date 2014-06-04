@@ -28,7 +28,10 @@
 
 package org.opennms.reporting.availability;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -36,16 +39,20 @@ import java.util.Locale;
 
 import junit.framework.TestCase;
 
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Marshaller;
+import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
+import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.mock.MockCategoryFactory;
 import org.opennms.reporting.availability.svclayer.LegacyAvailabilityDataService;
 
-public class AvailabilityReportTest extends TestCase {
+public class AvailabilityReportIT extends TestCase {
 
     protected MockDatabase m_db;
     protected Categories m_categories; 
@@ -54,6 +61,11 @@ public class AvailabilityReportTest extends TestCase {
 
     @Override
     protected void setUp() throws Exception {
+        System.err.println("------------------- begin "+getName()+" ---------------------");
+        
+        // Reset the FilterDaoFactory so we don't get screwed by having the JdbcFilterDao be connected to an older database
+        FilterDaoFactory.setInstance(null);
+    	
         super.setUp();
         Locale.setDefault(Locale.US);
         calendar = new GregorianCalendar();
@@ -215,11 +227,17 @@ public class AvailabilityReportTest extends TestCase {
 
     }
 
-    public void testBuiltClassicReport () {
+    public void testBuiltClassicReport () throws IOException, MarshalException, ValidationException {
 
         Report report = buildReport(calendar,"classic");
         
         assertNotNull("report", report);
+        
+        Writer fileWriter = new OutputStreamWriter(System.out, "UTF-8");
+        Marshaller marshaller = new Marshaller(fileWriter);
+        marshaller.setSuppressNamespaces(true);
+        marshaller.setValidation(false);
+        marshaller.marshal(report);
         
         Categories categories = report.getCategories();
         assertNotNull("report categories", report.getCategories());
@@ -227,10 +245,10 @@ public class AvailabilityReportTest extends TestCase {
         Category category = categories.getCategory(0);
         assertEquals("category count", 1,categories.getCategoryCount());
 
-        // basic testst
+        // basic tests
         assertEquals("category node count", 2,category.getNodeCount());
-        assertEquals("category ip address count", 3,category.getIpaddrCount());
-        assertEquals("category service count", 3,category.getServiceCount());
+        assertEquals("category ip address count", 3, category.getIpaddrCount());
+        assertEquals("category service count", 3, category.getServiceCount());
 
         Section section = getSectionByName(category,"LastMonthsDailyAvailability");
         assertNull("calendar table", section.getCalendarTable());
@@ -313,7 +331,10 @@ public class AvailabilityReportTest extends TestCase {
 
     @Override
     protected void tearDown() throws Exception {
+    	m_db.drop();
         super.tearDown();
+
+        System.err.println("------------------- end "+getName()+" -----------------------");
     }
 
 }

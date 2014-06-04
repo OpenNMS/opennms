@@ -94,7 +94,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitTemporaryDatabase
 @Transactional
-public class LocationDataServiceTest implements TemporaryDatabaseAware<TemporaryDatabase>, InitializingBean {
+public class LocationDataServiceIT implements TemporaryDatabaseAware<TemporaryDatabase>, InitializingBean {
     @Autowired
     private LocationDataService m_locationDataService;
 

@@ -38,9 +38,7 @@ import org.springframework.util.Assert;
 
 import javax.xml.bind.JAXB;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -100,9 +98,6 @@ public class DefaultRemoteRepositoryConfigDao implements
      */
     @Override
     public void loadConfiguration() throws Exception {
-        InputStream stream = null;
-        long lastModified;
-
         File file = null;
         try {
             file = m_configResource.getFile();
@@ -111,13 +106,6 @@ public class DefaultRemoteRepositoryConfigDao implements
             logger.error("Resource '{}' does not seem to have an underlying File object.", m_configResource);
         }
 
-        if (file != null) {
-            lastModified = file.lastModified();
-            stream = new FileInputStream(file);
-        } else {
-            lastModified = System.currentTimeMillis();
-            stream = m_configResource.getInputStream();
-        }
         setRemoteRepositoryConfig(JAXB.unmarshal(file, RemoteRepositoryConfig.class));
         Assert.notNull(m_remoteRepositoryConfig, "unmarshall config file returned a null value.");
         logger.debug("Unmarshalling config file '{}'", file.getAbsolutePath());
@@ -255,17 +243,6 @@ public class DefaultRemoteRepositoryConfigDao implements
      */
     private void setRemoteRepositoryConfig(RemoteRepositoryConfig remoteRepositoryConfig) {
         m_remoteRepositoryConfig = remoteRepositoryConfig;
-    }
-
-    /**
-     * <p>getRemoteRepositoryConfig</p>
-     * <p/>
-     * Get remote repository configuration
-     *
-     * @return a {@link org.opennms.features.reporting.model.remoterepository.RemoteRepositoryConfig} object
-     */
-    private RemoteRepositoryConfig getRemoteRepositoryConfig() {
-        return m_remoteRepositoryConfig;
     }
 
     /**

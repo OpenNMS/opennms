@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -25,30 +25,34 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+package org.opennms.netmgt.rrd.model;
 
-package org.opennms.systemreport.system;
+import java.io.File;
 
-import static org.junit.Assert.assertTrue;
-
-import java.util.TreeMap;
-
-import javax.annotation.Resource;
-
+import org.junit.Assert;
 import org.junit.Test;
-import org.opennms.core.test.MockLogAppender;
-import org.opennms.systemreport.SystemReportPlugin;
+import org.opennms.netmgt.rrd.model.v1.RRDv1;
 
-public class TopReportPluginTest extends ReportPluginTestCase {
-    @Resource(name="topReportPlugin")
-    private SystemReportPlugin m_topReportPlugin;
+/**
+ * The Test Class for NMS6369.
+ * 
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
+ */
+public class NMS6369Test {
 
-    public TopReportPluginTest() {
-        MockLogAppender.setupLogging(true, "DEBUG");
-    }
-
+    /**
+     * Test JRobin parse.
+     *
+     * @throws Exception the exception
+     */
     @Test
-    public void testTopReportPlugin() {
-        final TreeMap<String, org.springframework.core.io.Resource> entries = m_topReportPlugin.getEntries();
-        assertTrue(entries.containsKey("Output"));
+    public void testJrobinParse() throws Exception {
+        RRDv1 rrd = RrdConvertUtils.dumpJrb(new File("src/test/resources/mib2-interfaces.jrb"));
+        Assert.assertNotNull(rrd);
+        File target = new File("target/mib2-interfaces.jrb");
+        RrdConvertUtils.restoreJrb(rrd, target);
+        Assert.assertTrue(target.exists());
     }
+
 }
+

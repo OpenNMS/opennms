@@ -45,7 +45,7 @@ import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.mock.MockCategoryFactory;
 import org.opennms.reporting.availability.svclayer.LegacyAvailabilityDataService;
 
-public class AvailabilityCalculatorTest extends TestCase {
+public class AvailabilityCalculatorIT extends TestCase {
 
     protected MockDatabase m_db;
 

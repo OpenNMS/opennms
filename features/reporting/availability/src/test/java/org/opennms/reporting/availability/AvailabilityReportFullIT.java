@@ -64,7 +64,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class AvailabilityReportIntegrationTest implements InitializingBean {
+public class AvailabilityReportFullIT implements InitializingBean {
     
     @Resource
     AvailabilityCalculator calendarAvailabilityCalculator;

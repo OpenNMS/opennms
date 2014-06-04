@@ -30,30 +30,39 @@ package org.opennms.systemreport.system;
 
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
 import java.util.TreeMap;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.systemreport.SystemReportPlugin;
 
-public class ThreadReportPluginTest extends ReportPluginTestCase {
-    @Resource(name="threadReportPlugin")
-    private SystemReportPlugin m_threadReportPlugin;
+public class JavaReportPluginIT extends ReportPluginITCase {
+    @Resource(name="javaReportPlugin")
+    private SystemReportPlugin m_javaReportPlugin;
 
-    public ThreadReportPluginTest() {
+    @Resource(name="osReportPlugin")
+    private SystemReportPlugin m_osReportPlugin;
+
+    public JavaReportPluginIT() {
         MockLogAppender.setupLogging(false, "ERROR");
     }
 
     @Test
-    public void testThreadReportPlugin() throws IOException {
-        assertTrue(listContains(ThreadReportPlugin.class));
-        final TreeMap<String, org.springframework.core.io.Resource> entries = m_threadReportPlugin.getEntries();
-        final org.springframework.core.io.Resource resource = entries.get("ThreadDump.txt");
-        final String contents = IOUtils.toString(resource.getInputStream());
-        assertTrue(contents.contains("at sun.management.ThreadImpl.dumpAllThreads"));
+    public void testJavaReportPlugin() {
+        assertTrue(listContains(JavaReportPlugin.class));
+        final TreeMap<String, org.springframework.core.io.Resource> entries = m_javaReportPlugin.getEntries();
+        final float classVer = Float.valueOf(getResourceText(entries.get("Class Version")));
+        assertTrue(classVer >= 49.0);
+    }
+
+    @Test
+    public void testOSPlugin() {
+        assertTrue(listContains(OSReportPlugin.class));
+        final TreeMap<String, org.springframework.core.io.Resource> entries = m_osReportPlugin.getEntries();
+        assertTrue(entries.containsKey("Architecture"));
+        assertTrue(entries.containsKey("Name"));
+        assertTrue(entries.containsKey("Distribution"));
     }
 }

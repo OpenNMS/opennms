@@ -68,7 +68,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class AccessPointDaoTest implements InitializingBean {
+public class AccessPointDaoIT implements InitializingBean {
     @Autowired
     private NodeDao m_nodeDao;
 

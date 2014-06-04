@@ -9,6 +9,31 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.access-point-monitor</artifactId>
   <name>OpenNMS Features Access Point Monitor</name>
+  
+  <properties>
+    <skipITs>true</skipITs>
+  </properties>
+  
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>2.16</version>
+        <configuration>
+          <skipITs>${skipITs}</skipITs>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
   <dependencies>
     <dependency>
       <groupId>org.opennms</groupId>

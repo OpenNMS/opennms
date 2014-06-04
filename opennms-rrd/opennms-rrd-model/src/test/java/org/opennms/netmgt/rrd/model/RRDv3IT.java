@@ -45,7 +45,7 @@ import org.opennms.netmgt.rrd.model.v3.RRDv3;
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
-public class RRDv3Test {
+public class RRDv3IT {
 
     /**
      * Parses a simple RRD.

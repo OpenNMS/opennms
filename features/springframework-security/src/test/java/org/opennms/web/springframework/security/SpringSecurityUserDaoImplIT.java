@@ -74,7 +74,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class SpringSecurityUserDaoImplTest extends TestCase implements InitializingBean {
+public class SpringSecurityUserDaoImplIT extends TestCase implements InitializingBean {
 
     private static final String MAGIC_USERS_FILE = "src/test/resources/org/opennms/web/springframework/security/magic-users.properties";
     private static final String USERS_XML_FILE = "src/test/resources/org/opennms/web/springframework/security/users.xml";
@@ -328,6 +328,8 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
             contents.append(line);
             contents.append("\n");
         }
+        
+        reader.close();
         
         return contents.toString();
     }

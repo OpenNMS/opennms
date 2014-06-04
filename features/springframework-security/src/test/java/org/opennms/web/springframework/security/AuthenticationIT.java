@@ -68,7 +68,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class AuthenticationIntegrationTest implements InitializingBean {
+public class AuthenticationIT implements InitializingBean {
 
     @Autowired
     private UserManager m_userManager;

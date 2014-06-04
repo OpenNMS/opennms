@@ -57,8 +57,8 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(locations={
 		"classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
-@JUnitSnmpAgent(port=TcaDataTest.TEST_SNMP_PORT, host=TcaDataTest.TEST_IP_ADDRESS, resource="classpath:juniperTcaSample.properties")
-public class TcaDataTest implements InitializingBean {
+@JUnitSnmpAgent(port=TcaDataIT.TEST_SNMP_PORT, host=TcaDataIT.TEST_IP_ADDRESS, resource="classpath:juniperTcaSample.properties")
+public class TcaDataIT implements InitializingBean {
 
 	static final int TEST_SNMP_PORT = 9161;
 	static final String TEST_IP_ADDRESS = "127.0.0.1";

@@ -41,7 +41,7 @@ import org.opennms.netmgt.rrd.model.v3.RRDv3;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
-public class RrdConvertUtilsTest {
+public class RrdConvertUtilsIT {
 
     /**
      * Test JRobin parse.

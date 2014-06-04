@@ -78,8 +78,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class AccessPointMonitordTest implements InitializingBean {
-    private static final Logger LOG = LoggerFactory.getLogger(AccessPointMonitordTest.class);
+public class AccessPointMonitordIT implements InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(AccessPointMonitordIT.class);
 
     @Autowired
     private PlatformTransactionManager m_transactionManager;

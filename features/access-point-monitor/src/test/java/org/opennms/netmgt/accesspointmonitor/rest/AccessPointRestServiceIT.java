@@ -56,7 +56,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class AccessPointRestServiceTest extends AbstractSpringJerseyRestTestCase {
+public class AccessPointRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Autowired
     private AccessPointDatabasePopulator m_databasePopulator;
