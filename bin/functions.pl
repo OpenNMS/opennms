@@ -1,4 +1,7 @@
-#!/usr/bin/env perl
+#!/usr/bin/env perl -w
+
+use strict;
+use warnings;
 
 use Config;
 use Cwd;
@@ -15,7 +18,9 @@ use vars qw(
 	$GIT
 	$HELP
 	$JAVA_HOME
+	@JAVA_SEARCH_DIRS
 	$MVN
+	$MAVEN_VERSION
 	$MAVEN_OPTS
 	$PATHSEP
 	$PREFIX
@@ -30,11 +35,21 @@ $PATHSEP       = $Config{'path_sep'};
 $VERBOSE       = undef;
 @ARGS          = ();
 
+@JAVA_SEARCH_DIRS = qw(
+	/usr/lib/jvm
+	/usr/java
+	/System/Library/Java/JavaVirtualMachines
+	/Library/Java/JavaVirtualMachines
+	/Library/Java/Home
+	/opt
+);
+
 eval {
 	setpriority(0, 0, 10);
 };
 
 if (not defined $PATHSEP) { $PATHSEP = ':'; }
+die "\$PREFIX not set!" unless (defined $PREFIX);
 
 # If we were called from bin, remove the /bin so we're always
 # rooted in the top-of-tree
@@ -44,24 +59,7 @@ if (basename($PREFIX) eq "bin") {
 	$PREFIX = File::Spec->catdir(@dirs);
 }
 
-# path to git executable
-$GIT = $ENV{'GIT'};
-if (not defined $GIT or not -x $GIT) {
-	for my $dir (File::Spec->path()) {
-		my $git = File::Spec->catfile($dir, 'git');
-		if ($^O =~ /(mswin|msys)/i) {
-			$git .= '.exe';
-		}
-		if (-x $git) {
-			$GIT = $git;
-			break;
-		}
-	}
-}
-if ($GIT eq "" or ! -x "$GIT") {
-	warning("Unable to locate git.");
-	$GIT = undef;
-}
+$GIT = find_git();
 
 # path to maven executable
 $MVN = $ENV{'MVN'};
@@ -115,16 +113,29 @@ END
 	exit 1;
 }
 
+if ((defined $JAVA_HOME and -d $JAVA_HOME) or (exists $ENV{'JAVA_HOME'} and -d $ENV{'JAVA_HOME'})) {
+	if (not defined $JAVA_HOME or not -d $JAVA_HOME) {
+		$JAVA_HOME = $ENV{'JAVA_HOME'};
+	}
+
+	my ($shortversion) = get_version_from_java(File::Spec->catfile($JAVA_HOME, 'bin', 'java'));
+	my $minimumversion = get_minimum_java();
+
+	if ($shortversion < $minimumversion) {
+		die "You specified a Java home of $JAVA_HOME, but it does not meet minimum java version $minimumversion!\n";
+	}
+}
+
 if (not defined $JAVA_HOME or $JAVA_HOME eq "") {
 	debug("--java-home not passed, searching for \$JAVA_HOME");
-	if (exists $ENV{'JAVA_HOME'} and -e $ENV{'JAVA_HOME'} and $ENV{'JAVA_HOME'} ne "") {
-		$JAVA_HOME = $ENV{'JAVA_HOME'};
-	} else {
+	$JAVA_HOME = find_java_home();
+	if (not defined $JAVA_HOME) {
 		warning("\$JAVA_HOME is not set, things might go wonky.  Or not.");
 	}
 }
 
 if (defined $JAVA_HOME and $JAVA_HOME ne "") {
+	info("Using \$JAVA_HOME=$JAVA_HOME");
 	$ENV{'JAVA_HOME'} = $JAVA_HOME;
 	$ENV{'PATH'}      = File::Spec->catfile($JAVA_HOME, 'bin') . $PATHSEP . $ENV{'PATH'};
 }
@@ -192,6 +203,126 @@ chomp(my $git_branch=`$GIT symbolic-ref HEAD 2>/dev/null || $GIT rev-parse HEAD 
 $git_branch =~ s,^refs/heads/,,;
 info("Git Branch = $git_branch");
 
+sub find_git {
+	my $git = $ENV{'GIT'};
+
+	if (not defined $git or not -x $git) {
+		for my $dir (File::Spec->path()) {
+			my $g = File::Spec->catfile($dir, 'git');
+			if ($^O =~ /(mswin|msys)/i) {
+				$g .= '.exe';
+			}
+			if (-x $g) {
+				return $g;
+			}
+		}
+	}
+
+	if ($git eq "" or ! -x $git) {
+		warning("Unable to locate git.");
+		$git = undef;
+	}
+	return $git;
+}
+
+sub get_minimum_java {
+	my $minimum_java = '1.6';
+
+	my $pomfile = File::Spec->catfile($PREFIX, 'pom.xml');
+	if (-e $pomfile) {
+		open(POMFILE, $pomfile) or die "Unable to read $pomfile: $!\n";
+		while (<POMFILE>) {
+			if (/<source>([\d\.]+)<\/source>/) {
+				$minimum_java = $1;
+				last;
+			}
+		}
+		close(POMFILE) or die "Unable to close $pomfile: $!\n";
+	}
+
+	return $minimum_java;
+}
+
+sub get_version_from_java {
+	my $javacmd = shift;
+
+	if (not defined $javacmd or not -x $javacmd) {
+		return ();
+	}
+
+	my ($output, $bindir, $shortversion, $version, $build, $java_home);
+
+	$output = `"$javacmd" -version 2>\&1`;
+	($version) = $output =~ / version \"?([\d\.]+?(?:[\-\_]\S+?)?)\"?$/ms;
+	($version, $build) = $version =~ /^([\d\.]+)(?:[\-\_](.*?))?$/;
+	($shortversion) = $version =~ /^(\d+\.\d+)/;
+	$build = 0 if (not defined $build);
+
+	$bindir = dirname($javacmd);
+	$java_home = Cwd::realpath(File::Spec->catdir($bindir, '..'));
+
+	return ($shortversion, $version, $build, $java_home);
+}
+
+sub find_java_home {
+	my $minimum_java = get_minimum_java();
+
+	my $versions = {};
+	my $javacmd = 'java';
+
+	if ($^O =~ /(mswin|msys)/i) {
+		$javacmd .= '.exe';
+	}
+
+	for my $searchdir (@JAVA_SEARCH_DIRS) {
+		my @javas = (
+			glob(File::Spec->catfile($searchdir, 'bin', $javacmd)),
+			glob(File::Spec->catfile($searchdir, '*', 'bin', $javacmd)),
+			glob(File::Spec->catfile($searchdir, '*', '*', 'bin', $javacmd)),
+			glob(File::Spec->catfile($searchdir, '*', '*', '*', 'bin', $javacmd)),
+			glob(File::Spec->catfile($searchdir, '*', '*', '*', '*', 'bin', $javacmd))
+		);
+
+		for my $java (@javas) {
+			if (-x $java and ! -d $java) {
+				my ($shortversion, $version, $build, $java_home) = get_version_from_java($java);
+				next if (exists $versions->{$shortversion}->{$version}->{$build});
+
+				$versions->{$shortversion}->{$version}->{$build} = $java_home;
+			}
+		}
+	}
+
+	my $highest_valid = undef;
+
+	for my $majorversion (sort keys %$versions) {
+		if ($majorversion < $minimum_java) {
+			next;
+		}
+
+		#print STDERR "Java $majorversion:\n";
+		JDK_SEARCH: for my $version (sort keys %{$versions->{$majorversion}}) {
+			#print STDERR "  $version:\n";
+			for my $build (sort keys %{$versions->{$majorversion}->{$version}}) {
+				my $java_home = $versions->{$majorversion}->{$version}->{$build};
+				#print STDERR "    ", $build, ": ", $java_home, "\n";
+				if ($build =~ /^\d/) {
+					$highest_valid = $java_home;
+				} elsif (defined $highest_valid) {
+					last JDK_SEARCH;
+				}
+			}
+		}
+
+		if (defined $highest_valid) {
+			# we've matched in this version, don't bother looking at higher JDKs
+			last;
+		}
+	}
+
+	return $highest_valid;
+}
+
 sub clean_git {
 	if (-d '.git') {
 		my @command = ($GIT, "clean", "-fdx", ".");
@@ -231,6 +362,8 @@ sub get_dependencies {
 		org\.opennms\.smslib\:smslib
 	);
 
+	my $old_version;
+	my $old_module;
 	my $moduledir = $PREFIX . "/" . $directory;
 	my $deps = { 'org.opennms:opennms' => 1 };
 	my $versions = {};

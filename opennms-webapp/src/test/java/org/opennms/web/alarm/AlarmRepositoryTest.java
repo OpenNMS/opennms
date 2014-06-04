@@ -72,6 +72,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
+@Transactional
 public class AlarmRepositoryTest implements InitializingBean {
     
     @Autowired
