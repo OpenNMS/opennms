@@ -12,7 +12,7 @@
     var getAlarm = function() {
     };
 
-    var getAlarmsByNode = function(offset, limit, nodeId) {
+    var getAlarmsByNode = function(nodeId, offset, limit) {
       if (limit === undefined) {
         limit = 50;
       }
@@ -21,8 +21,9 @@
       }
 
       var alarmsUrl = config.getRoot() + '/rest/alarms?limit=' + limit + '&offset=' + offset + '&comparator=eq&nodeId=' + nodeId;
-      fetchAlarms(offset, limit, alarmsUrl);
-    }
+      return fetchAlarms(offset, limit, alarmsUrl);
+    };
+
     var getAlarms = function(offset, limit) {
       if (limit === undefined) {
         limit = 50;
@@ -32,10 +33,10 @@
       }
 
       var alarmsUrl = config.getRoot() + '/rest/alarms?limit=' + limit + '&offset=' + offset;
-      fetchAlarms(offset, limit, alarmsUrl);
+      return fetchAlarms(offset, limit, alarmsUrl);
     };
 
-    var fetchAlarms = function (offset, limit, nodeId) {
+    var fetchAlarms = function (offset, limit, alarmsUrl) {
       $log.debug('getAlarms: GET ' + alarmsUrl);
 
       var deferred = $q.defer();
