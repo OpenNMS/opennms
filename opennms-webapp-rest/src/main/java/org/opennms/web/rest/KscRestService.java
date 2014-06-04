@@ -29,12 +29,12 @@
  */
 package org.opennms.web.rest;
 
+import com.sun.jersey.spi.resource.PerRequest;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
 import javax.persistence.Entity;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -57,7 +57,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
-
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.netmgt.config.kscReports.Graph;
@@ -69,8 +68,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.sun.jersey.spi.resource.PerRequest;
 
 @Component
 @PerRequest
@@ -293,6 +290,22 @@ public class KscRestService extends OnmsRestService {
         public KscReport(final Integer reportId, final String label) {
             m_id = reportId;
             m_label = label;
+            m_show_graphtype_button = true;
+            m_show_timespan_button = true;
+            m_graphs_per_line = 0;
+        }
+
+        public KscReport(Report report) {
+            m_id = report.getId();
+            m_label = report.getTitle();
+            m_show_timespan_button = report.getShow_timespan_button();
+            m_show_graphtype_button = report.getShow_graphtype_button();
+            m_graphs_per_line = report.getGraphs_per_line();
+            m_graphs = new ArrayList<KscGraph>();
+
+            for(Graph graph : report.getGraphCollection()) {
+                m_graphs.add(new KscGraph(graph));
+            }
         }
 
         public KscReport(Report report) {
@@ -431,6 +444,55 @@ public class KscRestService extends OnmsRestService {
             graph.setExtlink(m_extlink);
 
             return graph;
+        }
+    }
+
+    @Entity
+    @XmlRootElement(name = "kscGraph")
+    @XmlAccessorType(XmlAccessType.NONE)
+    public static final class KscGraph {
+
+        @XmlAttribute(name = "title", required = true)
+        private String m_title;
+
+        @XmlAttribute(name = "timespan", required = true)
+        private String m_timespan;
+
+        @XmlAttribute(name = "graphtype", required = true)
+        private String m_graphtype;
+
+        @XmlAttribute(name = "resourceId", required = false)
+        private String m_resourceId;
+
+        @XmlAttribute(name = "nodeId", required = false)
+        private String m_nodeId;
+
+        @XmlAttribute(name = "nodeSource", required = false)
+        private String m_nodeSource;
+
+        @XmlAttribute(name = "domain", required = false)
+        private String m_domain;
+
+        @XmlAttribute(name = "interfaceId", required = false)
+        private String m_interfaceId;
+
+        @XmlAttribute(name = "extlink", required = false)
+        private String m_extlink;
+
+        public KscGraph() {
+
+        }
+
+        public KscGraph(Graph graph) {
+            m_title = graph.getTitle();
+            m_timespan = graph.getTimespan();
+            m_graphtype = graph.getGraphtype();
+            m_resourceId = graph.getResourceId();
+            m_nodeId = graph.getNodeId();
+            m_nodeSource = graph.getNodeSource();
+            m_domain = graph.getDomain();
+            m_interfaceId = graph.getInterfaceId();
+            m_extlink = graph.getExtlink();
         }
     }
 }
