@@ -151,7 +151,6 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
 
         m_workingMemory = ruleBase.newStatefulSession();
         m_workingMemory.setGlobal("engine", this);
-        m_workingMemory.setGlobal("logger", LOG);
         
         for (final Map.Entry<String, Object> entry : m_globals.entrySet()) {
             m_workingMemory.setGlobal(entry.getKey(), entry.getValue());
