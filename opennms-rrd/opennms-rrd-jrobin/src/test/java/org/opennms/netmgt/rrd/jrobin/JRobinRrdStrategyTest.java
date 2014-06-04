@@ -483,6 +483,23 @@ public class JRobinRrdStrategyTest {
     	assertEquals(Arrays.asList(expected), Arrays.asList(actual));
     }
 
+    @Test
+    public void testFontArguments() throws Exception {
+        long end = System.currentTimeMillis();
+        long start = end - (24 * 60 * 60 * 1000);
+        String[] command = new String[] {
+                "--start=" + start,
+                "--end=" + end,
+                "--font=DEFAULT:16",
+                "--font", "TITLE:18:",
+                "CDEF:something=1",
+                "PRINT:something:AVERAGE:\"%le\""
+        };
+
+        JRobinRrdGraphDetails graphDetails = (JRobinRrdGraphDetails) m_strategy.createGraphReturnDetails(StringUtils.arrayToDelimitedString(command, " "), new File(""));
+        assertNotNull("graph details object", graphDetails);
+    }
+
     public File createRrdFile() throws Exception {
         String rrdFileBase = "foo";
 

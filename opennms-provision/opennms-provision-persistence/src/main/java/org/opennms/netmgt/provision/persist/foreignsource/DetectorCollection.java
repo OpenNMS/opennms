@@ -76,6 +76,7 @@ public class DetectorCollection implements List<PluginConfig> {
      */
     public void setDetectors(final List<PluginConfig> detectors) {
         synchronized(m_list) {
+            if (m_list == detectors) return;
             m_list.clear();
             m_list.addAll(detectors);
         }

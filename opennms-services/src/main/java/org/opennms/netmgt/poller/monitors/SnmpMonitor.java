@@ -39,6 +39,7 @@ import org.apache.log4j.Level;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.PropertiesUtils;
+import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
@@ -196,6 +197,10 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
         // Establish SNMP session with interface
         //
         try {
+            TimeoutTracker tracker = new TimeoutTracker(parameters, agentConfig.getRetries(), agentConfig.getTimeout());
+            tracker.reset();
+            tracker.startAttempt();
+
             if (log().isDebugEnabled()) {
                 log().debug("SnmpMonitor.poll: SnmpAgentConfig address: " +agentConfig);
             }
@@ -222,7 +227,7 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
                 svcParams.setProperty("matchCount", String.valueOf(matchCount));
                 log().debug("poll: SNMPwalk count succeeded, total=" + matchCount + " min=" + countMin + " max=" + countMax);
                 if ((countMin <= matchCount) && (matchCount <= countMax)) {
-                    status = PollStatus.available();
+                    status = PollStatus.available(tracker.elapsedTimeInMillis());
                 } else {
                     status = logDown(Level.DEBUG, PropertiesUtils.substitute(reasonTemplate, svcParams));
                     return status;
@@ -237,7 +242,7 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
                         svcParams.setProperty("observedValue", getStringValue(result));
                         log().debug("poll: SNMPwalk poll succeeded, addr=" + hostAddress + " oid=" + oid + " value=" + result);
                         if (meetsCriteria(result, operator, operand)) {
-                            status = PollStatus.available();
+                            status = PollStatus.available(tracker.elapsedTimeInMillis());
                             if ("false".equals(matchstr)) {
                                 return status;
                             }
@@ -264,7 +269,7 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
                     log().debug("poll: SNMP poll succeeded, addr=" + hostAddress + " oid=" + oid + " value=" + result);
                     
                     if (meetsCriteria(result, operator, operand)) {
-                        status = PollStatus.available();
+                        status = PollStatus.available(tracker.elapsedTimeInMillis());
                     } else {
                         status = PollStatus.unavailable(PropertiesUtils.substitute(reasonTemplate, svcParams));
                     }

@@ -51,13 +51,13 @@
 <input type="hidden" name="isNew" value="${isNew}"/>
   <table class="normal">
     <tr>
-    	<td class="standardheader">Type</td>
-    	<td class="standardheader">Datasource</td>
-    	<td class="standardheader">Datasource type</td>
-    	<td class="standardheader">Datasource label</td>
-    	<td class="standardheader">Value</td>
-    	<td class="standardheader">Re-arm</td>
-    	<td class="standardheader">Trigger</td>
+    	<th class="standardheader">Type</th>
+    	<th class="standardheader">Datasource</th>
+    	<th class="standardheader">Datasource type</th>
+    	<th class="standardheader">Datasource label</th>
+    	<th class="standardheader">Value</th>
+    	<th class="standardheader">Re-arm</th>
+    	<th class="standardheader">Trigger</th>
     </tr>
     	<tr>
     		<td class="standard">

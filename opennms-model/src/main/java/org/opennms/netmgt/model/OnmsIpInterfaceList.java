@@ -81,6 +81,7 @@ public class OnmsIpInterfaceList extends LinkedList<OnmsIpInterface> {
      * @param interfaces a {@link java.util.List} object.
      */
     public void setInterfaces(List<OnmsIpInterface> interfaces) {
+        if (interfaces == this) return;
         clear();
         addAll(interfaces);
     }

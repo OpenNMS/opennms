@@ -49,6 +49,8 @@ public abstract class AbstractThresholdEvaluatorState implements ThresholdEvalua
 
     private static final String UNKNOWN = "Unknown";
 
+    public static final String FORMATED_NAN = "NaN (the threshold definition has been changed)";
+
     /**
      * <p>createBasicEvent</p>
      *
@@ -63,7 +65,7 @@ public abstract class AbstractThresholdEvaluatorState implements ThresholdEvalua
         if (resource == null) { // Still works, mimic old code when instance value is null.
             resource = new CollectionResourceWrapper(date, 0, null, null, null, null, null);
         }
-        String dsLabelValue = resource.getLabelValue(resource.getLabel());
+        String dsLabelValue = resource.getFieldValue(resource.getDsLabel());
         if (dsLabelValue == null) dsLabelValue = UNKNOWN;
 
         // create the event to be sent
@@ -101,7 +103,13 @@ public abstract class AbstractThresholdEvaluatorState implements ThresholdEvalua
         bldr.addParam("value", formatValue(dsValue));
 
         // Add the instance name of the resource in question
-        bldr.addParam("instance", resource.getInstance() != null ? resource.getInstance() : "null");
+        bldr.addParam("instance", resource.getInstance() == null ? "null" : resource.getInstance());
+
+        // Add the instance name of the resource in question
+        bldr.addParam("instanceLabel", resource.getInstanceLabel() == null ? "null" : resource.getInstanceLabel());
+
+        // Add the resource ID required to call the Graph API.
+        bldr.addParam("resourceId",resource.getResourceId());
 
         // Add additional parameters
         if (additionalParams != null) {
@@ -121,7 +129,7 @@ public abstract class AbstractThresholdEvaluatorState implements ThresholdEvalua
      */
     protected String formatValue(double value) {
         if (Double.isNaN(value)) // When reconfiguring thresholds, the value is set to NaN.
-            return "NaN";
+            return FORMATED_NAN;
         String pattern = System.getProperty("org.opennms.threshd.value.decimalformat", "###.##");
         DecimalFormat valueFormatter = new DecimalFormat(pattern);
         return valueFormatter.format(value);

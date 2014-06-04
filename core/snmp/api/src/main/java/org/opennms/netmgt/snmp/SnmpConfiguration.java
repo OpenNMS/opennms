@@ -59,6 +59,9 @@ public class SnmpConfiguration {
     public static final String DEFAULT_AUTH_PROTOCOL = "MD5";
     public static final String DEFAULT_PRIV_PROTOCOL = "DES";
     public static final String DEFAULT_PRIV_PASS_PHRASE = DEFAULT_AUTH_PASS_PHRASE;
+    public static final String DEFAULT_CONTEXT_NAME = null;
+    public static final String DEFAULT_ENGINE_ID = null;
+    public static final String DEFAULT_CONTEXT_ENGINE_ID = null;
 
     public static final SnmpConfiguration DEFAULTS;
     
@@ -79,6 +82,9 @@ public class SnmpConfiguration {
         DEFAULTS.setAuthProtocol(DEFAULT_AUTH_PROTOCOL);
         DEFAULTS.setPrivProtocol(DEFAULT_PRIV_PROTOCOL);
         DEFAULTS.setPrivPassPhrase(DEFAULT_PRIV_PASS_PHRASE);
+        DEFAULTS.setContextName(DEFAULT_CONTEXT_NAME);
+        DEFAULTS.setEngineId(DEFAULT_ENGINE_ID);
+        DEFAULTS.setContextEngineId(DEFAULT_CONTEXT_ENGINE_ID);
     }
 
     private int m_timeout;
@@ -96,6 +102,9 @@ public class SnmpConfiguration {
     private String m_authProtocol;
     private String m_privProtocol;
     private String m_privPassPhrase;
+    private String m_contextName;
+    private String m_engineId;
+    private String m_contextEngineId;
     
     public SnmpConfiguration() {
         this(DEFAULTS);
@@ -117,6 +126,9 @@ public class SnmpConfiguration {
             setTimeout(config.getTimeout());
             setVersion(config.getVersion());
             setWriteCommunity(config.getWriteCommunity());
+            setContextName(config.getContextName());
+            setEngineId(config.getEngineId());
+            setContextEngineId(config.getContextEngineId());
         }
     }
 
@@ -273,6 +285,30 @@ public class SnmpConfiguration {
 
     public final void setPrivPassPhrase(String privPassPhrase) {
         m_privPassPhrase = privPassPhrase;
+    }
+    
+    public final String getContextName() {
+        return m_contextName;
+    }
+    
+    public final void setContextName(String contextName) {
+        m_contextName = contextName;
+    }
+    
+    public final String getEngineId() {
+        return m_engineId;
+    }
+    
+    public final void setEngineId(String engineId) {
+        m_engineId = engineId;
+    }
+    
+    public final String getContextEngineId() {
+        return m_contextEngineId;
+    }
+    
+    public final void setContextEngineId(String contextEngineId) {
+        m_contextEngineId = contextEngineId;
     }
 
 }

@@ -85,10 +85,8 @@ import org.springframework.core.style.ToStringCreator;
 @Table(name="node")
 @SecondaryTable(name="pathOutage")
 @Filter(name=FilterManager.AUTH_FILTER_NAME, condition="exists (select distinct x.nodeid from node x join category_node cn on x.nodeid = cn.nodeid join category_group cg on cn.categoryId = cg.categoryId where x.nodeid = nodeid and cg.groupId in (:userGroups))")
-public class OnmsNode extends OnmsEntity implements Serializable,
-        Comparable<OnmsNode> {
-
-    private static final long serialVersionUID = -5736397583719151493L;
+public class OnmsNode extends OnmsEntity implements Serializable, Comparable<OnmsNode> {
+    private static final long serialVersionUID = -2081288277603435617L;
 
     /** identifier field */
     private Integer m_id;
@@ -1017,7 +1015,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
     public void mergeNodeAttributes(OnmsNode scannedNode, EventForwarder eventForwarder) {
         if (hasNewValue(scannedNode.getLabel(), getLabel())) {
             // Create a NODE_LABEL_CHANGED_EVENT_UEI event
-            EventBuilder bldr = new EventBuilder(EventConstants.NODE_LABEL_CHANGED_EVENT_UEI, "OnmsNode.mergeNodeAttributes");
+            final EventBuilder bldr = new EventBuilder(EventConstants.NODE_LABEL_CHANGED_EVENT_UEI, "OnmsNode.mergeNodeAttributes");
 
             bldr.setNodeid(scannedNode.getId());
             bldr.setHost("host");
@@ -1063,7 +1061,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
         }
         
         mergeAgentAttributes(scannedNode);
-        
+
         mergeAdditionalCategories(scannedNode);
     }
     

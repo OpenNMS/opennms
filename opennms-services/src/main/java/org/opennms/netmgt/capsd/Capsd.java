@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -151,7 +151,7 @@ public class Capsd extends AbstractServiceDaemon {
         Assert.state(m_rescanRunner != null, "must set the rescanRunner property");
         Assert.state(m_eventListener != null, "must set the eventListener property");
 
-        if (System.getProperty("org.opennms.provisiond.enableDiscovery", "false").equalsIgnoreCase("true")) {
+        if (System.getProperty("org.opennms.provisiond.enableDiscovery", "true").equalsIgnoreCase("true")) {
         	throw new IllegalStateException("Provisiond is configured to handle discovery events. " +
         			"Please disable Capsd in service-configuration.xml, or set " +
         			"org.opennms.provisiond.enableDiscovery=false in opennms.properties!");
@@ -302,6 +302,17 @@ public class Capsd extends AbstractServiceDaemon {
     public void setEventListener(StoppableEventListener eventListener) {
         m_eventListener = eventListener;
     }
+    
+    public ExecutorService getSuspectRunner() {
+        return m_suspectRunner;
+    }
+    
+    public ExecutorService getRescanRunner() {
+        return m_rescanRunner;
+    }
 
+    public Scheduler getScheduler() {
+        return m_scheduler;
+    }
 } // end Capsd class
 

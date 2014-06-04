@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -48,6 +48,7 @@ import java.util.Date;
 import java.util.Iterator;
 
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.xml.event.Autoaction;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Forward;
@@ -80,7 +81,7 @@ public abstract class EventUtils {
         
         EventBuilder bldr = new EventBuilder(NODE_ADDED_EVENT_UEI, source);
         bldr.setNodeid(nodeId);
-        bldr.addParam(PARM_NODE_LABEL, nodeLabel);
+        bldr.addParam(PARM_NODE_LABEL, WebSecurityUtils.sanitizeString(nodeLabel));
         bldr.addParam(PARM_NODE_LABEL_SOURCE, labelSource);
         
         return bldr.getEvent();
@@ -354,6 +355,7 @@ public abstract class EventUtils {
      */
     public static String toString(Event event) {
         StringBuffer b = new StringBuffer("Event: ");
+        b.append("\n");
         if (event.getAutoacknowledge() != null) {
             b.append(" Autoacknowledge: " + event.getAutoacknowledge() + "\n");
         }
@@ -461,19 +463,19 @@ public abstract class EventUtils {
 
     public static String toString(Collection<Parm> parms) {
         if (parms.size() == 0) {
-            return "Parms: (none)\n";
+            return "{}\n";
         }
         
         StringBuffer b = new StringBuffer();
-        b.append("Parms:\n");
+        b.append("{\n");
         for (Parm p : parms) {
-            b.append(" ");
+            b.append("  ");
             b.append(p.getParmName());
             b.append(" = ");
             b.append(toString(p.getValue()));
             b.append("\n");
         }
-        b.append("End Parms\n");
+        b.append(" }");
         return b.toString();
     }
     

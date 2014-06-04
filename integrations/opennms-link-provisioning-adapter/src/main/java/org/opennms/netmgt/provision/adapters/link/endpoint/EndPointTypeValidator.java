@@ -93,6 +93,7 @@ public class EndPointTypeValidator {
      */
     public void setConfigs(List<EndPointType> configs) {
         synchronized(m_endPointConfigs) {
+            if (m_endPointConfigs == configs) return;
             m_endPointConfigs.clear();
             m_endPointConfigs.addAll(configs);
         }

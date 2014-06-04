@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<?meta name="GENERATOR" content="XML::Smart/1.6.9 Perl/5.008008 [linux]" ?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.39.1.11.1.2</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>1</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxJsIdpSignatureUpdate</uei>
+    <event-label>JUNIPER-JS-IDP-MIB defined trap event: jnxJsIdpSignatureUpdate</event-label>
+    <descr><![CDATA[
+<p>A trap which signifies that a signature update has occurred.</p><table>
+	<tr><td><b>
+
+	jnxJsIdpRunningDetectorVersion</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxJsIdpSecurityPackageVersion</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxJsIdpLastSignatureUpdateTime</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxJsIdpSignatureUpdateStatus</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxJsIdpSignatureUpdate trap received 
+			jnxJsIdpRunningDetectorVersion=%parm[#1]% 
+			jnxJsIdpSecurityPackageVersion=%parm[#2]% 
+			jnxJsIdpLastSignatureUpdateTime=%parm[#3]% 
+			jnxJsIdpSignatureUpdateStatus=%parm[#4]%</p>
+		]]></logmsg>
+    <severity>Indeterminate</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.39.1.11.1.2</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>2</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxJsIdpAttackLog</uei>
+    <event-label>JUNIPER-JS-IDP-MIB defined trap event: jnxJsIdpAttackLog</event-label>
+    <descr><![CDATA[
+<p>A trap which signifies that attacks have been detected.
+
+jnxJsIdpAttackName is the name of the attacks that have been
+detected so far and
+jnxJsIdpAttackHits is the number of times each attack has
+been detected.</p><table>
+	<tr><td><b>
+
+	jnxJsIdpAttackName</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxJsIdpAttackHits</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxJsIdpAttackLog trap received 
+			jnxJsIdpAttackName=%parm[#1]% 
+			jnxJsIdpAttackHits=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Indeterminate</severity>
+  </event>
+</events>
+

@@ -42,7 +42,6 @@ import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.xml.eventconf.Events;
 
-import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.event.Action;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Label;
@@ -70,6 +69,9 @@ public class MibCompilerPanel extends Panel {
 
     /** The Constant COMPILED. */
     private static final String COMPILED = "compiled";
+
+    /** The Constant MIB_FILE_EXTENTION. */
+    private static final String MIB_FILE_EXTENTION = ".mib";
 
     /** The Constant MIBS_ROOT_DIR. */
     private static final File MIBS_ROOT_DIR = new File(ConfigFileConstants.getHome(),  "/share/mibs"); // TODO Must be configurable
@@ -101,9 +103,6 @@ public class MibCompilerPanel extends Panel {
     /** The MIBs tree. */
     private final Tree mibsTree;
 
-    /** The MIBs container. */
-    private final HierarchicalContainer mibsContainer;
-
     /** The MIB parser. */
     private final MibParser mibParser;
 
@@ -112,7 +111,7 @@ public class MibCompilerPanel extends Panel {
 
     /** The Events Proxy. */
     private EventProxy eventsProxy;
-    
+
     /** The Data Collection Configuration DAO. */
     private DataCollectionConfigDao dataCollectionDao;
 
@@ -170,11 +169,9 @@ public class MibCompilerPanel extends Panel {
 
         // Initialize MIB Tree
 
-        mibsContainer = new HierarchicalContainer();
         mibsTree = new Tree("MIB Tree");
         initMibTree(logger);
-        final Label label = new Label("<p>Use the right-click context menu over the MIB tree files, to display the compiler operations.</p>"
-                                      + "<p>The file name requires to be the same as the MIB to be processed.</p>");
+        final Label label = new Label("<p>Use the right-click context menu over the MIB tree files, to display the compiler operations.</p>");
         label.setContentMode(Label.CONTENT_XHTML);
         addComponent(label);
         addComponent(mibsTree);
@@ -205,7 +202,6 @@ public class MibCompilerPanel extends Panel {
             }
         }
 
-        mibsTree.setContainerDataSource(mibsContainer);
         mibsTree.expandItemsRecursively(COMPILED);
         mibsTree.expandItemsRecursively(PENDING);
 
@@ -215,7 +211,7 @@ public class MibCompilerPanel extends Panel {
                 if (target == null) {
                     return new Action[] {};
                 }
-                Object parent = mibsContainer.getParent(target);
+                Object parent = mibsTree.getParent(target);
                 if (parent == null) {
                     return new Action[] {};
                 }
@@ -242,7 +238,7 @@ public class MibCompilerPanel extends Panel {
                                 String source = mibsTree.getParent(fileName).toString();
                                 File file = new File(PENDING.equals(source) ? MIBS_PENDING_DIR : MIBS_COMPILED_DIR, fileName);
                                 if (file.delete()) {
-                                    mibsContainer.removeItem(fileName);
+                                    mibsTree.removeItem(fileName);
                                     logger.info("MIB " + file + " has been successfully removed.");
                                 } else {
                                     getApplication().getMainWindow().showNotification("Can't delete " + file);
@@ -261,10 +257,28 @@ public class MibCompilerPanel extends Panel {
                 }
                 if (action == ACTION_COMPILE) {
                     if (parseMib(logger, new File(MIBS_PENDING_DIR, fileName))) {
-                        mibsTree.removeItem(target);
-                        addTreeItem(fileName, COMPILED);
-                        File file = new File(MIBS_PENDING_DIR, fileName);
-                        file.renameTo(new File(MIBS_COMPILED_DIR, file.getName()));
+                        // Renaming the file to be sure that the target name is correct and always has a file extension.
+                        final String mibFileName = mibParser.getMibName() + MIB_FILE_EXTENTION;
+                        final File currentFile = new File(MIBS_PENDING_DIR, fileName);
+                        final File suggestedFile = new File(MIBS_COMPILED_DIR, mibFileName);
+                        if (suggestedFile.exists()) {
+                            MessageBox mb = new MessageBox(getApplication().getMainWindow(),
+                                                           "Are you sure?",
+                                                           MessageBox.Icon.QUESTION,
+                                                           "The MIB " + mibFileName + " already exist on the compiled directory?<br/>Override the existing file could break other compiled mibs, so proceed with caution.<br/>This cannot be undone.",
+                                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
+                                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
+                            mb.addStyleName(Runo.WINDOW_DIALOG);
+                            mb.show(new EventListener() {
+                                public void buttonClicked(ButtonType buttonType) {
+                                    if (buttonType == MessageBox.ButtonType.YES) {
+                                        renameFile(logger, currentFile, suggestedFile);
+                                    }
+                                }
+                            });
+                        } else {
+                            renameFile(logger, currentFile, suggestedFile);
+                        }
                     }
                 }
                 if (action == ACTION_EVENTS) {
@@ -278,20 +292,35 @@ public class MibCompilerPanel extends Panel {
     }
 
     /**
+     * Rename file.
+     *
+     * @param logger the logger
+     * @param currentFile the current file
+     * @param suggestedFile the suggested file
+     */
+    private void renameFile(Logger logger, File currentFile, File suggestedFile) {
+        logger.info("Renaming file " + currentFile.getName() + " to " + suggestedFile.getName());
+        mibsTree.removeItem(currentFile.getName());
+        addTreeItem(suggestedFile.getName(), COMPILED);
+        currentFile.renameTo(suggestedFile);
+    }
+
+    /**
      * Adds the tree item.
      *
      * @param label the label
      * @param parent the parent
      */
+    // FIXME: It sounds reasonable to sort the tree after adding a new MIB ?
     private void addTreeItem(final String label, final String parent) {
-        mibsContainer.addItem(label);
+        mibsTree.addItem(label);
         if (parent == null) {
             LogUtils.debugf(this, "Adding root directory %s", label);
-            mibsContainer.setChildrenAllowed(parent, true);
+            mibsTree.setChildrenAllowed(parent, true);
         } else {
             LogUtils.debugf(this, "Adding item %s to %s folder", label, parent);
-            mibsContainer.setParent(label, parent);
-            mibsContainer.setChildrenAllowed(label, false);
+            mibsTree.setParent(label, parent);
+            mibsTree.setChildrenAllowed(label, false);
         }
     }
 
@@ -352,7 +381,9 @@ public class MibCompilerPanel extends Panel {
                 try {
                     logger.info("Found " + events.getEventCount() + " events.");
                     final String eventsFileName = fileName.replaceFirst("\\..*$", ".events.xml");
-                    final EventWindow w = new EventWindow(eventsDao, eventsProxy, eventsFileName, events, logger);
+                    final File configDir = new File(ConfigFileConstants.getHome(), "etc/events/");
+                    final File eventFile = new File(configDir, eventsFileName);
+                    final EventWindow w = new EventWindow(eventsDao, eventsProxy, eventFile, events, logger);
                     getApplication().getMainWindow().addWindow(w);
                 } catch (Throwable t) {
                     getApplication().getMainWindow().showNotification(t.getMessage(), Notification.TYPE_ERROR_MESSAGE);

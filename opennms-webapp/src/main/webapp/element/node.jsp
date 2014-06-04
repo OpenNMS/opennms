@@ -55,6 +55,7 @@
 
 <%!
     private int m_telnetServiceId;
+    private int m_sshServiceId;
     private int m_httpServiceId;
     private int m_dellServiceId;
     private int m_snmpServiceId;
@@ -67,6 +68,12 @@
         } catch (Throwable e) {
             throw new ServletException("Could not determine the Telnet service ID", e);
         }        
+
+        try {
+            m_sshServiceId = NetworkElementFactory.getInstance(getServletContext()).getServiceIdFromName("SSH");
+        } catch (Throwable e) {
+            throw new ServletException("Could not determine the SSH service ID", e);
+        } 
 
         try {
             m_httpServiceId = NetworkElementFactory.getInstance(getServletContext()).getServiceIdFromName("HTTP");
@@ -139,10 +146,12 @@
     Map<String, Object> nodeModel = new TreeMap<String, Object>();
     nodeModel.put("id", Integer.toString(nodeId));
     nodeModel.put("label", node_db.getLabel());
+    nodeModel.put("foreignId", node_db.getForeignId());
     nodeModel.put("foreignSource", node_db.getForeignSource());
 
     List<Map<String, String>> links = new ArrayList<Map<String, String>>();
     links.addAll(createLinkForService(nodeId, m_telnetServiceId, "Telnet", "telnet://", "", getServletContext()));
+    links.addAll(createLinkForService(nodeId, m_sshServiceId, "SSH", "ssh://", "", getServletContext()));
     links.addAll(createLinkForService(nodeId, m_httpServiceId, "HTTP", "http://", "/", getServletContext()));
     links.addAll(createLinkForService(nodeId, m_dellServiceId, "OpenManage", "https://", ":1311", getServletContext()));
     nodeModel.put("links", links);
@@ -153,7 +162,7 @@
         nodeModel.put("statusSite", asset.getBuilding());
     }
     
-    nodeModel.put("resources", m_resourceService.findNodeChildResources(nodeId));
+    nodeModel.put("resources", m_resourceService.findNodeChildResources(node_db));
     nodeModel.put("vlans", NetworkElementFactory.getInstance(getServletContext()).getVlansOnNode(nodeId));
     nodeModel.put("criticalPath", PathOutageFactory.getCriticalPath(nodeId));
     nodeModel.put("noCriticalPath", PathOutageFactory.NO_CRITICAL_PATH);
@@ -201,15 +210,11 @@
 	final Collection<ConditionalPageNavEntry> navLinks = registry.findProviders(ConditionalPageNavEntry.class, "(Page=node)");
 	for (final ConditionalPageNavEntry link : navLinks) {
 	    final DisplayStatus displayStatus = link.evaluate(request, node_db);
-	    switch(displayStatus) {
-		    case DISPLAY_NO_LINK:
-		        renderedLinks.add(link.getName());
-		        break;
-		    case DISPLAY_LINK:
-		        renderedLinks.add("<a href=\"" + link.getUrl().replace("%nodeid%", ""+nodeId) + "\">" + link.getName() + "</a>");
-		        break;
-		    case NO_DISPLAY:
-		        break;
+	    if (displayStatus == null) continue;
+	    if (displayStatus == DisplayStatus.DISPLAY_NO_LINK) {
+	        renderedLinks.add(link.getName());
+	    } else if (displayStatus == DisplayStatus.DISPLAY_LINK) {
+	        renderedLinks.add("<a href=\"" + link.getUrl().replace("%nodeid%", ""+nodeId) + "\">" + link.getName() + "</a>");
 	    }
 	}
 	
@@ -220,6 +225,7 @@
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Node" />
   <jsp:param name="headTitle" value="${model.label}" />
+  <jsp:param name="headTitle" value="ID ${model.id}" />
   <jsp:param name="headTitle" value="Node" />
   <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
   <jsp:param name="breadcrumb" value="Node" />
@@ -227,9 +233,9 @@
 </jsp:include>
 
 <div class="onms">
-<h2>Node: ${model.label}</h2>
+<h2>Node: ${model.label} (ID: ${model.id})</h2>
 <c:if test="${model.foreignSource != null}">
-<h2><em>Created via provisioning requisition <strong>${model.foreignSource}</strong></em></h2>
+<h2><em>Created via provisioning requisition <strong>${model.foreignSource} (foreignId: ${model.foreignId})</strong></em></h2>
 </c:if>
 <c:if test="${model.foreignSource == null}">
 <h2><em>Not a member of any provisioning requisition</em></h2>
@@ -366,7 +372,7 @@
         <td>${model.node.sysName}</td>
       </tr>
       <tr>
-        <th>Object&nbsp;ID</th>
+        <th>sysObjectID</th>
         <td>${model.node.sysObjectId}</td>
       </tr>
       <tr>
@@ -398,11 +404,14 @@
 	
 	<!-- Availability box -->
 	<c:if test="${fn:length( model.intfs ) < 10}">
-    <jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" />
+    <jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" >
+      <jsp:param name="node" value="${model.id}" />
+    </jsp:include>
     </c:if> 
-    <script type="text/javascript">
-        var nodeId = ${model.id}
-    </script>
+
+  <script type="text/javascript">
+    var nodeId = ${model.id}
+  </script>
   <div id="interface-panel-gwt">
     <h3 class="o-box">Node Interfaces</h3>
     <opennms:interfacelist id="gwtnodeList"></opennms:interfacelist>
@@ -483,7 +492,9 @@
   </div>
   
   <!-- Category box -->
-  <jsp:include page="/includes/nodeCategory-box.htm" flush="false" />
+  <jsp:include page="/includes/nodeCategory-box.htm" flush="false" >
+    <jsp:param name="node" value="${model.id}" />
+  </jsp:include>
   
   <!-- notification box -->
   <jsp:include page="/includes/notification-box.jsp" flush="false" >

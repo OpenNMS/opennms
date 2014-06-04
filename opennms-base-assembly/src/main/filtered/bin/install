@@ -1,10 +1,29 @@
 #!/bin/sh -
 
 OPENNMS_HOME="${install.dir}"
+RUNAS="root"
+
+myuser="`id | sed -e 's/uid=[0-9][0-9]*(//' -e 's/).*//'`"
+if [ x"$myuser" = x"$RUNAS" ]; then
+	true # all is well
+else
+	echo "Error: you must run this script as $RUNAS, not '$myuser'" >&2
+	exit 4 # According to LSB: 4 - user had insufficient privileges
+fi
 
 if [ -f "$OPENNMS_HOME/etc/opennms.conf" ]; then
 	. "$OPENNMS_HOME/etc/opennms.conf"
 fi
 
-exec ${install.bin.dir}/runjava -r -- \
-     $ADDITIONAL_MANAGER_OPTIONS -Dopennms.home="$OPENNMS_HOME" -cp "$OPENNMS_HOME/lib/opennms_bootstrap.jar:$OPENNMS_HOME/lib/opennms_install.jar" org.opennms.install.Installer "$@"
+# Load ~/.opennms-dev/opennms.conf if it exists, to override above configuration options.
+if [ -f "${HOME}/.opennms-dev/opennms.conf" ]; then
+	. "${HOME}/.opennms-dev/opennms.conf"
+fi
+
+app_class=org.opennms.install.Installer
+exec $OPENNMS_HOME/bin/runjava -r -- \
+	-Dopennms.home=$OPENNMS_HOME \
+	-Dopennms.manager.class=$app_class \
+	-cp "$OPENNMS_HOME/lib/opennms_bootstrap.jar:$OPENNMS_HOME/lib/opennms_install.jar" \
+	$JAVA_OPTIONS $ADDITIONAL_MANAGER_OPTIONS \
+	$app_class "$@"

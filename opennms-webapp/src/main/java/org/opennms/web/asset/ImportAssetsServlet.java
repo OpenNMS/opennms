@@ -49,6 +49,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.resource.Vault;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.web.api.Util;
 import org.opennms.web.servlet.MissingParameterException;
@@ -72,15 +73,15 @@ public class ImportAssetsServlet extends HttpServlet {
         private static final long serialVersionUID = 2498335935646001342L;
 
         public AssetException(String message) {
-    		super(message);
-    	}
+            super(message);
+        }
 
-		public AssetException(String message, Throwable t) {
-		    super(message, t);
-	    }
+        public AssetException(String message, Throwable t) {
+            super(message, t);
+        }
 
     }
-    
+
     /** The URL to redirect the client to in case of success. */
     protected String redirectSuccess;
 
@@ -143,31 +144,31 @@ public class ImportAssetsServlet extends HttpServlet {
                 messageText.append("s");
             }
             messageText.append(".");
-            
+
             if (errors.size() > 0) {
                 messageText.append("  ").append(errors.size()).append(" non-fatal errors occurred:");
                 for (String error : errors) {
                     messageText.append("<br />").append(error);
                 }
             }
-            
+
             request.getSession().setAttribute("message", messageText.toString());
             response.sendRedirect(response.encodeRedirectURL(this.redirectSuccess + "&showMessage=true"));
         } catch (AssetException e) {
-        	String message = "Error importing assets: " + e.getMessage();
-        	redirectWithErrorMessage(request, response, e, message);
+            String message = "Error importing assets: " + e.getMessage();
+            redirectWithErrorMessage(request, response, e, message);
         } catch (SQLException e) {
-        	String message ="Database exception importing assets: " + e.getMessage();
-        	redirectWithErrorMessage(request, response, e, message);
+            String message ="Database exception importing assets: " + e.getMessage();
+            redirectWithErrorMessage(request, response, e, message);
         }
     }
 
-	private void redirectWithErrorMessage(HttpServletRequest request, HttpServletResponse response,
-			Exception e, String message) throws IOException, UnsupportedEncodingException {
-		this.log(message, e);
-		request.getSession().setAttribute("message", message);
-		response.sendRedirect(response.encodeRedirectURL("import.jsp?showMessage=true"));
-	}
+    private void redirectWithErrorMessage(HttpServletRequest request, HttpServletResponse response,
+            Exception e, String message) throws IOException, UnsupportedEncodingException {
+        this.log(message, e);
+        request.getSession().setAttribute("message", message);
+        response.sendRedirect(response.encodeRedirectURL("import.jsp?showMessage=true"));
+    }
 
     /**
      * <p>decodeAssetsText</p>
@@ -182,7 +183,7 @@ public class ImportAssetsServlet extends HttpServlet {
         String[] line;
         List<Asset> list = new ArrayList<Asset>();
         text = text.trim();
-        
+
         int count = 0;
 
         try {
@@ -203,7 +204,7 @@ public class ImportAssetsServlet extends HttpServlet {
                         logger.debug("line was header. line:'{}'", (Object)line);
                         continue;
                     }
-                    
+
                     final Asset asset = new Asset();
 
                     asset.setNodeId(WebSecurityUtils.safeParseInt(line[1]));
@@ -242,7 +243,7 @@ public class ImportAssetsServlet extends HttpServlet {
                     asset.setDisplayCategory(Util.decode(line[34]));
                     asset.setNotifyCategory(Util.decode(line[35]));
                     asset.setPollerCategory(Util.decode(line[36]));
-                    
+
                     if (line.length > 37) {
                         asset.setThresholdCategory(Util.decode(line[37]));
                         asset.setUsername(Util.decode(line[38]));
@@ -263,10 +264,10 @@ public class ImportAssetsServlet extends HttpServlet {
                         asset.setHdd4(Util.decode(line[50]));
                         asset.setHdd5(Util.decode(line[51]));
                         asset.setHdd6(Util.decode(line[52]));
-    
+
                         asset.setNumpowersupplies(Util.decode(line[53]));
                         asset.setInputpower(Util.decode(line[54]));
-    
+
                         asset.setAdditionalhardware(Util.decode(line[55]));
                         asset.setAdmin(Util.decode(line[56]));
                         asset.setSnmpcommunity(Util.decode(line[57]));
@@ -299,7 +300,7 @@ public class ImportAssetsServlet extends HttpServlet {
 
         if (list.size() == 0) {
             logger.error("No asset information was found, list size was 0");
-        	throw new AssetException("No asset information was found.");
+            throw new AssetException("No asset information was found.");
         }
 
         return list;
@@ -312,21 +313,24 @@ public class ImportAssetsServlet extends HttpServlet {
      * @throws java.sql.SQLException if any.
      */
     public List<Integer> getCurrentAssetNodesList() throws SQLException {
-        Connection conn = Vault.getDbConnection();
         List<Integer> list = new ArrayList<Integer>();
 
+        final DBUtils d = new DBUtils(getClass());
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+
             Statement stmt = conn.createStatement();
+            d.watch(stmt);
+
             ResultSet rs = stmt.executeQuery("SELECT NODEID FROM ASSETS");
+            d.watch(rs);
 
             while (rs.next()) {
                 list.add(Integer.valueOf(rs.getInt("NODEID")));
             }
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return list;

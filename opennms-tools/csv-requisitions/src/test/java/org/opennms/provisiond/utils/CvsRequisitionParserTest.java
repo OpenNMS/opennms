@@ -36,17 +36,12 @@ import java.util.regex.Pattern;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 
 public class CvsRequisitionParserTest {
 
 	@Test
-	@Ignore
 	public void testParseCsv() throws IOException {
-//		Resource r = new ClassPathResource(":classpath:opennms/requisition.csv");
-		Resource r = new ClassPathResource("/Users/david/Documents/Business/Support/Towerstream/requisition2.csv");
-		CsvRequisitionParser.parseCsv("/Users/david/Documents/Business/Support/Towerstream/requisition2.csv", "/tmp");
+		CsvRequisitionParser.parseCsv("src/test/resources/META-INF/opennms/requisition.csv", "/tmp");
 	}
 	
 	@Test

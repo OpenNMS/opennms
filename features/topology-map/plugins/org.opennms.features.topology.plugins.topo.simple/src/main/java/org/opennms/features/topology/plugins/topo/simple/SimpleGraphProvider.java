@@ -171,7 +171,7 @@ public class SimpleGraphProvider extends AbstractTopologyProvider implements Gra
             newVertex.setLabel(vertex.label);
             newVertex.setLocked(vertex.locked);
             if (vertex.nodeID != null) newVertex.setNodeID(vertex.nodeID);
-            newVertex.setParent(vertex.parent);
+            if (!newVertex.equals(vertex.parent)) newVertex.setParent(vertex.parent);
             newVertex.setSelected(vertex.selected);
             newVertex.setStyleName(vertex.styleName);
             newVertex.setTooltipText(vertex.tooltipText);
@@ -210,7 +210,7 @@ public class SimpleGraphProvider extends AbstractTopologyProvider implements Gra
         }
 
         for (WrappedVertex vertex: graph.m_vertices) {
-            if (vertex.parent != null) {
+            if (vertex.parent != null && !vertex.equals(vertex.parent)) {
                 LoggerFactory.getLogger(this.getClass()).debug("Setting parent of " + vertex + " to " + vertex.parent);
                 setParent(vertex, vertex.parent);
             }

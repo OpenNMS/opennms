@@ -1,4 +1,4 @@
-<events>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <global>
     <security>
       <doNotOverride>logmsg</doNotOverride>

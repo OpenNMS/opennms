@@ -46,4 +46,6 @@
   <extend-property name="locale" values="de"/>
    
   <set-configuration-property name="UiBinder.useSafeHtmlTemplates" value="true" />
+
+  <collapse-all-properties/>
 </module>

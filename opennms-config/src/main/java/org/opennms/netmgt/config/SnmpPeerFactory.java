@@ -44,6 +44,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.IPLike;
@@ -417,6 +418,9 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         agentConfig.setPrivProtocol(determinePrivProtocol(def));
         agentConfig.setReadCommunity(determineReadCommunity(def));
         agentConfig.setWriteCommunity(determineWriteCommunity(def));
+        agentConfig.setContextName(determineContextName(def));
+        agentConfig.setEngineId(determineEngineId(def));
+        agentConfig.setContextEngineId(determineContextEngineId(def));
     }
     
     /**
@@ -520,7 +524,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      */
     private String determineAuthProtocol(final Definition def) {
         final String authProtocol = (def.getAuthProtocol() == null ? m_config.getAuthProtocol() : def.getAuthProtocol());
-        if (authProtocol == null) {
+        if (authProtocol == null && determineAuthPassPhrase(def) != null) {
             return SnmpAgentConfig.DEFAULT_AUTH_PROTOCOL;
         }
         return authProtocol;
@@ -535,9 +539,12 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      */
     private String determineAuthPassPhrase(final Definition def) {
         final String authPassPhrase = (def.getAuthPassphrase() == null ? m_config.getAuthPassphrase() : def.getAuthPassphrase());
+        // Forcing a default is wrong, because if it is not explicitly defined, probably it means that it should not be used, and SNMP4J expect null for optional parameters.
+        /*
         if (authPassPhrase == null) {
             return SnmpAgentConfig.DEFAULT_AUTH_PASS_PHRASE;
         }
+        */
         return authPassPhrase;
     }
 
@@ -550,9 +557,12 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      */
     private String determinePrivPassPhrase(final Definition def) {
         final String privPassPhrase = (def.getPrivacyPassphrase() == null ? m_config.getPrivacyPassphrase() : def.getPrivacyPassphrase());
+        // Forcing a default is wrong, because if it is not explicitly defined, probably it means that it should not be used, and SNMP4J expect null for optional parameters.
+        /*
         if (privPassPhrase == null) {
             return SnmpAgentConfig.DEFAULT_PRIV_PASS_PHRASE;
         }
+        */
         return privPassPhrase;
     }
 
@@ -565,7 +575,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      */
     private String determinePrivProtocol(final Definition def) {
         final String authPrivProtocol = (def.getPrivacyProtocol() == null ? m_config.getPrivacyProtocol() : def.getPrivacyProtocol());
-        if (authPrivProtocol == null) {
+        if (authPrivProtocol == null && determinePrivPassPhrase(def) != null) {
             return SnmpAgentConfig.DEFAULT_PRIV_PROTOCOL;
         }
         return authPrivProtocol;
@@ -596,8 +606,8 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         // if no security level configuration exists use
         int securityLevel = SnmpAgentConfig.NOAUTH_NOPRIV;
 
-        final String authPassPhrase = (def.getAuthPassphrase() == null ? m_config.getAuthPassphrase() : def.getAuthPassphrase());
-        final String privPassPhrase = (def.getPrivacyPassphrase() == null ? m_config.getPrivacyPassphrase() : def.getPrivacyPassphrase());
+        final String authPassPhrase = (StringUtils.isBlank(def.getAuthPassphrase()) ? m_config.getAuthPassphrase() : def.getAuthPassphrase());
+        final String privPassPhrase = (StringUtils.isBlank(def.getPrivacyPassphrase()) ? m_config.getPrivacyPassphrase() : def.getPrivacyPassphrase());
 
         if (authPassPhrase == null) {
             securityLevel = SnmpAgentConfig.NOAUTH_NOPRIV;
@@ -612,6 +622,45 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         return securityLevel;
     }
 
+    /**
+     * Helper method to find a context name to use from the snmp-config.
+     * @param def
+     * @return
+     */
+    private String determineContextName(final Definition def) {
+        final String contextName = (def.getContextName() == null ? m_config.getContextName() : def.getContextName());
+        if (contextName == null) {
+            return SnmpAgentConfig.DEFAULT_CONTEXT_NAME;
+        }
+        return contextName;
+    }
+    
+    /**
+     * Helper method to find an engine ID to use from the snmp-config.
+     * @param def
+     * @return
+     */
+    private String determineEngineId(final Definition def) {
+        final String engineId = (def.getEngineId() == null ? m_config.getEngineId() : def.getEngineId());
+        if (engineId == null) {
+            return SnmpAgentConfig.DEFAULT_ENGINE_ID;
+        }
+        return engineId;
+    }
+
+    /**
+     * Helper method to find a context engine ID to use from the snmp-config.
+     * @param def
+     * @return
+     */
+    private String determineContextEngineId(final Definition def) {
+        final String contextEngineId = (def.getContextEngineId() == null ? m_config.getContextEngineId() : def.getContextEngineId());
+        if (contextEngineId == null) {
+            return SnmpAgentConfig.DEFAULT_CONTEXT_ENGINE_ID;
+        }
+        return contextEngineId;
+    }
+    
     /**
      * Helper method to search the snmp-config for a port
      * @param def

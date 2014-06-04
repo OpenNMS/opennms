@@ -31,7 +31,6 @@ package org.opennms.netmgt.linkd;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -76,6 +75,7 @@ import org.opennms.netmgt.model.OnmsVlan;
 
 public abstract class AbstractQueryManager implements QueryManager {
     protected Linkd m_linkd;
+    private static final InetAddress m_zeroAddress = InetAddressUtils.addr("0.0.0.0");
 
     @Override
     public void setLinkd(final Linkd linkd) {
@@ -154,8 +154,8 @@ public abstract class AbstractQueryManager implements QueryManager {
             
             final String hostAddress = InetAddressUtils.str(ipaddress);
 
-            if (ipaddress == null || ipaddress.isLoopbackAddress() || hostAddress.equals("0.0.0.0")) {
-                LogUtils.warnf(this, "processIpNetToMediaTable: invalid IP: %s", hostAddress);
+            if (ipaddress == null || ipaddress.isLoopbackAddress() || m_zeroAddress.equals(ipaddress)) {
+                LogUtils.warnf(this, "processIpNetToMediaTable: invalid IP: %s", ipaddress);
                 continue;
             }
 
@@ -242,15 +242,11 @@ public abstract class AbstractQueryManager implements QueryManager {
         InetAddress ospfRouterId = snmpcoll.getOspfGeneralGroup().getOspfRouterId();
 
         LogUtils.debugf(this, "processOspf: ospf node/ospfrouterid: %d/%s", node.getNodeId(), str(ospfRouterId)); 
-        try {
-            if (InetAddress.getByName("0.0.0.0").equals(ospfRouterId)) {
-                LogUtils.infof(this, "processOspf: invalid ospf ruoter id. node/ospfrouterid: %d/%s. Skipping!", node.getNodeId(), str(ospfRouterId)); 
-                return;
-            }
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
+        if (m_zeroAddress.equals(ospfRouterId)) {
+            LogUtils.infof(this, "processOspf: invalid ospf ruoter id. node/ospfrouterid: %d/%s. Skipping!", node.getNodeId(), str(ospfRouterId)); 
+            return;
         }
-
+        
         node.setOspfRouterId(ospfRouterId);
 
         List<OspfNbrInterface> ospfinterfaces = new ArrayList<OspfNbrInterface>();
@@ -259,13 +255,9 @@ public abstract class AbstractQueryManager implements QueryManager {
             InetAddress ospfNbrRouterId = ospfNbrTableEntry.getOspfNbrRouterId();
             InetAddress ospfNbrIpAddr = ospfNbrTableEntry.getOspfNbrIpAddress();
             LogUtils.debugf(this, "processOspf: addind ospf node/ospfnbraddress/ospfnbrrouterid: %d/%s/%s", node.getNodeId(), str(ospfNbrIpAddr),str(ospfNbrRouterId)); 
-            try {
-                if (InetAddress.getByName("0.0.0.0").equals(ospfNbrIpAddr) || InetAddress.getByName("0.0.0.0").equals(ospfNbrRouterId)) {
-                    LogUtils.infof(this, "processOspf: ospf invalid ip address for node/ospfnbraddress/ospfnbrrouterid: %d/%s/%s", node.getNodeId(), str(ospfNbrIpAddr),str(ospfNbrRouterId)); 
-                    continue;
-                }
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
+            if (m_zeroAddress.equals(ospfNbrIpAddr) || m_zeroAddress.equals(ospfNbrRouterId)) {
+                LogUtils.infof(this, "processOspf: ospf invalid ip address for node/ospfnbraddress/ospfnbrrouterid: %d/%s/%s", node.getNodeId(), str(ospfNbrIpAddr),str(ospfNbrRouterId)); 
+                continue;
             }
             Integer ifIndex = ospfNbrTableEntry.getOspfNbrAddressLessIndex();
             LogUtils.debugf(this, "processOspf: ospf node/ospfnbraddress/ospfnbrrouterid/ospfnbrAddressLessIfIndex: %d/%s/%s/%d", node.getNodeId(), str(ospfNbrIpAddr),str(ospfNbrRouterId),ifIndex); 
@@ -302,6 +294,7 @@ public abstract class AbstractQueryManager implements QueryManager {
         
         for (final LldpRemTableEntry lldpRemTableEntry: snmpcoll.getLldpRemTable()) {
 
+            LogUtils.debugf(this, "processLldp: lldp remote entry node/localport/remporttype/remport: %d/%d/%d/%s", node.getNodeId(), lldpRemTableEntry.getLldpRemLocalPortNum(),lldpRemTableEntry.getLldpRemPortidSubtype(),lldpRemTableEntry.getLldpRemPortid()); 
             Integer lldpLocIfIndex = getLldpLocIfIndex(node.getLldpSysname(), localPortNumberToLocTableEntryMap.get(lldpRemTableEntry.getLldpRemLocalPortNum()));
             if (lldpLocIfIndex == null || lldpLocIfIndex.intValue() == -1) {
                 LogUtils.warnf(this, "processLldp: lldp local ifindex not valid for local node/lldpLocalPortNumber: %d/%d", node.getNodeId(), lldpRemTableEntry.getLldpRemLocalPortNum()); 
@@ -328,48 +321,88 @@ public abstract class AbstractQueryManager implements QueryManager {
             localPortNumberToLocTableEntryMap.put(lldpLocTableEntry.getLldpLocPortNum(), lldpLocTableEntry);
         }
         return localPortNumberToLocTableEntryMap;
+
     }
 
+
     private Integer getLldpRemIfIndex(LldpRemTableEntry lldpRemTableEntry) {
-        Integer ifindex=-1;
+        Integer ifindex = -1;
         switch (lldpRemTableEntry.getLldpRemPortidSubtype().intValue()) {
-            case LldpMibConstants.LLDP_PORTID_SUBTYPE_INTERFACEALIAS: ifindex=getFromSysnameIfAlias(lldpRemTableEntry.getLldpRemSysname(), lldpRemTableEntry.getLldpRemPortid());
-            break;
-            case LldpMibConstants.LLDP_PORTID_SUBTYPE_PORTCOMPONENT: ifindex=getFromSysnamePortComponent(lldpRemTableEntry.getLldpRemSysname(), lldpRemTableEntry.getLldpRemPortid());
-            break;
-            case LldpMibConstants.LLDP_PORTID_SUBTYPE_MACADDRESS: ifindex=getFromSysnameMacAddress(lldpRemTableEntry.getLldpRemSysname(), lldpRemTableEntry.getLldpRemMacAddress());
-            break;
-            case LldpMibConstants.LLDP_PORTID_SUBTYPE_NETWORKADDRESS: ifindex=getFromSysnameIpAddress(lldpRemTableEntry.getLldpRemSysname(), lldpRemTableEntry.getLldpRemIpAddress());
-            break;
-            case LldpMibConstants.LLDP_PORTID_SUBTYPE_INTERFACENAME: ifindex=getFromSysnameIfName(lldpRemTableEntry.getLldpRemSysname(), lldpRemTableEntry.getLldpRemPortid());
-            break;
-            case LldpMibConstants.LLDP_PORTID_SUBTYPE_AGENTCIRCUITID: ifindex=getFromSysnameAgentCircuitId(lldpRemTableEntry.getLldpRemSysname(), lldpRemTableEntry.getLldpRemPortid());
-            break;
-            case LldpMibConstants.LLDP_PORTID_SUBTYPE_LOCAL: ifindex=Integer.parseInt(lldpRemTableEntry.getLldpRemPortid());
-            break;
+            case LldpMibConstants.LLDP_PORTID_SUBTYPE_INTERFACEALIAS:
+                ifindex = getFromSysnameIfAlias(lldpRemTableEntry.getLldpRemSysname(),
+                                            lldpRemTableEntry.getLldpRemPortid());
+                break;
+            case LldpMibConstants.LLDP_PORTID_SUBTYPE_PORTCOMPONENT:
+                ifindex = getFromSysnamePortComponent(lldpRemTableEntry.getLldpRemSysname(),
+                                                  lldpRemTableEntry.getLldpRemPortid());
+                break;
+            case LldpMibConstants.LLDP_PORTID_SUBTYPE_MACADDRESS:
+                ifindex = getFromSysnameMacAddress(lldpRemTableEntry.getLldpRemSysname(),
+                                               lldpRemTableEntry.getLldpRemMacAddress());
+                break;
+            case LldpMibConstants.LLDP_PORTID_SUBTYPE_NETWORKADDRESS: ifindex = getFromSysnameIpAddress(lldpRemTableEntry.getLldpRemSysname(),
+                                              lldpRemTableEntry.getLldpRemIpAddress());
+                break;
+            case LldpMibConstants.LLDP_PORTID_SUBTYPE_INTERFACENAME:
+                ifindex = getFromSysnameIfName(lldpRemTableEntry.getLldpRemSysname(),
+                                           lldpRemTableEntry.getLldpRemPortid());
+                break;
+            case LldpMibConstants.LLDP_PORTID_SUBTYPE_AGENTCIRCUITID:
+                ifindex = getFromSysnameAgentCircuitId(lldpRemTableEntry.getLldpRemSysname(),
+                                                   lldpRemTableEntry.getLldpRemPortid());
+                break;
+            case LldpMibConstants.LLDP_PORTID_SUBTYPE_LOCAL:
+                try {
+                    ifindex = Integer.parseInt(lldpRemTableEntry.getLldpRemPortid());
+                } catch (NumberFormatException e) {
+                    ifindex = getFromSysnameIfName(lldpRemTableEntry.getLldpRemSysname(),
+                                               lldpRemTableEntry.getLldpRemPortid());
+                }
+                break;
         }
-        return ifindex;        
+
+        return ifindex;
     }
     
-    private Integer getLldpLocIfIndex(String sysname, LldpLocTableEntry lldpLocTableEntry) {
-        Integer ifindex=-1;
+    private Integer getLldpLocIfIndex(String sysname,
+            LldpLocTableEntry lldpLocTableEntry) {
+        Integer ifindex = -1;
         switch (lldpLocTableEntry.getLldpLocPortIdSubtype().intValue()) {
-            case LldpMibConstants.LLDP_PORTID_SUBTYPE_INTERFACEALIAS: ifindex=getFromSysnameIfAlias(sysname, lldpLocTableEntry.getLldpLocPortid());
+        case LldpMibConstants.LLDP_PORTID_SUBTYPE_INTERFACEALIAS:
+            ifindex = getFromSysnameIfAlias(sysname,
+                                            lldpLocTableEntry.getLldpLocPortid());
             break;
-            case LldpMibConstants.LLDP_PORTID_SUBTYPE_PORTCOMPONENT: ifindex=getFromSysnamePortComponent(sysname, lldpLocTableEntry.getLldpLocPortid());
+        case LldpMibConstants.LLDP_PORTID_SUBTYPE_PORTCOMPONENT:
+            ifindex = getFromSysnamePortComponent(sysname,
+                                                  lldpLocTableEntry.getLldpLocPortid());
             break;
-            case LldpMibConstants.LLDP_PORTID_SUBTYPE_MACADDRESS: ifindex=getFromSysnameMacAddress(sysname, lldpLocTableEntry.getLldpLocMacAddress());
+        case LldpMibConstants.LLDP_PORTID_SUBTYPE_MACADDRESS:
+            ifindex = getFromSysnameMacAddress(sysname,
+                                               lldpLocTableEntry.getLldpLocMacAddress());
             break;
-            case LldpMibConstants.LLDP_PORTID_SUBTYPE_NETWORKADDRESS: ifindex=getFromSysnameIpAddress(sysname, lldpLocTableEntry.getLldpLocIpAddress());
+        case LldpMibConstants.LLDP_PORTID_SUBTYPE_NETWORKADDRESS:
+            ifindex = getFromSysnameIpAddress(sysname,
+                                              lldpLocTableEntry.getLldpLocIpAddress());
             break;
-            case LldpMibConstants.LLDP_PORTID_SUBTYPE_INTERFACENAME: ifindex=getFromSysnameIfName(sysname, lldpLocTableEntry.getLldpLocPortid());
+        case LldpMibConstants.LLDP_PORTID_SUBTYPE_INTERFACENAME:
+            ifindex = getFromSysnameIfName(sysname,
+                                           lldpLocTableEntry.getLldpLocPortid());
             break;
-            case LldpMibConstants.LLDP_PORTID_SUBTYPE_AGENTCIRCUITID: ifindex=getFromSysnameAgentCircuitId(sysname, lldpLocTableEntry.getLldpLocPortid());
+        case LldpMibConstants.LLDP_PORTID_SUBTYPE_AGENTCIRCUITID:
+            ifindex = getFromSysnameAgentCircuitId(sysname,
+                                                   lldpLocTableEntry.getLldpLocPortid());
             break;
-            case LldpMibConstants.LLDP_PORTID_SUBTYPE_LOCAL: ifindex=Integer.parseInt(lldpLocTableEntry.getLldpLocPortid());
+        case LldpMibConstants.LLDP_PORTID_SUBTYPE_LOCAL:
+            try {
+                ifindex = Integer.parseInt(lldpLocTableEntry.getLldpLocPortid());
+            } catch (NumberFormatException e) {
+                ifindex = getFromSysnameIfName(sysname,
+                                               lldpLocTableEntry.getLldpLocPortid());
+            }
             break;
         }
-        return ifindex;  
+
+        return ifindex;
     }
         
     protected Integer getFromSysnameAgentCircuitId(String lldpRemSysname,
@@ -459,7 +492,7 @@ public abstract class AbstractQueryManager implements QueryManager {
                 LogUtils.warnf(this, "processCdpCacheTable: CDP address type not ip: %d", cdpAddrType);
             } else {
                 cdpTargetIpAddrString = InetAddressUtils.str(cdpTargetIpAddr);
-                if (cdpTargetIpAddr == null || cdpTargetIpAddr.isLoopbackAddress() || cdpTargetIpAddrString.equals("0.0.0.0")) {
+                if (cdpTargetIpAddr == null || cdpTargetIpAddr.isLoopbackAddress() || m_zeroAddress.equals(cdpTargetIpAddr)) {
                     LogUtils.debugf(this, "processCdpCacheTable: IP address is not valid: %s", cdpTargetIpAddrString);
                     cdpTargetIpAddrString = null;
                 } else {
@@ -625,7 +658,7 @@ public abstract class AbstractQueryManager implements QueryManager {
                     LogUtils.warnf(this, "processRouteTable: interface has an invalid ifType (%d). Skipping.", snmpiftype);
                 } else if (nexthop.isLoopbackAddress()) {
                     LogUtils.infof(this, "processRouteTable: next hop is a loopback address. Skipping.");
-                } else if (InetAddressUtils.str(nexthop).equals("0.0.0.0")) {
+                } else if (m_zeroAddress.equals(nexthop)) {
                     LogUtils.infof(this, "processRouteTable: next hop is a broadcast address. Skipping.");
                 } else if (nexthop.isMulticastAddress()) {
                     LogUtils.infof(this, "processRouteTable: next hop is a multicast address. Skipping.");
@@ -910,6 +943,8 @@ public abstract class AbstractQueryManager implements QueryManager {
             }
 
             final OnmsStpInterface stpInterface = stpinterfaces.get(stpport);
+            if (stpInterface == null )
+		continue;
 
             String stpPortDesignatedBridge = dot1dstpptentry.getDot1dStpPortDesignatedBridge();
             String stpPortDesignatedPort = dot1dstpptentry.getDot1dStpPortDesignatedPort();

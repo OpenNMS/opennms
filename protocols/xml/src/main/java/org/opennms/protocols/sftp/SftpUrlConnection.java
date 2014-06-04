@@ -86,6 +86,10 @@ public class SftpUrlConnection extends URLConnection {
         JSch jsch = new JSch();
         try {
             // TODO: Experimental authentication handling using Private/Public keys
+            // FIXME: We can include this property on the request object, for example:
+            // <request>
+            //   <parameter name='sftp.private-key.location' value='/opt/opennms/etc/private.key'/>
+            // </request>
             // http://wiki.jsch.org/index.php?Manual%2FExamples%2FJschPubkeyAuthExample
             String prvkey = System.getProperty("sftp.private-key.location");
             if (prvkey != null) {

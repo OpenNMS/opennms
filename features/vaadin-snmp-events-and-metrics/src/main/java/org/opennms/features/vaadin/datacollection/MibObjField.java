@@ -30,11 +30,11 @@ package org.opennms.features.vaadin.datacollection;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.features.vaadin.api.OnmsBeanContainer;
 import org.opennms.netmgt.config.datacollection.MibObj;
 import org.vaadin.addon.customfield.CustomField;
 
 import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -58,7 +58,7 @@ public class MibObjField extends CustomField implements Button.ClickListener {
     private Table table = new Table();
 
     /** The Container. */
-    private BeanContainer<String,MibObj> container = new BeanContainer<String,MibObj>(MibObj.class);
+    private OnmsBeanContainer<MibObj> container = new OnmsBeanContainer<MibObj>(MibObj.class);
 
     /** The Toolbar. */
     private HorizontalLayout toolbar = new HorizontalLayout();
@@ -75,7 +75,6 @@ public class MibObjField extends CustomField implements Button.ClickListener {
      * @param resourceTypes the available resource types
      */
     public MibObjField(final List<String> resourceTypes) {
-        container.setBeanIdProperty("oid");
         table.setContainerDataSource(container);
         table.setStyleName(Runo.TABLE_SMALL);
         table.setVisibleColumns(new Object[]{"oid", "instance", "alias", "type"});
@@ -179,8 +178,11 @@ public class MibObjField extends CustomField implements Button.ClickListener {
      */
     private void addHandler() {
         MibObj obj = new MibObj();
-        obj.setOid("1.1.1.1");
-        container.addBean(obj);
+        obj.setOid(".1.1.1.1");
+        obj.setInstance("0");
+        obj.setType("gauge");
+        obj.setAlias("testVar");
+        container.addOnmsBean(obj);
     }
 
     /**

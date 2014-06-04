@@ -109,7 +109,7 @@ public class JniPingRequest implements Request<JniPingRequestId, JniPingRequest,
         m_id = id;
         m_timeout = timeout;
         m_retries = retries;
-        m_packetsize = packetsize-8;
+        m_packetsize = packetsize;
         m_log = log;
         m_callback = callback;
     }

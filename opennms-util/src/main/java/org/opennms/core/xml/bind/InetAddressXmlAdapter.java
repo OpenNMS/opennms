@@ -44,14 +44,14 @@ public class InetAddressXmlAdapter extends XmlAdapter<String, InetAddress> {
 
     /** {@inheritDoc} */
     @Override
-    public String marshal(InetAddress inetAddr) throws Exception {
+    public String marshal(final InetAddress inetAddr) throws Exception {
         return InetAddressUtils.toIpAddrString(inetAddr);
     }
 
     /** {@inheritDoc} */
     @Override
-    public InetAddress unmarshal(String ipAddr) throws Exception {
-        return InetAddressUtils.getInetAddress(ipAddr);
+    public InetAddress unmarshal(final String ipAddr) throws Exception {
+        return (ipAddr == null || ipAddr.isEmpty())? null : InetAddressUtils.addr(ipAddr);
     }
 
 }

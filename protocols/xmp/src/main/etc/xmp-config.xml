@@ -1,3 +1,3 @@
 <?xml version="1.0"?>
-<xmp-config port="5270" retry="1" timeout="3000" authenUser="cartographer">
+<xmp-config port="5270" retry="1" timeout="3000" authenUser="changeit">
 </xmp-config>

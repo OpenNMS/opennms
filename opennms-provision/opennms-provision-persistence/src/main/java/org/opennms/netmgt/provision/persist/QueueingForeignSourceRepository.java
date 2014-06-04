@@ -29,6 +29,7 @@
 package org.opennms.netmgt.provision.persist;
 
 import java.net.URL;
+import java.util.Date;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -136,6 +137,14 @@ public class QueueingForeignSourceRepository implements ForeignSourceRepository,
     @Override
     public Requisition getRequisition(final ForeignSource foreignSource) throws ForeignSourceRepositoryException {
         return m_repository.getRequisition(foreignSource);
+    }
+
+    @Override
+    public Date getRequisitionDate(final String foreignSource) {
+        if (m_pendingRequisitions.containsKey(foreignSource)) {
+            return m_pendingRequisitions.get(foreignSource).getDate();
+        }
+        return m_repository.getRequisitionDate(foreignSource);
     }
 
     @Override

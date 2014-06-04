@@ -55,6 +55,7 @@ public class OnmsGroupList extends LinkedList<OnmsGroup> {
     }
     
     public void setGroups(final List<OnmsGroup> groups) {
+        if (groups == this) return;
         clear();
         addAll(groups);
     }

@@ -42,6 +42,7 @@ import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.tasks.Task;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.url.GenericURLFactory;
 import org.opennms.netmgt.EventConstants;
@@ -72,7 +73,9 @@ import org.springframework.core.io.UrlResource;
  */
 @EventListener(name="Provisiond:EventListener")
 public class Provisioner implements SpringServiceDaemon {
-    
+    private static final String SCHEDULE_RESCAN_FOR_UPDATED_NODES = "org.opennms.provisiond.scheduleRescanForUpdatedNodes";
+    private static final String SCHEDULE_RESCAN_FOR_EXISTING_NODES = "org.opennms.provisiond.scheduleRescanForExistingNodes";
+
     /** Constant <code>NAME="Provisiond"</code> */
     public static final String NAME = "Provisiond";
 
@@ -185,7 +188,7 @@ public class Provisioner implements SpringServiceDaemon {
     @Override
     public void start() throws Exception {
         m_manager.initializeAdapters();
-        String enabled = System.getProperty("org.opennms.provisiond.scheduleRescanForExistingNodes", "true");
+        String enabled = System.getProperty(SCHEDULE_RESCAN_FOR_EXISTING_NODES, "true");
         if (Boolean.valueOf(enabled)) {
             scheduleRescanForExistingNodes();
         } else {
@@ -583,12 +586,18 @@ public class Provisioner implements SpringServiceDaemon {
     
     /**
      * <p>handleNodeUpdated</p>
+     * A re-import has occurred, attempt a rescan now.
      *
      * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     @EventHandler(uei = EventConstants.NODE_UPDATED_EVENT_UEI)
     public void handleNodeUpdated(Event e) {
-        // scan now since a reimport has occurred
+    	LogUtils.debugf(this, "Node updated event received: %s", e);
+        if (!Boolean.valueOf(System.getProperty(SCHEDULE_RESCAN_FOR_UPDATED_NODES, "true"))) {
+        	LogUtils.debugf(this, "Rescanning updated nodes is disabled via property: %s", SCHEDULE_RESCAN_FOR_UPDATED_NODES);
+        	return;
+        }
+        
         removeNodeFromScheduleQueue(new Long(e.getNodeid()).intValue());
         NodeScanSchedule scheduleForNode = getProvisionService().getScheduleForNode(new Long(e.getNodeid()).intValue(), true);
         if (scheduleForNode != null) {

@@ -638,10 +638,14 @@ public class WillItUnmarshalTest {
         findConfigurationFilesInDirectory(examplesDir, null, allXml);
         
         allXml.removeAll(m_exampleFilesTested);
-        allXml.remove("correlation-engine.xml");
-        allXml.remove("drools-engine.xml");
-        allXml.remove("nodeParentRules-context.xml");
+        allXml.remove("drools-engine.d/nodeParentRules/drools-engine.xml");
+        allXml.remove("drools-engine.d/nodeParentRules/nodeParentRules-context.xml");
+        allXml.remove("drools-engine.d/nodeParentRules/locationMonitorRules-context.xml");
+        allXml.remove("jetty.xml");
         allXml.remove("nsclient-config.xml");
+        allXml.remove("Juniper/mcg/3gpp.kpis.xml");
+        allXml.remove("Juniper/mcg/MCG-collectd-configuration.xml");
+        allXml.remove("Juniper/mcg/MCG-xml-datacollection-config.xml");
         if (allXml.size() > 0) {
             List<String> files = new ArrayList<String>(allXml);
             Collections.sort(files);

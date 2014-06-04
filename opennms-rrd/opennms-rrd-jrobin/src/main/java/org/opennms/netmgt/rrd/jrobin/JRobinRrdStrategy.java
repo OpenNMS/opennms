@@ -29,6 +29,7 @@
 package org.opennms.netmgt.rrd.jrobin;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,6 +51,7 @@ import org.jrobin.data.DataProcessor;
 import org.jrobin.data.Plottable;
 import org.jrobin.graph.RrdGraph;
 import org.jrobin.graph.RrdGraphDef;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
@@ -197,14 +199,15 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
         
         RrdDb rrd = new RrdDb(rrdDef);
         rrd.close();
-        
+
         String filenameWithoutExtension = rrdDef.getPath().replace(RrdUtils.getExtension(), "");
         int lastIndexOfSeparator = filenameWithoutExtension.lastIndexOf(File.separator);
-        
-		RrdUtils.createMetaDataFile(
-				filenameWithoutExtension.substring(0, lastIndexOfSeparator),
-				filenameWithoutExtension.substring(lastIndexOfSeparator),
-				attributeMappings);
+
+        RrdUtils.createMetaDataFile(
+            filenameWithoutExtension.substring(0, lastIndexOfSeparator),
+            filenameWithoutExtension.substring(lastIndexOfSeparator),
+            attributeMappings
+        );
     }
 
     /**
@@ -254,7 +257,7 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
         try {
             long now = System.currentTimeMillis();
             long collectTime = (now - (now % interval)) / 1000L;
-            rrd = new RrdDb(fileName);
+            rrd = new RrdDb(fileName, true);
             FetchData data = rrd.createFetchRequest(consolidationFunction, collectTime, collectTime).fetchData();
             if(log().isDebugEnabled()) {
             	//The "toString" method of FetchData is quite computationally expensive; 
@@ -284,7 +287,7 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
     public Double fetchLastValueInRange(final String fileName, final String ds, final int interval, final int range) throws NumberFormatException, org.opennms.netmgt.rrd.RrdException {
         RrdDb rrd = null;
         try {
-        	rrd = new RrdDb(fileName);
+        	rrd = new RrdDb(fileName, true);
          	long now = System.currentTimeMillis();
             long latestUpdateTime = (now - (now % interval)) / 1000L;
             long earliestUpdateTime = ((now - (now % interval)) - range) / 1000L;
@@ -729,24 +732,71 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
 		return def;
 	}
 
-	private void processRrdFontArgument(RrdGraphDef graphDef, String argParm) {
-		/*
-		String[] argValue = tokenize(argParm, ":", true);
-		if (argValue[0].equals("DEFAULT")) {
-			int newPointSize = Integer.parseInt(argValue[1]);
-			graphDef.setSmallFont(graphDef.getSmallFont().deriveFont(newPointSize));
-		} else if (argValue[0].equals("TITLE")) {
-			int newPointSize = Integer.parseInt(argValue[1]);
-			graphDef.setLargeFont(graphDef.getLargeFont().deriveFont(newPointSize));
-		} else {
-			try {
-				Font font = Font.createFont(Font.TRUETYPE_FONT, new File(argValue[0]));
-			} catch (Throwable e) {
-				// oh well, fall back to existing font stuff
-				log().warn("unable to create font from font argument " + argParm, e);
-			}
-		}
-		*/
+	private void processRrdFontArgument(final RrdGraphDef graphDef, final String argParm) {
+	    final String[] argValue = tokenize(argParm, ":", false);
+            if (argValue.length < 2) {
+                LogUtils.warnf(this, "Argument '%s' does not specify font size", argParm);
+                return;
+            }
+            if (argValue.length > 3) {
+                LogUtils.debugf(this, "Argument '%s' includes extra data, ignoring the extra data.", argParm);
+            }
+	    int newPointSize = 0;
+	    try {
+	        newPointSize = Integer.parseInt(argValue[1]);
+	    } catch (final NumberFormatException e) {
+	        LogUtils.warnf(this, e, "Failed to parse %s as an integer: %s", argValue[1], e.getMessage());
+	    }
+	    int fontTag;
+	    Font font;
+
+	    if (argValue[0].equals("DEFAULT")) {
+	        fontTag = RrdGraphDef.FONTTAG_DEFAULT;
+	    } else if (argValue[0].equals("TITLE")) {
+	        fontTag = RrdGraphDef.FONTTAG_TITLE;
+	    } else if (argValue[0].equals("AXIS")) {
+	        fontTag = RrdGraphDef.FONTTAG_AXIS;
+	    } else if (argValue[0].equals("UNIT")) {
+	        fontTag = RrdGraphDef.FONTTAG_UNIT;
+	    } else if (argValue[0].equals("LEGEND")) {
+	        fontTag = RrdGraphDef.FONTTAG_LEGEND;
+	    } else if (argValue[0].equals("WATERMARK")) {
+	        fontTag = RrdGraphDef.FONTTAG_WATERMARK;
+	    } else {
+	        LogUtils.warnf(this, "invalid font tag %s", argValue[0]);
+	        return;
+	    }
+
+	    try {
+	        font = graphDef.getFont(fontTag);
+
+	        // If we have a font specified, try to get a font object for it.
+	        if (argValue.length == 3 && argValue[2] != null && argValue[2].length() > 0) {
+	            final int origPointSize = font.getSize();
+
+                    // Get our new font
+	            font = Font.decode(argValue[2]);
+
+	            // Font.decode() returns a 12 px font size, by default unless you specify
+	            // a font size in the font name pattern.
+	            if (newPointSize > 0) {
+	                font = font.deriveFont((float) newPointSize);
+	            } else {
+	                font = font.deriveFont((float) origPointSize);
+	            }
+	        } else {
+	            // If we don't have a font name specified, then we just adjust the font size.
+	            font = font.deriveFont((float) newPointSize);
+	        }
+
+	        if (fontTag == RrdGraphDef.FONTTAG_DEFAULT) {
+	            graphDef.setFont(fontTag, font, true, newPointSize == 0);
+	        } else {
+	            graphDef.setFont(fontTag, font);
+	        }
+	    } catch (final Throwable e) {
+	        LogUtils.warnf(this, e, "unable to create font from font argument %s", argParm);
+	    }
 	}
     
     private String[] tokenize(final String line, final String delimiters, final boolean processQuotes) {

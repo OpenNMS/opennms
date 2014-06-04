@@ -171,6 +171,7 @@
 <table class="standard o-box">
 
 <%
+   String acknowledgeEvent = System.getProperty("opennms.eventlist.acknowledge");
    for( int i=0; i < events.length; i++ ) {
        Event event = events[i];
        pageContext.setAttribute("event", event);
@@ -179,7 +180,9 @@
        <% if( request.isUserInRole( Authentication.ROLE_ADMIN ) || !request.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
            <td class="divider">
              <nobr>
+               <% if ("true".equals(acknowledgeEvent)) { %>
                <input type="checkbox" name="event" value="<%=event.getId()%>" />
+               <% } %>
                <a href="event/detail.jsp?id=<%=event.getId()%>"><%=event.getId()%></a>
              </nobr>
            </td>
@@ -193,7 +196,6 @@
      <tr>
        <td class="standard" colspan="2">
          <%
-         String acknowledgeEvent = System.getProperty("opennms.eventlist.acknowledge");
          if( (request.isUserInRole( Authentication.ROLE_ADMIN ) || !request.isUserInRole( Authentication.ROLE_READONLY )) && "true".equals(acknowledgeEvent)) { %>
            <nobr>
              <input type="button" value="Acknowledge" onclick="submitAck()">

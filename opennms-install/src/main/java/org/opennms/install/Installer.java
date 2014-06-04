@@ -106,6 +106,7 @@ public class Installer {
     boolean m_ignore_database_version = false;
     boolean m_do_not_revert = false;
     boolean m_remove_database = false;
+    boolean m_skip_upgrade_tools = false;
 
     String m_etc_dir = "";
     String m_tomcat_conf = null;
@@ -291,6 +292,11 @@ public class Installer {
 
         System.out.println();
         System.out.println("Installer completed successfully!");
+
+        if (!m_skip_upgrade_tools) {
+            System.setProperty("opennms.manager.class", "org.opennms.upgrade.support.Upgrade");
+            Bootstrap.main(new String[] {});
+        }
     }
 
 	private void checkIPv6() {
@@ -506,6 +512,10 @@ public class Installer {
         options.addOption("r", "rpm-install", false,
                           "RPM install (deprecated)");
 
+        // upgrade tools options
+        options.addOption("S", "skip-upgrade-tools", false,
+                "Skip the execution of the upgrade tools (post-processing tasks)");
+
         CommandLineParser parser = new PosixParser();
         m_commandLine = parser.parse(options, argv);
 
@@ -571,6 +581,7 @@ public class Installer {
         }
         m_fix_constraint_remove_rows = m_commandLine.hasOption("X");
         m_install_webapp = m_commandLine.hasOption("y");
+        m_skip_upgrade_tools = m_commandLine.hasOption("S");
 
         if (m_commandLine.getArgList().size() > 0) {
             usage(options, m_commandLine, "Unknown command-line arguments: "
@@ -1060,7 +1071,7 @@ public class Installer {
             }
         }
 
-        System.out.println("- searching for " + libname + ":");
+        System.out.println("- searching for " + fullname + ":");
         for (String dirname : searchPaths) {
             File entry = new File(dirname);
 
@@ -1069,9 +1080,18 @@ public class Installer {
                 dirname = entry.getParent();
             }
 
+
+
             String fullpath = dirname + File.separator + fullname;
             if (loadLibrary(fullpath)) {
                 return fullpath;
+            }
+
+            if (fullname.endsWith(".dylib")) {
+                final String fullPathOldExtension = fullpath.replace(".dylib", ".jnilib");
+                if (loadLibrary(fullPathOldExtension)) {
+                    return fullPathOldExtension;
+                }
             }
         }
 

@@ -203,7 +203,11 @@ public class Reportd implements SpringServiceDaemon {
 
                 m_reportScheduler.rebuildReportSchedule();
 
-                LogUtils.debugf(this,"handleRelodConfigEvent: reports rescheduled.");
+                LogUtils.debugf(this,"handleReloadConfigEvent: reports rescheduled.");
+                
+                m_reportDeliveryService.reloadConfiguration();
+                
+                LogUtils.debugf(this, "handleReloadConfigEvent: Configuration reloaded for report delivery service %s", m_reportDeliveryService.getClass().getName());
 
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Reportd");
                 ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Reportd");

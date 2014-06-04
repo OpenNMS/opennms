@@ -8,10 +8,12 @@
 	<style name="Table_Body" hAlign="Center" vAlign="Middle" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 	<parameter name="rrdDir" class="java.lang.String" isForPrompting="false"/>
 	<parameter name="nodeid" class="java.lang.Integer" isForPrompting="false"/>
+	<parameter name="foreignsource" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="foreignid" class="java.lang.String" isForPrompting="false"/>
 	<parameter name="startDate" class="java.util.Date" isForPrompting="false"/>
 	<parameter name="endDate" class="java.util.Date" isForPrompting="false"/>
 	<parameter name="hrStoragePath_PATH" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[$P{rrdDir}+$P{nodeid}.toString()+"/hrStorageIndex/C/mib2-host-resources-storage.jrb"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[new org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil().getNodeLevelResourceDirectory($P{rrdDir}, String.valueOf($P{nodeid}), $P{foreignsource}, $P{foreignid}) + "/hrStorageIndex/C/mib2-host-resources-storage.jrb"]]></defaultValueExpression>
 	</parameter>
 	<queryString language="jrobin">
 		<![CDATA[--start $P{startDate} --end $P{endDate}

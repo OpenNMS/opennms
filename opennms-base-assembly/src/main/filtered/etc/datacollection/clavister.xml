@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<datacollection-group name="CLAVISTER" xmlns="http://xmlns.opennms.org/xsd/config/datacollection">
+    <resourceType resourceLabel="${clvIfName} (${index})" label="Clavister specific interfaces" name="clvIfStatsEntry">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+    <resourceType resourceLabel="Ring ${clvIfRxRingIndex}" label="Clavister specific interface Rx ring" name="clvIfRxRingEntry">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+    <resourceType resourceLabel="Ring ${clvIfTxRingIndex}" label="Clavister specific interface Tx ring" name="clvIfTxRingEntry">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+    <resourceType resourceLabel="VLAN ${clvIfVlIndex}" label="Clavister VLAN" name="clvIfVlanStatsEntry">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+    <resourceType resourceLabel="${clvHWSensorName} (${index})" label="Hardware sensors entry" name="clvHWSensorEntry">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+    <resourceType resourceLabel="${clvIPPoolName} (${index})" label="IP pools" name="clvIPPoolEntry">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+    <resourceType resourceLabel="${clvDHCPRuleName} ({index})" label="DHCP server rules usage" name="clvDHCPRuleEntry">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+    <resourceType resourceLabel="${clvUserAuthRuleName} ({index})" label="User authentication rule usage" name="clvUserAuthRuleUseEntry">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+    <resourceType resourceLabel="${clvLinkMonGrpName} (${index})" label="Link monitor groups" name="clvLinkMonGrpEntry">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+    <resourceType resourceLabel="${clvLinkMHId} (${index})" label="Link monitored hosts in a link monnitor group" name="clvLinkMonHostEntry">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+    <resourceType resourceLabel="${clvPipeName} (${index})" label="Pipes" name="clvPipeEntry">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+    <resourceType resourceLabel="Pipe ${clvPiPrecIndex}" label="Pipe precedences" name="clvPipePrecEntry">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+    <resourceType resourceLabel="${clvSmtpAlgName} (${index})" label="SMTP ALG objects" name="clvSmtpAlgEntry">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+    <resourceType resourceLabel="${clvSmtpADBlName} (${index})" label="SMTP ALG DNS balck list objects" name="clvSmtpAlgDnsBlEntry">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+    <resourceType resourceLabel="${clvDHCPRelName} (${index})" label="DHCP relay rules" name="clvDHCPRelayRuleEntry">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+    <resourceType resourceLabel="${clvAppCtrlName} (${index})" label="Clavister specific application control entry" name="clvAppControlEntry">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+    <group ifType="ignore" name="clvSystem">
+        <mibObj type="gauge32"   alias="clvSysCpuLoad"    instance="0" oid=".1.3.6.1.4.1.5089.1.2.1.1"/>
+        <mibObj type="counter32" alias="clvSysFwdBits"    instance="0" oid=".1.3.6.1.4.1.5089.1.2.1.2"/>
+        <mibObj type="counter32" alias="clvSysFwdPackets" instance="0" oid=".1.3.6.1.4.1.5089.1.2.1.3"/>
+        <mibObj type="gauge32"   alias="clvSysBuffUse"    instance="0" oid=".1.3.6.1.4.1.5089.1.2.1.4"/>
+        <mibObj type="gauge32"   alias="clvSysConns"      instance="0" oid=".1.3.6.1.4.1.5089.1.2.1.5"/>
+        <mibObj type="gauge32"   alias="clvSysMemUsage"   instance="0" oid=".1.3.6.1.4.1.5089.1.2.1.12"/>
+        <mibObj type="gauge32"   alias="clvSysTimerUsage" instance="0" oid=".1.3.6.1.4.1.5089.1.2.1.14"/>
+        <mibObj type="gauge32"   alias="clvSysConnOPS"    instance="0" oid=".1.3.6.1.4.1.5089.1.2.1.15"/>
+        <mibObj type="gauge32"   alias="clvSysConnCPS"    instance="0" oid=".1.3.6.1.4.1.5089.1.2.1.16"/>
+        <mibObj type="counter64" alias="clvSysHCFwdBits"  instance="0" oid=".1.3.6.1.4.1.5089.1.2.1.17"/>
+    </group>
+    <group ifType="ignore" name="clvSysPerStateCounters">
+        <mibObj type="gauge32"   alias="clvSysPscTcpSyn"  instance="0" oid=".1.3.6.1.4.1.5089.1.2.1.6.1"/>
+        <mibObj type="gauge32"   alias="clvSysPscTcpOpen" instance="0" oid=".1.3.6.1.4.1.5089.1.2.1.6.2"/>
+        <mibObj type="gauge32"   alias="clvSysPscTcpFin"  instance="0" oid=".1.3.6.1.4.1.5089.1.2.1.6.3"/>
+        <mibObj type="gauge32"   alias="clvSysPscUdp"     instance="0" oid=".1.3.6.1.4.1.5089.1.2.1.6.4"/>
+        <mibObj type="gauge32"   alias="clvSysPscIcmp"    instance="0" oid=".1.3.6.1.4.1.5089.1.2.1.6.5"/>
+        <mibObj type="gauge32"   alias="clvSysPscOther"   instance="0" oid=".1.3.6.1.4.1.5089.1.2.1.6.6"/>
+    </group>
+    <group ifType="ignore" name="clvSysTCPUsage">
+        <mibObj type="gauge32" alias="clvSysTCPRecvSmall" instance="0" oid=".1.3.6.1.4.1.5089.1.2.1.13.1"/>
+        <mibObj type="gauge32" alias="clvSysTCPRecvLarge" instance="0" oid=".1.3.6.1.4.1.5089.1.2.1.13.2"/>
+        <mibObj type="gauge32" alias="clvSysTCPSendSmall" instance="0" oid=".1.3.6.1.4.1.5089.1.2.1.13.3"/>
+        <mibObj type="gauge32" alias="clvSysTCPSendLarge" instance="0" oid=".1.3.6.1.4.1.5089.1.2.1.13.4"/>
+    </group>
+    <group ifType="ignore" name="clvIPsecGlobal">
+        <mibObj type="gauge32"   alias="clvIPsecPhOneActive" instance="0" oid=".1.3.6.1.4.1.5089.1.2.2.1.1.1"/>
+        <mibObj type="gauge32"   alias="clvIPsecPhOneAggrMD" instance="0" oid=".1.3.6.1.4.1.5089.1.2.2.1.1.2"/>
+        <mibObj type="gauge32"   alias="clvIPsecQModeActive" instance="0" oid=".1.3.6.1.4.1.5089.1.2.2.1.1.3"/>
+        <mibObj type="counter32" alias="clvIPsecPhOneDone"   instance="0" oid=".1.3.6.1.4.1.5089.1.2.2.1.1.4"/>
+        <mibObj type="counter32" alias="clvIPsecPhOneFailed" instance="0" oid=".1.3.6.1.4.1.5089.1.2.2.1.1.5"/>
+        <mibObj type="counter32" alias="clvIPsecPhOneRekeyd" instance="0" oid=".1.3.6.1.4.1.5089.1.2.2.1.1.6"/>
+        <mibObj type="counter32" alias="clvIPsecQModeDone"   instance="0" oid=".1.3.6.1.4.1.5089.1.2.2.1.1.7"/>
+        <mibObj type="counter32" alias="clvIPsecQModeFailed" instance="0" oid=".1.3.6.1.4.1.5089.1.2.2.1.1.8"/>
+        <mibObj type="counter32" alias="clvIPsecInfoDone"    instance="0" oid=".1.3.6.1.4.1.5089.1.2.2.1.1.9"/>
+        <mibObj type="counter32" alias="clvIPsecInfoFailed"  instance="0" oid=".1.3.6.1.4.1.5089.1.2.2.1.1.10"/>
+        <mibObj type="counter64" alias="clvIPsecInOctComp"   instance="0" oid=".1.3.6.1.4.1.5089.1.2.2.1.1.11"/>
+        <mibObj type="counter64" alias="clvIPsecInOctUncomp" instance="0" oid=".1.3.6.1.4.1.5089.1.2.2.1.1.12"/>
+        <mibObj type="counter64" alias="clvIPsecOutOctComp"  instance="0" oid=".1.3.6.1.4.1.5089.1.2.2.1.1.13"/>
+        <mibObj type="counter64" alias="clvIPsecOutOctUncom" instance="0" oid=".1.3.6.1.4.1.5089.1.2.2.1.1.14"/>
+        <mibObj type="counter64" alias="clvIPsecFwdOctComp"  instance="0" oid=".1.3.6.1.4.1.5089.1.2.2.1.1.15"/>
+        <mibObj type="counter64" alias="clvIPsecFwdOctUcomp" instance="0" oid=".1.3.6.1.4.1.5089.1.2.2.1.1.16"/>
+        <mibObj type="counter64" alias="clvIPsecInPackets"   instance="0" oid=".1.3.6.1.4.1.5089.1.2.2.1.1.17"/>
+        <mibObj type="counter64" alias="clvIPsecOutPackets"  instance="0" oid=".1.3.6.1.4.1.5089.1.2.2.1.1.18"/>
+        <mibObj type="counter64" alias="clvIPsecFwdPackets"  instance="0" oid=".1.3.6.1.4.1.5089.1.2.2.1.1.19"/>
+        <mibObj type="gauge32"   alias="clvIPsecActiveTrans" instance="0" oid=".1.3.6.1.4.1.5089.1.2.2.1.1.20"/>
+        <mibObj type="counter32" alias="clvIPsecTotalTrans"  instance="0" oid=".1.3.6.1.4.1.5089.1.2.2.1.1.21"/>
+        <mibObj type="counter32" alias="clvIPsecOutOfTrans"  instance="0" oid=".1.3.6.1.4.1.5089.1.2.2.1.1.22"/>
+        <mibObj type="counter32" alias="clvIPsecTotalRekeys" instance="0" oid=".1.3.6.1.4.1.5089.1.2.2.1.1.23"/>
+    </group>
+    <group ifType="ignore" name="clvUserAuth">
+        <mibObj type="gauge32" alias="clvUAuthHTTPUsrs"   instance="0" oid=".1.3.6.1.4.1.5089.1.2.6.1"/>
+        <mibObj type="gauge32" alias="clvUAuthXAUTHUsers" instance="0" oid=".1.3.6.1.4.1.5089.1.2.6.2"/>
+        <mibObj type="gauge32" alias="clvUAuthHTTPSUsers" instance="0" oid=".1.3.6.1.4.1.5089.1.2.6.3"/>
+        <mibObj type="gauge32" alias="clvUAuthPPPUsers"   instance="0" oid=".1.3.6.1.4.1.5089.1.2.6.4"/>
+        <mibObj type="gauge32" alias="clvUAuthEAPUsers"   instance="0" oid=".1.3.6.1.4.1.5089.1.2.6.5"/>
+    </group>
+    <group ifType="ignore" name="clvALG">
+        <mibObj type="gauge32" alias="clvAlgSessions"    instance="0" oid=".1.3.6.1.4.1.5089.1.2.9.1"/>
+        <mibObj type="gauge32" alias="clvAlgConnections" instance="0" oid=".1.3.6.1.4.1.5089.1.2.9.2"/>
+        <mibObj type="gauge32" alias="clvAlgTCPStreams"  instance="0" oid=".1.3.6.1.4.1.5089.1.2.9.3"/>
+    </group>
+    <group ifType="ignore" name="clvDHCPRelay">
+        <mibObj type="gauge32" alias="clvDHCPRelCurClis"  instance="0" oid=".1.3.6.1.4.1.5089.1.2.11.1"/>
+        <mibObj type="gauge32" alias="clvDHCPRelCurTrans" instance="0" oid=".1.3.6.1.4.1.5089.1.2.11.2"/>
+        <mibObj type="gauge32" alias="clvDHCPRelRejected" instance="0" oid=".1.3.6.1.4.1.5089.1.2.11.3"/>
+    </group>
+    <group ifType="ignore" name="clvHA">
+        <mibObj type="gauge32"   alias="clvHASSendQLength"   instance="0" oid=".1.3.6.1.4.1.5089.1.2.12.1"/>
+        <mibObj type="gauge32"   alias="clvHASSendQUsagePkt" instance="0" oid=".1.3.6.1.4.1.5089.1.2.12.2"/>
+        <mibObj type="gauge32"   alias="clvHASSendQUsageOct" instance="0" oid=".1.3.6.1.4.1.5089.1.2.12.3"/>
+        <mibObj type="counter32" alias="clvHASSentPkts"      instance="0" oid=".1.3.6.1.4.1.5089.1.2.12.4"/>
+        <mibObj type="counter32" alias="clvHASSendResPkts"   instance="0" oid=".1.3.6.1.4.1.5089.1.2.12.5"/>
+    </group>
+    <group ifType="ignore" name="clvIPPools">
+        <mibObj type="integer32" alias="clvIPPoolsNumber" instance="0" oid=".1.3.6.1.4.1.5089.1.2.4.1"/>
+    </group>
+    <group ifType="ignore" name="clvDHCPServer">
+        <mibObj type="gauge32" alias="clvDHCPTotalRej" instance="0" oid=".1.3.6.1.4.1.5089.1.2.5.1"/>
+    </group>
+    <group ifType="ignore" name="clvLinkMonitor">
+        <mibObj type="integer32" alias="clvLinkMonGrp" instance="0" oid=".1.3.6.1.4.1.5089.1.2.7.1"/>
+    </group>
+    <group ifType="ignore" name="clvPipes">
+        <mibObj type="gauge32" alias="clvPipeUsers" instance="0" oid=".1.3.6.1.4.1.5089.1.2.8.1"/>
+    </group>
+
+    <group ifType="all" name="clvIfStatsTable">
+        <mibObj type="string"    alias="clvIfStatsIndex"    instance="clvIfStatsEntry" oid=".1.3.6.1.4.1.5089.1.2.1.7.1.1"/>
+        <mibObj type="string"    alias="clvIfName"          instance="clvIfStatsEntry" oid=".1.3.6.1.4.1.5089.1.2.1.7.1.2"/>
+        <mibObj type="counter32" alias="clvIfFragsIn"       instance="clvIfStatsEntry" oid=".1.3.6.1.4.1.5089.1.2.1.7.1.3"/>
+        <mibObj type="counter32" alias="clvIfFragReassOk"   instance="clvIfStatsEntry" oid=".1.3.6.1.4.1.5089.1.2.1.7.1.4"/>
+        <mibObj type="counter32" alias="clvIfFragReassFail" instance="clvIfStatsEntry" oid=".1.3.6.1.4.1.5089.1.2.1.7.1.5"/>
+        <mibObj type="counter32" alias="clvIfPktsInCnt"     instance="clvIfStatsEntry" oid=".1.3.6.1.4.1.5089.1.2.1.7.1.6"/>
+        <mibObj type="counter32" alias="clvIfPktsOutCnt"    instance="clvIfStatsEntry" oid=".1.3.6.1.4.1.5089.1.2.1.7.1.7"/>
+        <mibObj type="counter32" alias="clvIfBitsInCnt"     instance="clvIfStatsEntry" oid=".1.3.6.1.4.1.5089.1.2.1.7.1.8"/>
+        <mibObj type="counter32" alias="clvIfBitsOutCnt"    instance="clvIfStatsEntry" oid=".1.3.6.1.4.1.5089.1.2.1.7.1.9"/>
+        <mibObj type="counter32" alias="clvIfPktsTotCnt"    instance="clvIfStatsEntry" oid=".1.3.6.1.4.1.5089.1.2.1.7.1.10"/>
+        <mibObj type="counter32" alias="clvIfBitsTotCnt"    instance="clvIfStatsEntry" oid=".1.3.6.1.4.1.5089.1.2.1.7.1.11"/>
+        <mibObj type="counter64" alias="clvIfHCPktsInCnt"   instance="clvIfStatsEntry" oid=".1.3.6.1.4.1.5089.1.2.1.7.1.12"/>
+        <mibObj type="counter64" alias="clvIfHCPktsOutCnt"  instance="clvIfStatsEntry" oid=".1.3.6.1.4.1.5089.1.2.1.7.1.13"/>
+        <mibObj type="counter64" alias="clvIfHCBitsInCnt"   instance="clvIfStatsEntry" oid=".1.3.6.1.4.1.5089.1.2.1.7.1.14"/>
+        <mibObj type="counter64" alias="clvIfHCBitsOutCnt"  instance="clvIfStatsEntry" oid=".1.3.6.1.4.1.5089.1.2.1.7.1.15"/>
+        <mibObj type="counter64" alias="clvIfHCPktsTotCnt"  instance="clvIfStatsEntry" oid=".1.3.6.1.4.1.5089.1.2.1.7.1.16"/>
+        <mibObj type="counter64" alias="clvIfHCBitsTotCnt"  instance="clvIfStatsEntry" oid=".1.3.6.1.4.1.5089.1.2.1.7.1.17"/>
+    </group>
+    <group ifType="all" name="clvIfRxRingTable">
+        <mibObj type="string"    alias="clvIfRxRingIndex"   instance="clvIfRxRingEntry" oid=".1.3.6.1.4.1.5089.1.2.1.8.1.1"/>
+        <mibObj type="counter32" alias="clvIfRxRingFifoErr" instance="clvIfRxRingEntry" oid=".1.3.6.1.4.1.5089.1.2.1.8.1.2"/>
+        <mibObj type="gauge32"   alias="clvIfRxDespools"    instance="clvIfRxRingEntry" oid=".1.3.6.1.4.1.5089.1.2.1.8.1.3"/>
+        <mibObj type="gauge32"   alias="clvIfRxAvgUse"      instance="clvIfRxRingEntry" oid=".1.3.6.1.4.1.5089.1.2.1.8.1.4"/>
+        <mibObj type="gauge32"   alias="clvIfRxRingSat"     instance="clvIfRxRingEntry" oid=".1.3.6.1.4.1.5089.1.2.1.8.1.5"/>
+        <mibObj type="gauge32"   alias="clvRxRingFlooded"   instance="clvIfRxRingEntry" oid=".1.3.6.1.4.1.5089.1.2.1.8.1.6"/>
+    </group>
+    <group ifType="all" name="clvIfTxRingTable">
+        <mibObj type="string"    alias="clvIfTxRingIndex"   instance="clvIfTxRingEntry" oid=".1.3.6.1.4.1.5089.1.2.1.9.1.1"/>
+        <mibObj type="gauge32"   alias="clvIfTxDespools"    instance="clvIfTxRingEntry" oid=".1.3.6.1.4.1.5089.1.2.1.9.1.2"/>
+        <mibObj type="gauge32"   alias="clvIfTxAvgUse"      instance="clvIfTxRingEntry" oid=".1.3.6.1.4.1.5089.1.2.1.9.1.3"/>
+        <mibObj type="gauge32"   alias="clvIfTxRingSat"     instance="clvIfTxRingEntry" oid=".1.3.6.1.4.1.5089.1.2.1.9.1.4"/>
+        <mibObj type="gauge32"   alias="clvRxTingFlooded"   instance="clvIfTxRingEntry" oid=".1.3.6.1.4.1.5089.1.2.1.9.1.5"/>
+    </group>
+    <group ifType="all" name="clvIfVlanStatsTable">
+        <mibObj type="string"    alias="clvIfVlIndex"        instance="clvIfVlanStatsEntry" oid=".1.3.6.1.4.1.5089.1.2.1.10.1.1"/>
+        <mibObj type="counter32" alias="clvIfVlUntInPkts"    instance="clvIfVlanStatsEntry" oid=".1.3.6.1.4.1.5089.1.2.1.10.1.2"/>
+        <mibObj type="counter32" alias="clvIfVlUntOutPkts"   instance="clvIfVlanStatsEntry" oid=".1.3.6.1.4.1.5089.1.2.1.10.1.3"/>
+        <mibObj type="counter32" alias="clvIfVlUntTotPkts"   instance="clvIfVlanStatsEntry" oid=".1.3.6.1.4.1.5089.1.2.1.10.1.4"/>
+        <mibObj type="counter32" alias="clvIfVlUntInOctets"  instance="clvIfVlanStatsEntry" oid=".1.3.6.1.4.1.5089.1.2.1.10.1.5"/>
+        <mibObj type="counter32" alias="clvIfVlUntOutOctets" instance="clvIfVlanStatsEntry" oid=".1.3.6.1.4.1.5089.1.2.1.10.1.6"/>
+        <mibObj type="counter32" alias="clvIfVlUntTotOctets" instance="clvIfVlanStatsEntry" oid=".1.3.6.1.4.1.5089.1.2.1.10.1.7"/>
+    </group>
+    <group ifType="all" name="clvHWSensorTable">
+        <mibObj type="string"    alias="clvHWSensorIndex" instance="clvHWSensorEntry" oid=".1.3.6.1.4.1.5089.1.2.1.11.1.1"/>
+        <mibObj type="string"    alias="clvHWSensorName"  instance="clvHWSensorEntry" oid=".1.3.6.1.4.1.5089.1.2.1.11.1.2"/>
+        <mibObj type="gauge32"   alias="clvHWSensorValue" instance="clvHWSensorEntry" oid=".1.3.6.1.4.1.5089.1.2.1.11.1.3"/>
+        <mibObj type="string"    alias="clvHWSensorUnit"  instance="clvHWSensorEntry" oid=".1.3.6.1.4.1.5089.1.2.1.11.1.4"/>
+    </group>
+    <group ifType="all" name="clvIPPoolTable">
+        <mibObj type="string"    alias="clvIPPoolIndex"    instance="clvIPPoolEntry" oid=".1.3.6.1.4.1.5089.1.2.4.2.1.1"/>
+        <mibObj type="string"    alias="clvIPPoolName"     instance="clvIPPoolEntry" oid=".1.3.6.1.4.1.5089.1.2.4.2.1.2"/>
+        <mibObj type="gauge32"   alias="clvIPPoolPrepare"  instance="clvIPPoolEntry" oid=".1.3.6.1.4.1.5089.1.2.4.2.1.3"/>
+        <mibObj type="gauge32"   alias="clvIPPoolFree"     instance="clvIPPoolEntry" oid=".1.3.6.1.4.1.5089.1.2.4.2.1.4"/>
+        <mibObj type="gauge32"   alias="clvIPPoolMisses"   instance="clvIPPoolEntry" oid=".1.3.6.1.4.1.5089.1.2.4.2.1.5"/>
+        <mibObj type="gauge32"   alias="clvIPPoolCliFails" instance="clvIPPoolEntry" oid=".1.3.6.1.4.1.5089.1.2.4.2.1.6"/>
+        <mibObj type="gauge32"   alias="clvIPPoolUsed"     instance="clvIPPoolEntry" oid=".1.3.6.1.4.1.5089.1.2.4.2.1.7"/>
+    </group>
+    <group ifType="all" name="clvDHCPRuleTable">
+        <mibObj type="string"  alias="clvDHCPRuleIndex"    instance="clvDHCPRuleEntry" oid=".1.3.6.1.4.1.5089.1.2.5.2.1.1"/>
+        <mibObj type="string"  alias="clvDHCPRuleName"     instance="clvDHCPRuleEntry" oid=".1.3.6.1.4.1.5089.1.2.5.2.1.2"/>
+        <mibObj type="gauge32" alias="clvDHCPRuleUsage"    instance="clvDHCPRuleEntry" oid=".1.3.6.1.4.1.5089.1.2.5.2.1.3"/>
+        <mibObj type="gauge32" alias="clvDHCPRuleUsagePer" instance="clvDHCPRuleEntry" oid=".1.3.6.1.4.1.5089.1.2.5.2.1.4"/>
+        <mibObj type="gauge32" alias="clvDHCPActCli"       instance="clvDHCPRuleEntry" oid=".1.3.6.1.4.1.5089.1.2.5.2.1.5"/>
+        <mibObj type="gauge32" alias="clvDHCPActCliPer"    instance="clvDHCPRuleEntry" oid=".1.3.6.1.4.1.5089.1.2.5.2.1.6"/>
+        <mibObj type="gauge32" alias="clvDHCPRejRequests"  instance="clvDHCPRuleEntry" oid=".1.3.6.1.4.1.5089.1.2.5.2.1.7"/>
+        <mibObj type="gauge32" alias="clvDHCPTotalLeases"  instance="clvDHCPRuleEntry" oid=".1.3.6.1.4.1.5089.1.2.5.2.1.8"/>
+    </group>
+    <group ifType="all" name="clvUserAuthRuleUseTable">
+        <mibObj type="string"    alias="clvUserAuthRuleIndex" instance="clvUserAuthRuleUseEntry" oid=".1.3.6.1.4.1.5089.1.2.6.6.1.1"/>
+        <mibObj type="string"    alias="clvUserAuthRuleName"  instance="clvUserAuthRuleUseEntry" oid=".1.3.6.1.4.1.5089.1.2.6.6.1.2"/>
+        <mibObj type="counter32" alias="clvUserAuthRuleUse"   instance="clvUserAuthRuleUseEntry" oid=".1.3.6.1.4.1.5089.1.2.6.6.1.3"/>
+    </group>
+    <group ifType="all" name="clvLinkMonGrpTable">
+        <mibObj type="string"  alias="clvLinkMonGrpIndex"  instance="clvLinkMonGrpEntry" oid=".1.3.6.1.4.1.5089.1.2.7.2.1.1"/>
+        <mibObj type="string"  alias="clvLinkMonGrpName"   instance="clvLinkMonGrpEntry" oid=".1.3.6.1.4.1.5089.1.2.7.2.1.2"/>
+        <mibObj type="gauge32" alias="clvLinkMonGrpHostUp" instance="clvLinkMonGrpEntry" oid=".1.3.6.1.4.1.5089.1.2.7.2.1.3"/>
+    </group>
+    <group ifType="all" name="clvLinkMonHostTable">
+        <mibObj type="string"    alias="clvLinkMHIndex"     instance="clvLinkMonHostEntry" oid=".1.3.6.1.4.1.5089.1.2.7.3.1.1"/>
+        <mibObj type="string"    alias="clvLinkMHId"        instance="clvLinkMonHostEntry" oid=".1.3.6.1.4.1.5089.1.2.7.3.1.2"/>
+        <mibObj type="gauge32"   alias="clvLinkMHSTermLoss" instance="clvLinkMonHostEntry" oid=".1.3.6.1.4.1.5089.1.2.7.3.1.3"/>
+        <mibObj type="counter32" alias="clvLinkMHPktsLost"  instance="clvLinkMonHostEntry" oid=".1.3.6.1.4.1.5089.1.2.7.3.1.4"/>
+    </group>
+    <group ifType="all" name="clvPipeTable">
+        <mibObj type="string"    alias="clvPipeIndex"       instance="clvPipeEntry" oid=".1.3.6.1.4.1.5089.1.2.8.2.1.1"/>
+        <mibObj type="string"    alias="clvPipeName"        instance="clvPipeEntry" oid=".1.3.6.1.4.1.5089.1.2.8.2.1.2"/>
+        <mibObj type="integer32" alias="clvPipeMinPrec"     instance="clvPipeEntry" oid=".1.3.6.1.4.1.5089.1.2.8.2.1.3"/>
+        <mibObj type="integer32" alias="clvPipeMaxPrec"     instance="clvPipeEntry" oid=".1.3.6.1.4.1.5089.1.2.8.2.1.4"/>
+        <mibObj type="integer32" alias="clvPipeDefPrec"     instance="clvPipeEntry" oid=".1.3.6.1.4.1.5089.1.2.8.2.1.5"/>
+        <mibObj type="integer32" alias="clvPipeNumPrec"     instance="clvPipeEntry" oid=".1.3.6.1.4.1.5089.1.2.8.2.1.6"/>
+        <mibObj type="gauge32"   alias="clvPipeNumUsers"    instance="clvPipeEntry" oid=".1.3.6.1.4.1.5089.1.2.8.2.1.7"/>
+        <mibObj type="gauge32"   alias="clvPipeCurrentBps"  instance="clvPipeEntry" oid=".1.3.6.1.4.1.5089.1.2.8.2.1.8"/>
+        <mibObj type="gauge32"   alias="clvPipeCurrentPps"  instance="clvPipeEntry" oid=".1.3.6.1.4.1.5089.1.2.8.2.1.9"/>
+        <mibObj type="counter32" alias="clvPipeDelayedPkts" instance="clvPipeEntry" oid=".1.3.6.1.4.1.5089.1.2.8.2.1.10"/>
+        <mibObj type="counter32" alias="clvPipeDropedPkts"  instance="clvPipeEntry" oid=".1.3.6.1.4.1.5089.1.2.8.2.1.11"/>
+    </group>
+    <group ifType="all" name="clvPipePrecTable">
+        <mibObj type="string"    alias="clvPiPrecIndex"      instance="clvPipePrecEntry" oid=".1.3.6.1.4.1.5089.1.2.8.3.1.1"/>
+        <mibObj type="integer32" alias="clvPiPrec"           instance="clvPipePrecEntry" oid=".1.3.6.1.4.1.5089.1.2.8.3.1.2"/>
+        <mibObj type="gauge32"   alias="clvPiPrecBps"        instance="clvPipePrecEntry" oid=".1.3.6.1.4.1.5089.1.2.8.3.1.3"/>
+        <mibObj type="gauge32"   alias="clvPiPrecTotalPps"   instance="clvPipePrecEntry" oid=".1.3.6.1.4.1.5089.1.2.8.3.1.4"/>
+        <mibObj type="gauge32"   alias="clvPiPrecResBps"     instance="clvPipePrecEntry" oid=".1.3.6.1.4.1.5089.1.2.8.3.1.5"/>
+        <mibObj type="gauge32"   alias="clvPiPrecDynLimBps"  instance="clvPipePrecEntry" oid=".1.3.6.1.4.1.5089.1.2.8.3.1.6"/>
+        <mibObj type="gauge32"   alias="clvPiPrecDynULimBps" instance="clvPipePrecEntry" oid=".1.3.6.1.4.1.5089.1.2.8.3.1.7"/>
+        <mibObj type="counter32" alias="clvPiPrecDelPkts"    instance="clvPipePrecEntry" oid=".1.3.6.1.4.1.5089.1.2.8.3.1.8"/>
+        <mibObj type="counter32" alias="clvPiPrecDroPkts"    instance="clvPipePrecEntry" oid=".1.3.6.1.4.1.5089.1.2.8.3.1.9"/>
+    </group>
+    <group ifType="all" name="clvSmtpAlgTable">
+        <mibObj type="string"  alias="clvSmtpAlgIndex"    instance="clvSmtpAlgEntry" oid=".1.3.6.1.4.1.5089.1.2.9.5.1.1.1"/>
+        <mibObj type="string"  alias="clvSmtpAlgName"     instance="clvSmtpAlgEntry" oid=".1.3.6.1.4.1.5089.1.2.9.5.1.1.2"/>
+        <mibObj type="gauge32" alias="clvSmtpAlgTChkSes"  instance="clvSmtpAlgEntry" oid=".1.3.6.1.4.1.5089.1.2.9.5.1.1.3"/>
+        <mibObj type="gauge32" alias="clvSmtpAlgTSpamSes" instance="clvSmtpAlgEntry" oid=".1.3.6.1.4.1.5089.1.2.9.5.1.1.4"/>
+        <mibObj type="gauge32" alias="clvSmtpAlgTDroSes"  instance="clvSmtpAlgEntry" oid=".1.3.6.1.4.1.5089.1.2.9.5.1.1.5"/>
+    </group>
+    <group ifType="all" name="clvSmtpAlgDnsBlTable">
+        <mibObj type="string"  alias="clvSmtpADBlIndex"    instance="clvSmtpAlgDnsBlEntry" oid=".1.3.6.1.4.1.5089.1.2.9.5.2.1.1"/>
+        <mibObj type="string"  alias="clvSmtpADBlName"     instance="clvSmtpAlgDnsBlEntry" oid=".1.3.6.1.4.1.5089.1.2.9.5.2.1.2"/>
+        <mibObj type="gauge32" alias="clvSmtpADBlChecked"  instance="clvSmtpAlgDnsBlEntry" oid=".1.3.6.1.4.1.5089.1.2.9.5.2.1.3"/>
+        <mibObj type="gauge32" alias="clvSmtpADBlMatched"  instance="clvSmtpAlgDnsBlEntry" oid=".1.3.6.1.4.1.5089.1.2.9.5.2.1.4"/>
+        <mibObj type="gauge32" alias="clvSmtpADBlFailChks" instance="clvSmtpAlgDnsBlEntry" oid=".1.3.6.1.4.1.5089.1.2.9.5.2.1.5"/>
+    </group>
+    <group ifType="all" name="clvDHCPRelayRuleTable">
+        <mibObj type="string"  alias="clvDHCPRelIndex"     instance="clvDHCPRelayRuleEntry" oid=".1.3.6.1.4.1.5089.1.2.11.4.1.1"/>
+        <mibObj type="string"  alias="clvDHCPRelName"      instance="clvDHCPRelayRuleEntry" oid=".1.3.6.1.4.1.5089.1.2.11.4.1.2"/>
+        <mibObj type="gauge32" alias="clvDHCPRelHits"      instance="clvDHCPRelayRuleEntry" oid=".1.3.6.1.4.1.5089.1.2.11.4.1.3"/>
+        <mibObj type="gauge32" alias="clvDHCPRelCurCli"    instance="clvDHCPRelayRuleEntry" oid=".1.3.6.1.4.1.5089.1.2.11.4.1.4"/>
+        <mibObj type="gauge32" alias="clvDHCPRelRejCliPks" instance="clvDHCPRelayRuleEntry" oid=".1.3.6.1.4.1.5089.1.2.11.4.1.5"/>
+        <mibObj type="gauge32" alias="clvDHCPRelRejSrvPks" instance="clvDHCPRelayRuleEntry" oid=".1.3.6.1.4.1.5089.1.2.11.4.1.6"/>
+    </group>
+    <group ifType="all" name="clvAppControlTable">
+        <mibObj type="string"    alias="clvAppCtrlIndex"    instance="clvAppControlEntry" oid=".1.3.6.1.4.1.5089.1.2.13.1.1"/>
+        <mibObj type="string"    alias="clvAppCtrlName"     instance="clvAppControlEntry" oid=".1.3.6.1.4.1.5089.1.2.13.1.2"/>
+        <mibObj type="counter64" alias="clvAppCtrlBytesFwd" instance="clvAppControlEntry" oid=".1.3.6.1.4.1.5089.1.2.13.1.3"/>
+        <mibObj type="counter64" alias="clvAppCtrlPktsFwd"  instance="clvAppControlEntry" oid=".1.3.6.1.4.1.5089.1.2.13.1.4"/>
+        <mibObj type="counter64" alias="clvAppCtrlClassfd"  instance="clvAppControlEntry" oid=".1.3.6.1.4.1.5089.1.2.13.1.5"/>
+    </group>
+    <systemDef name="Clavister">
+        <sysoidMask>.1.3.6.1.4.1.5089.</sysoidMask>
+        <collect>
+            <includeGroup>clvSystem</includeGroup>
+            <includeGroup>clvSysPerStateCounters</includeGroup>
+            <includeGroup>clvIfStatsTable</includeGroup>
+            <includeGroup>clvIfRxRingTable</includeGroup>
+            <includeGroup>clvIfTxRingTable</includeGroup>
+            <includeGroup>clvIfVlanStatsTable</includeGroup>
+            <includeGroup>clvHWSensorTable</includeGroup>
+            <includeGroup>clvSysTCPUsage</includeGroup>
+            <includeGroup>clvIPsecGlobal</includeGroup>
+            <includeGroup>clvIPPools</includeGroup>
+            <includeGroup>clvIPPoolTable</includeGroup>
+            <includeGroup>clvDHCPServer</includeGroup>
+            <includeGroup>clvDHCPRuleTable</includeGroup>
+            <includeGroup>clvUserAuth</includeGroup>
+            <includeGroup>clvUserAuthRuleUseTable</includeGroup>
+            <includeGroup>clvLinkMonitor</includeGroup>
+            <includeGroup>clvLinkMonGrpTable</includeGroup>
+            <includeGroup>clvLinkMonHostTable</includeGroup>
+            <includeGroup>clvPipes</includeGroup>
+            <includeGroup>clvPipeTable</includeGroup>
+            <includeGroup>clvPipePrecTable</includeGroup>
+            <includeGroup>clvALG</includeGroup>
+            <includeGroup>clvSmtpAlgTable</includeGroup>
+            <includeGroup>clvSmtpAlgDnsBlTable</includeGroup>
+            <includeGroup>clvDHCPRelay</includeGroup>
+            <includeGroup>clvDHCPRelayRuleTable</includeGroup>
+            <includeGroup>clvHA</includeGroup>
+            <includeGroup>clvAppControlTable</includeGroup>
+        </collect>
+    </systemDef>
+</datacollection-group>

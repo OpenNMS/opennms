@@ -38,6 +38,7 @@ import org.opennms.netmgt.collectd.PersistAllSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.StorageStrategy;
+import org.opennms.protocols.xml.config.Request;
 import org.opennms.protocols.xml.config.XmlGroup;
 import org.w3c.dom.Document;
 
@@ -49,10 +50,10 @@ import org.w3c.dom.Document;
 public class MockSftp3gppStrictCollectionHandler extends Sftp3gppXmlCollectionHandler {
 
     /* (non-Javadoc)
-     * @see org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler#getXmlDocument(java.lang.String)
+     * @see org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler#getXmlDocument(java.lang.String, org.opennms.protocols.xml.config.Request)
      */
     @Override
-    protected Document getXmlDocument(String urlString) {
+    protected Document getXmlDocument(String urlString, Request request) {
         return MockDocumentBuilder.getXmlDocument();
     }
 

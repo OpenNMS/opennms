@@ -55,6 +55,7 @@ public class StringUtilsTest {
     @Test
     public void testWindowsPaths() {
     	if (File.separatorChar != '\\') return;
+    	if (Boolean.getBoolean("java.awt.headless")) return;
     	
     	final String[] trueStrings = new String[] { "C:\\monkey", "C:/monkey", "C:/", "C:\\" };
     	final String[] falseStrings = new String[] { "C:", "foo/bar", "/tmp/blah", "", "/", "blah:baz" };

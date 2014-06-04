@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.threshd;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +41,7 @@ import org.opennms.netmgt.config.collector.AttributeGroup;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.config.collector.CollectionSet;
+import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -82,19 +84,19 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
      * @param hostAddress a {@link java.lang.String} object.
      * @param serviceName a {@link java.lang.String} object.
      * @param repo a {@link org.opennms.netmgt.model.RrdRepository} object.
-     * @param roProps a {@link java.util.Map} object.
+     * @param svcParams a {@link org.opennms.netmgt.config.collector.ServiceParameters} object.
      * @return a {@link org.opennms.netmgt.threshd.ThresholdingVisitor} object.
      */
-    public static ThresholdingVisitor create(int nodeId, String hostAddress, String serviceName, RrdRepository repo, Map<String, Object> roProps) {
+    public static ThresholdingVisitor create(int nodeId, String hostAddress, String serviceName, RrdRepository repo, ServiceParameters svcParams) {
         ThreadCategory log = ThreadCategory.getInstance(ThresholdingVisitor.class);
 
-        String enabled = ParameterMap.getKeyedString(roProps, "thresholding-enabled", null);
+        String enabled = ParameterMap.getKeyedString(svcParams.getParameters(), "thresholding-enabled", null);
         if (enabled != null && !"true".equals(enabled)) {
             log.info("create: Thresholds processing is not enabled. Check thresholding-enabled param on collectd package");
             return null;
         }
 
-        CollectorThresholdingSet thresholdingSet = new CollectorThresholdingSet(nodeId, hostAddress, serviceName, repo, roProps);
+        CollectorThresholdingSet thresholdingSet = new CollectorThresholdingSet(nodeId, hostAddress, serviceName, repo, svcParams);
         if (!thresholdingSet.hasThresholds()) {
             log.warn("create: the ipaddress/service " + hostAddress + "/" + serviceName + " on node " + nodeId + " has no configured thresholds.");
         }
@@ -117,12 +119,19 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
     }
     
     /**
-     * Get a list of thresholds groups (for junit only at this time)
+     * Get a list of thresholds groups (for JUnit only at this time).
      *
      * @return a {@link java.util.List} object.
      */
-    public List<ThresholdGroup> getThresholdGroups() {
-        return m_thresholdingSet.m_thresholdGroups;
+    List<ThresholdGroup> getThresholdGroups() {
+        return Collections.unmodifiableList(m_thresholdingSet.m_thresholdGroups);
+    }
+    
+    /**
+     * Get a list of scheduled outages (for JUnit only at this time).
+     */
+    List<String> getScheduledOutages() {
+        return Collections.unmodifiableList(m_thresholdingSet.m_scheduledOutages);
     }
     
     @Override
@@ -172,11 +181,10 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
         }
     }
 
-    /*
+    /**
      * Apply threshold for specific resource (and required attributes).
-     * Send thresholds events (if exists)
+     * Send thresholds events (if exists).
      */
-    /** {@inheritDoc} */
     @Override
     public void completeResource(CollectionResource resource) {
         List<Event> eventList = m_thresholdingSet.applyThresholds(resource, m_attributesMap, m_collectionTimestamp);
@@ -185,7 +193,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
         proxy.sendAllEvents();
     }
     
-    /*
+    /**
      * Return the collection timestamp passed in at construct time.  Typically used by tests, but might be  useful elsewhere
      */
     public Date getCollectionTimestamp() {

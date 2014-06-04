@@ -46,6 +46,7 @@
         classpath:/META-INF/opennms/applicationContext-reportingJasperReports.xml
 
         classpath:/META-INF/opennms/applicationContext-reporting.xml
+        /WEB-INF/spring-security.d/*.xml
         /WEB-INF/applicationContext-spring-security.xml
         /WEB-INF/applicationContext-jersey.xml
         /WEB-INF/applicationContext-spring-webflow.xml
@@ -59,6 +60,16 @@
   </context-param>
 
   <!-- WARMERGE: insert context-param -->  
+
+  <filter>
+    <!-- This filter has to come before other filters. -->
+    <filter-name>characterEncodingFilter</filter-name>
+    <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+    <init-param>
+        <param-name>encoding</param-name>
+        <param-value>UTF-8</param-value>
+    </init-param>
+  </filter>
 
   <filter>
     <!--  note the name of this filter is important and is used in the app contexts -->
@@ -144,6 +155,11 @@
   </filter>
 
   <!-- WARMERGE: insert filter -->
+
+  <filter-mapping>
+    <filter-name>characterEncodingFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
 
   <filter-mapping>
     <filter-name>openSessionInViewFilter</filter-name>
@@ -1115,7 +1131,7 @@
     <location>/errors/categorynotfound.jsp</location>
   </error-page>
   <error-page>
-    <exception-type>org.opennms.web.MissingParameterException</exception-type>
+    <exception-type>org.opennms.web.servlet.MissingParameterException</exception-type>
     <location>/errors/missingparam.jsp</location>
   </error-page>
   <error-page>
@@ -1162,6 +1178,14 @@
     <exception-type>java.lang.Throwable</exception-type>
     <location>/errors/unknownexception.jsp</location>
   </error-page>  
+  <error-page>
+    <error-code>500</error-code>
+    <location>/errors/unknownexception.jsp</location>
+  </error-page>  
+  <error-page>
+    <error-code>404</error-code>
+    <location>/errors/pagenotfound.jsp</location>
+  </error-page>
   
   <!-- the welcome-file elements need to point at a file that exists or
        a non-wildcard url-pattern in a servlet-mapping element. -->

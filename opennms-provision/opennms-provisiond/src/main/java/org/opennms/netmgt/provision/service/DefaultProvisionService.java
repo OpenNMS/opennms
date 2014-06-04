@@ -179,7 +179,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
      * @return a boolean.
      */
     public boolean isDiscoveryEnabled() {
-        return System.getProperty("org.opennms.provisiond.enableDiscovery", "false").equalsIgnoreCase("true");
+        return System.getProperty("org.opennms.provisiond.enableDiscovery", "true").equalsIgnoreCase("true");
     }
 
     public boolean isRequisitionedEntityDeletionEnabled() {
@@ -193,11 +193,17 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         node.setDistPoller(createDistPollerIfNecessary("localhost", "127.0.0.1"));
         m_nodeDao.save(node);
         m_nodeDao.flush();
-        
+
         final EntityVisitor eventAccumlator = new AddEventVisitor(m_eventForwarder);
 
         node.visit(eventAccumlator);
-        
+
+        if (node.getCategories().size() > 0) {
+            final EventBuilder bldr = new EventBuilder(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI, "OnmsNode.mergeNodeAttributes");
+            bldr.setNode(node);
+            bldr.addParam(EventConstants.PARM_NODE_LABEL, node.getLabel());
+            m_eventForwarder.sendNow(bldr.getEvent());
+        }
     }
     
     /** {@inheritDoc} */
@@ -206,8 +212,11 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
     	final OnmsNode dbNode = m_nodeDao.getHierarchy(node.getId());
 
+        final Set<OnmsCategory> existingCategories = dbNode.getCategories();
+        final Set<OnmsCategory> newCategories = node.getCategories();
+
         dbNode.mergeNode(node, m_eventForwarder, false);
-    
+
         m_nodeDao.update(dbNode);
         m_nodeDao.flush();
 
@@ -215,6 +224,17 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
         node.visit(eventAccumlator);
         
+        boolean categoriesChanged = false;
+        if (existingCategories.size() != newCategories.size()) categoriesChanged = true;
+        if (!categoriesChanged && !existingCategories.containsAll(newCategories)) categoriesChanged = true;
+        if (!categoriesChanged && !newCategories.containsAll(existingCategories)) categoriesChanged = true;
+
+        if (categoriesChanged) {
+            final EventBuilder bldr = new EventBuilder(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI, "OnmsNode.mergeNodeAttributes");
+            bldr.setNode(dbNode);
+            bldr.addParam(EventConstants.PARM_NODE_LABEL, dbNode.getLabel());
+            m_eventForwarder.sendNow(bldr.getEvent());
+        }
     }
 
     /** {@inheritDoc} */
@@ -1103,8 +1123,13 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 
                 // @ipv6
                 final OnmsNode node = new OnmsNode(createDistPollerIfNecessary("localhost", "127.0.0.1"));
-                node.setLabel(hostname == null ? ipAddress : hostname);
-                node.setLabelSource(hostname == null ? "A" : "H");
+                if (hostname == null || ipAddress.equals(hostname)) {
+                    node.setLabel(ipAddress);
+                    node.setLabelSource("A");
+                } else {
+                    node.setLabel(hostname);
+                    node.setLabelSource("H");
+                }
                 node.setForeignSource(FOREIGN_SOURCE_FOR_DISCOVERED_NODES);
                 node.setType("A");
                 node.setLastCapsdPoll(now);

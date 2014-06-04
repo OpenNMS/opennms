@@ -158,6 +158,15 @@ public abstract class ResourceTypeUtils {
     }
 
     /**
+     * <p>isStoreByForeignSource</p>
+     *
+     * @return a boolean.
+     */
+    public static boolean isStoreByForeignSource() {
+        return Boolean.getBoolean("org.opennms.rrd.storeByForeignSource");
+    }
+
+    /**
      * <p>isResponseTime</p>
      *
      * @param relativePath a {@link java.lang.String} object.
@@ -235,7 +244,7 @@ public abstract class ResourceTypeUtils {
         try {
             s_cache.updateProperties(new File(resourceDir, DS_PROPERTIES_FILE), dsNamesToRrdNames);
         } catch (IOException e) {
-            log().error("Unable to save DataSource Properties file" + e, e);
+            log().error("Unable to save DataSource Properties file: " + e, e);
         }
     }
 

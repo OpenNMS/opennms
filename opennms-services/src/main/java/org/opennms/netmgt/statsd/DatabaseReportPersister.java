@@ -30,6 +30,7 @@ package org.opennms.netmgt.statsd;
 
 import java.util.Date;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.ResourceReferenceDao;
 import org.opennms.netmgt.dao.StatisticsReportDao;
 import org.opennms.netmgt.model.AttributeStatistic;
@@ -68,9 +69,14 @@ public class DatabaseReportPersister implements ReportPersister, InitializingBea
             data.setReport(dbReport);
             data.setValue(stat.getStatistic());
             dbReport.addData(data);
+            LogUtils.debugf(this, "Adding %s", data);
         }
         
-        m_statisticsReportDao.save(dbReport);
+        if (dbReport.getData().isEmpty()) {
+            LogUtils.warnf(this, "Cannot store %s because it doesn't contain data. Probably all the metrics are NaN for the report period.", report);
+        } else {
+            m_statisticsReportDao.save(dbReport);
+        }
     }
 
     private ResourceReference getResourceReference(String id) {

@@ -28,14 +28,18 @@
 
 package org.opennms.nrtg.nrtbroker.local.internal;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.opennms.nrtg.api.NrtBroker;
 import org.opennms.nrtg.api.ProtocolCollector;
 import org.opennms.nrtg.api.model.CollectionJob;
 import org.opennms.nrtg.api.model.MeasurementSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.*;
 
 /**
  * @author Markus Neumann
@@ -48,19 +52,16 @@ public class NrtBrokerLocal implements NrtBroker, NrtBrokerLocalMBean {
         private Map<String, List<MeasurementSet>> m_measurementSets = new HashMap<String, List<MeasurementSet>>();
         private Map<String, Date> m_lastAccess = new HashMap<String, Date>();
 
-        public List<MeasurementSet> getAndRemove(String key) {
-            synchronized (m_measurementSets) {
-                m_lastAccess.put(key, new Date());
-                List<MeasurementSet> measurementSetList = m_measurementSets.get(key);
-                m_measurementSets.put(key, new ArrayList<MeasurementSet>());
+        public synchronized List<MeasurementSet> getAndRemove(final String key) {
+            m_lastAccess.put(key, new Date());
+            final List<MeasurementSet> measurementSetList = m_measurementSets.get(key);
+            m_measurementSets.put(key, new ArrayList<MeasurementSet>());
 
-                return measurementSetList;
-            }
+            return measurementSetList;
         }
 
-        public void addMeasurementSets(Map<String, MeasurementSet> measurementSets) {
-            for (Map.Entry<String, MeasurementSet> entry : measurementSets.entrySet()) {
-
+        public synchronized void addMeasurementSets(final Map<String, MeasurementSet> measurementSets) {
+            for (final Map.Entry<String, MeasurementSet> entry : measurementSets.entrySet()) {
                 String arr[] = entry.getKey().split(",");
 
                 for (String destination : arr) {
@@ -71,33 +72,29 @@ public class NrtBrokerLocal implements NrtBroker, NrtBrokerLocalMBean {
             doHousekeeping();
         }
 
-        public void addMeasurementSet(String key, MeasurementSet measurementSet) {
-            synchronized (m_measurementSets) {
-                if (!m_measurementSets.containsKey(key)) {
-                    m_measurementSets.put(key, new ArrayList<MeasurementSet>());
-                }
-
-                List<MeasurementSet> measurementSetList = m_measurementSets.get(key);
-                measurementSetList.add(measurementSet);
+        public synchronized void addMeasurementSet(String key, MeasurementSet measurementSet) {
+            if (!m_measurementSets.containsKey(key)) {
+                m_measurementSets.put(key, new ArrayList<MeasurementSet>());
             }
+
+            List<MeasurementSet> measurementSetList = m_measurementSets.get(key);
+            measurementSetList.add(measurementSet);
         }
 
-        private void doHousekeeping() {
-            synchronized (m_measurementSets) {
-                for (String key : m_lastAccess.keySet()) {
-                    Date lastAccess = m_lastAccess.get(key);
-                    Date now = new Date();
-                    if (now.getTime() - lastAccess.getTime() > 120000) {
-                        m_lastAccess.remove(key);
-                        m_measurementSets.remove(key);
+        private synchronized void doHousekeeping() {
+            for (final String key : m_lastAccess.keySet()) {
+                final Date lastAccess = m_lastAccess.get(key);
+                final Date now = new Date();
+                if (now.getTime() - lastAccess.getTime() > 120000) {
+                    m_lastAccess.remove(key);
+                    m_measurementSets.remove(key);
 
-                        logger.warn("Timed out object removed '{}'", key);
-                    }
+                    logger.warn("Timed out object removed '{}'", key);
                 }
             }
         }
 
-        private Integer getAmountOfMeasurementSets() {
+        private synchronized Integer getAmountOfMeasurementSets() {
             return m_measurementSets.size();
         }
     }

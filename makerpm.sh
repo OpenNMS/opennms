@@ -9,8 +9,7 @@ export PATH="$TOPDIR/maven/bin:$JAVA_HOME/bin:$PATH"
 
 cd "$TOPDIR"
 
-#opennms-core-1.9.9-0.<datestamp>.rpm
-#opennms-core-<pom-version>-<release-major>.<release-minor>.<release-micro>
+BINARIES="expect rpmbuild rsync"
 
 function exists() {
     which "$1" >/dev/null 2>&1
@@ -23,9 +22,9 @@ function use_git() {
 function run()
 {
     if exists $1; then
-	"$@"
+        "$@"
     else
-	die "Command not found: $1"
+        die "Command not found: $1"
     fi
 }    
 
@@ -57,16 +56,16 @@ function usage()
 function calcMinor()
 {
     if use_git; then
-	git log --pretty='format:%cd' --date=short -1 | head -n 1 | sed -e 's,^Date: *,,' -e 's,-,,g'
+        git log --pretty='format:%cd' --date=short | sort -u -r | head -n 1 | sed -e 's,^Date: *,,' -e 's,-,,g'
     else
-	date '+%Y%m%d'
+        date '+%Y%m%d'
     fi
 }
 
 function branch()
 {
     if use_git; then
-	run git branch | grep -E '^\*' | awk '{ print $2 }'
+        run git branch | grep -E '^\*' | awk '{ print $2 }'
     else
         echo "source"
     fi
@@ -97,7 +96,7 @@ function extraInfo()
 function extraInfo2()
 {
     if use_git; then
-        echo "  http://opennms.git.sourceforge.net/git/gitweb.cgi?p=opennms/opennms;a=shortlog;h=$(commit)"
+        echo "  https://github.com/OpenNMS/opennms/commit/$(commit)"
     else
         echo ""
     fi
@@ -113,17 +112,17 @@ function version()
 function setJavaHome()
 {
     if [ -z "$JAVA_HOME" ]; then
-	# hehe
-	for dir in /usr/java/jdk1.{6,7,8,9}*; do
-	    if [ -x "$dir/bin/java" ]; then
-		export JAVA_HOME="$dir"
-		break
-	    fi
-	done
+        # hehe
+        for dir in /usr/java/jdk1.{6,7,8,9}*; do
+            if [ -x "$dir/bin/java" ]; then
+                export JAVA_HOME="$dir"
+                break
+            fi
+        done
     fi
 
     if [ -z $JAVA_HOME ]; then
-	die "*** JAVA_HOME must be set ***"
+        die "*** JAVA_HOME must be set ***"
     fi
 }
 
@@ -154,32 +153,32 @@ function main()
 
 
     while getopts adhrs:g:M:m:u: OPT; do
-	case $OPT in
-	    a)  ASSEMBLY_ONLY=true
-		;;
-	    d)  ENABLE_SNAPSHOTS=false
-		;;
-	    s)  SIGN=true
-		SIGN_PASSWORD="$OPTARG"
-		;;
+        case $OPT in
+            a)  ASSEMBLY_ONLY=true
+                ;;
+            d)  ENABLE_SNAPSHOTS=false
+                ;;
+            s)  SIGN=true
+                SIGN_PASSWORD="$OPTARG"
+                ;;
             r)  BUILD_RPM=false
                 ;;
-	    g)  SIGN_ID="$OPTARG"
-		;;
-	    M)  RELEASE_MAJOR="$OPTARG"
-		;;
-	    m)  RELEASE_MINOR="$OPTARG"
-		;;
-	    u)  RELEASE_MICRO="$OPTARG"
-		;;
-	    *)  usage
-		;;
-	esac
+            g)  SIGN_ID="$OPTARG"
+                ;;
+            M)  RELEASE_MAJOR="$OPTARG"
+                ;;
+            m)  RELEASE_MINOR="$OPTARG"
+                ;;
+            u)  RELEASE_MICRO="$OPTARG"
+                ;;
+            *)  usage
+                ;;
+        esac
     done
 
     RELEASE=$RELEASE_MAJOR
     if [ "$RELEASE_MAJOR" = 0 ] ; then
-	RELEASE=${RELEASE_MAJOR}.${RELEASE_MINOR}.${RELEASE_MICRO}
+        RELEASE=${RELEASE_MAJOR}.${RELEASE_MINOR}.${RELEASE_MICRO}
     fi
 
     EXTRA_INFO=$(extraInfo)
@@ -209,26 +208,26 @@ function main()
         echo "=== Building RPMs ==="
         for spec in tools/packages/opennms/opennms.spec opennms-tools/centric-troubleticketer/src/main/rpm/opennms-plugin-ticketer-centric.spec
         do
-    	run rpmbuild -bb \
-    	    --define "skip_compile $(skipCompile)" \
-    	    --define "enable_snapshots $(enableSnapshots)" \
-    	    --define "extrainfo $EXTRA_INFO" \
-    	    --define "extrainfo2 $EXTRA_INFO2" \
-    	    --define "_topdir $WORKDIR" \
-    	    --define "_tmppath $WORKDIR/tmp" \
-    	    --define "version $VERSION" \
-    	    --define "releasenumber $RELEASE" \
-    	    $spec
+            run rpmbuild -bb \
+                --define "skip_compile $(skipCompile)" \
+                --define "enable_snapshots $(enableSnapshots)" \
+                --define "extrainfo $EXTRA_INFO" \
+                --define "extrainfo2 $EXTRA_INFO2" \
+                --define "_topdir $WORKDIR" \
+                --define "_tmppath $WORKDIR/tmp" \
+                --define "version $VERSION" \
+                --define "releasenumber $RELEASE" \
+                $spec
         done
     fi
 
     if $SIGN; then
 
-	RPMS=$(echo "$WORKDIR"/RPMS/noarch/*.rpm)
-	#run rpm --define "_signature gpg" --define "_gpg_name $SIGN_ID" --resign "$RPMS"
+        RPMS=$(echo "$WORKDIR"/RPMS/noarch/*.rpm)
+        #run rpmsign --define "_signature gpg" --define "_gpg_name $SIGN_ID" --resign "$RPMS"
 
-	run expect -c "set timeout -1; spawn rpm --define \"_signature gpg\" --define \"_gpg_name $SIGN_ID\" --resign $RPMS; match_max 100000; expect \"Enter pass phrase: \"; send -- \"${SIGN_PASSWORD}\r\"; expect eof" || \
-	    die "RPM signing failed for $(branch)"
+        run expect -c "set timeout -1; spawn rpmsign --define \"_signature gpg\" --define \"_gpg_name $SIGN_ID\" --resign $RPMS; match_max 100000; expect \"Enter pass phrase: \"; send -- \"${SIGN_PASSWORD}\r\"; expect eof" || \
+            die "RPM signing failed for $(branch)"
 
     fi
 
@@ -237,5 +236,13 @@ function main()
     echo ""
     echo "Your completed RPMs are in the $WORKDIR/RPMS/noarch directory."
 }
+
+for BIN in $BINARIES; do
+	EXECUTABLE=`which $BIN 2>/dev/null || :`
+	if [ -z "$EXECUTABLE" ] || [ ! -x "$EXECUTABLE" ]; then
+		echo "ERROR: $BIN not found"
+		exit 1
+	fi
+done
 
 main "$@"

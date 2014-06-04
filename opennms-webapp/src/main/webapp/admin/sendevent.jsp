@@ -210,6 +210,14 @@
         <tr>
           <td valign="top" align="left">
             <div class="ui-widget">
+              <label>UUID:</label>
+              <input id="uuid" name="uuid" type="text" value="" size="64" />
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top" align="left">
+            <div class="ui-widget">
               <label>Node ID:</label>
               <select id="nodeSelect" name="nodeSelect" style="display: none"></select>
             </div>
@@ -311,7 +319,7 @@
 
             if (!excludeList.contains(trimmedUei)) {
 		sortedMap.put(label,uei);
-                System.out.println("sortedMap.put('"+label+"', '"+uei+"')");
+                //System.out.println("sortedMap.put('"+label+"', '"+uei+"')");
             }
 	}
         for(Map.Entry<String, String> me : sortedMap.entrySet()) {

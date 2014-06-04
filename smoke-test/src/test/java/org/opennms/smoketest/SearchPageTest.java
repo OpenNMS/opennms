@@ -36,57 +36,41 @@ public class SearchPageTest extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        selenium.click("link=Search");
-        waitForPageToLoad();
+        clickAndWait("link=Search");
     }
 
     @Test
     public void testAllTextIsPresent() throws Exception {
-        assertTrue(selenium.isTextPresent("Search for Nodes"));
-        assertTrue(selenium.isTextPresent("Search Asset Information"));
-        assertTrue(selenium.isTextPresent("Search Options"));
-        assertTrue(selenium.isTextPresent("MAC Address"));
+        waitForText("Search for Nodes");
+        waitForText("Search Asset Information");
+        waitForText("Search Options");
+        waitForText("MAC Address");
     }
-        
-     @Test
-     public void testAllLinksArePresent() {
-        assertTrue(selenium.isElementPresent("link=All nodes"));
-        assertTrue(selenium.isElementPresent("link=All nodes and their interfaces"));
-        assertTrue(selenium.isElementPresent("link=All nodes with asset info"));
-     }
-      
-     @Test 
-     public void testAllFormsArePresent() {
-        assertTrue(selenium.isElementPresent("css=input[type=submit]"));
+
+    @Test
+    public void testAllLinksArePresent() throws InterruptedException {
+        waitForElement("link=All nodes");
+        waitForElement("link=All nodes and their interfaces");
+        waitForElement("link=All nodes with asset info");
+    }
+
+    @Test 
+    public void testAllFormsArePresent() throws InterruptedException {
+        waitForElement("css=input[type=submit]");
         assertEquals("Search", selenium.getValue("css=input[type=submit]"));
-     }
-      
-     @Test
-     public void testAllLinks() {
-        selenium.click("link=All nodes");
-        waitForPageToLoad();
-        long endTime = System.currentTimeMillis() + 30000;
-        while(System.currentTimeMillis() < endTime){
-            if(selenium.isTextPresent("Nodes")){
-                break;
-            }
-            if(endTime - System.currentTimeMillis() < 5000){
-                fail ("25 second timeout trying to reach \"Search/All nodes\" Page");
-            }
-        }
-        selenium.click("//div[@id='content']/div/h2/a[2]");
-        waitForPageToLoad();
-        selenium.click("link=All nodes and their interfaces");
-        waitForPageToLoad();
-        assertTrue(selenium.isTextPresent("Nodes and their interfaces"));
-        assertTrue(selenium.isElementPresent("link=Hide interfaces"));
-        selenium.click("//div[@id='content']/div/h2/a[2]");
-        waitForPageToLoad();
-        selenium.click("link=All nodes with asset info");
-        waitForPageToLoad();
-        assertTrue(selenium.isTextPresent("Assets"));
-        selenium.click("link=Log out");
-        waitForPageToLoad();
+    }
+
+    @Test
+    public void testAllLinks() throws InterruptedException {
+        clickAndWait("link=All nodes");
+        waitForText("Nodes", LOAD_TIMEOUT);
+        clickAndWait("//div[@id='content']/div/h2/a[2]");
+        clickAndWait("link=All nodes and their interfaces");
+        waitForText("Nodes and their interfaces");
+        waitForElement("link=Hide interfaces");
+        clickAndWait("//div[@id='content']/div/h2/a[2]");
+        clickAndWait("link=All nodes with asset info");
+        waitForText("Assets");
     }
 
 }

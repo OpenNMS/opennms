@@ -89,8 +89,12 @@ public class ResourceTypePanel extends VerticalLayout {
             @Override
             public void deleteResourceType(ResourceType resourceType) {
                 logger.info("Resource type " + resourceType.getName() + " has been removed.");
-                table.removeItem(resourceType.getName());
-                table.refreshRowCache();
+                Object itemId = table.getValue();
+                if (itemId != null) {
+                    table.select(null);
+                    table.removeItem(itemId);
+                    table.refreshRowCache();
+                }
             }
         };
 

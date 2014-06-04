@@ -1,0 +1,37 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+  <event>
+    <uei>uei.opennms.org/nodes/correlation/nodeDownPastHoldDownTime</uei>
+    <event-label>OpenNMS-defined node event: nodeDownPastHoldDownTime</event-label>
+    <descr>
+      &lt;p&gt;All interfaces on node %parm[nodelabel]% are
+      down.&lt;/p&gt; &lt;p&gt;This event is generated when node
+      outage processing determines that all interfaces on the node
+      are down.&lt;/p&gt; &lt;p&gt;This event was generated after
+      the node-down situation endured past a hold-down timer of
+      %parm[holdDownTime]% seconds.&lt;/p&gt;
+    </descr>
+    <logmsg dest='logndisplay'>
+      Node %parm[nodelabel]% is down for over %parm[holdDownTime]% seconds.
+    </logmsg>
+    <severity>Critical</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false" />
+  </event>
+  <event>
+    <uei>uei.opennms.org/nodes/correlation/interfaceDownPastHoldDownTime</uei>
+    <event-label>OpenNMS-defined node event: interfaceDownPastHoldDownTime</event-label>
+    <descr>
+      &lt;p&gt;All services are down on interface %interface%
+      &lt;/p&gt; &lt;p&gt;This event is generated when node outage
+      processing determines that the critical service or all
+      services on the interface are now down &lt;/p&gt; &lt;p&gt;
+      This event was generated after the interface-down situation
+      endured past a hold-down timer of %parm[holdDownTime]% seconds.
+      &lt;/p&gt;
+    </descr>
+    <logmsg dest='logndisplay'>
+      Interface %interface% is down for over %parm[holdDownTime]% seconds..
+    </logmsg>
+    <severity>Critical</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="3" auto-clean="false"/>
+  </event>
+</events>

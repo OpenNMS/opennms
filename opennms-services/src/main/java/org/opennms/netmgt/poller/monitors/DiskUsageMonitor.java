@@ -196,35 +196,34 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
                 return PollStatus.unavailable();
             }
 
-            for (Map.Entry<SnmpInstId, SnmpValue> e : flagResults.entrySet()) { 
-                log().debug("poll: SNMPwalk poll succeeded, addr=" + hostAddress + " oid=" + hrStorageDescrSnmpObject + " instance=" + e.getKey() + " value=" + e.getValue());
-                
-                if (isMatch(e.getValue().toString(), diskName, matchType)) {
-                	log().debug("DiskUsageMonitor.poll: found disk=" + diskName);
-                	
-                	SnmpObjId hrStorageSizeSnmpObject = SnmpObjId.get(hrStorageSize + "." + e.getKey().toString());
-                	SnmpObjId hrStorageUsedSnmpObject = SnmpObjId.get(hrStorageUsed + "." + e.getKey().toString());
-                	
-                	
-                	SnmpValue snmpSize = SnmpUtils.get(agentConfig, hrStorageSizeSnmpObject);
-                	SnmpValue snmpUsed = SnmpUtils.get(agentConfig, hrStorageUsedSnmpObject);
-                	float calculatedPercentage = ( (( (float)snmpSize.toLong() - (float)snmpUsed.toLong() ) / (float)snmpSize.toLong() ) ) * 100;
-                
-                	log().debug("DiskUsageMonitor: calculatedPercentage=" + calculatedPercentage + " percentFree="+percentFree);
-                	
-                	if (calculatedPercentage < percentFree) {
-                	
-                		return PollStatus.unavailable(diskName + " usage high (" + (100 - (int)calculatedPercentage)  + "%)");
-                		
-                	}
-                	else {
-                		return status;
-                	}
-                }
+            boolean foundDisk = false;
             
-                 
+            for (Map.Entry<SnmpInstId, SnmpValue> e : flagResults.entrySet()) { 
+                foundDisk = true;
+                log().debug("poll: SNMPwalk poll succeeded, addr=" + hostAddress + " oid=" + hrStorageDescrSnmpObject + " instance=" + e.getKey() + " value=" + e.getValue());
+
+                if (isMatch(e.getValue().toString(), diskName, matchType)) {
+                    log().debug("DiskUsageMonitor.poll: found disk=" + diskName);
+
+                    SnmpObjId hrStorageSizeSnmpObject = SnmpObjId.get(hrStorageSize + "." + e.getKey().toString());
+                    SnmpObjId hrStorageUsedSnmpObject = SnmpObjId.get(hrStorageUsed + "." + e.getKey().toString());
+
+
+                    SnmpValue snmpSize = SnmpUtils.get(agentConfig, hrStorageSizeSnmpObject);
+                    SnmpValue snmpUsed = SnmpUtils.get(agentConfig, hrStorageUsedSnmpObject);
+                    float calculatedPercentage = ( (( (float)snmpSize.toLong() - (float)snmpUsed.toLong() ) / (float)snmpSize.toLong() ) ) * 100;
+
+                    log().debug("DiskUsageMonitor: calculatedPercentage=" + calculatedPercentage + " percentFree="+percentFree);
+
+                    if (calculatedPercentage < percentFree) {
+                        return PollStatus.unavailable(e.getValue().toString() + " usage high (" + (100 - (int)calculatedPercentage)  + "%)");
+                    }
+                }
             }
 
+            if (foundDisk) {
+                return status;
+            }
             // if we get here.. it means we did not find the disk...  which means we should not be monitoring it.
             log().debug("DiskUsageMonitor: no disks found");
             return PollStatus.unavailable("could not find " + diskName + "in table");

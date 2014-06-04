@@ -79,6 +79,7 @@ public class OnmsCategoryCollection extends LinkedList<OnmsCategory> {
      * @param categories a {@link java.util.List} object.
      */
     public void setCategories(List<OnmsCategory> categories) {
+        if (categories == this) return;
         clear();
         addAll(categories);
     }

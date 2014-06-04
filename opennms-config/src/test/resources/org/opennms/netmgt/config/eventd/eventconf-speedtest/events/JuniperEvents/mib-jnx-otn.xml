@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<?meta name="GENERATOR" content="XML::Smart/1.6.9 Perl/5.008008 [linux]" ?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.15</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>1</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxOtnAlarmSet</uei>
+    <event-label>JUNIPER-OTN-MIB defined trap event: jnxOtnAlarmSet</event-label>
+    <descr><![CDATA[
+<p>Notification of a recently set Otn alarm.</p><table>
+	<tr><td><b>
+
+	ifDescr</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxOtnLastAlarmId</b></td><td>
+	%parm[#2]%;</td><td><p>
+		otnLosAlarm(0)
+		otnLofAlarm(1)
+		otnLomAlarm(2)
+		otnWavelengthlockAlarm(3)
+		otnOtuAisAlarm(4)
+		otnOtuBdiAlarm(5)
+		otnOtuTtimAlarm(6)
+		otnOtuIaeAlarm(7)
+		otnOtuSdAlarm(8)
+		otnOtuSfAlarm(9)
+		otnOtuFecExcessiveErrsAlarm(10)
+		otnOtuFecDegradedErrsAlarm(11)
+		otnOtuBbeThreholdAlarm(12)
+		otnOtuEsThreholdAlarm(13)
+		otnOtuSesThreholdAlarm(14)
+		otnOtuUasThreholdAlarm(15)
+		otnOduAisAlarm(16)
+		otnOduOciAlarm(17)
+		otnOduLckAlarm(18)
+		otnOduBdiAlarm(19)
+		otnOduTtimAlarm(20)
+		otnOduSdAlarm(21)
+		otnOduSfAlarm(22)
+		otnOduRxApsChange(23)
+		otnOduBbeThreholdAlarm(24)
+		otnOduEsThreholdAlarm(25)
+		otnOduSesThreholdAlarm(26)
+		otnOduUasThreholdAlarm(27)
+		otnOpuPMTAlarm(28)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxOtnCurrentAlarms</b></td><td>
+	%parm[#3]%;</td><td><p>
+		otnLosAlarm(0)
+		otnLofAlarm(1)
+		otnLomAlarm(2)
+		otnWavelengthlockAlarm(3)
+		otnOtuAisAlarm(4)
+		otnOtuBdiAlarm(5)
+		otnOtuTtimAlarm(6)
+		otnOtuIaeAlarm(7)
+		otnOtuSdAlarm(8)
+		otnOtuSfAlarm(9)
+		otnOtuFecExcessiveErrsAlarm(10)
+		otnOtuFecDegradedErrsAlarm(11)
+		otnOtuBbeThreholdAlarm(12)
+		otnOtuEsThreholdAlarm(13)
+		otnOtuSesThreholdAlarm(14)
+		otnOtuUasThreholdAlarm(15)
+		otnOduAisAlarm(16)
+		otnOduOciAlarm(17)
+		otnOduLckAlarm(18)
+		otnOduBdiAlarm(19)
+		otnOduTtimAlarm(20)
+		otnOduSdAlarm(21)
+		otnOduSfAlarm(22)
+		otnOduRxApsChange(23)
+		otnOduBbeThreholdAlarm(24)
+		otnOduEsThreholdAlarm(25)
+		otnOduSesThreholdAlarm(26)
+		otnOduUasThreholdAlarm(27)
+		otnOpuPMTAlarm(28)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxOtnLastAlarmDate</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxOtnAlarmSet trap received 
+			ifDescr=%parm[#1]% 
+			jnxOtnLastAlarmId=%parm[#2]% 
+			jnxOtnCurrentAlarms=%parm[#3]% 
+			jnxOtnLastAlarmDate=%parm[#4]%</p>
+		]]></logmsg>
+    <severity>Warning</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.15</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>2</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxOtnAlarmCleared</uei>
+    <event-label>JUNIPER-OTN-MIB defined trap event: jnxOtnAlarmCleared</event-label>
+    <descr><![CDATA[
+<p>Notification of a recently cleared Otn alarm.</p><table>
+	<tr><td><b>
+
+	ifDescr</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxOtnLastAlarmId</b></td><td>
+	%parm[#2]%;</td><td><p>
+		otnLosAlarm(0)
+		otnLofAlarm(1)
+		otnLomAlarm(2)
+		otnWavelengthlockAlarm(3)
+		otnOtuAisAlarm(4)
+		otnOtuBdiAlarm(5)
+		otnOtuTtimAlarm(6)
+		otnOtuIaeAlarm(7)
+		otnOtuSdAlarm(8)
+		otnOtuSfAlarm(9)
+		otnOtuFecExcessiveErrsAlarm(10)
+		otnOtuFecDegradedErrsAlarm(11)
+		otnOtuBbeThreholdAlarm(12)
+		otnOtuEsThreholdAlarm(13)
+		otnOtuSesThreholdAlarm(14)
+		otnOtuUasThreholdAlarm(15)
+		otnOduAisAlarm(16)
+		otnOduOciAlarm(17)
+		otnOduLckAlarm(18)
+		otnOduBdiAlarm(19)
+		otnOduTtimAlarm(20)
+		otnOduSdAlarm(21)
+		otnOduSfAlarm(22)
+		otnOduRxApsChange(23)
+		otnOduBbeThreholdAlarm(24)
+		otnOduEsThreholdAlarm(25)
+		otnOduSesThreholdAlarm(26)
+		otnOduUasThreholdAlarm(27)
+		otnOpuPMTAlarm(28)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxOtnCurrentAlarms</b></td><td>
+	%parm[#3]%;</td><td><p>
+		otnLosAlarm(0)
+		otnLofAlarm(1)
+		otnLomAlarm(2)
+		otnWavelengthlockAlarm(3)
+		otnOtuAisAlarm(4)
+		otnOtuBdiAlarm(5)
+		otnOtuTtimAlarm(6)
+		otnOtuIaeAlarm(7)
+		otnOtuSdAlarm(8)
+		otnOtuSfAlarm(9)
+		otnOtuFecExcessiveErrsAlarm(10)
+		otnOtuFecDegradedErrsAlarm(11)
+		otnOtuBbeThreholdAlarm(12)
+		otnOtuEsThreholdAlarm(13)
+		otnOtuSesThreholdAlarm(14)
+		otnOtuUasThreholdAlarm(15)
+		otnOduAisAlarm(16)
+		otnOduOciAlarm(17)
+		otnOduLckAlarm(18)
+		otnOduBdiAlarm(19)
+		otnOduTtimAlarm(20)
+		otnOduSdAlarm(21)
+		otnOduSfAlarm(22)
+		otnOduRxApsChange(23)
+		otnOduBbeThreholdAlarm(24)
+		otnOduEsThreholdAlarm(25)
+		otnOduSesThreholdAlarm(26)
+		otnOduUasThreholdAlarm(27)
+		otnOpuPMTAlarm(28)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxOtnLastAlarmDate</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxOtnAlarmCleared trap received 
+			ifDescr=%parm[#1]% 
+			jnxOtnLastAlarmId=%parm[#2]% 
+			jnxOtnCurrentAlarms=%parm[#3]% 
+			jnxOtnLastAlarmDate=%parm[#4]%</p>
+		]]></logmsg>
+    <severity>Normal</severity>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
+  </event>
+</events>
+

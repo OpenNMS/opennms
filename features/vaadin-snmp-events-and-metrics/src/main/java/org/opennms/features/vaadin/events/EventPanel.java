@@ -29,6 +29,7 @@ package org.opennms.features.vaadin.events;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
@@ -80,19 +81,19 @@ public abstract class EventPanel extends Panel {
     /** The Events Proxy. */
     private EventProxy eventProxy;
 
-    /** The Events File name. */
-    private String fileName;
+    /** The Events File. */
+    private File eventFile;
 
     /**
      * Instantiates a new event panel.
      *
      * @param eventConfDao the OpenNMS Events Configuration DAO
      * @param eventProxy the OpenNMS Events Proxy
-     * @param fileName the MIB's file name
+     * @param eventFile the events file
      * @param events the OpenNMS events object
      * @param logger the logger object
      */
-    public EventPanel(final EventConfDao eventConfDao, final EventProxy eventProxy, final String fileName, final Events events, final Logger logger) {
+    public EventPanel(final EventConfDao eventConfDao, final EventProxy eventProxy, final File eventFile, final Events events, final Logger logger) {
 
         if (eventProxy == null)
             throw new RuntimeException("eventProxy cannot be null.");
@@ -101,7 +102,7 @@ public abstract class EventPanel extends Panel {
 
         this.eventConfDao = eventConfDao;
         this.eventProxy = eventProxy;
-        this.fileName = fileName;
+        this.eventFile = eventFile;
 
         setCaption("Events");
         addStyleName(Runo.PANEL_LIGHT);
@@ -171,9 +172,12 @@ public abstract class EventPanel extends Panel {
             }
             public void deleteEvent(org.opennms.netmgt.xml.eventconf.Event event) {
                 logger.info("Event " + event.getUei() + " has been removed.");
-                eventTable.select(null);
-                eventTable.removeItem(event.getUei());
-                eventTable.refreshRowCache();
+                Object itemId = eventTable.getValue();
+                if (itemId != null) {
+                    eventTable.select(null);
+                    eventTable.removeItem(itemId);
+                    eventTable.refreshRowCache();
+                }
             }
         };
         mainLayout.addComponent(eventForm);
@@ -212,9 +216,7 @@ public abstract class EventPanel extends Panel {
      * @param logger the logger
      */
     public void processEvents(final Events events, final Logger logger) {
-        final File configDir = new File(ConfigFileConstants.getHome(), "etc/events/");
-        final File file = new File(configDir, fileName);
-        if (file.exists()) {
+        if (eventFile.exists()) {
             MessageBox mb = new MessageBox(getApplication().getMainWindow(),
                                            "Are you sure?",
                                            MessageBox.Icon.QUESTION,
@@ -225,12 +227,12 @@ public abstract class EventPanel extends Panel {
             mb.show(new EventListener() {
                 public void buttonClicked(ButtonType buttonType) {
                     if (buttonType == MessageBox.ButtonType.YES) {
-                        validateFile(file, events, logger);
+                        validateFile(eventFile, events, logger);
                     }
                 }
             });
         } else {
-            validateFile(file, events, logger);
+            validateFile(eventFile, events, logger);
         }
     }
 
@@ -276,19 +278,27 @@ public abstract class EventPanel extends Panel {
      */
     private void saveFile(final File file, final Events events, final Logger logger) {
         try {
-            logger.info("Saving XML data into " + file.getAbsolutePath());
+            logger.info("Saving XML data into " + file);
             // Save the XML of the new events
-            FileWriter writer = new FileWriter(file);
-            JaxbUtils.marshal(events, writer);
-            writer.close();
-            // Add a reference to the new file into eventconf.xml
-            String fileName = "events/" + file.getName();
-            if (!eventConfDao.getRootEvents().getEventFileCollection().contains(fileName)) {
-                logger.info("Adding a reference to " + file.getName() + " inside eventconf.xml.");
-                eventConfDao.getRootEvents().getEventFileCollection().add(0, fileName);
-                eventConfDao.saveCurrent();
+            saveEvents(events, file);
+            // Add a reference to the new file into eventconf.xml if there are events
+            String fileName = file.getAbsolutePath().replaceFirst(".*\\/events\\/(.*)", "events/$1");
+            final Events rootEvents = eventConfDao.getRootEvents();
+            final File rootFile = ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME);
+            if (events.getEventCount() > 0) {
+                if (!rootEvents.getEventFileCollection().contains(fileName)) {
+                    logger.info("Adding a reference to " + fileName + " inside eventconf.xml.");
+                    rootEvents.getEventFileCollection().add(0, fileName);
+                    saveEvents(rootEvents, rootFile);
+                }
+            } else {
+                // If a reference to an empty events file exist, it should be removed.
+                if (rootEvents.getEventFileCollection().contains(fileName)) {
+                    logger.info("Removing a reference to " + fileName + " inside eventconf.xml because there are no events.");
+                    rootEvents.getEventFileCollection().remove(fileName);
+                    saveEvents(rootEvents, rootFile);
+                }
             }
-            // Send eventsConfigChange event
             EventBuilder eb = new EventBuilder(EventConstants.EVENTSCONFIG_CHANGED_EVENT_UEI, "WebUI");
             eventProxy.send(eb.getEvent());
             logger.info("The event's configuration reload operation is being performed.");
@@ -297,5 +307,18 @@ public abstract class EventPanel extends Panel {
             logger.error(e.getMessage());
             failure();
         }
+    }
+
+    /**
+     * Save events.
+     *
+     * @param events the events
+     * @param eventFile the events file
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    private void saveEvents(final Events events, final File eventFile) throws IOException {
+        FileWriter writer = new FileWriter(eventFile);
+        JaxbUtils.marshal(events, writer);
+        writer.close();
     }
 }

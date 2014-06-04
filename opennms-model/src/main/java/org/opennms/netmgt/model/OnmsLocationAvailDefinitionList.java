@@ -57,6 +57,7 @@ public class OnmsLocationAvailDefinitionList extends LinkedList<OnmsLocationAvai
     }
     
     public void setDefinitions(List<OnmsLocationAvailDataPoint> defs) {
+        if (defs == this) return;
         clear();
         addAll(defs);
     }

@@ -80,6 +80,7 @@ public class RequisitionMonitoredServiceCollection extends LinkedList<Requisitio
      * @param services a {@link java.util.List} object.
      */
     public void setMonitoredServices(List<RequisitionMonitoredService> services) {
+        if (services == this) return;
         clear();
         addAll(services);
     }

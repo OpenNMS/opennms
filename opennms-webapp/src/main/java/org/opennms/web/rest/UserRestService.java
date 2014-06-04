@@ -28,6 +28,7 @@
 
 package org.opennms.web.rest;
 
+import java.security.Principal;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -44,11 +45,13 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.model.OnmsUser;
 import org.opennms.netmgt.model.OnmsUserList;
+import org.opennms.web.springframework.security.Authentication;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +74,12 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Path("users")
 @Transactional
 public class UserRestService extends OnmsRestService {
+    private static final Comparator<OnmsUser> USER_COMPARATOR = new Comparator<OnmsUser>() {
+        @Override public int compare(final OnmsUser a, final OnmsUser b) {
+            return a.getUsername().compareTo(b.getUsername());
+        }
+    };
+
     @Autowired
     private UserManager m_userManager;
 
@@ -80,20 +89,15 @@ public class UserRestService extends OnmsRestService {
     @Context
     ResourceContext m_context;
 
+    @Context
+    SecurityContext m_securityContext;
+
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public OnmsUserList getUsers() {
-        final OnmsUserList list;
         readLock();
         try {
-            list = m_userManager.getOnmsUserList();
-            Collections.sort(list, new Comparator<OnmsUser>() {
-                @Override
-                public int compare(final OnmsUser a, final OnmsUser b) {
-                    return a.getUsername().compareTo(b.getUsername());
-                }
-            });
-            return list;
+            return filterUserPasswords(m_userManager.getOnmsUserList());
         } catch (final Throwable t) {
             throw getException(Status.BAD_REQUEST, t);
         } finally {
@@ -108,7 +112,7 @@ public class UserRestService extends OnmsRestService {
         readLock();
         try {
             final OnmsUser user = m_userManager.getOnmsUser(username);
-            if (user != null) return user;
+            if (user != null) return filterUserPassword(user);
             throw getException(Status.NOT_FOUND, username + " does not exist");
         } catch (final Throwable t) {
             if (t instanceof WebApplicationException) throw (WebApplicationException)t;
@@ -123,6 +127,9 @@ public class UserRestService extends OnmsRestService {
     public Response addUser(final OnmsUser user) {
         writeLock();
         try {
+            if (!hasEditRights()) {
+                throw getException(Status.BAD_REQUEST, new RuntimeException(m_securityContext.getUserPrincipal().getName() + " does not have write access to users!"));
+            }
             log().debug("addUser: Adding user " + user);
             m_userManager.save(user);
             return Response.seeOther(getRedirectUri(m_uriInfo, user.getUsername())).build();
@@ -140,6 +147,9 @@ public class UserRestService extends OnmsRestService {
         OnmsUser user = null;
         writeLock();
         try {
+            if (!hasEditRights()) {
+                throw getException(Status.BAD_REQUEST, new RuntimeException(m_securityContext.getUserPrincipal().getName() + " does not have write access to users!"));
+            }
             try {
                 user = m_userManager.getOnmsUser(userCriteria);
             } catch (final Throwable t) {
@@ -173,6 +183,9 @@ public class UserRestService extends OnmsRestService {
     public Response deleteUser(@PathParam("userCriteria") final String userCriteria) {
         writeLock();
         try {
+            if (!hasEditRights()) {
+                throw getException(Status.BAD_REQUEST, new RuntimeException(m_securityContext.getUserPrincipal().getName() + " does not have write access to users!"));
+            }
             OnmsUser user = null;
             try {
                 user = m_userManager.getOnmsUser(userCriteria);
@@ -192,4 +205,29 @@ public class UserRestService extends OnmsRestService {
         }
     }
 
+    public boolean hasEditRights() {
+        if (m_securityContext.isUserInRole(Authentication.ROLE_ADMIN) || m_securityContext.isUserInRole(Authentication.ROLE_REST)) {
+            return true;
+        }
+        return false;
+    }
+
+    private OnmsUserList filterUserPasswords(final OnmsUserList users) {
+        Collections.sort(users, USER_COMPARATOR);
+        for (final OnmsUser user : users) {
+            filterUserPassword(user);
+        }
+        return users;
+    }
+
+    private OnmsUser filterUserPassword(final OnmsUser user) {
+        if (!hasEditRights()) {
+            final Principal principal = m_securityContext.getUserPrincipal();
+            // users may see their own password hash  :)
+            if (!user.getUsername().equals(principal.getName())) {
+                user.setPassword("xxxxxxxx");
+            }
+        }
+        return user;
+    }
 }

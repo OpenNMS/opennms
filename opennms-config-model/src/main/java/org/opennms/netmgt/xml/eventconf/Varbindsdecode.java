@@ -109,6 +109,7 @@ public class Varbindsdecode implements Serializable {
     }
 
     public void setDecode(final List<Decode> decodes) {
+        if (m_decodes == decodes) return;
         m_decodes.clear();
         m_decodes.addAll(decodes);
     }
@@ -125,7 +126,7 @@ public class Varbindsdecode implements Serializable {
     }
 
     public void setDecodeCollection(final List<Decode> decodes) {
-        m_decodes = decodes;
+        setDecode(decodes);
     }
 
 	public void addDecode(final Decode decode) throws IndexOutOfBoundsException {

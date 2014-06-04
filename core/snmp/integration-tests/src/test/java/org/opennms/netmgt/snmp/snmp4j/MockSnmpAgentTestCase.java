@@ -28,15 +28,13 @@
 
 package org.opennms.netmgt.snmp.snmp4j;
 
-import static org.junit.Assert.fail;
-
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import org.junit.After;
 import org.junit.Before;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.snmp.SnmpAgentAddress;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -52,13 +50,7 @@ public abstract class MockSnmpAgentTestCase {
     private MockSnmpAgent m_agent;
 
     public MockSnmpAgentTestCase() {
-        super();
-
-        try {
-            m_agentAddress = InetAddress.getByName("127.0.0.1");
-        } catch (UnknownHostException e) {
-            fail(e.toString());
-        }
+        setAgentAddress(InetAddressUtils.getLocalHostAddress());
     }
 
     @Before
@@ -72,9 +64,9 @@ public abstract class MockSnmpAgentTestCase {
 
 	protected void agentSetup() throws InterruptedException, IOException {
 		if (usingMockStrategy()) {
-			MockSnmpStrategy.setDataForAddress(new SnmpAgentAddress(m_agentAddress, m_agentPort), m_propertiesResource);
+			MockSnmpStrategy.setDataForAddress(new SnmpAgentAddress(getAgentAddress(), getAgentPort()), m_propertiesResource);
 		} else {
-			m_agent = MockSnmpAgent.createAgentAndRun(m_propertiesResource.getURL(), m_agentAddress.getHostAddress() + "/" + m_agentPort);
+			m_agent = MockSnmpAgent.createAgentAndRun(m_propertiesResource.getURL(), getAgentAddress().getHostAddress() + "/" + m_agentPort);
 		}
 	}
 
@@ -93,7 +85,7 @@ public abstract class MockSnmpAgentTestCase {
     }
 
 	protected void agentCleanup() throws InterruptedException {
-		MockSnmpStrategy.removeHost(new SnmpAgentAddress(m_agentAddress, m_agentPort));
+		MockSnmpStrategy.removeHost(new SnmpAgentAddress(getAgentAddress(), getAgentPort()));
 
 		if (m_agent != null) {
 			m_agent.shutDownAndWait();
@@ -103,8 +95,8 @@ public abstract class MockSnmpAgentTestCase {
 
     protected SnmpAgentConfig getAgentConfig() {
         SnmpAgentConfig config = new SnmpAgentConfig();
-        config.setAddress(m_agentAddress);
-        config.setPort(m_agentPort);
+        config.setAddress(getAgentAddress());
+        config.setPort(getAgentPort());
         config.setVersion(SnmpAgentConfig.VERSION1);
         return config;
     }
@@ -113,7 +105,7 @@ public abstract class MockSnmpAgentTestCase {
         return m_agentAddress;
     }
 
-    private void setAgentAddress(InetAddress agentAddress) {
+    protected void setAgentAddress(final InetAddress agentAddress) {
         m_agentAddress = agentAddress;
     }
 
@@ -121,7 +113,7 @@ public abstract class MockSnmpAgentTestCase {
         return m_agentPort;
     }
 
-    private void setAgentPort(int agentPort) {
+    protected void setAgentPort(final int agentPort) {
         m_agentPort = agentPort;
     }
 
@@ -129,7 +121,7 @@ public abstract class MockSnmpAgentTestCase {
         return m_propertiesResource;
     }
 
-    public void setPropertiesResource(ClassPathResource propertiesResource) {
+    public void setPropertiesResource(final ClassPathResource propertiesResource) {
         m_propertiesResource = propertiesResource;
     }
 

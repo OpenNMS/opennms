@@ -52,7 +52,7 @@ public class Sftp3gppUrlConnectionTest {
      */
     @Test
     public void testPathForSFTP() throws Exception {
-        URL url = UrlFactory.getUrl("sftp://admin:admin@192.168.1.1/opt/hitachi/cnp/data/pm/reports/3gpp/5/data.xml");
+        URL url = UrlFactory.getUrl("sftp://admin:admin@192.168.1.1/opt/hitachi/cnp/data/pm/reports/3gpp/5/data.xml", null);
         URLConnection conn = url.openConnection();
         Assert.assertTrue(conn instanceof SftpUrlConnection);
         UrlFactory.disconnect(conn);
@@ -65,7 +65,7 @@ public class Sftp3gppUrlConnectionTest {
      */
     @Test
     public void testPathFor3GPPA() throws Exception {
-        URL url = UrlFactory.getUrl("sftp.3gpp://admin:admin@192.168.1.1/opt/hitachi/cnp/data/pm/reports/3gpp/5?step=300&timezone=GMT-5&neId=MME00001");
+        URL url = UrlFactory.getUrl("sftp.3gpp://admin:admin@192.168.1.1/opt/hitachi/cnp/data/pm/reports/3gpp/5?step=300&timezone=GMT-5&neId=MME00001", null);
         URLConnection conn = url.openConnection();
         Assert.assertTrue(conn instanceof Sftp3gppUrlConnection);
         String path = ((Sftp3gppUrlConnection) conn).getPath();
@@ -83,7 +83,7 @@ public class Sftp3gppUrlConnectionTest {
         long ts = 1320257100000l;
         Date date = new Date(ts);
         log().debug("Timestamp = " + date);
-        URL url = UrlFactory.getUrl("sftp.3gpp://admin:admin@192.168.1.1/opt/3gpp?step=300&timezone=GMT-5&neId=MME00001&referenceTimestamp=" + ts);
+        URL url = UrlFactory.getUrl("sftp.3gpp://admin:admin@192.168.1.1/opt/3gpp?step=300&timezone=GMT-5&neId=MME00001&referenceTimestamp=" + ts, null);
         URLConnection conn = url.openConnection();
         Assert.assertTrue(conn instanceof Sftp3gppUrlConnection);
         String path = ((Sftp3gppUrlConnection) conn).getPath();
@@ -99,7 +99,7 @@ public class Sftp3gppUrlConnectionTest {
      */
     @Test
     public void testGetTimeStampFromFile() throws Exception {
-        URL url = UrlFactory.getUrl("sftp.3gpp://admin:admin@192.168.1.1/opt/3gpp?step=300&neId=MME00001&deleteFile=true");
+        URL url = UrlFactory.getUrl("sftp.3gpp://admin:admin@192.168.1.1/opt/3gpp?step=300&neId=MME00001&deleteFile=true", null);
         URLConnection conn = url.openConnection();
         Assert.assertTrue(conn instanceof Sftp3gppUrlConnection);
         Sftp3gppUrlConnection c = (Sftp3gppUrlConnection) conn;

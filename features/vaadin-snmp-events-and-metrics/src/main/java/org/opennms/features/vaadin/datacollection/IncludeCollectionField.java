@@ -30,12 +30,12 @@ package org.opennms.features.vaadin.datacollection;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.features.vaadin.api.OnmsBeanContainer;
 import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.IncludeCollection;
 import org.vaadin.addon.customfield.CustomField;
 
 import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -60,7 +60,7 @@ public class IncludeCollectionField extends CustomField {
     private final Table table = new Table();
 
     /** The Container. */
-    private final BeanItemContainer<IncludeCollectionWrapper> container = new BeanItemContainer<IncludeCollectionWrapper>(IncludeCollectionWrapper.class);
+    private final OnmsBeanContainer<IncludeCollectionWrapper> container = new OnmsBeanContainer<IncludeCollectionWrapper>(IncludeCollectionWrapper.class);
 
     /** The Toolbar. */
     private final HorizontalLayout toolbar = new HorizontalLayout();
@@ -96,8 +96,7 @@ public class IncludeCollectionField extends CustomField {
                 IncludeCollectionWindow w = new IncludeCollectionWindow(dataCollectionConfigDao, container, obj) {
                     @Override
                     public void fieldChanged() {
-                        container.addBean(obj);
-                        table.select(obj);
+                        table.select(container.addOnmsBean(obj));
                     }
                 };
                 getApplication().getMainWindow().addWindow(w);

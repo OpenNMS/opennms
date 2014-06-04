@@ -35,6 +35,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Date;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.locks.Lock;
@@ -58,7 +59,6 @@ import org.springframework.util.Assert;
 public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepository implements InitializingBean {
     private String m_requisitionPath;
     private String m_foreignSourcePath;
-    private boolean m_updateDateStamps = true;
     
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
@@ -110,20 +110,6 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         }
     }
 
-    /**
-     * <p>setUpdateDateStamps</p>
-     *
-     * @param update a boolean.
-     */
-    public void setUpdateDateStamps(final boolean update) {
-        m_writeLock.lock();
-        try {
-            m_updateDateStamps = update;
-        } finally {
-            m_writeLock.unlock();
-        }
-    }
-    
     /**
      * <p>getForeignSourceCount</p>
      *
@@ -202,9 +188,6 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
             OutputStream outputStream = null;
             Writer writer = null;
             try {
-                if (m_updateDateStamps) {
-                    foreignSource.updateDateStamp();
-                }
                 outputStream = new FileOutputStream(outputFile);
                 writer = new OutputStreamWriter(outputStream, "UTF-8");
                 JaxbUtils.marshal(foreignSource, writer);
@@ -320,9 +303,6 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
             Writer writer = null;
             OutputStream outputStream = null;
             try {
-                if (m_updateDateStamps) {
-                    requisition.updateDateStamp();
-                }
                 outputStream = new FileOutputStream(outputFile);
                 writer = new OutputStreamWriter(outputStream, "UTF-8");
                 JaxbUtils.marshal(requisition, writer);
@@ -350,11 +330,13 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         m_writeLock.lock();
         try {
             LogUtils.debugf(this, "Deleting requisition %s from %s (if necessary)", requisition.getForeignSource(), m_requisitionPath);
-            final File deleteFile = RequisitionFileUtils.getOutputFileForRequisition(m_requisitionPath, requisition);
-            if (deleteFile.exists()) {
-                if (!deleteFile.delete()) {
-                    throw new ForeignSourceRepositoryException("unable to delete requisition file " + deleteFile);
+            final File fileToDelete = RequisitionFileUtils.getOutputFileForRequisition(m_requisitionPath, requisition);
+            if (fileToDelete.exists()) {
+                if (!fileToDelete.delete()) {
+                    throw new ForeignSourceRepositoryException("Unable to delete requisition file " + fileToDelete);
                 }
+            } else {
+                LogUtils.debugf(this, "File %s does not exist.", fileToDelete);
             }
         } finally {
             m_writeLock.unlock();
@@ -387,16 +369,27 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
             m_writeLock.unlock();
         }
     }
-    
+
     /** {@inheritDoc} */
-    public URL getRequisitionURL(final String foreignSource) throws ForeignSourceRepositoryException {
+    @Override
+    public Date getRequisitionDate(final String foreignSource) throws ForeignSourceRepositoryException {
         m_readLock.lock();
         try {
             final Requisition requisition = getRequisition(foreignSource);
             if (requisition == null) {
                 return null;
             }
-            return RequisitionFileUtils.getOutputFileForRequisition(m_requisitionPath, requisition).toURI().toURL();
+            return requisition.getDate();
+        } finally {
+            m_readLock.unlock();
+        }
+    }
+
+    /** {@inheritDoc} */
+    public URL getRequisitionURL(final String foreignSource) throws ForeignSourceRepositoryException {
+        m_readLock.lock();
+        try {
+            return RequisitionFileUtils.getOutputFileForRequisition(m_requisitionPath, foreignSource).toURI().toURL();
         } catch (final MalformedURLException e) {
             throw new ForeignSourceRepositoryException("an error occurred getting the requisition URL", e);
         } finally {

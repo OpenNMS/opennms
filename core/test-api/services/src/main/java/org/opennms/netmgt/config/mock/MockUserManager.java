@@ -87,4 +87,9 @@ public class MockUserManager extends UserManager {
         return m_fileSize;
     }
 
+    @Override
+    public void reload() throws IOException, FileNotFoundException, MarshalException, ValidationException {
+        parseXML();
+    }
+
 }

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<?meta name="GENERATOR" content="XML::Smart/1.6.9 Perl/5.008008 [linux]" ?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.45.1</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>1</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxBfdSessTxIntervalHigh</uei>
+    <event-label>JUNIPER-BFD-MIB defined trap event: jnxBfdSessTxIntervalHigh</event-label>
+    <descr><![CDATA[
+<p>This notification is generated when the threshold value for 
+transmit interval (jnxBfdSessThreshTxInterval) is set and 
+the bfd session transmit interval (jnxBfdSessCurrTxInterval)
+adapts to a value greater than the threshold value. This trap 
+is sent only once, when we first exceed the threshold. The 
+transmit interval can continue  to adapt beyond the threshold 
+value. Adaptation of transmit interval happens due to network 
+issues causing the BFD session to go down on either the local 
+system or the remote neighbor.</p><table>
+	<tr><td><b>
+
+	jnxBfdSessThreshTxInterval</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxBfdSessCurrTxInterval</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxBfdSessTxIntervalHigh trap received 
+			jnxBfdSessThreshTxInterval=%parm[#1]% 
+			jnxBfdSessCurrTxInterval=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Warning</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.45.1</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>2</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxBfdSessDetectionTimeHigh</uei>
+    <event-label>JUNIPER-BFD-MIB defined trap event: jnxBfdSessDetectionTimeHigh</event-label>
+    <descr><![CDATA[
+<p>This notification is generated when the threshold value for 
+detection time (jnxBfdSessThreshDectTime) is set and the bfd 
+session detection-time (jnxBfdSessCurrDectTime) adapts to a 
+value greater than the threshold value. This trap is sent only 
+once, when we first exceed the threshold. The detection-time 
+can continue to adapt beyond the threshold value. Adaptation 
+of detection-time happens due to network issues causing the 
+BFD session to go down on either the local system or the remote 
+neighbor.</p><table>
+	<tr><td><b>
+
+	jnxBfdSessThreshDectTime</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxBfdSessCurrDectTime</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxBfdSessDetectionTimeHigh trap received 
+			jnxBfdSessThreshDectTime=%parm[#1]% 
+			jnxBfdSessCurrDectTime=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Warning</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
+  </event>
+</events>
+

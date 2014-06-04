@@ -28,6 +28,9 @@
 
 package org.opennms.netmgt.provision.service;
 
+import org.opennms.core.utils.InetAddressUtils;
+
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.snmp.RowCallback;
 import org.opennms.netmgt.snmp.SnmpInstId;
@@ -142,7 +145,20 @@ public class PhysInterfaceTableTracker extends TableTracker {
         
         private Long getSpeed() {
             final Long highSpeed = getIfHighSpeed();
-            return highSpeed != null && highSpeed > 4294 ? highSpeed*1000000L : getIfSpeed(); 
+            final Long ifSpeed = getIfSpeed();
+            if (highSpeed != null && highSpeed > 4294L) {
+                return highSpeed * 1000000L;
+            }
+            if (ifSpeed == null) {
+                if (highSpeed != null && highSpeed > 0) {
+                    LogUtils.warnf(this, "the ifSpeed for ifIndex %d is null, which is a violation of the standard (this seems to be related to a broken SNMP agent). But, the ifHighSpeed is %d, so that value will be used instead.", getIfIndex(), highSpeed);
+                    return highSpeed * 1000000L;
+                } else {
+                    LogUtils.warnf(this, "the ifSpeed for ifIndex %d is null, which is a violation of the standard (this seems to be related to a broken SNMP agent). Returning 0 instead", getIfIndex());
+                    return 0L;
+                }
+            }
+            return ifSpeed;
         }
 
         private Integer getIfOperStatus() {
@@ -172,7 +188,25 @@ public class PhysInterfaceTableTracker extends TableTracker {
         
         private String getPhysAddr() {
             final SnmpValue value = getValue(IF_PHYS_ADDR);
-            return value == null ? null : value.toHexString();
+            String hexString = value == null ? null : value.toHexString();
+            String displayString = value == null ? null : value.toDisplayString();
+            // See ifTableEntry: NMS-4902 (revision cee964fe979e6465aeb4e2efd4772e50ebc54831)
+            try {
+                if (hexString != null && hexString.length() == 12) {
+                    // If the hex string is 12 characters long, than the agent is kinda weird and
+                    // is returning the value as a raw binary value that is 6 bytes in length.
+                    // But that's OK, as long as we can convert it into a string, that's fine. 
+                    return hexString;
+                } else {
+                    // This is the normal case that most agents conform to: the value is an ASCII 
+                    // string representing the colon-separated MAC address. We just need to reformat 
+                    // it to remove the colons and convert it into a 12-character string.
+                    return displayString == null || displayString.trim().isEmpty() ? null : InetAddressUtils.normalizeMacAddress(displayString);
+                }
+            } catch (IllegalArgumentException e) {
+                LogUtils.warnf(this, e, e.getMessage());
+                return displayString;
+            }
         }
         
         public OnmsSnmpInterface createInterfaceFromRow() {
@@ -185,6 +219,7 @@ public class PhysInterfaceTableTracker extends TableTracker {
             snmpIface.setIfSpeed(getSpeed());
             snmpIface.setIfType(getIfType());
             snmpIface.setPhysAddr(getPhysAddr());
+            snmpIface.setPoll("N");
             return snmpIface;
         }
 

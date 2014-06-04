@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.11.91-SNAPSHOT</version>
+    <version>1.12.8-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-webapp</artifactId>
@@ -19,6 +19,40 @@
   </properties>
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>test-compile</phase>
+            <goals><goal>copy</goal></goals>
+          </execution>
+        </executions>
+        <configuration>
+          <artifactItems>
+            <artifactItem>
+              <groupId>org.opennms.dependencies</groupId>
+              <artifactId>jaxb-dependencies</artifactId>
+              <type>pom</type>
+              <overWrite>false</overWrite>
+              <outputDirectory>${basedir}/target/endorsed</outputDirectory>
+            </artifactItem>
+          </artifactItems>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <argLine>-Xmx1g -Djava.endorsed.dirs=${basedir}/target/endorsed</argLine>
+          <systemProperties>
+            <property>
+              <name>java.endorsed.dirs</name>
+              <value>${basedir}/target/endorsed</value>
+            </property>
+          </systemProperties>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
@@ -176,7 +210,7 @@
                 <configuration>
                     <artifacts>
                         <artifact>
-                            <file>target/opennms-webapp-1.11.91-SNAPSHOT/WEB-INF/lib/opennms-webapp-1.11.91-SNAPSHOT.jar</file>
+                            <file>target/opennms-webapp-${project.version}/WEB-INF/lib/opennms-webapp-${project.version}.jar</file>
                             <type>jar</type>
                         </artifact>
                     </artifacts>
@@ -224,6 +258,23 @@
     								<ignore></ignore>
     							</action>
     						</pluginExecution>
+    						<pluginExecution>
+    							<pluginExecutionFilter>
+    								<groupId>
+    									org.apache.maven.plugins
+    								</groupId>
+    								<artifactId>
+    									maven-dependency-plugin
+    								</artifactId>
+    								<versionRange>[2.4,)</versionRange>
+    								<goals>
+    									<goal>copy</goal>
+    								</goals>
+    							</pluginExecutionFilter>
+    							<action>
+    								<ignore></ignore>
+    							</action>
+    						</pluginExecution>
     					</pluginExecutions>
     				</lifecycleMappingMetadata>
     			</configuration>
@@ -247,6 +298,7 @@
                   <goal>jspc</goal>
                 </goals>
                 <configuration>
+                  <keepSources>true</keepSources>
                   <webXmlFragment>${basedir}/target/web.xml.jspc-insert</webXmlFragment>
                   <generatedClasses>${basedir}/target/jsp-classes</generatedClasses>
                   <useProvidedScope>true</useProvidedScope>
@@ -541,22 +593,6 @@
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
-      <groupId>org.extremecomponents</groupId>
-      <artifactId>extremecomponents</artifactId>
-      <scope>${onmsLibScope}</scope>
-    </dependency>
-    <!--
-
-      JMesa is the latest version of the extremecomponents library. We
-      should eventually migrate our code to use it.
-
-    <dependency>
-      <groupId>org.jmesa</groupId>
-      <artifactId>jmesa</artifactId>
-      <scope>${onmsLibScope}</scope>
-    </dependency>
-    -->
-    <dependency>
       <groupId>org.tuckey</groupId>
       <artifactId>urlrewritefilter</artifactId>
       <scope>${onmsLibScope}</scope>
@@ -581,6 +617,26 @@
       <artifactId>struts</artifactId>
       <scope>${onmsLibScope}</scope>
     </dependency>
+
+    <!-- indirect 3rd-party dependencies that belong in WEB-INF/lib -->
+    <!-- these should all be <scope>compile</scope> -->
+
+    <dependency>
+      <groupId>org.extremecomponents</groupId>
+      <artifactId>extremecomponents</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <!--
+
+      JMesa is the latest version of the extremecomponents library. We
+      should eventually migrate our code to use it.
+
+    <dependency>
+      <groupId>org.jmesa</groupId>
+      <artifactId>jmesa</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    -->
 
     <!-- test dependencies -->
     <dependency>
@@ -614,6 +670,11 @@
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.http</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.xml</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

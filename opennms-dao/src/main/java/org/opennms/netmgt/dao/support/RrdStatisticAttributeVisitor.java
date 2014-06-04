@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.dao.support;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.RrdDao;
 import org.opennms.netmgt.model.AttributeStatisticVisitor;
 import org.opennms.netmgt.model.AttributeVisitor;
@@ -57,6 +58,8 @@ public class RrdStatisticAttributeVisitor implements AttributeVisitor, Initializ
         }
         
         double statistic = m_rrdDao.getPrintValue(attribute, m_consolidationFunction, m_startTime, m_endTime);
+        
+        LogUtils.debugf(this, "The value of %s is %s", attribute, statistic);
         
         /*
          * We don't want to do anything with NaN data, since

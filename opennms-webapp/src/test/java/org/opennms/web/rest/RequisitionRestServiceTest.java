@@ -59,6 +59,8 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
     
     @Test
     public void testRequisition() throws Exception {
+        cleanUpImports();
+
         createRequisition();
         String url = "/requisitions";
         String xml = sendRequest(GET, url, 200);
@@ -159,10 +161,11 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
         assertFalse(xml, xml.contains("172.20.1.201"));
 
         // set attributes
-        sendPut(url, "descr=Total+Crap&snmp-primary=P", 303, "/nodes/4243/interfaces/172.20.1.204");
+        sendPut(url, "status=3&descr=Total+Crap&snmp-primary=P", 303, "/nodes/4243/interfaces/172.20.1.204");
         xml = sendRequest(GET, url, 200);
         assertTrue(xml, xml.contains("descr=\"Total Crap\""));
         assertTrue(xml, xml.contains("snmp-primary=\"P\""));
+        assertTrue(xml, xml.contains("status=\"3\""));
  
         // delete interface
         xml = sendRequest(DELETE, url, 200);

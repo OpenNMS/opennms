@@ -13,62 +13,42 @@ OS type.........: linux-x64
 
 <datacollection-group name="VMware5">
 
-  <resourceType name="vmware5StAdptr" label="VMware v5 StAdptr" resourceLabel="${StAdptrName}">
+  <resourceType name="vmware5StAdptr" label="VMware v5 StAdptr" resourceLabel="${vmware5StAdptrName}">
     <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
     <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
   </resourceType>
 
-  <resourceType name="vmware5Cpu" label="VMware v5 Cpu" resourceLabel="${CpuName}">
+  <resourceType name="vmware5Cpu" label="VMware v5 Cpu" resourceLabel="${vmware5CpuName}">
     <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
     <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
   </resourceType>
 
-  <resourceType name="vmware5Net" label="VMware v5 Net" resourceLabel="${NetName}">
+  <resourceType name="vmware5Net" label="VMware v5 Net" resourceLabel="${vmware5NetName}">
     <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
     <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
   </resourceType>
 
-  <resourceType name="vmware5Disk" label="VMware v5 Disk" resourceLabel="${DiskName}">
+  <resourceType name="vmware5Disk" label="VMware v5 Disk" resourceLabel="${vmware5DiskName}">
     <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
     <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
   </resourceType>
 
-  <resourceType name="vmware5StPth" label="VMware v5 StPth" resourceLabel="${StPthName}">
+  <resourceType name="vmware5StPth" label="VMware v5 StPth" resourceLabel="${vmware5StPthName}">
     <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
     <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
   </resourceType>
 
-  <resourceType name="vmware5DaSt" label="VMware v5 DaSt" resourceLabel="${DaStName}">
+  <resourceType name="vmware5DaSt" label="VMware v5 DaSt" resourceLabel="${vmware5DaStName}">
     <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
     <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
   </resourceType>
 
-  <resourceType name="vmware5Sys" label="VMware v5 Sys" resourceLabel="${SysName}">
+  <resourceType name="vmware5Sys" label="VMware v5 Sys" resourceLabel="${vmware5SysName}">
     <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
     <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
   </resourceType>
 
-  <resourceType name="vmware5Cpu" label="VMware v5 Cpu" resourceLabel="${CpuName}">
-    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-    <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
-  </resourceType>
-
-  <resourceType name="vmware5Net" label="VMware v5 Net" resourceLabel="${NetName}">
-    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-    <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
-  </resourceType>
-
-  <resourceType name="vmware5VrtDisk" label="VMware v5 VrtDisk" resourceLabel="${VrtDiskName}">
-    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-    <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
-  </resourceType>
-
-  <resourceType name="vmware5Disk" label="VMware v5 Disk" resourceLabel="${DiskName}">
-    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-    <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
-  </resourceType>
-
-  <resourceType name="vmware5DaSt" label="VMware v5 DaSt" resourceLabel="${DaStName}">
+  <resourceType name="vmware5VrtDisk" label="VMware v5 VrtDisk" resourceLabel="${vmware5VrtDiskName}">
     <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
     <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
   </resourceType>

@@ -33,11 +33,13 @@
 		contentType="text/html"
 		session="true"
 		import="org.opennms.netmgt.config.PollerConfigFactory,
-				org.opennms.netmgt.config.PollerConfig,
-				org.opennms.netmgt.config.SnmpInterfacePollerConfigFactory,
-				org.opennms.netmgt.config.SnmpInterfacePollerConfig,
-				java.util.*,
+                org.opennms.netmgt.config.PollerConfig,
+                org.opennms.netmgt.config.SnmpInterfacePollerConfigFactory,
+                org.opennms.netmgt.config.SnmpInterfacePollerConfig,
+                org.opennms.netmgt.config.poller.Package,
+                java.util.*,
                 org.opennms.core.utils.SIUtils,
+                org.opennms.netmgt.model.OnmsNode,
                 org.opennms.netmgt.model.OnmsResource,
                 org.opennms.web.api.Util,
                 org.opennms.web.springframework.security.Authentication,
@@ -78,6 +80,7 @@
 <%
     Interface intf_db = ElementUtil.getInterfaceByParams(request, getServletContext());
     int nodeId = intf_db.getNodeId();
+    OnmsNode node = NetworkElementFactory.getInstance(getServletContext()).getNode(nodeId);
     String ipAddr = intf_db.getIpAddress();
 	int ifIndex = -1;    
 	if (intf_db.getIfIndex() > 0) {
@@ -97,7 +100,9 @@
     if( httpService != null  ) {
         httpIp = ipAddr;
     }
-    
+
+    Service[] services = ElementUtil.getServicesOnInterface(nodeId, ipAddr,getServletContext());
+
     PollerConfigFactory.init();
     PollerConfig pollerCfgFactory = PollerConfigFactory.getInstance();
     pollerCfgFactory.rebuildPackageIpListMap();
@@ -193,7 +198,7 @@ function doDelete() {
               ifLabel = IfLabel.getIfLabel(nodeId, ipAddr);
           }
 
-          List<OnmsResource> resources = m_resourceService.findNodeChildResources(nodeId);
+          List<OnmsResource> resources = m_resourceService.findNodeChildResources(node);
           for (OnmsResource resource : resources) {
               if (resource.getName().equals(ipAddr) || resource.getName().equals(ifLabel)) {
                   %>
@@ -250,19 +255,28 @@ function doDelete() {
 	    <table>
               <tr>
                 <th>Node</th>
-                <td><a href="element/node.jsp?node=<%=intf_db.getNodeId()%>"><%=NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(intf_db.getNodeId())%></a></td>
+                <td><a href="element/node.jsp?node=<%=intf_db.getNodeId()%>"><%=node.getLabel()%></a></td>
               </tr>
               <tr> 
                 <th>Polling Status</th>
                 <td><%=ElementUtil.getInterfaceStatusString(intf_db)%></td>
               </tr>
               <% if(ElementUtil.getInterfaceStatusString(intf_db).equals("Managed") && request.isUserInRole( Authentication.ROLE_ADMIN )) {
-                  List inPkgs = pollerCfgFactory.getAllPackageMatches(ipAddr);
-                  Iterator pkgiter = inPkgs.iterator();
-                  while (pkgiter.hasNext()) { %>
+                  List<String> inPkgs = pollerCfgFactory.getAllPackageMatches(ipAddr);
+                  Collections.sort(inPkgs);
+                  for (String pkgName : inPkgs) {
+                      Package pkg = pollerCfgFactory.getPackage(pkgName);
+                      boolean found = false;
+                      for (Service svc : services) {
+                          if (pollerCfgFactory.isServiceInPackageAndEnabled(svc.getServiceName(), pkg)) {
+                              found = true;
+                              continue;
+                          }
+                      }
+                      String pkgInfo = pkgName + (found ? " (*)" : ""); %>
                       <tr>
                           <th>Polling Package</th>
-                          <td><%= (String) pkgiter.next()%></td>
+                          <td><%= pkgInfo%></td>
                       </tr>
                   <% } %>
               <% } %>

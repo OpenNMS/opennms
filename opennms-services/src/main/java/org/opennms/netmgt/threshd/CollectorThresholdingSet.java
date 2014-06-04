@@ -33,11 +33,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.collectd.AliasedResource;
-import org.opennms.netmgt.collectd.IfInfo;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionResource;
+import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -51,8 +50,8 @@ public class CollectorThresholdingSet extends ThresholdingSet {
     
     // CollectionSpecification parameters
     boolean storeByIfAlias = false;
-    boolean storeByForeignSource = false;
-    
+    ServiceParameters svcParams;
+
     /**
      * <p>Constructor for CollectorThresholdingSet.</p>
      *
@@ -60,17 +59,13 @@ public class CollectorThresholdingSet extends ThresholdingSet {
      * @param hostAddress a {@link java.lang.String} object.
      * @param serviceName a {@link java.lang.String} object.
      * @param repository a {@link org.opennms.netmgt.model.RrdRepository} object.
+     * @param svcParams a {@link org.opennms.netmgt.config.collector.ServiceParameters} object.
      */
-    public CollectorThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository, Map<String, Object> roProps) {
+    public CollectorThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository, ServiceParameters svcParams) {
         super(nodeId, hostAddress, serviceName, repository);
-        String storeByIfAliasString = ParameterMap.getKeyedString(roProps, "storeByIfAlias", null);
+        String storeByIfAliasString = svcParams.getStoreByIfAlias();
         storeByIfAlias = storeByIfAliasString != null && storeByIfAliasString.toLowerCase().equals("true");
-        storeByForeignSource = isStoreByForeignSource();
-        log().debug("storeByForeignSource = " + storeByForeignSource);
-    }
-    
-    public static boolean isStoreByForeignSource() {
-       return Boolean.getBoolean("org.opennms.rrd.storeByForeignSource");
+        this.svcParams = svcParams;
     }
     
     /*
@@ -121,10 +116,7 @@ public class CollectorThresholdingSet extends ThresholdingSet {
     }
     
     protected boolean isCollectionEnabled(CollectionResource resource) {
-        if (resource instanceof IfInfo) {
-            return ((IfInfo) resource).isScheduledForCollection();
-        }
-        return true;
+        return resource.shouldPersist(svcParams);
     }
 
 }

@@ -30,7 +30,13 @@ package org.opennms.netmgt.collectd;
 
 
 import java.io.File;
-import java.util.*;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.opennms.core.utils.DefaultTimeKeeper;
 import org.opennms.core.utils.StringUtils;
@@ -42,6 +48,7 @@ import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>PersistOperationBuilder class.</p>
@@ -89,7 +96,7 @@ public class PersistOperationBuilder {
         return m_repository;
     }
 
-    private File getResourceDir(ResourceIdentifier resource) {
+    private File getResourceDir(ResourceIdentifier resource) throws FileNotFoundException {
         return resource.getResourceDir(getRepository());
     }
 
@@ -145,10 +152,17 @@ public class PersistOperationBuilder {
             // Nothing to do.  In fact, we'll get an error if we try to create an RRD file with no data sources            
             return;
         }
-        
-        RrdUtils.createRRD(m_resource.getOwnerName(), getResourceDir(m_resource).getAbsolutePath(), m_rrdName, getRepository().getStep(), getDataSources(), getRepository().getRraList(), getAttributeMappings());
-        RrdUtils.updateRRD(m_resource.getOwnerName(), getResourceDir(m_resource).getAbsolutePath(), m_rrdName, m_timeKeeper.getCurrentTime(), getValues());
-        RrdUtils.createMetaDataFile(getResourceDir(m_resource).getAbsolutePath(), m_rrdName, m_metaData);
+
+        try {
+            final String ownerName = m_resource.getOwnerName();
+            final String absolutePath = getResourceDir(m_resource).getAbsolutePath();
+            RrdUtils.createRRD(ownerName, absolutePath, m_rrdName, getRepository().getStep(), getDataSources(), getRepository().getRraList(), getAttributeMappings());
+            RrdUtils.updateRRD(ownerName, absolutePath, m_rrdName, m_timeKeeper.getCurrentTime(), getValues());
+            RrdUtils.createMetaDataFile(absolutePath, m_rrdName, m_metaData);
+        } catch (FileNotFoundException e) {
+            LoggerFactory.getLogger(getClass()).warn("Could not get resource directory: " + e.getMessage(), e);
+            return;
+        }
     }
 
     private String getValues() {

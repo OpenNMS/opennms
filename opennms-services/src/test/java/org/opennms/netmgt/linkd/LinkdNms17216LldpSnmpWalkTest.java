@@ -58,7 +58,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/applicationContext-linkd-test.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
 public class LinkdNms17216LldpSnmpWalkTest extends LinkdNms17216NetworkBuilder implements InitializingBean {
     
     @Override

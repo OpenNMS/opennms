@@ -3,7 +3,9 @@ package org.opennms.netmgt.provision.persist;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -11,6 +13,7 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
 public class RequisitionFileUtils {
@@ -45,13 +48,17 @@ public class RequisitionFileUtils {
         return encodeFileName(path, foreignSource.getName());
     }
 
-    static File getOutputFileForRequisition(final String path, final Requisition requisition) {
-        final File reqPath = new File(path);
-        createPath(reqPath);
-        return encodeFileName(path, requisition.getForeignSource());
+    public static File getOutputFileForRequisition(final String path, final Requisition requisition) {
+        return getOutputFileForRequisition(path, requisition.getForeignSource());
     }
 
-    public static File createSnapshot(final ForeignSourceRepository repository, final String foreignSource) {
+    public static File getOutputFileForRequisition(final String path, final String foreignSource) {
+        final File reqPath = new File(path);
+        createPath(reqPath);
+        return encodeFileName(path, foreignSource);
+    }
+
+    public static File createSnapshot(final ForeignSourceRepository repository, final String foreignSource, final Date date) {
         final URL url = repository.getRequisitionURL(foreignSource);
         if (url == null) {
             LogUtils.warnf(RequisitionFileUtils.class, "Unable to get requisition URL for foreign source %s", foreignSource);
@@ -70,7 +77,7 @@ public class RequisitionFileUtils {
             return null;
         }
 
-        final String targetFileName = sourceFileName + '.' + System.currentTimeMillis();
+        final String targetFileName = sourceFileName + '.' + date.getTime();
         final File targetFile = new File(targetFileName);
         try {
             FileUtils.copyFile(sourceFile, targetFile, true);
@@ -93,7 +100,12 @@ public class RequisitionFileUtils {
         }
 
         if (url != null) {
-            final String sourceFileName = url.getFile();
+            String sourceFileName = null;
+            try {
+                sourceFileName = URLDecoder.decode(url.getFile(), "utf-8");
+            } catch (final java.io.UnsupportedEncodingException e) {
+                LogUtils.warnf(RequisitionFileUtils.class, e, "Failed to decode URL %s as a file.", url.getFile());
+            }
             if (sourceFileName != null) {
                 final File sourceFile = new File(sourceFileName);
                 final File sourceDirectory = sourceFile.getParentFile();
@@ -119,6 +131,7 @@ public class RequisitionFileUtils {
         try {
             final File resourceFile = resource.getFile();
             if (isSnapshot(requisition.getForeignSource(), resourceFile)) {
+                LogUtils.tracef(RequisitionFileUtils.class, "Deleting %s", resourceFile);
                 if (!resourceFile.delete()) {
                     LogUtils.debugf(RequisitionFileUtils.class, "Failed to delete %s", resourceFile);
                 }
@@ -130,13 +143,44 @@ public class RequisitionFileUtils {
         
     }
 
+    public static void deleteSnapshotsOlderThan(final ForeignSourceRepository repository, final String foreignSource, final Date date) {
+        for (final File snapshotFile : findSnapshots(repository, foreignSource)) {
+            if (!isNewer(snapshotFile, date)) {
+                LogUtils.tracef(RequisitionFileUtils.class, "Deleting %s", snapshotFile);
+                snapshotFile.delete();
+            }
+        }
+    }
+
     public static void deleteAllSnapshots(final  ForeignSourceRepository repository) {
         for (final String foreignSource : repository.getActiveForeignSourceNames()) {
             final List<File> snapshots = findSnapshots(repository, foreignSource);
             for (final File snapshot : snapshots) {
+                LogUtils.tracef(RequisitionFileUtils.class, "Deleting %s", snapshot);
                 snapshot.delete();
             }
         }
+    }
+
+    public static Requisition getLatestPendingOrSnapshotRequisition(final ForeignSourceRepository foreignSourceRepository, final String foreignSource) {
+        Requisition newest = foreignSourceRepository.getRequisition(foreignSource);
+        for (final File snapshotFile : findSnapshots(foreignSourceRepository, foreignSource)) {
+            if (newest == null || isNewer(snapshotFile, newest.getDate())) {
+                newest = JaxbUtils.unmarshal(Requisition.class, snapshotFile);
+                newest.setResource(new FileSystemResource(snapshotFile));
+            }
+        }
+        return newest;
+    }
+
+    /** return true if the snapshot file is newer than the supplied date **/
+    public static boolean isNewer(final File snapshotFile, final Date date) {
+        final String name = snapshotFile.getName();
+        final String timestamp = name.substring(name.lastIndexOf(".") + 1);
+        final Date snapshotDate = new Date(Long.valueOf(timestamp));
+        final boolean isNewer = snapshotDate.after(date);
+        LogUtils.tracef(RequisitionFileUtils.class, "snapshot date = %s, comparison date = %s, snapshot date %s newer than comparison date", snapshotDate.getTime(), date.getTime(), (isNewer? "is" : "is not"));
+        return isNewer;
     }
 
 }

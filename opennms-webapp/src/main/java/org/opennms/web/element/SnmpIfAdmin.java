@@ -34,13 +34,16 @@
  */
 package org.opennms.web.element;
 
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.sql.SQLException;
+
+import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
-
-import java.net.*;
-import java.sql.SQLException;
+import org.opennms.protocols.snmp.SnmpBadConversionException;
 
 //import java.io.IOException;
 /**
@@ -183,25 +186,19 @@ public class SnmpIfAdmin {
         return m_value[value];
     }
 
-    private void setIfAdminStatusInDB(int ifindex, int value)
-            throws SQLException {
-        java.sql.Connection conn = null;
+    private void setIfAdminStatusInDB(int ifindex, int value) throws SQLException {
+        final DBUtils d = new DBUtils(getClass());
         try {
-            conn = org.opennms.core.resource.Vault.getDbConnection();
-            java.sql.PreparedStatement stmt = conn
-                    .prepareStatement("update snmpinterface set snmpifadminstatus = ? where nodeid = ? and snmpifindex=?;");
+            java.sql.Connection conn = org.opennms.core.resource.Vault.getDbConnection();
+            d.watch(conn);
+            java.sql.PreparedStatement stmt = conn.prepareStatement("update snmpinterface set snmpifadminstatus = ? where nodeid = ? and snmpifindex=?;");
+            d.watch(stmt);
             stmt.setInt(1, value);
             stmt.setInt(2, nodeid);
             stmt.setInt(3, ifindex);
             stmt.execute();
-        } catch (SQLException e) {
-            throw e;
         } finally {
-            try {
-                if (conn != null)
-                    conn.close();
-            } catch (SQLException e) {
-            }
+            d.cleanUp();
         }
     }
 
@@ -228,12 +225,10 @@ public class SnmpIfAdmin {
         SnmpValue val = SnmpUtils.getValueFactory().getInt32(value);
         SnmpValue result = SnmpUtils.set(m_agent, oid,val);
 
-   	 	
-
         if (result != null && result.isNumeric()) {
-        	int retvalue = result.toInt();
-        	setIfAdminStatusInDB(ifindex, retvalue);
-        	if (retvalue == value) return true;
+            int retvalue = result.toInt();
+            setIfAdminStatusInDB(ifindex, retvalue);
+            if (retvalue == value) return true;
         }
         return false;
     }

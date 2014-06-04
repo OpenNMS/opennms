@@ -82,7 +82,7 @@ public class OnmsServiceType implements Serializable {
      */
     @Id
     @XmlAttribute(name="id")
-    @Column(name="serviceId", nullable=false)
+    @Column(name="serviceId", nullable=false, unique=true)
     @SequenceGenerator(name="serviceTypeSequence", sequenceName="serviceNxtId")
     @GeneratedValue(generator="serviceTypeSequence")
     public Integer getId() {

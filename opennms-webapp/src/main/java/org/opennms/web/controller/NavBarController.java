@@ -139,12 +139,21 @@ public class NavBarController extends AbstractController implements Initializing
     private String createNavBarHtml(HttpServletRequest request) {
         StringBuilder strBuilder = new StringBuilder();
         strBuilder.append("<ul>");
-        
-        for (NavBarEntry entry : getNavBarItems()) {
-            if(entry.evaluate(request) == DisplayStatus.DISPLAY_LINK) {
-                strBuilder.append("<li><a href=\"" + entry.getUrl() +  "\" >" + entry.getName() + "</a></li>");
+
+        for (final NavBarEntry entry : getNavBarItems()) {
+            final DisplayStatus displayStatus = entry.evaluate(request);
+            switch(displayStatus) {
+                case DISPLAY_LINK:
+                    strBuilder.append("<li><a href=\"" + entry.getUrl() +  "\" >" + entry.getName() + "</a></li>");
+                    break;
+                case DISPLAY_NO_LINK:
+                    strBuilder.append("<li>" + entry.getName() + "</li>");
+                    break;
+                default:
+                    break;
             }
         }
+
         strBuilder.append("</ul>");
         return strBuilder.toString();
     }

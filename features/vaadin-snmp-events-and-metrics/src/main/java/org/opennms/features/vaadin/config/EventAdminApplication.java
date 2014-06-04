@@ -146,7 +146,7 @@ public class EventAdminApplication extends Application {
                 PromptWindow w = new PromptWindow("New Events Configuration", "Events File Name") {
                     @Override
                     public void textFieldChanged(String fieldValue) {
-                        final File file = new File(eventsDir, fieldValue);
+                        final File file = new File(eventsDir, normalizeFilename(fieldValue));
                         LogUtils.infof(this, "Adding new events file %s", file);
                         final Events events = new Events();
                         addEventPanel(layout, file, events);
@@ -221,6 +221,30 @@ public class EventAdminApplication extends Application {
     }
 
     /**
+     * Normalize filename.
+     *
+     * @param currentFileName the current file name
+     * @return the string
+     */
+    protected String normalizeFilename(String currentFileName) {
+        String fileName = currentFileName.replaceFirst("\\.$", "");
+        if (fileName.toLowerCase().endsWith(".xml")) {
+            if (fileName.toLowerCase().endsWith(".events.xml")) {
+                fileName = fileName.replaceFirst("\\.[Xx][Mm][Ll]", ".xml");
+            } else {
+                fileName = fileName.replaceFirst("\\.[Xx][Mm][Ll]", ".events.xml");
+            }
+        } else {
+            if (fileName.toLowerCase().endsWith(".events")) {
+                fileName += ".xml";
+            } else {
+                fileName += ".events.xml";
+            }
+        }
+        return fileName;
+    }
+
+    /**
      * Adds a new Events Panel.
      *
      * @param layout the layout
@@ -229,22 +253,22 @@ public class EventAdminApplication extends Application {
      * @return a new Events Panel Object
      */
     private void addEventPanel(final VerticalLayout layout, final File file, final Events events) {
-        EventPanel eventPanel = new EventPanel(eventConfDao, eventProxy, file.getName(), events, new SimpleLogger()) {
+        EventPanel eventPanel = new EventPanel(eventConfDao, eventProxy, file, events, new SimpleLogger()) {
             @Override
             public void cancel() {
                 this.setVisible(false);
             }
             @Override
             public void success() {
-                getMainWindow().showNotification("Event file " + file.getName() + " has been successfuly saved.");
+                getMainWindow().showNotification("Event file " + file + " has been successfuly saved.");
                 this.setVisible(false);
             }
             @Override
             public void failure() {
-                getMainWindow().showNotification("Event file " + file.getName() + " cannot be saved.", Notification.TYPE_ERROR_MESSAGE);
+                getMainWindow().showNotification("Event file " + file + " cannot be saved.", Notification.TYPE_ERROR_MESSAGE);
             }
         };
-        eventPanel.setCaption("Events from " + file.getName());
+        eventPanel.setCaption("Events from " + file);
         removeEventPanel(layout);
         layout.addComponent(eventPanel);
     }

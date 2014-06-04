@@ -59,7 +59,6 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpParams;
-import org.apache.http.protocol.HTTP;
 import org.opennms.core.utils.EmptyKeyRelaxedTrustProvider;
 import org.opennms.core.utils.EmptyKeyRelaxedTrustSSLContext;
 import org.opennms.core.utils.HttpResponseRange;
@@ -162,7 +161,7 @@ public class HttpNorthbounder extends AbstractNorthbounder {
             HttpEntity entity = null;
             try {
                 //I have no idea what I'm doing here ;)
-                entity = new StringEntity("XML HERE", HTTP.DEFAULT_CONTENT_TYPE, HTTP.DEFAULT_CONTENT_CHARSET);
+                entity = new StringEntity("XML HERE");
             } catch (UnsupportedEncodingException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -173,7 +172,7 @@ public class HttpNorthbounder extends AbstractNorthbounder {
         } else if (HttpMethod.GET == m_config.getMethod()) {
             
             //TODO: need to configure these
-            List<NameValuePair> getParms = null;
+            //List<NameValuePair> getParms = null;
             method = new HttpGet(uri);
         }
         

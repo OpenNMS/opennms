@@ -206,6 +206,7 @@ public class KscRestService extends OnmsRestService {
         }
 
         public void setKscReports(final List<KscReport> reports) {
+            if (reports == this) return;
             clear();
             addAll(reports);
         }

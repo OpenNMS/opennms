@@ -1,4 +1,4 @@
-<events>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
     <event>
         <uei>uei.opennms.org/internal/alarms/AlarmRaised</uei>
         <event-label>OpenNMS Alarm Raised</event-label>

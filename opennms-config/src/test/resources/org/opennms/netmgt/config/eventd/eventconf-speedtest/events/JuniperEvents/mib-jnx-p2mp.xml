@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<?meta name="GENERATOR" content="XML::Smart/1.6.9 Perl/5.008008 [linux]" ?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.5.7.1</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>1</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxMplsTeP2mpTunnelDestUp</uei>
+    <event-label>JNX-MPLS-TE-P2MP-STD-MIB defined trap event: jnxMplsTeP2mpTunnelDestUp</event-label>
+    <descr><![CDATA[
+<p>This notification is generated when a
+mplsTeP2mpTunnelDestOperStatus object for one of the
+destinations of one of the configured tunnels is about to
+leave the down(2) state and transition into some other
+state.  This other state is indicated by the included value
+of mplsTeP2mpTunnelDestOperStatus.
+
+This reporting of state transitions mirrors mplsTunnelUp.</p><table>
+	<tr><td><b>
+
+	jnxMplsTeP2mpTunnelDestAdminStatus</b></td><td>
+	%parm[#1]%;</td><td><p>
+		up(1)
+		down(2)
+		testing(3)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxMplsTeP2mpTunnelDestOperStatus</b></td><td>
+	%parm[#2]%;</td><td><p>
+		up(1)
+		down(2)
+		testing(3)
+		unknown(4)
+		lowerLayerDown(7)
+	</p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxMplsTeP2mpTunnelDestUp trap received 
+			jnxMplsTeP2mpTunnelDestAdminStatus=%parm[#1]% 
+			jnxMplsTeP2mpTunnelDestOperStatus=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Indeterminate</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.5.7.1</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>2</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxMplsTeP2mpTunnelDestDown</uei>
+    <event-label>JNX-MPLS-TE-P2MP-STD-MIB defined trap event: jnxMplsTeP2mpTunnelDestDown</event-label>
+    <descr><![CDATA[
+<p>This notification is generated when a
+mplsTeP2mpTunnelDestOperStatus object for one of the
+destinations of one of the configured tunnels is about to
+enter the down(2) state from some other state. This other
+state is indicated by the included value of
+mplsTeP2mpTunnelDestOperStatus.
+
+This reporting of state transitions mirrors mplsTunnelDown.</p><table>
+	<tr><td><b>
+
+	jnxMplsTeP2mpTunnelDestAdminStatus</b></td><td>
+	%parm[#1]%;</td><td><p>
+		up(1)
+		down(2)
+		testing(3)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxMplsTeP2mpTunnelDestOperStatus</b></td><td>
+	%parm[#2]%;</td><td><p>
+		up(1)
+		down(2)
+		testing(3)
+		unknown(4)
+		lowerLayerDown(7)
+	</p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxMplsTeP2mpTunnelDestDown trap received 
+			jnxMplsTeP2mpTunnelDestAdminStatus=%parm[#1]% 
+			jnxMplsTeP2mpTunnelDestOperStatus=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Indeterminate</severity>
+  </event>
+</events>
+

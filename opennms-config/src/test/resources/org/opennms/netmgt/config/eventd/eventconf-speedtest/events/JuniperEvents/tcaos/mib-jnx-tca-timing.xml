@@ -1,0 +1,1676 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<?meta name="GENERATOR" content="XML::Smart/1.6.9 Perl/5.008008 [linux]" ?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>12</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>5</vbvalue>
+      </varbind>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgTimingOscilDacRange</uei>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgTimingOscilDacRange</event-label>
+    <descr><![CDATA[
+<p>This notification signifies that the soscillator DAC value is 
+out of range where the value can be adjusted.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgSysConfigChange trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Critical</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>12</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>4</vbvalue>
+      </varbind>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgTimingOscilDacRange</uei>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgTimingOscilDacRange</event-label>
+    <descr><![CDATA[
+<p>This notification signifies that the soscillator DAC value is 
+out of range where the value can be adjusted.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgTimingOscilDacRange trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Major</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>12</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>3</vbvalue>
+      </varbind>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgTimingOscilDacRange</uei>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgTimingOscilDacRange</event-label>
+    <descr><![CDATA[
+<p>This notification signifies that the soscillator DAC value is 
+out of range where the value can be adjusted.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgTimingOscilDacRange trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Minor</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>12</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>2</vbvalue>
+      </varbind>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgTimingOscilDacRange</uei>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgTimingOscilDacRange</event-label>
+    <descr><![CDATA[
+<p>This notification signifies that the soscillator DAC value is 
+out of range where the value can be adjusted.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgTimingOscilDacRange trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Warning</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <descr><![CDATA[
+<p>This notification signifies that the soscillator DAC value is 
+out of range where the value can be adjusted.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgTimingOscilDacRange</event-label>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgTimingOscilDacRange trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>12</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>1</vbvalue>
+      </varbind>
+    </mask>
+    <severity>Cleared</severity>
+    <uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxTcaTrapMsgTimingOscilDacRange</uei>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgTimingOscilDacRange:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <descr><![CDATA[
+<p>This notification signifies that the system is no longer 
+providing a Stratum 1 reference.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgTimingNonStratumOne</event-label>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgTimingNonStratumOne trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>13</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>5
+</vbvalue>
+      </varbind>
+    </mask>
+    <severity>Critical</severity>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgTimingNonStratumOne</uei>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <descr><![CDATA[
+<p>This notification signifies that the system is no longer 
+providing a Stratum 1 reference.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgTimingNonStratumOne</event-label>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgTimingNonStratumOne trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>13</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>4
+</vbvalue>
+      </varbind>
+    </mask>
+    <severity>Major</severity>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgTimingNonStratumOne</uei>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <descr><![CDATA[
+<p>This notification signifies that the system is no longer 
+providing a Stratum 1 reference.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgTimingNonStratumOne</event-label>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgTimingNonStratumOne trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>13</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>3
+</vbvalue>
+      </varbind>
+    </mask>
+    <severity>Minor</severity>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgTimingNonStratumOne</uei>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <descr><![CDATA[
+<p>This notification signifies that the system is no longer 
+providing a Stratum 1 reference.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgTimingNonStratumOne</event-label>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgTimingNonStratumOne trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>13</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>2
+</vbvalue>
+      </varbind>
+    </mask>
+    <severity>Warning</severity>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgTimingNonStratumOne</uei>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <descr><![CDATA[
+<p>This notification signifies that the system is no longer 
+providing a Stratum 1 reference.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgTimingNonStratumOne</event-label>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgTimingNonStratumOne trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>13</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>1
+</vbvalue>
+      </varbind>
+    </mask>
+    <severity>Cleared</severity>
+    <uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxTcaTrapMsgTimingNonStratumOne</uei>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgTimingNonStratumOne:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <descr><![CDATA[
+<p>This notification signifies that the PTP salve detects any
+unreachable connectivity with PTP grandmaster.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgMsgPtpServerUnreachable</event-label>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgMsgPtpServerUnreachable trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>23</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>5
+</vbvalue>
+      </varbind>
+    </mask>
+    <severity>Critical</severity>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgMsgPtpServerUnreachable</uei>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <descr><![CDATA[
+<p>This notification signifies that the PTP salve detects any
+unreachable connectivity with PTP grandmaster.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgMsgPtpServerUnreachable</event-label>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgMsgPtpServerUnreachable trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>23</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>4
+</vbvalue>
+      </varbind>
+    </mask>
+    <severity>Major</severity>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgMsgPtpServerUnreachable</uei>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <descr><![CDATA[
+<p>This notification signifies that the PTP salve detects any
+unreachable connectivity with PTP grandmaster.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgMsgPtpServerUnreachable</event-label>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgMsgPtpServerUnreachable trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>23</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>3
+</vbvalue>
+      </varbind>
+    </mask>
+    <severity>Minor</severity>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgMsgPtpServerUnreachable</uei>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <descr><![CDATA[
+<p>This notification signifies that the PTP salve detects any
+unreachable connectivity with PTP grandmaster.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgMsgPtpServerUnreachable</event-label>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgMsgPtpServerUnreachable trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>23</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>2
+</vbvalue>
+      </varbind>
+    </mask>
+    <severity>Warning</severity>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgMsgPtpServerUnreachable</uei>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <descr><![CDATA[
+<p>This notification signifies that the PTP salve detects any
+unreachable connectivity with PTP grandmaster.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgMsgPtpServerUnreachable</event-label>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgMsgPtpServerUnreachable trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>23</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>1
+</vbvalue>
+      </varbind>
+    </mask>
+    <severity>Cleared</severity>
+    <uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxTcaTrapMsgMsgPtpServerUnreachable</uei>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgMsgPtpServerUnreachable:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <descr><![CDATA[
+<p>This notification signifies that the PTP salve has switched 
+to a new grandmaster.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgMsgPtpServerChange</event-label>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgMsgPtpServerChange trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>24</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>5
+</vbvalue>
+      </varbind>
+    </mask>
+    <severity>Critical</severity>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgMsgPtpServerChange</uei>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <descr><![CDATA[
+<p>This notification signifies that the PTP salve has switched 
+to a new grandmaster.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgMsgPtpServerChange</event-label>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgMsgPtpServerChange trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>24</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>4
+</vbvalue>
+      </varbind>
+    </mask>
+    <severity>Major</severity>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgMsgPtpServerChange</uei>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <descr><![CDATA[
+<p>This notification signifies that the PTP salve has switched 
+to a new grandmaster.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgMsgPtpServerChange</event-label>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgMsgPtpServerChange trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>24</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>3
+</vbvalue>
+      </varbind>
+    </mask>
+    <severity>Minor</severity>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgMsgPtpServerChange</uei>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <descr><![CDATA[
+<p>This notification signifies that the PTP salve has switched 
+to a new grandmaster.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgMsgPtpServerChange</event-label>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgMsgPtpServerChange trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>24</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>2
+</vbvalue>
+      </varbind>
+    </mask>
+    <severity>Warning</severity>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgMsgPtpServerChange</uei>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <descr><![CDATA[
+<p>This notification signifies that the PTP salve has switched 
+to a new grandmaster.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgMsgPtpServerChange</event-label>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgMsgPtpServerChange trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>24</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>1
+</vbvalue>
+      </varbind>
+    </mask>
+    <severity>Cleared</severity>
+    <uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxTcaTrapMsgMsgPtpServerChange</uei>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgMsgPtpServerChange:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <descr><![CDATA[
+<p>This notification signifies that the system clock frequency 
+goes to holdover state.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgFrequencyHoldover</event-label>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgFrequencyHoldover trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>26</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>5
+</vbvalue>
+      </varbind>
+    </mask>
+    <severity>Critical</severity>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgFrequencyHoldover</uei>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <descr><![CDATA[
+<p>This notification signifies that the system clock frequency 
+goes to holdover state.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgFrequencyHoldover</event-label>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgFrequencyHoldover trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>26</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>4
+</vbvalue>
+      </varbind>
+    </mask>
+    <severity>Major</severity>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgFrequencyHoldover</uei>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <descr><![CDATA[
+<p>This notification signifies that the system clock frequency 
+goes to holdover state.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgFrequencyHoldover</event-label>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgFrequencyHoldover trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>26</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>3
+</vbvalue>
+      </varbind>
+    </mask>
+    <severity>Minor</severity>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgFrequencyHoldover</uei>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <descr><![CDATA[
+<p>This notification signifies that the system clock frequency 
+goes to holdover state.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgFrequencyHoldover</event-label>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgFrequencyHoldover trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>26</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>2
+</vbvalue>
+      </varbind>
+    </mask>
+    <severity>Warning</severity>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgFrequencyHoldover</uei>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <descr><![CDATA[
+<p>This notification signifies that the system clock frequency 
+goes to holdover state.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgFrequencyHoldover</event-label>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgFrequencyHoldover trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>26</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>1</vbvalue>
+      </varbind>
+    </mask>
+    <severity>Cleared</severity>
+    <uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxTcaTrapMsgFrequencyHoldover</uei>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgFrequencyHoldover:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <descr><![CDATA[
+<p>This notification signifies that when system clock frequency 
+goes to freerun state.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgFrequencyFreerun</event-label>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgFrequencyFreerun trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>27</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>5
+</vbvalue>
+      </varbind>
+    </mask>
+    <severity>Critical</severity>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgFrequencyFreerun</uei>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <descr><![CDATA[
+<p>This notification signifies that when system clock frequency 
+goes to freerun state.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgFrequencyFreerun</event-label>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgFrequencyFreerun trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>27</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>4
+</vbvalue>
+      </varbind>
+    </mask>
+    <severity>Major</severity>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgFrequencyFreerun</uei>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <descr><![CDATA[
+<p>This notification signifies that when system clock frequency 
+goes to freerun state.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgFrequencyFreerun</event-label>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgFrequencyFreerun trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>27</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>3
+</vbvalue>
+      </varbind>
+    </mask>
+    <severity>Minor</severity>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgFrequencyFreerun</uei>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <descr><![CDATA[
+<p>This notification signifies that when system clock frequency 
+goes to freerun state.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgFrequencyFreerun</event-label>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgFrequencyFreerun trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>27</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>2
+</vbvalue>
+      </varbind>
+    </mask>
+    <severity>Warning</severity>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgFrequencyFreerun</uei>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <descr><![CDATA[
+<p>This notification signifies that when system clock frequency 
+goes to freerun state.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgFrequencyFreerun</event-label>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgFrequencyFreerun trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>27</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>1</vbvalue>
+      </varbind>
+    </mask>
+    <severity>Cleared</severity>
+    <uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxTcaTrapMsgFrequencyFreerun</uei>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgFrequencyFreerun:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <descr><![CDATA[
+<p>This notification signifies that when system clock frequency 
+reference input has changed.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgFrequencyRefInputChange</event-label>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgFrequencyRefInputChange trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>28</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>5
+</vbvalue>
+      </varbind>
+    </mask>
+    <severity>Critical</severity>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgFrequencyRefInputChange</uei>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <descr><![CDATA[
+<p>This notification signifies that when system clock frequency 
+reference input has changed.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgFrequencyRefInputChange</event-label>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgFrequencyRefInputChange trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>28</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>4
+</vbvalue>
+      </varbind>
+    </mask>
+    <severity>Major</severity>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgFrequencyRefInputChange</uei>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <descr><![CDATA[
+<p>This notification signifies that when system clock frequency 
+reference input has changed.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgFrequencyRefInputChange</event-label>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgFrequencyRefInputChange trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>28</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>3
+</vbvalue>
+      </varbind>
+    </mask>
+    <severity>Minor</severity>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgFrequencyRefInputChange</uei>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <descr><![CDATA[
+<p>This notification signifies that when system clock frequency 
+reference input has changed.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgFrequencyRefInputChange</event-label>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgFrequencyRefInputChange trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>28</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>2
+</vbvalue>
+      </varbind>
+    </mask>
+    <severity>Warning</severity>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgFrequencyRefInputChange</uei>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <descr><![CDATA[
+<p>This notification signifies that when system clock frequency 
+reference input has changed.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgFrequencyRefInputChange</event-label>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgFrequencyRefInputChange trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>28</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>1</vbvalue>
+      </varbind>
+    </mask>
+    <severity>Cleared</severity>
+    <uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxTcaTrapMsgFrequencyRefInputChange</uei>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgFrequencyRefInputChange:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <descr><![CDATA[
+<p>This notification signifies that when system clock frequency 
+input quality has changed.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgFrequencyInputQualityChange</event-label>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgFrequencyInputQualityChange trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>29</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>5
+</vbvalue>
+      </varbind>
+    </mask>
+    <severity>Critical</severity>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgFrequencyInputQualityChange</uei>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <descr><![CDATA[
+<p>This notification signifies that when system clock frequency 
+input quality has changed.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgFrequencyInputQualityChange</event-label>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgFrequencyInputQualityChange trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>29</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>4
+</vbvalue>
+      </varbind>
+    </mask>
+    <severity>Major</severity>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgFrequencyInputQualityChange</uei>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <descr><![CDATA[
+<p>This notification signifies that when system clock frequency 
+input quality has changed.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgFrequencyInputQualityChange</event-label>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgFrequencyInputQualityChange trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>29</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>3
+</vbvalue>
+      </varbind>
+    </mask>
+    <severity>Minor</severity>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgFrequencyInputQualityChange</uei>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <descr><![CDATA[
+<p>This notification signifies that when system clock frequency 
+input quality has changed.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgFrequencyInputQualityChange</event-label>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgFrequencyInputQualityChange trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>29</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>2
+</vbvalue>
+      </varbind>
+    </mask>
+    <severity>Warning</severity>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgFrequencyInputQualityChange</uei>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <descr><![CDATA[
+<p>This notification signifies that when system clock frequency 
+input quality has changed.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgFrequencyInputQualityChange</event-label>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgFrequencyInputQualityChange trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>29</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>1</vbvalue>
+      </varbind>
+    </mask>
+    <severity>Cleared</severity>
+    <uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxTcaTrapMsgFrequencyInputQualityChange</uei>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgFrequencyInputQualityChange:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+</events>
+

@@ -501,11 +501,13 @@ create index ipinterface_snmpInterfaceId_idx on ipInterface (snmpInterfaceId);
 --########################################################################
 
 create table service (
-	serviceID		integer not null,
+	serviceID		integer default nextval('serviceNxtId') not null,
 	serviceName		varchar(255) not null,
 
 	constraint pk_serviceID primary key (serviceID)
 );
+
+create unique index service_servicename_key on service (serviceid);
 
 --########################################################################
 --# ifServices Table - Contains a mapping of interfaces to services available
@@ -1205,7 +1207,7 @@ create table assets (
         vmwaremanagedobjectid	varchar(70),
         vmwaremanagedentitytype	varchar(70),
         vmwaremanagementserver	varchar(70),
-        vmwaretopologyinfo	varchar(1023),
+        vmwaretopologyinfo	text,
         vmwarestate	varchar(255),
         
     constraint pk_assetID primary key (id),
@@ -1228,7 +1230,7 @@ CREATE INDEX assets_an_idx ON assets(assetNumber);
 
 create table categories (
 		categoryId			integer,
-		categoryName			varchar(64) not null,
+		categoryName			text not null,
 		categoryDescription	varchar(256),
 
 	constraint category_pkey primary key (categoryId)

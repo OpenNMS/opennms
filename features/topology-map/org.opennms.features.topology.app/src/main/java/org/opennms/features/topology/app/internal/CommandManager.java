@@ -276,6 +276,7 @@ public class CommandManager {
 	}
 
 	public void setTopLevelMenuOrder(List<String> menuOrderList) {
+		if (m_topLevelMenuOrder == menuOrderList) return;
 		m_topLevelMenuOrder.clear();
 		m_topLevelMenuOrder.addAll(menuOrderList);
 

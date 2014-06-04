@@ -107,8 +107,13 @@
 			<formalpara>
 				<title>Gentoo</title>
 
-				<para>Gentoo ebuilds used to be available but are no longer officially maintained,
-				as we have no Gentoo packager volunteers to keep them up-to-date.</para>
+				<para>Gentoo ebuilds are available but are not officially supported,
+				as we depend on Gentoo packager volunteers from the at-large user
+				community to keep them up-to-date. Information is available
+				<ulink
+				url="http://www.opennms.org/wiki/Other_Install_instructions#Gentoo_Installation">
+				on the wiki</ulink>.
+				</para>
 			</formalpara>
 		</listitem>
 		<listitem>

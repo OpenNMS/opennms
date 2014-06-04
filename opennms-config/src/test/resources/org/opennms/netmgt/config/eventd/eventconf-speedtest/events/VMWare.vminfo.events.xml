@@ -1,0 +1,235 @@
+<!-- Start of auto generated data from MIB: VMWARE-VMINFO-MIB -->
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.6876.4.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/vmware/traps/vmwVmPoweredOn</uei>
+	<event-label>VMWARE-VMINFO-MIB defined trap event: vmwVmPoweredOn</event-label>
+	<descr>
+<![CDATA[
+<p>This trap is sent when a virtual machine is powered on from a suspended 
+or a powered off state. The origin of this event can be several:
+for instance may be operator initiated, existing vmx process reconnects to control subsystem. 
+NOTE: vms powered up due to VMotion are not reported. Upon receiving this notification client applications should
+poll the vmwVmTable to obtain current status.</p><table>
+	<tr><td><b>
+
+	vmwVmID</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	vmwVmConfigFilePath</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	vmwVmDisplayName</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			vmwVmPoweredOn trap received 
+			vmwVmID=%parm[#1]% 
+			vmwVmConfigFilePath=%parm[#2]% 
+			vmwVmDisplayName=%parm[#3]%</p>
+]]>		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/vmware/traps/vmwVmPoweredOff:%dpname%:%nodeid%:%parm[#3]%" alarm-type="2" auto-clean="false"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.6876.4.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/vmware/traps/vmwVmPoweredOff</uei>
+	<event-label>VMWARE-VMINFO-MIB defined trap event: vmwVmPoweredOff</event-label>
+	<descr>
+<![CDATA[
+<p>This trap is sent when a virtual machine is powered off. The origin of this event can be several:
+for instance may be operator initiated, vmx process terminating abnormally. NOTE: vms powered down due
+to VMotion are not reported. Upon receiving this notification client applications should
+poll the vmwVmTable to obtain current status.</p><table>
+	<tr><td><b>
+
+	vmwVmID</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	vmwVmConfigFilePath</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	vmwVmDisplayName</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			vmwVmPoweredOff trap received 
+			vmwVmID=%parm[#1]% 
+			vmwVmConfigFilePath=%parm[#2]% 
+			vmwVmDisplayName=%parm[#3]%</p>
+]]>		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.6876.4.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/vmware/traps/vmwVmHBLost</uei>
+	<event-label>VMWARE-VMINFO-MIB defined trap event: vmwVmHBLost</event-label>
+	<descr>
+<![CDATA[
+<p>This trap is sent when a virtual machine detects a loss in guest heartbeat. The Guest heartbeat
+is only sent if VMware Tools are installed in the Guest OS. Control process will send this event whenever it 
+determines the number of guest heartbeats for a given period of time have not been received. 
+Upon receiving this notification client applications should
+poll the vmwVmTable to obtain current status.</p><table>
+	<tr><td><b>
+
+	vmwVmID</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	vmwVmConfigFilePath</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	vmwVmDisplayName</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			vmwVmHBLost trap received 
+			vmwVmID=%parm[#1]% 
+			vmwVmConfigFilePath=%parm[#2]% 
+			vmwVmDisplayName=%parm[#3]%</p>
+]]>		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.6876.4.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/vmware/traps/vmwVmHBDetected</uei>
+	<event-label>VMWARE-VMINFO-MIB defined trap event: vmwVmHBDetected</event-label>
+	<descr>
+<![CDATA[
+<p>This trap is sent when a virtual machine detects or regains the required number of guest heartbeats
+for a given period of time. This is only sent if VMware tools are installed in the Guest OS.
+Upon receiving this notification client applications should
+poll the vmwVmTable to obtain current status.</p><table>
+	<tr><td><b>
+
+	vmwVmID</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	vmwVmConfigFilePath</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	vmwVmDisplayName</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			vmwVmHBDetected trap received 
+			vmwVmID=%parm[#1]% 
+			vmwVmConfigFilePath=%parm[#2]% 
+			vmwVmDisplayName=%parm[#3]%</p>
+]]>		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/vmware/traps/vmwVmHBLost:%dpname%:%nodeid%:%parm[#3]%" alarm-type="2" auto-clean="false"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.6876.4.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/vmware/traps/vmwVmSuspended</uei>
+	<event-label>VMWARE-VMINFO-MIB defined trap event: vmwVmSuspended</event-label>
+	<descr>
+<![CDATA[
+<p>This trap is sent when a virtual machine is suspended. The origin of this event may be several: operator
+initiated, by software api clients, and by other means.
+Upon receiving this notification client applications should
+poll the vmwVmTable to obtain current status.</p><table>
+	<tr><td><b>
+
+	vmwVmID</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	vmwVmConfigFilePath</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	vmwVmDisplayName</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			vmwVmSuspended trap received 
+			vmwVmID=%parm[#1]% 
+			vmwVmConfigFilePath=%parm[#2]% 
+			vmwVmDisplayName=%parm[#3]%</p>
+]]>		</logmsg>
+	<severity>Normal</severity>
+</event>
+</events>
+<!-- End of auto generated data from MIB: VMWARE-VMINFO-MIB -->

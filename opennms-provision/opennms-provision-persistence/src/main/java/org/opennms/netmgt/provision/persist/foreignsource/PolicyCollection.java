@@ -80,6 +80,7 @@ public class PolicyCollection implements List<PluginConfig> {
      * @param policies a {@link java.util.List} object.
      */
     public void setPolicies(List<PluginConfig> policies) {
+        if (policies == this) return;
         clear();
         addAll(policies);
     }

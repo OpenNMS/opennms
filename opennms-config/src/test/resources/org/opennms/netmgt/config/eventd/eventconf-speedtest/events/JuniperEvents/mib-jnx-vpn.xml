@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<?meta name="GENERATOR" content="XML::Smart/1.6.9 Perl/5.008008 [linux]" ?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.26</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>1</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxVpnIfUp</uei>
+    <event-label>JUNIPER-VPN-MIB defined trap event: jnxVpnIfUp</event-label>
+    <descr><![CDATA[
+<p>A jnxVpnIfUp notification is generated when the interface
+with index jnxVpnIfIndex belonging to the VPN named jnxVpnIfVpnName 
+of type jnxVpnIfVpnType transitions out of the 'down' state.</p><table>
+	<tr><td><b>
+
+	jnxVpnIfVpnType</b></td><td>
+	%parm[#1]%;</td><td><p>
+		other(1)
+		bgpIpVpn(2)
+		bgpL2Vpn(3)
+		bgpVpls(4)
+		l2Circuit(5)
+		ldpVpls(6)
+		opticalVpn(7)
+		vpOxc(8)
+		ccc(9)
+		bgpAtmVpn(10)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxVpnIfVpnName</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxVpnIfIndex</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxVpnIfUp trap received 
+			jnxVpnIfVpnType=%parm[#1]% 
+			jnxVpnIfVpnName=%parm[#2]% 
+			jnxVpnIfIndex=%parm[#3]%</p>
+		]]></logmsg>
+    <severity>Cleared</severity>
+    <alarm-data alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxVpnIfDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.26</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>2</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxVpnIfDown</uei>
+    <event-label>JUNIPER-VPN-MIB defined trap event: jnxVpnIfDown</event-label>
+    <descr><![CDATA[
+<p>A jnxVpnIfDown notification is generated when the interface
+with index jnxVpnIfIndex belonging to the VPN named jnxVpnIfVpnName 
+of type jnxVpnIfVpnType transitions to the 'down' state.</p><table>
+	<tr><td><b>
+
+	jnxVpnIfVpnType</b></td><td>
+	%parm[#1]%;</td><td><p>
+		other(1)
+		bgpIpVpn(2)
+		bgpL2Vpn(3)
+		bgpVpls(4)
+		l2Circuit(5)
+		ldpVpls(6)
+		opticalVpn(7)
+		vpOxc(8)
+		ccc(9)
+		bgpAtmVpn(10)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxVpnIfVpnName</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxVpnIfIndex</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxVpnIfDown trap received 
+			jnxVpnIfVpnType=%parm[#1]% 
+			jnxVpnIfVpnName=%parm[#2]% 
+			jnxVpnIfIndex=%parm[#3]%</p>
+		]]></logmsg>
+    <severity>Major</severity>
+    <alarm-data alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.26</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>3</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxVpnPwUp</uei>
+    <event-label>JUNIPER-VPN-MIB defined trap event: jnxVpnPwUp</event-label>
+    <descr><![CDATA[
+<p>A jnxVpnPwUp notification is generated when the Pseudo-Wire
+with index jnxVpnPwIndex belonging to the VPN named jnxVpnPwVpnName 
+of type jnxVpnPwVpnType transitions out of the 'down' state.</p><table>
+	<tr><td><b>
+
+	jnxVpnPwVpnType</b></td><td>
+	%parm[#1]%;</td><td><p>
+		other(1)
+		bgpIpVpn(2)
+		bgpL2Vpn(3)
+		bgpVpls(4)
+		l2Circuit(5)
+		ldpVpls(6)
+		opticalVpn(7)
+		vpOxc(8)
+		ccc(9)
+		bgpAtmVpn(10)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxVpnPwVpnName</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxVpnPwIndex</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxVpnPwUp trap received 
+			jnxVpnPwVpnType=%parm[#1]% 
+			jnxVpnPwVpnName=%parm[#2]% 
+			jnxVpnPwIndex=%parm[#3]%</p>
+		]]></logmsg>
+    <severity>Cleared</severity>
+    <alarm-data alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxVpnPwDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.26</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>4</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxVpnPwDown</uei>
+    <event-label>JUNIPER-VPN-MIB defined trap event: jnxVpnPwDown</event-label>
+    <descr><![CDATA[
+<p>A jnxVpnPwDown notification is generated when the Pseudo-Wire
+with index jnxVpnPwIndex belonging to the VPN named jnxVpnPwVpnName 
+of type jnxVpnPwVpnType transitions to the 'down' state.</p><table>
+	<tr><td><b>
+
+	jnxVpnPwVpnType</b></td><td>
+	%parm[#1]%;</td><td><p>
+		other(1)
+		bgpIpVpn(2)
+		bgpL2Vpn(3)
+		bgpVpls(4)
+		l2Circuit(5)
+		ldpVpls(6)
+		opticalVpn(7)
+		vpOxc(8)
+		ccc(9)
+		bgpAtmVpn(10)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxVpnPwVpnName</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxVpnPwIndex</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxVpnPwDown trap received 
+			jnxVpnPwVpnType=%parm[#1]% 
+			jnxVpnPwVpnName=%parm[#2]% 
+			jnxVpnPwIndex=%parm[#3]%</p>
+		]]></logmsg>
+    <severity>Major</severity>
+    <alarm-data alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%"/>
+  </event>
+</events>
+

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<?meta name="GENERATOR" content="XML::Smart/1.6.9 Perl/5.008008 [linux]" ?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.39.1.13.1</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>1</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxJsAvPatternUpdateTrap</uei>
+    <event-label>JUNIPER-JS-UTM-AV-MIB defined trap event: jnxJsAvPatternUpdateTrap</event-label>
+    <descr><![CDATA[
+<p>This traps is raised when the Anti-Virus pattern database is 
+updated successfully.</p><table>
+	<tr><td><b>
+
+	jnxAVPatternVersionString</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxAVPatternTimestamp</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxJsAvPatternUpdateTrap trap received 
+			jnxAVPatternVersionString=%parm[#1]% 
+			jnxAVPatternTimestamp=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Normal</severity>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
+  </event>
+</events>
+

@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<xml-datacollection-config rrdRepository="target/snmp/" xmlns="http://xmlns.opennms.org/xsd/config/xml-datacollection">
+    <xml-collection name="Http-Count">
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:1:8928</rra>
+            <rra>RRA:AVERAGE:0.5:12:8784</rra>
+            <rra>RRA:MIN:0.5:12:8784</rra>
+            <rra>RRA:MAX:0.5:12:8784</rra>
+        </rrd>
+        <xml-source url="http://{ipaddr}:10342/junit/status.html">
+            <request>
+              <parameter name="pre-parse-html" value="true"/>
+            </request>
+            <xml-group name="count-stats" resource-type="node" resource-xpath="/html/body">
+                <xml-object name="count" type="GAUGE" xpath="p[contains(.,'Document Count:')]" />
+            </xml-group>
+        </xml-source>
+    </xml-collection>
+    <xml-collection name="Http-Market">
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:1:8928</rra>
+            <rra>RRA:AVERAGE:0.5:12:8784</rra>
+            <rra>RRA:MIN:0.5:12:8784</rra>
+            <rra>RRA:MAX:0.5:12:8784</rra>
+        </rrd>
+        <xml-source url="http://{ipaddr}:10342/junit/market.html">
+            <xml-group name="market" resource-type="node" resource-xpath="div#cnnBody">
+                <xml-object name="dow" type="GAUGE" xpath="li.tickerDow span.posLast" />
+                <xml-object name="nasdaq" type="GAUGE" xpath="li.tickerNasdaq span.posLast" />
+            </xml-group>
+        </xml-source>
+    </xml-collection>
+ </xml-datacollection-config>

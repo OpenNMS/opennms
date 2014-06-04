@@ -28,36 +28,57 @@
 
 package org.opennms.netmgt.xml.eventconf;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.exolab.castor.xml.Validator;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.core.xml.ValidateUsing;
-import org.xml.sax.ContentHandler;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.Resource;
+import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.orm.ObjectRetrievalFailureException;
+import org.springframework.util.StringUtils;
 
 @XmlRootElement(name="events")
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("eventconf.xsd")
 @XmlType(propOrder={})
 public class Events implements Serializable {
-	private static final long serialVersionUID = -49037181336311348L;
+    public interface EventCallback<T> {
+		
+		public T process(T accum, Event event);
+
+	}
+
+	public interface EventCriteria {
+		
+		public boolean matches(Event e);
+
+	}
+
+	private static final long serialVersionUID = -3725006529763434264L;
 
 	private static final String[] EMPTY_STRING_ARRAY = new String[0];
 	private static final Event[] EMPTY_EVENT_ARRAY = new Event[0];
@@ -75,7 +96,19 @@ public class Events implements Serializable {
 	// @Size(min=0)
 	@XmlElement(name="event-file", required=false)
     private List<String> m_eventFiles = new ArrayList<String>();
-
+	
+	@XmlTransient
+	private Map<String, Events> m_loadedEventFiles = new LinkedHashMap<String, Events>();
+	
+	@XmlTransient
+	private Partition m_partition;
+	
+	@XmlTransient
+	private Map<String, List<Event>> m_partitionedEvents;
+	
+	@XmlTransient
+	private List<Event> m_nullPartitionedEvents;
+	
     public void addEvent(final Event event) throws IndexOutOfBoundsException {
         m_events.add(event);
     }
@@ -146,11 +179,6 @@ public class Events implements Serializable {
      * @return true if this object is valid according to the schema
      */
     public boolean isValid() {
-        try {
-            validate();
-        } catch (final ValidationException vex) {
-            return false;
-        }
         return true;
     }
 
@@ -162,12 +190,8 @@ public class Events implements Serializable {
         return m_eventFiles.iterator();
     }
 
-    public void marshal(final Writer out) throws MarshalException, ValidationException {
-        Marshaller.marshal(this, out);
-    }
-
-    public void marshal(final ContentHandler handler) throws IOException, MarshalException, ValidationException {
-        Marshaller.marshal(this, handler);
+    public void marshal(final Writer out) {
+        JaxbUtils.marshal(this, out);
     }
 
     public void removeAllEvent() {
@@ -209,12 +233,13 @@ public class Events implements Serializable {
     }
 
     public void setEvent(final List<Event> events) {
+        if (m_events == events) return;
         m_events.clear();
         m_events.addAll(events);
     }
 
     public void setEventCollection(final List<Event> events) {
-        m_events = events;
+        setEvent(events);
     }
 
     public void setEventFile(final int index, final String eventFile) throws IndexOutOfBoundsException {
@@ -232,10 +257,9 @@ public class Events implements Serializable {
     }
 
     public void setEventFile(final List<String> eventFiles) {
+        if (m_eventFiles == eventFiles) return;
         m_eventFiles.clear();
-        for (final String eventFile : eventFiles) {
-        	m_eventFiles.add(eventFile.intern());
-        }
+        m_eventFiles.addAll(eventFiles);
     }
 
     public void setEventFileCollection(final List<String> eventFiles) {
@@ -246,12 +270,8 @@ public class Events implements Serializable {
         m_global = global;
     }
 
-    public static Events unmarshal(final Reader reader) throws MarshalException, ValidationException {
-        return (Events) Unmarshaller.unmarshal(Events.class, reader);
-    }
-
-    public void validate() throws ValidationException {
-        new Validator().validate(this);
+    public static Events unmarshal(final Reader reader) {
+        return JaxbUtils.unmarshal(Events.class, reader);
     }
 
 	@Override
@@ -287,5 +307,220 @@ public class Events implements Serializable {
 		}
 		return true;
 	}
+	
+	Resource getRelative(Resource baseRef, String relative) {
+        try {
+        	if (relative.startsWith("classpath:")) {
+        		DefaultResourceLoader loader = new DefaultResourceLoader();
+        		return loader.getResource(relative);
+        	} else {
+        		return baseRef.createRelative(relative);
+        	}
+        } catch (final IOException e) {
+            throw new ObjectRetrievalFailureException(Resource.class, baseRef, "Resource location has a relative path, however the configResource does not reference a file, so the relative path cannot be resolved.  The location is: " + relative, null);
+        }
+
+	}
+	
+
+	public void loadEventFiles(Resource configResource) throws IOException, JAXBException {
+		m_loadedEventFiles.clear();
+		
+		for(String eventFile : m_eventFiles) {
+			Resource eventResource = getRelative(configResource, eventFile);
+			Events events = JaxbUtils.unmarshal(Events.class, eventResource);
+			if (events.getEventCount() <= 0) {
+				throw new IllegalStateException("Uh oh! An event file "+eventResource.getFile()+" with no events has been laoded!");
+			}
+            if (events.getGlobal() != null) {
+                throw new ObjectRetrievalFailureException(Resource.class, eventResource, "The event resource " + eventResource + " included from the root event configuration file cannot have a 'global' element", null);
+            }
+            if (events.getEventFileCollection().size() > 0) {
+                throw new ObjectRetrievalFailureException(Resource.class, eventResource, "The event resource " + eventResource + " included from the root event configuration file cannot include other configuration files: " + StringUtils.collectionToCommaDelimitedString(events.getEventFileCollection()), null);
+            }
+
+			m_loadedEventFiles.put(eventFile, events);
+		}
+	}
+
+	public boolean isSecureTag(String tag) {
+		return m_global == null ? false : m_global.isSecureTag(tag);
+	}
+	
+	public static interface Partition {
+		List<String> group(Event eventConf);
+		String group(org.opennms.netmgt.xml.event.Event matchingEvent);
+	}
+	
+	private void partitionEvents(Partition partition) {
+		m_partition = partition;
+
+		m_partitionedEvents = new LinkedHashMap<String, List<Event>>();
+		m_nullPartitionedEvents = new ArrayList<Event>();
+		
+		for(Event event : m_events) {
+			List<String> keys = partition.group(event);
+			if (keys == null) {
+				m_nullPartitionedEvents.add(event);
+			} else {
+				for(String key : keys) {
+					List<Event> events = m_partitionedEvents.get(key);
+					if (events == null) {
+						events = new ArrayList<Event>(1);
+						m_partitionedEvents.put(key, events);
+					}
+					events.add(event);
+				}
+			}
+		}
+		
+		
+	}
+	
+	public Event findFirstMatchingEvent(org.opennms.netmgt.xml.event.Event matchingEvent) {
+		String key = m_partition.group(matchingEvent);
+		if (key != null) {
+			List<Event> events = m_partitionedEvents.get(key);
+			if (events != null) {
+				for(Event event : events) {
+					if (event.matches(matchingEvent)) {
+						return event;
+					}
+				}
+			}
+		}
+		
+		for(Event event : m_nullPartitionedEvents) {
+			if (event.matches(matchingEvent)) {
+				return event;
+			}
+		}
+		
+		for(Entry<String, Events> loadedEvents : m_loadedEventFiles.entrySet()) {
+			Events subEvents = loadedEvents.getValue();
+			Event event = subEvents.findFirstMatchingEvent(matchingEvent);
+			if (event != null) {
+				return event;
+			}
+		}
+		
+		return null;
+	}
+	
+	public Event findFirstMatchingEvent(EventCriteria criteria) {
+		for(Event event : m_events) {
+			if (criteria.matches(event)) {
+				return event;
+			}
+		}
+		
+		for(Entry<String, Events> loadedEvents : m_loadedEventFiles.entrySet()) {
+			Events events = loadedEvents.getValue();
+			Event result = events.findFirstMatchingEvent(criteria);
+			if (result != null) {
+				return result;
+			}
+		}
+		
+		
+		return null;
+		
+	}
+
+	public <T> T forEachEvent(T initial, EventCallback<T> callback) {
+		T result = initial;
+		for(Event event : m_events) {
+			result = callback.process(result, event);
+		}
+		
+		for(Entry<String, Events> loadedEvents : m_loadedEventFiles.entrySet()) {
+			Events events = loadedEvents.getValue();
+			result = events.forEachEvent(result, callback);
+		}
+		
+		
+		return result;
+	}
+	
+	public void initialize(Partition partition) {
+		for(Event event : m_events) {
+			event.initialize();
+		}
+		
+		partitionEvents(partition);
+		
+		for(Entry<String, Events> loadedEvents : m_loadedEventFiles.entrySet()) {
+			Events events = loadedEvents.getValue();
+			events.initialize(partition);
+		}
+
+	}
+
+	public Events getLoadEventsByFile(String relativePath) {
+		return m_loadedEventFiles.get(relativePath);
+	}
+
+	public void addLoadedEventFile(String relativePath, Events events) {
+		m_eventFiles.add(relativePath);
+		m_loadedEventFiles.put(relativePath, events);
+	}
+
+	public void removeLoadedEventFile(String relativePath) {
+		m_eventFiles.remove(relativePath);
+		m_loadedEventFiles.remove(relativePath);
+	}
+	
+	public void saveEvents(Resource resource) {
+		final StringWriter stringWriter = new StringWriter();
+		JaxbUtils.marshal(this, stringWriter);
+
+		if (stringWriter.toString() != null) {
+			File file;
+			try {
+				file = resource.getFile();
+			} catch (final IOException e) {
+				throw new DataAccessResourceFailureException("Event resource '" + resource + "' is not a file resource and cannot be saved.  Nested exception: " + e, e);
+			}
+
+			Writer fileWriter = null;
+			try {
+				try {
+					fileWriter = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
+				} catch (final IOException e) {
+					throw new DataAccessResourceFailureException("Event file '" + file + "' could not be opened.  Nested exception: " + e, e);
+				}
+
+				try {
+					fileWriter.write(stringWriter.toString());
+				} catch (final IOException e) {
+					throw new DataAccessResourceFailureException("Event file '" + file + "' could not be written to.  Nested exception: " + e, e);
+				}
+
+				try {
+					fileWriter.close();
+				} catch (final IOException e) {
+					throw new DataAccessResourceFailureException("Event file '" + file + "' could not be closed.  Nested exception: " + e, e);
+				}
+			} finally {
+				if (fileWriter != null) try { fileWriter.close(); } catch(Exception e) {}
+			}
+		}
+
+	}
+	
+	public void save(Resource resource) {
+		for(Entry<String, Events> entry : m_loadedEventFiles.entrySet()) {
+			String eventFile = entry.getKey();
+			Events events = entry.getValue();
+			
+			Resource eventResource = getRelative(resource, eventFile);
+			events.save(eventResource);
+			
+		}
+		
+		saveEvents(resource);
+	}
+
+
 
 }

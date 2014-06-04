@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,6 +36,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.alarmd.api.Preservable;
 
 /**
@@ -255,12 +256,14 @@ class AlarmQueue<T extends Preservable> {
     }
     
     public void accept(T a) {
-        m_queue.offer(a);
+        boolean result = m_queue.offer(a);
+        LogUtils.debugf(this, "Alarm %s accepted, offered to blocking-queue. Actually queued? %s", a, result);
     }
     
     public void preserve(T a) {
         a.setPreserved(true);
-        m_queue.offer(a);
+        boolean result = m_queue.offer(a);
+        LogUtils.debugf(this,  "Alarm %s preserved, offered to blocking-queue. Actually queued? %s", a, result);
     }
     
     public List<T> getAlarmsToForward() throws InterruptedException {

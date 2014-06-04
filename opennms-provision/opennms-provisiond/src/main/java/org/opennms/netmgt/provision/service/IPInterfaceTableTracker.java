@@ -29,9 +29,9 @@
 package org.opennms.netmgt.provision.service;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.snmp.RowCallback;
@@ -105,24 +105,30 @@ public class IPInterfaceTableTracker extends TableTracker {
 
         public OnmsIpInterface createInterfaceFromRow() {
             
-            String ipAddr = getIpAddress();
-            InetAddress netMask = getNetMask();
-            Integer ifIndex = getIfIndex();
-            
-            OnmsSnmpInterface snmpIface = new OnmsSnmpInterface(null, ifIndex);
-            snmpIface.setNetMask(netMask);
-            snmpIface.setCollectionEnabled(true);
-            
-            OnmsIpInterface iface = new OnmsIpInterface(ipAddr, null);
-            iface.setSnmpInterface(snmpIface);
-            
-            iface.setIfIndex(ifIndex);
-            String hostName;
-            try {
-                hostName = InetAddress.getByName(ipAddr).getHostName();
-            } catch (final UnknownHostException e) {
-                hostName = InetAddressUtils.normalize(ipAddr);
+            final Integer ifIndex = getIfIndex();
+            final String ipAddr = getIpAddress();
+            final InetAddress netMask = getNetMask();
+
+            LogUtils.debugf(this, "createInterfaceFromRow: ifIndex = %s, ipAddress = %s, netmask = %s", ifIndex, ipAddr, netMask);
+
+            if (ipAddr == null) {
+                return null;
             }
+
+            final InetAddress inetAddress = InetAddressUtils.addr(ipAddr);
+            final OnmsIpInterface iface = new OnmsIpInterface(inetAddress, null);
+
+            if (ifIndex != null) {
+                final OnmsSnmpInterface snmpIface = new OnmsSnmpInterface(null, ifIndex);
+                snmpIface.setNetMask(netMask);
+                snmpIface.setCollectionEnabled(true);
+                iface.setSnmpInterface(snmpIface);
+                iface.setIfIndex(ifIndex);
+            }
+
+            String hostName = null;
+            if (inetAddress != null) hostName = inetAddress.getHostName();
+            if (hostName == null) hostName = InetAddressUtils.normalize(ipAddr);
             iface.setIpHostName(hostName == null? ipAddr : hostName);
             
             return iface;

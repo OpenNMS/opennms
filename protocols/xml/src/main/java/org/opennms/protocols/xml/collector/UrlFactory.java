@@ -28,16 +28,18 @@
 
 package org.opennms.protocols.xml.collector;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.protocols.http.HttpUrlConnection;
 import org.opennms.protocols.http.HttpUrlHandler;
+import org.opennms.protocols.http.HttpsUrlHandler;
 import org.opennms.protocols.sftp.Sftp3gppUrlHandler;
 import org.opennms.protocols.sftp.SftpUrlConnection;
 import org.opennms.protocols.sftp.SftpUrlHandler;
+import org.opennms.protocols.xml.config.Request;
 
 /**
  * A factory for creating URL objects.
@@ -54,19 +56,28 @@ public class UrlFactory {
     /**
      * Gets the URL Object.
      * <p>This method has been created because it is not possible to call URL.setURLStreamHandlerFactory more than once.</p>
-     * 
+     *
      * @param urlStr the URL String
+     * @param request the request
      * @return the URL Object
      * @throws MalformedURLException the malformed URL exception
      */
-    public static URL getUrl(String urlStr) throws MalformedURLException {
+    public static URL getUrl(String urlStr, Request request) throws MalformedURLException {
         URL url = null;
-        if (urlStr.startsWith(SftpUrlHandler.PROTOCOL + "://")) {
+        String protocol = null;
+        try {
+            protocol = urlStr.substring(0, urlStr.indexOf("://")).toLowerCase();
+        } catch (Exception e) {
+            return null;
+        }
+        if (SftpUrlHandler.PROTOCOL.equals(protocol)) {
             url = new URL(null, urlStr, new SftpUrlHandler());
-        } else if (urlStr.startsWith(Sftp3gppUrlHandler.PROTOCOL + "://")) {
+        } else if (Sftp3gppUrlHandler.PROTOCOL.equals(protocol)) {
             url = new URL(null, urlStr, new Sftp3gppUrlHandler());
-        } else if (urlStr.startsWith(HttpUrlHandler.PROTOCOL + "://")) {
-            url = new URL(null, urlStr, new HttpUrlHandler());
+        } else if (HttpUrlHandler.HTTP.equals(protocol)) {
+            url = new URL(null, urlStr, new HttpUrlHandler(request));
+        } else if (HttpsUrlHandler.HTTPS.equals(protocol)) {
+            url = new URL(null, urlStr, new HttpsUrlHandler(request));
         } else {
             url = new URL(urlStr);
         }
@@ -77,12 +88,17 @@ public class UrlFactory {
      * Disconnect.
      *
      * @param connection the URL connection
-     * @throws IOException Signals that an I/O exception has occurred.
      */
-    public static void disconnect(URLConnection connection) throws IOException {
-        if (connection != null && connection instanceof SftpUrlConnection) // We need to be sure to close the connections for SFTP
-            ((SftpUrlConnection)connection).disconnect();
-        if (connection != null && connection instanceof HttpUrlConnection)
-            ((HttpUrlConnection)connection).disconnect();
+    public static void disconnect(URLConnection connection) {
+        try {
+            if (connection == null)
+                return;
+            if (connection instanceof SftpUrlConnection) // We need to be sure to close the connections for SFTP
+                ((SftpUrlConnection)connection).disconnect();
+            if (connection instanceof HttpUrlConnection)
+                ((HttpUrlConnection)connection).disconnect();
+        } catch (Exception e) {
+            LogUtils.errorf(UrlFactory.class, e, "Can't close open connection.");
+        }
     }
 }

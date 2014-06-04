@@ -88,6 +88,7 @@ public class DaoWebAlarmRepositoryTest implements InitializingBean {
     
     @Test
     @Transactional
+    @JUnitTemporaryDatabase
     public void testGetAlarmById(){
         Alarm alarm = m_alarmRepo.getAlarm(1);
         assertNotNull(alarm);
@@ -101,7 +102,7 @@ public class DaoWebAlarmRepositoryTest implements InitializingBean {
     }
     
     @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @JUnitTemporaryDatabase
     public void testCountMatchingAlarms(){
         int alarms = m_alarmRepo.countMatchingAlarms(new AlarmCriteria(new AlarmIdFilter(1)));
         assertEquals(1, alarms);
@@ -112,6 +113,7 @@ public class DaoWebAlarmRepositoryTest implements InitializingBean {
     
     @Test
     @Transactional
+    @JUnitTemporaryDatabase
     public void testCountMatchingAlarmsBySeverity(){
         AlarmCriteria criteria = new AlarmCriteria();
         int [] matchingAlarms = m_alarmRepo.countMatchingAlarmsBySeverity(criteria);
@@ -129,7 +131,7 @@ public class DaoWebAlarmRepositoryTest implements InitializingBean {
     }
     
     @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @JUnitTemporaryDatabase
     public void testGetMatchingAlarms(){
         Alarm[] alarms = m_alarmRepo.getMatchingAlarms(new AlarmCriteria(new SeverityFilter(OnmsSeverity.NORMAL), new AlarmIdFilter(1)));
         assertNotNull(alarms);
@@ -141,7 +143,7 @@ public class DaoWebAlarmRepositoryTest implements InitializingBean {
     }
     
     @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @JUnitTemporaryDatabase
     public void testGetUnacknowledgedAlarms() {
         AlarmCriteria acked = new AlarmCriteria(AcknowledgeType.ACKNOWLEDGED, new Filter[0]);
         AlarmCriteria unacked = new AlarmCriteria(AcknowledgeType.UNACKNOWLEDGED, new Filter[0]);
@@ -173,7 +175,7 @@ public class DaoWebAlarmRepositoryTest implements InitializingBean {
 }
     
     @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @JUnitTemporaryDatabase
     public void testAcknowledgeUnacknowledge() {
         
         String user = "TestUser";
@@ -192,6 +194,7 @@ public class DaoWebAlarmRepositoryTest implements InitializingBean {
     
     @Test
     @Transactional
+    @JUnitTemporaryDatabase
     public void testSort() {
         
         for(SortStyle style : SortStyle.values()) {
@@ -203,6 +206,7 @@ public class DaoWebAlarmRepositoryTest implements InitializingBean {
 
     @Test
     @Transactional
+    @JUnitTemporaryDatabase
     public void testSortAndSearchBySameProperty() {
         
         Filter[] filters = new Filter[] { new NodeNameLikeFilter("node") };
@@ -214,6 +218,7 @@ public class DaoWebAlarmRepositoryTest implements InitializingBean {
 
     @Test
     @Transactional
+    @JUnitTemporaryDatabase
     public void testAcknowledgeUnacknowledgeAllAlarms() {
         String user = "TestUser";
         m_alarmRepo.acknowledgeAll("TestUser", new Date());
@@ -228,7 +233,7 @@ public class DaoWebAlarmRepositoryTest implements InitializingBean {
     }
     
     @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @JUnitTemporaryDatabase
     public void testEscalateAlarms() {
         int[] alarmIds = {1};
         m_alarmRepo.escalateAlarms(alarmIds, "TestUser", new Date());
@@ -241,7 +246,7 @@ public class DaoWebAlarmRepositoryTest implements InitializingBean {
     }
     
     @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @JUnitTemporaryDatabase
     public void testClearAlarms(){
         Alarm alarm = m_alarmRepo.getAlarm(1);
         
@@ -257,7 +262,7 @@ public class DaoWebAlarmRepositoryTest implements InitializingBean {
     }
 
     @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @JUnitTemporaryDatabase
     public void testAcknowledgements(){
         m_alarmRepo.acknowledgeAlarms(new int[] { 1 }, "agalue", new Date());
         List<OnmsAcknowledgment> acks = m_alarmRepo.getAcknowledgments(1);

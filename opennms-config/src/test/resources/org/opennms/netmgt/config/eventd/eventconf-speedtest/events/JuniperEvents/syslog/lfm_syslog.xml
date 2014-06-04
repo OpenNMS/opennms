@@ -1,0 +1,24 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">  
+  <event>
+        <uei>uei.opennms.org/vendor/Juniper/syslog/lfmd_3ah_linkup</uei>
+        <event-label>LFM Link Up</event-label>
+        <descr>
+		LFM link up
+        </descr>
+        <logmsg dest='logndisplay'>LFM Link Up: lfmLinkName: %parm[#1]%</logmsg>
+        <severity>Cleared</severity>
+                <alarm-data alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" clear-key="uei.opennms.org/vendor/Juniper/syslog/lfmd_3ah_linkdown:%dpname%:%nodeid%:%parm[#1]%" />
+  </event>
+  <event>
+        <uei>uei.opennms.org/vendor/Juniper/syslog/lfmd_3ah_linkdown</uei>
+        <event-label>LFM Link Down</event-label>
+        <descr>
+		LFM link down
+        </descr>
+        <logmsg dest='logndisplay'>LFM Down: lfmLinkName: %parm[#1]% reason: %parm[#2]%</logmsg>
+        <severity>Critical</severity>
+                <alarm-data alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" />
+  </event>
+</events>
+
+

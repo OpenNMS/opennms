@@ -162,7 +162,7 @@ public class GenericURLFactory implements URLStreamHandlerFactory {
     public URLStreamHandler createURLStreamHandler(String protocol) {
         Class<? extends URLConnection> c = null;
         if (!urlConnections.containsKey(protocol)) {
-            logger.warn("No protocol mapping with '{}' found. Return null", protocol);
+            logger.info("No protocol mapping with '{}' found. Return null. Creating...", protocol);
             return null; // No existing protocol mapping
         }
 

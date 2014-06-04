@@ -27,11 +27,12 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
+import org.opennms.features.vaadin.api.OnmsBeanContainer;
 import org.opennms.netmgt.config.datacollection.Parameter;
 import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.vaadin.addon.customfield.CustomField;
+
 import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -60,7 +61,7 @@ public class PersistSelectorStrategyField extends CustomField implements Button.
     private Table table = new Table();
 
     /** The Container. */
-    private BeanContainer<String,Parameter> container = new BeanContainer<String,Parameter>(Parameter.class);
+    private OnmsBeanContainer<Parameter> container = new OnmsBeanContainer<Parameter>(Parameter.class);
 
     /** The Toolbar. */
     private HorizontalLayout toolbar = new HorizontalLayout();
@@ -91,7 +92,6 @@ public class PersistSelectorStrategyField extends CustomField implements Button.
             }
         });
 
-        container.setBeanIdProperty("key");
         table.setCaption("Parameters");
         table.setContainerDataSource(container);
         table.setStyleName(Runo.TABLE_SMALL);
@@ -135,7 +135,10 @@ public class PersistSelectorStrategyField extends CustomField implements Button.
         Object value = newDataSource.getValue();
         if (value instanceof PersistenceSelectorStrategy) {
             PersistenceSelectorStrategy dto = (PersistenceSelectorStrategy) value;
-            combo.setValue(dto.getClazz());
+            if (!combo.containsId(dto.getClazz())) {
+                combo.addItem(dto.getClazz());
+                combo.setValue(dto.getClazz());
+            }
             container.removeAllItems();
             container.addAll(dto.getParameterCollection());
             table.setPageLength(dto.getParameterCollection() == null ? 0 : dto.getParameterCollection().size());
@@ -151,7 +154,9 @@ public class PersistSelectorStrategyField extends CustomField implements Button.
     @Override
     public Object getValue() {
         PersistenceSelectorStrategy dto = new PersistenceSelectorStrategy();
-        dto.setClazz((String) combo.getValue());
+        if (combo.getValue() != null) {
+            dto.setClazz((String) combo.getValue());
+        }
         for (Object itemId: container.getItemIds()) {
             dto.getParameterCollection().add(container.getItem(itemId).getBean());
         }
@@ -188,7 +193,8 @@ public class PersistSelectorStrategyField extends CustomField implements Button.
     private void addHandler() {
         Parameter p = new Parameter();
         p.setKey("New Parameter");
-        container.addBean(p);
+        p.setValue("New Value");
+        container.addOnmsBean(p);
     }
 
     /**

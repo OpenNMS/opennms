@@ -35,6 +35,7 @@ import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.fiber.PausableFiber;
@@ -117,12 +118,9 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
      * @param maxSize
      *            The maximum size of the thread pool.
      */
-    public LegacyScheduler(String parent, int maxSize) {
+    public LegacyScheduler(final String parent, final int maxSize) {
         m_status = START_PENDING;
-        m_runner = Executors.newFixedThreadPool(
-            maxSize,
-            new LogPreservingThreadFactory(getClass().getSimpleName(), maxSize, false)
-        );
+        m_runner = Executors.newFixedThreadPool(maxSize, new LogPreservingThreadFactory(parent, maxSize, false));
         m_queues = new ConcurrentSkipListMap<Long, PeekableFifoQueue<ReadyRunnable>>();
         m_scheduled = 0;
         m_worker = null;
@@ -435,6 +433,11 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
                                 // Add runnable to the execution queue
                                 m_runner.execute(readyRun);
                                 ++runned;
+                                if (log().isDebugEnabled() && m_runner instanceof ThreadPoolExecutor) {
+                                    ThreadPoolExecutor e = (ThreadPoolExecutor) m_runner;
+                                    String ratio = String.format("%.3f", e.getTaskCount() > 0 ? new Double(e.getCompletedTaskCount())/new Double(e.getTaskCount()) : 0);
+                                    log().debug("thread pool statistics: activeCount=" + e.getActiveCount() + ", taskCount=" + e.getTaskCount() + ", completedTaskCount=" + e.getCompletedTaskCount() + ", completedRatio=" + ratio + ", poolSize=" + e.getPoolSize());
+                                }
                             }
                         } catch (InterruptedException e) {
                             return; // jump all the way out

@@ -78,7 +78,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 // TODO: this class should be the starting point for Integration tests
 // either with linkd and capsd
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
 @JUnitTemporaryDatabase
 public class LinkdNms1055CapsdNetworkBuilderTest extends LinkdNms1055NetworkBuilder implements InitializingBean {
 

@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<?meta name="GENERATOR" content="XML::Smart/1.6.9 Perl/5.008008 [linux]" ?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.24.2</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>1</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/apsEventSwitchover</uei>
+    <event-label>APS-MIB defined trap event: apsEventSwitchover</event-label>
+    <descr><![CDATA[
+<p>An apsEventSwitchover notification is sent when the
+value of an instance of apsChanStatusSwitchovers increments.</p><table>
+	<tr><td><b>
+
+	apsChanStatusSwitchovers</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	apsChanStatusCurrent</b></td><td>
+	%parm[#2]%;</td><td><p>
+		lockedOut(0)
+		sd(1)
+		sf(2)
+		switched(3)
+		wtr(4)
+	</p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			apsEventSwitchover trap received 
+			apsChanStatusSwitchovers=%parm[#1]% 
+			apsChanStatusCurrent=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Normal</severity>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.24.2</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>2</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/apsEventModeMismatch</uei>
+    <event-label>APS-MIB defined trap event: apsEventModeMismatch</event-label>
+    <descr><![CDATA[
+<p>An apsEventModeMismatch notification is sent when the
+value of an instance of apsStatusModeMismatches increments.</p><table>
+	<tr><td><b>
+
+	apsStatusModeMismatches</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	apsStatusCurrent</b></td><td>
+	%parm[#2]%;</td><td><p>
+		modeMismatch(0)
+		channelMismatch(1)
+		psbf(2)
+		feplf(3)
+		extraTraffic(4)
+	</p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			apsEventModeMismatch trap received 
+			apsStatusModeMismatches=%parm[#1]% 
+			apsStatusCurrent=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Normal</severity>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.24.2</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>3</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/apsEventChannelMismatch</uei>
+    <event-label>APS-MIB defined trap event: apsEventChannelMismatch</event-label>
+    <descr><![CDATA[
+<p>An apsEventChannelMismatch notification is sent when the
+value of an instance of apsStatusChannelMismatches increments.</p><table>
+	<tr><td><b>
+
+	apsStatusChannelMismatches</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	apsStatusCurrent</b></td><td>
+	%parm[#2]%;</td><td><p>
+		modeMismatch(0)
+		channelMismatch(1)
+		psbf(2)
+		feplf(3)
+		extraTraffic(4)
+	</p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			apsEventChannelMismatch trap received 
+			apsStatusChannelMismatches=%parm[#1]% 
+			apsStatusCurrent=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Warning</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.24.2</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>4</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/apsEventPSBF</uei>
+    <event-label>APS-MIB defined trap event: apsEventPSBF</event-label>
+    <descr><![CDATA[
+<p>An apsEventPSBF notification is sent when the
+value of an instance of apsStatusPSBFs increments.</p><table>
+	<tr><td><b>
+
+	apsStatusPSBFs</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	apsStatusCurrent</b></td><td>
+	%parm[#2]%;</td><td><p>
+		modeMismatch(0)
+		channelMismatch(1)
+		psbf(2)
+		feplf(3)
+		extraTraffic(4)
+	</p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			apsEventPSBF trap received 
+			apsStatusPSBFs=%parm[#1]% 
+			apsStatusCurrent=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Major</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.24.2</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>5</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/apsEventFEPLF</uei>
+    <event-label>APS-MIB defined trap event: apsEventFEPLF</event-label>
+    <descr><![CDATA[
+<p>An apsEventFEPLFs notification is sent when the
+value of an instance of apsStatusFEPLFs increments.</p><table>
+	<tr><td><b>
+
+	apsStatusFEPLFs</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	apsStatusCurrent</b></td><td>
+	%parm[#2]%;</td><td><p>
+		modeMismatch(0)
+		channelMismatch(1)
+		psbf(2)
+		feplf(3)
+		extraTraffic(4)
+	</p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			apsEventFEPLF trap received 
+			apsStatusFEPLFs=%parm[#1]% 
+			apsStatusCurrent=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Major</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
+  </event>
+</events>
+

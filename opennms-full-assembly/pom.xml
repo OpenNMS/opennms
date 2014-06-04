@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>1.11.91-SNAPSHOT</version>
+    <version>1.12.8-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <groupId>org.opennms</groupId>
@@ -236,7 +236,6 @@
   </build>
 
   <modules>
-    <module>../core/build/keystore</module>
     <module>../opennms-install</module>
     <module>../opennms-assemblies</module>
     <module>../opennms-doc</module>
@@ -249,6 +248,11 @@
       <artifactId>karaf</artifactId>
       <type>tar.gz</type>
       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jaxb-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
@@ -519,7 +523,7 @@
   <repositories>
     <repository>
        <id>vaadin-addons</id>
-       <url>http://maven.vaadin.com/vaadin-addons</url>
+       <url>http://maven.opennms.org/content/groups/vaadin.com-addons/</url>
     </repository>
   </repositories>
 

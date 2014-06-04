@@ -80,6 +80,7 @@ public class AlarmList extends LinkedList<Alarm> {
      * @param events a {@link java.util.List} object.
      */
     public void setEvents(List<Alarm> events) {
+        if (events == this) return;
         clear();
         addAll(events);
     }

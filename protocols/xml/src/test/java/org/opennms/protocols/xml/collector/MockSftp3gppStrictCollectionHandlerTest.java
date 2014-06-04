@@ -79,4 +79,20 @@ public class MockSftp3gppStrictCollectionHandlerTest {
         Assert.assertEquals("frame=0, shelf=0, slot=2, sub-slot=0, name=/opt/hitachi/agw/data/trace", properties.get("label"));
     }
 
+    /**
+     * Test NMS-6365 (measObjLdn without PM Group information)
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testNMS6365() throws Exception {
+        MockSftp3gppStrictCollectionHandler handler = new MockSftp3gppStrictCollectionHandler();
+        String format = handler.get3gppFormat("dnsDns");
+        Map<String,String> properties = handler.get3gppProperties(format, "system|/service=callp1|");
+        Assert.assertEquals("system|/service=callp1|", properties.get("label"));
+
+        System.setProperty("org.opennms.collectd.xml.3gpp.useSimpleParserForMeasObjLdn", "true");
+        properties = handler.get3gppProperties(format, "system|/service=callp1|");
+        Assert.assertEquals("/service=callp1", properties.get("label"));
+    }
 }

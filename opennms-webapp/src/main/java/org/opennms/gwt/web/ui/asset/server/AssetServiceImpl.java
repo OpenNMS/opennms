@@ -58,6 +58,12 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 @Transactional(readOnly = false)
 public class AssetServiceImpl extends RemoteServiceServlet implements AssetService {
     private static final long serialVersionUID = -6571388103047893262L;
+    
+    private static final String[] WRITE_AUTHORIZED_ROLES = {
+        Authentication.ROLE_ADMIN,
+        Authentication.ROLE_PROVISION,
+        Authentication.ROLE_ASSET_EDITOR
+    };
 
     private static final String AUTOENABLE = "A";
     private static final String SSH_CONNECTION = "ssh";
@@ -167,7 +173,7 @@ public class AssetServiceImpl extends RemoteServiceServlet implements AssetServi
 
         // This is a poor re-implementation of modify permission based on spring
         // roles
-        if (m_securityContext.hasRole(Authentication.ROLE_ADMIN) || m_securityContext.hasRole(Authentication.ROLE_PROVISION)) {
+        if (isWriteAuthorized()) {
             assetCommand.setAllowModify(true);
         } else {
             assetCommand.setAllowModify(false);
@@ -178,6 +184,15 @@ public class AssetServiceImpl extends RemoteServiceServlet implements AssetServi
 
         logger.debug("assetCommand: '{}'", assetCommand);
         return assetCommand;
+    }
+
+    private boolean isWriteAuthorized() {
+        for(String role : WRITE_AUTHORIZED_ROLES) {
+            if (m_securityContext.hasRole(role)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

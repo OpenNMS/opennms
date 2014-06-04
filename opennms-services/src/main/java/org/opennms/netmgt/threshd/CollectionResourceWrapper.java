@@ -29,6 +29,7 @@
 package org.opennms.netmgt.threshd;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,7 +40,9 @@ import org.opennms.netmgt.collectd.AliasedResource;
 import org.opennms.netmgt.collectd.IfInfo;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionResource;
+import org.opennms.netmgt.dao.support.DefaultResourceDao;
 import org.opennms.netmgt.dao.support.ResourceTypeUtils;
+import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.poller.LatencyCollectionResource;
 
@@ -59,7 +62,7 @@ public class CollectionResourceWrapper {
     private final int m_nodeId;
     private final String m_hostAddress;
     private final String m_serviceName;
-    private String m_label;
+    private String m_dsLabel;
     private String m_iflabel;
     private String m_ifindex;
     private final RrdRepository m_repository;
@@ -198,21 +201,21 @@ public class CollectionResourceWrapper {
     }
 
     /**
-     * <p>getLabel</p>
+     * <p>getDsLabel</p>
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getLabel() {
-        return m_label;
+    public String getDsLabel() {
+        return m_dsLabel;
     }
 
     /**
-     * <p>setLabel</p>
+     * <p>setDsLabel</p>
      *
-     * @param label a {@link java.lang.String} object.
+     * @param dsLabel a {@link java.lang.String} object.
      */
-    public void setLabel(String label) {
-        m_label = label;
+    public void setDsLabel(String dsLabel) {
+        m_dsLabel = dsLabel;
     }
 
     /**
@@ -223,7 +226,16 @@ public class CollectionResourceWrapper {
     public String getInstance() {
         return m_resource != null ? m_resource.getInstance() : null;
     }
-    
+
+    /**
+     * <p>getInstanceLabel</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getInstanceLabel() {
+        return m_resource != null ? m_resource.getLabel() : null;
+    }
+
     /**
      * <p>getResourceTypeName</p>
      *
@@ -232,7 +244,37 @@ public class CollectionResourceWrapper {
     public String getResourceTypeName() {
         return m_resource != null ? m_resource.getResourceTypeName() : null;
     }
-    
+
+    /**
+     * <p>getResourceId</p>
+     * <p>Inspired by DefaultKscReportService</p>
+     * 
+     * @return a {@link java.lang.String} object.
+     */
+    public String getResourceId() {
+        String resourceType  = getResourceTypeName();
+        String resourceLabel = getInstanceLabel();
+        if ("node".equals(resourceType)) {
+            resourceType  = "nodeSnmp";
+            resourceLabel = "";
+        }
+        if ("if".equals(resourceType)) {
+            resourceType = "interfaceSnmp";
+        }
+        String parentResourceTypeName = "node";
+        String parentResourceName = Integer.toString(getNodeId());
+        // I can't find a better way to deal with this when storeByForeignSource is enabled        
+        if (m_resource != null && m_resource.getParent() != null && m_resource.getParent().startsWith(DefaultResourceDao.FOREIGN_SOURCE_DIRECTORY)) {
+            // If separatorChar is backslash (like on Windows) use a double-escaped backslash in the regex
+            String[] parts = m_resource.getParent().split(File.separatorChar == '\\' ? "\\\\" : File.separator);
+            if (parts.length == 3) {
+                parentResourceTypeName = "nodeSource";
+                parentResourceName = parts[1] + ":" + parts[2];
+            }
+        }
+        return OnmsResource.createResourceId(parentResourceTypeName, parentResourceName, resourceType, resourceLabel);
+    }
+
     /**
      * <p>getIfLabel</p>
      *
@@ -292,9 +334,6 @@ public class CollectionResourceWrapper {
         return true;
     }
 
-    /*
-     * FIXME What happen with numeric fields from strings.properties ?
-     */ 
     /**
      * <p>getAttributeValue</p>
      *
@@ -302,13 +341,23 @@ public class CollectionResourceWrapper {
      * @return a {@link java.lang.Double} object.
      */
     public Double getAttributeValue(String ds) {
+        if (isAnInterfaceResource() && ("snmpifspeed".equalsIgnoreCase(ds) || "snmpiftype".equalsIgnoreCase(ds))) { // Get Value from ifInfo only for Interface Resource
+            String value = getIfInfoValue(ds);
+            if (value != null) {
+                try {
+                    return Double.parseDouble(value);
+                } catch (Exception e) {
+                    return Double.NaN;
+                }
+            }
+        }
         if (m_attributes == null || m_attributes.get(ds) == null) {
-            log().warn("getAttributeValue: can't find attribute called " + ds + " on " + m_resource);
+            log().info("getAttributeValue: can't find attribute called " + ds + " on " + m_resource);
             return null;
         }
         String numValue = m_attributes.get(ds).getNumericValue();
         if (numValue == null) {
-            log().warn("getAttributeValue: can't find numeric value for " + ds + " on " + m_resource);
+            log().info("getAttributeValue: can't find numeric value for " + ds + " on " + m_resource);
             return null;
         }
         // Generating a unique ID for the node/resourceType/resource/metric combination.
@@ -345,8 +394,8 @@ public class CollectionResourceWrapper {
                 		", current=" + current);
             }
             if (last == null) {
-                log().info("getCounterValue: unknown last value, ignoring current");
                 m_localCache.put(id, Double.NaN);
+                log().info("getCounterValue: unknown last value for " + id + ", ignoring current");
             } else {                
                 Double delta = current.doubleValue() - last.value.doubleValue();
                 // wrapped counter handling(negative delta), rrd style
@@ -373,9 +422,10 @@ public class CollectionResourceWrapper {
                 // no delta across a time interval of zero.
                 long interval = ( m_collectionTimestamp.getTime() - last.timestamp.getTime() ) / 1000;
                 if (interval > 0) {
+                    log().debug("getCounterValue: id=" + id + ", value=" + delta/interval + ", delta=" + delta + ", interval=" + interval);
                     m_localCache.put(id, delta / interval);
                 } else {
-                    log().warn("getCounterValue: invalid zero-length rate interval for " + id + ", returning rate of zero");
+                    log().info("getCounterValue: invalid zero-length rate interval for " + id + ", returning rate of zero");
                     m_localCache.put(id, 0.0);
                     // Restore the original value inside the static cache
                     s_cache.put(id, last);
@@ -396,45 +446,65 @@ public class CollectionResourceWrapper {
     }
 
     /**
-     * <p>getLabelValue</p>
+     * <p>getFieldValue</p>
      *
      * @param ds a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    public String getLabelValue(String ds) {
-        if (ds == null || ds.equals(""))
+    public String getFieldValue(String ds) {
+        if (ds == null || "".equals(ds)) {
             return null;
+        }
+
         if (log().isDebugEnabled()) {
             log().debug("getLabelValue: Getting Value for " + m_resource.getResourceTypeName() + "::" + ds);
         }
-        if ("nodeid".equals(ds))
+
+        if ("nodeid".equalsIgnoreCase(ds)) {
             return Integer.toString(m_nodeId);
-        if ("ipaddress".equals(ds))
+        } else if ("ipaddress".equalsIgnoreCase(ds)) {
             return m_hostAddress;
-        if ("iflabel".equals(ds))
+        } else if ("iflabel".equalsIgnoreCase(ds)) {
             return getIfLabel();
-        String value = null;
-        File resourceDirectory = m_resource.getResourceDir(m_repository);
-        if ("ID".equals(ds)) {
-            return resourceDirectory.getName();
+        } else if ("id".equalsIgnoreCase(ds)) {
+            try {
+                File resourceDirectory = m_resource.getResourceDir(m_repository);
+                return resourceDirectory.getName();
+            } catch (FileNotFoundException e) {
+                log().debug("getLabelValue: cannot find resource directory: " + e.getMessage(), e);
+            }
         }
+
         try {
-            if (isAnInterfaceResource()) { // Get Value from ifInfo only for Interface Resource
-                value = getIfInfoValue(ds);
+            String retval = null;
+
+            // Get Value from ifInfo only for Interface Resource
+            if (isAnInterfaceResource()) {
+                retval = getIfInfoValue(ds);
+                if (retval != null) {
+                    return retval;
+                }
             }
-            if (value == null) { // Find value on saved string attributes                
-                value = ResourceTypeUtils.getStringProperty(resourceDirectory, ds);
+
+            // Find value on saved string attributes
+            File resourceDirectory = m_resource.getResourceDir(m_repository);
+            retval = ResourceTypeUtils.getStringProperty(resourceDirectory, ds);
+            if (retval != null) {
+                return retval;
             }
+        } catch (FileNotFoundException e) {
+            log().debug("getFieldValue: Can't find resource directory: " + e.getMessage(), e);
         } catch (Throwable e) {
-            log().info("getLabelValue: Can't get value for attribute " + ds + " for resource " + m_resource + ". " + e, e);
+            log().info("getFieldValue: Can't get value for attribute " + ds + " for resource " + m_resource + ". " + e, e);
         }
-        if (value == null) {
-            log().debug("getLabelValue: The field " + ds + " is not a string property. Trying to parse it as numeric metric.");
-            Double d = getAttributeValue(ds);
-            if (d != null)
-                value = d.toString();
+
+        log().debug("getFieldValue: The field " + ds + " is not a string property. Trying to parse it as numeric metric.");
+        Double d = getAttributeValue(ds);
+        if (d != null) {
+            return d.toString();
         }
-        return value;
+
+        return null;
     }
     
     /** {@inheritDoc} */

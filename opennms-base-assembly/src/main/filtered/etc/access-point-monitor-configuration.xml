@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <access-point-monitor-configuration threads="30" package-scan-interval="1800000">
-	<service-template name="Aruba-IsAPAdoptedOnController-Template" interval="120000" status="off">
+	<service-template name="Aruba-IsAPAdoptedOnController" interval="120000" status="off">
 		<parameter key="retry" value="3"/>
 		<parameter key="oid" value=".1.3.6.1.4.1.14823.2.2.1.5.2.1.4.1.19"/>
 		<parameter key="operator" value="="/>
@@ -8,11 +8,21 @@
 		<parameter key="match" value="true"/>
 	</service-template>
 
-	<package name="default">
-		<filter>IPADDR != '0.0.0.0'</filter>
-		<include-range begin="1.1.1.1" end="1.1.1.1" />
+	<service-template name="Motorola-IsAPAdoptedOnController" interval="120000" status="off">
+		<parameter key="retry" value="3"/>
+		<parameter key="oid" value=".1.3.6.1.4.1.388.14.3.2.1.9.2.1.2"/>
+	</service-template>
+
+	<package name="aruba-%">
+		<filter>(IPADDR != '0.0.0.0' &amp; (pollerCategory == '%packageName%'))</filter>
 		<service name="Aruba-IsAPAdoptedOnController" status="on"/>
 	</package>
 
+	<package name="motorola-%">
+		<filter>(IPADDR != '0.0.0.0' &amp; (pollerCategory == '%packageName%'))</filter>
+		<service name="Motorola-IsAPAdoptedOnController" status="on"/>
+	</package>
+
 	<monitor service="Aruba-IsAPAdoptedOnController" class-name="org.opennms.netmgt.accesspointmonitor.poller.InstanceStrategy" />
+	<monitor service="Motorola-IsAPAdoptedOnController" class-name="org.opennms.netmgt.accesspointmonitor.poller.TableStrategy" />
 </access-point-monitor-configuration>

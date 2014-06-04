@@ -48,6 +48,7 @@ import org.joda.time.Duration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.concurrent.PausibleScheduledThreadPoolExecutor;
@@ -84,6 +85,7 @@ import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.model.OnmsAssetRecord;
+import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
@@ -134,7 +136,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/importerServiceTest.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
 @JUnitTemporaryDatabase
 @DirtiesContext
 public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAware {
@@ -378,7 +380,8 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
     @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testSendEventsOnImport() throws Exception {
     	final MockNetwork network = new MockNetwork();
-        final MockNode node = network.addNode(1, "node1");
+        final String nodeLabel = "node1";
+        final MockNode node = network.addNode(1, nodeLabel);
         network.addInterface("172.20.1.204");
         network.addService("ICMP");
         network.addService("HTTP");
@@ -387,7 +390,8 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         network.addService("SNMP");
         
         anticpateCreationEvents(node);
-        
+        m_eventAnticipator.anticipateEvent(getNodeCategoryEvent(1, nodeLabel));
+
         importFromResource("classpath:/tec_dump.xml", true);
         
         m_eventAnticipator.verifyAnticipated();
@@ -428,8 +432,7 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         assertEquals("TestCategory", scannedNode.getCategories().iterator().next().getName());
                 
     }
-    
-    
+
     @Test(timeout=300000)
     @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testFindQuery() throws Exception {
@@ -551,6 +554,7 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         @JUnitSnmpAgent(host="172.20.2.204", resource="classpath:snmpTestData3.properties")
     })
     @Transactional
+    @Ignore
     public void testPopulateWithoutSnmpAndNodeScan() throws Exception {
         importFromResource("classpath:/requisition_then_scan_no_snmp_svc.xml", true);
 
@@ -1327,6 +1331,63 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         assertEquals("ICMP", node.getPathElement().getServiceName());
     }
 
+    @Test(timeout=300000)
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
+    public void testImportWithNodeCategoryEvents() throws Exception {
+        final MockNetwork network = new MockNetwork();
+        final MockNode node = network.addNode(1, "test");
+        network.addInterface("172.16.1.1");
+        network.addService("ICMP");
+        anticpateCreationEvents(node);
+        m_eventAnticipator.anticipateEvent(getNodeCategoryEvent(1, "test"));
+        m_eventAnticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_UPDATED_EVENT_UEI, "Test").setNodeid(1).getEvent());
+        m_eventAnticipator.anticipateEvent(getNodeCategoryEvent(1, "test"));
+        importFromResource("classpath:/requisition_with_node_categories.xml", true);
+        importFromResource("classpath:/requisition_with_node_categories_changed.xml", true);
+
+        m_eventAnticipator.verifyAnticipated();
+    }
+
+    @Test(timeout=300000)
+    @JUnitTemporaryDatabase
+    public void testImportWithGeoData() throws Exception {
+        importFromResource("classpath:/tec_dump.xml", true);
+        final NodeDao nodeDao = getNodeDao();
+
+        OnmsNode node = nodeDao.findByForeignId("matt:", "4243");
+        nodeDao.initialize(node.getAssetRecord());
+        nodeDao.initialize(node.getAssetRecord().getGeolocation());
+
+        OnmsGeolocation geolocation = new OnmsGeolocation();
+        geolocation.setAddress1("220 Chatham Business Dr.");
+        geolocation.setCity("Pittsboro");
+        geolocation.setState("NC");
+        geolocation.setZip("27312");
+        geolocation.setLatitude(35.715723f);
+        geolocation.setLongitude(-79.162261f);
+        node.getAssetRecord().setGeolocation(geolocation);
+        nodeDao.saveOrUpdate(node);
+        nodeDao.flush();
+
+        node = nodeDao.findByForeignId("matt:", "4243");
+        geolocation = node.getAssetRecord().getGeolocation();
+
+        assertNotNull(geolocation.getLatitude());
+        assertNotNull(geolocation.getLongitude());
+        assertEquals(Float.valueOf(35.715723f).doubleValue(),  geolocation.getLatitude().doubleValue(),  0.1d);
+        assertEquals(Float.valueOf(-79.162261f).doubleValue(), geolocation.getLongitude().doubleValue(), 0.1d);
+
+        System.err.println("=================================================================BLEARGH");
+        importFromResource("classpath:/tec_dump.xml", true);
+        node = nodeDao.findByForeignId("matt:", "4243");
+        geolocation = node.getAssetRecord().getGeolocation();
+
+        assertNotNull(geolocation.getLatitude());
+        assertNotNull(geolocation.getLongitude());
+        assertEquals(Float.valueOf(35.715723f).doubleValue(),  geolocation.getLatitude().doubleValue(),  0.1d);
+        assertEquals(Float.valueOf(-79.162261f).doubleValue(), geolocation.getLongitude().doubleValue(), 0.1d);
+    }
+
     private static Event nodeDeleted(int nodeid) {
         EventBuilder bldr = new EventBuilder(EventConstants.NODE_DELETED_EVENT_UEI, "Test");
         bldr.setNodeid(nodeid);
@@ -1369,9 +1430,10 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         return bldr.getEvent();
     }
 
+    private Event getNodeCategoryEvent(final int nodeId, final String nodeLabel) {
+        return new EventBuilder(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI, "Test").setNodeid(nodeId).setParam(EventConstants.PARM_NODE_LABEL, nodeLabel).getEvent();
+    }
 
-    
-    
     private OnmsNode createNode() {
         OnmsNode node = new OnmsNode();
         //node.setId(nodeId);

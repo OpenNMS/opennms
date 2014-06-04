@@ -125,7 +125,9 @@ public class SimpleVertexProvider implements VertexProvider {
 
 	@Override
 	public boolean setParent(VertexRef child, VertexRef parent) {
-		// Set the parent value on the vertex object
+	    if (child.equals(parent)) return false;
+
+	    // Set the parent value on the vertex object
 		getVertex(child).setParent(parent);
 
 		// Add a parent mapping

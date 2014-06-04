@@ -32,10 +32,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -46,6 +47,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 @XmlRootElement(name="rrd")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class XmlRrd implements Serializable, Comparable<XmlRrd> {
 
     /** The Constant serialVersionUID. */
@@ -71,7 +73,6 @@ public class XmlRrd implements Serializable, Comparable<XmlRrd> {
      *
      * @return the step
      */
-    @XmlTransient
     public Integer getStep() {
         return m_step;
     }
@@ -90,7 +91,6 @@ public class XmlRrd implements Serializable, Comparable<XmlRrd> {
      *
      * @return the XML RRAs
      */
-    @XmlTransient
     public List<String> getXmlRras() {
         return m_xmlRras;
     }

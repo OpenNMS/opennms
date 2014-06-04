@@ -86,8 +86,12 @@ public class GroupPanel extends VerticalLayout {
             @Override
             public void deleteGroup(Group group) {
                 logger.info("MIB Group " + group.getName() + " has been updated.");
-                table.removeItem(group.getName());
-                table.refreshRowCache();
+                Object itemId = table.getValue();
+                if (itemId != null) {
+                    table.select(null);
+                    table.removeItem(itemId);
+                    table.refreshRowCache();
+                }
             }
         };
 

@@ -87,8 +87,12 @@ public class SystemDefPanel extends VerticalLayout {
             @Override
             public void deleteSystemDef(SystemDef systemDef) {
                 logger.info("System Definition " + systemDef.getName() + " has been removed.");
-                table.removeItem(systemDef.getName());
-                table.refreshRowCache();
+                Object itemId = table.getValue();
+                if (itemId != null) {
+                    table.select(null);
+                    table.removeItem(itemId);
+                    table.refreshRowCache();
+                }
             }
         };
 
@@ -106,7 +110,7 @@ public class SystemDefPanel extends VerticalLayout {
             public void buttonClick(Button.ClickEvent event) {
                 SystemDef sysDef = new SystemDef();
                 sysDef.setName("New System Definition");
-                sysDef.setSysoidMask(".1.3.4.1.4.1.");
+                sysDef.setSysoidMask(".1.3.6.1.4.1.");
                 sysDef.setCollect(new Collect());
                 table.updateExternalSource(new BeanItem<SystemDef>(sysDef));
                 form.setReadOnly(false);

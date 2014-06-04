@@ -35,6 +35,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.provision.persist.FilesystemForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionAsset;
@@ -125,7 +126,7 @@ public class CsvRequisitionParser {
 			iface.setDescr("mgmt-if");
 			iface.setIpAddr(rd.getPrimaryIp());
 			iface.setManaged(true);
-			iface.setSnmpPrimary("P");
+			iface.setSnmpPrimary(PrimaryType.PRIMARY);
 			iface.setStatus(Integer.valueOf(1));
 			iface.setMonitoredServices(services);
 			

@@ -29,11 +29,15 @@
 package org.opennms.web.svclayer.support;
 
 import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.SortedSet;
 
-import junit.framework.TestCase;
-
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.dao.StatisticsReportDao;
 import org.opennms.netmgt.model.ResourceReference;
@@ -51,29 +55,26 @@ import org.springframework.validation.BindException;
  * @see DefaultStatisticsReportService
  * @author <a href="dj@opennms.org">DJ Gregor</a>
  */
-public class DefaultStatisticsReportServiceTest extends TestCase {
+public class DefaultStatisticsReportServiceTest {
     private EasyMockUtils m_mocks = new EasyMockUtils();
     
     private DefaultStatisticsReportService m_service = new DefaultStatisticsReportService();
     private ResourceDao m_resourceDao = m_mocks.createMock(ResourceDao.class);
     private StatisticsReportDao m_statisticsReportDao = m_mocks.createMock(StatisticsReportDao.class);
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        
+    @Before
+    public void setUp() throws Exception {
         m_service.setResourceDao(m_resourceDao);
         m_service.setStatisticsReportDao(m_statisticsReportDao );
         m_service.afterPropertiesSet();
     }
 
-    @Override
-    protected void runTest() throws Throwable {
-        super.runTest();
-        
+    @After
+    public void verify() throws Throwable {
         m_mocks.verifyAll();
     }
     
+    @Test
     public void testNullCommandObjectId() {
         StatisticsReportCommand command = new StatisticsReportCommand();
         BindException errors = new BindException(command, "");
@@ -90,6 +91,7 @@ public class DefaultStatisticsReportServiceTest extends TestCase {
         ta.verifyAnticipated();
     }
 
+    @Test
     public void testDatumWithNonExistentResource() {
         StatisticsReport report = new StatisticsReport();
         report.setId(1);
@@ -101,6 +103,7 @@ public class DefaultStatisticsReportServiceTest extends TestCase {
         datum.setId(1);
         datum.setResource(resourceRef);
         datum.setReport(report);
+        datum.setValue(0.1d);
         report.addData(datum);
 
         StatisticsReportCommand command = new StatisticsReportCommand();

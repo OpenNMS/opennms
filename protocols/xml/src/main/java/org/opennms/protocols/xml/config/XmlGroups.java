@@ -33,14 +33,18 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * The Class XmlGroups.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
+@XmlRootElement(name="xml-groups")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class XmlGroups implements Serializable {
 
     /** The Constant serialVersionUID. */
@@ -61,7 +65,6 @@ public class XmlGroups implements Serializable {
      *
      * @return the XML groups
      */
-    @XmlTransient
     public List<XmlGroup> getXmlGroups() {
         return m_xmlGroups;
     }

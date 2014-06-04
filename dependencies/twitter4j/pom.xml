@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>dependencies</artifactId>
-    <version>1.11.91-SNAPSHOT</version>
+    <version>1.12.8-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
@@ -15,7 +15,7 @@
     can depend on to use Twitter4J
   </description>
   <properties>
-    <twitter4jVersion>[2.0,)</twitter4jVersion>
+    <twitter4jVersion>[2.0,2.1)</twitter4jVersion>
   </properties>
   <dependencies>
     <dependency>

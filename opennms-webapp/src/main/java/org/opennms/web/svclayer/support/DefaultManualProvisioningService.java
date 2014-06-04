@@ -311,6 +311,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
     public Requisition saveProvisioningGroup(final String groupName, final Requisition group) {
         m_writeLock.lock();
         try {
+            trimWhitespace(group);
             group.setForeignSource(groupName);
             m_pendingForeignSourceRepository.save(group);
             m_pendingForeignSourceRepository.flush();
@@ -366,21 +367,19 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
 
 
     /** {@inheritDoc} */
-    public void importProvisioningGroup(final String groupName) {
+    public void importProvisioningGroup(final String requisitionName) {
         m_writeLock.lock();
         
         try {
-            // first we update the import timestamp
-            final Requisition group = getProvisioningGroup(groupName);
-            group.updateDateStamp();
-            saveProvisioningGroup(groupName, group);
+            final Requisition requisition = getProvisioningGroup(requisitionName);
+            saveProvisioningGroup(requisitionName, requisition);
             
             // then we send an event to the importer
             final EventProxy proxy = Util.createEventProxy();
     
             m_pendingForeignSourceRepository.flush();
-            final String url = m_pendingForeignSourceRepository.getRequisitionURL(groupName).toString();
-            Assert.notNull(url, "Could not find url for group "+groupName+".  Does it exists?");
+            final String url = m_pendingForeignSourceRepository.getRequisitionURL(requisitionName).toString();
+            Assert.notNull(url, "Could not find url for group "+requisitionName+".  Does it exists?");
             
             final EventBuilder bldr = new EventBuilder(EventConstants.RELOAD_IMPORT_UEI, "Web");
             bldr.addParam(EventConstants.PARM_URL, url);
@@ -388,7 +387,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
             try {
                 proxy.send(bldr.getEvent());
             } catch (final EventProxyException e) {
-                throw new DataAccessResourceFailureException("Unable to send event to import group "+groupName, e);
+                throw new DataAccessResourceFailureException("Unable to send event to import group "+requisitionName, e);
             }
         } finally {
             m_writeLock.unlock();
@@ -570,6 +569,30 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
             return PropertyUtils.getProperties(new OnmsAssetRecord());
         } finally {
             m_readLock.unlock();
+        }
+    }
+    
+    /**
+     * <p>trimWhitespace</p>
+     * 
+     * Removes leading and trailing whitespace from fields that should not have any
+     */
+    private void trimWhitespace(Requisition req) {
+        for (RequisitionNode node : req.getNodes()) {
+            if (node.getForeignId() != null) {
+                node.setForeignId(node.getForeignId().trim());
+            }
+            if (node.getParentForeignSource() != null) {
+                node.setParentForeignSource(node.getParentForeignSource().trim());
+            }
+            if (node.getParentForeignId() != null) {
+                node.setParentForeignId(node.getParentForeignId().trim());
+            }
+            for (RequisitionInterface intf : node.getInterfaces()) {
+                if (intf.getIpAddr() != null) {
+                    intf.setIpAddr(intf.getIpAddr().trim());
+                }
+            }
         }
     }
 

@@ -29,6 +29,7 @@
 package org.opennms.netmgt.collectd;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -96,7 +97,7 @@ public abstract class SnmpCollectionResource implements CollectionResource {
     }
 
     /** {@inheritDoc} */
-    public abstract File getResourceDir(RrdRepository repository);
+    public abstract File getResourceDir(RrdRepository repository) throws FileNotFoundException;
     
     /**
      * <p>getType</p>

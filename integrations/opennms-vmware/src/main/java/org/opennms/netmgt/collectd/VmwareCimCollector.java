@@ -45,6 +45,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.collectd.vmware.cim.VmwareCimCollectionAttributeType;
 import org.opennms.netmgt.collectd.vmware.cim.VmwareCimCollectionResource;
@@ -61,7 +62,6 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.protocols.vmware.VmwareViJavaAccess;
-import org.sblim.wbem.cim.CIMException;
 import org.sblim.wbem.cim.CIMObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -264,30 +264,31 @@ public class VmwareCimCollector implements ServiceCollector {
 
         try {
             vmwareViJavaAccess = new VmwareViJavaAccess(vmwareManagementServer);
+            int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", -1);
+            if (timeout > 0) {
+                if (!vmwareViJavaAccess.setTimeout(timeout)) {
+                    logger.warn("Error setting connection timeout for VMware management server '{}'", vmwareManagementServer);
+                }
+            }
         } catch (MarshalException e) {
             logger.warn("Error initialising VMware connection to '{}': '{}'", vmwareManagementServer, e.getMessage());
             return collectionSet;
-
         } catch (ValidationException e) {
             logger.warn("Error initialising VMware connection to '{}': '{}'", vmwareManagementServer, e.getMessage());
             return collectionSet;
-
         } catch (IOException e) {
             logger.warn("Error initialising VMware connection to '{}': '{}'", vmwareManagementServer, e.getMessage());
             return collectionSet;
-
         }
 
         try {
             vmwareViJavaAccess.connect();
         } catch (MalformedURLException e) {
-            logger.warn("Error connection VMware management server '{}': '{}'", vmwareManagementServer, e.getMessage());
+            logger.warn("Error connecting VMware management server '{}': '{}' exception: {} cause: '{}'", vmwareManagementServer, e.getMessage(), e.getClass().getName(), e.getCause());
             return collectionSet;
-
         } catch (RemoteException e) {
-            logger.warn("Error connection VMware management server '{}': '{}'", vmwareManagementServer, e.getMessage());
+            logger.warn("Error connecting VMware management server '{}': '{}' exception: {} cause: '{}'", vmwareManagementServer, e.getMessage(), e.getClass().getName(), e.getCause());
             return collectionSet;
-
         }
 
         HostSystem hostSystem = vmwareViJavaAccess.getHostSystemByManagedObjectId(vmwareManagedObjectId);
@@ -323,11 +324,8 @@ public class VmwareCimCollector implements ServiceCollector {
                 if (!cimObjects.containsKey(cimClass)) {
                     List<CIMObject> cimList = null;
                     try {
-                        cimList = vmwareViJavaAccess.queryCimObjects(hostSystem, cimClass);
-                    } catch (RemoteException e) {
-                        logger.warn("Error retrieving cim values from host system '{}'. Error message: '{}'", vmwareManagedObjectId, e.getMessage());
-                        return collectionSet;
-                    } catch (CIMException e) {
+                        cimList = vmwareViJavaAccess.queryCimObjects(hostSystem, cimClass, InetAddressUtils.str(agent.getInetAddress()));
+                    } catch (Exception e) {
                         logger.warn("Error retrieving CIM values from host system '{}'. Error message: '{}'", vmwareManagedObjectId, e.getMessage());
                         return collectionSet;
                     } finally {

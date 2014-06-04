@@ -30,6 +30,7 @@ package org.opennms.netmgt.eventd;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 import org.junit.After;
@@ -51,6 +52,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.xml.event.AlarmData;
+import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -129,10 +131,13 @@ public class EventdTest implements TemporaryDatabaseAware<TemporaryDatabase>, In
 
         node = m_databasePopulator.getNode2();
         assertNotNull(node);
-        sendNodeDownEvent(null, node);
+        Event generatedEvent = sendNodeDownEvent(null, node);
         Thread.sleep(1000);
 
         assertEquals(2, m_database.countRows(String.format("select * from events where eventuei = '%s'", EventConstants.NODE_DOWN_EVENT_UEI)));
+
+        assertNull(generatedEvent.getInterfaceAddress());
+        assertEquals(2, m_database.countRows(String.format("select * from events where eventuei = '%s' AND ipaddr IS NULL", EventConstants.NODE_DOWN_EVENT_UEI)));
     }
 
     /**
@@ -165,8 +170,9 @@ public class EventdTest implements TemporaryDatabaseAware<TemporaryDatabase>, In
     /**
      * @param reductionKey
      * @param node
+     * @return 
      */
-    private void sendNodeDownEvent(String reductionKey, OnmsNode node) {
+    private Event sendNodeDownEvent(String reductionKey, OnmsNode node) {
         EventBuilder e = MockEventUtil.createNodeDownEventBuilder("Test", node);
 
         if (reductionKey != null) {
@@ -181,7 +187,9 @@ public class EventdTest implements TemporaryDatabaseAware<TemporaryDatabase>, In
         e.setLogDest("logndisplay");
         e.setLogMessage("testing");
 
-        m_eventdIpcMgr.sendNow(e.getEvent());
+        final Event event = e.getEvent();
+        m_eventdIpcMgr.sendNow(event);
+        return event;
     }
 
     /**

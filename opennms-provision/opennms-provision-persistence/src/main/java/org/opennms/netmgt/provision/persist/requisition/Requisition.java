@@ -38,6 +38,7 @@ package org.opennms.netmgt.provision.persist.requisition;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -47,6 +48,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.Transient;
 import javax.xml.bind.ValidationException;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -75,9 +77,9 @@ import org.springframework.core.io.Resource;
 @XmlRootElement(name="model-import")
 @ValidateUsing("model-import.xsd")
 public class Requisition implements Serializable, Comparable<Requisition> {
-	private static final long serialVersionUID = 1629774241824443273L;
+    private static final long serialVersionUID = 1629774241824443273L;
 
-	@XmlTransient
+    @XmlTransient
     private Map<String, OnmsNodeRequisition> m_nodeReqs = new LinkedHashMap<String, OnmsNodeRequisition>();
     
     @XmlElement(name="node")
@@ -478,5 +480,21 @@ public class Requisition implements Serializable, Comparable<Requisition> {
     		}
     		throw new ValidationException(sb.toString());
     	}
+    }
+
+    @XmlTransient
+    @Transient
+    public Date getDate() {
+        return getDateStamp() == null? null : getDateStamp().toGregorianCalendar().getTime();
+    }
+
+    public void setDate(final Date date) {
+        final GregorianCalendar calendar = new GregorianCalendar();
+        calendar.setTime(date);
+        try {
+            setDateStamp(DatatypeFactory.newInstance().newXMLGregorianCalendar(calendar));
+        } catch (final DatatypeConfigurationException e) {
+            LogUtils.warnf(this, "Failed to turn %s into an XML date.", date);
+        }
     }
 }

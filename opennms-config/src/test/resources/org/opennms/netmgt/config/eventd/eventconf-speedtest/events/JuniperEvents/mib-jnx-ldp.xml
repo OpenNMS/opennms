@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<?meta name="GENERATOR" content="XML::Smart/1.6.9 Perl/5.008008 [linux]" ?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.4</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>1</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxLdpLspUp</uei>
+    <event-label>JUNIPER-LDP-MIB defined trap event: jnxLdpLspUp</event-label>
+    <descr><![CDATA[
+<p>The SNMP trap that is generated when an LSP comes up.</p><table>
+	<tr><td><b>
+
+	jnxLdpLspFec</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxLdpRtrid</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxLdpLspFecLen</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxLdpInstanceName</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxLdpLspUp trap received 
+			jnxLdpLspFec=%parm[#1]% 
+			jnxLdpRtrid=%parm[#2]% 
+			jnxLdpLspFecLen=%parm[#3]% 
+			jnxLdpInstanceName=%parm[#4]%</p>
+		]]></logmsg>
+    <severity>Cleared</severity>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxLdpLspDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.4</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>2</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxLdpLspDown</uei>
+    <event-label>JUNIPER-LDP-MIB defined trap event: jnxLdpLspDown</event-label>
+    <descr><![CDATA[
+<p>The SNMP trap that is generated when the LSP goes down.</p><table>
+	<tr><td><b>
+
+	jnxLdpLspFec</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxLdpRtrid</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxLdpLspDownReason</b></td><td>
+	%parm[#3]%;</td><td><p>
+		topologyChanged(1)
+		receivedWithdrawl(2)
+		neighborDown(3)
+		filterChanged(4)
+		bfdSessionDown(5)
+		unknown(6)
+		lspingDown(7)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxLdpLspFecLen</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxLdpInstanceName</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxLdpLspDown trap received 
+			jnxLdpLspFec=%parm[#1]% 
+			jnxLdpRtrid=%parm[#2]% 
+			jnxLdpLspDownReason=%parm[#3]% 
+			jnxLdpLspFecLen=%parm[#4]% 
+			jnxLdpInstanceName=%parm[#5]%</p>
+		]]></logmsg>
+    <severity>Major</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.4</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>3</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxLdpSesUp</uei>
+    <event-label>JUNIPER-LDP-MIB defined trap event: jnxLdpSesUp</event-label>
+    <descr><![CDATA[
+<p>The SNMP trap that is generated when the value of 'jnxMplsLdpSesState'
+enters the 'operational(5) state.</p><table>
+	<tr><td><b>
+
+	jnxMplsLdpSesState</b></td><td>
+	%parm[#1]%;</td><td><p>
+		nonexistent(1)
+		initialized(2)
+		openrec(3)
+		opensent(4)
+		operational(5)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxLdpSesUpIf</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxLdpSesUp trap received 
+			jnxMplsLdpSesState=%parm[#1]% 
+			jnxLdpSesUpIf=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Cleared</severity>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxLdpSesDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.4</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>4</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxLdpSesDown</uei>
+    <event-label>JUNIPER-LDP-MIB defined trap event: jnxLdpSesDown</event-label>
+    <descr><![CDATA[
+<p>The SNMP trap that is generated when the value of 'jnxMplsLdpSesState'
+leaves the 'operational(5) state. The value of jnxLdpSesDownIf is 
+one of the neighbor's interface. It is the interface associated with
+the last neighbor when jnxLdpSesDownReason is allAdjacenciesDown (3).</p><table>
+	<tr><td><b>
+
+	jnxMplsLdpSesState</b></td><td>
+	%parm[#1]%;</td><td><p>
+		nonexistent(1)
+		initialized(2)
+		openrec(3)
+		opensent(4)
+		operational(5)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxLdpSesDownReason</b></td><td>
+	%parm[#2]%;</td><td><p>
+		unknown(0)
+		holdExpired(1)
+		connectionExpired(2)
+		allAdjacenciesDown(3)
+		badTLV(4)
+		badPDU(5)
+		connectionError(6)
+		connectionReset(7)
+		peerSentNotification(8)
+		unexpectedEOF(9)
+		authenticationChanged(10)
+		initError(11)
+		gracefulRestartAbort(12)
+		cliCommand(13)
+		gracefulRestartChanged(14)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxLdpSesDownIf</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxLdpSesDown trap received 
+			jnxMplsLdpSesState=%parm[#1]% 
+			jnxLdpSesDownReason=%parm[#2]% 
+			jnxLdpSesDownIf=%parm[#3]%</p>
+		]]></logmsg>
+    <severity>Critical</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%"/>
+  </event>
+</events>
+

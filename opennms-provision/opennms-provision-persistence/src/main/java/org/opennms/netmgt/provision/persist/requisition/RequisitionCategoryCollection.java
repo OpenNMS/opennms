@@ -80,6 +80,7 @@ public class RequisitionCategoryCollection extends LinkedList<RequisitionCategor
      * @param categories a {@link java.util.List} object.
      */
     public void setCategories(List<RequisitionCategory> categories) {
+        if (categories == this) return;
         clear();
         addAll(categories);
     }

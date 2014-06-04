@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<?meta name="GENERATOR" content="XML::Smart/1.6.9 Perl/5.008008 [linux]" ?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.18</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>1</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxDomAlarmSet</uei>
+    <event-label>JUNIPER-DOM-MIB defined trap event: jnxDomAlarmSet</event-label>
+    <descr><![CDATA[
+<p>Notification of a recently set Dom alarm.</p><table>
+	<tr><td><b>
+
+	ifDescr</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxDomLastAlarms</b></td><td>
+	%parm[#2]%;</td><td><p>
+		domRxLossSignalAlarm(0)
+		domRxCDRLossLockAlarm(1)
+		domRxNotReadyAlarm(2)
+		domRxLaserPowerHighAlarm(3)
+		domRxLaserPowerLowAlarm(4)
+		domTxLaserBiasCurrentHighAlarm(5)
+		domTxLaserBiasCurrentLowAlarm(6)
+		domTxLaserOutputPowerHighAlarm(7)
+		domTxLaserOutputPowerLowAlarm(8)
+		domTxDataNotReadyAlarm(9)
+		domTxNotReadyAlarm(10)
+		domTxLaserFaultAlarm(11)
+		domTxCDRLossLockAlarm(12)
+		domModuleTemperatureHighAlarm(13)
+		domModuleTemperatureLowAlarm(14)
+		domModuleNotReadyAlarm(15)
+		domModulePowerDownAlarm(16)
+		domLinkDownAlarm(17)
+		domModuleRemovedAlarm(18)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxDomCurrentAlarms</b></td><td>
+	%parm[#3]%;</td><td><p>
+		domRxLossSignalAlarm(0)
+		domRxCDRLossLockAlarm(1)
+		domRxNotReadyAlarm(2)
+		domRxLaserPowerHighAlarm(3)
+		domRxLaserPowerLowAlarm(4)
+		domTxLaserBiasCurrentHighAlarm(5)
+		domTxLaserBiasCurrentLowAlarm(6)
+		domTxLaserOutputPowerHighAlarm(7)
+		domTxLaserOutputPowerLowAlarm(8)
+		domTxDataNotReadyAlarm(9)
+		domTxNotReadyAlarm(10)
+		domTxLaserFaultAlarm(11)
+		domTxCDRLossLockAlarm(12)
+		domModuleTemperatureHighAlarm(13)
+		domModuleTemperatureLowAlarm(14)
+		domModuleNotReadyAlarm(15)
+		domModulePowerDownAlarm(16)
+		domLinkDownAlarm(17)
+		domModuleRemovedAlarm(18)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxDomCurrentAlarmDate</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxDomAlarmSet trap received 
+			ifDescr=%parm[#1]% 
+			jnxDomLastAlarms=%parm[#2]% 
+			jnxDomCurrentAlarms=%parm[#3]% 
+			jnxDomCurrentAlarmDate=%parm[#4]%</p>
+		]]></logmsg>
+    <severity>Indeterminate</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.18</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>2</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxDomAlarmCleared</uei>
+    <event-label>JUNIPER-DOM-MIB defined trap event: jnxDomAlarmCleared</event-label>
+    <descr><![CDATA[
+<p>Notification of a recently cleared Dom alarm.</p><table>
+	<tr><td><b>
+
+	ifDescr</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxDomLastAlarms</b></td><td>
+	%parm[#2]%;</td><td><p>
+		domRxLossSignalAlarm(0)
+		domRxCDRLossLockAlarm(1)
+		domRxNotReadyAlarm(2)
+		domRxLaserPowerHighAlarm(3)
+		domRxLaserPowerLowAlarm(4)
+		domTxLaserBiasCurrentHighAlarm(5)
+		domTxLaserBiasCurrentLowAlarm(6)
+		domTxLaserOutputPowerHighAlarm(7)
+		domTxLaserOutputPowerLowAlarm(8)
+		domTxDataNotReadyAlarm(9)
+		domTxNotReadyAlarm(10)
+		domTxLaserFaultAlarm(11)
+		domTxCDRLossLockAlarm(12)
+		domModuleTemperatureHighAlarm(13)
+		domModuleTemperatureLowAlarm(14)
+		domModuleNotReadyAlarm(15)
+		domModulePowerDownAlarm(16)
+		domLinkDownAlarm(17)
+		domModuleRemovedAlarm(18)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxDomCurrentAlarms</b></td><td>
+	%parm[#3]%;</td><td><p>
+		domRxLossSignalAlarm(0)
+		domRxCDRLossLockAlarm(1)
+		domRxNotReadyAlarm(2)
+		domRxLaserPowerHighAlarm(3)
+		domRxLaserPowerLowAlarm(4)
+		domTxLaserBiasCurrentHighAlarm(5)
+		domTxLaserBiasCurrentLowAlarm(6)
+		domTxLaserOutputPowerHighAlarm(7)
+		domTxLaserOutputPowerLowAlarm(8)
+		domTxDataNotReadyAlarm(9)
+		domTxNotReadyAlarm(10)
+		domTxLaserFaultAlarm(11)
+		domTxCDRLossLockAlarm(12)
+		domModuleTemperatureHighAlarm(13)
+		domModuleTemperatureLowAlarm(14)
+		domModuleNotReadyAlarm(15)
+		domModulePowerDownAlarm(16)
+		domLinkDownAlarm(17)
+		domModuleRemovedAlarm(18)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxDomCurrentAlarmDate</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxDomAlarmCleared trap received 
+			ifDescr=%parm[#1]% 
+			jnxDomLastAlarms=%parm[#2]% 
+			jnxDomCurrentAlarms=%parm[#3]% 
+			jnxDomCurrentAlarmDate=%parm[#4]%</p>
+		]]></logmsg>
+    <severity>Indeterminate</severity>
+  </event>
+</events>
+

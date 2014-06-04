@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>topology</artifactId>
-    <version>1.11.91-SNAPSHOT</version>
+    <version>1.12.8-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -69,6 +69,7 @@
                               [1.0.2,)
                            </versionRange>
                            <goals>
+                              <goal>resources</goal>
                               <goal>update-widgetset</goal>
                            </goals>
                         </pluginExecutionFilter>
@@ -99,7 +100,7 @@
     <repository>
       <id>servicemix</id>
       <name>Apache ServiceMix Repository</name>
-      <url>http://svn.apache.org/repos/asf/servicemix/m2-repo</url>
+      <url>http://maven.opennms.org/content/groups/servicemix-release/</url>
       <releases><enabled>true</enabled></releases>
       <snapshots><enabled>false</enabled></snapshots>
     </repository>
@@ -117,7 +118,7 @@
     <pluginRepository>
       <id>servicemix</id>
       <name>Apache ServiceMix Repository</name>
-      <url>http://svn.apache.org/repos/asf/servicemix/m2-repo</url>
+      <url>http://maven.opennms.org/content/groups/servicemix-release/</url>
       <releases><enabled>true</enabled></releases>
       <snapshots><enabled>false</enabled></snapshots>
     </pluginRepository>

@@ -51,7 +51,7 @@
         <entry key="opennms-datasources.xml" value="dataSourceTester"/>
         <entry key="opennms-server.xml" value="opennmsServerConfigFactory"/>
         <!-- <entry key="opennms.properties" value="unknown"/> -->
-        <entry key="otrs.properties" value="otrsConfigDaoCheck"/>
+        <!-- <entry key="otrs.properties" value="otrsConfigDaoCheck"/> --> <!-- Not part of standard build -->
         <entry key="poll-outages.xml" value="pollOutagesConfigFactory"/>
         <entry key="poller-config.properties" value="pollerConfigProperties"/>
         <!-- <entry key="poller-configuration.xml" value="pollerConfigFactory"/> --><!-- database access -->
@@ -61,7 +61,7 @@
         <entry key="response-adhoc-graph.properties" value="responseAdhocGraph"/>
         <entry key="response-graph.properties" value="responsePrefabGraph"/>
         <entry key="rrd-configuration.properties" value="rrdConfigurationProperties"/>
-        <entry key="rt.properties" value="rtConfigDaoCheck"/>
+        <!-- <entry key="rt.properties" value="rtConfigDaoCheck"/> --><!-- Not part of standard build -->
         <entry key="rtc-configuration.xml" value="rtcConfigFactory"/>
         <entry key="rws-configuration.xml" value="rwsConfigFactory"/>
         <entry key="scriptd-configuration.xml" value="scriptdConfigFactory"/>

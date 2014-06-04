@@ -121,6 +121,7 @@ public class RequisitionNode {
         if (interfaces == null) {
             interfaces = new TreeSet<RequisitionInterface>();
         }
+        if (m_interfaces == interfaces) return;
         m_interfaces.clear();
         m_interfaces.addAll(interfaces);
     }
@@ -215,6 +216,7 @@ public class RequisitionNode {
         if (categories == null) {
             categories = new TreeSet<RequisitionCategory>();
         }
+        if (m_categories == categories) return;
         m_categories.clear();
         m_categories.addAll(categories);
     }
@@ -311,6 +313,7 @@ public class RequisitionNode {
         if (assets == null) {
             assets = new TreeSet<RequisitionAsset>();
         }
+        if (m_assets == assets) return;
         m_assets.clear();
         m_assets.addAll(assets);
     }
@@ -453,7 +456,7 @@ public class RequisitionNode {
      * @param value a {@link java.lang.String} object.
      */
     public void setParentForeignSource(String value) {
-        m_parentForeignSource = value;
+        m_parentForeignSource = value != null && "".equals(value.trim()) ? null : value;
     }
 
     /**
@@ -471,7 +474,7 @@ public class RequisitionNode {
      * @param value a {@link java.lang.String} object.
      */
     public void setParentForeignId(String value) {
-        m_parentForeignId = value;
+        m_parentForeignId = value != null && "".equals(value.trim()) ? null : value;
     }
 
     /**
@@ -489,7 +492,7 @@ public class RequisitionNode {
      * @param value a {@link java.lang.String} object.
      */
     public void setParentNodeLabel(String value) {
-        m_parentNodeLabel = value;
+        m_parentNodeLabel = value != null && "".equals(value.trim()) ? null : value;
     }
 
     @Override

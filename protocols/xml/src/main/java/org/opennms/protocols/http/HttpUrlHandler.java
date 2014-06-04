@@ -33,6 +33,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 
+import org.opennms.protocols.xml.config.Request;
+
 /**
  * The class for handling HTTP URL Connection using Apache HTTP Client
  * 
@@ -41,7 +43,20 @@ import java.net.URLStreamHandler;
 public class HttpUrlHandler extends URLStreamHandler {
 
     /** The Constant PROTOCOL. */
-    public static final String PROTOCOL = "http";
+    public static final String HTTP = "http";
+
+    /** The Request. */
+    private Request request;
+
+    /**
+     * Instantiates a new HTTP URL handler.
+     *
+     * @param request the request
+     */
+    public HttpUrlHandler(Request request) {
+        super();
+        this.request = request;
+    }
 
     /* (non-Javadoc)
      * @see java.net.URLStreamHandler#getDefaultPort()
@@ -56,7 +71,7 @@ public class HttpUrlHandler extends URLStreamHandler {
      */
     @Override
     protected URLConnection openConnection(URL url) throws IOException {
-        return new HttpUrlConnection(url);
+        return new HttpUrlConnection(url, request);
     }
 
 }

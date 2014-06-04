@@ -37,6 +37,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -111,6 +112,7 @@ public class DefaultResourceDaoTest extends TestCase {
         RrdUtils.setStrategy(new JRobinRrdStrategy());
         
         expect(m_dataCollectionConfigDao.getConfiguredResourceTypes()).andReturn(new HashMap<String, ResourceType>());
+        expect(m_dataCollectionConfigDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis()));
         
         m_easyMockUtils.replayAll();
         m_resourceDao.afterPropertiesSet();
@@ -157,6 +159,7 @@ public class DefaultResourceDaoTest extends TestCase {
 
         Collection<LocationMonitorIpInterface> locMons = new HashSet<LocationMonitorIpInterface>();
         expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(1)).andReturn(locMons).times(1);
+        expect(m_dataCollectionConfigDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis()-86400000l)).anyTimes();
         
         File response = m_fileAnticipator.tempDir("response");
         File ipDir = m_fileAnticipator.tempDir(response, "192.168.1.1");
@@ -312,6 +315,7 @@ public class DefaultResourceDaoTest extends TestCase {
         File intf = m_fileAnticipator.tempDir(domain, "server1");
         m_fileAnticipator.tempFile(intf, "ifInOctects" + RrdUtils.getExtension());
         
+        expect(m_dataCollectionConfigDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis()-86400000l)).anyTimes();
         String resourceId = OnmsResource.createResourceId("domain", "example1", "interfaceSnmp", "server1");
         
         m_easyMockUtils.replayAll();
@@ -338,12 +342,8 @@ public class DefaultResourceDaoTest extends TestCase {
         OnmsIpInterface ip = createIpInterface();
         node.addIpInterface(ip);
         nodes.add(node);
-        List<Integer> nodeIds = new ArrayList<Integer>();
-        nodeIds.add(node.getId());
         
-        expect(m_nodeDao.getNodeIds()).andReturn(nodeIds);
-        expect(m_nodeDao.get(1)).andReturn(node).times(2);
-        
+        expect(m_nodeDao.findAll()).andReturn(nodes);
 
         File response = m_fileAnticipator.tempDir("response");
         File ipDir = m_fileAnticipator.tempDir(response, "192.168.1.1");
@@ -364,11 +364,8 @@ public class DefaultResourceDaoTest extends TestCase {
         OnmsIpInterface ip = createIpInterface();
         node.addIpInterface(ip);
         nodes.add(node);
-        List<Integer> nodeIds = new ArrayList<Integer>();
-        nodeIds.add(node.getId());
-        
-        expect(m_nodeDao.getNodeIds()).andReturn(nodeIds);
-        expect(m_nodeDao.get(1)).andReturn(node).times(2);
+
+        expect(m_nodeDao.findAll()).andReturn(nodes);
 
         File response = m_fileAnticipator.tempDir("response");
         File distributed = m_fileAnticipator.tempDir(response, "distributed");
@@ -390,11 +387,8 @@ public class DefaultResourceDaoTest extends TestCase {
         OnmsIpInterface ip = createIpInterface();
         node.addIpInterface(ip);
         nodes.add(node);
-        List<Integer> nodeIds = new ArrayList<Integer>();
-        nodeIds.add(node.getId());
         
-        expect(m_nodeDao.getNodeIds()).andReturn(nodeIds);
-        expect(m_nodeDao.get(1)).andReturn(node).times(1);
+        expect(m_nodeDao.findAll()).andReturn(nodes);
 
         File snmp = m_fileAnticipator.tempDir("snmp");
         File nodeDir = m_fileAnticipator.tempDir(snmp, "1");
@@ -415,11 +409,8 @@ public class DefaultResourceDaoTest extends TestCase {
         OnmsIpInterface ip = createIpInterface();
         node.addIpInterface(ip);
         nodes.add(node);
-        List<Integer> nodeIds = new ArrayList<Integer>();
-        nodeIds.add(node.getId());
         
-        expect(m_nodeDao.getNodeIds()).andReturn(nodeIds);
-        expect(m_nodeDao.get(1)).andReturn(node).times(1);
+        expect(m_nodeDao.findAll()).andReturn(nodes);
 
         File snmp = m_fileAnticipator.tempDir("snmp");
         File nodeDir = m_fileAnticipator.tempDir(snmp, "1");
@@ -476,6 +467,7 @@ public class DefaultResourceDaoTest extends TestCase {
 
         expect(m_nodeDao.get(1)).andReturn(ip.getNode()).times(2);
         expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(1)).andReturn(new ArrayList<LocationMonitorIpInterface>());
+        expect(m_dataCollectionConfigDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis() - 86400000l));
 
         m_easyMockUtils.replayAll();
         OnmsResource resource = m_resourceDao.getResourceForIpInterface(ip);
@@ -533,6 +525,7 @@ public class DefaultResourceDaoTest extends TestCase {
 
         expect(m_nodeDao.get(ip.getNode().getId())).andReturn(ip.getNode()).times(1);
         expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(ip.getNode().getId())).andReturn(locationMonitorInterfaces).times(2);
+        expect(m_dataCollectionConfigDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis()-86400000l)).anyTimes();
 
         m_easyMockUtils.replayAll();
         OnmsResource resource = m_resourceDao.getResourceForIpInterface(ip, locMon);

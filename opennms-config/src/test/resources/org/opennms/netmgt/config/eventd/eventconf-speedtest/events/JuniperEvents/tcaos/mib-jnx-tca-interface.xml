@@ -1,0 +1,825 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<?meta name="GENERATOR" content="XML::Smart/1.6.9 Perl/5.008008 [linux]" ?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>16</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>5</vbvalue>
+      </varbind>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgTe1Los</uei>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgTe1Los</event-label>
+    <descr><![CDATA[
+<p>This notification signifies that T1/E1 interface has
+loss of signal defect.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgTe1Los trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Critical</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>16</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>4</vbvalue>
+      </varbind>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgTe1Los</uei>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgTe1Los</event-label>
+    <descr><![CDATA[
+<p>This notification signifies that T1/E1 interface has
+loss of signal defect.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgTe1Los trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Major</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>16</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>3</vbvalue>
+      </varbind>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgTe1Los</uei>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgTe1Los</event-label>
+    <descr><![CDATA[
+<p>This notification signifies that T1/E1 interface has
+loss of signal defect.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgTe1Los trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Minor</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>16</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>2</vbvalue>
+      </varbind>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgTe1Los</uei>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgTe1Los</event-label>
+    <descr><![CDATA[
+<p>This notification signifies that T1/E1 interface has
+loss of signal defect.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgTe1Los trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Warning</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgTe1Los:%dpname%:%nodeid%:%parm[names-all]%"/>
+    <descr><![CDATA[
+<p>This notification signifies that T1/E1 interface has
+loss of signal defect.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgTe1Los</event-label>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgTe1Los trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>16</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>1</vbvalue>
+      </varbind>
+    </mask>
+    <severity>Cleared</severity>
+    <uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxTcaTrapMsgTe1Los</uei>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>17</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>5</vbvalue>
+      </varbind>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgTe1Lof</uei>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgTe1Lof</event-label>
+    <descr><![CDATA[
+<p>This notification signifies that T1/E1 interface has
+loss of frame defect.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgTe1Lof trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Critical</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>17</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>4</vbvalue>
+      </varbind>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgTe1Lof</uei>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgTe1Lof</event-label>
+    <descr><![CDATA[
+<p>This notification signifies that T1/E1 interface has
+loss of frame defect.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgTe1Lof trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Major</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>17</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>3</vbvalue>
+      </varbind>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgTe1Lof</uei>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgTe1Lof</event-label>
+    <descr><![CDATA[
+<p>This notification signifies that T1/E1 interface has
+loss of frame defect.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgTe1Lof trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Minor</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>17</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>2</vbvalue>
+      </varbind>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgTe1Lof</uei>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgTe1Lof</event-label>
+    <descr><![CDATA[
+<p>This notification signifies that T1/E1 interface has
+loss of frame defect.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgTe1Lof trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Warning</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgTe1Lof:%dpname%:%nodeid%:%parm[names-all]%"/>
+    <descr><![CDATA[
+<p>This notification signifies that T1/E1 interface has
+loss of frame defect.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgTe1Lof</event-label>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgTe1Lof trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>17</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>1</vbvalue>
+      </varbind>
+    </mask>
+    <severity>Cleared</severity>
+    <uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxTcaTrapMsgTe1Lof</uei>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>18</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>5</vbvalue>
+      </varbind>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgTe1Ais</uei>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgTe1Ais</event-label>
+    <descr><![CDATA[
+<p>This notification signifies that T1/E1 interface has
+alarm indication signal defect.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgTe1Ais trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Critical</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>18</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>4</vbvalue>
+      </varbind>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgTe1Ais</uei>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgTe1Ais</event-label>
+    <descr><![CDATA[
+<p>This notification signifies that T1/E1 interface has
+alarm indication signal defect.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgTe1Ais trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Major</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>18</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>3</vbvalue>
+      </varbind>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgTe1Ais</uei>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgTe1Ais</event-label>
+    <descr><![CDATA[
+<p>This notification signifies that T1/E1 interface has
+alarm indication signal defect.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgTe1Ais trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Minor</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>18</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>2</vbvalue>
+      </varbind>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgTe1Ais</uei>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgTe1Ais</event-label>
+    <descr><![CDATA[
+<p>This notification signifies that T1/E1 interface has
+alarm indication signal defect.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgTe1Ais trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Warning</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgTe1Ais:%dpname%:%nodeid%:%parm[names-all]%"/>
+    <descr><![CDATA[
+<p>This notification signifies that T1/E1 interface has
+alarm indication signal defect.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgTe1Ais</event-label>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgTe1Ais trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>18</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>1</vbvalue>
+      </varbind>
+    </mask>
+    <severity>Cleared</severity>
+    <uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxTcaTrapMsgTe1Ais</uei>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>19</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>5</vbvalue>
+      </varbind>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgTe1Rai</uei>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgTe1Rai</event-label>
+    <descr><![CDATA[
+<p>This notification signifies that T1/E1 interface has
+remote alarm indication defect.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgTe1Rai trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Critical</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>19</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>4</vbvalue>
+      </varbind>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgTe1Rai</uei>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgTe1Rai</event-label>
+    <descr><![CDATA[
+<p>This notification signifies that T1/E1 interface has
+remote alarm indication defect.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgTe1Rai trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Major</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>19</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>3</vbvalue>
+      </varbind>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgTe1Rai</uei>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgTe1Rai</event-label>
+    <descr><![CDATA[
+<p>This notification signifies that T1/E1 interface has
+remote alarm indication defect.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgTe1Rai trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Minor</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>19</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>2</vbvalue>
+      </varbind>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgTe1Rai</uei>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgTe1Rai</event-label>
+    <descr><![CDATA[
+<p>This notification signifies that T1/E1 interface has
+remote alarm indication defect.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgTe1Rai trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Warning</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%"/>
+  </event>
+  <event>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxTcaTrapMsgTe1Rai:%dpname%:%nodeid%:%parm[names-all]%"/>
+    <descr><![CDATA[
+<p>This notification signifies that T1/E1 interface has
+remote alarm indication defect.</p><table>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSource</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxTcaTrapAttrSeverity</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <event-label>JUNIPER-TCA-TIMING-MIB defined trap event: jnxTcaTrapMsgTe1Rai</event-label>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTcaTrapMsgTe1Rai trap received 
+			jnxTcaTrapAttrSource=%parm[#1]% 
+			jnxTcaTrapAttrSeverity=%parm[#2]%</p>
+		]]></logmsg>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.27091.2.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>19</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>1</vbvalue>
+      </varbind>
+    </mask>
+    <severity>Cleared</severity>
+    <uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxTcaTrapMsgTe1Rai</uei>
+  </event>
+</events>
+

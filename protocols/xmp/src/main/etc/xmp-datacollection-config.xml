@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<xmp-datacollection-config rrdRepository="${install.share.dir}/rrd/snmp/">
+<xmp-datacollection-config rrdRepository="${install.share.dir}/share/rrd/snmp/">
 
  <xmp-collection name="default" xmpStorageFlag="select">
 
@@ -67,6 +67,8 @@
      <mibObj mib="cartographer" table="" var="diskWrites" instance="" />
      <mibObj mib="cartographer" table="" var="diskReadKB" instance="" />
      <mibObj mib="cartographer" table="" var="diskWriteKB" instance="" />
+     <mibObj mib="cartographer" table="" var="numGraphNodes" instance="" />
+     <mibObj mib="cartographer" table="" var="numGraphEdges" instance="" />
    </group>
 
    <group name="xmpdStats" resourceType="procStats">
@@ -78,6 +80,55 @@
              instance="xmpd" />
      <mibObj mib="cartographer" table="processTable" var="processThreadCount"
              instance="xmpd" />
+     <mibObj mib="cartographer" table="processTable" var="processReads"
+             instance="xmpd" />
+     <mibObj mib="cartographer" table="processTable" var="processWrites"
+             instance="xmpd" />
+     <mibObj mib="cartographer" table="processTable" var="processReadBytes"
+             instance="xmpd" />
+     <mibObj mib="cartographer" table="processTable" var="processWriteBytes"
+             instance="xmpd" />
+     <mibObj mib="cartographer" table="processTable" var="processCPUTime"
+             instance="xmpd" />
+   </group>
+
+   <group name="gnomeShellStats" resourceType="procStats">
+     <mibObj mib="cartographer" table="processTable" var="processSize"
+             instance="gnome-shell" />
+     <mibObj mib="cartographer" table="processTable" var="processRSS"
+             instance="gnome-shell" />
+     <mibObj mib="cartographer" table="processTable" var="processHandleCount"
+             instance="gnome-shell" />
+     <mibObj mib="cartographer" table="processTable" var="processThreadCount"
+             instance="gnome-shell" />
+     <mibObj mib="cartographer" table="processTable" var="processCPUTime"
+             instance="gnome-shell" />
+   </group>
+
+   <group name="cartographerGUIStats" resourceType="procStats">
+     <mibObj mib="cartographer" table="processTable" var="processSize"
+             instance="java -jar lib/Cartographer" />
+     <mibObj mib="cartographer" table="processTable" var="processRSS"
+             instance="java -jar lib/Cartographer" />
+     <mibObj mib="cartographer" table="processTable" var="processHandleCount"
+             instance="java -jar lib/Cartographer" />
+     <mibObj mib="cartographer" table="processTable" var="processThreadCount"
+             instance="java -jar lib/Cartographer" />
+     <mibObj mib="cartographer" table="processTable" var="processCPUTime"
+             instance="java -jar lib/Cartographer" />
+   </group>
+
+   <group name="cairoStats" resourceType="procStats">
+     <mibObj mib="cartographer" table="processTable" var="processSize"
+             instance="cairo-dock" />
+     <mibObj mib="cartographer" table="processTable" var="processRSS"
+             instance="cairo-dock" />
+     <mibObj mib="cartographer" table="processTable" var="processHandleCount"
+             instance="cairo-dock" />
+     <mibObj mib="cartographer" table="processTable" var="processThreadCount"
+             instance="cairo-dock" />
+     <mibObj mib="cartographer" table="processTable" var="processCPUTime"
+             instance="cairo-dock" />
    </group>
 
    <group name="filesys" resourceType="xmpFilesys">
@@ -89,8 +140,502 @@
              instance="" />
      <mibObj mib="cartographer" table="filesysTable" var="availBlocks"
              instance="" />
+     <mibObj mib="cartographer" table="filesysTable" var="percentUsedBlocks"
+             instance="" />
+     <mibObj mib="cartographer" table="filesysTable" var="percentUsedFiles"
+             instance="" />
    </group>
+
+    <group name="systemOnms" resourceType="">
+     <mibObj mib="core" table="" var="sysUpTime" instance="" />
+    </group>
+    <group name="onmsStats" resourceType="procStats">
+     <mibObj mib="cartographer" table="processTable" var="processSize"
+             instance="Dopennms" />
+     <mibObj mib="cartographer" table="processTable" var="processRSS"
+             instance="Dopennms" />
+     <mibObj mib="cartographer" table="processTable" var="processHandleCount"
+             instance="Dopennms" />
+     <mibObj mib="cartographer" table="processTable" var="processThreadCount"
+             instance="Dopennms" />
+     <mibObj mib="cartographer" table="processTable" var="processReads"
+             instance="Dopennms" />
+     <mibObj mib="cartographer" table="processTable" var="processWrites"
+             instance="Dopennms" />
+     <mibObj mib="cartographer" table="processTable" var="processReadBytes"
+             instance="Dopennms" />
+     <mibObj mib="cartographer" table="processTable" var="processWriteBytes"
+             instance="Dopennms" />
+     <mibObj mib="cartographer" table="processTable" var="processCPUTime"
+             instance="Dopennms" />
+    </group>
+
+    <group name="systemAsterisk" resourceType="">
+     <mibObj mib="core" table="" var="sysUpTime" instance="" />
+    </group>
+    <group name="asteriskStats" resourceType="procStats">
+     <mibObj mib="cartographer" table="processTable" var="processSize"
+             instance="asterisk" />
+     <mibObj mib="cartographer" table="processTable" var="processRSS"
+             instance="asterisk" />
+     <mibObj mib="cartographer" table="processTable" var="processHandleCount"
+             instance="asterisk" />
+     <mibObj mib="cartographer" table="processTable" var="processThreadCount"
+             instance="asterisk" />
+     <mibObj mib="cartographer" table="processTable" var="processReads"
+             instance="asterisk" />
+     <mibObj mib="cartographer" table="processTable" var="processWrites"
+             instance="asterisk" />
+     <mibObj mib="cartographer" table="processTable" var="processReadBytes"
+             instance="asterisk" />
+     <mibObj mib="cartographer" table="processTable" var="processWriteBytes"
+             instance="asterisk" />
+     <mibObj mib="cartographer" table="processTable" var="processCPUTime"
+             instance="asterisk" />
+    </group>
+
+    <group name="systemNamed" resourceType="">
+     <mibObj mib="core" table="" var="sysUpTime" instance="" />
+    </group>
+    <group name="namedStats" resourceType="procStats">
+     <mibObj mib="cartographer" table="processTable" var="processSize"
+             instance="named" />
+     <mibObj mib="cartographer" table="processTable" var="processRSS"
+             instance="named" />
+     <mibObj mib="cartographer" table="processTable" var="processHandleCount"
+             instance="named" />
+     <mibObj mib="cartographer" table="processTable" var="processThreadCount"
+             instance="named" />
+     <mibObj mib="cartographer" table="processTable" var="processReads"
+             instance="named" />
+     <mibObj mib="cartographer" table="processTable" var="processWrites"
+             instance="named" />
+     <mibObj mib="cartographer" table="processTable" var="processReadBytes"
+             instance="named" />
+     <mibObj mib="cartographer" table="processTable" var="processWriteBytes"
+             instance="named" />
+     <mibObj mib="cartographer" table="processTable" var="processCPUTime"
+             instance="named" />
+    </group>
+
+    <group name="systemSlapd" resourceType="">
+     <mibObj mib="core" table="" var="sysUpTime" instance="" />
+    </group>
+    <group name="slapdStats" resourceType="procStats">
+     <mibObj mib="cartographer" table="processTable" var="processSize"
+             instance="slapd" />
+     <mibObj mib="cartographer" table="processTable" var="processRSS"
+             instance="slapd" />
+     <mibObj mib="cartographer" table="processTable" var="processHandleCount"
+             instance="slapd" />
+     <mibObj mib="cartographer" table="processTable" var="processThreadCount"
+             instance="slapd" />
+     <mibObj mib="cartographer" table="processTable" var="processReads"
+             instance="slapd" />
+     <mibObj mib="cartographer" table="processTable" var="processWrites"
+             instance="slapd" />
+     <mibObj mib="cartographer" table="processTable" var="processReadBytes"
+             instance="slapd" />
+     <mibObj mib="cartographer" table="processTable" var="processWriteBytes"
+             instance="slapd" />
+     <mibObj mib="cartographer" table="processTable" var="processCPUTime"
+             instance="slapd" />
+    </group>
+
+    <group name="systemYpserv" resourceType="">
+     <mibObj mib="core" table="" var="sysUpTime" instance="" />
+    </group>
+    <group name="ypservStats" resourceType="procStats">
+     <mibObj mib="cartographer" table="processTable" var="processSize"
+             instance="ypserv" />
+     <mibObj mib="cartographer" table="processTable" var="processRSS"
+             instance="ypserv" />
+     <mibObj mib="cartographer" table="processTable" var="processHandleCount"
+             instance="ypserv" />
+     <mibObj mib="cartographer" table="processTable" var="processThreadCount"
+             instance="ypserv" />
+     <mibObj mib="cartographer" table="processTable" var="processReads"
+             instance="ypserv" />
+     <mibObj mib="cartographer" table="processTable" var="processWrites"
+             instance="ypserv" />
+     <mibObj mib="cartographer" table="processTable" var="processReadBytes"
+             instance="ypserv" />
+     <mibObj mib="cartographer" table="processTable" var="processWriteBytes"
+             instance="ypserv" />
+     <mibObj mib="cartographer" table="processTable" var="processCPUTime"
+             instance="ypserv" />
+    </group>
+
+    <group name="systemTS3server" resourceType="">
+     <mibObj mib="core" table="" var="sysUpTime" instance="" />
+    </group>
+    <group name="ts3serverStats" resourceType="procStats">
+     <mibObj mib="cartographer" table="processTable" var="processRSS"
+             instance="ts3server" />
+     <mibObj mib="cartographer" table="processTable" var="processHandleCount"
+             instance="ts3server" />
+     <mibObj mib="cartographer" table="processTable" var="processThreadCount"
+             instance="ts3server" />
+     <mibObj mib="cartographer" table="processTable" var="processReads"
+             instance="ts3server" />
+     <mibObj mib="cartographer" table="processTable" var="processWrites"
+             instance="ts3server" />
+     <mibObj mib="cartographer" table="processTable" var="processReadBytes"
+             instance="ts3server" />
+     <mibObj mib="cartographer" table="processTable" var="processWriteBytes"
+             instance="ts3server" />
+     <mibObj mib="cartographer" table="processTable" var="processCPUTime"
+             instance="ts3server" />
+    </group>
+
+    <group name="systemXbmc" resourceType="">
+     <mibObj mib="core" table="" var="sysUpTime" instance="" />
+    </group>
+    <group name="xbmcStats" resourceType="procStats">
+     <mibObj mib="cartographer" table="processTable" var="processRSS"
+             instance="XBMC" />
+     <mibObj mib="cartographer" table="processTable" var="processHandleCount"
+             instance="XBMC" />
+     <mibObj mib="cartographer" table="processTable" var="processThreadCount"
+             instance="XBMC" />
+     <mibObj mib="cartographer" table="processTable" var="processReads"
+             instance="XBMC" />
+     <mibObj mib="cartographer" table="processTable" var="processWrites"
+             instance="XBMC" />
+     <mibObj mib="cartographer" table="processTable" var="processReadBytes"
+             instance="XBMC" />
+     <mibObj mib="cartographer" table="processTable" var="processWriteBytes"
+             instance="XBMC" />
+     <mibObj mib="cartographer" table="processTable" var="processCPUTime"
+             instance="XBMC" />
+    </group>
 
   </groups>
  </xmp-collection>
+
+ <xmp-collection name="onmsPerf" xmpStorageFlag="select">
+
+   <rrd step="300">
+     <rra>RRA:AVERAGE:0.5:1:8928</rra>
+     <rra>RRA:AVERAGE:0.5:12:8784</rra>
+     <rra>RRA:MIN:0.5:12:8784</rra>
+     <rra>RRA:MAX:0.5:12:8784</rra>
+   </rrd>
+
+   <groups>
+
+    <group name="systemOnms" resourceType="">
+     <mibObj mib="core" table="" var="sysUpTime" instance="" />
+    </group>
+
+    <group name="onmsStats" resourceType="procStats">
+     <mibObj mib="cartographer" table="processTable" var="processSize"
+             instance="Dopennms" />
+     <mibObj mib="cartographer" table="processTable" var="processRSS"
+             instance="Dopennms" />
+     <mibObj mib="cartographer" table="processTable" var="processHandleCount"
+             instance="Dopennms" />
+     <mibObj mib="cartographer" table="processTable" var="processThreadCount"
+             instance="Dopennms" />
+     <mibObj mib="cartographer" table="processTable" var="processReads"
+             instance="Dopennms" />
+     <mibObj mib="cartographer" table="processTable" var="processWrites"
+             instance="Dopennms" />
+     <mibObj mib="cartographer" table="processTable" var="processReadBytes"
+             instance="Dopennms" />
+     <mibObj mib="cartographer" table="processTable" var="processWriteBytes"
+             instance="Dopennms" />
+     <mibObj mib="cartographer" table="processTable" var="processCPUTime"
+             instance="Dopennms" />
+    </group>
+
+   </groups>
+ </xmp-collection>
+
+ <xmp-collection name="mysqldPerf" xmpStorageFlag="select">
+   <rrd step="300">
+     <rra>RRA:AVERAGE:0.5:1:8928</rra>
+     <rra>RRA:AVERAGE:0.5:12:8784</rra>
+     <rra>RRA:MIN:0.5:12:8784</rra>
+     <rra>RRA:MAX:0.5:12:8784</rra>
+   </rrd>
+   <groups>
+    <group name="systemMysqld" resourceType="">
+     <mibObj mib="core" table="" var="sysUpTime" instance="" />
+    </group>
+    <group name="mysqldStats" resourceType="procStats">
+     <mibObj mib="cartographer" table="processTable" var="processSize"
+             instance="/usr/libexec/mysqld" />
+     <mibObj mib="cartographer" table="processTable" var="processRSS"
+             instance="/usr/libexec/mysqld" />
+     <mibObj mib="cartographer" table="processTable" var="processHandleCount"
+             instance="/usr/libexec/mysqld" />
+     <mibObj mib="cartographer" table="processTable" var="processThreadCount"
+             instance="/usr/libexec/mysqld" />
+     <mibObj mib="cartographer" table="processTable" var="processReads"
+             instance="/usr/libexec/mysqld" />
+     <mibObj mib="cartographer" table="processTable" var="processWrites"
+             instance="/usr/libexec/mysqld" />
+     <mibObj mib="cartographer" table="processTable" var="processReadBytes"
+             instance="/usr/libexec/mysqld" />
+     <mibObj mib="cartographer" table="processTable" var="processWriteBytes"
+             instance="/usr/libexec/mysqld" />
+     <mibObj mib="cartographer" table="processTable" var="processCPUTime"
+             instance="/usr/libexec/mysqld" />
+    </group>
+   </groups>
+ </xmp-collection>
+
+ <xmp-collection name="named" xmpStorageFlag="select">
+   <rrd step="300">
+     <rra>RRA:AVERAGE:0.5:1:8928</rra>
+     <rra>RRA:AVERAGE:0.5:12:8784</rra>
+     <rra>RRA:MIN:0.5:12:8784</rra>
+     <rra>RRA:MAX:0.5:12:8784</rra>
+   </rrd>
+   <groups>
+    <group name="systemNamed" resourceType="">
+     <mibObj mib="core" table="" var="sysUpTime" instance="" />
+    </group>
+    <group name="namedStats" resourceType="procStats">
+     <mibObj mib="cartographer" table="processTable" var="processSize"
+             instance="named" />
+     <mibObj mib="cartographer" table="processTable" var="processRSS"
+             instance="named" />
+     <mibObj mib="cartographer" table="processTable" var="processHandleCount"
+             instance="named" />
+     <mibObj mib="cartographer" table="processTable" var="processThreadCount"
+             instance="named" />
+     <mibObj mib="cartographer" table="processTable" var="processReads"
+             instance="named" />
+     <mibObj mib="cartographer" table="processTable" var="processWrites"
+             instance="named" />
+     <mibObj mib="cartographer" table="processTable" var="processReadBytes"
+             instance="named" />
+     <mibObj mib="cartographer" table="processTable" var="processWriteBytes"
+             instance="named" />
+     <mibObj mib="cartographer" table="processTable" var="processCPUTime"
+             instance="named" />
+    </group>
+   </groups>
+ </xmp-collection>
+
+ <xmp-collection name="ypserv" xmpStorageFlag="select">
+   <rrd step="300">
+     <rra>RRA:AVERAGE:0.5:1:8928</rra>
+     <rra>RRA:AVERAGE:0.5:12:8784</rra>
+     <rra>RRA:MIN:0.5:12:8784</rra>
+     <rra>RRA:MAX:0.5:12:8784</rra>
+   </rrd>
+   <groups>
+    <group name="systemYpserv" resourceType="">
+     <mibObj mib="core" table="" var="sysUpTime" instance="" />
+    </group>
+    <group name="ypservStats" resourceType="procStats">
+     <mibObj mib="cartographer" table="processTable" var="processSize"
+             instance="ypserv" />
+     <mibObj mib="cartographer" table="processTable" var="processRSS"
+             instance="ypserv" />
+     <mibObj mib="cartographer" table="processTable" var="processHandleCount"
+             instance="ypserv" />
+     <mibObj mib="cartographer" table="processTable" var="processThreadCount"
+             instance="ypserv" />
+     <mibObj mib="cartographer" table="processTable" var="processReads"
+             instance="ypserv" />
+     <mibObj mib="cartographer" table="processTable" var="processWrites"
+             instance="ypserv" />
+     <mibObj mib="cartographer" table="processTable" var="processReadBytes"
+             instance="ypserv" />
+     <mibObj mib="cartographer" table="processTable" var="processWriteBytes"
+             instance="ypserv" />
+     <mibObj mib="cartographer" table="processTable" var="processCPUTime"
+             instance="ypserv" />
+    </group>
+   </groups>
+ </xmp-collection>
+
+ <xmp-collection name="slapd" xmpStorageFlag="select">
+   <rrd step="300">
+     <rra>RRA:AVERAGE:0.5:1:8928</rra>
+     <rra>RRA:AVERAGE:0.5:12:8784</rra>
+     <rra>RRA:MIN:0.5:12:8784</rra>
+     <rra>RRA:MAX:0.5:12:8784</rra>
+   </rrd>
+   <groups>
+    <group name="systemSlapd" resourceType="">
+     <mibObj mib="core" table="" var="sysUpTime" instance="" />
+    </group>
+    <group name="slapdStats" resourceType="procStats">
+     <mibObj mib="cartographer" table="processTable" var="processSize"
+             instance="slapd" />
+     <mibObj mib="cartographer" table="processTable" var="processRSS"
+             instance="slapd" />
+     <mibObj mib="cartographer" table="processTable" var="processHandleCount"
+             instance="slapd" />
+     <mibObj mib="cartographer" table="processTable" var="processThreadCount"
+             instance="slapd" />
+     <mibObj mib="cartographer" table="processTable" var="processReads"
+             instance="slapd" />
+     <mibObj mib="cartographer" table="processTable" var="processWrites"
+             instance="slapd" />
+     <mibObj mib="cartographer" table="processTable" var="processReadBytes"
+             instance="slapd" />
+     <mibObj mib="cartographer" table="processTable" var="processWriteBytes"
+             instance="slapd" />
+     <mibObj mib="cartographer" table="processTable" var="processCPUTime"
+             instance="slapd" />
+    </group>
+   </groups>
+ </xmp-collection>
+
+ <xmp-collection name="ts3server" xmpStorageFlag="select">
+   <rrd step="300">
+     <rra>RRA:AVERAGE:0.5:1:8928</rra>
+     <rra>RRA:AVERAGE:0.5:12:8784</rra>
+     <rra>RRA:MIN:0.5:12:8784</rra>
+     <rra>RRA:MAX:0.5:12:8784</rra>
+   </rrd>
+   <groups>
+    <group name="systemTS3server" resourceType="">
+     <mibObj mib="core" table="" var="sysUpTime" instance="" />
+    </group>
+    <group name="ts3serverStats" resourceType="procStats">
+     <mibObj mib="cartographer" table="processTable" var="processRSS"
+             instance="ts3server" />
+     <mibObj mib="cartographer" table="processTable" var="processHandleCount"
+             instance="ts3server" />
+     <mibObj mib="cartographer" table="processTable" var="processThreadCount"
+             instance="ts3server" />
+     <mibObj mib="cartographer" table="processTable" var="processReads"
+             instance="ts3server" />
+     <mibObj mib="cartographer" table="processTable" var="processWrites"
+             instance="ts3server" />
+     <mibObj mib="cartographer" table="processTable" var="processReadBytes"
+             instance="ts3server" />
+     <mibObj mib="cartographer" table="processTable" var="processWriteBytes"
+             instance="ts3server" />
+     <mibObj mib="cartographer" table="processTable" var="processCPUTime"
+             instance="ts3server" />
+    </group>
+   </groups>
+ </xmp-collection>
+
+ <xmp-collection name="asterisk" xmpStorageFlag="select">
+   <rrd step="300">
+     <rra>RRA:AVERAGE:0.5:1:8928</rra>
+     <rra>RRA:AVERAGE:0.5:12:8784</rra>
+     <rra>RRA:MIN:0.5:12:8784</rra>
+     <rra>RRA:MAX:0.5:12:8784</rra>
+   </rrd>
+   <groups>
+    <group name="systemAsterisk" resourceType="">
+     <mibObj mib="core" table="" var="sysUpTime" instance="" />
+    </group>
+    <group name="asteriskStats" resourceType="procStats">
+     <mibObj mib="cartographer" table="processTable" var="processSize"
+             instance="asterisk" />
+     <mibObj mib="cartographer" table="processTable" var="processRSS"
+             instance="asterisk" />
+     <mibObj mib="cartographer" table="processTable" var="processHandleCount"
+             instance="asterisk" />
+     <mibObj mib="cartographer" table="processTable" var="processThreadCount"
+             instance="asterisk" />
+     <mibObj mib="cartographer" table="processTable" var="processReads"
+             instance="asterisk" />
+     <mibObj mib="cartographer" table="processTable" var="processWrites"
+             instance="asterisk" />
+     <mibObj mib="cartographer" table="processTable" var="processReadBytes"
+             instance="asterisk" />
+     <mibObj mib="cartographer" table="processTable" var="processWriteBytes"
+             instance="asterisk" />
+     <mibObj mib="cartographer" table="processTable" var="processCPUTime"
+             instance="asterisk" />
+    </group>
+   </groups>
+ </xmp-collection>
+
+ <xmp-collection name="gnomeShell" xmpStorageFlag="select">
+   <rrd step="300">
+     <rra>RRA:AVERAGE:0.5:1:8928</rra>
+     <rra>RRA:AVERAGE:0.5:12:8784</rra>
+     <rra>RRA:MIN:0.5:12:8784</rra>
+     <rra>RRA:MAX:0.5:12:8784</rra>
+   </rrd>
+   <groups>
+    <group name="systemGnomeShell" resourceType="">
+     <mibObj mib="core" table="" var="sysUpTime" instance="" />
+    </group>
+    <group name="gnomeShellStats" resourceType="procStats">
+     <mibObj mib="cartographer" table="processTable" var="processSize"
+             instance="/usr/bin/gnome-shell" />
+     <mibObj mib="cartographer" table="processTable" var="processRSS"
+             instance="/usr/bin/gnome-shell" />
+     <mibObj mib="cartographer" table="processTable" var="processHandleCount"
+             instance="/usr/bin/gnome-shell" />
+     <mibObj mib="cartographer" table="processTable" var="processThreadCount"
+             instance="/usr/bin/gnome-shell" />
+     <mibObj mib="cartographer" table="processTable" var="processCPUTime"
+             instance="/usr/bin/gnome-shell" />
+    </group>
+   </groups>
+ </xmp-collection>
+
+ <xmp-collection name="CartographerGUI" xmpStorageFlag="select">
+   <rrd step="300">
+     <rra>RRA:AVERAGE:0.5:1:8928</rra>
+     <rra>RRA:AVERAGE:0.5:12:8784</rra>
+     <rra>RRA:MIN:0.5:12:8784</rra>
+     <rra>RRA:MAX:0.5:12:8784</rra>
+   </rrd>
+   <groups>
+    <group name="systemCartographerGUI" resourceType="">
+     <mibObj mib="core" table="" var="sysUpTime" instance="" />
+    </group>
+    <group name="cartographerGUIStats" resourceType="procStats">
+     <mibObj mib="cartographer" table="processTable" var="processSize"
+             instance="java -jar lib/Cartographer" />
+     <mibObj mib="cartographer" table="processTable" var="processRSS"
+             instance="java -jar lib/Cartographer" />
+     <mibObj mib="cartographer" table="processTable" var="processHandleCount"
+             instance="java -jar lib/Cartographer" />
+     <mibObj mib="cartographer" table="processTable" var="processThreadCount"
+             instance="java -jar lib/Cartographer" />
+     <mibObj mib="cartographer" table="processTable" var="processCPUTime"
+             instance="java -jar lib/Cartographer" />
+    </group>
+   </groups>
+ </xmp-collection>
+
+ <xmp-collection name="xbmc" xmpStorageFlag="select">
+   <rrd step="300">
+     <rra>RRA:AVERAGE:0.5:1:8928</rra>
+     <rra>RRA:AVERAGE:0.5:12:8784</rra>
+     <rra>RRA:MIN:0.5:12:8784</rra>
+     <rra>RRA:MAX:0.5:12:8784</rra>
+   </rrd>
+   <groups>
+    <group name="systemXbmc" resourceType="">
+     <mibObj mib="core" table="" var="sysUpTime" instance="" />
+    </group>
+    <group name="xbmcStats" resourceType="procStats">
+     <mibObj mib="cartographer" table="processTable" var="processRSS"
+             instance="XBMC" />
+     <mibObj mib="cartographer" table="processTable" var="processHandleCount"
+             instance="XBMC" />
+     <mibObj mib="cartographer" table="processTable" var="processThreadCount"
+             instance="XBMC" />
+     <mibObj mib="cartographer" table="processTable" var="processReads"
+             instance="XBMC" />
+     <mibObj mib="cartographer" table="processTable" var="processWrites"
+             instance="XBMC" />
+     <mibObj mib="cartographer" table="processTable" var="processReadBytes"
+             instance="XBMC" />
+     <mibObj mib="cartographer" table="processTable" var="processWriteBytes"
+             instance="XBMC" />
+     <mibObj mib="cartographer" table="processTable" var="processCPUTime"
+             instance="XBMC" />
+    </group>
+   </groups>
+ </xmp-collection>
+
 </xmp-datacollection-config>

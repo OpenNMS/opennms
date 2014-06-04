@@ -30,6 +30,7 @@ package org.opennms.netmgt.poller.monitors;
 
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.lang.StringIndexOutOfBoundsException;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
@@ -242,13 +243,14 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
 
             // Iterate over the list of running services
             for(SnmpInstId nameInstance : nameResults.keySet()) {
-
+                final SnmpValue name = nameResults.get(nameInstance);
+                final SnmpValue value = statusResults.get(nameInstance);
                 // See if the service name is in the list of running services
-                if (match(serviceName, stripExtraQuotes(nameResults.get(nameInstance).toString()))) {
+                if (name != null && value != null && match(serviceName, stripExtraQuotes(name.toString()))) {
                     matches++;
                     log().debug("poll: HostResourceSwRunMonitor poll succeeded, addr=" + hostAddress + ", service-name=" + serviceName + ", value=" + nameResults.get(nameInstance));
                     // Using the instance of the service, get its status and see if it meets the criteria
-                    if (meetsCriteria(statusResults.get(nameInstance), "<=", runLevel)) {
+                    if (meetsCriteria(value, "<=", runLevel)) {
                         status = PollStatus.available();
                         // If we get here, that means the service passed the criteria, if only one match is desired we exit.
                         if ("false".equals(matchAll)) {
@@ -297,7 +299,15 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
     }
 
     private static String stripExtraQuotes(String string) {
-        return StringUtils.stripFrontBack(string, "\"", "\"");
+        String stripped;
+        try {
+            stripped = StringUtils.stripFrontBack(string, "\"", "\"");
+        } catch (StringIndexOutOfBoundsException e) {
+            // Sometimes these are zero-length, see NMS-5852
+            stripped = string;
+        }
+
+        return stripped;
     }
 
 }

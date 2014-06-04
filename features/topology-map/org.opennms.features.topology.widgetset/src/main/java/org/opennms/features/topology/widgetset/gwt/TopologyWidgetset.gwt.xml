@@ -17,4 +17,6 @@
     <inherits name="com.google.gwt.user.theme.standard.Standard" />
     <inherits name="com.google.gwt.xml.XML" />
     <inherits name="com.google.gwt.touch.Touch"/>
+
+    <collapse-all-properties/>
 </module>

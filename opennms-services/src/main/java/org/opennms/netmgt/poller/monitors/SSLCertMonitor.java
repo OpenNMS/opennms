@@ -88,18 +88,6 @@ final public class SSLCertMonitor extends AbstractServiceMonitor {
     public static final String PARAMETER_PORT = "port";
     public static final String PARAMETER_DAYS = "days";
 
-    private static Calendar m_calendar;
-
-    SSLCertMonitor() {
-        super();
-        m_calendar = null;
-    }
-
-    SSLCertMonitor(final Calendar cal) {
-        super();
-        m_calendar = cal;
-    }
-
     /**
      * {@inheritDoc}
      *
@@ -137,9 +125,6 @@ final public class SSLCertMonitor extends AbstractServiceMonitor {
         //
         Calendar calValid = GregorianCalendar.getInstance();
         Calendar calCurrent = GregorianCalendar.getInstance();
-        if (m_calendar != null) {
-            calCurrent.setTimeInMillis(m_calendar.getTimeInMillis());
-        }
         calValid.setTimeInMillis(calCurrent.getTimeInMillis());
         calValid.add(Calendar.DAY_OF_MONTH, validityDays);
 
@@ -236,17 +221,4 @@ final public class SSLCertMonitor extends AbstractServiceMonitor {
     protected SocketWrapper getSocketWrapper() {
         return new SslSocketWrapper();
     }
-
-    public void setCalendar(final Calendar cal) {
-        m_calendar = cal;
-    }
-
-    /**
-     *
-     * @return Calendar
-     */
-    public Calendar getCalendar() {
-        return m_calendar;
-    }
-
 }

@@ -1,0 +1,13 @@
+#!/bin/sh - 
+
+JAVA_OPTIONS="-Xmx256m"
+opennms_home="${install.dir}"
+
+app_class=org.opennms.netmgt.provision.service.vmware.VmwareRequisitionTool
+
+exec $opennms_home/bin/runjava -r -- $JAVA_OPTIONS \
+    -Dopennms.home=$opennms_home \
+    -Drrd.base.dir=${install.share.dir}/rrd \
+    -Drrd.binary=${install.rrdtool.bin} \
+    -Dopennms.manager.class=$app_class \
+    -jar $opennms_home/lib/opennms_bootstrap.jar $@

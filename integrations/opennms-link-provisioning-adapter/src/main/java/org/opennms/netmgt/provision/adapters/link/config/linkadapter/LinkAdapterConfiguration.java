@@ -36,12 +36,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-/**
- * <p>LinkAdapterConfiguration class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
 @XmlRootElement(name="link-adapter-configuration")
 public class LinkAdapterConfiguration {
     Set<LinkPattern> m_patterns = new HashSet<LinkPattern>();
@@ -51,7 +45,7 @@ public class LinkAdapterConfiguration {
      *
      * @param linkPattern a {@link org.opennms.netmgt.provision.adapters.link.config.linkadapter.LinkPattern} object.
      */
-    public void addPattern(LinkPattern linkPattern) {
+    public void addPattern(final LinkPattern linkPattern) {
         m_patterns.add(linkPattern);
     }
 
@@ -70,8 +64,9 @@ public class LinkAdapterConfiguration {
      *
      * @param patterns a {@link java.util.Set} object.
      */
-    public void setPatterns(Set<LinkPattern> patterns) {
+    public void setPatterns(final Set<LinkPattern> patterns) {
         synchronized(m_patterns) {
+            if (patterns == m_patterns) return;
             m_patterns.clear();
             m_patterns.addAll(patterns);
         }

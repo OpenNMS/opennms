@@ -77,7 +77,6 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
 
         SnmpAgentConfig agentConfig = new SnmpAgentConfig();
 
-
         String[] attributes = protocolConfigString.substring("snmp:".length()).split(",");
 
         for (String attribute : attributes) {
@@ -89,7 +88,7 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
             String key = pair[0];
             String value = pair[1];
 
-            if ("address".equalsIgnoreCase(key)) {
+            if ("address".equalsIgnoreCase(key) && !"null".equals(value)) {
                 agentConfig.setAddress(InetAddressUtils.addr(value));
             } else if ("port".equalsIgnoreCase(key)) {
                 agentConfig.setPort(Integer.parseInt(value));
@@ -119,6 +118,12 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
                 agentConfig.setPrivProtocol(value);
             } else if ("read-community".equalsIgnoreCase(key)) {
                 agentConfig.setReadCommunity(value);
+            } else if ("context-name".equalsIgnoreCase(key)) {
+                agentConfig.setContextName(value);
+            } else if ("engine-id".equalsIgnoreCase(key)) {
+                agentConfig.setEngineId(value);
+            } else if ("context-engine-id".equalsIgnoreCase(key)) {
+                agentConfig.setContextEngineId(value);
             } else {
                 s_logger.warn("Unexpected attribute in protocol configuration string for SnmpAgentConfig: '{}'", attribute);
             }
@@ -130,7 +135,7 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
 
     public String toProtocolConfigString() {
         StringBuffer buff = new StringBuffer("snmp:");
-        buff.append("address=" + InetAddressUtils.str(m_address));
+        buff.append("address=" + (m_address == null? null : InetAddressUtils.str(m_address)));
         buff.append(",port=" + getPort());
         buff.append(",timeout=" + getTimeout());
         buff.append(",retries=" + getRetries());
@@ -145,6 +150,9 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
             buff.append(",auth-protocol=" + getAuthProtocol());
             buff.append(",priv-passprhase=" + getPrivPassPhrase());
             buff.append(",priv-protocol=" + getPrivProtocol());
+            if (getContextName() != null) buff.append(",context-name=" + getContextName());
+            if (getEngineId() != null) buff.append(",engine-id=" + getEngineId());
+            if (getContextEngineId() != null) buff.append(",context-engine-id=" + getContextEngineId());
         } else {
             buff.append(",read-community=" + getReadCommunity());
         }
@@ -154,8 +162,8 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
 
     public String toString() {
         StringBuffer buff = new StringBuffer("AgentConfig[");
-        buff.append("Address: " + InetAddressUtils.str(m_address));
-        buff.append(", ProxyForAddress: " + InetAddressUtils.str(m_proxyFor));
+        buff.append("Address: " + (m_address == null? null : InetAddressUtils.str(m_address)));
+        buff.append(", ProxyForAddress: " + (m_proxyFor == null? null : InetAddressUtils.str(m_proxyFor)));
         buff.append(", Port: " + getPort());
         buff.append(", Community: " + getReadCommunity());
         buff.append(", Timeout: " + getTimeout());
@@ -171,6 +179,9 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
             buff.append(", auth-protocol: " + getAuthProtocol());
             buff.append(", priv-passprhase: " + getPrivPassPhrase());
             buff.append(", priv-protocol: " + getPrivProtocol());
+            buff.append(", Context name: " + getContextName());
+            buff.append(", Engine ID: " + getEngineId());
+            buff.append(", Context Engine ID: " + getContextEngineId());
         }
         buff.append("]");
         return buff.toString();

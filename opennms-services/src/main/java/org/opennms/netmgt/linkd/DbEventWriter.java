@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.AtInterfaceDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
@@ -568,8 +569,7 @@ public class DbEventWriter extends AbstractQueryManager {
 
     @Override
     protected RouterInterface getNodeidMaskFromIp(Connection dbConn, InetAddress ipaddr) throws SQLException {
-        final String hostAddress = str(ipaddr);
-		if (ipaddr.isLoopbackAddress() || hostAddress.equals("0.0.0.0")) return null;
+        if (ipaddr.isLoopbackAddress() || InetAddressUtils.ZEROS.equals(ipaddr)) return null;
 
         int nodeid = -1;
         int ifindex = -1;
@@ -579,6 +579,8 @@ public class DbEventWriter extends AbstractQueryManager {
 
         final DBUtils d = new DBUtils(getClass());
         try {
+            final String hostAddress = str(ipaddr);
+
             stmt = dbConn.prepareStatement(SQL_GET_NODEID__IFINDEX_MASK);
             d.watch(stmt);
             stmt.setString(1, hostAddress);
@@ -624,8 +626,7 @@ public class DbEventWriter extends AbstractQueryManager {
 
     @Override
     protected RouterInterface getNodeFromIp(Connection dbConn, InetAddress ipaddr) throws SQLException {
-        final String hostAddress = str(ipaddr);
-		if (ipaddr.isLoopbackAddress() || hostAddress.equals("0.0.0.0")) return null;
+        if (ipaddr.isLoopbackAddress() || InetAddressUtils.ZEROS.equals(ipaddr)) return null;
 
         int nodeid = -1;
         int ifindex = -1;
@@ -634,6 +635,8 @@ public class DbEventWriter extends AbstractQueryManager {
 
         final DBUtils d = new DBUtils(getClass());
         try {
+            final String hostAddress = str(ipaddr);
+
             stmt = dbConn.prepareStatement(SQL_GET_NODEID);
             d.watch(stmt);
             stmt.setString(1, hostAddress);

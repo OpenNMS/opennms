@@ -1,0 +1,494 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<?meta name="GENERATOR" content="XML::Smart/1.6.9 Perl/5.008008 [linux]" ?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.46.1.3</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>1</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxMIMstGenTrap</uei>
+    <event-label>JUNIPER-MIMSTP-MIB defined trap event: jnxMIMstGenTrap</event-label>
+    <descr><![CDATA[
+<p>Generated when any of the general events like protocol up or 
+protocol down occurs</p><table>
+	<tr><td><b>
+
+	jnxMIMstBrgAddress</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxMIMstGenTrapType</b></td><td>
+	%parm[#2]%;</td><td><p>
+		none(0)
+		up(1)
+		down(2)
+	</p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxMIMstGenTrap trap received 
+			jnxMIMstBrgAddress=%parm[#1]% 
+			jnxMIMstGenTrapType=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Normal</severity>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.46.1.3</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>2</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxMIMstErrTrap</uei>
+    <event-label>JUNIPER-MIMSTP-MIB defined trap event: jnxMIMstErrTrap</event-label>
+    <descr><![CDATA[
+<p>Generated when any of the error events like memory failure or buffer failure
+or protocol migration or new root or topology change occurs </p><table>
+	<tr><td><b>
+
+	jnxMIMstBrgAddress</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxMIMstGlobalErrTrapType</b></td><td>
+	%parm[#2]%;</td><td><p>
+		none(0)
+		memfail(1)
+		bufffail(2)
+	</p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxMIMstErrTrap trap received 
+			jnxMIMstBrgAddress=%parm[#1]% 
+			jnxMIMstGlobalErrTrapType=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Warning</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.46.1.3</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>3</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxMIMstNewRootTrap</uei>
+    <event-label>JUNIPER-MIMSTP-MIB defined trap event: jnxMIMstNewRootTrap</event-label>
+    <descr><![CDATA[
+<p>Generated whenever a new root bridge is selected in the topology. 
+The jnxMIMstNewRootTrap indicates that the sending agent has become 
+the new root of the Spanning Tree; the trap is sent by a bridge soon 
+after its election as the new root</p><table>
+	<tr><td><b>
+
+	jnxMIMstBrgAddress</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxMIMstOldDesignatedRoot</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxMIMstMstiBridgeRegionalRoot</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxMIMstMstiInstanceIndex</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxMIMstNewRootTrap trap received 
+			jnxMIMstBrgAddress=%parm[#1]% 
+			jnxMIMstOldDesignatedRoot=%parm[#2]% 
+			jnxMIMstMstiBridgeRegionalRoot=%parm[#3]% 
+			jnxMIMstMstiInstanceIndex=%parm[#4]%</p>
+		]]></logmsg>
+    <severity>Normal</severity>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.46.1.3</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>4</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxMIMstTopologyChgTrap</uei>
+    <event-label>JUNIPER-MIMSTP-MIB defined trap event: jnxMIMstTopologyChgTrap</event-label>
+    <descr><![CDATA[
+<p>Generated when topology change is detected </p><table>
+	<tr><td><b>
+
+	jnxMIMstBrgAddress</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxMIMstMstiInstanceIndex</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxMIMstTopologyChgTrap trap received 
+			jnxMIMstBrgAddress=%parm[#1]% 
+			jnxMIMstMstiInstanceIndex=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Normal</severity>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.46.1.3</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>5</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxMIMstProtocolMigrationTrap</uei>
+    <event-label>JUNIPER-MIMSTP-MIB defined trap event: jnxMIMstProtocolMigrationTrap</event-label>
+    <descr><![CDATA[
+<p>Generated when port protocol migration happens in the port </p><table>
+	<tr><td><b>
+
+	jnxMIMstBrgAddress</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxMIMstPortTrapIndex</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxMIMstForceProtocolVersion</b></td><td>
+	%parm[#3]%;</td><td><p>
+		stpCompatible(0)
+		rstp(2)
+		mstp(3)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxMIMstPortMigrationType</b></td><td>
+	%parm[#4]%;</td><td><p>
+		sendstp(0)
+		sendrstp(1)
+	</p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxMIMstProtocolMigrationTrap trap received 
+			jnxMIMstBrgAddress=%parm[#1]% 
+			jnxMIMstPortTrapIndex=%parm[#2]% 
+			jnxMIMstForceProtocolVersion=%parm[#3]% 
+			jnxMIMstPortMigrationType=%parm[#4]%</p>
+		]]></logmsg>
+    <severity>Normal</severity>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.46.1.3</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxMIMstInvalidBpduRxdTrap</uei>
+    <event-label>JUNIPER-MIMSTP-MIB defined trap event: jnxMIMstInvalidBpduRxdTrap</event-label>
+    <descr><![CDATA[
+<p>Generated when the invalid packet is received for 
+bpdu/stp/rstp/maximum age/forward delay/hello time</p><table>
+	<tr><td><b>
+
+	jnxMIMstBrgAddress</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxMIMstPortTrapIndex</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxMIMstPktErrType</b></td><td>
+	%parm[#3]%;</td><td><p>
+		protocolIdErr(0)
+		invalidBpdu(1)
+		configLengthErr(2)
+		tcnLengthErr(3)
+		rstpLengthErr(4)
+		maxAgeErr(5)
+		fwdDelayErr(6)
+		helloTimeErr(7)
+		mstpLengthErr(8)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxMIMstPktErrVal</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxMIMstInvalidBpduRxdTrap trap received 
+			jnxMIMstBrgAddress=%parm[#1]% 
+			jnxMIMstPortTrapIndex=%parm[#2]% 
+			jnxMIMstPktErrType=%parm[#3]% 
+			jnxMIMstPktErrVal=%parm[#4]%</p>
+		]]></logmsg>
+    <severity>Warning</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.46.1.3</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>7</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxMIMstRegionConfigChangeTrap</uei>
+    <event-label>JUNIPER-MIMSTP-MIB defined trap event: jnxMIMstRegionConfigChangeTrap</event-label>
+    <descr><![CDATA[
+<p>Generated when the MST region's configuration     
+identifier changes.</p><table>
+	<tr><td><b>
+
+	jnxMIMstBrgAddress</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxMIMstMstiConfigIdSel</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxMIMstMstiRegionName</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxMIMstMstiRegionVersion</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxMIMstMstiConfigDigest</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxMIMstRegionConfigChangeTrap trap received 
+			jnxMIMstBrgAddress=%parm[#1]% 
+			jnxMIMstMstiConfigIdSel=%parm[#2]% 
+			jnxMIMstMstiRegionName=%parm[#3]% 
+			jnxMIMstMstiRegionVersion=%parm[#4]% 
+			jnxMIMstMstiConfigDigest=%parm[#5]%</p>
+		]]></logmsg>
+    <severity>Normal</severity>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.46.1.3</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>8</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxMIMstCistPortRootProtectStateChangeTrap</uei>
+    <event-label>JUNIPER-MIMSTP-MIB defined trap event: jnxMIMstCistPortRootProtectStateChangeTrap</event-label>
+    <descr><![CDATA[
+<p>Generated when the ports Root-protect state (no-error or root-prevented) 
+for CIST changes.</p><table>
+	<tr><td><b>
+
+	jnxMIMstBrgAddress</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxMIMstCistPortRootProtectState</b></td><td>
+	%parm[#2]%;</td><td><p>
+		no-error(0)
+		root-prevented(1)
+	</p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxMIMstCistPortRootProtectStateChangeTrap trap received 
+			jnxMIMstBrgAddress=%parm[#1]% 
+			jnxMIMstCistPortRootProtectState=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Normal</severity>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.46.1.3</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>9</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxMIMstMstiPortRootProtectStateChangeTrap</uei>
+    <event-label>JUNIPER-MIMSTP-MIB defined trap event: jnxMIMstMstiPortRootProtectStateChangeTrap</event-label>
+    <descr><![CDATA[
+<p>Generated when the ports Root-protect state (no-error or root-prevented) 
+an MSTI changes.</p><table>
+	<tr><td><b>
+
+	jnxMIMstBrgAddress</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxMIMstMstiPortRootProtectState</b></td><td>
+	%parm[#2]%;</td><td><p>
+		no-error(0)
+		root-prevented(1)
+	</p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxMIMstMstiPortRootProtectStateChangeTrap trap received 
+			jnxMIMstBrgAddress=%parm[#1]% 
+			jnxMIMstMstiPortRootProtectState=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Normal</severity>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.46.1.3</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>10</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxMIMstCistPortLoopProtectStateChangeTrap</uei>
+    <event-label>JUNIPER-MIMSTP-MIB defined trap event: jnxMIMstCistPortLoopProtectStateChangeTrap</event-label>
+    <descr><![CDATA[
+<p>Generated when the ports Loop-protect state (no-error or loop-prevented) 
+for CIST changes.</p><table>
+	<tr><td><b>
+
+	jnxMIMstBrgAddress</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxMIMstCistPortLoopProtectState</b></td><td>
+	%parm[#2]%;</td><td><p>
+		no-error(0)
+		loop-prevented(1)
+	</p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxMIMstCistPortLoopProtectStateChangeTrap trap received 
+			jnxMIMstBrgAddress=%parm[#1]% 
+			jnxMIMstCistPortLoopProtectState=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Normal</severity>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.46.1.3</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>11</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxMIMstMstiPortLoopProtectStateChangeTrap</uei>
+    <event-label>JUNIPER-MIMSTP-MIB defined trap event: jnxMIMstMstiPortLoopProtectStateChangeTrap</event-label>
+    <descr><![CDATA[
+<p>Generated when the ports Loop-protect state (no-error or loop-prevented) 
+an MSTI changes.</p><table>
+	<tr><td><b>
+
+	jnxMIMstBrgAddress</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxMIMstMstiPortLoopProtectState</b></td><td>
+	%parm[#2]%;</td><td><p>
+		no-error(0)
+		loop-prevented(1)
+	</p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxMIMstMstiPortLoopProtectStateChangeTrap trap received 
+			jnxMIMstBrgAddress=%parm[#1]% 
+			jnxMIMstMstiPortLoopProtectState=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Normal</severity>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
+  </event>
+</events>
+

@@ -193,6 +193,7 @@ public class MobileSequenceTransaction implements Comparable<MobileSequenceTrans
      * @param responses a {@link java.util.List} object.
      */
     public synchronized void setResponses(List<MobileSequenceResponse> responses) {
+		if (m_responses == responses) return;
 		m_responses.clear();
 		m_responses.addAll(responses);
 	}

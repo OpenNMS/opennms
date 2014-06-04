@@ -41,6 +41,7 @@ package org.opennms.netmgt.poller.monitors;
 import com.vmware.vim25.HostRuntimeInfo;
 import com.vmware.vim25.HostSystemPowerState;
 import com.vmware.vim25.mo.HostSystem;
+
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.BeanUtils;
@@ -50,7 +51,6 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.protocols.vmware.VmwareViJavaAccess;
-import org.sblim.wbem.cim.CIMException;
 import org.sblim.wbem.cim.CIMObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -162,10 +162,10 @@ public class VmwareCimMonitor extends AbstractServiceMonitor {
             try {
                 vmwareViJavaAccess.connect();
             } catch (MalformedURLException e) {
-                logger.warn("Error connecting VMware management server '{}': '{}'", vmwareManagementServer, e.getMessage());
+                logger.warn("Error connecting VMware management server '{}': '{}' exception: {} cause: '{}'", vmwareManagementServer, e.getMessage(), e.getClass().getName(), e.getCause());
                 return PollStatus.unavailable("Error connecting VMware management server '" + vmwareManagementServer + "'");
             } catch (RemoteException e) {
-                logger.warn("Error connecting VMware management server '{}': '{}'", vmwareManagementServer, e.getMessage());
+                logger.warn("Error connecting VMware management server '{}': '{}' exception: {} cause: '{}'", vmwareManagementServer, e.getMessage(), e.getClass().getName(), e.getCause());
                 return PollStatus.unavailable("Error connecting VMware management server '" + vmwareManagementServer + "'");
             }
 
@@ -197,14 +197,8 @@ public class VmwareCimMonitor extends AbstractServiceMonitor {
             if ("poweredOn".equals(powerState)) {
                 List<CIMObject> cimObjects = null;
                 try {
-                    cimObjects = vmwareViJavaAccess.queryCimObjects(hostSystem, "CIM_NumericSensor");
-                } catch (RemoteException e) {
-                    logger.warn("Error retrieving CIM values from host system '{}'", vmwareManagedObjectId, e.getMessage());
-
-                    vmwareViJavaAccess.disconnect();
-
-                    return PollStatus.unavailable("Error retrieving cim values from host system '" + vmwareManagedObjectId + "'");
-                } catch (CIMException e) {
+                    cimObjects = vmwareViJavaAccess.queryCimObjects(hostSystem, "CIM_NumericSensor", svc.getIpAddr());
+                } catch (Exception e) {
                     logger.warn("Error retrieving CIM values from host system '{}'", vmwareManagedObjectId, e.getMessage());
 
                     vmwareViJavaAccess.disconnect();

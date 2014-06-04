@@ -64,10 +64,6 @@ import org.opennms.web.api.Util;
  *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
- * @since 1.8.1
  */
 public class NotificationWizardServlet extends HttpServlet {
     /**
@@ -78,10 +74,10 @@ public class NotificationWizardServlet extends HttpServlet {
     //SOURCE_PAGE_EVENTS_VIEW is more of a tag than an actual page - can't be used for navigation as is
     /** Constant <code>SOURCE_PAGE_OTHER_WEBUI="eventslist"</code> */
     public static final String SOURCE_PAGE_OTHER_WEBUI = "eventslist";
-    
+
     /** Constant <code>SOURCE_PAGE_NOTICES="eventNotices.jsp"</code> */
     public static final String SOURCE_PAGE_NOTICES = "eventNotices.jsp";
-    
+
     /** Constant <code>SOURCE_PAGE_NOTIFS_FOR_UEI="notifsForUEI.jsp"</code> */
     public static final String SOURCE_PAGE_NOTIFS_FOR_UEI = "notifsForUEI.jsp";
 
@@ -129,7 +125,7 @@ public class NotificationWizardServlet extends HttpServlet {
         } catch (Throwable e) {
             throw new ServletException("Failed to initialize NotificationFactory: " + e, e);
         }
-        
+
         String redirect;
 
         if (sourcePage.equals(SOURCE_PAGE_NOTICES)) {
@@ -185,7 +181,7 @@ public class NotificationWizardServlet extends HttpServlet {
             } catch (Throwable e) {
                 throw new ServletException("Couldn't save/reload notifications configuration file: " + e, e);
             }
-            
+
             return SOURCE_PAGE_NOTICES;
         } else {
             // FIXME: We should do something if we hit this
@@ -230,7 +226,7 @@ public class NotificationWizardServlet extends HttpServlet {
         ruleString = stripExtraWhite(ruleString);
         ruleString = stripServices(ruleString);
         ruleString = checkParens(ruleString);
-        
+
         StringBuffer rule = new StringBuffer(ruleString);
 
         String services[] = request.getParameterValues("services");
@@ -347,9 +343,9 @@ public class NotificationWizardServlet extends HttpServlet {
         String suppliedReturnPage=(String)user.getAttribute("noticeWizardReturnPage");
         if (suppliedReturnPage != null && !suppliedReturnPage.equals("")) {
             // Remove this attribute once we have consumed it, else the user may later
-        	// get returned to a potentially unexpected page here
-        	user.removeAttribute("noticeWizardReturnPage");
-        	return suppliedReturnPage;
+            // get returned to a potentially unexpected page here
+            user.removeAttribute("noticeWizardReturnPage");
+            return suppliedReturnPage;
         } else {
             return SOURCE_PAGE_NOTICES;
         }
@@ -364,7 +360,7 @@ public class NotificationWizardServlet extends HttpServlet {
 
         String redirectPage = SOURCE_PAGE_VALIDATE_PATH_OUTAGE;
         String criticalIp = request.getParameter("criticalIp");
-        
+
         Map<String, Object> params = new HashMap<String, Object>();
         if (newRule != null) {
             params.put("newRule", newRule);
@@ -385,7 +381,7 @@ public class NotificationWizardServlet extends HttpServlet {
                 redirectPage = SOURCE_PAGE_PATH_OUTAGE;
             }
         }
-        
+
         try {
             getFilterDao().validateRule(newRule);
         } catch (FilterParseException e) {
@@ -393,7 +389,7 @@ public class NotificationWizardServlet extends HttpServlet {
             params.put("mode", "Current rule failed");
             redirectPage = SOURCE_PAGE_PATH_OUTAGE;
         }
-        
+
         return redirectPage + makeQueryString(params);
     }
 
@@ -424,7 +420,7 @@ public class NotificationWizardServlet extends HttpServlet {
                 redirectPage = SOURCE_PAGE_PATH_OUTAGE;
             }
         }
-        
+
         return redirectPage + makeQueryString(params);
     }
 
@@ -436,7 +432,7 @@ public class NotificationWizardServlet extends HttpServlet {
          */
         user.setAttribute("noticeWizardReturnPage", request.getParameter("returnPage"));
         String uei = request.getParameter("uei");
-        
+
         boolean hasUei;
         try {
             hasUei = getNotificationFactory().hasUei(uei);
@@ -447,7 +443,7 @@ public class NotificationWizardServlet extends HttpServlet {
         } catch (ValidationException e) {
             throw new ServletException("Validation Exception while checking if there is an existing notification for UEI "+uei, e);
         }
-        
+
         if (hasUei) {
             //There are existing notifications for this UEI - goto a listing page
             Map<String, Object> params = new HashMap<String, Object>();
@@ -479,7 +475,7 @@ public class NotificationWizardServlet extends HttpServlet {
         params.put("newRule", toSingleQuote(newNotice.getRule()));
 
         user.setAttribute("newNotice", newNotice);
-        
+
         return SOURCE_PAGE_RULE + makeQueryString(params);  
     }
 
@@ -491,7 +487,7 @@ public class NotificationWizardServlet extends HttpServlet {
         notice.setStatus(status);
         return notice;
     }
-    
+
     /**
      * Common code for two source pages that can't really be considered the same
      */
@@ -510,7 +506,7 @@ public class NotificationWizardServlet extends HttpServlet {
 
         return SOURCE_PAGE_UEIS;
     }
-    
+
     /**
      * 
      */
@@ -565,10 +561,10 @@ public class NotificationWizardServlet extends HttpServlet {
 
         return buffer.toString();
     }
-    
+
     private static String toSingleQuote(String rule) {
         StringBuffer buffer = new StringBuffer(rule);
-        
+
         for (int i = 0; (i < buffer.length()); i++) {
             if ((i < buffer.length() - 5) && (buffer.substring(i, i + 6).equals("&quot;"))) {
                 buffer.replace(i, i + 6, "'");
@@ -576,7 +572,7 @@ public class NotificationWizardServlet extends HttpServlet {
                 buffer.replace(i, i + 1, "'");
             }
         }
-        
+
         return buffer.toString();
     }
 
@@ -584,11 +580,11 @@ public class NotificationWizardServlet extends HttpServlet {
         Pattern pattern1 = Pattern.compile("\\s+");
         Matcher matcher1 = pattern1.matcher(s);
         String mys1 = matcher1.replaceAll(" ");
-        
+
         Pattern pattern2 = Pattern.compile("^\\s");
         Matcher matcher2 = pattern2.matcher(mys1);
         String mys2 = matcher2.replaceAll("");
-        
+
         Pattern pattern3 = Pattern.compile("\\s$");
         Matcher matcher3 = pattern3.matcher(mys2);
         return matcher3.replaceAll("");
@@ -598,7 +594,7 @@ public class NotificationWizardServlet extends HttpServlet {
         String myregex = "\\s*\\&\\s*\\(\\s*\\!?is.+";
         Pattern pattern = Pattern.compile(myregex);
         Matcher matcher = pattern.matcher(s);
-        
+
         return matcher.replaceAll("");
     }
 
@@ -641,10 +637,11 @@ public class NotificationWizardServlet extends HttpServlet {
     }
 
     private void updatePaths(String rule, String criticalIp, String criticalSvc)
-                                 throws FilterParseException, SQLException {
-        Connection conn = Vault.getDbConnection();
-        SortedMap<Integer, String> nodes = getFilterDao().getNodeMap(rule);
+            throws FilterParseException, SQLException {
+        final Connection conn = Vault.getDbConnection();
+        final DBUtils d = new DBUtils(getClass(), conn);
         try {
+            SortedMap<Integer, String> nodes = getFilterDao().getNodeMap(rule);
             Iterator<Integer> i = nodes.keySet().iterator();
             while (i.hasNext()) {
                 Integer key = i.next();
@@ -654,7 +651,7 @@ public class NotificationWizardServlet extends HttpServlet {
                 }
             }
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
     }
 

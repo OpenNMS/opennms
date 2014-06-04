@@ -11,4 +11,6 @@
   <source path='client'/>
 
   <set-configuration-property name="UiBinder.useSafeHtmlTemplates" value="true" />
+
+  <collapse-all-properties/>
 </module>

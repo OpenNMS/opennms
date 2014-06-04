@@ -30,12 +30,12 @@ package org.opennms.features.vaadin.events;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.features.vaadin.api.OnmsBeanContainer;
 import org.opennms.netmgt.xml.eventconf.Varbindsdecode;
 import org.vaadin.addon.customfield.CustomField;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -65,7 +65,7 @@ public class VarbindsDecodeField extends CustomField implements Button.ClickList
     private Table table = new Table();
 
     /** The Container. */
-    private BeanContainer<String,Varbindsdecode> container = new BeanContainer<String,Varbindsdecode>(Varbindsdecode.class);
+    private OnmsBeanContainer<Varbindsdecode> container = new OnmsBeanContainer<Varbindsdecode>(Varbindsdecode.class);
 
     /** The Toolbar. */
     private HorizontalLayout toolbar = new HorizontalLayout();
@@ -80,7 +80,6 @@ public class VarbindsDecodeField extends CustomField implements Button.ClickList
      * Instantiates a new varbinds decode field.
      */
     public VarbindsDecodeField() {
-        container.setBeanIdProperty("parmid");
         table.setContainerDataSource(container);
         table.setStyleName(Runo.TABLE_SMALL);
         table.setVisibleColumns(new Object[]{"parmid", "decodeCollection"});
@@ -179,7 +178,7 @@ public class VarbindsDecodeField extends CustomField implements Button.ClickList
     private void addHandler() {
         Varbindsdecode v = new Varbindsdecode();
         v.setParmid("??"); // A non null value is required here.
-        container.addBean(v);
+        container.addOnmsBean(v);
     }
 
     /**

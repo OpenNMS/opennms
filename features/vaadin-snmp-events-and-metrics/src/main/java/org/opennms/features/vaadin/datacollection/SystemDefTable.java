@@ -27,12 +27,12 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
+import org.opennms.features.vaadin.api.OnmsBeanContainer;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.SystemDef;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItem;
-import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.themes.Runo;
 
@@ -56,8 +56,7 @@ public abstract class SystemDefTable extends Table {
      * @param group the OpenNMS Data Collection Group
      */
     public SystemDefTable(final DatacollectionGroup group) {
-        BeanContainer<String,SystemDef> container = new BeanContainer<String,SystemDef>(SystemDef.class);
-        container.setBeanIdProperty("name");
+        OnmsBeanContainer<SystemDef> container = new OnmsBeanContainer<SystemDef>(SystemDef.class);
         container.addAll(group.getSystemDefCollection());
         setContainerDataSource(container);
         setStyleName(Runo.TABLE_SMALL);
@@ -110,7 +109,7 @@ public abstract class SystemDefTable extends Table {
      */
     @SuppressWarnings("unchecked")
     public void addSystemDef(SystemDef systemDef) {
-        ((BeanContainer<String,SystemDef>) getContainerDataSource()).addBean(systemDef);
+        ((OnmsBeanContainer<SystemDef>) getContainerDataSource()).addOnmsBean(systemDef);
     }
 
 }

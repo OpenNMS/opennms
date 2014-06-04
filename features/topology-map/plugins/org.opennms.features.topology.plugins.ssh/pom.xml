@@ -6,7 +6,7 @@
     <relativePath>../../poms/compiled/</relativePath>
     <groupId>org.opennms.features.topology.build</groupId>
     <artifactId>compiled-bundle-settings</artifactId>
-    <version>1.11.91-SNAPSHOT</version>
+    <version>1.12.8-SNAPSHOT</version>
   </parent>
   <groupId>org.opennms.features.topology</groupId>
   <artifactId>ssh</artifactId>
@@ -34,7 +34,7 @@
   <repositories>
     <repository>
       <id>vaadin-snapshots</id>
-      <url>http://oss.sonatype.org/content/repositories/vaadin-snapshots/</url>
+      <url>http://maven.opennms.org/content/groups/vaadin-snapshot/</url>
       <releases>
         <enabled>false</enabled>
       </releases>
@@ -44,7 +44,7 @@
     </repository>
     <repository>
       <id>vaadin-addons</id>
-      <url>http://maven.vaadin.com/vaadin-addons</url>
+      <url>http://maven.opennms.org/content/groups/vaadin.com-addons/</url>
     </repository>
   </repositories>
 

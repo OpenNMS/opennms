@@ -29,7 +29,7 @@
 package org.opennms.protocols.xml.collector;
 
 import java.io.File;
-import java.io.IOException;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Date;
@@ -41,10 +41,8 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.apache.commons.io.IOUtils;
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.CollectionException;
 import org.opennms.netmgt.collectd.ServiceCollector;
@@ -52,6 +50,7 @@ import org.opennms.netmgt.config.collector.AttributeGroupType;
 import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.protocols.sftp.Sftp3gppUrlConnection;
 import org.opennms.protocols.sftp.Sftp3gppUrlHandler;
+import org.opennms.protocols.xml.config.Request;
 import org.opennms.protocols.xml.config.XmlDataCollection;
 import org.opennms.protocols.xml.config.XmlObject;
 import org.opennms.protocols.xml.config.XmlSource;
@@ -67,6 +66,9 @@ import org.w3c.dom.Document;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
+
+    /** The Constant PM_GROUPS_FILENAME. */
+    public static final String PM_GROUPS_FILENAME = "3gpp-pmgroups.properties";
 
     /** The Constant XML_LAST_FILENAME. */
     public static final String XML_LAST_FILENAME = "_xmlCollectorLastFilename";
@@ -85,6 +87,7 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
         collectionSet.setStatus(ServiceCollector.COLLECTION_UNKNOWN);
 
         // TODO We could be careful when handling exceptions because parsing exceptions will be treated different from connection or retrieval exceptions
+        Sftp3gppUrlConnection connection = null;
         try {
             File resourceDir = new File(getRrdRepository().getRrdBaseDir(), Integer.toString(agent.getNodeId()));
             for (XmlSource source : collection.getXmlSources()) {
@@ -92,13 +95,14 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
                     throw new CollectionException("The 3GPP SFTP Collection Handler can only use the protocol " + Sftp3gppUrlHandler.PROTOCOL);
                 }
                 String urlStr = parseUrl(source.getUrl(), agent, collection.getXmlRrd().getStep());
-                URL url = UrlFactory.getUrl(urlStr);
+                Request request = parseRequest(source.getRequest(), agent);
+                URL url = UrlFactory.getUrl(urlStr, request);
                 String lastFile = getLastFilename(resourceDir, url.getPath());
-                Sftp3gppUrlConnection connection = (Sftp3gppUrlConnection) url.openConnection();
+                connection = (Sftp3gppUrlConnection) url.openConnection();
                 if (lastFile == null) {
                     lastFile = connection.get3gppFileName();
                     log().debug("collect(single): retrieving file from " + url.getPath() + File.separatorChar + lastFile + " from " + agent.getHostAddress());
-                    Document doc = getXmlDocument(urlStr);
+                    Document doc = getXmlDocument(urlStr, request);
                     fillCollectionSet(agent, collectionSet, source, doc);
                     setLastFilename(resourceDir, url.getPath(), lastFile);
                     deleteFile(connection, lastFile);
@@ -106,17 +110,17 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
                     connection.connect();
                     List<String> files = connection.getFileList();
                     long lastTs = connection.getTimeStampFromFile(lastFile);
-                    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                    DocumentBuilder builder = factory.newDocumentBuilder();
-                    factory.setIgnoringComments(true);
                     boolean collected = false;
                     for (String fileName : files) {
                         if (connection.getTimeStampFromFile(fileName) > lastTs) {
                             log().debug("collect(multiple): retrieving file " + fileName + " from " + agent.getHostAddress());
                             InputStream is = connection.getFile(fileName);
-                            Document doc = builder.parse(is);
-                            IOUtils.closeQuietly(is);
-                            fillCollectionSet(agent, collectionSet, source, doc);
+                            try {
+                                Document doc = getXmlDocument(is, request);
+                                fillCollectionSet(agent, collectionSet, source, doc);
+                            } finally {
+                                IOUtils.closeQuietly(is);
+                            }
                             setLastFilename(resourceDir, url.getPath(), fileName);
                             deleteFile(connection, fileName);
                             collected = true;
@@ -125,7 +129,6 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
                     if (!collected) {
                         log().warn("collect: could not find any file after " + lastFile + " on " + agent);
                     }
-                    connection.disconnect();
                 }
             }
             collectionSet.setStatus(ServiceCollector.COLLECTION_SUCCEEDED);
@@ -133,6 +136,8 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
         } catch (Exception e) {
             collectionSet.setStatus(ServiceCollector.COLLECTION_FAILED);
             throw new CollectionException(e.getMessage(), e);
+        } finally {
+            UrlFactory.disconnect(connection);
         }
     }
 
@@ -224,14 +229,21 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
      *
      * @param resourceType the resource type
      * @return the 3gpp format
-     */
+     */    
     public String get3gppFormat(String resourceType) {
         if (m_pmGroups == null) {
             m_pmGroups = new Properties();
             try {
-                m_pmGroups.load(getClass().getResourceAsStream("/3gpp-pmgroups.properties"));
-            } catch (IOException e) {
-                log().warn("Can't load 3GPP PM Groups formats because " + e.getMessage());
+                File configFile = new File(ConfigFileConstants.getFilePathString(), PM_GROUPS_FILENAME);
+                if (configFile.exists()) {
+                    log().info("Using 3GPP PM Groups format from " + configFile);
+                    m_pmGroups.load(new FileInputStream(configFile));
+                } else {
+                    log().info("Using default 3GPP PM Groups format.");
+                    m_pmGroups.load(getClass().getResourceAsStream("/" + PM_GROUPS_FILENAME));
+                }
+            } catch (Exception e) {
+                log().warn("Can't load 3GPP PM Groups format because " + e.getMessage());
             }
         }
         return m_pmGroups.getProperty(resourceType);
@@ -244,6 +256,7 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
      * @param measInfoId the measInfoId (the resource instance)
      * @return the properties
      */
+    // FIXME  It may be possible to have some kind of default parsing by looking for key=value pairs.
     public Map<String,String> get3gppProperties(String format, String measInfoId) {
         Map<String,String> properties = new LinkedHashMap<String,String>();
         if (format != null) {
@@ -266,7 +279,18 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
                 }
             }
         }
-        properties.put("label", properties.toString().replaceAll("[{}]", ""));
+        if (properties.isEmpty() && Boolean.getBoolean("org.opennms.collectd.xml.3gpp.useSimpleParserForMeasObjLdn")) {
+            String[] groups = measInfoId.split("\\|");
+            for (String group : groups) {
+                String pair[] = group.split("=");
+                if (pair.length == 2) {
+                    properties.put(pair[0], pair[1]);
+                }
+            }
+        }
+        // If the format was not found, and the default parser couldn't extract any data then,
+        // the label must be equal to the instance (NMS-6365, to avoid blank descriptions). 
+        properties.put("label", properties.isEmpty() ? measInfoId : properties.toString().replaceAll("[{}]", ""));
         properties.put("instance", measInfoId);
         return properties;
     }

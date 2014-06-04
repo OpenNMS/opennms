@@ -3,7 +3,7 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.11.91-SNAPSHOT</version>
+    <version>1.12.8-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
@@ -27,6 +27,13 @@
       <groupId>org.drools</groupId>
       <artifactId>drools-compiler</artifactId>
       <version>${droolsVersion}</version>
+    </dependency>
+    <!-- *shudder* -->
+    <!-- unfortunately, this is needed for JDK 1.7 compatibility until we can update Drools to something newer than 5.1.1 -->
+    <dependency>
+       <groupId>org.eclipse.jdt.core.compiler</groupId>
+       <artifactId>ecj</artifactId>
+       <version>${ecjVersion}</version>
     </dependency>
   </dependencies>
   <repositories>

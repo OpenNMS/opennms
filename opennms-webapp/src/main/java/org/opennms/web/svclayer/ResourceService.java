@@ -31,6 +31,7 @@ package org.opennms.web.svclayer;
 import java.io.File;
 import java.util.List;
 
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,23 +58,12 @@ public interface ResourceService {
      */
     public List<OnmsResource> findTopLevelResources();
     /**
-     * <p>findNodeResources</p>
+     * <p>findNodeChildResources</p>
      *
+     * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
      * @return a {@link java.util.List} object.
      */
-    public List<OnmsResource> findNodeResources();
-    /**
-     * <p>findDomainResources</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    public List<OnmsResource> findDomainResources();
-    /**
-     * <p>findNodeSourceResources</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    public List<OnmsResource> findNodeSourceResources();
+    public List<OnmsResource> findNodeChildResources(OnmsNode node);
     /**
      * <p>findNodeChildResources</p>
      *

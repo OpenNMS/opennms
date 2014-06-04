@@ -15,6 +15,7 @@
 
         <!-- d3js includes -->
         <script type="text/javascript" src="/opennms/js/d3.v2.js"></script>
+        <script type="text/javascript" src="/opennms/js/simpledateformat.js"></script>
         <script type="text/javascript" src="/opennms/js/rrdgraph.js"></script>
 
         <!-- CSS include -->

@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<datacollection-group name="XML">
+    <resourceType name="solarisZoneStats" label="solarisZoneStats" resourceLabel="Zone ${index}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+</datacollection-group>

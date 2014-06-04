@@ -203,6 +203,12 @@ Requires(pre):	opennms-plugin-provisioning-snmp-asset
 Requires:	opennms-plugin-provisioning-snmp-asset
 Requires(pre):	opennms-plugin-ticketer-centric
 Requires:	opennms-plugin-ticketer-centric
+Requires(pre):	opennms-plugin-ticketer-jira
+Requires:	opennms-plugin-ticketer-jira
+Requires(pre):	opennms-plugin-ticketer-otrs
+Requires:	opennms-plugin-ticketer-otrs
+Requires(pre):	opennms-plugin-ticketer-rt
+Requires:	opennms-plugin-ticketer-rt
 Requires(pre):	opennms-plugin-protocol-cifs
 Requires:	opennms-plugin-protocol-cifs
 Requires(pre):	opennms-plugin-protocol-dhcp
@@ -289,6 +295,48 @@ Requires:	opennms-core = %{version}-%{release}
 %description plugin-provisioning-snmp-asset
 The SNMP asset provisioning adapter responds to provisioning events by updating asset
 fields with data fetched from SNMP GET requests.
+
+%{extrainfo}
+%{extrainfo2}
+
+
+%package plugin-ticketer-jira
+Summary:	JIRA Ticketer Plugin for OpenNMS
+Group:		Applications/System
+Requires(pre):	opennms-core = %{version}-%{release}
+Requires:	opennms-core = %{version}-%{release}
+
+%description plugin-ticketer-jira
+The JIRA ticketer plugin provides the ability to automatically create JIRA
+issues from OpenNMS alarms.
+
+%{extrainfo}
+%{extrainfo2}
+
+
+%package plugin-ticketer-otrs
+Summary:	OTRS Ticketer Plugin for OpenNMS
+Group:		Applications/System
+Requires(pre):	opennms-core = %{version}-%{release}
+Requires:	opennms-core = %{version}-%{release}
+
+%description plugin-ticketer-otrs
+The OTRS ticketer plugin provides the ability to automatically create OTRS
+issues from OpenNMS alarms.
+
+%{extrainfo}
+%{extrainfo2}
+
+
+%package plugin-ticketer-rt
+Summary:	RT Ticketer Plugin for OpenNMS
+Group:		Applications/System
+Requires(pre):	opennms-core = %{version}-%{release}
+Requires:	opennms-core = %{version}-%{release}
+
+%description plugin-ticketer-rt
+The RT ticketer plugin provides the ability to automatically create RT
+tickets from OpenNMS alarms.
 
 %{extrainfo}
 %{extrainfo2}
@@ -429,9 +477,9 @@ if [ "%{skip_compile}" = 1 ]; then
 	fi
 	TOPDIR=`pwd`
 	for dir in . opennms-tools; do
-		pushd $dir
+		cd $dir
 			"$TOPDIR"/compile.pl -N $EXTRA_OPTIONS -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" -Dopennms.home="%{instprefix}" install
-		popd
+		cd -
 	done
 else
 	echo "=== RUNNING COMPILE ==="
@@ -443,10 +491,10 @@ echo "=== BUILDING ASSEMBLIES ==="
 ./assemble.pl $EXTRA_OPTIONS -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
 	-Dopennms.home="%{instprefix}" -Dbuild.profile=full install
 
-pushd opennms-tools
+cd opennms-tools
 	../compile.pl $EXTRA_OPTIONS -N -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
         -Dopennms.home="%{instprefix}" install
-popd
+cd -
 
 echo "=== INSTALL COMPLETED ==="
 
@@ -503,7 +551,7 @@ rm -rf $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller
 
 rm -rf $RPM_BUILD_ROOT%{instprefix}/lib/*.tar.gz
 
-pushd $RPM_BUILD_ROOT
+cd $RPM_BUILD_ROOT
 
 # core package files
 find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
@@ -515,10 +563,13 @@ find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
 	grep -v '3gpp' | \
 	grep -v 'dhcpd-configuration.xml' | \
 	grep -v 'endpoint-configuration.xml' | \
+	grep -v 'jira.properties' | \
 	grep -v 'link-adapter-configuration.xml' | \
 	grep -v 'mapsadapter-configuration.xml' | \
 	grep -v 'nsclient-config.xml' | \
 	grep -v 'nsclient-datacollection-config.xml' | \
+	grep -v 'otrs.properties' | \
+	grep -v '/rt.properties' | \
 	grep -v 'snmp-asset-adapter-configuration.xml' | \
 	grep -v 'xml-datacollection-config.xml' | \
 	grep -v 'xmp-config.xml' | \
@@ -536,10 +587,13 @@ find $RPM_BUILD_ROOT%{sharedir}/etc-pristine ! -type d | \
 	grep -v '3gpp' | \
 	grep -v 'dhcpd-configuration.xml' | \
 	grep -v 'endpoint-configuration.xml' | \
+	grep -v 'jira.properties' | \
 	grep -v 'link-adapter-configuration.xml' | \
 	grep -v 'mapsadapter-configuration.xml' | \
 	grep -v 'nsclient-config.xml' | \
 	grep -v 'nsclient-datacollection-config.xml' | \
+	grep -v 'otrs.properties' | \
+	grep -v '/rt.properties' | \
 	grep -v 'snmp-asset-adapter-configuration.xml' | \
 	grep -v 'xml-datacollection-config.xml' | \
 	grep -v 'xmp-config.xml' | \
@@ -575,18 +629,24 @@ find $RPM_BUILD_ROOT%{instprefix}/lib ! -type d | \
 	grep -v 'org.opennms.protocols.cifs' | \
 	grep -v 'org.opennms.protocols.dhcp' | \
 	grep -v 'jdhcp' | \
+	grep -v 'jira' | \
 	grep -v 'org.opennms.protocols.nsclient' | \
 	grep -v 'org.opennms.protocols.radius' | \
 	grep -v 'gnu-crypto' | \
 	grep -v 'jradius' | \
+	grep -v 'opennms-integration-otrs' | \
+	grep -v 'opennms-integration-rt' | \
 	grep -v 'org.opennms.protocols.xml' | \
 	grep -v 'org.opennms.protocols.xmp' | \
-	grep -v 'Xmp' | \
+	grep -v 'xmp' | \
 	grep -v 'org.opennms.features.juniper-tca-collector' | \
 	grep -v 'opennms_jmx_config_generator' | \
 	sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/etc -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
+	sort >> %{_tmppath}/files.main
+find $RPM_BUILD_ROOT%{instprefix}/system ! -type d | \
+	sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
 	sort >> %{_tmppath}/files.main
 
 # jetty
@@ -606,7 +666,7 @@ find $RPM_BUILD_ROOT%{jettydir} -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
 	sort >> %{_tmppath}/files.jetty
 
-popd
+cd -
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -627,7 +687,6 @@ rm -rf $RPM_BUILD_ROOT
 			%{logdir}/webapp
 			%{instprefix}/data
 			%{instprefix}/deploy
-			%{instprefix}/system
 
 %if %{with_docs}
 %files docs
@@ -655,6 +714,7 @@ rm -rf $RPM_BUILD_ROOT
 %config %{jettydir}/%{servletdir}/WEB-INF/ncs*.xml
 %config %{jettydir}/%{servletdir}/WEB-INF/jsp/alarm/ncs-*
 %config %{jettydir}/%{servletdir}/WEB-INF/jsp/ncs
+%dir %{sharedir}/etc-pristine/drools-engine.d/ncs
 %{sharedir}/etc-pristine/drools-engine.d/ncs/*
 %{sharedir}/etc-pristine/ncs-northbounder-configuration.xml
 
@@ -699,6 +759,24 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(664 root root 775)
 %{instprefix}/lib/org.opennms.protocols.cifs*.jar
 
+%files plugin-ticketer-jira
+%defattr(664 root root 775)
+%{instprefix}/lib/jira-*.jar
+%config(noreplace) %{instprefix}/etc/jira.properties
+%{sharedir}/etc-pristine/jira.properties
+
+%files plugin-ticketer-otrs
+%defattr(664 root root 775)
+%{instprefix}/lib/opennms-integration-otrs-*.jar
+%config(noreplace) %{instprefix}/etc/otrs.properties
+%{sharedir}/etc-pristine/otrs.properties
+
+%files plugin-ticketer-rt
+%defattr(664 root root 775)
+%{instprefix}/lib/opennms-integration-rt-*.jar
+%config(noreplace) %{instprefix}/etc/rt.properties
+%{sharedir}/etc-pristine/rt.properties
+
 %files plugin-protocol-dhcp
 %defattr(664 root root 775)
 %config(noreplace) %{instprefix}/etc/dhcp*.xml
@@ -736,7 +814,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(664 root root 775)
 %config(noreplace) %{instprefix}/etc/xmp*.xml
 %{instprefix}/lib/org.opennms.protocols.xmp-*.jar
-%{instprefix}/lib/Xmp-*.jar
+%{instprefix}/lib/xmp-*.jar
 %{sharedir}/etc-pristine/xmp*.xml
 %{sharedir}/xsds/xmp*.xsd
 
@@ -850,7 +928,8 @@ done
 
 printf -- "- cleaning up \$OPENNMS_HOME/data... "
 if [ -d "$RPM_INSTALL_PREFIX0/data" ]; then
-	rm -rf "$RPM_INSTALL_PREFIX0/data"
+	find "$RPM_INSTALL_PREFIX0/data/"* -maxdepth 0 -name tmp -prune -o -print | xargs rm -rf
+	find "$RPM_INSTALL_PREFIX0/data/tmp/"* -maxdepth 0 -name README -prune -o -print | xargs rm -rf
 fi
 echo "done"
 

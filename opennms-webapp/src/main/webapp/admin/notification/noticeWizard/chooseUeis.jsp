@@ -74,6 +74,8 @@
   <jsp:param name="breadcrumb" value="Choose Event" />
 </jsp:include>
 
+<script type="text/javascript" src="js/jquery/jquery.js"></script>
+
 <script type="text/javascript" >
 
     function next()
@@ -88,6 +90,32 @@
         }
     }
 
+$(document).ready(function() {
+
+  $("select#uei").change(function(e) {
+    var label = $(e.target.options[e.target.selectedIndex]).text();
+    $('#regexp').prop('disabled', label !== 'REGEX_FIELD');
+  });
+
+  $('#regexp').change(function(e) {
+    var value = e.target.value;
+    if (!value.match("^~")) {
+      alert("Invalid regex field: [" + value + "], value does not start with ~\n" +
+        "Resetting value back to default.\n"
+      );
+      e.target.value = e.target.defaultValue;
+      return false;
+    }
+    var uei = $('#uei')[0];
+    $(uei.options[uei.selectedIndex]).val(value);
+    uei.selectmenu('refresh');
+  });
+  if ($('#regexp').val() === '~^$') {
+    $('#regexp').prop('disabled', true);
+  }
+
+});
+
 </script>
 
 <h2><%=(newNotice.getName()!=null ? "Editing notice: " + newNotice.getName() + "<br/>" : "")%></h2>
@@ -101,9 +129,11 @@
         <tr>
           <td valign="top" align="left">
             <h4>Events</h4>
-            <select NAME="uei" SIZE="20" >
+            <select id="uei" NAME="uei" SIZE="20" >
              <%=buildEventSelect(newNotice)%>
-            </select>
+            </select><br />
+            REGEX FIELD:
+            <input id="regexp" name="regexp" type="text" size="96" value="<%=(newNotice.getUei()!=null ? newNotice.getUei() : "")%>" />
           </td>
         </tr>
         <tr>
@@ -127,7 +157,13 @@
     {
         List events = m_eventConfDao.getEventsByLabel();
         StringBuffer buffer = new StringBuffer();
-        
+
+        if (notice.getUei() != null && notice.getUei().startsWith("~")) {
+            buffer.append("<option selected value=\""+notice.getUei()+"\">REGEX_FIELD</option>\n");
+        } else {
+            buffer.append("<option value=\"~^$\">REGEX_FIELD</option>\n");
+        }
+
         List excludeList = getExcludeList();
 	TreeMap<String, String> sortedMap = new TreeMap<String, String>();
 

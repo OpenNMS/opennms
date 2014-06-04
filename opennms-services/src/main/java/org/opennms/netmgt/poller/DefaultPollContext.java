@@ -30,6 +30,7 @@ package org.opennms.netmgt.poller;
 
 import java.net.InetAddress;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -59,6 +60,24 @@ import org.opennms.netmgt.xml.event.Event;
  * @version $Id: $
  */
 public class DefaultPollContext implements PollContext, EventListener {
+    
+    private static final String[] UEIS = {
+        // service events without node processing enable
+        EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI,
+        EventConstants.SERVICE_RESPONSIVE_EVENT_UEI,
+        
+        // service events with node processing enabled
+        EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI,
+        EventConstants.NODE_LOST_SERVICE_EVENT_UEI,
+
+        // interface events
+        EventConstants.INTERFACE_DOWN_EVENT_UEI,
+        EventConstants.INTERFACE_UP_EVENT_UEI,
+        
+        // node events
+        EventConstants.NODE_DOWN_EVENT_UEI,
+        EventConstants.NODE_UP_EVENT_UEI
+    };
     
     private volatile PollerConfig m_pollerConfig;
     private volatile QueryManager m_queryManager;
@@ -200,7 +219,7 @@ public class DefaultPollContext implements PollContext, EventListener {
     /** {@inheritDoc} */
     public PollEvent sendEvent(Event event) {
         if (!m_listenerAdded) {
-            getEventManager().addEventListener(this);
+            getEventManager().addEventListener(this, Arrays.asList(UEIS));
             m_listenerAdded = true;
         }
         PendingPollEvent pollEvent = new PendingPollEvent(event);
@@ -282,10 +301,16 @@ public class DefaultPollContext implements PollContext, EventListener {
         final int nodeId = svc.getNodeId();
         final String ipAddr = svc.getIpAddr();
         final String svcName = svc.getSvcName();
-        Runnable r = new Runnable() {
+        final Runnable r = new Runnable() {
             public void run() {
-                log().debug("run: Opening outage with query manager: "+svc+" with event:"+svcLostEvent);
-                getQueryManager().openOutage(getPollerConfig().getNextOutageIdSql(), nodeId, ipAddr, svcName, svcLostEvent.getEventId(), EventConstants.formatToString(svcLostEvent.getDate()));
+                if (log().isDebugEnabled()) log().debug("run: Opening outage with query manager: "+svc+" with event:"+svcLostEvent);
+
+                final int eventId = svcLostEvent.getEventId();
+                if (eventId > 0) {
+                    getQueryManager().openOutage(getPollerConfig().getNextOutageIdSql(), nodeId, ipAddr, svcName, eventId, EventConstants.formatToString(svcLostEvent.getDate()));
+                } else {
+                    log().warn("run: Failed to determine an eventId for service outage for: " + svc + " with event: " + svcLostEvent);
+                }
             }
 
         };
@@ -302,13 +327,18 @@ public class DefaultPollContext implements PollContext, EventListener {
      * @see org.opennms.netmgt.poller.pollables.PollContext#resolveOutage(org.opennms.netmgt.poller.pollables.PollableService, org.opennms.netmgt.xml.event.Event)
      */
     /** {@inheritDoc} */
-    public void resolveOutage(PollableService svc, final PollEvent svcRegainEvent) {
+    public void resolveOutage(final PollableService svc, final PollEvent svcRegainEvent) {
         final int nodeId = svc.getNodeId();
         final String ipAddr = svc.getIpAddr();
         final String svcName = svc.getSvcName();
-        Runnable r = new Runnable() {
+        final Runnable r = new Runnable() {
             public void run() {
-                getQueryManager().resolveOutage(nodeId, ipAddr, svcName, svcRegainEvent.getEventId(), EventConstants.formatToString(svcRegainEvent.getDate()));
+                final int eventId = svcRegainEvent.getEventId();
+                if (eventId > 0) {
+                    getQueryManager().resolveOutage(nodeId, ipAddr, svcName, eventId, EventConstants.formatToString(svcRegainEvent.getDate()));
+                } else {
+                    log().warn("run: Failed to determine an eventId for service regained for: " + svc + " with event: " + svcRegainEvent);
+                }
             }
         };
         if (svcRegainEvent instanceof PendingPollEvent) {
@@ -340,29 +370,32 @@ public class DefaultPollContext implements PollContext, EventListener {
      * @see org.opennms.netmgt.eventd.EventListener#onEvent(org.opennms.netmgt.xml.event.Event)
      */
     /** {@inheritDoc} */
-    public void onEvent(Event e) {
+    public void onEvent(final Event e) {
+        ThreadCategory log = log();
+        log.debug("onEvent: Waiting to process event: "+e+" uei: "+e.getUei()+", dbid: "+e.getDbid());
         synchronized (m_pendingPollEvents) {
-            log().debug("onEvent: Received event: "+e+" uei: "+e.getUei()+", dbid: "+e.getDbid());
-            for (Iterator<PendingPollEvent> it = m_pendingPollEvents .iterator(); it.hasNext();) {
-                PendingPollEvent pollEvent = it.next();
-                log().debug("onEvent: comparing events to poll event: "+pollEvent);
+            log.debug("onEvent: Received event: "+e+" uei: "+e.getUei()+", dbid: "+e.getDbid()+" pendingEventCount: " + m_pendingPollEvents.size());
+            for (final Iterator<PendingPollEvent> it = m_pendingPollEvents.iterator(); it.hasNext();) {
+                final PendingPollEvent pollEvent = it.next();
+                log.trace("onEvent: comparing events to poll event: "+pollEvent);
                 if (e.equals(pollEvent.getEvent())) {
-                    log().debug("onEvent: completing pollevent: "+pollEvent);
+                    log.trace("onEvent: completing pollevent: "+pollEvent);
                     pollEvent.complete(e);
                 }
             }
             
             for (Iterator<PendingPollEvent> it = m_pendingPollEvents.iterator(); it.hasNext(); ) {
                 PendingPollEvent pollEvent = it.next();
-                log().debug("onEvent: determining if pollEvent is pending: "+pollEvent);
+                log.trace("onEvent: determining if pollEvent is pending: "+pollEvent);
                 if (pollEvent.isPending()) continue;
                 
-                log().debug("onEvent: processing pending pollEvent...: "+pollEvent);
+                log.trace("onEvent: processing pending pollEvent...: "+pollEvent);
                 pollEvent.processPending();
                 it.remove();
-                log().debug("onEvent: processing of pollEvent completed.: "+pollEvent);
+                log.trace("onEvent: processing of pollEvent completed.: "+pollEvent);
             }
         }
+        log.debug("onEvent: Finished processing event: "+e+" uei: "+e.getUei()+", dbid: "+e.getDbid());
         
     }
 

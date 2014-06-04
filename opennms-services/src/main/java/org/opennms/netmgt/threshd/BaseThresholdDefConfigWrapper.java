@@ -28,13 +28,16 @@
 
 package org.opennms.netmgt.threshd;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.opennms.netmgt.config.threshd.Basethresholddef;
 import org.opennms.netmgt.config.threshd.Expression;
+import org.opennms.netmgt.config.threshd.ResourceFilter;
 import org.opennms.netmgt.config.threshd.Threshold;
 
 /**
@@ -69,6 +72,19 @@ public abstract class BaseThresholdDefConfigWrapper {
             return new ExpressionConfigWrapper((Expression)baseDef);
         }
         return null;
+    }
+    
+    /**
+     * Returns the names of the datasources required from the resource filters
+     *
+     * @return Collection of the names of datasources
+     */
+    public List<String> getFilterDatasources() {
+        final List<String> dataSources = new ArrayList<String>();
+        for (ResourceFilter s : getBasethresholddef().getResourceFilterCollection()) {
+            dataSources.add(s.getField());
+        }
+        return dataSources;
     }
     
     /**
@@ -202,12 +218,6 @@ public abstract class BaseThresholdDefConfigWrapper {
         return m_baseDef;
     }
 
-    /*
-     * Threshold merging config will use this to check if a new configuration is the same as other.
-     * The rule will be, if the threshold type (i.e., hiqh, low, relative), the datasource type, and
-     * the threshold expression matches, they are the same, even if they have different triger/rearm
-     * values.
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(final Object obj) {
@@ -216,7 +226,16 @@ public abstract class BaseThresholdDefConfigWrapper {
         BaseThresholdDefConfigWrapper o = (BaseThresholdDefConfigWrapper)obj;
         return getType().equals(o.getType())
         && getDsType().equals(o.getDsType())
-        && getDatasourceExpression().equals(o.getDatasourceExpression());
+        && getDatasourceExpression().equals(o.getDatasourceExpression())
+        && (getDsLabel() == o.getDsLabel() || (getDsLabel() != null && getDsLabel().equals(o.getDsLabel())))
+        && (getTriggeredUEI() == o.getTriggeredUEI() || (getTriggeredUEI() != null && getTriggeredUEI().equals(o.getTriggeredUEI())))
+        && (getRearmedUEI() ==  o.getRearmedUEI() || (getRearmedUEI() != null && getRearmedUEI().equals(o.getRearmedUEI())))
+        && getValue() == o.getValue()
+        && getRearm() == o.getRearm()
+        && getTrigger() == o.getTrigger()
+        && getBasethresholddef().getFilterOperator().equals(o.getBasethresholddef().getFilterOperator())
+        && getBasethresholddef().isRelaxed() == o.getBasethresholddef().isRelaxed()
+        && Arrays.equals(getBasethresholddef().getResourceFilter(), o.getBasethresholddef().getResourceFilter());
     }
     
     /** {@inheritDoc} */
@@ -227,28 +246,6 @@ public abstract class BaseThresholdDefConfigWrapper {
             .toHashCode();
     }
 
-    /*
-     * Returns true only if parameter object has exactly the same values for all attributes of
-     * the current object.
-     */
-    /**
-     * <p>identical</p>
-     *
-     * @param o a {@link org.opennms.netmgt.threshd.BaseThresholdDefConfigWrapper} object.
-     * @return a boolean.
-     */
-    public boolean identical(BaseThresholdDefConfigWrapper o) {
-        return equals(o)
-        && (getDsLabel() == o.getDsLabel() || (getDsLabel() != null && getDsLabel().equals(o.getDsLabel())))
-        && (getTriggeredUEI() == o.getTriggeredUEI() || (getTriggeredUEI() != null && getTriggeredUEI().equals(o.getTriggeredUEI())))
-        && (getRearmedUEI() ==  o.getRearmedUEI() || (getRearmedUEI() != null && getRearmedUEI().equals(o.getRearmedUEI())))
-        && getValue() == o.getValue()
-        && getRearm() == o.getRearm()
-        && getTrigger() == o.getTrigger()
-        && getBasethresholddef().getFilterOperator().equals(o.getBasethresholddef().getFilterOperator())
-        && Arrays.equals(getBasethresholddef().getResourceFilter(), o.getBasethresholddef().getResourceFilter());
-    }
-    
     /**
      * <p>merge</p>
      *

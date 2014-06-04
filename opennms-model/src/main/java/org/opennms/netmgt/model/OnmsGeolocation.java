@@ -1,16 +1,17 @@
 package org.opennms.netmgt.model;
 
+import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.PropertyAccessorFactory;
+
 @Embeddable
 public class OnmsGeolocation implements Serializable {
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -3859935145186027524L;
+    private static final long serialVersionUID = -3346555393433178515L;
 
     public OnmsGeolocation() {}
 
@@ -171,35 +172,65 @@ public class OnmsGeolocation implements Serializable {
     public String asAddressString() {
         final StringBuffer sb = new StringBuffer();
 
-        if (this.getAddress1() != null) {
+        if (hasText(this.getAddress1())) {
             sb.append(this.getAddress1());
-            if (this.getAddress2() != null) {
+            if (hasText(this.getAddress2())) {
                 sb.append(" ").append(this.getAddress2());
             }
         }
 
-        if (this.getCity() != null) {
+        if (hasText(this.getCity())) {
             if (sb.length() > 0) sb.append(", ");
             sb.append(this.getCity());
         }
-        if (this.getState() != null) {
+        if (hasText(this.getState())) {
             if (sb.length() > 0) sb.append(", ");
             sb.append(this.getState());
         }
-        if (this.getZip() != null) {
-            if (this.getState() != null) {
+        if (hasText(this.getZip())) {
+            if (hasText(this.getState())) {
                 sb.append(" ");
             } else if (sb.length() > 0) {
                 sb.append(", ");
             }
             sb.append(this.getZip());
         }
-        if (this.getCountry() != null) {
+        if (hasText(this.getCountry())) {
             if (sb.length() > 0) sb.append(", ");
             sb.append(this.getCountry());
+        }
+
+        if (sb.length() == 0) {
+            return null;
         }
 
         return sb.toString();
     }
 
+    private boolean hasText(final String string) {
+        return !(string == null || string.isEmpty() || string.trim().isEmpty());
+    }
+
+    public void mergeGeolocation(final OnmsGeolocation from) {
+        if (from == null) {
+            return;
+        }
+
+        final BeanWrapper toBean = PropertyAccessorFactory.forBeanPropertyAccess(this);
+        final BeanWrapper fromBean = PropertyAccessorFactory.forBeanPropertyAccess(from);
+        final PropertyDescriptor[] pds = fromBean.getPropertyDescriptors();
+
+        for (final PropertyDescriptor pd : pds) {
+            final String propertyName = pd.getName();
+
+            if (propertyName.equals("class")) {
+                continue;
+            }
+
+            final Object propertyValue = fromBean.getPropertyValue(propertyName);
+            if (propertyValue != null) {
+                toBean.setPropertyValue(propertyName, propertyValue);
+            }
+        }
+    }
 }

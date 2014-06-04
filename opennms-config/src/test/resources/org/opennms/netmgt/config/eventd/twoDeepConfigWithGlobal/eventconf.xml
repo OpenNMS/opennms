@@ -23,5 +23,5 @@
     <severity>Normal</severity>
   </event>
   
-  <event-file>${install.etc.dir}/BGP4.events.xml</event-file>
+  <event-file>BGP4.events.xml</event-file>
  </events>

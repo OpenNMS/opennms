@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.xml.eventconf;
 
+import static org.opennms.netmgt.xml.eventconf.EventMatchers.*;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
@@ -63,7 +65,62 @@ public class Maskelement implements Serializable {
 	private static final long serialVersionUID = -3932312038903008806L;
 	private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
-	// @NotNull
+    /**
+     * The UEI xml tag
+     */
+    public static final String TAG_UEI = "uei";
+
+    /**
+     * The event source xml tag
+     */
+    public static final String TAG_SOURCE = "source";
+
+    /**
+     * The event nodeid xml tag
+     */
+    public static final String TAG_NODEID = "nodeid";
+
+    /**
+     * The event host xml tag
+     */
+    public static final String TAG_HOST = "host";
+
+    /**
+     * The event interface xml tag
+     */
+    public static final String TAG_INTERFACE = "interface";
+
+    /**
+     * The event snmp host xml tag
+     */
+    public static final String TAG_SNMPHOST = "snmphost";
+
+    /**
+     * The event service xml tag
+     */
+    public static final String TAG_SERVICE = "service";
+
+    /**
+     * The SNMP EID xml tag
+     */
+    public static final String TAG_SNMP_EID = "id";
+
+    /**
+     * The SNMP specific xml tag
+     */
+    public static final String TAG_SNMP_SPECIFIC = "specific";
+
+    /**
+     * The SNMP generic xml tag
+     */
+    public static final String TAG_SNMP_GENERIC = "generic";
+
+    /**
+     * The SNMP community xml tag
+     */
+    public static final String TAG_SNMP_COMMUNITY = "community";
+
+    // @NotNull
 	@XmlElement(name="mename", required=true)
     private String m_name;
 
@@ -239,5 +296,29 @@ public class Maskelement implements Serializable {
 		}
 		return true;
 	}
+	
+	
+
+	public EventMatcher constructMatcher() {
+		List<EventMatcher> valueMatchers = new ArrayList<EventMatcher>(m_values.size());
+		for(String value : m_values) {
+			if (value == null) continue;
+			if (value.startsWith("~")) {
+				valueMatchers.add(valueMatchesRegexMatcher(field(m_name), value));
+			} else if (value.endsWith("%")) {
+				valueMatchers.add(valueStartsWithMatcher(field(m_name), value));
+			} else {
+				valueMatchers.add(valueEqualsMatcher(field(m_name), value));
+			}
+		}
+		
+		if (valueMatchers.size() == 1) {
+			return valueMatchers.get(0);
+		} else {
+			EventMatcher[] matchers = valueMatchers.toArray(new EventMatcher[valueMatchers.size()]);
+			return EventMatchers.or(matchers);
+		}
+
+	}	
 
 }

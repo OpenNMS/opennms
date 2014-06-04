@@ -69,6 +69,7 @@ import org.opennms.netmgt.model.OnmsUserList;
  *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
+ * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  */
 public abstract class UserManager {
     private static final char[] HEX = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
@@ -147,6 +148,8 @@ public abstract class UserManager {
      * @throws java.lang.Exception if any.
      */
     public void saveUser(final String name, final User details) throws Exception {
+        update();
+
         m_writeLock.lock();
         
         try {
@@ -167,6 +170,8 @@ public abstract class UserManager {
     }
     
     public void save(final OnmsUser user) throws Exception {
+        update();
+
         m_writeLock.lock();
         
         try {
@@ -233,7 +238,6 @@ public abstract class UserManager {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public boolean isUserOnDuty(final String user, final Calendar time) throws IOException, MarshalException, ValidationException {
-    
         update();
     
         m_readLock.lock();
@@ -263,7 +267,6 @@ public abstract class UserManager {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public Map<String, User> getUsers() throws IOException, MarshalException, ValidationException {
-    
         update();
     
         m_readLock.lock();
@@ -275,6 +278,8 @@ public abstract class UserManager {
     }
 
     public OnmsUserList getOnmsUserList() throws MarshalException, ValidationException, IOException {
+        update();
+
         final OnmsUserList list = new OnmsUserList();
 
         m_readLock.lock();
@@ -292,8 +297,9 @@ public abstract class UserManager {
     }
     
     public OnmsUser getOnmsUser(final String username) throws MarshalException, ValidationException, IOException {
+        update();
+
         m_readLock.lock();
-        
         try {
             return _getOnmsUser(username);
         } finally {
@@ -325,7 +331,6 @@ public abstract class UserManager {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public boolean hasUser(final String userName) throws IOException, MarshalException, ValidationException {
-    
         update();
 
         m_readLock.lock();
@@ -345,7 +350,6 @@ public abstract class UserManager {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public List<String> getUserNames() throws IOException, MarshalException, ValidationException {
-    
         update();
 
         m_readLock.lock();
@@ -373,7 +377,6 @@ public abstract class UserManager {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public User getUser(final String name) throws IOException, MarshalException, ValidationException {
-    
         update();
 
         m_readLock.lock();
@@ -667,7 +670,6 @@ public abstract class UserManager {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public String getXMPPAddress(final String userID) throws IOException, MarshalException, ValidationException {
-
         update();
         
         m_readLock.lock();
@@ -689,7 +691,6 @@ public abstract class UserManager {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public String getXMPPAddress(final User user) throws IOException, MarshalException, ValidationException {
-
         update();
 
         m_readLock.lock();
@@ -882,6 +883,8 @@ public abstract class UserManager {
      * @throws java.lang.Exception if any.
      */
     public void saveUsers(final Collection<User> usersList) throws Exception {
+        update();
+
         m_writeLock.lock();
         
         try {
@@ -973,6 +976,8 @@ public abstract class UserManager {
      * @throws java.lang.Exception if any.
      */
     public void renameUser(final String oldName, final String newName) throws Exception {
+        update();
+
         m_writeLock.lock();
         
         try {
@@ -1015,6 +1020,8 @@ public abstract class UserManager {
      * @throws java.lang.Exception if any.
      */
     public void setEncryptedPassword(final String userID, final String aPassword, final boolean salted) throws Exception {
+        update();
+
         m_writeLock.lock();
         
         try {
@@ -1042,6 +1049,8 @@ public abstract class UserManager {
      * @throws java.lang.Exception if any.
      */
     public void setUnencryptedPassword(final String userID, final String aPassword) throws Exception {
+        update();
+
         m_writeLock.lock();
         
         try {
@@ -1288,6 +1297,8 @@ public abstract class UserManager {
      * @throws java.io.IOException if any.
      */
     public boolean hasRole(final String roleid) throws MarshalException, ValidationException, IOException {
+        update();
+
         m_readLock.lock();
         try {
             return m_groupManager.getRole(roleid) != null;
@@ -1306,6 +1317,8 @@ public abstract class UserManager {
      * @throws java.io.IOException if any.
      */
     public int countUsersWithRole(final String roleid) throws MarshalException, ValidationException, IOException {
+        update();
+
         m_readLock.lock();
         try {
             final String[] users = _getUsersWithRole(roleid);
@@ -1315,14 +1328,9 @@ public abstract class UserManager {
             m_readLock.unlock();
         }
     }
-    /**
-     * <p>isUpdateNeeded</p>
-     *
-     * @return a boolean.
-     */
-    public abstract boolean isUpdateNeeded();
 
+    public abstract boolean isUpdateNeeded();
     public abstract long getLastModified();
     public abstract long getFileSize();
-
+    public abstract void reload() throws IOException, FileNotFoundException, MarshalException, ValidationException;
 }

@@ -606,7 +606,7 @@ public class AlarmFactory extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        Filter[] filters = new Filter[] { new NodeFilter(nodeId, servletContext), new InterfaceFilter(ipAddress), new ServiceFilter(serviceId) };
+        Filter[] filters = new Filter[] { new NodeFilter(nodeId, servletContext), new InterfaceFilter(ipAddress), new ServiceFilter(serviceId, servletContext) };
         return (AlarmFactory.getAlarms(sortStyle, ackType, filters, throttle, offset));
     }
 
@@ -618,8 +618,8 @@ public class AlarmFactory extends Object {
      * @return an array of {@link org.opennms.web.alarm.Alarm} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Alarm[] getAlarmsForService(int serviceId) throws SQLException {
-        return (getAlarmsForService(serviceId, SortStyle.ID, AcknowledgeType.UNACKNOWLEDGED, -1, -1));
+    public static Alarm[] getAlarmsForService(int serviceId, ServletContext servletContext) throws SQLException {
+        return (getAlarmsForService(serviceId, SortStyle.ID, AcknowledgeType.UNACKNOWLEDGED, -1, -1, servletContext));
     }
 
     /**
@@ -632,9 +632,9 @@ public class AlarmFactory extends Object {
      * @return an array of {@link org.opennms.web.alarm.Alarm} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Alarm[] getAlarmsForService(int serviceId, boolean includeAcknowledged) throws SQLException {
+    public static Alarm[] getAlarmsForService(int serviceId, boolean includeAcknowledged, ServletContext servletContext) throws SQLException {
         AcknowledgeType ackType = (includeAcknowledged) ? AcknowledgeType.BOTH : AcknowledgeType.UNACKNOWLEDGED;
-        return (getAlarmsForService(serviceId, SortStyle.ID, ackType, -1, -1));
+        return (getAlarmsForService(serviceId, SortStyle.ID, ackType, -1, -1, servletContext));
     }
 
     /**
@@ -652,12 +652,12 @@ public class AlarmFactory extends Object {
      * @return an array of {@link org.opennms.web.alarm.Alarm} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Alarm[] getAlarmsForService(int serviceId, SortStyle sortStyle, AcknowledgeType ackType, int throttle, int offset) throws SQLException {
+    public static Alarm[] getAlarmsForService(int serviceId, SortStyle sortStyle, AcknowledgeType ackType, int throttle, int offset, ServletContext servletContext) throws SQLException {
         if (sortStyle == null || ackType == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        Filter[] filters = new Filter[] { new ServiceFilter(serviceId) };
+        Filter[] filters = new Filter[] { new ServiceFilter(serviceId, servletContext) };
         return (AlarmFactory.getAlarms(sortStyle, ackType, filters, throttle, offset));
     }
 
@@ -677,7 +677,7 @@ public class AlarmFactory extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        Filter[] filters = new Filter[] { new NodeFilter(nodeId, servletContext), new InterfaceFilter(ipAddress), new ServiceFilter(serviceId) };
+        Filter[] filters = new Filter[] { new NodeFilter(nodeId, servletContext), new InterfaceFilter(ipAddress), new ServiceFilter(serviceId, servletContext) };
         return (getAlarmCount(ackType, filters));
     }
 
@@ -690,12 +690,12 @@ public class AlarmFactory extends Object {
      * @return a int.
      * @throws java.sql.SQLException if any.
      */
-    public static int getAlarmCountForService(int serviceId, AcknowledgeType ackType) throws SQLException {
+    public static int getAlarmCountForService(int serviceId, AcknowledgeType ackType, ServletContext servletContext) throws SQLException {
         if (ackType == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        Filter[] filters = new Filter[] { new ServiceFilter(serviceId) };
+        Filter[] filters = new Filter[] { new ServiceFilter(serviceId, servletContext) };
         return (getAlarmCount(ackType, filters));
     }
 

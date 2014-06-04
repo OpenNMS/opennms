@@ -298,7 +298,7 @@
 
 
 
-			<th width="8%">
+			<th width="7%">
               <%=this.makeSortLink( parms, SortStyle.ID,        SortStyle.REVERSE_ID,        "id",        "ID" )%>
               <br />
               <%=this.makeSortLink( parms, SortStyle.SEVERITY,  SortStyle.REVERSE_SEVERITY,  "severity",  "Severity"  )%>
@@ -315,7 +315,7 @@
 			<th width="3%">
               <%=this.makeSortLink( parms, SortStyle.COUNT,  SortStyle.REVERSE_COUNT,  "count",  "Count"  )%>
             </th>
-			<th width="20%">
+			<th width="13%">
               <%=this.makeSortLink( parms, SortStyle.LASTEVENTTIME,  SortStyle.REVERSE_LASTEVENTTIME,  "lasteventtime",  "Last Event Time"  )%>
               <c:if test="${param.display == 'long'}">
               <br />
@@ -326,7 +326,7 @@
               <% } %>
               </c:if>
             </th>
-			<th width="48%">Log Msg</th>
+			<th width="56%">Log Msg</th>
 		</tr>
 	</thead>
 
@@ -427,7 +427,7 @@
             <% } %>
           <br />
             <% if(alarms[i].getServiceName() != null && alarms[i].getServiceName() != "") { %>
-              <% Filter serviceFilter = new ServiceFilter(alarms[i].getServiceId()); %>
+              <% Filter serviceFilter = new ServiceFilter(alarms[i].getServiceId(), getServletContext()); %>
               <% if( alarms[i].getNodeId() != 0 && alarms[i].getIpAddress() != null ) { %>
                 <c:url var="serviceLink" value="element/service.jsp">
                   <c:param name="node" value="<%=String.valueOf(alarms[i].getNodeId())%>"/>
@@ -441,7 +441,7 @@
               <% if( !parms.filters.contains( serviceFilter )) { %>
                 <nobr>
                   <a href="<%=this.makeLink( parms, serviceFilter, true)%>" class="filterLink" title="Show only alarms with this service type">${addPositiveFilter}</a>
-                  <a href="<%=this.makeLink( parms, new NegativeServiceFilter(alarms[i].getServiceId()), true)%>" class="filterLink" title="Do not show alarms for this service">${addNegativeFilter}</a>
+                  <a href="<%=this.makeLink( parms, new NegativeServiceFilter(alarms[i].getServiceId(), getServletContext()), true)%>" class="filterLink" title="Do not show alarms for this service">${addNegativeFilter}</a>
                 </nobr>
               <% } %>                            
             <% } %>
@@ -480,7 +480,7 @@
           </c:if>
           </td>
           <td class="divider"><%=alarms[i].getLogMessage()%></td>
-       
+        </tr> 
       <% } /*end for*/%>
 
       </table>

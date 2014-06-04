@@ -392,6 +392,10 @@
       &lt;p&gt;The administrator has disabled notifications on
       OpenNMS. No pages or emails will be sent until notifications
       are reenabled.&lt;/p&gt;
+      &lt;p&gt;
+      Responsible user: &lt;em&gt;%parm[remoteUser]%&lt;/em&gt;
+      at &lt;em&gt;%parm[remoteHost]% (%parm[remoteAddr]%)&lt;/em&gt;
+      &lt;/p&gt;
     </descr>
     <logmsg dest='logndisplay'>
       &lt;p&gt;Notifications have been disabled.&lt;/p&gt;
@@ -406,6 +410,10 @@
       &lt;p&gt;The administrator has enabled notifications on
       OpenNMS. Pages and/or emails will be sent based upon receipt
       of important events.&lt;/p&gt;
+      &lt;p&gt;
+      Responsible user: &lt;em&gt;%parm[remoteUser]%&lt;/em&gt;
+      at &lt;em&gt;%parm[remoteHost]% (%parm[remoteAddr]%)&lt;/em&gt;
+      &lt;/p&gt;
     </descr>
     <logmsg dest='logndisplay'>
       &lt;p&gt;Notifications have been enabled.&lt;/p&gt;
@@ -1987,6 +1995,7 @@
   <event-file>events/CPQHPIM.events.xml</event-file>
   <event-file>events/Clarent.events.xml</event-file>
   <event-file>events/Clarinet.events.xml</event-file>
+  <event-file>events/Clavister.events.xml</event-file>
   <event-file>events/Compuware.events.xml</event-file>
   <event-file>events/Cricket.events.xml</event-file>
   <event-file>events/CRITAPP.events.xml</event-file>
@@ -2015,6 +2024,7 @@
   <event-file>events/GGSN.events.xml</event-file>
   <event-file>events/Groupwise.events.xml</event-file>
   <event-file>events/HP.events.xml</event-file>
+  <event-file>events/HWg.Poseidon.events.xml</event-file>
   <event-file>events/Hyperic.events.xml</event-file>
   <event-file>events/IBM.events.xml</event-file>
   <event-file>events/IBM-UMS.events.xml</event-file>

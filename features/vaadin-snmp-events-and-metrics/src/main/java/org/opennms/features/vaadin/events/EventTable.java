@@ -30,12 +30,12 @@ package org.opennms.features.vaadin.events;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.features.vaadin.api.OnmsBeanContainer;
 import org.opennms.netmgt.xml.eventconf.AlarmData;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.netmgt.xml.eventconf.Mask;
 
 import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.themes.Runo;
 
@@ -54,7 +54,8 @@ public abstract class EventTable extends Table {
     public static final String[] COLUMN_LABELS = new String[] { "Event Label", "Event UEI" };
 
     /** The Table Container for Events. */
-    private final BeanContainer<String, org.opennms.netmgt.xml.eventconf.Event> container;
+    private final OnmsBeanContainer<org.opennms.netmgt.xml.eventconf.Event> container =
+            new OnmsBeanContainer<org.opennms.netmgt.xml.eventconf.Event>(org.opennms.netmgt.xml.eventconf.Event.class);
 
     /**
      * Instantiates a new event table.
@@ -62,8 +63,6 @@ public abstract class EventTable extends Table {
      * @param events the OpenNMS events
      */
     public EventTable(final Events events) {
-        container = new BeanContainer<String, org.opennms.netmgt.xml.eventconf.Event>(org.opennms.netmgt.xml.eventconf.Event.class);
-        container.setBeanIdProperty("uei");
         container.addAll(events.getEventCollection());
         setContainerDataSource(container);
         setStyleName(Runo.TABLE_SMALL);
@@ -96,7 +95,7 @@ public abstract class EventTable extends Table {
      */
     public List<org.opennms.netmgt.xml.eventconf.Event> getOnmsEvents() {
         List<org.opennms.netmgt.xml.eventconf.Event> events = new ArrayList<org.opennms.netmgt.xml.eventconf.Event>();
-        for (String itemId : container.getItemIds()) {
+        for (Object itemId : container.getItemIds()) {
             org.opennms.netmgt.xml.eventconf.Event e = getEvent(itemId);
             // It doesn't make any sense an alarmData without reductionKey
             AlarmData a = e.getAlarmData();
@@ -117,7 +116,7 @@ public abstract class EventTable extends Table {
      * @param event the new event
      */
     public void addEvent(org.opennms.netmgt.xml.eventconf.Event event) {
-        container.addBean(event);
+        container.addOnmsBean(event);
     }
 
     /**

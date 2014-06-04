@@ -281,6 +281,7 @@ public class NCSRestService {
 	     * @param components a {@link java.util.List} object.
 	     */
 	    public void setComponents(List<NCSComponent> components) {
+	        if (components == this) return;
 	        clear();
 	        addAll(components);
 	    }

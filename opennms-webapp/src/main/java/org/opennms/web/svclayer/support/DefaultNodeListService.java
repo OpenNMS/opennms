@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,6 +29,7 @@
 package org.opennms.web.svclayer.support;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -46,6 +47,7 @@ import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.StringType;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.siteStatusViews.Category;
 import org.opennms.netmgt.config.siteStatusViews.RowDef;
 import org.opennms.netmgt.config.siteStatusViews.Rows;
@@ -84,6 +86,11 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
 
     /** {@inheritDoc} */
     public NodeListModel createNodeList(NodeListCommand command) {
+        return createNodeList(command, true);
+    }
+    
+    /** {@inheritDoc} */
+    public NodeListModel createNodeList(NodeListCommand command, boolean sanitizeLabels) {
         Collection<OnmsNode> onmsNodes = null;
         
         /*
@@ -109,6 +116,12 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
         if (command.getNodesWithDownAggregateStatus()) {
             AggregateStatus as = new AggregateStatus(onmsNodes);
             onmsNodes = as.getDownNodes();
+        }
+        
+        if (sanitizeLabels) {
+            for (OnmsNode node : onmsNodes) {
+                node.setLabel(WebSecurityUtils.sanitizeString(node.getLabel()));
+            }
         }
         
         return createModelForNodes(command, onmsNodes);
@@ -348,17 +361,9 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
                     }
                 } else if (command.hasMaclike()) {
                 	String macLikeStripped = command.getMaclike().toLowerCase().replaceAll("[:-]", "");
-                	for (OnmsIpInterface intf : node.getIpInterfaces()) {
-                		if (intf.getSnmpInterface() != null &&intf.getSnmpInterface().getPhysAddr() != null && intf.getSnmpInterface().getPhysAddr().toLowerCase().contains(macLikeStripped)) {
-                			displayInterfaces.add(intf);
-                		}
-                	}
                 	for (OnmsSnmpInterface snmpIntf : node.getSnmpInterfaces()) {
                 	    if (snmpIntf.getPhysAddr() != null && !"D".equals(snmpIntf.getCollect()) && snmpIntf.getPhysAddr().toLowerCase().contains(macLikeStripped)) {
-                	        OnmsIpInterface intf = snmpIntf.getPrimaryIpInterface();
-                	        if (intf == null) {
-                	            displaySnmpInterfaces.add(snmpIntf);
-                	        }
+                	        displaySnmpInterfaces.add(snmpIntf);
                 	    }
                 	}
                 	for (OnmsArpInterface aint : node.getArpInterfaces()) {

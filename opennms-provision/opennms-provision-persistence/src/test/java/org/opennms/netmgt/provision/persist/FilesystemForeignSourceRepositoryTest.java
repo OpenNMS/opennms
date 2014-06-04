@@ -29,6 +29,7 @@
 package org.opennms.netmgt.provision.persist;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -82,6 +83,10 @@ public class FilesystemForeignSourceRepositoryTest extends ForeignSourceReposito
         r.visit(v);
         assertEquals("number of nodes visited", 2, v.getNodeReqs().size());
         assertEquals("node name matches", "apknd", v.getNodeReqs().get(0).getNodeLabel());
+        
+        m_foreignSourceRepository.delete(r);
+        r = m_foreignSourceRepository.getRequisition(m_defaultForeignSourceName);
+        assertNull(r);
     }
 
     @Test
