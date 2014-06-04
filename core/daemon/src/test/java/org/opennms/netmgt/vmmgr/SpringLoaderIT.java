@@ -40,7 +40,7 @@ import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 import org.opennms.core.fiber.Fiber;
 import org.opennms.netmgt.model.ServiceDaemon;
 
-public class SpringLoaderTest {
+public class SpringLoaderIT {
 
 	@Before
 	public void setUp() {
