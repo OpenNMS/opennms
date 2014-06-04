@@ -53,7 +53,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath*:META-INF/opennms/correlation-engine.xml"
 })
 @JUnitConfigurationEnvironment
-public class CorrelatorIntegrationTest implements InitializingBean {
+public class CorrelatorIT implements InitializingBean {
 
     @Autowired
     private MockEventIpcManager m_eventIpcMgr;

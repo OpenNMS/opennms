@@ -59,7 +59,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class DroolsCorrelationEngineBuilderTest implements InitializingBean {
+public class DroolsCorrelationEngineBuilderIT implements InitializingBean {
     @Autowired
     private DroolsCorrelationEngineBuilder m_droolsCorrelationEngineBuilder;
     @Autowired
