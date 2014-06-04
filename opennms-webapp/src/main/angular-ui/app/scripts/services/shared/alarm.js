@@ -50,7 +50,9 @@
         var results = x2js.xml_str2json(data);
         var alarms = [];
         if (results && results.alarms && results.alarms.alarm) {
-          alarms = results.alarms.alarm;
+          results.alarms.alarm.map(function (alarm) {
+            alarms.push(new Alarm(alarm));
+          });
         }
         deferred.resolve(alarms);
       }).error(function(data, status, headers, config) {

@@ -15,6 +15,7 @@ function Outage(outage) {
   self.monitoredService = new MonitoredService(outage['monitoredService']);
   self.serviceLostEvent = new Event(outage['serviceLostEvent']);
   //self.node = new Node(self.nodeId);
+  self.nodeLabel = self.serviceLostEvent.nodeLabel;
 
   self.getNodeName = function() {
     if (self.nodeLabel === undefined || self.nodeLabel === '') {
@@ -23,4 +24,12 @@ function Outage(outage) {
       return self.nodeLabel;
     }
   };
+
+  self.getSeverityClass = function() {
+    if (this.serviceLostEvent.severity !== null && angular.isString(this.serviceLostEvent.severity) && this.serviceLostEvent.severity.length != 0) {
+      return 'severity-'+angular.uppercase(this.serviceLostEvent.severity);
+    }
+    return '';
+  };
+
 }
