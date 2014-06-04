@@ -36,12 +36,12 @@
     <dependency>
       <groupId>de.novanic</groupId>
       <artifactId>gwteventservice</artifactId>
-      <version>1.1.1</version>
+      <version>1.2.1</version>
     </dependency>
     <dependency>
       <groupId>com.google.gwt.google-apis</groupId>
       <artifactId>gwt-ajaxloader</artifactId>
-      <version>1.1.0</version>
+      <version>1.1.1</version>
       <exclusions>
         <exclusion>
           <groupId>com.google.gwt</groupId>
