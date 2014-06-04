@@ -39,7 +39,8 @@ import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
- * This class tests some of the quirky behaviors of presisting events.
+ * This class tests some of the quirky behaviors of persisting events.
+ * 
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 @SuppressWarnings("deprecation")

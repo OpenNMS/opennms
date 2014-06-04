@@ -68,6 +68,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
+@Transactional
 public class WebEventRepositoryFilterTest implements InitializingBean {
     
     @Autowired
