@@ -50,6 +50,7 @@ public class JRobinDirectoryUtilTest {
         System.setProperty("org.opennms.rrd.storeByGroup", "true");
         System.setProperty("org.opennms.rrd.storeByForeignSource", "false");
         System.setProperty("org.opennms.rrd.strategyClass", "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy");
+        System.clearProperty("org.opennms.rrd.fileExtension");
     }
     
     
