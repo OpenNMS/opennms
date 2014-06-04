@@ -97,7 +97,7 @@
         // Fetch interfaces.
         NodeService.getIpInterfaces(node._id).then($scope.processInterfaces);
 
-        AlarmService.getByNode($stateParams.nodeId).then(function(alarms) {
+        AlarmService.getByNode($scope.node._id).then(function(alarms) {
           $scope.node.alarms = alarms;
         });
       };
