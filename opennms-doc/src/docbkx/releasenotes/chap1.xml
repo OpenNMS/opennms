@@ -6,6 +6,22 @@
 
 	<!-- Start 1.12 -->
 
+	<section id="introduction-1.12.8">
+		<title>Release 1.12.8</title>
+
+		<para>
+			Release 1.12.8 is the 9th in the stable 1.12 series of OpenNMS.
+			It contains an important fix for a security issue that can expose
+			files outside of the OpenNMS directory through the web interface.
+			See <ulink url="http://www.opennms.org/wiki/What%27s_New_in_OpenNMS_1.12">What's
+			New in OpenNMS 1.12</ulink> for a general list of changes in the
+			1.12 series.
+		</para>
+		<para>
+			The codename for 1.12.8 is <emphasis>John Petrucci</emphasis>
+		</para>
+	</section>
+
 	<section id="introduction-1.12.7">
 		<title>Release 1.12.7</title>
 
@@ -247,6 +263,19 @@
 
 
 	<!-- Start 1.10 -->
+
+	<section id="introduction-1.10.14">
+		<title>Release 1.10.14</title>
+
+		<para>
+			Release 1.10.14 is the latest in the stable 1.10 series of OpenNMS
+			releases.  It contains a few small bugfixes including an important
+			security fix.
+		</para>
+		<para>
+			The codename for 1.10.14 is <emphasis>Chalumeau</emphasis>.
+		</para>
+	</section>
 
 	<section id="introduction-1.10.13">
 		<title>Release 1.10.13</title>

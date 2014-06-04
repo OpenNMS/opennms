@@ -6,6 +6,18 @@
 
 	<!-- Start 1.12 -->
 
+	<section id="opennms-1.12.8">
+		<title>Changes in OpenNMS 1.12.8</title>
+
+		<section id="opennms-1.12.8-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>Security: downloadReport allow download and view any file in filesystem (Issue <ulink url='http://issues.opennms.org/browse/NMS-6580'>NMS-6580</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
 	<section id="opennms-1.12.7">
 		<title>Changes in OpenNMS 1.12.7</title>
 
@@ -738,6 +750,28 @@
 	</section>
 
 	<!-- Start 1.10 -->
+
+	<section id="opennms-1.10.14">
+		<title>Changes in OpenNMS 1.10.14</title>
+
+		<section id="opennms-1.10.14-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>XSS vector in admin/error.jsp (Issue <ulink url='http://issues.opennms.org/browse/NMS-6147'>NMS-6147</ulink>)</para></listitem>
+				<listitem><para>maint_events.sh is not working (Issue <ulink url='http://issues.opennms.org/browse/NMS-6168'>NMS-6168</ulink>)</para></listitem>
+				<listitem><para>NPE on output.log due to null ifSpeed when calling PhysicalInterfaceRow.getSpeed (Issue <ulink url='http://issues.opennms.org/browse/NMS-6169'>NMS-6169</ulink>)</para></listitem>
+				<listitem><para>Date issues in &quot;Response time by node&quot; JR report (Issue <ulink url='http://issues.opennms.org/browse/NMS-6182'>NMS-6182</ulink>)</para></listitem>
+				<listitem><para>The SnmpMonitor is not returning the status with the responseTime value (Issue <ulink url='http://issues.opennms.org/browse/NMS-6192'>NMS-6192</ulink>)</para></listitem>
+				<listitem><para>Collectd throws ConcurrentModificationException when accessing PollOutagesConfigManager (Issue <ulink url='http://issues.opennms.org/browse/NMS-6277'>NMS-6277</ulink>)</para></listitem>
+				<listitem><para>ConcurrentModificationException inside ThresholdingSet (Issue <ulink url='http://issues.opennms.org/browse/NMS-6279'>NMS-6279</ulink>)</para></listitem>
+				<listitem><para>IfInfo can throw NullPointerException (Issue <ulink url='http://issues.opennms.org/browse/NMS-6280'>NMS-6280</ulink>)</para></listitem>
+				<listitem><para>Provisiond detectors sometimes fail to detect (Issue <ulink url='http://issues.opennms.org/browse/NMS-6412'>NMS-6412</ulink>)</para></listitem>
+				<listitem><para>The Valere devices with broken SNMP agents are hanging Provisiond. (Issue <ulink url='http://issues.opennms.org/browse/NMS-6484'>NMS-6484</ulink>)</para></listitem>
+				<listitem><para>Security: downloadReport allow download and view any file in filesystem (Issue <ulink url='http://issues.opennms.org/browse/NMS-6580'>NMS-6580</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
 
 	<section id="opennms-1.10.13">
 		<title>Changes in OpenNMS 1.10.13</title>
