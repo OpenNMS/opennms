@@ -65,7 +65,7 @@ public class AlarmStatusToggleOperation extends AbstractCheckedOperation {
 
     @Override
     protected boolean isChecked(GraphContainer container) {
-        return container.getStatusProvider() != null;
+        return container.getVertexStatusProvider() != null;
     }
 
     @Override
@@ -77,14 +77,14 @@ public class AlarmStatusToggleOperation extends AbstractCheckedOperation {
     public void applyHistory(GraphContainer container, Map<String, String> settings) {
         String historyValue = settings.get(getClass().getName());
         if (historyValue == null || historyValue.isEmpty()) {
-            container.setStatusProvider(m_statusProvider); // no history value set, use default
+            container.setVertexStatusProvider(m_statusProvider); // no history value set, use default
         } else {
             // an history value is set, decide what to do
             boolean alarmStatusEnabled = Boolean.TRUE.toString().equals(historyValue);
             if (alarmStatusEnabled) {
-                container.setStatusProvider(m_statusProvider);
+                container.setVertexStatusProvider(m_statusProvider);
             } else {
-                container.setStatusProvider(null);
+                container.setVertexStatusProvider(null);
             }
         }
     }
@@ -94,10 +94,10 @@ public class AlarmStatusToggleOperation extends AbstractCheckedOperation {
     }
 
     private void toggle(GraphContainer container) {
-        if (container.getStatusProvider() == null) {
-            container.setStatusProvider(m_statusProvider);
+        if (container.getVertexStatusProvider() == null) {
+            container.setVertexStatusProvider(m_statusProvider);
         } else {
-            container.setStatusProvider(null);
+            container.setVertexStatusProvider(null);
         }
         container.redoLayout();
     }

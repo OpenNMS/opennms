@@ -34,6 +34,7 @@ import java.util.List;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
+import org.opennms.netmgt.model.topology.EdgeAlarmStatusSummary;
 
 /**
  * <p>AlarmDaoHibernate class.</p>
@@ -82,6 +83,56 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
         }
         sql.append("GROUP BY node.id, node.label ");
         return findObjects(AlarmSummary.class, sql.toString());
+    }
+
+    @Override
+    public List<EdgeAlarmStatusSummary> getLldpEdgeAlarmSummaries(List<Integer> lldpLinkIds) {
+        if (lldpLinkIds.size() < 1) {
+            return Collections.emptyList();
+        }
+
+        /*StringBuilder sql = new StringBuilder();
+        sql.append("SELECT new org.opennms.netmgt.model.topology.EdgeAlarmStatusSummary( LEAST(s.id, t.id), GREATEST(s.id, t.id), alarm.uei)\n");
+        sql.append("FROM LldpLink as s\n");
+        sql.append("LEFT JOIN org.opennms.netmgt.model.LldpLink as t\n");
+        sql.append("with s.lldpRemPortDescr = t.lldpPortDescr AND\n");
+        sql.append(" s.lldpRemPortIdSubtype = t.lldpPortIdSubtype AND\n");
+        sql.append(" s.lldpRemPortId = t.lldpPortId\n");
+        sql.append("LEFT JOIN\n");
+        sql.append("  OnmsAlarm as alarm\n");
+        sql.append("with\n");
+        sql.append(" alarm.node.id = s.node.id AND\n");
+        sql.append(" s.lldpPortIfindex = alarm.ifindex\n");
+        sql.append("GROUP BY\n");
+        sql.append(" s.id,\n");
+        sql.append(" t.id,\n");
+        sql.append(" s.nodeId,\n");
+        sql.append(" t.nodeId,\n");
+        sql.append(" alarm.uei,\n");
+        sql.append(" alarm.lastEventTime\n");
+        sql.append("ORDER BY\n");
+        sql.append(" alarm.lastEventTime DESC limit 1");*/
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT new org.opennms.netmgt.model.topology.EdgeAlarmStatusSummary( LEAST(s.id, t.id), GREATEST(s.id, t.id), alarm.uei)\n");
+        sql.append("FROM LldpLink as s\n");
+        sql.append("LEFT JOIN org.opennms.netmgt.model.LldpLink as t\n");
+        sql.append("LEFT JOIN\n");
+        sql.append("  OnmsAlarm as alarm\n");
+        sql.append("with\n");
+        sql.append(" alarm.node.id = s.node.id AND\n");
+        sql.append(" s.lldpPortIfindex = alarm.ifindex\n");
+        sql.append("GROUP BY\n");
+        sql.append(" s.id,\n");
+        sql.append(" t.id,\n");
+        sql.append(" s.node.id,\n");
+        sql.append(" t.node.id,\n");
+        sql.append(" alarm.uei,\n");
+        sql.append(" alarm.lastEventTime\n");
+        sql.append("ORDER BY\n");
+        sql.append(" alarm.lastEventTime DESC limit 1");
+
+
+        return findObjects(EdgeAlarmStatusSummary.class, sql.toString());
     }
 
     /** {@inheritDoc} */

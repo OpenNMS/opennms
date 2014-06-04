@@ -30,8 +30,10 @@ package org.opennms.netmgt.dao.api;
 
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
+import org.opennms.netmgt.model.topology.EdgeAlarmStatusSummary;
 
 import java.util.List;
+import java.util.Set;
 
 public interface AlarmDao extends LegacyOnmsDao<OnmsAlarm, Integer> {
 
@@ -56,4 +58,5 @@ public interface AlarmDao extends LegacyOnmsDao<OnmsAlarm, Integer> {
     List<AlarmSummary> getNodeAlarmSummariesIncludeAcknowledgedOnes(List<Integer> nodeIds);
 
 
+    List<EdgeAlarmStatusSummary> getLldpEdgeAlarmSummaries(List<Integer> lldpLinkIds);
 }
