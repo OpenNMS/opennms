@@ -39,15 +39,23 @@
           return deferred.promise;
         };
 
-        var getOutages = function() {
+        var getOutages = function(options) {
           var summaryUrl = config.getRoot() + '/rest/outages';
           $log.debug('getOutages: GET ' + summaryUrl);
+
+          var defaults = {
+            limit: 25,
+            orderBy: 'ifLostService',
+            order: 'desc'
+          };
+          var params = {};
+          angular.extend(params, defaults, options);
 
           var deferred = $q.defer();
           $http({
             'method': 'GET',
             'url': summaryUrl,
-            'params': {'limit': 0},
+            'params': params,
             'headers': {
               'Accept': 'application/xml'
             }
