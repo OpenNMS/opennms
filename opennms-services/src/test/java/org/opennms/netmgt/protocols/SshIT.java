@@ -44,7 +44,7 @@ import org.opennms.netmgt.protocols.ssh.Ssh;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
  */
-public class SshTest extends TestCase {
+public class SshIT extends TestCase {
     InetAddress good;
     private static final InetAddress bad = InetAddressUtils.UNPINGABLE_ADDRESS;
 
