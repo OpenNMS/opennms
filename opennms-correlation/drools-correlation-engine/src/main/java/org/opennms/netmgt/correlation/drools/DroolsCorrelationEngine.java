@@ -129,18 +129,18 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
      */
     public void initialize() throws Exception {
     	final Properties props = new Properties();
-        props.setProperty("drools.dialect.java.compiler.lnglevel", "1.6");
+        props.setProperty("drools.dialect.java.compiler.lnglevel", "1.7");
 
-        final PackageBuilderConfiguration conf = new PackageBuilderConfiguration(props);
-        final PackageBuilder builder = new PackageBuilder( conf );
+        final PackageBuilderConfiguration packageBuilderConfig = new PackageBuilderConfiguration(props);
+        final PackageBuilder builder = new PackageBuilder( packageBuilderConfig );
         
         loadRules(builder);
         
         AssertBehaviour behaviour = AssertBehaviour.determineAssertBehaviour(m_assertBehaviour);
-        RuleBaseConfiguration config = new RuleBaseConfiguration();
-        config.setAssertBehaviour(behaviour);
+        RuleBaseConfiguration ruleBaseConfig = new RuleBaseConfiguration();
+        ruleBaseConfig.setAssertBehaviour(behaviour);
 
-        final RuleBase ruleBase = RuleBaseFactory.newRuleBase( config );
+        final RuleBase ruleBase = RuleBaseFactory.newRuleBase( ruleBaseConfig );
 
         if (builder.hasErrors()) {
             LOG.warn("Unable to initialize Drools engine: {}", builder.getErrors());
@@ -151,11 +151,11 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
 
         m_workingMemory = ruleBase.newStatefulSession();
         m_workingMemory.setGlobal("engine", this);
+        m_workingMemory.setGlobal("logger", LOG);
         
         for (final Map.Entry<String, Object> entry : m_globals.entrySet()) {
             m_workingMemory.setGlobal(entry.getKey(), entry.getValue());
         }
-
     }
 
     private void loadRules(final PackageBuilder builder) throws DroolsParserException, IOException {
