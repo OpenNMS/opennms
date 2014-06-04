@@ -12,7 +12,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -375,7 +374,7 @@ public class LldpLink implements Serializable {
 	 */
 	public String toString() {
 		return new ToStringBuilder(this)
-			.append("NodeId", m_node.getId())
+			.append("NodeId", m_node == null ? null : m_node.getId())
 			.append("lldpLocalPortNum", m_lldpLocalPortNum)
 			.append("lldpPortIdSubType", LldpPortIdSubType.getTypeString(m_lldpPortIdSubType.getValue()))
 			.append("lldpPortId", m_lldpPortId)

@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.config.EnhancedLinkdConfig;
@@ -48,6 +49,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
@@ -87,7 +89,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     /**
      * List that contains Linkable Nodes.
      */
-    private List<LinkableNode> m_nodes;
+    private List<LinkableNode> m_nodes = new CopyOnWriteArrayList<LinkableNode>();
 
     /**
      * Event handler
@@ -120,8 +122,10 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus arg0) {
-                m_nodes = m_queryMgr.getSnmpNodeList();
-                Assert.notNull(m_nodes);
+                synchronized(m_nodes) {
+                    m_nodes.clear();
+                    m_nodes.addAll(m_queryMgr.getSnmpNodeList());
+                }
                 scheduleCollection();
             }
         });

@@ -6,8 +6,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.opennms.core.criteria.Alias;
-import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.Alias.JoinType;
+import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.netmgt.dao.api.BridgeBridgeLinkDao;
 import org.opennms.netmgt.dao.api.BridgeElementDao;
@@ -36,41 +36,56 @@ import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.OspfElement;
 import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.model.PrimaryType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
-public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
-		
-//	private final static Logger LOG = LoggerFactory.getLogger(EnhancedLinkdServiceImpl.class);
 
-    @Autowired
-    private PlatformTransactionManager m_transactionManager;
-	
+public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
+
+	private final static Logger LOG = LoggerFactory.getLogger(EnhancedLinkdServiceImpl.class);
+
+	@Autowired
+	private PlatformTransactionManager m_transactionManager;
+
+	@Autowired
 	private NodeDao m_nodeDao;
 
+	@Autowired
 	private LldpLinkDao m_lldpLinkDao;
-	
+
+	@Autowired
 	private LldpElementDao m_lldpElementDao;
-	
+
+	@Autowired
 	private OspfLinkDao m_ospfLinkDao;
-	
+
+	@Autowired
 	private OspfElementDao m_ospfElementDao;
-	
+
+	@Autowired
 	private IsIsLinkDao m_isisLinkDao;
 
+	@Autowired
 	private IsIsElementDao m_isisElementDao;
-	
+
+	@Autowired
 	private IpNetToMediaDao m_ipNetToMediaDao;
-	
+
+	@Autowired
 	private BridgeElementDao m_bridgeElementDao;
-	
+
+	@Autowired
 	private BridgeMacLinkDao m_bridgeMacLinkDao;
-	
+
+	@Autowired
 	private BridgeBridgeLinkDao m_bridgeBridgeLinkDao;
-	
+
+	@Autowired
 	private BridgeStpLinkDao m_bridgeStpLinkDao; 
-	
-    @Override
+
+	@Override
 	public List<LinkableNode> getSnmpNodeList() {
 		final List<LinkableNode> nodes = new ArrayList<LinkableNode>();
 		
@@ -182,7 +197,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 	}
 
 	@Transactional
-    protected void saveLldpLink(final int nodeId, final LldpLink saveMe) {
+	protected void saveLldpLink(final int nodeId, final LldpLink saveMe) {
 		new UpsertTemplate<LldpLink, LldpLinkDao>(m_transactionManager,m_lldpLinkDao) {
 
 			@Override
@@ -201,8 +216,10 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 			@Override
 			protected LldpLink doInsert() {
 				final OnmsNode node = m_nodeDao.get(nodeId);
-				if ( node == null )
+				if ( node == null ) {
+					LOG.warn("Could not find node {} in database, discarding LldpLink {}", nodeId, saveMe);
 					return null;
+				}
 				saveMe.setNode(node);
 				saveMe.setLldpLinkLastPollTime(saveMe.getLldpLinkCreateTime());
 				m_dao.saveOrUpdate(saveMe);
@@ -219,8 +236,10 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 		if (element ==  null)
 			return;
 		final OnmsNode node = m_nodeDao.get(nodeId);
-		if ( node == null )
+		if ( node == null ) {
+			LOG.warn("Could not find node {} in database, discarding LldpElement {}", nodeId, element);
 			return;
+		}
 		
 		LldpElement dbelement = node.getLldpElement();
 		if (dbelement != null) {
@@ -232,7 +251,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 			node.setLldpElement(element);
 		}
 
-        m_nodeDao.saveOrUpdate(node);
+		m_nodeDao.saveOrUpdate(node);
 		m_nodeDao.flush();
 		
 	}
@@ -243,8 +262,8 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 			return;
 		saveOspfLink(nodeId, link);
 	}
-	
-	private void saveOspfLink(final int nodeId, final OspfLink saveMe) {
+
+	protected void saveOspfLink(final int nodeId, final OspfLink saveMe) {
 		new UpsertTemplate<OspfLink, OspfLinkDao>(m_transactionManager,m_ospfLinkDao) {
 
 			@Override
@@ -263,8 +282,10 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 			@Override
 			protected OspfLink doInsert() {
 				final OnmsNode node = m_nodeDao.get(nodeId);
-				if ( node == null )
+				if ( node == null ) {
+					LOG.warn("Could not find node {} in database, discarding OspfLink {}", nodeId, saveMe);
 					return null;
+				}
 				saveMe.setNode(node);
 				saveMe.setOspfLinkLastPollTime(saveMe.getOspfLinkCreateTime());
 				m_dao.saveOrUpdate(saveMe);
@@ -273,7 +294,6 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 			}
 			
 		}.execute();
-		
 	}
 
 	@Override
@@ -303,8 +323,10 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 			@Override
 			protected IsIsLink doInsert() {
 				final OnmsNode node = m_nodeDao.get(nodeId);
-				if ( node == null )
+				if ( node == null ) {
+					LOG.warn("Could not find node {} in database, discarding IsIsLink {}", nodeId, saveMe);
 					return null;
+				}
 				saveMe.setNode(node);
 				saveMe.setIsisLinkLastPollTime(saveMe.getIsisLinkCreateTime());
 				m_dao.saveOrUpdate(saveMe);
@@ -321,8 +343,10 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 		if (element ==  null)
 			return;
 		final OnmsNode node = m_nodeDao.get(nodeId);
-		if ( node == null )
+		if ( node == null ) {
+			LOG.warn("Could not find node {} in database, discarding OspfElement {}", nodeId, element);
 			return;
+		}
 		
 		OspfElement dbelement = node.getOspfElement();
 		if (dbelement != null) {
@@ -345,8 +369,10 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 		if (element ==  null)
 			return;
 		final OnmsNode node = m_nodeDao.get(nodeId);
-		if ( node == null )
+		if ( node == null ) {
+			LOG.warn("Could not find node {} in database, discarding IsIsLink {}", nodeId, element);
 			return;
+		}
 		
 		IsIsElement dbelement = node.getIsisElement();
 		if (dbelement != null) {
@@ -390,8 +416,10 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 			@Override
 			protected BridgeElement doInsert() {
 				final OnmsNode node = m_nodeDao.get(nodeId);
-				if ( node == null )
+				if ( node == null ) {
+					LOG.warn("Could not find node {} in database, discarding BridgeElement {}", nodeId, saveMe);
 					return null;
+				}
 				saveMe.setBridgeNodeLastPollTime(saveMe.getBridgeNodeCreateTime());
 				m_dao.saveOrUpdate(saveMe);
 				m_dao.flush();
@@ -429,8 +457,10 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 			@Override
 			protected BridgeStpLink doInsert() {
 				final OnmsNode node = m_nodeDao.get(nodeId);
-				if ( node == null )
+				if ( node == null ) {
+					LOG.warn("Could not find node {} in database, discarding BridgeStpLink {}", nodeId, saveMe);
 					return null;
+				}
 				saveMe.setBridgeStpLinkLastPollTime(saveMe.getBridgeStpLinkCreateTime());
 				m_dao.saveOrUpdate(saveMe);
 				m_dao.flush();
@@ -468,8 +498,10 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 			@Override
 			protected BridgeMacLink doInsert() {
 				final OnmsNode node = m_nodeDao.get(nodeId);
-				if ( node == null )
+				if ( node == null ) {
+					LOG.warn("Could not find node {} in database, discarding BridgeMacLink {}", nodeId, saveMe);
 					return null;
+				}
 				saveMe.setBridgeMacLinkLastPollTime(saveMe.getBridgeMacLinkCreateTime());
 				m_dao.saveOrUpdate(saveMe);
 				m_dao.flush();
@@ -499,8 +531,10 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 			@Override
 			protected BridgeBridgeLink doInsert() {
 				final OnmsNode node = m_nodeDao.get(nodeId);
-				if ( node == null )
+				if ( node == null ) {
+					LOG.warn("Could not find node {} in database, discarding BridgeBridgeLink {}", nodeId, saveMe);
 					return null;
+				}
 				saveMe.setBridgeBridgeLinkLastPollTime(saveMe.getBridgeBridgeLinkCreateTime());
 				m_dao.saveOrUpdate(saveMe);
 				m_dao.flush();
@@ -529,8 +563,10 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 			@Override
 			protected IpNetToMedia doUpdate(IpNetToMedia dbIpNetToMedia) {
 				final OnmsNode node = m_nodeDao.get(nodeId);
-				if (node == null)
+				if ( node == null ) {
+					LOG.warn("Could not find node {} in database, not updating IpNetToMedia {}", nodeId, saveMe);
 					return null;
+				}
 				saveMe.setSourceNode(node);
 				dbIpNetToMedia.merge(saveMe);
 				m_dao.update(dbIpNetToMedia);
@@ -541,8 +577,10 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 			@Override
 			protected IpNetToMedia doInsert() {
 				final OnmsNode node = m_nodeDao.get(nodeId);
-				if ( node == null )
+				if ( node == null ) {
+					LOG.warn("Could not find node {} in database, discarding IpNetToMedia {}", nodeId, saveMe);
 					return null;
+				}
 				saveMe.setSourceNode(node);
 				saveMe.setLastPollTime(saveMe.getCreateTime());
 				m_dao.saveOrUpdate(saveMe);
@@ -551,102 +589,5 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 			}
 			
 		}.execute();
-	}
-
-	
-	public LldpLinkDao getLldpLinkDao() {
-		return m_lldpLinkDao;
-	}
-
-	public void setLldpLinkDao(LldpLinkDao lldpLinkDao) {
-		m_lldpLinkDao = lldpLinkDao;
-	}
-
-	public NodeDao getNodeDao() {
-		return m_nodeDao;
-	}
-
-	public void setNodeDao(NodeDao nodeDao) {
-		m_nodeDao = nodeDao;
-	}
-
-	public OspfLinkDao getOspfLinkDao() {
-		return m_ospfLinkDao;
-	}
-
-	public void setOspfLinkDao(OspfLinkDao ospfLinkDao) {
-		m_ospfLinkDao = ospfLinkDao;
-	}
-
-	public IsIsLinkDao getIsisLinkDao() {
-		return m_isisLinkDao;
-	}
-
-	public void setIsisLinkDao(IsIsLinkDao isisLinkDao) {
-		m_isisLinkDao = isisLinkDao;
-	}
-
-	public LldpElementDao getLldpElementDao() {
-		return m_lldpElementDao;
-	}
-
-	public void setLldpElementDao(LldpElementDao lldpElementDao) {
-		m_lldpElementDao = lldpElementDao;
-	}
-
-	public OspfElementDao getOspfElementDao() {
-		return m_ospfElementDao;
-	}
-
-	public void setOspfElementDao(OspfElementDao ospfElementDao) {
-		m_ospfElementDao = ospfElementDao;
-	}
-
-	public IsIsElementDao getIsisElementDao() {
-		return m_isisElementDao;
-	}
-
-	public void setIsisElementDao(IsIsElementDao isisElementDao) {
-		m_isisElementDao = isisElementDao;
-	}
-
-	public BridgeElementDao getBridgeElementDao() {
-		return m_bridgeElementDao;
-	}
-
-	public void setBridgeElementDao(BridgeElementDao bridgeElementDao) {
-		m_bridgeElementDao = bridgeElementDao;
-	}
-
-	public BridgeMacLinkDao getBridgeMacLinkDao() {
-		return m_bridgeMacLinkDao;
-	}
-
-	public void setBridgeMacLinkDao(BridgeMacLinkDao bridgeMacLinkDao) {
-		m_bridgeMacLinkDao = bridgeMacLinkDao;
-	}
-
-	public BridgeBridgeLinkDao getBridgeBridgeLinkDao() {
-		return m_bridgeBridgeLinkDao;
-	}
-
-	public void setBridgeBridgeLinkDao(BridgeBridgeLinkDao bridgeBridgeLinkDao) {
-		m_bridgeBridgeLinkDao = bridgeBridgeLinkDao;
-	}
-
-	public BridgeStpLinkDao getBridgeStpLinkDao() {
-		return m_bridgeStpLinkDao;
-	}
-
-	public void setBridgeStpLinkDao(BridgeStpLinkDao bridgeStpLinkDao) {
-		m_bridgeStpLinkDao = bridgeStpLinkDao;
-	}
-
-	public IpNetToMediaDao getIpNetToMediaDao() {
-		return m_ipNetToMediaDao;
-	}
-
-	public void setIpNetToMediaDao(IpNetToMediaDao ipNetToMediaDao) {
-		m_ipNetToMediaDao = ipNetToMediaDao;
 	}
 }
