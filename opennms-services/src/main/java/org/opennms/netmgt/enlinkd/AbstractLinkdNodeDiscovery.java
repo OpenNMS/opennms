@@ -80,7 +80,7 @@ public abstract class AbstractLinkdNodeDiscovery implements ReadyRunnable {
      * @param config
      *            The SnmpPeer object to collect from.
      */
-    public AbstractLinkdNodeDiscovery(final EnhancedLinkd linkd, final LinkableNode node) {
+    protected AbstractLinkdNodeDiscovery(final EnhancedLinkd linkd, final LinkableNode node) {
         m_linkd = linkd;
         m_node = node;
         m_initial_sleep_time = m_linkd.getInitialSleepTime();
@@ -318,7 +318,7 @@ public abstract class AbstractLinkdNodeDiscovery implements ReadyRunnable {
      * 
      * @return Returns the initial_sleep_time.
      */
-    public long getInitialSleepTime() {
+    public final long getInitialSleepTime() {
         return m_initial_sleep_time;
     }
 
@@ -330,7 +330,7 @@ public abstract class AbstractLinkdNodeDiscovery implements ReadyRunnable {
      * @param initial_sleep_time
      *            The initial_sleep_timeto set.
      */
-    public void setInitialSleepTime(long initial_sleep_time) {
+    public final void setInitialSleepTime(long initial_sleep_time) {
         m_initial_sleep_time = initial_sleep_time;
     }
 
@@ -341,7 +341,7 @@ public abstract class AbstractLinkdNodeDiscovery implements ReadyRunnable {
      * 
      * @return Returns the initial_sleep_time.
      */
-    public long getPollInterval() {
+    public final long getPollInterval() {
         return m_poll_interval;
     }
 
@@ -353,12 +353,12 @@ public abstract class AbstractLinkdNodeDiscovery implements ReadyRunnable {
      * @param interval
      *            a long.
      */
-    public void setPollInterval(long interval) {
+    public final void setPollInterval(long interval) {
         m_poll_interval = interval;
     }
 
 
-    public int getNodeId() {
+    public final int getNodeId() {
     	return m_node.getNodeId();
     }
     
