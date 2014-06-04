@@ -161,7 +161,7 @@ describe('Shared Node Controllers Module:', function() {
 
           scope.processNode(fakeNode);
 
-          expect(AlarmService.getByNode).toHaveBeenCalled();
+          expect(AlarmService.getByNode).toHaveBeenCalledWith(fakeNode._id);
         });
 
         it('should save the alarms to the current node', function() {
