@@ -49,7 +49,7 @@ import org.opennms.core.utils.ConfigFileConstants;
  * 
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
-public class C3P0ConnectionFactoryTest extends TestCase {
+public class C3P0ConnectionFactoryIT extends TestCase {
     public void testMarshalDataSourceFromConfig() throws Exception {
         C3P0ConnectionFactory factory1 = null;
         C3P0ConnectionFactory factory2 = null;

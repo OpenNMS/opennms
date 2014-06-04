@@ -83,7 +83,7 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 		"classpath*:/META-INF/opennms/component-dao.xml" })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class AssetServiceImplTest implements InitializingBean {
+public class AssetServiceImplIT implements InitializingBean {
 
 	@Autowired
 	private DistPollerDao m_distPollerDao;

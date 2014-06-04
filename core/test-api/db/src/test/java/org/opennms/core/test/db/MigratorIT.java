@@ -67,8 +67,8 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/migratorTest.xml"
 })
 @JUnitTemporaryDatabase
-public class MigratorTest {
-    private static final Logger LOG = LoggerFactory.getLogger(MigratorTest.class);
+public class MigratorIT {
+    private static final Logger LOG = LoggerFactory.getLogger(MigratorIT.class);
 
     @Autowired
     DataSource m_dataSource;

@@ -45,7 +45,7 @@ import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.xml.event.Event;
 
 
-public class TaskCreationTest extends NotificationsTestCase {
+public class TaskCreationIT extends NotificationsITCase {
     
     private static final int INTERVAL = 1000;
     private BroadcastEventProcessor m_eventProcessor;

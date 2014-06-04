@@ -52,7 +52,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
     OpenNMSConfigurationExecutionListener.class
 })
 @JUnitConfigurationEnvironment
-public class CollectdConfigFactoryTest {
+public class CollectdConfigFactoryIT {
 
     private CollectdConfigFactory m_factory;
 

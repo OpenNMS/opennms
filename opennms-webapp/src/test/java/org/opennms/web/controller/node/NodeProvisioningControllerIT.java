@@ -76,7 +76,7 @@ import org.springframework.web.servlet.ModelAndView;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @Ignore("This test doesn't quite work yet because we don't have mock provisioning classes in the webapp")
-public class NodeProvisioningControllerTest {
+public class NodeProvisioningControllerIT {
 
 	private static final GrantedAuthority ROLE_USER = new SimpleGrantedAuthority(
 			Authentication.ROLE_USER);

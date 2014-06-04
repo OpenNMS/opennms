@@ -51,7 +51,7 @@ import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.mock.MockDataCollectionConfig;
-import org.opennms.netmgt.mock.OpenNMSTestCase;
+import org.opennms.netmgt.mock.OpenNMSITCase;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
@@ -63,7 +63,7 @@ import org.opennms.netmgt.snmp.SnmpWalker;
 import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.core.io.ClassPathResource;
 
-public class SnmpCollectorTestCase extends OpenNMSTestCase {
+public class SnmpCollectorITCase extends OpenNMSITCase {
 
 	private static final class AttributeVerifier extends AbstractCollectionSetVisitor {
 		private final List<MibObject> list;

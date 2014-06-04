@@ -74,7 +74,7 @@ import org.springframework.test.context.ContextConfiguration;
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
 @DirtiesContext
 // @Ignore("These tests are fixed in 1.13, and backporting the fixes are not worth it.  Narf.")
-public class InvalidRequisitionDataTest extends ProvisioningTestCase implements InitializingBean {
+public class InvalidRequisitionDataIT extends ProvisioningITCase implements InitializingBean {
     
     @Autowired
     private MockNodeDao m_nodeDao;

@@ -48,7 +48,7 @@ import org.springframework.test.context.ContextConfiguration;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:/META-INF/opennms/emptyContext.xml"})
 @JUnitConfigurationEnvironment
-public class SshMonitorTest {
+public class SshMonitorIT {
     public static final String HOST_TO_TEST = "127.0.0.1";
 
     @Test

@@ -29,9 +29,9 @@
 package org.opennms.netmgt.capsd;
 
 import org.junit.Before;
-import org.opennms.netmgt.capsd.IfSnmpCollectorTestCase.JoeSnmpIfSnmpCollectorTestCase;
+import org.opennms.netmgt.capsd.IfSnmpCollectorITCase.JoeSnmpIfSnmpCollectorITCase;
 
-public class  JoeSnmpV2IfSnmpCollectorTest extends JoeSnmpIfSnmpCollectorTestCase {
+public class  JoeSnmpV2IfSnmpCollectorIT extends JoeSnmpIfSnmpCollectorITCase {
     @Before
     @Override
     public void setUp() throws Exception {

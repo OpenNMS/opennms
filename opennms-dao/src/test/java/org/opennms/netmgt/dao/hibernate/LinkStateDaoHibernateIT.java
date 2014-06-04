@@ -63,7 +63,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class LinkStateDaoHibernateTest implements InitializingBean {
+public class LinkStateDaoHibernateIT implements InitializingBean {
     @Autowired
     private DataLinkInterfaceDao m_dataLinkInterfaceDao;
     

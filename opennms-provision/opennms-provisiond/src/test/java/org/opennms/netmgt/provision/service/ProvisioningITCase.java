@@ -11,7 +11,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-public abstract class ProvisioningTestCase {
+public abstract class ProvisioningITCase {
     @Autowired
     @Qualifier("scanExecutor")
     private PausibleScheduledThreadPoolExecutor m_scanExecutor;

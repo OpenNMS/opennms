@@ -52,7 +52,7 @@ import org.springframework.core.io.Resource;
  *
  */
 @JUnitTemporaryDatabase
-public class MicroblogNotificationStrategyTest {
+public class MicroblogNotificationStrategyIT {
 
     protected DefaultMicroblogConfigurationDao m_dao;
     protected Resource m_daoConfigResource;

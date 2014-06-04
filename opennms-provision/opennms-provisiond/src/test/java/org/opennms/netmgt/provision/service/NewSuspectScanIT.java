@@ -95,7 +95,7 @@ import org.springframework.test.context.ContextConfiguration;
         "importer.requisition.dir=target/imports"
 })
 @DirtiesContext
-public class NewSuspectScanTest extends ProvisioningTestCase implements InitializingBean {
+public class NewSuspectScanIT extends ProvisioningITCase implements InitializingBean {
 
     @Autowired
     private Provisioner m_provisioner;

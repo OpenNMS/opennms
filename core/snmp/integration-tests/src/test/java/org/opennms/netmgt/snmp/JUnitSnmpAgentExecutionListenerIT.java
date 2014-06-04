@@ -51,7 +51,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners(JUnitSnmpAgentExecutionListener.class)
-public class JUnitSnmpAgentExecutionListenerTest {
+public class JUnitSnmpAgentExecutionListenerIT {
 	final SnmpObjId m_oid = SnmpObjId.get(".1.3.5.1.1.1.0");
 
     @Before

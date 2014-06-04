@@ -68,7 +68,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class AuthorizationTest implements InitializingBean {
+public class AuthorizationIT implements InitializingBean {
 
     @Autowired
     AlarmDao m_alarmDao;

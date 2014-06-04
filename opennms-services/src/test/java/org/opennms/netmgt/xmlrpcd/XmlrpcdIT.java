@@ -44,12 +44,12 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.XmlrpcdConfigFactory;
-import org.opennms.netmgt.mock.OpenNMSTestCase;
+import org.opennms.netmgt.mock.OpenNMSITCase;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.ThrowableAnticipator;
 
-public class XmlrpcdTest extends OpenNMSTestCase {
+public class XmlrpcdIT extends OpenNMSITCase {
     private static final int m_port1 = 59000;
     private static final int m_port2 = 59001;
     
@@ -443,10 +443,10 @@ public class XmlrpcdTest extends OpenNMSTestCase {
         Date date = new Date();
         String enterpriseId = ".1.3.6.4.1.1.1";
 
-        EventBuilder bldr = XmlRpcNotifierTest.basicEventBuilder(date);
+        EventBuilder bldr = XmlRpcNotifierIT.basicEventBuilder(date);
         bldr.setSource("the one true source");
         bldr.setLogMessage("");
-        XmlRpcNotifierTest.addSnmpAttributes(bldr, "public", enterpriseId, 6, 2, date.getTime(), "1");
+        XmlRpcNotifierIT.addSnmpAttributes(bldr, "public", enterpriseId, 6, 2, date.getTime(), "1");
         getEventIpcManager().sendNow(bldr.getEvent());
         
         Thread.sleep(1000);
@@ -467,7 +467,7 @@ public class XmlrpcdTest extends OpenNMSTestCase {
         m_xmlrpcd.init();
         m_xmlrpcd.start();
 
-        Hashtable<String, String> trapMap = XmlRpcNotifierTest.basicTrapMap(date, "public", enterpriseId, 6, 2, date.getTime(), "1");
+        Hashtable<String, String> trapMap = XmlRpcNotifierIT.basicTrapMap(date, "public", enterpriseId, 6, 2, date.getTime(), "1");
         
         trapMap.put("uei", "uei.opennms.org/default/trap");
         trapMap.put("source", "the one true source");
@@ -482,12 +482,12 @@ public class XmlrpcdTest extends OpenNMSTestCase {
 
         m_anticipator1.anticipateCall("sendSnmpTrapEvent", trapMap);
 
-        EventBuilder bldr = XmlRpcNotifierTest.basicEventBuilder(date);
+        EventBuilder bldr = XmlRpcNotifierIT.basicEventBuilder(date);
         bldr.setUei("uei.opennms.org/default/trap");
         bldr.setSource("the one true source");
         bldr.setSeverity("Normal");
         bldr.setLogMessage("");
-        XmlRpcNotifierTest.addSnmpAttributes(bldr, "public", enterpriseId, 6, 2, date.getTime(), "1");
+        XmlRpcNotifierIT.addSnmpAttributes(bldr, "public", enterpriseId, 6, 2, date.getTime(), "1");
         getEventIpcManager().sendNow(bldr.getEvent());
         
         Thread.sleep(1000);

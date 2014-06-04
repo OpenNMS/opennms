@@ -68,7 +68,7 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @Transactional
-public class NetworkElementFactoryTest implements InitializingBean {
+public class NetworkElementFactoryIT implements InitializingBean {
     
     @Autowired
     DatabasePopulator m_dbPopulator;

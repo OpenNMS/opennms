@@ -55,7 +55,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
  * 
  * @author djgregor
  */
-public class TemporaryDatabaseTestCase extends TestCase {
+public class TemporaryDatabaseITCase extends TestCase {
     
     protected JdbcTemplate jdbcTemplate;
 
@@ -94,14 +94,14 @@ public class TemporaryDatabaseTestCase extends TestCase {
     private DataSource m_dataSource;
     private DataSource m_adminDataSource;
 
-    public TemporaryDatabaseTestCase() {
+    public TemporaryDatabaseITCase() {
         this(System.getProperty(DRIVER_PROPERTY, DEFAULT_DRIVER),
              System.getProperty(URL_PROPERTY, DEFAULT_URL),
              System.getProperty(ADMIN_USER_PROPERTY, DEFAULT_ADMIN_USER),
              System.getProperty(ADMIN_PASSWORD_PROPERTY, DEFAULT_ADMIN_PASSWORD));
     }
     
-    public TemporaryDatabaseTestCase(String driver, String url,
+    public TemporaryDatabaseITCase(String driver, String url,
             String adminUser, String adminPassword) {
         m_driver = driver;
         m_url = url;

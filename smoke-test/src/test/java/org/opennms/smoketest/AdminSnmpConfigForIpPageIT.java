@@ -31,7 +31,7 @@ package org.opennms.smoketest;
 import org.junit.Before;
 import org.junit.Test;
 
-public class AdminSnmpConfigForIpPageTest extends OpenNMSSeleniumTestCase {
+public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumITCase {
 
     @Before
     public void setUp() throws Exception {

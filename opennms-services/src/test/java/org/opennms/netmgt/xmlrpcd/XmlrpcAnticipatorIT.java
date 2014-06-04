@@ -38,7 +38,7 @@ import org.apache.xmlrpc.XmlRpcException;
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
-public class XmlrpcAnticipatorTest extends TestCase {
+public class XmlrpcAnticipatorIT extends TestCase {
     private static final int PORT = 59000;
     
     private XmlrpcAnticipator m_anticipator;

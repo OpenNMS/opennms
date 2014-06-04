@@ -51,7 +51,7 @@ import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  *
  */
-public class SpringWebflowContextTest extends TestCase {
+public class SpringWebflowContextIT extends TestCase {
 
     private String contextPath = "/opennms/rest";
 

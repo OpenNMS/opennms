@@ -71,8 +71,8 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/importerServiceTest.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
-public class ImportSchedulerTest implements InitializingBean {
-    private static final Logger LOG = LoggerFactory.getLogger(ImportSchedulerTest.class);
+public class ImportSchedulerIT implements InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(ImportSchedulerIT.class);
     
     @Autowired
     ImportJobFactory m_factory;

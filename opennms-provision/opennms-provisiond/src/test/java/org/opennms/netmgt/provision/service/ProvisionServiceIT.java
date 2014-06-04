@@ -70,7 +70,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/importerServiceTest.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
-public class ProvisionServiceTest implements InitializingBean {
+public class ProvisionServiceIT implements InitializingBean {
 
     @Autowired
     ProvisionService m_provService;

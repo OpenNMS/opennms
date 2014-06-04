@@ -78,8 +78,8 @@ import org.springframework.test.context.web.WebAppConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class GroupRestServiceTest extends AbstractSpringJerseyRestTestCase {
-    private static final Logger LOG = LoggerFactory.getLogger(GroupRestServiceTest.class);
+public class GroupRestServiceIT extends AbstractSpringJerseyRestTestCase {
+    private static final Logger LOG = LoggerFactory.getLogger(GroupRestServiceIT.class);
 
     @Override
     protected void afterServletStart() throws Exception {

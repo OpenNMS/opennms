@@ -45,7 +45,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment(systemProperties = {"org.opennms.snmp.dataCollectionConfig.reloadCheckInterval=60000"})
 @JUnitTemporaryDatabase(dirtiesContext=false)
-public class DataCollectionConfigDaoTest {
+public class DataCollectionConfigDaoIT {
 
    @Test
    public void testDefaultReloadInterval() {

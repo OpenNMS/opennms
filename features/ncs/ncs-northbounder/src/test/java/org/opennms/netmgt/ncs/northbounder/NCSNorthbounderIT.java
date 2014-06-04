@@ -62,7 +62,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @TestExecutionListeners({
     JUnitHttpServerExecutionListener.class
 })
-public class NCSNorthbounderTest {
+public class NCSNorthbounderIT {
 
     String url = "https://localhost/fmpm/restful/NotificationMessageRelay";
 

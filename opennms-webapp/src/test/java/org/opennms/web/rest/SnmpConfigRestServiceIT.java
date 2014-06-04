@@ -78,7 +78,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class SnmpConfigRestServiceTest extends AbstractSpringJerseyRestTestCase {
+public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
 	private static final int DEFAULT_PORT = 9161;
 	private static final int DEFAULT_RETRIES = 5;

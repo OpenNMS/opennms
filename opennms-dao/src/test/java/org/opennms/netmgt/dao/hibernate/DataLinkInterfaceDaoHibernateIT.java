@@ -72,9 +72,9 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class DataLinkInterfaceDaoHibernateTest implements InitializingBean {
+public class DataLinkInterfaceDaoHibernateIT implements InitializingBean {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DataLinkInterfaceDaoHibernateTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DataLinkInterfaceDaoHibernateIT.class);
 
     @Autowired
     private NodeDao m_nodeDao;

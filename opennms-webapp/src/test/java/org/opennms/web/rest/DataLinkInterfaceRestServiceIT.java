@@ -69,7 +69,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @Transactional
-public class DataLinkInterfaceRestServiceTest extends AbstractSpringJerseyRestTestCase {
+public class DataLinkInterfaceRestServiceIT extends AbstractSpringJerseyRestTestCase {
     private DatabasePopulator m_databasePopulator;
 
     @Override

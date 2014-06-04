@@ -59,9 +59,9 @@ import org.springframework.test.context.ContextConfiguration;
 		"classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
 @JUnitSnmpAgent(host="172.20.1.205", resource="classpath:snmpTestData1.properties")
-public class SnmpTrackerTest implements InitializingBean {
+public class SnmpTrackerIT implements InitializingBean {
 	
-	private static final Logger LOG = LoggerFactory.getLogger(SnmpTrackerTest.class);
+	private static final Logger LOG = LoggerFactory.getLogger(SnmpTrackerIT.class);
 	
 	@Autowired
 	private SnmpPeerFactory m_snmpPeerFactory;

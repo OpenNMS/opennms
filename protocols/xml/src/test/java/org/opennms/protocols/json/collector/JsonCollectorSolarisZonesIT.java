@@ -39,7 +39,7 @@ import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.Pointer;
 import org.junit.Assert;
 import org.junit.Test;
-import org.opennms.protocols.json.collector.AbstractJsonCollectorTest;
+import org.opennms.protocols.json.collector.JsonCollectorITCase;
 import org.opennms.protocols.json.collector.MockDocumentBuilder;
 
 /**
@@ -48,7 +48,7 @@ import org.opennms.protocols.json.collector.MockDocumentBuilder;
  * @author <a href="mailto:ronald.roskens@gmail.com">Ronald Roskens</a>
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class JsonCollectorSolarisZonesTest extends AbstractJsonCollectorTest {
+public class JsonCollectorSolarisZonesIT extends JsonCollectorITCase {
 
     /* (non-Javadoc)
      * @see org.opennms.protocols.xml.collector.AbcstractXmlCollectorTest#getXmlConfigFileName()

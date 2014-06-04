@@ -71,7 +71,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/importerServiceTest.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
-public class IfIndexNullTest extends ProvisioningTestCase implements InitializingBean {
+public class IfIndexNullIT extends ProvisioningITCase implements InitializingBean {
     
     @Autowired
     private Provisioner m_provisioner;

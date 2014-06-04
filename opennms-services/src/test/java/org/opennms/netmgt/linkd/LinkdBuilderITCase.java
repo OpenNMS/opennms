@@ -64,7 +64,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
 @JUnitTemporaryDatabase
-public abstract class LinkdTestBuilder extends LinkdTestHelper {
+public abstract class LinkdBuilderITCase extends LinkdTestHelper {
 
     private boolean firstTest=true;
 

@@ -53,7 +53,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class TopologyDaoHibernateTest {
+public class TopologyDaoHibernateIT {
 
     @Autowired
     private TopologyDao m_topologyDao;

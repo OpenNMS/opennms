@@ -44,7 +44,10 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 
-public class DefaultSurveillanceViewConfigDaoTest extends TestCase {
+/**
+ * Takes too long to run, so it's an IT test now.
+ */
+public class DefaultSurveillanceViewConfigDaoIT extends TestCase {
     private static final String CONFIG_WITH_VIEWS_RESOURCE = "/surveillance-views.testdata.xml";
     private static final String CONFIG_NO_VIEWS_RESOURCE = "/surveillance-views.testdata.noviews.xml";
     

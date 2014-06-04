@@ -67,7 +67,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class UpsertTest implements InitializingBean {
+public class UpsertIT implements InitializingBean {
     
     @Autowired
     UpsertService m_upsertService;

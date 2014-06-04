@@ -81,8 +81,8 @@ import org.springframework.util.StringUtils;
  * @author brozow
  * 
  */
-public class EventconfFactoryTest {
-    private static final Logger LOG = LoggerFactory.getLogger(EventconfFactoryTest.class);
+public class EventconfFactoryIT {
+    private static final Logger LOG = LoggerFactory.getLogger(EventconfFactoryIT.class);
 
     private static final String knownUEI1="uei.opennms.org/internal/capsd/snmpConflictsWithDb";
     private static final String knownLabel1="OpenNMS-defined capsd event: snmpConflictsWithDb";

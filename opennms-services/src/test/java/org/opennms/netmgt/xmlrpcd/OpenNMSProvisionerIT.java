@@ -70,7 +70,7 @@ import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-public class OpenNMSProvisionerTest {
+public class OpenNMSProvisionerIT {
 
 
     private OpenNMSProvisioner m_provisioner;

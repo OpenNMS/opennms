@@ -93,7 +93,7 @@ import org.springframework.transaction.annotation.Transactional;
     "opennms.pollerBackend.disconnectedTimeout=3000"
 })
 @JUnitTemporaryDatabase
-public class PollerBackEndIntegrationTest implements InitializingBean {
+public class PollerBackEndIT implements InitializingBean {
     
     @Resource(name="daemon")
     PollerBackEnd m_backEnd;

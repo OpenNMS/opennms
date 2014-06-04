@@ -63,7 +63,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class PollContextTest {
+public class PollContextIT {
 
     @Autowired
     private PollContext m_pollContext;

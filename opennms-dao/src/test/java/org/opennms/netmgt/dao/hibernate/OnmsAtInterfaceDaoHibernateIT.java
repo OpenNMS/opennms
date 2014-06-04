@@ -69,7 +69,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class OnmsAtInterfaceDaoHibernateTest implements InitializingBean {
+public class OnmsAtInterfaceDaoHibernateIT implements InitializingBean {
     @Autowired
     private NodeDao m_nodeDao;
     

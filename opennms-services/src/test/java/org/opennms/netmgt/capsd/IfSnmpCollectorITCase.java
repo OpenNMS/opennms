@@ -46,10 +46,10 @@ import org.opennms.netmgt.capsd.snmp.IfTable;
 import org.opennms.netmgt.capsd.snmp.IfXTable;
 import org.opennms.netmgt.capsd.snmp.IpAddrTable;
 import org.opennms.netmgt.capsd.snmp.SystemGroup;
-import org.opennms.netmgt.mock.OpenNMSTestCase;
+import org.opennms.netmgt.mock.OpenNMSITCase;
 import org.springframework.core.io.ClassPathResource;
 
-public class IfSnmpCollectorTestCase extends OpenNMSTestCase {
+public class IfSnmpCollectorITCase extends OpenNMSITCase {
     private static final String HOST_PROPERTY = "mock.snmpHost";
     private static final String DEFAULT_HOST = "127.0.0.1";
     private static final int PORT = 9161;
@@ -62,7 +62,7 @@ public class IfSnmpCollectorTestCase extends OpenNMSTestCase {
 
     private volatile boolean m_hasRun = false;
     
-    public static class JoeSnmpIfSnmpCollectorTestCase extends IfSnmpCollectorTestCase {
+    public static class JoeSnmpIfSnmpCollectorITCase extends IfSnmpCollectorITCase {
         @Override
         public void setUp() throws Exception {
             System.setProperty("org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.joesnmp.JoeSnmpStrategy");
@@ -70,7 +70,7 @@ public class IfSnmpCollectorTestCase extends OpenNMSTestCase {
         }
     }
 
-    public static class SNMP4JIfSnmpCollectorTestCase extends IfSnmpCollectorTestCase {
+    public static class SNMP4JIfSnmpCollectorITCase extends IfSnmpCollectorITCase {
         @Override
         public void setUp() throws Exception {
             System.setProperty("org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy");

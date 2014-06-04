@@ -79,7 +79,7 @@ import org.opennms.netmgt.snmp.SnmpValue;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  *
  */
-public class CollectionResourceWrapperTest {
+public class CollectionResourceWrapperIT {
     private boolean m_ignoreWarnings = false;
 
     @Before

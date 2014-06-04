@@ -68,7 +68,7 @@ import java.net.URLConnection;
 @TestExecutionListeners(listeners={
                         JUnitDNSServerExecutionListener.class
 })
-public class DnsRequisitionUrlConnectionTest {
+public class DnsRequisitionUrlConnectionIT {
 
     private static final String TEST_URL = "dns://localhost:9153/example.com";
 

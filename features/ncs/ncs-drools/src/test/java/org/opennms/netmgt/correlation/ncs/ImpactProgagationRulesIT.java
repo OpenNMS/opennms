@@ -56,7 +56,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 
-public class ImpactProgagationRulesTest extends CorrelationRulesTestCase {
+public class ImpactProgagationRulesIT extends CorrelationRulesITCase {
 	
 	@Autowired
 	private NCSComponentRepository m_repository;

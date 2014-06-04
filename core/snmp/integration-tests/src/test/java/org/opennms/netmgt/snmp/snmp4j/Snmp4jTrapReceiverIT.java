@@ -66,8 +66,8 @@ import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.UdpAddress;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 
-public class Snmp4jTrapReceiverTest extends MockSnmpAgentTestCase implements TrapProcessorFactory, CommandResponder {
-    private static final Logger LOG = LoggerFactory.getLogger(Snmp4jTrapReceiverTest.class);
+public class Snmp4jTrapReceiverIT extends MockSnmpAgentITCase implements TrapProcessorFactory, CommandResponder {
+    private static final Logger LOG = LoggerFactory.getLogger(Snmp4jTrapReceiverIT.class);
 
     private final Snmp4JStrategy m_strategy = new Snmp4JStrategy();
 

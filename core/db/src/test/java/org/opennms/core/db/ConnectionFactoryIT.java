@@ -49,7 +49,7 @@ import org.opennms.test.DaoTestConfigBean;
  * 
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
-public class ConnectionFactoryTest extends TestCase {
+public class ConnectionFactoryIT extends TestCase {
 	public void testMarshalDataSourceFromConfig() throws Exception {
 		DaoTestConfigBean bean = new DaoTestConfigBean();
 		bean.afterPropertiesSet();

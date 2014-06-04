@@ -69,8 +69,8 @@ import org.springframework.transaction.annotation.Transactional;
     "opennms.pollerBackend.disconnectedTimeout=3000"
 })
 @JUnitTemporaryDatabase
-public class PollerFrontEndIntegrationTest implements InitializingBean, TemporaryDatabaseAware<TemporaryDatabase> {
-    private static final Logger LOG = LoggerFactory.getLogger(PollerFrontEndIntegrationTest.class);
+public class PollerFrontEndIT implements InitializingBean, TemporaryDatabaseAware<TemporaryDatabase> {
+    private static final Logger LOG = LoggerFactory.getLogger(PollerFrontEndIT.class);
 
     @Autowired
     private DatabasePopulator m_populator;

@@ -55,7 +55,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class HttpNotificationStrategyTest {
+public class HttpNotificationStrategyIT {
 
     @Before
     public void setUp() throws Exception {

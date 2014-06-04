@@ -68,9 +68,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class AgentConfigurationResourceITTest extends AbstractSpringJerseyRestTestCase {
+public class AgentConfigurationResourceIT extends AbstractSpringJerseyRestTestCase {
     @SuppressWarnings("unused")
-    private static final Logger LOG = LoggerFactory.getLogger(AgentConfigurationResourceITTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AgentConfigurationResourceIT.class);
 
     @Autowired
     DatabasePopulator m_databasePopulator;

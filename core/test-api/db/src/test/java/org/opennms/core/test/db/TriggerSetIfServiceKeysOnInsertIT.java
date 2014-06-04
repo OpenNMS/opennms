@@ -36,8 +36,8 @@ import junit.framework.AssertionFailedError;
 
 import org.opennms.test.ThrowableAnticipator;
 
-public class TriggerSetIfServiceKeysOnInsertTest extends
-        PopulatedTemporaryDatabaseTestCase {
+public class TriggerSetIfServiceKeysOnInsertIT extends
+        PopulatedTemporaryDatabaseITCase {
 
 
     public void testSetIfServiceIdInOutage() throws Exception {

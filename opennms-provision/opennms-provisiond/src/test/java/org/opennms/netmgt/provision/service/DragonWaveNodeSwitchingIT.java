@@ -86,7 +86,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
 @DirtiesContext
-public class DragonWaveNodeSwitchingTest extends ProvisioningTestCase implements InitializingBean, MockSnmpDataProviderAware {
+public class DragonWaveNodeSwitchingIT extends ProvisioningITCase implements InitializingBean, MockSnmpDataProviderAware {
 
     @Autowired
     private MockNodeDao m_nodeDao;

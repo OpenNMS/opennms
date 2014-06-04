@@ -66,7 +66,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class EventDaoTest implements InitializingBean {
+public class EventDaoIT implements InitializingBean {
     @Autowired
 	private DistPollerDao m_distPollerDao;
     

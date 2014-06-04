@@ -91,8 +91,8 @@ import org.springframework.test.context.web.WebAppConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
-    private static final Logger LOG = LoggerFactory.getLogger(NodeRestServiceTest.class);
+public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
+    private static final Logger LOG = LoggerFactory.getLogger(NodeRestServiceIT.class);
 
     private static int m_nodeCounter = 0;
 

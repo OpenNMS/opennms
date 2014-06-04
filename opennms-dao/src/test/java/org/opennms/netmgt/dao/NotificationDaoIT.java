@@ -64,7 +64,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class NotificationDaoTest implements InitializingBean {
+public class NotificationDaoIT implements InitializingBean {
 	@Autowired
 	private DatabasePopulator m_databasePopulator;
 

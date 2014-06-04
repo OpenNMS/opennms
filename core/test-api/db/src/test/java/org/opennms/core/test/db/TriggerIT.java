@@ -32,7 +32,7 @@ import junit.framework.AssertionFailedError;
 
 import org.opennms.test.ThrowableAnticipator;
 
-public class TriggerTest extends PopulatedTemporaryDatabaseTestCase {
+public class TriggerIT extends PopulatedTemporaryDatabaseITCase {
    
     
     public void testSetIpInterfaceIfIndexLikeCapsdDoes() throws Exception {

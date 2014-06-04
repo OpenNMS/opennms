@@ -55,7 +55,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class OpenNMSIntegrationTestCaseTest {
+public class OpenNMSIntegrationTestCaseIT {
     
 
     @Test

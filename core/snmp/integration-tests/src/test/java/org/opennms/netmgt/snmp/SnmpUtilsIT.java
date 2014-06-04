@@ -46,12 +46,12 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.netmgt.snmp.joesnmp.JoeSnmpStrategy;
 import org.opennms.netmgt.snmp.mock.MockSnmpStrategy;
-import org.opennms.netmgt.snmp.snmp4j.MockSnmpAgentTestCase;
+import org.opennms.netmgt.snmp.snmp4j.MockSnmpAgentITCase;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy;
 import org.springframework.core.io.ClassPathResource;
 
 @RunWith(Parameterized.class)
-public class SnmpUtilsTest extends MockSnmpAgentTestCase implements TrapProcessorFactory {
+public class SnmpUtilsIT extends MockSnmpAgentITCase implements TrapProcessorFactory {
 	
 	@Parameters
 	public static List<Object[]> data() {
@@ -137,7 +137,7 @@ public class SnmpUtilsTest extends MockSnmpAgentTestCase implements TrapProcesso
     boolean m_trapsSupported;
     String m_oldProperty;
     
-    public SnmpUtilsTest(String strategyClass, int snmpVersion, boolean trapsSupported) {
+    public SnmpUtilsIT(String strategyClass, int snmpVersion, boolean trapsSupported) {
     	m_strategyClass = strategyClass;
     	m_snmpVersion = snmpVersion;
     	m_trapsSupported = trapsSupported;

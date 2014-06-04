@@ -68,7 +68,7 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @Transactional
-public class DefaultOutageServiceIntegrationTest implements InitializingBean {
+public class DefaultOutageServiceIntegrationIT implements InitializingBean {
     private static final int RANGE_LIMIT = 5;
 
     @Autowired

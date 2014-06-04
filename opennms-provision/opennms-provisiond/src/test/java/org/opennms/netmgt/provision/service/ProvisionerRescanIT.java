@@ -90,8 +90,8 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
 @DirtiesContext
-public class ProvisionerRescanTest implements InitializingBean {
-    private static final Logger LOG = LoggerFactory.getLogger(ProvisionerRescanTest.class);
+public class ProvisionerRescanIT implements InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(ProvisionerRescanIT.class);
 
     @Autowired
     private MockEventIpcManager m_mockEventIpcManager;

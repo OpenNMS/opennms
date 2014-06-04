@@ -58,7 +58,7 @@ import org.opennms.netmgt.xml.event.Event;
  *
  * @author brozow
  */
-public class PollContextTest {
+public class PollContextIT {
 
     private MockNetwork m_mNetwork;
     private MockDatabase m_db;

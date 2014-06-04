@@ -67,7 +67,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @Transactional
-public class EventRestServiceTest extends AbstractSpringJerseyRestTestCase {
+public class EventRestServiceIT extends AbstractSpringJerseyRestTestCase {
     private DatabasePopulator m_databasePopulator;
 
     @Override

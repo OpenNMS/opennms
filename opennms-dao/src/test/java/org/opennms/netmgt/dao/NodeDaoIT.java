@@ -86,7 +86,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false)
-public class NodeDaoTest implements InitializingBean {
+public class NodeDaoIT implements InitializingBean {
 
     @Autowired
     DistPollerDao m_distPollerDao;

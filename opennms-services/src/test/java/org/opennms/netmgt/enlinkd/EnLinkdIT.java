@@ -47,7 +47,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.nb.Nms10205bNetworkBuilder;
 import org.opennms.netmgt.nb.Nms17216NetworkBuilder;
 
-public class EnLinkdTest extends EnLinkdTestBuilder {
+public class EnLinkdIT extends EnLinkdBuilderITCase {
 
 	Nms10205bNetworkBuilder builder10205a = new Nms10205bNetworkBuilder();
 	Nms17216NetworkBuilder builder = new Nms17216NetworkBuilder();    

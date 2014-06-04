@@ -77,7 +77,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false)
-public class AlarmDaoTest implements InitializingBean {
+public class AlarmDaoIT implements InitializingBean {
     
 	@Autowired
     private DistPollerDao m_distPollerDao;

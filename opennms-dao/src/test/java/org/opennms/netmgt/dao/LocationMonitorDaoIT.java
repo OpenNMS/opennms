@@ -51,7 +51,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class LocationMonitorDaoTest implements InitializingBean {
+public class LocationMonitorDaoIT implements InitializingBean {
 	@Autowired
 	private LocationMonitorDao m_locationMonitorDao;
 

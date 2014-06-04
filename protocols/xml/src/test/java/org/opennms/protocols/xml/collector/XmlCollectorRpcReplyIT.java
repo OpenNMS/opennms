@@ -39,7 +39,7 @@ import org.junit.Test;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class XmlCollectorRpcReplyTest extends AbstractXmlCollectorTest {
+public class XmlCollectorRpcReplyIT extends XmlCollectorITCase {
 
     /* (non-Javadoc)
      * @see org.opennms.protocols.xml.collector.AbcstractXmlCollectorTest#getXmlConfigFileName()

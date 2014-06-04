@@ -75,7 +75,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class AcknowledgmentRestServiceTest extends AbstractSpringJerseyRestTestCase {
+public class AcknowledgmentRestServiceIT extends AbstractSpringJerseyRestTestCase {
 	@Autowired
 	TransactionTemplate m_template;
 

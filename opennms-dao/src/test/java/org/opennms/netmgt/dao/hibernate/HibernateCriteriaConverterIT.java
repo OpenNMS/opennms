@@ -65,8 +65,8 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @Transactional
-public class HibernateCriteriaConverterTest implements InitializingBean {
-    private static final Logger LOG = LoggerFactory.getLogger(HibernateCriteriaConverterTest.class);
+public class HibernateCriteriaConverterIT implements InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(HibernateCriteriaConverterIT.class);
 
     @Autowired
     DatabasePopulator m_populator;

@@ -78,7 +78,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:org/opennms/netmgt/trapd/applicationContext-trapDaemonTest.xml"}
 )
 @JUnitConfigurationEnvironment
-public class TrapHandlerTestCase implements InitializingBean {
+public class TrapHandlerITCase implements InitializingBean {
 
     @Autowired
     private Trapd m_trapd = null;

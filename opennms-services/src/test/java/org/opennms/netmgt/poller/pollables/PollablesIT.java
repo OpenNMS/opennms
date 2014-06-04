@@ -86,7 +86,7 @@ import org.opennms.test.mock.MockUtil;
  *
  * @author brozow
  */
-public class PollablesTest {
+public class PollablesIT {
 
     private PollableNetwork m_network;
     private MockPollContext m_pollContext;

@@ -61,7 +61,7 @@ import org.springframework.core.io.Resource;
  * @author <a href="mailto:ronald.roskens@gmail.com">Ronald Roskens</a>
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public abstract class AbstractJsonCollectorTest {
+public abstract class JsonCollectorITCase {
 
     /** The Constant TEST_SNMP_DIRECTORY. */
     private static final String TEST_SNMP_DIRECTORY = "target/snmp/";

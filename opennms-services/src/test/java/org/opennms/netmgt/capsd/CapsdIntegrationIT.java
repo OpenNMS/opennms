@@ -70,7 +70,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
 @JUnitTemporaryDatabase
-public class CapsdIntegrationTest implements TemporaryDatabaseAware<MockDatabase>, InitializingBean {
+public class CapsdIntegrationIT implements TemporaryDatabaseAware<MockDatabase>, InitializingBean {
 
     private static final int FOREIGN_NODEID = 77;
     private static final String FOREIGN_NODE_IP_ADDRESS = "192.0.2.201";

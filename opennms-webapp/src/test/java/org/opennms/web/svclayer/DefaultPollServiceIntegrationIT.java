@@ -61,7 +61,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class DefaultPollServiceIntegrationTest implements InitializingBean {
+public class DefaultPollServiceIntegrationIT implements InitializingBean {
 
     @Autowired
     private DemandPollService m_demandPollService;

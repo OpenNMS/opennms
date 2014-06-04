@@ -64,7 +64,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class StatisticsReportDaoTest implements InitializingBean {
+public class StatisticsReportDaoIT implements InitializingBean {
 	@Autowired
     private StatisticsReportDao m_statisticsReportDao;
 	

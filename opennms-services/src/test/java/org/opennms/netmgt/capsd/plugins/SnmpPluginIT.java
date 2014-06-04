@@ -47,7 +47,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.mock.OpenNMSTestCase;
+import org.opennms.netmgt.mock.OpenNMSITCase;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpStrategy;
 import org.opennms.netmgt.snmp.joesnmp.JoeSnmpStrategy;
@@ -56,10 +56,10 @@ import org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy;
 import org.springframework.core.io.ByteArrayResource;
 
 @RunWith(Parameterized.class)
-public class SnmpPluginTest extends OpenNMSTestCase {
+public class SnmpPluginIT extends OpenNMSITCase {
 	private static final String STRATEGY_CLASS_PROPERTY_NAME = "org.opennms.snmp.strategyClass";
 
-	public SnmpPluginTest(Class<? extends SnmpStrategy> strategyClass) {
+	public SnmpPluginIT(Class<? extends SnmpStrategy> strategyClass) {
 		System.setProperty(STRATEGY_CLASS_PROPERTY_NAME, strategyClass.getName());
 	}
 

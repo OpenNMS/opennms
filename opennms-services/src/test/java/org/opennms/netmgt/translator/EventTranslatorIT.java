@@ -64,7 +64,7 @@ import org.opennms.netmgt.xml.event.Logmsg;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Value;
 
-public class EventTranslatorTest {
+public class EventTranslatorIT {
     
     /* TODO for PassiveSTatusKeeper
      add reason mapper for status reason

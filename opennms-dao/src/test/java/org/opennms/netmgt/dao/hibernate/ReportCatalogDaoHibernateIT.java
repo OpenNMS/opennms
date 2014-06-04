@@ -58,7 +58,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class ReportCatalogDaoHibernateTest implements InitializingBean {
+public class ReportCatalogDaoHibernateIT implements InitializingBean {
     @Autowired
 	private ReportCatalogDao m_reportCatalogDao;
 

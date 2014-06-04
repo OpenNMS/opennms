@@ -75,8 +75,8 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
-public class Nms5414Test extends ProvisioningTestCase {
-    private static final Logger LOG = LoggerFactory.getLogger(Nms5414Test.class);
+public class Nms5414IT extends ProvisioningITCase {
+    private static final Logger LOG = LoggerFactory.getLogger(Nms5414IT.class);
     
     @Autowired
     private Provisioner m_provisioner;

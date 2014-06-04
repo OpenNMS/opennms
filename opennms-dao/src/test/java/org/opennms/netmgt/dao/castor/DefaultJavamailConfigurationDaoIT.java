@@ -62,7 +62,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class DefaultJavamailConfigurationDaoTest implements InitializingBean {
+public class DefaultJavamailConfigurationDaoIT implements InitializingBean {
 
     @Autowired
     private JavaMailConfigurationDao m_jmcDao;

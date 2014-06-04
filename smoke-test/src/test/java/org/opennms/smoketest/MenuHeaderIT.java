@@ -33,8 +33,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MenuHeaderTest extends OpenNMSSeleniumTestCase {
-    private static final Logger LOG = LoggerFactory.getLogger(MenuHeaderTest.class);
+public class MenuHeaderIT extends OpenNMSSeleniumITCase {
+    private static final Logger LOG = LoggerFactory.getLogger(MenuHeaderIT.class);
 
     @Before
     public void setUp() throws Exception {

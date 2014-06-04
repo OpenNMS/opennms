@@ -71,7 +71,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class KscRestServiceTest extends AbstractSpringJerseyRestTestCase {
+public class KscRestServiceIT extends AbstractSpringJerseyRestTestCase {
     private File m_configFile = new File("target/test-classes/ksc-performance-reports.xml");
 
     @Override

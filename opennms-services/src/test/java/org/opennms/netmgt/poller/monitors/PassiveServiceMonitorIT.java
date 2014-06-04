@@ -35,7 +35,7 @@ import java.util.HashMap;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.passive.PassiveStatusKeeper;
-import org.opennms.netmgt.passive.PassiveStatusKeeperTest;
+import org.opennms.netmgt.passive.PassiveStatusKeeperIT;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
@@ -45,7 +45,7 @@ import org.opennms.netmgt.poller.pollables.PollableNetwork;
 import org.opennms.netmgt.poller.pollables.PollableNode;
 import org.opennms.netmgt.poller.pollables.PollableService;
 
-public class PassiveServiceMonitorTest extends PassiveStatusKeeperTest {
+public class PassiveServiceMonitorIT extends PassiveStatusKeeperIT {
 
     // inherit from PassiveStatusKeeperTest so we can inherit all the proper initialization
     public void testPoll() throws UnknownHostException {

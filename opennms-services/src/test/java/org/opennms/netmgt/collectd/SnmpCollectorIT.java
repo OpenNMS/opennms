@@ -93,7 +93,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.rrd.storeByGroup=false")
 @JUnitTemporaryDatabase(reuseDatabase=false) // Relies on records created in @Before so we need a fresh database for each test
-public class SnmpCollectorTest implements InitializingBean, TestContextAware {
+public class SnmpCollectorIT implements InitializingBean, TestContextAware {
 
     @Autowired
     private PlatformTransactionManager m_transactionManager;

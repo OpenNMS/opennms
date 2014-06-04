@@ -86,7 +86,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class JdbcFilterDaoTest implements InitializingBean {
+public class JdbcFilterDaoIT implements InitializingBean {
     @Autowired
     NodeDao m_nodeDao;
     

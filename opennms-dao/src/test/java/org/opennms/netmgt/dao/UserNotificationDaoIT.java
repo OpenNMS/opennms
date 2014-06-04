@@ -68,7 +68,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class UserNotificationDaoTest implements InitializingBean {
+public class UserNotificationDaoIT implements InitializingBean {
 	
 	@Autowired
 	private DistPollerDao m_distPollerDao;

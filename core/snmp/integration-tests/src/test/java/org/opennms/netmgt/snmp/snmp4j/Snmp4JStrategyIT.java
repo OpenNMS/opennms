@@ -44,7 +44,7 @@ import org.snmp4j.smi.VariableBinding;
  * 
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public class Snmp4JStrategyTest extends MockSnmpAgentTestCase {
+public class Snmp4JStrategyIT extends MockSnmpAgentITCase {
 
 	@Override
 	protected boolean usingMockStrategy() {

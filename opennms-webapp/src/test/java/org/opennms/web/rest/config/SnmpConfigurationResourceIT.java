@@ -65,9 +65,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class SnmpConfigurationResourceITTest extends AbstractSpringJerseyRestTestCase {
+public class SnmpConfigurationResourceIT extends AbstractSpringJerseyRestTestCase {
     @SuppressWarnings("unused")
-    private static final Logger LOG = LoggerFactory.getLogger(SnmpConfigurationResourceITTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SnmpConfigurationResourceIT.class);
 
     @Override
     protected void beforeServletStart() throws Exception {

@@ -57,7 +57,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 
-public class DependencyRulesTest extends CorrelationRulesTestCase {
+public class DependencyRulesIT extends CorrelationRulesITCase {
     
     private static interface Predicate<T> {
         public boolean accept(T t);

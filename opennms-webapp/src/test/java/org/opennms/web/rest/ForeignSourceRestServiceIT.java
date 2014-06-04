@@ -63,7 +63,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class ForeignSourceRestServiceTest extends AbstractSpringJerseyRestTestCase {
+public class ForeignSourceRestServiceIT extends AbstractSpringJerseyRestTestCase {
     
     @Test
     public void testForeignSources() throws Exception {

@@ -45,7 +45,7 @@ import org.opennms.netmgt.xml.event.Event;
 /**
  * @author brozow
  */
-public class MockDatabaseTest extends TestCase {
+public class MockDatabaseIT extends TestCase {
 
     private MockNetwork m_network;
     private MockDatabase m_db;

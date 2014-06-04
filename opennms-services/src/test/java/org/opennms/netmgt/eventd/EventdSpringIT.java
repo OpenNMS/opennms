@@ -64,7 +64,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class EventdSpringTest implements InitializingBean {
+public class EventdSpringIT implements InitializingBean {
     @Autowired
     Eventd m_daemon;
 

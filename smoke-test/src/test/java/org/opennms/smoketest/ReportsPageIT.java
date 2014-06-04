@@ -33,7 +33,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 
-public class ReportsPageTest extends OpenNMSSeleniumTestCase {
+public class ReportsPageIT extends OpenNMSSeleniumITCase {
     @Before
     @Override
     public void setUp() throws Exception {

@@ -52,7 +52,7 @@ import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms102NetworkBuilder;
 
-public class Nms102Test extends LinkdTestBuilder {
+public class Nms102IT extends LinkdBuilderITCase {
 	    
 	Nms102NetworkBuilder builder = new Nms102NetworkBuilder();
 

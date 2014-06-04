@@ -53,11 +53,11 @@ import org.opennms.core.db.install.Constraint;
 import org.opennms.core.db.install.InstallerDb;
 import org.opennms.core.db.install.Table;
 import org.opennms.core.db.install.Trigger;
-import org.opennms.core.test.db.TemporaryDatabaseTestCase;
+import org.opennms.core.test.db.TemporaryDatabaseITCase;
 import org.opennms.test.ThrowableAnticipator;
 import org.springframework.util.StringUtils;
 
-public class InstallerDbTest extends TemporaryDatabaseTestCase {
+public class InstallerDbIT extends TemporaryDatabaseITCase {
     private static final String s_constraint = "fk_nodeid6";
 
     private InstallerDb m_installerDb;

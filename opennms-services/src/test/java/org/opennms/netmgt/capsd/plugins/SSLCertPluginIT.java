@@ -49,7 +49,7 @@ import org.springframework.test.context.ContextConfiguration;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/emptyContext.xml"})
 @JUnitConfigurationEnvironment
-public class SSLCertPluginTest {
+public class SSLCertPluginIT {
     @Before
     public void setUp() throws Exception {
     }

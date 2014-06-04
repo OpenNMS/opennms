@@ -61,7 +61,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @TestExecutionListeners({
     JUnitHttpServerExecutionListener.class
 })
-public class HttpUrlConnectionTest {
+public class HttpUrlConnectionIT {
 
     /**
      * Test the Servlet with a simple POST Request based on XML Data.

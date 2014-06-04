@@ -64,7 +64,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext = false)
-public class MemoDaoTest implements InitializingBean {
+public class MemoDaoIT implements InitializingBean {
 
     @Autowired
     private DistPollerDao m_distPollerDao;

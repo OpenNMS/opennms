@@ -57,7 +57,7 @@ import org.springframework.transaction.annotation.Transactional;
 		"file:target/classes/META-INF/opennms/component-dao.xml"
 })
 @Transactional
-public class NCSComponentDaoTest {
+public class NCSComponentDaoIT {
 	
 	@Autowired
 	NCSComponentRepository m_repository;

@@ -57,7 +57,7 @@ import org.easymock.EasyMock;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/emptyContext.xml"})
 @JUnitConfigurationEnvironment
-public class SSLCertMonitorTest {
+public class SSLCertMonitorIT {
 
     @Before
     public void setUp() throws Exception {

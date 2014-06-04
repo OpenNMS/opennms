@@ -105,7 +105,7 @@ import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @Transactional
-public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerseyRestTestCase {
+public class RemotePollerAvailabilityRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Autowired
     ApplicationDao m_applicationDao;

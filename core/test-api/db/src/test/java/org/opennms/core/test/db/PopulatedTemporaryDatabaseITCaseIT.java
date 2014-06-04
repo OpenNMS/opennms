@@ -30,8 +30,8 @@ package org.opennms.core.test.db;
 
 import java.util.Date;
 
-public class PopulatedTemporaryDatabaseTestCaseTest extends
-        PopulatedTemporaryDatabaseTestCase {
+public class PopulatedTemporaryDatabaseITCaseIT extends
+        PopulatedTemporaryDatabaseITCase {
 
     /**
      * Can we properly initialize the TestCase (including loading the database)?

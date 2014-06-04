@@ -48,7 +48,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 
-public class MonolithicDependencyRulesTest extends CorrelationRulesTestCase {
+public class MonolithicDependencyRulesIT extends CorrelationRulesITCase {
 	
 	@Autowired
 	NCSComponentRepository m_repository;

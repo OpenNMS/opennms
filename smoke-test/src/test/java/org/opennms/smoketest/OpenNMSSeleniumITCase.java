@@ -47,8 +47,8 @@ import com.thoughtworks.selenium.SeleneseTestBase;
 import com.thoughtworks.selenium.SeleniumException;
 import com.thoughtworks.selenium.webdriven.WebDriverBackedSelenium;
 
-public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
-    protected static final Logger LOG = LoggerFactory.getLogger(OpenNMSSeleniumTestCase.class);
+public class OpenNMSSeleniumITCase extends SeleneseTestBase {
+    protected static final Logger LOG = LoggerFactory.getLogger(OpenNMSSeleniumITCase.class);
     protected static final long LOAD_TIMEOUT = 60000;
     protected static final String BASE_URL = "http://localhost:8980/";
     private WebDriver m_driver = null;

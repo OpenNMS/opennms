@@ -76,7 +76,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class UserRestServiceTest extends AbstractSpringJerseyRestTestCase  {
+public class UserRestServiceIT extends AbstractSpringJerseyRestTestCase  {
     private static final String PASSWORD = "21232F297A57A5A743894A0E4A801FC3";
 
     @Override

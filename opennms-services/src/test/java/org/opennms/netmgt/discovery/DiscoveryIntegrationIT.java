@@ -58,7 +58,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class DiscoveryIntegrationTest implements InitializingBean {
+public class DiscoveryIntegrationIT implements InitializingBean {
 
     @Autowired
     private Discovery m_discovery;

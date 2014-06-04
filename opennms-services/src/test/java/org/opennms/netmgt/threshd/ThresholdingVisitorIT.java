@@ -116,8 +116,8 @@ import org.springframework.core.io.FileSystemResource;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  *
  */
-public class ThresholdingVisitorTest {
-    private static final Logger LOG = LoggerFactory.getLogger(ThresholdingVisitorTest.class);
+public class ThresholdingVisitorIT {
+    private static final Logger LOG = LoggerFactory.getLogger(ThresholdingVisitorIT.class);
 
     FilterDao m_filterDao;
     EventAnticipator m_anticipator;
@@ -1316,7 +1316,7 @@ public class ThresholdingVisitorTest {
 
         long timestamp = new Date().getTime();
         // Step 1
-        visitor.visitCollectionSet(ThresholdingVisitorTest.createAnonymousCollectionSet(timestamp));
+        visitor.visitCollectionSet(ThresholdingVisitorIT.createAnonymousCollectionSet(timestamp));
         IfInfo ifInfo = new IfInfo(resourceType, agent, ifData);
         addAttributeToCollectionResource(ifInfo, resourceType, "ifInOctets", "counter", "ifIndex", 10000);
         addAttributeToCollectionResource(ifInfo, resourceType, "ifOutOctets", "counter", "ifIndex", 10000);
@@ -1324,7 +1324,7 @@ public class ThresholdingVisitorTest {
         resource.visit(visitor);
 
         // Step 2 - Increment Counters
-        visitor.visitCollectionSet(ThresholdingVisitorTest.createAnonymousCollectionSet(timestamp+300000));
+        visitor.visitCollectionSet(ThresholdingVisitorIT.createAnonymousCollectionSet(timestamp+300000));
         ifInfo = new IfInfo(resourceType, agent, ifData);
         addAttributeToCollectionResource(ifInfo, resourceType, "ifInOctets", "counter", "ifIndex", 46000);
         addAttributeToCollectionResource(ifInfo, resourceType, "ifOutOctets", "counter", "ifIndex", 46000);
@@ -1780,7 +1780,7 @@ public class ThresholdingVisitorTest {
 
         long timestamp = new Date().getTime();
         // Step 1 - Initialize Counter
-        visitor.visitCollectionSet(ThresholdingVisitorTest.createAnonymousCollectionSet(timestamp));
+        visitor.visitCollectionSet(ThresholdingVisitorIT.createAnonymousCollectionSet(timestamp));
         BigDecimal n = new BigDecimal(Math.pow(2, bits) - 20000);
         SnmpValue snmpValue1 = SnmpUtils.getValueFactory().getCounter64(n.toBigInteger());
         SnmpCollectionResource resource1 = new IfInfo(resourceType, agent, ifData);
@@ -1788,7 +1788,7 @@ public class ThresholdingVisitorTest {
         resource1.visit(visitor);
         
         // Step 2 - Wrap Counter
-        visitor.visitCollectionSet(ThresholdingVisitorTest.createAnonymousCollectionSet(timestamp+300000));
+        visitor.visitCollectionSet(ThresholdingVisitorIT.createAnonymousCollectionSet(timestamp+300000));
         SnmpValue snmpValue2 = SnmpUtils.getValueFactory().getCounter64(new BigInteger("40000"));
         SnmpCollectionResource resource2 = new IfInfo(resourceType, agent, ifData);
         resource2.setAttributeValue(objectType, snmpValue2);

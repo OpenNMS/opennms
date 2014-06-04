@@ -61,7 +61,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class DefaultSurveillanceServiceIntegrationTest implements InitializingBean {
+public class DefaultSurveillanceServiceIntegrationIT implements InitializingBean {
 
     @Autowired
     private SurveillanceService m_surveillanceService;

@@ -80,7 +80,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @TestExecutionListeners({
     JUnitHttpServerExecutionListener.class
 })
-public class HttpDataCollectionTest {
+public class HttpDataCollectionIT {
 
     /** The Constant TEST_SNMP_DIRECTORY. */
     private static final String TEST_SNMP_DIRECTORY = "target/snmp/";

@@ -56,7 +56,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 
-public class EventMappingRulesTest extends CorrelationRulesTestCase {
+public class EventMappingRulesIT extends CorrelationRulesITCase {
 	
 	@Autowired
 	NCSComponentRepository m_repository;

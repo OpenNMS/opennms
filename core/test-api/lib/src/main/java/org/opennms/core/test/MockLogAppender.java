@@ -273,11 +273,14 @@ public class MockLogAppender {
             throw new AssertionFailedError("MockLogAppender has not been initialized");
         }
 
+/*
         try {
             Thread.sleep(500);
         } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
         }
+*/
+
         final LoggingEvent[] events = getEventsGreaterOrEqual(level);
         if (events.length == 0) {
             return;
@@ -325,11 +328,14 @@ public class MockLogAppender {
             throw new AssertionFailedError("MockLogAppender has not been initialized");
         }
 
+/*
         try {
             Thread.sleep(500);
         } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
         }
+*/
+
         final LoggingEvent[] events = getEventsAtLevel(level);
         if (events.length == 0) {
             throw new AssertionFailedError("No messages were received at level " + level);

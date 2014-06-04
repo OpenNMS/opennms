@@ -76,7 +76,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase=false)
-public class NotificationManagerTest implements InitializingBean {
+public class NotificationManagerIT implements InitializingBean {
 	@Autowired
 	private DataSource m_dataSource;
 

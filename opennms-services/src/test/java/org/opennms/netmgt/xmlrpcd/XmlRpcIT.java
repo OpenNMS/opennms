@@ -49,7 +49,7 @@ import org.opennms.test.mock.EasyMockUtils;
  *
  * @author brozow
  */
-public class XmlRpcTest  {
+public class XmlRpcIT  {
 
 
     static private WebServer m_webServer;

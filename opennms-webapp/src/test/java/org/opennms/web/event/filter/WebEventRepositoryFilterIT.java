@@ -69,7 +69,7 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @Transactional
-public class WebEventRepositoryFilterTest implements InitializingBean {
+public class WebEventRepositoryFilterIT implements InitializingBean {
     
     @Autowired
     DatabasePopulator m_dbPopulator;

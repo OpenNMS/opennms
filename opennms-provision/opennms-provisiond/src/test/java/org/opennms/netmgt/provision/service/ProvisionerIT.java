@@ -109,7 +109,7 @@ import org.opennms.netmgt.provision.service.NodeScan;
 import org.opennms.netmgt.provision.service.NodeScanSchedule;
 import org.opennms.netmgt.provision.service.ProvisionService;
 import org.opennms.netmgt.provision.service.Provisioner;
-import org.opennms.netmgt.provision.service.ProvisioningTestCase;
+import org.opennms.netmgt.provision.service.ProvisioningITCase;
 import org.opennms.netmgt.snmp.SnmpAgentAddress;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -142,8 +142,8 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
 @DirtiesContext
-public class ProvisionerTest extends ProvisioningTestCase implements InitializingBean, MockSnmpDataProviderAware {
-    private static final Logger LOG = LoggerFactory.getLogger(ProvisionerTest.class);
+public class ProvisionerIT extends ProvisioningITCase implements InitializingBean, MockSnmpDataProviderAware {
+    private static final Logger LOG = LoggerFactory.getLogger(ProvisionerIT.class);
 
     @Autowired
     private MockEventIpcManager m_mockEventIpcManager;

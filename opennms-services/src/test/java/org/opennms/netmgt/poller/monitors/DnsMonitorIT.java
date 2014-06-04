@@ -71,7 +71,7 @@ import org.xbill.DNS.Type;
             })
     })
 @JUnitConfigurationEnvironment
-public class DnsMonitorTest {
+public class DnsMonitorIT {
     
     @Before
     public void setup() throws Exception {

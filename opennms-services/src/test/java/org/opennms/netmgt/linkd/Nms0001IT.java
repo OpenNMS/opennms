@@ -55,7 +55,7 @@ import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms0001NetworkBuilder;
 
-public class Nms0001Test extends LinkdTestBuilder {
+public class Nms0001IT extends LinkdBuilderITCase {
 
 	Nms0001NetworkBuilder builder = new Nms0001NetworkBuilder();
 

@@ -84,8 +84,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @Transactional
-public class AlarmStatsRestServiceTest extends AbstractSpringJerseyRestTestCase {
-    private static final Logger LOG = LoggerFactory.getLogger(AlarmStatsRestServiceTest.class);
+public class AlarmStatsRestServiceIT extends AbstractSpringJerseyRestTestCase {
+    private static final Logger LOG = LoggerFactory.getLogger(AlarmStatsRestServiceIT.class);
     private DatabasePopulator m_databasePopulator;
     private WebApplicationContext m_context;
     private int count = 0;

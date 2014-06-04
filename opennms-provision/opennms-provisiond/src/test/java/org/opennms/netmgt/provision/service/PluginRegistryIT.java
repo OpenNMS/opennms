@@ -54,7 +54,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations= { "classpath:/pluginRegistryTest-context.xml" } )
-public class PluginRegistryTest implements InitializingBean {
+public class PluginRegistryIT implements InitializingBean {
     
     @Autowired
     ApplicationContext m_appContext;

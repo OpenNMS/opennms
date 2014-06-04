@@ -65,7 +65,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class TransactionAwareEventForwarderTest implements InitializingBean {
+public class TransactionAwareEventForwarderIT implements InitializingBean {
 
     @Autowired
     private TransactionAwareEventForwarder m_proxy;

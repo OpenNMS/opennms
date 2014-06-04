@@ -72,7 +72,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase {
+public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
     
     @Test
     public void testRequisition() throws Exception {

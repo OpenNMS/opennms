@@ -82,7 +82,7 @@ import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.core.io.FileSystemResource;
 
-public class LatencyStoringServiceMonitorAdaptorTest {
+public class LatencyStoringServiceMonitorAdaptorIT {
     private EasyMockUtils m_mocks;
 
     private PollerConfig m_pollerConfig;

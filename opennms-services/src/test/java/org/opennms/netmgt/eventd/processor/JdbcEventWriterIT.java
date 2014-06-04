@@ -30,7 +30,7 @@ package org.opennms.netmgt.eventd.processor;
 
 import java.sql.SQLException;
 
-import org.opennms.core.test.db.PopulatedTemporaryDatabaseTestCase;
+import org.opennms.core.test.db.PopulatedTemporaryDatabaseITCase;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.JdbcEventdServiceManager;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -44,7 +44,7 @@ import org.opennms.netmgt.xml.event.Event;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 @SuppressWarnings("deprecation")
-public class JdbcEventWriterTest extends PopulatedTemporaryDatabaseTestCase {
+public class JdbcEventWriterIT extends PopulatedTemporaryDatabaseITCase {
     private JdbcEventWriter m_jdbcEventWriter;
 
     @Override

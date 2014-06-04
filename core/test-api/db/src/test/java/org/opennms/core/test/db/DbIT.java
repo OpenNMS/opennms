@@ -29,7 +29,7 @@
 package org.opennms.core.test.db;
 
 
-public class DbTest extends TemporaryDatabaseTestCase {
+public class DbIT extends TemporaryDatabaseITCase {
 
     @Override
     protected void setUp() throws Exception {

@@ -57,8 +57,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mock.web.MockHttpServletRequest;
 
-public class NCSRestServiceTest extends AbstractSpringJerseyRestTestCase {
-	private static final Logger LOG = LoggerFactory.getLogger(NCSRestServiceTest.class);
+public class NCSRestServiceIT extends AbstractSpringJerseyRestITCase {
+	private static final Logger LOG = LoggerFactory.getLogger(NCSRestServiceIT.class);
 
 	private static void setupLogging(final String level) {
 		final Properties config = new Properties();

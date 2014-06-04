@@ -77,7 +77,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
 @JUnitTemporaryDatabase
-public class Nms7467CapsdIntegrationTest extends Nms7467NetworkBuilder implements InitializingBean {
+public class Nms7467CapsdIT extends Nms7467NetworkBuilder implements InitializingBean {
 
 
     @Autowired

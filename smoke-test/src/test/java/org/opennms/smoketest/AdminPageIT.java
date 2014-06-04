@@ -33,7 +33,7 @@ import org.junit.Test;
 
 import com.thoughtworks.selenium.Selenium;
 
-public class AdminPageTest extends OpenNMSSeleniumTestCase {
+public class AdminPageIT extends OpenNMSSeleniumITCase {
 
     @Before
     public void setUp() throws Exception {

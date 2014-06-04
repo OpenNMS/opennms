@@ -58,7 +58,7 @@ import org.opennms.test.ThrowableAnticipator;
  * @author mikeh@aiinet.com
  * @author dj@gregor.com
  */
-public class XmlRpcNotifierTest  {
+public class XmlRpcNotifierIT  {
     private XmlrpcAnticipator m_anticipator;
     private XmlRpcNotifier m_notifier;
     private MockDatabase m_db;
@@ -70,7 +70,7 @@ public class XmlRpcNotifierTest  {
 
     static final int s_nodeId = 1;
     private static final String s_nodeLabel = "Router";
-    private static final String s_source = XmlRpcNotifierTest.class.getName();
+    private static final String s_source = XmlRpcNotifierIT.class.getName();
     private static final String s_host = "bar";
     private static final String s_interface = "192.168.1.1";
     private static final String s_service = "ICMP";

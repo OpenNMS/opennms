@@ -43,9 +43,9 @@ import org.junit.runners.Parameterized.Parameters;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 @RunWith(Parameterized.class)
-public class SnmpNodeCollectorTest extends SnmpCollectorTestCase {
+public class SnmpNodeCollectorIT extends SnmpCollectorITCase {
 
-	public SnmpNodeCollectorTest(int config) {
+	public SnmpNodeCollectorIT(int config) {
 		setVersion(config);
 	}
 

@@ -36,7 +36,7 @@ import org.junit.BeforeClass;
  *
  * @author brozow
  */
-public class Snmp4JTrapHandlerTest extends TrapHandlerTestCase {
+public class Snmp4JTrapHandlerIT extends TrapHandlerITCase {
 
     /**
      * @throws java.lang.Exception

@@ -66,7 +66,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.nb.Nms10205bNetworkBuilder;
 
-public class Nms10205bEnTest extends EnLinkdTestBuilder {
+public class Nms10205bEnIT extends EnLinkdBuilderITCase {
 
 	Nms10205bNetworkBuilder builder = new Nms10205bNetworkBuilder();
 

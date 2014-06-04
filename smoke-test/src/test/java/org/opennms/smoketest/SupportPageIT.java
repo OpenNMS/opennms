@@ -31,7 +31,7 @@ package org.opennms.smoketest;
 import org.junit.Before;
 import org.junit.Test;
 
-public class SupportPageTest extends OpenNMSSeleniumTestCase {
+public class SupportPageIT extends OpenNMSSeleniumITCase {
     @Before
     public void setUp() throws Exception {
     	super.setUp();

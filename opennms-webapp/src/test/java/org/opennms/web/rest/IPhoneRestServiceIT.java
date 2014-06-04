@@ -79,7 +79,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @Transactional
-public class IPhoneRestServiceTest extends AbstractSpringJerseyRestTestCase {
+public class IPhoneRestServiceIT extends AbstractSpringJerseyRestTestCase {
     private EventDao m_eventDao;
 
     private DistPollerDao m_distPollerDao;

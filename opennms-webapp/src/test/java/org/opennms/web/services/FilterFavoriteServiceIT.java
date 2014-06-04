@@ -58,7 +58,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false)
-public class FilterFavoriteServiceTest {
+public class FilterFavoriteServiceIT {
 
 	@Autowired
     private FilterFavoriteService service;

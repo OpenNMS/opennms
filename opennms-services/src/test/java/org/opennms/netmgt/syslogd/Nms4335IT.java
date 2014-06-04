@@ -81,7 +81,7 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false,tempDbClass=MockDatabase.class)
 @Transactional
-public class Nms4335Test implements InitializingBean {
+public class Nms4335IT implements InitializingBean {
     
     String m_localhost = "127.0.0.1";
 

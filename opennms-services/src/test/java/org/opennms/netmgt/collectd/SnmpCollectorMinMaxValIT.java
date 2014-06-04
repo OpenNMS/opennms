@@ -92,8 +92,8 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.rrd.storeByGroup=false")
 @JUnitTemporaryDatabase
 @Transactional
-public class SnmpCollectorMinMaxValTest implements TestContextAware, InitializingBean {
-    private static final Logger LOG = LoggerFactory.getLogger(SnmpCollectorMinMaxValTest.class);
+public class SnmpCollectorMinMaxValIT implements TestContextAware, InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(SnmpCollectorMinMaxValIT.class);
     private static final String TEST_HOST_ADDRESS = "172.20.1.205";
     private static final String TEST_NODE_LABEL = "TestNode"; 
 

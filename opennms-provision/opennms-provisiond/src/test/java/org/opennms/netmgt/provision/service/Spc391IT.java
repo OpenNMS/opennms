@@ -70,7 +70,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/importerServiceTest.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
-public class Spc391Test extends ProvisioningTestCase {
+public class Spc391IT extends ProvisioningITCase {
 
     @Autowired
     private Provisioner m_provisioner;

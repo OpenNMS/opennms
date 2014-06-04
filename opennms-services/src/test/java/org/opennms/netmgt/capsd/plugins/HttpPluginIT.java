@@ -50,7 +50,7 @@ import org.springframework.test.context.ContextConfiguration;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/emptyContext.xml"})
 @JUnitConfigurationEnvironment
-public class HttpPluginTest {
+public class HttpPluginIT {
     @Before
     public void setUp() throws Exception {
     }

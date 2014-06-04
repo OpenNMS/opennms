@@ -32,7 +32,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 
-public class SearchPageTest extends OpenNMSSeleniumTestCase {
+public class SearchPageIT extends OpenNMSSeleniumITCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();

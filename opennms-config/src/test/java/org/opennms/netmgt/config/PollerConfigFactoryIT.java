@@ -49,10 +49,10 @@ import org.opennms.netmgt.mock.MockNetwork;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
-public class PollerConfigFactoryTest extends TestCase {
+public class PollerConfigFactoryIT extends TestCase {
 
     public static void main(String[] args) {
-        junit.textui.TestRunner.run(PollerConfigFactoryTest.class);
+        junit.textui.TestRunner.run(PollerConfigFactoryIT.class);
     }
     
     public static final String POLLER_CONFIG = "\n" +

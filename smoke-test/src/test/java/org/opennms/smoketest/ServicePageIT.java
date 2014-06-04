@@ -32,7 +32,7 @@ import org.junit.Test;
 import org.openqa.selenium.NoSuchElementException;
 
 
-public class ServicePageTest extends OpenNMSSeleniumTestCase {
+public class ServicePageIT extends OpenNMSSeleniumITCase {
 
     interface Setter {
         public void setField(String prefix);

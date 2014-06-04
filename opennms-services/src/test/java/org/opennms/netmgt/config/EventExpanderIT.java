@@ -24,7 +24,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-mockEventd.xml"
 })
 @JUnitConfigurationEnvironment
-public class EventExpanderTest {
+public class EventExpanderIT {
     @Autowired
     private EventConfDao m_eventConfDao;
 

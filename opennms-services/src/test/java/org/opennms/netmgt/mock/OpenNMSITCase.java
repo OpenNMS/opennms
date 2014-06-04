@@ -70,7 +70,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 
-public class OpenNMSTestCase {
+public class OpenNMSITCase {
     protected static MockDatabase m_db;
     protected static MockNetwork m_network;
     protected static Eventd m_eventd;

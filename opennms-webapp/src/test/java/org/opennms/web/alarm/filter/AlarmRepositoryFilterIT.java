@@ -69,7 +69,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class AlarmRepositoryFilterTest implements InitializingBean {
+public class AlarmRepositoryFilterIT implements InitializingBean {
     
     @Autowired
     DatabasePopulator m_dbPopulator;

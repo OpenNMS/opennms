@@ -80,7 +80,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
 @JUnitTemporaryDatabase
-public class LinkdTestCapsdNetworkBuilder extends TestNetworkBuilder implements InitializingBean {
+public class LinkdCapsdNetworkBuilderITCase extends TestNetworkBuilder implements InitializingBean {
 
     @Autowired
     private Capsd m_capsd;

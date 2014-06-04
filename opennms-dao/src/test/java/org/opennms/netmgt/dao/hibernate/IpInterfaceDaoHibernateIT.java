@@ -65,7 +65,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class IpInterfaceDaoHibernateTest implements InitializingBean {
+public class IpInterfaceDaoHibernateIT implements InitializingBean {
 
     @Autowired
     private IpInterfaceDao m_ipInterfaceDao;

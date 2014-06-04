@@ -31,7 +31,7 @@ package org.opennms.smoketest;
 import org.junit.Test;
 
 
-public class UserAccountPageTest extends OpenNMSSeleniumTestCase {
+public class UserAccountPageIT extends OpenNMSSeleniumITCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();

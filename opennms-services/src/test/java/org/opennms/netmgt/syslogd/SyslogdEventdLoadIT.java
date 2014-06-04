@@ -97,8 +97,8 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class SyslogdEventdLoadTest implements InitializingBean {
-    private static final Logger LOG = LoggerFactory.getLogger(SyslogdEventdLoadTest.class);
+public class SyslogdEventdLoadIT implements InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(SyslogdEventdLoadIT.class);
 
     private EventCounter m_eventCounter;
     private static final String MATCH_PATTERN = "^.*\\s(19|20)\\d\\d([-/.])(0[1-9]|1[012])\\2(0[1-9]|[12][0-9]|3[01])(\\s+)(\\S+)(\\s)(\\S.+)";

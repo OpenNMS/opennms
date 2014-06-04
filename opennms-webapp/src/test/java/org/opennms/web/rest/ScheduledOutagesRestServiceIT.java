@@ -82,7 +82,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class ScheduledOutagesRestServiceTest extends AbstractSpringJerseyRestTestCase {
+public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     private JAXBContext m_jaxbContext;
     private FilterDao m_filterDao;

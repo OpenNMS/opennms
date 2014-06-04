@@ -36,7 +36,7 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.utils.TcpEventProxy;
 
-public class AlarmsPageTest extends OpenNMSSeleniumTestCase {
+public class AlarmsPageIT extends OpenNMSSeleniumITCase {
     @BeforeClass
     public static void createAlarm() throws Exception {
         final EventProxy eventProxy = new TcpEventProxy();

@@ -70,16 +70,16 @@ import com.sun.jersey.spi.container.servlet.ServletContainer;
 import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
 
 /**
- * @deprecated This class is mostly copied from {@link org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase}
+ * @deprecated This class is mostly copied from {@link org.opennms.core.test.AbstractSpringJerseyRestITCase.AbstractSpringJerseyRestTestCase}
  * 
- * TODO: Replace usage of this class with {@link org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase}
+ * TODO: Replace usage of this class with {@link org.opennms.core.test.AbstractSpringJerseyRestITCase.AbstractSpringJerseyRestTestCase}
  * 
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  *
  */
-public abstract class AbstractSpringJerseyRestTestCase {
+public abstract class AbstractSpringJerseyRestITCase {
 	
-	private static Logger s_log = LoggerFactory.getLogger(AbstractSpringJerseyRestTestCase.class);
+	private static Logger s_log = LoggerFactory.getLogger(AbstractSpringJerseyRestITCase.class);
 
     static String GET = "GET";
     static String POST = "POST";

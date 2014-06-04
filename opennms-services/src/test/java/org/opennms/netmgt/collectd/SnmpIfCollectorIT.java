@@ -49,9 +49,9 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 @RunWith(Parameterized.class)
-public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
+public class SnmpIfCollectorIT extends SnmpCollectorITCase {
 
-	public SnmpIfCollectorTest(int config) {
+	public SnmpIfCollectorIT(int config) {
 		setVersion(config);
 	}
 

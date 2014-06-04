@@ -32,7 +32,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 
-public class OutagePageTest extends OpenNMSSeleniumTestCase {
+public class OutagePageIT extends OpenNMSSeleniumITCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();

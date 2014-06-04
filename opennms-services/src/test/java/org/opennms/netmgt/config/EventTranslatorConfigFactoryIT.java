@@ -37,7 +37,7 @@ import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
-import org.opennms.netmgt.mock.OpenNMSTestCase;
+import org.opennms.netmgt.mock.OpenNMSITCase;
 import org.opennms.netmgt.mock.OutageAnticipator;
 import org.opennms.netmgt.translator.EventTranslator;
 
@@ -45,7 +45,7 @@ import org.opennms.netmgt.translator.EventTranslator;
  * @author mhuot
  * 
  */
-public class EventTranslatorConfigFactoryTest extends OpenNMSTestCase {
+public class EventTranslatorConfigFactoryIT extends OpenNMSITCase {
     private EventTranslator m_translator;
     private MockEventIpcManager m_eventMgr;
     private String m_passiveStatusConfiguration = getStandardConfig();

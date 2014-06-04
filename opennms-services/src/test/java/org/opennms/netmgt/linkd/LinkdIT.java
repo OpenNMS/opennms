@@ -77,7 +77,7 @@ import org.opennms.netmgt.nb.Nms101NetworkBuilder;
 import org.opennms.netmgt.nb.Nms7467NetworkBuilder;
 import org.springframework.transaction.annotation.Transactional;
 
-public class LinkdTest extends LinkdTestBuilder {
+public class LinkdIT extends LinkdBuilderITCase {
 
 	Nms7467NetworkBuilder builder = new Nms7467NetworkBuilder();
 	Nms101NetworkBuilder builder1 = new Nms101NetworkBuilder();

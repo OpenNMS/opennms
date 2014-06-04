@@ -37,7 +37,7 @@ import org.junit.Test;
 import org.opennms.netmgt.model.notifd.Argument;
 import org.opennms.netmgt.model.notifd.NotificationStrategy;
 
-public class MicroblogReplyNotificationStrategyTest extends MicroblogNotificationStrategyTest {
+public class MicroblogReplyNotificationStrategyTest extends MicroblogNotificationStrategyIT {
     @Ignore
     @Test
     @Override

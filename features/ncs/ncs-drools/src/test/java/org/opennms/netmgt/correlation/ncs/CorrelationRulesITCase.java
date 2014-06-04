@@ -62,7 +62,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @Transactional
-public abstract class CorrelationRulesTestCase {
+public abstract class CorrelationRulesITCase {
 
     @Autowired
     @Qualifier("mock")
@@ -72,7 +72,7 @@ public abstract class CorrelationRulesTestCase {
     @Autowired
     private CorrelationEngineRegistrar m_correlator;
 
-    protected CorrelationRulesTestCase() {
+    protected CorrelationRulesITCase() {
         ConfigurationTestUtils.setRelativeHomeDirectory("src/test/opennms-home");
     }
 

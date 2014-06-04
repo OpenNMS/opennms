@@ -41,7 +41,7 @@ import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms4930NetworkBuilder;
 
-public class Nms4930Test extends LinkdTestBuilder {
+public class Nms4930IT extends LinkdBuilderITCase {
 
 	Nms4930NetworkBuilder builder = new Nms4930NetworkBuilder();
     @Before

@@ -41,7 +41,7 @@ import org.opennms.netmgt.config.syslogd.UeiMatch;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.test.DaoTestConfigBean;
 
-public class SyslogdConfigFactoryTest {
+public class SyslogdConfigFactoryIT {
 
     private SyslogdConfigFactory m_factory;
 

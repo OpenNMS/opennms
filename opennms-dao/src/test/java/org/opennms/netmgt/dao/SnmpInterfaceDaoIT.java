@@ -58,7 +58,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class SnmpInterfaceDaoTest implements InitializingBean {
+public class SnmpInterfaceDaoIT implements InitializingBean {
 	@Autowired
 	private SnmpInterfaceDao m_snmpInterfaceDao;
 

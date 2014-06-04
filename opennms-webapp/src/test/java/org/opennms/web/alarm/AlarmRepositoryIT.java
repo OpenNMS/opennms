@@ -73,7 +73,7 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @Transactional
-public class AlarmRepositoryTest implements InitializingBean {
+public class AlarmRepositoryIT implements InitializingBean {
     
     @Autowired
     DatabasePopulator m_dbPopulator;

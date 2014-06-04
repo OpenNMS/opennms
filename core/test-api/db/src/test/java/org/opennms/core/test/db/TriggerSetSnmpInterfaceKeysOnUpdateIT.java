@@ -43,8 +43,8 @@ import org.opennms.test.ThrowableAnticipator;
  * @author djgregor
  *
  */
-public class TriggerSetSnmpInterfaceKeysOnUpdateTest extends
-        PopulatedTemporaryDatabaseTestCase {
+public class TriggerSetSnmpInterfaceKeysOnUpdateIT extends
+        PopulatedTemporaryDatabaseITCase {
     
     @Override
     protected void setUp() throws Exception {

@@ -61,7 +61,7 @@ import org.opennms.netmgt.mock.NotificationAnticipator;
 import org.opennms.test.DaoTestConfigBean;
 import org.opennms.test.mock.MockUtil;
 
-public class NotificationsTestCase {
+public class NotificationsITCase {
 
     protected Notifd m_notifd;
     protected MockEventIpcManager m_eventMgr;

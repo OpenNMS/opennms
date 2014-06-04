@@ -73,7 +73,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false)
-public class AcknowledgmentDaoTest implements InitializingBean {
+public class AcknowledgmentDaoIT implements InitializingBean {
 	@Autowired
     private AcknowledgmentDao m_acknowledgmentDao;
 	

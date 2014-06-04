@@ -64,7 +64,7 @@ import org.springframework.webflow.test.MockRequestContext;
 @ContextConfiguration(locations={
         "classpath:org/opennms/web/svclayer/schedulerServiceTest.xml"
 })
-public class DefaultSchedulerServiceTest implements InitializingBean {
+public class DefaultSchedulerServiceIT implements InitializingBean {
     
     @Autowired 
     private DefaultSchedulerService m_schedulerService;

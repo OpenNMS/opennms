@@ -61,7 +61,7 @@ import org.opennms.netmgt.model.OnmsAtInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms7467NetworkBuilder;
 
-public class Nms7467Test extends LinkdTestBuilder {
+public class Nms7467IT extends LinkdBuilderITCase {
 
 	Nms7467NetworkBuilder builder = new Nms7467NetworkBuilder();
     @Test

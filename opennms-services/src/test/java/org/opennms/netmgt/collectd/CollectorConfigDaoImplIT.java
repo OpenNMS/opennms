@@ -50,7 +50,7 @@ import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.core.io.InputStreamResource;
 
-public class CollectorConfigDaoImplTest extends TestCase {
+public class CollectorConfigDaoImplIT extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();

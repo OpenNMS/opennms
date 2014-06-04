@@ -49,7 +49,7 @@ import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 
-public class BroadcastEventProcessorTest extends NotificationsTestCase {
+public class BroadcastEventProcessorIT extends NotificationsITCase {
 
     @Before
     @Override

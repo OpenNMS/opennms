@@ -73,7 +73,7 @@ import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms17216NetworkBuilder;
 
-public class Nms17216EnTest extends EnLinkdTestBuilder {
+public class Nms17216EnIT extends EnLinkdBuilderITCase {
         
 	Nms17216NetworkBuilder builder = new Nms17216NetworkBuilder();    
     /*

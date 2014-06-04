@@ -71,7 +71,7 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @Transactional
-public class WebNotificationRepositoryFilterTest implements InitializingBean {
+public class WebNotificationRepositoryFilterIT implements InitializingBean {
     
     @Autowired
     DatabasePopulator m_dbPopulator;

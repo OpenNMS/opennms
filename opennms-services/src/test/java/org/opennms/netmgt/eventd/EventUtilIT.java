@@ -58,7 +58,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false)
-public class EventUtilTest {
+public class EventUtilIT {
 
     private final MockNetwork m_network = new MockNetwork();
     private MockService m_svc;

@@ -42,14 +42,14 @@ import org.opennms.netmgt.snmp.mock.MockSnmpStrategy;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.core.io.ClassPathResource;
 
-public abstract class MockSnmpAgentTestCase {
+public abstract class MockSnmpAgentITCase {
     private InetAddress m_agentAddress;
     private int m_agentPort = 1691;
     private ClassPathResource m_propertiesResource = new ClassPathResource("loadSnmpDataTest.properties");
     
     private MockSnmpAgent m_agent;
 
-    public MockSnmpAgentTestCase() {
+    public MockSnmpAgentITCase() {
         setAgentAddress(InetAddressUtils.getLocalHostAddress());
     }
 

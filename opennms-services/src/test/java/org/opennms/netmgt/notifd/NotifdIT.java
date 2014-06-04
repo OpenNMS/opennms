@@ -62,7 +62,7 @@ import org.opennms.netmgt.xml.event.Tticket;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
  */
-public class NotifdTest extends NotificationsTestCase {
+public class NotifdIT extends NotificationsITCase {
 
     @Before
     @Override

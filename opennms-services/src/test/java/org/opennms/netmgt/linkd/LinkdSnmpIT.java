@@ -88,7 +88,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
 @JUnitConfigurationEnvironment
-public class LinkdSnmpTest extends TestNetworkBuilder implements InitializingBean {
+public class LinkdSnmpIT extends TestNetworkBuilder implements InitializingBean {
         
 	@Override
     public void afterPropertiesSet() throws Exception {

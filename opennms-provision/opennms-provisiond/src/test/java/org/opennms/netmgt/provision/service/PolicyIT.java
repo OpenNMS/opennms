@@ -73,7 +73,7 @@ import org.springframework.test.context.ContextConfiguration;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @Ignore("This test flaps because it doesn't account for provision ordering correctly")
-public class PolicyTest {
+public class PolicyIT {
 
     public static interface BackgroundTask {
         public void await() throws InterruptedException;

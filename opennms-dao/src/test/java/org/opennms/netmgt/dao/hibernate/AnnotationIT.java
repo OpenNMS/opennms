@@ -74,7 +74,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class AnnotationTest implements InitializingBean {
+public class AnnotationIT implements InitializingBean {
 	@Autowired
 	private SessionFactory m_sessionFactory;
         

@@ -63,7 +63,7 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @Transactional
-public class DaoWebNotificationRepositoryTest implements InitializingBean {
+public class DaoWebNotificationRepositoryIT implements InitializingBean {
 
     @Autowired
     DatabasePopulator m_dbPopulator;

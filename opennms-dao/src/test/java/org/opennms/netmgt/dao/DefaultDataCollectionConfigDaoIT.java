@@ -55,10 +55,12 @@ import org.springframework.core.io.InputStreamResource;
 
 /**
  * DefaultDataCollectionConfigDaoTest
+ * 
+ * This takes awhile, so it's marked as an integration test.
  *
  * @author <a href="mail:agalue@opennms.org">Alejandro Galue</a>
  */
-public class DefaultDataCollectionConfigDaoTest {
+public class DefaultDataCollectionConfigDaoIT {
     
     @Before
     public void setUp() {

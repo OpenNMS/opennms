@@ -36,8 +36,8 @@ import junit.framework.AssertionFailedError;
 
 import org.opennms.test.ThrowableAnticipator;
 
-public class TriggerSetSnmpInterfaceKeysOnInsertTest extends
-        PopulatedTemporaryDatabaseTestCase {
+public class TriggerSetSnmpInterfaceKeysOnInsertIT extends
+        PopulatedTemporaryDatabaseITCase {
     
     public void testSetSnmpInterfaceIdInIpInterface() throws Exception {
         executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");

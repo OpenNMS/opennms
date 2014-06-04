@@ -70,7 +70,7 @@ import org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms17216NetworkBuilder;
 
-public class Nms17216Test extends LinkdTestBuilder {
+public class Nms17216IT extends LinkdBuilderITCase {
 
 	Nms17216NetworkBuilder builder = new Nms17216NetworkBuilder();
     /*

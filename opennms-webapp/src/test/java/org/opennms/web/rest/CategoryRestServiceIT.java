@@ -45,7 +45,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class CategoryRestServiceTest extends AbstractSpringJerseyRestTestCase {
+public class CategoryRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Override
     protected void afterServletStart() throws Exception {

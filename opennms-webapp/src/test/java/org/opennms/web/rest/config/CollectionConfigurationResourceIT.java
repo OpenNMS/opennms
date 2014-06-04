@@ -70,9 +70,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class CollectionConfigurationResourceTest extends AbstractSpringJerseyRestTestCase {
+public class CollectionConfigurationResourceIT extends AbstractSpringJerseyRestTestCase {
     @SuppressWarnings("unused")
-    private static final Logger LOG = LoggerFactory.getLogger(CollectionConfigurationResourceTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CollectionConfigurationResourceIT.class);
 
     @Override
     protected void afterServletStart() throws Exception {

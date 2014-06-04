@@ -59,7 +59,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public abstract class EnLinkdTestBuilder extends EnLinkdTestHelper implements InitializingBean {
+public abstract class EnLinkdBuilderITCase extends EnLinkdTestHelper implements InitializingBean {
 
     @Autowired
     protected EnhancedLinkd m_linkd;

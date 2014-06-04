@@ -95,7 +95,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.rrd.storeByGroup=false")
 @JUnitTemporaryDatabase
-public class HttpCollectorTest implements TestContextAware, InitializingBean {
+public class HttpCollectorIT implements TestContextAware, InitializingBean {
 
     @Autowired
     private PlatformTransactionManager m_transactionManager;

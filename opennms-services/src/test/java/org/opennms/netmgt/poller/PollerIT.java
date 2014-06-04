@@ -84,7 +84,7 @@ import org.opennms.netmgt.xmlrpcd.OpenNMSProvisioner;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-public class PollerTest {
+public class PollerIT {
     private static final String CAPSD_CONFIG = "\n"
             + "<capsd-configuration max-suspect-thread-pool-size=\"2\" max-rescan-thread-pool-size=\"3\"\n"
             + "   delete-propagation-enabled=\"true\">\n"

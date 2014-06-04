@@ -50,7 +50,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 //@JUnitTemporaryDatabase
-public class StatsdTest implements InitializingBean {
+public class StatsdIT implements InitializingBean {
     @Autowired
     Statsd m_statsd;
     

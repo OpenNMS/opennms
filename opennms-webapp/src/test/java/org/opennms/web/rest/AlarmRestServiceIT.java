@@ -88,7 +88,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class AlarmRestServiceTest extends AbstractSpringJerseyRestTestCase {
+public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
 	@Autowired
 	TransactionTemplate m_template;
 

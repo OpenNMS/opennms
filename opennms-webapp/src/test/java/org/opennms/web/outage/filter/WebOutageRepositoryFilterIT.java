@@ -71,7 +71,7 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @Transactional
-public class WebOutageRepositoryFilterTest implements InitializingBean {
+public class WebOutageRepositoryFilterIT implements InitializingBean {
     
     @Autowired
     DatabasePopulator m_dbPopulator;

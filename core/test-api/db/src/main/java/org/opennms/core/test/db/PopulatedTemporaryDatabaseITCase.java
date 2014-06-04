@@ -43,8 +43,8 @@ import org.springframework.util.StringUtils;
  * DatabasePopulator to insert a standard set of content into the database. The context that contains the 
  * DatabasePopulator is <code>classpath:/META-INF/opennms/applicationContext-databasePopulator.xml</code>.
  */
-public class PopulatedTemporaryDatabaseTestCase extends
-        TemporaryDatabaseTestCase {
+public class PopulatedTemporaryDatabaseITCase extends
+        TemporaryDatabaseITCase {
     
     private InstallerDb m_installerDb = new InstallerDb();
     

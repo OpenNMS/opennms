@@ -33,7 +33,7 @@ import org.junit.Test;
 
 
 
-public class NotificationsPageTest extends OpenNMSSeleniumTestCase {
+public class NotificationsPageIT extends OpenNMSSeleniumITCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();

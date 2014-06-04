@@ -79,7 +79,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/testSiteStatusServiceContext.xml"
 })
 @JUnitConfigurationEnvironment
-public class DefaultSiteStatusServiceIntegrationTest implements InitializingBean {
+public class DefaultSiteStatusServiceIT implements InitializingBean {
 
     @Autowired
     private SiteStatusViewService m_aggregateService;

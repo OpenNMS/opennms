@@ -65,7 +65,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false)
-public class OnmsMapElementDaoHibernateTest implements InitializingBean {
+public class OnmsMapElementDaoHibernateIT implements InitializingBean {
 	@Autowired
 	private OnmsMapElementDao m_onmsMapElementDao;
 	
