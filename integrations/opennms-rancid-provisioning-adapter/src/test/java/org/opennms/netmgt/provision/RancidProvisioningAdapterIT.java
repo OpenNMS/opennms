@@ -29,26 +29,21 @@
 package org.opennms.netmgt.provision;
 
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.util.List;
-import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
-import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.http.annotations.JUnitHttpServer;
-import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.provision.SimpleQueuedProvisioningAdapter.AdapterOperation;
+import org.opennms.netmgt.provision.SimpleQueuedProvisioningAdapter.AdapterOperationType;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,28 +63,16 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-/**
- * Test class for Rancid Provisioning
- * 
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
- */
-public class RancidProvisioningAdapterIntegrationTest implements InitializingBean {
-
+public class RancidProvisioningAdapterIT implements InitializingBean {
+    @Autowired
+    private RancidProvisioningAdapter m_adapter;
+    
     @Autowired
     private NodeDao m_nodeDao;
-    
-    @Autowired
-    private MockEventIpcManager m_mockEventIpcManager;
-    
-    @Autowired
-    private DatabasePopulator m_populator;
 
-    @Autowired
-    private RancidProvisioningAdapter m_adapter; 
+    private AdapterOperation m_addOperation;
+    private AdapterOperation m_deleteOperation;
     
-    private static final int NODE_ID = 1;
-
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -97,30 +80,24 @@ public class RancidProvisioningAdapterIntegrationTest implements InitializingBea
 
     @Before
     public void setUp() throws Exception {
-        Properties props = new Properties();
-        props.setProperty("log4j.logger.org.hibernate", "INFO");
-        props.setProperty("log4j.logger.org.springframework", "INFO");
-        props.setProperty("log4j.logger.org.hibernate.SQL", "DEBUG");
-        MockLogAppender.setupLogging(props);
-        
-        m_populator.populateDatabase();
+        NetworkBuilder nb = new NetworkBuilder();
+        nb.addNode("test.example.com").setForeignSource("rancid").setForeignId("1");
+        nb.addInterface("192.168.0.1");
+        m_nodeDao.save(nb.getCurrentNode());
+        m_nodeDao.flush();
+
+        m_addOperation = m_adapter.new AdapterOperation(
+            m_nodeDao.findByForeignId("rancid", "1").getId(),
+            AdapterOperationType.ADD,
+            new SimpleQueuedProvisioningAdapter.AdapterOperationSchedule(0, 1, 1, TimeUnit.SECONDS)
+        );
+        m_deleteOperation = m_adapter.new AdapterOperation(
+            m_nodeDao.findByForeignId("rancid", "1").getId(),
+            AdapterOperationType.DELETE,
+            new SimpleQueuedProvisioningAdapter.AdapterOperationSchedule(0, 1, 1, TimeUnit.SECONDS)
+        );
     }
-    
-    /**
-     * TODO: This test needs to be updated so that it properly connects to the JUnitHttpServer
-     * for simulated RANCID REST operations.
-     */
-    @Test
-    @Transactional
-    @JUnitHttpServer(port=7081,basicAuth=true)
-    public void testAddNode() {
-        List<OnmsNode> nodes = m_nodeDao.findAll();
-        
-        assertTrue(nodes.size() > 0);
-        
-        m_adapter.addNode(nodes.get(0).getId());
-    }
-    
+
     /**
      * TODO: This test needs to be updated so that it properly connects to the JUnitHttpServer
      * for simulated RANCID REST operations.
@@ -129,38 +106,25 @@ public class RancidProvisioningAdapterIntegrationTest implements InitializingBea
     @Transactional
     @JUnitHttpServer(port=7081,basicAuth=true)
     @Ignore
-    public void testAddSameOperationTwice() throws InterruptedException {
-        // AdapterOperationChecker verifyOperations = new AdapterOperationChecker(2);
-        // m_adapter.getOperationQueue().addListener(verifyOperations);
-        OnmsNode node = m_nodeDao.get(NODE_ID);
-        assertNotNull(node);
-        int firstNodeId = node.getId();
-
-        m_adapter.addNode(firstNodeId);
-        m_adapter.addNode(firstNodeId); // should get deduplicated
-        m_adapter.updateNode(firstNodeId);
-
-        // assertTrue(verifyOperations.enqueueLatch.await(4, TimeUnit.SECONDS));
-        // assertTrue(verifyOperations.dequeueLatch.await(4, TimeUnit.SECONDS));
-        // assertTrue(verifyOperations.executeLatch.await(4, TimeUnit.SECONDS));
-        assertEquals(0, m_adapter.getOperationQueue().getOperationQueueForNode(firstNodeId).size());
+    public void testAdd() throws Exception {
+        OnmsNode n = m_nodeDao.findByForeignId("rancid", "1");
+        m_adapter.addNode(n.getId());
+        m_adapter.processPendingOperationForNode(m_addOperation);
+        Thread.sleep(3000);
     }
-
+    
+    /**
+     * TODO: This test needs to be updated so that it properly connects to the JUnitHttpServer
+     * for simulated RANCID REST operations.
+     * TODO: This test seems to pass even though it fails to connect with a mock RANCID server
+     */
     @Test
     @Transactional
-    public void testUpdateNode() {
-        // TODO: Add some tests
-    }
-
-    @Test
-    @Transactional
-    public void testDeleteNode() {
-        // TODO: Add some tests
-    }
-
-    @Test
-    @Transactional
-    public void testNodeConfigChanged() {
-        // TODO: Add some tests
+    @JUnitHttpServer(port=7081,basicAuth=true)
+    public void testDelete() throws Exception {
+        OnmsNode n = m_nodeDao.findByForeignId("rancid", "1");
+        m_adapter.deleteNode(n.getId());
+        m_adapter.processPendingOperationForNode(m_deleteOperation);
+        Thread.sleep(3000);
     }
 }

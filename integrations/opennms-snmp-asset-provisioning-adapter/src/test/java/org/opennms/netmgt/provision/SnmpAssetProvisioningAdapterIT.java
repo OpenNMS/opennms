@@ -66,7 +66,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class SnmpAssetProvisioningAdapterTest implements InitializingBean {
+public class SnmpAssetProvisioningAdapterIT implements InitializingBean {
 
 	@Autowired
 	private SnmpAssetProvisioningAdapter m_adapter;

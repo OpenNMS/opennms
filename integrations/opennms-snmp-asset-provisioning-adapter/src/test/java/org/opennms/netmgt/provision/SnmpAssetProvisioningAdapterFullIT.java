@@ -81,7 +81,7 @@ import org.springframework.util.Assert;
 		@JUnitSnmpAgent(host="172.20.1.201", resource = "classpath:snmpAssetTestData.properties"),
 		@JUnitSnmpAgent(host="172.20.1.204", resource = "classpath:snmpAssetTestData.properties")
 })
-public class SnmpAssetProvisioningAdapterIntegrationTest implements InitializingBean {
+public class SnmpAssetProvisioningAdapterFullIT implements InitializingBean {
 
 	@Autowired
 	private NodeDao m_nodeDao;
