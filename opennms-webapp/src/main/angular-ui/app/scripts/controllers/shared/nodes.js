@@ -24,28 +24,28 @@
       var self = this;
 
       $scope.init = function() {
-        self.fetchNodes();
+        $scope.fetchNodes();
       };
 
       $scope.fetchMoreNodes = function() {
         $scope.offset += $scope.limit;
-        self.fetchNodes();
+        $scope.fetchNodes();
       };
 
       $scope.fetchAllNodes = function() {
         $scope.limit = 0;
-        self.fetchNodes();
-      }
+        $scope.fetchNodes();
+      };
 
       $scope.getNodeLink = function (node) {
         return '#/node/' + node.id;
       };
 
-      self.fetchNodes = function() {
-        NodeService.list($scope.offset, $scope.limit).then(self.processNodes);
+      $scope.fetchNodes = function() {
+        NodeService.list($scope.offset, $scope.limit).then($scope.processNodes);
       };
 
-      self.processNodes = function(nodes) {
+      $scope.processNodes = function(nodes) {
         $log.debug('Got nodes:', nodes);
         $scope.nodes = $scope.nodes.concat(nodes);
 
@@ -71,28 +71,47 @@
 
       $scope.init();
     }])
-    .controller('NodeDetailCtrl', ['$scope', '$stateParams', '$log', 'NodeService', 'AlarmService', function ($scope, $stateParams, $log, NodeService) {
+    .controller('NodeDetailCtrl', ['$scope', '$stateParams', '$log', 'NodeService', 'AlarmService', function ($scope, $stateParams, $log, NodeService, AlarmService) {
       $scope.node = {};
 
       $scope.init = function() {
-        NodeService.get($stateParams.nodeId).then(function(node) {
-          $log.debug('Got node:', node);
-          $scope.node = node;
-          NodeService.getIpInterfaces(node._id).then(function(ifaces) {
-            $log.debug('Got node ifaces:', ifaces);
-            $scope.node.ifaces = ifaces;
-            $scope.node.ifaces.forEach(function(iface, index) {
-              NodeService.getIpInterfaceServices($scope.node._id, iface.ipAddress).then(function(services) {
-                $log.debug('Got node iface services:', services);
-                $scope.node.ifaces[index].services = services;
-              });
-            });
-          })
+        $scope.fetchNode($stateParams.nodeId);
+      };
+
+      $scope.processInterfaces = function(ifaces) {
+        $log.debug('Got node ifaces:', ifaces);
+        $scope.node.ifaces = ifaces;
+
+        $scope.node.ifaces.forEach(function(iface, index) {
+          NodeService.getIpInterfaceServices($scope.node._id, iface.ipAddress).then(function(services) {
+            $log.debug('Got node iface services:', services);
+            $scope.node.ifaces[index].services = services;
+          });
         });
       };
 
+      $scope.processNode = function(node) {
+        $log.debug('Got node:', node);
+        $scope.node = node;
+
+        // Fetch interfaces.
+        NodeService.getIpInterfaces(node._id).then($scope.processInterfaces);
+
+        AlarmService.getByNode($stateParams.nodeId).then(function(alarms) {
+          $scope.node.alarms = alarms;
+        });
+      };
+
+      $scope.fetchNode = function(nodeId) {
+        NodeService.get(nodeId).then($scope.processNode);
+      };
+
       /// Runtime stuff.
-      $scope.init();
+      if(!$scope.isTest) {
+        // When testing we don't want to initialize
+        $scope.init();
+      }
+
     }])
 
     .config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
