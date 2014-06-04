@@ -219,13 +219,13 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
         for (String role : configuredRoles) {
             String rolename = properties.getProperty("role." + role + ".name");
             if (rolename == null) {
-                  log().warn("Role configuration for '" + role + "' does not have 'name' parameter.  Expecting a 'role." + role + ".name' property");
+                  log().warn("Role configuration for '" + role + "' does not have 'name' parameter.  Expecting a 'role." + role + ".name' property. The role will not be usable.");
                   continue;
             }
 
             String userList = properties.getProperty("role." + role + ".users");
             if (userList == null) {
-                log().warn("Role configuration for '" + role + "' does not have 'users' parameter.  Expecting a 'role." + role + ".users' property");
+                log().warn("Role configuration for '" + role + "' does not have 'users' parameter.  Expecting a 'role." + role + ".users' property. The role will not be usable.");
                 continue;
             }
             String[] authUsers = BundleLists.parseBundleList(userList);
