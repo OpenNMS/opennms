@@ -1,17 +1,4 @@
 describe('Shared Node Controllers Module:', function() {
-//  var getThenObject;
-//  var getEmptyThenStub;
-//  beforeEach(function() {
-//    // This is helpful for promises.
-//    getThenObject = function(response) {
-//      return { then: function(cb) { cb(response) } };
-//    };
-//
-//    getEmptyThenStub = function() {
-//      return getThenObject({});
-//    };
-//  });
-
 
   beforeEach(module('opennms.controllers.shared.nodes'));
   beforeEach(function() {
@@ -20,7 +7,7 @@ describe('Shared Node Controllers Module:', function() {
 
   // Stub out the services.
   var NodeService;
-  var AlarmService ;
+  var AlarmService;
 
   beforeEach(inject(function(_NodeService_, _AlarmService_) {
     NodeService = _NodeService_;

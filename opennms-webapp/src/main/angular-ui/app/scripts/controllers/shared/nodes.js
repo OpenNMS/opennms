@@ -98,6 +98,7 @@
         NodeService.getIpInterfaces(node._id).then($scope.processInterfaces);
 
         AlarmService.getByNode($scope.node._id).then(function(alarms) {
+          $log.debug('Got alarms: ', alarms);
           $scope.node.alarms = alarms;
         });
       };
