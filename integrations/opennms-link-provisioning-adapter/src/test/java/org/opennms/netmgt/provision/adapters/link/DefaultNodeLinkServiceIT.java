@@ -82,7 +82,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class DefaultNodeLinkServiceTest implements InitializingBean {
+public class DefaultNodeLinkServiceIT implements InitializingBean {
     
     private int END_POINT1_ID;
     private int END_POINT2_ID;

@@ -60,7 +60,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class SimplerProvisioningAdapterTest implements InitializingBean {
+public class SimplerProvisioningAdapterIT implements InitializingBean {
     
     public static String NAME = "MyProvisioningAdapter";
     

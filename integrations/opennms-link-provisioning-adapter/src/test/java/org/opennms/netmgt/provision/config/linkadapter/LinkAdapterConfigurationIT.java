@@ -79,7 +79,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class LinkAdapterConfigurationTest implements InitializingBean {
+public class LinkAdapterConfigurationIT implements InitializingBean {
 
     static private class TestOutputResolver extends SchemaOutputResolver {
         private final File m_schemaFile;

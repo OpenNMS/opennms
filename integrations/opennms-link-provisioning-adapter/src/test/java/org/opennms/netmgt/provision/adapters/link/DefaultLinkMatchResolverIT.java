@@ -56,7 +56,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class DefaultLinkMatchResolverTest {
+public class DefaultLinkMatchResolverIT {
     @Autowired
     private DefaultLinkMatchResolverImpl m_resolver;
 

@@ -71,7 +71,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class LinkProvisioningAdapterTest implements InitializingBean {
+public class LinkProvisioningAdapterIT implements InitializingBean {
     
     public static final String END_POINT_1 = "nc-ral0001-to-ral0002-dwave";
     public static final String END_POINT_2 = "nc-ral0002-to-ral0001-dwave";
