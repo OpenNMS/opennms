@@ -17,13 +17,23 @@
 
       var alarmService = new Object();
       alarmService.internal = new Object();
-      alarmService.get = function () {
+
+      /**
+       * @description Retrieve a specific alarm. (TODO)
+       *
+       * @ngdoc method
+       * @name alarms.Services.AlarmsService#get
+       * @methodOf alarms.Services.AlarmsService
+       * @param {number} alarmId an alarm ID
+       * @returns {*} an angular promise to return a specific Alarm
+       */
+      alarmService.get = function (alarmId) {
       };
 
       /**
        * @description Retrieve alarms for a given node ID, limit and offset to paginate.
        *
-       * @name alarms.Services.AlarmsService:getByNode
+       * @name alarms.Services.AlarmsService#getByNode
        *
        * @ngdoc method
        * @methodOf alarms.Services.AlarmsService
@@ -47,7 +57,7 @@
       /**
        * @description Retrieves all active alarms, limited by offset and limit.
        *
-       * @name alarms.Services.AlarmsService:list
+       * @name alarms.Services.AlarmsService#list
        * @ngdoc method
        * @methodOf alarms.Services.AlarmsService
        * @param {number} offset  the alarm count to start the retrieval at. (default 0)
@@ -221,7 +231,7 @@
        * @description Requests all alarm summaries from the OpenNMS server and returns
        *              a promise to return an array of of AlarmSummary objects.
        * @ngdoc method
-       * @name alarms.Services.AlarmsService:summaries
+       * @name alarms.Services.AlarmsService#summaries
        * @methodOf alarms.Services.AlarmsService
        * @returns {Array} an angular promise to return an array of AlarmSummary objects
        */
