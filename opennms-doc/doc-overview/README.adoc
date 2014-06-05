@@ -18,6 +18,7 @@ Check out the source code from github with
     
 Change into the directory `opennms-doc`. With the command 
 
+    cd opennms/opennms-doc/doc-overview
     mvn clean install
     
 Maven will compile the AsciiDoc source files into HTML. For example, the output for the `doc-overview` module is generated in
