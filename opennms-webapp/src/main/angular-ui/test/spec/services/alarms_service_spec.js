@@ -1,4 +1,4 @@
-describe('Shared Alarms Services Module:', function() {
+describe('Shared Services Module - Alarms', function() {
   var rootScope;
   var AlarmService;
 
@@ -88,7 +88,7 @@ describe('Shared Alarms Services Module:', function() {
         _$httpBackend_.expectGET("/people/1234").respond(alarmsResponse);
         AlarmService.handlerFn = function() {};
         spyOn(AlarmService, 'handlerFn');
-        AlarmService.internal.getAlarmListSuccessHandler = function(deferred) {
+        AlarmService.internal.getAlarmListSuccessHandler = function() {
           return AlarmService.handlerFn;
         };
 
