@@ -1031,6 +1031,8 @@
    <maven.clover.licenseLocation>${user.home}/.m2/clover.license</maven.clover.licenseLocation>
 
     <!-- dependency versions -->
+    <oldAsmVersion>99.99.99-exclude-and-use-org.ow2.asm.asm-all-instead</oldAsmVersion>
+    <asmVersion>5.0.3</asmVersion>
     <activemqVersion>5.9.0</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
     <camelVersion>2.12.3</camelVersion>
@@ -2368,29 +2370,34 @@
       <!--  external dependencies -->
       <!--  PLEASE KEEP THESE IN ALPHABETICAL ORDER -->
       <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm-all</artifactId>
+        <version>${asmVersion}</version>
+      </dependency>
+      <dependency>
         <groupId>asm</groupId>
         <artifactId>asm</artifactId>
-        <version>3.1</version>
+        <version>${oldAsmVersion}</version>
       </dependency>
       <dependency>
         <groupId>asm</groupId>
         <artifactId>asm-analysis</artifactId>
-        <version>3.1</version>
+        <version>${oldAsmVersion}</version>
       </dependency>
       <dependency>
         <groupId>asm</groupId>
         <artifactId>asm-commons</artifactId>
-        <version>3.1</version>
+        <version>${oldAsmVersion}</version>
       </dependency>
       <dependency>
         <groupId>asm</groupId>
         <artifactId>asm-tree</artifactId>
-        <version>3.1</version>
+        <version>${oldAsmVersion}</version>
       </dependency>
       <dependency>
         <groupId>asm</groupId>
         <artifactId>asm-util</artifactId>
-        <version>3.1</version>
+        <version>${oldAsmVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.ant</groupId>
