@@ -39,7 +39,7 @@ Asciidoc documents have the +.asciidoc+ file extension.
 Note that different ways to add documentation works best for different cases:
 
 * Tutorials and How To's should be published on the http://wiki.opennms.org[OpenNMS Wiki].
-For example you want to describe how you use Net-SNMP agent and the SNMP monitor from OpenNMS to show how you solved a special use case.
+For example you want to describe how to use the Net-SNMP agent and the SNMP monitor from OpenNMS to solve a special use case with OpenNMS.
 
 * The documentation you can find in the source code can be characterized as a non-emotional technical documentation which explains concepts in detail and should be complete.
 
