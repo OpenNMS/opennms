@@ -25,7 +25,6 @@
       <name>OpenNMS Maven Snapshot Repository</name>
       <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
     </repository>
-<!--
     <repository>
       <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
       <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
@@ -33,6 +32,5 @@
       <name>OpenNMS Maven Repository</name>
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </repository>
--->
   </repositories>
 </project>
