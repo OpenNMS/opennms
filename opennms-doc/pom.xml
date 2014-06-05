@@ -48,44 +48,12 @@
                             </attributes>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>output-docbook</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>process-asciidoc</goal>
-                        </goals>
-                        <configuration>
-                            <backend>docbook</backend>
-                            <doctype>book</doctype>
-                        </configuration>
-                    </execution>
                 </executions>
                 <configuration>
                     <sourceDirectory>src/main/asciidoc</sourceDirectory>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <version>${mavenSitePluginVersion}</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>site</goal>
-                        </goals>
-                        <phase>package</phase>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <!-- Support for markdown -->
-                    <dependency>
-                        <groupId>org.apache.maven.doxia</groupId>
-                        <artifactId>doxia-module-markdown</artifactId>
-                        <version>${doxiaModuleMarkdownVersion}</version>
-                    </dependency>
-                </dependencies>
-                <configuration>
-                    <generateReports>false</generateReports>
+                    <attributes>
+                        <version>${project.version}</version>
+                    </attributes>
                 </configuration>
             </plugin>
         </plugins>
