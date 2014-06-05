@@ -249,8 +249,8 @@ public class KSC_PerformanceReportFactory {
      *
      * @return a {@link java.util.Map} object.
      */
-    public Map<Integer, Report> getReportList() {
-        LinkedHashMap<Integer, Report> reports = new LinkedHashMap<Integer, Report>(m_config.getReportCount());
+    public Map<Integer, String> getReportList() {
+        LinkedHashMap<Integer, String> reports = new LinkedHashMap<Integer, String>(m_config.getReportCount());
 
         List<Report> reportList = m_config.getReportCollection();
         Collections.sort(reportList, new Comparator<Report>() {
