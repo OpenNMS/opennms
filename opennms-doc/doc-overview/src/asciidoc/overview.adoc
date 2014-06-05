@@ -207,12 +207,12 @@ To include an image file, make sure it resides in the 'images/' directory relati
 
 [source]
 ----
-image::neo4j-logo.png[]
+image::opennms-logo.png[]
 ----
 
 Which is rendered as:
 
-image::neo4j-logo.png[]
+image::opennms-logo.png[]
 
 === Static Graphviz/DOT ===
 
@@ -387,8 +387,8 @@ This is how it renders:
 
 [snippet,java]
 ----
-component=neo4j-examples
-source=org/neo4j/examples/JmxDocTest.java
+component=opennms-examples
+source=org/opennms/examples/JmxDocTest.java
 classifier=test-sources
 tag=getStartTime
 ----
@@ -440,7 +440,7 @@ To illustrate this, look at the following documentation that generates the Ascii
 
 [source]
 ------------------------------
-include::{importdir}/neo4j-examples-docs-jar/dev/examples/hello-world-sample-chapter.asciidoc[]
+include::{importdir}/opennms-examples-docs-jar/dev/examples/hello-world-sample-chapter.asciidoc[]
 ------------------------------
 
 this file is included in this documentation via
@@ -448,14 +448,14 @@ this file is included in this documentation via
 [source]
 ----
   :leveloffset: 3
-  include::{importdir}/neo4j-examples-docs-jar/dev/examples/hello-world-sample-chapter.asciidoc[]
+  include::{importdir}/opennms-examples-docs-jar/dev/examples/hello-world-sample-chapter.asciidoc[]
 ----
 
 which renders the following chapter:
 
 :leveloffset: 3
 
-include::{importdir}/neo4j-examples-docs-jar/dev/examples/hello-world-sample-chapter.asciidoc[]
+include::{importdir}/opennms-examples-docs-jar/dev/examples/hello-world-sample-chapter.asciidoc[]
 
 :leveloffset: 2
 
