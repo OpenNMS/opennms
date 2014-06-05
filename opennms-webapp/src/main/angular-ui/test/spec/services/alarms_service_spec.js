@@ -98,6 +98,22 @@ describe('Shared Alarms Services Module:', function() {
         expect(AlarmService.handlerFn).toHaveBeenCalled();
       }));
     });
+
+    describe('processAlarmListResults', function() {
+      var alarms;
+      beforeEach(function() { alarms = AlarmService.internal.processAlarmListResults(sampleAlarmsResults); })
+
+      it('should return an array the same size as the results', function() {
+        expect(alarms.length).toBe(sampleAlarmsResults.alarms.alarm.length);
+      });
+
+      it('should map the alarms to Alarm objects', function() {
+        alarms.forEach(function(alarm) {
+          expect(alarm.className).not.toBeUndefined();
+          expect(alarm.className).toBe('Alarm');
+        });
+      });
+    });
   });
 
 });
