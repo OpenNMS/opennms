@@ -109,6 +109,16 @@ public class KscRestServiceTest extends AbstractSpringJerseyRestTestCase {
         assertTrue(xml, xml.contains("title=\"foo\""));
     }
 
+    @Test
+    public void testAddNewGraph() throws Exception {
+        final String kscReport = "<kscReport id=\"2\" label=\"foo2\"/>";
+
+        sendPost("/ksc", kscReport, 303, null);
+
+        final String xml = slurp(m_configFile);
+        assertTrue(xml, xml.contains("title=\"foo2\""));
+    }
+
     private static String slurp(final File file) throws Exception {
         Reader fileReader = null;
         BufferedReader reader = null;
@@ -129,58 +139,4 @@ public class KscRestServiceTest extends AbstractSpringJerseyRestTestCase {
             IOUtils.closeQuietly(fileReader);
         }
     }
-
-    /*
-    @Test
-    public void testWriteGroup() throws Exception {
-        createGroup("test");
-
-        String xml = sendRequest(GET, "/groups/test", 200);
-        assertTrue(xml.contains("<group><name>test</name>"));
-
-        sendPut("/groups/test", "comments=MONKEYS");
-
-        xml = sendRequest(GET, "/groups/test", 200);
-        assertTrue(xml.contains(">MONKEYS<"));
-    }
-
-    @Test
-    public void testDeleteGroup() throws Exception {
-        createGroup("deleteMe");
-
-        String xml = sendRequest(GET, "/groups", 200);
-        assertTrue(xml.contains("deleteMe"));
-
-        sendRequest(DELETE, "/groups/idontexist", 400);
-
-        sendRequest(DELETE, "/groups/deleteMe", 200);
-
-        sendRequest(GET, "/groups/deleteMe", 404);
-    }
-
-    @Test
-    public void testUsers() throws Exception {
-        createGroup("deleteMe");
-
-        sendRequest(PUT, "/groups/deleteMe/users/totallyUniqueUser", 200);
-
-        String xml = sendRequest(GET, "/groups/deleteMe", 200);
-        assertTrue(xml.contains("totallyUniqueUser"));
-
-        sendRequest(DELETE, "/groups/deleteMe/users/totallyBogusUser", 400);
-        sendRequest(DELETE, "/groups/deleteMe/users/totallyUniqueUser", 200);
-
-        xml = sendRequest(GET, "/groups/deleteMe", 200);
-        assertFalse(xml.contains("totallyUniqueUser"));
-    }
-
-    protected void createGroup(final String groupname) throws Exception {
-        String group = "<group>" +
-                "<name>" + groupname + "</name>" +
-                "<comments>" + groupname + "</comments>" +
-                "</group>";
-        sendPost("/groups", group);
-    }
-    */
-
 }

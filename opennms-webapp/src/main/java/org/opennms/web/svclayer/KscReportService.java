@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -84,13 +84,20 @@ public interface KscReportService {
      * <p>getTimeSpans</p>
      *
      * @param includeNone a boolean.
-     * @return a java$util$Map object.
+     * @return a {@link java.util.Map} object.
      */
     public Map<String, String> getTimeSpans(boolean includeNone);
     /**
      * <p>getReportList</p>
      *
-     * @return a java$util$Map object.
+     * @return a {@link java.util.Map} object.
      */
     public Map<Integer, String> getReportList();
+
+    /**
+     * <p>getReportMap</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
+    public Map<Integer, Report> getReportMap();
 }
