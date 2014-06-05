@@ -1,63 +1,81 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-
-    <parent>
-        <artifactId>opennms</artifactId>
-        <groupId>org.opennms</groupId>
-        <version>1.12.8-SNAPSHOT</version>
-    </parent>
-
-    <artifactId>documentation</artifactId>
-    <packaging>pom</packaging>
-    <name>OpenNMS :: Documentation</name>
-    <description>Official documentation</description>
-
-    <modules>
-        <module>guide-install</module>
-        <module>guide-user</module>
-        <module>guide-development</module>
-        <module>guide-admin</module>
-        <module>releasenotes</module>
-    </modules>
-
-    <properties>
-        <mavenSitePluginVersion>3.3</mavenSitePluginVersion>
-        <doxiaModuleMarkdownVersion>1.5</doxiaModuleMarkdownVersion>
-    </properties>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.asciidoctor</groupId>
-                <artifactId>asciidoctor-maven-plugin</artifactId>
-                <version>0.1.4</version>
-                <executions>
-                    <execution>
-                        <id>output-html</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>process-asciidoc</goal>
-                        </goals>
-                        <configuration>
-                            <sourceHighlighter>prettify</sourceHighlighter>
-                            <backend>html5</backend>
-                            <attributes>
-                                <toc>left</toc>
-                            </attributes>
-                        </configuration>
-                    </execution>
-                </executions>
-                <configuration>
-                    <headerFooter>true</headerFooter>
-                    <sourceDirectory>src/main/asciidoc</sourceDirectory>
-                    <imagesDir>images</imagesDir>
-                    <attributes>
-                        <version>${project.version}</version>
-                    </attributes>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>opennms</artifactId>
+    <groupId>org.opennms</groupId>
+    <version>1.12.8-SNAPSHOT</version>
+  </parent>
+  <artifactId>documentation</artifactId>
+  <packaging>pom</packaging>
+  <name>OpenNMS :: Documentation</name>
+  <description>Official documentation</description>
+  <modules>
+    <module>guide-install</module>
+    <module>guide-user</module>
+    <module>guide-development</module>
+    <module>guide-admin</module>
+    <module>releasenotes</module>
+  </modules>
+  <properties>
+    <asciidoc.source.directory>${basedir}/src/main/asciidoc</asciidoc.source.directory>
+    <asciidoc.output.directory>${basedir}/target/generated-docs</asciidoc.output.directory>
+  </properties>
+  <build>
+    <plugins>
+      <!-- we need this to copy the images to the generated-docs output directory,
+      otherwise images would not be part of the generated-docs -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-resources</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${asciidoc.output.directory}</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>src/main/resources</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.asciidoctor</groupId>
+        <artifactId>asciidoctor-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>output-html</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>process-asciidoc</goal>
+            </goals>
+            <configuration>
+              <sourceHighlighter>prettify</sourceHighlighter>
+              <backend>html5</backend>
+              <attributes>
+                <toc>left</toc>
+              </attributes>
+            </configuration>
+          </execution>
+        </executions>
+        <configuration>
+          <headerFooter>true</headerFooter>
+          <sourceDirectory>${asciidoc.source.directory}</sourceDirectory>
+          <outputDirectory>${asciidoc.output.directory}</outputDirectory>
+          <attributes>
+            <version>${project.version}</version>
+          </attributes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
