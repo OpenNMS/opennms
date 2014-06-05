@@ -428,11 +428,26 @@ module.exports = function (grunt) {
           showSource: true,
           sections: [
             {
-              id: 'alarms',
-              title: 'Alarms',
+              id: 'services',
+              title: 'Services',
               scripts: [
-                '<%= yeoman.app %>/<%= yeoman.scripts %>/services/shared/alarm.services.js',
-                '<%= yeoman.app %>/<%= yeoman.scripts %>/model/alarm.model.js'
+                '<%= yeoman.app %>/<%= yeoman.scripts %>/services/shared/alarm.services.js'
+
+              ]
+            },
+//            {
+//              id: 'events',
+//              title: 'Events',
+//              scripts: [
+//                '<%= yeoman.app %>/<%= yeoman.scripts %>/model/event.model.js'
+//              ]
+//            },
+            {
+              id: 'models',
+              title: 'Models',
+              scripts: [
+                '<%= yeoman.app %>/<%= yeoman.scripts %>/model/alarm.model.js',
+                '<%= yeoman.app %>/<%= yeoman.scripts %>/model/event.model.js'
               ]
             }
           ]

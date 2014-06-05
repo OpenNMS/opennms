@@ -1,10 +1,24 @@
 /* global moment: true */
 
+/**
+ * @ngdoc object
+ * @name models.Event
+ * @param {Object} alarm an event JSON object
+ * @constructor
+ */
 function Event(event) {
   'use strict';
   //console.log('new Event():', event);
 
   var self = this;
+
+  /**
+   * @description
+   * @ngdoc property
+   * @name models.Event#eventId
+   * @propertyOf models.Event
+   * @returns {number} Unique identifier for the event
+   */
   self.eventId = Number(event['_id']);
   self.uei = event['uei'];
 
