@@ -3,82 +3,65 @@
 Ronny Trommer <ronny@opennms.org>; Markus von Rüden <mvr@opennms.com>
 :ascii-ids:
 
-== Chapter 1
-
-=== Chapter 1.1
-
-== Chapter 2
-
-
-== Images
-
-.pris-overview.graphml
-image::images/pris-overview.png[pris-overview.graphml]
-
-.example.odp
-image::images/example.png[example.odp]
-
 [[community-docs]]
-Writing OpenNMS Documentation
-===========================
+== Writing OpenNMS Documentation
 
 NOTE: Other than writing documentation, you can help out by providing comments about improvements or reporting bugs - head over to the http://issues.opennms.org/browse/NMS/component/10011[issue tracker for documentation] to do that!
 
 For how to build the manual see:
-https://github.com/neo4j/neo4j/blob/master/manual/README.asciidoc[readme]
+https://github.com/OpenNMS/opennms/blob/development/docs/opennms-doc/doc-overview/README.adoc[readme]
 
-The documents use the asciidoc format, see:
+The documents use the AsciiDoc format, see:
 
 * http://www.methods.co.nz/asciidoc/[Aciidoc Reference]
+* http://www.methods.co.nz/asciidoc/faq.html[AsciiDoc FAQ]
 * http://powerman.name/doc/asciidoc[AsciiDoc cheatsheet]
+* http://xpt.sourceforge.net/techdocs/nix/tool/asciidoc-syn/ascs01-AsciiDocMarkupSyntaxQuickSummary/single/[AsciiDoc Cheatsheet]
 
-The cheatsheet is really useful!
+Here you can find other resources to get familiar with AsciiDoc, see:
+
+ * http://asciidoctor.org/docs/user-manual[AsciiDoc User Manual]
+ * http://asciidoctor.org/docs/install-and-use-asciidoctor-maven-plugin/[AsciiDoc Maven Plugin]
+ * https://groups.google.com/forum/?fromgroups#!forum/asciidoc[AsciiDoc discussion list]
+ * http://code.google.com/p/asciidoc/issues/list[AsciiDoc issue tracker]
+ * https://github.com/oreillymedia/docbook2asciidoc[Docbook to AsciiDoc]
+ * http://blog.rainwebs.net/2010/02/25/how-to-create-handsome-pdf-documents-without-frustration/[How to create handsome PDF documents without frustration]
+
+The cheatsheets are really useful!
 
 [[community-docs-overall-flow]]
 == Overall Flow ==
 
-Each (sub)project has its own documentation, which will produce a 'docs.jar' file.
-By default this file is assembled from the contents in 'src/docs/'.
+Each (sub)project represents a part of the documentation, which will produce a HTML output in the file system.
+The output is generated in the `target/generated` sources folder.
 Asciidoc documents have the +.asciidoc+ file extension.
-
-The documents can use code snippets which will extract code from the project.
-The corresponding code must be deployed to the 'sources.jar' or 'test-sources.jar' file.
-
-By setting up a unit test accordingly, documentation can be written directly in the JavaDoc comment.
-
-The above files are all consumed by the build of the manual (by adding them as dependencies).
-To get content included in the manual, it has to be explicitly included by a document in the manual as well.
 
 Note that different ways to add documentation works best for different cases:
 
-* For detail level documentation, it works well to write the documentation as part of unit tests (in the JavaDoc comment).
-  In this case, you typically do not want to link to the source code in the documentation.
-* For tutorial level documentation, the result will be best by writing a +.asciidoc+ file containing the text.
-  Source snippets and output examples can then be included from there.
-  In this case you typically want to link to the source code, and users should be able to run it without any special setup.
+* Tutorials and How To's should be published on the http://wiki.opennms.org[OpenNMS Wiki].
+For example you want to describe how you use Net-SNMP agent and the SNMP monitor from OpenNMS to show how you solved a special use case.
 
-== File Structure in 'docs.jar' ==
+* The documentation you can find in the source code can be characterized as a non-emotional technical documentation which explains concepts in detail and should be complete.
+
+== File Structure in 'opennms-doc' ==
 
 [options="header", cols="e,d"]
 |========================
 | Directory | Contents
-| dev/ | content aimed at developers
-| dev/images/ | images used by the dev docs
-| ops/ | content aimed at operations
-| ops/images/ | images used by the ops docs
-| man/ | manpages
+| doc-overview/ | module with this overview documentation
+| guide-user/ | module with the guide for people how to use and configure OpenNMS
+| guide-admin/ | module with the guide for administrators optimizing and running OpenNMS
+| guide-development/ | module with the guide for people who want to develop within OpenNMS
+| guide-install/ | module with the guide how to install OpenNMS on different operating systems
+| releasenotes/ | module with the changelog and release notes
 |========================
-
-Additional subdirectories are used as needed to structure the documents,
-like 'dev/tutorial/', 'ops/tutorial/' etc.
 
 == Headings and document structure ==
 
 Each document starts over with headings from level zero (the document title).
 Each document should have an id.
 In some cases sections in the document need to have id's as well, this depends on where they fit in the overall structure.
-To be able to link to content, it has to have an id.
-Missing id's in mandatory places will fail the build.
+To be able to link to content, it has to have an id. Missing id's in mandatory places will fail the build.
 
 This is how a document should start:
 
@@ -105,8 +88,6 @@ content here ...
 
 ----
 
-Asciidoc comes with one more syntax for headings, but in this project it's not used.
-
 == Writing ==
 
 Put one sentence on each line.
@@ -114,7 +95,6 @@ This makes it easy to move content around, and also easy to spot (too) long sent
 
 == Gotchas ==
 
-* A chapter can't be empty. (the build will fail on the docbook xml validity check)
 * Always leave a blank line at the end of documents
   (or the title of the next document might end up in the last
   paragraph of the document)
@@ -150,19 +130,19 @@ External links are added like this:
 
 [source]
 ----
-http://neo4j.org/[Link text here]
+http://www.opennms.org/[Link text here]
 ----
 
-Which renders like: http://neo4j.org/[Link text here]
+Which renders like: http://www.opennms.org/[Link text here]
 
 For short links it may be better not to add a link text, just do:
 
 [source]
 ----
-http://neo4j.org/
+http://www.opennms.org/
 ----
 
-Which renders like: http://neo4j.org/
+Which renders like: http://www.opennms.org/
 
 NOTE: It's ok to have a dot right after the URL, it won't be part of the link.
 
@@ -299,12 +279,11 @@ CAUTION: Keywords of the DOT language have to be surrounded by double quotes whe
 
 Common attributes you can use in documents:
 
-* \{neo4j-version} - rendered as "{neo4j-version}"
-* \{neo4j-git-tag} - rendered as "{neo4j-git-tag}"
-* \{lucene-version} - rendered as "{lucene-version}"
+* \{opennms-version} - rendered as "{opennms-version}"
+* \{opennms-git-tag} - rendered as "{opennms-git-tag}"
 
 These can substitute part of URLs that point to for example APIdocs or source code.
-Note that neo4j-git-tag also handles the case of snapshot/master.
+Note that opennms-git-tag also handles the case of snapshot/master.
 
 Sample Asciidoc attributes which can be used:
 
@@ -337,7 +316,6 @@ That is, missing includes here will still break the build!
 ////
 ----
 
-
 == Code Snippets ==
 
 === Explicitly defined in the document ===
@@ -347,19 +325,18 @@ WARNING: Use this kind of code snippets as little as possible.
 
 This is how to do it:
 
-[source]
+[source,xml]
 ----
- [source,cypher]
- ----
- start n=(2, 1) where (n.age < 30 and n.name = "Tobias") or not(n.name = "Tobias")  return n
- ----
-----
-
-Which is rendered as:
-
-[source,cypher]
-----
-start n=(2, 1) where (n.age < 30 and n.name = "Tobias") or not(n.name = "Tobias")  return n
+<service name="DNS" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="2" />
+  <parameter key="timeout" value="5000" />
+  <parameter key="port" value="53" />
+  <parameter key="lookup" value="localhost" />
+  <parameter key="fatal-response-codes" value="2,3,5" /><!-- ServFail, NXDomain, Refused -->
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
+  <parameter key="rrd-base-name" value="dns" />
+  <parameter key="ds-name" value="dns" />
+</service>
 ----
 
 If there's no suitable syntax highlighter, just omit the language: +[source]+.
@@ -367,15 +344,13 @@ If there's no suitable syntax highlighter, just omit the language: +[source]+.
 Currently the following syntax highlighters are enabled:
 
 * Bash
-* Cypher
 * Groovy
 * Java
 * JavaScript
 * Python
 * XML
 
-For other highlighters we could add see http://alexgorbatchev.com/SyntaxHighlighter/manual/brushes/.
-
+For other highlighters we could add see https://code.google.com/p/google-code-prettify/.
 
 === Fetched from source code ===
 
@@ -401,8 +376,8 @@ This is how to define a code snippet inclusion:
 ----
  [snippet,java]
  ----
- component=neo4j-examples
- source=org/neo4j/examples/JmxDocTest.java
+ component=opennms-examples
+ source=org/opennms/examples/JmxDocTest.java
  classifier=test-sources
  tag=getStartTime
  ----
@@ -484,42 +459,11 @@ include::{importdir}/neo4j-examples-docs-jar/dev/examples/hello-world-sample-cha
 
 :leveloffset: 2
 
-== Integrated Live Console ==
+== Images
 
-An interactive console can be added and will show up in the online HTML version.
-An optional title can be added, which will be used for the text of the button.
+.pris-overview.graphml
+image::images/pris-overview.png[pris-overview.graphml]
 
-This is how to do it, using Cypher to define the data, with an empty line to separate it from the query:
-
-[source]
-----
- .Interactive Example
- [console]
- ----
- CREATE (n {name: 'Neo4j'})
-
- MATCH (n)
- return n
- ----
-----
-
-And this is the result:
-
-.Interactive Example
-[console]
-----
-CREATE (n {name: 'Neo4j'})
-
-MATCH (n)
-return n
-----
-
-== Toolchain ==
-
-Useful links when configuring the docbook toolchain:
-
-* http://www.docbook.org/tdg/en/html/docbook.html
-* http://www.sagehill.net/docbookxsl/index.html
-* http://docbook.sourceforge.net/release/xsl/1.76.1/doc/html/index.html
-* http://docbook.sourceforge.net/release/xsl/1.76.1/doc/fo/index.html
+.example.odp
+image::images/example.png[example.odp]
 
