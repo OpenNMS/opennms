@@ -418,46 +418,23 @@ module.exports = function (grunt) {
       }
     },
 
-    docular: {
-      docular_webapp_target : "docs",
-      groups: [
-        {
-          groupTitle: 'Modules',
-          groupId: 'modules',
-          groupIcon: 'icon-book',
-          showSource: true,
-          sections: [
-            {
-              id: 'services',
-              title: 'Services',
-              scripts: [
-                '<%= yeoman.app %>/<%= yeoman.scripts %>/services/shared/alarm.services.js'
+    ngdocs: {
+      options: {
+        dest: 'docs',
+        title: 'OpenNMS Angular Documentation',
+        startPage: '/models'
+      },
 
-              ]
-            },
-//            {
-//              id: 'events',
-//              title: 'Events',
-//              scripts: [
-//                '<%= yeoman.app %>/<%= yeoman.scripts %>/model/event.model.js'
-//              ]
-//            },
-            {
-              id: 'models',
-              title: 'Models',
-              scripts: [
-                '<%= yeoman.app %>/<%= yeoman.scripts %>/model/alarm.model.js',
-                '<%= yeoman.app %>/<%= yeoman.scripts %>/model/event.model.js'
-              ]
-            }
-          ]
+      models: {
+        src: ['<%= yeoman.app %>/<%= yeoman.scripts %>/model/*.model.js'],
+        title: 'Models'
+      },
 
-        }
-      ],
-      showDocularDocs: false,
-      showAngularDocs: false
+      services: {
+        src: ['<%= yeoman.app %>/<%= yeoman.scripts %>/services/shared/*.services.js'],
+        title: 'Services'
+      }
     }
-
   });
 
   // Register tasks for all Cordova commands, but namespace
@@ -487,7 +464,7 @@ module.exports = function (grunt) {
   });
 
   // Load the docular plugin.
-  grunt.loadNpmTasks('grunt-docular');
+  grunt.loadNpmTasks('grunt-ngdocs');
 
   // Since Apache Ripple serves assets directly out of their respective platform
   // directories, we watch all registered files and then copy all un-built assets
@@ -528,8 +505,6 @@ module.exports = function (grunt) {
     grunt.config.set('watch', karma);
     return grunt.task.run(['watch']);
   });
-
-  grunt.registerTask('docs', ['docular']);
 
   grunt.registerTask('serve', function (target) {
     if (target === 'dist') {

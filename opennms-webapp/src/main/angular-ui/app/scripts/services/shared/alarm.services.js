@@ -7,7 +7,7 @@
 
   /**
    * @ngdoc service
-   * @name services.AlarmsService
+   * @name AlarmService
    *
    * @description The AlarmService provides components with access to the OpenNMS alarms REST resource.
    */
@@ -22,8 +22,8 @@
        * @description Retrieve a specific alarm. (TODO)
        *
        * @ngdoc method
-       * @name services.AlarmsService#get
-       * @methodOf services.AlarmsService
+       * @name AlarmService#get
+       * @methodOf AlarmService
        * @param {number} alarmId an alarm ID
        * @returns {*} an angular promise to return a specific Alarm
        */
@@ -33,10 +33,10 @@
       /**
        * @description Retrieve alarms for a given node ID, limit and offset to paginate.
        *
-       * @name services.AlarmsService#getByNode
+       * @name AlarmService#getByNode
        *
        * @ngdoc method
-       * @methodOf services.AlarmsService
+       * @methodOf AlarmService
        * @param {number} nodeId the node ID to retrieve alarms for.
        * @param {number} offset the alarm count to start the retrieval at. (default 0)
        * @param {number} limit the total alarms to retrieve. (default 50)
@@ -57,9 +57,9 @@
       /**
        * @description Retrieves all active alarms, limited by offset and limit.
        *
-       * @name services.AlarmsService#list
+       * @name AlarmService#list
        * @ngdoc method
-       * @methodOf services.AlarmsService
+       * @methodOf AlarmService
        * @param {number} offset  the alarm count to start the retrieval at. (default 0)
        * @param {number} limit  the total alarms to retrieve. (default 50)
        * @returns {*} an angular promise to return an array of Alarms
@@ -79,9 +79,9 @@
       /**
        * @description (Internal) Used internally to initiate the $http request..
        *
-       * @name services.AlarmsService:internal.fetchAlarms
+       * @name AlarmService:internal.fetchAlarms
        * @ngdoc method
-       * @methodOf services.AlarmsService
+       * @methodOf AlarmService
        * @param {string} alarmsUrl the formatted REST URL to retrieve alarms from.
        * @returns {*} an angular promise to return an array of Alarms
        * @private
@@ -103,9 +103,9 @@
       /**
        * @description (Internal) Processes the REST results into a new model.
        *
-       * @name services.AlarmsService:internal.processAlarmsList
+       * @name AlarmService:internal.processAlarmsList
        * @ngdoc method
-       * @methodOf services.AlarmsService
+       * @methodOf AlarmService
        * @param {Object} results the REST results object from the alarms resource.
        * @returns {Array} an array of Alarm objects.
        * @private
@@ -125,9 +125,9 @@
        * @description (Internal) A closure method that provides deferred to the error handler for
        * the methods that retrieve alarms listings.
        *
-       * @name services.AlarmsService:internal.getAlarmsListErrorHandler
+       * @name AlarmService:internal.getAlarmsListErrorHandler
        * @ngdoc method
-       * @methodOf services.AlarmsService
+       * @methodOf AlarmService
        * @param {Object} deferred the promise object that will be passed back through the API.
        * @returns {*} a handler function.
        * @private
@@ -146,9 +146,9 @@
        * the methods that retrieve alarms listings. It converts the raw results
        * from XML to JSON and passes on into internal.processAlarmsListResults.
        *
-       * @name services.AlarmsService:internal.getAlarmListSuccessHandler
+       * @name AlarmService:internal.getAlarmListSuccessHandler
        * @ngdoc method
-       * @methodOf services.AlarmsService
+       * @methodOf AlarmService
        * @param {Object} deferred the promise object that will be passed back through the API.
        * @returns {*} a handler function.
        * @private
@@ -168,9 +168,9 @@
        * the methods that retrieve alarms summaries. It converts the raw results
        * from XML to JSON and passes on into internal.processAlarmSummaryResults.
        *
-       * @name services.AlarmsService:internal.getAlarmSummarySuccessHandler
+       * @name AlarmService:internal.getAlarmSummarySuccessHandler
        * @ngdoc method
-       * @methodOf services.AlarmsService
+       * @methodOf AlarmService
        * @param {Object} deferred the promise object that will be passed back through the API.
        * @returns {*} a handler function.
        */
@@ -190,8 +190,8 @@
        * @description (Internal) Processes the REST results
        *
        * @ngdoc method
-       * @name services.AlarmsService:processAlarmSummaryResults
-       * @methodOf services.AlarmsService
+       * @name AlarmService:processAlarmSummaryResults
+       * @methodOf AlarmService
        * @param {Object} results RESTful results already converted from XML to JSON.
        * @returns {Array} an array of AlarmSummary objects.
        */
@@ -211,9 +211,9 @@
        * @description (Internal) A closure method that provides deferred to the error handler for
        * the methods that retrieve alarms listings.
        *
-       * @name services.AlarmsService:internal.getAlarmSummaryErrorHandler
+       * @name AlarmService:internal.getAlarmSummaryErrorHandler
        * @ngdoc method
-       * @methodOf services.AlarmsService
+       * @methodOf AlarmService
        * @param {Object} deferred the promise object that will be passed back through the API.
        * @returns {*} a handler function.
        * @private
@@ -231,8 +231,8 @@
        * @description Requests all alarm summaries from the OpenNMS server and returns
        *              a promise to return an array of of AlarmSummary objects.
        * @ngdoc method
-       * @name services.AlarmsService#summaries
-       * @methodOf services.AlarmsService
+       * @name AlarmService#summaries
+       * @methodOf AlarmService
        * @returns {Array} an angular promise to return an array of AlarmSummary objects
        */
       alarmService.summaries = function () {
