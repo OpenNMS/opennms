@@ -6,6 +6,7 @@ The documentation is tight into the build process of OpenNMS. The documentation 
 
 = Build from source
 It is possible to build the documentation from source. It requires the following components:
+
 * Java Development Kit 1.6+, OpenJDK or Oracle Java
 * Maven
 * Internet connectivity for downloading the package dependencies with Maven
