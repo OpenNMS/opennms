@@ -30,8 +30,13 @@ package org.opennms.netmgt.enlinkd;
 
 import static org.opennms.core.utils.InetAddressUtils.str;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
+import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
 import org.slf4j.Logger;
@@ -95,24 +100,57 @@ private final static Logger LOG = LoggerFactory.getLogger(LldpLinkdNodeDiscovery
 
         final LldpLocPortGetter lldpLocPort = new LldpLocPortGetter(getPeer());
         trackerName = "lldpRemTable";
-        LldpRemTableTracker lldpRemTable = new LldpRemTableTracker() {
 
-        	public void processLldpRemRow(final LldpRemRow row) {
-        		m_linkd.getQueryManager().store(getNodeId(),row.getLldpLink(lldpLocPort));
-        	}
+        // Create a shared producer-consumer queue so that we can perform
+        // all of the DAO store operations on the same thread in the same
+        // transaction
+        final BlockingQueue<LldpLink> links = new LinkedBlockingQueue<LldpLink>();
+
+        LldpRemTableTracker lldpRemTable = new LldpRemTableTracker() {
+            @Override
+            public void processLldpRemRow(final LldpRemRow row) {
+                LldpLink link = row.getLldpLink(lldpLocPort);
+                // Put the link into the p-c queue
+                if (!links.offer(link)) {
+                    LOG.error("Could not add LldpLink: {}", link);
+                }
+            }
         };
 
-		LOG.info( "run: collecting {} on: {}",trackerName, str(getTarget()));
+        LOG.info( "run: collecting {} on: {}",trackerName, str(getTarget()));
         walker = SnmpUtils.createWalker(getPeer(), trackerName, lldpRemTable);
         walker.start();
-        
+
         try {
-            walker.waitFor();
+            // Temporary collection for draining elements
+            Collection<LldpLink> myLinks = new ArrayList<LldpLink>();
+
+            // Loop while the walker is still active and drain from the p-c queue
+            while (!walker.await(0)) {
+                if (links.drainTo(myLinks) > 0) {
+                    for (LldpLink link : myLinks) {
+                        m_linkd.getQueryManager().store(getNodeId(), link);
+                    }
+                    myLinks.clear();
+                }
+                // It looks like collections take a couple dozen milliseconds so
+                // wait about 10 millis between draining from the p-c queue
+                Thread.sleep(10);
+            }
+
+            // Perform one final drain of the p-c queue
+            if (links.drainTo(myLinks) > 0) {
+                for (LldpLink link : myLinks) {
+                    m_linkd.getQueryManager().store(getNodeId(), link);
+                }
+                myLinks.clear();
+            }
+
             if (walker.timedOut()) {
-            	LOG.info(
+                LOG.info(
                         "run:Aborting node scan : Agent timed out while scanning the {} table", trackerName);
             }  else if (walker.failed()) {
-            	LOG.info(
+                LOG.info(
                         "run:Aborting node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
             }
         } catch (final InterruptedException e) {
