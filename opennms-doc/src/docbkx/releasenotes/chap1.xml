@@ -6,6 +6,19 @@
 
 	<!-- Start 1.13 -->
 
+	<section id="introduction-1.13.3">
+		<title>Release 1.13.3</title>
+
+		<para>
+			Release 1.13.3 is the 4th unstable release; it is a preview of
+			what will eventually become the OpenNMS 1.14.x stable series.
+			It contains a critical security fix.
+		</para>
+		<para>
+			The codename for 1.13.3 is <emphasis>De Musikalske Dvergene</emphasis>
+		</para>
+	</section>
+
 	<section id="introduction-1.13.2">
 		<title>Release 1.13.2</title>
 
