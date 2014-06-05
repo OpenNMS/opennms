@@ -79,7 +79,7 @@ public class Nms0002EnTest extends EnLinkdTestBuilder {
      * No way to get layer 2 link because no STP is enabled on Juniper device
      * 
      */
-    @Test(timeout=20000)
+    @Test(timeout=40000)
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host = Rluck001_IP, port = 161, resource = Rluck001_SNMP_RESOURCE),
             @JUnitSnmpAgent(host = Sluck001_IP, port = 161, resource = Sluck001_SNMP_RESOURCE)
@@ -214,7 +214,7 @@ public class Nms0002EnTest extends EnLinkdTestBuilder {
      *                  
      */      
     
-    @Test(timeout=20000)
+    @Test(timeout=40000)
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host = RDeEssnBrue_IP, port = 161, resource = RDeEssnBrue_SNMP_RESOURCE),
             @JUnitSnmpAgent(host = SDeEssnBrue081_IP, port = 161, resource = SDeEssnBrue081_SNMP_RESOURCE),
