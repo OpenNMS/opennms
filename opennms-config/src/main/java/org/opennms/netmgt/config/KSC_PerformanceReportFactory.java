@@ -249,19 +249,11 @@ public class KSC_PerformanceReportFactory {
      *
      * @return a {@link java.util.Map} object.
      */
-    public Map<Integer, String> getReportList() {
-        LinkedHashMap<Integer, String> reports = new LinkedHashMap<Integer, String>(m_config.getReportCount());
+    public Map<Integer, Report> getReportList() {
+        LinkedHashMap<Integer, Report> reports = new LinkedHashMap<Integer, Report>(m_config.getReportCount());
 
-        List<Report> reportList = m_config.getReportCollection();
-        Collections.sort(reportList, new Comparator<Report>() {
-            @Override
-            public int compare(Report o1, Report o2) {
-                return o1.getTitle().compareTo(o2.getTitle());
-            }
-        });
-        
-        for (Report report : reportList) {
-            reports.put(report.getId(), report.getTitle());
+        for (Report report : m_config.getReportCollection()) {
+            reports.put(report.getId(), report);
         }
         
         return Collections.unmodifiableMap(reports);

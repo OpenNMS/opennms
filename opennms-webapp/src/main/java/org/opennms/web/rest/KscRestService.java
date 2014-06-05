@@ -1,5 +1,4 @@
-/**
- * *****************************************************************************
+/*******************************************************************************
  * This file is part of OpenNMS(R).
  *
  * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
@@ -25,8 +24,7 @@
  * OpenNMS(R) Licensing <license@opennms.org>
  * http://www.opennms.org/
  * http://www.opennms.com/
- ******************************************************************************
- */
+ *******************************************************************************/
 package org.opennms.web.rest;
 
 import com.sun.jersey.spi.resource.PerRequest;
@@ -36,7 +34,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.Entity;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -53,11 +53,13 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
+import org.opennms.web.api.Authentication;
 import org.opennms.web.svclayer.KscReportService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,12 +114,12 @@ public class KscRestService extends OnmsRestService {
         readLock();
 
         try {
-            final Map<Integer, String> reportList = m_kscReportService.getReportList();
-            final String label = reportList.get(reportId);
-            if (label == null) {
+            final Map<Integer, Report> reportList = m_kscReportService.getReportList();
+            final Report report = reportList.get(reportId);
+            if (report == null) {
                 throw getException(Status.NOT_FOUND, "No such report id " + reportId);
             }
-            return new KscReport(reportId, label);
+            return new KscReport(report);
         } finally {
             readUnlock();
         }
@@ -143,7 +145,7 @@ public class KscRestService extends OnmsRestService {
         writeLock();
 
         try {
-            if (kscReportId == null || reportName == null || reportName == "" || resourceId == null || resourceId == "") {
+            if (kscReportId == null || reportName == null || reportName.isEmpty() || resourceId == null || resourceId.isEmpty()) {
                 throw getException(Status.BAD_REQUEST, "Invalid request: reportName and resourceId cannot be empty!");
             }
             final Report report = m_kscReportFactory.getReportByIndex(kscReportId);
@@ -184,6 +186,49 @@ public class KscRestService extends OnmsRestService {
         }
     }
 
+    @POST
+    @Consumes(MediaType.APPLICATION_XML)
+    public Response addKscReport(final KscReport kscReport) {
+        writeLock();
+        try {
+            LOG.debug("addKscReport: Adding KSC Report {}", kscReport);
+            Report report = m_kscReportFactory.getReportByIndex(kscReport.getId());
+            if (report != null) {
+                throw getException(Status.CONFLICT, "Invalid request: Existing KSC report found with ID: " + kscReport.getId());
+            }
+            report = new Report();
+            report.setId(kscReport.getId());
+            report.setTitle(kscReport.getLabel());
+            if (kscReport.getShowGraphtypeButton() != null) {
+                report.setShow_graphtype_button(kscReport.getShowGraphtypeButton());
+            }
+            if (kscReport.getShowTimespanButton() != null) {
+                report.setShow_timespan_button(kscReport.getShowTimespanButton());
+            }
+            if (kscReport.getGraphsPerLine() != null) {
+                report.setGraphs_per_line(kscReport.getGraphsPerLine());
+            }
+            if (kscReport.hasGraphs()) {
+                for (KscGraph kscGraph : kscReport.getGraphs()) {
+                    final Graph graph = kscGraph.buildGraph();
+                    report.addGraph(graph);
+                }
+            }
+
+            m_kscReportFactory.addReport(report);
+            try {
+                m_kscReportFactory.saveCurrent();
+            } catch (final Exception e) {
+                throw getException(Status.BAD_REQUEST, e.getMessage());
+            }
+            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
+        } catch (final Throwable t) {
+            throw getException(Status.BAD_REQUEST, t);
+        } finally {
+            writeUnlock();
+        }
+    }
+
     @Entity
     @XmlRootElement(name = "kscReports")
     public static final class KscReportCollection extends JaxbListWrapper<KscReport> {
@@ -198,10 +243,10 @@ public class KscRestService extends OnmsRestService {
             super(reports);
         }
 
-        public KscReportCollection(final Map<Integer, String> reportList) {
+        public KscReportCollection(final Map<Integer, Report> reportList) {
             super();
-            for (final Integer key : reportList.keySet()) {
-                add(new KscReport(key, reportList.get(key)));
+            for (final Report entry : reportList.values()) {
+                add(new KscReport(entry.getId(), entry.getTitle()));
             }
         }
 
@@ -222,17 +267,19 @@ public class KscRestService extends OnmsRestService {
         @XmlAttribute(name = "label", required = true)
         private String m_label;
 
-        @XmlAttribute(name = "show_timespan_button", required = true)
+        @XmlAttribute(name = "show_timespan_button", required = false)
         private Boolean m_show_timespan_button;
 
-        @XmlAttribute(name = "show_graphtype_button", required = true)
+        @XmlAttribute(name = "show_graphtype_button", required = false)
         private Boolean m_show_graphtype_button;
 
-        @XmlAttribute(name = "graphs_per_line", required = true)
+        @XmlAttribute(name = "graphs_per_line", required = false)
         private Integer m_graphs_per_line;
 
-        @XmlElement(name = "kscGraph")
-        private List<KscGraph> m_graphs;
+        @XmlElements(
+                @XmlElement(name = "kscGraph", required = false)
+        )
+        private List<KscGraph> m_graphs = new ArrayList<KscGraph>();
 
         public KscReport() {
         }
@@ -240,9 +287,10 @@ public class KscRestService extends OnmsRestService {
         public KscReport(final Integer reportId, final String label) {
             m_id = reportId;
             m_label = label;
-            m_show_graphtype_button = true;
-            m_show_timespan_button = true;
-            m_graphs_per_line = 0;
+            m_show_graphtype_button = null;
+            m_show_timespan_button = null;
+            m_graphs_per_line = null;
+            m_graphs.clear();
         }
 
         public KscReport(Report report) {
@@ -251,9 +299,9 @@ public class KscRestService extends OnmsRestService {
             m_show_timespan_button = report.getShow_timespan_button();
             m_show_graphtype_button = report.getShow_graphtype_button();
             m_graphs_per_line = report.getGraphs_per_line();
-            m_graphs = new ArrayList<KscGraph>();
+            m_graphs.clear();
 
-            for(Graph graph : report.getGraphCollection()) {
+            for (Graph graph : report.getGraphCollection()) {
                 m_graphs.add(new KscGraph(graph));
             }
         }
@@ -272,6 +320,38 @@ public class KscRestService extends OnmsRestService {
 
         public void setLabel(final String label) {
             m_label = label;
+        }
+
+        public Boolean getShowTimespanButton() {
+            return m_show_timespan_button;
+        }
+
+        public void setShowTimespanButton(final Boolean show) {
+            m_show_timespan_button = show;
+        }
+
+        public Boolean getShowGraphtypeButton() {
+            return m_show_graphtype_button;
+        }
+
+        public void setShowGraphtypeButton(final Boolean show) {
+            m_show_graphtype_button = show;
+        }
+
+        public Integer getGraphsPerLine() {
+            return m_graphs_per_line;
+        }
+
+        public void setGraphsPerLine(final Integer graphs) {
+            m_graphs_per_line = graphs;
+        }
+
+        public boolean hasGraphs() {
+            return !m_graphs.isEmpty();
+        }
+
+        public List<KscGraph> getGraphs() {
+            return m_graphs;
         }
     }
 
@@ -321,6 +401,34 @@ public class KscRestService extends OnmsRestService {
             m_domain = graph.getDomain();
             m_interfaceId = graph.getInterfaceId();
             m_extlink = graph.getExtlink();
+        }
+
+        public Graph buildGraph() {
+            boolean found = false;
+            for (final String valid : KSC_PerformanceReportFactory.TIMESPAN_OPTIONS) {
+                if (valid.equals(m_timespan)) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                LOG.debug("invalid timespan ('{}'), setting to '7_day' instead.", m_timespan);
+                m_timespan = "7_day";
+            }
+
+            final Graph graph = new Graph();
+            graph.setTitle(m_title);
+            graph.setTimespan(m_timespan);
+            graph.setGraphtype(m_graphtype);
+            graph.setResourceId(m_resourceId);
+            graph.setNodeId(m_nodeId);
+            graph.setNodeSource(m_nodeSource);
+            graph.setDomain(m_domain);
+            graph.setInterfaceId(m_interfaceId);
+            graph.setExtlink(m_extlink);
+
+            return graph;
         }
     }
 }

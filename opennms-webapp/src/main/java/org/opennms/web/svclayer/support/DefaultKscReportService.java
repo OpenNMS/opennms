@@ -233,7 +233,7 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
      * @return a {@link java.util.Map} object.
      */
     @Override
-    public Map<Integer, String> getReportList() {
+    public Map<Integer, Report> getReportList() {
         return m_kscReportFactory.getReportList();  
     }
 

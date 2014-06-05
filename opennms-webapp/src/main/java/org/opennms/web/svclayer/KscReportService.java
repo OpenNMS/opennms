@@ -92,5 +92,5 @@ public interface KscReportService {
      *
      * @return a java$util$Map object.
      */
-    public Map<Integer, String> getReportList();
+    public Map<Integer, Report> getReportList();
 }
