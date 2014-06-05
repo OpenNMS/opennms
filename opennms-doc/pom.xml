@@ -50,7 +50,9 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <headerFooter>true</headerFooter>
                     <sourceDirectory>src/main/asciidoc</sourceDirectory>
+                    <imagesDir>images</imagesDir>
                     <attributes>
                         <version>${project.version}</version>
                     </attributes>

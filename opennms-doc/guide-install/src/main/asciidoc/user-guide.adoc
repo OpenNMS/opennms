@@ -14,6 +14,8 @@ system, getting it installed and configured can take a little effort. It
 is the purpose of this document to explain what is required to get
 OpenNMS installed.
 
+image::opennms-architecture.png[OpenNMS architecture]
+
 === How to Use This Document
 
 So, how should you use this document? It is arranged in the following
