@@ -2,11 +2,11 @@
 
 /**
  * @ngdoc object
- * @name AlarmSummary
- * @param {object} data alarm summary JSON data.
+ * @name OutageSummary
+ * @param {Object} data an outage summary JSON object
  * @constructor
  */
-function AlarmSummary(data) {
+function OutageSummary(data) {
   'use strict';
 
   var self = this;
@@ -14,8 +14,8 @@ function AlarmSummary(data) {
   /**
    * @description
    * @ngdoc property
-   * @name AlarmSummary#nodeid
-   * @propertyOf AlarmSummary
+   * @name OutageSummary#nodeid
+   * @propertyOf OutageSummary
    * @returns {number} Unique integer identifier for node
    */
   self.nodeId    = data['_node-id'];
@@ -23,8 +23,8 @@ function AlarmSummary(data) {
   /**
    * @description
    * @ngdoc property
-   * @name AlarmSummary#nodeLabel
-   * @propertyOf AlarmSummary
+   * @name OutageSummary#nodeLabel
+   * @propertyOf OutageSummary
    * @returns {string} The human-readable name of the node of this alarm.
    */
   self.nodeLabel = data['_node-label'];
@@ -32,47 +32,37 @@ function AlarmSummary(data) {
   /**
    * @description
    * @ngdoc property
-   * @name AlarmSummary#severity
-   * @propertyOf AlarmSummary
-   * @returns {string} Severity the of alarm.
+   * @name OutageSummary#down
+   * @propertyOf OutageSummary
+   * @returns {*|Date} The time the outage started.
    */
-  self.severity  = data._severity;
+  self.down      = data['_time-down'];
 
   /**
    * @description
    * @ngdoc property
-   * @name AlarmSummary#date
-   * @propertyOf AlarmSummary
-   * @returns {*|Date} The last time an event affected alarms for the summary node.
+   * @name OutageSummary#up
+   * @propertyOf OutageSummary
+   * @returns {*|Date} The time the outage was resolved.
    */
-  self.date      = data._date;
+  self.up        = data['_time-up'];
 
   /**
    * @description
    * @ngdoc property
-   * @name AlarmSummary#count
-   * @propertyOf AlarmSummary
-   * @returns {number} The number of alarms affecting the summary node.
+   * @name OutageSummary#now
+   * @propertyOf OutageSummary
+   * @returns {*|Date} The time the outage was retrieved from the server.
    */
-  self.count     = data._count;
-
-  if (typeof self.count === 'string' || self.count instanceof String) {
-    self.count = parseInt(self.count, 10);
-  }
-  
-  /*
-  if (typeof self.date === 'string' || self.date instanceof String) {
-    self.date = moment(self.date);
-  }
-  */
+  self.now       = data['_time-now'];
 
   /**
    * @description Helper method to get a friendly node label. It will generate
    *              a node label based on the node ID if the nodeLabel property
    *              is not defined or is empty.
    * @ngdoc method
-   * @name AlarmSummary#getNodeName
-   * @methodOf AlarmSummary
+   * @name Outage#getNodeName
+   * @methodOf Outage
    * @returns {string} a formatted node label using the nodeLabel or the nodeId formatted into a string.
    */
   self.getNodeName = function() {
