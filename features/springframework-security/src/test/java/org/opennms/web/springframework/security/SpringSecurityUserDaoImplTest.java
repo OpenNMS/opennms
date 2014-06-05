@@ -39,14 +39,18 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Collection;
 import java.util.Iterator;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 
 import junit.framework.TestCase;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
+import org.opennms.core.test.Level;
 import org.opennms.core.test.MockLogAppender;
+import static org.opennms.core.test.MockLogAppender.assertLogAtLevel;
+import static org.opennms.core.test.MockLogAppender.assertNoWarningsOrGreater;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.config.GroupManager;
@@ -114,11 +118,13 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
         Iterator<? extends GrantedAuthority> itr = authorities.iterator();
         assertEquals("authorities 0 name", Authentication.ROLE_USER, itr.next().getAuthority());
         assertEquals("authorities 2 name", Authentication.ROLE_ADMIN, itr.next().getAuthority());
+        assertNoWarningsOrGreater();
     }
 
     @Test
     public void testGetByUsernameBogus() {
         assertNull("user object should be null", m_springSecurityDao.getByUsername("bogus"));
+        assertNoWarningsOrGreater();
     }
 
     @Test
@@ -134,6 +140,7 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
         assertNotNull("authorities should not be null", authorities);
         assertEquals("authorities size", 1, authorities.size());
         assertEquals("authorities 0 name", Authentication.ROLE_RTC, authorities.iterator().next().getAuthority());
+        assertNoWarningsOrGreater();
     }
 
     @Test
@@ -154,6 +161,7 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
         assertNotNull("authorities should not be null", authorities);
         assertEquals("authorities size", 1, authorities.size());
         assertEquals("authorities 0 name", Authentication.ROLE_USER, authorities.iterator().next().getAuthority());
+        assertNoWarningsOrGreater();
     }
     
     @Test
@@ -174,6 +182,7 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
         assertNotNull("authorities should not be null", authorities);
         assertEquals("authorities size", 1, authorities.size());
         assertEquals("authorities 0 name", Authentication.ROLE_DASHBOARD, authorities.iterator().next().getAuthority());
+        assertNoWarningsOrGreater();
     }
     
     @Test
@@ -229,6 +238,7 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
             fa.deleteExpected();
             fa.tearDown();
         }
+        assertNoWarningsOrGreater();
     }
     
     /**
@@ -304,7 +314,17 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
             fa.deleteExpected();
             fa.tearDown();
         }
+        assertNoWarningsOrGreater();
     }
+    
+    @DirtiesContext
+    @Test
+    public void testMissingMagicUsersProperties() {
+        ((SpringSecurityUserDaoImpl) m_springSecurityDao).setMagicUsersConfigurationFile("src/test/resources/org/opennms/web/springframework/security/magic-users-bad.properties");
+        ((SpringSecurityUserDaoImpl) m_springSecurityDao).parseMagicUsers();
+        assertLogAtLevel(Level.WARN);
+    }
+    
     private void writeTemporaryFile(File file, String content) throws IOException {
         Writer writer = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
         writer.write(content);
