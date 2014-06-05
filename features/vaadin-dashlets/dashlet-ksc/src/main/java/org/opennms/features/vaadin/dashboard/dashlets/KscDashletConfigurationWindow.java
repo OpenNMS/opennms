@@ -37,7 +37,6 @@ import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 
 import java.util.Map;
-import org.opennms.netmgt.config.kscReports.Report;
 
 /**
  * This class is used to display a custom configuration window for the Ksc dashlet.
@@ -91,11 +90,11 @@ public class KscDashletConfigurationWindow extends DashletConfigurationWindow {
 
         final KSC_PerformanceReportFactory kscPerformanceReportFactory = KSC_PerformanceReportFactory.getInstance();
 
-        Map<Integer, Report> reportsMap = kscPerformanceReportFactory.getReportList();
+        Map<Integer, String> reportsMap = kscPerformanceReportFactory.getReportList();
 
-        for (Map.Entry<Integer, Report> entry : reportsMap.entrySet()) {
+        for (Map.Entry<Integer, String> entry : reportsMap.entrySet()) {
             m_kscSelect.addItem(entry.getKey());
-            m_kscSelect.setItemCaption(entry.getKey(), entry.getValue().getTitle());
+            m_kscSelect.setItemCaption(entry.getKey(), entry.getValue());
             if (m_kscSelect.getValue() == null) {
                 m_kscSelect.setValue(entry.getKey());
             }
@@ -104,10 +103,8 @@ public class KscDashletConfigurationWindow extends DashletConfigurationWindow {
         String chartName = m_dashletSpec.getParameters().get("kscReport");
 
         if (chartName != null) {
-            for (Map.Entry<Integer, Report> entry : reportsMap.entrySet()) {
-                if (entry.getValue() != null && entry.getValue().getTitle() != null && entry.getValue().getTitle().equals(chartName)) {
-                    m_kscSelect.setValue(entry.getKey());
-                }
+            if (reportsMap.values().contains(chartName)) {
+                m_kscSelect.setValue(chartName);
             }
         }
 
@@ -151,9 +148,9 @@ public class KscDashletConfigurationWindow extends DashletConfigurationWindow {
         ok.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                Map<Integer, Report> reportsMap = kscPerformanceReportFactory.getReportList();
+                Map<Integer, String> reportsMap = kscPerformanceReportFactory.getReportList();
 
-                m_dashletSpec.getParameters().put("kscReport", reportsMap.get(m_kscSelect.getValue()).getTitle());
+                m_dashletSpec.getParameters().put("kscReport", reportsMap.get(m_kscSelect.getValue()));
 
                 WallboardProvider.getInstance().save();
                 ((WallboardConfigUI) getUI()).notifyMessage("Data saved", "Properties");
@@ -165,7 +162,7 @@ public class KscDashletConfigurationWindow extends DashletConfigurationWindow {
         ok.setClickShortcut(ShortcutAction.KeyCode.ENTER, null);
         buttonLayout.addComponent(ok);
 
-        if (reportsMap.isEmpty()) {
+        if (reportsMap.size() == 0) {
             m_kscSelect.setEnabled(false);
             ok.setEnabled(false);
         }
