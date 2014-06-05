@@ -98,7 +98,7 @@ public class KscRestService extends OnmsRestService {
         readLock();
 
         try {
-            final KscReportCollection reports = new KscReportCollection(m_kscReportService.getReportList());
+            final KscReportCollection reports = new KscReportCollection(m_kscReportService.getReportMap(), true);
             reports.setTotalCount(reports.size());
             return reports;
         } finally {
@@ -243,10 +243,14 @@ public class KscRestService extends OnmsRestService {
             super(reports);
         }
 
-        public KscReportCollection(final Map<Integer, Report> reportList) {
+        public KscReportCollection(final Map<Integer, Report> reportList, boolean terse) {
             super();
             for (final Report report : reportList.values()) {
-                add(new KscReport(report));
+                if (terse) {
+                    add(new KscReport(report.getId(), report.getTitle()));
+                } else {
+                    add(new KscReport(report));
+                }
             }
         }
 
