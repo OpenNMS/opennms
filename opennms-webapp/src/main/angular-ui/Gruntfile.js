@@ -91,6 +91,15 @@ module.exports = function (grunt) {
           open: true,
           base: ['coverage']
         }
+      },
+
+      docs: {
+        options: {
+          port: 9003,
+          open: true,
+          keepalive: true,
+          base: 'docs'
+        }
       }
     },
 
@@ -354,6 +363,7 @@ module.exports = function (grunt) {
           '<%= yeoman.app %>/bower_components/ionic/release/js/ionic-angular.js',
           '<%= yeoman.app %>/bower_components/angular-mocks/angular-mocks.js',
           '<%= yeoman.app %>/bower_components/x2js/xml2json.js',
+          '<%= yeoman.app %>/bower_components/moment/moment.js',
           '<%= yeoman.app %>/<%= yeoman.scripts %>/services/**/*.js',
           '<%= yeoman.app %>/<%= yeoman.scripts %>/controllers/**/*.js',
           '<%= yeoman.app %>/<%= yeoman.scripts %>/directives/**/*.js',
@@ -406,6 +416,31 @@ module.exports = function (grunt) {
           dest: '.tmp/concat/<%= yeoman.scripts %>'
         }]
       }
+    },
+
+    docular: {
+      docular_webapp_target : "docs",
+      groups: [
+        {
+          groupTitle: 'Modules',
+          groupId: 'modules',
+          groupIcon: 'icon-book',
+          showSource: true,
+          sections: [
+            {
+              id: 'alarms',
+              title: 'Alarms',
+              scripts: [
+                '<%= yeoman.app %>/<%= yeoman.scripts %>/services/shared/alarm.services.js',
+                '<%= yeoman.app %>/<%= yeoman.scripts %>/model/alarm.model.js'
+              ]
+            }
+          ]
+
+        }
+      ],
+      showDocularDocs: false,
+      showAngularDocs: false
     }
 
   });
@@ -435,6 +470,9 @@ module.exports = function (grunt) {
       });
     });
   });
+
+  // Load the docular plugin.
+  grunt.loadNpmTasks('grunt-docular');
 
   // Since Apache Ripple serves assets directly out of their respective platform
   // directories, we watch all registered files and then copy all un-built assets
@@ -476,6 +514,8 @@ module.exports = function (grunt) {
     return grunt.task.run(['watch']);
   });
 
+  grunt.registerTask('docs', ['docular']);
+
   grunt.registerTask('serve', function (target) {
     if (target === 'dist') {
       return grunt.task.run(['build', 'connect:dist:keepalive']);
@@ -512,8 +552,11 @@ module.exports = function (grunt) {
     'uglify',
     'usemin',
     'htmlmin',
-    'cordova:build'
+    'cordova:build',
+    'docs'
   ]);
+
+  grunt.registerTask('docs:serve', ['connect:docs']);
 
   grunt.registerTask('cordova', ['copy:all', 'cordova:build']);
 
