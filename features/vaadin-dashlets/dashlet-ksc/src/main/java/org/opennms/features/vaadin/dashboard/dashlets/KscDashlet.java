@@ -114,13 +114,13 @@ public class KscDashlet extends AbstractDashlet {
 
                     KSC_PerformanceReportFactory kscPerformanceReportFactory = KSC_PerformanceReportFactory.getInstance();
 
-                    Map<Integer, String> reportsMap = kscPerformanceReportFactory.getReportList();
+                    Map<Integer, Report> reportsMap = kscPerformanceReportFactory.getReportList();
 
                     int kscReportId = -1;
 
-                    for (Map.Entry<Integer, String> entry : reportsMap.entrySet()) {
+                    for (Map.Entry<Integer, Report> entry : reportsMap.entrySet()) {
 
-                        if (kscReportName.equals(entry.getValue())) {
+                        if (kscReportName.equals(entry.getValue().getTitle())) {
                             kscReportId = entry.getKey();
                             break;
                         }
@@ -278,13 +278,13 @@ public class KscDashlet extends AbstractDashlet {
 
                     KSC_PerformanceReportFactory kscPerformanceReportFactory = KSC_PerformanceReportFactory.getInstance();
 
-                    Map<Integer, String> reportsMap = kscPerformanceReportFactory.getReportList();
+                    Map<Integer, Report> reportsMap = kscPerformanceReportFactory.getReportList();
 
                     int kscReportId = -1;
 
-                    for (Map.Entry<Integer, String> entry : reportsMap.entrySet()) {
+                    for (Map.Entry<Integer, Report> entry : reportsMap.entrySet()) {
 
-                        if (kscReportName.equals(entry.getValue())) {
+                        if (kscReportName.equals(entry.getValue().getTitle())) {
                             kscReportId = entry.getKey();
                             break;
                         }
