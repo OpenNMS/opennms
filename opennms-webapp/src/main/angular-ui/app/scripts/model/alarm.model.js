@@ -31,4 +31,6 @@ function Alarm(alarm) {
     return '';
   };
 
+  self.className = 'Alarm';
+
 }
