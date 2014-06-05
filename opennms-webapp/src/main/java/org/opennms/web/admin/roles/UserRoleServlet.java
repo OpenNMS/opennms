@@ -69,7 +69,7 @@ import org.opennms.netmgt.config.WebRoleManager;
         public String execute(HttpServletRequest request, HttpServletResponse response) throws ServletException;
     }
     
-    private class ListAction implements Action {
+    private static class ListAction implements Action {
         @Override
         public String execute(HttpServletRequest request, HttpServletResponse response) {
             return LIST;

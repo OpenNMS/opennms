@@ -32,7 +32,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
 
     @SuppressWarnings("serial")
-    public class ScaleProperty implements Property<Double>, Property.ValueChangeNotifier{
+    public static class ScaleProperty implements Property<Double>, Property.ValueChangeNotifier{
         private Double m_scale;
         private Set<ValueChangeListener> m_listeners = new CopyOnWriteArraySet<Property.ValueChangeListener>();
         
@@ -104,7 +104,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
         
     }
     
-    public class PseudoEdge extends AbstractEdge {
+    public static class PseudoEdge extends AbstractEdge {
 
         public PseudoEdge(String namespace, String id, String styleName, Vertex source, Vertex target) {
             super(namespace, id, source, target);
@@ -254,8 +254,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 		if (criteria != null) {
 			for (Criteria criterium : criteria) {
 				try {
-					SemanticZoomLevelCriteria hopCriteria = (SemanticZoomLevelCriteria)criterium;
-					return hopCriteria;
+					return (SemanticZoomLevelCriteria)criterium;
 				} catch (ClassCastException e) {}
 			}
 		}

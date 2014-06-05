@@ -69,7 +69,7 @@ public class DefaultRrdSummaryService implements RrdSummaryService, Initializing
             public void commit();
         }
 
-        class SummaryHolder implements ResourceParent {
+        static class SummaryHolder implements ResourceParent {
             Summary m_summary = new Summary();
 
             @Override

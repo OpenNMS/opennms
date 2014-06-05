@@ -946,7 +946,7 @@ public abstract class NotificationManager {
 
         Map<String, Notification> newMap = new HashMap<String, Notification>();
 
-        Notification notices[] = m_notifications.getNotification();
+        Notification[] notices = m_notifications.getNotification();
         for (int i = 0; i < notices.length; i++) {
             newMap.put(notices[i].getName(), notices[i]);
         }

@@ -97,7 +97,7 @@ public class KscComboboxPresenter implements Presenter, KscComboboxView.Presente
         return m_list;
     }
     
-    public native final String getBaseHref() /*-{
+    public final native String getBaseHref() /*-{
         try{
             return $wnd.getBaseHref();
         }catch(err){

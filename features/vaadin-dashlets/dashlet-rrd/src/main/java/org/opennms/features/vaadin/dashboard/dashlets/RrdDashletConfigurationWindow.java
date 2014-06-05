@@ -421,8 +421,8 @@ public class RrdDashletConfigurationWindow extends DashletConfigurationWindow {
 
         String graphLabel, graphId, graphUrl, nodeId, nodeLabel, resourceId, resourceLabel, resourceTypeId, resourceTypeLabel;
 
-        String graphTypeArr[] = graph.getGraphtype().split("\\.");
-        String resourceIdArr[] = graph.getResourceId().split("\\.");
+        String[] graphTypeArr = graph.getGraphtype().split("\\.");
+        String[] resourceIdArr = graph.getResourceId().split("\\.");
 
         nodeId = resourceIdArr[0].split("[\\[\\]]")[1];
         String resourceTypeName = resourceIdArr[1].split("[\\[\\]]")[0];

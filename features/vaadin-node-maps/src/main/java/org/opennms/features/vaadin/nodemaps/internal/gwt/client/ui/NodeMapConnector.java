@@ -87,7 +87,7 @@ public class NodeMapConnector extends AbstractComponentConnector implements HasH
         ensureHandlerManager().addHandler(ComponentInitializedEvent.TYPE, this);
     }
 
-    private static native final boolean isRetina() /*-{
+    private static final native boolean isRetina() /*-{
         return $wnd.L.Browser.retina;
     }-*/;
 

@@ -56,7 +56,7 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
 	 * @author Markus von Rüden
 	 *
 	 */
-    protected static abstract class IdGenerator {
+    protected abstract static class IdGenerator {
         /** 
          * The topology provider. It is needed to initialize the counter.
          */

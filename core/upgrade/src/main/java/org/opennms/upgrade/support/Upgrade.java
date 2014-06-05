@@ -256,7 +256,7 @@ public class Upgrade {
      * @param args the arguments
      * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
-    public static void main(String args[]) throws OnmsUpgradeException {
+    public static void main(String[] args) throws OnmsUpgradeException {
         new Upgrade().execute();
     }
 }

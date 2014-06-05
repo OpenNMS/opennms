@@ -214,7 +214,7 @@ public class PollableNode extends PollableContainer {
      * @return a {@link org.opennms.netmgt.poller.pollables.PollableService} object.
      */
     public PollableService createService(final InetAddress addr, final String svcName) {
-        final PollableService retVal[] = new PollableService[1];
+        final PollableService[] retVal = new PollableService[1];
         
         Runnable r = new Runnable() {
             @Override
@@ -309,7 +309,7 @@ public class PollableNode extends PollableContainer {
     /** {@inheritDoc} */
     @Override
     public PollStatus doPoll(final PollableElement elem) {
-        final PollStatus retVal[] = new PollStatus[1];
+        final PollStatus[] retVal = new PollStatus[1];
         Runnable r = new Runnable() {
             @Override
             public void run() {

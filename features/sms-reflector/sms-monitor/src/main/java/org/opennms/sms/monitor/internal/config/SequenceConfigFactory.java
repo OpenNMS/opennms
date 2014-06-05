@@ -129,8 +129,7 @@ public class SequenceConfigFactory {
 		try {
 			initializeContext();
 			Reader r = new StringReader(sequenceXml);
-			MobileSequenceConfig s = (MobileSequenceConfig)getUnmarshaller().unmarshal(r);
-			return s;
+			return (MobileSequenceConfig)getUnmarshaller().unmarshal(r);
 		} catch (JAXBException e) {
 			throw new SequenceException("An error occurred reading the sequence.", e);
 		}

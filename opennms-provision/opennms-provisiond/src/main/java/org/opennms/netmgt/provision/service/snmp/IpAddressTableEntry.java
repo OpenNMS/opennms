@@ -65,9 +65,9 @@ public final class IpAddressTableEntry extends SnmpTableEntry {
     private static final Logger LOG = LoggerFactory.getLogger(IpAddressTableEntry.class);
     // Lookup strings for specific table entries
 
-    public final static String IP_ADDRESS_IF_INDEX = "ipAddressIfIndex";
-    public final static String IP_ADDR_ENT_NETMASK = "ipAddressPrefix";
-    public final static String IP_ADDR_TYPE        = "ipAddressType";
+    public static final String IP_ADDRESS_IF_INDEX = "ipAddressIfIndex";
+    public static final String IP_ADDR_ENT_NETMASK = "ipAddressPrefix";
+    public static final String IP_ADDR_TYPE        = "ipAddressType";
 
     /**
      * <P>

@@ -192,7 +192,7 @@ public class Sftp3gppUtils {
         if (properties.isEmpty() && Boolean.getBoolean("org.opennms.collectd.xml.3gpp.useSimpleParserForMeasObjLdn")) {
             String[] groups = measInfoId.split("\\|");
             for (String group : groups) {
-                String pair[] = group.split("=");
+                String[] pair = group.split("=");
                 if (pair.length == 2) {
                     properties.put(pair[0], pair[1]);
                 }

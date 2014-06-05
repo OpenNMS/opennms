@@ -54,18 +54,17 @@ public class OnmsNamespaceHandler extends NamespaceHandlerSupport {
         registerBeanDefinitionDecorator("annotated-subscription", new AnnotatedSubscriptionBeanDefinitionDecorator());
     }
     
-    public class OnmsServiceBeanDefinitionParser extends AbstractBeanDefinitionParser {
+    public static class OnmsServiceBeanDefinitionParser extends AbstractBeanDefinitionParser {
 
         @Override
         protected AbstractBeanDefinition parseInternal(Element element, ParserContext parserContext) {
             BeanDefinitionHolder beanDefHolder = parserContext.getDelegate().parseBeanDefinitionElement(element);
-            AbstractBeanDefinition def = (AbstractBeanDefinition)beanDefHolder.getBeanDefinition();
-            return def;
+            return (AbstractBeanDefinition)beanDefHolder.getBeanDefinition();
         }
 
     }
 
-    public class AnnotatedSubscriptionBeanDefinitionDecorator implements BeanDefinitionDecorator {
+    public static class AnnotatedSubscriptionBeanDefinitionDecorator implements BeanDefinitionDecorator {
 
         @Override
         public BeanDefinitionHolder decorate(Node node, BeanDefinitionHolder definition, ParserContext parserContext) {

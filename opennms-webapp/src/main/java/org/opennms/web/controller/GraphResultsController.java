@@ -152,7 +152,7 @@ public class GraphResultsController extends AbstractController implements Initia
 	
 	            	TimeSpec specStart = startParser.parse();
 	            	TimeSpec specEnd = endParser.parse();
-	            	long results[] = TimeSpec.getTimestamps(specStart, specEnd);
+	            	long[] results = TimeSpec.getTimestamps(specStart, specEnd);
 	            	//Multiply by 1000.  TimeSpec returns timestamps in Seconds, not Milliseconds.  
 	            	startLong = results[0]*1000;
 	            	endLong = results[1]*1000;

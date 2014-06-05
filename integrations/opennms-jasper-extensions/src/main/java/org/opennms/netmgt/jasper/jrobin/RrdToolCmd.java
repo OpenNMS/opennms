@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 abstract class RrdToolCmd {
     private static final Logger LOG = LoggerFactory.getLogger(RrdToolCmd.class);
 
-    public class EmptyJRDataSource implements JRDataSource {
+    public static class EmptyJRDataSource implements JRDataSource {
 
                 @Override
 		public Object getFieldValue(JRField arg0) throws JRException {

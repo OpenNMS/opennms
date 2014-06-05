@@ -64,8 +64,7 @@ public class DefaultWebGroupRepository implements WebGroupRepository, Initializi
     @Override
     public WebGroup getGroup(String groupName) {
         Group group = groupService.getGroup(groupName);
-        WebGroup webGroup = new WebGroup(group, groupService.getAuthorizedCategoriesAsString(groupName));
-        return webGroup;
+        return new WebGroup(group, groupService.getAuthorizedCategoriesAsString(groupName));
     }
 
     /** {@inheritDoc} */

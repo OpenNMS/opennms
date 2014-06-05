@@ -64,8 +64,7 @@ public class DefaultDaemonStatusService implements DaemonStatusService {
         @Override
 	public Map<String, ServiceInfo> getCurrentDaemonStatus() {
 		// TODO Auto-generated method stub
-		Map<String, ServiceInfo> info = daemonStatusDao.getCurrentDaemonStatus();
-        return info;
+		return daemonStatusDao.getCurrentDaemonStatus();
 	}
 	
 	/**

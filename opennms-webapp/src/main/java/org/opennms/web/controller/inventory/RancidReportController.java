@@ -74,8 +74,7 @@ public class RancidReportController implements Controller {
        
         Map<String, Object> model = new TreeMap<String, Object>();
         model.put("Report", "report");
-        ModelAndView modelAndView = new ModelAndView("inventory/rancidReport","model",model);
-        return modelAndView;
+        return new ModelAndView("inventory/rancidReport","model",model);
     }
 
 }

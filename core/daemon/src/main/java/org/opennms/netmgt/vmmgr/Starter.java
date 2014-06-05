@@ -35,14 +35,15 @@ import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.net.URL;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.TreeMap;
-import java.util.Map.Entry;
 
 import javax.management.MBeanServer;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.logging.Logging;
+import org.opennms.netmgt.config.ServiceConfigFactory;
 import org.opennms.netmgt.config.service.Service;
 import org.opennms.netmgt.config.service.types.InvokeAtType;
 import org.slf4j.Logger;
@@ -50,7 +51,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * <p>
- * The Manager is reponsible for launching/starting all services in the VM
+ * The Manager is responsible for launching/starting all services in the VM
  * that it is started for. The Manager operates in two modes, normal and
  * server
  * </p>
@@ -229,8 +230,7 @@ public class Starter {
     private File getPropertiesFile() {
         String homeDir = System.getProperty("opennms.home");
         File etcDir = new File(homeDir, "etc");
-        File propertiesFile = new File(etcDir, "opennms.properties");
-        return propertiesFile;
+        return new File(etcDir, "opennms.properties");
     }
 
     private void start() {

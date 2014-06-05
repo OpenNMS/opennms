@@ -43,9 +43,9 @@ import org.opennms.core.tasks.DefaultTaskCoordinator;
  */
 public class DefaultLifeCycleRepository implements LifeCycleRepository {
     
-    final private Map<String, LifeCycle> m_lifeCycles = new HashMap<String, LifeCycle>();
+    private final Map<String, LifeCycle> m_lifeCycles = new HashMap<String, LifeCycle>();
     
-    final private DefaultTaskCoordinator m_coordinator;
+    private final DefaultTaskCoordinator m_coordinator;
     
     /**
      * <p>Constructor for DefaultLifeCycleRepository.</p>

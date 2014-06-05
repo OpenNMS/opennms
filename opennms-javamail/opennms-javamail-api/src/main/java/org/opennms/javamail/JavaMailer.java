@@ -467,7 +467,7 @@ public class JavaMailer {
         }
     }
     
-    private class InputStreamDataSource implements DataSource { 
+    private static class InputStreamDataSource implements DataSource { 
     	
 
         
