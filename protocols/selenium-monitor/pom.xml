@@ -117,6 +117,32 @@
         <groupId>org.codehaus.groovy</groupId>
         <artifactId>groovy</artifactId>
         <version>1.9.0-beta-3</version>
+        <exclusions>
+          <exclusion>
+            <groupId>asm</groupId>
+            <artifactId>asm</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>asm</groupId>
+            <artifactId>asm-analysis</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>asm</groupId>
+            <artifactId>asm-commons</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>asm</groupId>
+            <artifactId>asm-tree</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>asm</groupId>
+            <artifactId>asm-util</artifactId>
+          </exclusion>
+        </exclusions>
+    </dependency>
+    <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm-all</artifactId>
     </dependency>
     <dependency>
         <groupId>org.slf4j</groupId>

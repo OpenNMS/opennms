@@ -31,6 +31,10 @@
       <version>${jerseyVersion}</version>
       <exclusions>
         <exclusion>
+          <groupId>asm</groupId>
+          <artifactId>asm</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>commons-logging</groupId>
           <artifactId>commons-logging</artifactId>
         </exclusion>
@@ -139,6 +143,11 @@
       <groupId>javax.ws.rs</groupId>
       <artifactId>jsr311-api</artifactId>
       <version>1.0</version>
+    </dependency>
+    <!-- replacing asm/asm dep in jersey-server -->
+    <dependency>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm-all</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
