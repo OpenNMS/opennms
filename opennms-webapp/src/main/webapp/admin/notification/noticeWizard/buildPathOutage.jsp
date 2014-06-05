@@ -61,7 +61,7 @@
     function next()
     {
         var ipElement = document.getElementById("cripIn");
-        if (!isValidIPAddress(ipElement.value)) {
+        if (!isValidIPAddress(ipElement.value) && !(ipElement.value == "")) {
             alert (ipElement.value + " is not a valid IP address!");
         } else {
             document.crpth.nextPage.value="<%=NotificationWizardServlet.SOURCE_PAGE_VALIDATE_PATH_OUTAGE%>";
