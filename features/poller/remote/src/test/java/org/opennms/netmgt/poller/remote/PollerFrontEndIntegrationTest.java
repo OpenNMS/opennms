@@ -94,6 +94,11 @@ public class PollerFrontEndIntegrationTest implements InitializingBean {
         BeanUtils.assertAutowiring(this);
     }
 
+    /*
+
+    Comment this out because it triggers FileAnticipator failures if the test is
+    marked as @Ignore.
+
     @BeforeClass
     public static void setUpAnticipator() throws IOException {
         m_fileAnticipator = new FileAnticipator();
@@ -110,6 +115,7 @@ public class PollerFrontEndIntegrationTest implements InitializingBean {
 
         m_fileAnticipator.tearDown();
     }
+    */
 
     @BeforeTransaction
     public void setUp() throws Exception {
