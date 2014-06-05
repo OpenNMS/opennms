@@ -21,11 +21,10 @@
  *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
+ * OpenNMS(R) Licensing <license@opennms.org>
+ * http://www.opennms.org/
+ * http://www.opennms.com/
  *******************************************************************************/
-
 package org.opennms.web.rest;
 
 import static org.junit.Assert.assertTrue;
@@ -45,9 +44,16 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
+import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.google.common.io.Files;
 
@@ -68,6 +74,12 @@ import com.google.common.io.Files;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class KscRestServiceTest extends AbstractSpringJerseyRestTestCase {
+
+    @Autowired
+    TransactionTemplate m_template;
+
+    private DatabasePopulator m_databasePopulator;
+
     private File m_configFile = new File("target/test-classes/ksc-performance-reports.xml");
 
     @Override
@@ -82,9 +94,19 @@ public class KscRestServiceTest extends AbstractSpringJerseyRestTestCase {
     @Override
     protected void afterServletStart() throws Exception {
         MockLogAppender.setupLogging(true, "DEBUG");
+        final WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
+        m_databasePopulator = context.getBean("databasePopulator", DatabasePopulator.class);
+        m_template.execute(new TransactionCallbackWithoutResult() {
+
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                m_databasePopulator.populateDatabase();
+            }
+        });
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testReadOnly() throws Exception {
         // Testing GET Collection
         String xml = sendRequest(GET, "/ksc", 200);
@@ -97,7 +119,8 @@ public class KscRestServiceTest extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
-    public void testAddGraph() throws Exception {
+    @JUnitTemporaryDatabase
+    public void testUpdateGraph() throws Exception {
         final Map<String, String> params = new HashMap<String, String>();
         params.put("title", "foo");
         params.put("reportName", "bar");

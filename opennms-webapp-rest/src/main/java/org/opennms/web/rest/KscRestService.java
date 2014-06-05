@@ -1,5 +1,4 @@
-/**
- * *****************************************************************************
+/*******************************************************************************
  * This file is part of OpenNMS(R).
  *
  * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
@@ -25,8 +24,7 @@
  * OpenNMS(R) Licensing <license@opennms.org>
  * http://www.opennms.org/
  * http://www.opennms.com/
- ******************************************************************************
- */
+ *******************************************************************************/
 package org.opennms.web.rest;
 
 import com.sun.jersey.spi.resource.PerRequest;
@@ -62,6 +60,7 @@ import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
 import org.opennms.web.svclayer.api.KscReportService;
+import org.opennms.web.api.Authentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -146,7 +145,7 @@ public class KscRestService extends OnmsRestService {
         writeLock();
 
         try {
-            if (kscReportId == null || reportName == null || reportName == "" || resourceId == null || resourceId == "") {
+            if (kscReportId == null || reportName == null || reportName.isEmpty() || resourceId == null || resourceId.isEmpty()) {
                 throw getException(Status.BAD_REQUEST, "Invalid request: reportName and resourceId cannot be empty!");
             }
             final Report report = m_kscReportFactory.getReportByIndex(kscReportId);
@@ -290,9 +289,10 @@ public class KscRestService extends OnmsRestService {
         public KscReport(final Integer reportId, final String label) {
             m_id = reportId;
             m_label = label;
-            m_show_graphtype_button = true;
-            m_show_timespan_button = true;
-            m_graphs_per_line = 0;
+            m_show_graphtype_button = null;
+            m_show_timespan_button = null;
+            m_graphs_per_line = null;
+            m_graphs.clear();
         }
 
         public KscReport(Report report) {
@@ -301,9 +301,9 @@ public class KscRestService extends OnmsRestService {
             m_show_timespan_button = report.getShow_timespan_button();
             m_show_graphtype_button = report.getShow_graphtype_button();
             m_graphs_per_line = report.getGraphs_per_line();
-            m_graphs = new ArrayList<KscGraph>();
+            m_graphs.clear();
 
-            for(Graph graph : report.getGraphCollection()) {
+            for (Graph graph : report.getGraphCollection()) {
                 m_graphs.add(new KscGraph(graph));
             }
         }
@@ -493,6 +493,34 @@ public class KscRestService extends OnmsRestService {
             m_domain = graph.getDomain();
             m_interfaceId = graph.getInterfaceId();
             m_extlink = graph.getExtlink();
+        }
+
+        public Graph buildGraph() {
+            boolean found = false;
+            for (final String valid : KSC_PerformanceReportFactory.TIMESPAN_OPTIONS) {
+                if (valid.equals(m_timespan)) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                LOG.debug("invalid timespan ('{}'), setting to '7_day' instead.", m_timespan);
+                m_timespan = "7_day";
+            }
+
+            final Graph graph = new Graph();
+            graph.setTitle(m_title);
+            graph.setTimespan(m_timespan);
+            graph.setGraphtype(m_graphtype);
+            graph.setResourceId(m_resourceId);
+            graph.setNodeId(m_nodeId);
+            graph.setNodeSource(m_nodeSource);
+            graph.setDomain(m_domain);
+            graph.setInterfaceId(m_interfaceId);
+            graph.setExtlink(m_extlink);
+
+            return graph;
         }
     }
 }
