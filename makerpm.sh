@@ -5,9 +5,7 @@ TOPDIR=`cd $MYDIR; pwd`
 
 WORKDIR="$TOPDIR/target/rpm"
 
-if [ -z "$JAVA_HOME" ]; then
-	JAVA_HOME=`"$TOPDIR/bin/javahome.pl"`
-fi
+JAVA_HOME=`"$TOPDIR/bin/javahome.pl"`
 
 export PATH="$TOPDIR/maven/bin:$JAVA_HOME/bin:$PATH"
 

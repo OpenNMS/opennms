@@ -5,9 +5,7 @@ TOPDIR=`cd $MYDIR; pwd`
 
 cd "$TOPDIR"
 
-if [ -z "$JAVA_HOME" ]; then
-	JAVA_HOME=`"$TOPDIR/bin/javahome.pl"`
-fi
+JAVA_HOME=`"$TOPDIR/bin/javahome.pl"`
 
 BINARIES="dch dpkg-sig dpkg-buildpackage expect"
 
