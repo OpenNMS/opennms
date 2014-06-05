@@ -19,8 +19,9 @@
     <module>releasenotes</module>
   </modules>
   <properties>
-    <asciidoc.source.directory>${basedir}/src/main/asciidoc</asciidoc.source.directory>
+    <asciidoc.source.directory>${basedir}/src/asciidoc</asciidoc.source.directory>
     <asciidoc.output.directory>${basedir}/target/generated-docs</asciidoc.output.directory>
+    <asciidoc.images.directory>images</asciidoc.images.directory>
   </properties>
   <build>
     <plugins>
@@ -37,11 +38,11 @@
               <goal>copy-resources</goal>
             </goals>
             <configuration>
-              <outputDirectory>${asciidoc.output.directory}</outputDirectory>
+              <outputDirectory>${asciidoc.output.directory}/${asciidoc.images.directory}</outputDirectory>
               <resources>
                 <resource>
-                  <directory>src/main/resources</directory>
-                  <filtering>true</filtering>
+                  <directory>${asciidoc.source.directory}/${asciidoc.images.directory}</directory>
+                  <filtering>false</filtering>
                 </resource>
               </resources>
             </configuration>
@@ -71,6 +72,7 @@
           <headerFooter>true</headerFooter>
           <sourceDirectory>${asciidoc.source.directory}</sourceDirectory>
           <outputDirectory>${asciidoc.output.directory}</outputDirectory>
+          <imagesDir>./</imagesDir>
           <attributes>
             <version>${project.version}</version>
           </attributes>
