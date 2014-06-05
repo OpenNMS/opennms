@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<linkd-configuration threads="5" 
+                     initial_sleep_time="60000"
+                     rescan_interval="86400000" 
+                     use-cdp-discovery="true"
+                     use-bridge-discovery="true"
+                     use-lldp-discovery="true"
+                     use-ospf-discovery="true"
+                     use-isis-discovery="true"
+                     />
+    

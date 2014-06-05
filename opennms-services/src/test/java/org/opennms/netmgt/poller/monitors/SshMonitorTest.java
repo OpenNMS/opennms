@@ -50,119 +50,121 @@ import org.springframework.test.context.ContextConfiguration;
 		"classpath:/META-INF/opennms/applicationContext-commonConfigs.xml"})
 @JUnitConfigurationEnvironment
 public class SshMonitorTest {
+    public static final String HOST_TO_TEST = "127.0.0.1";
 
     @Test
     public void testPoll() throws UnknownHostException {
 
         ServiceMonitor sm = new SshMonitor();
-        MonitoredService svc = new MockMonitoredService(1, "Router", InetAddressUtils.addr("127.0.0.1"), "SSH");
+        MonitoredService svc = new MockMonitoredService(1, "Router", InetAddressUtils.addr(HOST_TO_TEST), "SSH");
         Map<String, Object> parms = new HashMap<String, Object>();
 
         PollStatus ps = sm.poll(svc, parms);
-        assertTrue(ps.isUp());
-        assertFalse(ps.isDown());
+        assertTrue(createAssertMessage(ps, "Up"), ps.isUp());
+        assertFalse(createAssertMessage(ps, "not Down"), ps.isDown());
     }
 
     @Test
     public void testPollWithMatch() throws UnknownHostException {
 
         ServiceMonitor sm = new SshMonitor();
-        MonitoredService svc = new MockMonitoredService(1, "Router", InetAddressUtils.addr("127.0.0.1"), "SSH");
+        MonitoredService svc = new MockMonitoredService(1, "Router", InetAddressUtils.addr(HOST_TO_TEST), "SSH");
         Map<String, Object> parms = new HashMap<String, Object>();
         parms.put("match", "SSH");
 
         PollStatus ps = sm.poll(svc, parms);
-        assertTrue(ps.isUp());
-        assertFalse(ps.isDown());
+        assertTrue(createAssertMessage(ps, "Up"), ps.isUp());
+        assertFalse(createAssertMessage(ps, "not Down"), ps.isDown());
     }
 
     @Test
     public void testPollWithStarBanner() throws UnknownHostException {
 
         ServiceMonitor sm = new SshMonitor();
-        MonitoredService svc = new MockMonitoredService(1, "Router", InetAddressUtils.addr("127.0.0.1"), "SSH");
+        MonitoredService svc = new MockMonitoredService(1, "Router", InetAddressUtils.addr(HOST_TO_TEST), "SSH");
         Map<String, Object> parms = new HashMap<String, Object>();
         parms.put("banner", "*");
 
         PollStatus ps = sm.poll(svc, parms);
-        assertTrue(ps.isUp());
-        assertFalse(ps.isDown());
+        assertTrue(createAssertMessage(ps, "Up"), ps.isUp());
+        assertFalse(createAssertMessage(ps, "not Down"), ps.isDown());
     }
 
     @Test
     public void testPollWithRegexpBanner() throws UnknownHostException {
 
         ServiceMonitor sm = new SshMonitor();
-        MonitoredService svc = new MockMonitoredService(1, "Router", InetAddressUtils.addr("127.0.0.1"), "SSH");
+        MonitoredService svc = new MockMonitoredService(1, "Router", InetAddressUtils.addr(HOST_TO_TEST), "SSH");
         Map<String, Object> parms = new HashMap<String, Object>();
         parms.put("banner", "^SSH");
 
         PollStatus ps = sm.poll(svc, parms);
-        assertTrue(ps.isUp());
-        assertFalse(ps.isDown());
+        assertTrue(createAssertMessage(ps, "Up"), ps.isUp());
+        assertFalse(createAssertMessage(ps, "not Down"), ps.isDown());
     }
 
     @Test
     public void testPollWithBannerOpenSSH() throws UnknownHostException {
 
         ServiceMonitor sm = new SshMonitor();
-        MonitoredService svc = new MockMonitoredService(1, "Router", InetAddressUtils.addr("127.0.0.1"), "SSH");
+        MonitoredService svc = new MockMonitoredService(1, "Router", InetAddressUtils.addr(HOST_TO_TEST), "SSH");
         Map<String, Object> parms = new HashMap<String, Object>();
         parms.put("banner", "OpenSSH");
 
         PollStatus ps = sm.poll(svc, parms);
-        assertTrue(ps.isUp());
-        assertFalse(ps.isDown());
+        assertTrue(createAssertMessage(ps, "Up"), ps.isUp());
+        assertFalse(createAssertMessage(ps, "not Down"), ps.isDown());
     }
 
     @Test
     public void testPollWithBannerMissing() throws UnknownHostException {
 
         ServiceMonitor sm = new SshMonitor();
-        MonitoredService svc = new MockMonitoredService(1, "Router", InetAddressUtils.addr("127.0.0.1"), "SSH");
+        MonitoredService svc = new MockMonitoredService(1, "Router", InetAddressUtils.addr(HOST_TO_TEST), "SSH");
         Map<String, Object> parms = new HashMap<String, Object>();
         parms.put("banner", "OpenNMS");
 
         PollStatus ps = sm.poll(svc, parms);
-        assertTrue(ps.isDown());
-        assertFalse(ps.isUp());
+        assertTrue(createAssertMessage(ps, "Down"), ps.isDown());
+        assertFalse(createAssertMessage(ps, "not Up"), ps.isUp());
     }
 
     @Test
     public void testPollWithBannerOpenSSHRegexp() throws UnknownHostException {
 
         ServiceMonitor sm = new SshMonitor();
-        MonitoredService svc = new MockMonitoredService(1, "Router", InetAddressUtils.addr("127.0.0.1"), "SSH");
+        MonitoredService svc = new MockMonitoredService(1, "Router", InetAddressUtils.addr(HOST_TO_TEST), "SSH");
         Map<String, Object> parms = new HashMap<String, Object>();
         parms.put("banner", "^SSH\\-2\\.0\\-OpenSSH_\\d+\\.\\d+.*$");
 
         PollStatus ps = sm.poll(svc, parms);
-        assertTrue(ps.isUp());
-        assertFalse(ps.isDown());
+        assertTrue(createAssertMessage(ps, "Up"), ps.isUp());
+        assertFalse(createAssertMessage(ps, "not Down"), ps.isDown());
     }
 
     @Test
     public void testPollWithInvalidRegexpBanner() throws UnknownHostException, PatternSyntaxException {
 
         ServiceMonitor sm = new SshMonitor();
-        MonitoredService svc = new MockMonitoredService(1, "Router", InetAddressUtils.addr("127.0.0.1"), "SSH");
+        MonitoredService svc = new MockMonitoredService(1, "Router", InetAddressUtils.addr(HOST_TO_TEST), "SSH");
         Map<String, Object> parms = new HashMap<String, Object>();
         parms.put("banner", "^SSH\\-2\\.0\\-OpenSSH_\\d+\\.\\d+\\g$");
 
         PollStatus ps = sm.poll(svc, parms);
         assertTrue(ps.isUnavailable());
+        assertTrue(createAssertMessage(ps, "Unavailable"), ps.isUnavailable());
     }
 
     @Test
     public void testPollWithInvalidRegexpMatch() throws UnknownHostException, PatternSyntaxException {
 
         ServiceMonitor sm = new SshMonitor();
-        MonitoredService svc = new MockMonitoredService(1, "Router", InetAddressUtils.addr("127.0.0.1"), "SSH");
+        MonitoredService svc = new MockMonitoredService(1, "Router", InetAddressUtils.addr(HOST_TO_TEST), "SSH");
         Map<String, Object> parms = new HashMap<String, Object>();
         parms.put("banner", "^SSH\\-2\\.0\\-OpenSSH_\\d+\\.\\d+\\g$");
 
         PollStatus ps = sm.poll(svc, parms);
-        assertTrue(ps.isUnavailable());
+        assertTrue(createAssertMessage(ps, "Unavailable"), ps.isUnavailable());
     }
 
     @Test
@@ -173,7 +175,7 @@ public class SshMonitorTest {
         Map<String, Object> parms = new HashMap<String, Object>();
 
         PollStatus ps = sm.poll(svc, parms);
-        assertTrue(ps.isUnavailable());
+        assertTrue(createAssertMessage(ps, "Unavailable"), ps.isUnavailable());
     }
 
     @Test
@@ -185,7 +187,11 @@ public class SshMonitorTest {
         parms.put("banner", "OpenNMS");
 
         PollStatus ps = sm.poll(svc, parms);
-        assertTrue(ps.isDown());
-        assertFalse(ps.isUp());
+        assertTrue(createAssertMessage(ps, "Down"), ps.isDown());
+        assertFalse(createAssertMessage(ps, "not Up"), ps.isUp());
+    }
+
+    private String createAssertMessage(PollStatus ps, String expectation) {
+        return "polled service is " + ps.toString() + " not " + expectation + " due to: " + ps.getReason() + " (do you have an SSH daemon running on " + HOST_TO_TEST + "?)";
     }
 }

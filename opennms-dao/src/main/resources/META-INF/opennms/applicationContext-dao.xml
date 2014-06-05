@@ -98,14 +98,79 @@
   </bean>
 
   <onmsgi:service interface="org.opennms.netmgt.model.FilterManager" ref="filterManager" />
+
+  <bean id="lldpLinkDao" class="org.opennms.netmgt.dao.hibernate.LldpLinkDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.LldpLinkDao" ref="lldpLinkDao" />
     
+  <bean id="lldpElementDao" class="org.opennms.netmgt.dao.hibernate.LldpElementDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.LldpElementDao" ref="lldpElementDao" />
+    
+  <bean id="ospfLinkDao" class="org.opennms.netmgt.dao.hibernate.OspfLinkDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.OspfLinkDao" ref="ospfLinkDao" />
+    
+  <bean id="ospfElementDao" class="org.opennms.netmgt.dao.hibernate.OspfElementDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.OspfElementDao" ref="ospfElementDao" />
+    
+  <bean id="isisLinkDao" class="org.opennms.netmgt.dao.hibernate.IsIsLinkDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.IsIsLinkDao" ref="isisLinkDao" />
+    
+  <bean id="isisElementDao" class="org.opennms.netmgt.dao.hibernate.IsIsElementDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.IsIsElementDao" ref="isisElementDao" />
+
+  <bean id="ipNetToMediaDao" class="org.opennms.netmgt.dao.hibernate.IpNetToMediaDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.IpNetToMediaDao" ref="ipNetToMediaDao" />
+
+  <bean id="bridgeMacLinkDao" class="org.opennms.netmgt.dao.hibernate.BridgeMacLinkDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.BridgeMacLinkDao" ref="bridgeMacLinkDao" />
+    
+  <bean id="bridgeBridgeLinkDao" class="org.opennms.netmgt.dao.hibernate.BridgeBridgeLinkDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.BridgeBridgeLinkDao" ref="bridgeBridgeLinkDao" />
+    
+  <bean id="bridgeStpLinkDao" class="org.opennms.netmgt.dao.hibernate.BridgeStpLinkDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.BridgeStpLinkDao" ref="bridgeStpLinkDao" />
+    
+  <bean id="bridgeElementDao" class="org.opennms.netmgt.dao.hibernate.BridgeElementDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.BridgeElementDao" ref="bridgeElementDao" />
+
   <bean id="acknowledgmentDao" class="org.opennms.netmgt.dao.hibernate.AcknowledgmentDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
   
   <onmsgi:service interface="org.opennms.netmgt.dao.api.AcknowledgmentDao" ref="acknowledgmentDao" />
-  
-
+ 
   <bean id="alarmDao" class="org.opennms.netmgt.dao.hibernate.AlarmDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>

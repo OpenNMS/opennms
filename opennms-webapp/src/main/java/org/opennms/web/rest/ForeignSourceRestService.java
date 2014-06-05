@@ -357,7 +357,7 @@ public class ForeignSourceRestService extends OnmsRestService {
      * @return a {@link javax.ws.rs.core.Response} object.
      */
     @POST
-    @Consumes(MediaType.APPLICATION_XML)
+    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
     public Response addForeignSource(ForeignSource foreignSource) {
         writeLock();
@@ -379,7 +379,7 @@ public class ForeignSourceRestService extends OnmsRestService {
      */
     @POST
     @Path("{foreignSource}/detectors")
-    @Consumes(MediaType.APPLICATION_XML)
+    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
     public Response addDetector(@PathParam("foreignSource") String foreignSource, DetectorWrapper detector) {
         writeLock();
@@ -404,7 +404,7 @@ public class ForeignSourceRestService extends OnmsRestService {
      */
     @POST
     @Path("{foreignSource}/policies")
-    @Consumes(MediaType.APPLICATION_XML)
+    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
     public Response addPolicy(@PathParam("foreignSource") String foreignSource, PolicyWrapper policy) {
         writeLock();

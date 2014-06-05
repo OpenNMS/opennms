@@ -145,7 +145,7 @@ public class SnmpObjId implements Comparable<SnmpObjId> {
     public String toString() {
         StringBuffer buf = new StringBuffer(length()*2+10); // a guess at the str len
         for(int i = 0; i < length(); i++) {
-            if (i != 0 || addPrefixDotInToString()) {
+            if (i > 0 || addPrefixDotInToString()) {
                 buf.append('.');  
             }
             buf.append(m_ids[i]);

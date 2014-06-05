@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+  xsi:schemaLocation="
+    http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+  ">
+
+  <changeSet author="ranger@opennms.org" id="1.13.3-pathOutage-ipv6">
+
+    <modifyDataType tableName="pathoutage" columnName="criticalpathip" newDataType="text" />
+
+    <rollback>
+      <modifyDataType tableName="pathoutage" columnName="criticalpathip" newDataType="varchar(16)" />
+    </rollback>
+
+  </changeSet>
+
+</databaseChangeLog>
