@@ -45,7 +45,7 @@ $VERBOSE       = undef;
 	/opt/ci/java
 );
 
-push(@JAVA_SEARCH_DIRS, File::Spec->catdir($ENV{'HOME'}, 'ci', 'java');
+push(@JAVA_SEARCH_DIRS, File::Spec->catdir($ENV{'HOME'}, 'ci', 'java'));
 
 eval {
 	setpriority(0, 0, 10);
