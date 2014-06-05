@@ -91,7 +91,7 @@ public abstract class ResourceType {
      *
      * @return a {@link java.util.Collection} object.
      */
-    final public Collection<SnmpAttributeType> getAttributeTypes() {
+    public final Collection<SnmpAttributeType> getAttributeTypes() {
         if (m_attributeTypes == null) {
             m_attributeTypes = loadAttributeTypes();
         }

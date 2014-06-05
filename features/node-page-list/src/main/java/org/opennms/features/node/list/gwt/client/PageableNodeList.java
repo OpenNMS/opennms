@@ -309,7 +309,7 @@ public class PageableNodeList extends Composite implements ProvidesResize, Physi
         Location.assign(urlBuilder.toString());
     }
     
-    public native final String getBaseHref() /*-{
+    public final native String getBaseHref() /*-{
         try{
             return $wnd.getBaseHref();
         }catch(err){

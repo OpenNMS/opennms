@@ -193,8 +193,7 @@ public class IfServicesRestService extends OnmsRestService {
         builder.alias("serviceType", "serviceType", JoinType.LEFT_JOIN);
         applyQueryFilters(params, builder);
 
-        final Criteria criteria = builder.toCriteria();
-        return criteria;
+        return builder.toCriteria();
     }
 
     private void sendEvent(String eventUEI, OnmsMonitoredService dbObj) {

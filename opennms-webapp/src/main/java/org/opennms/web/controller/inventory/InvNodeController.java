@@ -79,8 +79,7 @@ public class InvNodeController implements Controller {
         Map<String, Object> model = m_inventoryService.getInventory(nodeid, 
                                                                          WebSecurityUtils.sanitizeString(group),
                                                                          WebSecurityUtils.sanitizeString(version));
-        ModelAndView modelAndView = new ModelAndView("inventory/invnode","model",model);
-        return modelAndView;
+        return new ModelAndView("inventory/invnode","model",model);
     }
 
 }

@@ -44,19 +44,19 @@ import org.slf4j.LoggerFactory;
  * Convenience class for generating a list of IP addresses from a file URL.
  */
 public class IpListFromUrl {
-    private final static Logger LOG = LoggerFactory.getLogger(IpListFromUrl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(IpListFromUrl.class);
 
     /**
      * The string indicating the start of the comments in a line containing the
      * IP address in a file URL
      */
-    private final static String COMMENT_STR = " #";
+    private static final String COMMENT_STR = " #";
 
     /**
      * This character at the start of a line indicates a comment line in a URL
      * file
      */
-    private final static char COMMENT_CHAR = '#';
+    private static final char COMMENT_CHAR = '#';
 
     /**
      * This method is used to read all interfaces from an URL file.

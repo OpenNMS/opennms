@@ -55,8 +55,8 @@ public class DnsDetector extends BasicDetector<DatagramPacket, DatagramPacket> {
     private static final Logger LOG = LoggerFactory.getLogger(DnsDetector.class);
     private static final String DEFAULT_SERVICE_NAME = "DNS";
 
-    private final static int DEFAULT_PORT = 53;
-    private final static String DEFAULT_LOOKUP = "localhost";
+    private static final int DEFAULT_PORT = 53;
+    private static final String DEFAULT_LOOKUP = "localhost";
     private String m_lookup = DEFAULT_LOOKUP;
 
     /**

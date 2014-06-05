@@ -106,7 +106,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
     
     private static final Logger LOG = LoggerFactory.getLogger(PageSequenceMonitor.class);
     
-    protected class SequenceTracker{
+    protected static class SequenceTracker{
         
         TimeoutTracker m_tracker;
         public SequenceTracker(Map<String, Object> parameterMap, int defaultSequenceRetry, int defaultTimeout) {

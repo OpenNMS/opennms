@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
 
 public class NrtBrokerLocal implements NrtBroker, NrtBrokerLocalMBean {
 
-    private class TimedOutMap {
+    private static class TimedOutMap {
         private Map<String, List<MeasurementSet>> m_measurementSets = new HashMap<String, List<MeasurementSet>>();
         private Map<String, Date> m_lastAccess = new HashMap<String, Date>();
 

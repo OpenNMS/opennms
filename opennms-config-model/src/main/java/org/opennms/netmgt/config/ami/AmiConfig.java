@@ -409,8 +409,7 @@ public class AmiConfig implements Serializable {
      * @return true if the object was removed from the collection.
      */
     public boolean removeDefinition(final Definition vDefinition) {
-        boolean removed = _definitionList.remove(vDefinition);
-        return removed;
+    	return _definitionList.remove(vDefinition);
     }
 
     /**
@@ -420,8 +419,7 @@ public class AmiConfig implements Serializable {
      * @return the element removed from the collection
      */
     public Definition removeDefinitionAt(final int index) {
-        Object obj = this._definitionList.remove(index);
-        return (Definition) obj;
+    	return (Definition) this._definitionList.remove(index);
     }
 
     /**

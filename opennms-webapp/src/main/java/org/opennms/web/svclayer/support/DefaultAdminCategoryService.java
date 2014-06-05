@@ -461,7 +461,7 @@ public class DefaultAdminCategoryService implements
         }
     }
     
-    public class CategoryAndMemberNodes {
+    public static class CategoryAndMemberNodes {
         private OnmsCategory m_category;
         private Collection<OnmsNode> m_memberNodes;
 
@@ -480,7 +480,7 @@ public class DefaultAdminCategoryService implements
         }
     }
 
-    public class EditModel {
+    public static class EditModel {
         private OnmsCategory m_category;
         private List<OnmsNode> m_nodes;
         private List<OnmsNode> m_sortedMemberNodes;
@@ -513,7 +513,7 @@ public class DefaultAdminCategoryService implements
         
     }
     
-    public class NodeEditModel {
+    public static class NodeEditModel {
         private OnmsNode m_node;
         private List<OnmsCategory> m_categories;
         private List<OnmsCategory> m_sortedCategories;

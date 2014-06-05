@@ -86,7 +86,7 @@ public class TimeRange {
             
         };
         
-        abstract public Date getStartDate();
+        public abstract Date getStartDate();
         public Date getEndDate() {
             return new Date( new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), new GregorianCalendar().get(Calendar.DATE) ).getTimeInMillis() );
         };

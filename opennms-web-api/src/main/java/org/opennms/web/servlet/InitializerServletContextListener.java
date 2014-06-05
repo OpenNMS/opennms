@@ -109,7 +109,7 @@ public class InitializerServletContextListener implements ServletContextListener
         }
     }
 
-    public class RTCPostSubscriberTimerTask extends TimerTask {
+    public static class RTCPostSubscriberTimerTask extends TimerTask {
         private CategoryList m_categorylist;
 
         public RTCPostSubscriberTimerTask() throws ServletException {

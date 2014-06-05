@@ -88,7 +88,7 @@ public class ProcessExec {
         return exitVal;
     }
 
-    public class PrintInputStream implements Runnable {
+    public static class PrintInputStream implements Runnable {
         private InputStream m_inputStream;
 
         private PrintStream m_printStream;

@@ -133,8 +133,7 @@ public class MockLogger extends MarkerIgnoringBase {
         } else {
             try {
                 FileOutputStream fos = new FileOutputStream(logFile);
-                PrintStream printStream = new PrintStream(fos);
-                return printStream;
+                return new PrintStream(fos);
             } catch (FileNotFoundException e) {
                 Util.report("Could not open [" + logFile + "]. Defaulting to System.err", e);
                 return System.err;

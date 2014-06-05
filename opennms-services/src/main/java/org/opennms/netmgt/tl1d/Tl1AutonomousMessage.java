@@ -91,7 +91,7 @@ public class Tl1AutonomousMessage extends Tl1Message {
         m_terminator = ";\n";
     }
     
-    protected class AutoHeader {
+    protected static class AutoHeader {
         
         private String m_rawMessage;
         private String m_sid;
@@ -137,7 +137,7 @@ public class Tl1AutonomousMessage extends Tl1Message {
 
     }
     
-    protected class AutoId {
+    protected static class AutoId {
         
         private String m_rawMessage;
         private String m_alarmCode;
@@ -194,7 +194,7 @@ public class Tl1AutonomousMessage extends Tl1Message {
         }
     }
 
-    protected class AutoBlock {
+    protected static class AutoBlock {
         
         private String m_block;
         private String m_aid;
