@@ -4,21 +4,14 @@
   angular.module('opennms.controllers.shared.outages', [
     'ui.router', 'angularMoment',
     'opennms.controllers.desktop.app',
+    'opennms.services.shared.pagedresource',
     'opennms.services.shared.outages',
     'opennms.services.shared.menu'
   ])
-    .controller('OutageCtrl', ['$scope', '$log', '$filter', 'OutageService', function($scope, $log, $filter, OutageService) {
+    .controller('OutageCtrl', ['$scope', '$log', '$timeout', '$filter', 'OutageService', 'PagedResourceFactory', function($scope, $log, $timeout, $filter, OutageService, PagedResourceFactory) {
         $log.debug('Initializing OutagesCtrl.');
         $scope.$log = $log;
         $scope.items = {};
-
-        $scope.init = function() {
-          OutageService.list().then(function(outages) {
-            $log.debug('Got outages:', outages);
-            $scope.items = outages;
-            $scope.search();
-          });
-        };
 
         $scope.filter = {
           type: 'both'
@@ -28,54 +21,92 @@
           reverse: false
         };
         $scope.gap = 5;
-        $scope.filteredItems = [];
-        $scope.groupedItems = [];
         $scope.itemsPerPage = 20;
-        $scope.pagedItems = [];
         $scope.currentPage = 0;
         $scope.items = [];
-        // limit: count
-        // offset: (page - 1) * count
-        // orderBy:
-        // order:
-        // comparator:
-        var searchMatch = function(haystack, needle) {
-          if (!needle) {
-            return true;
-          }
-          return haystack.toLowerCase().indexOf(needle.toLowerCase()) !== -1;
-        };
-        // init the filtered items
-        $scope.filterItems = function () {
+        $scope.totalCount = 0;
 
-        };
-        $scope.search = function() {
-          $scope.filteredItems = $filter('filter')($scope.items, function(item) {
-            for (var attr in item) {
-              if (searchMatch(item[attr], $scope.query))
-                return true;
-            }
-            return false;
+        var outageResource = PagedResourceFactory.createResource('/outages');
+        outageResource.setLimit($scope.itemsPerPage);
+        outageResource.setPage($scope.currentPage);
+        outageResource.orderBy($scope.sort.sortingOrder);
+        outageResource.order($scope.sort.reverse? 'desc' : 'asc');
+        if ($scope.filter.type === 'current') {
+          outageResource.setParams({ ifRegainedService: 'null' });
+        } else if ($scope.filter.type === 'resolved') {
+          outageResource.setParams({ ifRegainedService: 'notnull' });
+        } else {
+          outageResource.setParams({});
+        }
+
+        var updateUI = function() {
+          $timeout(function() {
+            $log.debug('Updating UI:');
+            outageResource.getCurrentResponse().then(function(results) {
+              $log.debug('results:',results);
+              var items = [];
+              var totalCount = 0;
+              if (results && results['outages']) {
+                if (results['outages']['outage']) {
+                  var outage = results['outages']['outage'];
+                  for (var i = 0; i < outage.length; i++) {
+                    items.push(new Outage(outage[i]));
+                  }
+                }
+                if (results['outages']['_totalCount']) {
+                  totalCount = Number(results['outages']['_totalCount']);
+                }
+              }
+              $scope.items = items;
+              $scope.totalCount = totalCount;
+            }, function(err) {
+              $log.error("Failed to update outages list:",err);
+            });
           });
-          // take care of the sorting order
-          if ($scope.sort.sortingOrder !== '') {
-            $scope.filteredItems = $filter('orderBy')($scope.filteredItems, $scope.sort.sortingOrder, $scope.sort.reverse);
-          }
-          $scope.currentPage = 0;
-          // now group by pages
-          $scope.groupToPages();
         };
-        // calculate page in place
-        $scope.groupToPages = function() {
-          $scope.pagedItems = [];
-          for (var i = 0; i < $scope.filteredItems.length; i++) {
-            if (i % $scope.itemsPerPage === 0) {
-              $scope.pagedItems[Math.floor(i / $scope.itemsPerPage)] = [$scope.filteredItems[i]];
+
+        $scope.$watch('itemsPerPage', function(newValue, oldValue) {
+          $log.debug('itemsPerPage: newValue=',newValue);
+          if (newValue !== oldValue) {
+            outageResource.setLimit(newValue);
+            $scope.currentPage = 0;
+            updateUI();
+          }
+        });
+        $scope.$watch('currentPage', function(newValue, oldValue) {
+          $log.debug('currentPage: newValue=',newValue);
+          if (newValue !== oldValue) {
+            outageResource.setPage(newValue);
+            updateUI();
+          }
+        });
+        $scope.$watch('filter.type', function(newValue, oldValue) {
+          $log.debug('filter.type: newValue=',newValue);
+          if (newValue !== oldValue) {
+            if (newValue === 'current') {
+              outageResource.setParams({ ifRegainedService: 'null' });
+            } else if (newValue === 'resolved') {
+              outageResource.setParams({ ifRegainedService: 'notnull' });
             } else {
-              $scope.pagedItems[Math.floor(i / $scope.itemsPerPage)].push($scope.filteredItems[i]);
+              outageResource.setParams({});
             }
+            updateUI();
           }
-        };
+        });
+        $scope.$watch('sort.sortingOrder', function(newValue, oldValue) {
+          $log.debug('sort.sortingOrder: newValue=',newValue);
+          if (newValue !== oldValue) {
+            outageResource.orderBy(newValue);
+            updateUI();
+          }
+        });
+        $scope.$watch('sort.reverse', function(newValue, oldValue) {
+          if (newValue !== oldValue) {
+            outageResource.order(newValue? 'desc' : 'asc');
+            updateUI();
+          }
+        });
+
         $scope.range = function(size, start, end) {
           var ret = [];
           //$log.debug('range(): size: '+size+', start: '+start+', end: '+end);
@@ -96,15 +127,18 @@
           //$log.debug('range(): ret:', ret);
           return ret;
         };
+
+        $scope.totalPages = function() {
+          return Math.ceil($scope.totalCount / $scope.itemsPerPage);
+        };
+
         $scope.firstPage = function() {
           if ($scope.currentPage > 0) {
             $scope.currentPage = 0;
           }
         };
         $scope.lastPage = function() {
-          if ($scope.currentPage < $scope.pagedItems.length - 1) {
-            $scope.currentPage = $scope.pagedItems.length - 1;
-          }
+          $scope.currentPage = $scope.totalPages() - 1;
         };
         $scope.prevPage = function() {
           if ($scope.currentPage > 0) {
@@ -112,7 +146,7 @@
           }
         };
         $scope.nextPage = function() {
-          if ($scope.currentPage < $scope.pagedItems.length - 1) {
+          if ($scope.currentPage < $scope.totalPages() - 1) {
             $scope.currentPage++;
           }
         };
@@ -125,12 +159,14 @@
           }
         };
 
-        $scope.init();
-        $scope.search();
+
+        updateUI();
+        //$scope.init();
+        //$scope.search();
 
         $log.debug('Finished Initializing OutagesCtrl.');
       }])
-    .controller('OutageDetailController', ['$scope', '$stateParams', 'OutageDetailService', function($scope, $stateParams, OutageDetailService) {
+    .controller('OutageDetailCtrl', ['$scope', '$stateParams', 'OutageDetailService', function($scope, $stateParams, OutageDetailService) {
         $scope.node = {};
         $scope.node.label = 'node8';
         $scope.node.id = 1;
@@ -185,7 +221,7 @@
             url: '/outages/{outageId:\d+}',
             views: {
               'mainContent': {
-                templateUrl: 'templates/desktop/outages/detail.html',
+                templateUrl: 'templates/desktop/outages/outage.html',
                 controller: 'OutageDetailCtrl'
               }
             }
