@@ -31,4 +31,4 @@ Maven will compile the AsciiDoc source files into HTML. For example, the output 
 
     ${OPENNMS_SOURCE}/opennms-doc/doc-overview/target/generated-docs/overview.html
     
-You can open the `overview.html` with your browser. 
+You can open the `overview.html` with your browser.

@@ -1,0 +1,10 @@
+= Documentation Overview
+// Authors, seperated by;. They might not be shown in the overview but will be generated
+Ronny Trommer <ronny@opennms.org>; Markus von Rueden <mvr@opennms.com>
+:ascii-ids:
+:icons: font
+:toc: left
+:toclevels: 4
+:numbered:
+
+include::overview.adoc[]

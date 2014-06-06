@@ -63,9 +63,6 @@
             <configuration>
               <sourceHighlighter>prettify</sourceHighlighter>
               <backend>html5</backend>
-              <attributes>
-                <toc>left</toc>
-              </attributes>
             </configuration>
           </execution>
         </executions>

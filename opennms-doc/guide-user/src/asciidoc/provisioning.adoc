@@ -1,14 +1,4 @@
 = OpenNMS Provisioning
-:ascii-ids:
-:icons: font
-
-OpenNMS version 1.8.0
-
-The OpenNMS Group, Inc. 220 Chatham Business Drive, Suite 220 Pittsboro,
-NC 27312 T +1 919 533-0160 F Work Fax
-Phonemailto:david@opennms.com[david@opennms.com]http://www.opennms.com/[http://www.opennms.com]
-
- 
 
 == Provisioning
 

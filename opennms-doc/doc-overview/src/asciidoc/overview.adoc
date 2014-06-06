@@ -1,8 +1,4 @@
 = Documentation Overview
-// Authors, seperated by;. They might not be shown in the overview but will be generated
-Ronny Trommer <ronny@opennms.org>; Markus von Rüden <mvr@opennms.com>
-:ascii-ids:
-:icons: font
 
 [[community-docs]]
 == Writing OpenNMS Documentation
@@ -222,49 +218,6 @@ For documentation see http://graphviz.org/.
 
 This is how to include a simple example graph:
 
-[source]
-----
- ["dot", "community-docs-graphdb-rels.svg"]
- ----
- "Start node" -> "End node" [label="relationship"]
- ----
-----
-
-Which is rendered as:
-
-["dot", "community-docs-graphdb-rels.svg"]
-----
-"Start node" -> "End node" [label="relationship"]
-----
-
-Here's an example using some predefined variables available in the build:
-
-[source]
-----
- ["dot", "community-docs-graphdb-rels-overview.svg", "meta"]
- ----
- "A Relationship" [fillcolor="NODEHIGHLIGHT"]
- "Start node" [fillcolor="NODE2HIGHLIGHT"]
- "A Relationship" -> "Start node" [label="has a"]
- "A Relationship" -> "End node" [label="has a"]
- "A Relationship" -> "Relationship type" [label="has a"]
- "Name" [TEXTNODE]
- "Relationship type" -> "Name" [label="uniquely identified by" color="EDGEHIGHLIGHT" fontcolor="EDGEHIGHLIGHT"]
- ----
-----
-
-Which is rendered as:
-
-["dot", "community-docs-graphdb-rels-overview.svg", "meta"]
-----
-"A Relationship" [fillcolor="NODEHIGHLIGHT"]
-"Start node" [fillcolor="NODE2HIGHLIGHT"]
-"A Relationship" -> "Start node" [label="has a"]
-"A Relationship" -> "End node" [label="has a"]
-"A Relationship" -> "Relationship type" [label="has a"]
-"Name" [TEXTNODE]
-"Relationship type" -> "Name" [label="uniquely identified by" color="EDGEHIGHLIGHT" fontcolor="EDGEHIGHLIGHT"]
-----
 
 The optional second argument given to the dot filter defines the style to use:
 
@@ -429,35 +382,6 @@ This is how it renders:
 +----------------------------------+
 3 rows, 12 ms
 ----
-
-
-== A sample Java based documentation test ==
-
-For Java, there are a couple of premade utilities that keep code and documentation together in
-Javadocs and code snippets that generate Asciidoc for the rest of the toolchain.
-
-To illustrate this, look at the following documentation that generates the Asciidoc file +hello-world-title.asciidoc+ with a content of:
-
-[source]
-------------------------------
-include::{importdir}/opennms-examples-docs-jar/dev/examples/hello-world-sample-chapter.asciidoc[]
-------------------------------
-
-this file is included in this documentation via
-
-[source]
-----
-  :leveloffset: 3
-  include::{importdir}/opennms-examples-docs-jar/dev/examples/hello-world-sample-chapter.asciidoc[]
-----
-
-which renders the following chapter:
-
-:leveloffset: 3
-
-include::{importdir}/opennms-examples-docs-jar/dev/examples/hello-world-sample-chapter.asciidoc[]
-
-:leveloffset: 2
 
 == Images
 
