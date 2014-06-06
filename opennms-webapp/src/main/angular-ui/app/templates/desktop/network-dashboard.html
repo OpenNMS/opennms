@@ -1,8 +1,8 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-lg-6">
-            <a class="btn btn-primary">Current Outages</a><br />
-            <div class="row" ng-repeat="outage in outages" ng-class="outage.getSeverityClass()">
+            <div class="well reportHeader"><span class="text-center ">Current Outages</span></div><br />
+            <div class="row well reportHeader" ng-repeat="outage in outages" ng-class="outage.getSeverityClass()">
                 <div class="row">
                     <div class="col-md-6 text-left"><strong><a ui-sref="app.nodes.detail({ nodeId: outage.nodeId})">{{outage.nodeLabel}}</a></strong></div>
                     <div class="col-md-3 text-right">{{outage.monitoredService.serviceName}} service</div><br/>
@@ -11,16 +11,13 @@
                     <div class="col-md-6 text-left"><strong>{{outage.serviceLostEvent.logMessage| words:8 }}</strong></div>
                     <div class="col-md-3 text-right">{{outage.ifLostService| amDateFormat:'YYYY-MM-DDTHH:mm:ssZZ'}}</div>
                 </div>
-                <hr/>
             </div>
         </div>
         <div class="col-lg-6">
-            <a class="btn btn-primary">Alarms</a><br />
-                <div class="row" ng-repeat="alarm in alarms" ng-class="alarm.getSeverityClass()">
-                    <h4><a ui-sref="app.alarms.detail({ alarmId: alarm.alarmId })">{{alarm.nodeLabel}}</a></h4><br/>
-                    <span ng-bind-html="alarm.description"></span>
-                    <hr/>
-                </div>
+            <div class="well reportHeader"><span>Alarms</span></div><br />
+            <div class="row well reportHeader" ng-repeat="alarm in alarms" ng-class="alarm.getSeverityClass()">
+                <h4><a ui-sref="app.alarms.detail({ alarmId: alarm.alarmId })">{{alarm.nodeLabel}}</a></h4><br/>
+                <span ng-bind-html="alarm.description"></span>
             </div>
         </div>
     </div>
