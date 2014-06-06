@@ -9,9 +9,12 @@
     'opennms.services.shared.nodes',
     'opennms.services.shared.alarms',
     'opennms.services.shared.menu',
+    'opennms.services.shared.pagedresource',
+    'opennms.services.shared.modelfactory',
+    'opennms.models.node',
     'opennms.directives.shared.nodes'
   ])
-    .controller('NodesCtrl', ['$scope', '$log', 'NodeService', function ($scope, $log, NodeService) {
+    .controller('NodesCtrl', ['$scope', '$log', '$timeout', 'NodeService', 'PagedResourceFactory', 'ModelFactory', function ($scope, $log, $timeout, NodeService, PagedResourceFactory, ModelFactory) {
       $log.debug('Initializing NodesCtrl.');
       $scope.listInterfaces = true;
       $scope.nodes = [];
@@ -21,97 +24,182 @@
       $scope.offset = 0;
       $scope.fetchedAll = false;
 
-      var self = this;
+      $scope.filter = {
+        type: 'both'
+      };
+      $scope.sort = {
+        sortingOrder: 'id',
+        reverse: false
+      };
+      $scope.gap = 3;
+      $scope.itemsPerPage = 50;
+      $scope.currentPage = 0;
+      $scope.items = [];
+      $scope.totalCount = 0;
 
-      $scope.init = function() {
-        $scope.fetchNodes();
+      var nodeListResource = PagedResourceFactory.createResource('/nodes');
+      nodeListResource.setLimit($scope.itemsPerPage);
+      nodeListResource.setPage($scope.currentPage);
+      nodeListResource.orderBy($scope.sort.sortingOrder);
+      nodeListResource.order($scope.sort.reverse?'desc':'asc');
+
+//      if ($scope.filter.type === 'current') {
+//        nodeListResource.setParams({ ifRegainedService: 'null' });
+//      } else if ($scope.filter.type === 'resolved') {
+//        nodeListResource.setParams({ ifRegainedService: 'notnull' });
+//      } else {
+        nodeListResource.setParams({});
+//      }
+
+      var updateUI = function() {
+        $timeout(function() {
+          $log.debug('Updating the UI: ');
+          nodeListResource.getCurrentResponse().then(function(results) {
+            var models = ModelFactory.processResults(results);
+            $scope.nodes = models.objects;
+            $log.debug('Retrieved nodes (' + models.totalCount + '): ', $scope.nodes);
+            $scope.totalCount = models.totalCount;
+          },
+          function(err) {
+            $log.error('Retrieving node list failed.');
+          });
+        })
       };
 
-      $scope.fetchMoreNodes = function() {
-        $scope.offset += $scope.limit;
-        $scope.fetchNodes();
+      $scope.range = function(size, start, end) {
+        var ret = [];
+        //$log.debug('range(): size: '+size+', start: '+start+', end: '+end);
+
+        if (size < end) {
+          end = size;
+          start = size - $scope.gap;
+        }
+        if (start < 0) {
+          start = 0;
+        }
+        if (end > size) {
+          end = size;
+        }
+        for (var i = start; i < end; i++) {
+          ret.push(i);
+        }
+        //$log.debug('range(): ret:', ret);
+        return ret;
       };
 
-      $scope.fetchAllNodes = function() {
-        $scope.limit = 0;
-        $scope.fetchNodes();
+      $scope.totalPages = function() {
+        return Math.ceil($scope.totalCount / $scope.itemsPerPage);
       };
 
-      $scope.getNodeLink = function (node) {
-        return '#/node/' + node.id;
-      };
-
-      $scope.fetchNodes = function() {
-        NodeService.list($scope.offset, $scope.limit).then($scope.processNodes);
-      };
-
-      $scope.processNodes = function(nodes) {
-        $log.debug('Got nodes:', nodes);
-        $scope.nodes = $scope.nodes.concat(nodes);
-
-        if ($scope.listInterfaces) {
-          for (var i=0; i < nodes.length; i++) {
-            var nodeId = nodes[i]['_id'];
-            NodeService.getIpInterfaces(nodeId).then(self.processIfaces);
-          }
+      $scope.firstPage = function() {
+        if ($scope.currentPage > 0) {
+          $scope.currentPage = 0;
         }
       };
-
-      self.processIfaces = function(ifaces) {
-        if (ifaces) {
-          if (!angular.isArray(ifaces)) {
-            ifaces = [ifaces];
-          }
-
-          var nodeId = ifaces[0].nodeId;
-          $log.debug('Interfaces for node ' + nodeId + ':', ifaces);
-          $scope.ifaces[nodeId] = ifaces;
+      $scope.lastPage = function() {
+        $scope.currentPage = $scope.totalPages() - 1;
+      };
+      $scope.prevPage = function() {
+        if ($scope.currentPage > 0) {
+          $scope.currentPage--;
         }
       };
+      $scope.nextPage = function() {
+        if ($scope.currentPage < $scope.totalPages() - 1) {
+          $log.debug('234')
+          $scope.currentPage++;
+        }
+      };
+      $scope.setPage = function() {
+        $scope.currentPage = this.n;
+      };
 
-      $scope.init();
+
+      $scope.$watch('currentPage', function(newValue, oldValue) {
+        $log.debug('currentPage: newValue=',newValue);
+        if (newValue !== oldValue) {
+          nodeListResource.setPage(newValue);
+          updateUI();
+        }
+      });
+
+      updateUI();
     }])
-    .controller('NodeDetailCtrl', ['$scope', '$stateParams', '$log', 'NodeService', 'AlarmService', function ($scope, $stateParams, $log, NodeService, AlarmService) {
+    .controller('NodeDetailCtrl', ['$scope', '$stateParams', '$log', '$timeout', 'NodeService', 'AlarmService', 'PagedResourceFactory', 'ModelFactory', function ($scope, $stateParams, $log, $timeout, NodeService, AlarmService, PagedResourceFactory, ModelFactory) {
+      $scope.currentNodeId = $stateParams.nodeId;
+
       $scope.node = {};
 
-      $scope.init = function() {
-        $scope.fetchNode($stateParams.nodeId);
+//      $scope.init = function() {
+//        $scope.fetchNode($stateParams.nodeId);
+//      };
+
+      var nodeListResource = PagedResourceFactory.createResource('/nodes/' + $scope.currentNodeId);
+//      nodeListResource.setLimit($scope.itemsPerPage);
+//      nodeListResource.setPage($scope.currentPage);
+//      nodeListResource.orderBy($scope.sort.sortingOrder);
+//      nodeListResource.order($scope.sort.reverse?'desc':'asc');
+
+//      if ($scope.filter.type === 'current') {
+//        nodeListResource.setParams({ ifRegainedService: 'null' });
+//      } else if ($scope.filter.type === 'resolved') {
+//        nodeListResource.setParams({ ifRegainedService: 'notnull' });
+//      } else {
+      nodeListResource.setParams({});
+//      }
+
+      var updateUI = function() {
+        $timeout(function() {
+          $log.debug('Updating the UI: ');
+          nodeListResource.getCurrentResponse().then(function(results) {
+              var models = ModelFactory.processResults(results);
+              $scope.node = models.objects;
+              $log.debug('Retrieved node (' + models.totalCount + '): ', $scope.nodes);
+              $scope.totalCount = models.totalCount;
+              $scope.processNode();
+            },
+            function(err) {
+              $log.error('Retrieving node list failed.');
+            });
+        })
       };
+
+      updateUI();
 
       $scope.processInterfaces = function(ifaces) {
         $log.debug('Got node ifaces:', ifaces);
         $scope.node.ifaces = ifaces;
 
         $scope.node.ifaces.forEach(function(iface, index) {
-          NodeService.getIpInterfaceServices($scope.node._id, iface.ipAddress).then(function(services) {
+          NodeService.getIpInterfaceServices($scope.node.id, iface.ipAddress).then(function(services) {
             $log.debug('Got node iface services:', services);
             $scope.node.ifaces[index].services = services;
           });
         });
       };
 
-      $scope.processNode = function(node) {
-        $log.debug('Got node:', node);
-        $scope.node = node;
+      $scope.processNode = function() {
+        $log.debug('Got node:', $scope.node);
+        //$scope.node = node;
 
         // Fetch interfaces.
-        NodeService.getIpInterfaces(node._id).then($scope.processInterfaces);
+        NodeService.getIpInterfaces($scope.node.id).then($scope.processInterfaces);
 
-        AlarmService.getByNode($scope.node._id).then(function(alarms) {
+        AlarmService.getByNode($scope.node.id).then(function(alarms) {
           $log.debug('Got alarms: ', alarms);
           $scope.node.alarms = alarms;
         });
       };
 
       $scope.fetchNode = function(nodeId) {
-        NodeService.get(nodeId).then($scope.processNode);
+        //NodeService.get(nodeId).then($scope.processNode);
       };
 
       /// Runtime stuff.
-      if(!$scope.isTest) {
+      //if(!$scope.isTest) {
         // When testing we don't want to initialize
-        $scope.init();
-      }
+        //$scope.init();
+      //}
 
     }])
 

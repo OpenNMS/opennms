@@ -3,7 +3,7 @@
         <div class="well nodeHeader">
             <div class="row">
                 <div class="col-md-6">
-                    <p><strong>{{node._label}}</strong> (<em>{{node._id}}</em>)</p>
+                    <p><strong>{{node.label}}</strong> (<em>{{node.id}}</em>)</p>
                     <p class="nodeHeaderLocation"><em>{{node.sysLocation | characters:50}}</em></p>
                 </div>
                 <div class="col-md-6">
@@ -29,9 +29,9 @@
             </div>
         </div>
 
-        <h4 ng-if="node._foreignSource"><em>Created via provisioning requisition <strong>{{node._foreignSource}}
-            (foreignId: {{node._foreignId}})</strong></em></h4>
-        <h4 ng-if="!node._foreignSource"><em>Not a member of any provisioning requisition</em></h4>
+        <h4 ng-if="node.foreignSource"><em>Created via provisioning requisition <strong>{{node.foreignSource}}
+            (foreignId: {{node.foreignId}})</strong></em></h4>
+        <h4 ng-if="!node.foreignSource"><em>Not a member of any provisioning requisition</em></h4>
 
         <div class="panel panel-default" ng-if="node.schedOutages">
             <div class="panel-heading">
