@@ -11,36 +11,38 @@
                 <th class="noWrap" custom-sort order="'outage.ifRegainedService'" sort="sort">Up&nbsp;</th>
             </tr>
         </thead>
-        <pre>pagedItems.length: {{pagedItems.length|json}}</pre>
-        <pre>items.length: {{items.length|json}}</pre>
-        <pre>currentPage: {{currentPage|json}}</pre>
-        <pre>sort: {{sort|json}}</pre>
-        <pre>itemsPerPage: <select ng-model="itemsPerPage" type="text" ng-change="{{search()}}">
-        <option>10</option>
-        <option>20</option>
-        <option>50</option>
-        <option>100</option>
-        <option>200</option>
-        <option>500</option>
-        <option>1000</option>
-        <option>2000</option>
-        </select></pre>
-        <pre>sortingOrder: <select ng-model="sort.sortingOrder" ng-change="{{search()}}">
-            <option>id</option>
-            <option>node.foreignSource</option>
-            <option>nodeId</option>
-            <option>ipAddress</option>
-            <option>monitoredService.serviceName</option>
-            <option>outage.ifLostService</option>
-            <option>outage.ifRegainedService</option>
-</select></pre>
-        <pre>Outage type: <select ng-model="filter.type" ng-change="{{search()}}">
-            <option value="current">Current</option>
-            <option value="resolved">Resolved</option>
-            <option value="both">Both Current &amp; Resolved</option>
+        <pre>items.length: {{items.length|json}}
+currentPage: {{currentPage|json}}
+totalPages: {{totalCount|json}}
+itemsPerPage: <select ng-model="itemsPerPage" type="text">
+<option>10</option>
+<option>20</option>
+<option>50</option>
+<option>100</option>
+<option>200</option>
+<option>500</option>
+<option>1000</option>
+<option>2000</option>
+</select>
+sortingOrder: <select ng-model="sort.sortingOrder">
+    <option>id</option>
+    <option>ifLostService</option>
+    <option>ifRegainedService</option>
+    <!--
+    <option>node.foreignSource</option>
+    <option>nodeId</option>
+    <option>ipAddress</option>
+    <option>monitoredService.serviceName</option>
+  -->
+</select>
+reverse? {{sort.reverse|json}}
+Outage type: <select ng-model="filter.type">
+    <option value="current">Current</option>
+    <option value="resolved">Resolved</option>
+    <option value="both">Both Current &amp; Resolved</option>
 </select></pre>
         <tbody>
-            <tr ng-repeat="outage in pagedItems[currentPage]| orderBy:sort.sortingOrder:sort.reverse">
+            <tr ng-repeat="outage in items">
                 <td><a ui-sref="app.outages-detail({ outageId: outage.id })">{{outage.id}}</a></td>
                 <td>
                     <span ng-if="outage.node && outage.node.foreignSource">
@@ -79,20 +81,20 @@
                     <li ng-class="{disabled: currentPage == 0}">
                         <a ng-href ng-click="firstPage()">First</a>
                     </li>
-                    <li ng-class="{disabled: currentPage < 1}">
+                    <li ng-class="{disabled: currentPage &lt; 1}">
                         <a ng-href ng-click="prevPage()">« Prev</a>
                     </li>
 
-                    <li ng-repeat="n in range(pagedItems.length, currentPage, currentPage + gap)"
+                    <li ng-repeat="n in range(totalPages(), currentPage, currentPage + gap)"
                         ng-class="{active: n == currentPage}"
                         ng-click="setPage()">
                         <a ng-href ng-bind="n + 1">1</a>
                     </li>
 
-                    <li ng-class="{disabled: (currentPage + 1) == pagedItems.length}">
+                    <li ng-class="{disabled: (currentPage + 1) == totalPages()}">
                         <a ng-href ng-click="nextPage()">Next »</a>
                     </li>
-                    <li ng-class="{disabled: (currentPage + 1) >= pagedItems.length}">
+                    <li ng-class="{disabled: (currentPage + 1) >= totalPages()}">
                         <a ng-href ng-click="lastPage()">Last</a>
                     </li>
                 </ul>
