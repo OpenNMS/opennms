@@ -1,4 +1,4 @@
-describe('Shared Node Controllers Module:', function() {
+xdescribe('Shared Node Controllers Module:', function() {
 
   beforeEach(module('opennms.controllers.shared.nodes'));
   beforeEach(function() {
@@ -8,6 +8,8 @@ describe('Shared Node Controllers Module:', function() {
   // Stub out the services.
   var NodeService;
   var AlarmService;
+  var PagedResourceFactory;
+  var ModelFactory;
 
   beforeEach(inject(function(_NodeService_, _AlarmService_) {
     NodeService = _NodeService_;
@@ -31,11 +33,13 @@ describe('Shared Node Controllers Module:', function() {
     var nodesController;
     //var NodeService;
 
-    beforeEach(inject(function(_$rootScope_, _$controller_, _$log_, _NodeService_) {
+    beforeEach(inject(function(_$rootScope_, _$controller_, _$log_, _NodeService_, _PagedResourceFactory_, _ModelFactory_) {
       rootScope = _$rootScope_;
       scope = rootScope.$new();
       $controller = _$controller_;
       NodeService = _NodeService_;
+      PagedResourceFactory = _PagedResourceFactory_;
+      ModelFactory = _ModelFactory_;
 
       // Stub these out.
       //NodeService.list = function() {}
