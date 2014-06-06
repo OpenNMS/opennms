@@ -11,7 +11,7 @@
       var x2js = new X2JS();
 
       var getReport = function(id) {
-        var nodeUrl = config.getRoot() + '/rest/reports/'+ id;
+        var nodeUrl = config.getRoot() + '/rest/ksc/'+ id;
         $log.debug('getReport: GET ' + nodeUrl);
 
         var deferred = $q.defer();
@@ -23,12 +23,12 @@
           }
         }).success(function(data, status, headers, config) {
           var results = x2js.xml_str2json(data);
-          var node = undefined;
-          if (results && results.node) {
-            node = results.node;
-            node._id = parseInt(node._id);
+          $log.debug('getReport: got results: ', results);
+          var report = undefined;
+          if (results && results.kscReport) {
+            report = new Report(results.kscReport);
           }
-          deferred.resolve(node);
+          deferred.resolve(report);
         }).error(function(data, status, headers, config) {
           $log.error('GET ' + nodeUrl + ' failed:', data, status);
           deferred.reject(status);
@@ -44,7 +44,7 @@
           offset = 0;
         }
 
-        var reportsUrl = config.getRoot() + '/rest/reports?limit=' + limit + '&offset=' + offset;
+        var reportsUrl = config.getRoot() + '/rest/ksc?limit=' + limit + '&offset=' + offset;
         $log.debug('getReports: GET ' + reportsUrl);
 
         var deferred = $q.defer();
@@ -57,14 +57,13 @@
         }).success(function(data, status, headers, config) {
           var results = x2js.xml_str2json(data);
           var reports = [];
-          if (results && results.reports && results.reports.node) {
-            if(!angular.isArray(results.reports.node)) {
-              reports.push(results.reports.node);
+          if (results && results.kscReports && results.kscReports.kscReport) {
+            if(!angular.isArray(results.kscReports.kscReport)) {
+              reports.push(new Report(results.kscReports.kscReport));
             } else {
-              reports = results.reports.node;
-            }
-            for (var i = 0; i < reports.length; i++) {
-              reports[i]['_id'] = parseInt(reports[i]['_id']);
+              results.kscReports.kscReport.map(function(report) {
+                reports.push(new Report(report));
+              });
             }
           }
           deferred.resolve(reports);
@@ -77,7 +76,7 @@
 
       return {
         'list': getReports,
-        'get': getReport,
+        'get': getReport
       };
     }])
 
