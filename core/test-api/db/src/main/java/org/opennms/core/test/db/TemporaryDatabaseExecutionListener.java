@@ -89,7 +89,7 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
         }
 
         try {
-            if (m_createNewDatabases) {
+            if (m_createNewDatabases && m_database != null) {
                 m_database.drop();
             }
         } finally {
@@ -122,7 +122,7 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
         System.err.println(String.format("TemporaryDatabaseExecutionListener.afterTestClass(%s)", testContext));
 
         try {
-            if (!m_createNewDatabases) {
+            if (!m_createNewDatabases && m_database != null) {
                 m_database.drop();
             }
         } catch (Throwable t) {
