@@ -48,6 +48,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
+@SuppressWarnings("deprecation")
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
@@ -76,13 +77,8 @@ public class CriteriaIT implements InitializingBean {
 
     @BeforeTransaction
     public void setUp() {
-        try {
-            if (!m_populated) {
-                m_databasePopulator.populateDatabase();
-            }
-        } catch (Throwable e) {
-            e.printStackTrace(System.err);
-        } finally {
+        if (!m_populated) {
+            m_databasePopulator.populateDatabase();
             m_populated = true;
         }
     }

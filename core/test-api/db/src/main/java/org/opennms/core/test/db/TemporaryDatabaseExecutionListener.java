@@ -46,7 +46,6 @@ import org.opennms.core.db.XADataSourceFactory;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.jdbc.datasource.DelegatingDataSource;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListener;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
@@ -72,25 +71,26 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
 
     @Override
     public void afterTestMethod(final TestContext testContext) throws Exception {
+        Throwable closeThrowable = null;
+
         System.err.println(String.format("TemporaryDatabaseExecutionListener.afterTestMethod(%s)", testContext));
 
         final JUnitTemporaryDatabase jtd = findAnnotation(testContext);
-        if (jtd == null) return;
+        if (jtd == null) {
+            return;
+        }
 
         // Close down the data sources that are referenced by the static DataSourceFactory helper classes
-        DataSourceFactory.close();
-        XADataSourceFactory.close();
+        try {
+            DataSourceFactory.close();
+            XADataSourceFactory.close();
+        } catch (Throwable t) {
+            closeThrowable = t;
+        }
 
         try {
-            // DON'T REMOVE THE DATABASE, just rely on the ShutdownHook to remove them instead
-            // otherwise you might remove the class-level database that is reused between tests.
-            // {@link TemporaryDatabase#createTestDatabase()}
             if (m_createNewDatabases) {
-                final DataSource dataSource = DataSourceFactory.getInstance();
-                final TemporaryDatabase tempDb = findTemporaryDatabase(dataSource);
-                if (tempDb != null) {
-                    tempDb.drop();
-                }
+                m_database.drop();
             }
         } finally {
             // We must mark the application context as dirty so that the DataSourceFactoryBean is
@@ -105,23 +105,31 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
                 testContext.markApplicationContextDirty();
                 testContext.setAttribute(DependencyInjectionTestExecutionListener.REINJECT_DEPENDENCIES_ATTRIBUTE, Boolean.TRUE);
             } else {
-                final DataSource dataSource = DataSourceFactory.getInstance();
-                final TemporaryDatabase tempDb = findTemporaryDatabase(dataSource);
-                if (tempDb != m_databases.peek()) {
+                if (m_database != m_databases.peek()) {
                     testContext.markApplicationContextDirty();
                     testContext.setAttribute(DependencyInjectionTestExecutionListener.REINJECT_DEPENDENCIES_ATTRIBUTE, Boolean.TRUE);
                 }
             }
         }
+
+        if (closeThrowable != null) {
+            throw new Exception("Caught a Throwable while closing database connections after test. Pickup after yourself! " + closeThrowable, closeThrowable);
+        }
     }
 
-    private static TemporaryDatabase findTemporaryDatabase(final DataSource dataSource) {
-        if (dataSource instanceof TemporaryDatabase) {
-            return (TemporaryDatabase) dataSource;
-        } else if (dataSource instanceof DelegatingDataSource) {
-            return findTemporaryDatabase(((DelegatingDataSource) dataSource).getTargetDataSource());
-        } else {
-            return null;
+    @Override
+    public void afterTestClass(final TestContext testContext) throws Exception {
+        System.err.println(String.format("TemporaryDatabaseExecutionListener.afterTestClass(%s)", testContext));
+
+        try {
+            if (!m_createNewDatabases) {
+                m_database.drop();
+            }
+        } catch (Throwable t) {
+            throw new Exception("Caught an exception while dropping the database at the end of the test: " + t, t);
+        } finally {
+            testContext.markApplicationContextDirty();
+            testContext.setAttribute(DependencyInjectionTestExecutionListener.REINJECT_DEPENDENCIES_ATTRIBUTE, Boolean.TRUE);
         }
     }
 
@@ -225,7 +233,6 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
     }
 
     private static class CreateNewDatabaseCallable implements Callable<TemporaryDatabase> {
-
         private final JUnitTemporaryDatabase m_jtd;
 
         public CreateNewDatabaseCallable(JUnitTemporaryDatabase jtd) {

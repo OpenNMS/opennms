@@ -45,7 +45,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -305,7 +304,8 @@ public class NodeDaoIT implements InitializingBean {
     @Transactional
     public void testDeleteOnOrphanIpInterface() {
 
-        int preCount = getJdbcTemplate().queryForInt("select count(*) from ipinterface where ipinterface.nodeId = " + getNode1().getId());
+        @SuppressWarnings("deprecation")
+		int preCount = getJdbcTemplate().queryForInt("select count(*) from ipinterface where ipinterface.nodeId = " + getNode1().getId());
 
         OnmsNode n = getNodeDao().get(getNode1().getId());
         Iterator<OnmsIpInterface> it = n.getIpInterfaces().iterator();
@@ -314,7 +314,8 @@ public class NodeDaoIT implements InitializingBean {
         getNodeDao().saveOrUpdate(n);
         getNodeDao().flush();
 
-        int postCount = getJdbcTemplate().queryForInt("select count(*) from ipinterface where ipinterface.nodeId = " + getNode1().getId());
+        @SuppressWarnings("deprecation")
+		int postCount = getJdbcTemplate().queryForInt("select count(*) from ipinterface where ipinterface.nodeId = " + getNode1().getId());
 
         assertEquals(preCount-1, postCount);
 
@@ -324,13 +325,15 @@ public class NodeDaoIT implements InitializingBean {
     @Test
     @Transactional
     public void testDeleteNode() {
-        int preCount = getJdbcTemplate().queryForInt("select count(*) from node");
+        @SuppressWarnings("deprecation")
+		int preCount = getJdbcTemplate().queryForInt("select count(*) from node");
 
         OnmsNode n = getNodeDao().get(getNode1().getId());
         getNodeDao().delete(n);
         getNodeDao().flush();
 
-        int postCount = getJdbcTemplate().queryForInt("select count(*) from node");
+        @SuppressWarnings("deprecation")
+		int postCount = getJdbcTemplate().queryForInt("select count(*) from node");
 
         assertEquals(preCount-1, postCount);
     }

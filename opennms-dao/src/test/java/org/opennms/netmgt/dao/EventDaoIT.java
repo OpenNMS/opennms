@@ -35,7 +35,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
@@ -53,6 +52,7 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -78,11 +78,16 @@ public class EventDaoIT implements InitializingBean {
 
 	@Autowired
 	private DatabasePopulator m_databasePopulator;
+
+	private static boolean m_populated = false;
 	
-	@Before
-	public void setUp() {
-		m_databasePopulator.populateDatabase();
-	}
+    @BeforeTransaction
+    public void setUp() {
+        if (!m_populated) {
+            m_databasePopulator.populateDatabase();
+            m_populated = true;
+        }
+    }
 
     @Override
     public void afterPropertiesSet() throws Exception {

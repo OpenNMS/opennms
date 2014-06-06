@@ -94,13 +94,8 @@ public class MemoDaoIT implements InitializingBean {
 
     @BeforeTransaction
     public void setUp() {
-        try {
-            if (!m_populated) {
-                m_databasePopulator.populateDatabase();
-            }
-        } catch (Throwable e) {
-            e.printStackTrace(System.err);
-        } finally {
+        if (!m_populated) {
+            m_databasePopulator.populateDatabase();
             m_populated = true;
         }
     }

@@ -114,7 +114,8 @@ public class UpsertIT implements InitializingBean {
         assertEquals(1, countIfs(m_populator.getNode1().getId(), 1001, newIfName));
     }
     
-    private int countIfs(int nodeId, int ifIndex, String ifName) {
+    @SuppressWarnings("deprecation")
+	private int countIfs(int nodeId, int ifIndex, String ifName) {
         return m_jdbcTemplate.queryForInt("select count(*) from snmpInterface where nodeid=? and snmpifindex=? and snmpifname=?", nodeId, ifIndex, ifName);
     }
     

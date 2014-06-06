@@ -94,7 +94,6 @@ public class AcknowledgmentDaoIT implements InitializingBean {
 	
     private static boolean m_populated = false;
     
-
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -102,13 +101,8 @@ public class AcknowledgmentDaoIT implements InitializingBean {
 
     @BeforeTransaction
     public void setUp() {
-        try {
-            if (!m_populated) {
-                m_databasePopulator.populateDatabase();
-            }
-        } catch (Throwable e) {
-            e.printStackTrace(System.err);
-        } finally {
+        if (!m_populated) {
+            m_databasePopulator.populateDatabase();
             m_populated = true;
         }
     }

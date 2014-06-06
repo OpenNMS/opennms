@@ -63,6 +63,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+@SuppressWarnings("deprecation")
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
@@ -133,24 +134,28 @@ public class IpInterfaceDaoIT implements InitializingBean {
         assertEquals(addr("192.168.1.1"), service.getIpAddress());
     }
 
-    @Test
+	@Test
     @Transactional
     public void testCountMatchingInterfaces() {
         OnmsCriteria crit = new OnmsCriteria(OnmsIpInterface.class);
         crit.add(Restrictions.like("ipAddress", "192.168.1.%"));
         assertEquals(3, m_ipInterfaceDao.countMatching(crit));
 
-        if (Boolean.getBoolean("skipIpv6Tests")) return;
+        if (Boolean.getBoolean("skipIpv6Tests")) {
+            return;
+        }
 
         crit = new OnmsCriteria(OnmsIpInterface.class);
         crit.add(Restrictions.like("ipAddress", "fe80:%dddd\\%5"));
         assertEquals(1, m_ipInterfaceDao.countMatching(crit));
     }
 
-    @Test
+	@Test
     @Transactional
     public void testGetIPv6Interfaces() {
-        if (Boolean.getBoolean("skipIpv6Tests")) return;
+        if (Boolean.getBoolean("skipIpv6Tests")) {
+            return;
+        }
 
         OnmsCriteria crit = new OnmsCriteria(OnmsIpInterface.class);
         crit.add(Restrictions.like("ipAddress", "fe80:%dddd\\%5"));
