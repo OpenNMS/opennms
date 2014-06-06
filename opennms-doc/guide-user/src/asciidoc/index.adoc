@@ -6,5 +6,5 @@
 :numbered:
 The OpenNMS Group, Inc. 220 Chatham Business Drive, Suite 220 Pittsboro, NC 27312
 
-include::provision.adoc[]
+include::provisioning.adoc[]
 

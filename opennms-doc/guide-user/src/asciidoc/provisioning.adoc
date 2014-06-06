@@ -723,7 +723,7 @@ single IP address. Navigate to the Admin Menu and click Provisioning
 Groups Menu from the list of Admin options and create the group
 “Bronze”.
 
-image:images/provision/00006.jpeg[Image]
+image:images/provisioning/00006.jpeg[Image]
 
 Creating a new Provisioning Group
 
@@ -731,7 +731,7 @@ Clicking the “Add New Group” button will create the group and will
 redisplay the page including this new group among the list of any
 group(s) that have already been created.
 
-image:images/provision/00028.jpeg[Image]
+image:images/provisioning/00028.jpeg[Image]
 
 Note: At this point, the XML structure for holding the new provisioning
 group (a.k.a. an import requisition) has been persisted to the
@@ -742,7 +742,7 @@ begin the process of defining node entities that will be imported into
 OpenNMS. Click the Add Node button will begin the node entity creation
 process fill in the node label and click the “Save” button.
 
-image:images/provision/00026.jpeg[Image]
+image:images/provisioning/00026.jpeg[Image]
 
 Creating a new Node definition in the Provisioning Group
 
@@ -758,7 +758,7 @@ Category”, and “Add Node Asset”. Click the “Add
 
 Interface” link to add an interface entity to the node.
 
-image:images/provision/00009.jpeg[Image]
+image:images/provisioning/00009.jpeg[Image]
 
 Adding an Interface to the node definition
 
@@ -770,7 +770,7 @@ save button. Now the node entity has an interface for which services can
 be defined for which the Web-UI now presents the “Add Service” link. Add
 two services (ICMP, SNMP) via this link.
 
-image:images/provision/00007.jpeg[Image]
+image:images/provisioning/00007.jpeg[Image]
 
 A complete node definition with all “required” elements defined.
 
@@ -782,7 +782,7 @@ provide because they will not be discovered during the Scan Phase.
 
 Two more node definitions will be added for the benefit of this example.
 
-image:images/provision/00021.jpeg[Image]
+image:images/provisioning/00021.jpeg[Image]
 
 The completed requisition for the example Bronze Provisioning Group
 
@@ -808,7 +808,7 @@ well the DB represents what is in the requisition.
 
  
 
-image:images/provision/00013.jpeg[Image]
+image:images/provisioning/00013.jpeg[Image]
 
 Note: You can tell that this is a pending requisition for 2 reasons: 1)
 there are 3 nodes defined and 0 nodes in the DB, 2) the requisition has
@@ -837,7 +837,7 @@ details of the node and the interfaces defined in the requisition. Upon
 receipt of these packets (or not) each node is inserted as a DB
 transaction.
 
-image:images/provision/000014.png[Image]
+image:images/provisioning/000014.png[Image]
 
 The nodes are now added to OpenNMS and are under management.
 
@@ -869,7 +869,7 @@ Each element in the Web-UI has an associated Edit icon. Click this icon
 to change the IP address for barbrady.opennms.org, click save, and then
 Click the Done button.
 
-image:images/provision/00027.jpeg[Image]
+image:images/provisioning/00027.jpeg[Image]
 
 Changing the IP address of “barbrady.opennms.org” from 10.1.1.2 to
 192.168.1.1
@@ -878,7 +878,7 @@ The Web-UI will return you to the Provisioning Groups screen where you
 will see that there are the time stamp showing that the requisition’s
 last modification is more recent that the last import time.
 
-image:images/provision/000012.png[Image]
+image:images/provisioning/000012.png[Image]
 
 The Provisioning Group must be re-imported
 
@@ -887,7 +887,7 @@ changes made to the requisition to take effect. The IP Interface will be
 simply updated and all the required events (messages) will be sent to
 communicate this change within OpenNMS.
 
-image:images/provision/000008.png[Image]
+image:images/provisioning/000008.png[Image]
 
 The IP interface for barbrady.opennms.org is immediately updated
 
@@ -900,7 +900,7 @@ button.
 
  
 
-image:images/provision/000010.png[Image]
+image:images/provisioning/000010.png[Image]
 
 Bronze Provisioning Group definition indicates a node has been removed
 and requires an import to delete the node entity from the OpenNMS system
@@ -911,7 +911,7 @@ deleted from the OpenNMS system. All the required Events (messages) will
 be sent by Provisiond to provide indication to the OpenNMS system that
 the node Barbrady has been deleted.
 
-image:images/provision/000011.png[Image]
+image:images/provisioning/000011.png[Image]
 
 Barbrady has been deleted
 
@@ -931,7 +931,7 @@ re-import the requisition, restore the Bronze.xml
 requisition from your backup copy to the $OPENNMS_ETC/imports/
 directory.
 
-image:images/provision/000019.png[Image]
+image:images/provisioning/000019.png[Image]
 
 All node definitions have been removed from the Bronze requisition. The
 Web-UI indicates an import is now required to remove them from OpenNMS.
@@ -973,7 +973,7 @@ requisition.
 First let’s simply provision the node and let the default foreign source
 definition apply.
 
-image:images/provision/00025.jpeg[Image]
+image:images/provisioning/00025.jpeg[Image]
 
 The node definition used for the Advanced Provisioning Example
 
@@ -985,9 +985,9 @@ persisted or managed by OpenNMS.
 
  
 
-image:images/provision/000005.png[Image]
+image:images/provisioning/000005.png[Image]
 
-image:images/provision/000002.png[Image]image:images/provision/000018.png[Image]Logical and
+image:images/provisioning/000002.png[Image]image:images/provisioning/000018.png[Image]Logical and
 Physical interface and Service entities directed and discovered by
 Provisiond.
 
@@ -1009,7 +1009,7 @@ detection and policies. The policies determine entity persistence and/or
 set attributes on the discovered entities that control OpenNMS’
 management behaviors.
 
-image:images/provision/000017.png[Image]
+image:images/provisioning/000017.png[Image]
 
 When creating a new foreign source definition, the default definition is
 used as a template.
@@ -1021,7 +1021,7 @@ OpenNMS Web-UI.
 
  
 
-image:images/provision/00022.jpeg[Image]
+image:images/provisioning/00022.jpeg[Image]
 
 Custom foreign source definition created for NMS Provisioning Group
 (foreign source).
@@ -1083,7 +1083,7 @@ The action parameter can be set to
 
 DO_NOT_PERSIST, Manage, or UnManage.
 
-image:images/provision/00001.jpeg[Image]
+image:images/provisioning/00001.jpeg[Image]
 
  
 
@@ -1109,7 +1109,7 @@ parameters can be an exact or regular expression match. As in most
 configurations in OpenNMS where regular expression matching can be
 optionally applied, prefix the value with the ‘~’ character.
 
-image:images/provision/00023.jpeg[Image]
+image:images/provisioning/00023.jpeg[Image]
 
 Example Matching IP Interface Policy to not Persist 10 Network addresses
 
@@ -1132,7 +1132,7 @@ Again, click the Add Policy button and let’s call this policy
 noMgt192168s. Again, choose the Mach IP Interface policy and this time
 set the action to UNMANAGE.
 
-image:images/provision/00015.jpeg[Image]
+image:images/provisioning/00015.jpeg[Image]
 
 Policy to not manage IP interfaces from 192.168 networks
 
@@ -1156,7 +1156,7 @@ as the key and “49” as the value.
 
  
 
-image:images/provision/00003.jpeg[Image]
+image:images/provisioning/00003.jpeg[Image]
 
 Matching SNMP Interface Policy example for Persistence and Data
 Collection
@@ -1176,7 +1176,7 @@ interface polices. Click the Add Policy button and give the policy name,
 “category” key and set the value to “Cisco”. Add a policy parameter and
 choose the “sysObjectId” key with a value “~^\.1\.3\.6\.1\.4\.1\.9\..*”.
 
-image:images/provision/00020.jpeg[Image]
+image:images/provisioning/00020.jpeg[Image]
 
 Example: Node Category setting policy
 
@@ -1263,13 +1263,13 @@ add Node Asset data in an import requisition. Click the “Add Node Asset”
 link and you can select from a drop down list all the possible node
 asset attributes that can be defined.
 
-image:images/provision/00024.jpeg[Image]
+image:images/provisioning/00024.jpeg[Image]
 
 After an import, you can navigate to the Node Page and click the “Asset
 Info” link and see the asset data that was just provided in the
 requisition.
 
-image:images/provision/000004.png[Image]
+image:images/provisioning/000004.png[Image]
 
  
 
