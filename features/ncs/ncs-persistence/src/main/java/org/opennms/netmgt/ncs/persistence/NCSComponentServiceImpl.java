@@ -37,14 +37,13 @@ import java.util.Set;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
-import org.hibernate.criterion.Restrictions;
 import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.Criteria.LockType;
 import org.opennms.core.criteria.restrictions.LikeRestriction;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
@@ -59,8 +58,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 public class NCSComponentServiceImpl implements NCSComponentService {
 	private static final Logger LOG = LoggerFactory.getLogger(NCSComponentServiceImpl.class);
-
-	private static final Set<NCSComponent> EMPTY_COMPONENT_SET = Collections.unmodifiableSet(new HashSet<NCSComponent>());
 
 	@Autowired
 	NCSComponentDao m_componentDao;
@@ -143,7 +140,7 @@ public class NCSComponentServiceImpl implements NCSComponentService {
 	@Override
 	@Transactional
 	public void deleteComponent(final String type, final String foreignSource, final String foreignId, final boolean deleteOrphans) {
-		LOG.debug("deleteSubcomponent({}, {}, {}, {})", type, foreignSource, foreignId, Boolean.valueOf(deleteOrphans));
+		LOG.debug("deleteComponent({}, {}, {}, {})", type, foreignSource, foreignId, Boolean.valueOf(deleteOrphans));
 
 		final NCSComponent component = getComponent(type, foreignSource, foreignId);
 		final ComponentIdentifier id = getIdentifier(component);
@@ -155,12 +152,6 @@ public class NCSComponentServiceImpl implements NCSComponentService {
 			LOG.warn("Component {} deleted, but an error occured while sending delete/update events.", id, e);
 		}
 	}
-
-
-
-
-
-
 
 	private Set<ComponentIdentifier> getIdentifiers(final Collection<NCSComponent> components) {
 		final Set<ComponentIdentifier> identifiers = new HashSet<ComponentIdentifier>();
@@ -196,6 +187,11 @@ public class NCSComponentServiceImpl implements NCSComponentService {
 
 				component.setSubcomponents(subcomponents);
 				m_componentDao.save(component);
+				// We must flush() and evict() the object from the session because this table is self-referential
+				// with the subcomponents and parentComponents. We must evict it so that subsequent calls to fetch
+				// these relations get fresh data.
+				m_componentDao.flush();
+				m_componentDao.evict(component);
 				ceq.componentAdded(getIdentifier(component));
 				return component;
 			}
@@ -218,6 +214,11 @@ public class NCSComponentServiceImpl implements NCSComponentService {
 				dbObj.setAttributes(component.getAttributes());
 				dbObj.setSubcomponents(subcomponents);
 				m_componentDao.update(dbObj);
+				// We must flush() and evict() the object from the session because this table is self-referential
+				// with the subcomponents and parentComponents. We must evict it so that subsequent calls to fetch
+				// these relations get fresh data.
+				m_componentDao.flush();
+				m_componentDao.evict(dbObj);
 				ceq.componentUpdated(getIdentifier(dbObj));
 				return dbObj;
 			}
@@ -227,21 +228,21 @@ public class NCSComponentServiceImpl implements NCSComponentService {
 		return existing;
 	}
 
-	private void deleteComponent(final ComponentIdentifier id, final ComponentEventQueue ceq, final boolean deleteOrphans) {
-		final NCSComponent component = getComponent(id);
+    private void deleteComponent(final ComponentIdentifier id, final ComponentEventQueue ceq, final boolean deleteOrphans) {
+        final NCSComponent component = getComponent(id);
 
         if (component == null) {
             throw new WebApplicationException(Status.BAD_REQUEST);
         }
 
         final Set<NCSComponent> parentComponents = component.getParentComponents();
-    	final Set<ComponentIdentifier> childrenIdentifiers = getIdentifiers(component.getSubcomponents());
+        final Set<ComponentIdentifier> childrenIdentifiers = getIdentifiers(component.getSubcomponents());
 
         // first, we deal with orphans
         if (deleteOrphans) {
-			for (final ComponentIdentifier subId : childrenIdentifiers) {
-				handleOrphanedComponents(component, subId, ceq, deleteOrphans);
-	        }
+            for (final ComponentIdentifier subId : childrenIdentifiers) {
+                handleOrphanedComponents(component, subId, ceq, deleteOrphans);
+            }
         }
 
         // first, we remove this component from each of its parents
@@ -251,19 +252,20 @@ public class NCSComponentServiceImpl implements NCSComponentService {
         }
 
         // then we delete this component
-    	component.setSubcomponents(EMPTY_COMPONENT_SET);
+        component.setSubcomponents(Collections.<NCSComponent>emptySet());
+        component.setAttributes(Collections.<String,String>emptyMap());
         m_componentDao.delete(component);
+        m_componentDao.flush();
 
         // and any events or alarms depending on it
         deleteEvents(id.getForeignSource(), id.getForeignId());
         deleteAlarms(id.getForeignSource(), id.getForeignId());
         
         // alert that the component is deleted
-		ceq.componentDeleted(getIdentifier(component));
+        ceq.componentDeleted(getIdentifier(component));
 
         // then alert about the parents
         sendUpdateEvents(ceq, getIdentifiers(parentComponents));
-
 	}
 
 	private void handleOrphanedComponents(final NCSComponent parent, final ComponentIdentifier child, final ComponentEventQueue ceq, final boolean deleteOrphans) {
@@ -314,6 +316,8 @@ public class NCSComponentServiceImpl implements NCSComponentService {
 		final Criteria alarmCriteria = new Criteria(OnmsAlarm.class)
             .addRestriction(new LikeRestriction("eventParms", "%componentForeignSource=" + foreignSource +"%"))
             .addRestriction(new LikeRestriction("eventParms", "%componentForeignId=" + foreignId +"%"));
+            // Do we need this?
+            // .setLockType(LockType.PESSIMISTIC_READ);
 
         for(final OnmsAlarm alarm : m_alarmDao.findMatching(alarmCriteria)) {
             m_alarmDao.delete(alarm);
@@ -324,6 +328,8 @@ public class NCSComponentServiceImpl implements NCSComponentService {
 		final Criteria eventCriteria = new Criteria(OnmsEvent.class)
             .addRestriction(new LikeRestriction("eventParms", "%componentForeignSource=" + foreignSource +"%"))
             .addRestriction(new LikeRestriction("eventParms", "%componentForeignId=" + foreignId +"%"));
+            // Do we need this?
+            //.setLockType(LockType.PESSIMISTIC_READ);
 
         for(final OnmsEvent event : m_eventDao.findMatching(eventCriteria)) {
             m_eventDao.delete(event);

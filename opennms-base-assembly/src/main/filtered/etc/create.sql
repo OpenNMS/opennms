@@ -2628,3 +2628,40 @@ CREATE TABLE filterfavorites (
   CONSTRAINT pk_filterid PRIMARY KEY (filterid)
 );
 CREATE INDEX filternamesidx ON filterfavorites (username, filtername, page);
+
+--##################################################################
+--# The following command should populate the ncscomponent table
+--##################################################################
+CREATE TABLE ncscomponent (
+    id integer NOT NULL,
+    version integer,
+    name character varying(255),
+    type character varying(255),
+    foreignsource character varying(255),
+    foreignid character varying(255),
+    depsrequired character varying(12),
+    nodeforeignsource character varying(64),
+    nodeforeignid character varying(64),
+    upeventuei character varying(255),
+    downeventuei character varying(255)
+);
+ALTER TABLE ONLY ncscomponent ADD CONSTRAINT ncscomponent_type_foreignsource_foreignid_key UNIQUE (type, foreignsource, foreignid);
+ALTER TABLE ONLY ncscomponent ADD CONSTRAINT pk_ncsid PRIMARY KEY (id);
+
+CREATE TABLE subcomponents (
+    component_id integer NOT NULL,
+    subcomponent_id integer NOT NULL
+);
+ALTER TABLE ONLY subcomponents ADD CONSTRAINT subcomponents_component_id_subcomponent_id_key UNIQUE (component_id, subcomponent_id);
+ALTER TABLE ONLY subcomponents ADD CONSTRAINT subcomponents_pkey PRIMARY KEY (component_id, subcomponent_id);
+ALTER TABLE ONLY subcomponents ADD CONSTRAINT fk_subcomp_comp_id FOREIGN KEY (component_id) REFERENCES ncscomponent(id);
+ALTER TABLE ONLY subcomponents ADD CONSTRAINT fk_subcomp_subcomp_id FOREIGN KEY (subcomponent_id) REFERENCES ncscomponent(id);
+
+CREATE TABLE ncs_attributes (
+    ncscomponent_id integer NOT NULL,
+    key character varying(255) NOT NULL,
+    value character varying(255) NOT NULL
+);
+ALTER TABLE ONLY ncs_attributes ADD CONSTRAINT ncs_attributes_pkey PRIMARY KEY (ncscomponent_id, key);
+ALTER TABLE ONLY ncs_attributes ADD CONSTRAINT fk_ncs_attr_comp_id FOREIGN KEY (ncscomponent_id) REFERENCES ncscomponent(id);
+
