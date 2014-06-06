@@ -20,7 +20,7 @@ describe('Shared Services Module - PagedResourceFactory', function() {
         var restUrl = '/blah';
         var resource = PagedResourceFactory.createResource(restUrl);
         expect(resource).toBeDefined();
-        expect(resource.internal.url).toEqual(ConfigService.getRoot() + restUrl);
+        expect(resource.internal.url).toEqual(ConfigService.getRoot() + '/rest' + restUrl);
         expect(resource.internal.limit).toEqual(50);
         expect(resource.internal.page).toEqual(0);
       });
@@ -36,7 +36,7 @@ describe('Shared Services Module - PagedResourceFactory', function() {
 
       var response = resource.getCurrentResponse();
       expect(response).toBeDefined();
-      expect(url).toEqual('/opennms/blah?offset=0&limit=50');
+      expect(url).toEqual('/opennms/rest/blah?offset=0&limit=50');
     });
 
     it('should increase the offset by limit', function() {
@@ -65,7 +65,7 @@ describe('Shared Services Module - PagedResourceFactory', function() {
 
       var response = resource.getNextResponse();
       expect(response).toBeDefined();
-      expect(url).toEqual('/opennms/blah?offset=50&limit=50');
+      expect(url).toEqual('/opennms/rest/blah?offset=50&limit=50');
     });
 
     it('should attempt to get the previous page', function() {
@@ -78,11 +78,11 @@ describe('Shared Services Module - PagedResourceFactory', function() {
 
       resource.nextPage();
       response = resource.getCurrentResponse();
-      expect(url).toEqual('/opennms/blah?offset=50&limit=50');
+      expect(url).toEqual('/opennms/rest/blah?offset=50&limit=50');
 
       response = resource.getPreviousResponse();
       expect(response).toBeDefined();
-      expect(url).toEqual('/opennms/blah?offset=0&limit=50');
+      expect(url).toEqual('/opennms/rest/blah?offset=0&limit=50');
     });
 
     it('should work with a different limit', function() {
@@ -94,27 +94,87 @@ describe('Shared Services Module - PagedResourceFactory', function() {
       };
 
       resource.getCurrentResponse();
-      expect(url).toEqual('/opennms/blah?offset=0&limit=9');
+      expect(url).toEqual('/opennms/rest/blah?offset=0&limit=9');
 
       resource.getNextResponse();
-      expect(url).toEqual('/opennms/blah?offset=9&limit=9');
+      expect(url).toEqual('/opennms/rest/blah?offset=9&limit=9');
 
       resource.getNextResponse();
-      expect(url).toEqual('/opennms/blah?offset=18&limit=9');
+      expect(url).toEqual('/opennms/rest/blah?offset=18&limit=9');
 
       resource.previousPage();
       resource.previousPage();
       resource.getCurrentResponse();
-      expect(url).toEqual('/opennms/blah?offset=0&limit=9');
+      expect(url).toEqual('/opennms/rest/blah?offset=0&limit=9');
 
       resource.nextPage();
       resource.getCurrentResponse();
-      expect(url).toEqual('/opennms/blah?offset=9&limit=9');
+      expect(url).toEqual('/opennms/rest/blah?offset=9&limit=9');
 
       resource.previousPage();
       resource.previousPage();
       resource.getCurrentResponse();
-      expect(url).toEqual('/opennms/blah?offset=0&limit=9');
+      expect(url).toEqual('/opennms/rest/blah?offset=0&limit=9');
+    });
+
+    it('should include orderBy if specified', function() {
+      var resource = PagedResourceFactory.createResource('/blah');
+      resource.orderBy('alarmId');
+      var url = '', response;
+      resource.internal.httpGet = function(u) {
+        url = u;
+        return true;
+      };
+
+      resource.getCurrentResponse();
+      expect(url).toEqual('/opennms/rest/blah?offset=0&limit=50&orderBy=alarmId&order=asc');
+
+      resource.reverse();
+      resource.getCurrentResponse();
+      expect(url).toEqual('/opennms/rest/blah?offset=0&limit=50&orderBy=alarmId&order=desc');
+    });
+
+    it('should reset the offset if order is modified', function() {
+      var resource = PagedResourceFactory.createResource('/blah');
+      var url = '', response;
+      resource.internal.httpGet = function(u) {
+        url = u;
+        return true;
+      };
+
+      resource.nextPage();
+      resource.nextPage();
+      resource.nextPage();
+
+      expect(resource.currentPage()).toBe(3);
+      resource.orderBy('alarmId');
+      expect(resource.currentPage()).toBe(0);
+
+      resource.setPage(14);
+      expect(resource.currentPage()).toBe(14);
+      resource.reverse();
+      expect(resource.currentPage()).toBe(0);
+    });
+
+    it('should add the specified parameters to the URL', function() {
+      var resource = PagedResourceFactory.createResource('/blah');
+      var url = '', response;
+      resource.internal.httpGet = function(u) {
+        url = u;
+        return true;
+      };
+
+      resource.setPage(2);
+      resource.getCurrentResponse();
+      expect(url).toBe('/opennms/rest/blah?offset=100&limit=50');
+
+      resource.setParams({
+        foo: 'bar',
+        baz: ['a', 'b', 'c']
+      });
+
+      resource.getCurrentResponse();
+      expect(url).toBe('/opennms/rest/blah?offset=0&limit=50&foo=bar&baz=a&baz=b&baz=c');
     });
 
   });
@@ -123,20 +183,47 @@ describe('Shared Services Module - PagedResourceFactory', function() {
   describe('internal functions', function() {
     it('should return the default URL when buildUrl() is called', function() {
       var resource = PagedResourceFactory.createResource('/blah');
-      expect(resource.internal.buildUrl()).toEqual('/opennms/blah?offset=0&limit=50');
+      expect(resource.internal.buildUrl()).toEqual('/opennms/rest/blah?offset=0&limit=50');
     });
 
     it('should fetch the expected URL', inject(function(_$httpBackend_) {
       var resource = PagedResourceFactory.createResource('/blah');
-      _$httpBackend_.expectGET('/opennms/blah?offset=0&limit=50').respond({thing: true});
+      _$httpBackend_.expectGET('/opennms/rest/blah?offset=0&limit=50').respond('<thing>blah</thing>');
       var promise = resource.getCurrentResponse();
       expect(promise).toBeDefined();
-      rootScope.$apply();
-      _$httpBackend_.flush();
-      promise.then(function(response) {
-        expect(response.thing).toBeDefined();
-        expect(response.thing).toEqual(true);
+      promise.then(function(ret) {
+        expect(ret.thing).toBeDefined();
+        expect(ret.thing).toEqual('blah');
+      }, function(err) {
+        expect(err).toBeUndefined();
       });
+      _$httpBackend_.flush();
+      rootScope.$apply();
+    }));
+
+
+    it('should call the callback', inject(function(_$httpBackend_) {
+      var resource = PagedResourceFactory.createResource('/blah');
+      var callbackResult = undefined;
+      resource.setCallback(function(r) {
+        callbackResult = r;
+      });
+
+      _$httpBackend_.expectGET('/opennms/rest/blah?offset=0&limit=50').respond('<thing>blah</thing>');
+
+      var promise = resource.getCurrentResponse();
+      expect(promise).toBeDefined();
+      promise.then(function(response) {
+        console.log('blah');
+        expect(response.thing).toBeDefined();
+        expect(response.thing).toEqual('blah');
+
+        expect(callbackResult).toBeDefined();
+        expect(callbackResult.thing).toBeDefined();
+        expect(callbackResult.thing).toEqual('blah');
+      });
+      _$httpBackend_.flush();
+      rootScope.$apply();
     }));
 
   });
