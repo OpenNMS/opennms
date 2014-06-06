@@ -13,6 +13,8 @@
    * standard OpenNMS ReST resources with support for sorting and pagination.
    */
   .factory('PagedResourceFactory', ['$q', '$rootScope', '$log', '$http', 'ConfigService', function ($q, $rootScope, $log, $http, config) {
+    $log.debug('Initializing PagedResourceFactory.');
+
     var x2js = new X2JS();
     var paged = new Object();
     paged.internal = new Object();
@@ -174,6 +176,20 @@
         self.firstPage();
       };
 
+      /**
+       * @description Set how many results should be returned per page.
+       *
+       * @ngdoc method
+       * @name PagedResource#setLimit
+       * @methodOf PagedResource
+       * @param {limit} The number of results expected.
+       * @returns {*} The number of results that should be returned.
+       */
+      self.setLimit = function(limit) {
+        self.internal.limit = limit;
+        self.firstPage();
+        return self.internal.limit;
+      };
 
       /**
        * @description Get the current page's resource data.
