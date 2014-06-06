@@ -13,14 +13,33 @@
                 <span class="glyphicon glyphicon-search form-control-feedback"></span>
 
             </div>
-            <div class="input-group">
-                <button class="btn btn-xs btn-default" ng-click="fetchMoreNodes()">More</button>
-                <button class="btn btn-xs btn-default" ng-click="fetchAllNodes()">All</button>
-            </div>
+
+                <ul class="pagination pagination-sm btn-group-justified">
+                    <li ng-class="{disabled: currentPage == 0}">
+                        <a ng-href ng-click="firstPage()">First</a>
+                    </li>
+                    <li ng-class="{disabled: currentPage &lt; 1}">
+                        <a ng-href ng-click="prevPage()">« Prev</a>
+                    </li>
+
+                    <li ng-repeat="n in range(totalPages(), currentPage, currentPage + gap)"
+                        ng-class="{active: n == currentPage}"
+                        ng-click="setPage()">
+                        <a ng-href ng-bind="n + 1">1</a>
+                    </li>
+
+                    <li ng-class="{disabled: (currentPage + 1) == totalPages()}">
+                        <a ng-href ng-click="nextPage()">Next »</a>
+                    </li>
+                    <li ng-class="{disabled: (currentPage + 1) >= totalPages()}">
+                        <a ng-href ng-click="lastPage()">Last</a>
+                    </li>
+                </ul>
+
 
             <ul class="list-unstyled">
-                <li ng-repeat="node in nodes | filter:nodeListFilter | orderBy:'_id' track by node._id">
-                    <a ui-sref="app.nodes.detail({ nodeId: node._id})" node-list-popover popover-node="node">{{node._label}}</a>
+                <li ng-repeat="node in nodes">
+                    <a ui-sref="app.nodes.detail({ nodeId: node.id})" node-list-popover popover-node="node">{{node.label}}</a>
                 </li>
                 <li></li>
             </ul>

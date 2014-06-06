@@ -16,10 +16,10 @@
           var node = scope.currentNode();
 
           var content = '<div>';
-          content += '<strong>' + node._label + '</strong> ID: ' + node._id + '<br/>';
+          content += '<strong>' + node.label + '</strong> ID: ' + node.id + '<br/>';
 
           if(node._foreignId) {
-            content += '<strong>Foreign Source:</strong> ' + node._foreignSource +'<br/><strong>Foreign ID:</strong> ' + node._foreignId + '<br/>'
+            content += '<strong>Foreign Source:</strong> ' + node.foreignSource +'<br/><strong>Foreign ID:</strong> ' + node.foreignId + '<br/>'
           }
 
           content += '</div>';

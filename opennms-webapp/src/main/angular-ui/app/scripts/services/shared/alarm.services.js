@@ -113,9 +113,15 @@
       alarmService.internal.processAlarmListResults = function(results) {
         var alarms = [];
         if (results && results.alarms && results.alarms.alarm) {
-          results.alarms.alarm.map(function (alarm) {
-            alarms.push(new Alarm(alarm));
-          });
+          $log.debug('got some alarms')
+          $log.debug(results);
+          if(angular.isArray(results.alarms.alarm)) {
+            results.alarms.alarm.map(function (alarm) {
+              alarms.push(new Alarm(alarm));
+            });
+          } else {
+            alarms.push(new Alarm(results.alarms.alarm));
+          }
         }
 
         return alarms;
