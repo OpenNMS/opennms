@@ -55,6 +55,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
@@ -280,7 +281,7 @@ public class KscRestService extends OnmsRestService {
         @XmlAttribute(name = "graphs_per_line", required = false)
         private Integer m_graphs_per_line;
 
-        @XmlElement(name = "kscGraph")
+        @XmlElements(@XmlElement(name = "kscGraph"))
         private List<KscGraph> m_graphs = new ArrayList<KscGraph>();
 
         public KscReport() {
@@ -289,9 +290,6 @@ public class KscRestService extends OnmsRestService {
         public KscReport(final Integer reportId, final String label) {
             m_id = reportId;
             m_label = label;
-            m_show_graphtype_button = true;
-            m_show_timespan_button = true;
-            m_graphs_per_line = 0;
         }
 
         public KscReport(Report report) {

@@ -1,10 +1,10 @@
-(function() {
+(function(PluginManager) {
   'use strict';
 
   /* Filters */
 
-  angular.module('opennms.filters.global', []).
-    filter('interpolate', ['serviceStatus', function() {
+  angular.module('opennms.filters.global', [])
+    .filter('interpolate', ['serviceStatus', function() {
         return function(status) {
           var status_map = {
             'A': 'Managed',
@@ -21,6 +21,11 @@
           }
           return '';
         };
-      }]);
+      }])
+    .filter('escape', function() {
+      return window.escape;
+    })
+    ;
 
-});
+  PluginManager.register('opennms.filters.global');
+}(PluginManager));

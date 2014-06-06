@@ -111,7 +111,9 @@ public class KscRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
     @Test
     public void testAddNewGraph() throws Exception {
-        final String kscReport = "<kscReport id=\"2\" label=\"foo2\"/>";
+        final String kscReport = "<kscReport id=\"3\" label=\"foo2\">"
+                +"<kscGraph title=\"Title1\" resourceId=\"node[2].responseTime[127.0.0.1]\" timespan=\"1_hour\" graphtype=\"icmp\"/>"
+                +"</kscReport>";
 
         sendPost("/ksc", kscReport, 303, null);
 
