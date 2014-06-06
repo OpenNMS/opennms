@@ -2,6 +2,7 @@
 // Authors, seperated by;. They might not be shown in the overview but will be generated
 Ronny Trommer <ronny@opennms.org>; Markus von Rüden <mvr@opennms.com>
 :ascii-ids:
+:icons: font
 
 [[community-docs]]
 == Writing OpenNMS Documentation
@@ -207,12 +208,12 @@ To include an image file, make sure it resides in the 'images/' directory relati
 
 [source]
 ----
-image::opennms-logo.png[]
+image::images/opennms-logo.png[]
 ----
 
 Which is rendered as:
 
-image::opennms-logo.png[]
+image::images/opennms-logo.png[]
 
 === Static Graphviz/DOT ===
 
@@ -280,7 +281,6 @@ CAUTION: Keywords of the DOT language have to be surrounded by double quotes whe
 Common attributes you can use in documents:
 
 * \{opennms-version} - rendered as "{opennms-version}"
-* \{opennms-git-tag} - rendered as "{opennms-git-tag}"
 
 These can substitute part of URLs that point to for example APIdocs or source code.
 Note that opennms-git-tag also handles the case of snapshot/master.

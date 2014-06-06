@@ -1,4 +1,6 @@
 = OpenNMS Provisioning
+:ascii-ids:
+:icons: font
 
 OpenNMS version 1.8.0
 

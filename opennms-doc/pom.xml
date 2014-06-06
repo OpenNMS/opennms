@@ -75,7 +75,7 @@
           <outputDirectory>${asciidoc.output.directory}</outputDirectory>
           <imagesDir>./</imagesDir>
           <attributes>
-            <version>${project.version}</version>
+            <opennms-version>${project.version}</opennms-version>
           </attributes>
         </configuration>
       </plugin>
