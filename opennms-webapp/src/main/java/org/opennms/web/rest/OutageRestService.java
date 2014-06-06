@@ -42,6 +42,7 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.model.OnmsOutage;
@@ -141,6 +142,12 @@ public class OutageRestService extends OnmsRestService {
         readLock();
         try {
             final CriteriaBuilder builder = new CriteriaBuilder(OnmsOutage.class);
+            builder.alias("monitoredService", "monitoredService", JoinType.LEFT_JOIN);
+            builder.alias("monitoredService.ipInterface", "ipInterface", JoinType.LEFT_JOIN);
+            builder.alias("ipInterface.node", "node", JoinType.LEFT_JOIN);
+            builder.alias("ipInterface.snmpInterface", "snmpInterface", JoinType.LEFT_JOIN);
+            builder.alias("monitoredService.serviceType", "serviceType", JoinType.LEFT_JOIN);
+
             applyQueryFilters(m_uriInfo.getQueryParameters(), builder);
     
             final OnmsOutageCollection coll = new OnmsOutageCollection(m_outageDao.findMatching(builder.toCriteria()));
