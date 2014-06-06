@@ -12,6 +12,7 @@
   <name>OpenNMS Dependencies Jersey</name>
   <properties>
     <jerseyVersion>1.18.1</jerseyVersion>
+    <jerseyContribVersion>1.18</jerseyContribVersion>
   </properties>
   <dependencies>
     <dependency>
@@ -77,7 +78,7 @@
     <dependency>
       <groupId>com.sun.jersey.contribs</groupId>
       <artifactId>jersey-spring</artifactId>
-      <version>${jerseyVersion}</version>
+      <version>${jerseyContribVersion}</version>
       <exclusions>
         <exclusion>
           <groupId>commons-logging</groupId>
@@ -116,7 +117,7 @@
     <dependency>
       <groupId>com.sun.jersey.contribs</groupId>
       <artifactId>jersey-apache-client</artifactId>
-      <version>${jerseyVersion}</version>
+      <version>${jerseyContribVersion}</version>
       <exclusions>
         <exclusion>
           <groupId>commons-logging</groupId>
@@ -127,17 +128,17 @@
     <dependency>
       <groupId>com.sun.jersey.contribs</groupId>
       <artifactId>jersey-multipart</artifactId>
-      <version>${jerseyVersion}</version>
+      <version>${jerseyContribVersion}</version>
     </dependency>
     <dependency>
       <groupId>com.sun.jersey.contribs.jersey-oauth</groupId>
       <artifactId>oauth-client</artifactId>
-      <version>${jerseyVersion}</version>
+      <version>${jerseyContribVersion}</version>
     </dependency>
     <dependency>
       <groupId>com.sun.jersey.contribs.jersey-oauth</groupId>
       <artifactId>oauth-signature</artifactId>
-      <version>${jerseyVersion}</version>
+      <version>${jerseyContribVersion}</version>
     </dependency>
     <dependency>
       <groupId>javax.ws.rs</groupId>
