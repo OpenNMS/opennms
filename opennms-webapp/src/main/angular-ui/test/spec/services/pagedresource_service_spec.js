@@ -214,7 +214,6 @@ describe('Shared Services Module - PagedResourceFactory', function() {
       var promise = resource.getCurrentResponse();
       expect(promise).toBeDefined();
       promise.then(function(response) {
-        console.log('blah');
         expect(response.thing).toBeDefined();
         expect(response.thing).toEqual('blah');
 
