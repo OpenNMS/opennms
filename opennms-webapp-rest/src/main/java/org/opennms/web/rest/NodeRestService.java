@@ -321,6 +321,7 @@ public class NodeRestService extends OnmsRestService {
      */
     @Path("{nodeCriteria}/metrics")
     public MetricsResourceResource getMetricsResource() {
+        LOG.debug("getMetricsResource()");
         return m_context.getResource(MetricsResourceResource.class);
     }
 
