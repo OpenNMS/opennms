@@ -82,7 +82,7 @@
           }
         };
 
-        $scope.interval = 5000; // 5 seconds.
+        $scope.interval = 30000; // 5 seconds.
 
         $scope.next = function() {
           $scope.end = moment();
@@ -118,6 +118,9 @@
             case '7_day':
               $scope.start = moment($scope.end).subtract('days', 7);
               break;
+            case '14_day':
+              $scope.start = moment($scope.end).subtract('days', 14);
+              break;
             case '1_month':
               $scope.start = moment($scope.end).subtract('months', 1);
               break;
@@ -152,7 +155,7 @@
               $scope.start = moment($scope.end).startOf('week').subtract(1, 'ms').startOf('week');
               $scope.end.startOf('week').subtract(1, 'ms');
               break;
-            case 'This Month':
+            case 'Last Week':
               $scope.start = moment($scope.end).startOf('month');
               break;
             case 'Last Month':
@@ -182,6 +185,7 @@
 
         var timeOut;
         $scope.reload = function() {
+          $timeout.cancel(timeOut);
           timeOut = $timeout(function() {
             $scope.next();
             $scope.reload();
@@ -191,9 +195,117 @@
         $scope.reload();
 
         $scope.$on('$destroy', function(event) {
-          $log.debug('cancel timeout:', timeOut);
-          $timeout.cancel(timeOut);
+          if (timeOut) {
+            $log.debug('cancel timeout:', timeOut);
+            $timeout.cancel(timeOut);
+          }
         });
+      }])
+    .controller('ReportNodeResourcesCtrl', ['$scope', '$stateParams', '$log', 'ReportsService', function($scope, $stateParams, $log, ReportsService) {
+        $log.debug('Initializing ReportNodeResourcesCtrl.');
+        $scope.resourcetypes = [];
+
+        $scope.init = function() {
+          $scope.fetchMetrics($stateParams.nodeId);
+        };
+
+        $scope.processReport = function(metrics) {
+          $log.debug('Got metrics:', metrics);
+          $scope.metrics = metrics;
+        };
+
+        $scope.fetchMetrics = function(nodeId) {
+          ReportsService.getMetrics(nodeId).then($scope.processReport);
+        };
+
+        $scope.getResourceId = function(resource, metric) {
+          return resource._name + '[' + metric._resourceName + ']';
+        };
+
+        /// Runtime stuff.
+        if (!$scope.isTest) {
+          // When testing we don't want to initialize
+          $scope.init();
+        }
+
+      }])
+    .controller('ReportsNodeResourcesListCtrl', ['$scope', '$stateParams', '$log', 'ReportsService', function($scope, $stateParams, $log, ReportsService) {
+        $log.debug('Initializing ReportsNodeResourcesListCtrl.');
+        $log.debug('$stateParams:', $stateParams);
+        $scope.metrics = {};
+
+        $scope.timeperiods = [
+          {label: '1 Hour', value: '1_hour'},
+          {label: '2 Hours', value: '2_hour'},
+          {label: '4 Hours', value: '2_hour'},
+          {label: '6 Hours', value: '2_hour'},
+          {label: '8 Hours', value: '2_hour'},
+          {label: '12 Hours', value: '2_hour'},
+          {label: '1 Day', value: '1_day'},
+          {label: '2 Days', value: '2_day'},
+          {label: '7 Days', value: '7_day'},
+          {label: '2 Weeks', value: '14_day'},
+          {label: '1 Month', value: '1_month'},
+          {label: '3 Month', value: '3_month'},
+          {label: '6 Month', value: '6_month'},
+          {label: '1 Year', value: '1_year'},
+          {label: 'Today', value: 'Today'},
+          {label: 'Yesterday', value: 'Yesterday'},
+          {label: 'Yesterday 9am-5pm', value: 'Yesterday 9am-5pm'},
+          {label: 'Yesterday 5pm-10pm', value: 'Yesterday 5pm-10pm'},
+          {label: 'This Week', value: 'This Week'},
+          {label: 'Last Week', value: 'Last Week'},
+          {label: 'Last Month', value: 'Last Month'},
+          {label: 'This Quarter', value: 'This Quarter'},
+          {label: 'Last Quarter', value: 'Last Quarter'},
+          {label: 'This Year', value: 'This Year'},
+          {label: 'Last Year', value: 'Last Year'}
+        ];
+        $scope.timeperiod = $scope.timeperiods[8];
+
+        $scope.refreshperiods = [
+          5, 10, 15, 30, 60, 90, 120, 180, 300
+        ];
+        $scope.refresh = $scope.refreshperiods[3];
+
+        $scope.timechange = function(period) {
+          $log.debug('timechange:', period);
+          //$log.debug('metrics:', $scope.metrics);
+          $scope.metrics.resource.forEach(function(resource) {
+            //$log.debug('resource:', resource);
+            resource.metric.forEach(function(metric) {
+              //$log.debug('metric:', metric);
+              metric.graph.forEach(function(graph) {
+                $log.debug('graph:', graph);
+                graph.timespan = period.value;
+              });
+            });
+          });
+        };
+
+        $scope.refreshchange = function(period) {
+          $log.debug('refreshchange:', period);
+        };
+
+        $scope.init = function() {
+          $scope.fetchMetrics($stateParams.nodeId, $stateParams.resourceId);
+        };
+
+        $scope.processReport = function(metrics) {
+          $log.debug('Got metrics:', metrics);
+          $scope.metrics = metrics;
+        };
+
+        $scope.fetchMetrics = function(nodeId, resourceId) {
+          ReportsService.getGraphs(nodeId, resourceId).then($scope.processReport);
+        };
+
+        /// Runtime stuff.
+        if (!$scope.isTest) {
+          // When testing we don't want to initialize
+          $scope.init();
+        }
+
       }])
 
     .config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
@@ -213,6 +325,26 @@
               'reportDetails': {
                 templateUrl: 'templates/desktop/reports/detail.html',
                 controller: 'ReportDetailCtrl',
+                title: 'Report Details'
+              }
+            }
+          })
+          .state('app.reports.node', {
+            url: '/node/:nodeId',
+            views: {
+              'reportDetails': {
+                templateUrl: 'templates/desktop/reports/resources.html',
+                controller: 'ReportNodeResourcesCtrl',
+                title: 'Report Details'
+              }
+            }
+          })
+          .state('app.reports.node-details', {
+            url: '/node/:nodeId/resource/:resourceId',
+            views: {
+              'reportDetails': {
+                templateUrl: 'templates/desktop/reports/resourcelist.html',
+                controller: 'ReportsNodeResourcesListCtrl',
                 title: 'Report Details'
               }
             }
