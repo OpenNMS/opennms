@@ -497,7 +497,9 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
     @JUnitTemporaryDatabase
     public void testMetricsResource() throws Exception {
         createIpInterface();
-        String url = "/nodes/1/ipinterfaces/10.10.10.10/metrics";
+        System.err.println("testMetricsResource(): createIpInterface()");
+        String url = "/nodes/1/metrics";
+        System.err.println("sendRequest('GET', '"+url+"', 200);");
         String xml = sendRequest(GET, url, 200);
         System.err.println(xml);
         assertTrue(xml.contains("<name>ICMP</name>"));

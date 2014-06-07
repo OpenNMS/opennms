@@ -87,9 +87,7 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Path("nodes")
 @Transactional
 public class NodeRestService extends OnmsRestService {
-	
     private static final Logger LOG = LoggerFactory.getLogger(NodeRestService.class);
-
     
     @Autowired
     private NodeDao m_nodeDao;
@@ -316,6 +314,7 @@ public class NodeRestService extends OnmsRestService {
      */
     @Path("{nodeCriteria}/metrics")
     public MetricsResourceResource getMetricsResource() {
+        LOG.debug("getMetricsResource()");
         return m_context.getResource(MetricsResourceResource.class);
     }
 
