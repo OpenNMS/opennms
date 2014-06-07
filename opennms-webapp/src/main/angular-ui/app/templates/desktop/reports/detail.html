@@ -13,7 +13,7 @@
                 <div class="col-sm-4 text-right">
                     Node: <a ui-sref="app.nodes.detail({ nodeId: graph.nodeId})">{{graph.nodeId}}</a><br />
                     {{getResourceLabel(graph)}}: <a ui-sref="app.node.ipaddress.detail({ nodeId: graph.nodeId, ipAddress: graph.resourceIndex })">{{graph.resourceIndex}}</a>
-                    <a ng-href="/opennms/graph/results.htm?resourceId={{graph.resourceId|escape}}&reports=all&start={{start|amDateFormat:'XSSS'}}&end={{end|amDateFormat:'XSSS'}}" alt="Resource Graph: {{graph.type| uppercase}}">Detail</a>
+                    <a ui-sref="app.reports.node({nodeId: graph.nodeId, reports: 'all', start: start, end: end})" alt="Resource Graph: {{graph.type| uppercase}}">Detail</a>
                 </div>
             </div>
             <a ng-href="{{resourceUrl}}" alt="Resource Graph: {{graph.type| uppercase}}">

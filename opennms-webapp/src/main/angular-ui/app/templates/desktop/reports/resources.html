@@ -1,0 +1,18 @@
+<div>
+    <p ng-if="!metrics">No resources are available to graph.</p>
+    <div ng-if="metrics">
+        <div>
+            <div class="well reportHeader">Node Resources</div><br />
+            <div class="container">
+                <div class="row" ng-repeat="resource in metrics.resource">
+                    <div>{{resource._label}}</div>
+                    <div class="container">
+                        <div class="row" ng-repeat="metric in resource.metric">
+                            <a ui-sref="app.reports.node-details({nodeId: metrics._nodeId, resourceId: getResourceId(resource, metric)})">{{metric._resourceLabel}}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

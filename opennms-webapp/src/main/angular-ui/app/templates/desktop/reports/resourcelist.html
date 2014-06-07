@@ -1,0 +1,43 @@
+<div>
+    <p ng-if="!metrics">No resources are available to graph.</p>
+    <div ng-if="metrics">
+        <div>
+            <div>Time Period: <select id="ng-timeperiod" ng-model="timeperiod" ng-options="opt as opt.label for opt in timeperiods" ng-change="timechange(timeperiod)"></select>
+                <div class="pull-right">Refresh:<select id="ng-refresh" ng-model="refresh" ng-options="opt as opt for opt in refreshperiods" ng-change="refreshchange(timeperiod)"></select></div>
+            </div>
+            <div class="well reportHeader">Node Resources</div><br />
+            <div class="container">
+                <div class="row" ng-repeat="resource in metrics.resource">
+
+                    <div>{{resource._label}}</div>
+                    <div class="container">
+                        <div class="row" ng-repeat="metric in resource.metric">
+                            <div class="row" ng-repeat="graph in metric.graph" ng-controller="ReportGraphCtrl" ng-init="graph = graph">
+                                <pre ng-hide="true" class="outline-2">{{graph|json}}</pre>
+                                <div class="row">
+                                    <div class="col-sm-4 text-left">
+                                        <h4 ng-if="graph.title">{{graph.title}}</h4>
+                                        From: {{start|amDateFormat:'YYYY-MM-DD HH:mm:ss'}}<br />
+                                        To: {{end|amDateFormat:'YYYY-MM-DD HH:mm:ss'}}
+                                    </div>
+                                    <div class="col-sm-4 text-right">
+                                        Node: <a ui-sref="app.nodes.detail({ nodeId: graph.nodeId})">{{graph.nodeId}}</a><br />
+                                        {{getResourceLabel(graph)}}: <a ui-sref="app.node.ipaddress.detail({ nodeId: graph.nodeId, ipAddress: graph.resourceIndex })">{{graph.resourceIndex}}</a>
+                                        <a ui-sref="app.reports.node({nodeId: graph.nodeId, reports: 'all', start: start, end: end})" alt="Resource Graph: {{graph.type| uppercase}}">Detail</a>
+                                    </div>
+                                </div>
+                                <a ng-href="{{resourceUrl}}" alt="Resource Graph: {{graph.type| uppercase}}">
+                                    <img ng-src="{{imageUrl}}"/>
+                                </a>
+                            </div>
+
+
+
+                            <a ui-sref="app.reports.node.details({nodeId: metrics._nodeId, resourceId: metric._resourceId})">{{metric._resourceLabel}}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
