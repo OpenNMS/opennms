@@ -137,7 +137,7 @@ public class Nms4930Test extends LinkdTestBuilder {
         final List<DataLinkInterface> ifaces = m_dataLinkInterfaceDao.findAll();
         assertEquals("we should have found one link", 1, ifaces.size());
         for (final DataLinkInterface link: ifaces) {
-            checkLink(dlink2, dlink1, 10, 24, link);
+            checkLink(dlink1,dlink2 , 24, 10, link);
             assertEquals(DiscoveryProtocol.bridge, link.getProtocol());
         }
 
