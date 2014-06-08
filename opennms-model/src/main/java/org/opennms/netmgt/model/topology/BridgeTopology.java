@@ -239,9 +239,21 @@ public class BridgeTopology {
 		return false;
 	}
 
+	public void addTopology(Integer nodeid, Map<Integer, Set<String>> bridgeTopologyTable) {
+		LOG.info("addTopology: -----------------------------------------------------");
+		LOG.info("addTopology: adding bridge topology for node {}", nodeid);
+		for (final Entry<Integer, Set<String>> curEntry : bridgeTopologyTable
+				.entrySet()) {
+			bridgeTopologyPortCandidates.add(new BridgeTopologyLinkCandidate(
+					new BridgeTopologyPort(
+							nodeid, curEntry.getKey(), curEntry.getValue())));
+		}
+	}
+	
 	public void parseBFT(Integer nodeid,
 			Map<Integer, Set<String>> bridgeForwardingTable) {
-		LOG.info("parseBFT: parsing node {},", nodeid);
+		LOG.info("parseBFT: -----------------------------------------------------");
+		LOG.info("parseBFT: start: parsing bridge forwarding table for node {}", nodeid);
 
 		// parsing bridge forwarding table
 		for (final Entry<Integer, Set<String>> curEntry : bridgeForwardingTable
@@ -273,6 +285,13 @@ public class BridgeTopology {
 					}
 				}
 			}
+			LOG.info(
+					"parseBFT: node {} port {} macs {} targets {} role {}",
+					topologycandidate.getBridgeTopologyPort().getNodeid(),
+					topologycandidate.getBridgeTopologyPort()
+							.getBridgePort(), topologycandidate.getMacs(),
+					topologycandidate.getTargets(), topologycandidate
+							.getRole());
 			bridgeTopologyPortCandidates.add(parseBFTEntry(topologycandidate));
 		}
 		// first: cannot have two backbone from one bridge, so if a backbone and
@@ -335,9 +354,9 @@ public class BridgeTopology {
 
 		// reset all roles
 		for (BridgeTopologyLinkCandidate candidate : bridgeTopologyPortCandidates) {
-			if (candidate.getRole() == BridgePortRole.DIRECT)
 				candidate.setRole(null);
 		}
+		LOG.info("parseBFT: end: bridge forwarding table for node {}", nodeid);
 	}
 
 	private BridgeTopologyLinkCandidate parseBFTEntry(
@@ -363,16 +382,11 @@ public class BridgeTopology {
 		 * to the same pseudo device
 		 */
 		for (BridgeTopologyLinkCandidate linkcandidate : bridgeTopologyPortCandidates) {
-			LOG.info("parseBFTEntry: ------------------");
 			LOG.info(
-					"parseBFTEntry: start: candidate node {} port {} macs {} targets {} role {}: node {} port {} macs {} targets {} role {}",
-					topologyLinkCandidate.getBridgeTopologyPort().getNodeid(),
-					topologyLinkCandidate.getBridgeTopologyPort()
-							.getBridgePort(), topologyLinkCandidate.getMacs(),
-					topologyLinkCandidate.getTargets(), topologyLinkCandidate
-							.getRole(), linkcandidate.getBridgeTopologyPort()
-							.getNodeid(), linkcandidate.getBridgeTopologyPort()
-							.getBridgePort(), linkcandidate.getMacs(),
+					"parseBFTEntry: cycle top: checking node {} port {} macs {} targets {} role {}",
+					linkcandidate.getBridgeTopologyPort()
+					.getNodeid(), linkcandidate.getBridgeTopologyPort()
+					.getBridgePort(), linkcandidate.getMacs(),
 					linkcandidate.getTargets(), linkcandidate.getRole());
 			// regola same node non faccio niente
 			if (linkcandidate.getBridgeTopologyPort().getNodeid().intValue() == topologyLinkCandidate
@@ -451,12 +465,15 @@ public class BridgeTopology {
 				linkcandidate.setLinkPortCandidate(null);
 			}
 			LOG.info(
-					"parseBFTEntry: end: candidate node {} port {} macs {} targets {} role {}: node {} port {} macs {} targets {} role {}",
+					"parseBFTEntry: cycle end: node {} port {} macs {} targets {} role {}",
 					topologyLinkCandidate.getBridgeTopologyPort().getNodeid(),
 					topologyLinkCandidate.getBridgeTopologyPort()
 							.getBridgePort(), topologyLinkCandidate.getMacs(),
 					topologyLinkCandidate.getTargets(), topologyLinkCandidate
-							.getRole(), linkcandidate.getBridgeTopologyPort()
+							.getRole());
+			LOG.info(
+					"parseBFTEntry: cycle end: node {} port {} macs {} targets {} role {}: node {} port {} macs {} targets {} role {}",
+					linkcandidate.getBridgeTopologyPort()
 							.getNodeid(), linkcandidate.getBridgeTopologyPort()
 							.getBridgePort(), linkcandidate.getMacs(),
 					linkcandidate.getTargets(), linkcandidate.getRole());
@@ -524,13 +541,32 @@ public class BridgeTopology {
 						candidateB.getBridgeTopologyPort().getNodeid())
 						&& candidateB.getTargets().contains(
 								candidateA.getBridgeTopologyPort().getNodeid())) {
-					BridgeTopologyLink link = new BridgeTopologyLink(
+					// this means that there is a path from A to B but this must be compatible
+					// A--C--D---E---B
+					// Target Intersection must be null
+					boolean linkFound=true;
+					for (Integer targetA: candidateA.getTargets()) {
+						if (targetA.intValue() == candidateB.getBridgeTopologyPort().getNodeid().intValue())
+							continue;
+						if (candidateB.getTargets().contains(targetA)) {
+							LOG.info(
+									"getTopology: bridgetobridge discovery: bridge found {} between A and B: skipping",
+									targetA,
+									candidateA.getBridgeTopologyPort().getNodeid(),
+									candidateB.getBridgeTopologyPort().getNodeid());
+							linkFound=false;
+							break;
+						}
+					}
+					if (linkFound) {
+						BridgeTopologyLink link = new BridgeTopologyLink(
 							candidateA.getBridgeTopologyPort(),
 							candidateB.getBridgeTopologyPort());
-					LOG.info(
+						LOG.info(
 							"getTopology: bridgetobridge discovery: link found {}",
 							link);
-					bridgelinks.add(link);
+						bridgelinks.add(link);
+					}
 				}
 			}
 		}
