@@ -85,6 +85,10 @@ public class BridgeTopology {
 			return targets;
 		}
 
+		public void setTargets(Set<Integer> targets) {
+			this.targets = targets;
+		}
+
 		public void addTarget(Integer target) {
 			this.targets.add(target);
 		}
@@ -239,7 +243,7 @@ public class BridgeTopology {
 		return false;
 	}
 
-	public void addTopology(Integer nodeid, Map<Integer, Set<String>> bridgeTopologyTable) {
+	public void addTopology(Integer nodeid, Map<Integer, Set<String>> bridgeTopologyTable, Set<Integer> targets) {
 		LOG.info("addTopology: -----------------------------------------------------");
 		LOG.info("addTopology: adding bridge topology for node {}", nodeid);
 		for (final Entry<Integer, Set<String>> curEntry : bridgeTopologyTable
@@ -247,9 +251,11 @@ public class BridgeTopology {
 			LOG.info(
 					"addTopology: node {}, port {}: mac {}",
 					nodeid, curEntry.getKey(), curEntry.getValue());
-			bridgeTopologyPortCandidates.add(new BridgeTopologyLinkCandidate(
+			BridgeTopologyLinkCandidate candidate =new BridgeTopologyLinkCandidate(
 					new BridgeTopologyPort(
-							nodeid, curEntry.getKey(), curEntry.getValue())));
+							nodeid, curEntry.getKey(), curEntry.getValue()));
+			candidate.setTargets(targets);
+			bridgeTopologyPortCandidates.add(candidate);
 		}
 	}
 	
