@@ -115,8 +115,8 @@
     
     <dependency>
         <groupId>org.codehaus.groovy</groupId>
-        <artifactId>groovy</artifactId>
-        <version>1.9.0-beta-3</version>
+        <artifactId>groovy-all</artifactId>
+        <version>${groovyVersion}</version>
         <exclusions>
           <exclusion>
             <groupId>asm</groupId>
