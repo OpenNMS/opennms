@@ -101,7 +101,7 @@ public abstract class BaseFilter<T> implements Filter {
      * @param value a T object.
      * @throws java.sql.SQLException if any.
      */
-    final public void bindValue(PreparedStatement ps, int parameterIndex, T value) throws SQLException {
+    public final void bindValue(PreparedStatement ps, int parameterIndex, T value) throws SQLException {
         m_sqlType.bindParam(ps, parameterIndex, value);
     }
     
@@ -121,7 +121,7 @@ public abstract class BaseFilter<T> implements Filter {
      * @param value a T object.
      * @return a {@link java.lang.String} object.
      */
-    final public String getValueAsString(T value) {
+    public final String getValueAsString(T value) {
         return m_sqlType.getValueAsString(value);
     }
     

@@ -53,7 +53,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @version $Id: $
  */
 @Distributable(DistributionContext.DAEMON)
-final public class SMSPingMonitor extends AbstractServiceMonitor {
+public final class SMSPingMonitor extends AbstractServiceMonitor {
     private static final Logger LOG = LoggerFactory.getLogger(SMSPingMonitor.class);
 	Phonebook phonebook = new PropertyPhonebook();
 

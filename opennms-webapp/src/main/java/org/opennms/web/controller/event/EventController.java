@@ -378,8 +378,7 @@ public class EventController extends MultiActionController implements Initializi
 
     private OnmsFilterFavorite getFavorite(String favoriteId, String username, String[] filters) {
         if (favoriteId != null) {
-            OnmsFilterFavorite filter = favoriteService.getFavorite(favoriteId, username, getFilterCallback().toFilterString(filters));
-            return filter;
+        	return favoriteService.getFavorite(favoriteId, username, getFilterCallback().toFilterString(filters));
         }
         return null;
     }

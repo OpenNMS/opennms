@@ -112,7 +112,7 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
      * The default event UEI - if the event lookup into the 'event.conf' fails,
      * the event is loaded with information from this default UEI
      */
-    private final static String DEFAULT_EVENT_UEI = "uei.opennms.org/default/event";
+    private static final String DEFAULT_EVENT_UEI = "uei.opennms.org/default/event";
 
     /**
      * The default trap UEI - if the trap lookup into the 'event.conf' fails,

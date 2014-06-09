@@ -211,7 +211,7 @@ public class SiteStatusViewsFactory {
      *
      * @return a {@link org.opennms.netmgt.config.siteStatusViews.SiteStatusViewConfiguration} object.
      */
-    public synchronized static SiteStatusViewConfiguration getConfig() {
+    public static synchronized SiteStatusViewConfiguration getConfig() {
         return m_config;
     }
 
@@ -220,7 +220,7 @@ public class SiteStatusViewsFactory {
      *
      * @param m_config a {@link org.opennms.netmgt.config.siteStatusViews.SiteStatusViewConfiguration} object.
      */
-    public synchronized static void setConfig(SiteStatusViewConfiguration m_config) {
+    public static synchronized void setConfig(SiteStatusViewConfiguration m_config) {
         SiteStatusViewsFactory.m_config = m_config;
     }
 
@@ -229,7 +229,7 @@ public class SiteStatusViewsFactory {
      *
      * @return a {@link java.util.Map} object.
      */
-    public synchronized static Map<String, View> getViewsMap() {
+    public static synchronized Map<String, View> getViewsMap() {
         return Collections.unmodifiableMap(m_viewsMap);
     }
 
@@ -238,7 +238,7 @@ public class SiteStatusViewsFactory {
      *
      * @param map a {@link java.util.Map} object.
      */
-    public synchronized static void setViewsMap(Map<String, View> map) {
+    public static synchronized void setViewsMap(Map<String, View> map) {
         m_viewsMap = map;
     }
 }

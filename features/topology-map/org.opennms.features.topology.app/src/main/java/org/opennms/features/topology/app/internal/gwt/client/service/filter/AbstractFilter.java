@@ -10,7 +10,7 @@ public abstract class AbstractFilter implements Filter {
     public abstract boolean match(Map<String, String> properties);
 
     @Override
-    abstract public String toString();
+    public abstract String toString();
     
     @Override
     public boolean equals(Object o) {

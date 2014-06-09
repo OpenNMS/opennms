@@ -67,7 +67,7 @@ public class AddNewInterfaceServlet extends HttpServlet {
     /**
      * The value used as the source of the event
      */
-    final static String EVENT_SOURCE_VALUE = "Web UI";
+    static final String EVENT_SOURCE_VALUE = "Web UI";
 
     /** {@inheritDoc} */
     @Override

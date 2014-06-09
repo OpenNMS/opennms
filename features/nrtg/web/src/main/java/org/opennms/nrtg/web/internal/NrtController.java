@@ -63,7 +63,7 @@ public class NrtController {
     private SnmpAgentConfigFactory m_snmpAgentConfigFactory;
     private NrtBroker m_nrtBroker;
 
-    protected class MetricTuple {
+    protected static class MetricTuple {
 
         private String m_metricId;
         private String m_onmsLogicMetricId;

@@ -105,11 +105,11 @@ final class MergeableDefinition {
      *
      * @return a {@link org.opennms.netmgt.config.snmp.Definition} object.
      */
-    final public Definition getConfigDef() {
+    public final Definition getConfigDef() {
         return m_snmpConfigDef;
     }
     
-    final private <T> boolean areEquals(T object1, T object2) {
+    private final <T> boolean areEquals(T object1, T object2) {
     	return SnmpConfigManager.areEquals(object1, object2);
     }
 

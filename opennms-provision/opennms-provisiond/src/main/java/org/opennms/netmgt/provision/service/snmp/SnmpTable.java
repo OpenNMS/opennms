@@ -43,7 +43,7 @@ import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpResult;
 
-abstract public class SnmpTable<T extends SnmpTableEntry> extends AggregateTracker {
+public abstract class SnmpTable<T extends SnmpTableEntry> extends AggregateTracker {
     private static final Logger LOG = LoggerFactory.getLogger(SnmpTable.class);
     private Map<SnmpInstId, T> m_results = new TreeMap<SnmpInstId, T>();
     private InetAddress m_address;

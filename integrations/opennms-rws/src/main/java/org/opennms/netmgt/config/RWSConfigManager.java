@@ -51,7 +51,7 @@ import org.opennms.rancid.ConnectionProperties;
  * @author <a href="mailto:brozow@openms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
-abstract public class RWSConfigManager implements RWSConfig {
+public abstract class RWSConfigManager implements RWSConfig {
     private static final Logger LOG = LoggerFactory.getLogger(RWSConfigManager.class);
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();

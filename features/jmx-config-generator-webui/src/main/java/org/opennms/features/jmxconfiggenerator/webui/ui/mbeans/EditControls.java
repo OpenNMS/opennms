@@ -126,7 +126,7 @@ class EditControls<T extends Component> extends HorizontalLayout implements Read
 	 * @param <T>
 	 *            Type of the outer component.
 	 */
-	public static abstract class AbstractButtonHandler<T extends Component> implements ButtonHandler<T> {
+	public abstract static class AbstractButtonHandler<T extends Component> implements ButtonHandler<T> {
 
 		private final T outer;
 

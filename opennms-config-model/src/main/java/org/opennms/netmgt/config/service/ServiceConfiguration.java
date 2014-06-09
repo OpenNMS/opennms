@@ -238,8 +238,7 @@ public class ServiceConfiguration implements Serializable {
      * @return true if the object was removed from the collection.
      */
     public boolean removeService(final Service vService) {
-        boolean removed = _serviceList.remove(vService);
-        return removed;
+    	return _serviceList.remove(vService);
     }
 
     /**

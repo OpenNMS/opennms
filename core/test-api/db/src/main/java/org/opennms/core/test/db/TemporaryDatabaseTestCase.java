@@ -439,7 +439,7 @@ public class TemporaryDatabaseTestCase extends TestCase {
      * 
      * @author djgregor
      */
-    public class TestFailureAndTearDownErrorException extends Exception {
+    public static class TestFailureAndTearDownErrorException extends Exception {
         private static final long serialVersionUID = -5664844942506660064L;
         private Throwable m_tearDownError;
         

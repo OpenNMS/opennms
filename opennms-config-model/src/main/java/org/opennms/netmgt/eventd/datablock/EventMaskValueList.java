@@ -268,7 +268,7 @@ public class EventMaskValueList extends ArrayList<String> {
         }
 
         if (value.endsWith("%")) {
-            char val[] = value.toCharArray();
+            char[] val = value.toCharArray();
             int len = value.length();
             int lastIndex = len - 1;
 

@@ -61,7 +61,7 @@
     function next()
     {
         var ipElement = document.getElementById("cripIn");
-        if (!isValidIPAddress(ipElement.value)) {
+        if (!isValidIPAddress(ipElement.value) && !(ipElement.value == "")) {
             alert (ipElement.value + " is not a valid IP address!");
         } else {
             document.crpth.nextPage.value="<%=NotificationWizardServlet.SOURCE_PAGE_VALIDATE_PATH_OUTAGE%>";
@@ -84,11 +84,11 @@
 
     <h3>Define the Critical Path</h3>
 
-    Enter the critical path IP address in xxx.xxx.xxx.xxx format. (Or leave blank to clear previously set paths.)
+    Enter the critical path IP address in xxx.xxx.xxx.xxx or xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx format. (Or leave blank to clear previously set paths.)
 
     <br/><br/>
 
-    <input id="cripIn" type="text" name="criticalIp" value = '<%= (criticalIp != null ? criticalIp : "") %>' size="17" maxlength="15" />
+    <input id="cripIn" type="text" name="criticalIp" value = '<%= (criticalIp != null ? criticalIp : "") %>' size="57" maxlength="55" />
 
     <br/><br/>
 
