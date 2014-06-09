@@ -62,7 +62,7 @@ public class EventTranslator extends AbstractServiceDaemon implements EventTrans
         super(NAME);
     }
 
-    public final static String NAME = "event-translator";
+    public static final String NAME = "event-translator";
 
     /**
      * <p>onInit</p>

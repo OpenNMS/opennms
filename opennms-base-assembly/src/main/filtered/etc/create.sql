@@ -1305,7 +1305,7 @@ CREATE UNIQUE INDEX catenode_unique_idx on category_node(categoryId, nodeId);
 
 create table pathOutage (
 	nodeID			integer,
-	criticalPathIp		varchar(16) not null,
+	criticalPathIp		text not null,
 	criticalPathServiceName	varchar(255),
 
 	constraint fk_nodeID8 foreign key (nodeID) references node ON DELETE CASCADE

@@ -291,7 +291,7 @@ public class GraphResults {
         }
     }
 
-    public class BeanFriendlyCalendar extends GregorianCalendar {
+    public static class BeanFriendlyCalendar extends GregorianCalendar {
         /**
          * 
          */

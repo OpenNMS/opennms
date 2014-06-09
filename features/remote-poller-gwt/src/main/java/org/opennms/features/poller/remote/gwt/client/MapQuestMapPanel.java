@@ -306,8 +306,7 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
     private static MQARectLL toMQARectLL(final GWTBounds bounds) {
         final MQALatLng ne = toMQALatLng(bounds.getNorthEastCorner());
         final MQALatLng sw = toMQALatLng(bounds.getSouthWestCorner());
-        final MQARectLL mqBounds = MQARectLL.newInstance(ne, sw);
-        return mqBounds;
+        return MQARectLL.newInstance(ne, sw);
     }
 
     private void syncMapSizeWithParent() {

@@ -38,18 +38,18 @@ public class AvailabilityConstants {
     /**
      * The sql statement that is used to get node information for an IP address.
      */
-    public final static String DB_GET_INFO_FOR_IP = "SELECT  node.nodeid, node.nodelabel FROM " + "node, ipInterface WHERE ((ipInterface.ipaddr = ?) AND " + "(ipInterface.nodeid = node.nodeid) AND (node.nodeType = 'A') AND (ipinterface.ismanaged = 'M') )";
+    public static final String DB_GET_INFO_FOR_IP = "SELECT  node.nodeid, node.nodelabel FROM " + "node, ipInterface WHERE ((ipInterface.ipaddr = ?) AND " + "(ipInterface.nodeid = node.nodeid) AND (node.nodeType = 'A') AND (ipinterface.ismanaged = 'M') )";
 
     /**
      * The sql statement that is used to get services information for a
      * nodeid/IP address.
      */
-    public final static String DB_GET_SVC_ENTRIES = "SELECT ifServices.serviceid, service.servicename FROM ifServices, ipInterface, node, " + "service WHERE ((ifServices.nodeid = ? ) AND (ifServices.ipaddr = ?) AND ipinterface.ipaddr = ? AND ipinterface.isManaged ='M' AND " + "(ifServices.serviceid = service.serviceid) AND (ifservices.status = 'A')) AND node.nodeid = ? AND node.nodetype = 'A'";
+    public static final String DB_GET_SVC_ENTRIES = "SELECT ifServices.serviceid, service.servicename FROM ifServices, ipInterface, node, " + "service WHERE ((ifServices.nodeid = ? ) AND (ifServices.ipaddr = ?) AND ipinterface.ipaddr = ? AND ipinterface.isManaged ='M' AND " + "(ifServices.serviceid = service.serviceid) AND (ifservices.status = 'A')) AND node.nodeid = ? AND node.nodetype = 'A'";
 
     /**
      * The sql statement for getting outage entries for a nodeid/ip/serviceid
      */
-    public final static String DB_GET_OUTAGE_ENTRIES = "SELECT ifLostService, ifRegainedService from outages " + "where  (outages.nodeid = ?) AND (outages.ipaddr = ?) AND (outages.serviceid = ?)"; // and
+    public static final String DB_GET_OUTAGE_ENTRIES = "SELECT ifLostService, ifRegainedService from outages " + "where  (outages.nodeid = ?) AND (outages.ipaddr = ?) AND (outages.serviceid = ?)"; // and
                                                                                                                                                                                                         // ((ifRegainedService
                                                                                                                                                                                                         // IS
                                                                                                                                                                                                         // null)

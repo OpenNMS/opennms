@@ -266,7 +266,6 @@ public final class InetCidrRouteTableEntry extends IpRouteCollectorEntry
        final Integer mask = 0xffffffff << (32 - prefix);
        final Integer value = mask;
        final byte[] bytes = new byte[]{ (byte)(value >>> 24), (byte)(value >> 16 & 0xff), (byte)(value >> 8 & 0xff), (byte)(value & 0xff) };
-       final InetAddress netAddr = InetAddressUtils.getInetAddress(bytes);
-       return netAddr;
+       return InetAddressUtils.getInetAddress(bytes);
    }
 }

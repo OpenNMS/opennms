@@ -132,8 +132,7 @@ public abstract class AbstractJsonCollectionHandler extends AbstractXmlCollectio
         }
         // Processing single-key resource name.
         LOG.debug("getResourceName: getting key for resource's name using {}", group.getKeyXpath());
-        String keyName = (String)context.getValue(group.getKeyXpath());
-        return keyName;
+        return (String)context.getValue(group.getKeyXpath());
     }
 
     /**

@@ -162,7 +162,7 @@ public class SnmpTrapHelper {
     /**
      * Variable binding factory for SnmpOctetString
      */
-    private class SnmpOctetStringFactory implements VarBindFactory {
+    private static class SnmpOctetStringFactory implements VarBindFactory {
         /**
          * Constructs a new SnmpVarBind with the specified name and value. The
          * value will be encoded as an SnmpOctetString. The value is assumed to
@@ -203,7 +203,7 @@ public class SnmpTrapHelper {
     /**
      * Variable binding factory for SnmpInt32
      */
-    private class SnmpInt32Factory implements VarBindFactory {
+    private static class SnmpInt32Factory implements VarBindFactory {
         /**
          * Constructs a new SnmpVarBind with the specified name and value. The
          * value will be encoded as an SnmpInt32. The value is assumed to have
@@ -248,7 +248,7 @@ public class SnmpTrapHelper {
     /**
      * Variable binding factory for SnmpNull
      */
-    private class SnmpNullFactory implements VarBindFactory {
+    private static class SnmpNullFactory implements VarBindFactory {
         /**
          * Constructs a new SnmpVarBind with the specified name and value. The
          * value will be encoded as an SnmpNull.The value and encoding
@@ -272,7 +272,7 @@ public class SnmpTrapHelper {
     /**
      * Variable binding factory for SnmpObjectId
      */
-    private class SnmpObjectIdFactory implements VarBindFactory {
+    private static class SnmpObjectIdFactory implements VarBindFactory {
         /**
          * Constructs a new SnmpVarBind with the specified name and value. The
          * value will be encoded as an SnmpObjectId. The value is assumed to
@@ -307,7 +307,7 @@ public class SnmpTrapHelper {
     /**
      * Variable binding factory for SnmpIPAddress
      */
-    private class SnmpIPAddressFactory implements VarBindFactory {
+    private static class SnmpIPAddressFactory implements VarBindFactory {
         /**
          * Constructs a new SnmpVarBind with the specified name and value. The
          * value will be encoded as an SnmpIPAddress. The value is assumed to
@@ -346,7 +346,7 @@ public class SnmpTrapHelper {
     /**
      * Variable binding factory for SnmpTimeTicks
      */
-    private class SnmpTimeTicksFactory implements VarBindFactory {
+    private static class SnmpTimeTicksFactory implements VarBindFactory {
         /**
          * Constructs a new SnmpVarBind with the specified name and value. The
          * value will be encoded as an SnmpTimeTicks. The value is assumed to
@@ -395,7 +395,7 @@ public class SnmpTrapHelper {
     /**
      * Variable binding factory for SnmpCounter32
      */
-    private class SnmpCounter32Factory implements VarBindFactory {
+    private static class SnmpCounter32Factory implements VarBindFactory {
         /**
          * Constructs a new SnmpVarBind with the specified name and value. The
          * value will be encoded as an SnmpCounter32. The value is assumed to
@@ -444,7 +444,7 @@ public class SnmpTrapHelper {
     /**
      * Variable binding factory for SnmpGauge32
      */
-    private class SnmpGauge32Factory implements VarBindFactory {
+    private static class SnmpGauge32Factory implements VarBindFactory {
         /**
          * Constructs a new SnmpVarBind with the specified name and value. The
          * value will be encoded as an SnmpGauge32. The value is assumed to have
@@ -493,7 +493,7 @@ public class SnmpTrapHelper {
     /**
      * Variable binding factory for SnmpOpaque
      */
-    private class SnmpOpaqueFactory implements VarBindFactory {
+    private static class SnmpOpaqueFactory implements VarBindFactory {
         /**
          * Constructs a new SnmpVarBind with the specified name and value. The
          * value will be encoded as an SnmpOpaque. The value is assumed to have
@@ -528,7 +528,7 @@ public class SnmpTrapHelper {
     /**
      * Variable binding factory for SnmpCounter64
      */
-    private class SnmpCounter64Factory implements VarBindFactory {
+    private static class SnmpCounter64Factory implements VarBindFactory {
         /**
          * Constructs a new SnmpVarBind with the specified name and value. The
          * value will be encoded as an SnmpCounter64. The value is assumed to

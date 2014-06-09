@@ -55,7 +55,7 @@ abstract class NodeIdFocusToRestrictionsConverter {
         return getRestrictions(extractNodeIds(vertices)); // we have entries, so wie use them
     }
 
-    abstract protected Restriction createRestriction(Integer nodeId);
+    protected abstract Restriction createRestriction(Integer nodeId);
 
     private List<Restriction> getRestrictions(List<Integer> nodeIdFocus) {
         List<Restriction> restrictions = new ArrayList<Restriction>();

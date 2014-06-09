@@ -788,8 +788,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
 
         final PolledService polledService = getPolledService(polledServiceId);
         if (polledService == null) return null;
-        final PollStatus result = m_pollService.poll(polledService);
-        return result;
+        return m_pollService.poll(polledService);
     }
 
     private void fireConfigurationChange(final Date oldTime, final Date newTime) {

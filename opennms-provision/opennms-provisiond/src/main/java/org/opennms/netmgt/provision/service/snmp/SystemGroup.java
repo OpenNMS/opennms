@@ -58,27 +58,27 @@ public final class SystemGroup extends AggregateTracker {
     // Lookup strings for specific table entries
     //
     /** Constant <code>SYS_OBJECTID_ALIAS="sysObjectID"</code> */
-    public final static String SYS_OBJECTID_ALIAS = "sysObjectID";
+    public static final String SYS_OBJECTID_ALIAS = "sysObjectID";
     private static final String SYS_OBJECTID = ".1.3.6.1.2.1.1.2";
 
     /** Constant <code>SYS_UPTIME_ALIAS="sysUptime"</code> */
-    public final static String SYS_UPTIME_ALIAS = "sysUptime";
+    public static final String SYS_UPTIME_ALIAS = "sysUptime";
     private static final String SYS_UPTIME = ".1.3.6.1.2.1.1.3";
 
     /** Constant <code>SYS_NAME_ALIAS="sysName"</code> */
-    public final static String SYS_NAME_ALIAS = "sysName";
+    public static final String SYS_NAME_ALIAS = "sysName";
     private static final String SYS_NAME = ".1.3.6.1.2.1.1.5";
 
     /** Constant <code>SYS_DESCR_ALIAS="sysDescr"</code> */
-    public final static String SYS_DESCR_ALIAS = "sysDescr";
+    public static final String SYS_DESCR_ALIAS = "sysDescr";
     private static final String SYS_DESCR = ".1.3.6.1.2.1.1.1";
 
     /** Constant <code>SYS_LOCATION_ALIAS="sysLocation"</code> */
-    public final static String SYS_LOCATION_ALIAS = "sysLocation";
+    public static final String SYS_LOCATION_ALIAS = "sysLocation";
     private static final String SYS_LOCATION = ".1.3.6.1.2.1.1.6";
 
     /** Constant <code>SYS_CONTACT_ALIAS="sysContact"</code> */
-    public final static String SYS_CONTACT_ALIAS = "sysContact";
+    public static final String SYS_CONTACT_ALIAS = "sysContact";
     private static final String SYS_CONTACT = ".1.3.6.1.2.1.1.4";
     
     /**

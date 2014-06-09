@@ -112,8 +112,7 @@ public class AliasedResource extends SnmpCollectionResource {
     @Override
     public File getResourceDir(final RrdRepository repository) {
         File domainDir = new File(repository.getRrdBaseDir(), getDomain());
-        File aliasDir = new File(domainDir, getAliasDir());
-        return aliasDir;
+        return new File(domainDir, getAliasDir());
     }
 
     /**

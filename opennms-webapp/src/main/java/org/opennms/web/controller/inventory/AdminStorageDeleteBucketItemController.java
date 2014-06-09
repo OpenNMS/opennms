@@ -91,8 +91,7 @@ public class AdminStorageDeleteBucketItemController implements Controller {
             }
      }
         Map<String, Object> model  = m_inventoryService.getBuckets(nodeid);
-        ModelAndView modelAndView = new ModelAndView("admin/storage/storageAdmin","model",model);
-        return modelAndView;
+        return new ModelAndView("admin/storage/storageAdmin","model",model);
     }
     
     

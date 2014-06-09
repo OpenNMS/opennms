@@ -54,7 +54,7 @@ public class ContextMenu {
 		entries.add(entry);
 	}
 	
-	public class CMEntry{
+	public static class CMEntry{
 		public String command;
 		public String link;
 		public String params;

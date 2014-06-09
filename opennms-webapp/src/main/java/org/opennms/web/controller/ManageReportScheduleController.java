@@ -95,8 +95,7 @@ public class ManageReportScheduleController extends SimpleFormController {
     protected ModelAndView onSubmit(Object command) throws Exception {
         ManageReportScheduleCommand manageCommand = (ManageReportScheduleCommand) command;
         m_reportSchedulerService.removeTriggers((manageCommand.getTriggerNames()));
-        ModelAndView mav = new ModelAndView(getSuccessView());
-        return mav;
+        return new ModelAndView(getSuccessView());
     }
 
 }

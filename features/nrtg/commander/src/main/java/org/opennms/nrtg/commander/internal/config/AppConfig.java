@@ -58,8 +58,7 @@ public class AppConfig {
 
     @Bean(name = "amqConnectionFactory")
     public ConnectionFactory amqConnectionFactory() {
-        ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(ActiveMQConnectionFactory.DEFAULT_BROKER_URL);
-        return connectionFactory;
+        return new ActiveMQConnectionFactory(ActiveMQConnectionFactory.DEFAULT_BROKER_URL);
     }
 
     @Bean(name = "JmsTemplate")

@@ -17,7 +17,7 @@ public abstract class AbstractLayoutAlgorithm implements LayoutAlgorithm, Layout
     private static final Logger LOG = LoggerFactory.getLogger(AbstractLayoutAlgorithm.class);
 
 	@Override
-	abstract public void updateLayout(GraphContainer graph);
+	public abstract void updateLayout(GraphContainer graph);
 
 	protected static Dimension selectLayoutSize(GraphContainer g) {
 	    int vertexCount = g.getGraph().getDisplayVertices().size();

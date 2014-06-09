@@ -53,7 +53,7 @@ import org.opennms.netmgt.provision.persist.requisition.Requisition;
  */
 public class VmwareRequisitionTool {
 
-    public static void main(String args[]) throws Exception {
+    public static void main(String[] args) throws Exception {
         final Options options = new Options();
 
         final CommandLineParser parser = new PosixParser();

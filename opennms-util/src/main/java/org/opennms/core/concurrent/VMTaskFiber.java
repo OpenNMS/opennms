@@ -51,7 +51,7 @@ public class VMTaskFiber implements Fiber, Runnable {
     /**
      * The list of classes that are passed as entry arguments.
      */
-    private static final String MAIN_PARAMETER_TYPES[] = { "[Ljava.lang.String;" };
+    private static final String[] MAIN_PARAMETER_TYPES = { "[Ljava.lang.String;" };
 
     /**
      * The return type for the entry method.

@@ -87,13 +87,13 @@ public abstract class AbstractDetector implements ServiceDetector {
     /**
      * <p>onInit</p>
      */
-    abstract protected void onInit();
+    protected abstract void onInit();
     
     /**
      * <p>dispose</p>
      */
     @Override
-    abstract public void dispose();
+    public abstract void dispose();
     
     /**
      * <p>setPort</p>

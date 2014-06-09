@@ -97,7 +97,7 @@ public class TicketNotificationStrategy implements NotificationStrategy {
 		}
 	}
 	
-	protected class AlarmStateRowCallbackHandler implements RowCallbackHandler {
+	protected static class AlarmStateRowCallbackHandler implements RowCallbackHandler {
 		AlarmState m_alarmState;
 		public AlarmStateRowCallbackHandler() {
 			m_alarmState = null;

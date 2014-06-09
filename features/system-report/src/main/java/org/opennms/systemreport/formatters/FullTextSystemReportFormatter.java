@@ -70,12 +70,12 @@ public class FullTextSystemReportFormatter extends AbstractSystemReportFormatter
         final OutputStream out = getOutputStream();
 
         try {
-            out.write(String.format("= %s: %s =\n\n", plugin.getName(), plugin.getDescription()).getBytes());
+            out.write(String.format("= %s: %s =%n%n", plugin.getName(), plugin.getDescription()).getBytes());
             
             for (final Map.Entry<String,Resource> entry : plugin.getEntries().entrySet()) {
                 final Resource value = entry.getValue();
 
-                out.write(String.format("== %s ==\n\n", entry.getKey()).getBytes());
+                out.write(String.format("== %s ==%n%n", entry.getKey()).getBytes());
 
                 final InputStream is = value.getInputStream();
                 int bytes;
@@ -86,7 +86,7 @@ public class FullTextSystemReportFormatter extends AbstractSystemReportFormatter
                 }
                 is.close();
 
-                out.write("\n\n".getBytes());
+                out.write("%n%n".getBytes());
             }
 
         } catch (final Exception e) {
