@@ -43,7 +43,7 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
  * creating and collection occurs in the main run method of the instance. This
  * allows the collection to occur in a thread if necessary.
  */
-public abstract class AbstractLinkdNodeDiscovery implements ReadyRunnable {
+public abstract class NodeDiscovery implements ReadyRunnable {
 
 	/**
      * The node ID of the system used to collect the SNMP information
@@ -81,7 +81,7 @@ public abstract class AbstractLinkdNodeDiscovery implements ReadyRunnable {
      * @param config
      *            The SnmpPeer object to collect from.
      */
-    public AbstractLinkdNodeDiscovery(final EnhancedLinkd linkd, final LinkableSnmpNode node) {
+    public NodeDiscovery(final EnhancedLinkd linkd, final LinkableSnmpNode node) {
         m_linkd = linkd;
         m_node = node;
         m_initial_sleep_time = m_linkd.getInitialSleepTime();
@@ -281,9 +281,9 @@ public abstract class AbstractLinkdNodeDiscovery implements ReadyRunnable {
 
     /** {@inheritDoc} */
     public boolean equals(ReadyRunnable run) {
-        if (run instanceof AbstractLinkdNodeDiscovery
+        if (run instanceof NodeDiscovery
                 && this.getPackageName().equals(run.getPackageName())) {
-            AbstractLinkdNodeDiscovery c = (AbstractLinkdNodeDiscovery) run;
+            NodeDiscovery c = (NodeDiscovery) run;
             if (c.getTarget().equals(getTarget()))
                 return true;
         }

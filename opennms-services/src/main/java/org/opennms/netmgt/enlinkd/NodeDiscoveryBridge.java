@@ -63,8 +63,8 @@ import org.slf4j.LoggerFactory;
  * and collection occurs in the main run method of the instance. This allows the
  * collection to occur in a thread if necessary.
  */
-public final class BridgeLinkdNodeDiscovery extends AbstractLinkdNodeDiscovery {
-    private static final Logger LOG = LoggerFactory.getLogger(BridgeLinkdNodeDiscovery.class);
+public final class NodeDiscoveryBridge extends NodeDiscovery {
+    private static final Logger LOG = LoggerFactory.getLogger(NodeDiscoveryBridge.class);
 
 	public final static String CISCO_ENTERPRISE_OID = ".1.3.6.1.4.1.9";
 
@@ -77,7 +77,7 @@ public final class BridgeLinkdNodeDiscovery extends AbstractLinkdNodeDiscovery {
 	 * @param LinkableNode
 	 *            node
 	 */
-	public BridgeLinkdNodeDiscovery(final EnhancedLinkd linkd,
+	public NodeDiscoveryBridge(final EnhancedLinkd linkd,
 			final LinkableSnmpNode node) {
 		super(linkd, node);
 	}

@@ -51,9 +51,9 @@ import org.slf4j.LoggerFactory;
  * creating and collection occurs in the main run method of the instance. This
  * allows the collection to occur in a thread if necessary.
  */
-public final class IpNetToMediaLinkdNodeDiscovery extends AbstractLinkdNodeDiscovery {
+public final class NodeDiscoveryIpNetToMedia extends NodeDiscovery {
     
-	private final static Logger LOG = LoggerFactory.getLogger(IpNetToMediaLinkdNodeDiscovery.class);
+	private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIpNetToMedia.class);
 
 	/**
 	 * Constructs a new SNMP collector for IpNetToMedia Node Discovery. 
@@ -63,7 +63,7 @@ public final class IpNetToMediaLinkdNodeDiscovery extends AbstractLinkdNodeDisco
 	 * @param EnhancedLinkd linkd
 	 * @param LinkableNode node
 	 */
-    public IpNetToMediaLinkdNodeDiscovery(final EnhancedLinkd linkd, final LinkableSnmpNode node) {
+    public NodeDiscoveryIpNetToMedia(final EnhancedLinkd linkd, final LinkableSnmpNode node) {
     	super(linkd, node);
     }
 
