@@ -244,6 +244,9 @@ public class BridgeTopology {
 		LOG.info("addTopology: adding bridge topology for node {}", nodeid);
 		for (final Entry<Integer, Set<String>> curEntry : bridgeTopologyTable
 				.entrySet()) {
+			LOG.info(
+					"addTopology: node {}, port {}: mac {}",
+					nodeid, curEntry.getKey(), curEntry.getValue());
 			bridgeTopologyPortCandidates.add(new BridgeTopologyLinkCandidate(
 					new BridgeTopologyPort(
 							nodeid, curEntry.getKey(), curEntry.getValue())));
