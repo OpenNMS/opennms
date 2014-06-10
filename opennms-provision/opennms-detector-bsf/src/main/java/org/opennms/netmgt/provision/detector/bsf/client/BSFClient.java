@@ -153,8 +153,7 @@ public class BSFClient implements Client<BSFRequest, BSFResponse> {
     @Override
     public BSFResponse receiveBanner() throws IOException, Exception {
         LOG.debug("Results: {}", m_results);
-        final BSFResponse response = new BSFResponse(m_results);
-        return response;
+        return new BSFResponse(m_results);
     }
 
     /**

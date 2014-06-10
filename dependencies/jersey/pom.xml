@@ -11,7 +11,8 @@
   <packaging>pom</packaging>
   <name>OpenNMS Dependencies Jersey</name>
   <properties>
-    <jerseyVersion>1.10</jerseyVersion>
+    <jerseyVersion>1.18.1</jerseyVersion>
+    <jerseyContribVersion>1.18</jerseyContribVersion>
   </properties>
   <dependencies>
     <dependency>
@@ -77,7 +78,7 @@
     <dependency>
       <groupId>com.sun.jersey.contribs</groupId>
       <artifactId>jersey-spring</artifactId>
-      <version>${jerseyVersion}</version>
+      <version>${jerseyContribVersion}</version>
       <exclusions>
         <exclusion>
           <groupId>commons-logging</groupId>
@@ -116,7 +117,7 @@
     <dependency>
       <groupId>com.sun.jersey.contribs</groupId>
       <artifactId>jersey-apache-client</artifactId>
-      <version>${jerseyVersion}</version>
+      <version>${jerseyContribVersion}</version>
       <exclusions>
         <exclusion>
           <groupId>commons-logging</groupId>
@@ -127,17 +128,17 @@
     <dependency>
       <groupId>com.sun.jersey.contribs</groupId>
       <artifactId>jersey-multipart</artifactId>
-      <version>${jerseyVersion}</version>
+      <version>${jerseyContribVersion}</version>
     </dependency>
     <dependency>
       <groupId>com.sun.jersey.contribs.jersey-oauth</groupId>
       <artifactId>oauth-client</artifactId>
-      <version>${jerseyVersion}</version>
+      <version>${jerseyContribVersion}</version>
     </dependency>
     <dependency>
       <groupId>com.sun.jersey.contribs.jersey-oauth</groupId>
       <artifactId>oauth-signature</artifactId>
-      <version>${jerseyVersion}</version>
+      <version>${jerseyContribVersion}</version>
     </dependency>
     <dependency>
       <groupId>javax.ws.rs</groupId>
@@ -162,27 +163,8 @@
   </dependencies>
   <repositories>
     <repository>
-      <snapshots>
-        <enabled>false</enabled>
-        <updatePolicy>${updatePolicy}</updatePolicy>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>${updatePolicy}</updatePolicy>
-      </releases>
-      <id>maven-repo</id>
-      <name>Maven Central</name>
-      <url>http://maven.opennms.org/content/groups/maven.org-release2</url>
-    </repository>
-    <repository>
-      <snapshots>
-        <enabled>false</enabled>
-        <updatePolicy>${updatePolicy}</updatePolicy>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>${updatePolicy}</updatePolicy>
-      </releases>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
       <id>maven2-repository.dev.java.net</id>
       <name>Java.net Repository for Maven</name>
       <url>http://maven.opennms.org/content/groups/java.net-release</url>

@@ -130,8 +130,7 @@ public class FilterFavoriteService {
      * @return
      */
     public List<OnmsFilterFavorite> getFavorites(String userName, OnmsFilterFavorite.Page page) {
-        List<OnmsFilterFavorite> favorites = favoriteDao.findBy(userName, page);
-        return favorites;
+        return favoriteDao.findBy(userName, page);
     }
 
     public OnmsFilterFavorite createFavorite(String userName, String favoriteName, String filterString, OnmsFilterFavorite.Page page) throws FilterFavoriteException {

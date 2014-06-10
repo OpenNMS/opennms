@@ -420,8 +420,8 @@ public class KscDashlet extends AbstractDashlet {
                 Map<String, String> data = new HashMap<String, String>();
 
                 if (nodeId == null) {
-                    String arr0[] = resourceId.split("\\.");
-                    String arr1[] = arr0[0].split("[\\[\\]]");
+                    String[] arr0 = resourceId.split("\\.");
+                    String[] arr1 = arr0[0].split("[\\[\\]]");
                     data.put("nodeId", arr1[1]);
                 } else {
                     data.put("nodeId", nodeId);

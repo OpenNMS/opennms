@@ -173,7 +173,7 @@ public class IconCreateCallback extends JSObjectWrapper {
 
     }
 
-    public native final JSObject getCallbackFunction() /*-{
+    public final native JSObject getCallbackFunction() /*-{
         var self = this;
         return function(cluster) {
             return self.@org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.IconCreateCallback::createIcon(Lorg/opennms/features/vaadin/nodemaps/internal/gwt/client/ui/MarkerCluster;)(cluster);

@@ -34,7 +34,7 @@ public class SVGElement extends Element{
 
     protected SVGElement() {}
     
-    public final static native SVGElement wrapElement(Element svg) /*-{
+    public static final native SVGElement wrapElement(Element svg) /*-{
         return elem;
     }-*/;
 

@@ -116,7 +116,7 @@ public class AutoIntegerIdMapStoreReplacement implements ColumnChangeReplacement
         return new MultiColumnKey(objects);
     }
     
-    public class MultiColumnKey {
+    public static class MultiColumnKey {
         private final Object[] m_keys;
         
         public MultiColumnKey(Object[] keys) {

@@ -22,7 +22,7 @@ public class DefaultServiceRegistry implements ServiceRegistry {
      *
      * @author brozow
      */
-    public class AnyFilter implements Filter {
+    public static class AnyFilter implements Filter {
 
         @Override
         public boolean match(Map<String, String> properties) {

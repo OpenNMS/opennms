@@ -43,27 +43,27 @@ public class AbstractDashlet implements Dashlet {
     }
 
     @Override
-    final public String getName() {
+    public final String getName() {
         return m_name;
     }
 
-    final public void setName(String name) {
+    public final void setName(String name) {
         m_name = name;
     }
 
     @Override
-    final public DashletSpec getDashletSpec() {
+    public final DashletSpec getDashletSpec() {
         return m_dashletSpec;
     }
 
-    final public void setDashletSpec(DashletSpec dashletSpec) {
+    public final void setDashletSpec(DashletSpec dashletSpec) {
         m_dashletSpec = dashletSpec;
     }
 
-    final private void updateWallboard() {
+    private final void updateWallboard() {
     }
 
-    final private void updateDashboard() {
+    private final void updateDashboard() {
     }
 
     @Override

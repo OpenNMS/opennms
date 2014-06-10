@@ -122,7 +122,7 @@ public class SmsPinger {
 	 *
 	 * @throws java.io.IOException if any.
 	 */
-	public synchronized static void initialize() throws IOException {
+	public static synchronized void initialize() throws IOException {
 	    if (s_pingTracker == null) throw new IllegalStateException("SmsPinger not yet initialized!!"); 
 	}
 	
@@ -131,7 +131,7 @@ public class SmsPinger {
 	 *
 	 * @param pingTracker a {@link org.opennms.sms.ping.SmsPingTracker} object.
 	 */
-	public synchronized static void setSmsPingTracker(SmsPingTracker pingTracker) {
+	public static synchronized void setSmsPingTracker(SmsPingTracker pingTracker) {
 	    log.debug("Initializing SmsPinger with pingTracker {}", pingTracker);
 	    s_pingTracker = pingTracker;
 	}

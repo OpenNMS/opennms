@@ -76,8 +76,7 @@ public class RancidController implements Controller {
         String node = request.getParameter("node");
         int nodeid = WebSecurityUtils.safeParseInt(node);
         Map<String, Object> model = m_inventoryService.getRancidNode(nodeid);
-        ModelAndView modelAndView = new ModelAndView("inventory/rancid","model",model);
-        return modelAndView;
+        return new ModelAndView("inventory/rancid","model",model);
     }
 
 }

@@ -275,7 +275,7 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements Initiali
 	}
 	
 	
-	protected class EventParm<T extends Object> {
+	protected static class EventParm<T extends Object> {
 		private String m_parmName;
 		private T m_parmValue;
 		

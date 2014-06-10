@@ -1210,7 +1210,7 @@ public class Installer {
         if (rtt == null) {
             System.out.println("failed.!");
         } else {
-            System.out.printf("successful.. round trip time: %.3f ms\n", rtt.doubleValue() / 1000.0);
+            System.out.printf("successful.. round trip time: %.3f ms%n", rtt.doubleValue() / 1000.0);
         }
         
     }

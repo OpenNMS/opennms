@@ -71,7 +71,7 @@ import org.slf4j.LoggerFactory;
  */
 
 @Distributable
-final public class RadiusAuthMonitor extends AbstractServiceMonitor {
+public final class RadiusAuthMonitor extends AbstractServiceMonitor {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(RadiusAuthMonitor.class);
 

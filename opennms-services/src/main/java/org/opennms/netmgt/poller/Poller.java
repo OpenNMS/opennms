@@ -69,9 +69,9 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class Poller extends AbstractServiceDaemon {
     
-    private final static Logger LOG = LoggerFactory.getLogger(Poller.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Poller.class);
 
-    private final static String LOG4J_CATEGORY = "poller";
+    private static final String LOG4J_CATEGORY = "poller";
 
     private boolean m_initialized = false;
 

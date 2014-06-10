@@ -472,20 +472,20 @@
       <plugin>
         <groupId>org.codehaus.gmaven</groupId>
         <artifactId>gmaven-plugin</artifactId>
-        <version>1.3</version>
+        <version>1.4</version>
         <configuration>
-          <providerSelection>1.7</providerSelection>
+          <providerSelection>1.8</providerSelection>
         </configuration>
         <dependencies>
           <dependency>
             <groupId>org.codehaus.gmaven.runtime</groupId>
-            <artifactId>gmaven-runtime-1.7</artifactId>
-            <version>1.3</version>
+            <artifactId>gmaven-runtime-1.8</artifactId>
+            <version>1.4</version>
           </dependency>
           <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-all</artifactId>
-            <version>1.7.5</version>
+            <version>${groovyVersion}</version>
           </dependency>
         </dependencies>
       </plugin>
@@ -1027,7 +1027,7 @@
    <webstart.dnameSt/>
    <webstart.dnameC/>
 
-   <updatePolicy>daily</updatePolicy>
+   <updatePolicy>interval:60</updatePolicy> <!-- 60 minutes -->
    <maven.clover.licenseLocation>${user.home}/.m2/clover.license</maven.clover.licenseLocation>
 
     <!-- dependency versions -->
@@ -1047,9 +1047,10 @@
     <dnsjavaVersion>2.1.3</dnsjavaVersion>
     <ecjVersion>4.2.2</ecjVersion>
     <eclipselinkVersion>2.5.1</eclipselinkVersion>
+    <groovyVersion>1.8.9</groovyVersion>
     <guavaVersion>13.0</guavaVersion>
-    <gwtVersion>2.5.1</gwtVersion>
-    <gwtPluginVersion>2.5.1</gwtPluginVersion>
+    <gwtVersion>2.6.1</gwtVersion>
+    <gwtPluginVersion>2.6.1</gwtPluginVersion>
     <httpcoreVersion>4.2.4</httpcoreVersion>
     <httpclientVersion>4.2.5</httpclientVersion>
     <jacksonVersion>1.9.13</jacksonVersion>
@@ -3207,11 +3208,12 @@
       <dependency>
         <groupId>org.codehaus.groovy</groupId>
         <artifactId>groovy-all</artifactId>
-        <version>1.7.5</version>
+        <version>${groovyVersion}</version>
       </dependency>
   </dependencies>
   </dependencyManagement>
   <repositories>
+<!--
     <repository>
       <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
       <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
@@ -3226,6 +3228,7 @@
       <name>Maven Central</name>
       <url>http://maven.opennms.org/content/groups/maven.org-release2</url>
     </repository>
+-->
   </repositories>
   <pluginRepositories>
     <pluginRepository>
@@ -3235,6 +3238,7 @@
       <name>OpenNMS Repository</name>
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </pluginRepository>
+<!--
     <pluginRepository>
       <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
       <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
@@ -3267,6 +3271,7 @@
       <name>Maven Central</name>
       <url>http://repo1.maven.org/maven2</url>
     </pluginRepository>
+-->
   </pluginRepositories>
   <distributionManagement>
     <site>

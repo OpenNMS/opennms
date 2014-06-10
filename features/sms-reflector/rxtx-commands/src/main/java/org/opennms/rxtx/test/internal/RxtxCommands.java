@@ -64,7 +64,7 @@ public final class RxtxCommands
     implements CommandProvider
 {
 	
-	private final class EventLogger implements SerialPortEventListener {
+	private final static class EventLogger implements SerialPortEventListener {
 		private final CommandInterpreter intp;
 
 		private EventLogger(CommandInterpreter intp) {

@@ -100,8 +100,7 @@ public class ManageDatabaseReportController extends SimpleFormController {
     protected ModelAndView onSubmit(Object command) throws Exception {
         ManageDatabaseReportCommand manageCommand = (ManageDatabaseReportCommand) command;
         m_reportStoreService.delete(manageCommand.getIds());
-        ModelAndView mav = new ModelAndView(getSuccessView());
-        return mav;
+        return new ModelAndView(getSuccessView());
     }
     
     

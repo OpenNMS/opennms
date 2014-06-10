@@ -113,8 +113,8 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
 
     /** Constant <code>NAME="RancidProvisioningAdapter"</code> */
     public static final String NAME = "RancidProvisioningAdapter";
-    private volatile static ConcurrentMap<Integer, RancidNode> m_onmsNodeRancidNodeMap;
-    private volatile static ConcurrentMap<Integer, String> m_onmsNodeIpMap;
+    private static volatile  ConcurrentMap<Integer, RancidNode> m_onmsNodeRancidNodeMap;
+    private static volatile ConcurrentMap<Integer, String> m_onmsNodeIpMap;
     
 
     @Override

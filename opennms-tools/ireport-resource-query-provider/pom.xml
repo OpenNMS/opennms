@@ -45,7 +45,7 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jasper-dependencies</artifactId>
-      <version>1.10.10-SNAPSHOT</version>
+      <version>1.13.2-SNAPSHOT</version>
       <type>pom</type>
     </dependency>
     <dependency>
@@ -61,6 +61,7 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+<!--
   <repositories>
     <repository>
       <snapshots>
@@ -76,4 +77,5 @@
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </repository>
   </repositories>
+-->
 </project>
