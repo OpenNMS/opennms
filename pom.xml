@@ -1046,8 +1046,8 @@
     <ecjVersion>4.2.2</ecjVersion>
     <eclipselinkVersion>2.5.1</eclipselinkVersion>
     <guavaVersion>13.0</guavaVersion>
-    <gwtVersion>2.5.1</gwtVersion>
-    <gwtPluginVersion>2.5.1</gwtPluginVersion>
+    <gwtVersion>2.6.1</gwtVersion>
+    <gwtPluginVersion>2.6.1</gwtPluginVersion>
     <httpcoreVersion>4.2.4</httpcoreVersion>
     <httpclientVersion>4.2.5</httpclientVersion>
     <jacksonVersion>1.9.13</jacksonVersion>
