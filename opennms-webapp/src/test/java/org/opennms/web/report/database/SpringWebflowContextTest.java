@@ -77,7 +77,7 @@ public class SpringWebflowContextTest extends TestCase {
                                         "classpath*:/META-INF/opennms/component-service.xml " +
                                         "classpath*:/META-INF/opennms/component-dao.xml " +
                                         "classpath:/META-INF/opennms/applicationContext-reportingCore.xml " +
-                                        "classpath:org/opennms/web/svclayer/applicationContext-svclayer.xml " +
+                                        "classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml " +
                                         "classpath:/META-INF/opennms/applicationContext-reporting.xml " +
                                         "/WEB-INF/applicationContext-spring-security.xml " +
                                         "/WEB-INF/applicationContext-spring-webflow.xml"
