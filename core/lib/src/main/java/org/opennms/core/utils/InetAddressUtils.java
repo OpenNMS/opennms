@@ -515,6 +515,18 @@ public abstract class InetAddressUtils {
     
     public static String getBridgeAddressFromStpBridgeId(String bridgeId) {
         return bridgeId.substring(4, 16);
-}
+    }
+    
+    public static InetAddress getIpAddressByHexString(String ipaddrhexstrng) {
+
+        long ipAddr = Long.parseLong(ipaddrhexstrng, 16);
+        byte[] bytes = new byte[4];
+        bytes[3] = (byte) (ipAddr & 0xff);
+        bytes[2] = (byte) ((ipAddr >> 8) & 0xff);
+        bytes[1] = (byte) ((ipAddr >> 16) & 0xff);
+        bytes[0] = (byte) ((ipAddr >> 24) & 0xff);
+
+        return InetAddressUtils.getInetAddress(bytes);
+   }
 
 }
