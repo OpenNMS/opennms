@@ -39,13 +39,13 @@ import java.util.regex.Pattern;
  */
 public abstract class WebSecurityUtils {
 	
-	private final static Pattern ILLEGAL_IN_INTEGER = Pattern.compile("[^0-9+-]");
+	private static final Pattern ILLEGAL_IN_INTEGER = Pattern.compile("[^0-9+-]");
 	
-	private final static Pattern ILLEGAL_IN_FLOAT = Pattern.compile("[^0-9.Ee+-]");
+	private static final Pattern ILLEGAL_IN_FLOAT = Pattern.compile("[^0-9.Ee+-]");
 	
-	private final static Pattern ILLEGAL_IN_COLUMN_NAME_PATTERN = Pattern.compile("[^A-Za-z0-9_]");
+	private static final Pattern ILLEGAL_IN_COLUMN_NAME_PATTERN = Pattern.compile("[^A-Za-z0-9_]");
 	
-    private final static Pattern scriptPattern = Pattern.compile("script", Pattern.CASE_INSENSITIVE);
+    private static final Pattern scriptPattern = Pattern.compile("script", Pattern.CASE_INSENSITIVE);
 
     /**
      * <p>sanitizeString</p>

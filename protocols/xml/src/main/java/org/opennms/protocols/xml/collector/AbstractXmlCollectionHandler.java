@@ -471,8 +471,7 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setIgnoringComments(true);
             DocumentBuilder builder = factory.newDocumentBuilder();
-            final Document doc = builder.parse(is);
-            return doc;
+            return builder.parse(is);
         } catch (Exception e) {
             throw new XmlCollectorException(e.getMessage(), e);
         }

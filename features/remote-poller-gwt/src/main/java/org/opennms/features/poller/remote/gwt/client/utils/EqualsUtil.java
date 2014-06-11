@@ -43,7 +43,7 @@ public class EqualsUtil {
 	 * @param aThat a boolean.
 	 * @return a boolean.
 	 */
-	static public boolean areEqual(boolean aThis, boolean aThat){
+	public static boolean areEqual(boolean aThis, boolean aThat){
 	    return aThis == aThat;
 	  }
 
@@ -54,7 +54,7 @@ public class EqualsUtil {
 	   * @param aThat a char.
 	   * @return a boolean.
 	   */
-	  static public boolean areEqual(char aThis, char aThat){
+	  public static boolean areEqual(char aThis, char aThat){
 	    return aThis == aThat;
 	  }
 
@@ -65,7 +65,7 @@ public class EqualsUtil {
 	   * @param aThat a long.
 	   * @return a boolean.
 	   */
-	  static public boolean areEqual(long aThis, long aThat){
+	  public static boolean areEqual(long aThis, long aThat){
 	    /*
 	    * Implementation Note
 	    * Note that byte, short, and int are handled by this method, through
@@ -81,7 +81,7 @@ public class EqualsUtil {
 	   * @param aThat a float.
 	   * @return a boolean.
 	   */
-	  static public boolean areEqual(float aThis, float aThat){
+	  public static boolean areEqual(float aThis, float aThat){
 		  return areEqual(Float.valueOf(aThis), Float.valueOf(aThat));
 	  }
 
@@ -92,7 +92,7 @@ public class EqualsUtil {
 	   * @param aThat a double.
 	   * @return a boolean.
 	   */
-	  static public boolean areEqual(double aThis, double aThat){
+	  public static boolean areEqual(double aThis, double aThat){
 		  return areEqual(Double.valueOf(aThis), Double.valueOf(aThat));
 	  }
 
@@ -106,7 +106,7 @@ public class EqualsUtil {
 	   * @param aThat a {@link java.lang.Object} object.
 	   * @return a boolean.
 	   */
-	  static public boolean areEqual(Object aThis, Object aThat){
+	  public static boolean areEqual(Object aThis, Object aThat){
 	    return aThis == null ? aThat == null : aThis.equals(aThat);
 	  }
 

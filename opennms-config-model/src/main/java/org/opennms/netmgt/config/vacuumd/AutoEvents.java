@@ -239,8 +239,7 @@ public class AutoEvents implements Serializable {
      * @return true if the object was removed from the collection.
      */
     public boolean removeAutoEvent(final AutoEvent vAutoEvent) {
-        boolean removed = _autoEventList.remove(vAutoEvent);
-        return removed;
+    	return _autoEventList.remove(vAutoEvent);
     }
 
     /**
@@ -250,8 +249,7 @@ public class AutoEvents implements Serializable {
      * @return the element removed from the collection
      */
     public AutoEvent removeAutoEventAt(final int index) {
-        Object obj = this._autoEventList.remove(index);
-        return (AutoEvent) obj;
+    	return (AutoEvent) this._autoEventList.remove(index);
     }
 
     /**

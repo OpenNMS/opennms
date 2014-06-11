@@ -467,7 +467,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
         dispatch(request, response);
         assertEquals(expectedStatus, response.getStatus());
 
-        System.err.printf("xml: %s\n", response.getContentAsString());
+        System.err.printf("xml: %s%n", response.getContentAsString());
 
         InputStream in = new ByteArrayInputStream(response.getContentAsByteArray());
 

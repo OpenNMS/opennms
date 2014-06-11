@@ -47,7 +47,7 @@ import com.google.gwt.dom.client.Element;
 
 public class MarqueeSelectHandler implements DragBehaviorHandler{
 
-    public class Interval{
+    public static class Interval{
         
         private int m_lo;
         public int getLo() {

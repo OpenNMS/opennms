@@ -33,8 +33,8 @@ import org.opennms.netmgt.model.ncs.NCSComponent.NodeIdentification;
 
 public class NCSBuilder {
 	
-	final private NCSBuilder m_parent;
-	final private NCSComponent m_component;
+	private final NCSBuilder m_parent;
+	private final NCSComponent m_component;
 	
 	/**
 	 * @param type

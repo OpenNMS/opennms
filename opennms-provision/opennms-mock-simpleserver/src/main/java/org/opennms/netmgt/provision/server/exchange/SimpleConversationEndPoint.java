@@ -202,7 +202,7 @@ public class SimpleConversationEndPoint {
 
           @Override
           public void doRequest(OutputStream out) throws IOException {
-              out.write(String.format("%s\r\n", request).getBytes());
+              out.write(String.format("%s\r%n", request).getBytes());
           }
           
       };
@@ -220,7 +220,7 @@ public class SimpleConversationEndPoint {
             @Override
             public void doRequest(OutputStream out) throws IOException {
                 for(int i = 0; i < request.length; i++) {
-                    out.write(String.format("%s\r\n", request[i]).getBytes());
+                    out.write(String.format("%s\r%n", request[i]).getBytes());
                 }
             }
           

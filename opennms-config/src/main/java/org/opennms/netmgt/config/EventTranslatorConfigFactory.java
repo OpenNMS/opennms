@@ -787,7 +787,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
     // to be broken.  It if probably a Hack and we probably need to have
     // a better way to access the Spring property editors and convert
     // to a string more correctly.
-    class StringPropertyEditor extends PropertyEditorSupport {
+    static class StringPropertyEditor extends PropertyEditorSupport {
 
         @Override
         public void setValue(Object value) {

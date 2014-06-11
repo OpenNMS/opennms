@@ -157,7 +157,7 @@ public class DataLinkInterfaceRestServiceTest extends AbstractSpringJerseyRestTe
         assertTrue(response.getHeader("Location").toString().contains(contextPath + "links/"));
         
         final String newXml = sendRequest(GET, "/links", 200);
-        assertTrue(newXml.contains("<links count=\"4\""));
+        assertTrue(newXml, newXml.contains("<links count=\"4\""));
     }
     
     @Test
@@ -165,15 +165,15 @@ public class DataLinkInterfaceRestServiceTest extends AbstractSpringJerseyRestTe
     public void testPut() throws Exception {
         String xml = sendRequest(GET, "/links/64", 200);
         assertNotNull(xml);
-        assertTrue(xml.contains("<link "));
-        assertTrue(xml.contains("source=\"linkd\""));
+        assertTrue(xml, xml.contains("<link "));
+        assertTrue(xml, xml.contains("source=\"linkd\""));
         
         sendPut("/links/64", "source=monkey", 303, "/links/64");
         
         xml = sendRequest(GET, "/links/64", 200);
         assertNotNull(xml);
-        assertTrue(xml.contains("<link "));
-        assertTrue(xml.contains("source=\"monkey\""));
+        assertTrue(xml, xml.contains("<link "));
+        assertTrue(xml, xml.contains("source=\"monkey\""));
     }
 
     @Test

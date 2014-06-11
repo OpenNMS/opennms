@@ -19,6 +19,7 @@ use vars qw(
 	$HELP
 	$JAVA_HOME
 	@JAVA_SEARCH_DIRS
+	$LOGLEVEL
 	$MVN
 	$MAVEN_VERSION
 	$MAVEN_OPTS
@@ -33,6 +34,7 @@ $HELP          = undef;
 $JAVA_HOME     = undef;
 $PATHSEP       = $Config{'path_sep'};
 $VERBOSE       = undef;
+$LOGLEVEL      = 'debug' unless (defined $LOGLEVEL);
 @ARGS          = ();
 
 @JAVA_SEARCH_DIRS = qw(
@@ -42,7 +44,10 @@ $VERBOSE       = undef;
 	/Library/Java/JavaVirtualMachines
 	/Library/Java/Home
 	/opt
+	/opt/ci/java
 );
+
+push(@JAVA_SEARCH_DIRS, File::Spec->catdir($ENV{'HOME'}, 'ci', 'java'));
 
 eval {
 	setpriority(0, 0, 10);
@@ -85,6 +90,7 @@ my $result = GetOptions(
 	"profile|p=s"               => \$BUILD_PROFILE,
 	"java-home|java|j=s"        => \$JAVA_HOME,
 	"verbose|v"                 => \$VERBOSE,
+	"log-level|l=s"             => \$LOGLEVEL,
 );
 
 if (not $result) {
@@ -108,8 +114,22 @@ usage: $0 [-h] [-j \$JAVA_HOME] [-t] [-v]
 	                       (default: $MAVEN_OPTS)
 	-p/--profile PROFILE   default, dir, full, or fulldir
 	-t/--enable-tests      enable tests when building
-	-v/--verbose           be more verbose
+	-l/--log-level         log level (error/warning/info/debug)
 END
+	exit 1;
+}
+
+if ($VERBOSE) {
+	$LOGLEVEL = 'debug';
+}
+
+if (not defined $LOGLEVEL or $LOGLEVEL eq '') {
+	$LOGLEVEL = 'info';
+}
+
+$LOGLEVEL = lc($LOGLEVEL);
+if ($LOGLEVEL !~ /^(error|warning|info|debug)$/) {
+	print STDERR "Log level $LOGLEVEL invalid.  Must be one of 'error', 'warning', 'info', or 'debug'.\n";
 	exit 1;
 }
 
@@ -122,7 +142,9 @@ if ((defined $JAVA_HOME and -d $JAVA_HOME) or (exists $ENV{'JAVA_HOME'} and -d $
 	my $minimumversion = get_minimum_java();
 
 	if ($shortversion < $minimumversion) {
-		die "You specified a Java home of $JAVA_HOME, but it does not meet minimum java version $minimumversion!\n";
+		warning("You specified a Java home of $JAVA_HOME, but it does not meet minimum java version $minimumversion!  Will try detecting instead.");
+		undef $JAVA_HOME;
+		delete $ENV{'JAVA_HOME'};
 	}
 }
 
@@ -496,15 +518,15 @@ sub run_command {
 }
 
 sub debug {
-	print "[DEBUG] " . join(' ', @_) . "\n" if ($VERBOSE);
+	print "[DEBUG] " . join(' ', @_) . "\n" if ($LOGLEVEL eq 'debug');
 }
 
 sub warning {
-	print "[WARN] " . join(' ', @_) . "\n";
+	print "[WARN] " . join(' ', @_) . "\n" if ($LOGLEVEL =~ /^(debug|warning)$/);
 }
 
 sub info {
-	print "[INFO] " . join(' ', @_) . "\n";
+	print "[INFO] " . join(' ', @_) . "\n" if ($LOGLEVEL =~ /^(debug|warning|info)$/);
 }
 
 sub error {

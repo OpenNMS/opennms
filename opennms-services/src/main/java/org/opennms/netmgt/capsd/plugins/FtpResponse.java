@@ -45,7 +45,7 @@ import org.springframework.util.StringUtils;
  */
 public class FtpResponse {
     private int m_code;
-    private String m_response[];
+    private String[] m_response;
 
     /**
      * Creates an empty FTP response.

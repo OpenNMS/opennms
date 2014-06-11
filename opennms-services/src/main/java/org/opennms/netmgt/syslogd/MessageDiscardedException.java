@@ -35,7 +35,7 @@ package org.opennms.netmgt.syslogd;
  * @version $Id: $
  */
 public class MessageDiscardedException extends Exception {
-    final static long serialVersionUID = 2L;
+    static final long serialVersionUID = 2L;
 
     public MessageDiscardedException() {
         super();

@@ -165,7 +165,7 @@ public class AggregateStatus implements SurveillanceStatus {
         return sb.toString();
     }
 
-    final class AggregateStatusVisitor extends AbstractEntityVisitor {
+    final static class AggregateStatusVisitor extends AbstractEntityVisitor {
 
         Set<OnmsNode> m_downNodes = new LinkedHashSet<OnmsNode>();
 

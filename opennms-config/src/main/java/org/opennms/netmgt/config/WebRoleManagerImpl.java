@@ -55,7 +55,7 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
     private GroupManager m_groupManager;
     private UserManager m_userManager;
     
-    private class InvalidUser extends WebUser {
+    private static class InvalidUser extends WebUser {
 
         public InvalidUser(String name) {
             super(name);
@@ -68,7 +68,7 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
         
     }
     
-    private class InvalidGroup extends WebGroup {
+    private static class InvalidGroup extends WebGroup {
 
         public InvalidGroup(String name) {
             super(name);

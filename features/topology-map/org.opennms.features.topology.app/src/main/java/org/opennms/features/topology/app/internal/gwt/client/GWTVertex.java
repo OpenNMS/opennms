@@ -585,7 +585,7 @@ public class GWTVertex extends JavaScriptObject {
     
     //support for creating a node-chart
     //segmentWidth defines how thick the donut ring will be (in pixels)
-    final static String makeChart(final double cx, final double cy, final double r, final double segmentWidth, final JsArrayNumber dataArray, final String[] classArray, final double total){
+    static final String makeChart(final double cx, final double cy, final double r, final double segmentWidth, final JsArrayNumber dataArray, final String[] classArray, final double total){
 				
 				String svg = "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">";
 				

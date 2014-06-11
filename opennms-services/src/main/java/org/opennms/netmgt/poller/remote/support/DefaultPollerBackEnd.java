@@ -344,8 +344,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         }
 
         Collections.sort(configs);
-        SimplePollerConfiguration pollerConfiguration = new SimplePollerConfiguration(getConfigurationTimestamp(), configs.toArray(new PolledService[configs.size()]));
-        return pollerConfiguration;
+        return new SimplePollerConfiguration(getConfigurationTimestamp(), configs.toArray(new PolledService[configs.size()]));
     }
 
     private Package getPollingPackageForMonitor(final OnmsLocationMonitor mon) {
@@ -369,8 +368,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         if (def == null) {
             throw new IllegalStateException("Location definition '" + mon.getDefinitionName() + "' could not be found for location monitor ID " + mon.getId());
         }
-        String pollingPackageName = def.getPollingPackageName();
-        return pollingPackageName;
+        return def.getPollingPackageName();
     }
 
     /** {@inheritDoc} */

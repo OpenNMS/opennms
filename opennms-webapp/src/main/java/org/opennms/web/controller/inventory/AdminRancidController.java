@@ -85,8 +85,7 @@ public class AdminRancidController implements Controller {
         } else {
             model   = m_inventoryService.getRancidNodeWithCLogin(nodeid,request.isUserInRole(Authentication.ROLE_ADMIN));            
         }
-        ModelAndView modelAndView = new ModelAndView("admin/rancid/rancidAdmin","model",model);
-        return modelAndView;
+        return new ModelAndView("admin/rancid/rancidAdmin","model",model);
     }
 
 }

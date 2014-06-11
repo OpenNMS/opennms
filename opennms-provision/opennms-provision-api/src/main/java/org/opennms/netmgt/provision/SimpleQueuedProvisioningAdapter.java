@@ -498,8 +498,7 @@ public abstract class SimpleQueuedProvisioningAdapter implements ProvisioningAda
         }
         
         public int getAttemptsRemainingAndDecrement() {
-            int currentAttemptsRemaining = m_attemptsRemaining--;
-            return currentAttemptsRemaining;
+        	return m_attemptsRemaining--;
         }
         
         @Override

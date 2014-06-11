@@ -52,7 +52,7 @@ class RrdXportCmd extends RrdToolCmd implements RrdGraphConstants {
     JRDataSource execute() throws RrdException, IOException {
         String startStr = getOptionValue("s", "start", DEFAULT_START);
         String endStr = getOptionValue("e", "end", DEFAULT_END);
-        long span[] = Util.getTimestamps(startStr, endStr);
+        long[] span = Util.getTimestamps(startStr, endStr);
         dproc = new DataProcessor(span[0], span[1]);
         xports = new ArrayList<XPort>();
         long step = parseLong(getOptionValue(null, "step", "1"));

@@ -299,7 +299,7 @@ public class SnmpIPAddress extends SnmpOctetString {
     public InetAddress convertToIpAddress() {
         byte[] data = getString();
 
-        byte addr[] = new byte[4];
+        byte[] addr = new byte[4];
         addr[0] = data[0];
         addr[1] = data[1];
         addr[2] = data[2];

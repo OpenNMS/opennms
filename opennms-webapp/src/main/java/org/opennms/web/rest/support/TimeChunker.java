@@ -35,7 +35,7 @@ import java.util.List;
 
 public class TimeChunker {
     
-    public class TimeChunk {
+    public static class TimeChunk {
         private Date m_startDate;
         private Date m_endDate;
         
@@ -63,7 +63,7 @@ public class TimeChunker {
         
     }
     
-    public class Chunks extends Exception {
+    public static class Chunks extends Exception {
 
         /**
          * 
