@@ -41,7 +41,7 @@ import java.util.regex.Pattern;
 public class MultilineHttpResponse extends MultilineOrientedResponse {
     
     
-    private static final Pattern DEFAULT_REGEX = Pattern.compile("([H][T][T][P+]/[1].[0-1]) ([0-6]+) ([a-zA-Z ]+)\r%n");
+    private static final Pattern DEFAULT_REGEX = Pattern.compile("([H][T][T][P+]/[1].[0-1]) ([0-6]+) ([a-zA-Z ]+)\r\n");
 
     /**
      * <p>Constructor for MultilineHttpResponse.</p>
@@ -67,7 +67,7 @@ public class MultilineHttpResponse extends MultilineOrientedResponse {
 
         final Pattern p;
         if (isCheckCode) {
-            p = Pattern.compile(String.format("([H][T][T][P+]/[1].[0-1]) ([0-%s][0-2][0-%s]) ([a-zA-Z ]+)\r%n", codeArray[1], codeArray[3]));
+            p = Pattern.compile(String.format("([H][T][T][P+]/[1].[0-1]) ([0-%s][0-2][0-%s]) ([a-zA-Z ]+)\r\n", codeArray[1], codeArray[3]));
         } else {
             p = DEFAULT_REGEX;
         }

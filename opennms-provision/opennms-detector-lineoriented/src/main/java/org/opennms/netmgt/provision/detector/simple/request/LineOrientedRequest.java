@@ -62,7 +62,7 @@ public class LineOrientedRequest {
      * @param out a {@link java.io.OutputStream} object.
      */
     public void send(final OutputStream out) throws IOException {
-        out.write(String.format("%s\r%n", m_command).getBytes("UTF-8"));
+        out.write(String.format("%s\r\n", m_command).getBytes("UTF-8"));
     }
     
     /**
@@ -71,7 +71,7 @@ public class LineOrientedRequest {
      * @return a {@link java.lang.String} object.
      */
     public String getRequest() {
-        return String.format("%s\r%n", m_command);
+        return String.format("%s\r\n", m_command);
     }
     
     /**

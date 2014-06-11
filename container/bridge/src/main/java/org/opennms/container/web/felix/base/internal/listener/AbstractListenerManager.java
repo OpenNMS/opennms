@@ -29,7 +29,7 @@ import org.osgi.util.tracker.ServiceTracker;
 public class AbstractListenerManager<T> extends ServiceTracker<T, T> {
 
     private ArrayList<T> allContextListeners;
-    
+
     private final Object lock;
 
     protected AbstractListenerManager(BundleContext context, Class<T> clazz)
