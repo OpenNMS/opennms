@@ -133,6 +133,7 @@ groovy.compiler.output.path=target/classes
     </dependency>
   </dependencies>
   <repositories>
+<!--
     <repository>
       <snapshots>
         <enabled>false</enabled>
@@ -146,15 +147,10 @@ groovy.compiler.output.path=target/classes
       <name>OpenNMS Repository</name>
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </repository>
+-->
     <repository>
-      <snapshots>
-        <enabled>true</enabled>
-        <updatePolicy>${updatePolicy}</updatePolicy>
-      </snapshots>
-      <releases>
-        <enabled>false</enabled>
-        <updatePolicy>${updatePolicy}</updatePolicy>
-      </releases>
+      <snapshots><enabled>true</enabled></snapshots>
+      <releases><enabled>false</enabled></releases>
       <id>opennms-snapshots</id>
       <name>OpenNMS Snapshot Repository</name>
       <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>

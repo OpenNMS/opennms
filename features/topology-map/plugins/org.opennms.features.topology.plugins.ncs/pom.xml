@@ -161,10 +161,20 @@
             <scope>test</scope>
             <exclusions>
                 <exclusion>
+                    <groupId>asm</groupId>
+                    <artifactId>asm</artifactId>
+                </exclusion>
+                <exclusion>
                     <groupId>commons-logging</groupId>
                     <artifactId>commons-logging</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <!-- override asm/asm from container -->
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-all</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.karaf.tooling.exam</groupId>

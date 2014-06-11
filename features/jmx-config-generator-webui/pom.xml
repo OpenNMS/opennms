@@ -28,7 +28,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-RequiredExecutionEnvironment>JavaSE-1.6</Bundle-RequiredExecutionEnvironment>
+                        <Bundle-RequiredExecutionEnvironment>JavaSE-1.7</Bundle-RequiredExecutionEnvironment>
                         <Vaadin-Application>org.opennms.features.jmxconfiggenerator.webui.JmxConfigGeneratorApplication</Vaadin-Application>
                         <Vaadin-Alias>/${project.artifactId}</Vaadin-Alias>
                         <Include-Resource>src/main/webapp,{maven-resources}</Include-Resource>
@@ -192,45 +192,28 @@
     <repositories>
         <repository>
             <id>vaadin-snapshots</id>
+            <releases><enabled>false</enabled></releases>
+            <snapshots><enabled>true</enabled></snapshots>
             <url>http://maven.opennms.org/content/groups/vaadin-snapshot/</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
         </repository>
         <repository>
             <id>vaadin-addons</id>
             <url>http://maven.opennms.org/content/groups/vaadin.com-addons/</url>
         </repository>
-        <repository>
-          <id>maven-repo</id>
-          <name>Maven Central</name>
-          <url>http://maven.opennms.org/content/groups/maven.org-release2</url>
-       </repository>
     </repositories>
 
     <pluginRepositories>
         <pluginRepository>
             <id>codehaus-snapshots</id>
+            <snapshots><enabled>true</enabled></snapshots>
+            <releases><enabled>false</enabled></releases>
             <url>http://maven.opennms.org/content/groups/codehaus.org-snapshot/</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
         </pluginRepository>
         <pluginRepository>
             <id>vaadin-snapshots</id>
+            <snapshots><enabled>true</enabled></snapshots>
+            <releases><enabled>false</enabled></releases>
             <url>http://maven.opennms.org/content/groups/vaadin-snapshot/</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
         </pluginRepository>
     </pluginRepositories>
 

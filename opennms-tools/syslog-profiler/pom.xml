@@ -14,6 +14,7 @@
     <module>profiler</module>
     <module>onejar</module>
   </modules>
+<!--
   <repositories>
     <repository>
       <snapshots>
@@ -38,4 +39,5 @@
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </repository>
   </repositories>
+-->
 </project>
