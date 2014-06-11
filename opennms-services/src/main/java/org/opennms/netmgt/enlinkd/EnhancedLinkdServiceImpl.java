@@ -30,6 +30,8 @@ import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.BridgeStpLink;
+import org.opennms.netmgt.model.CdpElement;
+import org.opennms.netmgt.model.CdpLink;
 import org.opennms.netmgt.model.IpNetToMedia;
 import org.opennms.netmgt.model.IsIsElement;
 import org.opennms.netmgt.model.IsIsLink;
@@ -755,5 +757,17 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
 	public void setIpNetToMediaDao(IpNetToMediaDao ipNetToMediaDao) {
 		m_ipNetToMediaDao = ipNetToMediaDao;
+	}
+
+	@Override
+	public void store(int nodeId, CdpElement cdp) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void store(int nodeId, CdpLink link) {
+		// TODO Auto-generated method stub
+		
 	}
 }
