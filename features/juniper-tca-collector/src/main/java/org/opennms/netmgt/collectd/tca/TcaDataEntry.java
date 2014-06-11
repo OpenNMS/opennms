@@ -40,13 +40,13 @@ import org.opennms.netmgt.snmp.SnmpStore;
 public final class TcaDataEntry extends SnmpStore {
 
 	/** Constant <code>TCA_PEER_ADDRESS="jnxTcaSlaRawDataPeerIPAddress"</code>. */
-	public final static	String	TCA_PEER_ADDRESS = "jnxTcaSlaRawDataPeerIPAddress";
+	public static final String	TCA_PEER_ADDRESS = "jnxTcaSlaRawDataPeerIPAddress";
 
 	/** Constant <code>TCA_RAW_DATA="jnxTcaSlaRawDataString"</code>. */
-	public final static	String	TCA_RAW_DATA = "jnxTcaSlaRawDataString";
+	public static final String	TCA_RAW_DATA = "jnxTcaSlaRawDataString";
 
 	/** The Constant TCA Element List. */
-	public final static NamedSnmpVar[] tca_elemList = new NamedSnmpVar[] {
+	public static final NamedSnmpVar[] tca_elemList = new NamedSnmpVar[] {
 		new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, TCA_PEER_ADDRESS, ".1.3.6.1.4.1.27091.3.1.6.1.1", 1),
 		new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, TCA_RAW_DATA, ".1.3.6.1.4.1.27091.3.1.6.1.2", 2),
 	};

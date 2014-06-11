@@ -235,8 +235,7 @@ public abstract class SimpleQueuedProvisioningAdapter2 implements ProvisioningAd
         }
         
         ScheduledFuture<?> schedule(ScheduledExecutorService executor) {
-            ScheduledFuture<?> future = executor.scheduleWithFixedDelay(this, m_schedule.m_initalDelay, m_schedule.m_interval, m_schedule.m_unit);
-            return future;
+        	return executor.scheduleWithFixedDelay(this, m_schedule.m_initalDelay, m_schedule.m_interval, m_schedule.m_unit);
         }
         
         //TODO: Test this behavior with Unit Tests, for sure!

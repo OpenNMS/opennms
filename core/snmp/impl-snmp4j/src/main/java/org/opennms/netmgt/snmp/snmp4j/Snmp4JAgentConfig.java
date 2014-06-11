@@ -150,8 +150,7 @@ public class Snmp4JAgentConfig {
     private static Address convertAddress(InetAddress address, int port) {
         String transportAddress = address.getHostAddress();
         transportAddress += "/" + port;
-        Address targetAddress = new UdpAddress(transportAddress);
-        return targetAddress;
+        return new UdpAddress(transportAddress);
     }
 
     /**

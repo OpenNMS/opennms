@@ -73,7 +73,7 @@ abstract public class AbstractSimpleServer {
 
         @Override
         public boolean sendReply(OutputStream out) throws IOException {
-            out.write(String.format("%s\r\n", m_banner).getBytes());
+            out.write(String.format("%s\r%n", m_banner).getBytes());
             return true;
         }
         
@@ -101,7 +101,7 @@ abstract public class AbstractSimpleServer {
         @Override
         public boolean sendReply(OutputStream out) throws IOException {
             LOG.info("writing output: {}", m_response);
-            out.write(String.format("%s\r\n", m_response).getBytes());
+            out.write(String.format("%s\r%n", m_response).getBytes());
             return false;
         }
         

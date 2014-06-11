@@ -38,31 +38,31 @@ public class Profiler {
         int count;
         int sum;
 
-        synchronized public void start() {
+        public synchronized void start() {
             if (!isStarted()) startTime = System.currentTimeMillis();
             count++;
         }
 
-        synchronized public void stop() {
+        public synchronized void stop() {
             endTime = System.currentTimeMillis();
             sum += (endTime -startTime);
             startTime = 0;
             endTime = 0;
         }
 
-        synchronized public boolean isStarted() {
+        public synchronized boolean isStarted() {
             return startTime > 0;
         }
 
-        synchronized public long getSum() {
+        public synchronized long getSum() {
             return sum;
         }
 
-        synchronized public int getCount() {
+        public synchronized int getCount() {
             return count;
         }
 
-        synchronized public double getAVG() {
+        public synchronized double getAVG() {
             return ((double)getSum()) / ((double)count);    // ms
         }
     }
@@ -80,8 +80,8 @@ public class Profiler {
 
     @Override
     public String toString() {
-        final String HEADER = "%-60s%10s%20s%20s\n";
-        final String ROW = "%-60s%10d%20.2f%20.2f\n";
+        final String HEADER = "%-60s%10s%20s%20s%n";
+        final String ROW = "%-60s%10d%20.2f%20.2f%n";
 
         StringBuilder sb = new StringBuilder();
         sb.append(String.format(HEADER, "key", "count", "avg (ms)", "sum (sec)"));

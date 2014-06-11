@@ -187,7 +187,7 @@ public class KscAddGraphPresenter implements Presenter, KscAddGraphView.Presente
         container.add(m_mainPopup.asWidget());
     }
     
-    public native final String getBaseHref() /*-{
+    public final native String getBaseHref() /*-{
         try{
             return $wnd.getBaseHref();
         }catch(err){

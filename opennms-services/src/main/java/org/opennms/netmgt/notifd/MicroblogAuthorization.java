@@ -38,7 +38,7 @@ public class MicroblogAuthorization {
         }
     }
 
-    public class MicroblogAuthorizationException extends Exception {
+    public static class MicroblogAuthorizationException extends Exception {
         private static final long serialVersionUID = -2319636949583935715L;
 
         public MicroblogAuthorizationException() {

@@ -403,8 +403,7 @@ public class DnsRequisitionUrlConnection extends URLConnection {
      * @return
      */
     private String computeHashCode(String hashSource) {
-        String hash = String.valueOf(hashSource.hashCode());
-        return hash;
+    	return String.valueOf(hashSource.hashCode());
     }
 
     /**

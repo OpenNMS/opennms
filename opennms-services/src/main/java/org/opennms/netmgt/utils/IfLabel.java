@@ -176,8 +176,7 @@ public class IfLabel {
             
         });
         q.execute();
-        String[] labels = list.toArray(new String[list.size()]);
-        return labels;
+        return list.toArray(new String[list.size()]);
     }
 
     /**

@@ -303,8 +303,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
 
             if (pending == null) {
                 m_deployedForeignSourceRepository.flush();
-                final Requisition deployed = m_deployedForeignSourceRepository.getRequisition(name);
-                return deployed;
+                return m_deployedForeignSourceRepository.getRequisition(name);
             }
 
             return pending;

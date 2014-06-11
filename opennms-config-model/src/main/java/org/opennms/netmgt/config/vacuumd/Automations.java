@@ -244,8 +244,7 @@ public class Automations implements Serializable {
      * @return true if the object was removed from the collection.
      */
     public boolean removeAutomation(final Automation vAutomation) {
-        boolean removed = _automationList.remove(vAutomation);
-        return removed;
+    	return _automationList.remove(vAutomation);
     }
 
     /**
@@ -255,8 +254,7 @@ public class Automations implements Serializable {
      * @return the element removed from the collection
      */
     public Automation removeAutomationAt(final int index) {
-        Object obj = this._automationList.remove(index);
-        return (Automation) obj;
+    	return (Automation) this._automationList.remove(index);
     }
 
     /**

@@ -53,9 +53,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Trigger implements Serializable {
     private static final long serialVersionUID = -2490841506653475960L;
 
-    public final static String DEFAULT_DATA_SOURCE = "opennms";
+    public static final String DEFAULT_DATA_SOURCE = "opennms";
 
-    public final static int DEFAULT_ROW_COUNT = 0;
+    public static final int DEFAULT_ROW_COUNT = 0;
 
     // --------------------------/
     // - Class/Member Variables -/

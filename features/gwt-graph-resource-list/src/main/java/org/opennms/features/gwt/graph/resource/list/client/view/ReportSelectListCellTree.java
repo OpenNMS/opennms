@@ -78,7 +78,7 @@ public class ReportSelectListCellTree extends CellTree {
     
     private static class CustomTreeModel implements TreeViewModel {
         
-        private final class ResourceListItemCell extends AbstractCell<ResourceListItem> {
+        private final static class ResourceListItemCell extends AbstractCell<ResourceListItem> {
             @Override
             public void render(Context context, ResourceListItem value, SafeHtmlBuilder sb) {
                 if(value != null) {
@@ -88,7 +88,7 @@ public class ReportSelectListCellTree extends CellTree {
             }
         }
 
-        private final class ResourceTypCell extends AbstractCell<ResourceType> {
+        private final static class ResourceTypCell extends AbstractCell<ResourceType> {
             @Override
             public void render(Context context, ResourceType value, SafeHtmlBuilder sb) {
                 if(value != null) {

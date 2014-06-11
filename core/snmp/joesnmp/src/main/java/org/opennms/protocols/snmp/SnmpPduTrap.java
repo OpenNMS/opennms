@@ -81,42 +81,42 @@ public class SnmpPduTrap extends Object implements SnmpSyntax, Cloneable {
     /**
      * The ASN.1 type for the SNMPv1 Trap.
      */
-    public final static int TRAP = (int) (ASN1.CONTEXT | ASN1.CONSTRUCTOR | 4) + 256;
+    public static final int TRAP = (int) (ASN1.CONTEXT | ASN1.CONSTRUCTOR | 4) + 256;
 
     /**
      * Generic trap type: cold start.
      */
-    public final static int GenericColdStart = 0;
+    public static final int GenericColdStart = 0;
 
     /**
      * Generic trap type: warm start.
      */
-    public final static int GenericWarmStart = 1;
+    public static final int GenericWarmStart = 1;
 
     /**
      * Generic trap type: link down.
      */
-    public final static int GenericLinkDown = 2;
+    public static final int GenericLinkDown = 2;
 
     /**
      * Generic trap type: link up.
      */
-    public final static int GenericLinkUp = 3;
+    public static final int GenericLinkUp = 3;
 
     /**
      * Generic trap type: authentication-failure.
      */
-    public final static int GenericAuthenticationFailure = 4;
+    public static final int GenericAuthenticationFailure = 4;
 
     /**
      * Generic trap type: EGP Neighbor Loss.
      */
-    public final static int GenericEgpNeighborLoss = 5;
+    public static final int GenericEgpNeighborLoss = 5;
 
     /**
      * Generic trap type: Enterprise Specific.
      */
-    public final static int GenericEnterpriseSpecific = 6;
+    public static final int GenericEnterpriseSpecific = 6;
 
     /**
      * Constructs a new SnmpPduTrap with the default values.

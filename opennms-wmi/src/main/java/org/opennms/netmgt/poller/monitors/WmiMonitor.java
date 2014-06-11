@@ -66,13 +66,13 @@ public class WmiMonitor extends AbstractServiceMonitor {
 	private static final Logger LOG = LoggerFactory.getLogger(WmiMonitor.class);
 
 
-	private final static String DEFAULT_WMI_CLASS = "Win32_ComputerSystem";
-	private final static String DEFAULT_WMI_OBJECT = "Status";
-	private final static String DEFAULT_WMI_COMP_VAL = "OK";
-	private final static String DEFAULT_WMI_MATCH_TYPE = "all";
-	private final static String DEFAULT_WMI_COMP_OP = "EQ";
-	private final static String DEFAULT_WMI_NAMESPACE = WmiParams.WMI_DEFAULT_NAMESPACE;
-    private final static String DEFAULT_WMI_WQL = "NOTSET";
+	private static final String DEFAULT_WMI_CLASS = "Win32_ComputerSystem";
+	private static final String DEFAULT_WMI_OBJECT = "Status";
+	private static final String DEFAULT_WMI_COMP_VAL = "OK";
+	private static final  String DEFAULT_WMI_MATCH_TYPE = "all";
+	private static final String DEFAULT_WMI_COMP_OP = "EQ";
+	private static final String DEFAULT_WMI_NAMESPACE = WmiParams.WMI_DEFAULT_NAMESPACE;
+    private static final String DEFAULT_WMI_WQL = "NOTSET";
 
 	/**
 	 * {@inheritDoc}

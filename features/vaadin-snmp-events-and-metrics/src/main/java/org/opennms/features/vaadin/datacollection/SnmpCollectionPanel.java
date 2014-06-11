@@ -65,7 +65,7 @@ public class SnmpCollectionPanel extends Panel {
     private boolean isNew;
 
     /** The OpenNMS Data Collection Configuration DAO. */
-    final private DataCollectionConfigDao dataCollectionConfigDao;
+    private final DataCollectionConfigDao dataCollectionConfigDao;
 
     /** The selected resourceType ID. */
     private Object selectedSnmpCollectionId;

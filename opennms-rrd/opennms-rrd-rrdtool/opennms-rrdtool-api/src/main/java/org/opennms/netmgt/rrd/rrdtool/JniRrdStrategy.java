@@ -67,8 +67,8 @@ import org.springframework.util.FileCopyUtils;
 public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand ,StringBuffer> {
     private static final Logger LOG = LoggerFactory.getLogger(JniRrdStrategy.class);
 	
-	private final static String IGNORABLE_LIBART_WARNING_STRING = "*** attempt to put segment in horiz list twice";
-	private final static String IGNORABLE_LIBART_WARNING_REGEX = "\\*\\*\\* attempt to put segment in horiz list twice\r?\n?";
+	private static final String IGNORABLE_LIBART_WARNING_STRING = "*** attempt to put segment in horiz list twice";
+	private static final String IGNORABLE_LIBART_WARNING_REGEX = "\\*\\*\\* attempt to put segment in horiz list twice\r?\n?";
 
     private Properties m_configurationProperties;
     

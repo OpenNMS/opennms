@@ -240,7 +240,7 @@ public class ConfigResultView extends CustomComponent implements ModelChangeList
 		}
 	}
 
-	private class TabContent extends HorizontalSplitPanel {
+	private static class TabContent extends HorizontalSplitPanel {
 
 		/**
 		 * TextArea for the configuration content (e.g. the SNMP-Graph-Properties)
