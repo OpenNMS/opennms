@@ -276,14 +276,4 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     public void setTemplate(TransactionTemplate template) {
         m_template = template;
     }
-
-    /**
-     * <p>getTemplate</p>
-     *
-     * @return a {@link org.springframework.transaction.support.TransactionTemplate} object.
-     */
-    public TransactionTemplate getTemplate() {
-        return m_template;
-    }
-
 }
