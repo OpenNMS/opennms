@@ -42,6 +42,7 @@ import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Default polling context that is instantiated on a per package basis.
@@ -175,6 +176,7 @@ public class DefaultPollingContext implements PollingContext {
     }
 
     @Override
+    @Transactional
     public void run() {
         // Determine the list of interfaces to poll at runtime
         OnmsIpInterfaceList ifaces = getInterfaceList();
@@ -252,7 +254,8 @@ public class DefaultPollingContext implements PollingContext {
         for (OnmsAccessPoint ap : apsUp) {
             // Update the status in the database
             ap.setStatus(AccessPointStatus.ONLINE);
-            m_accessPointDao.update(ap);
+            // Use merge() here because the object may have been updated in a separate thread
+            m_accessPointDao.merge(ap);
 
             try {
                 // Generate an AP UP event
@@ -268,7 +271,8 @@ public class DefaultPollingContext implements PollingContext {
         for (OnmsAccessPoint ap : apsDown) {
             // Update the status in the database
             ap.setStatus(AccessPointStatus.OFFLINE);
-            m_accessPointDao.update(ap);
+            // Use merge() here because the object may have been updated in a separate thread
+            m_accessPointDao.merge(ap);
 
             try {
                 // Generate an AP DOWN event
@@ -329,7 +333,7 @@ public class DefaultPollingContext implements PollingContext {
         return bldr.getEvent();
     }
 
-    protected Parm buildParm(String parmName, String parmValue) {
+    protected static Parm buildParm(String parmName, String parmValue) {
         Value v = new Value();
         v.setContent(parmValue);
         Parm p = new Parm();
