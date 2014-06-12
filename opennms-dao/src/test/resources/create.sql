@@ -2321,7 +2321,6 @@ create table cdpLink (
 );
 
 create table ospfElement (
-create table ospfElement (
       id integer default nextval('opennmsnxtid') not null,
       nodeid          integer not null,
       ospfRouterId varchar(16) not null,
