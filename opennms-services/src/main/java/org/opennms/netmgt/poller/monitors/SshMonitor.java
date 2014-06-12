@@ -113,7 +113,6 @@ public final class SshMonitor extends AbstractServiceMonitor {
         } catch (final PatternSyntaxException e) {
             final String matchString = match == null ? banner : match;
             LOG.info("Invalid regular expression for SSH banner match /{}/: {}", matchString, e.getMessage());
-            LOG.debug("Invalid Regular expression for SSH banner match /{}/", matchString, e);
             return ps;
         }
 

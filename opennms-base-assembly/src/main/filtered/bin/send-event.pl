@@ -13,6 +13,7 @@ use vars qw(
 	$LOGMSG
 	$HOSTNAME
 	$INTERFACE
+	$IFINDEX
 	$NODEID
 	$SERVICE
 	$SEVERITY
@@ -41,6 +42,7 @@ my $result = GetOptions("help|h" => \$help,
                         "descr|d=s"     => \$DESCR,
                         "logmsg|l=s"    => \$LOGMSG,
                         "interface|i=s" => \$INTERFACE,
+                        "ifindex|f=i"   => \$IFINDEX,
                         "nodeid|n=i"    => \$NODEID,
                         "parm|p=s"      => \@PARMS,
                         "service|s=s"   => \$SERVICE,
@@ -192,6 +194,7 @@ END
 
 $event .= "   <interface>$INTERFACE</interface>\n" if (defined $INTERFACE);
 $event .= "   <service>$SERVICE</service>\n"       if (defined $SERVICE);
+$event .= "   <ifIndex>$IFINDEX</ifIndex>\n"     if (defined $IFINDEX);
 
 if (@PARMS) {
   $event .= "   <parms>\n";
@@ -265,6 +268,7 @@ Options:
          --service, -s     service name 
          --nodeid, -n      node identifier (numeric)
          --interface, -i   IP address of the interface
+         --ifindex, -f     IfIndex of the interface
          --descr, -d       a description for the event browser
          --logmsg, -l      a logmsg for the event browser (secure field by default)
          --severity, -x    the severity of the event (numeric or name)

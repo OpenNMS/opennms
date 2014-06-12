@@ -71,7 +71,7 @@ import org.opennms.netmgt.filter.FilterDaoFactory;
  * @author <a href="mailto:brozow@openms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
-abstract public class RancidAdapterConfigManager implements RancidAdapterConfig {
+public abstract class RancidAdapterConfigManager implements RancidAdapterConfig {
     private static final Logger LOG = LoggerFactory.getLogger(RancidAdapterConfigManager.class);
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();

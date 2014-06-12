@@ -14,18 +14,7 @@ import org.opennms.features.topology.api.MapViewManager;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.support.SemanticZoomLevelCriteria;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
-import org.opennms.features.topology.api.topo.AbstractEdge;
-import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.Edge;
-import org.opennms.features.topology.api.topo.EdgeListener;
-import org.opennms.features.topology.api.topo.EdgeProvider;
-import org.opennms.features.topology.api.topo.GraphProvider;
-import org.opennms.features.topology.api.topo.RefComparator;
-import org.opennms.features.topology.api.topo.StatusProvider;
-import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.features.topology.api.topo.VertexListener;
-import org.opennms.features.topology.api.topo.VertexProvider;
-import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.api.topo.*;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
@@ -40,8 +29,10 @@ import com.vaadin.data.util.BeanItem;
 
 public class VEProviderGraphContainer implements GraphContainer, VertexListener, EdgeListener, ServiceListener {
 
+
+
     @SuppressWarnings("serial")
-    public class ScaleProperty implements Property<Double>, Property.ValueChangeNotifier{
+    public static class ScaleProperty implements Property<Double>, Property.ValueChangeNotifier{
         private Double m_scale;
         private Set<ValueChangeListener> m_listeners = new CopyOnWriteArraySet<Property.ValueChangeListener>();
         
@@ -113,7 +104,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
         
     }
     
-    public class PseudoEdge extends AbstractEdge {
+    public static class PseudoEdge extends AbstractEdge {
 
         public PseudoEdge(String namespace, String id, String styleName, Vertex source, Vertex target) {
             super(namespace, id, source, target);
@@ -223,6 +214,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     private LayoutAlgorithm m_layoutAlgorithm;
     private SelectionManager m_selectionManager;
     private StatusProvider m_statusProvider;
+    private Set<EdgeStatusProvider> m_edgeStatusProviders;
     private MergingGraphProvider m_mergedGraphProvider;
     private MapViewManager m_viewManager = new DefaultMapViewManager();
     private String m_sessionId;
@@ -262,8 +254,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 		if (criteria != null) {
 			for (Criteria criterium : criteria) {
 				try {
-					SemanticZoomLevelCriteria hopCriteria = (SemanticZoomLevelCriteria)criterium;
-					return hopCriteria;
+					return (SemanticZoomLevelCriteria)criterium;
 				} catch (ClassCastException e) {}
 			}
 		}
@@ -324,7 +315,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     }
     
     @Override
-    public void setStatusProvider(StatusProvider statusProvider) {
+    public void setVertexStatusProvider(StatusProvider statusProvider) {
         m_statusProvider = statusProvider;
         setDirty(true);
     }
@@ -587,8 +578,14 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     }
 
     @Override
-    public StatusProvider getStatusProvider() {
+    public StatusProvider getVertexStatusProvider() {
         return m_statusProvider;
+    }
+
+    @Override
+    public Set<EdgeStatusProvider> getEdgeStatusProviders(){
+        if(m_edgeStatusProviders == null) m_edgeStatusProviders = new HashSet<EdgeStatusProvider>();
+        return m_edgeStatusProviders;
     }
 
     @Override

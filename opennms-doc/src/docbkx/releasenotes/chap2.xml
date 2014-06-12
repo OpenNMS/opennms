@@ -6,6 +6,46 @@
 
 	<!-- Start 1.13 -->
 
+	<section id="opennms-1.13.3">
+		<title>Changes in OpenNMS 1.13.3</title>
+
+		<section id="opennms-1.13.3-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>Security: downloadReport allow download and view any file in filesystem (Issue <ulink url='http://issues.opennms.org/browse/NMS-6580'>NMS-6580</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
+	<section id="opennms-1.13.2">
+		<title>Changes in OpenNMS 1.13.2</title>
+
+		<section id="opennms-1.13.2-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>Using the Sftp3gppXmlCollectionHandler affecting the XSLT pre processing. Both are not working together. (Issue <ulink url='http://issues.opennms.org/browse/NMS-6533'>NMS-6533</ulink>)</para></listitem>
+				<listitem><para>ResourceDao.findTopLevelResources() is returning duplicated data because of storeByForeignSource (Issue <ulink url='http://issues.opennms.org/browse/NMS-6545'>NMS-6545</ulink>)</para></listitem>
+				<listitem><para>Notifications are truncated at 4000 chars in database (Issue <ulink url='http://issues.opennms.org/browse/NMS-6562'>NMS-6562</ulink>)</para></listitem>
+				<listitem><para>The SFTP Connection are not closed when an exception is thrown using 3GPP XML Collector  (Issue <ulink url='http://issues.opennms.org/browse/NMS-6564'>NMS-6564</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.13.2-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>Patch for auto-acknowledgement of threshold events (Issue <ulink url='http://issues.opennms.org/browse/NMS-1462'>NMS-1462</ulink>)</para></listitem>
+				<listitem><para>Embed JMS provider inside OpenNMS (Issue <ulink url='http://issues.opennms.org/browse/NMS-2638'>NMS-2638</ulink>)</para></listitem>
+				<listitem><para>Add ability to match event parms for auto-ack (Issue <ulink url='http://issues.opennms.org/browse/NMS-3090'>NMS-3090</ulink>)</para></listitem>
+				<listitem><para>Alphabetize the polling packages on scheduled outages (Issue <ulink url='http://issues.opennms.org/browse/NMS-5243'>NMS-5243</ulink>)</para></listitem>
+				<listitem><para>Sort notifications by severity (Issue <ulink url='http://issues.opennms.org/browse/NMS-6504'>NMS-6504</ulink>)</para></listitem>
+				<listitem><para>snmp mib compiler should use twin column select for systemDefs (Issue <ulink url='http://issues.opennms.org/browse/NMS-6525'>NMS-6525</ulink>)</para></listitem>
+				<listitem><para>Make visible the scheduled outages that are being executed. (Issue <ulink url='http://issues.opennms.org/browse/NMS-6558'>NMS-6558</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
 	<section id="opennms-1.13.1">
 		<title>Changes in OpenNMS 1.13.1</title>
 
@@ -169,6 +209,55 @@
 	</section>
 
 	<!-- Start 1.12 -->
+
+	<section id="opennms-1.12.8">
+		<title>Changes in OpenNMS 1.12.8</title>
+
+		<section id="opennms-1.12.8-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>Security: downloadReport allow download and view any file in filesystem (Issue <ulink url='http://issues.opennms.org/browse/NMS-6580'>NMS-6580</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
+	<section id="opennms-1.12.7">
+		<title>Changes in OpenNMS 1.12.7</title>
+
+		<section id="opennms-1.12.7-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>Form too large error on /opennms/admin/getNodes page (Issue <ulink url='http://issues.opennms.org/browse/NMS-2846'>NMS-2846</ulink>)</para></listitem>
+				<listitem><para>exception when unmanaging interfaces via Admin -&gt; Manage and unmanage (Issue <ulink url='http://issues.opennms.org/browse/NMS-3998'>NMS-3998</ulink>)</para></listitem>
+				<listitem><para>Resource Graph Resources - limited to 55 Resources or less (Issue <ulink url='http://issues.opennms.org/browse/NMS-4675'>NMS-4675</ulink>)</para></listitem>
+				<listitem><para>Long query size for Resource Graphs generates 413 error - increase HeaderBufferSize (Issue <ulink url='http://issues.opennms.org/browse/NMS-4760'>NMS-4760</ulink>)</para></listitem>
+				<listitem><para>Add config option to use persistent session with Jetty (Issue <ulink url='http://issues.opennms.org/browse/NMS-5527'>NMS-5527</ulink>)</para></listitem>
+				<listitem><para>Really large provisioning groups crash Web UI (Issue <ulink url='http://issues.opennms.org/browse/NMS-6364'>NMS-6364</ulink>)</para></listitem>
+				<listitem><para>Syslog Northbounder runs in a NullPointerException (Issue <ulink url='http://issues.opennms.org/browse/NMS-6383'>NMS-6383</ulink>)</para></listitem>
+				<listitem><para>The notification WebUI is unusable when there are notifications associated with events that doesn&#39;t exist on the DB. (Issue <ulink url='http://issues.opennms.org/browse/NMS-6447'>NMS-6447</ulink>)</para></listitem>
+				<listitem><para>Embedded Jetty blocking HTTP requests due to &quot;Max threads&quot; settings (Issue <ulink url='http://issues.opennms.org/browse/NMS-6519'>NMS-6519</ulink>)</para></listitem>
+				<listitem><para>WebStart remote poller needs Permissions: manifest attribute to run under Java 7u45 (Issue <ulink url='http://issues.opennms.org/browse/NMS-6522'>NMS-6522</ulink>)</para></listitem>
+				<listitem><para>Using the Sftp3gppXmlCollectionHandler affecting the XSLT pre processing. Both are not working together. (Issue <ulink url='http://issues.opennms.org/browse/NMS-6533'>NMS-6533</ulink>)</para></listitem>
+				<listitem><para>ResourceDao.findTopLevelResources() is returning duplicated data because of storeByForeignSource (Issue <ulink url='http://issues.opennms.org/browse/NMS-6545'>NMS-6545</ulink>)</para></listitem>
+				<listitem><para>Some provisioning adapters do not send reload success / failure events (Issue <ulink url='http://issues.opennms.org/browse/NMS-6548'>NMS-6548</ulink>)</para></listitem>
+				<listitem><para>Eventd does not honor reloadDaemonConfig event (Issue <ulink url='http://issues.opennms.org/browse/NMS-6549'>NMS-6549</ulink>)</para></listitem>
+				<listitem><para>Vacuumd does not honor reloadDaemonConfig event (Issue <ulink url='http://issues.opennms.org/browse/NMS-6552'>NMS-6552</ulink>)</para></listitem>
+				<listitem><para>Notifications are truncated at 4000 chars in database (Issue <ulink url='http://issues.opennms.org/browse/NMS-6562'>NMS-6562</ulink>)</para></listitem>
+				<listitem><para>The SFTP Connection are not closed when an exception is thrown using 3GPP XML Collector  (Issue <ulink url='http://issues.opennms.org/browse/NMS-6564'>NMS-6564</ulink>)</para></listitem>
+				<listitem><para>Two XSS vulnerabilities in webapp (Issue <ulink url='http://issues.opennms.org/browse/NMS-6571'>NMS-6571</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.12.7-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>there appears to be no way to restrict access to the ajp port (Issue <ulink url='http://issues.opennms.org/browse/NMS-3499'>NMS-3499</ulink>)</para></listitem>
+				<listitem><para>Debian packages need updating to support postgresql-9.2 and postgresql-9.3 (Issue <ulink url='http://issues.opennms.org/browse/NMS-6517'>NMS-6517</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
 
 	<section id="opennms-1.12.6">
 		<title>Changes in OpenNMS 1.12.6</title>
@@ -865,6 +954,28 @@
 	</section>
 
 	<!-- Start 1.10 -->
+
+	<section id="opennms-1.10.14">
+		<title>Changes in OpenNMS 1.10.14</title>
+
+		<section id="opennms-1.10.14-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>XSS vector in admin/error.jsp (Issue <ulink url='http://issues.opennms.org/browse/NMS-6147'>NMS-6147</ulink>)</para></listitem>
+				<listitem><para>maint_events.sh is not working (Issue <ulink url='http://issues.opennms.org/browse/NMS-6168'>NMS-6168</ulink>)</para></listitem>
+				<listitem><para>NPE on output.log due to null ifSpeed when calling PhysicalInterfaceRow.getSpeed (Issue <ulink url='http://issues.opennms.org/browse/NMS-6169'>NMS-6169</ulink>)</para></listitem>
+				<listitem><para>Date issues in &quot;Response time by node&quot; JR report (Issue <ulink url='http://issues.opennms.org/browse/NMS-6182'>NMS-6182</ulink>)</para></listitem>
+				<listitem><para>The SnmpMonitor is not returning the status with the responseTime value (Issue <ulink url='http://issues.opennms.org/browse/NMS-6192'>NMS-6192</ulink>)</para></listitem>
+				<listitem><para>Collectd throws ConcurrentModificationException when accessing PollOutagesConfigManager (Issue <ulink url='http://issues.opennms.org/browse/NMS-6277'>NMS-6277</ulink>)</para></listitem>
+				<listitem><para>ConcurrentModificationException inside ThresholdingSet (Issue <ulink url='http://issues.opennms.org/browse/NMS-6279'>NMS-6279</ulink>)</para></listitem>
+				<listitem><para>IfInfo can throw NullPointerException (Issue <ulink url='http://issues.opennms.org/browse/NMS-6280'>NMS-6280</ulink>)</para></listitem>
+				<listitem><para>Provisiond detectors sometimes fail to detect (Issue <ulink url='http://issues.opennms.org/browse/NMS-6412'>NMS-6412</ulink>)</para></listitem>
+				<listitem><para>The Valere devices with broken SNMP agents are hanging Provisiond. (Issue <ulink url='http://issues.opennms.org/browse/NMS-6484'>NMS-6484</ulink>)</para></listitem>
+				<listitem><para>Security: downloadReport allow download and view any file in filesystem (Issue <ulink url='http://issues.opennms.org/browse/NMS-6580'>NMS-6580</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
 
 	<section id="opennms-1.10.13">
 		<title>Changes in OpenNMS 1.10.13</title>

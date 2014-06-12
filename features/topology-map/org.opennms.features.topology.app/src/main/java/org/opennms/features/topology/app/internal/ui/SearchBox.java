@@ -383,8 +383,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
     }
 
     private static SearchSuggestion mapToSearchSuggestion(VertexRef vertexRef) {
-        SearchSuggestion suggestion = new SearchSuggestion(vertexRef.getNamespace(), vertexRef.getId(), vertexRef.getLabel());
-        return suggestion;
+    	return new SearchSuggestion(vertexRef.getNamespace(), vertexRef.getId(), vertexRef.getLabel());
     }
 
     @Override

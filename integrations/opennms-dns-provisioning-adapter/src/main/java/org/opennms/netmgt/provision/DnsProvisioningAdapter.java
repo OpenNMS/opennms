@@ -77,7 +77,7 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     private static final String MESSAGE_PREFIX = "Dynamic DNS provisioning failed: ";
     private static final String ADAPTER_NAME="DNS Provisioning Adapter";
     
-    private volatile static ConcurrentMap<Integer, DnsRecord> m_nodeDnsRecordMap;
+    private static volatile ConcurrentMap<Integer, DnsRecord> m_nodeDnsRecordMap;
 
     /**
      * <p>afterPropertiesSet</p>
@@ -276,14 +276,4 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     public void setTemplate(TransactionTemplate template) {
         m_template = template;
     }
-
-    /**
-     * <p>getTemplate</p>
-     *
-     * @return a {@link org.springframework.transaction.support.TransactionTemplate} object.
-     */
-    public TransactionTemplate getTemplate() {
-        return m_template;
-    }
-
 }

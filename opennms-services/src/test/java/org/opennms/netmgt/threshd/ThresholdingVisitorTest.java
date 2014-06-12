@@ -37,6 +37,7 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DateFormat;
@@ -106,6 +107,7 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.test.FileAnticipator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
@@ -119,6 +121,8 @@ public class ThresholdingVisitorTest {
 
     FilterDao m_filterDao;
     EventAnticipator m_anticipator;
+    FileAnticipator m_fileAnticipator;
+    Map<Integer, File> m_hrStorageProperties;
     List<Event> m_anticipatedEvents;
     private static final Comparator<Parm> PARM_COMPARATOR = new Comparator<Parm>() {
         @Override
@@ -198,6 +202,9 @@ public class ThresholdingVisitorTest {
 
         MockLogAppender.setupLogging();
 
+        m_fileAnticipator = new FileAnticipator();
+        m_hrStorageProperties = new HashMap<Integer, File>();
+
         m_filterDao = EasyMock.createMock(FilterDao.class);
         EasyMock.expect(m_filterDao.getActiveIPAddressList((String)EasyMock.anyObject())).andReturn(Collections.singletonList(addr("127.0.0.1"))).anyTimes();
         m_filterDao.flushActiveIpAddressListCache();
@@ -239,10 +246,18 @@ public class ThresholdingVisitorTest {
         ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(getClass().getResourceAsStream(thresholds)));
         ThreshdConfigFactory.setInstance(new ThreshdConfigFactory(getClass().getResourceAsStream(threshd),"127.0.0.1", false));
     }
+
+    @After
+    public void checkWarnings() throws Throwable {
+//        MockLogAppender.assertNoWarningsOrGreater();
+        m_fileAnticipator.deleteExpected();
+    }
     
     @After
     public void tearDown() throws Exception {
         EasyMock.verify(m_filterDao);
+        m_fileAnticipator.deleteExpected(true);
+        m_fileAnticipator.tearDown();
     }
 
     @Test
@@ -449,19 +464,19 @@ public class ThresholdingVisitorTest {
         addHighThresholdEvent(1, 90, 50, 120, ifName, ifIndex.toString(), "ifOutOctets", ifName, ifIndex.toString());
         addHighThresholdEvent(1, 90, 50, 120, ifName, ifIndex.toString(), "ifInOctets", ifName, ifIndex.toString());
 
-        File resourceDir = new File(getRepository().getRrdBaseDir(), "1/" + ifName);
-        resourceDir.deleteOnExit();
-        resourceDir.mkdirs();
+
+        File nodeDir = m_fileAnticipator.tempDir("1");
+        File resourceDir = m_fileAnticipator.tempDir(nodeDir, ifName);
+        File propertiesFile = m_fileAnticipator.tempFile(resourceDir, "strings.properties");
         Properties p = new Properties();
         p.put("myMockParam", "myMockValue");
-        ResourceTypeUtils.saveUpdatedProperties(new File(resourceDir, "strings.properties"), p);
+        ResourceTypeUtils.saveUpdatedProperties(propertiesFile, p);
         
         ThresholdingVisitor visitor = createVisitor();
         visitor.visitCollectionSet(createAnonymousCollectionSet(new Date().getTime()));
 
         runInterfaceResource(visitor, "127.0.0.1", ifName, ifSpeed, ifIndex, 10000, 46000); // real value = (46000 - 10000)/300 = 120
         verifyEvents(0);
-        deleteDirectory(new File(getRepository().getRrdBaseDir(), "1"));
     }
     
     /*
@@ -1639,8 +1654,9 @@ public class ThresholdingVisitorTest {
         p.put("hda1_hrStorageDescr", "/home");
         p.put("hda2_hrStorageDescr", "/opt");
         p.put("hda3_hrStorageDescr", "/usr");
-        File f = new File(getRepository().getRrdBaseDir(), "1/strings.properties");
-        ResourceTypeUtils.saveUpdatedProperties(f, p);
+	File nodeDir = m_fileAnticipator.tempDir("1");
+	File propertiesFile = m_fileAnticipator.tempFile(nodeDir, "strings.properties");
+        ResourceTypeUtils.saveUpdatedProperties(propertiesFile, p);
         
         // Creating Resource
         SnmpCollectionResource resource = new NodeInfo(resourceType, agent);
@@ -1654,7 +1670,6 @@ public class ThresholdingVisitorTest {
         // Run Visitor and Verify Events
         resource.visit(visitor);
         EasyMock.verify(agent);
-        f.delete();
         verifyEvents(0);
     }
 
@@ -1710,8 +1725,7 @@ public class ThresholdingVisitorTest {
         Properties p = new Properties();
         p.put("hrStorageType", ".1.3.6.1.2.1.25.2.1.4");
         p.put("hrStorageDescr", fs);
-        File f = new File(getRepository().getRrdBaseDir(), "1/hrStorageIndex/" + resourceId + "/strings.properties");
-        ResourceTypeUtils.saveUpdatedProperties(f, p);
+        ResourceTypeUtils.saveUpdatedProperties(createHrStoragePropertiesFile(resourceId), p);
         // Creating Resource
         SnmpInstId inst = new SnmpInstId(resourceId);
         SnmpCollectionResource resource = new GenericIndexResource(resourceType, "hrStorageIndex", inst);
@@ -1721,7 +1735,23 @@ public class ThresholdingVisitorTest {
         // Run Visitor
         resource.visit(visitor);
         EasyMock.verify(agent);
-        f.delete();
+    }
+
+    private File createHrStoragePropertiesFile(int resourceId) throws IOException {
+        if (!m_hrStorageProperties.containsKey(resourceId)) {
+            File nodeDir;
+            if (!(nodeDir = new File(m_fileAnticipator.getTempDir(), "1")).exists()) {
+                nodeDir = m_fileAnticipator.tempDir("1");
+            }
+            File hrStorageDir;
+            if (!(hrStorageDir = new File(nodeDir,  "hrStorageIndex")).exists()) {
+                hrStorageDir = m_fileAnticipator.tempDir(nodeDir, "hrStorageIndex");
+            }
+            File resourceDir = m_fileAnticipator.tempDir(hrStorageDir, String.valueOf(resourceId));
+            m_hrStorageProperties.put(resourceId, m_fileAnticipator.tempFile(resourceDir, "strings.properties"));
+        }
+
+        return m_hrStorageProperties.get(resourceId);
     }
 
     /*
@@ -1824,9 +1854,9 @@ public class ThresholdingVisitorTest {
         return mibObject;
     }
 
-    private static RrdRepository getRepository() {
+    private RrdRepository getRepository() {
         RrdRepository repo = new RrdRepository();
-        repo.setRrdBaseDir(new File("/tmp"));
+        repo.setRrdBaseDir(m_fileAnticipator.getTempDir());
         return repo;		
     }
 

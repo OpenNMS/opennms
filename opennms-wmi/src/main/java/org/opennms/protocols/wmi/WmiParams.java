@@ -37,11 +37,11 @@ package org.opennms.protocols.wmi;
  */
 public class WmiParams {
     /** Constant <code>WMI_OPERATION_INSTANCEOF="InstanceOf"</code> */
-    public final static String WMI_OPERATION_INSTANCEOF = "InstanceOf";
+    public static final String WMI_OPERATION_INSTANCEOF = "InstanceOf";
     /** Constant <code>WMI_OPERATION_WQL="Wql"</code> */
-    public final static String WMI_OPERATION_WQL = "Wql";
+    public static final String WMI_OPERATION_WQL = "Wql";
     /** Constant <code>WMI_DEFAULT_NAMESPACE="root/cimv2"</code> */
-    public final static String WMI_DEFAULT_NAMESPACE = "root/cimv2";
+    public static final String WMI_DEFAULT_NAMESPACE = "root/cimv2";
 
     /**
 	 * Contains the value to perform a comparison against.

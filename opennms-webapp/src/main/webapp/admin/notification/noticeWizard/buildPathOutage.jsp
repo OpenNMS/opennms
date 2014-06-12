@@ -50,14 +50,23 @@
   <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
   <jsp:param name="breadcrumb" value="<a href='admin/notification/index.jsp'>Configure Notifications</a>" />
   <jsp:param name="breadcrumb" value="Configure Path Outages" />
+  <jsp:param name="script" value="<script type='text/javascript' src='js/ipv6/ipv6.js'></script>" />
+  <jsp:param name="script" value="<script type='text/javascript' src='js/ipv6/lib/jsbn.js'></script>" />
+  <jsp:param name="script" value="<script type='text/javascript' src='js/ipv6/lib/jsbn2.js'></script>" />
+  <jsp:param name="script" value="<script type='text/javascript' src='js/ipv6/lib/sprintf.js'></script>" />
 </jsp:include>
 
 <script type="text/javascript" >
 
     function next()
     {
-        document.crpth.nextPage.value="<%=NotificationWizardServlet.SOURCE_PAGE_VALIDATE_PATH_OUTAGE%>";
-        document.crpth.submit();
+        var ipElement = document.getElementById("cripIn");
+        if (!isValidIPAddress(ipElement.value) && !(ipElement.value == "")) {
+            alert (ipElement.value + " is not a valid IP address!");
+        } else {
+            document.crpth.nextPage.value="<%=NotificationWizardServlet.SOURCE_PAGE_VALIDATE_PATH_OUTAGE%>";
+            document.crpth.submit();
+        }
     }
     
 </script>
@@ -75,11 +84,11 @@
 
     <h3>Define the Critical Path</h3>
 
-    Enter the critical path IP address in xxx.xxx.xxx.xxx format. (Or leave blank to clear previously set paths.)
+    Enter the critical path IP address in xxx.xxx.xxx.xxx or xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx format. (Or leave blank to clear previously set paths.)
 
     <br/><br/>
 
-    <input type="text" name="criticalIp" value = '<%= (criticalIp != null ? criticalIp : "") %>' size="17" maxlength="15" />
+    <input id="cripIn" type="text" name="criticalIp" value = '<%= (criticalIp != null ? criticalIp : "") %>' size="57" maxlength="55" />
 
     <br/><br/>
 

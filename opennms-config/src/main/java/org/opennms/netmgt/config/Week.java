@@ -84,7 +84,7 @@ public class Week {
      */
     public Day[] getDays() {
         Calendar day = (Calendar)m_calendar.clone();
-        Day days[] = new Day[7];
+        Day[] days = new Day[7];
         for(int i = 0; i < 7; i++) {
             days[i] = new Day(day.getTime(), m_role, m_groupManager);
             day.add(Calendar.DAY_OF_YEAR, 1);

@@ -44,32 +44,32 @@ public class Constants extends EventConstants {
      * value are added as delimiter separated list of ' <parmName>= <value>'
      * strings
      */
-    public final static char NAME_VAL_DELIM = '=';
+    public static final char NAME_VAL_DELIM = '=';
 
     /**
      * The delimiter used to delimit multiple values of the same element that
      * are appended and made the value of a single database column
      */
-    public final static char MULTIPLE_VAL_DELIM = ';';
+    public static final char MULTIPLE_VAL_DELIM = ';';
 
     /**
      * The parser adds the value and attributes of an element to a single
      * element of eventBlock and uses the ATTRIB_DELIM to separate these values
      */
-    public final static String ATTRIB_DELIM = "/\\";
+    public static final String ATTRIB_DELIM = "/\\";
 
     /**
      * The values and the corresponding attributes of an element are added to a
      * single column of the table and delimited by DB_ATTRIB_DELIM
      */
-    public final static char DB_ATTRIB_DELIM = ',';
+    public static final char DB_ATTRIB_DELIM = ',';
 
     /**
      * Multiple values of any xml element are appended into one value when
      * inserted into the database - if the length of the appended string exceeds
      * the column length, the value is appended with this pattern
      */
-    public final static String VALUE_TRUNCATE_INDICATOR = "...";
+    public static final String VALUE_TRUNCATE_INDICATOR = "...";
 
     /**
      * This method is used to escape required values from strings that may

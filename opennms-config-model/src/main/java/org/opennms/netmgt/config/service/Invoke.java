@@ -332,8 +332,7 @@ public class Invoke implements Serializable {
      * @return true if the object was removed from the collection.
      */
     public boolean removeArgument(final Argument vArgument) {
-        boolean removed = _argumentList.remove(vArgument);
-        return removed;
+    	return _argumentList.remove(vArgument);
     }
 
     /**
@@ -343,8 +342,7 @@ public class Invoke implements Serializable {
      * @return the element removed from the collection
      */
     public Argument removeArgumentAt(final int index) {
-        Object obj = this._argumentList.remove(index);
-        return (Argument) obj;
+    	return (Argument)this._argumentList.remove(index);
     }
 
     /**

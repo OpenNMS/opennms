@@ -51,7 +51,7 @@ public class PipedMarshaller {
     private static final Logger LOG = LoggerFactory.getLogger(PipedMarshaller.class);
     private EuiLevel m_objToMarshall;
 
-    private class MarshalThread implements Runnable {
+    private static class MarshalThread implements Runnable {
         private PipedWriter m_out;
 
         private PipedReader m_in;

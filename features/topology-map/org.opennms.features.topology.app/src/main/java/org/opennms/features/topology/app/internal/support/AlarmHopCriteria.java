@@ -154,8 +154,7 @@ public class AlarmHopCriteria extends VertexHopCriteria implements CollapsibleCr
 	@Override
 	public Set<VertexRef> getVertices() {
 		List<OnmsAlarm> alarms = findAlarms();
-		Set<VertexRef> vertices = createVertices(alarms);
-		return vertices;
+		return createVertices(alarms);
 	}
 
     private Set<VertexRef> createVertices(List<OnmsAlarm> alarms) {
@@ -181,8 +180,7 @@ public class AlarmHopCriteria extends VertexHopCriteria implements CollapsibleCr
             bldr.eq("id", getSearchResult().getAlarmId());
 		}
 		
-		List<OnmsAlarm> alarms = m_alarmDao.findMatching(bldr.toCriteria());
-        return alarms;
+        return m_alarmDao.findMatching(bldr.toCriteria());
     }
 
 	private boolean isSeverityQuery() {

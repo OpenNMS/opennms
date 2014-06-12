@@ -15,6 +15,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
     </cm:property-placeholder>
 
     <reference id="dataLinkInterfaceDao" interface="org.opennms.netmgt.dao.api.DataLinkInterfaceDao" availability="mandatory" />
+    <reference id="lldpLinkDao" interface="org.opennms.netmgt.dao.api.LldpLinkDao" availability="mandatory" />
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
     <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" availability="mandatory" />
     <reference id="snmpInterfaceDao" interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" availability="mandatory" />
@@ -22,8 +23,8 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
     <reference id="topologyDao" interface="org.opennms.netmgt.dao.api.TopologyDao" availability="mandatory" />
     <reference id="filterManager" interface="org.opennms.netmgt.model.FilterManager" availability="mandatory" />
    
-    <bean id="linkdTopologyProvider"  init-method="onInit" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider">
-        <!--property name="transactionTemplate" ref="transactionTemplate" /-->
+    <!--<bean id="linkdTopologyProvider"  init-method="onInit" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider">
+        &lt;!&ndash;property name="transactionTemplate" ref="transactionTemplate" /&ndash;&gt;
         <property name="dataLinkInterfaceDao" ref="dataLinkInterfaceDao" />
         <property name="nodeDao" ref="nodeDao" />
         <property name="snmpInterfaceDao" ref="snmpInterfaceDao" />
@@ -33,9 +34,22 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
         <property name="addNodeWithoutLink" value="true"/>
         <property name="filterManager" ref="filterManager" />
         <property name="linkdHopCriteriaFactory" ref="linkdHopCriteriaFactory" />
+    </bean>-->
+
+    <bean id="linkdTopologyProvider"  init-method="onInit" class="org.opennms.features.topology.plugins.topo.linkd.internal.EnhancedLinkdTopologyProvider">
+        <!--property name="transactionTemplate" ref="transactionTemplate" /-->
+        <property name="lldpLinkDao" ref="lldpLinkDao" />
+        <property name="nodeDao" ref="nodeDao" />
+        <property name="snmpInterfaceDao" ref="snmpInterfaceDao" />
+        <property name="ipInterfaceDao" ref="ipInterfaceDao" />
+        <property name="topologyDao" ref="topologyDao"/>
+        <property name="configurationFile" value="${configurationFile}"/>
+        <property name="addNodeWithoutLink" value="true"/>
+        <property name="filterManager" ref="filterManager" />
+        <property name="linkdHopCriteriaFactory" ref="linkdHopCriteriaFactory" />
     </bean>
-    
-    <!-- 
+
+    <!--
       Wrap the Linkd provider in a provider that calculates SZL based on hop distance from a set of
       focal vertices
     -->
@@ -52,48 +66,8 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
     <bean id="linkdHopCriteriaFactory" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdHopCriteriaFactory">
         <argument ref="nodeDao"/>
     </bean>
-    
 
-    <!--
-    <service interface="org.opennms.features.topology.api.topo.VertexProvider" ref="linkdTopologyProvider">
-        <service-properties>
-            <entry key="label" value="Linkd"/>
-        </service-properties>
-    </service>
-
-    <service interface="org.opennms.features.topology.api.topo.EdgeProvider" ref="linkdTopologyProvider">
-        <service-properties>
-            <entry key="label" value="Linkd"/>
-        </service-properties>
-    </service>
-        
-    <service interface="org.opennms.features.topology.api.topo.GraphProvider" ref="linkdTopologyProvider">
-        <service-properties>
-            <entry key="label" value="Linkd"/>
-        </service-properties>
-    </service>
-    -->
-
-    <!--
-    <service interface="org.opennms.features.topology.api.topo.VertexProvider" ref="topologyHopProvider">
-        <service-properties>
-            <entry key="label" value="Linkd"/>
-        </service-properties>
-    </service>
-
-    <service interface="org.opennms.features.topology.api.topo.EdgeProvider" ref="topologyHopProvider">
-        <service-properties>
-            <entry key="label" value="Linkd"/>
-        </service-properties>
-    </service>
-        
-    <service interface="org.opennms.features.topology.api.topo.GraphProvider" ref="topologyHopProvider">
-        <service-properties>
-            <entry key="label" value="Linkd"/>
-        </service-properties>
-    </service>
-    -->
-
+    <!-- Linkd Topology Provider Services -->
     <service interface="org.opennms.features.topology.api.topo.VertexProvider" ref="topologyACLProvider">
         <service-properties>
             <entry key="label" value="Linkd"/>
@@ -114,7 +88,23 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
 
     <service interface="org.opennms.features.topology.api.topo.SearchProvider" ref="linkdTopologyProvider" />
 
-    <!--
+    <!-- OSPF EdgeProvider Service -->
+    <bean id="ospfEdgeProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.OspfEdgeProvider"></bean>
+
+    <service interface="org.opennms.features.topology.api.topo.EdgeProvider" ref="ospfEdgeProvider" >
+        <service-properties>
+            <entry key="label" value="Linkd" />
+        </service-properties>
+    </service>
+
+    <bean id="isisEdgeProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.IsisEdgeProvider"></bean>
+
+    <service interface="org.opennms.features.topology.api.topo.EdgeProvider" ref="isisEdgeProvider">
+        <service-properties>
+            <entry key="label" value="Linkd"/>
+        </service-properties>
+    </service>
+<!--
     <service interface="org.opennms.features.topology.api.CheckedOperation" >
       	<service-properties>
             <entry key="operation.menuLocation" value="View"/>
@@ -124,8 +114,23 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
             <argument ref="linkdTopologyProvider"/>
         </bean>
     </service>
-    -->
-    
+-->
+
+    <bean id="lldpLinkStatusProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LldpLinkStatusProvider" >
+        <property name="alarmDao" ref="alarmDao" />
+        <property name="lldpLinkDao" ref="lldpLinkDao"/>
+    </bean>
+
+    <service interface="org.opennms.features.topology.api.CheckedOperation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="View"/>
+            <entry key="operation.label" value="Lldp Link Status"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.plugins.topo.linkd.internal.operations.LinkStatusToggleOperation">
+            <property name="edgeStatusProvider" ref="lldpLinkStatusProvider"/>
+        </bean>
+    </service>
+
     <service interface="org.opennms.features.topology.api.IconRepository">
         <bean class="org.opennms.features.topology.api.support.DefaultIconRepository">
             <property name="iconMap">

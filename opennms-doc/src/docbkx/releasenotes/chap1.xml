@@ -6,6 +6,36 @@
 
 	<!-- Start 1.13 -->
 
+	<section id="introduction-1.13.3">
+		<title>Release 1.13.3</title>
+
+		<para>
+			Release 1.13.3 is the 4th unstable release; it is a preview of
+			what will eventually become the OpenNMS 1.14.x stable series.
+			It contains a critical security fix.
+		</para>
+		<para>
+			The codename for 1.13.3 is <emphasis>De Musikalske Dvergene</emphasis>
+		</para>
+	</section>
+
+	<section id="introduction-1.13.2">
+		<title>Release 1.13.2</title>
+
+		<para>
+			Release 1.13.2 is the 3rd unstable release; it is a preview of
+			what will eventually become the OpenNMS 1.14.x stable series.
+			It contains a large number of changes over 1.13.1, including
+			collection updates, lots of refactoring, more topology UI
+			enhancements, auto-acknowledge notification updates, Linkd
+			updates, VMware graph enhancements, and many other small
+			improvements.
+		</para>
+		<para>
+			The codename for 1.13.2 is <emphasis>Boston</emphasis>
+		</para>
+	</section>
+
 	<section id="introduction-1.13.1">
 		<title>Release 1.13.1</title>
 
@@ -39,6 +69,39 @@
 	</section>
 
 	<!-- Start 1.12 -->
+
+	<section id="introduction-1.12.8">
+		<title>Release 1.12.8</title>
+
+		<para>
+			Release 1.12.8 is the 9th in the stable 1.12 series of OpenNMS.
+			It contains an important fix for a security issue that can expose
+			files outside of the OpenNMS directory through the web interface.
+			See <ulink url="http://www.opennms.org/wiki/What%27s_New_in_OpenNMS_1.12">What's
+			New in OpenNMS 1.12</ulink> for a general list of changes in the
+			1.12 series.
+		</para>
+		<para>
+			The codename for 1.12.8 is <emphasis>John Petrucci</emphasis>
+		</para>
+	</section>
+
+	<section id="introduction-1.12.7">
+		<title>Release 1.12.7</title>
+
+		<para>
+			Release 1.12.7 is the eighth in the stable 1.12 series of OpenNMS.
+			It contains a number of important fixes including a XSS vulnerability, and
+			also introduces a potentially incompatible change to the way the web UI
+			is configured.  For details on the web UI changes,
+			see "<ulink url="http://www.opennms.org/wiki/What%27s_New_in_OpenNMS_1.12#Changes_to_Web_UI_Startup">Changes
+			to the Web UI Startup</ulink>" on the "<ulink url="http://www.opennms.org/wiki/What%27s_New_in_OpenNMS_1.12">What's
+			New in OpenNMS 1.12</ulink>" page.
+		</para>
+		<para>
+			The codename for 1.12.7 is <emphasis>Bob Marley</emphasis>
+		</para>
+	</section>
 
 	<section id="introduction-1.12.6">
 		<title>Release 1.12.6</title>
@@ -264,6 +327,19 @@
 
 
 	<!-- Start 1.10 -->
+
+	<section id="introduction-1.10.14">
+		<title>Release 1.10.14</title>
+
+		<para>
+			Release 1.10.14 is the latest in the stable 1.10 series of OpenNMS
+			releases.  It contains a few small bugfixes including an important
+			security fix.
+		</para>
+		<para>
+			The codename for 1.10.14 is <emphasis>Chalumeau</emphasis>.
+		</para>
+	</section>
 
 	<section id="introduction-1.10.13">
 		<title>Release 1.10.13</title>

@@ -90,7 +90,7 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
      * @author jeffg
      *
      */
-    class ConstantStaticDef extends Plottable {
+    static class ConstantStaticDef extends Plottable {
         private double m_startTime = Double.NEGATIVE_INFINITY;
         private double m_endTime = Double.POSITIVE_INFINITY;
         private double m_value = Double.NaN;

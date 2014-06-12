@@ -49,7 +49,7 @@ final class Client extends Observable implements Runnable, Fiber {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(Client.class);
 
-    private final static short DHCP_TARGET_PORT = 67;
+    private static final short DHCP_TARGET_PORT = 67;
 
     private static InetAddress NULL_ADDR;
 
