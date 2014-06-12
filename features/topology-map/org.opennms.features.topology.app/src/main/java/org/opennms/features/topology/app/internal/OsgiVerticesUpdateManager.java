@@ -119,7 +119,7 @@ public class OsgiVerticesUpdateManager implements VerticesUpdateManager {
      * Notifies all listeners that the focus of the vertices has changed.
      * @param newVertexRefs
      */
-    synchronized private void fireVertexRefsUpdated(Collection<VertexRef> newVertexRefs) {
+    private synchronized void fireVertexRefsUpdated(Collection<VertexRef> newVertexRefs) {
         if (!hasChanged(newVertexRefs, m_verticesInFocus)) {
             return;
         }

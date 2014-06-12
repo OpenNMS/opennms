@@ -84,8 +84,7 @@ public class SmsClient implements Client<LineOrientedRequest, SmsResponse> {
     }
     
     private SmsResponse receiveResponse() {
-        SmsResponse smsResponse = new SmsResponse();
-        return smsResponse;
+    	return new SmsResponse();
     }
 
     /**

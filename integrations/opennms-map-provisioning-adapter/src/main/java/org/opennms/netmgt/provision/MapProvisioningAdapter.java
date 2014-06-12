@@ -80,7 +80,7 @@ import org.springframework.util.Assert;
 public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter implements InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(MapProvisioningAdapter.class);
     
-    private class XY {
+    private static class XY {
         int x;
         int y;
         
@@ -148,7 +148,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     
     private TransactionTemplate m_template;
     
-    private volatile static ConcurrentMap<String,Integer> m_mapNameMapSizeListMap;
+    private static volatile ConcurrentMap<String,Integer> m_mapNameMapSizeListMap;
     
     private static final String MESSAGE_PREFIX = "Dynamic Map provisioning failed: ";
     private static final String ADAPTER_NAME="MAP Provisioning Adapter";
@@ -250,16 +250,6 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     public void setOnmsNodeDao(NodeDao onmsNodeDao) {
         m_onmsNodeDao = onmsNodeDao;
     }
-
-    /**
-     * <p>getTemplate</p>
-     *
-     * @return a {@link org.springframework.transaction.support.TransactionTemplate} object.
-     */
-    public TransactionTemplate getTemplate() {
-        return m_template;
-    }
-
 
     /**
      * <p>setTemplate</p>

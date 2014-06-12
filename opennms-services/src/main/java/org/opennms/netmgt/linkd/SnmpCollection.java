@@ -437,7 +437,7 @@ public final class SnmpCollection implements ReadyRunnable {
         }
     }
     
-    private class TrackerBuilder {
+    private static class TrackerBuilder {
     	private final CollectionTracker[] OF_TRACKERS = new CollectionTracker[0];
     	private String m_msg = null;
     	private List<CollectionTracker> m_trackerList = new ArrayList<CollectionTracker>();

@@ -91,14 +91,6 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     private TransactionTemplate m_template;
     
     /**
-     * <p>getTemplate</p>
-     *
-     * @return a {@link org.springframework.transaction.support.TransactionTemplate} object.
-     */
-    public TransactionTemplate getTemplate() {
-        return m_template;
-    }
-    /**
      * <p>setTemplate</p>
      *
      * @param template a {@link org.springframework.transaction.support.TransactionTemplate} object.
@@ -113,8 +105,8 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
 
     /** Constant <code>NAME="RancidProvisioningAdapter"</code> */
     public static final String NAME = "RancidProvisioningAdapter";
-    private volatile static ConcurrentMap<Integer, RancidNode> m_onmsNodeRancidNodeMap;
-    private volatile static ConcurrentMap<Integer, String> m_onmsNodeIpMap;
+    private static volatile  ConcurrentMap<Integer, RancidNode> m_onmsNodeRancidNodeMap;
+    private static volatile ConcurrentMap<Integer, String> m_onmsNodeIpMap;
     
 
     @Override

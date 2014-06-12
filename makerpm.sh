@@ -5,6 +5,8 @@ TOPDIR=`cd $MYDIR; pwd`
 
 WORKDIR="$TOPDIR/target/rpm"
 
+JAVA_HOME=`"$TOPDIR/bin/javahome.pl"`
+
 export PATH="$TOPDIR/maven/bin:$JAVA_HOME/bin:$PATH"
 
 cd "$TOPDIR"
@@ -109,23 +111,6 @@ function version()
     head -n 1
 }
 
-function setJavaHome()
-{
-    if [ -z "$JAVA_HOME" ]; then
-        # hehe
-        for dir in /usr/java/jdk1.{6,7,8,9}*; do
-            if [ -x "$dir/bin/java" ]; then
-                export JAVA_HOME="$dir"
-                break
-            fi
-        done
-    fi
-
-    if [ -z $JAVA_HOME ]; then
-        die "*** JAVA_HOME must be set ***"
-    fi
-}
-
 function skipCompile()
 {
     if $ASSEMBLY_ONLY; then echo 1; else echo 0; fi
@@ -184,8 +169,6 @@ function main()
     EXTRA_INFO=$(extraInfo)
     EXTRA_INFO2=$(extraInfo2)
     VERSION=$(version)
-
-    setJavaHome
 
     if $BUILD_RPM; then
         echo "==== Building OpenNMS RPMs ===="

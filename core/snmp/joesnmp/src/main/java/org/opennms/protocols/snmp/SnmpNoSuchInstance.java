@@ -43,7 +43,7 @@ public class SnmpNoSuchInstance extends SnmpV2Error {
     /**
      * Defines the serialization format.
      */
-    final static long serialVersionUID = 909796483768805665L;
+    static final long serialVersionUID = 909796483768805665L;
 
     /**
      * The ASN.1 value that defines this variable.

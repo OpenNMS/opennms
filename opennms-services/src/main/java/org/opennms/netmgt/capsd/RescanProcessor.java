@@ -2600,8 +2600,7 @@ public final class RescanProcessor implements Runnable {
 
         final boolean localHostAddress = (ifaddr.isLoopbackAddress() && dbInterfaces.length > 1);
         final boolean nonIpAddress = s_ZERO_ZERO_ZERO_ZERO.equals(ifaddrString);
-        final boolean scannable = !localHostAddress && !nonIpAddress;
-        return scannable;
+        return !localHostAddress && !nonIpAddress;
     }
 
     private int getNodeId() {

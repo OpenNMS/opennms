@@ -877,7 +877,7 @@ public final class BroadcastEventProcessor implements EventListener {
 
         User user = getUserManager().getUser(targetName);
 
-        Command commands[] = new Command[commandList.length];
+        Command[] commands = new Command[commandList.length];
         for (int i = 0; i < commandList.length; i++) {
             commands[i] = getNotificationCommandManager().getCommand(commandList[i]);
         }
@@ -913,7 +913,7 @@ public final class BroadcastEventProcessor implements EventListener {
         contact.setInfo(address);
         user.addContact(contact);
 
-        Command commands[] = new Command[commandList.length];
+        Command[] commands = new Command[commandList.length];
         for (int i = 0; i < commandList.length; i++) {
             commands[i] = getNotificationCommandManager().getCommand(commandList[i]);
         }

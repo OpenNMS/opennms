@@ -66,75 +66,75 @@ public class XmpMonitor extends AbstractServiceMonitor {
     /**
      * The default port to use for XMP
      */
-    private final static int DEFAULT_PORT = Xmp.XMP_PORT;
+    private static final int DEFAULT_PORT = Xmp.XMP_PORT;
 
     /**
      * Default number of retries for TCP requests
      */
-    private final static int DEFAULT_RETRY = 0;
+    private static final int DEFAULT_RETRY = 0;
 
     /**
      * Default timeout (in milliseconds) for XMP requests
      */
-    private final static int DEFAULT_TIMEOUT = 5000; // in milliseconds
+    private static final int DEFAULT_TIMEOUT = 5000; // in milliseconds
 
     /**
      * Default XMP user for performing requests
      */
-    private final static String DEFAULT_AUTHEN_USER = "xmpUser";
+    private static final String DEFAULT_AUTHEN_USER = "xmpUser";
 
     /**
      * Default type of request to perform
      */
-    private final static String DEFAULT_REQUEST_TYPE = "GetRequest";
+    private static final String DEFAULT_REQUEST_TYPE = "GetRequest";
 
     /**
      * Default MIB from which to make request
      */
-    private final static String DEFAULT_REQUEST_MIB = "core";
+    private static final String DEFAULT_REQUEST_MIB = "core";
 
     /**
      * Default table from which to make request
      */
-    private final static String DEFAULT_REQUEST_TABLE = "";
+    private static final String DEFAULT_REQUEST_TABLE = "";
 
     /**
      * Default object name to request
      */
-    private final static String DEFAULT_REQUEST_OBJECT = "sysObjectID";
+    private static final String DEFAULT_REQUEST_OBJECT = "sysObjectID";
 
     /**
      * Default instance to request (for SelectTableRequest only)
      */
-    private final static String DEFAULT_REQUEST_INSTANCE = "*";
+    private static final String DEFAULT_REQUEST_INSTANCE = "*";
 
     /**
      * Default string against which to match the returned value(s)
      */
-    private final static String DEFAULT_VALUE_MATCH = null;
+    private static final String DEFAULT_VALUE_MATCH = null;
 
     /**
      * Default string against which to match the returned instance(s)
      */
-    private final static String DEFAULT_INSTANCE_MATCH = null;
+    private static final String DEFAULT_INSTANCE_MATCH = null;
 
     /**
      * Default integer denoting minimum number of
      * matches allowed
      */
-    private final static int DEFAULT_MIN_MATCHES = 1;
+    private static final int DEFAULT_MIN_MATCHES = 1;
 
     /**
      * Default integer denoting maximum number of
      * matches allowed.
      */
-    private final static int DEFAULT_MAX_MATCHES = 1;
+    private static final int DEFAULT_MAX_MATCHES = 1;
 
     /**
      * Default boolean indicating whether maximum number
      * of matches is actually unbounded
      */
-    private final static boolean DEFAULT_MAX_MATCHES_UNBOUNDED = true;
+    private static final boolean DEFAULT_MAX_MATCHES_UNBOUNDED = true;
 
     private static final boolean DEFAULT_VALUE_CASE_SENSITIVE = false;
 

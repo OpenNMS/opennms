@@ -106,7 +106,7 @@ public class NoClosePipedInputStream extends InputStream{
      * The circular buffer into which incoming data is placed.
      * @since   JDK1.1
      */
-    protected byte buffer[];
+    protected byte[] buffer;
 
     /**
      * The index of the position in the circular buffer at which the
@@ -254,7 +254,7 @@ public class NoClosePipedInputStream extends InputStream{
      *           {@link #connect(java.io.PipedOutputStream) unconnected},
      *           closed,or if an I/O error occurs.
      */
-    synchronized void receive(byte b[], int off, int len)  throws IOException {
+    synchronized void receive(byte[] b, int off, int len)  throws IOException {
         checkStateForReceive();
         writeSide = Thread.currentThread();
         int bytesToTransfer = len;
@@ -370,7 +370,7 @@ public class NoClosePipedInputStream extends InputStream{
      *           closed, or if an I/O error occurs.
      */
     @Override
-    public synchronized int read(byte b[], int off, int len)  throws IOException {
+    public synchronized int read(byte[] b, int off, int len)  throws IOException {
         if (b == null) {
             throw new NullPointerException();
         } else if (off < 0 || len < 0 || len > b.length - off) {

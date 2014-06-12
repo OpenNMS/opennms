@@ -46,7 +46,7 @@ import org.opennms.netmgt.jasper.helper.ResourcePathFileTraversal;
 
 public class ResourceDataSource implements JRDataSource {
     
-    private class ResourceFilterFields{
+    private static class ResourceFilterFields{
         private String[] m_fields;
         private String[] m_strProps;
         

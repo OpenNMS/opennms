@@ -29,8 +29,10 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-// TODO: Set the polling context class type using Spring.
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * Access Point Monitor daemon class: Initializes and schedules the defined
@@ -56,6 +58,10 @@ public class AccessPointMonitord extends AbstractServiceDaemon implements ReadyR
     private NodeDao m_nodeDao;
     private IpInterfaceDao m_ipInterfaceDao;
     private volatile Map<String, PollingContext> m_activePollers = new HashMap<String, PollingContext>();
+    public PollingContextFactory m_pollingContextFactory;
+
+    @Autowired
+    private TransactionTemplate m_transactionTemplate;
 
     /**
      * <p>
@@ -66,6 +72,10 @@ public class AccessPointMonitord extends AbstractServiceDaemon implements ReadyR
      */
     public boolean isInitialized() {
         return m_initialized;
+    }
+
+    public void setPollingContextFactory(PollingContextFactory pollerContextFactory) {
+        this.m_pollingContextFactory = pollerContextFactory;
     }
 
     /**
@@ -316,20 +326,25 @@ public class AccessPointMonitord extends AbstractServiceDaemon implements ReadyR
     /** {@inheritDoc} */
     @Override
     protected void onInit() {
-        createScheduler();
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                createScheduler();
 
-        synchronized (m_activePollers) {
-            m_activePollers.clear();
-        }
+                synchronized (m_activePollers) {
+                    m_activePollers.clear();
+                }
 
-        // Schedule the packages that are defined in the configuration file
-        LOG.debug("onInit: Scheduling packages for polling");
-        scheduleStaticPackages();
-        scheduleDynamicPackages();
+                // Schedule the packages that are defined in the configuration file
+                LOG.debug("onInit: Scheduling packages for polling");
+                scheduleStaticPackages();
+                scheduleDynamicPackages();
 
-        getScheduler().schedule(getPollerConfig().getPackageScanInterval(), this);
+                getScheduler().schedule(getPollerConfig().getPackageScanInterval(), AccessPointMonitord.this);
 
-        m_initialized = true;
+                m_initialized = true;
+            }
+        });
     }
 
     /**
@@ -433,7 +448,7 @@ public class AccessPointMonitord extends AbstractServiceDaemon implements ReadyR
         Service svc = pkg.getEffectiveService();
 
         // Create a new polling context
-        PollingContext p = new DefaultPollingContext();
+        PollingContext p = m_pollingContextFactory.getInstance();
 
         // Initialise the context
         p.setPackage(pkg);

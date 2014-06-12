@@ -112,8 +112,7 @@ public class AlarmStatusProvider implements StatusProvider {
     }
 
     private static AlarmStatus createStatus(AlarmSummary summary) {
-        AlarmStatus status = new AlarmStatus(summary.getMaxSeverity().getLabel(), summary.getAlarmCount());
-        return status;
+    	return new AlarmStatus(summary.getMaxSeverity().getLabel(), summary.getAlarmCount());
     }
 
     private static Map<Integer, VertexRef> extractNodeIds(Collection<VertexRef> inputList) {

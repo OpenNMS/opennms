@@ -56,8 +56,7 @@ public class JBossDetector extends JMXDetector {
     /** {@inheritDoc} */
     @Override
     protected JMXClient getClient() {
-        JBossClient client = new JBossClient();
-        return client;
+    	return new JBossClient();
     }
 
     /** {@inheritDoc} */

@@ -69,7 +69,7 @@ public class ImportAssetsServlet extends HttpServlet {
     private Logger logger = LoggerFactory.getLogger(ImportAssetsServlet.class.getName());
     private List<String> errors = new ArrayList<String>();
 
-    private class AssetException extends Exception {
+    private static class AssetException extends Exception {
         private static final long serialVersionUID = 2498335935646001342L;
 
         public AssetException(String message) {

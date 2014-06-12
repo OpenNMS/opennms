@@ -178,8 +178,7 @@ public class ThresholdGroup {
 	        }
 	    }
 	    buf.append("}");
-	    String toString = buf.toString();
-	    return toString;
+	    return buf.toString();
 	}
 	
 	/**
