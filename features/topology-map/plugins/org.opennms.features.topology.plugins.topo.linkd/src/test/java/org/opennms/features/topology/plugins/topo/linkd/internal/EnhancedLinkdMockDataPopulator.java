@@ -30,6 +30,7 @@ package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 import org.easymock.EasyMock;
 import org.junit.Assert;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.*;
@@ -46,6 +47,9 @@ public class EnhancedLinkdMockDataPopulator {
 
     @Autowired
     private LldpLinkDao m_lldpLinkDao;
+
+    @Autowired
+    private OspfLinkDao m_ospfLinkDao;
 
     @Autowired
     private NodeDao m_nodeDao;
@@ -74,6 +78,7 @@ public class EnhancedLinkdMockDataPopulator {
     private List<OnmsNode> m_nodes;
     //private List<DataLinkInterface> m_links;
     private List<LldpLink> m_links;
+    private List<OspfLink> m_ospfLinks;
 
     public void populateDatabase() {
         final OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
@@ -317,6 +322,31 @@ public class EnhancedLinkdMockDataPopulator {
         links.add(dli18);
         setLinks(links);
 
+        //OSPF links
+        OspfLink ospfLink12 = createOspfLink(getNode1(), "192.168.100.246", "255.255.255.252", 0, 10101, "192.168.100.249", "192.168.100.245", 0);
+        OspfLink ospfLink21 = createOspfLink(getNode2(), "192.168.100.245", "255.255.255.252", 0, 10101, "192.168.100.250", "192.168.100.246", 0);
+
+        ospfLink12.setId(10012);
+        ospfLink21.setId(10021);
+
+        List<OspfLink> ospfLinks = new ArrayList<OspfLink>();
+        ospfLinks.add(ospfLink12);
+        ospfLinks.add(ospfLink21);
+        setOspfLinks(ospfLinks);
+
+    }
+
+    private OspfLink createOspfLink(OnmsNode node, String sourceIpAddr, String sourceIpMask, int addrLessIndex, int ifIndex, String remRouterId, String remIpAddr, int remAddrLessIndex) {
+        final OspfLink ospfLink = new OspfLink();
+        ospfLink.setNode(node);
+        ospfLink.setOspfIpAddr(InetAddressUtils.addr(sourceIpAddr));
+        ospfLink.setOspfIpMask(InetAddressUtils.addr(sourceIpMask));
+        ospfLink.setOspfAddressLessIndex(addrLessIndex);
+        ospfLink.setOspfIfIndex(ifIndex);
+        ospfLink.setOspfRemRouterId(InetAddressUtils.addr(remRouterId));
+        ospfLink.setOspfRemIpAddr(InetAddressUtils.addr(remIpAddr));
+        ospfLink.setOspfRemAddressLessIndex(remAddrLessIndex);
+        return ospfLink;
     }
 
     private LldpLink createLldpLink(OnmsNode node, String nodePortId, String nodePortDescr, int portIfIndex, int localPortNum, LldpLink.LldpPortIdSubType portIdSubType, LldpElement remLldpElement, String node2PortDescr, String node2PortId) {
@@ -333,10 +363,12 @@ public class EnhancedLinkdMockDataPopulator {
         return ips;
 
     }
+
     public void setUpMock() {
 
         //EasyMock.expect(m_dataLinkInterfaceDao.findAll()).andReturn(getLinks()).anyTimes();
         EasyMock.expect(m_lldpLinkDao.findAll()).andReturn(getLinks()).anyTimes();
+        EasyMock.expect(m_ospfLinkDao.findAll()).andReturn(getOspfLinks()).anyTimes();
         EasyMock.expect(m_nodeDao.findAll()).andReturn(getNodes()).anyTimes();
 
         for (int i=1;i<9;i++) {
@@ -348,11 +380,11 @@ public class EnhancedLinkdMockDataPopulator {
 
         //EasyMock.replay(m_dataLinkInterfaceDao);
         EasyMock.replay(m_lldpLinkDao);
+        EasyMock.replay(m_ospfLinkDao);
         EasyMock.replay(m_nodeDao);
         EasyMock.replay(m_snmpInterfaceDao);
         EasyMock.replay(m_ipInterfaceDao);
     }
-
     public OnmsNode getNode(Integer id) {
         OnmsNode node= null;
         switch (id) {
@@ -467,6 +499,14 @@ public class EnhancedLinkdMockDataPopulator {
 
     public List<LldpLink> getLinks(){
         return m_links;
+    }
+
+    private void setOspfLinks(List<OspfLink> ospfLinks) {
+        m_ospfLinks = ospfLinks;
+    }
+
+    private List<OspfLink> getOspfLinks(){
+        return m_ospfLinks;
     }
 
 /*
@@ -609,5 +649,9 @@ public class EnhancedLinkdMockDataPopulator {
 
     public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
         m_ipInterfaceDao = ipInterfaceDao;
+    }
+
+    public void setOspfLinkDao(OspfLinkDao ospfLinkDao) {
+        m_ospfLinkDao = ospfLinkDao;
     }
 }

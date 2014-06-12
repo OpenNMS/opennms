@@ -47,20 +47,56 @@ import java.util.*;
 
 public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider implements SearchProvider {
 
-    private class LldpLinkDetail{
-
+    private abstract class LinkDetail<K> {
         private final String m_id;
         private final Vertex m_source;
-        private final LldpLink m_sourceLink;
+        private final K m_sourceLink;
         private final Vertex m_target;
-        private final LldpLink m_targetLink;
+        private final K m_targetLink;
 
-        public LldpLinkDetail(String id, Vertex source, LldpLink sourceLink, Vertex target, LldpLink targetLink){
+        public LinkDetail(String id, Vertex source, K sourceLink, Vertex target, K targetLink){
             m_id = id;
             m_source = source;
             m_sourceLink = sourceLink;
             m_target = target;
             m_targetLink = targetLink;
+        }
+
+        public abstract int hashCode();
+
+        public abstract boolean equals(Object obj);
+
+        public abstract int getSourceIfIndex();
+
+        public abstract int getTargetIfIndex();
+
+        public String getId() {
+            return m_id;
+        }
+
+        public Vertex getSource() {
+            return m_source;
+        }
+
+        public Vertex getTarget() {
+            return m_target;
+        }
+
+        public K getSourceLink() {
+            return m_sourceLink;
+        }
+
+        public K getTargetLink() {
+            return m_targetLink;
+        }
+    }
+
+
+    private class LldpLinkDetail extends LinkDetail<LldpLink>{
+
+
+        public LldpLinkDetail(String id, Vertex source, LldpLink sourceLink, Vertex target, LldpLink targetLink) {
+            super(id, source, sourceLink, target, targetLink);
         }
 
         @Override
@@ -85,24 +121,52 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
 
         }
 
-        public String getId() {
-            return m_id;
+        @Override
+        public int getSourceIfIndex() {
+            return getSourceLink().getLldpPortIfindex();
         }
 
-        public Vertex getSource() {
-            return m_source;
+        @Override
+        public int getTargetIfIndex() {
+            return getTargetLink().getLldpPortIfindex();
+        }
+    }
+
+    private class OspfLinkDetail extends LinkDetail<OspfLink>{
+
+        public OspfLinkDetail(String id, Vertex source, OspfLink sourceLink, Vertex target, OspfLink targetLink) {
+            super(id, source, sourceLink, target, targetLink);
         }
 
-        public Vertex getTarget() {
-            return m_target;
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((getSourceLink() == null) ? 0 : getSourceLink().getId().hashCode()) + ((getTargetLink() == null) ? 0 : getTargetLink().getId().hashCode());
+            result = prime * result
+                    + ((getVertexNamespace() == null) ? 0 : getVertexNamespace().hashCode());
+            return result;
         }
 
-        public LldpLink getSourceLink() {
-            return m_sourceLink;
+        @Override
+        public boolean equals(Object obj) {
+            if(obj instanceof LldpLinkDetail){
+                OspfLinkDetail objDetail = (OspfLinkDetail)obj;
+
+                return getId().equals(objDetail.getId());
+            } else  {
+                return false;
+            }
         }
 
-        public LldpLink getTargetLink() {
-            return m_targetLink;
+        @Override
+        public int getSourceIfIndex() {
+            return getSourceLink().getOspfIfIndex();
+        }
+
+        @Override
+        public int getTargetIfIndex() {
+            return getTargetLink().getOspfIfIndex();
         }
     }
 
@@ -125,6 +189,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
     };
 
     private LldpLinkDao m_lldpLinkDao;
+    private OspfLinkDao m_ospfLinkDao;
 
     public EnhancedLinkdTopologyProvider() { }
 
@@ -149,51 +214,11 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             //This reset container is set in here for the demo, don't commit
 
             resetContainer();
-            List<LldpLink> allLinks = m_lldpLinkDao.findAll();
-            Set<LldpLinkDetail> combinedLinkDetails = new HashSet<LldpLinkDetail>();
-            for (LldpLink sourceLink : allLinks) {
-                LOG.debug("loadtopology: parsing link: " + sourceLink);
-                OnmsNode sourceNode = sourceLink.getNode();
-                LldpElement sourceElement = sourceNode.getLldpElement();
-                LOG.debug("loadtopology: found source node: " + sourceNode.getLabel());
-                Vertex source = getVertex(getVertexNamespace(), sourceNode.getNodeId());
-                if (source == null) {
-                    LOG.debug("loadtopology: adding source node as vertex: " + sourceNode.getLabel());
-                    source = getVertex(sourceNode);
-                    addVertices(source);
-                }
 
-                for (LldpLink targetLink : allLinks) {
-                    OnmsNode targetNode = targetLink.getNode();
-                    LldpElement targetLldpElement = targetNode.getLldpElement();
+            getLldpLinks();
+            getOspfLinks();
 
-                    //Compare the remote data to the targetNode element data
-                    boolean bool1 = sourceLink.getLldpRemPortId().equals(targetLink.getLldpPortId()) && targetLink.getLldpRemPortId().equals(sourceLink.getLldpPortId());
-                    boolean bool2 = sourceLink.getLldpRemPortDescr().equals(targetLink.getLldpPortDescr()) && targetLink.getLldpRemPortDescr().equals(sourceLink.getLldpPortDescr());
-                    boolean bool3 = sourceLink.getLldpRemChassisId().equals(targetLldpElement.getLldpChassisId()) && targetLink.getLldpRemChassisId().equals(sourceElement.getLldpChassisId());
-                    boolean bool4 = sourceLink.getLldpRemSysname().equals(targetLldpElement.getLldpSysname()) && targetLink.getLldpRemSysname().equals(sourceElement.getLldpSysname());
-                    boolean bool5 = sourceLink.getLldpRemPortIdSubType() == targetLink.getLldpPortIdSubType() && targetLink.getLldpRemPortIdSubType() == sourceLink.getLldpPortIdSubType();
 
-                    if (bool1 && bool2 && bool3 && bool4 && bool5) {
-                        Vertex target = getVertex(getVertexNamespace(), targetNode.getNodeId());
-                        if (target == null) {
-                            target = getVertex(targetNode);
-                        }
-
-                        LldpLinkDetail linkDetail = new LldpLinkDetail(
-                                Math.min(sourceLink.getId(), targetLink.getId()) + "|" + Math.max(sourceLink.getId(), targetLink.getId()),
-                                source, sourceLink, target, targetLink);
-                        combinedLinkDetails.add(linkDetail);
-                    }
-                }
-
-            }
-
-            //Adding all deduplicated links
-            for (LldpLinkDetail linkDetail : combinedLinkDetails) {
-                AbstractEdge edge = connectVertices(linkDetail.getId(), linkDetail.getSource(), linkDetail.getTarget());
-                edge.setTooltipText(getEdgeTooltipText(linkDetail.getSourceLink(), linkDetail.getTargetLink(), linkDetail.getSource(), linkDetail.getTarget()));
-            }
         } catch (Exception e){   }
 
         LOG.debug("loadtopology: adding nodes without links: " + isAddNodeWithoutLink());
@@ -268,6 +293,80 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
 
     }
 
+    private void getOspfLinks() {
+        List<OspfLink> allLinks =  getOspfLinkDao().findAll();
+        Set<OspfLinkDetail> combinedLinkDetails = new HashSet<OspfLinkDetail>();
+        for(OspfLink sourceLink : allLinks) {
+
+            for (OspfLink targetLink : allLinks) {
+                boolean ipAddrCheck = sourceLink.getOspfRemIpAddr().equals(targetLink.getOspfIpAddr()) && targetLink.getOspfRemIpAddr().equals(sourceLink.getOspfIpAddr());
+                if(ipAddrCheck) {
+                    String id = "ospf::" + Math.min(sourceLink.getId(), targetLink.getId()) + "||" + Math.max(sourceLink.getId(), targetLink.getId());
+                    Vertex source = new AbstractVertex(AbstractLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, sourceLink.getNode().getNodeId(), sourceLink.getNode().getLabel());
+                    Vertex target = new AbstractVertex(AbstractLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, targetLink.getNode().getNodeId(), targetLink.getNode().getLabel());
+                    Edge edge = new AbstractEdge(getEdgeNamespace(), id, source, target);
+
+                    OspfLinkDetail linkDetail = new OspfLinkDetail(
+                            Math.min(sourceLink.getId(), targetLink.getId()) + "|" + Math.max(sourceLink.getId(), targetLink.getId()),
+                            source, sourceLink, target, targetLink);
+                    combinedLinkDetails.add(linkDetail);
+                }
+            }
+        }
+
+        for (OspfLinkDetail linkDetail : combinedLinkDetails) {
+            AbstractEdge edge = connectVertices(linkDetail.getId(), linkDetail.getSource(), linkDetail.getTarget());
+            edge.setTooltipText(getEdgeTooltipText(linkDetail));
+        }
+    }
+
+    private void getLldpLinks() {
+        List<LldpLink> allLinks = m_lldpLinkDao.findAll();
+        Set<LldpLinkDetail> combinedLinkDetails = new HashSet<LldpLinkDetail>();
+        for (LldpLink sourceLink : allLinks) {
+            LOG.debug("loadtopology: parsing link: " + sourceLink);
+            OnmsNode sourceNode = sourceLink.getNode();
+            LldpElement sourceElement = sourceNode.getLldpElement();
+            LOG.debug("loadtopology: found source node: " + sourceNode.getLabel());
+            Vertex source = getVertex(getVertexNamespace(), sourceNode.getNodeId());
+            if (source == null) {
+                LOG.debug("loadtopology: adding source node as vertex: " + sourceNode.getLabel());
+                source = getVertex(sourceNode);
+                addVertices(source);
+            }
+
+            for (LldpLink targetLink : allLinks) {
+                OnmsNode targetNode = targetLink.getNode();
+                LldpElement targetLldpElement = targetNode.getLldpElement();
+
+                //Compare the remote data to the targetNode element data
+                boolean bool1 = sourceLink.getLldpRemPortId().equals(targetLink.getLldpPortId()) && targetLink.getLldpRemPortId().equals(sourceLink.getLldpPortId());
+                boolean bool2 = sourceLink.getLldpRemPortDescr().equals(targetLink.getLldpPortDescr()) && targetLink.getLldpRemPortDescr().equals(sourceLink.getLldpPortDescr());
+                boolean bool3 = sourceLink.getLldpRemChassisId().equals(targetLldpElement.getLldpChassisId()) && targetLink.getLldpRemChassisId().equals(sourceElement.getLldpChassisId());
+                boolean bool4 = sourceLink.getLldpRemSysname().equals(targetLldpElement.getLldpSysname()) && targetLink.getLldpRemSysname().equals(sourceElement.getLldpSysname());
+                boolean bool5 = sourceLink.getLldpRemPortIdSubType() == targetLink.getLldpPortIdSubType() && targetLink.getLldpRemPortIdSubType() == sourceLink.getLldpPortIdSubType();
+
+                if (bool1 && bool2 && bool3 && bool4 && bool5) {
+                    Vertex target = getVertex(getVertexNamespace(), targetNode.getNodeId());
+                    if (target == null) {
+                        target = getVertex(targetNode);
+                    }
+
+                    LldpLinkDetail linkDetail = new LldpLinkDetail(
+                            Math.min(sourceLink.getId(), targetLink.getId()) + "|" + Math.max(sourceLink.getId(), targetLink.getId()),
+                            source, sourceLink, target, targetLink);
+                    combinedLinkDetails.add(linkDetail);
+                }
+            }
+
+        }
+
+        for (LldpLinkDetail linkDetail : combinedLinkDetails) {
+            AbstractEdge edge = connectVertices(linkDetail.getId(), linkDetail.getSource(), linkDetail.getTarget());
+            edge.setTooltipText(getEdgeTooltipText(linkDetail));
+        }
+    }
+
     @Override
     public void refresh() {
         try {
@@ -279,12 +378,13 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         }
     }
 
-    private String getEdgeTooltipText(LldpLink sourceLink,
-                                      LldpLink targetLink, Vertex source, Vertex target) {
-        StringBuffer tooltipText = new StringBuffer();
+    private String getEdgeTooltipText(LinkDetail linkDetail) {
 
-        OnmsSnmpInterface sourceInterface = getByNodeIdAndIfIndex(sourceLink, source);
-        OnmsSnmpInterface targetInterface = getByNodeIdAndIfIndex(targetLink, target);
+        StringBuffer tooltipText = new StringBuffer();
+        Vertex source = linkDetail.getSource();
+        Vertex target = linkDetail.getTarget();
+        OnmsSnmpInterface sourceInterface = getByNodeIdAndIfIndex(linkDetail.getSourceIfIndex(), source);
+        OnmsSnmpInterface targetInterface = getByNodeIdAndIfIndex(linkDetail.getTargetIfIndex(), target);
 
         tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
         if (sourceInterface != null && targetInterface != null
@@ -338,15 +438,23 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         return tooltipText.toString();
     }
 
-    private OnmsSnmpInterface getByNodeIdAndIfIndex(LldpLink sourceLink, Vertex source) {
-        if(source.getId() != null && sourceLink.getLldpPortIfindex() != null)
-            return getSnmpInterfaceDao().findByNodeIdAndIfIndex(Integer.parseInt(source.getId()), sourceLink.getLldpPortIfindex());
+    private OnmsSnmpInterface getByNodeIdAndIfIndex(Integer ifIndex, Vertex source) {
+        if(source.getId() != null && ifIndex != null)
+            return getSnmpInterfaceDao().findByNodeIdAndIfIndex(Integer.parseInt(source.getId()), ifIndex);
 
         return null;
     }
 
     public void setLldpLinkDao(LldpLinkDao lldpLinkDao) {
         m_lldpLinkDao = lldpLinkDao;
+    }
+
+    public void setOspfLinkDao(OspfLinkDao ospfLinkDao) {
+        m_ospfLinkDao = ospfLinkDao;
+    }
+
+    public OspfLinkDao getOspfLinkDao(){
+        return m_ospfLinkDao;
     }
 
     public LldpLinkDao getLldpLinkDao() {
