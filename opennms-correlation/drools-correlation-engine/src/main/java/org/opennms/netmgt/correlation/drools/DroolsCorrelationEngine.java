@@ -129,7 +129,8 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
      */
     public void initialize() throws Exception {
     	final Properties props = new Properties();
-        props.setProperty("drools.dialect.java.compiler.lnglevel", "1.7");
+        
+        props.setProperty("drools.dialect.java.compiler.lnglevel", "1.6");
 
         final PackageBuilderConfiguration packageBuilderConfig = new PackageBuilderConfiguration(props);
         final PackageBuilder builder = new PackageBuilder( packageBuilderConfig );
