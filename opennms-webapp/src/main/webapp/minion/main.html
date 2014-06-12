@@ -1,0 +1,19 @@
+<div class="minion-main">
+	<h3>Minion Control Panel</h3>
+	<div ng-controller="MinionListCtrl">
+		<table>
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Location</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="minion in minions">
+					<td>{{minion.uuid}}</td>
+					<td>{{minion.location}}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
