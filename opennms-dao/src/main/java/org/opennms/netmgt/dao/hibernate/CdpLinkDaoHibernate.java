@@ -31,74 +31,51 @@ package org.opennms.netmgt.dao.hibernate;
 import java.util.Date;
 import java.util.List;
 
-import org.opennms.netmgt.dao.api.LldpLinkDao;
-import org.opennms.netmgt.model.LldpLink;
+import org.opennms.netmgt.dao.api.CdpLinkDao;
+import org.opennms.netmgt.model.CdpLink;
 import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.util.Assert;
 
 /**
- * <p>IpInterfaceDaoHibernate class.</p>
+ * <p>CdpLinkDaoHibernate class.</p>
  *
  * @author antonio
  */
-public class LldpLinkDaoHibernate extends AbstractDaoHibernate<LldpLink, Integer>  implements LldpLinkDao {
+public class CdpLinkDaoHibernate extends AbstractDaoHibernate<CdpLink, Integer>  implements CdpLinkDao {
 
     /**
      * <p>Constructor for IpInterfaceDaoHibernate.</p>
      */
-    public LldpLinkDaoHibernate() {
-        super(LldpLink.class);
+    public CdpLinkDaoHibernate() {
+        super(CdpLink.class);
     }
 
     /** {@inheritDoc} */
     @Override
-    public LldpLink get(OnmsNode node, Integer lldpLocalPortNum) {
-        return findUnique("from LldpLink as lldpLink where lldpLink.node = ? and lldpLink.lldpLocalPortNum = ?", node, lldpLocalPortNum);
+    public CdpLink get(OnmsNode node, Integer cdpCacheifIndex) {
+        return findUnique("from CdpLink as cdpLink where cdpLink.node = ? and cdpLink.cdpCacheIfIndex = ?", node, cdpCacheifIndex);
     }
 
     /** {@inheritDoc} */
     @Override
-    public LldpLink get(Integer nodeId, Integer lldpLocalPortNum) {
+    public CdpLink get(Integer nodeId, Integer cdpCacheifIndex) {
         Assert.notNull(nodeId, "nodeId cannot be null");
-        Assert.notNull(lldpLocalPortNum, "lldpLocalPortNum cannot be null");
-        return findUnique("from LldpLink as lldpLink where lldpLink.node.id = ? and lldpLink.lldpLocalPortNum = ?", nodeId, lldpLocalPortNum);
+        Assert.notNull(cdpCacheifIndex, "cdpCacheifIndex cannot be null");
+        return findUnique("from CdpLink as cdpLink where cdpLink.node.id = ? and cdpLink.cdpCacheIfIndex = ?", nodeId, cdpCacheifIndex);
     }
     
     /** {@inheritDoc} */
     @Override
-    public List<LldpLink> findByNodeId(Integer nodeId) {
+    public List<CdpLink> findByNodeId(Integer nodeId) {
         Assert.notNull(nodeId, "nodeId cannot be null");
-        return find("from LldpLink lldpLink where lldpLink.node.id = ?", nodeId);
+        return find("from CdpLink cdpLink where cdpLink.node.id = ?", nodeId);
     }
 
 	@Override
 	public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
-		for (LldpLink link: find("from LldpLink lldpLink where lldpLink.node.id = ? and lldpLink.lldpLinkLastPollTime < ?",nodeId,now)) {
+		for (CdpLink link: find("from CdpLink cdpLink where cdpLink.node.id = ? and cdpLink.cdpLinkLastPollTime < ?",nodeId,now)) {
 			delete(link);
 		}
 	}
-
-    public List<LldpLink> findLinksForIds(List<Integer> linkIds) {
-
-        StringBuilder sql = new StringBuilder();
-        sql.append("FROM LldpLink lldplink ");
-        if(linkIds.size() == 1){
-            sql.append("where lldplink.id = " + linkIds.get(0) + " ");
-        } else{
-            sql.append("where lldplink.id in (");
-            int counter = 0;
-            for (Integer id : linkIds) {
-                sql.append(id);
-                if(counter < linkIds.size() - 1 ) {
-                    sql.append(",");
-                }
-                counter++;
-            }
-            sql.append(")");
-        }
-
-        return find(sql.toString());
-    }
-    
     
 }

@@ -17,6 +17,8 @@ import org.opennms.netmgt.dao.api.BridgeBridgeLinkDao;
 import org.opennms.netmgt.dao.api.BridgeElementDao;
 import org.opennms.netmgt.dao.api.BridgeMacLinkDao;
 import org.opennms.netmgt.dao.api.BridgeStpLinkDao;
+import org.opennms.netmgt.dao.api.CdpElementDao;
+import org.opennms.netmgt.dao.api.CdpLinkDao;
 import org.opennms.netmgt.dao.api.IpNetToMediaDao;
 import org.opennms.netmgt.dao.api.IsIsElementDao;
 import org.opennms.netmgt.dao.api.IsIsLinkDao;
@@ -30,6 +32,8 @@ import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.BridgeStpLink;
+import org.opennms.netmgt.model.CdpElement;
+import org.opennms.netmgt.model.CdpLink;
 import org.opennms.netmgt.model.IpNetToMedia;
 import org.opennms.netmgt.model.IsIsElement;
 import org.opennms.netmgt.model.IsIsLink;
@@ -54,6 +58,10 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
     private PlatformTransactionManager m_transactionManager;
 	
 	private NodeDao m_nodeDao;
+
+	private CdpLinkDao m_cdpLinkDao;
+	
+	private CdpElementDao m_cdpElementDao;
 
 	private LldpLinkDao m_lldpLinkDao;
 	
@@ -173,14 +181,58 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
 	@Override
 	public void reconcileCdp(int nodeId, Date now) {
-		// TODO Auto-generated method stub
-		
+		CdpElement element = m_cdpElementDao.findByNodeId(nodeId);
+		if (element != null && element.getCdpNodeLastPollTime().getTime() < now.getTime()) {
+			m_cdpElementDao.delete(element);
+			m_cdpElementDao.flush();
+		}
+		m_cdpLinkDao.deleteByNodeIdOlderThen(nodeId, now);
+		m_cdpLinkDao.flush();
 	}
 
 	@Override
 	public void reconcileIpNetToMedia(int nodeId, Date now) {
 		m_ipNetToMediaDao.deleteBySourceNodeIdOlderThen(nodeId, now);
 		m_ipNetToMediaDao.flush();
+	}
+
+	@Override
+	public void store(int nodeId, CdpLink link) {
+		if (link == null)
+			return;
+		saveCdpLink(nodeId, link);
+	}
+
+	@Transactional
+    protected void saveCdpLink(final int nodeId, final CdpLink saveMe) {
+		new UpsertTemplate<CdpLink, CdpLinkDao>(m_transactionManager,m_cdpLinkDao) {
+
+			@Override
+			protected CdpLink query() {
+				return m_dao.get(nodeId, saveMe.getCdpCacheIfIndex());
+			}
+
+			@Override
+			protected CdpLink doUpdate(CdpLink dbCdpLink) {
+				dbCdpLink.merge(saveMe);
+				m_dao.update(dbCdpLink);
+				m_dao.flush();
+				return dbCdpLink;
+			}
+
+			@Override
+			protected CdpLink doInsert() {
+				final OnmsNode node = m_nodeDao.get(nodeId);
+				if ( node == null )
+					return null;
+				saveMe.setNode(node);
+				saveMe.setCdpLinkLastPollTime(saveMe.getCdpLinkCreateTime());
+				m_dao.saveOrUpdate(saveMe);
+				m_dao.flush();
+				return saveMe;
+			}
+			
+		}.execute();
 	}
 
 	@Override
@@ -220,6 +272,29 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 			}
 			
 		}.execute();
+	}
+
+	@Override
+	@Transactional
+	public void store(int nodeId, CdpElement element) {
+		if (element ==  null)
+			return;
+		final OnmsNode node = m_nodeDao.get(nodeId);
+		if ( node == null )
+			return;
+		
+		CdpElement dbelement = node.getCdpElement();
+		if (dbelement != null) {
+			dbelement.merge(element);
+			node.setCdpElement(dbelement);
+		} else {
+			element.setNode(node);
+			element.setCdpNodeLastPollTime(element.getCdpNodeCreateTime());
+			node.setCdpElement(element);
+		}
+
+        m_nodeDao.saveOrUpdate(node);
+		m_nodeDao.flush();
 	}
 
 	@Override
@@ -660,6 +735,13 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 		}.execute();
 	}
 
+	public CdpLinkDao getCdpLinkDao() {
+		return m_cdpLinkDao;
+	}
+
+	public void setCdpLinkDao(CdpLinkDao cdpLinkDao) {
+		m_cdpLinkDao = cdpLinkDao;
+	}
 	
 	public LldpLinkDao getLldpLinkDao() {
 		return m_lldpLinkDao;
@@ -691,6 +773,14 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
 	public void setIsisLinkDao(IsIsLinkDao isisLinkDao) {
 		m_isisLinkDao = isisLinkDao;
+	}
+
+	public CdpElementDao getCdpElementDao() {
+		return m_cdpElementDao;
+	}
+
+	public void setCdpElementDao(CdpElementDao cdpElementDao) {
+		m_cdpElementDao = cdpElementDao;
 	}
 
 	public LldpElementDao getLldpElementDao() {
@@ -756,4 +846,5 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 	public void setIpNetToMediaDao(IpNetToMediaDao ipNetToMediaDao) {
 		m_ipNetToMediaDao = ipNetToMediaDao;
 	}
+
 }
