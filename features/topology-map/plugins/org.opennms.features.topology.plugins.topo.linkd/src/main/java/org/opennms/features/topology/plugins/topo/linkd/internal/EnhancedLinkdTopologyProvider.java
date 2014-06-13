@@ -190,6 +190,8 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
 
     private LldpLinkDao m_lldpLinkDao;
     private OspfLinkDao m_ospfLinkDao;
+    public final static String LLDP_EDGE_NAMESPACE = TOPOLOGY_NAMESPACE_LINKD + "::LLDP";
+    public final static String OSPF_EDGE_NAMESPACE = TOPOLOGY_NAMESPACE_LINKD + "::OSPF";
 
     public EnhancedLinkdTopologyProvider() { }
 
@@ -304,7 +306,6 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                     String id = "ospf::" + Math.min(sourceLink.getId(), targetLink.getId()) + "||" + Math.max(sourceLink.getId(), targetLink.getId());
                     Vertex source = new AbstractVertex(AbstractLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, sourceLink.getNode().getNodeId(), sourceLink.getNode().getLabel());
                     Vertex target = new AbstractVertex(AbstractLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, targetLink.getNode().getNodeId(), targetLink.getNode().getLabel());
-                    Edge edge = new AbstractEdge(getEdgeNamespace(), id, source, target);
 
                     OspfLinkDetail linkDetail = new OspfLinkDetail(
                             Math.min(sourceLink.getId(), targetLink.getId()) + "|" + Math.max(sourceLink.getId(), targetLink.getId()),
@@ -315,7 +316,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         }
 
         for (OspfLinkDetail linkDetail : combinedLinkDetails) {
-            AbstractEdge edge = connectVertices(linkDetail.getId(), linkDetail.getSource(), linkDetail.getTarget());
+            AbstractEdge edge = connectVertices(linkDetail.getId(), linkDetail.getSource(), linkDetail.getTarget(), OSPF_EDGE_NAMESPACE);
             edge.setTooltipText(getEdgeTooltipText(linkDetail));
         }
     }
@@ -362,7 +363,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         }
 
         for (LldpLinkDetail linkDetail : combinedLinkDetails) {
-            AbstractEdge edge = connectVertices(linkDetail.getId(), linkDetail.getSource(), linkDetail.getTarget());
+            AbstractEdge edge = connectVertices(linkDetail.getId(), linkDetail.getSource(), linkDetail.getTarget(), LLDP_EDGE_NAMESPACE);
             edge.setTooltipText(getEdgeTooltipText(linkDetail));
         }
     }

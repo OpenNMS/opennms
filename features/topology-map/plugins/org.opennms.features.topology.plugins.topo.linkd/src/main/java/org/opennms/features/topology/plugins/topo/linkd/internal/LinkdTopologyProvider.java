@@ -39,7 +39,6 @@ import javax.xml.bind.JAXBException;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.FocusNodeHopCriteria;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractEdge;
@@ -56,7 +55,6 @@ import org.opennms.features.topology.api.topo.WrappedVertex;
 import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -138,7 +136,7 @@ public class LinkdTopologyProvider extends AbstractLinkdTopologyProvider impleme
             
             // Create a new edge that connects the vertices
             // TODO: Make sure that all properties are set on this object
-            AbstractEdge edge = connectVertices(link.getDataLinkInterfaceId(), source, target); 
+            AbstractEdge edge = connectVertices(link.getDataLinkInterfaceId(), source, target, getEdgeNamespace());
             edge.setTooltipText(getEdgeTooltipText(link, source, target));
         }
         
