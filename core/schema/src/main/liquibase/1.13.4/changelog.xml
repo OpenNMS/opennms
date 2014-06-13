@@ -17,6 +17,8 @@
       <column name="location" type="text">
         <constraints nullable="false" />
       </column>
+      <column name="status" type="text" />
+      <column name="last_updated" type="DATETIME" defaultValueDate="CURRENT_TIMESTAMP" />
     </createTable>
 
     <createTable tableName="minions_properties">
