@@ -762,8 +762,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.1</version>
         <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
+          <source>1.7</source>
+          <target>1.7</target>
           <encoding>UTF-8</encoding>
           <optimize>true</optimize>
         </configuration>
@@ -876,7 +876,7 @@
         <artifactId>maven-pmd-plugin</artifactId>
         <version>2.5</version>
         <configuration>
-            <targetJdk>1.6</targetJdk>
+            <targetJdk>1.7</targetJdk>
             <rulesets>
                <!--
                <ruleset>/rulesets/basic-jsf.xml</ruleset>
@@ -1027,7 +1027,7 @@
    <webstart.dnameSt/>
    <webstart.dnameC/>
 
-   <updatePolicy>daily</updatePolicy>
+   <updatePolicy>interval:60</updatePolicy> <!-- 60 minutes -->
    <maven.clover.licenseLocation>${user.home}/.m2/clover.license</maven.clover.licenseLocation>
 
     <!-- dependency versions -->
@@ -1049,8 +1049,8 @@
     <eclipselinkVersion>2.5.1</eclipselinkVersion>
     <groovyVersion>1.8.9</groovyVersion>
     <guavaVersion>13.0</guavaVersion>
-    <gwtVersion>2.5.1</gwtVersion>
-    <gwtPluginVersion>2.5.1</gwtPluginVersion>
+    <gwtVersion>2.6.1</gwtVersion>
+    <gwtPluginVersion>2.6.1</gwtPluginVersion>
     <httpcoreVersion>4.2.4</httpcoreVersion>
     <httpclientVersion>4.2.5</httpclientVersion>
     <jacksonVersion>1.9.13</jacksonVersion>
@@ -3213,6 +3213,7 @@
   </dependencies>
   </dependencyManagement>
   <repositories>
+<!--
     <repository>
       <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
       <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
@@ -3227,6 +3228,7 @@
       <name>Maven Central</name>
       <url>http://maven.opennms.org/content/groups/maven.org-release2</url>
     </repository>
+-->
   </repositories>
   <pluginRepositories>
     <pluginRepository>
@@ -3236,6 +3238,7 @@
       <name>OpenNMS Repository</name>
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </pluginRepository>
+<!--
     <pluginRepository>
       <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
       <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
@@ -3268,6 +3271,7 @@
       <name>Maven Central</name>
       <url>http://repo1.maven.org/maven2</url>
     </pluginRepository>
+-->
   </pluginRepositories>
   <distributionManagement>
     <site>

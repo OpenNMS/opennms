@@ -31,7 +31,6 @@
       <version>${project.version}</version>
     </dependency>
   </dependencies>
-  <!--
   <repositories>
     <repository>
       <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
@@ -41,5 +40,4 @@
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </repository>
   </repositories>
-  -->
 </project>
