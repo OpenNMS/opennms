@@ -42,27 +42,27 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Bridges opennms services with osgi service registry and vice versa. {@link org.opennms.core.soa.ServiceRegistry}
- * 
+ *
  * It does this by listening to registrations from each service and publishing new services in the corresponding registry.
  * OSGI services are only published to the core.soa.ServiceRegistry if they are marked with the 'registration.export' attribute.
  * A 'registration.source' attribute indicating the source of the initial registration (either 'osgi' or 'onms').
  * This is added to each synchronized service in order to avoid registration looping.
- * 
+ *
  * @author brozow
  *
  */
 public class OnmsOSGiBridgeActivator implements RegistrationHook, ServiceListener, BundleActivator {
     private static final Logger LOG = LoggerFactory.getLogger(OnmsOSGiBridgeActivator.class);
 
-    private AtomicReference<BundleContext> m_bundleContext = new AtomicReference<>();
+    private final AtomicReference<BundleContext> m_bundleContext = new AtomicReference<>();
 
     private static final String ONMS_SOURCE = "onms";
     private static final String OSGI_SOURCE = "osgi";
     private static final String REGISTRATION_EXPORT = "registration.export";
     private static final String REGISTRATION_SOURCE = "registration.source";
-    private ServiceRegistry m_registry = DefaultServiceRegistry.INSTANCE;
-    private Map<Registration, ServiceRegistration<?>> m_onmsRegistration2osgiRegistrationMap = new ConcurrentHashMap<Registration, ServiceRegistration<?>>();
-    private Map<ServiceReference<?>, Registration> m_osgiReference2onmsRegistrationMap = new ConcurrentHashMap<ServiceReference<?>, Registration>();
+    private final ServiceRegistry m_registry = DefaultServiceRegistry.INSTANCE;
+    private final Map<Registration, ServiceRegistration<?>> m_onmsRegistration2osgiRegistrationMap = new ConcurrentHashMap<Registration, ServiceRegistration<?>>();
+    private final Map<ServiceReference<?>, Registration> m_osgiReference2onmsRegistrationMap = new ConcurrentHashMap<ServiceReference<?>, Registration>();
 
     @Override
     public void start(final BundleContext bundleContext) throws InvalidSyntaxException {
@@ -72,7 +72,6 @@ public class OnmsOSGiBridgeActivator implements RegistrationHook, ServiceListene
 
         // register for ONMS registrations to forward registrations to OSGi service registry
         getRegistry().addRegistrationHook(this, true);
-
 
         // register service listener for export osgi services to forward to ONMS registry
         String exportFilter = "("+REGISTRATION_EXPORT+"=*)";
@@ -93,7 +92,7 @@ public class OnmsOSGiBridgeActivator implements RegistrationHook, ServiceListene
     @Override
     public void stop(final BundleContext bundleContext) {
         m_bundleContext.set(null);
-        // TODO unregister services form both registries with the osgi container stops		
+        // TODO unregister services form both registries with the osgi container stops
     }
 
     @Override
@@ -103,7 +102,6 @@ public class OnmsOSGiBridgeActivator implements RegistrationHook, ServiceListene
 
         final Class<?>[] providerInterfaces = onmsRegistration.getProvidedInterfaces();
         final String[] serviceClasses = new String[providerInterfaces.length];
-
 
         for(int i = 0; i < providerInterfaces.length; i++) {
             serviceClasses[i] = providerInterfaces[i].getName();
@@ -128,7 +126,7 @@ public class OnmsOSGiBridgeActivator implements RegistrationHook, ServiceListene
         if (osgiRegistration == null) {
             return;
         }
-        osgiRegistration.unregister();		
+        osgiRegistration.unregister();
     }
 
     @Override
@@ -149,7 +147,7 @@ public class OnmsOSGiBridgeActivator implements RegistrationHook, ServiceListene
         }
     }
 
-    private void registerWithOnmsRegistry(ServiceReference<?> reference) {
+    private void registerWithOnmsRegistry(final ServiceReference<?> reference) {
         LOG.debug("registerWithOnmsRegistry: {}", reference.getBundle());
 
         final BundleContext bundleContext = m_bundleContext.get();
@@ -167,20 +165,18 @@ public class OnmsOSGiBridgeActivator implements RegistrationHook, ServiceListene
         // if this service is already registered then skip it
         if (m_osgiReference2onmsRegistrationMap.containsKey(reference)) return;
 
-        String[] classNames = (String[]) reference.getProperty(Constants.OBJECTCLASS);
+        final String[] classNames = (String[]) reference.getProperty(Constants.OBJECTCLASS);
 
         try {
-            Class<?>[] providerInterfaces = findClasses(classNames);
+            final Class<?>[] providerInterfaces = findClasses(classNames);
+            final Object provider = bundleContext.getService(reference);
+            final Map<String, String> properties = new LinkedHashMap<String, String>();
 
-            Object provider = bundleContext.getService(reference);
-
-            Map<String, String> properties = new LinkedHashMap<String, String>();
-
-            for(String key : reference.getPropertyKeys()) {
-                Object val = reference.getProperty(key);
-                StringBuilder buf = new StringBuilder();
+            for(final String key : reference.getPropertyKeys()) {
+                final Object val = reference.getProperty(key);
+                final StringBuilder buf = new StringBuilder();
                 if (val instanceof Object[]) {
-                    Object[] a = (Object[])val;
+                    final Object[] a = (Object[])val;
                     for(int i = 0; i < a.length; i++) {
                         if (i != 0) buf.append(',');
                         buf.append(a[i]);
@@ -203,37 +199,32 @@ public class OnmsOSGiBridgeActivator implements RegistrationHook, ServiceListene
         }
     }
 
-    private boolean isOnmsExported(ServiceReference<?> reference) {
+    private boolean isOnmsExported(final ServiceReference<?> reference) {
         return Arrays.asList(reference.getPropertyKeys()).contains(REGISTRATION_EXPORT);
     }
 
-    private boolean isOnmsSource(ServiceReference<?> reference) {
+    private boolean isOnmsSource(final ServiceReference<?> reference) {
         return ONMS_SOURCE.equals(reference.getProperty(REGISTRATION_SOURCE));
     }
 
-    private Class<?>[] findClasses(String[] classNames) throws ClassNotFoundException {
-        Class<?>[] providerInterfaces = new Class<?>[classNames.length];
+    private Class<?>[] findClasses(final String[] classNames) throws ClassNotFoundException {
+        final Class<?>[] providerInterfaces = new Class<?>[classNames.length];
 
         for(int i = 0; i < classNames.length; i++) {
             providerInterfaces[i] = Class.forName(classNames[i]);
         }
 
         return providerInterfaces;
-
     }
 
-    private void unregisterWithOnmsRegistry(ServiceReference<?> reference) {
-
-        Registration onmsRegistration = m_osgiReference2onmsRegistrationMap.remove(reference);
-
+    private void unregisterWithOnmsRegistry(final ServiceReference<?> reference) {
+        final Registration onmsRegistration = m_osgiReference2onmsRegistrationMap.remove(reference);
         if (onmsRegistration == null) return;
 
         onmsRegistration.unregister();
-
     }
 
     private ServiceRegistry getRegistry() {
         return m_registry;
     }
-
 }
