@@ -600,11 +600,7 @@ public class Provisioner implements SpringServiceDaemon {
     @EventHandler(uei = EventConstants.NODE_UPDATED_EVENT_UEI)
     public void handleNodeUpdated(Event e) {
     	LOG.debug("Node updated event received: {}", e);
-        if (!Boolean.valueOf(System.getProperty(SCHEDULE_RESCAN_FOR_UPDATED_NODES, "true"))) {
-        	LOG.debug("Rescanning updated nodes is disabled via property: {}", SCHEDULE_RESCAN_FOR_UPDATED_NODES);
-        	return;
-        }
-        
+    	
         removeNodeFromScheduleQueue(new Long(e.getNodeid()).intValue());
         NodeScanSchedule scheduleForNode = getProvisionService().getScheduleForNode(e.getNodeid().intValue(), true);
         if (scheduleForNode != null) {
@@ -858,7 +854,11 @@ public class Provisioner implements SpringServiceDaemon {
 
     private boolean getEventRescanExistingOnImport(final Event event) {
         final String rescanExisting = EventUtils.getParm(event, EventConstants.PARM_IMPORT_RESCAN_EXISTING);
-        if (rescanExisting == null) return true;
+        
+        if (rescanExisting == null) {
+            return Boolean.getBoolean(SCHEDULE_RESCAN_FOR_UPDATED_NODES);
+        }
+        
         return Boolean.parseBoolean(rescanExisting);
     }
     
