@@ -694,7 +694,7 @@
       <column name="nodeid" />
     </createIndex>
     <createIndex tableName="cdpelement" indexName="cdp_deviceid_idx">
-      <column name="cdpglobaldevicesid" />
+      <column name="cdpglobaldeviceid" />
     </createIndex>
 
     <rollback>
