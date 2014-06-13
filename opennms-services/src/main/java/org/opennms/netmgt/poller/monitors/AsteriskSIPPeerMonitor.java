@@ -33,7 +33,6 @@ import java.util.Map;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 
-import org.apache.log4j.Level;
 import org.asteriskjava.manager.AuthenticationFailedException;
 import org.asteriskjava.manager.ManagerConnection;
 import org.asteriskjava.manager.ManagerConnectionFactory;
@@ -43,12 +42,15 @@ import org.asteriskjava.manager.response.ManagerResponse;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.config.AmiPeerFactory;
-import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.config.ami.AmiAgentConfig;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <P>
@@ -62,34 +64,35 @@ import org.opennms.netmgt.config.ami.AmiAgentConfig;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class AsteriskSIPPeerMonitor extends AbstractServiceMonitor {
+	private static final Logger LOG = LoggerFactory.getLogger(AsteriskSIPPeerMonitor.class);
 
 	/**
-     	* Default retries.
-     	*/
-    	private static final int DEFAULT_RETRY = 0;
+	  * Default retries.
+	  */
+	private static final int DEFAULT_RETRY = 0;
 
 	/**
-     	* Default timeout. Specifies how long (in milliseconds) to block waiting for data from the
-     	* monitored interface.
-     	*/
+	  * Default timeout. Specifies how long (in milliseconds) to block waiting for data from the
+	  * monitored interface.
+	  */
 	private static final int DEFAULT_TIMEOUT = 3000; // 3 second timeout on read()
 
 	/**
-     	* Default sip peer. Specifies the sip peer to get information from the Asterisk server.
-     	*/
+	  * Default sip peer. Specifies the sip peer to get information from the Asterisk server.
+	  */
 	private static final String DEFAULT_SIPPEER = ""; 
 
 	/**
-	* {@inheritDoc}
-     	*
-     	* <P>
-     	* Initialize the service monitor.
-     	* </P>
-     	* @exception RuntimeException
-     	*                Thrown if an unrecoverable error occurs that prevents the
-     	*                plug-in from functioning.
-     	*/
-    	public void initialize(Map<String, Object> parameters) 
+	  * {@inheritDoc}
+	  *
+	  * <P>
+	  * Initialize the service monitor.
+	  * </P>
+	  * @exception RuntimeException
+	  *		Thrown if an unrecoverable error occurs that prevents the
+	  *		plug-in from functioning.
+	  */
+	public void initialize(Map<String, Object> parameters) 
 	{
 		try
 		{
@@ -97,33 +100,33 @@ public class AsteriskSIPPeerMonitor extends AbstractServiceMonitor {
 		}
 		catch(Exception e)
 		{
-			log().fatal("Initalize: Failed to load AMI configuration", e);
+			LOG.error("Initalize: Failed to load AMI configuration", e);
 			throw new UndeclaredThrowableException(e);
 		}
 		return;
 	}
 
 	/**
-        * {@inheritDoc}
-        *
-        * <P>
-        * Run the service monitor and return the poll status
-        * </P>
-        */
+	  * {@inheritDoc}
+	  *
+	  * <P>
+	  * Run the service monitor and return the poll status
+	  * </P>
+	  */
 	public PollStatus poll(MonitoredService svc, Map<String, Object> parameters)
 	{
 		//check, if interface type is supported
 		final NetworkInterface<InetAddress> iface = svc.getNetInterface();
-        	if (iface.getType() != NetworkInterface.TYPE_INET) 
+		if (iface.getType() != NetworkInterface.TYPE_INET) 
 		{
-            		throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_INET currently supported");
-        	}
+	    		throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_INET currently supported");
+		}
 
 		//read configuration parameters
 		String sipPeer = ParameterMap.getKeyedString(parameters, "sip-peer", DEFAULT_SIPPEER);
 		if(sipPeer.equals(DEFAULT_SIPPEER))
 		{
-			log().fatal("AsteriskMonitor: No sip-peer parameter in poller configuration");
+			LOG.error("AsteriskMonitor: No sip-peer parameter in poller configuration");
 			throw new RuntimeException("AsteriskMonitor: required parameter 'sip-peer' is not present in supplied properties.");
 
 		}
@@ -132,16 +135,16 @@ public class AsteriskSIPPeerMonitor extends AbstractServiceMonitor {
 		AmiAgentConfig amiConfig = amiPeerFactory.getAgentConfig(svc.getAddress());
 
 		//setting up AMI connection	
-		log().debug(svc.getSvcName() + ": Creating new AMI-Connection: " + svc.getIpAddr() + ":" + amiConfig.getPort() + ", " + amiConfig.getUsername() + "/" + amiConfig.getPassword());
+		LOG.debug("{}: Creating new AMI-Connection: {}:{}, {}/{}", svc.getSvcName(), svc.getIpAddr(), amiConfig.getPort(), amiConfig.getUsername(), amiConfig.getPassword());
 		ManagerConnectionFactory factory = new ManagerConnectionFactory(svc.getIpAddr(), amiConfig.getPort(), amiConfig.getUsername(), amiConfig.getPassword());
 		ManagerConnection managerConnection;
 		if(amiConfig.getUseTls())
 		{
-                	managerConnection = factory.createSecureManagerConnection();
+			managerConnection = factory.createSecureManagerConnection();
 		}
 		else
 		{
-                	managerConnection = factory.createManagerConnection();
+			managerConnection = factory.createManagerConnection();
 		}
 		managerConnection.setSocketTimeout(new Long(timeoutTracker.getTimeoutInMillis()).intValue());
 
@@ -149,54 +152,52 @@ public class AsteriskSIPPeerMonitor extends AbstractServiceMonitor {
 		while(timeoutTracker.shouldRetry())
 		{
 			timeoutTracker.nextAttempt();
-			log().debug(svc.getSvcName() + ": Attempt " + timeoutTracker.getAttempt());
+			LOG.debug("{}: Attempt {}", svc.getSvcName(), timeoutTracker.getAttempt());
 			try
 			{
-				log().debug(svc.getSvcName() + ": AMI login");
-	                	managerConnection.login();
+				LOG.debug("{}: AMI login", svc.getSvcName());
+				managerConnection.login();
 
-				log().debug(svc.getSvcName() + ": AMI sendAction SipShowPeer");
-                		ManagerResponse response = managerConnection.sendAction(new SipShowPeerAction(sipPeer));
+				LOG.debug("{}: AMI sendAction SipShowPeer", svc.getSvcName());
+				ManagerResponse response = managerConnection.sendAction(new SipShowPeerAction(sipPeer));
 				if(response.getAttribute("Status") == null)
 				{
-					log().debug(svc.getSvcName() + ": service status down");
+					LOG.debug("{}: service status down", svc.getSvcName());
 					return PollStatus.decode("Down", "State of SIP Peer is unknown, because it was not found on the Asterisk server");
 
 				}
-				log().debug(svc.getSvcName() + ": Response: " + response.getAttribute("Status"));
+				LOG.debug("{}: Response: {}", svc.getSvcName(), response.getAttribute("Status"));
 
-				log().debug(svc.getSvcName() + ": AMI logoff");
-	               		managerConnection.logoff();
+				LOG.debug("{}: AMI logoff", svc.getSvcName());
+				managerConnection.logoff();
 
-                		if (response.getAttribute("Status").startsWith("OK"))
-                		{
-					log().debug(svc.getSvcName() + ": service status up");
+				if (response.getAttribute("Status").startsWith("OK"))
+				{
+					LOG.debug("{}: service status up", svc.getSvcName());
 					return PollStatus.decode("Up", "OK");
-	                	}
-        	        	else
-                		{
-					log().debug(svc.getSvcName() + ": service status down");
+				}
+				else
+				{
+					LOG.debug("{}: service status down", svc.getSvcName());
 					return PollStatus.decode("Down", "State of SIP Peer is " + response.getAttribute("Status") + " and not OK");
-	                	}
+				}
 			}
 			catch(AuthenticationFailedException e)
 			{
-				log().error(svc.getSvcName() + ": AMI AuthenticationError: " + e.toString());
+				LOG.debug("{}: AMI AuthenticationError.", svc.getSvcName(), e);
 				return PollStatus.decode("Down", "Could not get the state of SIP Peer: AMI AuthenticationError");
 			}
 			catch(TimeoutException e)
 			{
-				log().debug(svc.getSvcName() + ": TimeOut reached: " + e.toString());
+				LOG.debug("{}: TimeOut reached.", svc.getSvcName(), e);
 			}
-
 			catch(SocketTimeoutException e)
 			{
-				log().debug(svc.getSvcName() + ": TimeOut reached: " + e.toString());
+				LOG.debug("{}: TimeOut reached.", svc.getSvcName(), e);
 			}
-
 			catch(Exception e)
 			{	
-				log().error(svc.getSvcName() + ": Exception: " + e.toString());
+				LOG.error("{}: An Unknown Exception Occurred.", svc.getSvcName(), e);
 				return PollStatus.decode("Down", "Could not get the state of SIP Peer: " + e.toString());
 			}
 		}
