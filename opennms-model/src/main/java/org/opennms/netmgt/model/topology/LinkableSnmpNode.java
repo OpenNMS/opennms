@@ -118,4 +118,35 @@ public class LinkableSnmpNode {
         return m_sysname;
     }
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + m_nodeId;
+		result = prime
+				* result
+				+ ((m_snmpprimaryaddr == null) ? 0 : m_snmpprimaryaddr
+						.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		LinkableSnmpNode other = (LinkableSnmpNode) obj;
+		if (m_nodeId != other.m_nodeId)
+			return false;
+		if (m_snmpprimaryaddr == null) {
+			if (other.m_snmpprimaryaddr != null)
+				return false;
+		} else if (!m_snmpprimaryaddr.equals(other.m_snmpprimaryaddr))
+			return false;
+		return true;
+	}
+
 }
