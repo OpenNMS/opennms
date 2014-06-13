@@ -90,8 +90,7 @@ public class NotificationRestService extends OnmsRestService {
     public OnmsNotification getNotification(@PathParam("notifId") String notifId) {
         readLock();
         try {
-            OnmsNotification result= m_notifDao.get(new Integer(notifId));
-            return result;
+            return m_notifDao.get(new Integer(notifId));
         } finally {
             readUnlock();
         }

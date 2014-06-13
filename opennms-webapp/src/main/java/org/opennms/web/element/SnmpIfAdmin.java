@@ -76,7 +76,7 @@ public class SnmpIfAdmin {
     /** Constant <code>TESTING=3</code> */
     public static final int TESTING = 3;
 
-    private static final String m_value[] = { "null", "up", "down", "testing" };
+    private static final String[] m_value = { "null", "up", "down", "testing" };
 
     //	.iso.org.dod.internet.mgmt.mib-2.interfaces.ifTable.ifEntry.ifAdminStatus
     private static final String snmpObjectId = ".1.3.6.1.2.1.2.2.1.7";

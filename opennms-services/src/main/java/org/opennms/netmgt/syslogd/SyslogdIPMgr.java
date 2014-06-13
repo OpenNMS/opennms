@@ -50,7 +50,7 @@ final class SyslogdIPMgr {
      * The SQL statement used to extract the list of currently known IP
      * addresses and their node IDs from the IP Interface table.
      */
-    private final static String IP_LOAD_SQL = "SELECT ipAddr, nodeid FROM ipInterface";
+    private static final String IP_LOAD_SQL = "SELECT ipAddr, nodeid FROM ipInterface";
 
     /**
      * A Map of IP addresses and node IDs

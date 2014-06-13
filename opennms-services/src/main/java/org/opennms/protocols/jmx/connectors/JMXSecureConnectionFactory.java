@@ -76,7 +76,7 @@ public class JMXSecureConnectionFactory {
 
         // RMI and JMXMP use different URL schemes
         try {
-            if (protocol.equalsIgnoreCase("jmxmp")) {
+            if (protocol.equalsIgnoreCase("jmxmp") || protocol.equalsIgnoreCase("remoting-jmx")) {
 
                 // Create an JMXMP connector client and
                 // connect it to the JMXMP connector server

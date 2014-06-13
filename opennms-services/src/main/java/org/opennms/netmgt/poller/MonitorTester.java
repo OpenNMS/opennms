@@ -79,7 +79,7 @@ public class MonitorTester {
         try {
             cmd = parser.parse(options, args);
         } catch (ParseException e) {
-            new HelpFormatter().printHelp(80, CMD_SYNTAX, String.format("ERROR: %s\n", e.getMessage()), options, null);
+            new HelpFormatter().printHelp(80, CMD_SYNTAX, String.format("ERROR: %s%n", e.getMessage()), options, null);
             System.exit(1);
         }
 
@@ -129,23 +129,23 @@ public class MonitorTester {
         try {
             PollerConfigFactory.init();
         } catch (Exception e) {
-            System.err.printf("Error: Can't initialize poller-configuration.xml. %s\n", e.getMessage());
+            System.err.printf("Error: Can't initialize poller-configuration.xml. %s%n", e.getMessage());
             System.exit(1);
         }
         PollerConfig config = PollerConfigFactory.getInstance();
 
-        System.out.printf("Checking service %s on IP %s\n", serviceName, ipAddress);
+        System.out.printf("Checking service %s on IP %s%n", serviceName, ipAddress);
 
         org.opennms.netmgt.config.poller.Package pkg = packageName == null ? config.getFirstLocalPackageMatch(ipAddress) : config.getPackage(packageName);
         if (pkg == null) {
-            System.err.printf("Error: Package %s doesn't exist\n", packageName);
+            System.err.printf("Error: Package %s doesn't exist%n", packageName);
             System.exit(1);
         }
-        System.out.printf("Package: %s\n", pkg.getName());
+        System.out.printf("Package: %s%n", pkg.getName());
 
         Service svc = config.getServiceInPackage(serviceName, pkg);
         if (svc == null) {
-            System.err.printf("Error: Service %s not defined on package %s\n", serviceName, packageName);
+            System.err.printf("Error: Service %s not defined on package %s%n", serviceName, packageName);
             System.exit(1);
         }
 
@@ -153,7 +153,7 @@ public class MonitorTester {
         if (monitorClass == null) {
             monitor = config.getServiceMonitor(serviceName);
             if (monitor == null) {
-                System.err.printf("Error: Service %s doesn't have a monitor class defined\n", serviceName);
+                System.err.printf("Error: Service %s doesn't have a monitor class defined%n", serviceName);
                 System.exit(1);
             }
         } else {
@@ -161,11 +161,11 @@ public class MonitorTester {
                 final Class<? extends ServiceMonitor> mc = Class.forName(monitorClass).asSubclass(ServiceMonitor.class);
                 monitor = mc.newInstance();
             } catch (Exception e) {
-                System.err.printf("Error: Can't instantiate %s because %s\n", monitorClass, e.getMessage());
+                System.err.printf("Error: Can't instantiate %s because %s%n", monitorClass, e.getMessage());
                 System.exit(1);
             }
         }
-        System.out.printf("Monitor: %s\n", monitor.getClass().getName());
+        System.out.printf("Monitor: %s%n", monitor.getClass().getName());
 
         if (config.isPolledLocally(ipAddress, serviceName)) {
             for (Parameter p : svc.getParameters()) {
@@ -174,16 +174,16 @@ public class MonitorTester {
                 }
             }
             for (Entry<String,Object> e : parameters.entrySet()) {
-                System.out.printf("Parameter %s : %s\n", e.getKey(), e.getValue());
+                System.out.printf("Parameter %s : %s%n", e.getKey(), e.getValue());
             }
             try {
                 PollStatus status = monitor.poll(monSvc, parameters);
-                System.out.printf("Available ? %s (status %s[%s])\n", status.isAvailable(), status.getStatusName(), status.getStatusCode());
+                System.out.printf("Available ? %s (status %s[%s])%n", status.isAvailable(), status.getStatusName(), status.getStatusCode());
                 if (status.isAvailable()) {
-                    System.out.printf("Response time: %s\n", status.getResponseTime());
+                    System.out.printf("Response time: %s%n", status.getResponseTime());
                 } else {
                     if (status.getReason() != null) {
-                        System.out.printf("Reason: %s\n", status.getReason());
+                        System.out.printf("Reason: %s%n", status.getReason());
                     }
                 }
             } catch (Exception e) {
@@ -191,7 +191,7 @@ public class MonitorTester {
                 System.exit(1);
             }
         } else {
-            System.err.printf("Error: Polling is not enabled for service %s using IP %s\n", serviceName, ipAddress);
+            System.err.printf("Error: Polling is not enabled for service %s using IP %s%n", serviceName, ipAddress);
         }
 
         System.exit(0);

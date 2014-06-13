@@ -162,8 +162,7 @@ public class ViewsDisplayFactory {
     private InputStream getStream() throws IOException {
         File viewsDisplayFile = getViewsDisplayFile();
         m_lastModified = viewsDisplayFile.lastModified();
-        InputStream stream = new FileInputStream(viewsDisplayFile);
-        return stream;
+        return new FileInputStream(viewsDisplayFile);
     }
 
     /**

@@ -143,7 +143,7 @@ public class UpdateMessage {
     
     
     
-    private class UpdateHeader {
+    private static class UpdateHeader {
         
         /*
                                       1  1  1  1  1  1

@@ -109,8 +109,7 @@ public class DefaultQueryManager implements QueryManager {
     private static Timestamp convertEventTimeToTimeStamp(String time) {
         try {
             Date date = EventConstants.parseToDate(time);
-            Timestamp eventTime = new Timestamp(date.getTime());
-            return eventTime;
+            return new Timestamp(date.getTime());
         } catch (ParseException e) {
             throw new IllegalArgumentException("Invalid date format: " + time, e);
         }
@@ -138,7 +137,7 @@ public class DefaultQueryManager implements QueryManager {
                 
                 String sql = "insert into outages (outageId, svcLostEventId, nodeId, ipAddr, serviceId, ifLostService) values ("+outageId+", ?, ?, ?, ?, ?)";
                 
-                Object values[] = {
+                Object[] values = {
                         Integer.valueOf(dbId),
                         Integer.valueOf(nodeId),
                         ipAddr,
@@ -173,7 +172,7 @@ public class DefaultQueryManager implements QueryManager {
                 
                 String sql = "update outages set svcRegainedEventId=?, ifRegainedService=? where nodeId = ? and ipAddr = ? and serviceId = ? and ifRegainedService is null";
                 
-                Object values[] = {
+                Object[] values = {
                         Integer.valueOf(dbId),
                         convertEventTimeToTimeStamp(time),
                         Integer.valueOf(nodeId),

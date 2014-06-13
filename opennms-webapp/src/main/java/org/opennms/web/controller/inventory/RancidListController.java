@@ -84,8 +84,7 @@ public class RancidListController implements Controller {
             model = m_inventoryService.getRancidNodeList(nodeid,WebSecurityUtils.sanitizeString(group));
         }
 
-        ModelAndView modelAndView = new ModelAndView("inventory/rancidList","model",model);
-        return modelAndView;
+        return new ModelAndView("inventory/rancidList","model",model);
     }
 
 }

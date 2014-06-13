@@ -59,7 +59,7 @@ import com.vaadin.ui.TextField;
  */
 public class AttributesTable extends Table {
 
-	final private Map<Object, Field<String>> fieldsToValidate = new HashMap<Object, Field<String>>();
+	private final Map<Object, Field<String>> fieldsToValidate = new HashMap<Object, Field<String>>();
 	private List<Field<?>> fields = new ArrayList<Field<?>>();
 	private final UniqueAttributeNameValidator uniqueAttributeNameValidator;
 	private final Callback callback;
@@ -105,8 +105,8 @@ public class AttributesTable extends Table {
 
 	private class AttributesTableFieldFactory implements TableFieldFactory {
 
-		final private Validator nameValidator = new AttributeNameValidator();
-		final private Validator lengthValidator = new StringLengthValidator(String.format("Maximal length is %d", Config.ATTRIBUTES_ALIAS_MAX_LENGTH), 0, Config.ATTRIBUTES_ALIAS_MAX_LENGTH, false); 
+		private final Validator nameValidator = new AttributeNameValidator();
+		private final Validator lengthValidator = new StringLengthValidator(String.format("Maximal length is %d", Config.ATTRIBUTES_ALIAS_MAX_LENGTH), 0, Config.ATTRIBUTES_ALIAS_MAX_LENGTH, false); 
 
 		@Override
 		public Field<?> createField(Container container, Object itemId, Object propertyId, Component uiContext) {

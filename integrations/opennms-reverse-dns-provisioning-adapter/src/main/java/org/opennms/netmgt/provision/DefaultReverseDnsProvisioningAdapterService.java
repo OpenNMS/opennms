@@ -27,16 +27,6 @@ public class DefaultReverseDnsProvisioningAdapterService implements
         m_template = template;
     }
 
-    /**
-     * <p>getTemplate</p>
-     *
-     * @return a {@link org.springframework.transaction.support.TransactionTemplate} object.
-     */
-    public TransactionTemplate getTemplate() {
-        return m_template;
-    }
-
-
     public IpInterfaceDao getIpInterfaceDao() {
         return m_ipInterfaceDao;
     }

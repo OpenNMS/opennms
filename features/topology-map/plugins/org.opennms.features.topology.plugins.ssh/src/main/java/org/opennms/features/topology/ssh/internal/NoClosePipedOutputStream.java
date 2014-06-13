@@ -166,7 +166,7 @@ public class NoClosePipedOutputStream extends OutputStream{
      *          closed, or if an I/O error occurs.
      */
     @Override
-    public void write(byte b[], int off, int len) throws IOException {
+    public void write(byte[] b, int off, int len) throws IOException {
         if (sink == null) {
             throw new IOException("Pipe not connected");
         } else if (b == null) {

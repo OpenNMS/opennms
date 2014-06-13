@@ -432,7 +432,7 @@ public class DefaultAdminApplicationService implements
         return service;
     }
 
-    public class ApplicationAndMemberServices {
+    public static class ApplicationAndMemberServices {
         private OnmsApplication m_application;
         private Collection<OnmsMonitoredService> m_memberServices;
 
@@ -451,7 +451,7 @@ public class DefaultAdminApplicationService implements
         }
     }
 
-    public class EditModel {
+    public static class EditModel {
         private OnmsApplication m_application;
         private List<OnmsMonitoredService> m_monitoredServices;
         private List<OnmsMonitoredService> m_sortedMemberServices;
@@ -484,7 +484,7 @@ public class DefaultAdminApplicationService implements
     }
 
 
-    public class ServiceEditModel {
+    public static class ServiceEditModel {
         private OnmsMonitoredService m_service;
         private List<OnmsApplication> m_applications;
         private List<OnmsApplication> m_sortedApplications;

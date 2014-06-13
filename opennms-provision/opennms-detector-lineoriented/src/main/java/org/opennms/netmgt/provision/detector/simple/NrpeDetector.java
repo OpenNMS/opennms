@@ -49,12 +49,12 @@ public class NrpeDetector extends BasicDetector<NrpeRequest, NrpePacket> {
     
     private static final String DEFAULT_SERVICE_NAME = "NRPE";
 
-    private final static int DEFAULT_PORT = 5666;
+    private static final int DEFAULT_PORT = 5666;
     
     /**
      * Default whether to use SSL
      */
-    private final static boolean DEFAULT_USE_SSL = true;
+    private static final boolean DEFAULT_USE_SSL = true;
     
     private boolean m_useSsl = DEFAULT_USE_SSL;
     private int m_padding = 2;

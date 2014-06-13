@@ -318,8 +318,7 @@ public class Provisioner implements SpringServiceDaemon {
      * @return a {@link java.util.concurrent.ScheduledFuture} object.
      */
     public ScheduledFuture<?> getScheduledFutureForNode(int nodeId) {
-        ScheduledFuture<?> scheduledFuture = m_scheduledNodes.get(nodeId);
-        return scheduledFuture;
+    	return m_scheduledNodes.get(nodeId);
     }
     
     /**

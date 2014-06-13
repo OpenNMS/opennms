@@ -237,8 +237,7 @@ public class ActionEvents implements Serializable {
      * @return true if the object was removed from the collection.
      */
     public boolean removeActionEvent(final ActionEvent vActionEvent) {
-        boolean removed = _actionEventList.remove(vActionEvent);
-        return removed;
+    	return _actionEventList.remove(vActionEvent);
     }
 
     /**
@@ -248,8 +247,7 @@ public class ActionEvents implements Serializable {
      * @return the element removed from the collection
      */
     public ActionEvent removeActionEventAt(final int index) {
-        Object obj = this._actionEventList.remove(index);
-        return (ActionEvent) obj;
+    	return (ActionEvent) this._actionEventList.remove(index);
     }
 
     /**

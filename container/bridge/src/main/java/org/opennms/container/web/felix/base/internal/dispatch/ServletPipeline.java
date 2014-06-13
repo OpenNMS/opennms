@@ -95,7 +95,7 @@ public final class ServletPipeline
         }
     }
 
-    private final class RequestWrapper
+    private final static class RequestWrapper
         extends HttpServletRequestWrapper
     {
         private final String requestUri;
