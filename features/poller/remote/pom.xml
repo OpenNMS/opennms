@@ -9,6 +9,21 @@
   <groupId>org.opennms.features.poller</groupId>
   <artifactId>org.opennms.features.poller.remote</artifactId>
   <name>OpenNMS :: Features :: Poller :: Remote</name>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
   <dependencies>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
