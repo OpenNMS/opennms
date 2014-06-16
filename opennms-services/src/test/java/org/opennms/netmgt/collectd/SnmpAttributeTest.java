@@ -34,7 +34,6 @@ import static org.easymock.EasyMock.isA;
 import static org.easymock.EasyMock.isNull;
 import static org.easymock.EasyMock.matches;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -180,6 +179,17 @@ public class SnmpAttributeTest extends TestCase {
 
         assertEquals(1, count.get());
         persister.commitBuilder();
+    }
+
+    /**
+     * @see http://issues.opennms.org/browse/NMS-6202
+     */
+    public void test8DigitDecimalNumericAttributeStringValue() throws Exception {
+        String longValue = "49197860";
+        testPersisting(
+            new Double(longValue).toString(),
+            new Snmp4JValueFactory().getOctetString(longValue.getBytes("UTF-8"))
+        );
     }
 
     @SuppressWarnings("unchecked")
