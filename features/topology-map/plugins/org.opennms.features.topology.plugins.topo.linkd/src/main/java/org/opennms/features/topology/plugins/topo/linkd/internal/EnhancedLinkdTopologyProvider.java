@@ -221,7 +221,9 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             getOspfLinks();
 
 
-        } catch (Exception e){   }
+        } catch (Exception e){
+            String message = e.getMessage();
+        }
 
         LOG.debug("loadtopology: adding nodes without links: " + isAddNodeWithoutLink());
         if (isAddNodeWithoutLink()) {

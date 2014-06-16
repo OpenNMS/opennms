@@ -126,7 +126,7 @@ public class OspfLinkStatusProviderTest {
 
         Vertex sourceVertex = new AbstractVertex("nodes", "1", "source");
         Vertex targetVertex = new AbstractVertex("nodes", "2", "target");
-        EdgeRef edge = new AbstractEdge("nodes", "1|2", sourceVertex, targetVertex);
+        EdgeRef edge = new AbstractEdge(EnhancedLinkdTopologyProvider.OSPF_EDGE_NAMESPACE, "1|2", sourceVertex, targetVertex);
         return Arrays.asList(edge);
     }
 
