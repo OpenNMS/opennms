@@ -53,7 +53,21 @@ public class LinkStatusToggleOperation extends AbstractCheckedOperation {
 
     @Override
     public void applyHistory(GraphContainer container, Map<String, String> settings) {
+        Set<EdgeStatusProvider> edgeStatusProviders = container.getEdgeStatusProviders();
 
+        String historyValue = settings.get(getClass().getName());
+        // an history value is set, decide what to do
+        boolean statusEnabled = Boolean.TRUE.toString().equals(historyValue);
+        if (statusEnabled) {
+            if(!edgeStatusProviders.contains(m_edgeStatusProvider)) {
+                edgeStatusProviders.add(m_edgeStatusProvider);
+            }
+
+        } else {
+            if(edgeStatusProviders.contains(m_edgeStatusProvider)) {
+                edgeStatusProviders.remove(m_edgeStatusProvider);
+            }
+        }
     }
 
     @Override
