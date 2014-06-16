@@ -160,10 +160,10 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         }
         
         if (m_linkdConfig.useCdpDiscovery()) {
-         //   LOG.info("getSnmpCollections: adding Cdp Discovery: {}",
-         //           node);
-        //     CdpLinkdNodeDiscovery cdpcoll = new CdpLinkdNodeDiscovery(this, node);
-        //     snmpcolls.add(cdpcoll);   	
+            LOG.info("getSnmpCollections: adding Cdp Discovery: {}",
+                    node);
+             NodeDiscoveryCdp cdpcoll = new NodeDiscoveryCdp(this, node);
+             snmpcolls.add(cdpcoll);   	
         }
         
         if (m_linkdConfig.useBridgeDiscovery()) {
@@ -321,6 +321,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
                 ReadyRunnable rr = getReadyRunnable(collection);
                 if (rr == null) {
                     LOG.warn("wakeUpNodeCollection: found null ReadyRunnable for nodeid {}", nodeid);
+                    continue;
                 } else {
                     rr.wakeUp();
                 }
@@ -348,7 +349,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
 
                 if (rr == null) {
                     LOG.warn("deleteNode: found null ReadyRunnable");
-                    return;
+                    continue;
                 } else {
                     rr.unschedule();
                 }
@@ -359,6 +360,34 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
 
     }
 
+    void rescheduleNodeCollection(int nodeid) {
+        LOG.info("rescheduleNodeCollection: suspend collection LinkableNode for node {}",
+                nodeid);
+        
+        LinkableSnmpNode node = getNode(nodeid);
+        if (node == null) {
+            LOG.warn("rescheduleNodeCollection: node not found: {}", nodeid);
+        } else {
+            Collection<NodeDiscovery> collections = getSnmpCollections(node);
+            LOG.info("rescheduleNodeCollection: fetched SnmpCollections from scratch, iterating over {} objects to rescheduling",
+                            collections.size());
+            for (NodeDiscovery collection : collections) {
+                ReadyRunnable rr = getReadyRunnable(collection);
+
+                if (rr == null) {
+                    LOG.warn("rescheduleNodeCollection: found null ReadyRunnable");
+                    continue;
+                } else {
+                    rr.unschedule();
+                    rr.schedule();
+                }
+
+            }
+
+        }
+    	
+    }
+    
     void suspendNodeCollection(int nodeid) {
         LOG.info("suspendNodeCollection: suspend collection LinkableNode for node {}",
                         nodeid);
@@ -379,7 +408,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
                 if (rr == null) {
                     LOG.warn("suspendNodeCollection: suspend: node not found: {}",
                                    nodeid);
-                    return;
+                    continue;
                 } else {
                     rr.suspend();
                 }

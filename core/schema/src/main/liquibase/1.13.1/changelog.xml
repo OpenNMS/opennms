@@ -677,7 +677,7 @@
       <column name="cdpglobalrun" type="integer">
         <constraints nullable="false" />
       </column>
-      <column name="cdpglobaldevicesid" type="varchar(255)">
+      <column name="cdpglobaldeviceid" type="varchar(255)">
         <constraints nullable="false" />
       </column>
       <column name="cdpnodecreatetime" type="DATETIME">
@@ -694,7 +694,7 @@
       <column name="nodeid" />
     </createIndex>
     <createIndex tableName="cdpelement" indexName="cdp_deviceid_idx">
-      <column name="cdpglobaldevicesid" />
+      <column name="cdpglobaldeviceid" />
     </createIndex>
 
     <rollback>
