@@ -264,13 +264,13 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
             AbstractVertex networkVertex = addNetworkVertex(vmwareManagementServer + "/" + network, moIdToName.get(network));
             // networkVertex.setParent(datacenterVertex);
             if (!networkVertex.equals(datacenterVertex)) setParent(networkVertex, datacenterVertex);
-            connectVertices(vmwareManagementServer + "/" + vmwareManagedObjectId + "->" + network, hostSystemVertex, networkVertex);
+            connectVertices(vmwareManagementServer + "/" + vmwareManagedObjectId + "->" + network, hostSystemVertex, networkVertex, getEdgeNamespace());
         }
         for (String datastore : datastores) {
             AbstractVertex datastoreVertex = addDatastoreVertex(vmwareManagementServer + "/" + datastore, moIdToName.get(datastore));
             // datastoreVertex.setParent(datacenterVertex);
             if (!datastoreVertex.equals(datacenterVertex)) setParent(datastoreVertex, datacenterVertex);
-            connectVertices(vmwareManagementServer + "/" + vmwareManagedObjectId + "->" + datastore, hostSystemVertex, datastoreVertex);
+            connectVertices(vmwareManagementServer + "/" + vmwareManagedObjectId + "->" + datastore, hostSystemVertex, datastoreVertex, getEdgeNamespace());
         }
     }
 
@@ -361,7 +361,7 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
         }
 
         // connect the virtual machine to the host system
-        connectVertices(vmwareManagementServer + "/" + vmwareManagedObjectId + "->" + vmwareManagementServer + "/" + vmwareHostSystemId, virtualMachineVertex, getVertex(getVertexNamespace(), vmwareManagementServer + "/" + vmwareHostSystemId));
+        connectVertices(vmwareManagementServer + "/" + vmwareManagedObjectId + "->" + vmwareManagementServer + "/" + vmwareHostSystemId, virtualMachineVertex, getVertex(getVertexNamespace(), vmwareManagementServer + "/" + vmwareHostSystemId), getEdgeNamespace());
     }
 
     @Override

@@ -320,8 +320,8 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
     }
 
     protected final AbstractEdge connectVertices(String id, VertexRef sourceId, VertexRef targetId, String namespace) {
-        SimpleConnector source = new SimpleConnector(getVertexNamespace(), sourceId.getId()+"-"+id+"-connector", sourceId);
-        SimpleConnector target = new SimpleConnector(getVertexNamespace(), targetId.getId()+"-"+id+"-connector", targetId);
+        SimpleConnector source = new SimpleConnector(sourceId.getNamespace(), sourceId.getId()+"-"+id+"-connector", sourceId);
+        SimpleConnector target = new SimpleConnector(targetId.getNamespace(), targetId.getId()+"-"+id+"-connector", targetId);
 
         AbstractEdge edge = new AbstractEdge(namespace, id, source, target);
 
