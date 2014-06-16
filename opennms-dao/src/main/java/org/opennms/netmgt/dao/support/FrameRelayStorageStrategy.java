@@ -59,7 +59,7 @@ public class FrameRelayStorageStrategy extends IndexStorageStrategy {
      * @return a {@link java.lang.String} object.
      */
     public String getInterfaceName(String nodeId, String ifIndex) {
-       String label = m_storageStrategyService.getSnmpInterfaceLabel(new Integer(ifIndex));
+       String label = m_storageStrategyService.getSnmpInterfaceLabel(Integer.valueOf(ifIndex));
        return label != null ? label : ifIndex;
     }
 

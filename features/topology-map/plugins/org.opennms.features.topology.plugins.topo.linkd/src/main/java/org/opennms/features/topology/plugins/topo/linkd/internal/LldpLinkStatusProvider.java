@@ -45,7 +45,7 @@ import java.util.*;
 
 public class LldpLinkStatusProvider implements EdgeStatusProvider {
 
-    public class LldpLinkStatus implements Status{
+    public static class LldpLinkStatus implements Status{
 
         final String m_status;
 

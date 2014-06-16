@@ -660,7 +660,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
         }
 
         try {
-            return new Integer(value);
+            return Integer.valueOf(value);
         } catch (NumberFormatException e) {
             throw new DataAccessResourceFailureException(
                                                          "Property value for '"

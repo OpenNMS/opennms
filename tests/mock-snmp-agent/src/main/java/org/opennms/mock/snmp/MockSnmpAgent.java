@@ -90,6 +90,7 @@ import org.snmp4j.util.ThreadPool;
  * @author Jeff Gehlbach
  */
 public class MockSnmpAgent extends BaseAgent implements Runnable {
+	
     private static final String PROPERTY_SLEEP_ON_CREATE = "mockSnmpAgent.sleepOnCreate";
     
     // initialize Log4J logging
@@ -122,7 +123,6 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         File bootCountFile;
         try {
             bootCountFile = File.createTempFile("mockSnmpAgent", "boot");
-            bootCountFile.createNewFile();
             ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(bootCountFile));
             out.writeInt(0);
             out.flush();

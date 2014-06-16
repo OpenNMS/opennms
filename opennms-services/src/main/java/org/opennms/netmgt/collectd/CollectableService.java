@@ -505,7 +505,9 @@ final class CollectableService implements ReadyRunnable {
                     try {
                         // Rename <oldNodeId> dir to <newNodeId> dir.
                         LOG.debug("Attempting to rename {} to {}", oldNodeDir, newNodeDir);
-                        oldNodeDir.renameTo(newNodeDir);
+                        if(!oldNodeDir.renameTo(newNodeDir)) {
+                        	LOG.warn("Could not rename file: {}", oldNodeDir.getPath());
+                        }
                         LOG.debug("Rename successful!!");
                     } catch (SecurityException se) {
                         LOG.error("Insufficient authority to rename RRD directory.", se);

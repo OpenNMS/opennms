@@ -88,6 +88,7 @@ import org.springframework.transaction.annotation.Transactional;
         "file:src/main/webapp/WEB-INF/applicationContext-remote-poller.xml",
         "classpath:/locationDataServiceTest.xml",
         "classpath:META-INF/opennms/applicationContext-minimal-conf.xml"
+        
 })
 @JUnitConfigurationEnvironment(systemProperties={
     "opennms.pollerBackend.monitorCheckInterval=500",

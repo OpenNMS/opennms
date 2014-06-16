@@ -88,7 +88,7 @@ public class MockNode extends MockContainer<MockNetwork,MockInterface> {
     // impl
     @Override
     Object getKey() {
-        return new Integer(m_nodeid);
+        return Integer.valueOf(m_nodeid);
     }
 
     // model

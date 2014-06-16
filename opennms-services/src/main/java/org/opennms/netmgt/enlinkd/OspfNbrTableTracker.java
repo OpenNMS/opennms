@@ -82,7 +82,7 @@ public class OspfNbrTableTracker extends TableTracker {
         OSPF_NBR_ROUTERID
     };
         
-    class OspfNbrRow extends SnmpRowResult {
+    static class OspfNbrRow extends SnmpRowResult {
     	
         public OspfNbrRow(int columnCount, SnmpInstId instance) {
 			super(columnCount, instance);

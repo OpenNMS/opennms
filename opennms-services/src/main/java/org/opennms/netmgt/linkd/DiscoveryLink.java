@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class DiscoveryLink implements ReadyRunnable {
 
-    private class BridgeTopologyLinkCandidate {
+    private static class BridgeTopologyLinkCandidate {
 
         private final BridgeTopologyPort bridgeTopologyPort;
         private Set<String> macs = new HashSet<String>();
@@ -233,7 +233,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 
     }
 
-    private class BridgeTopologyLink {
+    private static class BridgeTopologyLink {
         public SwitchPort getLinkedSwitchPort() {
 			return linkedSwitchPort;
 		}

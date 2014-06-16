@@ -268,7 +268,7 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
      * @return a {@link org.opennms.netmgt.mock.MockNode} object.
      */
     public MockNode getNode(int i) {
-        return (MockNode) getMember(new Integer(i));
+        return (MockNode) getMember(Integer.valueOf(i));
     }
 
     // model
@@ -332,7 +332,7 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
             serviceId = m_nameToIdMap.get(svcName).intValue();
         } else {
             serviceId = m_nextServiceId++;
-            Integer serviceIdObj = new Integer(serviceId);
+            Integer serviceIdObj = Integer.valueOf(serviceId);
             m_nameToIdMap.put(svcName, serviceIdObj);
             m_idToNameMap.put(serviceIdObj, svcName);
         }

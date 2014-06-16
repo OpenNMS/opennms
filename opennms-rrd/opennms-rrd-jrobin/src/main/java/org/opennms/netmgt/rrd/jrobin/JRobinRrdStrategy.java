@@ -157,7 +157,9 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
 			final String directory, final String rrdName, int step,
 			final List<RrdDataSource> dataSources, final List<String> rraList) throws Exception {
         File f = new File(directory);
-        f.mkdirs();
+        if (!f.mkdirs()) {
+        	LOG.warn("Could not make directory: {}",f.getPath());
+        }
 
         String fileName = directory + File.separator + rrdName + RrdUtils.getExtension();
 

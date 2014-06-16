@@ -151,7 +151,7 @@ public class Dot1dStpPortTableTracker extends TableTracker {
 		DOT1D_STP_PORT_DESIGNATED_PORT
 	};
 
-	class Dot1dStpPortRow extends SnmpRowResult {
+	static class Dot1dStpPortRow extends SnmpRowResult {
 
 		public Dot1dStpPortRow(int columnCount, SnmpInstId instance) {
 			super(columnCount, instance);

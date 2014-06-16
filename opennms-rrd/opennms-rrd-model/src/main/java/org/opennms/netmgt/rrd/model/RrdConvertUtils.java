@@ -41,6 +41,8 @@ import org.jrobin.core.RrdException;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.rrd.model.v1.RRDv1;
 import org.opennms.netmgt.rrd.model.v3.RRDv3;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
@@ -51,6 +53,8 @@ import org.xml.sax.helpers.XMLReaderFactory;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 public class RrdConvertUtils {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(RrdConvertUtils.class);
 
     /**
      * Instantiates a new RRDtool Convert Utils.
@@ -111,7 +115,9 @@ public class RrdConvertUtils {
         JaxbUtils.marshal(rrd, new FileWriter(outputXmlFile));
         RrdDb targetJrb = new RrdDb(targetFile.getCanonicalPath(), RrdDb.PREFIX_XML + outputXmlFile.getAbsolutePath());
         targetJrb.close();
-        outputXmlFile.delete();
+        if(!outputXmlFile.delete()) {
+        	LOG.warn("Could not delete file: {}", outputXmlFile.getPath());
+        }
     }
 
     /**
@@ -132,7 +138,9 @@ public class RrdConvertUtils {
             JaxbUtils.marshal(rrd, new FileWriter(xmlDest));
             Process process = Runtime.getRuntime().exec(new String[]{ rrdBinary, "restore", xmlDest.getAbsolutePath(), targetFile.getAbsolutePath() });
             process.waitFor();
-            xmlDest.delete();
+            if(!xmlDest.delete()) {
+            	LOG.warn("Could not delete file: {}", xmlDest.getPath());
+            }
         } catch (Exception e) {
             throw new RrdException("Can't restore RRD", e);
         }

@@ -309,7 +309,7 @@ public class WmiCollector implements ServiceCollector {
     @Override
     public void initialize(final CollectionAgent agent, final Map<String, Object> parameters) {
         LOG.debug("initialize: Initializing WMI collection for agent: {}", agent);
-        final Integer scheduledNodeKey = new Integer(agent.getNodeId());
+        final Integer scheduledNodeKey = Integer.valueOf(agent.getNodeId());
         WmiAgentState nodeState = m_scheduledNodes.get(scheduledNodeKey);
 
         if (nodeState != null) {
