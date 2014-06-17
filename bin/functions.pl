@@ -177,8 +177,6 @@ if ($MAVEN_VERSION =~ /^[12]/) {
 if (defined $TESTS) {
 	debug("tests are enabled");
 	unshift(@ARGS, '-DfailIfNoTests=false');
-	# TODO: revisit this when we move to JDK 1.8, see https://bugs.eclipse.org/bugs/show_bug.cgi?id=353467 and http://stackoverflow.com/questions/7970622/java-7-jvm-verifyerror-in-eclipse   ## JavaSE-1.7
-	unshift(@ARGS, '-XX:-UseSplitVerifier');
 } else {
 	debug("tests are not enabled, passing -Dmaven.test.skip.exec=true");
 	unshift(@ARGS, '-Dmaven.test.skip.exec=true');
