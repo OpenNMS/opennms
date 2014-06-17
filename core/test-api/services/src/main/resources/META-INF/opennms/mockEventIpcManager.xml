@@ -11,4 +11,13 @@
     <property name="eventIpcManagerProxy" ref="eventIpcManager" />
   </bean>
   
+  <bean id="eventIpcManagerFactory-setInstance" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="mockEventIpcManager">
+    <property name="staticMethod"><value>org.opennms.netmgt.model.events.EventIpcManagerFactory.setIpcManager</value></property>
+    <property name="arguments">
+      <list>
+        <ref bean="mockEventIpcManager"/>
+      </list>
+    </property>
+  </bean>
+
 </beans>

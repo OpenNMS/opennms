@@ -56,6 +56,9 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
+        <configuration>
+          <gwtSdkFirstInClasspath>true</gwtSdkFirstInClasspath>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -480,6 +483,11 @@
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.opennms-gwt-theme</artifactId>
       <version>${project.version}</version>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.poller</groupId>
+      <artifactId>org.opennms.features.poller.remote</artifactId>
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>

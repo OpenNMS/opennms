@@ -1546,6 +1546,11 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.opennms.features.poller</groupId>
+        <artifactId>org.opennms.features.poller.remote</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.instrumentationLogReader</artifactId>
         <version>${project.version}</version>

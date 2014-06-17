@@ -177,7 +177,7 @@ maintained
 <!-- cgallen stopped since poller backend jndi conflicts with JBOSS if on same machine
 	<service>
 		<name>OpenNMS:Name=PollerBackEnd</name>
-		<class-name>org.opennms.netmgt.poller.jmx.RemotePollerBackEnd</class-name>
+		<class-name>org.opennms.netmgt.poller.remote.jmx.RemotePollerBackEnd</class-name>
 		<invoke at="start" pass="0" method="init"/>
 		<invoke at="start" pass="1" method="start"/>
 		<invoke at="status" pass="0" method="status"/>

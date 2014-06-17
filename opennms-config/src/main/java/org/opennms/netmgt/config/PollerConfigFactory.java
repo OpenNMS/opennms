@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
- * Poller service from the poller-configuration xml file.
+ * Poller service from the poller-configuration XML file.
  *
  * A mapping of the configured URLs to the iplist they contain is built at
  * init() time so as to avoid numerous file reads.

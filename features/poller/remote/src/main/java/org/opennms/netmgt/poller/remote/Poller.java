@@ -51,6 +51,8 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
 
     private static final Logger LOG = LoggerFactory.getLogger(Poller.class);
 
+    private final static String LOG4J_CATEGORY = "poller";
+
     private PollerFrontEnd m_pollerFrontEnd;
     private Scheduler m_scheduler;
     private long m_initialSpreadTime = 300000L;
@@ -215,5 +217,8 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
         }
     }
 
+    public static String getLoggingCategory() {
+        return LOG4J_CATEGORY;
+    }
 
 }

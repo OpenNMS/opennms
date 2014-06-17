@@ -31,7 +31,7 @@ package org.opennms.netmgt.threshd;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.model.events.EventIpcManagerFactory;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
