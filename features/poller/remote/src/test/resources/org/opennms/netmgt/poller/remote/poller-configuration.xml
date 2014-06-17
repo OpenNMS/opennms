@@ -153,19 +153,21 @@
 
 	</package>
 
-	<monitor service="HTTP" 	class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/>
-	<monitor service="HTTP-8080"    class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/>
-	<monitor service="HTTP-8000"    class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/>
-	<monitor service="HTTPS" 	class-name="org.opennms.netmgt.poller.monitors.HttpsMonitor"/>
-	<monitor service="SMTP" 	class-name="org.opennms.netmgt.poller.monitors.SmtpMonitor"/>
-	<monitor service="DNS"  	class-name="org.opennms.netmgt.poller.monitors.DnsMonitor" />
-	<monitor service="FTP"  	class-name="org.opennms.netmgt.poller.monitors.FtpMonitor"/>
-	<monitor service="SNMP"         class-name="org.opennms.netmgt.poller.monitors.SnmpMonitor"/>
-	<monitor service="Oracle" 	class-name="org.opennms.netmgt.poller.monitors.TcpMonitor"/>
-	<monitor service="Postgres" 	class-name="org.opennms.netmgt.poller.monitors.TcpMonitor"/>
-	<monitor service="MySQL" 	class-name="org.opennms.netmgt.poller.monitors.TcpMonitor"/>
-	<monitor service="SQLServer" 	class-name="org.opennms.netmgt.poller.monitors.TcpMonitor"/>
-	<monitor service="SSH"		class-name="org.opennms.netmgt.poller.monitors.TcpMonitor"/>
-	<monitor service="IMAP" 	class-name="org.opennms.netmgt.poller.monitors.ImapMonitor"/>
-	<monitor service="POP3" 	class-name="org.opennms.netmgt.poller.monitors.Pop3Monitor"/>
+	<!-- Replace all monitors with MockMonitor so that we don't need the opennms-services monitors -->
+	<monitor service="HTTP" 	class-name="org.opennms.netmgt.mock.MockMonitor"/>
+	<monitor service="HTTP-8080"    class-name="org.opennms.netmgt.mock.MockMonitor"/>
+	<monitor service="HTTP-8000"    class-name="org.opennms.netmgt.mock.MockMonitor"/>
+	<monitor service="HTTPS" 	class-name="org.opennms.netmgt.mock.MockMonitor"/>
+	<monitor service="SMTP" 	class-name="org.opennms.netmgt.mock.MockMonitor"/>
+	<monitor service="DNS"  	class-name="org.opennms.netmgt.mock.MockMonitor" />
+	<monitor service="FTP"  	class-name="org.opennms.netmgt.mock.MockMonitor"/>
+	<monitor service="SNMP"         class-name="org.opennms.netmgt.mock.MockMonitor"/>
+	<monitor service="Oracle" 	class-name="org.opennms.netmgt.mock.MockMonitor"/>
+	<monitor service="Postgres" 	class-name="org.opennms.netmgt.mock.MockMonitor"/>
+	<monitor service="MySQL" 	class-name="org.opennms.netmgt.mock.MockMonitor"/>
+	<monitor service="SQLServer" 	class-name="org.opennms.netmgt.mock.MockMonitor"/>
+	<monitor service="SSH"		class-name="org.opennms.netmgt.mock.MockMonitor"/>
+	<monitor service="IMAP" 	class-name="org.opennms.netmgt.mock.MockMonitor"/>
+	<monitor service="POP3" 	class-name="org.opennms.netmgt.mock.MockMonitor"/>
+	<monitor service="ICMP" 	class-name="org.opennms.netmgt.mock.MockMonitor"/>
 </poller-configuration>

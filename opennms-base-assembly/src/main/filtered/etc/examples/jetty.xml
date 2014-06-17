@@ -34,10 +34,10 @@
 				<Arg>
 					<New class="org.eclipse.jetty.http.ssl.SslContextFactory">
 						<Set name="keyStore"><SystemProperty name="org.opennms.netmgt.jetty.https-keystore" /></Set>
-						<Set name="keyStorePassword"><SystemProperty name="org.opennms.netmgt.jetty.https-keystorepassword" /></Set>
-						<Set name="keyManagerPassword"><SystemProperty name="org.opennms.netmgt.jetty.https-keypassword" /></Set>
+						<Set name="keyStorePassword"><SystemProperty name="org.opennms.netmgt.jetty.https-keystorepassword" default="changeit" /></Set>
+						<Set name="keyManagerPassword"><SystemProperty name="org.opennms.netmgt.jetty.https-keypassword" default="changeit" /></Set>
 						<Set name="trustStore"><SystemProperty name="org.opennms.netmgt.jetty.https-keystore" /></Set>
-						<Set name="trustStorePassword"><SystemProperty name="org.opennms.netmgt.jetty.https-keystorepassword" /></Set>
+						<Set name="trustStorePassword"><SystemProperty name="org.opennms.netmgt.jetty.https-keystorepassword" default="changeit" /></Set>
 					</New>
 				</Arg>
 				<Set name="host"><SystemProperty name="org.opennms.netmgt.jetty.https-host" default="0.0.0.0" /></Set>
