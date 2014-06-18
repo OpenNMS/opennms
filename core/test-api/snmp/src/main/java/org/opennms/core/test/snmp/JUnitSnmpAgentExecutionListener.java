@@ -196,7 +196,7 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
 
             mapper.addProxy(hostAddress, listenAddress);
 
-            LOG.debug(this, "using MockSnmpAgent on {} for 'real' address {}", listenAddress, agentAddress);
+            LOG.debug("using MockSnmpAgent on {} for 'real' address {}", listenAddress, agentAddress);
 
             @SuppressWarnings("unchecked")
             final Map<SnmpAgentAddress,MockSnmpAgent> agents = (Map<SnmpAgentAddress,MockSnmpAgent>)testContext.getAttribute(AGENT_KEY);
