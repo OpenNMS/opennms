@@ -3,7 +3,11 @@ package org.opennms.netmgt.enlinkd;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Criteria;
@@ -13,6 +17,8 @@ import org.opennms.netmgt.dao.api.BridgeBridgeLinkDao;
 import org.opennms.netmgt.dao.api.BridgeElementDao;
 import org.opennms.netmgt.dao.api.BridgeMacLinkDao;
 import org.opennms.netmgt.dao.api.BridgeStpLinkDao;
+import org.opennms.netmgt.dao.api.CdpElementDao;
+import org.opennms.netmgt.dao.api.CdpLinkDao;
 import org.opennms.netmgt.dao.api.IpNetToMediaDao;
 import org.opennms.netmgt.dao.api.IsIsElementDao;
 import org.opennms.netmgt.dao.api.IsIsLinkDao;
@@ -26,6 +32,8 @@ import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.BridgeStpLink;
+import org.opennms.netmgt.model.CdpElement;
+import org.opennms.netmgt.model.CdpLink;
 import org.opennms.netmgt.model.IpNetToMedia;
 import org.opennms.netmgt.model.IsIsElement;
 import org.opennms.netmgt.model.IsIsLink;
@@ -36,6 +44,8 @@ import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.OspfElement;
 import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.netmgt.model.topology.BridgeTopology;
+import org.opennms.netmgt.model.topology.BridgeTopology.BridgeTopologyLink;
 import org.opennms.netmgt.model.topology.LinkableSnmpNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -48,6 +58,10 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
     private PlatformTransactionManager m_transactionManager;
 	
 	private NodeDao m_nodeDao;
+
+	private CdpLinkDao m_cdpLinkDao;
+	
+	private CdpElementDao m_cdpElementDao;
 
 	private LldpLinkDao m_lldpLinkDao;
 	
@@ -71,6 +85,22 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 	
 	private BridgeStpLinkDao m_bridgeStpLinkDao; 
 	
+	volatile Map<Integer,Map<Integer,Set<String>>> m_bftMap = new HashMap<Integer, Map<Integer,Set<String>>>();
+	
+	private void addBridgeForwardingTableEntry(Integer nodeid,Integer bridgeport, String mac) {
+		Map<Integer,Set<String>> bft = new HashMap<Integer, Set<String>>();
+        if (m_bftMap.containsKey(nodeid))
+        	bft = m_bftMap.get(nodeid);
+        Set<String> macs = new HashSet<String>();
+        if (bft.containsKey(bridgeport)) {
+            macs = bft.get(bridgeport);
+        }
+        macs.add(mac);
+
+        bft.put(bridgeport, macs);
+        m_bftMap.put(nodeid, bft);
+	}
+
     @Override
 	public List<LinkableSnmpNode> getSnmpNodeList() {
 		final List<LinkableSnmpNode> nodes = new ArrayList<LinkableSnmpNode>();
@@ -151,8 +181,13 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
 	@Override
 	public void reconcileCdp(int nodeId, Date now) {
-		// TODO Auto-generated method stub
-		
+		CdpElement element = m_cdpElementDao.findByNodeId(nodeId);
+		if (element != null && element.getCdpNodeLastPollTime().getTime() < now.getTime()) {
+			m_cdpElementDao.delete(element);
+			m_cdpElementDao.flush();
+		}
+		m_cdpLinkDao.deleteByNodeIdOlderThen(nodeId, now);
+		m_cdpLinkDao.flush();
 	}
 
 	@Override
@@ -162,15 +197,42 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 	}
 
 	@Override
-	public void reconcileBridge(int nodeId, Date now) {
-		m_bridgeElementDao.deleteByNodeIdOlderThen(nodeId, now);
-		m_bridgeElementDao.flush();
+	public void store(int nodeId, CdpLink link) {
+		if (link == null)
+			return;
+		saveCdpLink(nodeId, link);
+	}
 
-		m_bridgeStpLinkDao.deleteByNodeIdOlderThen(nodeId, now);
-		m_bridgeStpLinkDao.flush();
-		
-		m_bridgeMacLinkDao.deleteByNodeIdOlderThen(nodeId, now);
-		m_bridgeMacLinkDao.flush();
+	@Transactional
+    protected void saveCdpLink(final int nodeId, final CdpLink saveMe) {
+		new UpsertTemplate<CdpLink, CdpLinkDao>(m_transactionManager,m_cdpLinkDao) {
+
+			@Override
+			protected CdpLink query() {
+				return m_dao.get(nodeId, saveMe.getCdpCacheIfIndex());
+			}
+
+			@Override
+			protected CdpLink doUpdate(CdpLink dbCdpLink) {
+				dbCdpLink.merge(saveMe);
+				m_dao.update(dbCdpLink);
+				m_dao.flush();
+				return dbCdpLink;
+			}
+
+			@Override
+			protected CdpLink doInsert() {
+				final OnmsNode node = m_nodeDao.get(nodeId);
+				if ( node == null )
+					return null;
+				saveMe.setNode(node);
+				saveMe.setCdpLinkLastPollTime(saveMe.getCdpLinkCreateTime());
+				m_dao.saveOrUpdate(saveMe);
+				m_dao.flush();
+				return saveMe;
+			}
+			
+		}.execute();
 	}
 
 	@Override
@@ -210,6 +272,29 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 			}
 			
 		}.execute();
+	}
+
+	@Override
+	@Transactional
+	public void store(int nodeId, CdpElement element) {
+		if (element ==  null)
+			return;
+		final OnmsNode node = m_nodeDao.get(nodeId);
+		if ( node == null )
+			return;
+		
+		CdpElement dbelement = node.getCdpElement();
+		if (dbelement != null) {
+			dbelement.merge(element);
+			node.setCdpElement(dbelement);
+		} else {
+			element.setNode(node);
+			element.setCdpNodeLastPollTime(element.getCdpNodeCreateTime());
+			node.setCdpElement(element);
+		}
+
+        m_nodeDao.saveOrUpdate(node);
+		m_nodeDao.flush();
 	}
 
 	@Override
@@ -443,17 +528,120 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 	public void store(int nodeId, BridgeMacLink link) {
 		if (link == null)
 			return;
-		saveBridgeMacLink(nodeId, link);
+		addBridgeForwardingTableEntry(nodeId, link.getBridgePort(), link.getMacAddress());
 		
 	}
 
+	@Override
+	public synchronized void reconcileBridge(int nodeId, Date now) {
+		m_bridgeElementDao.deleteByNodeIdOlderThen(nodeId, now);
+		m_bridgeElementDao.flush();
+
+		m_bridgeStpLinkDao.deleteByNodeIdOlderThen(nodeId, now);
+		m_bridgeStpLinkDao.flush();
+		
+		Map<Integer,Set<String>> bft = m_bftMap.remove(nodeId);
+		if (bft == null || bft.isEmpty())
+			return;
+		Set<String> macs = new HashSet<String>();
+		for (Set<String> portmacs: bft.values()) 
+			macs.addAll(portmacs);
+		
+		Map<Integer,Map<Integer,Set<String>>> savedtopology = new HashMap<Integer, Map<Integer,Set<String>>>();
+		for (BridgeMacLink maclink: m_bridgeMacLinkDao.findAll()) {
+			if (maclink.getNode().getId().intValue() == nodeId)
+				continue;
+			if (macs.contains(maclink.getMacAddress())) {
+				Map<Integer,Set<String>> nodesavedtopology = new HashMap<Integer, Set<String>>();
+				if (savedtopology.containsKey(maclink.getNode().getId())) 
+					nodesavedtopology = savedtopology.get(maclink.getNode().getId());
+				Set<String> macsonport = new HashSet<String>();
+				if (nodesavedtopology.containsKey(maclink.getBridgePort()))
+					macsonport = nodesavedtopology.get(maclink.getBridgePort());
+				macsonport.add(maclink.getMacAddress());
+				nodesavedtopology.put(maclink.getBridgePort(), macsonport);
+				savedtopology.put(maclink.getNode().getId(), nodesavedtopology);
+				break;	
+			}
+		}
+		
+		BridgeTopology topology = new BridgeTopology();
+		for (Integer savednode: savedtopology.keySet()) {
+			topology.addTopology(savednode, savedtopology.get(savednode),new HashSet<Integer>());
+		}
+		Set<Integer> targets = new HashSet<Integer>();
+		targets.add(nodeId);
+		for (BridgeBridgeLink bblink: m_bridgeBridgeLinkDao.findByNodeId(nodeId)) {
+			Map<Integer,Set<String>> nodesavedtopology = new HashMap<Integer, Set<String>>();
+			nodesavedtopology.put(bblink.getDesignatedPort(), new HashSet<String>());
+			topology.addTopology(bblink.getDesignatedNode().getId(), nodesavedtopology, targets);
+		}
+		for (BridgeBridgeLink bblink: m_bridgeBridgeLinkDao.findByDesignatedNodeId(nodeId)) {
+			Map<Integer,Set<String>> nodesavedtopology = new HashMap<Integer, Set<String>>();
+			nodesavedtopology.put(bblink.getBridgePort(), new HashSet<String>());
+			topology.addTopology(bblink.getNode().getId(), nodesavedtopology, targets);
+		}
+		topology.parseBFT(nodeId, bft);
+
+		// now check the topology with the old one
+		// delete the not found links
+		for (BridgeTopologyLink btl: topology.getTopology()) {
+				saveLink(btl);
+		}
+		for (Integer curNodeId: savedtopology.keySet()) {
+			m_bridgeMacLinkDao.deleteByNodeIdOlderThen(curNodeId, now);
+		}
+		m_bridgeMacLinkDao.deleteByNodeIdOlderThen(nodeId, now);
+		m_bridgeMacLinkDao.flush();
+
+		// What about bridge bridge topology
+		// The changes could only be regarding the nodeId
+		m_bridgeBridgeLinkDao.deleteByNodeIdOlderThen(nodeId, now);
+		m_bridgeBridgeLinkDao.deleteByDesignatedNodeIdOlderThen(nodeId, now);
+		m_bridgeBridgeLinkDao.flush();
+
+	}
+	
+	protected void saveLink(final BridgeTopologyLink bridgelink) {
+		OnmsNode node = m_nodeDao.get(bridgelink.getBridgeTopologyPort().getNodeid());
+		if (node == null)
+			return;
+		OnmsNode designatenode = null;
+		if (bridgelink.getDesignateBridgePort() != null)
+			designatenode = m_nodeDao.get(bridgelink.getDesignateBridgePort().getNodeid());
+		if (bridgelink.getMacs().isEmpty() && designatenode != null) {
+			BridgeBridgeLink link = new BridgeBridgeLink();
+			link.setNode(node);
+			link.setBridgePort(bridgelink.getBridgeTopologyPort().getBridgePort());
+			link.setDesignatedNode(designatenode);
+			link.setDesignatedPort(bridgelink.getDesignateBridgePort().getBridgePort());
+			saveBridgeBridgeLink(link);
+			return;
+		} 
+		for (String mac: bridgelink.getMacs()) {
+			BridgeMacLink maclink1 = new BridgeMacLink();
+			maclink1.setNode(node);
+			maclink1.setBridgePort(bridgelink.getBridgeTopologyPort().getBridgePort());
+			maclink1.setMacAddress(mac);
+			saveBridgeMacLink(maclink1);
+			if (designatenode == null)
+				continue;
+			BridgeMacLink maclink2 = new BridgeMacLink();
+			maclink2.setNode(designatenode);
+			maclink2.setBridgePort(bridgelink.getDesignateBridgePort().getBridgePort());
+			maclink2.setMacAddress(mac);
+			saveBridgeMacLink(maclink2);
+			
+		}
+	}
+
 	@Transactional
-    protected void saveBridgeMacLink(final int nodeId, final BridgeMacLink saveMe) {
+    protected void saveBridgeMacLink(final BridgeMacLink saveMe) {
 		new UpsertTemplate<BridgeMacLink, BridgeMacLinkDao>(m_transactionManager,m_bridgeMacLinkDao) {
 
 			@Override
 			protected BridgeMacLink query() {
-				return m_dao.getByNodeIdBridgePort(nodeId,saveMe.getBridgePort());
+				return m_dao.getByNodeIdBridgePort(saveMe.getNode().getId(),saveMe.getBridgePort());
 			}
 
 			@Override
@@ -466,9 +654,6 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
 			@Override
 			protected BridgeMacLink doInsert() {
-				final OnmsNode node = m_nodeDao.get(nodeId);
-				if ( node == null )
-					return null;
 				saveMe.setBridgeMacLinkLastPollTime(saveMe.getBridgeMacLinkCreateTime());
 				m_dao.saveOrUpdate(saveMe);
 				m_dao.flush();
@@ -478,13 +663,14 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 		}.execute();
 	}
 
+	
 	@Transactional
-    protected void saveBridgeBridgeLink(final int nodeId, final BridgeBridgeLink saveMe) {
+    protected void saveBridgeBridgeLink(final BridgeBridgeLink saveMe) {
 		new UpsertTemplate<BridgeBridgeLink, BridgeBridgeLinkDao>(m_transactionManager,m_bridgeBridgeLinkDao) {
 
 			@Override
 			protected BridgeBridgeLink query() {
-				return m_dao.getByNodeIdBridgePort(nodeId,saveMe.getBridgePort());
+				return m_dao.getByNodeIdBridgePort(saveMe.getNode().getId(),saveMe.getBridgePort());
 			}
 
 			@Override
@@ -497,9 +683,6 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
 			@Override
 			protected BridgeBridgeLink doInsert() {
-				final OnmsNode node = m_nodeDao.get(nodeId);
-				if ( node == null )
-					return null;
 				saveMe.setBridgeBridgeLinkLastPollTime(saveMe.getBridgeBridgeLinkCreateTime());
 				m_dao.saveOrUpdate(saveMe);
 				m_dao.flush();
@@ -552,6 +735,13 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 		}.execute();
 	}
 
+	public CdpLinkDao getCdpLinkDao() {
+		return m_cdpLinkDao;
+	}
+
+	public void setCdpLinkDao(CdpLinkDao cdpLinkDao) {
+		m_cdpLinkDao = cdpLinkDao;
+	}
 	
 	public LldpLinkDao getLldpLinkDao() {
 		return m_lldpLinkDao;
@@ -583,6 +773,14 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
 	public void setIsisLinkDao(IsIsLinkDao isisLinkDao) {
 		m_isisLinkDao = isisLinkDao;
+	}
+
+	public CdpElementDao getCdpElementDao() {
+		return m_cdpElementDao;
+	}
+
+	public void setCdpElementDao(CdpElementDao cdpElementDao) {
+		m_cdpElementDao = cdpElementDao;
 	}
 
 	public LldpElementDao getLldpElementDao() {
@@ -648,4 +846,5 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 	public void setIpNetToMediaDao(IpNetToMediaDao ipNetToMediaDao) {
 		m_ipNetToMediaDao = ipNetToMediaDao;
 	}
+
 }

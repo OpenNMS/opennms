@@ -28,15 +28,20 @@
 
 package org.opennms.netmgt.model.topology;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
+import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.model.topology.BridgeTopology.BridgeTopologyLink;
 import org.opennms.netmgt.model.topology.BridgeTopology.BridgeTopologyPort;
-import org.opennms.netmgt.model.topology.BridgeTopology.SwitchPort;
 public class DefaultBridgeTopologyTest {
     
     @Before
@@ -57,17 +62,13 @@ public class DefaultBridgeTopologyTest {
 	protected void printBridgeTopologyLink(BridgeTopologyLink path) {
        System.err.println("");
        System.err.println("------link-----");
+       System.err.println("macs on link: " + path.getMacs());
        System.err.println("------bridge port-----");
        printBridgeTopologyPort(path.getBridgeTopologyPort());
-       if (path.getDesignatebridgePort() != null ) {
+       if (path.getDesignateBridgePort() != null ) {
 	       System.err.println("------designated port-----");
-    	   printBridgeTopologyPort(path.getDesignatebridgePort());
+    	   printBridgeTopologyPort(path.getDesignateBridgePort());
        }
-       if (path.getLinkedSwitchPort() != null) {
-	       System.err.println("------linked switch port-----");
-    	   System.err.println(path.getLinkedSwitchPort());
-       }
-       System.err.println("macs on link: " + path.getMacs());
 	}
 
 	protected void printBridgeTopologyPort(BridgeTopologyPort port) {
@@ -76,19 +77,23 @@ public class DefaultBridgeTopologyTest {
 		System.err.println("learned macs: " + port.getMacs());
 	}
 	
-	protected void printSwitchPort(SwitchPort port) {
-		System.err.println("nodeid: " + port.getNodeid());
-		System.err.println("ifindex: " + port.getIfindex());
-	}
+	private Map<Integer,Set<String>> addBridgeForwardingTableEntry(Integer bridgeport, String mac, Map<Integer,Set<String>> bft) {
+        Set<String> macs = new HashSet<String>();
+        if (bft.containsKey(bridgeport)) {
+            macs = bft.get(bridgeport);
+        }
+        macs.add(mac);
 
+        bft.put(bridgeport, macs);
+		return bft;
+	}
 		
 	@Test
     public void testOneBridgeOnePortOneMac() throws Exception {
 
         Integer nodeA  = 10;
 
-        LinkableSnmpNode snmpnodeA = new LinkableSnmpNode(nodeA, null, null, null);
-        LinkableNode linkablenodeA = new LinkableNode(snmpnodeA, null);
+        Map<Integer,Set<String>> bftA = new HashMap<Integer, Set<String>>();
         
         Integer portA1 = 1;
         Integer portA2 = 2;
@@ -102,18 +107,40 @@ public class DefaultBridgeTopologyTest {
         String mac4 = "000daaaa0004"; // learned on port A2 
         String mac5 = "000daaaa0005"; // learned on port A2 
 
-        linkablenodeA.addBridgeForwardingTableEntry(portA1, mac1);
-        linkablenodeA.addBridgeForwardingTableEntry(portA2, mac2);
-        linkablenodeA.addBridgeForwardingTableEntry(portA3, mac3);
-        linkablenodeA.addBridgeForwardingTableEntry(portA4, mac4);
-        linkablenodeA.addBridgeForwardingTableEntry(portA5, mac5);
+        bftA = addBridgeForwardingTableEntry(portA1, mac1, bftA);
+        bftA = addBridgeForwardingTableEntry(portA2, mac2, bftA);
+        bftA = addBridgeForwardingTableEntry(portA3, mac3, bftA);
+        bftA = addBridgeForwardingTableEntry(portA4, mac4, bftA);
+        bftA = addBridgeForwardingTableEntry(portA5, mac5, bftA);
 
         BridgeTopology bridgeTopology = new BridgeTopology();
         
-        bridgeTopology.addNodeToTopology(linkablenodeA);
+        bridgeTopology.parseBFT(nodeA,bftA);
 
-        printBridgeTopologyLinks(bridgeTopology.getTopology());
-
+        List<BridgeTopologyLink> links = bridgeTopology.getTopology();
+        printBridgeTopologyLinks(links);
+        assertEquals(5, links.size());
+        for (BridgeTopologyLink link: links) {
+        	assertEquals(null,link.getDesignateBridgePort());
+        	BridgeTopologyPort port = link.getBridgeTopologyPort();
+        	assertEquals(nodeA, port.getNodeid());
+    		assertEquals(1, link.getMacs().size());
+    		assertEquals(1, port.getMacs().size());
+    		assertEquals(port.getMacs().iterator().next(),link.getMacs().iterator().next());
+        	if (link.getBridgeTopologyPort().getBridgePort() == portA1) {
+        		assertEquals(mac1, link.getMacs().iterator().next());
+        	} else if (link.getBridgeTopologyPort().getBridgePort() == portA2) {
+        		assertEquals(mac2, link.getMacs().iterator().next());
+        	} else if (link.getBridgeTopologyPort().getBridgePort() == portA3) {
+        		assertEquals(mac3, link.getMacs().iterator().next());
+        	} else if (link.getBridgeTopologyPort().getBridgePort() == portA4) {
+        		assertEquals(mac4, link.getMacs().iterator().next());
+        	} else if (link.getBridgeTopologyPort().getBridgePort() == portA5) {
+        		assertEquals(mac5, link.getMacs().iterator().next());
+        	} else {
+        		assertEquals(-1, 1);
+        	}
+        }
 	}
 
 	@Test
@@ -128,19 +155,35 @@ public class DefaultBridgeTopologyTest {
         String mac3 = "000daaaa0003"; // port A1
         String mac4 = "000daaaa0004"; // port A1
 
-        LinkableSnmpNode snmpnodeA = new LinkableSnmpNode(nodeA, null, null, null);
-        LinkableNode linkablenodeA = new LinkableNode(snmpnodeA, null);
+        Map<Integer,Set<String>> bftA = new HashMap<Integer, Set<String>>();
 
-        linkablenodeA.addBridgeForwardingTableEntry(portA1, mac1);
-        linkablenodeA.addBridgeForwardingTableEntry(portA1, mac2);
-        linkablenodeA.addBridgeForwardingTableEntry(portA1, mac3);
-        linkablenodeA.addBridgeForwardingTableEntry(portA1, mac4);
+        bftA = addBridgeForwardingTableEntry(portA1, mac1,bftA);
+        bftA =addBridgeForwardingTableEntry(portA1, mac2,bftA);
+        bftA =addBridgeForwardingTableEntry(portA1, mac3,bftA);
+        bftA =addBridgeForwardingTableEntry(portA1, mac4,bftA);
         
         BridgeTopology bridgeTopology = new BridgeTopology();
         
-        bridgeTopology.addNodeToTopology(linkablenodeA);
+        bridgeTopology.parseBFT(nodeA,bftA);
 
-        printBridgeTopologyLinks(bridgeTopology.getTopology());
+        List<BridgeTopologyLink> links = bridgeTopology.getTopology();
+        printBridgeTopologyLinks(links);
+        assertEquals(1, links.size());
+        for (BridgeTopologyLink link: links) {
+        	BridgeTopologyPort port = link.getBridgeTopologyPort();
+    		assertEquals(port.getMacs(),link.getMacs());
+        	assertEquals(null,link.getDesignateBridgePort());
+        	if (link.getBridgeTopologyPort().getBridgePort() == portA1) {
+        		assertEquals(4, link.getMacs().size());
+        		Iterator<String> macs = link.getMacs().iterator();
+        		assertEquals(mac4, macs.next());
+        		assertEquals(mac3, macs.next());
+        		assertEquals(mac2, macs.next());
+        		assertEquals(mac1, macs.next());
+        	} else {
+        		assertEquals(-1, 1);
+        	}
+        }
 
 	}
 
@@ -178,35 +221,81 @@ public class DefaultBridgeTopologyTest {
 		String mac252 = "000daaaa0252"; // port A25
 		String mac253 = "000daaaa0253"; // port A25
 		
-        LinkableSnmpNode snmpnodeA = new LinkableSnmpNode(nodeA, null, null, null);
-        LinkableNode linkablenodeA = new LinkableNode(snmpnodeA, null);
+        Map<Integer,Set<String>> bftA = new HashMap<Integer, Set<String>>();
 
-        linkablenodeA.addBridgeForwardingTableEntry(portA1, mac1);
-        linkablenodeA.addBridgeForwardingTableEntry(portA2, mac2);
-        linkablenodeA.addBridgeForwardingTableEntry(portA3, mac3);
-        linkablenodeA.addBridgeForwardingTableEntry(portA4, mac4);
+        bftA =addBridgeForwardingTableEntry(portA1, mac1,bftA);
+        bftA =addBridgeForwardingTableEntry(portA2, mac2,bftA);
+        bftA =addBridgeForwardingTableEntry(portA3, mac3,bftA);
+        bftA =addBridgeForwardingTableEntry(portA4, mac4,bftA);
 
-        linkablenodeA.addBridgeForwardingTableEntry(portA23, mac231);
-        linkablenodeA.addBridgeForwardingTableEntry(portA23, mac232);
-        linkablenodeA.addBridgeForwardingTableEntry(portA23, mac233);
-        linkablenodeA.addBridgeForwardingTableEntry(portA23, mac234);
+        bftA =addBridgeForwardingTableEntry(portA23, mac231,bftA);
+        bftA =addBridgeForwardingTableEntry(portA23, mac232,bftA);
+        bftA =addBridgeForwardingTableEntry(portA23, mac233,bftA);
+        bftA =addBridgeForwardingTableEntry(portA23, mac234,bftA);
 
-        linkablenodeA.addBridgeForwardingTableEntry(portA24, mac241);
-        linkablenodeA.addBridgeForwardingTableEntry(portA24, mac242);
-        linkablenodeA.addBridgeForwardingTableEntry(portA24, mac243);
-        linkablenodeA.addBridgeForwardingTableEntry(portA24, mac244);
-        linkablenodeA.addBridgeForwardingTableEntry(portA24, mac245);
+        bftA =addBridgeForwardingTableEntry(portA24, mac241,bftA);
+        bftA =addBridgeForwardingTableEntry(portA24, mac242,bftA);
+        bftA =addBridgeForwardingTableEntry(portA24, mac243,bftA);
+        bftA =addBridgeForwardingTableEntry(portA24, mac244,bftA);
+        bftA =addBridgeForwardingTableEntry(portA24, mac245,bftA);
 
-        linkablenodeA.addBridgeForwardingTableEntry(portA25, mac251);
-        linkablenodeA.addBridgeForwardingTableEntry(portA25, mac252);
-        linkablenodeA.addBridgeForwardingTableEntry(portA25, mac253);
+        bftA =addBridgeForwardingTableEntry(portA25, mac251,bftA);
+        bftA =addBridgeForwardingTableEntry(portA25, mac252,bftA);
+        bftA =addBridgeForwardingTableEntry(portA25, mac253,bftA);
         
 
         BridgeTopology bridgeTopology = new BridgeTopology();
         
-        bridgeTopology.addNodeToTopology(linkablenodeA);
+        bridgeTopology.parseBFT(nodeA,bftA);
 
-        printBridgeTopologyLinks(bridgeTopology.getTopology());
+        List<BridgeTopologyLink> links = bridgeTopology.getTopology();
+        printBridgeTopologyLinks(links);
+        assertEquals(7, links.size());
+        for (BridgeTopologyLink link: links) {
+        	BridgeTopologyPort port = link.getBridgeTopologyPort();
+    		assertEquals(port.getMacs(),link.getMacs());
+        	assertEquals(null,link.getDesignateBridgePort());
+        	if (link.getBridgeTopologyPort().getBridgePort() == portA1) {
+        		assertEquals(1, link.getMacs().size());
+        		Iterator<String> macs = link.getMacs().iterator();
+        		assertEquals(mac1, macs.next());
+        	} else if (link.getBridgeTopologyPort().getBridgePort() == portA2) {
+        		assertEquals(1, link.getMacs().size());
+        		Iterator<String> macs = link.getMacs().iterator();
+        		assertEquals(mac2, macs.next());
+        	} else if (link.getBridgeTopologyPort().getBridgePort() == portA3) {
+        		assertEquals(1, link.getMacs().size());
+        		Iterator<String> macs = link.getMacs().iterator();
+        		assertEquals(mac3, macs.next());
+        	} else if (link.getBridgeTopologyPort().getBridgePort() == portA4) {
+        		assertEquals(1, link.getMacs().size());
+        		Iterator<String> macs = link.getMacs().iterator();
+        		assertEquals(mac4, macs.next());
+        	} else if (link.getBridgeTopologyPort().getBridgePort() == portA23) {
+        		assertEquals(4, link.getMacs().size());
+        		Iterator<String> macs = link.getMacs().iterator();
+        		assertEquals(mac232, macs.next());
+        		assertEquals(mac231, macs.next());
+        		assertEquals(mac234, macs.next());
+        		assertEquals(mac233, macs.next());
+        	} else if (link.getBridgeTopologyPort().getBridgePort() == portA24) {
+        		assertEquals(5, link.getMacs().size());
+        		Iterator<String> macs = link.getMacs().iterator();
+        		assertEquals(mac241, macs.next());
+        		assertEquals(mac245, macs.next());
+        		assertEquals(mac244, macs.next());
+        		assertEquals(mac243, macs.next());
+        		assertEquals(mac242, macs.next());
+        	} else if (link.getBridgeTopologyPort().getBridgePort() == portA25) {
+        		assertEquals(3, link.getMacs().size());
+        		Iterator<String> macs = link.getMacs().iterator();
+        		assertEquals(mac253, macs.next());
+        		assertEquals(mac251, macs.next());
+        		assertEquals(mac252, macs.next());
+        	} else {
+        		assertEquals(-1, 1);
+        	}
+        }
 
 	}
 
@@ -238,41 +327,90 @@ public class DefaultBridgeTopologyTest {
         String mac8 = "000daaaa0008"; // port AB ---port B8
         String mac9 = "000daaaa0009"; // port AB ---port B9
 
-        LinkableSnmpNode snmpnodeA = new LinkableSnmpNode(nodeA, null, null, null);
-        LinkableNode linkablenodeA = new LinkableNode(snmpnodeA, null);
+        Map<Integer,Set<String>> bftA = new HashMap<Integer, Set<String>>();
 
-        linkablenodeA.addBridgeForwardingTableEntry(portA1, mac1);
-        linkablenodeA.addBridgeForwardingTableEntry(portA2, mac2);
-        linkablenodeA.addBridgeForwardingTableEntry(portA3, mac3);
-        linkablenodeA.addBridgeForwardingTableEntry(portA4, mac4);
-        linkablenodeA.addBridgeForwardingTableEntry(portA5, mac5);
+        bftA =addBridgeForwardingTableEntry(portA1, mac1,bftA);
+        bftA =addBridgeForwardingTableEntry(portA2, mac2,bftA);
+        bftA =addBridgeForwardingTableEntry(portA3, mac3,bftA);
+        bftA =addBridgeForwardingTableEntry(portA4, mac4,bftA);
+        bftA =addBridgeForwardingTableEntry(portA5, mac5,bftA);
 
-        linkablenodeA.addBridgeForwardingTableEntry(portAB, mac6);
-        linkablenodeA.addBridgeForwardingTableEntry(portAB, mac7);
-        linkablenodeA.addBridgeForwardingTableEntry(portAB, mac8);
-        linkablenodeA.addBridgeForwardingTableEntry(portAB, mac9);
+        bftA =addBridgeForwardingTableEntry(portAB, mac6,bftA);
+        bftA =addBridgeForwardingTableEntry(portAB, mac7,bftA);
+        bftA =addBridgeForwardingTableEntry(portAB, mac8,bftA);
+        bftA =addBridgeForwardingTableEntry(portAB, mac9,bftA);
         
-        LinkableSnmpNode snmpnodeB = new LinkableSnmpNode(nodeB, null, null, null);
-        LinkableNode linkablenodeB = new LinkableNode(snmpnodeB, null);
+        Map<Integer,Set<String>> bftB = new HashMap<Integer, Set<String>>();
 
-        linkablenodeB.addBridgeForwardingTableEntry(portBA, mac1);
-        linkablenodeB.addBridgeForwardingTableEntry(portBA, mac2);
-        linkablenodeB.addBridgeForwardingTableEntry(portBA, mac3);
-        linkablenodeB.addBridgeForwardingTableEntry(portBA, mac4);
-        linkablenodeB.addBridgeForwardingTableEntry(portBA, mac5);
+        bftB =addBridgeForwardingTableEntry(portBA, mac1,bftB);
+        bftB =addBridgeForwardingTableEntry(portBA, mac2,bftB);
+        bftB =addBridgeForwardingTableEntry(portBA, mac3,bftB);
+        bftB =addBridgeForwardingTableEntry(portBA, mac4,bftB);
+        bftB =addBridgeForwardingTableEntry(portBA, mac5,bftB);
 
-        linkablenodeB.addBridgeForwardingTableEntry(portB6, mac6);
-        linkablenodeB.addBridgeForwardingTableEntry(portB7, mac7);
-        linkablenodeB.addBridgeForwardingTableEntry(portB8, mac8);
-        linkablenodeB.addBridgeForwardingTableEntry(portB9, mac9);
+        bftB =addBridgeForwardingTableEntry(portB6, mac6,bftB);
+        bftB =addBridgeForwardingTableEntry(portB7, mac7,bftB);
+        bftB =addBridgeForwardingTableEntry(portB8, mac8,bftB);
+        bftB =addBridgeForwardingTableEntry(portB9, mac9,bftB);
 
         BridgeTopology bridgeTopology = new BridgeTopology();
         
-        bridgeTopology.addNodeToTopology(linkablenodeA);
-        bridgeTopology.addNodeToTopology(linkablenodeB);
+        bridgeTopology.parseBFT(nodeA,bftA);
+        bridgeTopology.parseBFT(nodeB,bftB);
 
-        printBridgeTopologyLinks(bridgeTopology.getTopology());
-
+        List<BridgeTopologyLink> links = bridgeTopology.getTopology();
+        printBridgeTopologyLinks(links);
+        assertEquals(10, links.size());
+        for (BridgeTopologyLink link: links) {
+        	if (link.getMacs().isEmpty()) {
+        		assertEquals(nodeA, link.getBridgeTopologyPort().getNodeid());
+        		assertEquals(portAB,link.getBridgeTopologyPort().getBridgePort());
+        		assertEquals(nodeB, link.getDesignateBridgePort().getNodeid());
+        		assertEquals(portBA,link.getDesignateBridgePort().getBridgePort());
+        	} else {
+        		assertEquals(1, link.getMacs().size());
+        		String mac = link.getMacs().iterator().next();
+        		if (mac.equals(mac1)) {
+            		assertEquals(nodeA, link.getBridgeTopologyPort().getNodeid());
+            		assertEquals(portA1,link.getBridgeTopologyPort().getBridgePort());
+            		assertEquals(null, link.getDesignateBridgePort());
+        		} else if (mac.equals(mac2)) {
+            		assertEquals(nodeA, link.getBridgeTopologyPort().getNodeid());
+            		assertEquals(portA2,link.getBridgeTopologyPort().getBridgePort());
+            		assertEquals(null, link.getDesignateBridgePort());
+        		} else if (mac.equals(mac3)) {
+            		assertEquals(nodeA, link.getBridgeTopologyPort().getNodeid());
+            		assertEquals(portA3,link.getBridgeTopologyPort().getBridgePort());
+            		assertEquals(null, link.getDesignateBridgePort());
+        		} else if (mac.equals(mac4)) {
+            		assertEquals(nodeA, link.getBridgeTopologyPort().getNodeid());
+            		assertEquals(portA4,link.getBridgeTopologyPort().getBridgePort());
+            		assertEquals(null, link.getDesignateBridgePort());
+        		} else if (mac.equals(mac5)) {
+            		assertEquals(nodeA, link.getBridgeTopologyPort().getNodeid());
+            		assertEquals(portA5,link.getBridgeTopologyPort().getBridgePort());
+            		assertEquals(null, link.getDesignateBridgePort());
+        		} else if (mac.equals(mac6)) {
+            		assertEquals(nodeB, link.getBridgeTopologyPort().getNodeid());
+            		assertEquals(portB6,link.getBridgeTopologyPort().getBridgePort());
+            		assertEquals(null, link.getDesignateBridgePort());
+        		} else if (mac.equals(mac7)) {
+            		assertEquals(nodeB, link.getBridgeTopologyPort().getNodeid());
+            		assertEquals(portB7,link.getBridgeTopologyPort().getBridgePort());
+            		assertEquals(null, link.getDesignateBridgePort());
+        		} else if (mac.equals(mac8)) {
+            		assertEquals(nodeB, link.getBridgeTopologyPort().getNodeid());
+            		assertEquals(portB8,link.getBridgeTopologyPort().getBridgePort());
+            		assertEquals(null, link.getDesignateBridgePort());
+        		} else if (mac.equals(mac9)) {
+            		assertEquals(nodeB, link.getBridgeTopologyPort().getNodeid());
+            		assertEquals(portB9,link.getBridgeTopologyPort().getBridgePort());
+            		assertEquals(null, link.getDesignateBridgePort());
+        		} else {
+        			assertEquals(false, true);
+        		}
+        	}
+        }
   
     }
 
@@ -297,40 +435,72 @@ public class DefaultBridgeTopologyTest {
         String mac8 = "000daaaa0008"; // port A8 ---port BA
         String mac9 = "000daaaa0009"; // port AB ---port BA
 
-        LinkableSnmpNode snmpnodeA = new LinkableSnmpNode(nodeA, null, null, null);
-        LinkableNode linkablenodeA = new LinkableNode(snmpnodeA, null);
+        Map<Integer,Set<String>> bftA = new HashMap<Integer, Set<String>>();
 
-        linkablenodeA.addBridgeForwardingTableEntry(portAB, mac1);
-        linkablenodeA.addBridgeForwardingTableEntry(portAB, mac2);
-        linkablenodeA.addBridgeForwardingTableEntry(portAB, mac3);
-        linkablenodeA.addBridgeForwardingTableEntry(portAB, mac4);
-        linkablenodeA.addBridgeForwardingTableEntry(portAB, mac5);
+        bftA =addBridgeForwardingTableEntry(portAB, mac1,bftA);
+        bftA =addBridgeForwardingTableEntry(portAB, mac2,bftA);
+        bftA =addBridgeForwardingTableEntry(portAB, mac3,bftA);
+        bftA =addBridgeForwardingTableEntry(portAB, mac4,bftA);
+        bftA =addBridgeForwardingTableEntry(portAB, mac5,bftA);
 
-        linkablenodeA.addBridgeForwardingTableEntry(portAB, mac6);
-        linkablenodeA.addBridgeForwardingTableEntry(portAB, mac7);
-        linkablenodeA.addBridgeForwardingTableEntry(portA8, mac8);
-        linkablenodeA.addBridgeForwardingTableEntry(portAB, mac9);
+        bftA =addBridgeForwardingTableEntry(portAB, mac6,bftA);
+        bftA =addBridgeForwardingTableEntry(portAB, mac7,bftA);
+        bftA =addBridgeForwardingTableEntry(portA8, mac8,bftA);
+        bftA =addBridgeForwardingTableEntry(portAB, mac9,bftA);
         
-        LinkableSnmpNode snmpnodeB = new LinkableSnmpNode(nodeB, null, null, null);
-        LinkableNode linkablenodeB = new LinkableNode(snmpnodeB, null);
+        Map<Integer,Set<String>> bftB = new HashMap<Integer, Set<String>>();
 
-        linkablenodeB.addBridgeForwardingTableEntry(portBA, mac1);
-        linkablenodeB.addBridgeForwardingTableEntry(portBA, mac2);
-        linkablenodeB.addBridgeForwardingTableEntry(portBA, mac3);
-        linkablenodeB.addBridgeForwardingTableEntry(portBA, mac4);
-        linkablenodeB.addBridgeForwardingTableEntry(portBA, mac5);
+        bftB =addBridgeForwardingTableEntry(portBA, mac1,bftB);
+        bftB =addBridgeForwardingTableEntry(portBA, mac2,bftB);
+        bftB =addBridgeForwardingTableEntry(portBA, mac3,bftB);
+        bftB =addBridgeForwardingTableEntry(portBA, mac4,bftB);
+        bftB =addBridgeForwardingTableEntry(portBA, mac5,bftB);
 
-        linkablenodeB.addBridgeForwardingTableEntry(portB6, mac6);
-        linkablenodeB.addBridgeForwardingTableEntry(portBA, mac7);
-        linkablenodeB.addBridgeForwardingTableEntry(portBA, mac8);
-        linkablenodeB.addBridgeForwardingTableEntry(portBA, mac9);
+        bftB =addBridgeForwardingTableEntry(portB6, mac6,bftB);
+        bftB =addBridgeForwardingTableEntry(portBA, mac7,bftB);
+        bftB =addBridgeForwardingTableEntry(portBA, mac8,bftB);
+        bftB =addBridgeForwardingTableEntry(portBA, mac9,bftB);
 
         BridgeTopology bridgeTopology = new BridgeTopology();
         
-        bridgeTopology.addNodeToTopology(linkablenodeA);
-        bridgeTopology.addNodeToTopology(linkablenodeB);
+        bridgeTopology.parseBFT(nodeA,bftA);
+        bridgeTopology.parseBFT(nodeB,bftB);
 
-        printBridgeTopologyLinks(bridgeTopology.getTopology());
+        List<BridgeTopologyLink> links = bridgeTopology.getTopology();
+        printBridgeTopologyLinks(links);
+        assertEquals(3, links.size());
+        
+        for (BridgeTopologyLink link: links) {
+        	assertEquals(false, link.getMacs().isEmpty());
+        	if (link.getMacs().contains(mac1)) {
+        		assertEquals(7, link.getMacs().size());
+        		assertEquals(true, link.getMacs().contains(mac2));
+        		assertEquals(true, link.getMacs().contains(mac3));
+        		assertEquals(true, link.getMacs().contains(mac4));
+        		assertEquals(true, link.getMacs().contains(mac5));
+        		assertEquals(false, link.getMacs().contains(mac6));
+        		assertEquals(true, link.getMacs().contains(mac7));
+        		assertEquals(false, link.getMacs().contains(mac8));
+        		assertEquals(true, link.getMacs().contains(mac9));
+        		assertEquals(nodeA, link.getBridgeTopologyPort().getNodeid());
+        		assertEquals(portAB,link.getBridgeTopologyPort().getBridgePort());
+        		assertEquals(nodeB, link.getDesignateBridgePort().getNodeid());
+        		assertEquals(portBA,link.getDesignateBridgePort().getBridgePort());
+    		} else if (link.getMacs().contains(mac6)) {
+        		assertEquals(1, link.getMacs().size());
+        		assertEquals(nodeB, link.getBridgeTopologyPort().getNodeid());
+        		assertEquals(portB6,link.getBridgeTopologyPort().getBridgePort());
+        		assertEquals(null, link.getDesignateBridgePort());
+    		} else if (link.getMacs().contains(mac8)) {
+        		assertEquals(1, link.getMacs().size());
+        		assertEquals(nodeA, link.getBridgeTopologyPort().getNodeid());
+        		assertEquals(portA8,link.getBridgeTopologyPort().getBridgePort());
+        		assertEquals(null, link.getDesignateBridgePort());
+    		} else {
+    			assertEquals(false, true);
+    		}
+    	}
+
 
     }
 
@@ -352,30 +522,55 @@ public class DefaultBridgeTopologyTest {
         String macB21 = "000daa000b21"; // port AB ---port B2 
         String macB22 = "000daa000b22"; // port AB ---port B2
         
-        LinkableSnmpNode snmpnodeA = new LinkableSnmpNode(nodeA, null, null, null);
-        LinkableNode linkablenodeA = new LinkableNode(snmpnodeA, null);
+        Map<Integer,Set<String>> bftA = new HashMap<Integer, Set<String>>();
 
-        linkablenodeA.addBridgeForwardingTableEntry(portA1, macA11);
-        linkablenodeA.addBridgeForwardingTableEntry(portA1, macA12);
-        linkablenodeA.addBridgeForwardingTableEntry(portAB, macAB);
-        linkablenodeA.addBridgeForwardingTableEntry(portAB, macB21);
-        linkablenodeA.addBridgeForwardingTableEntry(portAB, macB22);
+        bftA =addBridgeForwardingTableEntry(portA1, macA11,bftA);
+        bftA =addBridgeForwardingTableEntry(portA1, macA12,bftA);
+        bftA =addBridgeForwardingTableEntry(portAB, macAB,bftA);
+        bftA =addBridgeForwardingTableEntry(portAB, macB21,bftA);
+        bftA =addBridgeForwardingTableEntry(portAB, macB22,bftA);
 
-        LinkableSnmpNode snmpnodeB = new LinkableSnmpNode(nodeB, null, null, null);
-        LinkableNode linkablenodeB = new LinkableNode(snmpnodeB, null);
+        Map<Integer,Set<String>> bftB = new HashMap<Integer, Set<String>>();
 
-        linkablenodeB.addBridgeForwardingTableEntry(portBA, macA11);
-        linkablenodeB.addBridgeForwardingTableEntry(portBA, macA12);
-        linkablenodeB.addBridgeForwardingTableEntry(portBA, macAB);
-        linkablenodeB.addBridgeForwardingTableEntry(portB2, macB21);
-        linkablenodeB.addBridgeForwardingTableEntry(portB2, macB22);
+        bftB =addBridgeForwardingTableEntry(portBA, macA11,bftB);
+        bftB =addBridgeForwardingTableEntry(portBA, macA12,bftB);
+        bftB =addBridgeForwardingTableEntry(portBA, macAB,bftB);
+        bftB =addBridgeForwardingTableEntry(portB2, macB21,bftB);
+        bftB =addBridgeForwardingTableEntry(portB2, macB22,bftB);
 
         BridgeTopology bridgeTopology = new BridgeTopology();
         
-        bridgeTopology.addNodeToTopology(linkablenodeA);
-        bridgeTopology.addNodeToTopology(linkablenodeB);
+        bridgeTopology.parseBFT(nodeA,bftA);
+        bridgeTopology.parseBFT(nodeB,bftB);
 
-        printBridgeTopologyLinks(bridgeTopology.getTopology());
+        List<BridgeTopologyLink> links = bridgeTopology.getTopology();
+        printBridgeTopologyLinks(links);
+        assertEquals(3, links.size());
+        
+        for (BridgeTopologyLink link: links) {
+        	assertEquals(false, link.getMacs().isEmpty());
+        	if (link.getMacs().contains(macAB)) {
+        		assertEquals(1, link.getMacs().size());
+        		assertEquals(nodeA, link.getBridgeTopologyPort().getNodeid());
+        		assertEquals(portAB,link.getBridgeTopologyPort().getBridgePort());
+        		assertEquals(nodeB, link.getDesignateBridgePort().getNodeid());
+        		assertEquals(portBA,link.getDesignateBridgePort().getBridgePort());
+    		} else if (link.getMacs().contains(macA12)) {
+        		assertEquals(2, link.getMacs().size());
+        		assertEquals(true, link.getMacs().contains(macA12));
+        		assertEquals(nodeA, link.getBridgeTopologyPort().getNodeid());
+        		assertEquals(portA1,link.getBridgeTopologyPort().getBridgePort());
+        		assertEquals(null, link.getDesignateBridgePort());
+    		} else if (link.getMacs().contains(macB21)) {
+        		assertEquals(2, link.getMacs().size());
+        		assertEquals(true, link.getMacs().contains(macB22));
+        		assertEquals(nodeB, link.getBridgeTopologyPort().getNodeid());
+        		assertEquals(portB2,link.getBridgeTopologyPort().getBridgePort());
+        		assertEquals(null, link.getDesignateBridgePort());
+    		} else {
+    			assertEquals(false, true);
+    		}
+        }
 
 	}
 
@@ -384,13 +579,23 @@ public class DefaultBridgeTopologyTest {
 		ABCTopology topology = new ABCTopology();
         
 		BridgeTopology bridgeTopology = new BridgeTopology();
+        bridgeTopology.parseBFT(topology.nodeA,topology.bftA);
+        bridgeTopology.parseBFT(topology.nodeB,topology.bftB);
+
+        topology.checkAB(bridgeTopology.getTopology());
+
+	}
+
+	@Test
+	public void testTwoConnectedBridgeTopologyBA() {
+		ABCTopology topology = new ABCTopology();
         
-        bridgeTopology.addNodeToTopology(topology.getA());
-        bridgeTopology.addNodeToTopology(topology.getB());
+		BridgeTopology bridgeTopology = new BridgeTopology();
+        
+        bridgeTopology.parseBFT(topology.nodeB,topology.bftB);
+        bridgeTopology.parseBFT(topology.nodeA,topology.bftA);
 
-        printBridgeTopologyLinks(bridgeTopology.getTopology());
-
-
+        topology.checkAB(bridgeTopology.getTopology());
 	}
 
 	@Test
@@ -399,10 +604,22 @@ public class DefaultBridgeTopologyTest {
 		ABCTopology topology = new ABCTopology();
         BridgeTopology bridgeTopology = new BridgeTopology();
         
-        bridgeTopology.addNodeToTopology(topology.getA());
-        bridgeTopology.addNodeToTopology(topology.getC());
+        bridgeTopology.parseBFT(topology.nodeA,topology.bftA);
+        bridgeTopology.parseBFT(topology.nodeC,topology.bftC);
 
-        printBridgeTopologyLinks(bridgeTopology.getTopology());
+        topology.checkAC(bridgeTopology.getTopology());
+	}
+
+	@Test
+	public void testTwoConnectedBridgeTopologyCA() {
+
+		ABCTopology topology = new ABCTopology();
+        BridgeTopology bridgeTopology = new BridgeTopology();
+        
+        bridgeTopology.parseBFT(topology.nodeC,topology.bftC);
+        bridgeTopology.parseBFT(topology.nodeA,topology.bftA);
+
+        topology.checkAC(bridgeTopology.getTopology());
 	}
 
 	@Test
@@ -411,48 +628,59 @@ public class DefaultBridgeTopologyTest {
 
         BridgeTopology bridgeTopology = new BridgeTopology();
         
-        bridgeTopology.addNodeToTopology(topology.getB());
-        bridgeTopology.addNodeToTopology(topology.getC());
+        bridgeTopology.parseBFT(topology.nodeB,topology.bftB);
+        bridgeTopology.parseBFT(topology.nodeC,topology.bftC);
 
-        printBridgeTopologyLinks(bridgeTopology.getTopology());
-
+        topology.checkBC(bridgeTopology.getTopology());
 	}
-	
+
 	@Test
-	public void testTwoConnectedBridgeTopologyDE() {
-		DEFTopology topology = new DEFTopology();
+	public void testTwoConnectedBridgeTopologyCB() {
+		ABCTopology topology = new ABCTopology();
 
         BridgeTopology bridgeTopology = new BridgeTopology();
         
-        bridgeTopology.addNodeToTopology(topology.getD());
-        bridgeTopology.addNodeToTopology(topology.getD());
+        bridgeTopology.parseBFT(topology.nodeC,topology.bftC);
+        bridgeTopology.parseBFT(topology.nodeB,topology.bftB);
 
-        printBridgeTopologyLinks(bridgeTopology.getTopology());
+        topology.checkBC(bridgeTopology.getTopology());
+	}
+
+	@Test
+	public void testTwoConnectedBridgeTopologyDE() {
+		DEFGTopology topology = new DEFGTopology();
+
+        BridgeTopology bridgeTopology = new BridgeTopology();
+        
+        bridgeTopology.parseBFT(topology.nodeD,topology.bftD);
+        bridgeTopology.parseBFT(topology.nodeE,topology.bftE);
+
+        topology.checkDE(bridgeTopology.getTopology());
 
 	}
 
 	@Test
 	public void testTwoConnectedBridgeTopologyDF() {
-		DEFTopology topology = new DEFTopology();
+		DEFGTopology topology = new DEFGTopology();
 
         BridgeTopology bridgeTopology = new BridgeTopology();
         
-        bridgeTopology.addNodeToTopology(topology.getD());
-        bridgeTopology.addNodeToTopology(topology.getF());
+        bridgeTopology.parseBFT(topology.nodeD,topology.bftD);
+        bridgeTopology.parseBFT(topology.nodeF,topology.bftF);
 
-        printBridgeTopologyLinks(bridgeTopology.getTopology());
+        topology.checkDF(bridgeTopology.getTopology());
 	}
 
 	@Test
 	public void testTwoConnectedBridgeTopologyEF() {
-		DEFTopology topology = new DEFTopology();
+		DEFGTopology topology = new DEFGTopology();
 
         BridgeTopology bridgeTopology = new BridgeTopology();
         
-        bridgeTopology.addNodeToTopology(topology.getE());
-        bridgeTopology.addNodeToTopology(topology.getF());
+        bridgeTopology.parseBFT(topology.nodeE,topology.bftE);
+        bridgeTopology.parseBFT(topology.nodeF,topology.bftF);
 
-        printBridgeTopologyLinks(bridgeTopology.getTopology());
+        topology.checkEF(bridgeTopology.getTopology());
 	}
 
 
@@ -462,11 +690,12 @@ public class DefaultBridgeTopologyTest {
 
         BridgeTopology bridgeTopology = new BridgeTopology();
         
-        bridgeTopology.addNodeToTopology(topology.getA());
-        bridgeTopology.addNodeToTopology(topology.getB());
-        bridgeTopology.addNodeToTopology(topology.getC());
+        bridgeTopology.parseBFT(topology.nodeA,topology.bftA);
+        bridgeTopology.parseBFT(topology.nodeB,topology.bftB);
+        bridgeTopology.parseBFT(topology.nodeC,topology.bftC);
 
-        printBridgeTopologyLinks(bridgeTopology.getTopology());
+        topology.check(bridgeTopology.getTopology());
+
 	}
 
 	@Test
@@ -475,113 +704,117 @@ public class DefaultBridgeTopologyTest {
 
         BridgeTopology bridgeTopology = new BridgeTopology();
         
-        bridgeTopology.addNodeToTopology(topology.getA());
-        bridgeTopology.addNodeToTopology(topology.getC());
-        bridgeTopology.addNodeToTopology(topology.getB());
+        bridgeTopology.parseBFT(topology.nodeA,topology.bftA);
+        bridgeTopology.parseBFT(topology.nodeC,topology.bftC);
+        bridgeTopology.parseBFT(topology.nodeB,topology.bftB);
 
-        printBridgeTopologyLinks(bridgeTopology.getTopology());
+        topology.check(bridgeTopology.getTopology());
+
+	}
+
+	@Test
+	public void testThreeConnectedBridgeTopologyBAC() {
+		ABCTopology topology = new ABCTopology();
+
+        BridgeTopology bridgeTopology = new BridgeTopology();
+        
+        bridgeTopology.parseBFT(topology.nodeB,topology.bftB);
+        bridgeTopology.parseBFT(topology.nodeA,topology.bftA);
+        bridgeTopology.parseBFT(topology.nodeC,topology.bftC);
+
+        topology.check(bridgeTopology.getTopology());
+
+	}
+
+	@Test
+	public void testThreeConnectedBridgeTopologyBCA() {
+		ABCTopology topology = new ABCTopology();
+
+        BridgeTopology bridgeTopology = new BridgeTopology();
+        
+        bridgeTopology.parseBFT(topology.nodeB,topology.bftB);
+        bridgeTopology.parseBFT(topology.nodeC,topology.bftC);
+        bridgeTopology.parseBFT(topology.nodeA,topology.bftA);
+
+        topology.check(bridgeTopology.getTopology());
+	}
+
+	@Test
+	public void testThreeConnectedBridgeTopologyCAB() {
+		ABCTopology topology = new ABCTopology();
+
+        BridgeTopology bridgeTopology = new BridgeTopology();
+        
+        bridgeTopology.parseBFT(topology.nodeC,topology.bftC);
+        bridgeTopology.parseBFT(topology.nodeA,topology.bftA);
+        bridgeTopology.parseBFT(topology.nodeB,topology.bftB);
+
+        topology.check(bridgeTopology.getTopology());
+	}
+
+	@Test
+	public void testThreeConnectedBridgeTopologyCBA() {
+		ABCTopology topology = new ABCTopology();
+
+        BridgeTopology bridgeTopology = new BridgeTopology();
+        
+        bridgeTopology.parseBFT(topology.nodeC,topology.bftC);
+        bridgeTopology.parseBFT(topology.nodeB,topology.bftB);
+        bridgeTopology.parseBFT(topology.nodeA,topology.bftA);
+
+        topology.check(bridgeTopology.getTopology());
 
 	}
 
 	@Test
 	public void testThreeConnectedBridgeTopologyDEF() {
 
-		DEFTopology topology = new DEFTopology();
+		DEFGTopology topology = new DEFGTopology();
 
         BridgeTopology bridgeTopology = new BridgeTopology();
         
-        bridgeTopology.addNodeToTopology(topology.getD());
-        bridgeTopology.addNodeToTopology(topology.getE());
-        bridgeTopology.addNodeToTopology(topology.getF());
+        bridgeTopology.parseBFT(topology.nodeD,topology.bftD);
+        bridgeTopology.parseBFT(topology.nodeE,topology.bftE);
+        bridgeTopology.parseBFT(topology.nodeF,topology.bftF);
 
-        printBridgeTopologyLinks(bridgeTopology.getTopology());
+        topology.checkDEF(bridgeTopology.getTopology());
 
 	}
 	
 	@Test
 	public void testThreeConnectedBridgeTopologyDFE() {
-		DEFTopology topology = new DEFTopology();
+		DEFGTopology topology = new DEFGTopology();
 
         BridgeTopology bridgeTopology = new BridgeTopology();
         
-        bridgeTopology.addNodeToTopology(topology.getD());
-        bridgeTopology.addNodeToTopology(topology.getF());
-        bridgeTopology.addNodeToTopology(topology.getE());
-
-        printBridgeTopologyLinks(bridgeTopology.getTopology());
+        bridgeTopology.parseBFT(topology.nodeD,topology.bftD);
+        bridgeTopology.parseBFT(topology.nodeF,topology.bftF);
+        bridgeTopology.parseBFT(topology.nodeE,topology.bftE);
+        
+        topology.checkDEF(bridgeTopology.getTopology());
 	}
 
-	private class DEFTopology {
-		Integer nodeD = 104;
-        Integer nodeE = 105;
-        Integer nodeF = 106;
+	@Test 
+	public void testFourConnectedBridgeTopologyDEFG() {
+		DEFGTopology topology = new DEFGTopology();
 
-		Integer portD  = 4;
-		Integer portDD = 40;
-		Integer portE  = 5;
-		Integer portEE = 50;
-		Integer portF  = 6;
-		Integer portFF = 60;
-		
-        String mac1 = "000daaaa0001"; // port D  ---port EE ---port FF
-        String mac2 = "000daaaa0002"; // port D  ---port EE ---port FF
-        String mac3 = "000daaaa0003"; // port DD ---port EE ---port F
-        String mac4 = "000daaaa0004"; // port DD ---port EE ---port F
-        String mac5 = "000daaaa0005"; // port DD ---port E ---port FF
-        String mac6 = "000daaaa0006"; // port DD ---port E ---port FF
-
-        LinkableNode linkablenodeD;
-        LinkableNode linkablenodeE;
-        LinkableNode linkablenodeF;
+        BridgeTopology bridgeTopology = new BridgeTopology();
         
-        public DEFTopology() {
-	        LinkableSnmpNode snmpnodeD = new LinkableSnmpNode(nodeD, null, null, null);
-	        linkablenodeD = new LinkableNode(snmpnodeD, null);
-	        linkablenodeD.addBridgeForwardingTableEntry(portD, mac1);
-	        linkablenodeD.addBridgeForwardingTableEntry(portD, mac2);
-	        linkablenodeD.addBridgeForwardingTableEntry(portDD, mac3);
-	        linkablenodeD.addBridgeForwardingTableEntry(portDD, mac4);
-	        linkablenodeD.addBridgeForwardingTableEntry(portDD, mac5);
-	        linkablenodeD.addBridgeForwardingTableEntry(portDD, mac6);
-	
-	        LinkableSnmpNode snmpnodeE = new LinkableSnmpNode(nodeE, null, null, null);
-	        linkablenodeE = new LinkableNode(snmpnodeE, null);
-	        linkablenodeE.addBridgeForwardingTableEntry(portEE, mac1);
-	        linkablenodeE.addBridgeForwardingTableEntry(portEE, mac2);
-	        linkablenodeE.addBridgeForwardingTableEntry(portEE, mac3);
-	        linkablenodeE.addBridgeForwardingTableEntry(portEE, mac4);
-	        linkablenodeE.addBridgeForwardingTableEntry(portE, mac5);
-	        linkablenodeE.addBridgeForwardingTableEntry(portE, mac6);
-	
-	        LinkableSnmpNode snmpnodeF = new LinkableSnmpNode(nodeF, null, null, null);
-	        linkablenodeF = new LinkableNode(snmpnodeF, null);
-	        linkablenodeF.addBridgeForwardingTableEntry(portFF, mac1);
-	        linkablenodeF.addBridgeForwardingTableEntry(portFF, mac2);
-	        linkablenodeF.addBridgeForwardingTableEntry(portF, mac3);
-	        linkablenodeF.addBridgeForwardingTableEntry(portF, mac4);
-	        linkablenodeF.addBridgeForwardingTableEntry(portFF, mac5);
-	        linkablenodeF.addBridgeForwardingTableEntry(portFF, mac6);
-        }
+        bridgeTopology.parseBFT(topology.nodeD,topology.bftD);
+        bridgeTopology.parseBFT(topology.nodeE,topology.bftE);
+        bridgeTopology.parseBFT(topology.nodeF,topology.bftF);
+        bridgeTopology.parseBFT(topology.nodeG,topology.bftG);
         
-        public LinkableNode getD() {
-        	return linkablenodeD;
-        }
+        topology.check(bridgeTopology.getTopology());
 
-        public LinkableNode getE() {
-        	return linkablenodeE;
-        }
-        public LinkableNode getF() {
-        	return linkablenodeF;
-        }
-
-		
 	}
+
 	private class ABCTopology {
 		Integer nodeA = 101;
         Integer nodeB = 102;
         Integer nodeC = 103;
 
-		Integer portA1 = 1;
+		Integer portA = 1;
 		Integer portAB = 12;
 		Integer portBA = 21;
 		Integer portB  = 2;
@@ -593,42 +826,405 @@ public class DefaultBridgeTopologyTest {
         String mac2 = "000daaaa0002"; // port AB ---port B  ---port CB
         String mac3 = "000daaaa0003"; // port AB ---port BC ---port C
 
-        LinkableNode linkablenodeA;
-        LinkableNode linkablenodeB;
-        LinkableNode linkablenodeC;
+        Map<Integer,Set<String>> bftA = new HashMap<Integer, Set<String>>();
+        Map<Integer,Set<String>> bftB = new HashMap<Integer, Set<String>>();
+        Map<Integer,Set<String>> bftC = new HashMap<Integer, Set<String>>();
         
+        /*
+         *              -----------------
+         *     mac1 --  ||portA|        |
+         *              |   "Bridge A"  |
+         *              |   |portAB|    |
+         *              -----------------
+         *                      |
+         *                      |
+         *              -----------------
+         *              |   |portBA|    |
+         *              |   "Bridge B"  |
+         *     mac2 --  ||portB|        |
+         *              |   |portBC|    |
+         *              -----------------
+         *                      |
+         *                      |
+         *              -----------------
+         *              |   |portCB|    |
+         *              |   "Bridge C"  |
+         *     mac3 --  ||portC|        |
+         *              -----------------
+         *               
+         */                   
         public ABCTopology() {
         
-        	LinkableSnmpNode snmpnodeA = new LinkableSnmpNode(nodeA, null, null, null);
-        	linkablenodeA = new LinkableNode(snmpnodeA, null);
-        	linkablenodeA.addBridgeForwardingTableEntry(portA1, mac1);
-        	linkablenodeA.addBridgeForwardingTableEntry(portAB, mac2);
-        	linkablenodeA.addBridgeForwardingTableEntry(portAB, mac3);
+        	bftA =addBridgeForwardingTableEntry(portA, mac1,bftA);
+        	bftA =addBridgeForwardingTableEntry(portAB, mac2,bftA);
+        	bftA =addBridgeForwardingTableEntry(portAB, mac3,bftA);
 
-        	LinkableSnmpNode snmpnodeB = new LinkableSnmpNode(nodeB, null, null, null);
-        	linkablenodeB = new LinkableNode(snmpnodeB, null);
-	        linkablenodeB.addBridgeForwardingTableEntry(portBA, mac1);
-	        linkablenodeB.addBridgeForwardingTableEntry(portB, mac2);
-	        linkablenodeB.addBridgeForwardingTableEntry(portBC, mac3);
+	        bftB =addBridgeForwardingTableEntry(portBA, mac1,bftB);
+	        bftB =addBridgeForwardingTableEntry(portB, mac2,bftB);
+	        bftB =addBridgeForwardingTableEntry(portBC, mac3,bftB);
 
-	        LinkableSnmpNode snmpnodeC = new LinkableSnmpNode(nodeC, null, null, null);
-	        linkablenodeC = new LinkableNode(snmpnodeC, null);
-	        linkablenodeC.addBridgeForwardingTableEntry(portCB, mac1);
-	        linkablenodeC.addBridgeForwardingTableEntry(portCB, mac2);
-	        linkablenodeC.addBridgeForwardingTableEntry(portC, mac3);
+	        bftC =addBridgeForwardingTableEntry(portCB, mac1,bftC);
+	        bftC =addBridgeForwardingTableEntry(portCB, mac2,bftC);
+	        bftC =addBridgeForwardingTableEntry(portC, mac3,bftC);
         }
         
-        public LinkableNode getA() {
-        	return linkablenodeA;
+        public void checkAC(List<BridgeTopologyLink> links) {
+            printBridgeTopologyLinks(links);
+            assertEquals(3, links.size());
+            
+            for (BridgeTopologyLink link: links) {
+            	if (link.getMacs().contains(mac1)) {
+            		assertEquals(1, link.getMacs().size());
+            		assertEquals(nodeA, link.getBridgeTopologyPort().getNodeid());
+            		assertEquals(portA,link.getBridgeTopologyPort().getBridgePort());
+            		assertEquals(null, link.getDesignateBridgePort());
+           		} else if (link.getMacs().contains(mac2)) {
+            		assertEquals(1, link.getMacs().size());
+            		assertEquals(nodeA, link.getBridgeTopologyPort().getNodeid());
+            		assertEquals(portAB,link.getBridgeTopologyPort().getBridgePort());
+            		assertEquals(nodeC, link.getDesignateBridgePort().getNodeid());
+            		assertEquals(portCB,link.getDesignateBridgePort().getBridgePort());
+           		} else if (link.getMacs().contains(mac3)) {
+            		assertEquals(1, link.getMacs().size());
+            		assertEquals(nodeC, link.getBridgeTopologyPort().getNodeid());
+            		assertEquals(portC,link.getBridgeTopologyPort().getBridgePort());
+            		assertEquals(null, link.getDesignateBridgePort());
+        		} else {
+        			assertEquals(false, true);
+        		}
+            }
+        }
+        public void checkAB(List<BridgeTopologyLink> links) {
+            printBridgeTopologyLinks(links);
+            assertEquals(4, links.size());
+            for (BridgeTopologyLink link: links) {
+            	if (link.getMacs().isEmpty()) {
+            		assertEquals(nodeA, link.getBridgeTopologyPort().getNodeid());
+            		assertEquals(portAB,link.getBridgeTopologyPort().getBridgePort());
+            		assertEquals(nodeB, link.getDesignateBridgePort().getNodeid());
+            		assertEquals(portBA,link.getDesignateBridgePort().getBridgePort());
+        		} else if (link.getMacs().contains(mac1)) {
+            		assertEquals(1, link.getMacs().size());
+            		assertEquals(nodeA, link.getBridgeTopologyPort().getNodeid());
+            		assertEquals(portA,link.getBridgeTopologyPort().getBridgePort());
+            		assertEquals(null, link.getDesignateBridgePort());
+           		} else if (link.getMacs().contains(mac2)) {
+            		assertEquals(1, link.getMacs().size());
+            		assertEquals(nodeB, link.getBridgeTopologyPort().getNodeid());
+            		assertEquals(portB,link.getBridgeTopologyPort().getBridgePort());
+            		assertEquals(null, link.getDesignateBridgePort());
+           		} else if (link.getMacs().contains(mac3)) {
+            		assertEquals(1, link.getMacs().size());
+            		assertEquals(nodeB, link.getBridgeTopologyPort().getNodeid());
+            		assertEquals(portBC,link.getBridgeTopologyPort().getBridgePort());
+            		assertEquals(null, link.getDesignateBridgePort());
+        		} else {
+        			assertEquals(false, true);
+        		}
+            }
+
+        }
+        
+        public void checkBC(List<BridgeTopologyLink> links) {
+            printBridgeTopologyLinks(links);
+            assertEquals(4, links.size());
+            for (BridgeTopologyLink link: links) {
+            	if (link.getMacs().isEmpty()) {
+            		assertEquals(nodeB, link.getBridgeTopologyPort().getNodeid());
+            		assertEquals(portBC,link.getBridgeTopologyPort().getBridgePort());
+            		assertEquals(nodeC, link.getDesignateBridgePort().getNodeid());
+            		assertEquals(portCB,link.getDesignateBridgePort().getBridgePort());
+        		} else if (link.getMacs().contains(mac1)) {
+            		assertEquals(1, link.getMacs().size());
+            		assertEquals(nodeB, link.getBridgeTopologyPort().getNodeid());
+            		assertEquals(portBA,link.getBridgeTopologyPort().getBridgePort());
+            		assertEquals(null, link.getDesignateBridgePort());
+           		} else if (link.getMacs().contains(mac2)) {
+            		assertEquals(1, link.getMacs().size());
+            		assertEquals(nodeB, link.getBridgeTopologyPort().getNodeid());
+            		assertEquals(portB,link.getBridgeTopologyPort().getBridgePort());
+            		assertEquals(null, link.getDesignateBridgePort());
+           		} else if (link.getMacs().contains(mac3)) {
+            		assertEquals(1, link.getMacs().size());
+            		assertEquals(nodeC, link.getBridgeTopologyPort().getNodeid());
+            		assertEquals(portC,link.getBridgeTopologyPort().getBridgePort());
+            		assertEquals(null, link.getDesignateBridgePort());
+        		} else {
+        			assertEquals(false, true);
+        		}
+            }
+
         }
 
-        public LinkableNode getB() {
-        	return linkablenodeB;
+        public void check(List<BridgeTopologyLink> links) {
+            printBridgeTopologyLinks(links);
+            assertEquals(5, links.size());
+            for (BridgeTopologyLink link: links) {
+            	if (link.getMacs().isEmpty() && link.getBridgeTopologyPort().getNodeid() == nodeB) {
+            		assertEquals(portBC,link.getBridgeTopologyPort().getBridgePort());
+            		assertEquals(nodeC, link.getDesignateBridgePort().getNodeid());
+            		assertEquals(portCB,link.getDesignateBridgePort().getBridgePort());
+            	} else if (link.getMacs().isEmpty() && link.getBridgeTopologyPort().getNodeid() == nodeA) {
+                	assertEquals(portAB,link.getBridgeTopologyPort().getBridgePort());
+                	assertEquals(nodeB, link.getDesignateBridgePort().getNodeid());
+                	assertEquals(portBA,link.getDesignateBridgePort().getBridgePort());
+        		} else if (link.getMacs().contains(mac1)) {
+            		assertEquals(1, link.getMacs().size());
+            		assertEquals(nodeA, link.getBridgeTopologyPort().getNodeid());
+            		assertEquals(portA,link.getBridgeTopologyPort().getBridgePort());
+            		assertEquals(null, link.getDesignateBridgePort());
+           		} else if (link.getMacs().contains(mac2)) {
+            		assertEquals(1, link.getMacs().size());
+            		assertEquals(nodeB, link.getBridgeTopologyPort().getNodeid());
+            		assertEquals(portB,link.getBridgeTopologyPort().getBridgePort());
+            		assertEquals(null, link.getDesignateBridgePort());
+           		} else if (link.getMacs().contains(mac3)) {
+            		assertEquals(1, link.getMacs().size());
+            		assertEquals(nodeC, link.getBridgeTopologyPort().getNodeid());
+            		assertEquals(portC,link.getBridgeTopologyPort().getBridgePort());
+            		assertEquals(null, link.getDesignateBridgePort());
+        		} else {
+        			assertEquals(false, true);
+        		}
+            }
         }
-        public LinkableNode getC() {
-        	return linkablenodeC;
-        }
-
 	}
+	
+	
+	private class DEFGTopology {
+		Integer nodeD = 104;
+	    Integer nodeE = 105;
+	    Integer nodeF = 106;
+	    Integer nodeG = 107;
+	
+		Integer portD  = 4;
+		Integer portDD = 40;
+		Integer portE  = 5;
+		Integer portEE = 50;
+		Integer portF  = 6;
+		Integer portFF = 60;
+		
+		Integer portG7 = 7;
+		Integer portG8 = 8;
+		Integer portGD = 74;
+		Integer portGE = 75;
+		Integer portGF = 76;
+	
+	    String mac1 = "000daaaa0001"; // port D  ---port EE ---port FF ---portGD
+	    String mac2 = "000daaaa0002"; // port D  ---port EE ---port FF ---portGD
+	    String mac3 = "000daaaa0003"; // port DD ---port EE ---port F  ---portGF
+	    String mac4 = "000daaaa0004"; // port DD ---port EE ---port F  ---portGF
+	    String mac5 = "000daaaa0005"; // port DD ---port E ---port FF  ---portGE 
+	    String mac6 = "000daaaa0006"; // port DD ---port E ---port FF  ---portGE
+	    String mac7 = "000daaaa0007"; // port DD ---port EE ---port FF ---portG7
+	    String mac8 = "000daaaa0008"; // port DD ---port EE ---port FF ---portG8
+	
+	    Map<Integer,Set<String>> bftD = new HashMap<Integer, Set<String>>();
+	    Map<Integer,Set<String>> bftE = new HashMap<Integer, Set<String>>();
+	    Map<Integer,Set<String>> bftF = new HashMap<Integer, Set<String>>();
+	    Map<Integer,Set<String>> bftG = new HashMap<Integer, Set<String>>();
+    
+	    /*
+	     *              -----------------
+	     *mac1/mac2 --  ||portD|        |
+	     *              |   "Bridge D"  |     |-------------
+	     *              |       |portDD||-----||portGD|     |
+	     *              -----------------     |             |
+	     *                                    |             |
+	     *              -----------------     |    |port G7||---mac7
+	     *mac3/mac4 --  ||portF|        |     |             |
+	     *              |   "Bridge F"  |     |             |
+	     *              |       |portFF||-----||portGF|     |
+	     *              -----------------     |             |
+	     *                                    | "Bridge G"  |
+	     *              -----------------     |             |
+	     *mac5/mac6 --  ||portE|        |     |    |port G8||---mac8
+	     *              |   "Bridge E"  |     |             |
+	     *              |       |portEE||-----||portGE|     |
+	     *              -----------------     |-------------|
+	     */
+	    public DEFGTopology() {
+	        bftD =addBridgeForwardingTableEntry(portD,  mac1,bftD);
+	        bftD =addBridgeForwardingTableEntry(portD,  mac2,bftD);
+	        bftD =addBridgeForwardingTableEntry(portDD, mac3,bftD);
+	        bftD =addBridgeForwardingTableEntry(portDD, mac4,bftD);
+	        bftD =addBridgeForwardingTableEntry(portDD, mac5,bftD);
+	        bftD =addBridgeForwardingTableEntry(portDD, mac6,bftD);
+	        bftD =addBridgeForwardingTableEntry(portDD, mac7,bftD);
+	        bftD =addBridgeForwardingTableEntry(portDD, mac8,bftD);
+	
+	        bftE =addBridgeForwardingTableEntry(portEE, mac1,bftE);
+	        bftE =addBridgeForwardingTableEntry(portEE, mac2,bftE);
+	        bftE =addBridgeForwardingTableEntry(portEE, mac3,bftE);
+	        bftE =addBridgeForwardingTableEntry(portEE, mac4,bftE);
+	        bftE =addBridgeForwardingTableEntry(portE,  mac5,bftE);
+	        bftE =addBridgeForwardingTableEntry(portE,  mac6,bftE);
+	        bftE =addBridgeForwardingTableEntry(portEE, mac7,bftE);
+	        bftE =addBridgeForwardingTableEntry(portEE, mac8,bftE);
+	
+	        bftF =addBridgeForwardingTableEntry(portFF, mac1,bftF);
+	        bftF =addBridgeForwardingTableEntry(portFF, mac2,bftF);
+	        bftF =addBridgeForwardingTableEntry(portF,  mac3,bftF);
+	        bftF =addBridgeForwardingTableEntry(portF,  mac4,bftF);
+	        bftF =addBridgeForwardingTableEntry(portFF, mac5,bftF);
+	        bftF =addBridgeForwardingTableEntry(portFF, mac6,bftF);
+	        bftF =addBridgeForwardingTableEntry(portFF, mac7,bftF);
+	        bftF =addBridgeForwardingTableEntry(portFF, mac8,bftF);
+	        
+	        bftG =addBridgeForwardingTableEntry(portGD, mac1,bftG);
+	        bftG =addBridgeForwardingTableEntry(portGD, mac2,bftG);
+	        bftG =addBridgeForwardingTableEntry(portGF, mac3,bftG);
+	        bftG =addBridgeForwardingTableEntry(portGF, mac4,bftG);
+	        bftG =addBridgeForwardingTableEntry(portGE, mac5,bftG);
+	        bftG =addBridgeForwardingTableEntry(portGE, mac6,bftG);
+	        bftG =addBridgeForwardingTableEntry(portG7, mac7,bftG);
+	        bftG =addBridgeForwardingTableEntry(portG8, mac8,bftG);
+	
+	    }
+	    
+	    public void checkDE(List<BridgeTopologyLink> links) {
+	        printBridgeTopologyLinks(links);
+	        assertEquals(3, links.size());
+	        for (BridgeTopologyLink link: links) {
+	        	if (link.getMacs().contains(mac1)) {
+	        		assertEquals(2, link.getMacs().size());
+	        		assertEquals(true,link.getMacs().contains(mac2));
+	        		assertEquals(nodeD, link.getBridgeTopologyPort().getNodeid());
+	        		assertEquals(portD,link.getBridgeTopologyPort().getBridgePort());
+	        		assertEquals(null, link.getDesignateBridgePort());
+	        	} else if (link.getMacs().contains(mac5)) {
+	        		assertEquals(2, link.getMacs().size());
+	        		assertEquals(true,link.getMacs().contains(mac6));
+	        		assertEquals(nodeE, link.getBridgeTopologyPort().getNodeid());
+	        		assertEquals(portE,link.getBridgeTopologyPort().getBridgePort());
+	        		assertEquals(null, link.getDesignateBridgePort());
+	        	} else if (link.getMacs().contains(mac7)) {
+	        		assertEquals(4, link.getMacs().size());
+	        		assertEquals(true,link.getMacs().contains(mac3));
+	        		assertEquals(true,link.getMacs().contains(mac4));
+	        		assertEquals(true,link.getMacs().contains(mac8));
+	        		assertEquals(nodeD, link.getBridgeTopologyPort().getNodeid());
+	        		assertEquals(portDD,link.getBridgeTopologyPort().getBridgePort());
+	        		assertEquals(nodeE, link.getDesignateBridgePort().getNodeid());
+	        		assertEquals(portEE,link.getDesignateBridgePort().getBridgePort());
+	        	} else {
+	    			assertEquals(false, true);
+	    		}
+	        }
+	    	
+	    }
+	
+	    public void checkDF(List<BridgeTopologyLink> links) {
+	        printBridgeTopologyLinks(links);
+	        assertEquals(3, links.size());
+	        for (BridgeTopologyLink link: links) {
+	        	if (link.getMacs().contains(mac1)) {
+	        		assertEquals(2, link.getMacs().size());
+	        		assertEquals(true,link.getMacs().contains(mac2));
+	        		assertEquals(nodeD, link.getBridgeTopologyPort().getNodeid());
+	        		assertEquals(portD,link.getBridgeTopologyPort().getBridgePort());
+	        		assertEquals(null, link.getDesignateBridgePort());
+	        	} else if (link.getMacs().contains(mac3)) {
+	        		assertEquals(2, link.getMacs().size());
+	        		assertEquals(true,link.getMacs().contains(mac4));
+	        		assertEquals(nodeF, link.getBridgeTopologyPort().getNodeid());
+	        		assertEquals(portF,link.getBridgeTopologyPort().getBridgePort());
+	        		assertEquals(null, link.getDesignateBridgePort());
+	        	} else if (link.getMacs().contains(mac7)) {
+	        		assertEquals(4, link.getMacs().size());
+	           		assertEquals(true,link.getMacs().contains(mac5));
+   	        		assertEquals(true,link.getMacs().contains(mac6));
+	        		assertEquals(true,link.getMacs().contains(mac8));
+	        		assertEquals(nodeD, link.getBridgeTopologyPort().getNodeid());
+	        		assertEquals(portDD,link.getBridgeTopologyPort().getBridgePort());
+	        		assertEquals(nodeF, link.getDesignateBridgePort().getNodeid());
+	        		assertEquals(portFF,link.getDesignateBridgePort().getBridgePort());
+	        	} else {
+	    			assertEquals(false, true);
+	    		}
+	        }
+	    	
+	    }
+	
+	    public void checkEF(List<BridgeTopologyLink> links) {
+	        printBridgeTopologyLinks(links);
+	        assertEquals(3, links.size());
+	        for (BridgeTopologyLink link: links) {
+	        	if (link.getMacs().contains(mac3)) {
+	        		assertEquals(2, link.getMacs().size());
+	        		assertEquals(true,link.getMacs().contains(mac4));
+	        		assertEquals(nodeF, link.getBridgeTopologyPort().getNodeid());
+	        		assertEquals(portF,link.getBridgeTopologyPort().getBridgePort());
+	        		assertEquals(null, link.getDesignateBridgePort());
+	        	} else if (link.getMacs().contains(mac5)) {
+	        		assertEquals(2, link.getMacs().size());
+	        		assertEquals(true,link.getMacs().contains(mac6));
+	        		assertEquals(nodeE, link.getBridgeTopologyPort().getNodeid());
+	        		assertEquals(portE,link.getBridgeTopologyPort().getBridgePort());
+	        		assertEquals(null, link.getDesignateBridgePort());
+	        	}  else if (link.getMacs().contains(mac7)) {
+	        		assertEquals(4, link.getMacs().size());
+	           		assertEquals(true,link.getMacs().contains(mac1));
+   	        		assertEquals(true,link.getMacs().contains(mac2));
+	        		assertEquals(true,link.getMacs().contains(mac8));
+	        		assertEquals(nodeE, link.getBridgeTopologyPort().getNodeid());
+	        		assertEquals(portEE,link.getBridgeTopologyPort().getBridgePort());
+	        		assertEquals(nodeF, link.getDesignateBridgePort().getNodeid());
+	        		assertEquals(portFF,link.getDesignateBridgePort().getBridgePort());
+		       	} else {
+	    			assertEquals(false, true);
+	    		}
+	        }
+	    }
+	
+	    public void checkDEF(List<BridgeTopologyLink> links) {
+	        printBridgeTopologyLinks(links);
+	        assertEquals(6, links.size());
+	        for (BridgeTopologyLink link: links) {
+	        	if (link.getMacs().contains(mac1)) {
+	        		assertEquals(2, link.getMacs().size());
+	        		assertEquals(true,link.getMacs().contains(mac2));
+	        		assertEquals(nodeD, link.getBridgeTopologyPort().getNodeid());
+	        		assertEquals(portD,link.getBridgeTopologyPort().getBridgePort());
+	        		assertEquals(null, link.getDesignateBridgePort());
+	        	} else if (link.getMacs().contains(mac3)) {
+	        		assertEquals(2, link.getMacs().size());
+	        		assertEquals(true,link.getMacs().contains(mac4));
+	        		assertEquals(nodeF, link.getBridgeTopologyPort().getNodeid());
+	        		assertEquals(portF,link.getBridgeTopologyPort().getBridgePort());
+	        		assertEquals(null, link.getDesignateBridgePort());
+	        	} else if (link.getMacs().contains(mac5)) {
+	        		assertEquals(2, link.getMacs().size());
+	        		assertEquals(true,link.getMacs().contains(mac6));
+	        		assertEquals(nodeE, link.getBridgeTopologyPort().getNodeid());
+	        		assertEquals(portE,link.getBridgeTopologyPort().getBridgePort());
+	        		assertEquals(null, link.getDesignateBridgePort());
+	        	} else if (nodeE == link.getBridgeTopologyPort().getNodeid() && link.getMacs().contains(mac7)) {
+	        		assertEquals(2, link.getMacs().size());
+	        		assertEquals(true,link.getMacs().contains(mac8));
+	        		assertEquals(portEE,link.getBridgeTopologyPort().getBridgePort());
+	        		assertEquals(null, link.getDesignateBridgePort());
+	        	} else if (nodeF == link.getBridgeTopologyPort().getNodeid() && link.getMacs().contains(mac7)) {
+	        		assertEquals(2, link.getMacs().size());
+	        		assertEquals(true,link.getMacs().contains(mac8));
+	        		assertEquals(portFF,link.getBridgeTopologyPort().getBridgePort());
+	        		assertEquals(null, link.getDesignateBridgePort());
+	        	} else if (nodeD == link.getBridgeTopologyPort().getNodeid() && link.getMacs().contains(mac7)) {
+	        		assertEquals(2, link.getMacs().size());
+	        		assertEquals(true,link.getMacs().contains(mac8));
+	        		assertEquals(portDD,link.getBridgeTopologyPort().getBridgePort());
+	        		assertEquals(null, link.getDesignateBridgePort());
+		       	} else {
+	    			assertEquals(false, true);
+	    		}
+	        }
+	    }
+	
+	    public void check(List<BridgeTopologyLink> links) {
+	        printBridgeTopologyLinks(links);
+	        assertEquals(8, links.size());
+	    }
+	}
+
 
 }

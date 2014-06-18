@@ -48,8 +48,8 @@ import org.slf4j.LoggerFactory;
  * creating and collection occurs in the main run method of the instance. This
  * allows the collection to occur in a thread if necessary.
  */
-public final class LldpLinkdNodeDiscovery extends AbstractLinkdNodeDiscovery {
-private final static Logger LOG = LoggerFactory.getLogger(LldpLinkdNodeDiscovery.class);
+public final class NodeDiscoveryLldp extends NodeDiscovery {
+private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryLldp.class);
 	/**
 	 * Constructs a new SNMP collector for Lldp Node Discovery. 
 	 * The collection does not occur until the
@@ -58,7 +58,7 @@ private final static Logger LOG = LoggerFactory.getLogger(LldpLinkdNodeDiscovery
 	 * @param EnhancedLinkd linkd
 	 * @param LinkableNode node
 	 */
-    public LldpLinkdNodeDiscovery(final EnhancedLinkd linkd, final LinkableSnmpNode node) {
+    public NodeDiscoveryLldp(final EnhancedLinkd linkd, final LinkableSnmpNode node) {
     	super(linkd, node);
     }
 

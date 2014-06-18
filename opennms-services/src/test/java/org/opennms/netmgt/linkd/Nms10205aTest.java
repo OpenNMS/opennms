@@ -258,7 +258,8 @@ public class Nms10205aTest extends LinkdTestBuilder {
                 checkLink(spaceexsw2, mumbai, 34, 508, datalinkinterface);
                 assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
             } else if (start+19 == id ) {
-                checkLink(spaceexsw1,spaceexsw2, 1361, 501 , datalinkinterface);
+//                checkLink(spaceexsw1,spaceexsw2, 1361, 501 , datalinkinterface);
+            	checkLink(spaceexsw2, spaceexsw1, 523,1361, datalinkinterface);
                 assertEquals(DiscoveryProtocol.bridge, datalinkinterface.getProtocol());
             } else {
                 assertEquals(-1, 0);
@@ -435,7 +436,8 @@ public class Nms10205aTest extends LinkdTestBuilder {
         for (final DataLinkInterface datalinkinterface: links) {
             int id = datalinkinterface.getId().intValue();
             if (start == id ) {
-            	checkLink(spaceexsw1, spaceexsw2, 1361, 501, datalinkinterface);
+//            	checkLink(spaceexsw1, spaceexsw2, 1361, 501, datalinkinterface);
+            	checkLink(spaceexsw2, spaceexsw1, 523,1361, datalinkinterface);
                 assertEquals(DiscoveryProtocol.bridge, datalinkinterface.getProtocol());
              } else {
                 checkLink(spaceexsw1,spaceexsw1,-1,-1,datalinkinterface);

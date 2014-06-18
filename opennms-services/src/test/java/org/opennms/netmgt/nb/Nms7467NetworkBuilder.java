@@ -128,8 +128,8 @@ public class Nms7467NetworkBuilder extends TestNetworkBuilder {
 
     static {
         CISCO_C870_IP_IF_MAP.put(InetAddressUtils.addr("172.20.1.1"), 12);
-        CISCO_C870_IP_IF_MAP.put(InetAddressUtils.addr("172.20.2.1"), 13);
         CISCO_C870_IP_IF_MAP.put(InetAddressUtils.addr("10.255.255.2"), 12);
+        CISCO_C870_IP_IF_MAP.put(InetAddressUtils.addr("172.20.2.1"), 13);
         CISCO_C870_IP_IF_MAP.put(InetAddressUtils.addr("65.41.39.146"), 14);            
 
         CISCO_C870_IF_IFNAME_MAP.put(1, "Fa0");
@@ -166,10 +166,10 @@ public class Nms7467NetworkBuilder extends TestNetworkBuilder {
         CISCO_C870_IF_IFDESCR_MAP.put(17, "Tunnel0");        
         CISCO_C870_IF_IFDESCR_MAP.put(18, "NVI0");        
 
-        CISCO_C870_IF_MAC_MAP.put(1, "001f6cd034e7");
-        CISCO_C870_IF_MAC_MAP.put(2, "001f6cd034e8");
-        CISCO_C870_IF_MAC_MAP.put(3, "001f6cd034e9");
-        CISCO_C870_IF_MAC_MAP.put(4, "001f6cd034ea");
+        CISCO_C870_IF_MAC_MAP.put(1,  "001f6cd034e7");
+        CISCO_C870_IF_MAC_MAP.put(2,  "001f6cd034e8");
+        CISCO_C870_IF_MAC_MAP.put(3,  "001f6cd034e9");
+        CISCO_C870_IF_MAC_MAP.put(4,  "001f6cd034ea");
         CISCO_C870_IF_MAC_MAP.put(12, "001f6cd034e7");
         CISCO_C870_IF_MAC_MAP.put(13, "001f6cd034e7");
         CISCO_C870_IF_MAC_MAP.put(14, "00000c03b09e");

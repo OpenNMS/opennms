@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,16 +26,17 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.topo;
+package org.opennms.netmgt.dao.api;
 
-import java.util.Collection;
-import java.util.Map;
+import org.opennms.netmgt.model.CdpElement;
 
-public interface EdgeStatusProvider {
+/**
+ * <p>CdpElementDao interface.</p>
+ */
+public interface CdpElementDao extends OnmsDao<CdpElement, Integer> {
+    
+    public CdpElement findByNodeId(Integer id);
 
-    public String getNameSpace();
+    public CdpElement findByGlobalDeviceId(String deviceId);
 
-    public Map<EdgeRef, Status> getStatusForEdges(EdgeProvider edgeProvider, Collection<EdgeRef> edges, Criteria[] criteria);
-
-    public boolean contributesTo(String namespace);
 }

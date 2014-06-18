@@ -199,7 +199,9 @@ public final class Dot1dBaseTracker extends AggregateTracker
      * @return a {@link java.lang.String} object.
      */
     public String getBridgeAddress() {
-        return m_store.getHexString(BASE_BRIDGE_ADDRESS);
+    	if (m_store.getValue(BASE_BRIDGE_ADDRESS) != null)
+    		return m_store.getHexString(BASE_BRIDGE_ADDRESS);
+    	return null;
     }
     
     /**
@@ -208,7 +210,9 @@ public final class Dot1dBaseTracker extends AggregateTracker
      * @return a int.
      */
     public Integer getNumberOfPorts() {
-    	return m_store.getInt32(BASE_NUM_PORTS);
+    	if (m_store.getValue(BASE_NUM_PORTS) != null)
+    		return m_store.getInt32(BASE_NUM_PORTS);
+    	return null;
     }
 
     /**
@@ -217,15 +221,21 @@ public final class Dot1dBaseTracker extends AggregateTracker
      * @return a int.
      */
     public Integer getBridgeType() {
-    	return m_store.getInt32(BASE_NUM_TYPE);
+    	if (m_store.getValue(BASE_NUM_TYPE) != null)
+    		return m_store.getInt32(BASE_NUM_TYPE);
+    	return null;
     }
     
     public Integer getStpProtocolSpecification(){
+    	if (m_store.getValue(STP_PROTOCOL_SPEC) != null)
     	return m_store.getInt32(STP_PROTOCOL_SPEC);
+    	return null;
     }
 	
     public Integer getStpPriority(){
-    	return m_store.getInt32(STP_PRIORITY);
+    	if (m_store.getValue(STP_PRIORITY) != null)
+    		return m_store.getInt32(STP_PRIORITY);
+    	return null;
     }
     
     /**
@@ -234,7 +244,9 @@ public final class Dot1dBaseTracker extends AggregateTracker
      * @return a {@link java.lang.String} object.
      */
     public String getStpDesignatedRoot(){
-    	return m_store.getHexString(STP_DESIGNATED_ROOT);
+    	if (m_store.getValue(STP_DESIGNATED_ROOT) != null)
+    		return m_store.getHexString(STP_DESIGNATED_ROOT);
+    	return null;
     }
 
     /**
@@ -243,7 +255,9 @@ public final class Dot1dBaseTracker extends AggregateTracker
      * @return a int.
      */
     public Integer getStpRootCost(){
-    	return m_store.getInt32(STP_ROOT_COST); 
+    	if (m_store.getValue(STP_ROOT_COST) != null)
+    		return m_store.getInt32(STP_ROOT_COST); 
+    	return null;
     }
 
     /**
@@ -252,14 +266,17 @@ public final class Dot1dBaseTracker extends AggregateTracker
      * @return a int.
      */
     public Integer getStpRootPort(){
-    	return m_store.getInt32(STP_ROOT_PORT);
+    	if (m_store.getValue(STP_ROOT_PORT) != null)
+    		return m_store.getInt32(STP_ROOT_PORT);
+    	return null;
     }
 
     public BridgeElement getBridgeElement() {
     	BridgeElement bridge = new BridgeElement();
     	bridge.setBaseBridgeAddress(getBridgeAddress());
     	bridge.setBaseNumPorts(getNumberOfPorts());
-    	bridge.setBaseType(BridgeDot1dBaseType.get(getBridgeType()));
+    	if (getBridgeType() != null)
+    		bridge.setBaseType(BridgeDot1dBaseType.get(getBridgeType()));
     	if (getStpProtocolSpecification() != null) {
     		bridge.setStpProtocolSpecification(getStpProtocolSpecification());
     		bridge.setStpPriority(getStpPriority());

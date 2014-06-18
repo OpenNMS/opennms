@@ -43,7 +43,7 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
  * creating and collection occurs in the main run method of the instance. This
  * allows the collection to occur in a thread if necessary.
  */
-public abstract class AbstractLinkdNodeDiscovery implements ReadyRunnable {
+public abstract class NodeDiscovery implements ReadyRunnable {
 
 	/**
      * The node ID of the system used to collect the SNMP information
@@ -81,7 +81,7 @@ public abstract class AbstractLinkdNodeDiscovery implements ReadyRunnable {
      * @param config
      *            The SnmpPeer object to collect from.
      */
-    public AbstractLinkdNodeDiscovery(final EnhancedLinkd linkd, final LinkableSnmpNode node) {
+    public NodeDiscovery(final EnhancedLinkd linkd, final LinkableSnmpNode node) {
         m_linkd = linkd;
         m_node = node;
         m_initial_sleep_time = m_linkd.getInitialSleepTime();
@@ -279,17 +279,6 @@ public abstract class AbstractLinkdNodeDiscovery implements ReadyRunnable {
         return getPeer().getPort();
     }
 
-    /** {@inheritDoc} */
-    public boolean equals(ReadyRunnable run) {
-        if (run instanceof AbstractLinkdNodeDiscovery
-                && this.getPackageName().equals(run.getPackageName())) {
-            AbstractLinkdNodeDiscovery c = (AbstractLinkdNodeDiscovery) run;
-            if (c.getTarget().equals(getTarget()))
-                return true;
-        }
-        return false;
-    }
-
     /**
      * <p>
      * getInfo
@@ -364,4 +353,38 @@ public abstract class AbstractLinkdNodeDiscovery implements ReadyRunnable {
     }
     
     public abstract String getName();
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ (int) (m_initial_sleep_time ^ (m_initial_sleep_time >>> 32));
+		result = prime * result + ((m_node == null) ? 0 : m_node.hashCode());
+		result = prime * result
+				+ (int) (m_poll_interval ^ (m_poll_interval >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		NodeDiscovery other = (NodeDiscovery) obj;
+		if (m_initial_sleep_time != other.m_initial_sleep_time)
+			return false;
+		if (m_node == null) {
+			if (other.m_node != null)
+				return false;
+		} else if (!m_node.equals(other.m_node))
+			return false;
+		if (m_poll_interval != other.m_poll_interval)
+			return false;
+		return true;
+	}
+    
 }

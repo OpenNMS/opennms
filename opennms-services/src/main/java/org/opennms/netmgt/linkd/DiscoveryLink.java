@@ -255,10 +255,23 @@ public final class DiscoveryLink implements ReadyRunnable {
                           str(curNode.getSnmpPrimaryIpAddr()));
                 bridgeNodes.add(curNode);
                 for (Entry<Integer, String> entry: curNode.getMacIdentifiers().entrySet()) {
+                    LOG.info("getLinksFromBridge: parsing mac identifier {} with associated ifindex {}.", entry.getValue(),entry.getKey());
                 	if (entry.getValue() == null || entry.getValue().equals(""))
                 		continue;
+                	//check if the ifindex has a corresponfing bridge id and is not
+                	// associate with an ip address
+                	int bridgePort = curNode.getBridgePortFromIfindex(entry.getKey().intValue());
+                	if (bridgePort == -1) {
+                        LOG.info("getLinksFromBridge: invalid bridge port association found. Skipping mac identifier {}.", entry.getValue());
+                		continue;
+                	}
+                	if (!m_linkd.getAtInterfaces(getPackageName(),
+                                    entry.getValue()).isEmpty()) {
+                        LOG.info("getLinksFromBridge: the mac was is associated to ip address. Skipping mac identifier {}.", entry.getValue());
+                		continue;
+                	}
                     topology.addBridgeAssociatedMac(curNode.getNodeId(), entry.getKey(),
-                                                    entry.getValue());
+                            curNode.getBridgeForwardingTable().get(bridgePort),entry.getValue());
                 }
             }
         }
@@ -345,7 +358,7 @@ public final class DiscoveryLink implements ReadyRunnable {
         }
 
         for (final LinkableNode bridgeNode : bridgeNodes) {
-        	topology.addNodeToTopology(bridgeNode);
+        	topology.parseBFT(bridgeNode.getNodeId(),bridgeNode.getBridgeForwardingTable());
         }
 
         List<String> macParsed = new ArrayList<String>();
@@ -354,34 +367,22 @@ public final class DiscoveryLink implements ReadyRunnable {
             Integer curIfIndex = getIfIndexFromNodeidBridgePort(linkableNodes,
                                                                 curNodeId,
                                                                 link.getBridgeTopologyPort().getBridgePort());
-            if (link.getLinkedSwitchPort() != null ) {
-            	final NodeToNodeLink lk = new NodeToNodeLink(
-                        curNodeId,
-                        curIfIndex,
-                        DiscoveryProtocol.bridge);
-            	lk.setNodeparentid(link.getLinkedSwitchPort().getNodeid());
-            	lk.setParentifindex(link.getLinkedSwitchPort().getIfindex());
-            	addNodetoNodeLink(lk);
-            	LOG.info("getLinksFromBridge: saving bridge link: {}",
-                        lk.toString());
-            } else {
-            	macParsed = addLinks(macParsed, link.getMacs(), curNodeId,
-                                 curIfIndex, DiscoveryProtocol.bridge);
-	            if (link.getDesignatebridgePort() != null) {
-	                Integer endNodeId = link.getDesignatebridgePort().getNodeid();
-	                Integer endIfIndex = getIfIndexFromNodeidBridgePort(linkableNodes,
-	                                                                    endNodeId,
-	                                                                    link.getDesignatebridgePort().getBridgePort());
-	                final NodeToNodeLink lk = new NodeToNodeLink(
-	                                                             curNodeId,
-	                                                             curIfIndex,
-	                                                             DiscoveryProtocol.bridge);
-	                lk.setNodeparentid(endNodeId);
-	                lk.setParentifindex(endIfIndex);
-	                addNodetoNodeLink(lk);
-	                LOG.info("getLinksFromBridge: saving bridge link: {}",
-	                         lk.toString());
-	            }
+        	macParsed = addLinks(macParsed, link.getMacs(), curNodeId,
+                             curIfIndex, DiscoveryProtocol.bridge);
+            if (link.getDesignateBridgePort() != null) {
+                Integer endNodeId = link.getDesignateBridgePort().getNodeid();
+                Integer endIfIndex = getIfIndexFromNodeidBridgePort(linkableNodes,
+                                                                    endNodeId,
+                                                                    link.getDesignateBridgePort().getBridgePort());
+                final NodeToNodeLink lk = new NodeToNodeLink(
+                                                             curNodeId,
+                                                             curIfIndex,
+                                                             DiscoveryProtocol.bridge);
+                lk.setNodeparentid(endNodeId);
+                lk.setParentifindex(endIfIndex);
+                addNodetoNodeLink(lk);
+                LOG.info("getLinksFromBridge: saving bridge link: {}",
+                         lk.toString());
             }
         }
         LOG.info("getLinksFromBridge: done finding links using Bridge Discovery");

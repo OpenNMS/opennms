@@ -39,6 +39,7 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol;
 import org.opennms.netmgt.nb.Nms4930NetworkBuilder;
 import static org.opennms.netmgt.nb.TestNetworkBuilder.DLINK1_IP;
 import static org.opennms.netmgt.nb.TestNetworkBuilder.DLINK1_NAME;
@@ -97,13 +98,10 @@ public class Nms4930Test extends LinkdTestBuilder {
 
         final List<DataLinkInterface> ifaces = m_dataLinkInterfaceDao.findAll();
         
-        // FIXME These switches have both do1d and dot1q forwarding table,
-        // this must be further analyzed.
-        // this is a link bridgetobridge discovery: parsing nodeidA 2, portA 10, targetsA [1]
-        // must be considered in discovery algorithm
         assertEquals("we should have found 1 link", 1, ifaces.size());
         for (final DataLinkInterface link: ifaces) {
-            printLink(link);
+            checkLink(dlink1, dlink2, 24, 10, link);
+            assertEquals(DiscoveryProtocol.bridge, link.getProtocol());
         }
     }
     
@@ -137,16 +135,12 @@ public class Nms4930Test extends LinkdTestBuilder {
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
 
         final List<DataLinkInterface> ifaces = m_dataLinkInterfaceDao.findAll();
-        for (final DataLinkInterface link: ifaces) {
-            printLink(link);
-        }
-        
-        // FIXME These switches have both do1d and dot1q forwarding table,
-        // this must be further analyzed.
-        // this is a link bridgetobridge discovery: parsing nodeidA 2, portA 10, targetsA [1]
-        // must be considered in discovery algorithm
-        // the link is between node1 port 24 and node2 port 10
         assertEquals("we should have found one link", 1, ifaces.size());
+        for (final DataLinkInterface link: ifaces) {
+            checkLink(dlink1,dlink2 , 24, 10, link);
+            assertEquals(DiscoveryProtocol.bridge, link.getProtocol());
+        }
+
     }
 
 }

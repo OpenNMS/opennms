@@ -29,27 +29,28 @@
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 import org.easymock.EasyMock;
+import org.easymock.internal.matchers.Any;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.criteria.restrictions.InRestriction;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.topology.api.topo.*;
+import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.api.AlarmDao;
-import org.opennms.netmgt.dao.api.LldpLinkDao;
-import org.opennms.netmgt.model.LldpElement;
-import org.opennms.netmgt.model.LldpLink;
-import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.dao.api.OspfLinkDao;
+import org.opennms.netmgt.model.*;
 import org.opennms.netmgt.model.topology.EdgeAlarmStatusSummary;
 
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 
-public class LldpLinkStatusProviderTest {
+public class OspfLinkStatusProviderTest {
 
     private AlarmDao m_alarmDao;
-    private LldpLinkDao m_lldpLinkDao;
-    private LldpLinkStatusProvider m_statusProvider;
+    private OspfLinkDao m_lldpLinkDao;
+    private OspfLinkStatusProvider m_statusProvider;
     private EdgeProvider m_edgeProvider;
     private OnmsNode m_node1;
     private OnmsNode m_node2;
@@ -65,11 +66,11 @@ public class LldpLinkStatusProviderTest {
         m_node2.setLldpElement(new LldpElement(m_node2, "node2ChassisId", "node2SysName", LldpElement.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL));
 
         m_alarmDao = EasyMock.createMock(AlarmDao.class);
-        m_lldpLinkDao = EasyMock.createMock(LldpLinkDao.class);
+        m_lldpLinkDao = EasyMock.createMock(OspfLinkDao.class);
 
-        m_statusProvider = new LldpLinkStatusProvider();
+        m_statusProvider = new OspfLinkStatusProvider();
         m_statusProvider.setAlarmDao(m_alarmDao);
-        m_statusProvider.setLldpLinkDao(m_lldpLinkDao);
+        m_statusProvider.setOspfLinkDao(m_lldpLinkDao);
 
         m_edgeProvider = EasyMock.createMock(EdgeProvider.class);
 
@@ -77,12 +78,10 @@ public class LldpLinkStatusProviderTest {
 
     @Test
     public void testGetLldpLinkStatus() {
-        List<Integer> linkIds = new ArrayList<Integer>();
-        linkIds.add(1);
-        linkIds.add(2);
+
         EasyMock.expect(
                 m_alarmDao.findMatching(EasyMock.anyObject(org.opennms.core.criteria.Criteria.class))).andReturn(createAlarm());
-        EasyMock.expect(m_lldpLinkDao.findLinksForIds(linkIds)).andReturn(createLldpLinks());
+        EasyMock.expect(m_lldpLinkDao.findMatching(EasyMock.<org.opennms.core.criteria.Criteria>anyObject())).andReturn(createOspfLinks());
 
         EasyMock.replay(m_alarmDao, m_lldpLinkDao);
 
@@ -98,12 +97,9 @@ public class LldpLinkStatusProviderTest {
 
     @Test
     public void testGetLldpLinkStatusDown(){
-        List<Integer> linkIds = new ArrayList<Integer>();
-        linkIds.add(1);
-        linkIds.add(2);
         EasyMock.expect(
                 m_alarmDao.findMatching(EasyMock.anyObject(org.opennms.core.criteria.Criteria.class))).andReturn(createDownAlarm());
-        EasyMock.expect(m_lldpLinkDao.findLinksForIds(linkIds)).andReturn(createLldpLinks());
+        EasyMock.expect(m_lldpLinkDao.findMatching(EasyMock.<org.opennms.core.criteria.Criteria>anyObject())).andReturn(createOspfLinks());
 
         EasyMock.replay(m_alarmDao, m_lldpLinkDao);
 
@@ -130,23 +126,19 @@ public class LldpLinkStatusProviderTest {
 
         Vertex sourceVertex = new AbstractVertex("nodes", "1", "source");
         Vertex targetVertex = new AbstractVertex("nodes", "2", "target");
-        EdgeRef edge = new AbstractEdge(EnhancedLinkdTopologyProvider.LLDP_EDGE_NAMESPACE, "1|2", sourceVertex, targetVertex);
+        EdgeRef edge = new AbstractEdge(EnhancedLinkdTopologyProvider.OSPF_EDGE_NAMESPACE, "1|2", sourceVertex, targetVertex);
         return Arrays.asList(edge);
     }
 
 
-    private List<LldpLink> createLldpLinks() {
-        List<LldpLink> links = new ArrayList<LldpLink>();
+    private List<OspfLink> createOspfLinks() {
+        List<OspfLink> links = new ArrayList<OspfLink>();
 
-        LldpLink link = new LldpLink(m_node1, 12, 1, "node1PortId", "node1PortDescr", LldpLink.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL,
-                "node2ChassisId", "node2SysName", LldpElement.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL, "node2PortId",
-                LldpLink.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, "node2PortDescr");
+        OspfLink link = createOspfLink(m_node1, "192.168.100.246", "255.255.255.252", 0, 10101, "192.168.100.249", "192.168.100.245", 0);
         link.setId(1);
         links.add(link);
 
-        LldpLink link2 = new LldpLink(m_node2, 21, 2, "node2PortId", "node2PortDescr", LldpLink.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL,
-                "node1ChassisId", "node1SysName", LldpElement.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL, "node1PortId",
-                LldpLink.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, "node1PortDescr");
+        OspfLink link2 = createOspfLink(m_node2, "192.168.100.245", "255.255.255.252", 0, 10101, "192.168.100.250", "192.168.100.246", 0);
         link2.setId(2);
         links.add(link2);
 
@@ -162,11 +154,24 @@ public class LldpLinkStatusProviderTest {
 
         OnmsAlarm alarm1 = new OnmsAlarm();
         alarm1.setNode(m_node1);
-        alarm1.setIfIndex(1);
+        alarm1.setIfIndex(10101);
         alarm1.setUei("uei.opennms.org/internal/topology/linkDown");
         alarms.add(alarm1);
 
         return alarms;
+    }
+
+    private OspfLink createOspfLink(OnmsNode node, String sourceIpAddr, String sourceIpMask, int addrLessIndex, int ifIndex, String remRouterId, String remIpAddr, int remAddrLessIndex) {
+        final OspfLink ospfLink = new OspfLink();
+        ospfLink.setNode(node);
+        ospfLink.setOspfIpAddr(InetAddressUtils.addr(sourceIpAddr));
+        ospfLink.setOspfIpMask(InetAddressUtils.addr(sourceIpMask));
+        ospfLink.setOspfAddressLessIndex(addrLessIndex);
+        ospfLink.setOspfIfIndex(ifIndex);
+        ospfLink.setOspfRemRouterId(InetAddressUtils.addr(remRouterId));
+        ospfLink.setOspfRemIpAddr(InetAddressUtils.addr(remIpAddr));
+        ospfLink.setOspfRemAddressLessIndex(remAddrLessIndex);
+        return ospfLink;
     }
 
 }

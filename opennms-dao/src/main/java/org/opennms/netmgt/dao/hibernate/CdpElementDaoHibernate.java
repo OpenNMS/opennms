@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,16 +26,40 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.topo;
+package org.opennms.netmgt.dao.hibernate;
 
-import java.util.Collection;
-import java.util.Map;
+import org.opennms.netmgt.dao.api.CdpElementDao;
+import org.opennms.netmgt.model.CdpElement;
 
-public interface EdgeStatusProvider {
+public class CdpElementDaoHibernate extends AbstractDaoHibernate<CdpElement, Integer> implements CdpElementDao {
 
-    public String getNameSpace();
+    /**
+     * <p>
+     * Constructor for CdpElementDaoHibernate.
+     * </p>
+     */
+    public CdpElementDaoHibernate() {
+        super(CdpElement.class);
+    }
 
-    public Map<EdgeRef, Status> getStatusForEdges(EdgeProvider edgeProvider, Collection<EdgeRef> edges, Criteria[] criteria);
+    /**
+     * <p>
+     * findByNodeId
+     * </p>
+     *
+     * @param id a {@link java.lang.Integer} object.
+     * @return a {@link org.opennms.netmgt.model.LldpElement} object.
+     */
+    @Override
+    public CdpElement findByNodeId(Integer id) {
+        return findUnique("from CdpElement rec where rec.node.id = ?", id);
+    }
 
-    public boolean contributesTo(String namespace);
+	@Override
+	public CdpElement findByGlobalDeviceId(String deviceId) {
+        return findUnique("from CdpElement rec where rec.cdpGlobalDeviceId = ? ", deviceId);
+	}
+
+
+
 }

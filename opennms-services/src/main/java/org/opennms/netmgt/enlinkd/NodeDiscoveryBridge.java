@@ -63,8 +63,8 @@ import org.slf4j.LoggerFactory;
  * and collection occurs in the main run method of the instance. This allows the
  * collection to occur in a thread if necessary.
  */
-public final class BridgeLinkdNodeDiscovery extends AbstractLinkdNodeDiscovery {
-    private static final Logger LOG = LoggerFactory.getLogger(BridgeLinkdNodeDiscovery.class);
+public final class NodeDiscoveryBridge extends NodeDiscovery {
+    private static final Logger LOG = LoggerFactory.getLogger(NodeDiscoveryBridge.class);
 
 	public final static String CISCO_ENTERPRISE_OID = ".1.3.6.1.4.1.9";
 
@@ -77,17 +77,36 @@ public final class BridgeLinkdNodeDiscovery extends AbstractLinkdNodeDiscovery {
 	 * @param LinkableNode
 	 *            node
 	 */
-	public BridgeLinkdNodeDiscovery(final EnhancedLinkd linkd,
+	public NodeDiscoveryBridge(final EnhancedLinkd linkd,
 			final LinkableSnmpNode node) {
 		super(linkd, node);
 	}
-
+	
 	protected void runCollection() {
 
 		final Date now = new Date();
 
+		Map<Integer,String> vlanmap = getVtpVlanMap();
+		
+		if (vlanmap.isEmpty())
+			walkBridge(null,null);
+		else {
+			for (Entry<Integer, String> entry: vlanmap.entrySet()) {
+				String community = getPeer().getReadCommunity();
+				LOG.debug("run: cisco vlan collection setting peer community: {} with VLAN {}",
+						community, entry.getKey());
+				getPeer().setReadCommunity(community + "@" + entry.getKey());
+				walkBridge(entry.getKey(), entry.getValue());
+				getPeer().setReadCommunity(community);
+			}
+		}
+
+		m_linkd.getQueryManager().reconcileBridge(getNodeId(), now);
 		LOG.debug("run: collecting: {}", getPeer());
+	}
 	
+	private Map<Integer,String> getVtpVlanMap() {
+		
 		final Map<Integer,String> vlanmap = new HashMap<Integer, String>();
 		String trackerName = "vtpVersion";
 		final CiscoVtpTracker vtpStatus = new CiscoVtpTracker();
@@ -100,25 +119,26 @@ public final class BridgeLinkdNodeDiscovery extends AbstractLinkdNodeDiscovery {
 			if (walker.timedOut()) {
 				LOG.info("run:Aborting Bridge Linkd node scan : Agent timed out while scanning the {} table",
 						trackerName);
-				return;
+				return vlanmap;
 			} else if (walker.failed()) {
 				LOG.info("run:Aborting Bridge Linkd node scan : Agent failed while scanning the {} table: {}",
 						trackerName, walker.getErrorMessage());
-				return;
+				return vlanmap;
 			}
 		} catch (final InterruptedException e) {
 			LOG.error("run: Bridge Linkd node collection interrupted, exiting", e);
-			return;
+			return vlanmap;
 		}
 
 		if (vtpStatus.getVtpVersion() == null) {
-			LOG.info("cisco vtp mib not supported, on: {}",
+			LOG.info("run: cisco vtp mib not supported, on: {}",
 					str(getPeer().getAddress()));
-			return;
+			return vlanmap;
 		}
-		LOG.info("cisco vtp mib supported, on: {}", str(getPeer()
+
+		LOG.info("run: cisco vtp mib supported, on: {}", str(getPeer()
 				.getAddress()));
-		LOG.info("walking cisco vtp, on: {}", str(getPeer()
+		LOG.info("run: walking cisco vtp, on: {}", str(getPeer()
 				.getAddress()));
 
 		trackerName = "ciscoVtpVlan";
@@ -139,32 +159,14 @@ public final class BridgeLinkdNodeDiscovery extends AbstractLinkdNodeDiscovery {
 			if (walker.timedOut()) {
 				LOG.info("run:Aborting Bridge Linkd node scan : Agent timed out while scanning the {} table",
 						trackerName);
-				return;
 			} else if (walker.failed()) {
 				LOG.info("run:Aborting Bridge Linkd node scan : Agent failed while scanning the {} table: {}",
 						trackerName, walker.getErrorMessage());
-				return;
 			}
 		} catch (final InterruptedException e) {
 			LOG.error("run: Bridge Linkd node collection interrupted, exiting",e);
-			return;
 		}
-
-		if (vlanmap.isEmpty())
-			walkBridge(null,null);
-		else {
-			for (Entry<Integer, String> entry: vlanmap.entrySet()) {
-				String community = getPeer().getReadCommunity();
-				LOG.debug("run: cisco vlan collection setting peer community: {} with VLAN {}",
-						community, entry.getKey());
-				getPeer().setReadCommunity(community + "@" + entry.getKey());
-				walkBridge(entry.getKey(), entry.getValue());
-				getPeer().setReadCommunity(community);
-			}
-		}
-
-		m_linkd.getQueryManager().reconcileBridge(getNodeId(), now);
-
+		return vlanmap;
 	}
 
 	protected void walkBridge(Integer vlan, String vlanname) {
@@ -234,11 +236,11 @@ public final class BridgeLinkdNodeDiscovery extends AbstractLinkdNodeDiscovery {
 		} else {
 			walkSpanningTree(bridge.getBaseBridgeAddress(),vlan);
 		}		
-		walkDot1DTpFdp(vlan);
-		walkDot1QTpFdp();
+		walkDot1dTpFdp(vlan);
+		walkDot1qTpFdp();
 	}
 
-	private void walkDot1DTpFdp(final Integer vlan) {
+	private void walkDot1dTpFdp(final Integer vlan) {
 		String trackerName = "dot1dTbFdbPortTable";
 
 		Dot1dTpFdbTableTracker stpPortTableTracker = new Dot1dTpFdbTableTracker() {
@@ -273,7 +275,7 @@ public final class BridgeLinkdNodeDiscovery extends AbstractLinkdNodeDiscovery {
 		}
 	}
 
-	private void walkDot1QTpFdp() {
+	private void walkDot1qTpFdp() {
 
 		String trackerName = "dot1qTbFdbPortTable";
 
@@ -352,4 +354,5 @@ public final class BridgeLinkdNodeDiscovery extends AbstractLinkdNodeDiscovery {
 		return "BridgeLinkDiscovery";
 	}
 
+	
 }

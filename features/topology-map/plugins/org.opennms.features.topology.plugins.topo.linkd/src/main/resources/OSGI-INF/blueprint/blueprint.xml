@@ -16,6 +16,8 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
 
     <reference id="dataLinkInterfaceDao" interface="org.opennms.netmgt.dao.api.DataLinkInterfaceDao" availability="mandatory" />
     <reference id="lldpLinkDao" interface="org.opennms.netmgt.dao.api.LldpLinkDao" availability="mandatory" />
+    <reference id="ospfLinkDao" interface="org.opennms.netmgt.dao.api.OspfLinkDao" availability="mandatory" />
+    <reference id="ospfElementDao" interface="org.opennms.netmgt.dao.api.OspfElementDao" availability="mandatory" />
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
     <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" availability="mandatory" />
     <reference id="snmpInterfaceDao" interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" availability="mandatory" />
@@ -39,6 +41,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
     <bean id="linkdTopologyProvider"  init-method="onInit" class="org.opennms.features.topology.plugins.topo.linkd.internal.EnhancedLinkdTopologyProvider">
         <!--property name="transactionTemplate" ref="transactionTemplate" /-->
         <property name="lldpLinkDao" ref="lldpLinkDao" />
+        <property name="ospfLinkDao" ref="ospfLinkDao"/>
         <property name="nodeDao" ref="nodeDao" />
         <property name="snmpInterfaceDao" ref="snmpInterfaceDao" />
         <property name="ipInterfaceDao" ref="ipInterfaceDao" />
@@ -89,13 +92,16 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
     <service interface="org.opennms.features.topology.api.topo.SearchProvider" ref="linkdTopologyProvider" />
 
     <!-- OSPF EdgeProvider Service -->
-    <bean id="ospfEdgeProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.OspfEdgeProvider"></bean>
+    <!--<bean id="ospfEdgeProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.OspfEdgeProvider">
+        <property name="ospfLinkDao" ref="ospfLinkDao" />
+        <property name="ospfElementDao" ref="ospfElementDao"/>
+    </bean>
 
     <service interface="org.opennms.features.topology.api.topo.EdgeProvider" ref="ospfEdgeProvider" >
         <service-properties>
             <entry key="label" value="Linkd" />
         </service-properties>
-    </service>
+    </service>-->
 
     <bean id="isisEdgeProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.IsisEdgeProvider"></bean>
 
@@ -116,6 +122,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
     </service>
 -->
 
+    <!-- LldpLinkStatusProvider Service and CheckedOperation -->
     <bean id="lldpLinkStatusProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LldpLinkStatusProvider" >
         <property name="alarmDao" ref="alarmDao" />
         <property name="lldpLinkDao" ref="lldpLinkDao"/>
@@ -130,6 +137,25 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
             <property name="edgeStatusProvider" ref="lldpLinkStatusProvider"/>
         </bean>
     </service>
+    <!-- End LldpLinkStatusProvider -->
+
+    <!-- OspfLinkStatusProvider Service and CheckedOperation -->
+    <bean id="ospfLinkStatusProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.OspfLinkStatusProvider">
+        <property name="alarmDao" ref="alarmDao"/>
+        <property name="ospfLinkDao" ref="ospfLinkDao" />
+    </bean>
+
+    <service interface="org.opennms.features.topology.api.CheckedOperation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="View"/>
+            <entry key="operation.label" value="OSPF Link Status"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.plugins.topo.linkd.internal.operations.LinkStatusToggleOperation">
+            <property name="edgeStatusProvider" ref="ospfLinkStatusProvider"/>
+        </bean>
+    </service>
+    <!-- End OspfLinkStatusProvider -->
+
 
     <service interface="org.opennms.features.topology.api.IconRepository">
         <bean class="org.opennms.features.topology.api.support.DefaultIconRepository">
