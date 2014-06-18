@@ -108,7 +108,7 @@ final public class ImapMonitor extends AbstractServiceMonitor {
     /**
      * The BYE response received from the server in response to the logout
      */
-    private static String IMAP_BYE_RESPONSE_PREFIX = "* BYE ";
+    private static String IMAP_BYE_RESPONSE_PREFIX = "* BYE";
 
     /**
      * The LOGOUT response received from the server in response to the logout
