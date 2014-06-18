@@ -34,12 +34,4 @@
   <onmsgi:service interface="org.opennms.netmgt.model.events.EventProxy" ref="eventIpcManager" />
   <onmsgi:service interface="org.opennms.netmgt.model.events.EventSubscriptionService" ref="eventIpcManager" />
 
-  <bean id="eventIpcManagerFactory-setInstance" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.eventd.EventIpcManagerFactory.setIpcManager</value></property>
-    <property name="arguments">
-      <list>
-        <ref bean="eventIpcManager"/>
-      </list>
-    </property>
-  </bean>
 </beans>

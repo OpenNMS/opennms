@@ -942,9 +942,6 @@
   </reporting>
 
   <properties>
-
-    
-  
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
@@ -1063,6 +1060,7 @@
     <log4j2Version>2.0-rc1</log4j2Version>
     <minaVersion>2.0.7</minaVersion>
     <paxExamVersion>2.6.0</paxExamVersion>
+    <powermockVersion>1.5.5</powermockVersion>
     <oroVersion>2.0.8</oroVersion>
     <osgiVersion>4.3.1</osgiVersion>
     <osgiEnterpriseVersion>4.2.0</osgiEnterpriseVersion>
@@ -1543,6 +1541,11 @@
       <dependency>
         <groupId>org.opennms.features.poller</groupId>
         <artifactId>org.opennms.features.poller.api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.poller</groupId>
+        <artifactId>org.opennms.features.poller.remote</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -2814,6 +2817,11 @@
         <groupId>org.codehaus.jackson</groupId>
         <artifactId>jackson-xc</artifactId>
         <version>${jacksonVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>javassist</groupId>
+        <artifactId>javassist</artifactId>
+        <version>9999.use-org-javassist-not-javassist</version>
       </dependency>
       <dependency>
         <groupId>javax.annotation</groupId>

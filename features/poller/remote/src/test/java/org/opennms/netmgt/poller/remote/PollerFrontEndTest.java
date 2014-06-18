@@ -48,8 +48,8 @@ import org.opennms.netmgt.config.DefaultServiceMonitorLocator;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
-import org.opennms.netmgt.poller.monitors.HttpMonitor;
 import org.opennms.netmgt.poller.remote.support.DefaultPollerFrontEnd;
 import org.opennms.test.mock.EasyMockUtils;
 
@@ -577,7 +577,7 @@ public class PollerFrontEndTest extends TestCase {
 
     private void anticipatePollServiceSetMonitorLocators() {
         ServiceMonitorLocator locator = new DefaultServiceMonitorLocator(
-                                                                         "HTTP", HttpMonitor.class);
+                                                                         "HTTP", ServiceMonitor.class);
         Set<ServiceMonitorLocator> locators = Collections.singleton(locator);
         expect(
                m_backEnd
