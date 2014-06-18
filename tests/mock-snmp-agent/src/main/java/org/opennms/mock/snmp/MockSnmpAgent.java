@@ -540,13 +540,28 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     @Override
     protected void initTransportMappings() throws IOException {
         try {
-            final DefaultUdpTransportMapping mapping = new DefaultUdpTransportMapping(new UdpAddress(m_address), true);
+            final MockUdpTransportMapping mapping = new MockUdpTransportMapping(new UdpAddress(m_address), true);
             mapping.setThreadName("MockSnmpAgent-UDP-Transport");
             transportMappings = new TransportMapping[] { mapping };
         } catch (final IOException e) {
             m_failure = e;
             throw e;
         }
+    }
+
+    public static final class MockUdpTransportMapping extends DefaultUdpTransportMapping {
+        public MockUdpTransportMapping(final UdpAddress udpAddress, final boolean reuseAddress) throws IOException {
+            super(udpAddress, reuseAddress);
+        }
+
+        public int getPort() {
+            return socket.getLocalPort();
+        }
+    }
+
+    public int getPort() {
+        final TransportMapping mapping = transportMappings[0];
+        return ((MockUdpTransportMapping)mapping).getPort();
     }
 
     // override the agent defaults since we are providing all the agent data
@@ -645,6 +660,5 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     public String toString() {
         return "MockSnmpAgent["+m_address+"]";
     }
-
 
 }
