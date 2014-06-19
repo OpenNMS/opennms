@@ -102,6 +102,8 @@
   
   <bean id="collectdConfig" class="org.opennms.netmgt.config.CollectdConfigFactory"/>
   
+  <onmsgi:service interface="org.opennms.netmgt.config.api.CollectdConfigFactory" ref="collectdConfig" />
+  
    <bean id="dataCollectionConfigDao" class="org.opennms.netmgt.config.DefaultDataCollectionConfigDao">
     <property name="configResource" ref="dataCollectionConfigResourceLocation" />
     <property name="configDirectory" ref="dataCollectionConfigDirectoryLocation" />
@@ -138,6 +140,8 @@
   </bean>
 
   <bean id="trapdConfig" class="org.opennms.netmgt.config.TrapdConfigFactory" depends-on="trapdConfig-init" lazy-init="true" factory-method="getInstance"/>
+  
+  <onmsgi:service interface="org.opennms.netmgt.config.TrapdConfig" ref="trapdConfig" />
   
   <bean id="dataCollectionConfigResourceLocation" class="java.lang.String">
     <constructor-arg value="file:${opennms.home}/etc/datacollection-config.xml" />
