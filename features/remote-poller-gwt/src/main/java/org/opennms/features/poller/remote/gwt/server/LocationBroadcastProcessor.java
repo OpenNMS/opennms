@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.hibernate.criterion.Restrictions;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.restrictions.BetweenRestriction;
 import org.opennms.core.criteria.restrictions.InRestriction;

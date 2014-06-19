@@ -625,7 +625,7 @@ public class GroupOperationsTest {
 				Component component = itr.next();
 				try {
 					Form form = (Form)component;
-					Field field = form.getField("Group Label");
+					Field<String> field = form.getField("Group Label");
 					field.setValue("My New Awesome Group");
 					// Make sure that the value was set
 					assertEquals("My New Awesome Group", field.getValue());

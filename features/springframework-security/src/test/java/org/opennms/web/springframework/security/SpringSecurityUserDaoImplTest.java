@@ -39,9 +39,6 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Collection;
 import java.util.Iterator;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-
 import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
