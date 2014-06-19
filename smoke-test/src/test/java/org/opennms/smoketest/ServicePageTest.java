@@ -71,12 +71,17 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
         return currentNode;
     }
 
-
     @Test
-    public void testProvisioningGroupSetup() throws Exception {
+    public void testProvisioning() throws Exception {
+        createProvisioningGroup();
+        checkProvisioningGroupWasCreated();
+        deleteProvisioningNodesAndGroups();
+    }
 
+    public void createProvisioningGroup() throws Exception {
         String groupName = "SeleniumTestGroup";
 
+        frontPage();
         clickAndWait("link=Admin");
 
         clickAndWait("link=Manage Provisioning Requisitions");
@@ -111,51 +116,23 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
 
         clickAndWait("//input[@value='Done']");
         clickAndWait("//input[@value='Synchronize']");
-        selenium.click("link=Log out");
-        waitForPageToLoad();
-
-        // Yo dawg, I heard you liked hacks
-        Thread.sleep(10000);
     }
-
-    @Test
-    public void testCreateUser() throws InterruptedException { 
-        clickAndWait("link=Admin");
-        clickAndWait("link=Configure Users, Groups and On-Call Roles");
-        clickAndWait("link=Configure Users");
-        clickAndWait("link=Add new user");
-        selenium.type("id=userID", "SmokeTestUser");
-        selenium.type("id=pass1", "SmokeTestPassword");
-        selenium.type("id=pass2", "SmokeTestPassword");
-        clickAndWait("id=doOK");
-        waitForElement("id=saveUserButton");
-        clickAndWait("id=saveUserButton");
-        waitForElement("id=users(SmokeTestUser).doDetails");
-    }
-
-    @Test  
-    public void testCreateGroup() throws InterruptedException {
-        clickAndWait("link=Admin");
-        clickAndWait("link=Configure Users, Groups and On-Call Roles");
-        clickAndWait("link=Configure Groups");
-        clickAndWait("link=Add new group");
-        selenium.type("id=groupName", "SmokeTestGroup");
-        selenium.type("id=groupComment", "Test");
-        clickAndWait("id=doOK");
-        waitForElement("name=finish");
-        clickAndWait("name=finish");
-        clickAndWait("//div[@id='content']/form/table/tbody/tr[4]/td[2]/a/i");
-        selenium.addSelection("name=availableUsers", "label=SmokeTestUser");
-        selenium.click("xpath=/html/body/div[2]/form/table[2]/tbody/tr[2]/td/table/tbody/tr[2]/td/p/input[2]");
-        waitForElement("name=finish");
-        clickAndWait("name=finish");
-        clickAndWait("link=SmokeTestGroup");
-        waitForText("SmokeTestUser");
-    }
-
-    @Test
-    public void testProvisioningGroupWasCreated() throws InterruptedException {
+    
+    public void checkProvisioningGroupWasCreated() throws Exception {
+        frontPage();
         clickAndWait("link=Node List");
+
+        // wait 60-ish seconds to make sure the new node is created
+        int count = 60;
+        while(selenium.isTextPresent("None found.") && count > 0) {
+            Thread.sleep(1000);
+            count--;
+            selenium.refresh();
+            waitForPageToLoad();
+        }
+
+        assertFalse(selenium.isTextPresent("None found."));
+
         if(selenium.isElementPresent("link=localNode")) {
             // if there's more than 1 node discovered, it will give a list
             clickAndWait("link=localNode");
@@ -172,8 +149,8 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
         }
     }
 
-    @Test
-    public void testDeleteProvisioningNodesAndGroups() throws Exception {
+    public void deleteProvisioningNodesAndGroups() throws Exception {
+        frontPage();
         clickAndWait("link=Admin");
         clickAndWait("link=Manage Provisioning Requisitions");
         clickAndWait("//input[@value='Delete Nodes']");
@@ -201,14 +178,72 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
     }
 
     @Test
-    public void testDeleteUsersAndGroups() {
+    public void testUsersAndGroups() throws Exception {
+        createUser();
+        createGroup();
+        deleteUsersAndGroups();
+    }
+
+    public void createUser() throws Exception { 
+        frontPage();
+        clickAndWait("link=Admin");
+        clickAndWait("link=Configure Users, Groups and On-Call Roles");
+        clickAndWait("link=Configure Users");
+        clickAndWait("link=Add new user");
+        selenium.type("id=userID", "SmokeTestUser");
+        selenium.type("id=pass1", "SmokeTestPassword");
+        selenium.type("id=pass2", "SmokeTestPassword");
+        clickAndWait("id=doOK");
+        waitForElement("id=saveUserButton");
+        clickAndWait("id=saveUserButton");
+        waitForElement("id=users(SmokeTestUser).doDetails");
+    }
+
+    public void createGroup() throws Exception {
+        frontPage();
         clickAndWait("link=Admin");
         clickAndWait("link=Configure Users, Groups and On-Call Roles");
         clickAndWait("link=Configure Groups");
-        selenium.click("//div[@id='content']/form/table/tbody/tr[4]/td/a/i");
-        clickAndWait("link=Users and Groups");
+        clickAndWait("link=Add new group");
+        waitForElement("id=groupName");
+        selenium.type("id=groupName", "SmokeTestGroup");
+        selenium.type("id=groupComment", "Test");
+        Thread.sleep(1000);
+        clickAndWait("id=doOK");
+        System.err.println(selenium.getHtmlSource());
+        waitForElement("name=finish");
+        clickAndWait("name=finish");
+        clickAndWait("//div[@id='content']/form/table/tbody/tr[4]/td[2]/a/i");
+        selenium.addSelection("name=availableUsers", "label=SmokeTestUser");
+        selenium.click("xpath=/html/body/div[2]/form/table[2]/tbody/tr[2]/td/table/tbody/tr[2]/td/p/input[2]");
+        waitForElement("name=finish");
+        clickAndWait("name=finish");
+        clickAndWait("link=SmokeTestGroup");
+        waitForText("SmokeTestUser");
+    }
+
+    public void deleteUsersAndGroups() throws Exception {
+        frontPage();
+        clickAndWait("link=Admin");
+        clickAndWait("link=Configure Users, Groups and On-Call Roles");
+        clickAndWait("link=Configure Groups");
+        waitForText("group-SmokeTestGroup");
+        selenium.chooseOkOnNextConfirmation();
+        selenium.click("id=delete-SmokeTestGroup");
+        selenium.getConfirmation();
+        waitForText("group-Admin");
+        assertFalse(selenium.isTextPresent("SmokeTestGroup"));
+
+        frontPage();
+        clickAndWait("link=Admin");
+        clickAndWait("link=Configure Users, Groups and On-Call Roles");
         clickAndWait("link=Configure Users");
-        selenium.click("xpath=//html/body/div[2]/form/table/tbody/tr[2]/td/a/i");  
+        waitForText("user-SmokeTestUser");
+        selenium.chooseOkOnNextConfirmation();
+        selenium.click("id=users(SmokeTestUser).doDelete");
+        selenium.getConfirmation();
+        waitForText("user-admin");
+        assertFalse(selenium.isTextPresent("SmokeTestUser"));
     }
 
 }

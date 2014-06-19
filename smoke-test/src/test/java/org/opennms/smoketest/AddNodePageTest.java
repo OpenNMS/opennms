@@ -30,6 +30,7 @@ package org.opennms.smoketest;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.openqa.selenium.NoSuchElementException;
 
 public class AddNodePageTest extends OpenNMSSeleniumTestCase {
     @Before
@@ -37,18 +38,25 @@ public class AddNodePageTest extends OpenNMSSeleniumTestCase {
     	super.setUp();
         clickAndWait("link=Add Node");
     }
+
     @Test
+    public void testAddNode() throws Exception {
+        setupProvisioningGroup();
+        addNode();
+        deleteProvisioningGroup();
+    }
+
     public void setupProvisioningGroup() throws Exception {
-        selenium.open("/opennms/admin/node/add.htm");
         clickAndWait("link=Admin");
         clickAndWait("link=Manage Provisioning Requisitions");
         selenium.type("css=form[name=takeAction] > input[name=groupName]", "test");
         clickAndWait("css=input[type=submit]");
         clickAndWait("//input[@value='Synchronize']");
     }
-    @Test
-    public void testAddNodePage() throws Exception {
 
+    public void addNode() throws Exception {
+        frontPage();
+        clickAndWait("link=Add Node");
         waitForText("Category:");
         assertEquals("Provision", selenium.getValue("css=input[type=submit]"));
         waitForElement("css=input[type=reset]");
@@ -58,6 +66,45 @@ public class AddNodePageTest extends OpenNMSSeleniumTestCase {
         waitForText("SNMP Parameters (optional)");
         waitForText("Surveillance Category Memberships (optional)");
         waitForText("Basic Attributes (required)");
+        selenium.type("//input[@name='ipAddress']", "::1");
+        selenium.type("//input[@name='nodeLabel']", "AddNodePageTest");
+        selenium.click("//input[@type='submit']");
+        waitForPageToLoad();
+        waitForText("Your node has been added to the test requisition");
+    }
+
+    public void deleteProvisioningGroup() throws Exception {
+        frontPage();
+        clickAndWait("link=Admin");
+        clickAndWait("link=Manage Provisioning Requisitions");
+        // node has been created in requisition, needs sync to database
+        waitForText("1 nodes defined");
+        waitForText("0 nodes in database");
+        clickAndWait("//input[@value='Synchronize']");
+
+        // refresh until the node has been added to the database
+        waitForElementRefresh("//input[@value='Delete Nodes']");
+        waitForText("1 nodes in database");
+
+        // then delete the nodes from the requisition
+        selenium.chooseOkOnNextConfirmation();
+        selenium.click("//input[@value='Delete Nodes']");
+        selenium.getConfirmation();
+        waitForPageToLoad();
+
+        // now that we have deleted the nodes from the requisition, we should still
+        // see it still in the DB, but not in the requisition
+        waitForText("0 nodes defined");
+        waitForText("1 nodes in database");
+
+        // so then we sync it to get rid of the DB node
+        waitForElement("//input[@value='Synchronize']");
+        selenium.click("//input[@value='Synchronize']");
+
+        // now we wait for the sync to delete the node; once it has
+        // we'll have the 'Delete Requisition' button and we can delete it
+        waitForElementRefresh("//input[@value='Delete Requisition']");
+        clickAndWait("//input[@value='Delete Requisition']");
     }
 
 }
