@@ -28,9 +28,11 @@
 
 package org.opennms.smoketest;
 
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
-
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ServicePageTest extends OpenNMSSeleniumTestCase {
 
     interface Setter {
@@ -72,7 +74,7 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
     }
 
     @Test
-    public void testProvisioning() throws Exception {
+    public void a_testProvisioning() throws Exception {
         String groupName = "SeleniumTestGroup";
         
         frontPage();
@@ -141,7 +143,7 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
     }
 
     @Test
-    public void testUsersAndGroups() throws Exception {
+    public void b_testUsersAndGroups() throws Exception {
         // go to the add user page
         clickAndWait("link=Admin");
         clickAndWait("link=Configure Users, Groups and On-Call Roles");

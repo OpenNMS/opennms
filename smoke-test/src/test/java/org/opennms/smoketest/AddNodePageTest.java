@@ -28,18 +28,14 @@
 
 package org.opennms.smoketest;
 
-import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AddNodePageTest extends OpenNMSSeleniumTestCase {
-    @Before
-    public void setUp() throws Exception {
-    	super.setUp();
-        clickAndWait("link=Add Node");
-    }
-
     @Test
-    public void testAddNode() throws Exception {
+    public void a_testAddNode() throws Exception {
         setupProvisioningGroup();
         addNode();
         deleteProvisioningGroup();
