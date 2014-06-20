@@ -17,6 +17,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
     <reference id="dataLinkInterfaceDao" interface="org.opennms.netmgt.dao.api.DataLinkInterfaceDao" availability="mandatory" />
     <reference id="lldpLinkDao" interface="org.opennms.netmgt.dao.api.LldpLinkDao" availability="mandatory" />
     <reference id="ospfLinkDao" interface="org.opennms.netmgt.dao.api.OspfLinkDao" availability="mandatory" />
+    <reference id="isisLinkDao" interface="org.opennms.netmgt.dao.api.IsIsLinkDao" availability="mandatory" />
     <reference id="ospfElementDao" interface="org.opennms.netmgt.dao.api.OspfElementDao" availability="mandatory" />
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
     <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" availability="mandatory" />
@@ -42,6 +43,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
         <!--property name="transactionTemplate" ref="transactionTemplate" /-->
         <property name="lldpLinkDao" ref="lldpLinkDao" />
         <property name="ospfLinkDao" ref="ospfLinkDao"/>
+        <property name="isisLinkDao" ref="isisLinkDao" />
         <property name="nodeDao" ref="nodeDao" />
         <property name="snmpInterfaceDao" ref="snmpInterfaceDao" />
         <property name="ipInterfaceDao" ref="ipInterfaceDao" />
@@ -92,24 +94,27 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
     <service interface="org.opennms.features.topology.api.topo.SearchProvider" ref="linkdTopologyProvider" />
 
     <!-- OSPF EdgeProvider Service -->
-    <!--<bean id="ospfEdgeProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.OspfEdgeProvider">
-        <property name="ospfLinkDao" ref="ospfLinkDao" />
-        <property name="ospfElementDao" ref="ospfElementDao"/>
-    </bean>
+<!--
+        <bean id="ospfEdgeProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.OspfEdgeProvider">
+            <property name="ospfLinkDao" ref="ospfLinkDao" />
+            <property name="ospfElementDao" ref="ospfElementDao"/>
+        </bean>
 
-    <service interface="org.opennms.features.topology.api.topo.EdgeProvider" ref="ospfEdgeProvider" >
-        <service-properties>
-            <entry key="label" value="Linkd" />
-        </service-properties>
-    </service>-->
+        <service interface="org.opennms.features.topology.api.topo.EdgeProvider" ref="ospfEdgeProvider" >
+            <service-properties>
+                <entry key="label" value="Linkd" />
+            </service-properties>
+        </service>
 
-    <bean id="isisEdgeProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.IsisEdgeProvider"></bean>
+        <bean id="isisEdgeProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.IsisEdgeProvider"></bean>
 
-    <service interface="org.opennms.features.topology.api.topo.EdgeProvider" ref="isisEdgeProvider">
-        <service-properties>
-            <entry key="label" value="Linkd"/>
-        </service-properties>
-    </service>
+        <service interface="org.opennms.features.topology.api.topo.EdgeProvider" ref="isisEdgeProvider">
+            <service-properties>
+                <entry key="label" value="Linkd"/>
+            </service-properties>
+        </service>
+
+    -->
 <!--
     <service interface="org.opennms.features.topology.api.CheckedOperation" >
       	<service-properties>

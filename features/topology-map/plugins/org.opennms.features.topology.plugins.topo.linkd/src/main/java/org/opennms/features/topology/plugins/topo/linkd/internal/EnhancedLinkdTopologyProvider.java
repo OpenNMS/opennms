@@ -47,6 +47,7 @@ import java.util.*;
 
 public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider implements SearchProvider {
 
+
     private abstract class LinkDetail<K> {
         private final String m_id;
         private final Vertex m_source;
@@ -170,6 +171,54 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         }
     }
 
+    private class IsIsLinkDetail extends LinkDetail<Integer>{
+
+
+        private final int m_sourceIfindex;
+        private final int m_targetIfindex;
+        private final int m_sourceLinkId;
+        private final int m_targetLinkId;
+
+        public IsIsLinkDetail(String id, Vertex source, int sourceLinkId, Integer sourceIfIndex, Vertex target, int targetLinkId, Integer targetIfIndex) {
+            super(id, source, null, target, null);
+            m_sourceLinkId = sourceLinkId;
+            m_targetLinkId = targetLinkId;
+            m_sourceIfindex = sourceIfIndex;
+            m_targetIfindex = targetIfIndex;
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((getSourceLink() == null) ? 0 : m_sourceLinkId) + ((getTargetLink() == null) ? 0 : m_targetLinkId);
+            result = prime * result
+                    + ((getVertexNamespace() == null) ? 0 : getVertexNamespace().hashCode());
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if(obj instanceof LldpLinkDetail){
+                IsIsLinkDetail objDetail = (IsIsLinkDetail)obj;
+
+                return getId().equals(objDetail.getId());
+            } else  {
+                return false;
+            }
+        }
+
+        @Override
+        public int getSourceIfIndex() {
+            return m_sourceIfindex;
+        }
+
+        @Override
+        public int getTargetIfIndex() {
+            return m_targetIfindex;
+        }
+    }
+
     private interface LinkState {
         void setParentInterfaces(OnmsSnmpInterface sourceInterface, OnmsSnmpInterface targetInterface);
         String getLinkStatus();
@@ -190,8 +239,10 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
 
     private LldpLinkDao m_lldpLinkDao;
     private OspfLinkDao m_ospfLinkDao;
+    private IsIsLinkDao m_isisLinkDao;
     public final static String LLDP_EDGE_NAMESPACE = TOPOLOGY_NAMESPACE_LINKD + "::LLDP";
     public final static String OSPF_EDGE_NAMESPACE = TOPOLOGY_NAMESPACE_LINKD + "::OSPF";
+    public final static String ISIS_EDGE_NAMESPACE = TOPOLOGY_NAMESPACE_LINKD + "::ISIS";
 
     public EnhancedLinkdTopologyProvider() { }
 
@@ -219,6 +270,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
 
             getLldpLinks();
             getOspfLinks();
+            getIsIsLinks();
 
 
         } catch (Exception e){
@@ -370,6 +422,31 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         }
     }
 
+    private void getIsIsLinks(){
+        List<Object[]> isislinks = m_isisLinkDao.getLinksForTopology();
+
+        for (Object[] linkObj : isislinks) {
+            Integer link1Id = (Integer) linkObj[1];
+            Integer link1Nodeid = (Integer) linkObj[2];
+            Integer link1IfIndex = (Integer) linkObj[3];
+            Integer link2Id = (Integer) linkObj[4];
+            Integer link2Nodeid = (Integer) linkObj[5];
+            Integer link2IfIndex = (Integer) linkObj[6];
+            IsIsLinkDetail linkDetail = new IsIsLinkDetail(
+                    Math.min(link1Id, link2Id) + "|" + Math.max(link1Id, link2Id),
+                    getVertex(m_nodeDao.get(link1Nodeid)),
+                    link1Id,
+                    link1IfIndex,
+                    getVertex(m_nodeDao.get(link2Nodeid)),
+                    link2Id,
+                    link2IfIndex
+            );
+
+            AbstractEdge edge = connectVertices(linkDetail.getId(), linkDetail.getSource(), linkDetail.getTarget(), ISIS_EDGE_NAMESPACE);
+            edge.setTooltipText(getEdgeTooltipText(linkDetail));
+        }
+    }
+
     @Override
     public void refresh() {
         try {
@@ -452,6 +529,10 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         m_lldpLinkDao = lldpLinkDao;
     }
 
+    public LldpLinkDao getLldpLinkDao() {
+        return m_lldpLinkDao;
+    }
+
     public void setOspfLinkDao(OspfLinkDao ospfLinkDao) {
         m_ospfLinkDao = ospfLinkDao;
     }
@@ -460,8 +541,12 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         return m_ospfLinkDao;
     }
 
-    public LldpLinkDao getLldpLinkDao() {
-        return m_lldpLinkDao;
+    public IsIsLinkDao getIsisLinkDao() {
+        return m_isisLinkDao;
+    }
+
+    public void setIsisLinkDao(IsIsLinkDao isisLinkDao) {
+        m_isisLinkDao = isisLinkDao;
     }
 
     //Search Provider methods
