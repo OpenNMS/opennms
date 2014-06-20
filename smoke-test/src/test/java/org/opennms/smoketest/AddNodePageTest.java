@@ -30,7 +30,6 @@ package org.opennms.smoketest;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.NoSuchElementException;
 
 public class AddNodePageTest extends OpenNMSSeleniumTestCase {
     @Before
@@ -83,7 +82,7 @@ public class AddNodePageTest extends OpenNMSSeleniumTestCase {
         clickAndWait("//input[@value='Synchronize']");
 
         // refresh until the node has been added to the database
-        waitForElementRefresh("//input[@value='Delete Nodes']");
+        waitForElementRefresh("//input[@value='Delete Nodes']", "link=Provisioning Requisitions");
         waitForText("1 nodes in database");
 
         // then delete the nodes from the requisition
@@ -103,7 +102,7 @@ public class AddNodePageTest extends OpenNMSSeleniumTestCase {
 
         // now we wait for the sync to delete the node; once it has
         // we'll have the 'Delete Requisition' button and we can delete it
-        waitForElementRefresh("//input[@value='Delete Requisition']");
+        waitForElementRefresh("//input[@value='Delete Requisition']", "link=Provisioning Requisitions");
         clickAndWait("//input[@value='Delete Requisition']");
     }
 

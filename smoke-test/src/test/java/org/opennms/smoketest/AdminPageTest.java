@@ -45,10 +45,10 @@ public class AdminPageTest extends OpenNMSSeleniumTestCase {
     public void testAllTextIsPresent() throws Exception {
         waitForText("OpenNMS System");
         waitForText("Operations");
-        waitForText("Nodes");
+        waitForText("Node Provisioning");
         waitForText("Distributed Monitoring");
         waitForText("Descriptions");
-        waitForText("Scheduled Outages: Add");
+        waitForText("Add and edit scheduled");
         waitForText("Notification Status:");
     }
 
