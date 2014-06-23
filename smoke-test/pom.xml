@@ -98,6 +98,7 @@
       <groupId>org.slf4j</groupId>
       <artifactId>log4j-over-slf4j</artifactId>
       <scope>test</scope>
+      <version>${slf4jVersion}</version>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
@@ -146,7 +147,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.11</version>
+      <version>4.11</version><!--$NO-MVN-MAN-VER$-->
       <scope>test</scope>
     </dependency>
   </dependencies>
