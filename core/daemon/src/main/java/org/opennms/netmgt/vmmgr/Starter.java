@@ -43,6 +43,7 @@ import javax.management.MBeanServer;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.logging.Logging;
+import org.opennms.netmgt.config.ServiceConfigFactory;
 import org.opennms.netmgt.config.service.Service;
 import org.opennms.netmgt.config.service.types.InvokeAtType;
 import org.slf4j.Logger;
