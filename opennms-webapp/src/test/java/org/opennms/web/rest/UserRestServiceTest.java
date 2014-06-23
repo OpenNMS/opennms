@@ -142,9 +142,10 @@ public class UserRestServiceTest extends AbstractSpringJerseyRestTestCase  {
 
     @Test
     public void testWriteALotOfUsers() throws Exception {
-        int userCount = 40;
+        int userCount = 50;
 
-        ExecutorService pool = Executors.newCachedThreadPool();
+        // Limit the thread pool so that we don't exhaust all of the database connections
+        ExecutorService pool = Executors.newFixedThreadPool(25);
         List<Future<?>> createFutures = new ArrayList<Future<?>>();
         for (int i = 0; i < userCount; i++) {
             final String userName = "test" + i;

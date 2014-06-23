@@ -28,9 +28,11 @@
 
 package org.opennms.smoketest;
 
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
-
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class UserAccountPageTest extends OpenNMSSeleniumTestCase {
     @Override
     public void setUp() throws Exception {
@@ -41,19 +43,19 @@ public class UserAccountPageTest extends OpenNMSSeleniumTestCase {
     }
     
     @Test
-    public void testAllTextIsPresent() throws Exception {
+    public void a_testAllTextIsPresent() throws Exception {
         waitForText("User Account Self-Service");
         waitForText("Account Self-Service Options");
         waitForText("require further");
     }
 
     @Test 
-    public void testAllLinksArePresent() throws InterruptedException {
+    public void b_testAllLinksArePresent() throws InterruptedException {
         waitForElement("link=Change Password");
     }
 
     @Test
-    public void testAllLinks() throws InterruptedException {
+    public void c_testAllLinks() throws InterruptedException {
         clickAndWait("link=Change Password");
         waitForText("Please enter the old and new passwords and confirm.");
         waitForText("Current Password");

@@ -29,9 +29,11 @@
 package org.opennms.smoketest;
 
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
-
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class SearchPageTest extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
@@ -40,7 +42,7 @@ public class SearchPageTest extends OpenNMSSeleniumTestCase {
     }
 
     @Test
-    public void testAllTextIsPresent() throws Exception {
+    public void a_testAllTextIsPresent() throws Exception {
         waitForText("Search for Nodes");
         waitForText("Search Asset Information");
         waitForText("Search Options");
@@ -48,20 +50,20 @@ public class SearchPageTest extends OpenNMSSeleniumTestCase {
     }
 
     @Test
-    public void testAllLinksArePresent() throws InterruptedException {
+    public void b_testAllLinksArePresent() throws InterruptedException {
         waitForElement("link=All nodes");
         waitForElement("link=All nodes and their interfaces");
         waitForElement("link=All nodes with asset info");
     }
 
     @Test 
-    public void testAllFormsArePresent() throws InterruptedException {
+    public void c_testAllFormsArePresent() throws InterruptedException {
         waitForElement("css=input[type=submit]");
         assertEquals("Search", selenium.getValue("css=input[type=submit]"));
     }
 
     @Test
-    public void testAllLinks() throws InterruptedException {
+    public void d_testAllLinks() throws InterruptedException {
         clickAndWait("link=All nodes");
         waitForText("Nodes", LOAD_TIMEOUT);
         clickAndWait("//div[@id='content']/div/h2/a[2]");

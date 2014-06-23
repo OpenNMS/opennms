@@ -29,8 +29,11 @@
 package org.opennms.smoketest;
 
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class DashboardPageTest extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
@@ -40,7 +43,7 @@ public class DashboardPageTest extends OpenNMSSeleniumTestCase {
     }
 
     @Test
-    public void testDashboardPage() throws Exception {
+    public void a_testDashboardPage() throws Exception {
         waitForText("Alarms");
         waitForText("Notifications");
         waitForText("Node Status");

@@ -34,9 +34,9 @@ import org.easymock.EasyMock;
 import org.easymock.IAnswer;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
-import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.TroubleTicketState;
+import org.opennms.netmgt.model.events.EventIpcManagerFactory;
 import org.opennms.test.mock.EasyMockUtils;
 
 import org.opennms.api.integration.ticketing.*;

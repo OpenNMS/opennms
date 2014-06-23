@@ -158,7 +158,7 @@
 	      String numericPin = userFactory.getNumericPin(userid);
 	      String textPin = userFactory.getTextPin(userid);
          %>
-         <tr bgcolor=<%=row%2==0 ? "#ffffff" : "#cccccc"%>>
+         <tr bgcolor=<%=row%2==0 ? "#ffffff" : "#cccccc"%> id="user-<%= userid %>">
           <% if (!curUser.getUserId().equals("admin")) { %>
           <td width="5%" rowspan="2" align="center"> 
             <a id="<%= "users("+curUser.getUserId()+").doDelete" %>" href="javascript:deleteUser('<%=curUser.getUserId()%>')" onclick="return confirm('Are you sure you want to delete the user <%=curUser.getUserId()%>?')"><i class="fa fa-trash-o fa-2x"></i></a> 
