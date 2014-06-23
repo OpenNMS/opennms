@@ -71,6 +71,8 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
 
         public abstract int getTargetIfIndex();
 
+        public abstract String getType();
+
         public String getId() {
             return m_id;
         }
@@ -131,6 +133,11 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         public int getTargetIfIndex() {
             return getTargetLink().getLldpPortIfindex();
         }
+
+        @Override
+        public String getType() {
+            return "LLDP";
+        }
     }
 
     private class OspfLinkDetail extends LinkDetail<OspfLink>{
@@ -168,6 +175,11 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         @Override
         public int getTargetIfIndex() {
             return getTargetLink().getOspfIfIndex();
+        }
+
+        @Override
+        public String getType() {
+            return "OSPF";
         }
     }
 
@@ -216,6 +228,11 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         @Override
         public int getTargetIfIndex() {
             return m_targetIfindex;
+        }
+
+        @Override
+        public String getType() {
+            return "IsIs";
         }
     }
 
@@ -470,9 +487,9 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         if (sourceInterface != null && targetInterface != null
                 && sourceInterface.getNetMask() != null && !sourceInterface.getNetMask().isLoopbackAddress()
                 && targetInterface.getNetMask() != null && !targetInterface.getNetMask().isLoopbackAddress()) {
-            tooltipText.append("Type of Link: Layer3/Layer2");
+            tooltipText.append("Type of Link: " + linkDetail.getType() + " Layer3/Layer2");
         } else {
-            tooltipText.append("Type of Link: Layer2");
+            tooltipText.append("Type of Link: " + linkDetail.getType() + " Layer2");
         }
         tooltipText.append(HTML_TOOLTIP_TAG_END);
 
@@ -485,13 +502,6 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             tooltipText.append( ":"+targetInterface.getIfName());
         tooltipText.append("&gt;");
         tooltipText.append(HTML_TOOLTIP_TAG_END);
-
-        LinkStateMachine stateMachine = new LinkStateMachine();
-        stateMachine.setParentInterfaces(sourceInterface, targetInterface);
-        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append("Link status: " + stateMachine.getLinkStatus());
-        tooltipText.append(HTML_TOOLTIP_TAG_END);
-
 
         if ( targetInterface != null) {
             if (targetInterface.getIfSpeed() != null) {
