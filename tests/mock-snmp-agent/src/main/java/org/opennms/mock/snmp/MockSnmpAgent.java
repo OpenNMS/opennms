@@ -312,6 +312,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     @Override
     public void run() {
         try {
+	    s_log.debug("Initializing SNMP Agent");
             init();
             loadConfig(ImportModes.UPDATE_CREATE);
             addShutdownHook();
@@ -325,6 +326,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         }
 
         boolean interrupted = false;
+	s_log.debug("Initialization Complete processing message until agent is shutdown.");
         while (m_running.get()) {
             try {
                 Thread.sleep(10); // fast, Fast, FAST, *FAST*!!!
@@ -334,6 +336,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
             }
         }
 
+	s_log.debug("Shutdown called stopping agent.");
         for (final TransportMapping transportMapping : transportMappings) {
             try {
                 if (transportMapping != null) {
