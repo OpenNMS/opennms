@@ -42,7 +42,7 @@ public class SurveillancePageTest extends OpenNMSSeleniumTestCase {
     }
 
     @Test
-    public void testSurveillancePage() throws Exception {
+    public void a_testSurveillancePage() throws Exception {
         waitForText("Surveillance View:");
         waitForText("Routers");
         waitForText("Nodes Down");

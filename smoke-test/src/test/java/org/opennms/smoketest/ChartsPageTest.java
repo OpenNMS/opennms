@@ -42,7 +42,7 @@ public class ChartsPageTest extends OpenNMSSeleniumTestCase {
     }
 
     @Test
-    public void b_testChartsPage() throws Exception {
+    public void a_testChartsPage() throws Exception {
         waitForText("Charts");
         waitForElement("css=img[alt=sample-bar-chart]");
         waitForElement("css=img[alt=sample-bar-chart2]");

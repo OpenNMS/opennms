@@ -33,8 +33,6 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-import com.thoughtworks.selenium.Selenium;
-
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AdminPageTest extends OpenNMSSeleniumTestCase {
 
@@ -48,10 +46,10 @@ public class AdminPageTest extends OpenNMSSeleniumTestCase {
     public void a_testAllTextIsPresent() throws Exception {
         waitForText("OpenNMS System");
         waitForText("Operations");
-        waitForText("Node Provisioning");
+        waitForText("Nodes");
         waitForText("Distributed Monitoring");
         waitForText("Descriptions");
-        waitForText("Add and edit scheduled");
+        waitForText("Scheduled Outages: Add");
         waitForText("Notification Status:");
     }
 
@@ -191,13 +189,5 @@ public class AdminPageTest extends OpenNMSSeleniumTestCase {
     @Test
     public void g_testLinkGroupFive() throws Exception {
         waitForElement("//a[@href='http://www.opennms.org']");
-    }
-
-    public void setSelenium(Selenium s) {
-        selenium = s;
-    }
-
-    public Selenium getSelenium() {
-        return selenium;
     }
 }
