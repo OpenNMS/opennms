@@ -94,7 +94,7 @@ public abstract class AbstractLinkStatusProvider implements EdgeStatusProvider {
             List<EdgeAlarmStatusSummary> lldpEdgeAlarmSummaries = getEdgeAlarmSummaries(new ArrayList<Integer>(linkIds));
 
             for (EdgeAlarmStatusSummary eSum : lldpEdgeAlarmSummaries) {
-                String linkId = eSum.getLldpLinkId();
+                String linkId = eSum.getId();
                 EdgeRef edge = mappedRefs.get(linkId);
                 if (returnMap.size() > 0 && edge != null) returnMap.put(edge, getLinkStatusForSummary(eSum));
             }
