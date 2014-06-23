@@ -29,8 +29,11 @@
 package org.opennms.smoketest;
 
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AssetsPageTest extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
@@ -39,7 +42,7 @@ public class AssetsPageTest extends OpenNMSSeleniumTestCase {
     }
 
     @Test
-    public void testAllTextIsPresent() throws InterruptedException { 
+    public void a_testAllTextIsPresent() throws InterruptedException { 
         waitForText("Search Asset Information");
         waitForText("Assets Inventory");
         waitForText("nter the data by hand");
@@ -48,13 +51,13 @@ public class AssetsPageTest extends OpenNMSSeleniumTestCase {
     }    
 
     @Test 
-    public void testAllLinksArePresent() throws InterruptedException {
+    public void b_testAllLinksArePresent() throws InterruptedException {
         waitForElement("css=input[type=submit]");
         waitForElement("name=searchvalue");
         waitForElement("link=All nodes with asset info");
     }
     @Test
-    public void testAllLinks() throws InterruptedException {
+    public void c_testAllLinks() throws InterruptedException {
         clickAndWait("link=All nodes with asset info");
         waitForText("Assets");
         clickAndWait("//div[@id='content']/div/h2/a[2]");
