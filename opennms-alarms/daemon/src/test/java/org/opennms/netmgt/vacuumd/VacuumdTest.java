@@ -41,11 +41,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.db.DataSourceFactory;
@@ -167,6 +169,13 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, Initia
     @After
     public void tearDown() throws Exception {
         m_alarmd.destroy();
+
+        final List<OnmsNode> nodes = m_nodeDao.findAll();
+        for (final OnmsNode node : nodes) {
+            m_nodeDao.delete(node);
+        }
+        m_nodeDao.flush();
+
         MockUtil.println("Sleeping for "+TEAR_DOWN_WAIT_MILLIS+" millis in tearDown...");
         Thread.sleep(TEAR_DOWN_WAIT_MILLIS);
     }
@@ -503,6 +512,7 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, Initia
      * 
      */
     @Test
+    @Ignore
     public final void testRunUpdate() {
         //TODO Implement runUpdate().
     }
