@@ -37,7 +37,7 @@ import java.net.BindException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -112,8 +112,8 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     private AtomicReference<URL> m_moFile = new AtomicReference<URL>();
     private AtomicBoolean m_running = new AtomicBoolean();
     private AtomicBoolean m_stopped = new AtomicBoolean();
-    private List<ManagedObject> m_moList;
-    private MockSnmpMOLoader m_moLoader;
+    private AtomicReference<List<ManagedObject>> m_moList = new AtomicReference<List<ManagedObject>>();
+    private AtomicReference<MockSnmpMOLoader> m_moLoader = new AtomicReference<MockSnmpMOLoader>();
     private AtomicReference<IOException> m_failure = new AtomicReference<IOException>();
 
     private static File BOOT_COUNT_FILE;
@@ -137,7 +137,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
 
     public MockSnmpAgent(final File confFile, final URL moFile) {
         super(BOOT_COUNT_FILE, confFile, new CommandProcessor(new OctetString(MPv3.createLocalEngineID(new OctetString("MOCKAGENT")))));
-        m_moLoader = new PropertiesBackedManagedObject();
+        m_moLoader.set(new PropertiesBackedManagedObject());
         m_moFile.set(moFile);
         agent.setWorkerPool(ThreadPool.create("RequestPool", 4));
     }
@@ -180,7 +180,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
                 Thread.sleep(10);
             }
         } catch (final InterruptedException e) {
-            s_log.warn("Agent interrupted while starting: " + e.getLocalizedMessage());
+            s_log.warn("MockSnmpAgent: Agent interrupted while starting: " + e.getLocalizedMessage());
             agent.shutDownAndWait();
             throw e;
         }
@@ -188,7 +188,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         if (!thread.isAlive()) {
             agent.m_running.set(false);
             agent.m_stopped.set(true);
-            throw new IllegalStateException("agent failed to start on address " + bindAddress, agent.m_failure.get());
+            throw new IllegalStateException("MockSnmpAgent: agent failed to start on address " + bindAddress, agent.m_failure.get());
         }
 
         if (System.getProperty(PROPERTY_SLEEP_ON_CREATE) != null) {
@@ -311,27 +311,28 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
      */
     @Override
     public void run() {
-	s_log.warn("Initializing SNMP Agent");
+	s_log.warn("MockSnmpAgent: Initializing SNMP Agent");
         try {
             init();
-	    s_log.warn("Finished 'init' loading config");
+	    s_log.warn("MockSnmpAgent: Finished 'init' loading config");
             loadConfig(ImportModes.UPDATE_CREATE);
-	    s_log.warn("finished 'loadConfig' adding shutdown hook");
+	    s_log.warn("MockSnmpAgent: finished 'loadConfig' adding shutdown hook");
             addShutdownHook();
-	    s_log.warn("finished 'addShutdownHook' finishing init");
+	    s_log.warn("MockSnmpAgent: finished 'addShutdownHook' finishing init");
             finishInit();
-	    s_log.warn("finished 'finishInit' running agent");
+	    s_log.warn("MockSnmpAgent: finished 'finishInit' running agent");
             super.run();
-	    s_log.warn("finished running Agent - setting running to true");
+	    s_log.warn("MockSnmpAgent: finished running Agent - setting running to true");
             m_running.set(true);
         } catch (final BindException e) {
-        	s_log.error(String.format("Unable to bind to %s.  You probably specified an invalid address or a port < 1024 and are not running as root. Exception: %s", m_address.get(), e), e);
+        	s_log.error(String.format("MockSnmpAgent: Unable to bind to %s.  You probably specified an invalid address or a port < 1024 and are not running as root. Exception: %s", m_address.get(), e), e);
         } catch (final Throwable t) {
-        	s_log.error("An error occurred while initializing: " + t, t);
+        	s_log.error("MockSnmpAgent: An error occurred while initializing: " + t, t);
+        	t.printStackTrace();
         }
 
         boolean interrupted = false;
-	s_log.warn("Initialization Complete processing message until agent is shutdown.");
+	s_log.warn("MockSnmpAgent: Initialization Complete processing message until agent is shutdown.");
         while (m_running.get()) {
             try {
                 Thread.sleep(10); // fast, Fast, FAST, *FAST*!!!
@@ -341,20 +342,20 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
             }
         }
 
-	s_log.warn("Shutdown called stopping agent.");
+	s_log.warn("MockSnmpAgent: Shutdown called stopping agent.");
         for (final TransportMapping transportMapping : transportMappings) {
             try {
                 if (transportMapping != null) {
                 	transportMapping.close();
                 }
             } catch (final IOException t) {
-            	s_log.error("an error occurred while closing the transport mapping " + transportMapping + ": " + t, t);
+            	s_log.error("MockSnmpAgent: an error occurred while closing the transport mapping " + transportMapping + ": " + t, t);
             }
         }
 
         m_stopped.set(true);
 
-        s_log.warn("Agent is no longer running.");
+        s_log.warn("MockSnmpAgent: Agent is no longer running.");
         if (interrupted) {
         	Thread.currentThread().interrupt();
         }
@@ -592,14 +593,15 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     /** {@inheritDoc} */
     @Override
     protected void registerManagedObjects() {
-        m_moList = createMockMOs();
-        Iterator<ManagedObject> moListIter = m_moList.iterator();
-        while (moListIter.hasNext()) {
+        final List<ManagedObject> mockMOs = Collections.unmodifiableList(createMockMOs());
+        m_moList.set(mockMOs);
+
+        for (final ManagedObject mo : mockMOs) {
             try {
-                server.register(moListIter.next(), null);
+                server.register(mo, null);
             }
             catch (final DuplicateRegistrationException ex) {
-                s_log.error("unable to register managed object", ex);
+                s_log.error("MockSnmpAgent: unable to register managed object", ex);
             }
         }
     }
@@ -607,18 +609,18 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     /** {@inheritDoc} */
     @Override
     protected void unregisterManagedObjects() {
-        Iterator<ManagedObject> moListIter = m_moList.iterator();
-        while (moListIter.hasNext()) {
-            server.unregister(moListIter.next(), null);
+        for (final ManagedObject mo : m_moList.get()) {
+            server.unregister(mo, null);
         }
     }
 
     protected List<ManagedObject> createMockMOs() {
-        return m_moLoader.loadMOs(m_moFile.get());
+        return m_moLoader.get().loadMOs(m_moFile.get());
     }
 
     private ManagedObject findMOForOid(OID oid) {
-        for(ManagedObject mo : m_moList) {
+        final List<ManagedObject> list = m_moList.get();
+        for(ManagedObject mo : list) {
             if (mo.getScope().covers(oid)) {
                 return mo;
             }
