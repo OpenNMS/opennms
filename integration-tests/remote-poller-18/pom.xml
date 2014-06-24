@@ -109,8 +109,15 @@
       <artifactId>org.opennms.core.test-api.services</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
+      <groupId>org.opennms.features.poller</groupId>
+      <artifactId>org.opennms.features.poller.remote</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!-- Get the remote poller test JAR so that we have test config files to run with -->
+    <dependency>
+      <groupId>org.opennms.features.poller</groupId>
+      <artifactId>org.opennms.features.poller.remote</artifactId>
+      <version>${project.version}</version>
       <type>test-jar</type>
     </dependency>
 

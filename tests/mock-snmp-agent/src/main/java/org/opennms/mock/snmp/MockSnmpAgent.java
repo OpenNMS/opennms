@@ -37,8 +37,10 @@ import java.net.BindException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.snmp4j.MessageDispatcherImpl;
 import org.snmp4j.TransportMapping;
@@ -50,7 +52,6 @@ import org.snmp4j.agent.io.ImportModes;
 import org.snmp4j.agent.mo.MOTableRow;
 import org.snmp4j.agent.mo.snmp.RowStatus;
 import org.snmp4j.agent.mo.snmp.SnmpCommunityMIB;
-import org.snmp4j.agent.mo.snmp.SnmpCommunityMIB.SnmpCommunityEntryRow;
 import org.snmp4j.agent.mo.snmp.SnmpNotificationMIB;
 import org.snmp4j.agent.mo.snmp.SnmpTargetMIB;
 import org.snmp4j.agent.mo.snmp.StorageType;
@@ -92,32 +93,32 @@ import org.snmp4j.util.ThreadPool;
  */
 public class MockSnmpAgent extends BaseAgent implements Runnable {
     private static final String PROPERTY_SLEEP_ON_CREATE = "mockSnmpAgent.sleepOnCreate";
-    
+
     // initialize Log4J logging
     static {
-    	try {
-    		Class.forName("org.apache.log4j.Logger");
-    		LogFactory.setLogFactory(new Log4jLogFactory());
-    	} catch (Exception e) {
-    		LogFactory.setLogFactory(new ConsoleLogFactory());
-    	}
-    	
-    	
+        try {
+            Class.forName("org.apache.log4j.Logger");
+            LogFactory.setLogFactory(new Log4jLogFactory());
+        } catch (Exception e) {
+            LogFactory.setLogFactory(new ConsoleLogFactory());
+        }
+
+
     }
-    
+
     private static final LogAdapter s_log = LogFactory.getLogger(MockSnmpAgent.class);
 
-    private String m_address;
-    private URL m_moFile;
-    private boolean m_running;
-    private boolean m_stopped;
-    private List<ManagedObject> m_moList;
-    private MockSnmpMOLoader m_moLoader;
-    private IOException m_failure;
+    private AtomicReference<String> m_address = new AtomicReference<String>();
+    private AtomicReference<URL> m_moFile = new AtomicReference<URL>();
+    private AtomicBoolean m_running = new AtomicBoolean();
+    private AtomicBoolean m_stopped = new AtomicBoolean();
+    private AtomicReference<List<ManagedObject>> m_moList = new AtomicReference<List<ManagedObject>>();
+    private AtomicReference<MockSnmpMOLoader> m_moLoader = new AtomicReference<MockSnmpMOLoader>();
+    private AtomicReference<IOException> m_failure = new AtomicReference<IOException>();
 
     private static File BOOT_COUNT_FILE;
 
-	public static boolean allowSetOnMissingOid = false;
+    public static boolean allowSetOnMissingOid = false;
 
     static {
         File bootCountFile;
@@ -136,8 +137,8 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
 
     public MockSnmpAgent(final File confFile, final URL moFile) {
         super(BOOT_COUNT_FILE, confFile, new CommandProcessor(new OctetString(MPv3.createLocalEngineID(new OctetString("MOCKAGENT")))));
-        m_moLoader = new PropertiesBackedManagedObject();
-        m_moFile = moFile;
+        m_moLoader.set(new PropertiesBackedManagedObject());
+        m_moFile.set(moFile);
         agent.setWorkerPool(ThreadPool.create("RequestPool", 4));
     }
     
@@ -154,22 +155,22 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
      */
     public MockSnmpAgent(final File confFile, final URL moFile, final String bindAddress) {
         this(confFile, moFile);
-        m_address = bindAddress;
+        m_address.set(bindAddress);
     }
     
     public static MockSnmpAgent createAgentAndRun(URL moFile, String bindAddress) throws InterruptedException {
-    	setupLogging();
+        setupLogging();
         try {
-        	InputStream in = moFile.openStream();
+            InputStream in = moFile.openStream();
             if (in == null) {
                 throw new IllegalArgumentException("could not get InputStream mock object resource; does it exist?  Resource: " + moFile);
             }
             in.close();
-            
+
         } catch (IOException e) {
             throw new RuntimeException("Got IOException while checking for existence of mock object file: " + e, e);
         }
-        
+
         final MockSnmpAgent agent = new MockSnmpAgent(new File("/dev/null"), moFile, bindAddress);
         Thread thread = new Thread(agent, agent.getClass().getSimpleName());
         thread.start();
@@ -179,17 +180,17 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
                 Thread.sleep(10);
             }
         } catch (final InterruptedException e) {
-            s_log.warn("Agent interrupted while starting: " + e.getLocalizedMessage());
+            s_log.warn("MockSnmpAgent: Agent interrupted while starting: " + e.getLocalizedMessage());
             agent.shutDownAndWait();
             throw e;
         }
 
         if (!thread.isAlive()) {
-            agent.m_running = false;
-            agent.m_stopped = true;
-            throw new IllegalStateException("agent failed to start on address " + bindAddress, agent.m_failure);
+            agent.m_running.set(false);
+            agent.m_stopped.set(true);
+            throw new IllegalStateException("MockSnmpAgent: agent failed to start on address " + bindAddress, agent.m_failure.get());
         }
-        
+
         if (System.getProperty(PROPERTY_SLEEP_ON_CREATE) != null) {
             long sleep = Long.parseLong(System.getProperty(PROPERTY_SLEEP_ON_CREATE));
             Thread.sleep(sleep);
@@ -197,68 +198,68 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
 
         return agent;
     }
-    
+
     private static void setupLogging() {
-    	if (LogFactory.getLogFactory() == null) {
-    		LogFactory.setLogFactory(new ConsoleLogFactory());
-    	}
-	}
+        if (LogFactory.getLogFactory() == null) {
+            LogFactory.setLogFactory(new ConsoleLogFactory());
+        }
+    }
 
     public static void main(String[] args) throws UnknownHostException, MalformedURLException {
-    	LogFactory.setLogFactory(new ConsoleLogFactory());
+        LogFactory.setLogFactory(new ConsoleLogFactory());
         AgentConfigData agentConfig = parseCli(args);
         if (agentConfig == null) {
             System.err.println("Could not parse configuration.");
             System.exit(1);
         }
         String listenSpec = agentConfig.getListenAddr().getHostAddress() + "/" + agentConfig.getListenPort();
-    	
-       	try {
-       	    MockSnmpAgent.createAgentAndRun(agentConfig.getMoFile(), listenSpec);
-       	} catch (InterruptedException e) {
-       	    System.exit(0);
-       	}
+
+        try {
+            MockSnmpAgent.createAgentAndRun(agentConfig.getMoFile(), listenSpec);
+        } catch (InterruptedException e) {
+            System.exit(0);
+        }
     }
 
     public static AgentConfigData parseCli(String[] args) throws UnknownHostException, MalformedURLException {
-    	
+
         String dumpFile = null;
         String listenAddr = "127.0.0.1";
         int listenPort = 1691;
 
-    	for(int i = 0; i < args.length; i++) {
-    		if ("-d".equals(args[i]) || "--dump-file".equals(args[i])) {
-    			if (i+1 >= args.length) {
+        for(int i = 0; i < args.length; i++) {
+            if ("-d".equals(args[i]) || "--dump-file".equals(args[i])) {
+                if (i+1 >= args.length) {
                     usage("You must specify at least a pathname or URL for the dump file.");
-    			} else {
-    				dumpFile = args[++i];
-    			}
-    		}
-    		else if ("-l".equals(args[i]) || "--listen-addr".equals(args[i])) {
-    			if (i+1 >= args.length) {
-    				usage("You must pass an address argument when using " + args[i] + ".");
-    			} else {
-    				listenAddr = args[++i];
-    			}
-    		}
-    		else if ("-p".equals(args[i]) || "--port".equals(args[i])) {
-    			if (i+1 >= args.length) {
-    				usage("You must pass a port number when using " + args[i] + ".");
-    			} else {
-    				listenPort = Integer.parseInt(args[++i]);
-    			}
-    		}
-    		
-    	}
-    	
-    	if (dumpFile == null) {
+                } else {
+                    dumpFile = args[++i];
+                }
+            }
+            else if ("-l".equals(args[i]) || "--listen-addr".equals(args[i])) {
+                if (i+1 >= args.length) {
+                    usage("You must pass an address argument when using " + args[i] + ".");
+                } else {
+                    listenAddr = args[++i];
+                }
+            }
+            else if ("-p".equals(args[i]) || "--port".equals(args[i])) {
+                if (i+1 >= args.length) {
+                    usage("You must pass a port number when using " + args[i] + ".");
+                } else {
+                    listenPort = Integer.parseInt(args[++i]);
+                }
+            }
+
+        }
+
+        if (dumpFile == null) {
             usage("You must specify at least a pathname or URL for the dump file.");
-    	}
-    	
-    	return new AgentConfigData(dumpFile, listenAddr, listenPort);
+        }
+
+        return new AgentConfigData(dumpFile, listenAddr, listenPort);
 
     }
-    
+
     private static void usage(String why) {
         System.err.println(why);
         System.err.println("java -jar mock-snmp-agent-jar-with-dependencies.jar -d dump-file [other options]");
@@ -267,20 +268,20 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         System.err.println("-p, --port {udp-port}\tUDP port to listen on (default: 1691)");
         System.exit(1);
     }
-    
-    
-    
+
+
+
     /** {@inheritDoc} */
     @Override
     protected void initMessageDispatcher() {
         dispatcher = new MessageDispatcherImpl();
-        
+
         usm = new USM(SecurityProtocols.getInstance(),
-                agent.getContextEngineID(),
-                updateEngineBoots());
-        
+                      agent.getContextEngineID(),
+                      updateEngineBoots());
+
         mpv3 = new MPv3(usm);
-        
+
         SecurityProtocols.getInstance().addDefaultProtocols();
         dispatcher.addMessageProcessingModel(new MPv1());
         dispatcher.addMessageProcessingModel(new MPv2c());
@@ -310,21 +311,29 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
      */
     @Override
     public void run() {
+	s_log.warn("MockSnmpAgent: Initializing SNMP Agent");
         try {
             init();
+	    s_log.warn("MockSnmpAgent: Finished 'init' loading config");
             loadConfig(ImportModes.UPDATE_CREATE);
+	    s_log.warn("MockSnmpAgent: finished 'loadConfig' adding shutdown hook");
             addShutdownHook();
+	    s_log.warn("MockSnmpAgent: finished 'addShutdownHook' finishing init");
             finishInit();
+	    s_log.warn("MockSnmpAgent: finished 'finishInit' running agent");
             super.run();
-            m_running = true;
+	    s_log.warn("MockSnmpAgent: finished running Agent - setting running to true");
+            m_running.set(true);
         } catch (final BindException e) {
-        	s_log.error(String.format("Unable to bind to %s.  You probably specified an invalid address or a port < 1024 and are not running as root. Exception: %s", m_address, e), e);
+        	s_log.error(String.format("MockSnmpAgent: Unable to bind to %s.  You probably specified an invalid address or a port < 1024 and are not running as root. Exception: %s", m_address.get(), e), e);
         } catch (final Throwable t) {
-        	s_log.error("An error occurred while initializing: " + t, t);
+        	s_log.error("MockSnmpAgent: An error occurred while initializing: " + t, t);
+        	t.printStackTrace();
         }
 
         boolean interrupted = false;
-        while (m_running) {
+	s_log.warn("MockSnmpAgent: Initialization Complete processing message until agent is shutdown.");
+        while (m_running.get()) {
             try {
                 Thread.sleep(10); // fast, Fast, FAST, *FAST*!!!
             } catch (final InterruptedException e) {
@@ -333,35 +342,36 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
             }
         }
 
+	s_log.warn("MockSnmpAgent: Shutdown called stopping agent.");
         for (final TransportMapping transportMapping : transportMappings) {
             try {
                 if (transportMapping != null) {
                 	transportMapping.close();
                 }
             } catch (final IOException t) {
-            	s_log.error("an error occurred while closing the transport mapping " + transportMapping + ": " + t, t);
+            	s_log.error("MockSnmpAgent: an error occurred while closing the transport mapping " + transportMapping + ": " + t, t);
             }
         }
 
-        m_stopped = true;
-        
-        s_log.debug("Agent is no longer running.");
+        m_stopped.set(true);
+
+        s_log.warn("MockSnmpAgent: Agent is no longer running.");
         if (interrupted) {
         	Thread.currentThread().interrupt();
         }
     }
 
     public void shutDown() {
-        m_running = false;
-        m_stopped = false;
+        m_running.set(false);
+        m_stopped.set(false);
     }
 
     public boolean isRunning() {
-        return m_running;
+        return m_running.get();
     }
 
     public boolean isStopped() {
-        return m_stopped;
+        return m_stopped.get();
     }
 
     /** {@inheritDoc} */
@@ -376,9 +386,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
                 new Integer32(StorageType.nonVolatile), // storage type
                 new Integer32(RowStatus.active)         // row status
         };
-        SnmpCommunityEntryRow row =
-            communityMIB.getSnmpCommunityEntry().createRow(
-                                                           new OctetString("public2public").toSubIndex(true), com2sec);
+        MOTableRow row = communityMIB.getSnmpCommunityEntry().createRow(new OctetString("public2public").toSubIndex(true), com2sec);
         communityMIB.getSnmpCommunityEntry().addRow(row);
     }
 
@@ -541,13 +549,28 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     @Override
     protected void initTransportMappings() throws IOException {
         try {
-            transportMappings = new TransportMapping[1];
-            transportMappings[0] =
-                new DefaultUdpTransportMapping(new UdpAddress(m_address));
+            final MockUdpTransportMapping mapping = new MockUdpTransportMapping(new UdpAddress(m_address.get()), true);
+            mapping.setThreadName("MockSnmpAgent-UDP-Transport");
+            transportMappings = new TransportMapping[] { mapping };
         } catch (final IOException e) {
-            m_failure = e;
+            m_failure.set(e);
             throw e;
         }
+    }
+
+    public static final class MockUdpTransportMapping extends DefaultUdpTransportMapping {
+        public MockUdpTransportMapping(final UdpAddress udpAddress, final boolean reuseAddress) throws IOException {
+            super(udpAddress, reuseAddress);
+        }
+
+        public int getPort() {
+            return socket.getLocalPort();
+        }
+    }
+
+    public int getPort() {
+        final TransportMapping mapping = transportMappings[0];
+        return ((MockUdpTransportMapping)mapping).getPort();
     }
 
     // override the agent defaults since we are providing all the agent data
@@ -568,14 +591,15 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     /** {@inheritDoc} */
     @Override
     protected void registerManagedObjects() {
-        m_moList = createMockMOs();
-        Iterator<ManagedObject> moListIter = m_moList.iterator();
-        while (moListIter.hasNext()) {
+        final List<ManagedObject> mockMOs = Collections.unmodifiableList(createMockMOs());
+        m_moList.set(mockMOs);
+
+        for (final ManagedObject mo : mockMOs) {
             try {
-                server.register(moListIter.next(), null);
+                server.register(mo, null);
             }
             catch (final DuplicateRegistrationException ex) {
-            	s_log.error("unable to register managed object", ex);
+                s_log.error("MockSnmpAgent: unable to register managed object", ex);
             }
         }
     }
@@ -583,18 +607,18 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     /** {@inheritDoc} */
     @Override
     protected void unregisterManagedObjects() {
-        Iterator<ManagedObject> moListIter = m_moList.iterator();
-        while (moListIter.hasNext()) {
-            server.unregister(moListIter.next(), null);
+        for (final ManagedObject mo : m_moList.get()) {
+            server.unregister(mo, null);
         }
     }
 
     protected List<ManagedObject> createMockMOs() {
-        return m_moLoader.loadMOs(m_moFile);
+        return m_moLoader.get().loadMOs(m_moFile.get());
     }
-    
+
     private ManagedObject findMOForOid(OID oid) {
-        for(ManagedObject mo : m_moList) {
+        final List<ManagedObject> list = m_moList.get();
+        for(ManagedObject mo : list) {
             if (mo.getScope().covers(oid)) {
                 return mo;
             }
@@ -609,9 +633,9 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
             ((Updatable)mo).updateValue(oid, value);
         }
     }
-    
+
     private void assertNotNull(final String string, final Object o) {
-    	if (!allowSetOnMissingOid  && o == null) {
+        if (!allowSetOnMissingOid  && o == null) {
             throw new IllegalStateException(string);
         }
     }
@@ -638,14 +662,13 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     
     public void updateValuesFromResource(final URL moFile) {
         unregisterManagedObjects();
-        m_moFile = moFile;
+        m_moFile.set(moFile);
         registerManagedObjects();
     }
     
     @Override
     public String toString() {
-        return "MockSnmpAgent["+m_address+"]";
+        return "MockSnmpAgent["+m_address.get()+"]";
     }
-    
 
 }

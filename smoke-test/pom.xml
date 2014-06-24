@@ -144,5 +144,11 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.11</version><!--$NO-MVN-MAN-VER$-->
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>

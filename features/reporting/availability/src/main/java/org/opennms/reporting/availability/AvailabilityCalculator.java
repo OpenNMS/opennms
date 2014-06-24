@@ -30,7 +30,6 @@ package org.opennms.reporting.availability;
 
 import java.io.File;
 import java.io.OutputStream;
-import java.util.Calendar;
 import java.util.Date;
 
 import org.opennms.reporting.core.svclayer.ReportStoreService;

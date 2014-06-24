@@ -29,8 +29,11 @@
 package org.opennms.smoketest;
 
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class InstrumentationLogReaderPageTest extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
@@ -41,7 +44,7 @@ public class InstrumentationLogReaderPageTest extends OpenNMSSeleniumTestCase {
     }
 
     @Test
-    public void testInstrumentationLogReaderPage() throws Exception {
+    public void a_testInstrumentationLogReaderPage() throws Exception {
         selenium.type("name=searchString", "test");
         clickAndWait("css=#ILRfilter > input[type=submit]");
         assertEquals("test", selenium.getValue("name=searchString"));
@@ -56,7 +59,7 @@ public class InstrumentationLogReaderPageTest extends OpenNMSSeleniumTestCase {
     }
 
     @Test
-    public void testSortingLinks() throws InterruptedException {
+    public void b_testSortingLinks() throws InterruptedException {
         clickAndWait("link=Collections");
         waitForElement("link=Collections ^");
         clickAndWait("link=Collections ^");

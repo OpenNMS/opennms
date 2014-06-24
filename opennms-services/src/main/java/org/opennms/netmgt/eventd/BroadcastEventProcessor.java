@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.eventd;
 
-import java.util.List;
-
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.capsd.EventUtils;
@@ -37,7 +35,6 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;

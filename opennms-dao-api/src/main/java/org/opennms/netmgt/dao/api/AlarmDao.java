@@ -33,7 +33,6 @@ import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.opennms.netmgt.model.topology.EdgeAlarmStatusSummary;
 
 import java.util.List;
-import java.util.Set;
 
 public interface AlarmDao extends LegacyOnmsDao<OnmsAlarm, Integer> {
 
