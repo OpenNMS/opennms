@@ -5,6 +5,8 @@ TOPDIR=`cd $MYDIR; pwd`
 
 cd "$TOPDIR"
 
+JAVA_HOME=`"$TOPDIR/bin/javahome.pl"`
+
 BINARIES="dch dpkg-sig dpkg-buildpackage expect"
 
 function exists() {
@@ -105,23 +107,6 @@ function version()
         head -n 1
 }
 
-function setJavaHome()
-{
-    if [ -z "$JAVA_HOME" ]; then
-        # hehe
-        for dir in /usr/lib/jvm/java-{1.5.0,6,7,8,9}-sun; do
-            if [ -x "$dir/bin/java" ]; then
-                export JAVA_HOME="$dir"
-                break
-            fi
-        done
-    fi
-
-    if [ -z $JAVA_HOME ]; then
-        die "*** JAVA_HOME must be set ***"
-    fi
-}
-
 function skipCompile()
 {
     if $ASSEMBLY_ONLY; then echo 1; else echo 0; fi
@@ -181,7 +166,6 @@ function main()
     EXTRA_INFO2=$(extraInfo2)
     VERSION=$(version)
 
-    setJavaHome
     export PATH="$TOPDIR/maven/bin:$JAVA_HOME/bin:$PATH"
 
     if $BUILD_DEB; then

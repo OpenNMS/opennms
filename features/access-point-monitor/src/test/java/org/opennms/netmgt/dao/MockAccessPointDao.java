@@ -40,4 +40,9 @@ public class MockAccessPointDao extends AbstractMockDao<OnmsAccessPoint,String> 
         return new ArrayList<String>(packages);
     }
 
+    @Override
+    public void merge(OnmsAccessPoint ap) {
+        save(ap);
+    }
+
 }

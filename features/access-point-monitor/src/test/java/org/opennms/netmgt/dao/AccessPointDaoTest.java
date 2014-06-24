@@ -48,7 +48,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * <p>
@@ -74,9 +73,6 @@ public class AccessPointDaoTest implements InitializingBean {
 
     @Autowired
     private AccessPointDao m_accessPointDao;
-
-    @Autowired
-    TransactionTemplate m_transTemplate;
 
     private final static String AP1_MAC = "00:01:02:03:04:05";
 
