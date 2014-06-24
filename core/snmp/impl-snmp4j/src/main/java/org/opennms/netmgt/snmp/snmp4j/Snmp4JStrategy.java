@@ -69,12 +69,10 @@ import org.snmp4j.mp.PduHandle;
 import org.snmp4j.security.SecurityLevel;
 import org.snmp4j.security.SecurityModel;
 import org.snmp4j.security.SecurityModels;
-import org.snmp4j.security.SecurityProtocols;
 import org.snmp4j.security.USM;
 import org.snmp4j.security.UsmUser;
 import org.snmp4j.smi.IpAddress;
 import org.snmp4j.smi.OID;
-import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.SMIConstants;
 import org.snmp4j.smi.UdpAddress;
 import org.snmp4j.smi.VariableBinding;
@@ -99,7 +97,8 @@ public class Snmp4JStrategy implements SnmpStrategy {
         }
 
         SNMP4JSettings.setEnterpriseID(5813);
-        USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
+        //USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
+        USM usm = new USM();
         SecurityModels.getInstance().addSecurityModel(usm);
         
         // Enable extensibility in SNMP4J so that we can subclass some SMI classes to work around
