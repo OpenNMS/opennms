@@ -2271,21 +2271,24 @@ create table minions (
 --#
 --# minions_properties - arbitrary properties associated with a minion
 --#
---# id    : The ID of the minion
---# key   : The property key
---# value : The property value
+--# id        : The unique ID of the property entry
+--# minion_id : The ID of the minion
+--# key       : The property key
+--# value     : The property value
 --#
 --########################################################################
 
 create table minions_properties (
-    id    varchar(36) not null,
-    key   text not null,
-    value text,
+    id        integer default nextval('opennmsnxtid') not null,
+    minion_id varchar(36) not null,
+    key       text not null,
+    value     text,
 
-    constraint fk_minions_properties foreign key (id) references minions ON DELETE CASCADE
+    constraint pk_minions_properties_id primary key (id),
+    constraint fk_minions_properties foreign key (minion_id) references minions (id) ON DELETE CASCADE
 );
 
-CREATE UNIQUE INDEX minions_properties_unique_idx ON minions_properties(id, key);
+CREATE UNIQUE INDEX minions_properties_unique_idx ON minions_properties(minion_id, key);
 
 --# Begin enlinkd table
 drop table lldpElement cascade;

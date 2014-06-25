@@ -2285,7 +2285,7 @@ create table minions_properties (
     value     text,
 
     constraint pk_minions_properties_id primary key (id),
-    constraint fk_minions_properties foreign key (minion_id) references minions ON DELETE CASCADE
+    constraint fk_minions_properties foreign key (minion_id) references minions (id) ON DELETE CASCADE
 );
 
 CREATE UNIQUE INDEX minions_properties_unique_idx ON minions_properties(minion_id, key);
