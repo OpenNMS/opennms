@@ -75,6 +75,10 @@ public class ResourceQueryCommandParser{
             processFilters(command);
         }else if(command.toLowerCase().contains("string")) {
             processStringProperties(command);
+        }else if(command.toLowerCase().contains("foreignsource")) {
+            processForeignSource(command);
+        }else if(command.toLowerCase().contains("foreignid")) {
+            processForeignId(command);
         }
     }
 
@@ -105,6 +109,16 @@ public class ResourceQueryCommandParser{
     private void processRrdDir(String command) {
         String value = command.substring(command.toLowerCase().indexOf("rrddir") + "rrdDir".length(), command.length());
         getCurrentQuery().setRrdDir(value.trim());
+    }
+
+    private void processForeignSource(String command) {
+        String value = command.substring(command.toLowerCase().indexOf("foreignsource") + "foreignsource".length(), command.length());
+        getCurrentQuery().setForeignSource(value.trim());
+    }
+
+    private void processForeignId(String command) {
+        String value = command.substring(command.toLowerCase().indexOf("foreignid") + "foreignid".length(), command.length());
+        getCurrentQuery().setForeignId(value.trim());
     }
 
 
