@@ -258,6 +258,12 @@
   </bean>
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.OutageDao" ref="outageDao" />
+  
+   <bean id="pathOutageDao" class="org.opennms.netmgt.dao.hibernate.PathOutageDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.PathOutageDao" ref="pathOutageDao" />
 
   <bean id="serviceTypeDao" class="org.opennms.netmgt.dao.hibernate.ServiceTypeDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
