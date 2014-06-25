@@ -90,5 +90,4 @@ public interface ReadyRunnable extends Runnable {
      */
     public void setPackageName(String pkg);
 
-    
 }

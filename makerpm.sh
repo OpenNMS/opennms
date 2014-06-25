@@ -224,9 +224,9 @@ function main()
     if $SIGN; then
 
         RPMS=$(echo "$WORKDIR"/RPMS/noarch/*.rpm)
-        #run rpm --define "_signature gpg" --define "_gpg_name $SIGN_ID" --resign "$RPMS"
+        #run rpmsign --define "_signature gpg" --define "_gpg_name $SIGN_ID" --resign "$RPMS"
 
-        run expect -c "set timeout -1; spawn rpm --define \"_signature gpg\" --define \"_gpg_name $SIGN_ID\" --resign $RPMS; match_max 100000; expect \"Enter pass phrase: \"; send -- \"${SIGN_PASSWORD}\r\"; expect eof" || \
+        run expect -c "set timeout -1; spawn rpmsign --define \"_signature gpg\" --define \"_gpg_name $SIGN_ID\" --resign $RPMS; match_max 100000; expect \"Enter pass phrase: \"; send -- \"${SIGN_PASSWORD}\r\"; expect eof" || \
             die "RPM signing failed for $(branch)"
 
     fi

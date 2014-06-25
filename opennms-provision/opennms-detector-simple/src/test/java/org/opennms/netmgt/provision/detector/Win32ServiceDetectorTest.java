@@ -53,7 +53,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitSnmpAgent(host=Win32ServiceDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/windows2003.properties")
 public class Win32ServiceDetectorTest implements InitializingBean {
-    static final String TEST_IP_ADDRESS = "172.20.1.205";
+    static final String TEST_IP_ADDRESS = "192.0.2.1";
 
     @Autowired
     private Win32ServiceDetector m_detector;
@@ -67,8 +67,8 @@ public class Win32ServiceDetectorTest implements InitializingBean {
     public void setUp() throws InterruptedException {
         MockLogAppender.setupLogging();
 
-        m_detector.setRetries(1);
-        m_detector.setTimeout(500);
+        m_detector.setRetries(2);
+        m_detector.setTimeout(5000);
         m_detector.setWin32ServiceName("VMware Tools Service");
     }
     

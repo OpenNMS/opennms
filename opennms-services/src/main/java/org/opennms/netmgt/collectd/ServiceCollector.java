@@ -30,6 +30,7 @@ package org.opennms.netmgt.collectd;
 
 import java.util.Map;
 
+import org.opennms.netmgt.config.collector.CollectionConstants;
 import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
@@ -43,21 +44,31 @@ import org.opennms.netmgt.model.events.EventProxy;
 public interface ServiceCollector {
     /**
      * Status of the collector object.
+     * @deprecated Replace with value in {@link CollectionConstants}
      */
     static final int COLLECTION_UNKNOWN = 0;
 
-    /** Constant <code>COLLECTION_SUCCEEDED=1</code> */
+    /** 
+     * Constant <code>COLLECTION_SUCCEEDED=1</code> 
+     * @deprecated Replace with value in {@link CollectionConstants}
+     */
     static final int COLLECTION_SUCCEEDED = 1;
 
-    /** Constant <code>COLLECTION_FAILED=2</code> */
+    /** 
+     * Constant <code>COLLECTION_FAILED=2</code> 
+     * @deprecated Replace with value in {@link CollectionConstants}
+     */
     static final int COLLECTION_FAILED = 2;
 
-    /** Constant <code>statusType="{Unknown,COLLECTION_SUCCEEDED,COLLECTIO"{trunked}</code> */
+    /** 
+     * Constant <code>statusType="{Unknown,COLLECTION_SUCCEEDED,COLLECTIO"{trunked}</code> 
+     * @deprecated Replace with value in {@link CollectionConstants}
+     */
     static final String[] statusType = {
         "Unknown",
         "COLLECTION_SUCCEEDED",
         "COLLECTION_FAILED"
-        };
+    };
 
     /**
      * <p>initialize</p>

@@ -29,32 +29,18 @@
 
 --%>
 
+<%@page import="org.opennms.web.lldp.LldpElementFactory"%>
+<%@page import="org.opennms.web.lldp.LldpElementNode"%>
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="
-        org.opennms.web.element.*,
-        org.opennms.netmgt.model.OnmsNode,
-		java.util.*,
-		java.net.*,
-        java.sql.SQLException,
-        org.opennms.core.soa.ServiceRegistry,
-        org.opennms.core.utils.InetAddressUtils,
-	org.opennms.netmgt.poller.PathOutageFactory,
-        org.opennms.web.api.Authentication,
-        org.opennms.web.svclayer.ResourceService,
-        org.opennms.web.asset.Asset,
-        org.opennms.web.asset.AssetModel,
-        org.opennms.web.navigate.*,
-        org.springframework.web.context.WebApplicationContext,
-        org.springframework.web.context.support.WebApplicationContextUtils"
+	import="org.opennms.web.element.*,org.opennms.netmgt.model.OnmsNode,java.util.*,java.net.*,java.sql.SQLException,org.opennms.core.soa.ServiceRegistry,org.opennms.core.utils.InetAddressUtils,org.opennms.netmgt.poller.PathOutageFactory,org.opennms.web.api.Authentication,org.opennms.web.svclayer.ResourceService,org.opennms.web.asset.Asset,org.opennms.web.asset.AssetModel,org.opennms.web.navigate.*,org.springframework.web.context.WebApplicationContext,org.springframework.web.context.support.WebApplicationContextUtils"
 %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 
-<%!
-    private int m_telnetServiceId;
+<%!private int m_telnetServiceId;
     private int m_sshServiceId;
     private int m_httpServiceId;
     private int m_dellServiceId;
@@ -136,8 +122,7 @@
         map.put("text", linkText);
         map.put("url", linkPrefix + ip + linkSuffix);
         return Collections.singleton(map);
-    }
-%>
+    }%>
 
 <%
 	OnmsNode node_db = ElementUtil.getNodeByParams(request, getServletContext());
@@ -162,6 +147,8 @@
         nodeModel.put("statusSite", asset.getBuilding());
     }
     
+    LldpElementNode lldp = LldpElementFactory.getInstance(getServletContext()).getLldpElement(nodeId);
+    nodeModel.put("lldp", lldp);
     nodeModel.put("resources", m_resourceService.findNodeChildResources(node_db));
     nodeModel.put("vlans", NetworkElementFactory.getInstance(getServletContext()).getVlansOnNode(nodeId));
     nodeModel.put("criticalPath", PathOutageFactory.getPrettyCriticalPath(nodeId));
@@ -386,6 +373,29 @@
       <tr>
         <th valign="top">Description</th>
         <td valign="top">${model.node.sysDescription}</td>
+      </tr>
+    </table>
+  </c:if>
+
+  <!-- Asset box, if info available --> 
+  <c:if test="${! empty model.lldp }">
+    <h3 class="o-box">Lldp Information</h3>
+    <table class="o-box">
+      <tr>
+        <th>chassis id</th>
+        <td>${model.lldp.lldpChassisIdString}</td>
+      </tr>
+      <tr>
+        <th>sysname</th>
+        <td>${model.lldp.lldpSysName}</td>
+      </tr>
+      <tr>
+        <th>create time</th>
+        <td>${model.lldp.lldpCreateTime}</td>
+      </tr>
+      <tr>
+        <th>last poll time</th>
+        <td>${model.lldp.lldpLastPollTime}</td>
       </tr>
     </table>
   </c:if>

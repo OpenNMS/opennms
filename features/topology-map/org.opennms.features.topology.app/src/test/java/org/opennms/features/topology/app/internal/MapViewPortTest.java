@@ -8,7 +8,7 @@ import org.opennms.features.topology.api.BoundingBox;
 import org.opennms.features.topology.api.Point;
 
 public class MapViewPortTest {
-    
+    private double m_delta = 0.001;
     @Test
     public void testGetBounds() {
         DefaultMapViewManager viewManager = new DefaultMapViewManager();
@@ -17,8 +17,8 @@ public class MapViewPortTest {
         
         BoundingBox boundingBox = viewManager.getCurrentBoundingBox();
         assertNotNull(boundingBox);
-        assertEquals(4000, boundingBox.getCenter().getX());
-        assertEquals(2000, boundingBox.getCenter().getY());
+        assertEquals(4000.0, boundingBox.getCenter().getX(), 0.001);
+        assertEquals(2000.0, boundingBox.getCenter().getY(), 0.001);
         assertEquals(8000, boundingBox.getWidth());
         assertEquals(6000, boundingBox.getHeight());
         assertEquals(0, boundingBox.getX());
@@ -28,8 +28,8 @@ public class MapViewPortTest {
         
         viewManager.setScale(1.0);
         boundingBox = viewManager.getCurrentBoundingBox();
-        assertEquals(4000, boundingBox.getCenter().getX());
-        assertEquals(2000, boundingBox.getCenter().getY());
+        assertEquals(4000, boundingBox.getCenter().getX(), m_delta);
+        assertEquals(2000, boundingBox.getCenter().getY(), m_delta);
         assertEquals(200, boundingBox.getWidth());
         assertEquals(150, boundingBox.getHeight());
         assertEquals(3900, boundingBox.getX());
@@ -50,8 +50,8 @@ public class MapViewPortTest {
         
         BoundingBox box = viewManager.getCurrentBoundingBox();
         assertNotNull(box);
-        assertEquals(4000, box.getCenter().getX());
-        assertEquals(2000, box.getCenter().getY());
+        assertEquals(4000, box.getCenter().getX(), m_delta);
+        assertEquals(2000, box.getCenter().getY(), m_delta);
         assertEquals(8000, box.getWidth());
         assertEquals(6000, box.getHeight());
         assertEquals(0, box.getX());
@@ -61,8 +61,8 @@ public class MapViewPortTest {
         
         box = viewManager.getCurrentBoundingBox();
         assertNotNull(box);
-        assertEquals(3900, box.getCenter().getX());
-        assertEquals(1900, box.getCenter().getY());
+        assertEquals(3900, box.getCenter().getX(), m_delta);
+        assertEquals(1900, box.getCenter().getY(), m_delta);
         assertEquals(8000, box.getWidth());
         assertEquals(6000, box.getHeight());
         assertEquals(-100, box.getX());

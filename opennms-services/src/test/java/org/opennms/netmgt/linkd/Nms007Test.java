@@ -28,6 +28,35 @@
 
 package org.opennms.netmgt.linkd;
 
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly170_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly170_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly170_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly171_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly171_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly171_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly172_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly172_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly172_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly173_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly173_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly173_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly174_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly174_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly174_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly175_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly175_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly175_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly176_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly176_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly176_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly177_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly177_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly177_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly189_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly189_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.FireFly189_SNMP_RESOURCE;
+
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -38,9 +67,11 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.nb.Nms007NetworkBuilder;
 
-public class Nms007Test extends Nms007NetworkBuilder {
+public class Nms007Test extends LinkdTestBuilder {
 
+	Nms007NetworkBuilder builder = new Nms007NetworkBuilder();
     /*
      * FireFly170 -- ospfid 192.168.168.170 -----> 10.0.0.171/24:192.168.168.171:FireFly171
      *                                      -----> 20.0.0.175/24:192.168.168.175:FireFly175
@@ -73,26 +104,26 @@ public class Nms007Test extends Nms007NetworkBuilder {
      */
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host = FireFly170_IP, port = 161, resource = "classpath:linkd/nms007/mib2_"+FireFly170_IP + ".txt"),
-            @JUnitSnmpAgent(host = FireFly171_IP, port = 161, resource = "classpath:linkd/nms007/mib2_"+FireFly171_IP + ".txt"),
-            @JUnitSnmpAgent(host = FireFly172_IP, port = 161, resource = "classpath:linkd/nms007/mib2_"+FireFly172_IP + ".txt"),
-            @JUnitSnmpAgent(host = FireFly173_IP, port = 161, resource = "classpath:linkd/nms007/mib2_"+FireFly173_IP + ".txt"),
-            @JUnitSnmpAgent(host = FireFly174_IP, port = 161, resource = "classpath:linkd/nms007/mib2_"+FireFly174_IP + ".txt"),
-            @JUnitSnmpAgent(host = FireFly175_IP, port = 161, resource = "classpath:linkd/nms007/mib2_"+FireFly175_IP + ".txt"),
-            @JUnitSnmpAgent(host = FireFly176_IP, port = 161, resource = "classpath:linkd/nms007/mib2_"+FireFly176_IP + ".txt"),
-            @JUnitSnmpAgent(host = FireFly177_IP, port = 161, resource = "classpath:linkd/nms007/mib2_"+FireFly177_IP + ".txt"),
-            @JUnitSnmpAgent(host = FireFly189_IP, port = 161, resource = "classpath:linkd/nms007/mib2_"+FireFly189_IP + ".txt")
+            @JUnitSnmpAgent(host = FireFly170_IP, port = 161, resource = FireFly170_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host = FireFly171_IP, port = 161, resource = FireFly171_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host = FireFly172_IP, port = 161, resource = FireFly172_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host = FireFly173_IP, port = 161, resource = FireFly173_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host = FireFly174_IP, port = 161, resource = FireFly174_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host = FireFly175_IP, port = 161, resource = FireFly175_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host = FireFly176_IP, port = 161, resource = FireFly176_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host = FireFly177_IP, port = 161, resource = FireFly177_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host = FireFly189_IP, port = 161, resource = FireFly189_SNMP_RESOURCE)
     })
     public void testOspfLinks() throws Exception {
-        m_nodeDao.save(getFireFly170());
-        m_nodeDao.save(getFireFly171());
-        m_nodeDao.save(getFireFly172());
-        m_nodeDao.save(getFireFly173());
-        m_nodeDao.save(getFireFly174());
-        m_nodeDao.save(getFireFly175());
-        m_nodeDao.save(getFireFly176());
-        m_nodeDao.save(getFireFly177());
-        m_nodeDao.save(getFireFly189());
+        m_nodeDao.save(builder.getFireFly170());
+        m_nodeDao.save(builder.getFireFly171());
+        m_nodeDao.save(builder.getFireFly172());
+        m_nodeDao.save(builder.getFireFly173());
+        m_nodeDao.save(builder.getFireFly174());
+        m_nodeDao.save(builder.getFireFly175());
+        m_nodeDao.save(builder.getFireFly176());
+        m_nodeDao.save(builder.getFireFly177());
+        m_nodeDao.save(builder.getFireFly189());
         m_nodeDao.flush();
 
         Package example1 = m_linkdConfig.getPackage("example1");

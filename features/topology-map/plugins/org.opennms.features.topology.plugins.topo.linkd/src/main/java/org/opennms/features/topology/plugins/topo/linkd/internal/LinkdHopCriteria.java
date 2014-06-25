@@ -47,7 +47,7 @@ import org.opennms.netmgt.model.OnmsNode;
  */
 public class LinkdHopCriteria extends VertexHopCriteria {
 
-	public static final String NAMESPACE = "node";
+	public static final String NAMESPACE = "nodes";
 	private final String m_nodeId;
 	
 	private NodeDao m_nodeDao;
@@ -122,9 +122,11 @@ public class LinkdHopCriteria extends VertexHopCriteria {
         OnmsNode node = m_nodeDao.get(id);
 		
 		Set<VertexRef> vertices = new TreeSet<VertexRef>(new RefComparator());
-		
-		String label = node.getLabel();
-        vertices.add(new DefaultVertexRef("nodes", m_nodeId, label));
+
+        if(node != null) {
+            String label = node.getLabel();
+            vertices.add(new DefaultVertexRef("nodes", m_nodeId, label));
+        }
 		
 		return vertices;
 	}
