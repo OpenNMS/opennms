@@ -48,9 +48,9 @@
         <enabled>true</enabled>
         <updatePolicy>${updatePolicy}</updatePolicy>
       </releases>
-      <id>oosnmp-repo</id>
-      <name>SNMP4J Maven Repository</name>
-      <url>https://oosnmp.net/dist/release</url>
+      <id>opennms-3rdparty-repo</id>
+      <name>OpenNMS 3rd Party Maven Repository</name>
+      <url>http://maven.opennms.org/content/repositories/thirdparty</url>
     </repository>
   </repositories>
 </project>
