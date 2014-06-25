@@ -79,6 +79,8 @@ drop table group_user cascade;
 drop table category_user cascade;
 drop table category_group cascade;
 drop table filterfavorites cascade;
+drop table minions_properties cascade;
+drop table minions cascade;
 
 drop sequence catNxtId;
 drop sequence nodeNxtId;
@@ -1305,7 +1307,7 @@ CREATE UNIQUE INDEX catenode_unique_idx on category_node(categoryId, nodeId);
 
 create table pathOutage (
 	nodeID			integer,
-	criticalPathIp		varchar(16) not null,
+	criticalPathIp		text not null,
 	criticalPathServiceName	varchar(255),
 
 	constraint fk_nodeID8 foreign key (nodeID) references node ON DELETE CASCADE
@@ -2244,6 +2246,46 @@ create table category_group (
 CREATE INDEX catid_idx3 on category_group(categoryId);
 CREATE INDEX catgroup_idx on category_group(groupId);
 CREATE UNIQUE INDEX catgroup_unique_idx on category_group(categoryId, groupId);
+
+--########################################################################
+--#
+--# minions - table for tracking remote minions
+--#
+--# id           : The ID of the minion
+--# location     : The monitoring location associated with the minion
+--# status       : The status of the minion
+--# last_updated : The last time the minion reported in
+--#
+--########################################################################
+
+create table minions (
+    id           varchar(36) not null,
+    location     text not null,
+    status       text,
+    last_updated timestamp with time zone default now(),
+
+    constraint pk_minions primary key (id)
+);
+
+--########################################################################
+--#
+--# minions_properties - arbitrary properties associated with a minion
+--#
+--# id    : The ID of the minion
+--# key   : The property key
+--# value : The property value
+--#
+--########################################################################
+
+create table minions_properties (
+    id    varchar(36) not null,
+    key   text not null,
+    value text,
+
+    constraint fk_minions_properties foreign key (id) references minions ON DELETE CASCADE
+);
+
+CREATE UNIQUE INDEX minions_properties_unique_idx ON minions_properties(id, key);
 
 --# Begin enlinkd table
 drop table lldpElement cascade;

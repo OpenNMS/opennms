@@ -47,4 +47,22 @@
 
   </changeSet>
 
+  <changeSet author="ranger@opennms.org" id="1.13.4-add-primary-key-to-minions-properties">
+    <renameColumn tableName="minions_properties" oldColumnName="id" newColumnName="minion_id" />
+
+    <addColumn tableName="minions_properties">
+      <column name="id" type="integer" defaultValueComputed="NEXTVAL('opennmsnxtid')">
+        <constraints nullable="false" />
+      </column>
+    </addColumn>
+
+    <addPrimaryKey tableName="minions_properties" columnNames="id" constraintName="pk_minions_properties_id" />        
+
+    <rollback>
+      <dropPrimaryKey tableName="minions_properties" constraintName="pk_minions_properties_id" />
+      <dropColumn tableName="minions_properties" columnName="id" />
+      <renameColumn tableName="minions_properties" oldColumnName="minion_id" newColumnName="id" />
+    </rollback>
+  </changeSet>
+
 </databaseChangeLog>
