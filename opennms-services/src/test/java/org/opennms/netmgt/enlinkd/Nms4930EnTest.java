@@ -104,7 +104,7 @@ public class Nms4930EnTest extends EnLinkdTestBuilder {
 
         assertTrue(m_linkd.runSingleSnmpCollection(dlink2.getId()));
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
-        assertEquals(1411,m_bridgeMacLinkDao.countAll());
+        assertEquals(659,m_bridgeMacLinkDao.countAll());
         for (String mac: macsonbbport)
         	assertEquals(2,m_bridgeMacLinkDao.findByMacAddress(mac).size());
 
@@ -144,7 +144,7 @@ public class Nms4930EnTest extends EnLinkdTestBuilder {
         assertEquals(977,m_bridgeMacLinkDao.countAll());
         assertTrue(m_linkd.runSingleSnmpCollection(dlink1.getId()));
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
-        assertEquals(1411,m_bridgeMacLinkDao.countAll());
+        assertEquals(659,m_bridgeMacLinkDao.countAll());
         for (String mac: macsonbbport)
         	assertEquals(2,m_bridgeMacLinkDao.findByMacAddress(mac).size());
 
