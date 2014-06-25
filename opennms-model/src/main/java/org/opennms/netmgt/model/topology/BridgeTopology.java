@@ -187,10 +187,8 @@ public class BridgeTopology {
 			super();
 			this.bridgePort = bridgeport;
 			this.designatebridgePort = designatedbridgePort;
-			for (String mac : bridgeport.getMacs()) {
-				if (designatedbridgePort.getMacs().contains(mac))
-					macs.add(mac);
-			}
+			macs.addAll(bridgeport.getMacs());
+			macs.addAll(designatebridgePort.getMacs());
 		}
 
 		public Set<String> getMacs() {

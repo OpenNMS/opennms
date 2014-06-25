@@ -30,11 +30,13 @@ package org.opennms.netmgt.enlinkd;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
+import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms4930NetworkBuilder;
 import static org.opennms.netmgt.nb.TestNetworkBuilder.DLINK1_IP;
@@ -102,7 +104,7 @@ public class Nms4930EnTest extends EnLinkdTestBuilder {
 
         assertTrue(m_linkd.runSingleSnmpCollection(dlink2.getId()));
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
-        assertEquals(659,m_bridgeMacLinkDao.countAll());
+        assertEquals(1411,m_bridgeMacLinkDao.countAll());
         for (String mac: macsonbbport)
         	assertEquals(2,m_bridgeMacLinkDao.findByMacAddress(mac).size());
 
@@ -142,11 +144,14 @@ public class Nms4930EnTest extends EnLinkdTestBuilder {
         assertEquals(977,m_bridgeMacLinkDao.countAll());
         assertTrue(m_linkd.runSingleSnmpCollection(dlink1.getId()));
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
-        assertEquals(659,m_bridgeMacLinkDao.countAll());
+        assertEquals(1411,m_bridgeMacLinkDao.countAll());
         for (String mac: macsonbbport)
         	assertEquals(2,m_bridgeMacLinkDao.findByMacAddress(mac).size());
 
-
+        BridgeMacLink mac1 = m_bridgeMacLinkDao.getByNodeIdBridgePortMac(dlink1.getId(), 1, "64168dfa8d49");
+        assertNotNull(mac1);
+        assertNotNull(mac1.getBridgePortIfIndex());
+        assertEquals(1, mac1.getBridgePortIfIndex().intValue());
     }
 
 }
