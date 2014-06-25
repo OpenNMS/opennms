@@ -56,6 +56,7 @@ import org.jasypt.util.password.PasswordEncryptor;
 import org.jasypt.util.password.StrongPasswordEncryptor;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.config.api.UserConfig;
 import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.DutySchedule;
 import org.opennms.netmgt.config.users.Header;
@@ -73,7 +74,7 @@ import org.opennms.netmgt.model.OnmsUserList;
  * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  */
-public abstract class UserManager {
+public abstract class UserManager implements UserConfig{
     private static final char[] HEX = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
     private static final PasswordEncryptor m_passwordEncryptor = new StrongPasswordEncryptor();
@@ -81,18 +82,6 @@ public abstract class UserManager {
     private final ReadWriteLock m_readWriteLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_readWriteLock.readLock();
     private final Lock m_writeLock = m_readWriteLock.writeLock();
-
-    public enum ContactType {
-        email,
-        pagerEmail,
-        xmppAddress,
-        microblog,
-        numericPage,
-        textPage,
-        workPhone,
-        mobilePhone,
-        homePhone
-    }
 
     protected GroupManager m_groupManager;
     /**

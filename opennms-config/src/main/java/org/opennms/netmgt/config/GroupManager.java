@@ -53,6 +53,7 @@ import org.opennms.core.utils.OwnedIntervalSequence;
 import org.opennms.core.utils.Owner;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.config.api.GroupConfig;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.groups.Groupinfo;
 import org.opennms.netmgt.config.groups.Groups;
@@ -75,7 +76,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:ayres@net.orst.edu">Bill Ayres</a>
  * @author <a href="mailto:dj@gregor.com">DJ Gregor</a>
  */
-public abstract class GroupManager {
+public abstract class GroupManager implements GroupConfig{
 
     public static class OnmsGroupMapper {
 

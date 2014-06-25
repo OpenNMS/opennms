@@ -42,6 +42,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.CastorUtils;
+import org.opennms.netmgt.config.api.EventdConfig;
 import org.opennms.netmgt.config.eventd.EventdConfiguration;
 
 /**
@@ -49,7 +50,7 @@ import org.opennms.netmgt.config.eventd.EventdConfiguration;
  *
  * @author david
  */
-public class EventdConfigManager {
+public class EventdConfigManager implements EventdConfig {
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();

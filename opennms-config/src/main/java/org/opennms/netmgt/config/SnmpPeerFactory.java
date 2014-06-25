@@ -164,11 +164,11 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         }
     }
 
-    public static Lock getReadLock() {
+    protected static Lock getReadLock() {
         return m_readLock;
     }
 
-    public static Lock getWriteLock() {
+    protected static Lock getWriteLock() {
         return m_writeLock;
     }
 
