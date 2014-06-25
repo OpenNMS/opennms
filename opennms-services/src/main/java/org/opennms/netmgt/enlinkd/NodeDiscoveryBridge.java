@@ -87,22 +87,23 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 
 		final Date now = new Date();
 
-		LOG.debug("runCollection: collecting: {}", getPeer());
+		LOG.debug("run: collecting: {}", getPeer());
 		Map<Integer,String> vlanmap = getVtpVlanMap();
+		Map<Integer,Integer> bridgeifindex = new HashMap<Integer, Integer>();
 		
 		if (vlanmap.isEmpty())
-			walkBridge(null,null);
+			bridgeifindex.putAll(walkDot1d(null,null));
 		else {
+			String community = getPeer().getReadCommunity();
 			for (Entry<Integer, String> entry: vlanmap.entrySet()) {
-				String community = getPeer().getReadCommunity();
-				LOG.debug("runCollection: cisco vlan collection setting peer community: {} with VLAN {}",
+				LOG.debug("run: cisco vlan collection setting peer community: {} with VLAN {}",
 						community, entry.getKey());
 				getPeer().setReadCommunity(community + "@" + entry.getKey());
-				walkBridge(entry.getKey(), entry.getValue());
-				getPeer().setReadCommunity(community);
+				bridgeifindex.putAll(walkDot1d(entry.getKey(), entry.getValue()));
 			}
+			getPeer().setReadCommunity(community);
 		}
-
+		walkDot1qTpFdp(bridgeifindex);
 		m_linkd.getQueryManager().reconcileBridge(getNodeId(), now);
 	}
 	
@@ -170,7 +171,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 		return vlanmap;
 	}
 
-	protected void walkBridge(Integer vlan, String vlanname) {
+	protected Map<Integer,Integer> walkDot1d(Integer vlan, String vlanname) {
 		String trackerName = "dot1dbase";
 		final Dot1dBaseTracker dot1dbase = new Dot1dBaseTracker();
 		SnmpWalker walker = SnmpUtils.createWalker(getPeer(), trackerName,
@@ -182,15 +183,15 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 			if (walker.timedOut()) {
 				LOG.info("run:Aborting Bridge Linkd node scan : Agent timed out while scanning the {} table",
 						trackerName);
-				return;
+				return null;
 			} else if (walker.failed()) {
 				LOG.info("run:Aborting Bridge Linkd node scan : Agent failed while scanning the {} table: {}",
 						trackerName, walker.getErrorMessage());
-				return;
+				return null;
 			}
 		} catch (final InterruptedException e) {
 			LOG.error("run: Bridge Linkd node collection interrupted, exiting",e);
-			return;
+			return null;
 		}
 
 		BridgeElement bridge = dot1dbase.getBridgeElement();
@@ -199,19 +200,19 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 		if (bridge.getBaseBridgeAddress() == null) {
 			LOG.info("bridge mib not supported on: {}",
 					str(getPeer().getAddress()));
-			return;
+			return null;
 		}
 
 		if (isValidBridgeAddress(bridge.getBaseBridgeAddress())) {
 			LOG.info("bridge not supported, base address identifier {} is not valid on: {}",
 					dot1dbase.getBridgeAddress(), str(getPeer().getAddress()));
-			return;
+			return null;
 		}
 
 		if (bridge.getBaseNumPorts() == 0) {
 			LOG.info("bridge {} has 0 port active, on: {}",
 					dot1dbase.getBridgeAddress(), str(getPeer().getAddress()));
-			return;
+			return null;
 		}
 		LOG.info("bridge {} has is if type {}, on: {}", dot1dbase
 				.getBridgeAddress(), BridgeDot1dBaseType.getTypeString(dot1dbase.getBridgeType()));
@@ -219,7 +220,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 		if (bridge.getBaseType() ==  BridgeDot1dBaseType.DOT1DBASETYPE_SOURCEROUTE_ONLY) {
 			LOG.info("{}: source route only type bridge, on: {}",
 					dot1dbase.getBridgeAddress(), str(getPeer().getAddress()));
-			return;
+			return null;
 		}
 		m_linkd.getQueryManager().store(getNodeId(), bridge);
 		
@@ -240,7 +241,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 			walkSpanningTree(bridge.getBaseBridgeAddress(),vlan, bridgetoifindex);
 		}		
 		walkDot1dTpFdp(vlan,bridgetoifindex);
-		walkDot1qTpFdp(bridgetoifindex);
+		return bridgetoifindex;
 	}
 
 	private Map<Integer,Integer> walkDot1dBasePortTable() {
