@@ -183,55 +183,51 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 			if (walker.timedOut()) {
 				LOG.info("run:Aborting Bridge Linkd node scan : Agent timed out while scanning the {} table",
 						trackerName);
-				return null;
+				return new HashMap<Integer, Integer>();
 			} else if (walker.failed()) {
 				LOG.info("run:Aborting Bridge Linkd node scan : Agent failed while scanning the {} table: {}",
 						trackerName, walker.getErrorMessage());
-				return null;
+				return new HashMap<Integer, Integer>();
 			}
 		} catch (final InterruptedException e) {
 			LOG.error("run: Bridge Linkd node collection interrupted, exiting",e);
-			return null;
+			return new HashMap<Integer, Integer>();
 		}
 
 		BridgeElement bridge = dot1dbase.getBridgeElement();
 		bridge.setVlan(vlan);
 		bridge.setVlanname(vlanname);
 		if (bridge.getBaseBridgeAddress() == null) {
-			LOG.info("bridge mib not supported on: {}",
+			LOG.info("run: bridge mib not supported on: {}",
 					str(getPeer().getAddress()));
-			return null;
+			return new HashMap<Integer, Integer>();
 		}
 
-		if (isValidBridgeAddress(bridge.getBaseBridgeAddress())) {
-			LOG.info("bridge not supported, base address identifier {} is not valid on: {}",
+		if (!isValidBridgeAddress(bridge.getBaseBridgeAddress())) {
+			LOG.info("run: bridge not supported, base address identifier {} is not valid on: {}",
 					dot1dbase.getBridgeAddress(), str(getPeer().getAddress()));
-			return null;
+			return new HashMap<Integer, Integer>();
 		}
 
 		if (bridge.getBaseNumPorts() == 0) {
-			LOG.info("bridge {} has 0 port active, on: {}",
+			LOG.info("run: bridge {} has 0 port active, on: {}",
 					dot1dbase.getBridgeAddress(), str(getPeer().getAddress()));
-			return null;
+			return new HashMap<Integer, Integer>();
 		}
-		LOG.info("bridge {} has is if type {}, on: {}", dot1dbase
+		LOG.info("run: bridge {} has is if type {}, on: {}", dot1dbase
 				.getBridgeAddress(), BridgeDot1dBaseType.getTypeString(dot1dbase.getBridgeType()));
 
 		if (bridge.getBaseType() ==  BridgeDot1dBaseType.DOT1DBASETYPE_SOURCEROUTE_ONLY) {
-			LOG.info("{}: source route only type bridge, on: {}",
+			LOG.info("run: {}: source route only type bridge, on: {}",
 					dot1dbase.getBridgeAddress(), str(getPeer().getAddress()));
-			return null;
+			return new HashMap<Integer, Integer>();
 		}
 		m_linkd.getQueryManager().store(getNodeId(), bridge);
 		
 		Map<Integer,Integer> bridgetoifindex = walkDot1dBasePortTable();
 
 		if (!isValidStpBridgeId(bridge.getStpDesignatedRoot())) {
-			LOG.info("spanning tree not supported on: {}",
-					str(getPeer().getAddress()));
-		} else if (bridge.getStpProtocolSpecification() != 3) {
-			LOG.info("ieee8021d spanning tree not supported on bridge {}, on: {}",
-					bridge.getStpDesignatedRoot(),
+			LOG.info("run: invalid Stp designated root: spanning tree not supported on: {}",
 					str(getPeer().getAddress()));
 		} else if (bridge.getBaseBridgeAddress().equals(getBridgeAddressFromStpBridgeId(bridge.getStpDesignatedRoot()))) {
 			LOG.info("designated root of spanning tree is itself on bridge {}, on: {}",
@@ -319,7 +315,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 			public void processDot1qTpFdbRow(final Dot1qTpFdbRow row) {
 				BridgeMacLink link = row.getLink();
 				link.setBridgePortIfIndex(bridgeifindex.get(link.getBridgePort()));
-				if (isValidBridgeAddress(link.getMacAddress())
+				if (isValidBridgeAddress(link.getMacAddress()) && link.getBridgePort() != null
 						&& link.getBridgeDot1qTpFdbStatus() == BridgeMacLink.BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED)
 					m_linkd.getQueryManager().store(getNodeId(), link);
 			}

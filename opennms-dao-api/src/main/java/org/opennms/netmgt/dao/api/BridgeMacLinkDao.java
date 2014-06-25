@@ -43,7 +43,7 @@ public interface BridgeMacLinkDao extends OnmsDao<BridgeMacLink, Integer> {
     
     public List<BridgeMacLink> findByNodeId(Integer id);
 
-    public BridgeMacLink getByNodeIdBridgePort(Integer id, Integer port);
+    public BridgeMacLink getByNodeIdBridgePortMac(Integer id, Integer port,String mac);
 
     public List<BridgeMacLink> findByMacAddress(String mac);
 

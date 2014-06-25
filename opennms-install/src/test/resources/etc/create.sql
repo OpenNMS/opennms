@@ -2419,7 +2419,7 @@ create table bridgeMacLink (
     bridgePortIfIndex   integer,
     bridgePortIfName    varchar(32),
     vlan                integer,
-    macAdreess          varchar(12) not null,
+    macAddress          varchar(12) not null,
     bridgeMacLinkCreateTime     timestamp not null,
     bridgeMacLinkLastPollTime   timestamp not null,
     constraint pk_bridgemaclink_id primary key (id),

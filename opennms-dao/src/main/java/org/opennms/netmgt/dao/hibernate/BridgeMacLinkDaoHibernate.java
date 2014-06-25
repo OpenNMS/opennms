@@ -55,14 +55,14 @@ public class BridgeMacLinkDaoHibernate extends AbstractDaoHibernate<BridgeMacLin
 
 
 	@Override
-	public BridgeMacLink getByNodeIdBridgePort(Integer id, Integer port) {
-		return findUnique("from BridgeMacLink rec where rec.node.id = ?  and rec.bridgePort = ?", id,port);
+	public BridgeMacLink getByNodeIdBridgePortMac(Integer id, Integer port, String mac) {
+		return findUnique("from BridgeMacLink rec where rec.node.id = ?  and rec.bridgePort = ? and rec.macAddress = ? ", id,port,mac);
 	}
 
 
 	@Override
 	public List<BridgeMacLink> findByMacAddress(String mac) {
-		return find("from BridgeMacLink red where rec.macAddress = ?", mac);
+		return find("from BridgeMacLink rec where rec.macAddress = ?", mac);
 	}
 
 

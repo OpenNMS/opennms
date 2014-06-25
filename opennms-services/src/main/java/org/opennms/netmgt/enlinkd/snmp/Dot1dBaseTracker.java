@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeElement.BridgeDot1dBaseType;
+import org.opennms.netmgt.model.BridgeElement.BridgeDot1dStpProtocolSpecification;
 
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.NamedSnmpVar;
@@ -278,7 +279,7 @@ public final class Dot1dBaseTracker extends AggregateTracker
     	if (getBridgeType() != null)
     		bridge.setBaseType(BridgeDot1dBaseType.get(getBridgeType()));
     	if (getStpProtocolSpecification() != null) {
-    		bridge.setStpProtocolSpecification(getStpProtocolSpecification());
+    		bridge.setStpProtocolSpecification(BridgeDot1dStpProtocolSpecification.get(getStpProtocolSpecification()));
     		bridge.setStpPriority(getStpPriority());
     		bridge.setStpDesignatedRoot(getStpDesignatedRoot());
     		bridge.setStpRootPort(getStpRootPort());

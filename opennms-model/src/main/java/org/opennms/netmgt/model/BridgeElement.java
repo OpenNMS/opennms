@@ -15,7 +15,6 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Type;
@@ -28,7 +27,8 @@ public class BridgeElement {
 		DOT1D_STP_PROTOCOL_SPECIFICATION_UNKNOWN(1),
 		DOT1D_STP_PROTOCOL_SPECIFICATION_DECLB100(2),
 		DOT1D_STP_PROTOCOL_SPECIFICATION_IEEE8021D(3),
-		DOT1D_STP_PROTOCOL_SPECIFICATION_OTHER_VENDOR_SPECIFIC(-1111);
+		DOT1D_STP_PROTOCOL_SPECIFICATION_IEEE8021M(4),
+		DOT1D_STP_PROTOCOL_SPECIFICATION_IEEE8021AQ(5);
 		private int m_type;
 
 		BridgeDot1dStpProtocolSpecification(int type) {
@@ -40,7 +40,9 @@ public class BridgeElement {
         static {
         	s_typeMap.put(1, "unknown" );
         	s_typeMap.put(2, "decLb100" );
-        	s_typeMap.put(3, "ieee8021d" );
+        	s_typeMap.put(3, "ieee802.1d" );
+        	s_typeMap.put(4, "ieee802.1m" );
+        	s_typeMap.put(5, "ieee802.1aq" );
         }
         
         public static String getTypeString(Integer code) {
@@ -62,8 +64,10 @@ public class BridgeElement {
             case 1: 	return DOT1D_STP_PROTOCOL_SPECIFICATION_UNKNOWN;
             case 2: 	return DOT1D_STP_PROTOCOL_SPECIFICATION_DECLB100;
             case 3: 	return DOT1D_STP_PROTOCOL_SPECIFICATION_IEEE8021D;
+            case 4: 	return DOT1D_STP_PROTOCOL_SPECIFICATION_IEEE8021M;
+            case 5: 	return DOT1D_STP_PROTOCOL_SPECIFICATION_IEEE8021AQ;
             default:
-            	return DOT1D_STP_PROTOCOL_SPECIFICATION_OTHER_VENDOR_SPECIFIC;
+                throw new IllegalArgumentException("Cannot create Dot1dStpProtocolSpecification from" + code +" code");
             }
         }
 
@@ -123,7 +127,7 @@ public class BridgeElement {
 	private String m_baseBridgeAddress;
 	private Integer m_baseNumPorts;
 	private BridgeDot1dBaseType m_baseType;
-	private Integer m_stpProtocolSpecification;
+	private BridgeDot1dStpProtocolSpecification m_stpProtocolSpecification;
 	private Integer m_stpPriority;
 	private String m_stpDesignatedRoot;
 	private Integer m_stpRootCost;
@@ -219,16 +223,12 @@ public class BridgeElement {
 
 
     @Column(name="stpProtocolSpecification", nullable = true)
-	public Integer getStpProtocolSpecification() {
+    @Type(type="org.opennms.netmgt.model.BridgeDot1dStpProtocolSpecificationUserType")
+	public BridgeDot1dStpProtocolSpecification getStpProtocolSpecification() {
 		return m_stpProtocolSpecification;
 	}
 
-    @Transient
-    public BridgeDot1dStpProtocolSpecification getStpProtocolSpecificationType() {
-    	return BridgeDot1dStpProtocolSpecification.get(m_stpProtocolSpecification);
-    }
-
-	public void setStpProtocolSpecification(Integer stpProtocolSpecification) {
+	public void setStpProtocolSpecification(BridgeDot1dStpProtocolSpecification stpProtocolSpecification) {
 		m_stpProtocolSpecification = stpProtocolSpecification;
 	}
 
