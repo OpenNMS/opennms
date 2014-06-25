@@ -49,10 +49,6 @@ public abstract class MockSnmpAgentTestCase {
     
     private MockSnmpAgent m_agent;
 
-    public MockSnmpAgentTestCase() {
-        setAgentAddress(InetAddressUtils.getLocalHostAddress());
-    }
-
     @Before
     public void setUp() throws Exception {
         MockUtil.println("------------ Strategy = " + System.getProperty("org.opennms.snmp.strategyClass")+" --------------------------");
@@ -64,9 +60,16 @@ public abstract class MockSnmpAgentTestCase {
 
 	protected void agentSetup() throws InterruptedException, IOException {
 		if (usingMockStrategy()) {
+			setAgentAddress(InetAddressUtils.getLocalHostAddress());
 			MockSnmpStrategy.setDataForAddress(new SnmpAgentAddress(getAgentAddress(), getAgentPort()), m_propertiesResource);
 		} else {
-			m_agent = MockSnmpAgent.createAgentAndRun(m_propertiesResource.getURL(), getAgentAddress().getHostAddress() + "/" + m_agentPort);
+			try {
+				m_agent = MockSnmpAgent.createAgentAndRun(m_propertiesResource.getURL(), InetAddressUtils.getLocalHostAddress().getHostAddress() + "/0");
+			} catch (Throwable e) {
+				m_agent = MockSnmpAgent.createAgentAndRun(m_propertiesResource.getURL(), InetAddressUtils.ONE_TWENTY_SEVEN.getHostAddress() + "/0");
+			}
+			setAgentAddress(m_agent.getInetAddress());
+			setAgentPort(m_agent.getPort());
 		}
 	}
 
