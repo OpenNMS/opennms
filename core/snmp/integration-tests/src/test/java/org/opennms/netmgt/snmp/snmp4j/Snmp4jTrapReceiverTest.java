@@ -30,6 +30,7 @@ package org.opennms.netmgt.snmp.snmp4j;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -70,8 +71,6 @@ public class Snmp4jTrapReceiverTest extends MockSnmpAgentTestCase implements Tra
     private static final Logger LOG = LoggerFactory.getLogger(Snmp4jTrapReceiverTest.class);
 
     private final Snmp4JStrategy m_strategy = new Snmp4JStrategy();
-
-    private InetAddress m_addr = InetAddressUtils.getLocalHostAddress();
 
     private int m_trapCount;
 
@@ -159,7 +158,7 @@ public class Snmp4jTrapReceiverTest extends MockSnmpAgentTestCase implements Tra
         try {
             long start = System.currentTimeMillis();
 
-            m_strategy.registerForTraps(trapListener, this, m_addr, 9162, Collections.singletonList(user));
+            m_strategy.registerForTraps(trapListener, this, getAgentAddress(), 9162, Collections.singletonList(user));
             sendTraps();
 
             long waitUntil = System.currentTimeMillis() + 30000L;
@@ -199,7 +198,7 @@ public class Snmp4jTrapReceiverTest extends MockSnmpAgentTestCase implements Tra
     }
 
     private void sendTraps() throws Exception {
-        final String hostAddress = InetAddressUtils.str(m_addr);
+        final String hostAddress = str(getAgentAddress());
 
         LOG.debug("Sending V2 Trap");
         SnmpObjId enterpriseId = SnmpObjId.get(".0.0");
