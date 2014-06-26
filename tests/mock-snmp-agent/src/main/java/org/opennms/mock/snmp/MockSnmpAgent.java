@@ -311,18 +311,18 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
      */
     @Override
     public void run() {
-	s_log.warn("MockSnmpAgent: Initializing SNMP Agent");
+	s_log.info("MockSnmpAgent: Initializing SNMP Agent");
         try {
             init();
-	    s_log.warn("MockSnmpAgent: Finished 'init' loading config");
+	    s_log.info("MockSnmpAgent: Finished 'init' loading config");
             loadConfig(ImportModes.UPDATE_CREATE);
-	    s_log.warn("MockSnmpAgent: finished 'loadConfig' adding shutdown hook");
+	    s_log.info("MockSnmpAgent: finished 'loadConfig' adding shutdown hook");
             addShutdownHook();
-	    s_log.warn("MockSnmpAgent: finished 'addShutdownHook' finishing init");
+	    s_log.info("MockSnmpAgent: finished 'addShutdownHook' finishing init");
             finishInit();
-	    s_log.warn("MockSnmpAgent: finished 'finishInit' running agent");
+	    s_log.info("MockSnmpAgent: finished 'finishInit' running agent");
             super.run();
-	    s_log.warn("MockSnmpAgent: finished running Agent - setting running to true");
+	    s_log.info("MockSnmpAgent: finished running Agent - setting running to true");
             m_running.set(true);
         } catch (final BindException e) {
         	s_log.error(String.format("MockSnmpAgent: Unable to bind to %s.  You probably specified an invalid address or a port < 1024 and are not running as root. Exception: %s", m_address.get(), e), e);
@@ -332,7 +332,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         }
 
         boolean interrupted = false;
-	s_log.warn("MockSnmpAgent: Initialization Complete processing message until agent is shutdown.");
+	s_log.info("MockSnmpAgent: Initialization Complete processing message until agent is shutdown.");
         while (m_running.get()) {
             try {
                 Thread.sleep(10); // fast, Fast, FAST, *FAST*!!!
@@ -342,7 +342,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
             }
         }
 
-	s_log.warn("MockSnmpAgent: Shutdown called stopping agent.");
+	s_log.info("MockSnmpAgent: Shutdown called stopping agent.");
         for (final TransportMapping transportMapping : transportMappings) {
             try {
                 if (transportMapping != null) {
@@ -355,7 +355,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
 
         m_stopped.set(true);
 
-        s_log.warn("MockSnmpAgent: Agent is no longer running.");
+        s_log.info("MockSnmpAgent: Agent is no longer running.");
         if (interrupted) {
         	Thread.currentThread().interrupt();
         }
