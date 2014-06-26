@@ -28,7 +28,12 @@
 
 package org.opennms.netmgt.dao.support;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,9 +42,9 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
-import java.util.Map.Entry;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.BundleLists;
@@ -271,9 +276,10 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
                     return (name.endsWith(".properties"));
                 }
             };
-            File[] propertyFiles = includeDirectory.listFiles(propertyFilesFilter);
+            final File[] propertyFiles = includeDirectory.listFiles(propertyFilesFilter);
+            Arrays.sort(propertyFiles);
 
-            for (File file : propertyFiles) {
+            for (final File file : propertyFiles) {
                 loadIncludedFile(type, file);
             }
         }
