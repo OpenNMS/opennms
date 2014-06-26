@@ -85,7 +85,7 @@ public class ResourceQuery {
     }
     
     public String constructBasePath() {
-        if (m_dirUtil.isStoreByForeignSource()) {
+        if (!m_dirUtil.isStoreByForeignSource()) {
             return getRrdDir() + File.separator + getNodeId() + File.separator + getResourceName();
         }
         else {
