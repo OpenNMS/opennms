@@ -55,11 +55,11 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
     /**
      * The current status of this fiber
      */
-    private int m_status;
+    private volatile int m_status;
 
-    private String m_name;
+    private final String m_name;
     
-    private Object m_statusLock = new Object();
+    private final Object m_statusLock = new Object();
 
     /**
      * <p>onInit</p>
