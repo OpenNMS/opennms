@@ -33,6 +33,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.InputStream;
 import java.sql.Connection;
@@ -148,6 +149,7 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, Initia
         expander.setEventConfDao(new EmptyEventConfDao());
         m_eventdIpcMgr.setEventExpander(expander);
 
+        Vacuumd.destroySingleton();
         m_vacuumd = Vacuumd.getSingleton();
         m_vacuumd.setEventManager(m_eventdIpcMgr);
         m_vacuumd.init();
@@ -162,6 +164,7 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, Initia
         node.setId(2);
         node.setLabel("default-2");
         m_nodeDao.save(node);
+        m_nodeDao.flush();
 
         MockUtil.println("------------ Finished setup for: "+ this.getClass().getName() +" --------------------------");
     }
@@ -192,7 +195,7 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, Initia
      * This is an attempt at testing scheduled automations.
      * @throws InterruptedException
      */
-    @Test
+    @Test(timeout=90000)
     @JUnitTemporaryDatabase(dirtiesContext=true,tempDbClass=MockDatabase.class)
     public final void testConcurrency() throws InterruptedException {
         try {
@@ -207,7 +210,9 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, Initia
          */
         m_vacuumd.start();
         assertTrue(m_vacuumd.getStatus() >= 1);
-        Thread.sleep(200);
+        while(m_vacuumd.getScheduler().getStatus() != PausableFiber.RUNNING) {
+            Thread.sleep(20);
+        }
         assertEquals(Fiber.RUNNING, m_vacuumd.getStatus());
         assertEquals(Fiber.RUNNING, m_vacuumd.getScheduler().getStatus());
         
@@ -215,26 +220,38 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, Initia
          * Testing the pause
          */
         m_vacuumd.pause();
-        Thread.sleep(200);
+        while(m_vacuumd.getScheduler().getStatus() != PausableFiber.PAUSED) {
+            Thread.sleep(20);
+        }
         assertEquals(PausableFiber.PAUSED, m_vacuumd.getStatus());
         assertEquals(PausableFiber.PAUSED, m_vacuumd.getScheduler().getStatus());
 
         m_vacuumd.resume();
-        Thread.sleep(200);
+        while(m_vacuumd.getScheduler().getStatus() != PausableFiber.RUNNING) {
+            Thread.sleep(20);
+        }
         assertEquals(PausableFiber.RUNNING, m_vacuumd.getStatus());
         assertEquals(PausableFiber.RUNNING, m_vacuumd.getScheduler().getStatus());
         
         // Get an alarm in the DB
         bringNodeDownCreatingEvent(1);
+
         // There should be one node down alarm
+        while(countAlarms() < 1) {
+            Thread.sleep(20);
+        }
         assertEquals("count of nodeDown events", 1, m_jdbcTemplate.queryForInt("select count(*) from events where eventuei = '" + EventConstants.NODE_DOWN_EVENT_UEI + "'"));
         assertEquals("alarm count", 1, countAlarms());
         assertEquals("counter in the alarm", 1, m_jdbcTemplate.queryForInt("select counter from alarms where eventuei = '" + EventConstants.NODE_DOWN_EVENT_UEI + "'"));
         // Fetch the initial severity of the alarm
         int currentSeverity = m_jdbcTemplate.queryForInt("select severity from alarms");
+        assertEquals(OnmsSeverity.MAJOR.getId(), currentSeverity);
 
         // Create another node down event
         bringNodeDownCreatingEvent(1);
+        while( m_jdbcTemplate.queryForInt("select counter from alarms") < 2) {
+            Thread.sleep(20);
+        }
         assertEquals("count of nodeDown events", 2, m_jdbcTemplate.queryForInt("select count(*) from events where eventuei = '" + EventConstants.NODE_DOWN_EVENT_UEI + "'"));
         // Make sure there's still one alarm...
         assertEquals("alarm count", 1, countAlarms());
@@ -242,8 +259,13 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, Initia
         assertEquals("counter in the alarm", 2, m_jdbcTemplate.queryForInt("select counter from alarms"));
 
         // Sleep long enough for the escalation automation to run, then check that it was escalated
-        Thread.sleep(VacuumdConfigFactory.getInstance().getAutomation("autoEscalate").getInterval() + 500);
+        while(verifyAlarmEscalated() < (currentSeverity + 1)) {
+            Thread.sleep(1000);
+        }
         assertEquals("alarm severity wrong, should have been escalated", currentSeverity+1, verifyAlarmEscalated());
+        } catch (Throwable e) {
+            e.printStackTrace();
+            fail("Unexpected exception caught: " + e.getMessage());
         } finally {
         // Stop what you start
         m_vacuumd.stop();
