@@ -47,6 +47,19 @@ public class ResourceQueryParserTest {
         assertEquals("10", rQuery.getNodeId());
         assertEquals("nsVpnMonitor", rQuery.getResourceName());
     }
+
+    @Test
+    public void testCommandParsingWithForeignSource() {
+        ResourceQueryCommandParser parser = new ResourceQueryCommandParser();
+        ResourceQuery rQuery = parser.parseQueryCommand(getResourceQueryWithForeignSource());
+
+        assertNotNull(rQuery);
+        assertTrue(rQuery.getRrdDir().matches(".*src/test/resources/share/rrd/snmp"));
+        assertEquals("10", rQuery.getNodeId());
+        assertEquals("nsVpnMonitor", rQuery.getResourceName());
+        assertEquals("someForeignSource", rQuery.getForeignSource());
+        assertEquals("someForeignId", rQuery.getForeignId())
+    }
     
     @Test
     public void testCommandParsingWithFilter() {
@@ -90,6 +103,10 @@ public class ResourceQueryParserTest {
     
     private String getResourceQuery() {
         return "--rrdDir /Users/thedesloge/git/opennms/integrations/opennms-jasper-extensions/src/test/resources/share/rrd/snmp  --nodeid 10 --resourceType nsVpnMonitor";
+    }
+
+    private String getResourceQueryWithForeignSource() {
+        return "--rrdDir /Users/thedesloge/git/opennms/integrations/opennms-jasper-extensions/src/test/resources/share/rrd/snmp  --nodeid 10 --resourceType nsVpnMonitor --foreignsource someForeignSource --foreignid someForeignId";
     }
     
     private String getResourceQueryWithFilter() {
