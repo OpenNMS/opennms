@@ -138,6 +138,9 @@ public class HttpMonitor extends AbstractServiceMonitor {
             log().debug("Port = " + currentPort + ", Address = " + (iface.getAddress()) + ", " + httpClient.getTimeoutTracker());
             
             httpClient.setCurrentPort(currentPort);
+            String serviceInfo = new StringBuilder(iface.getAddress().toString())
+            .append(":").append(svc.getSvcName()).append(":").append(currentPort)
+            .toString();
 
             for(httpClient.getTimeoutTracker().reset();
                 httpClient.getTimeoutTracker().shouldRetry() && httpClient.getPollStatus() != PollStatus.SERVICE_AVAILABLE; 
@@ -168,30 +171,32 @@ public class HttpMonitor extends AbstractServiceMonitor {
                         httpClient.read();
 
                         if (!httpClient.isResponseTextFound()) {
-                            String message = "Matching text: ["+httpClient.getResponseText()+"] not found in body of HTTP response";
+                            String message = "Matching text: ["+httpClient.getResponseText()+"] not found in body of HTTP response for " + serviceInfo;
                             log().debug(message);
                             httpClient.setReason("Matching text: ["+httpClient.getResponseText()+"] not found in body of HTTP response");
                         }
                     }
                     
                 } catch (NoRouteToHostException e) {
-                    log().warn("checkStatus: No route to host exception for address " + (iface.getAddress()), e);
+                    log().warn("checkStatus: No route to host exception while polling " + serviceInfo, e);
                     portIndex = determinePorts(httpClient.getParameters()).length; // Will cause outer for(;;) to terminate
                     httpClient.setReason("No route to host exception");
                 } catch (SocketTimeoutException e) {
-                    log().info("checkStatus: HTTP socket connection timed out with " + httpClient.getTimeoutTracker().toString());
+                    log().info("checkStatus: HTTP socket connection for service " + serviceInfo + " timed out with " + httpClient.getTimeoutTracker().toString());
                     httpClient.setReason("HTTP connection timeout");
                 } catch (InterruptedIOException e) {
-                    log().info(String.format("checkStatus: HTTP connection interrupted after %d bytes transferred with %s", e.bytesTransferred, httpClient.getTimeoutTracker().toString()), e);
+                    log().info(String.format("checkStatus: HTTP connection for service " + serviceInfo + " interrupted after %d bytes transferred with %s", e.bytesTransferred, httpClient.getTimeoutTracker().toString()), e);
                     httpClient.setReason(String.format("HTTP connection interrupted, %d bytes transferred", e.bytesTransferred));
                 } catch (ConnectException e) {
-                    log().warn("Connection exception for " + (iface.getAddress()) + ":" + determinePorts(httpClient.getParameters())[portIndex], e);
+                    log().warn("Connection exception for " + serviceInfo, e);
                     httpClient.setReason("HTTP connection exception on port: "+determinePorts(httpClient.getParameters())[portIndex]+": "+e.getMessage());
                 } catch (IOException e) {
-                    log().warn("IOException while polling address " + (iface.getAddress()), e);
+                    String exceptionClass = e.getClass().getSimpleName();
+                    log().warn(exceptionClass + " while polling " + serviceInfo, e);
                     httpClient.setReason("IOException while polling address: "+(iface.getAddress())+": "+e.getMessage());
                 } catch (Throwable e) {
-                    log().warn("Unexpected exception while polling address " + (iface.getAddress()), e);
+                    String exceptionClass = e.getClass().getSimpleName();
+                    log().warn("Unexpected " + exceptionClass + " while polling " + serviceInfo, e);
                     httpClient.setReason("Unexpected exception while polling address: "+(iface.getAddress())+": "+e.getMessage());
                 } finally {
                     httpClient.closeConnection();
