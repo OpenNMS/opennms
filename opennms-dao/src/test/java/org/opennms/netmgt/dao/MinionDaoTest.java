@@ -36,6 +36,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.UUID;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -66,8 +67,17 @@ public class MinionDaoTest {
     @Autowired
     private MinionPropertyDao m_minionPropertyDao;
 
+    @Before
+    public void setUp() throws Exception {
+        final Collection<OnmsMinion> minions = m_minionDao.findAll();
+        for (final OnmsMinion minion : minions) {
+            m_minionDao.delete(minion);
+        }
+        m_minionDao.flush();
+    }
+
     @Test
-    public void testQueryByLocation() {
+    public void testQueryByLocation() throws Exception {
         final Date now = new Date();
         m_minionDao.save(new OnmsMinion(UUID.randomUUID().toString(), "TestLocation", "Started", now));
         m_minionDao.save(new OnmsMinion(UUID.randomUUID().toString(), "TestLocation", "Stopped", now));
@@ -78,7 +88,7 @@ public class MinionDaoTest {
     }
 
     @Test
-    public void testProperties() {
+    public void testProperties() throws Exception {
         final Date now = new Date();
         
         final OnmsMinion a = new OnmsMinion(UUID.randomUUID().toString(), "TestLocation", "Started", now);
