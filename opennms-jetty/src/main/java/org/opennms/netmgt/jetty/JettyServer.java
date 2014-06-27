@@ -32,7 +32,6 @@ import java.io.File;
 import java.io.InputStream;
 
 import org.eclipse.jetty.server.Connector;
-import org.eclipse.jetty.server.NCSARequestLog;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.server.ssl.SslSocketConnector;

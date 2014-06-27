@@ -30,12 +30,15 @@ package org.opennms.smoketest;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.utils.TcpEventProxy;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AlarmsPageTest extends OpenNMSSeleniumTestCase {
     @BeforeClass
     public static void createAlarm() throws Exception {
@@ -52,7 +55,7 @@ public class AlarmsPageTest extends OpenNMSSeleniumTestCase {
     }
 
     @Test
-    public void testAllTextIsPresent() throws InterruptedException {
+    public void a_testAllTextIsPresent() throws InterruptedException {
         waitForText("Alarm Queries");
         waitForText("Outstanding and acknowledged alarms");
         waitForText("To view acknowledged alarms");
@@ -61,14 +64,14 @@ public class AlarmsPageTest extends OpenNMSSeleniumTestCase {
     }
 
     @Test
-    public void testAllLinksArePresent() throws InterruptedException { 
+    public void b_testAllLinksArePresent() throws InterruptedException { 
         waitForElement("link=All alarms (summary)");
         waitForElement("link=All alarms (detail)");
         waitForElement("link=Advanced Search");
     }
 
     @Test
-    public void testAllLinks() throws InterruptedException{
+    public void c_testAllLinks() throws InterruptedException{
         clickAndWait("link=All alarms (summary)");
         waitForText("Alarm(s) outstanding");
         waitForElement("//input[@value='Go']");
@@ -91,7 +94,7 @@ public class AlarmsPageTest extends OpenNMSSeleniumTestCase {
     }
 
     @Test
-    public void testAlarmLink() throws Exception {
+    public void d_testAlarmLink() throws Exception {
         createAlarm();
         clickAndWait("link=All alarms (summary)");
 
@@ -116,7 +119,7 @@ public class AlarmsPageTest extends OpenNMSSeleniumTestCase {
     }
 
     @Test
-    public void testAlarmIdNotFoundPage() throws InterruptedException {
+    public void e_testAlarmIdNotFoundPage() throws InterruptedException {
         selenium.open("/opennms/alarm/detail.htm?id=999999999");
         waitForText("Alarm ID Not Found");
     }

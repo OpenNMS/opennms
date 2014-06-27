@@ -115,11 +115,11 @@
           <th>Comments</th>
         </tr>
          <c:forEach var="group" varStatus="groupStatus" items="${groups}">
-         <tr class="divider ${groupStatus.index % 2 == 0 ?  'even' : 'odd'}" >
+         <tr class="divider ${groupStatus.index % 2 == 0 ?  'even' : 'odd'}" id="group-${group.name}">
           <td width="5%" align="center">
             <c:choose>
               <c:when test='${group.name != "Admin"}'>
-                <a href="javascript:deleteGroup('${group.name}')" onclick="return confirm('Are you sure you want to delete the group ${group.name}?')"><i class="fa fa-trash-o fa-2x"></i></a>              
+                <a id="${group.name}.doDelete" href="javascript:deleteGroup('${group.name}')" onclick="return confirm('Are you sure you want to delete the group ${group.name}?')"><i class="fa fa-trash-o fa-2x"></i></a>              
               </c:when>
               <c:otherwise>
                 <i class="fa fa-trash-o fa-2x" onclick="alert('Sorry, the ${group.name} group cannot be deleted.')"></i>
@@ -127,7 +127,7 @@
             </c:choose>
           </td>
           <td width="5%" align="center">
-            <a href="javascript:modifyGroup('${group.name}')"><i class="fa fa-edit fa-2x"></i></a>
+            <a id="${group.name}.doModify" href="javascript:modifyGroup('${group.name}')"><i class="fa fa-edit fa-2x"></i></a>
           </td>
           <td width="5%" align="center">
             <c:choose>
