@@ -37,8 +37,8 @@ public class ResourceQuery {
     private String m_rrdDir;
     private String m_node;
     private String m_resourceName;
-    private String m_foriegnSource;
-    private String m_foriegnId;
+    private String m_foreignSource;
+    private String m_foreignId;
     private String[] m_filters;
     private String[] m_strProperties;
 
