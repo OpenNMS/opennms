@@ -44,6 +44,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.snmp4j.MessageDispatcherImpl;
+import org.snmp4j.Session;
 import org.snmp4j.TransportMapping;
 import org.snmp4j.agent.BaseAgent;
 import org.snmp4j.agent.CommandProcessor;
@@ -52,7 +53,6 @@ import org.snmp4j.agent.ManagedObject;
 import org.snmp4j.agent.io.ImportModes;
 import org.snmp4j.agent.mo.snmp.RowStatus;
 import org.snmp4j.agent.mo.snmp.SnmpCommunityMIB;
-import org.snmp4j.agent.mo.snmp.SnmpCommunityMIB.SnmpCommunityEntryRow;
 import org.snmp4j.agent.mo.snmp.SnmpNotificationMIB;
 import org.snmp4j.agent.mo.snmp.SnmpTargetMIB;
 import org.snmp4j.agent.mo.snmp.StorageType;
@@ -173,7 +173,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         }
 
         final MockSnmpAgent agent = new MockSnmpAgent(new File("/dev/null"), moFile, bindAddress);
-        Thread thread = new Thread(agent, agent.getClass().getSimpleName());
+        Thread thread = new Thread(agent, agent.getClass().getSimpleName() + '-' + agent.hashCode());
         thread.start();
 
         try {
@@ -275,19 +275,64 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     /** {@inheritDoc} */
     @Override
     protected void initMessageDispatcher() {
-        dispatcher = new MessageDispatcherImpl();
+        s_log.info("MockSnmpAgent: starting initMessageDispatcher()");
+        try {
+            dispatcher = new MessageDispatcherImpl();
+    
+            usm = new USM(SecurityProtocols.getInstance(),
+                          agent.getContextEngineID(),
+                          updateEngineBoots());
+    
+            mpv3 = new MPv3(usm);
+    
+            SecurityProtocols.getInstance().addDefaultProtocols();
+            dispatcher.addMessageProcessingModel(new MPv1());
+            dispatcher.addMessageProcessingModel(new MPv2c());
+            dispatcher.addMessageProcessingModel(mpv3);
+            initSnmpSession();
+        } finally {
+            s_log.info("MockSnmpAgent: finished initMessageDispatcher()");
+        }
+    }
 
-        usm = new USM(SecurityProtocols.getInstance(),
-                      agent.getContextEngineID(),
-                      updateEngineBoots());
+    @Override
+    public void initSnmpSession() {
+        s_log.info("MockSnmpAgent: starting initTransportMappings()");
+        try {
+            super.initSnmpSession();
+        } finally {
+            s_log.info("MockSnmpAgent: finished initTransportMappings()");
+        }
+    }
 
-        mpv3 = new MPv3(usm);
+    @Override
+    public void initConfigMIB() {
+        s_log.info("MockSnmpAgent: starting initConfigMIB()");
+        try {
+            super.initConfigMIB();
+        } finally {
+            s_log.info("MockSnmpAgent: finished initConfigMIB()");
+        }
+    }
 
-        SecurityProtocols.getInstance().addDefaultProtocols();
-        dispatcher.addMessageProcessingModel(new MPv1());
-        dispatcher.addMessageProcessingModel(new MPv2c());
-        dispatcher.addMessageProcessingModel(mpv3);
-        initSnmpSession();
+    @Override
+    public void setupDefaultProxyForwarder() {
+        s_log.info("MockSnmpAgent: starting setupDefaultProxyForwarder()");
+        try {
+            super.setupDefaultProxyForwarder();
+        } finally {
+            s_log.info("MockSnmpAgent: finished setupDefaultProxyForwarder()");
+        }
+    }
+
+    @Override
+    public void updateSession(Session session) {
+        s_log.info("MockSnmpAgent: starting updateSession()");
+        try {
+            super.updateSession(session);
+        } finally {
+            s_log.info("MockSnmpAgent: finished updateSession()");
+        }
     }
 
     public void shutDownAndWait() throws InterruptedException {
@@ -549,16 +594,20 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     /** {@inheritDoc} */
     @Override
     protected void initTransportMappings() throws IOException {
+        s_log.info("MockSnmpAgent: starting initTransportMappings()");
         try {
             final MockUdpTransportMapping mapping = new MockUdpTransportMapping(new UdpAddress(m_address.get()), true);
             mapping.setThreadName("MockSnmpAgent-UDP-Transport");
             transportMappings = new TransportMapping[] { mapping };
         } catch (final IOException e) {
+            s_log.info("MockSnmpAgent: initTransportMappings() caught an IoException: " + e.getMessage());
             m_failure.set(e);
             throw e;
+        } finally {
+            s_log.info("MockSnmpAgent: finished initTransportMappings()");
         }
     }
-
+    
     public static final class MockUdpTransportMapping extends DefaultUdpTransportMapping {
         public MockUdpTransportMapping(final UdpAddress udpAddress, final boolean reuseAddress) throws IOException {
             super(udpAddress, reuseAddress);
@@ -587,7 +636,12 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     /** {@inheritDoc} */
     @Override
     protected void registerSnmpMIBs() {
-        registerManagedObjects();
+        s_log.info("MockSnmpAgent: starting registerSnmpMIBs()");
+        try {
+            registerManagedObjects();
+        } finally {
+            s_log.info("MockSnmpAgent: finished registerSnmpMIBs()");
+        }
     }
 
 
