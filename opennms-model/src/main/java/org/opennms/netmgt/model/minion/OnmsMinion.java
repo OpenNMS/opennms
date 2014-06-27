@@ -17,6 +17,13 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlID;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * <p>The OnmsMinion represents a minion node which has reported to OpenNMS.</p>
@@ -25,11 +32,24 @@ import javax.persistence.Transient;
  */
 @Entity
 @Table(name="minions")
+@XmlRootElement(name="minion")
+@XmlAccessorType(XmlAccessType.NONE)
 public class OnmsMinion {
+    @XmlID
+    @XmlAttribute(name="id")
     private String m_id;
+
+    @XmlElement(name="location")
     private String m_location;
+
+    @XmlElement(name="status")
     private String m_status;
+
+    @XmlElement(name="date")
     private Date m_lastUpdated;
+
+    @XmlElementWrapper(name="properties")
+    @XmlElement(name="property")
     private List<OnmsMinionProperty> m_properties = new ArrayList<OnmsMinionProperty>();
 
     public OnmsMinion() {

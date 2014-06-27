@@ -12,6 +12,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlValue;
 
 /**
  * @hibernate.class table="minions_properties"
@@ -20,21 +26,35 @@ import javax.persistence.UniqueConstraint;
         @UniqueConstraint(columnNames={"id", "key"})
 })
 @Entity
+@XmlRootElement(name="property")
+@XmlAccessorType(XmlAccessType.NONE)
 public class OnmsMinionProperty implements Serializable {
     private static final long serialVersionUID = 1L;
+
+    @XmlAttribute(name="id")
     private Integer m_id;
+
+    /*
+    @XmlIDREF
+    @XmlAttribute(name="minion-id")
+    */
+    @XmlTransient
     private OnmsMinion m_minion;
+
+    @XmlAttribute(name="key")
     private String m_key;
+
+    @XmlValue
     private String m_value;
-    
+
     public OnmsMinionProperty() {}
-    
+
     public OnmsMinionProperty(final OnmsMinion minion, final String key, final String value) {
         m_minion = minion;
         m_key = key;
         m_value = value;
     }
-    
+
     @Id
     @SequenceGenerator(name="minionSequence", sequenceName="opennmsNxtId")
     @GeneratedValue(generator="minionSequence")
@@ -52,7 +72,7 @@ public class OnmsMinionProperty implements Serializable {
     public OnmsMinion getMinion() {
         return m_minion;
     }
-    
+
     void setMinion(final OnmsMinion minion) {
         m_minion = minion;
     }
@@ -61,11 +81,11 @@ public class OnmsMinionProperty implements Serializable {
     public String getKey() {
         return m_key;
     }
-    
+
     void setKey(final String key) {
         m_key = key;
     }
-    
+
     @Column(name="value")
     public String getValue() {
         return m_value;
