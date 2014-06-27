@@ -41,11 +41,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.db.DataSourceFactory;
@@ -99,7 +101,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml"
 })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase(dirtiesContext=false,tempDbClass=MockDatabase.class)
+@JUnitTemporaryDatabase(dirtiesContext=true,tempDbClass=MockDatabase.class)
 public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, InitializingBean {
     private static final long TEAR_DOWN_WAIT_MILLIS = 1000;
 
@@ -168,6 +170,13 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, Initia
     @After
     public void tearDown() throws Exception {
         m_alarmd.destroy();
+
+        final List<OnmsNode> nodes = m_nodeDao.findAll();
+        for (final OnmsNode node : nodes) {
+            m_nodeDao.delete(node);
+        }
+        m_nodeDao.flush();
+
         MockUtil.println("Sleeping for "+TEAR_DOWN_WAIT_MILLIS+" millis in tearDown...");
         Thread.sleep(TEAR_DOWN_WAIT_MILLIS);
     }
@@ -185,6 +194,7 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, Initia
      * @throws InterruptedException
      */
     @Test
+    @JUnitTemporaryDatabase(dirtiesContext=true,tempDbClass=MockDatabase.class)
     public final void testConcurrency() throws InterruptedException {
         try {
         /*
@@ -402,6 +412,7 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, Initia
     }
     
     @Test
+    @JUnitTemporaryDatabase(dirtiesContext=true,tempDbClass=MockDatabase.class)
     public final void testRunAutomationWithNoTrigger() throws InterruptedException, SQLException {
         bringNodeDownCreatingEvent(1);
         Thread.sleep(1000);
@@ -414,6 +425,7 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, Initia
     }
     
     @Test
+    @JUnitTemporaryDatabase(dirtiesContext=true,tempDbClass=MockDatabase.class)
     public final void testRunAutomationWithZeroResultsFromTrigger() throws InterruptedException, SQLException {
         bringNodeDownCreatingEvent(1);
         Thread.sleep(1000);
@@ -428,6 +440,7 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, Initia
      * @throws InterruptedException 
      */
     @Test
+    @JUnitTemporaryDatabase(dirtiesContext=true,tempDbClass=MockDatabase.class)
     public final void testCosmicClearAutomation() throws InterruptedException {
         // create node down events with severity 6
         bringNodeDownCreatingEvent(1);
@@ -504,6 +517,7 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, Initia
      * 
      */
     @Test
+    @Ignore
     public final void testRunUpdate() {
         //TODO Implement runUpdate().
     }

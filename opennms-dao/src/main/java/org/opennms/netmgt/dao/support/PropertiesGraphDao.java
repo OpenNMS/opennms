@@ -280,9 +280,10 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
                     return (name.endsWith(".properties"));
                 }
             };
-            File[] propertyFiles = includeDirectory.listFiles(propertyFilesFilter);
+            final File[] propertyFiles = includeDirectory.listFiles(propertyFilesFilter);
+            Arrays.sort(propertyFiles);
 
-            for (File file : propertyFiles) {
+            for (final File file : propertyFiles) {
                 loadIncludedFile(type, file);
             }
         }
