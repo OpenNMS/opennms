@@ -29,8 +29,11 @@
 package org.opennms.smoketest;
 
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class DistributedMapIT extends OpenNMSSeleniumITCase {
     @Before
     public void setUp() throws Exception {
@@ -40,7 +43,7 @@ public class DistributedMapIT extends OpenNMSSeleniumITCase {
     }
 
     @Test
-    public void testDistributedMap() throws Exception {
+    public void a_testDistributedMap() throws Exception {
         assertEquals("Applications", selenium.getTable("css=td > table.0.2"));
         assertEquals("off", selenium.getValue("id=gwt-uid-6"));
         assertEquals("on", selenium.getValue("id=gwt-uid-1"));

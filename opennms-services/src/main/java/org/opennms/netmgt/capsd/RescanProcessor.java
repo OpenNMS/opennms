@@ -61,11 +61,11 @@ import org.opennms.netmgt.config.CapsdConfig;
 import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.PollerConfigFactory;
-import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventIpcManagerFactory;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -2600,8 +2600,7 @@ public final class RescanProcessor implements Runnable {
 
         final boolean localHostAddress = (ifaddr.isLoopbackAddress() && dbInterfaces.length > 1);
         final boolean nonIpAddress = s_ZERO_ZERO_ZERO_ZERO.equals(ifaddrString);
-        final boolean scannable = !localHostAddress && !nonIpAddress;
-        return scannable;
+        return !localHostAddress && !nonIpAddress;
     }
 
     private int getNodeId() {

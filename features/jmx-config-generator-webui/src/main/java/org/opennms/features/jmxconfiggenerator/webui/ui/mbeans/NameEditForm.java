@@ -37,6 +37,7 @@ import org.opennms.features.jmxconfiggenerator.webui.ui.validators.NameValidator
 
 import com.vaadin.data.Item;
 import com.vaadin.data.Validator;
+import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
@@ -50,9 +51,9 @@ import com.vaadin.ui.TextField;
  * @author Markus von Rüden
  */
 public class NameEditForm extends Form implements ModelChangeListener<Item>, ViewStateChangedListener,
-		EditControls.Callback {
+		EditControls.Callback<Component> {
 
-	private final EditControls footer = new EditControls(this);
+	private final EditControls<Component> footer = new EditControls<Component>(this);
 	private final MBeansController controller;
 	private final Validator nameValidator = new NameValidator();
 	private final FormParameter parameter;
@@ -89,8 +90,8 @@ public class NameEditForm extends Form implements ModelChangeListener<Item>, Vie
 				return null;
 			}
 		});
-		setWidth(100, UNITS_PERCENTAGE);
-		setHeight(Config.NAME_EDIT_FORM_HEIGHT + (parameter.hasFooter() ? 0 : -60), UNITS_PIXELS);
+		setWidth(100, Unit.PERCENTAGE);
+		setHeight(Config.NAME_EDIT_FORM_HEIGHT + (parameter.hasFooter() ? 0 : -60), Unit.PIXELS);
 		setReadOnly(true);
 		setImmediate(true);
 		setBuffered(true);

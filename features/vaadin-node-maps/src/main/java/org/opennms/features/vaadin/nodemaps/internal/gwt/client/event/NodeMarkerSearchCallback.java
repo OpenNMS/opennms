@@ -68,7 +68,7 @@ public abstract class NodeMarkerSearchCallback extends JSObjectWrapper {
         return results;
     }
 
-    private native final JSObject getCallbackFunction() /*-{
+    private final native JSObject getCallbackFunction() /*-{
         var self = this;
         return function(text) {
             return self.@org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.NodeMarkerSearchCallback::doSearch(Ljava/lang/String;)(text);

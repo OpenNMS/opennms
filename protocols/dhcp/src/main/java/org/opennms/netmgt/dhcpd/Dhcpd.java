@@ -99,7 +99,7 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
     /**
      * The singular instance of the DHCP server.
      */
-    private final static Dhcpd m_singleton = new Dhcpd();
+    private static final Dhcpd m_singleton = new Dhcpd();
 
     /**
      * List of clients currently connected to the DHCP daemon

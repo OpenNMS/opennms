@@ -1070,8 +1070,7 @@ public class SnmpSession extends Object {
                 Thread.currentThread().interrupt();
             }
         }
-        SnmpPduPacket response = handler.getResponse();
-        return response;
+        return handler.getResponse();
     }
 
 

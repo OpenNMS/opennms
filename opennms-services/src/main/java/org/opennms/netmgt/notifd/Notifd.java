@@ -124,7 +124,7 @@ public final class Notifd extends AbstractServiceDaemon {
         try {
             LOG.info("Notification status = {}", getConfigManager().getNotificationStatus());
 
-            Queue queues[] = getConfigManager().getConfiguration().getQueue();
+            Queue[] queues = getConfigManager().getConfiguration().getQueue();
             for (Queue queue : queues) {
                 NoticeQueue curQueue = new NoticeQueue();
 

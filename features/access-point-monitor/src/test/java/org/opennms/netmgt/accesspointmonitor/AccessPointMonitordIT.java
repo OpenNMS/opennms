@@ -62,7 +62,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -82,9 +83,6 @@ public class AccessPointMonitordIT implements InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(AccessPointMonitordIT.class);
 
     @Autowired
-    private PlatformTransactionManager m_transactionManager;
-
-    @Autowired
     private NodeDao m_nodeDao;
 
     @Autowired
@@ -97,7 +95,7 @@ public class AccessPointMonitordIT implements InitializingBean {
     private AccessPointDao m_accessPointDao;
 
     @Autowired
-    AccessPointMonitord m_apm;
+    private AccessPointMonitord m_apm;
 
     AnnotationBasedEventListenerAdapter m_adapter;
     AccessPointMonitorConfigFactory m_apmdConfigFactory;
@@ -113,7 +111,6 @@ public class AccessPointMonitordIT implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
-        assertNotNull(m_transactionManager);
         assertNotNull(m_nodeDao);
         assertNotNull(m_ipInterfaceDao);
         assertNotNull(m_serviceTypeDao);
@@ -182,7 +179,8 @@ public class AccessPointMonitordIT implements InitializingBean {
         m_eventMgr.send(bldr.getEvent());
     }
 
-    private void addNewAccessPoint(String name, String mac, String pkg) {
+    @Transactional(propagation=Propagation.MANDATORY)
+    public void addNewAccessPoint(String name, String mac, String pkg) {
         NetworkBuilder nb = new NetworkBuilder();
 
         nb.addNode(name).setForeignSource("apmd").setForeignId(name);

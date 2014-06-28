@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms-tools</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.13.3-SNAPSHOT</version>
+    <version>1.13.4-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>selector-tracker</artifactId>
@@ -23,19 +23,19 @@
           </execution>
         </executions>
         <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
+          <source>1.7</source>
+          <target>1.7</target>
         </configuration>
         <dependencies>
          <dependency>
          <groupId>org.aspectj</groupId>
          <artifactId>aspectjrt</artifactId>
-         <version>1.6.8</version>
+         <version>1.8.1</version>
          </dependency>
          <dependency>
          <groupId>org.aspectj</groupId>
          <artifactId>aspectjweaver</artifactId>
-         <version>1.6.8</version>
+         <version>1.8.1</version>
          </dependency>
         </dependencies>
       </plugin>

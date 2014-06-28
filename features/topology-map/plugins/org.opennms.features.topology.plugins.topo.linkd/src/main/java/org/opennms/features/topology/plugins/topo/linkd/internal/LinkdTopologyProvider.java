@@ -243,8 +243,7 @@ public class LinkdTopologyProvider extends AbstractLinkdTopologyProvider impleme
     }
 
     private SearchResult createSearchResult(OnmsNode node, String queryString) {
-        SearchResult result = new SearchResult("node", node.getId().toString(), node.getLabel(), queryString);
-        return result;
+    	return new SearchResult("node", node.getId().toString(), node.getLabel(), queryString);
     }
 
     @Override

@@ -29,9 +29,11 @@
 package org.opennms.smoketest;
 
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
-
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class SurveillancePageIT extends OpenNMSSeleniumITCase {
     @Before
     public void setUp() throws Exception {
@@ -40,7 +42,7 @@ public class SurveillancePageIT extends OpenNMSSeleniumITCase {
     }
 
     @Test
-    public void testSurveillancePage() throws Exception {
+    public void a_testSurveillancePage() throws Exception {
         waitForText("Surveillance View:");
         waitForText("Routers");
         waitForText("Nodes Down");

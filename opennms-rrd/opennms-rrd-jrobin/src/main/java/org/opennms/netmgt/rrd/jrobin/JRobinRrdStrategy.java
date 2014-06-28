@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -90,7 +90,7 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
      * @author jeffg
      *
      */
-    class ConstantStaticDef extends Plottable {
+    static class ConstantStaticDef extends Plottable {
         private double m_startTime = Double.NEGATIVE_INFINITY;
         private double m_endTime = Double.POSITIVE_INFINITY;
         private double m_value = Double.NaN;
@@ -687,7 +687,7 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
                 String[] hrule = tokenize(definition, ":", true);
                 String[] color = tokenize(hrule[0], "#", true);
                 Double value = Double.valueOf(color[0]);
-                graphDef.hrule(value, getColor(color[1]), hrule[1]);
+                graphDef.hrule(value, getColor(color[1]), (hrule.length > 1 ? hrule[1] : ""));
             } else if (arg.endsWith("/rrdtool") || arg.equals("graph") || arg.equals("-")) {
             	// ignore, this is just a leftover from the rrdtool-specific options
 

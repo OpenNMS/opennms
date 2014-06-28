@@ -349,19 +349,19 @@
                   Available Users <br/>
                   <%=createSelectList("availableUsers", availableUsers)%><br/>
                   <p align="center">
-                  <input type="button" name="availableAll" onClick="selectAllAvailable()" value="Select All"/><br/>
-                  <input type="button" onClick="addUsers()" value="&nbsp;&#155;&#155;&nbsp;"/></p>
+                  <input type="button" name="availableAll" onClick="javascript:selectAllAvailable()" value="Select All"/><br/>
+                  <input type="button" id="users.doAdd" onClick="javascript:addUsers()" value="&nbsp;&#155;&#155;&nbsp;" /></p>
                 </td>
                 <td align="center">
                   Currently in Group <br/>
                   <%=createSelectList("selectedUsers", selectedUsers)%><br/>
                   <p align="center">
-                  <input type="button" name="selectedAll" onClick="selectAllSelected()" value="Select All"/><br/>
-                  <input type="button" onClick="removeUsers()" value="&nbsp;&#139;&#139;&nbsp;"/></p>
+                  <input type="button" name="selectedAll" onClick="javascript:selectAllSelected()" value="Select All"/><br/>
+                  <input type="button" id="users.doRemove" onClick="javascript:removeUsers()" value="&nbsp;&#139;&#139;&nbsp;" /></p>
                 </td>
                 <td>
-                  <input type="button" value="  Move Up   " onclick="move(-1)"/> <br/>
-                  <input type="button" value="Move Down" onclick="move(1)"/>
+                  <input type="button" value="  Move Up   " onClick="javascript:move(-1)"/> <br/>
+                  <input type="button" value="Move Down" onClick="javascript:move(1)"/>
                 </td>
               </tr>
             </table>
@@ -383,19 +383,19 @@
 	                  <%=createSelectList("availableCategories", categoryListNotInGroup)%><br/>
 	                  <p align="center">
 	                  
-	                  <input type="button" name="availableAll" onClick="selectAllAvailableCategories()" value="Select All"/><br/>
-	                  <input type="button" onClick="addCategories()" value="&nbsp;&#155;&#155;&nbsp;"/></p>
+	                  <input type="button" name="availableAll" onClick="javascript:selectAllAvailableCategories()" value="Select All"/><br/>
+	                  <input type="button" id="categories.doAdd" onClick="javascript:addCategories()" value="&nbsp;&#155;&#155;&nbsp;" /></p>
 	                </td>
 	                <td align="center">
 	                  Currently in Group <br/>
 	                  <%=createSelectList("selectedCategories", categoryListInGroup)%><br/>
 	                  <p align="center">
-	                  <input type="button" name="selectedAll" onClick="selectAllSelectedCategories()" value="Select All"/><br/>
-	                  <input type="button" onClick="removeCategories()" value="&nbsp;&#139;&#139;&nbsp;"/></p>
+	                  <input type="button" name="selectedAll" onClick="javascript:selectAllSelectedCategories()" value="Select All"/><br/>
+	                  <input type="button" id="categories.doRemove" onClick="javascript:removeCategories()" value="&nbsp;&#139;&#139;&nbsp;" /></p>
 	                </td>
 	                <td>
-	                  <input type="button" value="  Move Up   " onclick="moveCat(-1)"/> <br/>
-	                  <input type="button" value="Move Down" onclick="moveCat(1)"/>
+	                  <input type="button" value="  Move Up   " onClick="javascript:moveCat(-1)"/> <br/>
+	                  <input type="button" value="Move Down" onClick="javascript:moveCat(1)"/>
 	                </td>
 	              </tr>
 	            </table>
@@ -448,7 +448,7 @@
                     <% i++; } %>
       </table>
 
-  <p><input type="button" name="addSchedule" value="Add This Many Schedules" onclick="addGroupDutySchedules()"/>
+  <p><input type="button" name="addSchedule" value="Add This Many Schedules" onClick="javascript:addGroupDutySchedules()"/>
      <input type="hidden" name="dutySchedules" value="<%=group.getDutySchedules().size()%>"/>
     <select name="numSchedules" value="3" size="1">
       <option value="1">1</option>
@@ -461,7 +461,7 @@
     </select>
   </p>
 
-  <p><input type="button" name="addSchedule" value="Remove Checked Schedules" onclick="removeGroupDutySchedules()"/></p>
+  <p><input type="button" name="addSchedule" value="Remove Checked Schedules" onClick="javascript:removeGroupDutySchedules()"/></p>
 
 
 <!-- finish and discard buttons -->
@@ -473,7 +473,7 @@
           <tr>
             <td>
               <input type="submit" name="finish" value="Finish"/>
-              <input type="button" name="cancel" value="Cancel" onclick="cancelGroup()"/>
+              <input type="button" name="cancel" value="Cancel" onClick="javascript:cancelGroup()"/>
             </td>
           </tr>
         </table>

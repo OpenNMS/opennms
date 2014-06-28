@@ -51,8 +51,7 @@ public class PatternMatchingFilter extends AttributeComparisonFilter {
         // 6. put back escaped starts
         value = value.replace("~~ESCAPED_STAR~~", "\\*");
         
-        RegExp regex = RegExp.compile(value);
-        return regex;
+        return RegExp.compile(value);
     }
     
     public static String toFilterMatch(RegExp regex) {

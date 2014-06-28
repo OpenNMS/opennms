@@ -29,9 +29,11 @@
 package org.opennms.smoketest;
 
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
-
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class OutagePageIT extends OpenNMSSeleniumITCase {
     @Before
     public void setUp() throws Exception {
@@ -40,7 +42,7 @@ public class OutagePageIT extends OpenNMSSeleniumITCase {
     }
 
     @Test
-    public void testAllTextIsPresent() throws Exception {
+    public void a_testAllTextIsPresent() throws Exception {
         waitForText("Outage Menu");
         waitForText("Outages and Service Level Availability");
         waitForText("Outage ID");
@@ -48,18 +50,18 @@ public class OutagePageIT extends OpenNMSSeleniumITCase {
     }  
 
     @Test
-    public void testAllLinksArePresent() throws InterruptedException {
+    public void b_testAllLinksArePresent() throws InterruptedException {
         waitForElement("link=Current outages");
         waitForElement("link=All outages");
     }
 
     @Test
-    public void testAllFormsArePresent() {
+    public void c_testAllFormsArePresent() {
         assertEquals("Get details", selenium.getValue("css=input[type='submit']"));
     }
 
     @Test
-    public void testAllLinks() throws InterruptedException {
+    public void d_testAllLinks() throws InterruptedException {
         clickAndWait("link=Current outages");
         waitForElement("name=outtype");
         waitForElement("css=input[type='submit']");

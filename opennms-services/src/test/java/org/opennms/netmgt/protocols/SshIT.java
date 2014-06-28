@@ -71,7 +71,7 @@ public class SshIT extends TestCase {
     
     public void testSshGood() throws Exception {
         ssh.setAddress(good);
-        assertTrue(ssh.poll(tt).isAvailable());
+        assertTrue("SSH poll against " + GOOD_HOST + " failed", ssh.poll(tt).isAvailable());
     }
     
     public void testSshBad() throws Exception {

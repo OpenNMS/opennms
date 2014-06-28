@@ -51,7 +51,7 @@ public class TopologySelector {
 	private final Map<GraphProvider, ServiceRegistration<CheckedOperation>> m_registrations = new HashMap<GraphProvider, ServiceRegistration<CheckedOperation>>();
 	
     
-    private class TopologySelectorOperation extends AbstractCheckedOperation {
+    private static class TopologySelectorOperation extends AbstractCheckedOperation {
     	
     	private GraphProvider m_topologyProvider;
     	private Map<?,?> m_metaData;

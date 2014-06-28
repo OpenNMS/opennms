@@ -82,7 +82,7 @@ public class RrdGraphController extends AbstractController {
 
         String resourceId = request.getParameter("resourceId");
         
-        long times[] = this.parseTimes(request);
+        long[] times = this.parseTimes(request);
         
         long startTime = times[0];
         long endTime = times[1];
@@ -195,7 +195,7 @@ public class RrdGraphController extends AbstractController {
 
         	TimeSpec specStart = startParser.parse();
         	TimeSpec specEnd = endParser.parse();
-        	long results[] = TimeSpec.getTimestamps(specStart, specEnd);
+        	long[] results = TimeSpec.getTimestamps(specStart, specEnd);
         	//Multiply by 1000.  TimeSpec returns timestamps in Seconds, not Milliseconds.  Gah.  
         	results[0] = results[0]*1000;
         	results[1] = results[1]*1000;

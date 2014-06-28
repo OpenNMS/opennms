@@ -44,8 +44,8 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 
 public class KSCResourceAddGraph implements EntryPoint {
-    final static public boolean DEBUG = true;
-    final static private String m_debugResponse =
+    public static final boolean DEBUG = true;
+    private static final String m_debugResponse =
         "{" +
             "\"@totalCount\":\"2\"," +
             "\"@count\":\"2\"," +

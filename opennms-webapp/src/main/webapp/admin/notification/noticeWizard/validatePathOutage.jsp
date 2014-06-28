@@ -33,6 +33,7 @@
 	contentType="text/html"
 	session="true"
 	import="java.util.*,
+	    org.opennms.core.utils.InetAddressUtils,
 		org.opennms.web.admin.notification.noticeWizard.*,
 		org.opennms.web.api.Util,
         org.opennms.netmgt.filter.FilterDaoFactory,
@@ -43,7 +44,7 @@
 
 <%
    String newRule = request.getParameter("newRule");
-   String criticalIp = request.getParameter("criticalIp");
+   String criticalIp = InetAddressUtils.normalize(request.getParameter("criticalIp"));
    if (criticalIp == null) { criticalIp = ""; }
    String criticalSvc = request.getParameter("criticalSvc");
    String showNodes = request.getParameter("showNodes");

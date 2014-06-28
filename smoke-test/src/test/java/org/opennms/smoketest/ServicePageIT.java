@@ -28,10 +28,12 @@
 
 package org.opennms.smoketest;
 
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 import org.openqa.selenium.NoSuchElementException;
 
-
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ServicePageIT extends OpenNMSSeleniumITCase {
 
     interface Setter {
@@ -73,7 +75,7 @@ public class ServicePageIT extends OpenNMSSeleniumITCase {
 
 
     @Test
-    public void testProvisioningGroupSetup() throws Exception {
+    public void a_testProvisioningGroupSetup() throws Exception {
 
         String groupName = "SeleniumTestGroup";
 
@@ -119,7 +121,7 @@ public class ServicePageIT extends OpenNMSSeleniumITCase {
     }
 
     @Test
-    public void testCreateUser() throws InterruptedException { 
+    public void b_testCreateUser() throws InterruptedException { 
         clickAndWait("link=Admin");
         clickAndWait("link=Configure Users, Groups and On-Call Roles");
         clickAndWait("link=Configure Users");
@@ -134,7 +136,7 @@ public class ServicePageIT extends OpenNMSSeleniumITCase {
     }
 
     @Test  
-    public void testCreateGroup() throws InterruptedException {
+    public void c_testCreateGroup() throws InterruptedException {
         clickAndWait("link=Admin");
         clickAndWait("link=Configure Users, Groups and On-Call Roles");
         clickAndWait("link=Configure Groups");
@@ -154,7 +156,7 @@ public class ServicePageIT extends OpenNMSSeleniumITCase {
     }
 
     @Test
-    public void testProvisioningGroupWasCreated() throws InterruptedException {
+    public void d_testProvisioningGroupWasCreated() throws InterruptedException {
         clickAndWait("link=Node List");
         if(selenium.isElementPresent("link=localNode")) {
             // if there's more than 1 node discovered, it will give a list
@@ -173,7 +175,7 @@ public class ServicePageIT extends OpenNMSSeleniumITCase {
     }
 
     @Test
-    public void testDeleteProvisioningNodesAndGroups() throws Exception {
+    public void e_testDeleteProvisioningNodesAndGroups() throws Exception {
         clickAndWait("link=Admin");
         clickAndWait("link=Manage Provisioning Requisitions");
         clickAndWait("//input[@value='Delete Nodes']");
@@ -201,7 +203,7 @@ public class ServicePageIT extends OpenNMSSeleniumITCase {
     }
 
     @Test
-    public void testDeleteUsersAndGroups() {
+    public void f_testDeleteUsersAndGroups() {
         clickAndWait("link=Admin");
         clickAndWait("link=Configure Users, Groups and On-Call Roles");
         clickAndWait("link=Configure Groups");

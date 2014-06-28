@@ -58,7 +58,7 @@ import org.slf4j.LoggerFactory;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 @Distributable(DistributionContext.DAEMON)
-final public class DhcpMonitor extends AbstractServiceMonitor {
+public final class DhcpMonitor extends AbstractServiceMonitor {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(DhcpMonitor.class);
 

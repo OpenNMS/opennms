@@ -41,7 +41,7 @@ import de.novanic.eventservice.client.event.RemoteEventServiceFactory;
 
 public class Main implements EntryPoint {
     
-    private class DeferredCommandExecutor implements CommandExecutor{
+    private static class DeferredCommandExecutor implements CommandExecutor{
 
         @Override
         public void schedule(Scheduler.RepeatingCommand command) {

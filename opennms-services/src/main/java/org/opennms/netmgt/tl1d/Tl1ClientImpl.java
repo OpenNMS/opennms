@@ -411,7 +411,7 @@ public class Tl1ClientImpl implements Tl1Client {
         return m_started;
     }
 
-    private class TimeoutSleeper {
+    private static class TimeoutSleeper {
 
         public void sleep(long sleepTime) throws InterruptedException {
             Thread.sleep(sleepTime);

@@ -77,8 +77,7 @@ public class BoundingBox{
     }
     
     public Point getCenter() {
-        Point p = new Point(getX() + (getWidth()/2), getY() + (getHeight()/2));
-        return p;
+    	return new Point(getX() + (getWidth()/2), getY() + (getHeight()/2));
     }
     
     public void setCenter(Point center) {

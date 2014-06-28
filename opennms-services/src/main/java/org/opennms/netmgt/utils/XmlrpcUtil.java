@@ -30,8 +30,8 @@ package org.opennms.netmgt.utils;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventIpcManagerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -189,7 +189,7 @@ public class ExecCommandController extends MapsLoggingController {
 		return null;
 	}
 	
-	private class Command
+	private static class Command
 	{
 	    private BufferedReader out;
 	    private Process p;

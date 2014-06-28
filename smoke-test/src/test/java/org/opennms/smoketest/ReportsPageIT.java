@@ -29,10 +29,12 @@
 package org.opennms.smoketest;
 
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
-
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ReportsPageIT extends OpenNMSSeleniumITCase {
     @Before
     @Override
@@ -47,7 +49,7 @@ public class ReportsPageIT extends OpenNMSSeleniumITCase {
     }
 
     @Test
-    public void testAllTextIsPresent() throws Exception {
+    public void a_testAllTextIsPresent() throws Exception {
         waitForText("Reports");
         waitForText("Descriptions");
         waitForText("Key SNMP Customized");
@@ -55,7 +57,7 @@ public class ReportsPageIT extends OpenNMSSeleniumITCase {
     }
      
     @Test
-    public void testAllLinksArePresent() throws InterruptedException {
+    public void b_testAllLinksArePresent() throws InterruptedException {
         waitForElement("link=Resource Graphs");
         waitForElement("link=KSC Performance, Nodes, Domains");
         waitForElement("link=Database Reports");
@@ -63,14 +65,14 @@ public class ReportsPageIT extends OpenNMSSeleniumITCase {
     }
         
      @Test
-     public void testAllFormsArePresent() throws InterruptedException {
+     public void c_testAllFormsArePresent() throws InterruptedException {
         waitForElement("css=input[type=submit]");
         waitForElement("//input[@value='KSC Reports']");
      }
 //TODO Tak: Build report download test
      @Ignore
      @Test
-     public void testDownloadSampleReport() throws InterruptedException {
+     public void d_testDownloadSampleReport() throws InterruptedException {
          clickAndWait("link=Database Reports");
          waitForElement("link=Online reports");
     	 clickAndWait("link=Online reports");
@@ -81,7 +83,7 @@ public class ReportsPageIT extends OpenNMSSeleniumITCase {
      }
      
       @Test
-      public void testAllLinks() throws Exception {
+      public void e_testAllLinks() throws Exception {
         clickAndWait("link=Resource Graphs");
         waitForText("Standard Resource");
         waitForText("Performance Reports");

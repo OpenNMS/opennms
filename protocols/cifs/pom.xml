@@ -4,16 +4,12 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>org.opennms.protocols</artifactId>
-        <version>1.13.3-SNAPSHOT</version>
+        <version>1.13.4-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.protocols</groupId>
     <artifactId>org.opennms.protocols.cifs</artifactId>
     <name>OpenNMS Protocols CIFS Support</name>
-
-    <properties>
-        <powermock.version>1.5</powermock.version>
-    </properties>
 
     <dependencies>
         <dependency>
@@ -23,13 +19,13 @@
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-module-junit4</artifactId>
-            <version>${powermock.version}</version>
+            <version>${powermockVersion}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-api-easymock</artifactId>
-            <version>${powermock.version}</version>
+            <version>${powermockVersion}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -69,4 +65,15 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <repositories>
+        <repository>
+            <snapshots><enabled>false</enabled></snapshots>
+            <releases><enabled>true</enabled></releases>
+            <id>opennms-repo</id>
+            <name>OpenNMS Repository</name>
+            <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+        </repository>
+    </repositories>
+
 </project>

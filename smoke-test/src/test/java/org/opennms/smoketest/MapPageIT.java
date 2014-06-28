@@ -29,8 +29,11 @@
 package org.opennms.smoketest;
 
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class MapPageIT extends OpenNMSSeleniumITCase {
     @Before
     public void setUp() throws Exception {
@@ -40,7 +43,7 @@ public class MapPageIT extends OpenNMSSeleniumITCase {
     }
 
     @Test
-    public void testMapPage() throws Exception {
+    public void a_testMapPage() throws Exception {
         waitForElement("id=mainSvgDocument");
         waitForText("Network Topology Maps");
     }

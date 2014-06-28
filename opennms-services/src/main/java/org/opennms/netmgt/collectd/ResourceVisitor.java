@@ -41,6 +41,6 @@ public abstract class ResourceVisitor extends AbstractCollectionSetVisitor {
     
     /** {@inheritDoc} */
     @Override
-    abstract public void visitResource(CollectionResource resource);
+    public abstract void visitResource(CollectionResource resource);
 
 }

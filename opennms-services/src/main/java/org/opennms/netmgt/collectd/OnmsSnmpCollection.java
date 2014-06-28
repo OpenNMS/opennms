@@ -61,7 +61,7 @@ public class OnmsSnmpCollection {
     
     private static final Logger LOG = LoggerFactory.getLogger(OnmsSnmpCollection.class);
 
-    private ServiceParameters m_params;
+    private final ServiceParameters m_params;
     private NodeResourceType m_nodeResourceType;
     private IfResourceType m_ifResourceType;
     private IfAliasResourceType m_ifAliasResourceType;

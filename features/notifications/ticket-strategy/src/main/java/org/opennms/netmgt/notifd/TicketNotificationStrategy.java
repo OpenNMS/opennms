@@ -36,9 +36,9 @@ import org.apache.commons.lang.StringUtils;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DefaultEventConfDao;
-import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventIpcManager;
+import org.opennms.netmgt.model.events.EventIpcManagerFactory;
 import org.opennms.netmgt.model.notifd.Argument;
 import org.opennms.netmgt.model.notifd.NotificationStrategy;
 import org.opennms.netmgt.xml.eventconf.AlarmData;
@@ -97,7 +97,7 @@ public class TicketNotificationStrategy implements NotificationStrategy {
 		}
 	}
 	
-	protected class AlarmStateRowCallbackHandler implements RowCallbackHandler {
+	protected static class AlarmStateRowCallbackHandler implements RowCallbackHandler {
 		AlarmState m_alarmState;
 		public AlarmStateRowCallbackHandler() {
 			m_alarmState = null;

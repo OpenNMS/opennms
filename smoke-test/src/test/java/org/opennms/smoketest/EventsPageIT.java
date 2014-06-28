@@ -29,8 +29,11 @@
 package org.opennms.smoketest;
 
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class EventsPageIT extends OpenNMSSeleniumITCase {
     @Before
     public void setUp() throws Exception {
@@ -39,7 +42,7 @@ public class EventsPageIT extends OpenNMSSeleniumITCase {
     }
 
     @Test
-    public void testAllTextIsPresent() throws Exception {       
+    public void a_testAllTextIsPresent() throws Exception {       
         waitForText("Event Queries");
         waitForText("Outstanding and acknowledged events");
         waitForText("hit [Enter]");
@@ -47,14 +50,14 @@ public class EventsPageIT extends OpenNMSSeleniumITCase {
     }
 
     @Test
-    public void testAllLinksArePresent() throws InterruptedException {
+    public void b_testAllLinksArePresent() throws InterruptedException {
         assertEquals("Get details", selenium.getValue("css=input[type='submit']"));
         waitForElement("link=All events");
         waitForElement("link=Advanced Search");
     }
 
     @Test 
-    public void testAllLinks() throws InterruptedException {
+    public void c_testAllLinks() throws InterruptedException {
         clickAndWait("link=All events");
         assertFalse(selenium.isTextPresent("Ack"));
         waitForText("Event(s) outstanding");
@@ -72,7 +75,7 @@ public class EventsPageIT extends OpenNMSSeleniumITCase {
     }
 
     @Test
-    public void testNodeIdNotFoundPage() throws InterruptedException {
+    public void d_testNodeIdNotFoundPage() throws InterruptedException {
         selenium.open("/opennms/event/detail.jsp?id=999999999");
         waitForText("Event Not Found in Database");
     }

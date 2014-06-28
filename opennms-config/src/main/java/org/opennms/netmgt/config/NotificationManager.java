@@ -264,7 +264,7 @@ public abstract class NotificationManager {
 
         for (Notification curNotif : m_notifications.getNotificationCollection()) {
 
-            LOG.debug("Checking {} against {}", curNotif.getUei(), event.getUei());
+            LOG.debug("Checking notification {} against event {} with UEI {}", curNotif.getUei(), event.getDbid(), event.getUei());
 
             if (event.getUei().equals(curNotif.getUei()) || "MATCH-ANY-UEI".equals(curNotif.getUei())) {
                 // Match!
@@ -278,7 +278,7 @@ public abstract class NotificationManager {
                 }
             } else {
 
-                LOG.debug("Event UEI {} did not match {}", curNotif.getUei(), event.getUei());
+                LOG.debug("Notification UEI {} did not match UEI of event {}: {}", curNotif.getUei(), event.getDbid(), event.getUei());
                 continue;
             }
 
@@ -327,7 +327,7 @@ public abstract class NotificationManager {
                 }
             } else {
 
-                LOG.debug("Current notification is turned off.");
+                LOG.debug("Current notification with UEI {} is turned off.", curNotif.getUei());
             }
         }
 
@@ -946,7 +946,7 @@ public abstract class NotificationManager {
 
         Map<String, Notification> newMap = new HashMap<String, Notification>();
 
-        Notification notices[] = m_notifications.getNotification();
+        Notification[] notices = m_notifications.getNotification();
         for (int i = 0; i < notices.length; i++) {
             newMap.put(notices[i].getName(), notices[i]);
         }

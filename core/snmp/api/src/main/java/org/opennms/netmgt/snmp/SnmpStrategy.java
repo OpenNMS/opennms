@@ -39,7 +39,7 @@ public interface SnmpStrategy {
 
     SnmpValue set(SnmpAgentConfig agentConfig, SnmpObjId oid, SnmpValue value);
 
-    SnmpValue[] set(SnmpAgentConfig agentConfig, SnmpObjId oid[], SnmpValue value[]);
+    SnmpValue[] set(SnmpAgentConfig agentConfig, SnmpObjId[] oid, SnmpValue[] value);
 
     SnmpValue get(SnmpAgentConfig agentConfig, SnmpObjId oid);
     SnmpValue[] get(SnmpAgentConfig agentConfig, SnmpObjId[] oids);
