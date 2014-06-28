@@ -73,7 +73,7 @@ import org.springframework.test.context.transaction.BeforeTransaction;
 })
 @JUnitTemporaryDatabase
 public class PollerFrontEndIT implements InitializingBean {
-    private static final Logger LOG = LoggerFactory.getLogger(PollerFrontEndIntegrationTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PollerFrontEndIT.class);
 
     @Autowired
     private DatabasePopulator m_populator;
