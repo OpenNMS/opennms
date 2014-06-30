@@ -61,7 +61,7 @@ public class ResourceQueryParserTest {
         assertEquals("someForeignId", rQuery.getForeignId());
 
         System.setProperty("org.opennms.rrd.storeByForeignSource", "true");
-        assertTrue(rQuery.constructBasePath().matches(".*src/test/resources/share/rrd/snmp/fs/someForeignSource/someForeignId"))
+        assertTrue(rQuery.constructBasePath().matches(".*src/test/resources/share/rrd/snmp/fs/someForeignSource/someForeignId"));
 
         System.setProperty("org.opennms.rrd.storeByForeignSource", "false");
         assertTrue(rQuery.constructBasePath().matches(".*src/test/resources/share/rrd/snmp/10"));
