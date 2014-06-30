@@ -31,16 +31,102 @@ package org.opennms.features.topology.app.internal.jung;
 public class QuadTree<Key extends Comparable, Value> {
     private Node root;
 
+
     // helper node data type
     private class Node {
-        Key x, y;              // x- and y- coordinates
-        Node NW, NE, SE, SW;   // four subtrees
-        Value value;           // associated data
+        private Key m_cx;
+        private Key m_cy;
+
+        private Key m_x;
+
+        private Key m_y;        // x- and y- coordinates
+        private Node m_NW;
+        private Node m_NE;
+        private Node m_SE;
+        private Node m_SW;      // four subtrees
+        private Value m_value;  // associated data
+        private double m_mass;
+        private boolean m_isLeaf;
+
 
         Node(Key x, Key y, Value value) {
-            this.x = x;
-            this.y = y;
-            this.value = value;
+            setX(x);
+            setY(y);
+            setCx(x);
+            setCy(y);
+            setValue(value);
+        }
+
+        public Key getCx() {
+            return m_cx;
+        }
+
+        public void setCx(Key cx) {
+            m_cx = cx;
+        }
+
+        public Key getCy() {
+            return m_cy;
+        }
+
+        public void setCy(Key cy) {
+            m_cy = cy;
+        }
+
+        public void setX(Key x) {
+            m_x = x;
+        }
+
+        public void setY(Key y) {
+           m_y = y;
+        }
+
+        public void setNW(Node NW) {
+            m_NW = NW;
+        }
+
+        public void setNE(Node NE) {
+            m_NE = NE;
+        }
+
+        public void setSE(Node SE) {
+            m_SE = SE;
+        }
+
+        public void setSW(Node SW) {
+            m_SW = SW;
+        }
+
+        public Value getValue() {
+            return m_value;
+        }
+
+        public void setValue(Value value) {
+            m_value = value;
+        }
+
+        public Key getX() {
+            return m_x;
+        }
+
+        public Key getY() {
+            return m_y;
+        }
+
+        public Node getNW() {
+            return m_NW;
+        }
+
+        public Node getNE() {
+            return m_NE;
+        }
+
+        public Node getSE() {
+            return m_SE;
+        }
+
+        public Node getSW() {
+            return m_SW;
         }
     }
 
@@ -55,10 +141,10 @@ public class QuadTree<Key extends Comparable, Value> {
     private Node insert(Node h, Key x, Key y, Value value) {
         if (h == null) return new Node(x, y, value);
             //// if (eq(x, h.x) && eq(y, h.y)) h.value = value;  // duplicate
-        else if ( less(x, h.x) &&  less(y, h.y)) h.SW = insert(h.SW, x, y, value);
-        else if ( less(x, h.x) && !less(y, h.y)) h.NW = insert(h.NW, x, y, value);
-        else if (!less(x, h.x) &&  less(y, h.y)) h.SE = insert(h.SE, x, y, value);
-        else if (!less(x, h.x) && !less(y, h.y)) h.NE = insert(h.NE, x, y, value);
+        else if ( less(x, h.getX()) &&  less(y, h.getY())) h.setSW(insert(h.getSW(), x, y, value));
+        else if ( less(x, h.getX()) && !less(y, h.getY())) h.setNW(insert(h.getNW(), x, y, value));
+        else if (!less(x, h.getX()) &&  less(y, h.getY())) h.setSE(insert(h.getSE(), x, y, value));
+        else if (!less(x, h.getX()) && !less(y, h.getY())) h.setNE(insert(h.getNE(), x, y, value));
         return h;
     }
 
