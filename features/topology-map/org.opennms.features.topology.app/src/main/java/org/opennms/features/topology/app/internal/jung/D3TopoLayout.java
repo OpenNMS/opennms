@@ -32,8 +32,13 @@ import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
 import edu.uci.ics.jung.algorithms.util.IterativeContext;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.util.Pair;
+
 import org.apache.commons.collections15.Factory;
 import org.apache.commons.collections15.map.LazyMap;
+import org.opennms.features.topology.api.BoundingBox;
+import org.opennms.features.topology.app.internal.jung.QuadTree.Node;
+import org.opennms.features.topology.app.internal.jung.QuadTree.Visitor;
+
 import java.awt.geom.Point2D;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
@@ -46,6 +51,7 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
     private static final int DEFAULT_CHARGE = -120;
     private double EPSILON = 0.00000000001D;
     private int m_charge = -30;
+    private double m_thetaSquared = .64;
 
     private double m_alpha = 0.1;
     private Map<V, VertexData> m_vertexData = LazyMap.decorate(new HashMap<V, VertexData>(), new Factory<VertexData>(){
@@ -137,20 +143,65 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
         if(currentForce != 0){
             double centerX = getSize().getWidth() / 2;
             double centerY = getSize().getHeight() / 2;
-            int i = -1;
-            //D3 layout code a little confusing, check for errors line 99
+
             for (V v : getGraph().getVertices()) {
                 VertexData vData = getVertexData(v);
                 vData.offset((centerX - vData.getX()) * currentForce, (centerY - vData.getY()) * currentForce);
             }
-
+            
         }
 
         //Compute quad tree center of mass and apply charge force
-        //TODO create a quadtree implementation from D3
         if(getDefaultCharge() != 0){
-	    
+            
+            BoundingBox bounds = new BoundingBox();
+            for(V v : getGraph().getVertices()) {
+                VertexData vData = getVertexData(v);
+                BoundingBox rounded = new BoundingBox((int)vData.getX(), (int)vData.getY(), 1, 1);
+                bounds.addBoundingbox(rounded);
+            }
+            
+            QuadTree<VertexData> quadTree = new QuadTree<VertexData>(bounds);
+            for(V v : getGraph().getVertices()) {
+                VertexData vData = getVertexData(v);
+                quadTree.insert(vData, vData.getCharge(), vData);
+            }
+
+            for(V v: getGraph().getVertices()) {
+                final VertexData vData = getVertexData(v);
+                quadTree.visit(new Visitor<VertexData>() {
+
+                    @Override
+                    public boolean visitNode(Node<VertexData> n) {
+                        
+                        if (n.isLeaf() && vData == n.getValue()) return true;
+                        
+                        double dx = n.getX() - vData.getX();
+                        double dy = n.getY() - vData.getY();
+                        double dw = n.getWidth();
+                        double dSquared = dx*dx + dy*dy;
+
+                        if (dw*dw/m_thetaSquared < dSquared) {
+                            double force = n.getCharge() / dSquared;
+                            vData.offset(- (dx*force), - (dy*force));
+                            return true;
+                        }
+                        
+                        if (n.isLeaf()) {
+                            double force = n.getCharge() / dSquared;
+                            vData.offset(- (dx*force), - (dy*force));
+                            return true;
+                        }
+                        
+                        return false;
+                        
+                    }
+                    
+                });
+            }
         }
+        
+        m_alpha *= 0.99;
 
 
     }
@@ -161,10 +212,7 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
 
     @Override
     public boolean done() {
-        if((m_alpha *= .99) < 0.005){
-            return true;
-        }
-        return false;
+        return m_alpha < 0.005;
     }
 
     private VertexData getVertexData(V v) {

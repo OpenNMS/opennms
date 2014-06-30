@@ -28,75 +28,87 @@
 
 package org.opennms.features.topology.app.internal.jung;
 
-public class QuadTree<Key extends Comparable, Value> {
-    private Node root;
+import java.awt.geom.Point2D;
+
+import org.opennms.features.topology.api.BoundingBox;
+import org.opennms.features.topology.api.Point;
+
+public class QuadTree<Value> {
+    private Node<Value> m_root;
+    
+    public static interface Visitor<Value> {
+        public boolean visitNode(Node<Value> n);
+    }
 
 
     // helper node data type
-    private class Node {
-        private Key m_cx;
-        private Key m_cy;
+    public static class Node<Value> {
+        private static final int EQ = -1;
+        private static final int NW = 0;
+        private static final int NE = 1;
+        private static final int SW = 2;
+        private static final int SE = 3;
 
-        private Key m_x;
+        private Point2D m_location;
+        private Value m_value;
+        private BoundingBox m_bounds;
 
-        private Key m_y;        // x- and y- coordinates
-        private Node m_NW;
-        private Node m_NE;
-        private Node m_SE;
-        private Node m_SW;      // four subtrees
-        private Value m_value;  // associated data
-        private double m_mass;
-        private boolean m_isLeaf;
+        private Node<Value>[] m_nodes;
+        
+        private Point2D m_centerOfMass;
+        private int m_charge;
 
+        
+        public Node(BoundingBox bounds) {
+            this(null, null, bounds);
+        }
 
-        Node(Key x, Key y, Value value) {
-            setX(x);
-            setY(y);
-            setCx(x);
-            setCy(y);
+        public Node(Point2D location, Value value, BoundingBox bounds) {
+            setLocation(location);
             setValue(value);
+            setBounds(bounds);
+        }
+        
+        private void setBounds(BoundingBox bounds) {
+            m_bounds = new BoundingBox(bounds);
+        }
+        
+        private static Point2D clonePoint(Point2D pt) {
+            return (Point2D)pt.clone();
+        }
+        
+        public Point2D getLocation() {
+            return clonePoint(m_location);
         }
 
-        public Key getCx() {
-            return m_cx;
+        public void setLocation(Point2D location) {
+            m_location = clonePoint(location);
         }
-
-        public void setCx(Key cx) {
-            m_cx = cx;
+        
+        public void setLocation(double x, double y) {
+            m_centerOfMass = new Point2D.Double(x, y);
         }
-
-        public Key getCy() {
-            return m_cy;
+        
+        public Point2D getCenterOfMass() {
+            return clonePoint(m_centerOfMass);
         }
-
-        public void setCy(Key cy) {
-            m_cy = cy;
+        
+        public void setCenterOfMass(Point2D location) {
+            m_centerOfMass = clonePoint(location);
         }
-
-        public void setX(Key x) {
-            m_x = x;
+        
+        public void setCenterOfMass(double x, double y) {
+            m_centerOfMass = new Point2D.Double(x, y);
         }
-
-        public void setY(Key y) {
-           m_y = y;
+        
+        public void setCharge(int charge) {
+            m_charge = charge;
         }
-
-        public void setNW(Node NW) {
-            m_NW = NW;
+        
+        public int getCharge() {
+            return m_charge;
         }
-
-        public void setNE(Node NE) {
-            m_NE = NE;
-        }
-
-        public void setSE(Node SE) {
-            m_SE = SE;
-        }
-
-        public void setSW(Node SW) {
-            m_SW = SW;
-        }
-
+        
         public Value getValue() {
             return m_value;
         }
@@ -104,80 +116,119 @@ public class QuadTree<Key extends Comparable, Value> {
         public void setValue(Value value) {
             m_value = value;
         }
+        
+        
+        public int getWidth() {
+            return m_bounds.getWidth();
+        }
+        
+        public boolean isLeaf() {
+            return m_nodes == null;
+        }
+        
+        public double getX() { return m_location.getX(); }
+        public double getY() { return m_location.getY(); }
+        
+        private int getQuadrant(Point2D pt) {
+            Point center = m_bounds.getCenter();
+            if ( less(pt.getX(), center.getX()) &&  less(pt.getY(), center.getY())) return NW;
+            if ( less(pt.getX(), center.getX()) && !less(pt.getY(), center.getY())) return SW;
+            if (!less(pt.getX(), center.getX()) &&  less(pt.getY(), center.getY())) return NE;
+            // !less && !less
+            return SE;
+        }
+        
+        private BoundingBox getChildBounds(int quadrant) {
+            int x = m_bounds.getX();
+            int y = m_bounds.getY();
+            int halfW = m_bounds.getWidth()/2;
+            int halfH = m_bounds.getHeight()/2;
+            switch(quadrant) {
+            case NW: return new BoundingBox(x, y, halfW, halfH);
+            case SW: return new BoundingBox(x, y + halfH, halfW, halfH);
+            case NE: return new BoundingBox(x + halfW, y, halfW, halfH);
+            default: return new BoundingBox(x + halfW, y+halfH, halfW, halfH);
+            }
+        }
+        
+        private Node<Value> getChild(int quadrant) {
+            if (m_nodes == null) {
+                m_nodes = new Node[4];
+            }
+            if (m_nodes[quadrant] == null) {
+                m_nodes[quadrant] = new Node<Value>(getChildBounds(quadrant));
+            }
+            return m_nodes[quadrant];
+        }
+        
+        private Node<Value> getChild(Point2D pt) {
+            return getChild(getQuadrant(pt));
+        }
+        
+        private boolean less(double k1, double k2) { return k1 < k2; }
+        
+        void insert(Point2D pt, int charge, Value v) {
+            if (m_value == null) {
+                // set location and 
+                setLocation(pt);
+                setValue(v);
+                setCenterOfMass(pt);
+                setCharge(charge);
+                
+            } else {
+                if (this.isLeaf()) {
+                    // move current data into a child node
+                    insertChild(getLocation(), m_charge, m_value);
+                }
+                
+                // insert new child data and update charge and center of mass
+                insertChild(pt, charge, v);
+                int newCharge = m_charge+charge;
+                double cx = (getX()*m_charge + pt.getX()) / newCharge;
+                double cy = (getY()*m_charge + pt.getY()) / newCharge;
+                setCenterOfMass(cx, cy);
+                setLocation(cx, cy);
+                m_charge = newCharge;
 
-        public Key getX() {
-            return m_x;
+            }
         }
 
-        public Key getY() {
-            return m_y;
+        private void insertChild(Point2D pt, int charge, Value v) {
+            Node<Value> child = getChild(pt);
+            child.insert(pt, charge, v);
         }
 
-        public Node getNW() {
-            return m_NW;
+        public void visit(Visitor<Value> visitor) {
+            if (!visitor.visitNode(this)) {
+                if (!isLeaf()) {
+                    for(int i = 0; i < m_nodes.length; i++) {
+                        Node<Value> n = m_nodes[i];
+                        if (n != null) {
+                            n.visit(visitor);
+                        }
+                    }
+                }
+                
+            }
         }
 
-        public Node getNE() {
-            return m_NE;
-        }
-
-        public Node getSE() {
-            return m_SE;
-        }
-
-        public Node getSW() {
-            return m_SW;
-        }
+    }
+    
+    public QuadTree(BoundingBox bounds) {
+        m_root = new Node<Value>(bounds);
     }
 
 
     /***********************************************************************
      *  Insert (x, y) into appropriate quadrant
      ***********************************************************************/
-    public void insert(Key x, Key y, Value value) {
-        root = insert(root, x, y, value);
-    }
-
-    private Node insert(Node h, Key x, Key y, Value value) {
-        if (h == null) return new Node(x, y, value);
-            //// if (eq(x, h.x) && eq(y, h.y)) h.value = value;  // duplicate
-        else if ( less(x, h.getX()) &&  less(y, h.getY())) h.setSW(insert(h.getSW(), x, y, value));
-        else if ( less(x, h.getX()) && !less(y, h.getY())) h.setNW(insert(h.getNW(), x, y, value));
-        else if (!less(x, h.getX()) &&  less(y, h.getY())) h.setSE(insert(h.getSE(), x, y, value));
-        else if (!less(x, h.getX()) && !less(y, h.getY())) h.setNE(insert(h.getNE(), x, y, value));
-        return h;
+    public void insert(Point2D location, int charge, Value value) {
+        m_root.insert(location, charge, value);
     }
 
 
-    /***********************************************************************
-     *  Range search.
-     ***********************************************************************/
-/*
-
-    public void query2D(Interval2D<Key> rect) {
-        query2D(root, rect);
+    public void visit(Visitor<Value> visitor) {
+        m_root.visit(visitor);
     }
 
-    private void query2D(Node h, Interval2D<Key> rect) {
-        if (h == null) return;
-        Key xmin = rect.intervalX.low;
-        Key ymin = rect.intervalY.low;
-        Key xmax = rect.intervalX.high;
-        Key ymax = rect.intervalY.high;
-        if (rect.contains(h.x, h.y))
-            System.out.println("    (" + h.x + ", " + h.y + ") " + h.value);
-        if ( less(xmin, h.x) &&  less(ymin, h.y)) query2D(h.SW, rect);
-        if ( less(xmin, h.x) && !less(ymax, h.y)) query2D(h.NW, rect);
-        if (!less(xmax, h.x) &&  less(ymin, h.y)) query2D(h.SE, rect);
-        if (!less(xmax, h.x) && !less(ymax, h.y)) query2D(h.NE, rect);
-    }
-*/
-
-
-    /*************************************************************************
-     *  helper comparison functions
-     *************************************************************************/
-
-    private boolean less(Key k1, Key k2) { return k1.compareTo(k2) <  0; }
-    private boolean eq  (Key k1, Key k2) { return k1.compareTo(k2) == 0; }
 }

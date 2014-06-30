@@ -37,6 +37,13 @@ public class BoundingBox{
     public BoundingBox() {
         
     }
+    
+    public BoundingBox(BoundingBox box) {
+        m_left = box.m_left;
+        m_right = box.m_right;
+        m_top = box.m_top;
+        m_bottom = box.m_bottom;
+    }
 
     public BoundingBox(int x, int y, int width, int height) {
         m_left = x;
