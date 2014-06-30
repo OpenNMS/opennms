@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.net.BindException;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -565,9 +566,18 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
             super(udpAddress, reuseAddress);
         }
 
+        public InetAddress getInetAddress() {
+            return socket.getLocalAddress();
+        }
+
         public int getPort() {
             return socket.getLocalPort();
         }
+    }
+
+    public InetAddress getInetAddress() {
+        final TransportMapping mapping = transportMappings[0];
+        return ((MockUdpTransportMapping)mapping).getInetAddress();
     }
 
     public int getPort() {

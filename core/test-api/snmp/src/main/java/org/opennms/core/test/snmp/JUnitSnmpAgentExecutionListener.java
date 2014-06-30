@@ -175,24 +175,19 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
         final int port = config.port();
         final SnmpAgentAddress agentAddress = new SnmpAgentAddress(hostAddress, port);
 
-        final InetAddress localHost = InetAddress.getLocalHost();
         final SnmpAgentConfigProxyMapper mapper = SnmpAgentConfigProxyMapper.getInstance();
-
-        SnmpAgentAddress listenAddress = null;
-
-        // try to find an unused port on localhost
-        int mappedPort = 1161;
-        do {
-            listenAddress = new SnmpAgentAddress(localHost, mappedPort++);
-        } while (mapper.contains(listenAddress));
 
         if (Boolean.valueOf(useMockSnmpStrategy)) {
             // since it's all virtual, the "mapped" port just points to the real agent address
             mapper.addProxy(hostAddress, agentAddress);
         } else {
-            final MockSnmpAgent agent = MockSnmpAgent.createAgentAndRun(resource.getURL(), str(localHost) + "/0");
-            final int agentPort = agent.getPort();
-            listenAddress = new SnmpAgentAddress(localHost, agentPort);
+            MockSnmpAgent agent = null;
+            try {
+                agent = MockSnmpAgent.createAgentAndRun(resource.getURL(), str(InetAddress.getLocalHost()) + "/0");
+            } catch (Throwable e) {
+                agent = MockSnmpAgent.createAgentAndRun(resource.getURL(), str(InetAddressUtils.ONE_TWENTY_SEVEN) + "/0");
+            }
+            SnmpAgentAddress listenAddress = new SnmpAgentAddress(agent.getInetAddress(), agent.getPort());
 
             mapper.addProxy(hostAddress, listenAddress);
 
