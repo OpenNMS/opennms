@@ -204,9 +204,8 @@ public class MockLogAppender {
         setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.hibernate.SQL", "INFO");
         setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.hibernate.cfg.AnnotationBinder", "ERROR");
         setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.quartz", "INFO");
-        // Turn off dumb SNMP4J logging which triggers our "no logging higher than INFO" checks
-        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.snmp4j", "FATAL");
-        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.snmp4j.agent", "FATAL");
+        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.snmp4j", "ERROR");
+        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.snmp4j.agent", "ERROR");
         setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.springframework", "INFO");
         setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.springframework.beans.factory.support", "WARN");
         setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.springframework.context.support", "WARN");
