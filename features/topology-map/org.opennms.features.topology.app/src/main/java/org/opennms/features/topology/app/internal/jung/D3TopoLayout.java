@@ -114,7 +114,7 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
             double xDelta = targetVertexData.getX() - srcVertexData.getX();
             double yDelta = targetVertexData.getY() - srcVertexData.getY();
             double l = xDelta * xDelta + yDelta * yDelta;
-            if (l > 0) {
+            if (l != 0) {
                 EdgeData edgeData = getEdgeData(e);
                 double lSqrt = Math.sqrt(l);
                 double distance = m_alpha * edgeData.getStrength() * (lSqrt - edgeData.getDistance()) / lSqrt;
@@ -134,7 +134,7 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
 
         //Apply gravity forces
         currentForce = m_alpha * getGravity();
-        if(currentForce > 0){
+        if(currentForce != 0){
             double centerX = getSize().getWidth() / 2;
             double centerY = getSize().getHeight() / 2;
             int i = -1;
@@ -149,7 +149,7 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
         //Compute quad tree center of mass and apply charge force
         //TODO create a quadtree implementation from D3
         if(getDefaultCharge() != 0){
-
+	    
         }
 
 
