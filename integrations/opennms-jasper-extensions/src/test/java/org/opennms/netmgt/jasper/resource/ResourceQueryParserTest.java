@@ -58,7 +58,13 @@ public class ResourceQueryParserTest {
         assertEquals("10", rQuery.getNodeId());
         assertEquals("nsVpnMonitor", rQuery.getResourceName());
         assertEquals("someForeignSource", rQuery.getForeignSource());
-        assertEquals("someForeignId", rQuery.getForeignId())
+        assertEquals("someForeignId", rQuery.getForeignId());
+
+        System.setProperty("org.opennms.rrd.storeByForeignSource", "true");
+        assertTrue(rQuery.constructBasePath().matches(".*src/test/resources/share/rrd/snmp/fs/someForeignSource/someForeignId"))
+
+        System.setProperty("org.opennms.rrd.storeByForeignSource", "false");
+        assertTrue(rQuery.constructBasePath().matches(".*src/test/resources/share/rrd/snmp/10"));
     }
     
     @Test
