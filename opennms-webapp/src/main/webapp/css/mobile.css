@@ -144,13 +144,13 @@ td div.clip {
 }
 /* Layouts */
 div.TwoColLeft {
-	width: 40%;
+	width: 48%;
 	float: left;
 	position: relative;
 	margin-right: 2%;
 }
 div.TwoColRight {
-	width: 57%;
+	width: 49%;
 	float: left;
 	position: relative;
 }
