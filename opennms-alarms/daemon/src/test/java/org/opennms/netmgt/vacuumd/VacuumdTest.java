@@ -197,6 +197,7 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, Initia
      */
     @Test(timeout=90000)
     @JUnitTemporaryDatabase(dirtiesContext=true,tempDbClass=MockDatabase.class)
+    @Ignore
     public final void testConcurrency() throws InterruptedException {
         try {
         /*
