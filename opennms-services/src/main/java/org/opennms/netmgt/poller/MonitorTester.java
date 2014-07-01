@@ -171,7 +171,7 @@ public class MonitorTester {
         if (config.isPolledLocally(ipAddress, serviceName)) {
             for (Parameter p : svc.getParameterCollection()) {
                 if (!parameters.containsKey(p.getKey())) {
-                    parameters.put(p.getKey(), p.getValue());
+                    parameters.put(p.getKey(), p.getValue() == null ? p.getAnyObject() : p.getValue());
                 }
             }
             for (Entry<String,Object> e : parameters.entrySet()) {
