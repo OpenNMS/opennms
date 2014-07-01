@@ -190,6 +190,8 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
             SnmpAgentAddress listenAddress = new SnmpAgentAddress(agent.getInetAddress(), agent.getPort());
 
             mapper.addProxy(hostAddress, listenAddress);
+            testContext.setAttribute(IPADDRESS_KEY, listenAddress.getAddress());
+            testContext.setAttribute(PORT_KEY, listenAddress.getPort());
 
             LOG.debug("using MockSnmpAgent on {} for 'real' address {}", listenAddress, agentAddress);
 
