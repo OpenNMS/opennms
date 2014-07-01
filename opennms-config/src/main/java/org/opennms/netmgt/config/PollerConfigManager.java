@@ -1023,8 +1023,9 @@ abstract public class PollerConfigManager implements PollerConfig {
                         final ServiceMonitorLocator locator = new DefaultServiceMonitorLocator(monitor.getService(), mc);
                         locators.add(locator);
                     }
+                    LOG.debug("Loaded monitor for service: {}, class-name: {}", monitor.getService(), monitor.getClassName());
                 } catch (final ClassNotFoundException e) {
-                    LOG.warn("Unable to location monitor for service: {} class-name: {}", monitor.getService(), monitor.getClassName(), e);
+                    LOG.warn("Unable to load monitor for service: {}, class-name: {}", monitor.getService(), monitor.getClassName(), e);
                 } catch (ConfigObjectRetrievalFailureException e) {
                     LOG.warn("{} {}", e.getMessage(), e.getRootCause(), e);
                 }

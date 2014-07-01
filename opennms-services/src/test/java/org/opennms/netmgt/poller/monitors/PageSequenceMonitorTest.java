@@ -39,6 +39,7 @@ import java.util.Map.Entry;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -125,6 +126,7 @@ public class PageSequenceMonitorTest {
     }
 
     @Test
+    @Ignore("EBay tests stopped working, we REALLY need to make our own repeatable version of this test")
     public void testHttps() throws Exception {
         m_params.put("page-sequence", "" +
             "<?xml version=\"1.0\"?>" +
@@ -141,6 +143,7 @@ public class PageSequenceMonitorTest {
     }
 
     @Test
+    @Ignore("EBay tests stopped working, we REALLY need to make our own repeatable version of this test")
     public void testHttpsWithHostValidation() throws Exception {
         m_params.put("page-sequence", "" +
             "<?xml version=\"1.0\"?>" +
@@ -157,6 +160,7 @@ public class PageSequenceMonitorTest {
     }
 
     @Test
+    @Ignore("EBay tests stopped working, we REALLY need to make our own repeatable version of this test")
     public void testHttpsWithoutHostValidation() throws Exception {
         m_params.put("page-sequence", "" +
             "<?xml version=\"1.0\"?>" +

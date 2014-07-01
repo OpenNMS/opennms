@@ -11,10 +11,6 @@
     <artifactId>org.opennms.protocols.cifs</artifactId>
     <name>OpenNMS Protocols CIFS Support</name>
 
-    <properties>
-        <powermock.version>1.5</powermock.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.easymock</groupId>
@@ -23,13 +19,13 @@
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-module-junit4</artifactId>
-            <version>${powermock.version}</version>
+            <version>${powermockVersion}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-api-easymock</artifactId>
-            <version>${powermock.version}</version>
+            <version>${powermockVersion}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

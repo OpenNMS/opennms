@@ -68,10 +68,10 @@ public class Reflections {
 	 * @param clazz
 	 * @return
 	 */
-	public static List<Class> buildClassHierarchy(Class clazz) {
-		Set<Class> classes = new HashSet<Class>();
+	public static List<Class<?>> buildClassHierarchy(Class<?> clazz) {
+		Set<Class<?>> classes = new HashSet<Class<?>>();
 		buildClassHierarchy(clazz, classes);
-		return new ArrayList<Class>(classes);
+		return new ArrayList<Class<?>>(classes);
 	}
 
 	/**
@@ -85,7 +85,7 @@ public class Reflections {
 	 *            avoid double occurance of interrfaces)
 	 * @see #buildClassHierarchy(java.lang.Class)
 	 */
-	private static void buildClassHierarchy(Class clazz, Set<Class> classes) {
+	private static void buildClassHierarchy(Class<?> clazz, Set<Class<?>> classes) {
 		if (clazz == null) return;
 		classes.add(clazz);
 		classes.addAll(Arrays.asList(clazz.getInterfaces()));

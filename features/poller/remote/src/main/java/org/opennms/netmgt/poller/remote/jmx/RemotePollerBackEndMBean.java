@@ -26,32 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.poller.jmx;
+package org.opennms.netmgt.poller.remote.jmx;
 
-import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
-import org.opennms.netmgt.poller.Poller;
+import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
 /**
- * <p>RemotePollerBackEnd class.</p>
+ * <p>RemotePollerBackEndMBean interface.</p>
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @version $Id: $
  */
-public class RemotePollerBackEnd extends AbstractSpringContextJmxServiceDaemon<org.opennms.netmgt.poller.remote.support.DefaultPollerBackEnd> implements RemotePollerBackEndMBean {
-
-    /** {@inheritDoc} */
-    @Override
-    protected String getLoggingPrefix() {
-        return Poller.getLoggingCategory();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected String getSpringContext() {
-        return "pollerBackEndContext";
-    }
+public interface RemotePollerBackEndMBean extends BaseOnmsMBean {
 
 }

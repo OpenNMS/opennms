@@ -29,8 +29,11 @@
 package org.opennms.smoketest;
 
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class NodeListPageTest extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
@@ -39,17 +42,17 @@ public class NodeListPageTest extends OpenNMSSeleniumTestCase {
     }
 
     @Test
-    public void testAllTextIsPresent() throws Exception {
+    public void a_testAllTextIsPresent() throws Exception {
         assertTrue("Could not find header '<h3>Nodes</h3>'", selenium.getHtmlSource().contains("<h3>Nodes</h3>"));
     }
     
     @Test
-    public void testAllLinksArePresent() throws InterruptedException {
+    public void b_testAllLinksArePresent() throws InterruptedException {
         waitForElement("//a[@href='element/nodeList.htm?listInterfaces=true']");
     }
     
     @Test
-    public void testAllLinks() throws InterruptedException {
+    public void c_testAllLinks() throws InterruptedException {
         clickAndWait("link=Show interfaces");
         waitForText("interfaces");
     }
