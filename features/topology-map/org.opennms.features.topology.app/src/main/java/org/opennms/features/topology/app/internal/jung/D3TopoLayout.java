@@ -154,7 +154,7 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
         //Compute quad tree center of mass and apply charge force
         if(getDefaultCharge() != 0){
             
-            BoundingBox bounds = new BoundingBox();
+            BoundingBox bounds = new BoundingBox(0, 0, (int)getSize().getWidth(), (int)getSize().getHeight());
             for(V v : getGraph().getVertices()) {
                 VertexData vData = getVertexData(v);
                 BoundingBox rounded = new BoundingBox((int)vData.getX(), (int)vData.getY(), 1, 1);
@@ -205,6 +205,9 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
 
 
     }
+
+    // position verlet integration
+    //skipping for now
 
     private double getGravity() {
         return 0.1;

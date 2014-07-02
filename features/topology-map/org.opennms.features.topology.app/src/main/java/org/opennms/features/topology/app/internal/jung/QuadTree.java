@@ -60,7 +60,7 @@ public class QuadTree<Value> {
 
         
         public Node(BoundingBox bounds) {
-            this(null, null, bounds);
+            this(new Point2D.Double(bounds.getX(), bounds.getY()), null, bounds);
         }
 
         public Node(Point2D location, Value value, BoundingBox bounds) {
@@ -179,16 +179,16 @@ public class QuadTree<Value> {
                 if (this.isLeaf()) {
                     // move current data into a child node
                     insertChild(getLocation(), m_charge, m_value);
+                } else {
+                    // insert new child data and update charge and center of mass
+                    insertChild(pt, charge, v);
+                    int newCharge = m_charge+charge;
+                    double cx = (getX()*m_charge + pt.getX()) / newCharge;
+                    double cy = (getY()*m_charge + pt.getY()) / newCharge;
+                    setCenterOfMass(cx, cy);
+                    setLocation(cx, cy);
+                    m_charge = newCharge;
                 }
-                
-                // insert new child data and update charge and center of mass
-                insertChild(pt, charge, v);
-                int newCharge = m_charge+charge;
-                double cx = (getX()*m_charge + pt.getX()) / newCharge;
-                double cy = (getY()*m_charge + pt.getY()) / newCharge;
-                setCenterOfMass(cx, cy);
-                setLocation(cx, cy);
-                m_charge = newCharge;
 
             }
         }
