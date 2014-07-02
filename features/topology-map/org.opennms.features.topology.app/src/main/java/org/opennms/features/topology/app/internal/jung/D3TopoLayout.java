@@ -48,7 +48,7 @@ import java.util.Random;
 
 public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements IterativeContext {
 
-    private static final double LINK_DISTANCE = 300.0;
+    private static final double LINK_DISTANCE = 150.0;
     private static final double LINK_STRENGTH = 2.0;
     private static final int DEFAULT_CHARGE = -1200;
     private double EPSILON = 0.00000000001D;
@@ -217,7 +217,7 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
             location.setLocation(vData.getX(), vData.getY());
         }
         
-        m_alpha *= 0.99;
+        m_alpha *= 0.998235;
 
 
     }

@@ -247,6 +247,15 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <bean class="org.opennms.features.topology.app.internal.operations.TopoFRLayoutOperation"/>
     </service>
 
+    <!-- D3 Layout-->
+    <service interface="org.opennms.features.topology.api.CheckedOperation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="View"/>
+            <entry key="operation.label" value="D3 Layout?group=layout"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.app.internal.operations.D3TopoLayoutOperation"/>
+    </service>
+
 
     <service interface="org.opennms.features.topology.api.CheckedOperation" >
         <service-properties>
