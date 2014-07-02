@@ -29,10 +29,11 @@
 package org.opennms.smoketest;
 
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
-
-
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class NotificationsPageTest extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
@@ -41,7 +42,7 @@ public class NotificationsPageTest extends OpenNMSSeleniumTestCase {
     }
 
     @Test
-    public void testAllTextIsPresent() throws Exception {
+    public void a_testAllTextIsPresent() throws Exception {
         waitForText("Notification queries");
         waitForText("Outstanding and Acknowledged Notices");
         waitForText("Notification Escalation");
@@ -52,20 +53,20 @@ public class NotificationsPageTest extends OpenNMSSeleniumTestCase {
     }
 
     @Test
-    public void testAllLinksArePresent() throws InterruptedException {
+    public void b_testAllLinksArePresent() throws InterruptedException {
         waitForElement("link=Your outstanding notices");
         waitForElement("link=All outstanding notices");
         waitForElement("link=All acknowledged notices");
     }
 
     @Test 
-    public void testAllFormsArePresent() throws InterruptedException {
+    public void c_testAllFormsArePresent() throws InterruptedException {
         waitForElement("css=input[type=submit]");
         waitForElement("//input[@value='Get details']");
     }
 
     @Test
-    public void testAllLinks() throws InterruptedException {
+    public void d_testAllLinks() throws InterruptedException {
         clickAndWait("link=Your outstanding notices");
         waitForText("admin was notified");
         waitForElement("link=[Remove all]");

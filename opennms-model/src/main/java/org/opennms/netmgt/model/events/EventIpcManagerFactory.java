@@ -26,9 +26,8 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.eventd;
+package org.opennms.netmgt.model.events;
 
-import org.opennms.netmgt.model.events.EventIpcManager;
 import org.springframework.util.Assert;
 
 /**
@@ -72,8 +71,10 @@ public abstract class EventIpcManagerFactory {
     /**
      * This is here for unit testing so we can reset this class before
      * every test.
+     * 
+     * @deprecated Only for unit testing!
      */
-    protected static void reset() {
+    public static void reset() {
         m_ipcManager = null;
     }
 

@@ -120,7 +120,7 @@ public class MBeansHelper {
 	 * @return T if a key is found in <code>map</code>, otherwise null.
 	 */
 	public static <T> T getValueForClass(Map<Class<?>, T> map, Class<?> clazz) {
-		List<Class> classes = Reflections.buildClassHierarchy(clazz);
+		List<Class<?>> classes = Reflections.buildClassHierarchy(clazz);
 		for (int i = classes.size() - 1; i >= 0; i--) {
 			if (map.get(classes.get(i)) != null) return map.get(classes.get(i));
 		}

@@ -93,11 +93,11 @@ public final class GWTEdge extends JavaScriptObject {
         $wnd.console.log(obj);
     }-*/;
 
-    public static final native void setStatus(String status) /*-{
+    public final native void setStatus(String status) /*-{
         this.status = status;
     }-*/;
 
-    public static final native String getStatus() /*-{
+    public final native String getStatus() /*-{
         return this.status;
     }-*/;
 

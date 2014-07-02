@@ -29,7 +29,6 @@
 package org.opennms.netmgt.collectd.jdbc;
 
 import org.opennms.netmgt.collection.api.CollectionAttributeType;
-import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.support.AbstractCollectionAttribute;
 
 public class JdbcCollectionAttribute extends AbstractCollectionAttribute {

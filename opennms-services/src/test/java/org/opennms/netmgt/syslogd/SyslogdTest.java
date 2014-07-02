@@ -246,7 +246,7 @@ public class SyslogdTest implements InitializingBean {
             //Failures are for weenies
         }
 
-        ea.verifyAnticipated(5000, 0, 0, 0, 0);
+        ea.verifyAnticipated(10000, 0, 0, 0, 0);
     }
 
     @Test
