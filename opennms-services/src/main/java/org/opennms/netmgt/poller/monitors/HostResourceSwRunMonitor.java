@@ -38,6 +38,7 @@ import java.util.Map;
 import org.apache.log4j.Level;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
+import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
@@ -236,10 +237,18 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
                     statusResults.put(result.getInstance(), result.getValue(serviceStatusOidId));
                 }
             };
-            TableTracker tracker = new TableTracker(callback, serviceNameOidId, serviceStatusOidId);
-            SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "HostResourceSwRunMonitor", tracker);
+            TimeoutTracker tracker = new TimeoutTracker(parameters, agentConfig.getRetries(), agentConfig.getTimeout());
+            tracker.reset();
+            tracker.startAttempt();
+
+            TableTracker tableTracker = new TableTracker(callback, serviceNameOidId, serviceStatusOidId);
+            SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "HostResourceSwRunMonitor", tableTracker);
             walker.start();
             walker.waitFor();
+            String error = walker.getErrorMessage();
+            if (error != null && !error.trim().equals("")) {
+                return logDown(Level.WARN, error);
+            }
 
             // Iterate over the list of running services
             for(SnmpInstId nameInstance : nameResults.keySet()) {
@@ -251,7 +260,7 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
                     log().debug("poll: HostResourceSwRunMonitor poll succeeded, addr=" + hostAddress + ", service-name=" + serviceName + ", value=" + nameResults.get(nameInstance));
                     // Using the instance of the service, get its status and see if it meets the criteria
                     if (meetsCriteria(value, "<=", runLevel)) {
-                        status = PollStatus.available();
+                        status = PollStatus.available(tracker.elapsedTimeInMillis());
                         // If we get here, that means the service passed the criteria, if only one match is desired we exit.
                         if ("false".equals(matchAll)) {
                            return status;
