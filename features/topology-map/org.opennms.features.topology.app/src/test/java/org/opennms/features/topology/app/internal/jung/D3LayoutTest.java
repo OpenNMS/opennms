@@ -166,7 +166,9 @@ public class D3LayoutTest {
         layout.setInitializer(initializer(graphLayout, size));
         layout.setSize(size);
         
-        try (PrintWriter out = new PrintWriter(new FileWriter("data"+count+".js"))) {
+        PrintWriter out = null;
+        try {
+            out = new PrintWriter(new FileWriter("data"+count+".js"))) 
 
             out.println("var gCenter = { x: " + size.getWidth()/2.0 + ", y: " + size.getHeight()/2.0 + "};");
            
@@ -192,6 +194,8 @@ public class D3LayoutTest {
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        } finally {
+            if (out != null) out.close();
         }
 
         for (Vertex v : vertices) {
