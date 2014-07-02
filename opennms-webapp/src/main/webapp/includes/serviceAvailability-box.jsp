@@ -45,9 +45,13 @@
 		org.exolab.castor.xml.MarshalException,
 		org.exolab.castor.xml.ValidationException,
 		org.opennms.web.category.*,
-		org.opennms.web.element.*
+		org.opennms.web.element.*,
+		java.util.Date
 	"
 %>
+<%@ page import="org.opennms.netmgt.model.OnmsMonitoredService" %>
+<%@ page import="org.opennms.web.outage.Outage" %>
+<%@ page import="org.opennms.web.outage.OutageModel" %>
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -96,12 +100,64 @@
         styleClass = "Indeterminate";
 		statusContent = ElementUtil.getServiceStatusString(service);
     }
-    
+
+    long timelineEnd = new Date().getTime() / 1000;
+    long timelineStart = timelineEnd - 3600 * 24;
+    int timelineWidth = 250;
+    String emptyUrl = "/opennms/rest/timeline/empty/" + timelineStart + "/" + timelineEnd + "/" + timelineWidth;
+
+    int nodeId = service.getNodeId();
+    String ipAddr = service.getIpAddress();
+
+    Outage[] outages = new OutageModel().getCurrentOutagesForNode(nodeId);
+
+    String warnClass = "Normal";
+
+    for(int o=0;o<outages.length;o++) {
+        if (outages[o].getIpAddress().equals(ipAddr) && outages[o].getServiceName().equals(service.getServiceName())) {
+            warnClass = "Critical";
+            break;
+        }
+    }
+
+    String overallStatusString = request.getParameter("interfaceStatus");
+    String overallStatus = "Indeterminate";
+
+    double overallRtcValue = this.m_model.getInterfaceAvailability(nodeId, ipAddr);
+
+    int serviceCount = ElementUtil.getServicesOnInterface(nodeId, ipAddr,getServletContext()).length;
+
+    if (serviceCount < 1) {
+        overallStatusString = "Not Monitored";
+    } else {
+        overallStatus = CategoryUtil.getCategoryClass(this.m_normalThreshold, this.m_warningThreshold, overallRtcValue);
+        overallStatusString = CategoryUtil.formatValue(overallRtcValue) + "%";
+    }
+
+    String timelineUrl = "/opennms/rest/timeline/html/" + String.valueOf(nodeId) + "/" + ipAddr + "/" + service.getServiceName() + "/" + timelineStart + "/" + timelineEnd + "/" + timelineWidth;
 %>
 
 <h3>Overall Availability</h3>
 <table>
-  <tr class="<%= styleClass %>"/>
-    <td class="divider bright"><%= statusContent %></td>
+  <tr class="CellStatus">
+    <td class="Cleared nobright" colspan="2"><%=ipAddr%></td>
+    <td class="Cleared nobright"><img src="/opennms/rest/timeline/header/<%=timelineStart%>/<%=timelineEnd%>/<%=timelineWidth%>"></td>
+    <td class="<%=overallStatus%> nobright"><%=overallStatusString%></td>
+  </tr>
+  <tr class="CellStatus"/>
+    <td class="Cleared nobright"></td>
+    <td class="<%=warnClass%> bright"><%=service.getServiceName()%></td>
+    <%
+        if (service.isManaged()) {
+    %>
+    <td class="Cleared nobright"><script src="<%=timelineUrl%>"></script></td>
+    <%
+        } else {
+    %>
+    <td class="Cleared nobright"><img src="<%=emptyUrl%>"></td>
+    <%
+        }
+    %>
+    <td class="<%= styleClass %> nobright"><%= statusContent %></td>
   </tr>
 </table>

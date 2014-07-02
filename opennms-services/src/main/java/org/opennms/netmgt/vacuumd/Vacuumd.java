@@ -97,6 +97,15 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
     }
 
     /**
+     */
+    static synchronized void destroySingleton() {
+        if (m_singleton != null) {
+            m_singleton.stop();
+            m_singleton = null;
+        }
+    }
+
+    /**
      * <p>Constructor for Vacuumd.</p>
      */
     public Vacuumd() {
@@ -152,7 +161,7 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
     @Override
     protected void onStop() {
         m_stopped = true;
-        if (m_scheduler != null) {
+        if (m_scheduler != null && m_scheduler.getStatus() == RUNNING) {
             m_scheduler.stop();
         }
     }

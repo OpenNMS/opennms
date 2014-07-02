@@ -61,34 +61,34 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
      * The map of queue that contain {@link ReadyRunnable ready runnable}
      * instances. The queues are mapped according to the interval of scheduling.
      */
-    private Map<Long, PeekableFifoQueue<ReadyRunnable>> m_queues;
+    private final Map<Long, PeekableFifoQueue<ReadyRunnable>> m_queues;
 
     /**
      * The total number of elements currently scheduled. This should be the sum
      * of all the elements in the various queues.
      */
-    private int m_scheduled;
+    private volatile int m_scheduled;
 
     /**
      * The pool of threads that are used to executed the runnable instances
      * scheduled by the class' instance.
      */
-    private ExecutorService m_runner;
+    private final ExecutorService m_runner;
 
     /**
      * The status for this fiber.
      */
-    private int m_status;
+    private volatile int m_status;
 
     /**
      * The worker thread that executes this instance.
      */
-    private Thread m_worker;
+    private volatile Thread m_worker;
 
     /**
      * Used to keep track of the number of tasks that have been executed.
      */
-    private long m_numTasksExecuted = 0;
+    private volatile long m_numTasksExecuted = 0;
 
     /**
      * This queue extends the standard FIFO queue instance so that it is

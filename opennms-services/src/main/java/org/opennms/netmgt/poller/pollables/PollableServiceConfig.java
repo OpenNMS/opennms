@@ -225,8 +225,8 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
                 }
             }
             if (!matched) {
-                LOG.warn("getInterval: Could not locate downtime model, throwing runtime exception");
-                throw new RuntimeException("Downtime model is invalid, cannot schedule service " + m_service);
+                LOG.error("Downtime model is invalid on package " + m_pkg.getName() + ", cannot schedule service " + m_service);
+                return -1;
             }
         }
         
