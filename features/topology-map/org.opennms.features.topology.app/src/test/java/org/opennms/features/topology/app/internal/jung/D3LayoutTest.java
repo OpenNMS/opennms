@@ -168,7 +168,7 @@ public class D3LayoutTest {
         
         PrintWriter out = null;
         try {
-            out = new PrintWriter(new FileWriter("data"+count+".js"))) 
+            out = new PrintWriter(new FileWriter("data"+count+".js")) ;
 
             out.println("var gCenter = { x: " + size.getWidth()/2.0 + ", y: " + size.getHeight()/2.0 + "};");
            
